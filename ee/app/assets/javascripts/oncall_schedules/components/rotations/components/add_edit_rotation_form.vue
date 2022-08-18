@@ -19,6 +19,7 @@ import {
   CHEVRON_SKIPPING_PALETTE_ENUM,
 } from 'ee/oncall_schedules/constants';
 import { format24HourTimeStringFromInt } from '~/lib/utils/datetime_utility';
+import { formatParticipantsForTokenSelector } from 'ee/oncall_schedules/utils/common_utils';
 import { s__, __ } from '~/locale';
 
 export const i18n = {
@@ -97,6 +98,11 @@ export default {
       default: () => ({}),
     },
   },
+  computed: {
+    formParticipantsWithTokenStyles() {
+      return formatParticipantsForTokenSelector(this.form.participants);
+    },
+  },
   methods: {
     format24HourTimeStringFromInt,
   },
@@ -128,7 +134,7 @@ export default {
         :state="validationState.participants"
       >
         <gl-token-selector
-          :selected-tokens="form.participants"
+          :selected-tokens="formParticipantsWithTokenStyles"
           :dropdown-items="participants"
           :loading="isLoading"
           container-class="gl-h-13! gl-overflow-y-auto"

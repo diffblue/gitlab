@@ -1,12 +1,9 @@
 <script>
 import { GlAvatar, GlPopover } from '@gitlab/ui';
-import * as cssVariables from '@gitlab/ui/scss_to_js/scss_variables';
-import { uniqueId, startCase } from 'lodash';
-import { darkModeEnabled } from '~/lib/utils/color_utils';
+import { uniqueId } from 'lodash';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { truncate } from '~/lib/utils/text_utility';
 import { __, sprintf } from '~/locale';
-import { LIGHT_TO_DARK_MODE_SHADE_MAPPING } from '../../../constants';
 
 export const SHIFT_WIDTHS = {
   md: 100,
@@ -28,22 +25,32 @@ export default {
       type: Object,
       required: true,
     },
-    rotationAssigneeStartsAt: {
+    startsAt: {
       type: String,
       required: true,
     },
-    rotationAssigneeEndsAt: {
+    endsAt: {
       type: String,
       required: true,
     },
-    rotationAssigneeStyle: {
+    containerStyle: {
       type: Object,
       required: true,
     },
-    shiftWidth: {
-      type: Number,
+    color: {
+      type: Object,
       required: true,
     },
+  },
+  data() {
+    const { colorWeight, backgroundStyle, textClass } = this.color;
+
+    return {
+      colorWeight,
+      backgroundStyle,
+      textClass,
+      shiftWidth: parseInt(this.containerStyle.width, 10),
+    };
   },
   computed: {
     assigneeName() {
@@ -53,25 +60,9 @@ export default {
 
       return this.assignee.user.username;
     },
-    colorWeight() {
-      const { colorWeight } = this.assignee;
-      return darkModeEnabled() ? LIGHT_TO_DARK_MODE_SHADE_MAPPING[colorWeight] : colorWeight;
-    },
-    chevronBackground() {
-      const { colorPalette } = this.assignee;
-      const bgColor = `dataViz${startCase(colorPalette)}${this.colorWeight}`;
-      return cssVariables[bgColor];
-    },
-    textClass() {
-      if (darkModeEnabled()) {
-        return this.colorWeight < 500 ? 'gl-text-white' : 'gl-text-gray-900';
-      }
-
-      return 'gl-text-white';
-    },
-    endsAt() {
+    endsAtString() {
       return sprintf(__('Ends: %{endsAt}'), {
-        endsAt: `${formatDate(this.rotationAssigneeEndsAt, TIME_DATE_FORMAT)}`,
+        endsAt: `${formatDate(this.endsAt, TIME_DATE_FORMAT)}`,
       });
     },
     rotationAssigneeUniqueID() {
@@ -83,9 +74,9 @@ export default {
     hasRotationMobileViewText() {
       return this.shiftWidth <= SHIFT_WIDTHS.sm;
     },
-    startsAt() {
+    startsAtString() {
       return sprintf(__('Starts: %{startsAt}'), {
-        startsAt: `${formatDate(this.rotationAssigneeStartsAt, TIME_DATE_FORMAT)}`,
+        startsAt: `${formatDate(this.startsAt, TIME_DATE_FORMAT)}`,
       });
     },
   },
@@ -93,11 +84,11 @@ export default {
 </script>
 
 <template>
-  <div class="gl-absolute gl-h-7 gl-mt-3 gl-pr-1" :style="rotationAssigneeStyle">
+  <div class="gl-absolute gl-h-7 gl-mt-3 gl-pr-1" :style="containerStyle">
     <div
       :id="rotationAssigneeUniqueID"
       class="gl-h-6"
-      :style="{ backgroundColor: chevronBackground }"
+      :style="backgroundStyle"
       :class="$options.ROTATION_CENTER_CLASS"
       data-testid="rotation-assignee"
     >
@@ -113,10 +104,10 @@ export default {
     </div>
     <gl-popover :target="rotationAssigneeUniqueID" :title="assignee.user.username" placement="top">
       <p class="gl-m-0" data-testid="rotation-assignee-starts-at">
-        {{ startsAt }}
+        {{ startsAtString }}
       </p>
       <p class="gl-m-0" data-testid="rotation-assignee-ends-at">
-        {{ endsAt }}
+        {{ endsAtString }}
       </p>
     </gl-popover>
   </div>

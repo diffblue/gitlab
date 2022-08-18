@@ -3,7 +3,11 @@ import { startCase } from 'lodash';
 import { darkModeEnabled } from '~/lib/utils/color_utils';
 import { newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
 import { sprintf, __ } from '~/locale';
-import { ASSIGNEE_COLORS_COMBO, LIGHT_TO_DARK_MODE_SHADE_MAPPING } from '../constants';
+import {
+  ASSIGNEE_COLORS_COMBO,
+  LIGHT_TO_DARK_MODE_SHADE_MAPPING,
+  NON_ACTIVE_PARTICIPANT_STYLE,
+} from '../constants';
 
 /**
  * Returns formatted timezone string, e.g. (UTC-09:00) AKST Alaska
@@ -34,38 +38,20 @@ export const isNameFieldValid = (nameField) => {
 };
 
 /**
- * Returns a Array of Objects that represent the shift participant
- * with his/her username and unique shift color values
- *
- * @param {Object[]} participants
- *
- * @returns {Object[]} A list of values to save each participant
- * @property {string} username
- * @property {string} colorWeight
- * @property {string} colorPalette
- */
-export const getParticipantsForSave = (participants) =>
-  participants.map(({ username, colorWeight, colorPalette }) => ({
-    username,
-    // eslint-disable-next-line @gitlab/require-i18n-strings
-    colorWeight: `WEIGHT_${colorWeight}`,
-    colorPalette: colorPalette.toUpperCase(),
-  }));
-
-/**
  * Returns user data along with user token styles - color of the text
  * as well as the token background color depending on light or dark mode
  *
- * @template User
- * @param {User} user
+ * @param {Object}
+ * @property {string} colorWeight
+ * @property {string} colorPalette
  *
  * @returns {Object}
- * @property {User}
- * @property {string} class (CSS) for text color
- * @property {string} styles for token background color
+ * @property {string} colorWeight
+ * @property {string} colorPalette
+ * @property {string} textClass (CSS) for text color
+ * @property {string} backgroundStyle for background color
  */
-export const getUserTokenStyles = (user) => {
-  const { colorWeight, colorPalette } = user;
+export const getShiftStyles = ({ colorWeight, colorPalette }) => {
   const isDarkMode = darkModeEnabled();
   const modeColorWeight = isDarkMode ? LIGHT_TO_DARK_MODE_SHADE_MAPPING[colorWeight] : colorWeight;
   const bgColor = `dataViz${startCase(colorPalette)}${modeColorWeight}`;
@@ -78,61 +64,53 @@ export const getUserTokenStyles = (user) => {
   }
 
   return {
-    ...user,
-    class: textClass,
-    style: { backgroundColor: cssVariables[bgColor] },
+    textClass,
+    backgroundStyle: { backgroundColor: cssVariables[bgColor] },
   };
 };
 
 /**
- * Sets colorWeight and colorPalette for all participants options taking into account saved participants colors
- * so that there will be no color overlap
  *
- * @param {Object[]} allParticipants
- * @param {Object[]} selectedParticipants
+ * @param {number} participantIndex
+ * @returns {Object}
+ * @property {string} colorWeight
+ * @property {string} colorPalette
+ * @property {string} textClass (CSS) for text color
+ * @property {Object} backgroundStyle for background color
+ *  */
+export const getParticipantColor = (participantIndex) => {
+  if (participantIndex === -1) return NON_ACTIVE_PARTICIPANT_STYLE;
+
+  const colorIndexReference = participantIndex % ASSIGNEE_COLORS_COMBO.length;
+
+  return getShiftStyles(ASSIGNEE_COLORS_COMBO[colorIndexReference]);
+};
+
+/**
+ * Returns a Array of Objects that represent the shift participant
+ * with his/her username and unique shift color values
  *
- * @returns {Object[]} A list of all participants with colorWeight and colorPalette properties set
+ * @param {Object[]} participants
+ *
+ * @returns {Object[]} A list of values to save each participant
+ * @property {string} username
+ * @property {string} colorWeight
+ * @property {string} colorPalette
  */
-export const setParticipantsColors = (allParticipants, selectedParticipants = []) => {
-  // filter out the colors that saved participants have assigned
-  // so there are no duplicate colors
-  let availableColors = ASSIGNEE_COLORS_COMBO.filter(({ colorWeight, colorPalette }) =>
-    selectedParticipants.every(
-      ({ colorWeight: weight, colorPalette: palette }) =>
-        !(colorWeight === weight && colorPalette === palette),
-    ),
-  );
+export const getParticipantsForSave = (participants) => {
+  /**
+   * Todo: Remove getParticipantsForSave once styling is no longer
+   * required in API. See https://gitlab.com/gitlab-org/gitlab/-/issues/344950
+   */
 
-  // if all colors are exhausted, we allow to pick from the whole palette
-  if (!availableColors.length) {
-    availableColors = ASSIGNEE_COLORS_COMBO;
-  }
+  const TEMP_DEFAULT_COLOR_WEIGHT = 'WEIGHT_500';
+  const TEMP_DEFAULT_COLOR_PALLET = 'BLUE';
 
-  // filter out participants that were not saved previously and have no color info assigned
-  // and assign each one an available color set
-  const participants = allParticipants
-    .filter((participant) =>
-      selectedParticipants.every(({ user: { username } }) => username !== participant.username),
-    )
-    .map((participant, index) => {
-      const colorIndex = index % availableColors.length;
-      const { colorWeight, colorPalette } = availableColors[colorIndex];
-
-      return {
-        ...participant,
-        colorWeight,
-        colorPalette,
-      };
-    });
-
-  return [
-    ...participants,
-    ...selectedParticipants.map(({ user, colorWeight, colorPalette }) => ({
-      ...user,
-      colorWeight,
-      colorPalette,
-    })),
-  ].map(getUserTokenStyles);
+  return participants.map(({ username }) => ({
+    username,
+    colorWeight: TEMP_DEFAULT_COLOR_WEIGHT,
+    colorPalette: TEMP_DEFAULT_COLOR_PALLET,
+  }));
 };
 
 /**
@@ -166,4 +144,26 @@ export const parseRotationDate = (dateTimeString, scheduleTimezone) => {
   const time = parseInt(hour, 10);
 
   return { date, time };
+};
+
+/**
+ * Renames keys to be read by gl-token-selector
+ * @param {Object[]} participants
+ *
+ * @returns {Object}
+ * @property {Object} user
+ * @property {string} class (CSS) for text color
+ * @property {string} styles for token background color
+ *
+ */
+export const formatParticipantsForTokenSelector = (participants) => {
+  return participants.map((item, index) => {
+    const { textClass, backgroundStyle } = getParticipantColor(index);
+
+    return {
+      ...item,
+      class: textClass,
+      style: backgroundStyle,
+    };
+  });
 };

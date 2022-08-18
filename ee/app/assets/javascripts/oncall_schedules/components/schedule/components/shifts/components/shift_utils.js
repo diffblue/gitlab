@@ -82,10 +82,31 @@ export const getPixelOffset = ({ timeframe, shift, timelineWidth, presetType }) 
  * @param {Object} shift, timelineWidth, presetType, shiftDLSOffset
  * @return {Number} width in pixels
  */
-export const getPixelWidth = ({ shift, timelineWidth, presetType, shiftDLSOffset }) => {
-  const totalTime = getTotalTime(presetType);
+const getPixelWidth = ({ shift, timelineWidth, presetType }) => {
+  const displayRangeTotal = getTotalTime(presetType);
   const durationMillis = getDuration(shift);
-  const DLS = milliseconds({ m: shiftDLSOffset });
+  const shiftDayListSavingsOffset =
+    new Date(shift.startsAt).getTimezoneOffset() - new Date(shift.endsAt).getTimezoneOffset();
+  const DLS = milliseconds({ m: shiftDayListSavingsOffset });
   // shift width (px) = shift time (ms) * total width (px) / total time (ms)
-  return ((durationMillis + DLS) * timelineWidth) / totalTime;
+  return Math.round(((durationMillis + DLS) * timelineWidth) / displayRangeTotal);
+};
+
+export const getShiftContainerStyles = ({ timeframe, presetType, timelineWidth, shift }) => {
+  const left = getPixelOffset({
+    timeframe,
+    shift,
+    timelineWidth,
+    presetType,
+  });
+  const width = getPixelWidth({
+    shift,
+    timelineWidth,
+    presetType,
+  });
+
+  return {
+    left: `${left}px`,
+    width: `${width}px`,
+  };
 };

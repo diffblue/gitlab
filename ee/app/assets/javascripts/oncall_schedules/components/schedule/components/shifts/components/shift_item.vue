@@ -1,6 +1,6 @@
 <script>
 import RotationAssignee from 'ee/oncall_schedules/components/rotations/components/rotation_assignee.vue';
-import { getPixelOffset, getPixelWidth } from './shift_utils';
+import { getShiftContainerStyles } from './shift_utils';
 
 export default {
   components: {
@@ -23,36 +23,15 @@ export default {
       type: Number,
       required: true,
     },
+    shiftColor: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
-    shiftStyles() {
+    containerStyle() {
       const { timeframe, presetType, timelineWidth, shift } = this;
-
-      return {
-        left: getPixelOffset({
-          timeframe,
-          shift,
-          timelineWidth,
-          presetType,
-        }),
-        width: Math.round(
-          getPixelWidth({
-            shift,
-            timelineWidth,
-            presetType,
-            shiftDLSOffset:
-              new Date(shift.startsAt).getTimezoneOffset() -
-              new Date(shift.endsAt).getTimezoneOffset(),
-          }),
-        ),
-      };
-    },
-    rotationAssigneeStyle() {
-      const { left, width } = this.shiftStyles;
-      return {
-        left: `${left}px`,
-        width: `${width}px`,
-      };
+      return getShiftContainerStyles({ timeframe, presetType, timelineWidth, shift });
     },
   },
 };
@@ -61,9 +40,9 @@ export default {
 <template>
   <rotation-assignee
     :assignee="shift.participant"
-    :rotation-assignee-style="rotationAssigneeStyle"
-    :rotation-assignee-starts-at="shift.startsAt"
-    :rotation-assignee-ends-at="shift.endsAt"
-    :shift-width="shiftStyles.width"
+    :container-style="containerStyle"
+    :starts-at="shift.startsAt"
+    :ends-at="shift.endsAt"
+    :color="shiftColor"
   />
 </template>
