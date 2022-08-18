@@ -66,6 +66,9 @@ RSpec.describe 'User creates release', :js do
       expect(link.url).to eq(link_2[:url])
       expect(link.name).to eq(link_2[:title])
 
+      expect(release).not_to be_historical_release
+      expect(release).not_to be_upcoming_release
+
       expect(page).to have_current_path(project_release_path(project, release))
     end
   end
