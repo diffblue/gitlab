@@ -30,23 +30,23 @@ export default {
     stats() {
       return [
         {
-          key: UPGRADE_STATUS_RECOMMENDED,
-          props: {
-            skip: this.shouldSkipStat(UPGRADE_STATUS_RECOMMENDED),
-            variables: { ...this.variables, upgradeStatus: UPGRADE_STATUS_RECOMMENDED },
-            variant: 'warning',
-            title: s__('Runners|Outdated'),
-            metaText: s__('Runners|recommended'),
-          },
-        },
-        {
           key: UPGRADE_STATUS_AVAILABLE,
           props: {
             skip: this.shouldSkipStat(UPGRADE_STATUS_AVAILABLE),
             variables: { ...this.variables, upgradeStatus: UPGRADE_STATUS_AVAILABLE },
             variant: 'info',
-            title: s__('Runners|Outdated'),
-            metaText: s__('Runners|available'),
+            title: s__('Runners|Upgrade available'),
+            metaIcon: 'upgrade',
+          },
+        },
+        {
+          key: UPGRADE_STATUS_RECOMMENDED,
+          props: {
+            skip: this.shouldSkipStat(UPGRADE_STATUS_RECOMMENDED),
+            variables: { ...this.variables, upgradeStatus: UPGRADE_STATUS_RECOMMENDED },
+            variant: 'warning',
+            title: s__('Runners|Upgrade recommended'),
+            metaIcon: 'upgrade',
           },
         },
       ];

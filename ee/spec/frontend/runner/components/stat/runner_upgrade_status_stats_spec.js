@@ -34,14 +34,14 @@ describe('RunnerStats', () => {
   `('With licensed feature $glFeatures', ({ glFeatures }) => {
     const statOptions = [
       {
-        metatext: s__('Runners|recommended'),
-        variant: 'warning',
-        variables: { upgradeStatus: UPGRADE_STATUS_RECOMMENDED },
-      },
-      {
-        metatext: s__('Runners|available'),
+        title: s__('Runners|Upgrade available'),
         variant: 'info',
         variables: { upgradeStatus: UPGRADE_STATUS_AVAILABLE },
+      },
+      {
+        title: s__('Runners|Upgrade recommended'),
+        variant: 'warning',
+        variables: { upgradeStatus: UPGRADE_STATUS_RECOMMENDED },
       },
     ];
 
@@ -50,12 +50,12 @@ describe('RunnerStats', () => {
         glFeatures,
       });
 
-      statOptions.forEach(({ metatext, variant, variables }, i) => {
+      statOptions.forEach(({ title, variant, variables }, i) => {
         const stat = findRunnerSingleStatAt(i);
 
         expect(stat.attributes()).toMatchObject({
-          title: s__('Runners|Outdated'),
-          metatext,
+          metaicon: 'upgrade',
+          title,
           variant,
         });
         expect(stat.props()).toEqual({
@@ -90,8 +90,8 @@ describe('RunnerStats', () => {
         glFeatures,
       });
 
-      expect(findRunnerSingleStatAt(0).props('skip')).toBe(true);
-      expect(findRunnerSingleStatAt(1).props('skip')).toBe(false);
+      expect(findRunnerSingleStatAt(0).props('skip')).toBe(false);
+      expect(findRunnerSingleStatAt(1).props('skip')).toBe(true);
     });
   });
 
