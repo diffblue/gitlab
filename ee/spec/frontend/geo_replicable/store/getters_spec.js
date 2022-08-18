@@ -22,4 +22,21 @@ describe('GeoReplicable Store Getters', () => {
       expect(getters.replicableTypeName(state)).toBe('package files');
     });
   });
+
+  describe.each`
+    currentFilterIndex | searchFilter | hasFilters
+    ${0}               | ${''}        | ${false}
+    ${0}               | ${'test'}    | ${true}
+    ${1}               | ${''}        | ${true}
+    ${1}               | ${'test'}    | ${true}
+  `('hasFilters', ({ currentFilterIndex, searchFilter, hasFilters }) => {
+    beforeEach(() => {
+      state.currentFilterIndex = currentFilterIndex;
+      state.searchFilter = searchFilter;
+    });
+
+    it(`when currentFilterIndex: ${currentFilterIndex} and searchFilter: "${searchFilter}" hasFilters returns ${hasFilters}`, () => {
+      expect(getters.hasFilters(state)).toBe(hasFilters);
+    });
+  });
 });

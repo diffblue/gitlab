@@ -18,4 +18,4 @@
 
   = paginate @registries, theme: 'gitlab'
 - else
-  = render 'shared/empty_states/geo_replication', replicable_type: _('projects')
+  = render 'shared/empty_states/geo_replication', replicable_type: _('projects'), has_filters: true
