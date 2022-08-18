@@ -35,13 +35,14 @@ RSpec.describe Gitlab::Insights::Reducers::DoraReducer do
     it 'converts from seconds to days' do
       data = [
         { 'value' => 86400, 'date' => '2020-01-01' },
-        { 'value' => 43200, 'date' => '2020-01-02' }
+        { 'value' => 43200, 'date' => '2020-01-02' },
+        { 'value' => nil, 'date' => '2020-01-03' }
       ]
 
       result = described_class
         .reduce(data, period: 'day', metric: 'lead_time_for_changes')
 
-      expect(result).to eq({ '01 Jan 20' => 1, '02 Jan 20' => 0.5 })
+      expect(result).to eq({ '01 Jan 20' => 1, '02 Jan 20' => 0.5, '03 Jan 20' => nil })
     end
   end
 
@@ -49,13 +50,14 @@ RSpec.describe Gitlab::Insights::Reducers::DoraReducer do
     it 'converts from seconds to days' do
       data = [
         { 'value' => 86400, 'date' => '2020-01-01' },
-        { 'value' => 43200, 'date' => '2020-01-02' }
+        { 'value' => 43200, 'date' => '2020-01-02' },
+        { 'value' => nil, 'date' => '2020-01-03' }
       ]
 
       result = described_class
         .reduce(data, period: 'day', metric: 'time_to_restore_service')
 
-      expect(result).to eq({ '01 Jan 20' => 1, '02 Jan 20' => 0.5 })
+      expect(result).to eq({ '01 Jan 20' => 1, '02 Jan 20' => 0.5, '03 Jan 20' => nil })
     end
   end
 
