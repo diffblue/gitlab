@@ -17,6 +17,9 @@ module AuditEvents
 
     validates :destination_url, public_url: true, presence: true
     validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
+    validates :verification_token, length: { in: 16..24 }, allow_nil: true
+    validates :verification_token, presence: true, on: :update
+
     has_secure_token :verification_token, length: 24
 
     validate :has_fewer_than_20_headers?

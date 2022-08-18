@@ -2790,6 +2790,7 @@ Input type: `ExternalAuditEventDestinationCreateInput`
 | <a id="mutationexternalauditeventdestinationcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationexternalauditeventdestinationcreatedestinationurl"></a>`destinationUrl` | [`String!`](#string) | Destination URL. |
 | <a id="mutationexternalauditeventdestinationcreategrouppath"></a>`groupPath` | [`ID!`](#id) | Group path. |
+| <a id="mutationexternalauditeventdestinationcreateverificationtoken"></a>`verificationToken` | [`String`](#string) | Verification token. |
 
 #### Fields
 
