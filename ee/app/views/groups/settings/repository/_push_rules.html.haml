@@ -1,0 +1,16 @@
+%section.settings.as-push-rules.no-animate#js-push-rules{ class: ('expanded' if expanded_by_default?) }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
+      = _("Pre-defined push rules")
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded_by_default? ? _('Collapse') : _('Expand')
+    %p
+      = _("Rules that define what git pushes are accepted for a project in this group. All newly created projects in this group will use these settings.")
+  .settings-content
+    = gitlab_ui_form_for @push_rule, url: group_push_rules_path(@group), as: :push_rule, method: :put do |f|
+      - if @push_rule.errors.any?
+        = render Pajamas::AlertComponent.new(variant: :danger, dismissible: false) do |c|
+          = c.body do
+            - @push_rule.errors.full_messages.each do |msg|
+              %p= msg
+      = render "shared/push_rules/form", f: f, context: @group

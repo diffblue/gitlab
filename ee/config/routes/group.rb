@@ -193,7 +193,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
       resources :merge_commit_reports, only: [:index], constraints: { format: :csv }
     end
 
-    resource :push_rules, only: [:edit, :update]
+    resource :push_rules, only: [:update]
 
     resource :saml_providers, path: 'saml', only: [:show, :create, :update] do
       callback_methods = Rails.env.test? ? [:get, :post] : [:post]
