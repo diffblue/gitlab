@@ -368,6 +368,16 @@ RSpec.describe QuickActions::InterpretService do
 
           expect(updates[:assignee_ids]).to match_array([current_user.id])
         end
+
+        context 'it reassigns multiple users' do
+          let(:additional_user) { create(:user) }
+
+          it 'reassigns user if content contains /reassign @user' do
+            _, updates = service.execute("/reassign @#{current_user.username} @#{additional_user.username}", merge_request)
+
+            expect(updates[:assignee_ids]).to match_array([current_user.id, additional_user.id])
+          end
+        end
       end
 
       context 'Issue' do
@@ -402,6 +412,16 @@ RSpec.describe QuickActions::InterpretService do
             _, updates = service.execute("/reassign @#{current_user.username}", test_case)
 
             expect(updates[:assignee_ids]).to eq(nil)
+          end
+        end
+
+        context 'it reassigns multiple users' do
+          let(:additional_user) { create(:user) }
+
+          it 'reassigns user if content contains /reassign @user' do
+            _, updates = service.execute("/reassign @#{current_user.username} @#{additional_user.username}", issue)
+
+            expect(updates[:assignee_ids]).to match_array([current_user.id, additional_user.id])
           end
         end
       end

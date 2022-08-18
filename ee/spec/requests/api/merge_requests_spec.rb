@@ -31,6 +31,10 @@ RSpec.describe API::MergeRequests do
         { assignee_ids: [user.id, other_user.id] }
       end
 
+      before do
+        stub_const("Issuable::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
+      end
+
       context 'when licensed' do
         before do
           stub_licensed_features(multiple_merge_request_assignees: true)
@@ -44,6 +48,19 @@ RSpec.describe API::MergeRequests do
           expect(json_response['assignees'].first['name']).to eq(user.name)
           expect(json_response['assignees'].second['name']).to eq(other_user.name)
           expect(json_response.dig('assignee', 'name')).to eq(user.name)
+        end
+
+        context 'when assignees is over the limit' do
+          let(:params) do
+            { assignee_ids: [user.id, other_user.id, create(:user).id] }
+          end
+
+          it 'does not create merge request with too many assignees' do
+            update_merge_request(params)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']['assignees']).to match_array(["total must be less than or equal to 2"])
+          end
         end
       end
 
@@ -71,7 +88,7 @@ RSpec.describe API::MergeRequests do
       end
 
       before do
-        stub_const("MergeRequest::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
+        stub_const("Issuable::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
       end
 
       context 'when licensed' do
@@ -145,7 +162,7 @@ RSpec.describe API::MergeRequests do
       end
 
       before do
-        stub_const("MergeRequest::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
+        stub_const("Issuable::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
       end
 
       context 'when licensed' do

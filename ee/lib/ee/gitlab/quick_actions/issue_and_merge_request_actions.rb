@@ -10,7 +10,9 @@ module EE
         included do
           desc { _('Change assignee(s)') }
           explanation { _('Change assignee(s).') }
-          execution_message { _('Changed assignee(s).') }
+          execution_message do |ids|
+            _('Changed assignee(s).')
+          end
           params '@user1 @user2'
           types Issue, MergeRequest
           condition do
@@ -19,8 +21,8 @@ module EE
               quick_action_target.persisted? &&
               current_user.can?(:"set_#{quick_action_target.to_ability_name}_metadata", quick_action_target)
           end
-          command :reassign do |reassign_param|
-            @updates[:assignee_ids] = extract_users(reassign_param).map(&:id)
+          command :reassign do |reassign_params|
+            @updates[:assignee_ids] = extract_users(reassign_params).map(&:id)
           end
 
           desc { _('Set weight') }
