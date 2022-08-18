@@ -14,7 +14,7 @@
 
   .settings-content
     = gitlab_ui_form_for @application_setting, url: advanced_search_admin_application_settings_path(anchor: 'js-elasticsearch-settings'), html: { class: 'fieldset-form' } do |f|
-      = form_errors(@application_setting, pajamas_alert: true)
+      = form_errors(@application_setting)
 
       %fieldset
         - component_params = { card_options: { class: 'gl-bg-gray-10 gl-mb-6' } }

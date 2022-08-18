@@ -14,7 +14,7 @@
       - instance_link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('user/admin_area/settings/instance_template_repository') }
       = s_('AdminSettings|The template for the required pipeline configuration can be one of the GitLab-provided templates, or a custom template added to an instance template repository. %{link_start}How do I create an instance template repository?%{link_end}').html_safe % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe, link_start: instance_link_start, link_end: '</a>'.html_safe }
     = form_for @application_setting, url: ci_cd_admin_application_settings_path(anchor: 'js-required-pipeline-settings'), html: { class: 'fieldset-form' } do |f|
-      = form_errors(@application_setting, pajamas_alert: true)
+      = form_errors(@application_setting)
 
       .form-group.col-md-9.gl-p-0
         = f.label :required_instance_ci_template, s_('AdminSettings|Select a CI/CD template')

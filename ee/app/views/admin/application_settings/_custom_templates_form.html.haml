@@ -10,7 +10,7 @@
     .settings-content
 
       = form_for @application_setting, url: templates_admin_application_settings_path(anchor: 'js-custom-project-templates-settings') do |f|
-        = form_errors(@application_setting, pajamas_alert: true)
+        = form_errors(@application_setting)
 
         %fieldset
           .form-group
