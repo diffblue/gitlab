@@ -10,7 +10,7 @@ RSpec.describe EE::InviteMembersHelper do
     let(:notification_attributes) do
       {
         'free_users_limit' => ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
-        'members_count' => project.root_ancestor.free_plan_members_count,
+        'members_count' => 0,
         'new_trial_registration_path' => new_trial_path,
         'purchase_path' => group_billings_path(project.root_ancestor)
       }
@@ -22,7 +22,7 @@ RSpec.describe EE::InviteMembersHelper do
 
     context 'when applying the free user cap is not valid' do
       let!(:group) do
-        create(:group_with_plan, projects: [project], plan: :default_plan)
+        create(:group_with_plan, :private, projects: [project], plan: :default_plan)
       end
 
       it 'does not include users limit notification data' do
@@ -31,34 +31,15 @@ RSpec.describe EE::InviteMembersHelper do
     end
 
     context 'when on free plan' do
-      context 'when user namespace' do
-        let!(:user_namespace) do
-          build(:user_namespace, projects: [project], gitlab_subscription: build(:gitlab_subscription, :free))
-        end
-
-        it 'includes users limit notification data' do
-          users_limit_dataset = Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
-
-          expect(users_limit_dataset).to eq(notification_attributes.merge({
-            'user_namespace' => 'true',
-            'members_path' => namespace_project_project_members_path(project.root_ancestor, project)
-          }))
-        end
+      let!(:group) do
+        create(:group_with_plan, :private, projects: [project], plan: :free_plan)
       end
 
-      context 'when group namespace' do
-        let!(:group) do
-          create(:group_with_plan, projects: [project], plan: :free_plan)
-        end
+      it 'includes users limit notification data' do
+        users_limit_dataset = Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
+        result = notification_attributes.merge('members_path' => group_usage_quotas_path(project.root_ancestor))
 
-        it 'includes users limit notification data' do
-          users_limit_dataset = Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
-
-          expect(users_limit_dataset).to eq(notification_attributes.merge({
-            'user_namespace' => 'false',
-            'members_path' => group_usage_quotas_path(project.root_ancestor)
-          }))
-        end
+        expect(users_limit_dataset).to eq(result)
       end
     end
   end

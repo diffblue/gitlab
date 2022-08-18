@@ -275,10 +275,10 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  context 'check if free user cap has been reached', :saas do
-    let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
-    let_it_be(:subgroup) { create(:group, parent: group) }
-    let_it_be(:project, refind: true) { create(:project, namespace: group) }
+  context 'when checking if free user cap has been reached', :saas do
+    let_it_be(:group, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
+    let_it_be(:subgroup) { create(:group, :private, parent: group) }
+    let_it_be(:project, refind: true) { create(:project, :private, group: group) }
     let_it_be(:user) { create(:user) }
 
     before_all do
@@ -367,6 +367,18 @@ RSpec.describe Member, type: :model do
           expect(user.project_members.last).to be_awaiting
         end
 
+        context 'when the namespace is public' do
+          before do
+            group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+          end
+
+          it 'sets the group member to awaiting' do
+            group.add_developer(user)
+
+            expect(user.group_members.last).to be_active
+          end
+        end
+
         context 'when multiple members are added' do
           before do
             stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
@@ -396,7 +408,7 @@ RSpec.describe Member, type: :model do
 
         context 'when the user is already an active subgroup member' do
           it 'sets the group member to active' do
-            other_subgroup = create(:group, parent: group)
+            other_subgroup = create(:group, :private, parent: group)
             create(:group_member, :active, group: other_subgroup, user: user)
 
             subgroup.add_developer(user)
@@ -430,13 +442,11 @@ RSpec.describe Member, type: :model do
             project.root_ancestor.clear_memoization(:has_free_or_no_subscription)
             over_limit_user = create(:user)
 
-            project.root_ancestor.clear_memoization(:free_plan_user_ids)
             project.add_developer(user)
-            project.root_ancestor.clear_memoization(:free_plan_user_ids)
             project.add_developer(over_limit_user)
 
             expect(user.project_members.last).to be_active
-            expect(over_limit_user.project_members.last).to be_awaiting
+            expect(over_limit_user.project_members.last).to be_active
           end
         end
       end
@@ -445,10 +455,9 @@ RSpec.describe Member, type: :model do
 
   context 'when activating a member', :saas do
     let(:user_cap) { true }
-    let(:member) { group.members.last }
 
-    let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
-    let_it_be(:project, refind: true) { create(:project, namespace: group) }
+    let_it_be(:group, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
+    let_it_be(:project) { create(:project, :private, group: group) }
     let_it_be(:active_user) { create(:user) }
     let_it_be(:active_member) { create(:group_member, :maintainer, group: group, user: active_user) }
     let_it_be(:user) { create(:user) }
@@ -483,6 +492,18 @@ RSpec.describe Member, type: :model do
           member.activate
 
           expect(member).to be_awaiting
+        end
+
+        context 'when namespace is public' do
+          before do
+            group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+          end
+
+          it 'activates member' do
+            member.activate
+
+            expect(member.reload).to be_active
+          end
         end
 
         context 'when user already has an other active membership' do
@@ -532,8 +553,8 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  context 'when setting the member to awaiting', :saas do
-    let_it_be(:group, refind: true) { create(:group_with_plan, plan: :free_plan) }
+  context 'when setting the member to awaiting' do
+    let_it_be(:group, refind: true) { create(:group) }
     let_it_be(:member) { create(:group_member, :active, :owner, group: group) }
 
     context 'when user is the last owner' do

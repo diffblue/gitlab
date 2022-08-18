@@ -19,7 +19,7 @@ module Namespaces
         return unless ::Namespaces::FreeUserCap.trimming_enabled?
 
         count = 0
-        Namespace.in_default_plan.top_most.find_each do |namespace|
+        Group.in_default_plan.top_most.non_public_only.find_each do |namespace|
           break if count >= MAX_NAMESPACES_TO_TRIM
 
           next unless ::Namespaces::FreeUserCap::Standard.new(namespace).enforce_cap?

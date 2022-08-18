@@ -20,7 +20,7 @@ module EE
 
       def expire_free_plan_counter_cache
         # Using `source.members_and_requesters` in Members::CreatorService#find_or_initialize_member_by_user
-        # affects memoization on free_plan_user_ids and billed_user_ids_including_guests in
+        # affects memoization on billed_user_ids_including_guests in
         # this creation callback for a similar reason as the one mentioned in the
         # Members::CreatorService#find_or_initialize_member_by_user method.
         # Before with `source.members.build` the memoization didn't need explicitly cleared,

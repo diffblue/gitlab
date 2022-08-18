@@ -2,7 +2,7 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :aggregate_failures, type: :component do
-  let_it_be(:namespace, refind: true) { create(:group) }
+  let_it_be(:namespace, refind: true) { create(:group, :private) }
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:content_class) { '_content_class_' }
   let_it_be(:trial_ends_on) { Date.parse('2022-06-01') }
@@ -40,9 +40,9 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
     it 'does not have banner content' do
       render_inline(component)
 
-      expect(rendered_component).not_to have_selector(".#{content_class}")
-      expect(rendered_component).not_to have_content(title)
-      expect(rendered_component).not_to have_content(body)
+      expect(page).not_to have_selector(".#{content_class}")
+      expect(page).not_to have_content(title)
+      expect(page).not_to have_content(body)
     end
   end
 
@@ -50,17 +50,25 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
     it 'renders the banner' do
       render_inline(component)
 
-      expect(rendered_component).to have_selector(".#{content_class}")
-      expect(rendered_component).to have_content(title)
-      expect(rendered_component).to have_content(body)
-      expect(rendered_component).to have_link('Over limit status', href: described_class::BLOG_URL)
-      expect(rendered_component).to have_link('upgrade to a paid tier', href: group_billings_path(namespace))
-      expect(rendered_component).not_to have_css('.gl-alert-actions')
+      expect(page).to have_selector(".#{content_class}")
+      expect(page).to have_content(title)
+      expect(page).to have_content(body)
+      expect(page).to have_link('Over limit status', href: described_class::BLOG_URL)
+      expect(page).to have_link('upgrade to a paid tier', href: group_billings_path(namespace))
+      expect(page).not_to have_css('.gl-alert-actions')
 
-      expect(rendered_component).to have_css('.js-user-over-limit-free-plan-alert' \
-                                             "[data-dismiss-endpoint='#{group_callouts_path}']" \
-                                             "[data-feature-id='#{described_class::USAGE_QUOTA_TRIAL_ALERT}']" \
-                                             "[data-group-id='#{namespace.id}']")
+      expect(page).to have_css('.js-user-over-limit-free-plan-alert' \
+                               "[data-dismiss-endpoint='#{group_callouts_path}']" \
+                               "[data-feature-id='#{described_class::USAGE_QUOTA_TRIAL_ALERT}']" \
+                               "[data-group-id='#{namespace.id}']")
+    end
+
+    context 'when group is public' do
+      before do
+        namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+      end
+
+      include_examples 'does not render the banner'
     end
 
     context 'when the free_user_cap feature flag is not enabled' do

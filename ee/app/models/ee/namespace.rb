@@ -283,21 +283,6 @@ module EE
         end
     end
 
-    def has_free_or_no_subscription?
-      # this is a side-effect free version of checking if a namespace
-      # is on a free plan or has no plan - see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/80839#note_851566461
-      strong_memoize(:has_free_or_no_subscription) do
-        subscription = root_ancestor.gitlab_subscription
-
-        # there is a chance that subscriptions do not have a plan https://gitlab.com/gitlab-org/gitlab/-/merge_requests/81432#note_858514873
-        if subscription&.plan_name
-          subscription.plan_name == ::Plan::FREE
-        else
-          true
-        end
-      end
-    end
-
     # When a purchasing a GL.com plan for a User namespace
     # we only charge for a single user.
     # This method is overwritten in Group where we made the calculation
@@ -318,10 +303,6 @@ module EE
         shared_group_user_ids: [],
         shared_project_user_ids: []
       }
-    end
-
-    def free_plan_members_count
-      free_plan_user_ids.count
     end
 
     def eligible_for_trial?
@@ -470,93 +451,16 @@ module EE
       ::Feature.enabled?(:saas_user_caps, root_ancestor)
     end
 
-    def apply_user_cap?
-      user_cap_available? || enforce_free_user_cap?
-    end
-
-    def enforce_free_user_cap?
-      free_user_cap.enforce_cap?
-    end
-
-    def user_limit_reached?(use_cache: false)
-      free_user_cap.reached_limit?
-    end
-
-    def capacity_left_for_user?(user)
-      return true unless apply_user_cap?
-      return true if ::Member.in_hierarchy(root_ancestor).with_user(user).with_state(:active).exists?
-
-      !user_limit_reached?
-    end
-
-    def free_plan_user_ids
-      strong_memoize(:free_plan_user_ids) do
-        billed_users.pluck(:id)
-      end
+    def capacity_left_for_user?(_user)
+      true
     end
 
     def expire_free_plan_members_count_cache
-      clear_memoization(:free_plan_user_ids)
-    end
-
-    def trimmable_user_ids
-      strong_memoize(:trimmable_user_ids) do
-        active_members = ::Member.in_hierarchy(self).active_state
-
-        users_without_project_bots(active_members)
-          .with_state(:active)
-          .pluck(:id)
-      end
-    end
-
-    def recent_activity_by_users_in_hierarchy
-      strong_memoize(:recent_activity_by_users_in_hierarchy) do
-        ::Event.from_union(
-          [
-            ::Event.where(author: trimmable_user_ids).where(project: root_ancestor.all_projects),
-            ::Event.where(author: trimmable_user_ids).where(group: root_ancestor.self_and_descendants)
-          ]
-        ).group(:author_id).maximum(:id)
-      end
-    end
-
-    def take_high_activity_user_ids(user_ids, count = ::Namespaces::FreeUserCap::FREE_USER_LIMIT)
-      user_ids
-        .sort_by { |e| -recent_activity_by_users_in_hierarchy[e].to_i }
-        .take(count)
-    end
-
-    def staying_in_user_ids
-      strong_memoize(:staying_in_user_ids) do
-        if trimmable_user_ids.count <= ::Namespaces::FreeUserCap::FREE_USER_LIMIT
-          trimmable_user_ids
-        else
-          if owner_ids.count == ::Namespaces::FreeUserCap::FREE_USER_LIMIT
-            owner_ids
-          elsif owner_ids.count > ::Namespaces::FreeUserCap::FREE_USER_LIMIT
-            take_high_activity_user_ids(owner_ids)
-          else
-            additional_non_owners = take_high_activity_user_ids(trimmable_user_ids, ::Namespaces::FreeUserCap::FREE_USER_LIMIT) - owner_ids
-            owners_and_users = take_high_activity_user_ids(owner_ids) + additional_non_owners
-            owners_and_users.take(::Namespaces::FreeUserCap::FREE_USER_LIMIT)
-          end
-        end
-      end
-    end
-
-    def memberships_to_be_deactivated
-      ::Member
-        .in_hierarchy(self)
-        .active_state
-        .excluding_users(staying_in_user_ids)
+      # no-op - overridden in groups
     end
 
     def exclude_guests?
       false
-    end
-
-    def owner_ids
-      [owner.id]
     end
 
     def all_security_orchestration_policy_configurations
@@ -578,22 +482,6 @@ module EE
         .for_namespace(namespace_ids)
         .with_project_and_namespace
         .select { |configuration| configuration&.policy_configuration_valid? }
-    end
-
-    def free_user_cap
-      @free_user_cap ||= ::Namespaces::FreeUserCap::Standard.new(self)
-    end
-
-    # Members belonging directly to Projects within user/project namespaces
-    def billed_users
-      # this will include the namespace owner(user namespace) as well
-      members = ::ProjectMember.without_invites_and_requests.where(source_id: ::Project.in_namespace(self))
-
-      users_without_project_bots(members).with_state(:active)
-    end
-
-    def users_without_project_bots(members)
-      ::User.id_in(members.distinct.select(:user_id)).without_project_bot
     end
 
     def any_project_with_shared_runners_enabled_with_cte?

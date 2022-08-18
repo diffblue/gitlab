@@ -674,11 +674,11 @@ RSpec.describe GitlabSubscription, :saas do
 
     context 'after_save' do
       context 'when plan changes' do
-        let_it_be(:namespace, refind: true) { create(:namespace, :with_namespace_settings) }
+        let_it_be(:group, refind: true) { create(:group, :private) }
 
         let(:gitlab_subscription) do
-          record = create(:gitlab_subscription, namespace: namespace, hosted_plan: initial_plan)
-          namespace.clear_memoization(:has_free_or_no_subscription) # create of subscription hits this and caches it
+          record = create(:gitlab_subscription, namespace: group, hosted_plan: initial_plan)
+          group.clear_memoization(:has_free_or_no_subscription) # create of subscription hits this and caches it
           record
         end
 
@@ -731,7 +731,24 @@ RSpec.describe GitlabSubscription, :saas do
             end.to change { namespace_settings.prevent_sharing_groups_outside_hierarchy }.from(false).to(true)
           end
 
+          it 'changes from paid plan to public free plan' do
+            group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+
+            expect do
+              gitlab_subscription.update!(hosted_plan: free_plan)
+            end.not_to change { namespace_settings.prevent_sharing_groups_outside_hierarchy }
+          end
+
           it 'changes from paid plan to paid plan with default setting' do
+            expect do
+              gitlab_subscription.update!(hosted_plan: premium_plan)
+            end.not_to change { namespace_settings.prevent_sharing_groups_outside_hierarchy }
+          end
+
+          it 'changes from paid plan to public free plan with non-default setting' do
+            group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+            namespace_settings.update!(prevent_sharing_groups_outside_hierarchy: true)
+
             expect do
               gitlab_subscription.update!(hosted_plan: premium_plan)
             end.not_to change { namespace_settings.prevent_sharing_groups_outside_hierarchy }
