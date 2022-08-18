@@ -29,55 +29,114 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
   end
 
   describe 'visiting geo projects initial page' do
-    before do
-      visit(admin_geo_projects_path)
-      wait_for_requests
-    end
-
-    it 'shows all projects in the registry' do
-      page.within(find('#content-body', match: :first)) do
-        expect(page).to have_content(synced_registry.project.full_name)
-        expect(page).to have_content(sync_pending_sync_registry.project.full_name)
-        expect(page).to have_content(sync_pending_verification_registry.project.full_name)
-        expect(page).to have_content(sync_failed_registry.project.full_name)
-        expect(page).to have_content(never_synced_registry.project.full_name)
-        expect(page).not_to have_content('There are no projects to show')
-      end
-    end
-
-    describe 'searching for a geo project' do
-      it 'filters out projects with the search term' do
-        fill_in :name, with: synced_registry.project.name
-        find('#project-filter-form-field').native.send_keys(:enter)
-
+    context 'with registries' do
+      before do
+        visit(admin_geo_projects_path)
         wait_for_requests
+      end
 
+      it 'shows all projects in the registry' do
         page.within(find('#content-body', match: :first)) do
           expect(page).to have_content(synced_registry.project.full_name)
-          expect(page).not_to have_content(sync_pending_sync_registry.project.full_name)
-          expect(page).not_to have_content(sync_pending_verification_registry.project.full_name)
-          expect(page).not_to have_content(sync_failed_registry.project.full_name)
-          expect(page).not_to have_content(never_synced_registry.project.full_name)
+          expect(page).to have_content(sync_pending_sync_registry.project.full_name)
+          expect(page).to have_content(sync_pending_verification_registry.project.full_name)
+          expect(page).to have_content(sync_failed_registry.project.full_name)
+          expect(page).to have_content(never_synced_registry.project.full_name)
           expect(page).not_to have_content('There are no projects to show')
+        end
+      end
+
+      describe 'searching for a geo project' do
+        it 'filters out projects with the search term' do
+          fill_in :name, with: synced_registry.project.name
+          find('#project-filter-form-field').native.send_keys(:enter)
+
+          wait_for_requests
+
+          page.within(find('#content-body', match: :first)) do
+            expect(page).to have_content(synced_registry.project.full_name)
+            expect(page).not_to have_content(sync_pending_sync_registry.project.full_name)
+            expect(page).not_to have_content(sync_pending_verification_registry.project.full_name)
+            expect(page).not_to have_content(sync_failed_registry.project.full_name)
+            expect(page).not_to have_content(never_synced_registry.project.full_name)
+            expect(page).not_to have_content('There are no projects to show')
+          end
         end
       end
     end
 
-    describe 'with no registries' do
-      it 'shows empty state' do
-        fill_in :name, with: 'asdfasdf'
-        find('#project-filter-form-field').native.send_keys(:enter)
+    context 'with no registries' do
+      shared_examples 'shows empty state' do
+        before do
+          visit(admin_geo_projects_path(params))
+          wait_for_requests
+        end
 
-        wait_for_requests
+        it 'with correct title and description' do
+          expect(page).to have_text(title)
+          expect(page).to have_text(description)
+        end
 
-        page.within(find('#content-body', match: :first)) do
+        it 'with no registries' do
           expect(page).not_to have_content(synced_registry.project.full_name)
           expect(page).not_to have_content(sync_pending_sync_registry.project.full_name)
           expect(page).not_to have_content(sync_pending_verification_registry.project.full_name)
           expect(page).not_to have_content(sync_failed_registry.project.full_name)
           expect(page).not_to have_content(never_synced_registry.project.full_name)
-          expect(page).to have_content('There are no projects to show')
         end
+
+        it 'with conditional help link' do
+          expect(page.has_link?('Geo Troubleshooting')).to be(show_link)
+        end
+      end
+
+      describe 'with no filter' do
+        before do
+          allow_next_instance_of(Geo::ProjectRegistryStatusFinder) do |instance|
+            allow(instance).to receive_message_chain(:all_projects, :page).and_return([])
+            allow(instance).to receive_message_chain(:all_projects, :limit).and_return([])
+          end
+        end
+
+        let(:params) { nil }
+        let(:title) { 'There are no projects to show' }
+        let(:description) { 'No projects were found.' }
+        let(:show_link) { true }
+
+        it_behaves_like 'shows empty state'
+      end
+
+      describe 'with a search filter' do
+        let(:params) { { name: 'fake registry' } }
+        let(:title) { 'No results found' }
+        let(:description) { 'Edit your search filter and try again.' }
+        let(:show_link) { false }
+
+        it_behaves_like 'shows empty state'
+      end
+
+      describe 'with a status filter' do
+        before do
+          allow_next_instance_of(Geo::ProjectRegistryStatusFinder) do |instance|
+            allow(instance).to receive_message_chain(:synced_projects, :page).and_return([])
+          end
+        end
+
+        let(:params) { { sync_status: :synced } }
+        let(:title) { 'No results found' }
+        let(:description) { 'Edit your search filter and try again.' }
+        let(:show_link) { false }
+
+        it_behaves_like 'shows empty state'
+      end
+
+      describe 'with a search filter and status filter' do
+        let(:params) { { sync_status: :synced, name: 'fake registry' } }
+        let(:title) { 'No results found' }
+        let(:description) { 'Edit your search filter and try again.' }
+        let(:show_link) { false }
+
+        it_behaves_like 'shows empty state'
       end
     end
   end

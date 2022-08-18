@@ -1,9 +1,8 @@
-import { getByRole } from '@testing-library/dom';
-import { mount } from '@vue/test-utils';
+import { GlEmptyState, GlSprintf, GlLink } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import GeoReplicableEmptyState from 'ee/geo_replicable/components/geo_replicable_empty_state.vue';
-import createStore from 'ee/geo_replicable/store';
 import {
   MOCK_GEO_REPLICATION_SVG_PATH,
   MOCK_GEO_TROUBLESHOOTING_LINK,
@@ -20,33 +19,54 @@ describe('GeoReplicableEmptyState', () => {
     geoReplicableEmptySvgPath: MOCK_GEO_REPLICATION_SVG_PATH,
   };
 
-  const createComponent = () => {
-    wrapper = mount(GeoReplicableEmptyState, {
-      store: createStore({ replicableType: MOCK_REPLICABLE_TYPE, graphqlFieldName: null }),
+  const createComponent = (getters) => {
+    const store = new Vuex.Store({
+      getters: {
+        replicableTypeName: () => MOCK_REPLICABLE_TYPE,
+        hasFilters: () => false,
+        ...getters,
+      },
+    });
+
+    wrapper = shallowMount(GeoReplicableEmptyState, {
+      store,
       propsData,
+      stubs: {
+        GlSprintf,
+      },
     });
   };
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
   });
 
-  describe('template', () => {
+  const findGlEmptyState = () => wrapper.findComponent(GlEmptyState);
+  const findGlLink = () => wrapper.findComponent(GlLink);
+
+  describe.each`
+    hasFilters | title                                             | description                                 | link
+    ${false}   | ${`There are no ${MOCK_REPLICABLE_TYPE} to show`} | ${`No ${MOCK_REPLICABLE_TYPE} were found.`} | ${MOCK_GEO_TROUBLESHOOTING_LINK}
+    ${true}    | ${'No results found'}                             | ${'Edit your search filter and try again.'} | ${false}
+  `('template when hasFilters is $hasFilters', ({ hasFilters, title, description, link }) => {
     beforeEach(() => {
-      createComponent();
+      createComponent({ hasFilters: () => hasFilters });
     });
 
-    it('renders correct link', () => {
-      expect(
-        getByRole(wrapper.element, 'link', { name: 'Geo Troubleshooting' }).getAttribute('href'),
-      ).toBe(MOCK_GEO_TROUBLESHOOTING_LINK);
+    it(`sets empty state title to ${title}`, () => {
+      expect(findGlEmptyState().props('title')).toBe(title);
     });
 
-    it('sets correct svg', () => {
-      expect(getByRole(wrapper.element, 'img').getAttribute('src')).toBe(
-        MOCK_GEO_REPLICATION_SVG_PATH,
-      );
+    it(`sets empty state description to ${description}`, () => {
+      expect(findGlEmptyState().text()).toContain(description);
+    });
+
+    it(`does${link ? '' : ' not'} provide a help link to ${MOCK_GEO_TROUBLESHOOTING_LINK}`, () => {
+      expect(findGlLink().exists() && findGlLink().attributes('href')).toBe(link);
+    });
+
+    it(`sets empty state image to ${MOCK_GEO_REPLICATION_SVG_PATH}`, () => {
+      expect(findGlEmptyState().props('svgPath')).toBe(MOCK_GEO_REPLICATION_SVG_PATH);
     });
   });
 });

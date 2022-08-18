@@ -1,11 +1,13 @@
 - geo_troubleshooting_link = help_page_path('administration/geo/replication/troubleshooting.md')
+- image = 'illustrations/empty-state/geo-replication-empty.svg'
+- title = has_filters ? _('No results found') : s_('Geo|There are no %{replicable_type} to show') % { replicable_type: replicable_type }
+- geo_troubleshooting_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: geo_troubleshooting_link }
+- description = has_filters ? _('Edit your search filter and try again.') : html_escape(s_('Geo|No %{replicable_type} were found. If you believe this may be an error, please refer to the %{linkStart}Geo Troubleshooting%{linkEnd} documentation for more information.')) % { replicable_type: replicable_type, linkStart: geo_troubleshooting_link_start, linkEnd: '</a>'.html_safe }
 
 .row.empty-state
   .col-12
     .svg-content.svg-250
-      = image_tag 'illustrations/empty-state/geo-replication-empty.svg'
-  .col-12
-    .text-content
-      %h4.text-center= sprintf(s_('Geo|There are no %{replicable_type} to show'), { replicable_type: replicable_type })
-      %p
-        = sprintf(s_('Adjust your filters/search criteria above. If you believe this may be an error, please refer to the %{linkStart}Geo Troubleshooting%{linkEnd} documentation for more information.') , { linkStart: "<a href=\"#{geo_troubleshooting_link}\" target=\"_blank\">", linkEnd: "</a>", }).html_safe
+      = image_tag image
+  .col-12.gl-text-center
+    %h4= title
+    %p= description
