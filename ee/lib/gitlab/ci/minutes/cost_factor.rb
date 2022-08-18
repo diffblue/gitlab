@@ -56,8 +56,7 @@ module Gitlab
         private
 
         def public_open_source?(project)
-          Feature.enabled?(:ci_new_public_oss_cost_factor, project) &&
-            project.public? &&
+          project.public? &&
             project.actual_plan.open_source?
         end
 
