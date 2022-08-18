@@ -73,6 +73,8 @@ module EE
         includes(:merge_train)
       end
 
+      scope :with_head_pipeline, -> { where.not(head_pipeline_id: nil) }
+
       def merge_requests_author_approval?
         !!target_project&.merge_requests_author_approval?
       end

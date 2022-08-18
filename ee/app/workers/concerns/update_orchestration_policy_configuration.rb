@@ -4,7 +4,9 @@ module UpdateOrchestrationPolicyConfiguration
   def update_policy_configuration(configuration)
     unless configuration.policy_configuration_valid?
       configuration.delete_all_schedules
-      configuration.approval_rules.scan_finding.delete_all if configuration.project?
+
+      configuration.delete_scan_finding_rules
+
       configuration.update!(configured_at: Time.current)
       return
     end
@@ -16,18 +18,22 @@ module UpdateOrchestrationPolicyConfiguration
     end
 
     if configuration.project?
-      configuration.approval_rules.scan_finding.delete_all
-      configuration.project.approval_merge_request_rules.scan_finding.delete_all
+      configuration.transaction do
+        configuration.delete_scan_finding_rules
 
-      configuration.active_scan_result_policies.each_with_index do |policy, policy_index|
-        Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService
-          .new(policy_configuration: configuration, policy: policy, policy_index: policy_index)
+        configuration.active_scan_result_policies.each_with_index do |policy, policy_index|
+          Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService
+            .new(policy_configuration: configuration, policy: policy, policy_index: policy_index)
+            .execute
+        end
+
+        Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
+          .new(policy_configuration: configuration)
           .execute
       end
-
-      Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
-        .new(policy_configuration: configuration)
-        .execute
+      Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService
+          .new(policy_configuration: configuration)
+          .execute
     end
 
     configuration.update!(configured_at: Time.current)
