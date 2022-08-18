@@ -47,7 +47,7 @@ RSpec.describe 'User creates release', :js do
       fill_out_form_and_submit
     end
 
-    it 'creates a new release when "Create release" is clicked and redirects to the release\'s dedicated page', :aggregate_failures do
+    it 'creates a new release when "Create release" is clicked and redirects to the release\'s dedicated page', :aggregate_failures, :sidekiq_inline do
       release = project.releases.last
 
       expect(release.tag).to eq(tag_name)
@@ -68,6 +68,8 @@ RSpec.describe 'User creates release', :js do
 
       expect(release).not_to be_historical_release
       expect(release).not_to be_upcoming_release
+
+      expect(release.evidences.length).to eq(1)
 
       expect(page).to have_current_path(project_release_path(project, release))
     end
