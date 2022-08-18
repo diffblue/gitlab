@@ -27,6 +27,20 @@ export default {
     };
   },
   computed: {
+    isCollapsible() {
+      if (!this.vulnerabilities.collapsed) {
+        return false;
+      }
+
+      return this.vulnerabilitiesCount > 0;
+    },
+
+    vulnerabilitiesCount() {
+      return this.vulnerabilities.collapsed.reduce((counter, current) => {
+        return counter + (current.added?.length || 0) + (current.fixed?.length || 0);
+      }, 0);
+    },
+
     totalNewVulnerabilities() {
       if (!this.vulnerabilities.collapsed) {
         return 0;
@@ -80,6 +94,7 @@ export default {
     :fetch-expanded-data="fetchExpandedData"
     :status-icon-name="statusIconName"
     :widget-name="$options.name"
+    :is-collapsible="isCollapsible"
     multi-polling
     @is-loading="handleIsLoading"
   >
