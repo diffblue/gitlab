@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe AuditEvents::ExternalAuditEventDestination do
-  subject(:destination) { create(:external_audit_event_destination) }
+  subject(:destination) { build(:external_audit_event_destination) }
 
   let_it_be(:group) { create(:group) }
 
@@ -18,6 +18,31 @@ RSpec.describe AuditEvents::ExternalAuditEventDestination do
     it { is_expected.to validate_presence_of(:destination_url) }
     it { is_expected.to have_db_column(:verification_token).of_type(:text) }
     it { is_expected.to have_many(:headers).class_name('AuditEvents::Streaming::Header') }
+    it { is_expected.to validate_length_of(:verification_token).is_at_least(16).is_at_most(24) }
+
+    context 'when creating with undefined verification token' do
+      let_it_be(:destination) { create(:external_audit_event_destination, verification_token: nil) }
+
+      it 'destination is valid' do
+        expect(destination).to be_valid
+      end
+
+      it 'verification token is present' do
+        expect(destination.verification_token).to be_present
+      end
+    end
+
+    context 'when updating' do
+      before do
+        destination.save!
+      end
+
+      it 'verification token cannot be nil' do
+        destination.verification_token = nil
+
+        expect(destination).not_to be_valid
+      end
+    end
 
     it 'can have 20 headers' do
       create_list(:audit_events_streaming_header, 20, external_audit_event_destination: subject)

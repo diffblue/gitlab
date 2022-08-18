@@ -16,13 +16,19 @@ module Mutations
                  required: true,
                  description: 'Group path.'
 
+        argument :verification_token, GraphQL::Types::String,
+                 required: false,
+                 description: 'Verification token.'
+
         field :external_audit_event_destination, ::Types::AuditEvents::ExternalAuditEventDestinationType,
               null: true,
               description: 'Destination created.'
 
-        def resolve(destination_url:, group_path:)
+        def resolve(destination_url:, group_path:, verification_token: nil)
           group = authorized_find!(group_path)
-          destination = ::AuditEvents::ExternalAuditEventDestination.new(group: group, destination_url: destination_url)
+          destination = ::AuditEvents::ExternalAuditEventDestination.new(group: group,
+                                                                         destination_url: destination_url,
+                                                                         verification_token: verification_token)
 
           audit(destination, action: :create) if destination.save
 
