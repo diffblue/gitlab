@@ -1,7 +1,9 @@
 <script>
 import axios from '~/lib/utils/axios_utils';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
+import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
 import SummaryText from './summary_text.vue';
+import SummaryHighlights from './summary_highlights.vue';
 import i18n from './i18n';
 
 export default {
@@ -9,6 +11,7 @@ export default {
   components: {
     MrWidget,
     SummaryText,
+    SummaryHighlights,
   },
   i18n,
   props: {
@@ -39,6 +42,37 @@ export default {
       return this.vulnerabilities.collapsed.reduce((counter, current) => {
         return counter + (current.added?.length || 0) + (current.fixed?.length || 0);
       }, 0);
+    },
+
+    highlights() {
+      if (!this.vulnerabilities.collapsed) {
+        return {};
+      }
+
+      const highlights = {
+        [HIGH]: 0,
+        [CRITICAL]: 0,
+        other: 0,
+      };
+
+      // The data we receive from the API is something like:
+      // [
+      //  { scanner: "SAST", added: [{ id: 15, severity: 'critical' }] },
+      //  { scanner: "DAST", added: [{ id: 15, severity: 'high' }] },
+      //  ...
+      // ]
+      return this.vulnerabilities.collapsed
+        .flatMap((vuln) => vuln.added)
+        .reduce((acc, vuln) => {
+          if (vuln.severity === HIGH) {
+            acc[HIGH] += 1;
+          } else if (vuln.severity === CRITICAL) {
+            acc[CRITICAL] += 1;
+          } else {
+            acc.other += 1;
+          }
+          return acc;
+        }, highlights);
     },
 
     totalNewVulnerabilities() {
@@ -100,6 +134,10 @@ export default {
   >
     <template #summary>
       <summary-text :total-new-vulnerabilities="totalNewVulnerabilities" :is-loading="isLoading" />
+      <summary-highlights
+        v-if="!isLoading && totalNewVulnerabilities > 0"
+        :highlights="highlights"
+      />
     </template>
     <template #content>
       <!-- complex content will go here, otherwise we can use the structured :content property. -->

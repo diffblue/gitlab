@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import MRSecurityWidget from 'ee/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue';
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
+import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import axios from '~/lib/utils/axios_utils';
@@ -22,6 +23,7 @@ describe('MR Widget Security Reports', () => {
 
   const findWidget = () => wrapper.findComponent(Widget);
   const findSummaryText = () => wrapper.findComponent(SummaryText);
+  const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
@@ -48,7 +50,7 @@ describe('MR Widget Security Reports', () => {
       });
     });
 
-    it('fetchCollapsedData - returns an empty list of endpoints when the paths are missing from the MR data', () => {
+    it('fetchCollapsedData - returns an empty list of endpoints', () => {
       expect(wrapper.vm.fetchCollapsedData().length).toBe(0);
     });
 
@@ -57,6 +59,11 @@ describe('MR Widget Security Reports', () => {
       findWidget().vm.$emit('is-loading', true);
       await nextTick();
       expect(findSummaryText().props()).toMatchObject({ isLoading: true });
+      expect(findSummaryHighlights().exists()).toBe(false);
+    });
+
+    it('does not display the summary highlights component', () => {
+      expect(findSummaryHighlights().exists()).toBe(false);
     });
 
     it('should not be collapsible', () => {
@@ -71,13 +78,19 @@ describe('MR Widget Security Reports', () => {
     };
 
     const mockWithData = () => {
-      mockAxios
-        .onGet(reportEndpoints.sastComparisonPath)
-        .replyOnce(200, { added: [{ id: 1 }, { id: 2 }] });
+      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(200, {
+        added: [
+          { id: 1, severity: 'critical' },
+          { id: 2, severity: 'high' },
+        ],
+      });
 
-      mockAxios
-        .onGet(reportEndpoints.dastComparisonPath)
-        .replyOnce(200, { added: [{ id: 5 }, { id: 3 }] });
+      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
+        added: [
+          { id: 5, severity: 'low' },
+          { id: 3, severity: 'unknown' },
+        ],
+      });
     };
 
     it('computes the total number of new potential vulnerabilities correctly', async () => {
@@ -90,6 +103,9 @@ describe('MR Widget Security Reports', () => {
 
       await waitForPromises();
       expect(findSummaryText().props()).toMatchObject({ totalNewVulnerabilities: 4 });
+      expect(findSummaryHighlights().props()).toMatchObject({
+        highlights: { critical: 1, high: 1, other: 2 },
+      });
     });
 
     it('tells the widget to be collapsible only if there is data', async () => {

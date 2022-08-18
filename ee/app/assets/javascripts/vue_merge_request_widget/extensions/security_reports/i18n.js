@@ -13,6 +13,9 @@ export default {
   apiFuzzing: s__('ciReport|API fuzzing'),
   securityScanning: s__('ciReport|Security scanning'),
   error: s__('ciReport|Security reports failed loading results'),
+  highlights: s__(
+    'ciReport|%{criticalStart}critical%{criticalEnd}, %{highStart}high%{highEnd} and %{otherStart}others%{otherEnd}',
+  ),
   noNewVulnerabilities: s__(
     'ciReport|%{scanner} detected no %{boldStart}new%{boldEnd} potential vulnerabilities',
   ),

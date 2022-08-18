@@ -45840,6 +45840,9 @@ msgid_plural "changes"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "ciReport|%{criticalStart}critical%{criticalEnd}, %{highStart}high%{highEnd} and %{otherStart}others%{otherEnd}"
+msgstr ""
+
 msgid "ciReport|%{danger_start}%{degradedNum} degraded%{danger_end}, %{same_start}%{sameNum} same%{same_end}, and %{success_start}%{improvedNum} improved%{success_end}"
 msgstr ""
 
