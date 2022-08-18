@@ -977,7 +977,7 @@ module Ci
     end
 
     # With multi-project and parent-child pipelines
-    def all_pipelines_in_hierarchy
+    def upstream_and_all_downstreams
       object_hierarchy.all_objects
     end
 
