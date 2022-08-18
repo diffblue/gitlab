@@ -6,8 +6,8 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:parent_group) { create(:group) }
-  let_it_be(:group) { create(:group, parent: parent_group) }
+  let_it_be(:parent_group) { create(:group, :private) }
+  let_it_be(:group) { create(:group, :private, parent: parent_group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:other_project) { create(:project, group: group) }
   let_it_be(:board) { create(:board, project: project) }
@@ -52,7 +52,7 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
 
     context 'when user can access the group' do
       before do
-        group.add_developer(current_user)
+        parent_group.add_developer(current_user)
       end
 
       it 'finds all epics for issues in the project board' do
