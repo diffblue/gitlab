@@ -1,4 +1,5 @@
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import { GlDatepicker } from '@gitlab/ui';
 
 import ExpiresAtField from '~/access_tokens/components/expires_at_field.vue';
@@ -16,26 +17,39 @@ describe('~/access_tokens/components/expires_at_field', () => {
     maxDate: new Date('2022-3-2'),
   };
 
-  const createComponent = (propsData = defaultPropsData) => {
+  const createComponent = (props = {}) => {
     wrapper = mount(ExpiresAtField, {
-      propsData,
+      propsData: {
+        ...defaultPropsData,
+        ...props,
+      },
     });
   };
 
-  beforeEach(() => {
-    createComponent();
-  });
+  const findMaxExpirationDateMessage = () => wrapper.findComponent(MaxExpirationDateMessage);
 
   afterEach(() => {
-    wrapper.destroy();
-    wrapper = null;
+    wrapper?.destroy();
   });
 
-  it('renders `MaxExpirationDateMessage` message component', () => {
-    expect(wrapper.findComponent(MaxExpirationDateMessage).exists()).toBe(true);
+  it('renders a description', () => {
+    const description = 'My description';
+    createComponent({ description });
+
+    expect(wrapper.text()).toContain(description);
+    expect(findMaxExpirationDateMessage().exists()).toBe(false);
+  });
+
+  it('renders `MaxExpirationDateMessage` message component', async () => {
+    createComponent();
+    await nextTick();
+
+    expect(findMaxExpirationDateMessage().exists()).toBe(true);
   });
 
   it('sets `GlDatepicker` `maxDate` prop', () => {
+    createComponent();
+
     expect(wrapper.findComponent(GlDatepicker).props('maxDate')).toEqual(defaultPropsData.maxDate);
   });
 });
