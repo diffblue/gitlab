@@ -9,13 +9,13 @@ RSpec.describe 'User updates feature flag', :js do
   let_it_be(:project) { create(:project, namespace: user.namespace) }
 
   let_it_be(:feature_flag) do
-    create_flag(project, 'test_flag', false, version: Operations::FeatureFlag.versions['new_version_flag'],
+    create_flag(project, 'test_flag', false,
+                version: Operations::FeatureFlag.versions['new_version_flag'],
                 description: 'For testing')
   end
 
   let_it_be(:strategy) do
-    create(:operations_strategy, feature_flag: feature_flag,
-            name: 'default', parameters: {})
+    create(:operations_strategy, feature_flag: feature_flag, name: 'default', parameters: {})
   end
 
   let_it_be(:scope) do

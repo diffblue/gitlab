@@ -201,8 +201,9 @@ RSpec.describe 'Environments page', :js do
     end
 
     let!(:prometheus_alert) do
-      create(:prometheus_alert, project: project, environment: environment,
-        prometheus_metric: prometheus_metric)
+      create(:prometheus_alert,
+             project: project, environment: environment,
+             prometheus_metric: prometheus_metric)
     end
 
     let!(:prometheus_metric) do

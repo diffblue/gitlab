@@ -631,10 +631,7 @@ RSpec.describe EpicsFinder do
 
               context 'when a project is restricted' do
                 let_it_be(:issue) do
-                  create(:issue, project: subgroup_project,
-                    epic: subgroup_epic1,
-                    milestone: subgroup_project_milestone
-                  )
+                  create(:issue, project: subgroup_project, epic: subgroup_epic1, milestone: subgroup_project_milestone)
                 end
 
                 before do

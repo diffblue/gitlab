@@ -9,8 +9,7 @@ RSpec.describe Resolvers::Vulnerabilities::IssueLinksResolver do
   let_it_be(:vulnerability) { create(:vulnerability) }
 
   subject do
-    resolve(described_class, obj: vulnerability, args: filters, ctx: { current_user: user },
-            arg_style: :internal)
+    resolve(described_class, obj: vulnerability, args: filters, ctx: { current_user: user }, arg_style: :internal)
   end
 
   describe '#ready?' do

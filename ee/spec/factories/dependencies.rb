@@ -28,7 +28,7 @@ FactoryBot.define do
            url: 'http://gitlab.org/some-group/some-project/-/security/vulnerabilities/42'
          },
          {
-           name:     'XSS vulnerability',
+           name: 'XSS vulnerability',
            severity: 'low',
            id: 1729,
            url: 'http://gitlab.org/some-group/some-project/-/security/vulnerabilities/1729'

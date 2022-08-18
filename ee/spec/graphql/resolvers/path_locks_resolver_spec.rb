@@ -12,8 +12,8 @@ RSpec.describe Resolvers::PathLocksResolver do
 
   describe '#resolve' do
     subject(:resolve_path_locks) do
-      resolve(described_class, obj: project, lookahead: positive_lookahead, ctx: { current_user: user },
-              arg_style: :internal)
+      resolve(described_class,
+              obj: project, lookahead: positive_lookahead, ctx: { current_user: user }, arg_style: :internal)
     end
 
     context 'feature is not licensed' do

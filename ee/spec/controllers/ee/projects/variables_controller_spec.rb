@@ -19,7 +19,7 @@ RSpec.describe Projects::VariablesController do
         project_id: project,
         variables_attributes: [variable_attributes]
       },
-      format: :json
+        format: :json
     end
 
     before do

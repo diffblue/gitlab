@@ -103,7 +103,7 @@ RSpec.describe TrialsController, :saas do
           it 'applies a trial to the namespace' do
             apply_trial_params = {
               uid: user.id,
-              trial_user:  ActionController::Parameters.new(post_params).permit(:namespace_id).merge(namespace_id: namespace.id, gitlab_com_trial: true, sync_to_gl: true)
+              trial_user: ActionController::Parameters.new(post_params).permit(:namespace_id).merge(namespace_id: namespace.id, gitlab_com_trial: true, sync_to_gl: true)
             }
 
             expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
@@ -397,7 +397,7 @@ RSpec.describe TrialsController, :saas do
       }
       apply_trial_params = {
         uid: user.id,
-        trial_user:  ActionController::Parameters.new(post_params).permit(:namespace_id, :trial_entity, :glm_source, :glm_content).merge(gl_com_params)
+        trial_user: ActionController::Parameters.new(post_params).permit(:namespace_id, :trial_entity, :glm_source, :glm_content).merge(gl_com_params)
       }
 
       expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
@@ -506,7 +506,7 @@ RSpec.describe TrialsController, :saas do
       }
       extend_reactivate_trial_params = {
         uid: user.id,
-        trial_user:  ActionController::Parameters.new(put_params).permit(:namespace_id, :trial_extension_type, :trial_entity, :glm_source, :glm_content).merge(gl_com_params)
+        trial_user: ActionController::Parameters.new(put_params).permit(:namespace_id, :trial_extension_type, :trial_entity, :glm_source, :glm_content).merge(gl_com_params)
       }
 
       expect_next_instance_of(GitlabSubscriptions::ExtendReactivateTrialService) do |service|

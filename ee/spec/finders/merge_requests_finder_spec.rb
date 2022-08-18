@@ -16,9 +16,8 @@ RSpec.describe MergeRequestsFinder do
 
     context 'merge commit sha' do
       let_it_be(:merged_merge_request) do
-        create(:merge_request, :simple, author: user,
-               source_project: project4, target_project: project4,
-               state: :merged, merge_commit_sha: 'rurebf')
+        create(:merge_request, :simple, author: user, source_project: project4, target_project: project4,
+                                        state: :merged, merge_commit_sha: 'rurebf')
       end
 
       it 'filters by merge commit sha' do
