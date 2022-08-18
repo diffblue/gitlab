@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
 
 RSpec.describe EE::Gitlab::Scim::ParamsParser do
   describe '#filter_params' do

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
 
 RSpec.describe Gitlab::Graphql::Aggregations::Issuables::LazyLinksAggregate do
   let(:fake_class) do
