@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples 'sync requirement with issue state' do
+RSpec.shared_examples 'sync requirement with issue state' do
   let_it_be(:not_member) { create(:user) }
   let_it_be(:project) { create(:project, :private) }
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples 'a model with a requirement issue association' do
+RSpec.shared_examples 'a model with a requirement issue association' do
   describe 'requirement issue association' do
     subject { build(:requirement, requirement_issue: requirement_issue_arg) }
 

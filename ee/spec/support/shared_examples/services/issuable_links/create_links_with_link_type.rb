@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-shared_examples 'issuable link creation with blocking link_type' do
+RSpec.shared_examples 'issuable link creation with blocking link_type' do
   subject { described_class.new(issuable, user, params).execute }
 
   context 'when is_blocked_by relation is used' do
