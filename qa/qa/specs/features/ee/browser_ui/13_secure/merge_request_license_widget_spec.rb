@@ -96,8 +96,7 @@ module QA
       end
 
       it 'manage licenses from the merge request',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348039',
-         quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/370336', type: :stale } do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348039' do
         @merge_request.visit!
 
         Page::MergeRequest::Show.perform do |show|

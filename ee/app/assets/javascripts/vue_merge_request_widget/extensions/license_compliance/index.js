@@ -50,7 +50,7 @@ export default {
             {
               text: s__('ciReport|Manage Licenses'),
               href: this.licenseCompliance.license_scanning.settings_path,
-              target: '_blank',
+              target: '_self',
             },
           ]
         : [];
@@ -61,7 +61,7 @@ export default {
         {
           text: s__('ciReport|Full Report'),
           href: this.licenseCompliance.license_scanning.full_report_path,
-          target: '_blank',
+          target: '_self',
         },
       ];
     },

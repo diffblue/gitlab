@@ -71,6 +71,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
         <li>
           <div
             class="gl-w-full gl-pl-6"
+            data-qa-selector="child_content"
             data-testid="child-content"
           >
             <!---->
@@ -84,6 +85,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                 <svg
                   aria-label="Success "
                   class="gl-display-block gl-icon s12"
+                  data-qa-selector="status_success_icon"
                   data-testid="status-success-icon"
                   role="img"
                 >
@@ -187,6 +189,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                      
                     <a
                       class="btn gl-display-none gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                      data-qa-selector="mr_widget_extension_actions_button"
                       data-testid="extension-actions-button"
                       href="/group-name/project-name/-/merge_requests/78/full_report"
                     >
@@ -289,6 +292,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
         <li>
           <div
             class="gl-w-full gl-pl-6"
+            data-qa-selector="child_content"
             data-testid="child-content"
           >
             <!---->
@@ -302,6 +306,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
                 <svg
                   aria-label="Failed "
                   class="gl-display-block gl-icon s12"
+                  data-qa-selector="status_failed_icon"
                   data-testid="status-failed-icon"
                   role="img"
                 >
@@ -446,6 +451,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
         <li>
           <div
             class="gl-w-full gl-pl-6"
+            data-qa-selector="child_content"
             data-testid="child-content"
           >
             <!---->
@@ -459,6 +465,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                 <svg
                   aria-label="Notice "
                   class="gl-display-block gl-icon s12"
+                  data-qa-selector="status_notice_icon"
                   data-testid="status-alert-icon"
                   role="img"
                 >
@@ -562,6 +569,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                      
                     <a
                       class="btn gl-display-none gl-md-display-block gl-float-left btn-confirm btn-sm gl-button btn-confirm-tertiary"
+                      data-qa-selector="mr_widget_extension_actions_button"
                       data-testid="extension-actions-button"
                       href="/group-name/project-name/-/merge_requests/78/full_report"
                     >
