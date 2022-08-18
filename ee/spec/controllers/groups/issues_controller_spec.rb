@@ -21,7 +21,7 @@ RSpec.describe Groups::IssuesController do
           issuable_ids: "#{issue1.id}, #{issue2.id}",
           epic_id: epic.id
           },
-          group_id: group
+        group_id: group
         }
     end
 

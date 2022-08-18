@@ -224,7 +224,7 @@ RSpec.describe Groups::EpicBoardsController do
           group_id: group,
           id: board.to_param
       },
-          format: format
+                 format: format
     end
   end
 end

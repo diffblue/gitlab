@@ -312,8 +312,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
       let_it_be(:dast_profile) { create(:dast_profile, project: project) }
 
       let_it_be(:dast_profile_schedule) do
-        create(:dast_profile_schedule, project: project,
-        dast_profile: dast_profile)
+        create(:dast_profile_schedule, project: project, dast_profile: dast_profile)
       end
 
       it "graphql/#{path}.json" do
