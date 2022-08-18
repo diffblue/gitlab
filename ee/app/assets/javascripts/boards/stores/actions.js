@@ -24,6 +24,13 @@ import searchIterationQuery from 'ee/issues/list/queries/search_iterations.query
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import epicBoardListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.graphql';
 import {
+  EpicFilterType,
+  GroupByParamType,
+  FilterFields,
+  IterationIDs,
+  DEFAULT_BOARD_LIST_ITEMS_SIZE,
+} from 'ee_else_ce/boards/constants';
+import {
   fullEpicBoardId,
   formatEpic,
   formatListEpics,
@@ -32,7 +39,6 @@ import {
   FiltersInfo,
 } from '../boards_util';
 
-import { EpicFilterType, GroupByParamType, FilterFields, IterationIDs } from '../constants';
 import epicBoardQuery from '../graphql/epic_board.query.graphql';
 import createEpicBoardListMutation from '../graphql/epic_board_list_create.mutation.graphql';
 import epicCreateMutation from '../graphql/epic_create.mutation.graphql';
@@ -424,7 +430,7 @@ export default {
         ? { ...filterParams, epicWildcardId: EpicFilterType.none.toUpperCase() }
         : { ...filterParams, epicId },
       after: fetchNext ? state.pageInfoByListId[listId].endCursor : undefined,
-      first: 10,
+      first: DEFAULT_BOARD_LIST_ITEMS_SIZE,
       ...(!fetchNext ? { fetchPolicy: fetchPolicies.NO_CACHE } : {}),
     };
 

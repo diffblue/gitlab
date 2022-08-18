@@ -34,6 +34,7 @@ describe('Board card component', () => {
       propsData: {
         list,
         item: issue,
+        index: 0,
         ...props,
       },
       provide: {
