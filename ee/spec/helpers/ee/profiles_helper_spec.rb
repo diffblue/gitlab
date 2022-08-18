@@ -27,8 +27,9 @@ RSpec.describe ProfilesHelper do
     using RSpec::Parameterized::TableSyntax
 
     where(:policy_enabled, :result) do
-      true  | "Key becomes invalid on this date. Maximum lifetime for SSH keys is 10 days"
-      false | "Key becomes invalid on this date."
+      true | format(s_('Profiles|Key becomes invalid on this date. Maximum lifetime for SSH keys is ' \
+                       '%{max_ssh_key_lifetime} days'), max_ssh_key_lifetime: 10)
+      false | s_('Profiles|Optional but recommended. If set, key becomes invalid on the specified date.')
     end
 
     with_them do
