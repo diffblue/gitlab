@@ -22,13 +22,13 @@ RSpec.describe 'Promotions', :js do
     end
 
     it 'appears in project edit page' do
-      visit edit_project_path(project)
+      visit project_settings_merge_requests_path(project)
 
       expect(find('#promote_mr_features')).to have_content 'Improve merge requests'
     end
 
     it 'does not show when cookie is set' do
-      visit edit_project_path(project)
+      visit project_settings_merge_requests_path(project)
 
       within('#promote_mr_features') do
         find('.js-close').click
@@ -36,7 +36,7 @@ RSpec.describe 'Promotions', :js do
 
       wait_for_requests
 
-      visit edit_project_path(project)
+      visit project_settings_merge_requests_path(project)
 
       expect(page).not_to have_selector('#promote_mr_features')
     end

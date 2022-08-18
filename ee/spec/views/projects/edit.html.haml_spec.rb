@@ -15,32 +15,6 @@ RSpec.describe 'projects/edit' do
                                     current_application_settings: Gitlab::CurrentSettings.current_application_settings)
   end
 
-  context 'status checks' do
-    context 'feature is not available' do
-      before do
-        stub_licensed_features(external_status_checks: false)
-
-        render
-      end
-
-      it 'hides the status checks area' do
-        expect(rendered).not_to have_content('Status check')
-      end
-
-      context 'feature is available' do
-        before do
-          stub_licensed_features(external_status_checks: true)
-
-          render
-        end
-
-        it 'shows the status checks area' do
-          expect(rendered).to have_content('Status check')
-        end
-      end
-    end
-  end
-
   describe 'prompt user about registration features' do
     context 'with no license and service ping disabled' do
       before do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'projects/_merge_request_approvals_settings' do
+RSpec.describe 'projects/settings/merge_requests/_merge_request_approvals_settings' do
   let(:project) { build(:project) }
 
   before do
@@ -11,7 +11,7 @@ RSpec.describe 'projects/_merge_request_approvals_settings' do
     allow(view).to receive(:expanded).and_return(true)
     allow(project).to receive(:feature_available?).and_return(true)
 
-    render partial: 'projects/merge_request_approvals_settings'
+    render partial: 'projects/settings/merge_requests/merge_request_approvals_settings'
   end
 
   it 'renders the settings title' do

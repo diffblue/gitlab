@@ -54,3 +54,7 @@ module QA
     end
   end
 end
+
+QA::Page::Project::Settings::MergeRequest.prepend_mod_with( # rubocop:disable Cop/InjectEnterpriseEditionModule
+  "Page::Project::Settings::MergeRequestApprovals",
+  namespace: QA)

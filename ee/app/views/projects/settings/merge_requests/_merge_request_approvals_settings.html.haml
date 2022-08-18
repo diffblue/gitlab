@@ -1,11 +1,9 @@
 - return unless @project.feature_available?(:merge_requests, current_user)
 - return unless @project.feature_available?(:merge_request_approvers, current_user)
 
-%section.settings.merge-requests-feature.no-animate#js-merge-request-approval-settings{ class: [('expanded' if expanded)], data: { qa_selector: 'merge_request_approvals_settings_content' } }
+%section.settings.merge-requests-feature.no-animate#js-merge-request-approval-settings.expanded{ data: { qa_selector: 'merge_request_approvals_settings_content' } }
   .settings-header
     %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Merge request approvals')
-    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
-      = expanded ? _('Collapse') : _('Expand')
     %p
       - duties_link_url = help_page_path('user/compliance/compliance_report/index', anchor: 'separation-of-duties')
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: duties_link_url }

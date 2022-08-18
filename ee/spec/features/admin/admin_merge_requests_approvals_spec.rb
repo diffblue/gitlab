@@ -32,7 +32,7 @@ RSpec.describe 'Admin interacts with merge requests approvals settings' do
     expect(find_field('Prevent approvals by users who add commits')).to be_checked
     expect(find_field(_('Prevent editing approval rules in projects and merge requests'))).to be_checked
 
-    visit edit_project_path(project)
+    visit project_settings_merge_requests_path(project)
 
     page.within('[data-testid="merge-request-approval-settings"]') do
       expect(find('[data-testid="prevent-author-approval"] > input')).to be_disabled.and be_checked
