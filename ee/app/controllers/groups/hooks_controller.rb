@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Groups::HooksController < Groups::ApplicationController
-  include ::Integrations::HooksExecution
+  include ::WebHooks::HookActions
 
   # Authorize
   before_action :group
