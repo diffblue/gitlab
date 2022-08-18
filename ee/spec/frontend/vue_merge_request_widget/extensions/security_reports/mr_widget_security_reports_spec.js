@@ -58,6 +58,10 @@ describe('MR Widget Security Reports', () => {
       await nextTick();
       expect(findSummaryText().props()).toMatchObject({ isLoading: true });
     });
+
+    it('should not be collapsible', () => {
+      expect(findWidget().props('isCollapsible')).toBe(false);
+    });
   });
 
   describe('with MR data', () => {
@@ -66,7 +70,7 @@ describe('MR Widget Security Reports', () => {
       dastComparisonPath: '/my/dast/endpoint',
     };
 
-    it('computes the total number of new potential vulnerabilities correctly', async () => {
+    const mockWithData = () => {
       mockAxios
         .onGet(reportEndpoints.sastComparisonPath)
         .replyOnce(200, { added: [{ id: 1 }, { id: 2 }] });
@@ -74,18 +78,31 @@ describe('MR Widget Security Reports', () => {
       mockAxios
         .onGet(reportEndpoints.dastComparisonPath)
         .replyOnce(200, { added: [{ id: 5 }, { id: 3 }] });
+    };
+
+    it('computes the total number of new potential vulnerabilities correctly', async () => {
+      mockWithData();
 
       createComponent({
-        propsData: {
-          mr: {
-            ...reportEndpoints,
-          },
-        },
+        propsData: { mr: { ...reportEndpoints } },
         mountFn: mountExtended,
       });
 
       await waitForPromises();
       expect(findSummaryText().props()).toMatchObject({ totalNewVulnerabilities: 4 });
+    });
+
+    it('tells the widget to be collapsible only if there is data', async () => {
+      mockWithData();
+
+      createComponent({
+        propsData: { mr: { ...reportEndpoints } },
+        mountFn: mountExtended,
+      });
+
+      expect(findWidget().props('isCollapsible')).toBe(false);
+      await waitForPromises();
+      expect(findWidget().props('isCollapsible')).toBe(true);
     });
   });
 });
