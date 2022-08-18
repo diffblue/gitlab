@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
-  let_it_be(:namespace, reload: true) { create(:group_with_plan, plan: :free_plan) }
+  let_it_be(:namespace, reload: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
   let(:should_check_namespace_plan) { true }
 
@@ -57,7 +57,15 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
               namespace
             end
 
-            it { is_expected.to be true }
+            it { is_expected.to be false }
+          end
+
+          context 'when the namespace is public' do
+            before do
+              namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+            end
+
+            it { is_expected.to be false }
           end
         end
 
@@ -68,9 +76,15 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
 
         context 'when no plan exists' do
-          let_it_be(:namespace) { create(:group) }
+          let_it_be(:namespace) { create(:group, :private) }
 
           it { is_expected.to be true }
+
+          context 'when namespace is public' do
+            let_it_be(:namespace) { create(:group, :public) }
+
+            it { is_expected.to be false }
+          end
         end
 
         context 'when should check namespace plan is false' do
@@ -127,7 +141,7 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
               namespace
             end
 
-            it { is_expected.to be true }
+            it { is_expected.to be false }
           end
         end
 
@@ -138,9 +152,15 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
 
         context 'when no plan exists' do
-          let_it_be(:namespace) { create(:group) }
+          let_it_be(:namespace) { create(:group, :private) }
 
           it { is_expected.to be true }
+
+          context 'when namespace is public' do
+            let_it_be(:namespace) { create(:group, :public) }
+
+            it { is_expected.to be false }
+          end
         end
 
         context 'when should check namespace plan is false' do
@@ -150,6 +170,12 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
       end
     end
+  end
+
+  describe '#users_count' do
+    subject { described_class.new(namespace).users_count }
+
+    it { is_expected.to eq(0) }
   end
 
   describe '#remaining_seats' do
@@ -196,6 +222,12 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
 
       context 'when it is a free plan' do
         it { is_expected.to be true }
+
+        context 'when namespace is public' do
+          let_it_be(:namespace) { create(:group, :public) }
+
+          it { is_expected.to be false }
+        end
       end
 
       context 'when it is a non free plan' do
@@ -205,9 +237,15 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       context 'when no plan exists' do
-        let_it_be(:namespace) { create(:group) }
+        let_it_be(:namespace) { create(:group, :private) }
 
         it { is_expected.to be true }
+
+        context 'when namespace is public' do
+          let_it_be(:namespace) { create(:group, :public) }
+
+          it { is_expected.to be false }
+        end
       end
 
       context 'when should check namespace plan is false' do

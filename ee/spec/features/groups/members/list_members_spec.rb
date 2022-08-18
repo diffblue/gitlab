@@ -84,7 +84,7 @@ RSpec.describe 'Groups > Members > List members' do
 
   context 'when over free user limit', :saas do
     let_it_be(:user) { create(:user) }
-    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
     subject(:visit_page) { visit group_group_members_path(group) }
 

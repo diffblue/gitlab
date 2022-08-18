@@ -313,7 +313,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     let(:awaiting_user_names) { awaiting_members.map { |m| m.user.name } }
     let(:active_user_names) { active_members.map { |m| m.user.name } }
 
-    let_it_be(:group) { create(:group) }
+    let_it_be(:group) { create(:group, :private) }
     let_it_be(:awaiting_members) { create_list(:group_member, 3, :awaiting, source: group) }
     let_it_be(:active_members) { create_list(:group_member, 3, source: group) }
 

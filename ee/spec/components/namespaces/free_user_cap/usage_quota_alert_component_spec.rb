@@ -2,7 +2,7 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggregate_failures, type: :component do
-  let_it_be(:namespace, refind: true) { create(:group) }
+  let_it_be(:namespace, refind: true) { create(:group, :private) }
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:content_class) { '_content_class_' }
 
@@ -33,31 +33,31 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
     it 'has content for the alert' do
       render_inline(component)
 
-      expect(rendered_component).to have_selector(".#{content_class}")
-      expect(rendered_component).to have_content(title)
-      expect(rendered_component).to have_content(body)
-      expect(rendered_component).to have_link('upgrade', href: group_billings_path(namespace))
-      expect(rendered_component).not_to have_css('.gl-alert-actions')
+      expect(page).to have_selector(".#{content_class}")
+      expect(page).to have_content(title)
+      expect(page).to have_content(body)
+      expect(page).to have_link('upgrade', href: group_billings_path(namespace))
+      expect(page).not_to have_css('.gl-alert-actions')
 
-      expect(rendered_component)
+      expect(page)
         .to have_css('.js-user-over-limit-free-plan-alert' \
-                               "[data-dismiss-endpoint='#{group_callouts_path}']" \
-                               "[data-feature-id='#{described_class::FREE_GROUP_LIMITED_ALERT}']" \
-                               "[data-group-id='#{namespace.id}']")
+                     "[data-dismiss-endpoint='#{group_callouts_path}']" \
+                     "[data-feature-id='#{described_class::FREE_GROUP_LIMITED_ALERT}']" \
+                     "[data-group-id='#{namespace.id}']")
     end
 
     it 'renders all the expected tracking items' do
       render_inline(component)
 
-      expect(rendered_component).to have_css('[data-testid="free-group-limited-alert"]' \
-                                                       '[data-track-action="render"]' \
-                                                       '[data-track-property="free_group_limited_usage_quota_banner"]')
-      expect(rendered_component).to have_css('[data-testid="free-group-limited-dismiss"]' \
-                                                       '[data-track-action="dismiss_banner"]' \
-                                                       '[data-track-property="free_group_limited_usage_quota_banner"]')
-      expect(rendered_component).to have_css('[data-track-action="click_link"]' \
-                                                       '[data-track-label="upgrade"]' \
-                                                       '[data-track-property="free_group_limited_usage_quota_banner"]')
+      expect(page).to have_css('[data-testid="free-group-limited-alert"]' \
+                               '[data-track-action="render"]' \
+                               '[data-track-property="free_group_limited_usage_quota_banner"]')
+      expect(page).to have_css('[data-testid="free-group-limited-dismiss"]' \
+                               '[data-track-action="dismiss_banner"]' \
+                               '[data-track-property="free_group_limited_usage_quota_banner"]')
+      expect(page).to have_css('[data-track-action="click_link"]' \
+                               '[data-track-label="upgrade"]' \
+                               '[data-track-property="free_group_limited_usage_quota_banner"]')
     end
   end
 
@@ -65,7 +65,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
     it 'does not have the title' do
       render_inline(component)
 
-      expect(rendered_component).not_to have_content(title)
+      expect(page).not_to have_content(title)
     end
   end
 
@@ -105,6 +105,14 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
 
       context 'when trial is active' do
         let!(:gitlab_subscription) { create(:gitlab_subscription, :active_trial, :free, namespace: namespace) }
+
+        it_behaves_like 'does not render the alert'
+      end
+
+      context 'when group is public' do
+        before do
+          namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        end
 
         it_behaves_like 'does not render the alert'
       end

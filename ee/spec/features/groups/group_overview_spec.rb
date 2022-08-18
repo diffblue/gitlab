@@ -83,7 +83,7 @@ RSpec.describe 'Group information', :js, :aggregate_failures do
   end
 
   context 'when over free user limit', :saas do
-    let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+    let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
     it_behaves_like 'over the free user limit alert'
   end

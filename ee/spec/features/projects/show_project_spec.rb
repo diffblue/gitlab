@@ -67,7 +67,7 @@ RSpec.describe 'Project show page', :feature do
     subject(:visit_page) { visit project_path(project) }
 
     context 'with group namespace' do
-      let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
+      let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
       before do
         group.add_owner(user)
@@ -75,47 +75,21 @@ RSpec.describe 'Project show page', :feature do
       end
 
       context 'with repository' do
-        let_it_be(:project) { create(:project, :repository, group: group) }
+        let_it_be(:project) { create(:project, :repository, :private, group: group) }
 
         it_behaves_like 'over the free user limit alert'
       end
 
       context 'with empty repository' do
-        let_it_be(:project) { create(:project, :empty_repo, group: group) }
+        let_it_be(:project) { create(:project, :empty_repo, :private, group: group) }
 
         it_behaves_like 'over the free user limit alert'
       end
 
       context 'without repository' do
-        let_it_be(:project) { create(:project, group: group) }
+        let_it_be(:project) { create(:project, :private, group: group) }
 
         it_behaves_like 'over the free user limit alert'
-      end
-    end
-
-    context 'with user namespace' do
-      let_it_be(:namespace) { create(:namespace_with_plan, plan: :free_plan) }
-
-      before do
-        sign_in(project.owner)
-      end
-
-      context 'with repository' do
-        let_it_be(:project) { create(:project, :repository, namespace: namespace) }
-
-        it_behaves_like 'user namespace over the free user limit alert'
-      end
-
-      context 'with empty repository' do
-        let_it_be(:project) { create(:project, :empty_repo, namespace: namespace) }
-
-        it_behaves_like 'user namespace over the free user limit alert'
-      end
-
-      context 'without repository' do
-        let_it_be(:project) { create(:project, namespace: namespace) }
-
-        it_behaves_like 'user namespace over the free user limit alert'
       end
     end
   end

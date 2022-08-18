@@ -215,6 +215,7 @@ class GitlabSubscription < ApplicationRecord
 
     # going from free to paid - allow
     # going from paid to free - prevent
+    # going from paid to public free - allow
     namespace.update_attribute(:prevent_sharing_groups_outside_hierarchy, prevent_sharing)
   end
 

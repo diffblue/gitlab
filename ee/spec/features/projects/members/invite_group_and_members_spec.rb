@@ -189,8 +189,8 @@ RSpec.describe 'Project > Members > Invite group and members' do
 
     context 'with group namespace' do
       let_it_be(:user) { create(:user) }
-      let_it_be(:group) { create(:group_with_plan, plan: :free_plan) }
-      let_it_be(:project) { create(:project, group: group) }
+      let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+      let_it_be(:project) { create(:project, :private, group: group) }
 
       before do
         group.add_owner(user)
@@ -198,21 +198,6 @@ RSpec.describe 'Project > Members > Invite group and members' do
       end
 
       it_behaves_like 'over the free user limit alert'
-    end
-
-    context 'with user namespace' do
-      let_it_be(:namespace) { create(:namespace, :with_namespace_settings) }
-      let_it_be(:project) do
-        project = create(:project, namespace: namespace)
-        create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-        project
-      end
-
-      before do
-        sign_in(project.owner)
-      end
-
-      it_behaves_like 'user namespace over the free user limit alert'
     end
   end
 end

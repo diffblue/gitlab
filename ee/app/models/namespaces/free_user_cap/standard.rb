@@ -33,16 +33,20 @@ module Namespaces
         ::Feature.enabled?(:free_user_cap, root_namespace)
       end
 
-      private
-
-      attr_reader :root_namespace
-
       def users_count
         root_namespace.free_plan_members_count || 0
       end
 
+      private
+
+      attr_reader :root_namespace
+
       def enforceable_subscription?
-        ::Gitlab::CurrentSettings.should_check_namespace_plan? && root_namespace.has_free_or_no_subscription?
+        return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        return false unless root_namespace.group_namespace?
+        return false if root_namespace.public?
+
+        root_namespace.has_free_or_no_subscription?
       end
     end
   end

@@ -140,16 +140,17 @@ RSpec.describe Members::CreateService do
         project.add_maintainer(user)
       end
 
-      it 'sets members to the correct status' do
+      it 'does not set any to awaiting' do
         expect(execute_service[:status]).to eq(:success)
         expect(project_user.project_members.last).to be_active
-        expect(over_limit_user.project_members.last).to be_awaiting
+        expect(over_limit_user.project_members.last).to be_active
       end
     end
 
     context 'with a group project' do
       before do
         project.add_developer(create(:user))
+        project.update!(group: create(:group, :private))
       end
 
       it 'sets members to the correct status' do

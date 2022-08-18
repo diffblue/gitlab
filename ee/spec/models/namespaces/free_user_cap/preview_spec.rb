@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
-  let_it_be(:namespace) { create(:group_with_plan, plan: :free_plan) }
+  let_it_be(:namespace) { create(:group_with_plan, :private, plan: :free_plan) }
 
   before do
     stub_ee_application_setting(should_check_namespace_plan: true)
@@ -23,6 +23,14 @@ RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
 
     context 'when :preview_free_user_cap is enabled' do
       it { is_expected.to be true }
+
+      context 'when the namespace is public' do
+        before do
+          namespace.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
+        end
+
+        it { is_expected.to be false }
+      end
     end
   end
 end
