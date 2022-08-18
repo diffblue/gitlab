@@ -189,7 +189,7 @@ export default {
       <component
         :is="treeRootWrapper"
         v-bind="treeRootOptions"
-        class="board-swimlanes-headers gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-bg-white gl-top-0 gl-z-index-3"
+        class="board-swimlanes-headers gl-display-table gl-sticky gl-pt-5 gl-mb-5 gl-top-0 gl-z-index-3"
         data-testid="board-swimlanes-headers"
         @end="moveList"
       >
@@ -197,7 +197,7 @@ export default {
           v-for="list in lists"
           :key="list.id"
           :class="{
-            'is-collapsed': list.collapsed,
+            'is-collapsed gl-w-10': list.collapsed,
             'is-draggable': isListDraggable(list),
           }"
           class="board gl-display-inline-block gl-px-3 gl-vertical-align-top gl-white-space-normal"

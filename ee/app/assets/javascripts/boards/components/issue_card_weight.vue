@@ -25,7 +25,7 @@ export default {
   <component
     :is="tagName"
     ref="itemWeight"
-    class="board-card-info card-number board-card-weight"
+    class="board-card-info board-card-weight gl-mr-3 gl-cursor-pointer gl-text-gray-500 gl-hover-text-decoration-underline"
     v-on="$listeners"
   >
     <gl-icon name="weight" class="board-card-info-icon gl-mr-2" />

@@ -414,8 +414,6 @@ RSpec.describe 'epic boards', :js do
     click_button 'Create board'
 
     wait_for_requests
-
-    expect(page).not_to have_selector('.board-list-loading')
   end
 
   def update_board_scope(filter, value)
@@ -428,8 +426,6 @@ RSpec.describe 'epic boards', :js do
     click_button 'Save changes'
 
     wait_for_requests
-
-    expect(page).not_to have_selector('.board-list-loading')
   end
 
   def update_board_label(label_title)

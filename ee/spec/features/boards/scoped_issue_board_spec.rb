@@ -702,8 +702,6 @@ RSpec.describe 'Scoped issue boards', :js do
     click_button 'Create board'
 
     wait_for_requests
-
-    expect(page).not_to have_selector('.board-list-loading')
   end
 
   def click_value(filter, value)
@@ -750,8 +748,6 @@ RSpec.describe 'Scoped issue boards', :js do
     click_button 'Save changes'
 
     wait_for_requests
-
-    expect(page).not_to have_selector('.board-list-loading')
   end
 
   # Click on modal to make sure the dropdown is closed (e.g. label scenario)
