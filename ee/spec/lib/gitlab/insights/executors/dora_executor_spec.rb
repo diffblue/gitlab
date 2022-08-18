@@ -128,7 +128,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
     end
 
     context 'when unknown chart type is given' do
-      let(:chart_type) { 'line' }
+      let(:chart_type) { 'stacked-bar' }
 
       it 'raises error' do
         expect do
