@@ -1,6 +1,12 @@
 # frozen_string_literal: true
 
 module Types
+  # If you're considering to add a new field in DeploymentType, please follow this guideline:
+  # - If the field is preloadable in batch, define it in DeploymentType.
+  #   In this case, you should extend DeploymentsResolver logic to preload the field. Also, add a new test that
+  #   fetching the specific field for multiple deployments doesn't cause N+1 query problem.
+  # - If the field is NOT preloadable in batch, define it in DeploymentDetailsType.
+  #   This type can be only fetched for a single deployment, so you don't need to take care of the preloading.
   class DeploymentType < BaseObject
     graphql_name 'Deployment'
     description 'The deployment of an environment'

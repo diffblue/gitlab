@@ -10991,6 +10991,24 @@ The deployment of an environment.
 | <a id="deploymenttag"></a>`tag` | [`Boolean`](#boolean) | True or false if the deployment ran on a Git-tag. |
 | <a id="deploymentupdatedat"></a>`updatedAt` | [`Time`](#time) | When the deployment record was updated. |
 
+### `DeploymentDetails`
+
+The details of the deployment.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="deploymentdetailscreatedat"></a>`createdAt` | [`Time`](#time) | When the deployment record was created. |
+| <a id="deploymentdetailsfinishedat"></a>`finishedAt` | [`Time`](#time) | When the deployment finished. |
+| <a id="deploymentdetailsid"></a>`id` | [`ID`](#id) | Global ID of the deployment. |
+| <a id="deploymentdetailsiid"></a>`iid` | [`ID`](#id) | Project-level internal ID of the deployment. |
+| <a id="deploymentdetailsref"></a>`ref` | [`String`](#string) | Git-Ref that the deployment ran on. |
+| <a id="deploymentdetailssha"></a>`sha` | [`String`](#string) | Git-SHA that the deployment ran on. |
+| <a id="deploymentdetailsstatus"></a>`status` | [`DeploymentStatus`](#deploymentstatus) | Status of the deployment. |
+| <a id="deploymentdetailstag"></a>`tag` | [`Boolean`](#boolean) | True or false if the deployment ran on a Git-tag. |
+| <a id="deploymentdetailsupdatedat"></a>`updatedAt` | [`Time`](#time) | When the deployment record was updated. |
+
 ### `Design`
 
 A single design.
@@ -15870,6 +15888,18 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | ---- | ---- | ----------- |
 | <a id="projectdastsitevalidationsnormalizedtargeturls"></a>`normalizedTargetUrls` | [`[String!]`](#string) | Normalized URL of the target to be scanned. |
 | <a id="projectdastsitevalidationsstatus"></a>`status` | [`DastSiteValidationStatusEnum`](#dastsitevalidationstatusenum) | Status of the site validation. |
+
+##### `Project.deployment`
+
+Details of the deployment of the project.
+
+Returns [`DeploymentDetails`](#deploymentdetails).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectdeploymentiid"></a>`iid` | [`ID!`](#id) | Project-level internal ID of the Deployment. |
 
 ##### `Project.environment`
 

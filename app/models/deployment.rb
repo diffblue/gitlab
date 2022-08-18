@@ -36,6 +36,7 @@ class Deployment < ApplicationRecord
   delegate :name, to: :environment, prefix: true
   delegate :kubernetes_namespace, to: :deployment_cluster, allow_nil: true
 
+  scope :for_iid, -> (project, iid) { where(project: project, iid: iid) }
   scope :for_environment, -> (environment) { where(environment_id: environment) }
   scope :for_environment_name, -> (project, name) do
     where('deployments.environment_id = (?)',
