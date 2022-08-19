@@ -138,11 +138,8 @@ module GitlabSubscriptions
         next unless customers_oauth_app_uid
 
         application = Doorkeeper::Application.find_by_uid(customers_oauth_app_uid)
-        existing_token = Doorkeeper::AccessToken.matching_token_for(application, current_user.id, application.scopes)
 
-        next existing_token if existing_token
-
-        Doorkeeper::AccessToken.new(
+        OauthAccessToken.new(
           application_id: application.id,
           resource_owner_id: current_user.id,
           token: Doorkeeper::OAuth::Helpers::UniqueToken.generate,
