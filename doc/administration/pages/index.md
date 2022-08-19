@@ -156,7 +156,7 @@ Watch the [video tutorial](https://youtu.be/dD8c7WNcc6s) for this configuration.
 **Requirements:**
 
 - [Wildcard DNS setup](#dns-configuration)
-- Wildcard TLS certificate
+- TLS certificate. Can be either Wildcard, or any other type meeting the [requirements](../../user/project/pages/custom_domains_ssl_tls_certification/index.md#manual-addition-of-ssltls-certificates).
 
 ---
 
