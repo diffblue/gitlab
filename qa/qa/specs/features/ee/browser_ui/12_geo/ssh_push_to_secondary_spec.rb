@@ -48,10 +48,6 @@ module QA
           QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-            EE::Page::Main::Banner.perform do |banner|
-              expect(banner).to have_secondary_read_only_banner
-            end
-
             # Ensure the SSH key has replicated
             expect(key).to be_replicated
 
@@ -69,7 +65,7 @@ module QA
             end
 
             # Perform a git push over SSH at the secondary
-            push = Resource::Repository::Push.fabricate! do |push|
+            Resource::Repository::Push.fabricate! do |push|
               push.new_branch = false
               push.ssh_key = key
               push.repository_ssh_uri = location.uri
@@ -77,12 +73,6 @@ module QA
               push.file_content = "# #{file_content_secondary}"
               push.commit_message = "Update #{file_name}"
             end
-
-            # Remove ssh:// from the URI to ensure we can match accurately
-            # as ssh:// can appear depending on how GitLab is configured.
-            ssh_uri = project.repository_ssh_location.git_uri.to_s.gsub(%r{ssh://}, '')
-
-            expect(push.output).to match(%r{This request to a Geo secondary node will be forwarded to the.*Geo primary node:.*#{ssh_uri}}m)
 
             # Validate git push worked and new content is visible
             Page::Project::Show.perform do |show|
@@ -131,10 +121,6 @@ module QA
           QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-            EE::Page::Main::Banner.perform do |banner|
-              expect(banner).to have_secondary_read_only_banner
-            end
-
             # Ensure the SSH key has replicated
             expect(key).to be_replicated
 
@@ -152,7 +138,7 @@ module QA
             end
 
             # Perform a git push over SSH at the secondary
-            push = Resource::Repository::Push.fabricate! do |push|
+            Resource::Repository::Push.fabricate! do |push|
               push.use_lfs = true
               push.new_branch = false
               push.ssh_key = key
@@ -161,9 +147,6 @@ module QA
               push.file_content = "# #{file_content_secondary}"
               push.commit_message = "Add #{file_name_secondary}"
             end
-
-            ssh_uri = project.repository_ssh_location.git_uri.to_s.gsub(%r{ssh://}, '')
-            expect(push.output).to match(%r{This request to a Geo secondary node will be forwarded to the.*Geo primary node:.*#{ssh_uri}}m)
 
             # Validate git push worked and new content is visible
             Page::Project::Show.perform do |show|

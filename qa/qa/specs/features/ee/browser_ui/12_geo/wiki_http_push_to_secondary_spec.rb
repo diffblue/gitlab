@@ -44,10 +44,6 @@ module QA
         QA::Runtime::Logger.debug('Visiting the secondary geo node')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-          EE::Page::Main::Banner.perform do |banner|
-            expect(banner).to have_secondary_read_only_banner
-          end
-
           Page::Main::Menu.perform(&:go_to_projects)
 
           Page::Dashboard::Projects.perform do |dashboard|
@@ -76,17 +72,6 @@ module QA
             push.file_content = push_content_secondary
             push.commit_message = 'Update Home.md'
           end
-
-          # Check that the git cli produces the 'warning: redirecting to..(primary node)' output
-          primary_uri = wiki.repository_http_location.uri
-          primary_uri.user = nil
-
-          # The secondary inserts a special path prefix.
-          # See `Gitlab::Geo::GitPushHttp::PATH_PREFIX`.
-          path = File.join(git_push_http_path_prefix, '\d+', primary_uri.path)
-          absolute_path = primary_uri.to_s.sub(primary_uri.path, path)
-
-          expect(push.output).to match(/warning: redirecting to #{absolute_path}/)
 
           # Validate git push worked and new content is visible
           push.visit!
