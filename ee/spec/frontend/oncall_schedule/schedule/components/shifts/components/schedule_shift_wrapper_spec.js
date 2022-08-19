@@ -112,4 +112,22 @@ describe('ee/oncall_schedules/components/schedule/components/shifts/components/s
       expect(findShiftItems().exists()).toBe(false);
     });
   });
+
+  describe('when there are non-active participants in the rotation', () => {
+    it('should render when there are no active participants', () => {
+      createComponent({
+        props: {
+          presetType: PRESET_TYPES.DAYS,
+          timeframeItem: timeframe,
+          rotation: {
+            ...mockRotations[0],
+            participants: {
+              nodes: [],
+            },
+          },
+        },
+      });
+      expect(findShiftItems()).toHaveLength(2);
+    });
+  });
 });
