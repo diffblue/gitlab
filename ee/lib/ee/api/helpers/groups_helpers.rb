@@ -17,12 +17,16 @@ module EE
           end
 
           params :optional_update_params_ee do
-            optional :file_template_project_id, type: Integer, desc: 'The ID of a project to use for custom templates in this group'
-            optional :prevent_forking_outside_group, type: ::Grape::API::Boolean, desc: 'Prevent forking projects inside this group to external namespaces'
-            optional :unique_project_download_limit, type: Integer,
-              desc: 'Maximum number of unique projects a user can download in the specified time period before they \
-              are banned.'
-            optional :unique_project_download_limit_interval_in_seconds, type: Integer,
+            optional :file_template_project_id,
+              type: Integer, desc: 'The ID of a project to use for custom templates in this group'
+            optional :prevent_forking_outside_group,
+              type: ::Grape::API::Boolean, desc: 'Prevent forking projects inside this group to external namespaces'
+            optional :unique_project_download_limit,
+              type: Integer,
+              desc: 'Maximum number of unique projects a user can download in the specified time period before they ' \
+                    'are banned.'
+            optional :unique_project_download_limit_interval_in_seconds,
+              type: Integer,
               desc: 'Time period during which a user can download a maximum amount of projects before they are banned.'
             optional :unique_project_download_limit_allowlist,
               type: Array[String],

@@ -32,12 +32,12 @@ module Elastic
         end
 
         indexes :id, type: :keyword,
-          index_options: 'docs',
-          normalizer: :sha_normalizer
+                     index_options: 'docs',
+                     normalizer: :sha_normalizer
         indexes :rid, type: :keyword
         indexes :sha, type: :keyword,
-          index_options: 'docs',
-          normalizer: :sha_normalizer
+                      index_options: 'docs',
+                      normalizer: :sha_normalizer
         indexes :message, type: :text, index_options: 'positions'
         indexes :visibility_level, type: :integer
         indexes :repository_access_level, type: :integer

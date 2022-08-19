@@ -8,9 +8,10 @@ module EE
 
         prepended do
           params :optional_params_ee do
-            optional :unprotect_access_level, type: Integer,
-                     values: ::ProtectedBranch::UnprotectAccessLevel.allowed_access_levels,
-                     desc: 'Access levels allowed to unprotect (defaults: `40`, maintainer access level)'
+            optional :unprotect_access_level,
+              type: Integer,
+              values: ::ProtectedBranch::UnprotectAccessLevel.allowed_access_levels,
+              desc: 'Access levels allowed to unprotect (defaults: `40`, maintainer access level)'
 
             optional :allowed_to_push, type: Array, desc: 'An array of users/groups allowed to push' do
               optional :access_level, type: Integer, values: ::ProtectedBranch::PushAccessLevel.allowed_access_levels

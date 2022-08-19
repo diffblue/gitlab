@@ -21,10 +21,8 @@ module Elastic
         indexes :id, type: :integer
         indexes :iid, type: :integer
 
-        indexes :title, type: :text,
-          index_options: 'positions'
-        indexes :description, type: :text,
-          index_options: 'positions'
+        indexes :title, type: :text, index_options: 'positions'
+        indexes :description, type: :text, index_options: 'positions'
         indexes :state, type: :keyword
         indexes :project_id, type: :integer
         indexes :author_id, type: :integer

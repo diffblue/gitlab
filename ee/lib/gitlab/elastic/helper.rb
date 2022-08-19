@@ -52,12 +52,12 @@ module Gitlab
           uri = Addressable::URI.parse(uri) if uri.is_a? String
 
           {
-            scheme:   uri.scheme,
-            user:     user.presence || Addressable::URI.unencode(uri.user),
+            scheme: uri.scheme,
+            user: user.presence || Addressable::URI.unencode(uri.user),
             password: password.presence || Addressable::URI.unencode(uri.password) || (user.present? ? '' : nil),
-            host:     uri.host,
-            path:     uri.path,
-            port:     uri.port
+            host: uri.host,
+            path: uri.path,
+            port: uri.port
           }.compact
         end
 
@@ -318,9 +318,9 @@ module Gitlab
         info = client.info.fetch('version', {})
 
         {
-          distribution:   info.fetch('distribution', 'elasticsearch'),
-          version:        info['number'],
-          build_type:     info['build_type'],
+          distribution: info.fetch('distribution', 'elasticsearch'),
+          version: info['number'],
+          build_type: info['build_type'],
           lucene_version: info['lucene_version']
         }
       rescue StandardError

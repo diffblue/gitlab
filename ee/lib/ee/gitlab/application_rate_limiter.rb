@@ -13,12 +13,12 @@ module EE
           super.merge({
             unique_project_downloads_for_application: {
               threshold: -> { application_settings.max_number_of_repository_downloads },
-              interval:  -> { application_settings.max_number_of_repository_downloads_within_time_period }
+              interval: -> { application_settings.max_number_of_repository_downloads_within_time_period }
             },
             # actual values will get sent by Abuse::GitAbuse::NamespaceThrottleService
             unique_project_downloads_for_namespace: {
               threshold: 0,
-              interval:  0
+              interval: 0
             }
           }).freeze
         end

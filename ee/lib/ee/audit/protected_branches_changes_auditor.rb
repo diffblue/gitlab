@@ -11,9 +11,9 @@ module EE
 
       def execute
         audit_changes(:allow_force_push, as: 'allow force push', entity: model.project,
-                      model: model, event_type: event_type)
+                                         model: model, event_type: event_type)
         audit_changes(:code_owner_approval_required, as: 'code owner approval required',
-                      entity: model.project, model: model, event_type: event_type)
+                                                     entity: model.project, model: model, event_type: event_type)
         audit_access_levels
       end
 

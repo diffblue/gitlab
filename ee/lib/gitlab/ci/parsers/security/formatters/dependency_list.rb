@@ -18,7 +18,7 @@ module Gitlab
                 packager: packager(package_manager),
                 package_manager: package_manager,
                 location: formatted_location(dependency, file_path),
-                version:  dependency['version'],
+                version: dependency['version'],
                 vulnerabilities: formatted_vulnerabilities(vulnerabilities),
                 licenses: []
               }
@@ -68,7 +68,7 @@ module Gitlab
             def formatted_location(dependency, file_path)
               base_location = {
                 blob_path: blob_path(file_path),
-                path:      file_path
+                path: file_path
               }
 
               return base_location unless dependency['iid']
