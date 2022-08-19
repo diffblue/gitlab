@@ -62,10 +62,11 @@ module Gitlab
           end
 
           def parse_components
-            data['components']&.each do |component|
-              next unless supported_component_type?(component['type'])
+            data['components']&.each do |component_data|
+              next unless supported_component_type?(component_data['type'])
 
-              report.add_component(component.slice(*COMPONENT_ATTRIBUTES))
+              component = ::Gitlab::Ci::Reports::Sbom::Component.new(component_data.slice(*COMPONENT_ATTRIBUTES))
+              report.add_component(component)
             end
           end
 

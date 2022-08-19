@@ -7,10 +7,10 @@ module Gitlab
         class Component
           attr_reader :component_type, :name, :version
 
-          def initialize(component = {})
-            @component_type = component['type']
-            @name = component['name']
-            @version = component['version']
+          def initialize(component_data = {})
+            @component_type = component_data['type']
+            @name = component_data['name']
+            @version = component_data['version']
           end
         end
       end
