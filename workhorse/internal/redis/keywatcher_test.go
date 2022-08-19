@@ -38,16 +38,16 @@ func createUnsubscribeMessage(key string) []interface{} {
 	}
 }
 
-func countWatchers(key string) int {
-	keyWatcherMutex.Lock()
-	defer keyWatcherMutex.Unlock()
-	return len(keyWatcher[key])
+func countSubscribers(key string) int {
+	keyWatchMutex.Lock()
+	defer keyWatchMutex.Unlock()
+	return len(subscribers[key])
 }
 
-func deleteWatchers(key string) {
-	keyWatcherMutex.Lock()
-	defer keyWatcherMutex.Unlock()
-	delete(keyWatcher, key)
+func deleteSubscribers(key string) {
+	keyWatchMutex.Lock()
+	defer keyWatchMutex.Unlock()
+	delete(subscribers, key)
 }
 
 // Forces a run of the `Process` loop against a mock PubSubConn.
@@ -60,11 +60,11 @@ func processMessages(numWatchers int, value string) {
 	psc.AddSubscriptionMessage(createSubscriptionMessage(keySubChannel, runnerKey+"="+value))
 
 	// Wait for all the `WatchKey` calls to be registered
-	for countWatchers(runnerKey) != numWatchers {
+	for countSubscribers(runnerKey) != numWatchers {
 		time.Sleep(time.Millisecond)
 	}
 
-	processInner(psc)
+	receivePubSubStream(psc)
 }
 
 type keyChangeTestCase struct {
@@ -86,7 +86,7 @@ func TestKeyChangesBubblesUpError(t *testing.T) {
 	_, err := WatchKey(runnerKey, "something", time.Second)
 	require.Error(t, err, "Expected error")
 
-	deleteWatchers(runnerKey)
+	deleteSubscribers(runnerKey)
 }
 
 func TestKeyChangesInstantReturn(t *testing.T) {
@@ -140,7 +140,7 @@ func TestKeyChangesInstantReturn(t *testing.T) {
 			require.NoError(t, err, "Expected no error")
 			require.Equal(t, tc.expectedStatus, val, "Expected value")
 
-			deleteWatchers(runnerKey)
+			deleteSubscribers(runnerKey)
 		})
 	}
 }
@@ -273,7 +273,7 @@ func TestShutdown(t *testing.T) {
 	}()
 
 	go func() {
-		require.Eventually(t, func() bool { return countWatchers(runnerKey) == 1 }, 10*time.Second, time.Millisecond)
+		require.Eventually(t, func() bool { return countSubscribers(runnerKey) == 1 }, 10*time.Second, time.Millisecond)
 
 		Shutdown()
 		wg.Done()
@@ -281,7 +281,7 @@ func TestShutdown(t *testing.T) {
 
 	wg.Wait()
 
-	require.Eventually(t, func() bool { return countWatchers(runnerKey) == 0 }, 10*time.Second, time.Millisecond)
+	require.Eventually(t, func() bool { return countSubscribers(runnerKey) == 0 }, 10*time.Second, time.Millisecond)
 
 	// Adding a key after the shutdown should result in an immediate response
 	var val WatchKeyStatus
