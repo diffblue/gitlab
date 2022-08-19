@@ -4716,6 +4716,9 @@ msgstr ""
 msgid "ApplicationSettings|Text shown after a user signs up. Markdown enabled."
 msgstr ""
 
+msgid "ApplicationSettings|This feature is only available on GitLab.com"
+msgstr ""
+
 msgid "ApplicationSettings|This option is only available on GitLab.com"
 msgstr ""
 
@@ -12390,6 +12393,9 @@ msgstr ""
 msgid "Date range must be shorter than %{max_range} days."
 msgstr ""
 
+msgid "Date to enact enforcement on newly created namespaces"
+msgstr ""
+
 msgid "DateRange|%{start_date}–%{end_date}"
 msgstr ""
 
@@ -14644,6 +14650,9 @@ msgid "Enable container expiration and retention policies for projects created e
 msgstr ""
 
 msgid "Enable container expiration caching."
+msgstr ""
+
+msgid "Enable dashboard limits on namespaces"
 msgstr ""
 
 msgid "Enable email notification"
@@ -16965,6 +16974,9 @@ msgid "Framework successfully deleted"
 msgstr ""
 
 msgid "Free Trial of GitLab.com Ultimate"
+msgstr ""
+
+msgid "Free User Cap"
 msgstr ""
 
 msgid "Free groups are limited to %{free_user_limit} member and the remaining members will get a status of over-limit and lose access to the group."
@@ -34108,6 +34120,9 @@ msgid "Role"
 msgstr ""
 
 msgid "Rollback"
+msgstr ""
+
+msgid "Rollout of free user limits within GitLab.com. Do not edit these values unless approval has been given via %{link_start}this issue%{link_end}."
 msgstr ""
 
 msgid "Ruby"

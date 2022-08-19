@@ -59,7 +59,15 @@ module EE
         :throttle_incident_management_notification_enabled,
         :throttle_incident_management_notification_per_period,
         :throttle_incident_management_notification_period_in_seconds
-      ]
+      ].tap do |settings|
+        next unless ::Gitlab.com?
+
+        settings << :dashboard_limit_enabled
+        settings << :dashboard_limit
+        settings << :dashboard_notification_limit
+        settings << :dashboard_enforcement_limit
+        settings << :dashboard_limit_new_namespace_creation_enforcement_date
+      end
     end
 
     def elasticsearch_objects_options(objects)
