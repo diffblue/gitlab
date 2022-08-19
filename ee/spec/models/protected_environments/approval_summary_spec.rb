@@ -16,8 +16,8 @@ RSpec.describe ProtectedEnvironments::ApprovalSummary do
   end
 
   let_it_be_with_refind(:approval_rule_group) do
-    create(:protected_environment_approval_rule, group: group, protected_environment: protected_environment,
-           required_approvals: 2)
+    create(:protected_environment_approval_rule,
+           group: group, protected_environment: protected_environment, required_approvals: 2)
   end
 
   let_it_be_with_refind(:approval_rule_user) do

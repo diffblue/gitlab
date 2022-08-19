@@ -76,13 +76,13 @@ RSpec.describe Integrations::ZentaoSerializers::IssueEntity do
           text_color: '#FFFFFF' }
       ],
       author: { id: 1,
-        name: 'admin',
-        web_url: 'http://example.com/users/1',
-        avatar_url: 'http://example.com/avatar/1' },
+                name: 'admin',
+                web_url: 'http://example.com/users/1',
+                avatar_url: 'http://example.com/avatar/1' },
       assignees: [{ id: 2,
-        name: 'productManager',
-        web_url: 'http://example.com/users/2',
-        avatar_url: 'http://example.com/avatar/2' }],
+                    name: 'productManager',
+                    web_url: 'http://example.com/users/2',
+                    avatar_url: 'http://example.com/avatar/2' }],
       web_url: 'http://example.com/issues/1',
       gitlab_web_url: "/#{project.full_path}/-/integrations/zentao/issues/story-34" }
   end

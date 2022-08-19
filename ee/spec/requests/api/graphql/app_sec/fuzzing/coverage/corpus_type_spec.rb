@@ -43,7 +43,7 @@ RSpec.describe 'Query.project(fullPath).corpuses' do
 
       nodes = graphql_data.dig('project', 'corpuses', 'nodes')
       expect(nodes).to contain_exactly({
-        'id' =>  corpus.to_global_id.to_s, 'package' => { 'id' => corpus.package.to_global_id.to_s }
+        'id' => corpus.to_global_id.to_s, 'package' => { 'id' => corpus.package.to_global_id.to_s }
       })
     end
   end

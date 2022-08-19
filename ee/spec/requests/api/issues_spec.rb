@@ -39,10 +39,10 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
 
         expect(response).to have_gitlab_http_status(:success)
         expect(issue_response_by_id(issue_with_epic.id)['epic']).to eq({ "id" => epic.id,
-                                                                    "iid" => epic.iid,
-                                                                    "group_id" => epic.group_id,
-                                                                    "title" => epic.title,
-                                                                    "url" => group_epic_path(epic.group, epic) })
+                                                                         "iid" => epic.iid,
+                                                                         "group_id" => epic.group_id,
+                                                                         "title" => epic.title,
+                                                                         "url" => group_epic_path(epic.group, epic) })
       end
 
       context 'and epic issue is not present' do
