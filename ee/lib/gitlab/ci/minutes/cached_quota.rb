@@ -35,7 +35,7 @@ module Gitlab
               end
             else
               redis.multi do |multi|
-                redis.set(cache_key, uncached_current_balance, nx: true, ex: TTL_REMAINING_MINUTES)
+                multi.set(cache_key, uncached_current_balance, nx: true, ex: TTL_REMAINING_MINUTES)
                 new_balance = multi.incrbyfloat(cache_key, -consumption)
               end
             end
