@@ -16,7 +16,7 @@ export const PROJECTS_TABLE_FIELDS = [
   },
 ];
 
-export const TITLE_USAGE_SINCE = s__('UsageQuota|Usage since %{usageSince}');
+export const TITLE_USAGE_SINCE = s__('UsageQuota|CI/CD minutes usage since %{usageSince}');
 export const TITLE_CURRENT_PERIOD = s__('UsageQuota|Current period usage');
 export const TOTAL_USED_UNLIMITED = __('Unlimited');
 export const MINUTES_USED = __('%{minutesUsed} minutes');

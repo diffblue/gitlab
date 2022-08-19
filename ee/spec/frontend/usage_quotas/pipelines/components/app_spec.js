@@ -84,15 +84,21 @@ describe('PipelineUsageApp', () => {
   describe('Buy additional minutes Button', () => {
     const mockApollo = createMockApolloProvider();
 
-    it('calls pushEECproductAddToCartEvent on click', () => {
+    it('calls pushEECproductAddToCartEvent on click', async () => {
       createComponent({ mockApollo });
+
+      await waitForPromises();
+
       findBuyAdditionalMinutesButton().trigger('click');
       expect(pushEECproductAddToCartEvent).toHaveBeenCalledTimes(1);
     });
 
     describe('Gitlab SaaS: valid data for buyAdditionalMinutesPath and buyAdditionalMinutesTarget', () => {
-      it('renders the button to buy additional minutes', () => {
+      it('renders the button to buy additional minutes', async () => {
         createComponent({ mockApollo });
+
+        await waitForPromises();
+
         expect(findBuyAdditionalMinutesButton().exists()).toBe(true);
         expect(findBuyAdditionalMinutesButton().text()).toBe(LABEL_BUY_ADDITIONAL_MINUTES);
       });
