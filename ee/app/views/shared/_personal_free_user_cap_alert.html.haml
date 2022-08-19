@@ -1,9 +1,0 @@
-- content_for :free_user_cap_alert do
-  - if ::Namespaces::FreeUserCap::Standard.new(source.root_ancestor).feature_enabled?
-    = render Namespaces::FreeUserCap::PersonalAlertComponent.new(namespace: source.root_ancestor,
-      user: current_user,
-      content_class: @content_class)
-  - else
-    = render Namespaces::FreeUserCap::PersonalPreviewAlertComponent.new(namespace: source.root_ancestor,
-      user: current_user,
-      content_class: @content_class)
