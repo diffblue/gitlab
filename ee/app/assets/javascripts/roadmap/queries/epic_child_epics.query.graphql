@@ -10,6 +10,7 @@ query epicChildEpics(
   $authorUsername: String = ""
   $confidential: Boolean
   $search: String = ""
+  $withColor: Boolean = false
 ) {
   group(fullPath: $fullPath) {
     id
@@ -30,6 +31,8 @@ query epicChildEpics(
         edges {
           node {
             ...BaseEpic
+            color @include(if: $withColor)
+            textColor @include(if: $withColor)
           }
         }
       }
