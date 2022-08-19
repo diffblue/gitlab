@@ -13,7 +13,7 @@
         .col-sm-2.col-form-label
           = f.label :access_level, "Access Level"
         .col-sm-10
-          = f.select :access_level, options_for_select(group.access_level_roles.keys), {}, class: 'form-control'
+          = f.select :access_level, options_for_select(group.access_level_roles), {}, class: 'form-control'
           .form-text.text-muted
             = s_('GroupSAML|Role to assign members of this SAML group.')
 

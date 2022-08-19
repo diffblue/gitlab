@@ -11,9 +11,9 @@ RSpec.describe API::SamlGroupLinks, api: true do
 
   let_it_be(:group_with_saml_group_links) do
     group = create(:group)
-    group.saml_group_links.create!(saml_group_name: "saml-group1", access_level: "Guest")
-    group.saml_group_links.create!(saml_group_name: "saml-group2", access_level: "Guest")
-    group.saml_group_links.create!(saml_group_name: "saml-group3", access_level: "Guest")
+    group.saml_group_links.create!(saml_group_name: "saml-group1", access_level: ::Gitlab::Access::GUEST)
+    group.saml_group_links.create!(saml_group_name: "saml-group2", access_level: ::Gitlab::Access::GUEST)
+    group.saml_group_links.create!(saml_group_name: "saml-group3", access_level: ::Gitlab::Access::GUEST)
     group
   end
 
@@ -57,16 +57,14 @@ RSpec.describe API::SamlGroupLinks, api: true do
         it "returns saml group links" do
           subject
 
-          aggregate_failures "testing response" do
-            expect(response).to have_gitlab_http_status(:ok)
-            expect(json_response).to(
-              match([
-                      { "access_level" => "Guest", "name" => "saml-group1" },
-                      { "access_level" => "Guest", "name" => "saml-group2" },
-                      { "access_level" => "Guest", "name" => "saml-group3" }
-                    ])
-            )
-          end
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to(
+            match([
+                    { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group1" },
+                    { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group2" },
+                    { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group3" }
+                  ])
+          )
         end
 
         context "when group does not have any associated saml_group_links" do
@@ -102,7 +100,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
   end
 
   describe "POST /groups/:id/saml_group_links" do
-    let_it_be(:params) { { saml_group_name: "Test group", access_level: "Guest" } }
+    let_it_be(:params) { { saml_group_name: "Test group", access_level: ::Gitlab::Access::GUEST } }
 
     subject { post api("/groups/#{group_id}/saml_group_links", current_user), params: params }
 
@@ -142,7 +140,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
           aggregate_failures "testing response" do
             expect(response).to have_gitlab_http_status(:created)
             expect(json_response['name']).to eq('Test group')
-            expect(json_response['access_level']).to eq('Guest')
+            expect(json_response['access_level']).to eq(::Gitlab::Access::GUEST)
           end
         end
 
@@ -206,7 +204,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
           aggregate_failures "testing response" do
             expect(response).to have_gitlab_http_status(:ok)
             expect(json_response['name']).to eq('saml-group1')
-            expect(json_response['access_level']).to eq('Guest')
+            expect(json_response['access_level']).to eq(::Gitlab::Access::GUEST)
           end
         end
 

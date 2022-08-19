@@ -27,7 +27,8 @@ module API
       end
       params do
         requires 'saml_group_name', type: String, desc: 'The name of a SAML group'
-        requires 'access_level', type: String, desc: 'Access level of a SAML group'
+        requires 'access_level', type: Integer, values: Gitlab::Access.all_values,
+                                 desc: 'Level of permissions for the linked SA group'
       end
       post ":id/saml_group_links" do
         group = find_group(params[:id])

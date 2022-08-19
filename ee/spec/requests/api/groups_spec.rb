@@ -90,7 +90,7 @@ RSpec.describe API::Groups do
             saml_group_link = group_json['saml_group_links'].first
 
             saml_group_link['name'] == 'saml-group' &&
-            saml_group_link['access_level'] == "Guest"
+            saml_group_link['access_level'] == ::Gitlab::Access::GUEST
           end
         )
       end
