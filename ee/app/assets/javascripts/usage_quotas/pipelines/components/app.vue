@@ -173,62 +173,62 @@ export default {
 
 <template>
   <div>
-    <section>
-      <div>
-        <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="lg" />
-        <minutes-usage-charts v-else :ci-minutes-usages="ciMinutesUsages" />
-      </div>
-      <div v-if="shouldShowBuyAdditionalMinutes" class="gl-display-flex gl-justify-content-end">
-        <gl-button
-          :href="buyAdditionalMinutesPath"
-          :target="buyAdditionalMinutesTarget"
-          :data-track-label="namespaceActualPlanName"
-          data-track-action="click_buy_ci_minutes"
-          data-track-property="pipeline_quota_page"
-          category="primary"
-          variant="confirm"
-          @click="trackBuyAdditionalMinutesClick"
+    <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="lg" />
+    <gl-alert v-else-if="error" variant="danger" @dismiss="clearError">
+      {{ error }}
+    </gl-alert>
+    <section v-else>
+      <section>
+        <div
+          v-if="shouldShowBuyAdditionalMinutes"
+          class="gl-display-flex gl-justify-content-end gl-py-3"
         >
-          {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
-        </gl-button>
-      </div>
-    </section>
-    <section class="gl-py-5">
-      <gl-loading-icon v-if="isLoading" class="gl-mt-5" size="lg" />
-      <gl-alert v-else-if="error" variant="danger" @dismiss="clearError">
-        {{ error }}
-      </gl-alert>
-      <div v-else>
-        <div class="gl-p-5">
-          <usage-overview
-            :minutes-title="monthlyUsageTitle"
-            :minutes-used="monthlyMinutesUsed"
-            minutes-used-qa-selector="plan_ci_minutes"
-            :minutes-used-percentage="usagePercentage(ciMinutesMonthlyMinutesUsedPercentage)"
-            :minutes-limit="ciMinutesMonthlyMinutesLimit"
-            :help-link-href="$options.CI_MINUTES_HELP_LINK"
-            :help-link-label="$options.CI_MINUTES_HELP_LINK_LABEL"
-            data-testid="monthly-usage-overview"
-          />
-          <usage-overview
-            v-if="shouldShowAdditionalMinutes"
-            class="gl-pt-5"
-            :minutes-title="$options.ADDITIONAL_MINUTES"
-            :minutes-used="purchasedMinutesUsed"
-            minutes-used-qa-selector="additional_ci_minutes"
-            :minutes-used-percentage="usagePercentage(ciMinutesPurchasedMinutesUsedPercentage)"
-            :minutes-limit="ciMinutesPurchasedMinutesLimit"
-            :help-link-href="$options.ADDITIONAL_MINUTES_HELP_LINK"
-            :help-link-label="$options.ADDITIONAL_MINUTES"
-            data-testid="purchased-usage-overview"
-          />
+          <gl-button
+            :href="buyAdditionalMinutesPath"
+            :target="buyAdditionalMinutesTarget"
+            :data-track-label="namespaceActualPlanName"
+            data-qa-selector="buy_ci_minutes"
+            data-track-action="click_buy_ci_minutes"
+            data-track-property="pipeline_quota_page"
+            category="primary"
+            variant="confirm"
+            class="js-buy-additional-minutes"
+            @click="trackBuyAdditionalMinutesClick"
+          >
+            {{ $options.LABEL_BUY_ADDITIONAL_MINUTES }}
+          </gl-button>
         </div>
+        <usage-overview
+          :minutes-title="monthlyUsageTitle"
+          :minutes-used="monthlyMinutesUsed"
+          minutes-used-qa-selector="plan_ci_minutes"
+          :minutes-used-percentage="usagePercentage(ciMinutesMonthlyMinutesUsedPercentage)"
+          :minutes-limit="ciMinutesMonthlyMinutesLimit"
+          :help-link-href="$options.CI_MINUTES_HELP_LINK"
+          :help-link-label="$options.CI_MINUTES_HELP_LINK_LABEL"
+          data-testid="monthly-usage-overview"
+        />
+        <usage-overview
+          v-if="shouldShowAdditionalMinutes"
+          class="gl-pt-5"
+          :minutes-title="$options.ADDITIONAL_MINUTES"
+          :minutes-used="purchasedMinutesUsed"
+          minutes-used-qa-selector="additional_ci_minutes"
+          :minutes-used-percentage="usagePercentage(ciMinutesPurchasedMinutesUsedPercentage)"
+          :minutes-limit="ciMinutesPurchasedMinutesLimit"
+          :help-link-href="$options.ADDITIONAL_MINUTES_HELP_LINK"
+          :help-link-label="$options.ADDITIONAL_MINUTES"
+          data-testid="purchased-usage-overview"
+        />
+      </section>
+      <minutes-usage-charts :ci-minutes-usage="ciMinutesUsages" />
+      <section class="gl-py-5">
         <project-list
           :projects="projects"
           :page-info="projectsPageInfo"
           @fetchMore="fetchMoreProjects"
         />
-      </div>
+      </section>
     </section>
   </div>
 </template>
