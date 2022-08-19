@@ -647,7 +647,7 @@ you can see the change without having to refresh the page.
 The following sections are updated in real time:
 
 - [Assignee](#assignee)
-- [Labels](../labels.md#real-time-changes-to-labels)
+- Labels, [if enabled](../labels.md#real-time-changes-to-labels)
 
 ## Assignee
 
