@@ -12,11 +12,11 @@ RSpec.describe GroupSaml::SamlGroupLinks::CreateService do
     let(:params) do
       {
         saml_group_name: "Test group",
-        access_level: "Guest"
+        access_level: ::Gitlab::Access::GUEST
       }
     end
 
-    let_it_be(:audit_event_message) { "SAML group links created. Group Name - Test group, Access Level - Guest" }
+    let_it_be(:audit_event_message) { "SAML group links created. Group Name - Test group, Access Level - 10" }
 
     context "when authorized user" do
       before do
@@ -55,7 +55,7 @@ RSpec.describe GroupSaml::SamlGroupLinks::CreateService do
           it "throws bad request error" do
             response = service.execute
             expect(response).not_to be_success
-            expect(response[:error]).to match /'invalid' is not a valid access_level/
+            expect(response[:error]).to match /Access level is invalid/
           end
         end
       end

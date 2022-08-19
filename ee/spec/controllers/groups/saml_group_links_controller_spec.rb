@@ -61,7 +61,7 @@ RSpec.describe Groups::SamlGroupLinksController do
 
       context 'with valid parameters' do
         let_it_be(:saml_group_name) { generate(:saml_group_name) }
-        let_it_be(:params) { route_params.merge(saml_group_link: { access_level: 'Reporter', saml_group_name: saml_group_name }) }
+        let_it_be(:params) { route_params.merge(saml_group_link: { access_level: ::Gitlab::Access::REPORTER, saml_group_name: saml_group_name }) }
 
         it 'responds with success' do
           expect(::Gitlab::Audit::Auditor)
@@ -71,14 +71,14 @@ RSpec.describe Groups::SamlGroupLinksController do
                   author: user,
                   scope: group,
                   target: group,
-                  message: "SAML group links created. Group Name - #{saml_group_name}, Access Level - Reporter" })
+                  message: "SAML group links created. Group Name - #{saml_group_name}, Access Level - 20" })
             ).and_call_original
 
           call_action
 
           expect(response).to have_gitlab_http_status(:found)
           expect(flash[:notice]).to include('New SAML group link saved.')
-          expect(AuditEvent.last.details[:custom_message]).to eq("SAML group links created. Group Name - #{saml_group_name}, Access Level - Reporter")
+          expect(AuditEvent.last.details[:custom_message]).to eq("SAML group links created. Group Name - #{saml_group_name}, Access Level - 20")
         end
 
         it 'creates the group link' do
@@ -87,7 +87,7 @@ RSpec.describe Groups::SamlGroupLinksController do
       end
 
       context 'with missing parameters' do
-        let_it_be(:params) { route_params.merge(saml_group_link: { access_level: 'Maintainer' }) }
+        let_it_be(:params) { route_params.merge(saml_group_link: { access_level: ::Gitlab::Access::MAINTAINER }) }
 
         it 'displays an error' do
           call_action

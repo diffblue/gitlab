@@ -12,9 +12,9 @@ RSpec.describe Groups::SyncService do
 
     let_it_be(:group_links) do
       [
-        create(:saml_group_link, group: top_level_group, access_level: 'Guest'),
-        create(:saml_group_link, group: group1, access_level: 'Reporter'),
-        create(:saml_group_link, group: group1, access_level: 'Developer')
+        create(:saml_group_link, group: top_level_group, access_level: Gitlab::Access::GUEST),
+        create(:saml_group_link, group: group1, access_level: Gitlab::Access::REPORTER),
+        create(:saml_group_link, group: group1, access_level: Gitlab::Access::DEVELOPER)
       ]
     end
 

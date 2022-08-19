@@ -4,8 +4,6 @@ class SamlGroupLink < ApplicationRecord
   include StripAttribute
   belongs_to :group
 
-  enum access_level: ::Gitlab::Access.options_with_minimal_access
-
   strip_attributes! :saml_group_name
 
   validates :group, :access_level, presence: true
@@ -19,7 +17,7 @@ class SamlGroupLink < ApplicationRecord
 
   def access_level_allowed
     return unless group
-    return if access_level.in?(group.access_level_roles.keys)
+    return if access_level.in?(group.access_level_roles.values)
 
     errors.add(:access_level, "is invalid")
   end

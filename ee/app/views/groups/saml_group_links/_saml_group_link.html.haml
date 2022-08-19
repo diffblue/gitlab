@@ -7,5 +7,4 @@
   %strong= s_('GroupSAML|SAML Group Name: %{saml_group_name}') % { saml_group_name: saml_group_link.saml_group_name }
 
   .light
-    = s_('GroupSAML|as %{access_level}') % { access_level: saml_group_link.access_level }
-
+    = s_('GroupSAML|as %{access_level}') % { access_level: Gitlab::Access.human_access(saml_group_link.access_level) }
