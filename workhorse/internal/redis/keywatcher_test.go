@@ -39,15 +39,15 @@ func createUnsubscribeMessage(key string) []interface{} {
 }
 
 func countSubscribers(key string) int {
-	keyWatchMutex.Lock()
-	defer keyWatchMutex.Unlock()
-	return len(subscribers[key])
+	globalKeyWatcher.mu.Lock()
+	defer globalKeyWatcher.mu.Unlock()
+	return len(globalKeyWatcher.subscribers[key])
 }
 
 func deleteSubscribers(key string) {
-	keyWatchMutex.Lock()
-	defer keyWatchMutex.Unlock()
-	delete(subscribers, key)
+	globalKeyWatcher.mu.Lock()
+	defer globalKeyWatcher.mu.Unlock()
+	delete(globalKeyWatcher.subscribers, key)
 }
 
 // Forces a run of the `Process` loop against a mock PubSubConn.
@@ -64,7 +64,7 @@ func processMessages(numWatchers int, value string) {
 		time.Sleep(time.Millisecond)
 	}
 
-	receivePubSubStream(psc)
+	globalKeyWatcher.receivePubSubStream(psc)
 }
 
 type keyChangeTestCase struct {
@@ -257,7 +257,7 @@ func TestKeyChangesParallel(t *testing.T) {
 func TestShutdown(t *testing.T) {
 	conn, td := setupMockPool()
 	defer td()
-	defer func() { shutdown = make(chan struct{}) }()
+	defer func() { globalKeyWatcher.shutdown = make(chan struct{}) }()
 
 	conn.Command("GET", runnerKey).Expect("something")
 
