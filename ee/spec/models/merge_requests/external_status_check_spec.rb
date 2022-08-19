@@ -80,7 +80,7 @@ RSpec.describe MergeRequests::ExternalStatusCheck, type: :model do
       let_it_be(:check) { create(:external_status_check, project: merge_request.project, protected_branches: [create(:protected_branch, name: 'new-branch', project: merge_request.project)]) }
 
       it 'does not enqueue the status check' do
-        expect(ApprovalRules::ExternalApprovalRulePayloadWorker).to receive(:perform_async).never
+        expect(ApprovalRules::ExternalApprovalRulePayloadWorker).not_to receive(:perform_async)
 
         subject
       end
