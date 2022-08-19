@@ -12,7 +12,7 @@ RSpec.describe 'Rack Attack global throttles' do
     before do
       settings_to_set = {
         throttle_unauthenticated_requests_per_period: requests_per_period,
-        throttle_unauthenticated_enabled:  true
+        throttle_unauthenticated_enabled: true
       }
       stub_application_setting(settings_to_set)
     end

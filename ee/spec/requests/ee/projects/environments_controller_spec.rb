@@ -16,10 +16,10 @@ RSpec.describe Projects::EnvironmentsController do
 
       create(:protected_environment, project: project, name: environment.name) do |protected_environment|
         create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
-        create(:protected_environment_approval_rule, user: create(:user),
-               protected_environment: protected_environment)
-        create(:protected_environment_approval_rule, group: create(:group),
-               protected_environment: protected_environment)
+        create(:protected_environment_approval_rule,
+               user: create(:user), protected_environment: protected_environment)
+        create(:protected_environment_approval_rule,
+               group: create(:group), protected_environment: protected_environment)
       end
     end
 
@@ -40,7 +40,7 @@ RSpec.describe Projects::EnvironmentsController do
     pipeline = create(:ci_pipeline, project: environment.project)
     build = create(:ci_build, environment: environment.name, pipeline: pipeline, user: deployer)
     create(:deployment, :blocked, environment: environment, deployable: build, user: deployer,
-           project: project, sha: commit.sha) do |deployment|
+                                  project: project, sha: commit.sha) do |deployment|
       create_list(:deployment_approval, 2, deployment: deployment)
     end
   end

@@ -27,8 +27,8 @@ RSpec.describe API::Deployments do
     end
 
     let!(:approval_rule) do
-      create(:protected_environment_approval_rule, group: security_group,
-        protected_environment: group_protected_environment, required_approvals: 2)
+      create(:protected_environment_approval_rule,
+             group: security_group, protected_environment: group_protected_environment, required_approvals: 2)
     end
   end
 
@@ -51,8 +51,8 @@ RSpec.describe API::Deployments do
       include_context 'group-level protected environments with multiple approval rules'
 
       let!(:deployment_approval) do
-        create(:deployment_approval, :approved, user: security_user, approval_rule: approval_rule,
-          deployment: deployment)
+        create(:deployment_approval, :approved,
+               user: security_user, approval_rule: approval_rule, deployment: deployment)
       end
 
       it 'has approval summary' do

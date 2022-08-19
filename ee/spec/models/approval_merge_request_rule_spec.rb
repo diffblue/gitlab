@@ -173,9 +173,9 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
     it 'finds an existing rule using rule_type column' do
       regular_rule_type_rule = create(
         :code_owner_rule,
-        name:          entry.pattern,
+        name: entry.pattern,
         merge_request: merge_request,
-        rule_type:     described_class.rule_types[:regular]
+        rule_type: described_class.rule_types[:regular]
       )
 
       expect(rule).not_to eq(regular_rule_type_rule)

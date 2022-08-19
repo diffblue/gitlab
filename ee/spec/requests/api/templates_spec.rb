@@ -5,9 +5,9 @@ require 'spec_helper'
 RSpec.describe API::Templates do
   files = {
     'Dockerfile/custom.dockerfile' => 'Custom dockerfiles',
-    'gitignore/custom.gitignore'   => 'Custom gitignores',
-    'gitlab-ci/custom.yml'         => 'Custom gitlab_ci_ymls',
-    'LICENSE/custom.txt'           => 'Custom licenses'
+    'gitignore/custom.gitignore' => 'Custom gitignores',
+    'gitlab-ci/custom.yml' => 'Custom gitlab_ci_ymls',
+    'LICENSE/custom.txt' => 'Custom licenses'
   }
 
   let_it_be(:project) { create(:project, :custom_repo, files: files) }

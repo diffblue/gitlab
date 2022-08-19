@@ -17,8 +17,8 @@ RSpec.describe AppSec::Dast::Profiles::CreateAssociationsService do
 
   let!(:dast_build) do
     create(:ci_build, project: project, user: user, pipeline: pipeline, stage_id: stage.id,
-                             options: { dast_configuration: { site_profile: dast_site_profile_name,
-                                                              scanner_profile: dast_scanner_profile_name } })
+                      options: { dast_configuration: { site_profile: dast_site_profile_name,
+                                                       scanner_profile: dast_scanner_profile_name } })
   end
 
   let(:params) { { builds: [dast_build] } }
@@ -71,8 +71,8 @@ RSpec.describe AppSec::Dast::Profiles::CreateAssociationsService do
 
         let!(:dast_build_2) do
           create(:ci_build, project: project, user: user, pipeline: pipeline, stage_id: stage.id,
-                 options: { dast_configuration: { site_profile: dast_site_profile_2.name,
-                                                  scanner_profile: dast_scanner_profile_2.name } })
+                            options: { dast_configuration: { site_profile: dast_site_profile_2.name,
+                                                             scanner_profile: dast_scanner_profile_2.name } })
         end
 
         let(:builds) { [dast_build, dast_build_2] }

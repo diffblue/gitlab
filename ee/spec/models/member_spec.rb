@@ -161,7 +161,7 @@ RSpec.describe Member, type: :model do
   context 'check if user cap has been reached', :saas do
     let_it_be(:group, refind: true) do
       create(:group_with_plan, plan: :ultimate_plan,
-             namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
+                               namespace_settings: create(:namespace_settings, new_user_signups_cap: 1))
     end
 
     let_it_be(:subgroup) { create(:group, parent: group) }

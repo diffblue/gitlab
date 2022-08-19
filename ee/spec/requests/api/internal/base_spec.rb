@@ -464,7 +464,7 @@ RSpec.describe API::Internal::Base do
       it 'returns an error message when the expiry date exceeds the max token lifetime' do
         post api('/internal/personal_access_token'),
              params: {
-               key_id:  key.id,
+               key_id: key.id,
                name: 'newtoken',
                scopes: %w(read_api read_repository),
                expires_at: (instance_level_max_personal_access_token_lifetime + 1).days.from_now.to_date.to_s
@@ -483,7 +483,7 @@ RSpec.describe API::Internal::Base do
 
         post api('/internal/personal_access_token'),
              params: {
-               key_id:  key.id,
+               key_id: key.id,
                name: 'newtoken',
                scopes: %w(read_api read_repository),
                expires_at: expires_at
