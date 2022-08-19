@@ -1,10 +1,10 @@
 - owners = Gitlab::CodeOwners.for_blob(@project, blob)
 - return if owners.empty?
 
-.well-segment.blob-auxiliary-viewer.file-owner-content.qa-file-owner-content
+.well-segment.blob-auxiliary-viewer.file-owner-content
   = sprite_icon('users', size: 18, css_class: 'icon')
   %strong
     = _("Code owners")
   = link_to sprite_icon('question-o'), help_page_path('user/project/code_owners'), title: 'About this feature', target: '_blank', rel: 'noopener noreferrer'
   &#58;
-  = users_sentence(owners, link_class: 'file-owner-link qa-link-file-owner')
+  = users_sentence(owners, link_class: 'file-owner-link')

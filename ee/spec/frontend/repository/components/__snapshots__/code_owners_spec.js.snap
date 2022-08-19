@@ -4,7 +4,7 @@ exports[`Code owners component matches the snapshot 1`] = `<!---->`;
 
 exports[`Code owners component matches the snapshot 2`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content qa-file-owner-content"
+  class="well-segment blob-auxiliary-viewer file-owner-content"
 >
   <gl-icon-stub
     data-testid="users-icon"
@@ -53,7 +53,7 @@ exports[`Code owners component matches the snapshot 2`] = `
 
 exports[`Code owners component matches the snapshot 3`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content qa-file-owner-content"
+  class="well-segment blob-auxiliary-viewer file-owner-content"
 >
   <gl-icon-stub
     data-testid="users-icon"
@@ -124,7 +124,7 @@ exports[`Code owners component matches the snapshot 3`] = `
 
 exports[`Code owners component matches the snapshot 4`] = `
 <div
-  class="well-segment blob-auxiliary-viewer file-owner-content qa-file-owner-content"
+  class="well-segment blob-auxiliary-viewer file-owner-content"
 >
   <gl-icon-stub
     data-testid="users-icon"

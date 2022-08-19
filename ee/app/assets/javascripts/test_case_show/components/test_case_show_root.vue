@@ -215,7 +215,7 @@ export default {
           :loading="testCaseSaveInProgress"
           category="primary"
           variant="confirm"
-          class="float-left qa-save-button"
+          class="float-left"
           @click.prevent="handleSaveTestCase(issuableMeta)"
           >{{ __('Save changes') }}</gl-button
         >

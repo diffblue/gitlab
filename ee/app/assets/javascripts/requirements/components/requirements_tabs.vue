@@ -109,7 +109,7 @@ export default {
           :title="$options.i18n.importRequirementsLabel"
           :aria-label="$options.i18n.importRequirementsLabel"
           category="secondary"
-          class="js-import-requirements qa-import-requirements-button"
+          class="js-import-requirements"
           :disabled="showCreateForm"
           icon="import"
           @click="$emit('click-import-requirements')"
@@ -119,7 +119,7 @@ export default {
       <gl-button
         category="primary"
         variant="confirm"
-        class="js-new-requirement qa-new-requirement-button"
+        class="js-new-requirement"
         :disabled="showCreateForm"
         @click="$emit('click-new-requirement')"
         >{{ __('New requirement') }}</gl-button

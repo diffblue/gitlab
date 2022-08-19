@@ -99,7 +99,7 @@ export default {
 <template>
   <div
     v-if="hasCodeOwners && !isFetching"
-    class="well-segment blob-auxiliary-viewer file-owner-content qa-file-owner-content"
+    class="well-segment blob-auxiliary-viewer file-owner-content"
   >
     <gl-icon name="users" data-testid="users-icon" />
     <strong>{{ $options.i18n.title }}</strong>
