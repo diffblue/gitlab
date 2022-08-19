@@ -56,8 +56,8 @@ module API
       params do
         requires :target_group_id, type: String, desc: 'The ID of the target group'
         requires :target_epic_iid, type: Integer, desc: 'The IID of the target epic'
-        optional :link_type, type: String, values: ::Epic::RelatedEpicLink.link_types.keys,
-          desc: 'The type of the relation'
+        optional :link_type,
+          type: String, values: ::Epic::RelatedEpicLink.link_types.keys, desc: 'The type of the relation'
       end
       post ':id/epics/:epic_iid/related_epics' do
         source_epic = find_permissioned_epic!(params[:epic_iid])

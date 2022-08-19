@@ -21,11 +21,9 @@ module API
           success EE::API::Entities::MergeTrain
         end
         params do
-          optional :scope, type: String, desc: 'The scope of merge trains',
-                                         values: %w[active complete]
-          optional :sort, type: String, desc: 'Sort by asc (ascending) or desc (descending)',
-                                        values: %w[asc desc],
-                                        default: 'desc'
+          optional :scope, type: String, desc: 'The scope of merge trains', values: %w[active complete]
+          optional :sort,
+            type: String, desc: 'Sort by asc (ascending) or desc (descending)', values: %w[asc desc], default: 'desc'
           use :pagination
         end
         get do

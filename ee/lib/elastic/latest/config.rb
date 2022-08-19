@@ -108,7 +108,8 @@ module Elastic
         # ES6-compatible way of having a parent, this is shared with all
         # Please note that if we add a parent to `project` we'll have to use that "grand-parent" as the routing value
         # for all children of project - therefore it is not advised.
-        indexes :join_field, type: :join,
+        indexes :join_field,
+          type: :join,
           relations: {
             project: %i(
               issue
@@ -125,10 +126,8 @@ module Elastic
 
         indexes :iid, type: :integer
 
-        indexes :title, type: :text,
-          index_options: 'positions'
-        indexes :description, type: :text,
-          index_options: 'positions'
+        indexes :title, type: :text, index_options: 'positions'
+        indexes :description, type: :text, index_options: 'positions'
         indexes :state, type: :keyword
         indexes :project_id, type: :integer
         indexes :author_id, type: :integer
@@ -154,8 +153,7 @@ module Elastic
         indexes :target_project_id, type: :integer
 
         ### NOTES
-        indexes :note, type: :text,
-          index_options: 'positions'
+        indexes :note, type: :text, index_options: 'positions'
 
         indexes :issue do
           indexes :assignee_id, type: :integer
@@ -169,15 +167,10 @@ module Elastic
         indexes :noteable_id, type: :keyword
 
         ### PROJECTS
-        indexes :name, type: :text,
-          index_options: 'positions'
-        indexes :path, type: :text,
-          index_options: 'positions'
-        indexes :name_with_namespace, type: :text,
-          index_options: 'positions',
-          analyzer: :my_ngram_analyzer
-        indexes :path_with_namespace, type: :text,
-          index_options: 'positions'
+        indexes :name, type: :text, index_options: 'positions'
+        indexes :path, type: :text, index_options: 'positions'
+        indexes :name_with_namespace, type: :text, index_options: 'positions', analyzer: :my_ngram_analyzer
+        indexes :path_with_namespace, type: :text, index_options: 'positions'
         indexes :namespace_id, type: :integer
         indexes :archived, type: :boolean
 
@@ -194,39 +187,25 @@ module Elastic
         indexes :blob do
           indexes :type, type: :keyword
 
-          indexes :id, type: :keyword,
-            index_options: 'docs',
-            normalizer: :sha_normalizer
+          indexes :id, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
           indexes :rid, type: :keyword
-          indexes :oid, type: :keyword,
-            index_options: 'docs',
-            normalizer: :sha_normalizer
-          indexes :commit_sha, type: :keyword,
-            index_options: 'docs',
-            normalizer: :sha_normalizer
-          indexes :path, type: :text,
-            analyzer: :path_analyzer
-          indexes :file_name, type: :text,
-            analyzer: :code_analyzer,
-            search_analyzer: :code_search_analyzer,
+          indexes :oid, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
+          indexes :commit_sha, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
+          indexes :path, type: :text, analyzer: :path_analyzer
+          indexes :file_name,
+            type: :text, analyzer: :code_analyzer, search_analyzer: :code_search_analyzer,
             fields: { reverse: { type: :text, analyzer: :whitespace_reverse } }
-          indexes :content, type: :text,
-            index_options: 'positions',
-            analyzer: :code_analyzer,
-            search_analyzer: :code_search_analyzer
+          indexes :content,
+            type: :text, index_options: 'positions', analyzer: :code_analyzer, search_analyzer: :code_search_analyzer
           indexes :language, type: :keyword
         end
 
         indexes :commit do
           indexes :type, type: :keyword
 
-          indexes :id, type: :keyword,
-            index_options: 'docs',
-            normalizer: :sha_normalizer
+          indexes :id, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
           indexes :rid, type: :keyword
-          indexes :sha, type: :keyword,
-            index_options: 'docs',
-            normalizer: :sha_normalizer
+          indexes :sha, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
 
           indexes :author do
             indexes :name, type: :text, index_options: 'positions'

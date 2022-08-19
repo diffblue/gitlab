@@ -12,14 +12,15 @@ module EE
         return if model.blank?
 
         if should_audit? :allow_merge_on_skipped_pipeline
-          audit_changes(:allow_merge_on_skipped_pipeline, as: 'allow_merge_on_skipped_pipeline', entity: @project,
-                        model: model, event_type: 'allow_merge_on_skipped_pipeline_updated')
+          audit_changes(:allow_merge_on_skipped_pipeline,
+            as: 'allow_merge_on_skipped_pipeline', entity: @project,
+            model: model, event_type: 'allow_merge_on_skipped_pipeline_updated')
         end
 
         audit_squash_option
         audit_changes(:merge_commit_template, as: 'merge_commit_template', entity: @project, model: model)
         audit_changes(:squash_commit_template, as: 'squash_commit_template', entity: @project, model: model,
-                      event_type: 'squash_commit_template_updated')
+                                               event_type: 'squash_commit_template_updated')
       end
 
       def attributes_from_auditable_model(column)

@@ -21,7 +21,7 @@ module EE
           definition = YAML.load_file(Rails.root.join(*events_path, "#{basename}.yml"))
 
           self.dispatch_from_definition(definition, label: label, property: property, value: value, context: context,
-                                          project: project, user: user, namespace: namespace, **extra)
+                                                    project: project, user: user, namespace: namespace, **extra)
         end
       end
     end

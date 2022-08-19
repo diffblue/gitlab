@@ -185,10 +185,10 @@ module EE
             else
               issue = ::Issues::UpdateService
                 .new(project: quick_action_target.project,
-                      current_user: current_user,
-                      params: {
-                        escalation_status: { status: :triggered, policy: policy }
-                      }
+                     current_user: current_user,
+                     params: {
+                       escalation_status: { status: :triggered, policy: policy }
+                     }
                     ).execute(quick_action_target)
 
               @execution_message[:page] =
