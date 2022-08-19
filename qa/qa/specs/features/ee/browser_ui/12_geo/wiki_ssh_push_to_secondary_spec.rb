@@ -42,10 +42,6 @@ module QA
         QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-          EE::Page::Main::Banner.perform do |banner|
-            expect(banner).to have_secondary_read_only_banner
-          end
-
           # Ensure the SSH key has replicated
           expect(key).to be_replicated
 
@@ -78,11 +74,6 @@ module QA
             push.file_content = push_content
             push.commit_message = 'Update Home.md'
           end
-
-          # Remove ssh:// from the URI to ensure we can match accurately
-          # as ssh:// can appear depending on how GitLab is configured.
-          ssh_uri = wiki.repository_ssh_location.git_uri.to_s.gsub(%r{ssh://}, '')
-          expect(push.output).to match(%r{This request to a Geo secondary node will be forwarded to the.*Geo primary node:.*#{ssh_uri}}m)
 
           # Validate git push worked and new content is visible
           push.visit!
