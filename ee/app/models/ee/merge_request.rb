@@ -218,7 +218,7 @@ module EE
     end
 
     def has_dependency_scanning_reports?
-      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.for_report(:dependency_list))
+      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.of_report_type(:dependency_list))
     end
 
     def compare_dependency_scanning_reports(current_user)
@@ -228,11 +228,11 @@ module EE
     end
 
     def has_license_scanning_reports?
-      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.for_report(:license_scanning))
+      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.of_report_type(:license_scanning))
     end
 
     def has_container_scanning_reports?
-      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.for_report(:container_scanning))
+      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.of_report_type(:container_scanning))
     end
 
     def compare_container_scanning_reports(current_user)
@@ -242,7 +242,7 @@ module EE
     end
 
     def has_dast_reports?
-      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.for_report(:dast))
+      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.of_report_type(:dast))
     end
 
     def compare_dast_reports(current_user)
@@ -269,7 +269,7 @@ module EE
     end
 
     def has_metrics_reports?
-      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.for_report(:metrics))
+      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.of_report_type(:metrics))
     end
 
     def compare_metrics_reports
@@ -279,7 +279,7 @@ module EE
     end
 
     def has_coverage_fuzzing_reports?
-      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.for_report(:coverage_fuzzing))
+      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.of_report_type(:coverage_fuzzing))
     end
 
     def compare_coverage_fuzzing_reports(current_user)
@@ -289,7 +289,7 @@ module EE
     end
 
     def has_api_fuzzing_reports?
-      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.for_report(:api_fuzzing))
+      !!actual_head_pipeline&.has_reports?(::Ci::JobArtifact.of_report_type(:api_fuzzing))
     end
 
     def compare_api_fuzzing_reports(current_user)

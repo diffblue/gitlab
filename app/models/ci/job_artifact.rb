@@ -239,7 +239,7 @@ module Ci
       end
     end
 
-    def self.for_report(report_type)
+    def self.of_report_type(report_type)
       file_types = file_types_for_report(report_type)
 
       with_file_types(file_types)

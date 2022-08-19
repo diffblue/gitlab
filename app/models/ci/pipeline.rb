@@ -1052,7 +1052,7 @@ module Ci
     end
 
     def latest_test_report_builds
-      latest_report_builds(Ci::JobArtifact.for_report(:test)).preload(:project, :metadata)
+      latest_report_builds(Ci::JobArtifact.of_report_type(:test)).preload(:project, :metadata)
     end
 
     def latest_report_builds_in_self_and_descendants(reports_scope = ::Ci::JobArtifact.all_reports)
@@ -1084,7 +1084,7 @@ module Ci
     end
 
     def can_generate_codequality_reports?
-      has_reports?(Ci::JobArtifact.for_report(:codequality))
+      has_reports?(Ci::JobArtifact.of_report_type(:codequality))
     end
 
     def test_report_summary
@@ -1103,7 +1103,7 @@ module Ci
 
     def accessibility_reports
       Gitlab::Ci::Reports::AccessibilityReports.new.tap do |accessibility_reports|
-        latest_report_builds(Ci::JobArtifact.for_report(:accessibility)).each do |build|
+        latest_report_builds(Ci::JobArtifact.of_report_type(:accessibility)).each do |build|
           build.collect_accessibility_reports!(accessibility_reports)
         end
       end
@@ -1111,7 +1111,7 @@ module Ci
 
     def codequality_reports
       Gitlab::Ci::Reports::CodequalityReports.new.tap do |codequality_reports|
-        latest_report_builds(Ci::JobArtifact.for_report(:codequality)).each do |build|
+        latest_report_builds(Ci::JobArtifact.of_report_type(:codequality)).each do |build|
           build.collect_codequality_reports!(codequality_reports)
         end
       end
@@ -1119,7 +1119,7 @@ module Ci
 
     def terraform_reports
       ::Gitlab::Ci::Reports::TerraformReports.new.tap do |terraform_reports|
-        latest_report_builds(::Ci::JobArtifact.for_report(:terraform)).each do |build|
+        latest_report_builds(::Ci::JobArtifact.of_report_type(:terraform)).each do |build|
           build.collect_terraform_reports!(terraform_reports)
         end
       end
@@ -1307,7 +1307,7 @@ module Ci
 
     def has_test_reports?
       strong_memoize(:has_test_reports) do
-        has_reports?(::Ci::JobArtifact.for_report(:test))
+        has_reports?(::Ci::JobArtifact.of_report_type(:test))
       end
     end
 

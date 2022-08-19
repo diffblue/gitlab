@@ -703,7 +703,7 @@ module Ci
     end
 
     def has_test_reports?
-      job_artifacts.for_report(:test).exists?
+      job_artifacts.of_report_type(:test).exists?
     end
 
     def has_old_trace?

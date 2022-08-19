@@ -9,7 +9,7 @@ module API
 
     helpers do
       def dependencies_by(params)
-        pipeline = ::Security::ReportFetchService.new(user_project, ::Ci::JobArtifact.for_report(:dependency_list)).pipeline
+        pipeline = ::Security::ReportFetchService.new(user_project, ::Ci::JobArtifact.of_report_type(:dependency_list)).pipeline
 
         return [] unless pipeline
 

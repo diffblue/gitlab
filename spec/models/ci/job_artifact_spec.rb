@@ -48,8 +48,8 @@ RSpec.describe Ci::JobArtifact do
     end
   end
 
-  describe '.for_report' do
-    subject { described_class.for_report(report_type) }
+  describe '.of_report_type' do
+    subject { described_class.of_report_type(report_type) }
 
     describe 'test_reports' do
       let(:report_type) { :test }
