@@ -5,5 +5,5 @@
 .js-corpus-management{ data: {project_full_path: @project.full_path,
             empty_state_svg_path: image_path('illustrations/no_commits.svg'),
             can_upload_corpus: can?(current_user, :create_package, @project).to_s,
-            can_read_corpus: can?(current_user, :read_package, @project).to_s,
+            can_read_corpus: can?(current_user, :read_package, @project&.packages_policy_subject).to_s,
             can_destroy_corpus: can?(current_user, :destroy_package, @project).to_s } }
