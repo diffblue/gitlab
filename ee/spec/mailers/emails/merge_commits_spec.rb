@@ -20,8 +20,15 @@ RSpec.describe Emails::MergeCommits do
     let(:frozen_time) { Time.current }
     let(:filename) { "#{group.id}-merge-commits-#{frozen_time.to_i}.csv" }
     let(:csv_data) { MergeCommits::ExportCsvService.new(current_user, group).csv_data.payload }
+    let(:group_url) { Gitlab::Routing.url_helpers.group_url(group) }
     let(:expected_text) do
-      "Your Chain of Custody CSV export for the group #{group.name} has been added to this email as an attachment."
+      "Your Chain of Custody CSV export for the group %{group_name} has been added to this email as an attachment."
+    end
+
+    let(:expected_plain_text) { format(expected_text, group_name: group.name) }
+    let(:expected_html_text) do
+      group_name_with_link = %r{<a .*?href="#{group_url}".*?>#{group.name}</a>}
+      Regexp.new(format(expected_text, group_name: group_name_with_link))
     end
 
     subject do
@@ -32,7 +39,7 @@ RSpec.describe Emails::MergeCommits do
 
     it { expect(subject.subject).to eq("#{group.name} | Exported Chain of Custody Report") }
     it { expect(subject.to).to contain_exactly(current_user.notification_email_for(project.group)) }
-    it { expect(subject.text_part).to have_content(expected_text) }
-    it { expect(subject.html_part).to have_content("Your Chain of Custody CSV export for the group") }
+    it { expect(subject.text_part.to_s).to match(expected_plain_text) }
+    it { expect(subject.html_part.to_s).to match(expected_html_text) }
   end
 end
