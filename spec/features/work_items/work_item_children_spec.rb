@@ -17,12 +17,12 @@ RSpec.describe 'Work item children', :js do
       stub_feature_flags(work_items: true)
       stub_feature_flags(work_items_hierarchy: true)
 
-      visit_issue(project, issue)
+      visit project_issue_path(project, issue)
 
       wait_for_requests
     end
 
-    it 'when issue does not have work item children' do
+    it 'are not displayed when issue does not have work item children', :aggregate_failures do
       page.within('[data-testid="work-item-links"]') do
         expect(find('[data-testid="links-empty"]')).to have_content(_('No child items are currently assigned.'))
         expect(page).not_to have_selector('[data-testid="add-links-form"]')
@@ -30,7 +30,7 @@ RSpec.describe 'Work item children', :js do
       end
     end
 
-    it 'toggles widget body' do
+    it 'toggles widget body', :aggregate_failures do
       page.within('[data-testid="work-item-links"]') do
         expect(page).to have_selector('[data-testid="links-body"]')
 
@@ -44,7 +44,7 @@ RSpec.describe 'Work item children', :js do
       end
     end
 
-    it 'toggles form' do
+    it 'toggles form', :aggregate_failures do
       page.within('[data-testid="work-item-links"]') do
         expect(page).not_to have_selector('[data-testid="add-links-form"]')
 
@@ -58,7 +58,7 @@ RSpec.describe 'Work item children', :js do
       end
     end
 
-    it 'adding a child task' do
+    it 'addss a child task', :aggregate_failures do
       page.within('[data-testid="work-item-links"]') do
         click_button 'Add a task'
 
@@ -75,7 +75,7 @@ RSpec.describe 'Work item children', :js do
       end
     end
 
-    it 'removing a child task and undoing' do
+    it 'removes a child task and undoing', :aggregate_failures do
       page.within('[data-testid="work-item-links"]') do
         click_button 'Add a task'
         fill_in 'Add a title', with: 'Task 1'
@@ -106,9 +106,5 @@ RSpec.describe 'Work item children', :js do
         expect(find('[data-testid="children-count"]')).to have_content('1')
       end
     end
-  end
-
-  def visit_issue(project, issue)
-    visit project_issue_path(project, issue)
   end
 end
