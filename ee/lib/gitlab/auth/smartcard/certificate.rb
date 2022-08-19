@@ -24,15 +24,15 @@ module Gitlab
 
         def create_user
           user_params = {
-            name:                       common_name,
-            username:                   username,
-            email:                      email,
-            password:                   password,
-            password_confirmation:      password,
+            name: common_name,
+            username: username,
+            email: email,
+            password: password,
+            password_confirmation: password,
             password_automatically_set: true,
-            certificate_subject:        subject,
-            certificate_issuer:         issuer,
-            skip_confirmation:          true
+            certificate_subject: subject,
+            certificate_issuer: issuer,
+            skip_confirmation: true
           }
 
           Users::AuthorizedCreateService.new(nil, user_params).execute

@@ -43,10 +43,10 @@ module Gitlab
 
         repository.__elasticsearch__.elastic_writing_targets.each do |target|
           logger.debug(message: "indexing_commit_range",
-                               project_id: project.id,
-                               from_sha: from_sha,
-                               to_sha: commit.sha,
-                               index_wiki: index_wiki?)
+                       project_id: project.id,
+                       from_sha: from_sha,
+                       to_sha: commit.sha,
+                       index_wiki: index_wiki?)
 
           # This might happen when default branch has been reset or rebased.
           base_sha = if purge_unreachable_commits_from_index?(commit.sha)
@@ -119,14 +119,14 @@ module Gitlab
         # We accept any form of settings, including string and array
         # This is why JSON is needed
         vars = {
-          'RAILS_ENV'               => Rails.env,
+          'RAILS_ENV' => Rails.env,
           'ELASTIC_CONNECTION_INFO' => elasticsearch_config(target),
-          'GITALY_CONNECTION_INFO'  => gitaly_config,
-          'FROM_SHA'                => from_sha,
-          'TO_SHA'                  => to_sha,
-          'CORRELATION_ID'          => Labkit::Correlation::CorrelationId.current_id,
-          'SSL_CERT_FILE'           => Gitlab::X509::Certificate.default_cert_file,
-          'SSL_CERT_DIR'            => Gitlab::X509::Certificate.default_cert_dir
+          'GITALY_CONNECTION_INFO' => gitaly_config,
+          'FROM_SHA' => from_sha,
+          'TO_SHA' => to_sha,
+          'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id,
+          'SSL_CERT_FILE' => Gitlab::X509::Certificate.default_cert_file,
+          'SSL_CERT_DIR' => Gitlab::X509::Certificate.default_cert_dir
         }
 
         # Set AWS environment variables for IAM role authentication if present

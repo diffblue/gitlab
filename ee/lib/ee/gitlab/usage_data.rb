@@ -117,9 +117,9 @@ module EE
           usage_data = super
 
           usage_data[:advanced_search] = {
-              distribution:   add_metric("AdvancedSearch::DistributionMetric"),
-              version:        add_metric("AdvancedSearch::VersionMetric"),
-              build_type:     add_metric("AdvancedSearch::BuildTypeMetric"),
+              distribution: add_metric("AdvancedSearch::DistributionMetric"),
+              version: add_metric("AdvancedSearch::VersionMetric"),
+              build_type: add_metric("AdvancedSearch::BuildTypeMetric"),
               lucene_version: add_metric("AdvancedSearch::LuceneVersionMetric")
           }
 

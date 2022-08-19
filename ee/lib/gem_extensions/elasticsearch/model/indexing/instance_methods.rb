@@ -10,15 +10,15 @@ module GemExtensions
 
             client.index(
               { index: index_name,
-                id:    self.es_id,
-                body:  document }.merge(options)
+                id: self.es_id,
+                body: document }.merge(options)
             )
           end
 
           def delete_document(options = {})
             client.delete(
               { index: index_name,
-                id:    self.es_id }.merge(options)
+                id: self.es_id }.merge(options)
             )
           end
 
@@ -34,8 +34,8 @@ module GemExtensions
 
               client.update(
                 { index: index_name,
-                  id:    self.es_id, # Changed
-                  body:  { doc: attributes } }.merge(options)
+                  id: self.es_id, # Changed
+                  body: { doc: attributes } }.merge(options)
               ) unless attributes.empty?
             else
               index_document(options)
@@ -46,8 +46,8 @@ module GemExtensions
           def update_document_attributes(attributes, options = {})
             client.update(
               { index: index_name,
-                id:    self.es_id,
-                body:  { doc: attributes } }.merge(options)
+                id: self.es_id,
+                body: { doc: attributes } }.merge(options)
             )
           end
         end
