@@ -44,7 +44,9 @@ RSpec.shared_examples 'is a Geo batcher' do
             described_class.new(destination_class, key: key, batch_size: destination_class.count).next_range!
           end
 
-          it { is_expected.to be_nil }
+          it 'starts from the beginning' do
+            expect(subject).to eq(1..destination_records.second.public_send(source_foreign_key))
+          end
         end
 
         context 'when the previous batch did not include the end of the table' do
@@ -155,7 +157,9 @@ RSpec.shared_examples 'is a Geo batcher' do
           described_class.new(destination_class, key: key, batch_size: batch_size).next_range!
         end
 
-        it { is_expected.to be_nil }
+        it 'starts from the beginning' do
+          expect(subject).to eq(1..orphaned_destination_foreign_key_id)
+        end
 
         context 'if cache is cleared' do
           it 'starts from the beginning' do
