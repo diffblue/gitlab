@@ -52,12 +52,12 @@ module Ci
         old_time = nil
 
         ::Gitlab::Redis::SharedState.with do |redis|
-          redis.multi do
+          redis.multi do |multi|
             key = last_build_update_key
 
-            old_time = redis.get(key)
-            redis.set(key, new_time)
-            redis.expire(key, TTL_RUNNING_BUILDS)
+            old_time = multi.get(key)
+            multi.set(key, new_time)
+            multi.expire(key, TTL_RUNNING_BUILDS)
           end
         end
 
