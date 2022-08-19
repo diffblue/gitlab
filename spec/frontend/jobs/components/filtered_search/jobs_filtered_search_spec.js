@@ -59,7 +59,7 @@ describe('Jobs filtered search', () => {
     expect(findFilteredSearch().props('value')).toEqual([]);
   });
 
-  it('filtered serach returns correct data shape when passed query string', () => {
+  it('filtered search returns correct data shape when passed query string', () => {
     const value = 'SUCCESS';
 
     createComponent({ queryString: { statuses: value } });

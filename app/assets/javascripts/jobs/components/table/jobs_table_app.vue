@@ -99,7 +99,7 @@ export default {
       return this.jobs.count;
     },
     validatedQueryString() {
-      const queryStringObject = queryToObject(window.location.search, { gatherArrays: true });
+      const queryStringObject = queryToObject(window.location.search);
 
       return validateQueryString(queryStringObject);
     },

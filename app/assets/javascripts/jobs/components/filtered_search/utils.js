@@ -9,7 +9,7 @@ export const validateQueryString = (queryStringObj) => {
 
   const filters = Object.keys(queryStringObj);
 
-  if (filters[0] === 'statuses') {
+  if (filters.includes('statuses')) {
     const found = jobStatusValues.find((status) => status === queryStringObj.statuses);
 
     if (found) {
