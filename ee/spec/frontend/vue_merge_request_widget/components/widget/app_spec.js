@@ -14,9 +14,9 @@ describe('MR Widget App', () => {
     });
   };
 
-  it('mounts the component', () => {
+  it('does not mount if widgets array is empty', () => {
     createComponent();
-    expect(wrapper.findByTestId('mr-widget-app').exists()).toBe(true);
+    expect(wrapper.findByTestId('mr-widget-app').exists()).toBe(false);
   });
 
   describe.each`
