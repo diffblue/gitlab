@@ -48,7 +48,7 @@ module QA
         end
 
         def pipeline_status(project_card)
-          project_card.find(element_selector_css(:status_badge)).text
+          project_card.find(element_selector_css(:status_badge_link)).text
         end
 
         private

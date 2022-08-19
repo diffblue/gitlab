@@ -13,11 +13,6 @@ module QA
             base.class_eval do
               include QA::Page::Component::ConfirmModal
 
-              view 'ee/app/views/projects/blob/_owners.html.haml' do
-                element :file_owner_content
-                element :link_file_owner
-              end
-
               # These two lock button elements are used for locking at directory level
               view 'ee/app/helpers/ee/lock_helper.rb' do
                 element :lock_button
