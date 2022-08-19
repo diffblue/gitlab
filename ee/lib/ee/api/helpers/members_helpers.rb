@@ -39,6 +39,7 @@ module EE
             end
           end
 
+          members = members.where.not(user_id: params[:skip_users]) if params[:skip_users].present?
           members = members.with_state(params[:state]) if params[:state].present?
 
           members
