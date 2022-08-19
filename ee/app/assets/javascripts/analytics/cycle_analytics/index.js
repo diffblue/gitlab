@@ -38,9 +38,6 @@ export default () => {
     selectedAssigneeList,
     selectedLabelList,
     pagination,
-    featureFlags: {
-      useVsaAggregatedTables: gon.features.useVsaAggregatedTables,
-    },
   });
 
   return new Vue({

@@ -48,20 +48,6 @@ RSpec.describe Projects::Analytics::CycleAnalytics::SummaryController do
         expect(json_response.last["value"].to_i).to eq(expected_cycle_time)
       end
 
-      context 'when the use_vsa_aggregated_tables FF is off' do
-        before do
-          stub_feature_flags(use_vsa_aggregated_tables: false)
-        end
-
-        it 'returns correct value' do
-          expected_cycle_time = (closed_at - first_mentioned_in_commit_at).to_i
-
-          subject
-
-          expect(json_response.last["value"].to_i).to eq(expected_cycle_time)
-        end
-      end
-
       context 'when analytics_disabled features are disabled' do
         it 'renders 404' do
           project.add_reporter(user)
