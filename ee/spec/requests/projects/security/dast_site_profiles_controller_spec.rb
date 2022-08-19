@@ -108,9 +108,9 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
 
           json_data = a_graphql_entity_for(
             dast_site_profile, :name, :excluded_urls, :referenced_in_security_policies,
-            targetUrl:  dast_site_profile.dast_site.url,
+            targetUrl: dast_site_profile.dast_site.url,
             targetType: dast_site_profile.target_type.upcase,
-            requestHeaders:  Dast::SiteProfilePresenter::REDACTED_REQUEST_HEADERS,
+            requestHeaders: Dast::SiteProfilePresenter::REDACTED_REQUEST_HEADERS,
             auth: a_graphql_entity_for(
               enabled: dast_site_profile.auth_enabled,
               url: dast_site_profile.auth_url,

@@ -15,11 +15,9 @@ RSpec.describe 'Epics through GroupQuery' do
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:label) { create(:label) }
   let_it_be_with_reload(:epic) do
-    create(:labeled_epic, group: group,
-      state: :closed, created_at: 3.days.ago,
-      updated_at: 2.days.ago, start_date: 2.days.ago,
-      end_date: 4.days.ago, labels: [label]
-    )
+    create(:labeled_epic,
+           group: group, state: :closed, created_at: 3.days.ago, updated_at: 2.days.ago,
+           start_date: 2.days.ago, end_date: 4.days.ago, labels: [label])
   end
 
   # similar to GET /groups/:id/epics

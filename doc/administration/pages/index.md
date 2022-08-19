@@ -368,7 +368,7 @@ world. Custom domains and TLS are supported.
 
    If you don't have IPv6, you can omit the IPv6 address.
 
-1. If you haven't named your certificate and key `example.io.crt` and `example.io.key` respectively,
+1. If you haven't named your certificate `example.io.crt` and your key `example.io.key`,
 then you need to also add the full paths as shown below:
 
    ```ruby

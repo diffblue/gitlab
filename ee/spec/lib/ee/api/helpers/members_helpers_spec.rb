@@ -45,4 +45,43 @@ RSpec.describe EE::API::Helpers::MembersHelpers do
       it { is_expected.to eq(false) }
     end
   end
+
+  describe '.retrieve_members' do
+    let(:klazz) do
+      klazz = Class.new do
+        def initialize(user)
+          @user = user
+        end
+
+        def current_user
+          @user
+        end
+
+        def can?(user, ability, members_source)
+          user == @user && ability == :read_group_saml_identity
+        end
+      end
+
+      klazz.prepend(API::Helpers::MembersHelpers)
+    end
+
+    subject(:retrieve_members) { klazz.new(user).retrieve_members(group, params: params) }
+
+    let_it_be(:group) { create(:group) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group_member) { create(:group_member, group: group, user: user) }
+    let_it_be(:params) { {} }
+
+    it 'includes user as member' do
+      expect(retrieve_members).to include(group_member)
+    end
+
+    context 'with skip_users present' do
+      let_it_be(:params) { { skip_users: [user.id] } }
+
+      it 'does not include user as member' do
+        expect(retrieve_members).not_to include(group_member)
+      end
+    end
+  end
 end

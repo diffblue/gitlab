@@ -12,13 +12,13 @@ RSpec.describe API::ProtectedEnvironments do
   let(:protected_environment_name) { 'production' }
 
   let!(:project_protected_environment) do
-    create(:protected_environment, :maintainers_can_deploy, :project_level, project: project,
-           name: protected_environment_name, required_approval_count: 1)
+    create(:protected_environment, :maintainers_can_deploy, :project_level,
+           project: project, name: protected_environment_name, required_approval_count: 1)
   end
 
   let!(:group_protected_environment) do
-    create(:protected_environment, :maintainers_can_deploy, :group_level, group: group,
-           name: protected_environment_name, required_approval_count: 2)
+    create(:protected_environment, :maintainers_can_deploy, :group_level,
+           group: group, name: protected_environment_name, required_approval_count: 2)
   end
 
   shared_examples 'requests for non-maintainers' do
@@ -84,7 +84,7 @@ RSpec.describe API::ProtectedEnvironments do
         before do
           create(:protected_environment_approval_rule, :maintainer_access,
             protected_environment: project_protected_environment, required_approvals: 3,
-                 group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
+            group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
         end
 
         it 'returns the protected environment' do

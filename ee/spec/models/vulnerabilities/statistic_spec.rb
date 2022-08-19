@@ -83,10 +83,10 @@ RSpec.describe Vulnerabilities::Statistic do
       let(:object) do
         {
           critical: target_critical + excluded_critical,
-          uknown:   target_unknown + excluded_unknown,
-          high:     target_high + excluded_high,
-          medium:   target_medium + excluded_medium,
-          low:      target_low + excluded_low
+          uknown: target_unknown + excluded_unknown,
+          high: target_high + excluded_high,
+          medium: target_medium + excluded_medium,
+          low: target_low + excluded_low
         }.stringify_keys
       end
 

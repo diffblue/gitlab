@@ -29,7 +29,7 @@ gem 'marginalia', '~> 1.10.0'
 gem 'declarative_policy', '~> 1.1.0'
 
 # Authentication libraries
-gem 'devise', '~> 4.7.2'
+gem 'devise', '~> 4.8.1'
 gem 'devise-pbkdf2-encryptable', '~> 0.0.0', path: 'vendor/gems/devise-pbkdf2-encryptable'
 gem 'bcrypt', '~> 3.1', '>= 3.1.14'
 gem 'doorkeeper', '~> 5.5.0.rc2'
@@ -233,7 +233,7 @@ gem 'js_regex', '~> 3.7'
 gem 'device_detector'
 
 # Redis
-gem 'redis', '~> 4.4.0'
+gem 'redis', '~> 4.7.0'
 gem 'connection_pool', '~> 2.0'
 
 # Redis session store

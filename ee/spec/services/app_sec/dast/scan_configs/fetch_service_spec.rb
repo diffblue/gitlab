@@ -105,10 +105,9 @@ RSpec.describe AppSec::Dast::ScanConfigs::FetchService do
 
       let(:policy_management_project) do
         create(
-          :project, :custom_repo, namespace: namespace,
-          files: {
-            '.gitlab/security-policies/policy.yml' => policy_yaml
-          })
+          :project, :custom_repo,
+          namespace: namespace,
+          files: { '.gitlab/security-policies/policy.yml' => policy_yaml })
       end
 
       let(:policy_configuration) do
