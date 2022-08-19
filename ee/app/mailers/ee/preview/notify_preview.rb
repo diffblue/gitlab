@@ -58,6 +58,15 @@ module EE
         def new_epic_email
           ::Notify.new_epic_email(user.id, epic.id).message
         end
+
+        def merge_commits_csv_email
+          ::Notify.merge_commits_csv_email(
+            user,
+            project.group,
+            'one,two,three',
+            'filename.csv'
+          ).message
+        end
       end
 
       private
