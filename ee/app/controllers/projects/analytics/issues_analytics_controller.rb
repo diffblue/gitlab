@@ -2,11 +2,15 @@
 
 class Projects::Analytics::IssuesAnalyticsController < Projects::ApplicationController
   include IssuableCollections
-  include RedisTracking
+  include ProductAnalyticsTracking
 
   before_action :authorize_read_issue_analytics!
 
-  track_redis_hll_event :show, name: 'p_analytics_issues'
+  track_custom_event :show,
+    name: 'p_analytics_issues',
+    action: 'perform_analytics_usage_action',
+    label: 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly',
+    destinations: %i[redis_hll snowplow]
 
   feature_category :planning_analytics
   urgency :low
@@ -40,5 +44,13 @@ class Projects::Analytics::IssuesAnalyticsController < Projects::ApplicationCont
 
   def preload_for_collection
     nil
+  end
+
+  def tracking_namespace_source
+    project.namespace
+  end
+
+  def tracking_project_source
+    project
   end
 end
