@@ -626,6 +626,8 @@ export const mockChildEpicNode1 = {
     fullPath: 'gitlab-org',
     __typename: 'Group',
   },
+  color: null,
+  textColor: null,
 };
 
 export const mockEpicChildEpicsQueryResponse = {
@@ -642,6 +644,35 @@ export const mockEpicChildEpicsQueryResponse = {
             {
               node: {
                 ...mockChildEpicNode1,
+              },
+              __typename: 'EpicEdge',
+            },
+          ],
+          __typename: 'EpicConnection',
+        },
+        __typename: 'Epic',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
+export const mockEpicChildEpicsWithColorQueryResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/2',
+      name: 'Gitlab Org',
+      epic: {
+        id: 'gid://gitlab/Epic/1',
+        title: 'Error omnis quos consequatur',
+        hasChildren: true,
+        children: {
+          edges: [
+            {
+              node: {
+                ...mockChildEpicNode1,
+                color: '#1068bf',
+                textColor: '#ffffff',
               },
               __typename: 'EpicEdge',
             },

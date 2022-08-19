@@ -38,6 +38,7 @@ const fetchGroupEpics = (
   if (epicIid) {
     query = epicChildEpics;
     variables.iid = epicIid;
+    variables.withColor = Boolean(gon?.features?.epicColorHighlight);
   } else {
     query = gon?.features?.epicColorHighlight ? groupEpicsWithColor : groupEpics;
     variables = {
@@ -69,7 +70,7 @@ const fetchGroupEpics = (
     });
 };
 
-export const fetchChildrenEpics = (state, { parentItem }) => {
+const fetchChildrenEpics = (state, { parentItem }) => {
   const { iid, group } = parentItem;
   const { filterParams, epicsState, sortedBy } = state;
 
@@ -81,6 +82,7 @@ export const fetchChildrenEpics = (state, { parentItem }) => {
         fullPath: group?.fullPath,
         state: epicsState,
         sort: sortedBy,
+        withColor: Boolean(gon?.features?.epicColorHighlight),
         ...filterParams,
       },
     })
@@ -178,7 +180,7 @@ export const fetchEpics = ({ state, commit, dispatch }, { endCursor } = {}) => {
     commit(types.REQUEST_EPICS);
   }
 
-  fetchGroupEpics(state, { endCursor })
+  return fetchGroupEpics(state, { endCursor })
     .then(({ rawEpics, pageInfo }) => {
       dispatch('receiveEpicsSuccess', {
         rawEpics,

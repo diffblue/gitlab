@@ -30,7 +30,6 @@ import {
   mockMilestone,
   mockFormattedMilestone,
   mockPageInfo,
-  mockEpic,
 } from '../mock_data';
 
 jest.mock('~/flash');
@@ -45,6 +44,7 @@ describe('Roadmap Vuex Actions', () => {
   const timeframeStartDate = mockTimeframeMonths[0];
   const timeframeEndDate = mockTimeframeMonths[mockTimeframeMonths.length - 1];
   let state;
+  let originalGon;
 
   beforeEach(() => {
     state = {
@@ -58,6 +58,11 @@ describe('Roadmap Vuex Actions', () => {
       timeframeStartDate,
       timeframeEndDate,
     };
+    originalGon = window.gon;
+  });
+
+  afterEach(() => {
+    window.gon = originalGon;
   });
 
   describe('setInitialData', () => {
@@ -74,38 +79,6 @@ describe('Roadmap Vuex Actions', () => {
         [{ type: types.SET_INITIAL_DATA, payload: mockRoadmap }],
         [],
       );
-    });
-  });
-
-  describe('fetchChildrenEpics', () => {
-    it('should fetch children epics for provided epic iid along with other parameters', () => {
-      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-        Promise.resolve({
-          data: mockEpicChildEpicsQueryResponse.data,
-        }),
-      );
-
-      const mockState = {
-        fullPath: 'gitlab-org',
-        sortedBy: mockSortedBy,
-        epicsState: 'opened',
-      };
-
-      return actions
-        .fetchChildrenEpics(mockState, {
-          parentItem: mockEpic,
-        })
-        .then(() => {
-          expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
-            query: epicChildEpics,
-            variables: {
-              iid: mockEpic.iid,
-              fullPath: '/groups/gitlab-org/',
-              sort: mockState.sortedBy,
-              state: mockState.epicsState,
-            },
-          });
-        });
     });
   });
 
@@ -206,13 +179,45 @@ describe('Roadmap Vuex Actions', () => {
     });
 
     describe('success', () => {
-      it('should perform REQUEST_EPICS mutation dispatch receiveEpicsSuccess action when request is successful', () => {
+      beforeEach(() => {
         jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
           Promise.resolve({
             data: mockGroupEpicsQueryResponse.data,
           }),
         );
+      });
 
+      describe.each([true, false])(
+        'when the epicColorHighlight feature flag enabled is %s',
+        (withColorEnabled) => {
+          beforeEach(() => {
+            window.gon = { features: { epicColorHighlight: withColorEnabled } };
+          });
+
+          it('calls query', async () => {
+            state.epicIid = 7;
+            await actions.fetchEpics({ state, commit: jest.fn(), dispatch: jest.fn() });
+
+            expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
+              query: epicChildEpics,
+              variables: {
+                endCursor: undefined,
+                fullPath: '',
+                iid: state.epicIid,
+                sort: state.sortedBy,
+                state: state.epicsState,
+                timeframe: {
+                  start: '2018-01-01',
+                  end: '2018-12-31',
+                },
+                withColor: withColorEnabled,
+              },
+            });
+          });
+        },
+      );
+
+      it('should perform REQUEST_EPICS mutation dispatch receiveEpicsSuccess action when request is successful', () => {
         return testAction(
           actions.fetchEpics,
           {},
@@ -372,36 +377,64 @@ describe('Roadmap Vuex Actions', () => {
       );
     });
 
-    it('should dispatch `receiveChildrenSuccess` on request success', () => {
-      jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
-        Promise.resolve({
-          data: mockEpicChildEpicsQueryResponse.data,
-        }),
+    describe('with successful child epics query response', () => {
+      beforeEach(() => {
+        jest.spyOn(epicUtils.gqClient, 'query').mockReturnValue(
+          Promise.resolve({
+            data: mockEpicChildEpicsQueryResponse.data,
+          }),
+        );
+
+        state.childrenFlags[parentItem.id] = {
+          itemExpanded: false,
+        };
+      });
+
+      describe.each([true, false])(
+        'when the epicColorHighlight feature flag enabled is %s',
+        (withColorEnabled) => {
+          beforeEach(() => {
+            window.gon = { features: { epicColorHighlight: withColorEnabled } };
+          });
+
+          it('should query children epics', async () => {
+            await actions.toggleEpic({ state, dispatch: jest.fn() }, { parentItem });
+
+            expect(epicUtils.gqClient.query).toHaveBeenCalledWith({
+              query: epicChildEpics,
+              variables: {
+                fullPath: '/groups/gitlab-org/',
+                iid: parentItem.iid,
+                sort: state.sortedBy,
+                state: state.epicsState,
+                withColor: withColorEnabled,
+              },
+            });
+          });
+        },
       );
 
-      state.childrenFlags[parentItem.id] = {
-        itemExpanded: false,
-      };
-
-      testAction(
-        actions.toggleEpic,
-        { parentItem },
-        state,
-        [],
-        [
-          {
-            type: 'requestChildrenEpics',
-            payload: { parentItemId: parentItem.id },
-          },
-          {
-            type: 'receiveChildrenSuccess',
-            payload: {
-              parentItemId: parentItem.id,
-              rawChildren: [mockChildEpicNode1],
+      it('should dispatch `receiveChildrenSuccess`', async () => {
+        await testAction(
+          actions.toggleEpic,
+          { parentItem },
+          state,
+          [],
+          [
+            {
+              type: 'requestChildrenEpics',
+              payload: { parentItemId: parentItem.id },
             },
-          },
-        ],
-      );
+            {
+              type: 'receiveChildrenSuccess',
+              payload: {
+                parentItemId: parentItem.id,
+                rawChildren: [mockChildEpicNode1],
+              },
+            },
+          ],
+        );
+      });
     });
 
     it('should dispatch `receiveEpicsFailure` on request failure', () => {
