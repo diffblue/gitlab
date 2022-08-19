@@ -50,7 +50,7 @@ export default {
     getShiftColor(participantId) {
       const participantIndex = this.participantIdsWithIndex[participantId];
 
-      return getParticipantColor(participantIndex);
+      return getParticipantColor(participantIndex ?? -1);
     },
   },
 };
