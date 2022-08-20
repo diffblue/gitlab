@@ -2,6 +2,7 @@
 import { GlEmptyState } from '@gitlab/ui';
 import { sprintf, s__ } from '~/locale';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
+import { EMPTY_LIST_DESCRIPTION, EMPTY_POLICY_PROJECT_DESCRIPTION } from './constants';
 
 export default {
   components: {
@@ -12,9 +13,8 @@ export default {
     emptyFilterDescription: s__(
       'SecurityOrchestration|To widen your search, change filters above or select a different security policy project.',
     ),
-    emptyStateDescription: s__(
-      'SecurityOrchestration|This %{namespaceType} does not contain any security policies.',
-    ),
+    EMPTY_LIST_DESCRIPTION,
+    EMPTY_POLICY_PROJECT_DESCRIPTION,
     newPolicyButtonText: NEW_POLICY_BUTTON_TEXT,
   },
   inject: ['emptyFilterSvgPath', 'emptyListSvgPath', 'namespaceType', 'newPolicyPath'],
@@ -24,12 +24,22 @@ export default {
       required: false,
       default: false,
     },
+    hasPolicyProject: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
-    description() {
-      return sprintf(this.$options.i18n.emptyStateDescription, {
-        namespaceType: this.namespaceType,
-      });
+    emptyStateDescription() {
+      return sprintf(
+        this.hasPolicyProject
+          ? this.$options.i18n.EMPTY_LIST_DESCRIPTION
+          : this.$options.i18n.EMPTY_POLICY_PROJECT_DESCRIPTION,
+        {
+          namespaceType: this.namespaceType,
+        },
+      );
     },
   },
 };
@@ -54,7 +64,7 @@ export default {
   >
     <template #description>
       <p class="gl-font-weight-bold">
-        {{ description }}
+        {{ emptyStateDescription }}
       </p>
     </template>
   </gl-empty-state>

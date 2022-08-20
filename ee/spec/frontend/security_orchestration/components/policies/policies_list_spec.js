@@ -163,21 +163,21 @@ describe('PoliciesList component', () => {
       });
     });
 
-    it('does emit `update-policy-list` and refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
+    it('does emit `update-policy-list` and refetch scan execution policies on `shouldUpdatePolicyList` change to `true`', async () => {
       expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(1);
       expect(wrapper.emitted('update-policy-list')).toBeUndefined();
       wrapper.setProps({ shouldUpdatePolicyList: true });
       await nextTick();
-      expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
+      expect(wrapper.emitted('update-policy-list')).toStrictEqual([[{}]]);
       expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
     });
 
     it('does not emit `update-policy-list` or refetch scan execution policies on `shouldUpdatePolicyList` change to `false`', async () => {
       wrapper.setProps({ shouldUpdatePolicyList: true });
       await nextTick();
+      expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
       wrapper.setProps({ shouldUpdatePolicyList: false });
       await nextTick();
-      expect(wrapper.emitted('update-policy-list')).toStrictEqual([[false]]);
       expect(projectScanExecutionPoliciesSpy).toHaveBeenCalledTimes(2);
     });
   });

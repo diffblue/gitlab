@@ -93,7 +93,14 @@ describe('Policies Header Component', () => {
 
       it('displays the alert component when scan new modal policy emits event', async () => {
         expect(findAlert().text()).toBe(projectLinkSuccessText);
-        expect(wrapper.emitted('update-policy-list')).toStrictEqual([[true]]);
+        expect(wrapper.emitted('update-policy-list')).toStrictEqual([
+          [
+            {
+              hasPolicyProject: undefined,
+              shouldUpdatePolicyList: true,
+            },
+          ],
+        ]);
       });
 
       it('hides the previous alert when scan new modal policy is processing a new link', async () => {

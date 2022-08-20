@@ -60,6 +60,11 @@ export default {
   },
   inject: ['documentationPath', 'namespacePath', 'namespaceType', 'newPolicyPath'],
   props: {
+    hasPolicyProject: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     shouldUpdatePolicyList: {
       type: Boolean,
       required: false,
@@ -211,10 +216,11 @@ export default {
   },
   watch: {
     shouldUpdatePolicyList(newShouldUpdatePolicyList) {
+      // This check prevents an infinite loop of `update-policy-list` being called
       if (newShouldUpdatePolicyList) {
         this.$apollo.queries.scanExecutionPolicies.refetch();
         this.$apollo.queries.scanResultPolicies.refetch();
-        this.$emit('update-policy-list', false);
+        this.$emit('update-policy-list', {});
       }
     },
   },
@@ -315,7 +321,10 @@ export default {
       </template>
 
       <template #empty>
-        <no-policies-empty-state :has-existing-policies="hasExistingPolicies" />
+        <no-policies-empty-state
+          :has-existing-policies="hasExistingPolicies"
+          :has-policy-project="hasPolicyProject"
+        />
       </template>
     </gl-table>
 

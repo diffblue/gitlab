@@ -1,14 +1,18 @@
 import { GlDropdown, GlModal, GlAlert } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import ScanNewPolicyModal from 'ee/security_orchestration/components/policies/scan_new_policy_modal.vue';
-import linkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/link_security_policy_project.mutation.graphql';
-import unlinkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/unlink_security_policy_project.mutation.graphql';
-import InstanceProjectSelector from 'ee/security_orchestration/components/instance_project_selector.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import ScanNewPolicyModal from 'ee/security_orchestration/components/policies/scan_new_policy_modal.vue';
+import linkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/link_security_policy_project.mutation.graphql';
+import unlinkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/unlink_security_policy_project.mutation.graphql';
+import InstanceProjectSelector from 'ee/security_orchestration/components/instance_project_selector.vue';
+import {
+  POLICY_PROJECT_LINK_ERROR_MESSAGE,
+  POLICY_PROJECT_LINK_SUCCESS_MESSAGE,
+} from 'ee/security_orchestration/components/policies/constants';
 import {
   mockLinkSecurityPolicyProjectResponses,
   mockUnlinkSecurityPolicyProjectResponses,
@@ -19,6 +23,10 @@ Vue.use(VueApollo);
 describe('ScanNewPolicyModal Component', () => {
   let wrapper;
   let projectUpdatedListener;
+  const sampleProject = {
+    id: 'gid://gitlab/Project/1',
+    name: 'Test 1',
+  };
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findInstanceProjectSelector = () => wrapper.findComponent(InstanceProjectSelector);
@@ -26,13 +34,7 @@ describe('ScanNewPolicyModal Component', () => {
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findModal = () => wrapper.findComponent(GlModal);
 
-  const selectProject = async ({
-    project = {
-      id: 'gid://gitlab/Project/1',
-      name: 'Test 1',
-    },
-    shouldSubmit = true,
-  } = {}) => {
+  const selectProject = async ({ project = sampleProject, shouldSubmit = true } = {}) => {
     findInstanceProjectSelector().vm.$emit('projectClicked', project);
     await waitForPromises();
 
@@ -121,12 +123,12 @@ describe('ScanNewPolicyModal Component', () => {
 
   describe('unlinking project', () => {
     it.each`
-      mutationResult | expectedVariant | expectedText
-      ${'success'}   | ${'success'}    | ${'okUnlink'}
-      ${'failure'}   | ${'danger'}     | ${'errorUnlink'}
+      mutationResult | expectedVariant | expectedText     | expectedHasPolicyProject
+      ${'success'}   | ${'success'}    | ${'okUnlink'}    | ${false}
+      ${'failure'}   | ${'danger'}     | ${'errorUnlink'} | ${true}
     `(
       'unlinks a project and handles $mutationResult case',
-      async ({ mutationResult, expectedVariant, expectedText }) => {
+      async ({ mutationResult, expectedVariant, expectedText, expectedHasPolicyProject }) => {
         createWrapper({
           mutationQuery: unlinkSecurityPolicyProject,
           mutationResult: mockUnlinkSecurityPolicyProjectResponses[mutationResult],
@@ -151,6 +153,7 @@ describe('ScanNewPolicyModal Component', () => {
         expect(projectUpdatedListener).toHaveBeenCalledWith({
           text: wrapper.vm.$options.i18n.save[expectedText],
           variant: expectedVariant,
+          hasPolicyProject: expectedHasPolicyProject,
         });
       },
     );
@@ -175,29 +178,26 @@ describe('ScanNewPolicyModal Component', () => {
       expect(findModal().attributes('ok-disabled')).toBeUndefined();
     });
 
-    it('emits an event with success message', async () => {
-      await createWrapperAndSelectProject();
+    it.each`
+      messageType  | factoryFn                                                                                                        | text                                   | variant      | hasPolicyProject | selectedProject
+      ${'success'} | ${createWrapperAndSelectProject}                                                                                 | ${POLICY_PROJECT_LINK_SUCCESS_MESSAGE} | ${'success'} | ${true}          | ${[sampleProject]}
+      ${'failure'} | ${async () => createWrapperAndSelectProject({ mutationResult: mockLinkSecurityPolicyProjectResponses.failure })} | ${POLICY_PROJECT_LINK_ERROR_MESSAGE}   | ${'danger'}  | ${false}         | ${undefined}
+    `(
+      'emits an event with $messageType message',
+      async ({ factoryFn, text, variant, hasPolicyProject, selectedProject }) => {
+        await factoryFn();
 
-      expect(projectUpdatedListener).toHaveBeenCalledWith({
-        text: 'Security policy project was linked successfully',
-        variant: 'success',
-      });
+        expect(projectUpdatedListener).toHaveBeenCalledWith({
+          text,
+          variant,
+          hasPolicyProject,
+        });
 
-      expect(findInstanceProjectSelector().props('selectedProjects')).toEqual([
-        { id: 'gid://gitlab/Project/1', name: 'Test 1' },
-      ]);
-    });
-
-    it('emits an event with an error message', async () => {
-      await createWrapperAndSelectProject({
-        mutationResult: mockLinkSecurityPolicyProjectResponses.failure,
-      });
-
-      expect(projectUpdatedListener).toHaveBeenCalledWith({
-        text: 'An error occurred assigning your security policy project',
-        variant: 'danger',
-      });
-    });
+        if (selectedProject) {
+          expect(findInstanceProjectSelector().props('selectedProjects')).toEqual(selectedProject);
+        }
+      },
+    );
   });
 
   describe('disabled', () => {

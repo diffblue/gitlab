@@ -7,14 +7,20 @@ export default {
     PoliciesHeader,
     PoliciesList,
   },
+  inject: ['assignedPolicyProject'],
   data() {
     return {
+      hasPolicyProject: Boolean(this.assignedPolicyProject?.id),
       shouldUpdatePolicyList: false,
     };
   },
   methods: {
-    handleUpdatePolicyList(val) {
-      this.shouldUpdatePolicyList = val;
+    handleUpdatePolicyList({ hasPolicyProject, shouldUpdatePolicyList = false }) {
+      if (hasPolicyProject !== undefined) {
+        this.hasPolicyProject = hasPolicyProject;
+      }
+
+      this.shouldUpdatePolicyList = shouldUpdatePolicyList;
     },
   },
 };
@@ -23,6 +29,7 @@ export default {
   <div>
     <policies-header @update-policy-list="handleUpdatePolicyList" />
     <policies-list
+      :has-policy-project="hasPolicyProject"
       :should-update-policy-list="shouldUpdatePolicyList"
       @update-policy-list="handleUpdatePolicyList"
     />
