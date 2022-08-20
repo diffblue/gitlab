@@ -31,15 +31,8 @@ module Geo
 
       try_obtain_lease do
         log_info('Lease obtained')
-
-        unless file_registry
-          log_error('Could not find file_registry')
-          break
-        end
-
         destroy_file
         destroy_registry
-
         log_info('File & registry removed')
       end
     rescue SystemCallError => e
@@ -64,10 +57,10 @@ module Geo
           log_info('Local file not found. Trying object storage')
           destroy_object_storage_file
         else
-          log_error('Unable to unlink file from filesystem, or object storage. A file may be orphaned', object_type: object_type)
+          log_error('Unable to unlink file from filesystem, or object storage. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
         end
       else
-        log_error('Unable to unlink file because file path is unknown. A file may be orphaned', object_type: object_type, object_db_id: object_db_id)
+        log_error('Unable to unlink file because file path is unknown. A file may be orphaned.', object_type: object_type, object_db_id: object_db_id)
       end
     end
 
@@ -102,7 +95,7 @@ module Geo
         next if file_uploader.nil?
         next file_uploader.file.path if file_uploader.object_store == ObjectStorage::Store::LOCAL
 
-        file_uploader.class.absolute_path(file_uploader.file)
+        file_uploader.class.absolute_path(file_uploader)
       end
     end
 
@@ -150,7 +143,8 @@ module Geo
 
       ::Fog::Storage.new(config)
         .directories.new(key: object_storage_config[:remote_directory])
-        .files.head(object_file_path)
+        .files
+        .head(object_file_path)
     end
 
     def object_file_path
