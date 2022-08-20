@@ -6,6 +6,10 @@ RSpec.describe 'EE IDE user commits changes', :js do
   include WebIdeSpecHelpers
   include NamespaceStorageHelpers
 
+  before do
+    stub_feature_flags(vscode_web_ide: false)
+  end
+
   context 'code owners' do
     let(:project) { create(:project, :custom_repo, files: { 'docs/CODEOWNERS' => "[Backend]\n*.rb @ruby-owner" }) }
     let(:ruby_owner) { create(:user, username: 'ruby-owner') }
