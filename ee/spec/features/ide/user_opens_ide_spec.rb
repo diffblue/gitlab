@@ -12,6 +12,8 @@ RSpec.describe 'EE user opens IDE', :js do
   let(:user) { project.first_owner }
 
   before do
+    stub_feature_flags(vscode_web_ide: false)
+
     stub_licensed_features(push_rules: true)
     stub_licensed_features(reject_unsigned_commits: true)
     sign_in(user)
