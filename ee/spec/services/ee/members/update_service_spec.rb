@@ -63,11 +63,24 @@ RSpec.describe Members::UpdateService do
         let(:source) { project }
       end
 
-      context 'when part of update is a noOp and part is a real change' do
+      context 'when access_level remains the same and expires_at changes' do
         before do
           described_class.new(
             current_user,
             params.merge(expires_at: 24.days.from_now)
+          ).execute(member, permission: permission)
+        end
+
+        it_behaves_like 'logs an audit event' do
+          let(:source) { group }
+        end
+      end
+
+      context 'when expires_at remains the same and access_level changes' do
+        before do
+          described_class.new(
+            current_user,
+            params.merge(access_level: Gitlab::Access::OWNER)
           ).execute(member, permission: permission)
         end
 
