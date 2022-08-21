@@ -4,6 +4,7 @@ module Iterations
   class Cadence < ApplicationRecord
     include Gitlab::SQL::Pattern
     include EachBatch
+    include Importable
 
     self.table_name = 'iterations_cadences'
 
@@ -27,7 +28,7 @@ module Iterations
 
     validate :start_date_comes_later_than_current_iteration, if: -> { current_iteration && requires_new_automation_start_date? }
     validate :start_date_comes_later_than_past_iteration, if: -> { !current_iteration && requires_new_automation_start_date? }
-    validate :start_date_would_not_create_past_iteration, if: -> { !current_iteration && requires_new_automation_start_date? }
+    validate :start_date_would_not_create_past_iteration, if: -> { !importing && !current_iteration && requires_new_automation_start_date? }
 
     after_commit :ensure_iterations_in_advance, on: [:create, :update], if: :changed_iterations_automation_fields?
 
