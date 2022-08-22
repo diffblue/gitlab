@@ -44,18 +44,6 @@ RSpec.describe 'Projects > Members > Tabs', :js do
     end
   end
 
-  context 'ultimate feature removal banner' do
-    before do
-      project = create(:project, :public)
-      project.add_guest(user)
-      project.project_setting.update!(legacy_open_source_license_available: false)
-      sign_in(user)
-      visit project_project_members_path(project)
-    end
-
-    it_behaves_like "ultimate feature removal banner"
-  end
-
   context 'when searching "Groups"' do
     before do
       click_link 'Groups'

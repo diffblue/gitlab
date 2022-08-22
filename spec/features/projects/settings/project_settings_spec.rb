@@ -85,17 +85,6 @@ RSpec.describe 'Projects settings' do
     end
   end
 
-  context 'ultimate feature removal banner' do
-    before do
-      project = create(:project, :public) 
-      project.add_maintainer(user)
-      project.project_setting.update!(legacy_open_source_license_available: false)
-      visit edit_project_path(project)
-    end
-
-    it_behaves_like "ultimate feature removal banner"
-  end
-
   def expect_toggle_state(state)
     is_collapsed = state == :collapsed
 

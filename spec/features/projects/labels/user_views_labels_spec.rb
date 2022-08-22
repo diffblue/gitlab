@@ -18,8 +18,6 @@ RSpec.describe "User views labels" do
     visit(project_labels_path(project))
   end
 
-  it_behaves_like "ultimate feature removal banner"
-
   it "shows all labels" do
     page.within('.prioritized-labels .manage-labels-list') do
       expect(page).to have_content('prioritized-label-name')
