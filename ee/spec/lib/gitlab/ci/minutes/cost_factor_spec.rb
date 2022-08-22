@@ -160,16 +160,6 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
 
             specify { expect(subject).to eq(public_cost_factor) }
           end
-
-          context 'when ci_new_public_oss_cost_factor is disabled' do
-            before do
-              stub_feature_flags(ci_new_public_oss_cost_factor: false)
-            end
-
-            it 'returns the public cost factor' do
-              expect(subject).to eq(public_cost_factor)
-            end
-          end
         end
       end
 
