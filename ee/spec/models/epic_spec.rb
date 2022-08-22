@@ -1143,4 +1143,87 @@ RSpec.describe Epic do
       let(:params) { { noteable: issuable } }
     end
   end
+
+  describe '#total_issue_weight_and_count' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:issue) { create(:issue, weight: 20, project: project) }
+    let_it_be(:issue2) { create(:issue, :closed, weight: 30, project: project) }
+    let_it_be(:epic_issue) { create(:epic_issue, epic: epic, issue: issue) }
+    let_it_be(:epic_issue2) { create(:epic_issue, epic: epic, issue: issue2) }
+
+    let_it_be(:subepic) do
+      create(:epic, parent: epic, group: group, total_opened_issue_weight: 10,
+                    total_closed_issue_weight: 20, total_opened_issue_count: 2,
+                    total_closed_issue_count: 3)
+    end
+
+    it 'returns hash of total issue weight and count including its subepics' do
+      expect(epic.total_issue_weight_and_count).to eq(
+        {
+          total_opened_issue_weight: 30,
+          total_closed_issue_weight: 50,
+          total_opened_issue_count: 3,
+          total_closed_issue_count: 4
+        }
+      )
+    end
+  end
+
+  describe '#update_cached_metadata' do
+    let_it_be(:parent_epic) { create(:epic, group: group) }
+
+    it 'schedules cache update for parent epic when new subepic is created' do
+      expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([parent_epic.id]).once
+
+      create(:epic, parent: parent_epic, group: group)
+    end
+
+    context 'when adding existing subepic' do
+      let_it_be_with_reload(:subepic) { create(:epic, group: group) }
+
+      it 'schedules cache update for parent epic' do
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([parent_epic.id]).once
+
+        subepic.update!(parent: parent_epic)
+      end
+    end
+
+    context 'when epic is already assigned to other epic' do
+      let_it_be(:old_parent) { create(:epic, group: group) }
+      let_it_be_with_reload(:subepic) { create(:epic, group: group, parent: old_parent) }
+
+      it 'schedules cache update for old parent and new parent epics' do
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([parent_epic.id]).once
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([old_parent.id]).once
+
+        subepic.update!(parent: parent_epic)
+      end
+
+      it 'schedules cache update for parent epic when removing subepic parent' do
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([old_parent.id]).once
+
+        subepic.update!(parent: nil)
+      end
+
+      it 'schedules cache update for parent epic when subepic is destroyed' do
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([old_parent.id]).once
+
+        subepic.destroy!
+      end
+
+      context 'when cache_issue_sums flag is disabled' do
+        before do
+          stub_feature_flags(cache_issue_sums: false)
+        end
+
+        it 'does nothing' do
+          expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
+
+          subepic.destroy!
+        end
+      end
+    end
+  end
 end

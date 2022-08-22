@@ -138,6 +138,8 @@ module EE
 
         ::Dora::DailyMetrics::RefreshWorker.perform_async(related_production_env.id, issue.created_at.to_date.to_s)
       end
+
+      after_commit :update_cached_metadata
     end
 
     class_methods do
@@ -336,6 +338,14 @@ module EE
       end
 
       _('This issue cannot be assigned to a confidential epic because it is public.')
+    end
+
+    def update_cached_metadata
+      return unless ::Feature.enabled?(:cache_issue_sums)
+      return unless epic_issue
+      return unless weight_previously_changed? || state_id_previously_changed?
+
+      ::Epics::UpdateCachedMetadataWorker.perform_async([epic_issue.epic_id])
     end
   end
 end

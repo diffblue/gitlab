@@ -176,6 +176,7 @@ module EE
       before_save :set_fixed_start_date, if: :start_date_is_fixed?
       before_save :set_fixed_due_date, if: :due_date_is_fixed?
       after_create_commit :usage_ping_record_epic_creation
+      after_commit :update_cached_metadata
 
       def epic_tree_root?
         parent_id.nil?
@@ -612,6 +613,76 @@ module EE
 
       unfiltered_epics = self.class.where(id: blocking_epics_ids)
       self.class.epics_readable_by_user(unfiltered_epics, user)
+    end
+
+    def total_issue_weight_and_count
+      subepic_sums = subepics_weight_and_count
+      issue_sums = issues_weight_and_count
+
+      {
+        total_opened_issue_weight: subepic_sums[:opened_issue_weight] + issue_sums[:opened_issue_weight],
+        total_closed_issue_weight: subepic_sums[:closed_issue_weight] + issue_sums[:closed_issue_weight],
+        total_opened_issue_count: subepic_sums[:opened_issue_count] + issue_sums[:opened_issue_count],
+        total_closed_issue_count: subepic_sums[:closed_issue_count] + issue_sums[:closed_issue_count]
+      }
+    end
+
+    def subepics_weight_and_count
+      sum = children.select(
+        'SUM(total_opened_issue_weight) AS opened_issue_weight',
+        'SUM(total_closed_issue_weight) AS closed_issue_weight',
+        'SUM(total_opened_issue_count) AS opened_issue_count',
+        'SUM(total_closed_issue_count) AS closed_issue_count'
+      )[0]
+
+      {
+        opened_issue_weight: sum.opened_issue_weight.to_i,
+        closed_issue_weight: sum.closed_issue_weight.to_i,
+        opened_issue_count: sum.opened_issue_count.to_i,
+        closed_issue_count: sum.closed_issue_count.to_i
+      }
+    end
+
+    def issues_weight_and_count
+      state_sums = issues
+        .select('issues.state_id AS issues_state_id',
+                'SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum',
+                'COUNT(issues.id) AS issues_count')
+        .reorder(nil)
+        .group("issues.state_id")
+
+      by_state = state_sums.each_with_object({}) do |state_sum, result|
+        key = ::Issue.available_states.key(state_sum.issues_state_id)
+        result[key] = state_sum
+      end
+
+      {
+        opened_issue_weight: by_state['opened']&.issues_weight_sum.to_i,
+        closed_issue_weight: by_state['closed']&.issues_weight_sum.to_i,
+        opened_issue_count: by_state['opened']&.issues_count.to_i,
+        closed_issue_count: by_state['closed']&.issues_count.to_i
+      }
+    end
+
+    def propagate_issue_metadata_change?
+      return false unless parent_id
+      return true if destroyed?
+
+      attrs = %w[total_opened_issue_weight total_closed_issue_weight
+                 total_opened_issue_count total_closed_issue_count
+                 parent_id]
+
+      (previous_changes.keys & attrs).any?
+    end
+
+    def update_cached_metadata
+      return unless ::Feature.enabled?(:cache_issue_sums)
+
+      ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id]) if propagate_issue_metadata_change?
+
+      if parent_id_previously_changed? && parent_id_previously_was
+        ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id_previously_was])
+      end
     end
   end
 end

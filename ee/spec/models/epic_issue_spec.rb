@@ -120,4 +120,43 @@ RSpec.describe EpicIssue do
       end
     end
   end
+
+  describe '#update_cached_metadata' do
+    it 'schedules cache update for epic when new issue is added' do
+      expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic.id]).once
+
+      create(:epic_issue, epic: epic, issue: issue)
+    end
+
+    context 'when epic issue already exists' do
+      let_it_be_with_reload(:epic_issue) { create(:epic_issue, epic: epic, issue: issue) }
+
+      it 'schedules cache update for epic when epic issue is updated' do
+        new_epic = create(:epic, group: group)
+
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic.id]).once
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([new_epic.id]).once
+
+        epic_issue.update!(epic: new_epic)
+      end
+
+      it 'schedules cache update for epic when epic issue is destroyed' do
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic.id]).once
+
+        epic_issue.destroy!
+      end
+
+      context 'when cache_issue_sums flag is disabled' do
+        before do
+          stub_feature_flags(cache_issue_sums: false)
+        end
+
+        it 'does nothing' do
+          expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
+
+          epic_issue.destroy!
+        end
+      end
+    end
+  end
 end

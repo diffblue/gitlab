@@ -317,6 +317,10 @@ RSpec.describe Issues::UpdateService do
               let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_ADDED_TO_EPIC }
             end
           end
+
+          it 'updates epic cache counts', :sidekiq_inline do
+            expect { subject }.to change { epic.reload.total_opened_issue_count }.by(1)
+          end
         end
 
         context 'when issue belongs to another epic' do
@@ -351,6 +355,11 @@ RSpec.describe Issues::UpdateService do
             it_behaves_like 'issue_edit snowplow tracking' do
               let(:property) { Gitlab::UsageDataCounters::IssueActivityUniqueCounter::ISSUE_CHANGED_EPIC }
             end
+          end
+
+          it 'updates epic cache counts', :sidekiq_inline do
+            expect { subject }.to change { epic.reload.total_opened_issue_count }.by(1)
+              .and(change { epic2.reload.total_opened_issue_count }.by(-1))
           end
         end
 

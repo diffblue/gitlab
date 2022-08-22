@@ -1188,4 +1188,74 @@ RSpec.describe Issue do
         .to contain_exactly(issue, test_case)
     end
   end
+
+  describe '#update_cached_metadata' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:epic) { create(:epic, group: group) }
+
+    before do
+      stub_licensed_features(epics: true)
+    end
+
+    context 'when epic is not assigned' do
+      let(:issue) { build(:issue, project: project) }
+
+      it 'does nothing' do
+        expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
+
+        issue.save!
+      end
+    end
+
+    context 'when creating new issue' do
+      let(:issue) { build(:issue, project: project, epic: epic) }
+
+      it 'schedules cache update for epic' do
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic.id]).once
+
+        issue.save!
+      end
+
+      context 'when cache_issue_sums flag is disabled' do
+        before do
+          stub_feature_flags(cache_issue_sums: false)
+        end
+
+        it 'does nothing' do
+          expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
+
+          issue.save!
+        end
+      end
+    end
+
+    context 'when updating an existing issue' do
+      let_it_be(:issue) { create(:issue, project: project, epic: epic) }
+
+      it 'schedules cache update for epic if state is changed' do
+        issue.state = :closed
+
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic.id]).once
+
+        issue.save!
+      end
+
+      it 'schedules cache update for epic if weight is changed' do
+        issue.weight = 2
+
+        expect(::Epics::UpdateCachedMetadataWorker).to receive(:perform_async).with([epic.id]).once
+
+        issue.save!
+      end
+
+      it 'does nothing when unrelated attributes are changed' do
+        issue.title = 'new title'
+
+        expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
+
+        issue.save!
+      end
+    end
+  end
 end
