@@ -22,20 +22,6 @@ RSpec.describe MergeRequest do
     it { expect(blocked_mr.blocked_merge_requests).to be_empty }
   end
 
-  describe '#mergeable? (blocking MRs)' do
-    context 'when improved_mergeability_checks is disabled' do
-      before do
-        stub_feature_flags(improved_mergeability_checks: false)
-      end
-
-      it 'checks MergeRequest#merge_blocked_by_other_mrs?' do
-        expect(blocked_mr).to receive(:merge_blocked_by_other_mrs?) { true }
-
-        expect(blocked_mr.mergeable?).to be(false)
-      end
-    end
-  end
-
   describe '#merge_blocked_by_other_mrs?' do
     context 'licensed' do
       before do

@@ -1134,43 +1134,19 @@ RSpec.describe MergeRequest do
         project.add_developer(user)
       end
 
-      context 'when improved_mergeability_checks is enabled' do
-        context 'when not approved' do
-          it 'is not mergeable' do
-            is_expected.to be_falsey
-          end
-        end
-
-        context 'when approved' do
-          before do
-            merge_request.approvals.create!(user: user)
-          end
-
-          it 'is mergeable' do
-            is_expected.to be_truthy
-          end
+      context 'when not approved' do
+        it 'is not mergeable' do
+          is_expected.to be_falsey
         end
       end
 
-      context 'when improved_mergeability_checks is disabled' do
+      context 'when approved' do
         before do
-          stub_feature_flags(improved_mergeability_checks: false)
+          merge_request.approvals.create!(user: user)
         end
 
-        context 'when not approved' do
-          it 'is not mergeable' do
-            is_expected.to be_falsey
-          end
-        end
-
-        context 'when approved' do
-          before do
-            merge_request.approvals.create!(user: user)
-          end
-
-          it 'is mergeable' do
-            is_expected.to be_truthy
-          end
+        it 'is mergeable' do
+          is_expected.to be_truthy
         end
       end
     end
@@ -1180,97 +1156,39 @@ RSpec.describe MergeRequest do
         stub_licensed_features(blocking_merge_requests: true)
       end
 
-      context 'when improved_mergeability_checks is disabled' do
-        before do
-          stub_feature_flags(improved_mergeability_checks: false)
-        end
+      context 'when the merge request is blocked' do
+        let(:merge_request) { create(:merge_request, :blocked, source_project: project, target_project: project) }
 
-        context 'when the merge request is blocked' do
-          let(:merge_request) { create(:merge_request, :blocked, source_project: project, target_project: project) }
-
-          it 'is not mergeable' do
-            is_expected.to be_falsey
-          end
-        end
-
-        context 'when merge request is not blocked' do
-          it 'is mergeable' do
-            is_expected.to be_truthy
-          end
+        it 'is not mergeable' do
+          is_expected.to be_falsey
         end
       end
 
-      context 'when improved_mergeability_checks is enabled' do
-        before do
-          stub_feature_flags(improved_mergeability_checks: true)
-        end
-
-        context 'when the merge request is blocked' do
-          let(:merge_request) { create(:merge_request, :blocked, source_project: project, target_project: project) }
-
-          it 'is not mergeable' do
-            is_expected.to be_falsey
-          end
-        end
-
-        context 'when merge request is not blocked' do
-          it 'is mergeable' do
-            is_expected.to be_truthy
-          end
+      context 'when merge request is not blocked' do
+        it 'is mergeable' do
+          is_expected.to be_truthy
         end
       end
     end
 
     context 'when running license_scanning ci job' do
-      context 'when improved_mergeability_checks is disabled' do
+      context 'when merge request has denied policies' do
         before do
-          stub_feature_flags(improved_mergeability_checks: false)
+          allow(merge_request).to receive(:has_denied_policies?).and_return(true)
         end
 
-        context 'when merge request has denied policies' do
-          before do
-            allow(merge_request).to receive(:has_denied_policies?).and_return(true)
-          end
-
-          it 'is not mergeable' do
-            is_expected.to be_falsey
-          end
-        end
-
-        context 'when merge request has no denied policies' do
-          before do
-            allow(merge_request).to receive(:has_denied_policies?).and_return(false)
-          end
-
-          it 'is mergeable' do
-            is_expected.to be_truthy
-          end
+        it 'is not mergeable' do
+          is_expected.to be_falsey
         end
       end
 
-      context 'when improved_mergeability_checks is enabled' do
+      context 'when merge request has no denied policies' do
         before do
-          stub_feature_flags(improved_mergeability_checks: true)
+          allow(merge_request).to receive(:has_denied_policies?).and_return(false)
         end
 
-        context 'when merge request has denied policies' do
-          before do
-            allow(merge_request).to receive(:has_denied_policies?).and_return(true)
-          end
-
-          it 'is not mergeable' do
-            is_expected.to be_falsey
-          end
-        end
-
-        context 'when merge request has no denied policies' do
-          before do
-            allow(merge_request).to receive(:has_denied_policies?).and_return(false)
-          end
-
-          it 'is mergeable' do
-            is_expected.to be_truthy
-          end
+        it 'is mergeable' do
+          is_expected.to be_truthy
         end
       end
     end
