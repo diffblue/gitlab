@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'Secure-Binaries.gitlab-ci.yml' do
-  include Ci::TemplateHelpers
-
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Secure-Binaries') }
 
   specify { expect(template).not_to be_nil }

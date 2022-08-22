@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService do
-  include Ci::TemplateHelpers
-
   describe '#execute' do
     let_it_be_with_reload(:project) { create(:project, :repository) }
 

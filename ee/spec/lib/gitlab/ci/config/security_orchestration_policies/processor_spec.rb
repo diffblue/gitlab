@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
-  include Ci::TemplateHelpers
-
   subject { described_class.new(config, project, ref, source).perform }
 
   let_it_be(:config) { { image: 'image:1.0.0' } }
