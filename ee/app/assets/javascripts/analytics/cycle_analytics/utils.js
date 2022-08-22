@@ -12,11 +12,11 @@ import httpStatus from '~/lib/utils/http_status';
 
 const EVENT_TYPE_LABEL = 'label';
 
-export const toggleSelectedLabel = ({ selectedLabelIds = [], value = null }) => {
-  if (!value) return selectedLabelIds;
-  return selectedLabelIds.includes(value)
-    ? selectedLabelIds.filter((v) => v !== value)
-    : [...selectedLabelIds, value];
+export const toggleSelectedLabel = ({ selectedLabels = [], value = null }) => {
+  if (!value) return selectedLabels;
+  return selectedLabels.includes(value)
+    ? selectedLabels.filter((v) => v !== value)
+    : [...selectedLabels, value];
 };
 
 export const isStartEvent = (ev) =>

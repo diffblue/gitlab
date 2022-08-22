@@ -8,15 +8,17 @@ import {
   rawTasksByTypeData,
   transformedTasksByTypeData,
   groupLabels,
+  groupLabelIds,
+  groupLabelNames,
   currentGroup,
 } from '../../../mock_data';
 
 const selectedProjectIds = [1, 2];
-const rootSelectedLabelIds = [1, 2, 3];
 const state = {
   topRankedLabels: groupLabels,
   subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
-  selectedLabelIds: rootSelectedLabelIds,
+  selectedLabelIds: groupLabelIds,
+  selectedLabelNames: groupLabelNames,
 };
 const rootState = {
   topRankedLabels: groupLabels,
@@ -24,7 +26,7 @@ const rootState = {
   createdBefore,
   currentGroup,
 };
-const rootGetters = { selectedProjectIds, selectedLabelIds: rootSelectedLabelIds };
+const rootGetters = { selectedProjectIds, selectedLabelIds: groupLabelIds };
 
 describe('Type of work getters', () => {
   describe('tasksByTypeChartData', () => {
@@ -53,6 +55,7 @@ describe('Type of work getters', () => {
         'createdAfter',
         'createdBefore',
         'selectedLabelIds',
+        'selectedLabelNames',
         'subject',
       ].forEach((key) => {
         expect(keys).toContain(key);
@@ -63,7 +66,8 @@ describe('Type of work getters', () => {
       const result = selectedTasksByTypeFilters(state, null, rootState, rootGetters);
 
       expect(result.currentGroup).toEqual(currentGroup);
-      expect(result.selectedLabelIds).toEqual(rootSelectedLabelIds);
+      expect(result.selectedLabelIds).toEqual(groupLabelIds);
+      expect(result.selectedLabelNames).toEqual(groupLabelNames);
       expect(result.selectedProjectIds).toEqual(selectedProjectIds);
       expect(result.subject).toEqual(TASKS_BY_TYPE_SUBJECT_ISSUE);
       expect(result.createdBefore).toEqual(createdBefore);

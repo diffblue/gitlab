@@ -12,6 +12,7 @@ export default {
     state.isLoadingTasksByTypeChartTopLabels = true;
     state.topRankedLabels = [];
     state.selectedLabelIds = [];
+    state.selectedLabelNames = [];
     state.errorCode = null;
     state.errorMessage = '';
   },
@@ -19,6 +20,7 @@ export default {
     state.isLoadingTasksByTypeChartTopLabels = false;
     state.topRankedLabels = data.map(convertObjectPropsToCamelCase);
     state.selectedLabelIds = data.map(({ id }) => id);
+    state.selectedLabelNames = data.map(({ title }) => title);
     state.errorCode = null;
     state.errorMessage = '';
   },
@@ -27,6 +29,7 @@ export default {
     state.isLoadingTasksByTypeChart = false;
     state.topRankedLabels = [];
     state.selectedLabelIds = [];
+    state.selectedLabelNames = [];
     state.errorCode = errorCode;
     state.errorMessage = message;
   },
@@ -41,14 +44,24 @@ export default {
     state.data = transformRawTasksByTypeData(data);
   },
   [types.SET_TASKS_BY_TYPE_FILTERS](state, { filter, value }) {
-    const { selectedLabelIds } = state;
+    const { selectedLabelIds, selectedLabelNames } = state;
     switch (filter) {
-      case TASKS_BY_TYPE_FILTERS.LABEL:
-        state.selectedLabelIds = toggleSelectedLabel({ selectedLabelIds, value });
+      case TASKS_BY_TYPE_FILTERS.LABEL: {
+        const { id, title } = value;
+        state.selectedLabelIds = toggleSelectedLabel({
+          selectedLabels: selectedLabelIds,
+          value: id,
+        });
+        state.selectedLabelNames = toggleSelectedLabel({
+          selectedLabels: selectedLabelNames,
+          value: title,
+        });
         break;
-      case TASKS_BY_TYPE_FILTERS.SUBJECT:
+      }
+      case TASKS_BY_TYPE_FILTERS.SUBJECT: {
         state.subject = value;
         break;
+      }
       default:
         break;
     }

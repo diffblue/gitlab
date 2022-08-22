@@ -111,7 +111,7 @@ describe('Value Stream Analytics LabelsSelector', () => {
 
         await nextTick();
         expect(wrapper.emitted('select-label').length > 0).toBe(true);
-        expect(wrapper.emitted('select-label')[0]).toContain(groupLabels[1].id);
+        expect(wrapper.emitted('select-label')[0]).toContain(groupLabels[1]);
       });
     });
   });
