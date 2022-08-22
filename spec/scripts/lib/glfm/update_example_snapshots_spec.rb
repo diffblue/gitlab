@@ -128,7 +128,7 @@ RSpec.describe Glfm::UpdateExampleSnapshots, '#process' do
 
       ## Strong but with two asterisks
 
-      ```````````````````````````````` example gitlab strong
+      ```````````````````````````````` example gitlab
       **bold**
       .
       <p><strong>bold</strong></p>
@@ -155,7 +155,7 @@ RSpec.describe Glfm::UpdateExampleSnapshots, '#process' do
       `source_specification` will be `gitlab`.
 
 
-      ```````````````````````````````` example gitlab strong
+      ```````````````````````````````` example gitlab
       <strong>
       bold
       </strong>
@@ -169,7 +169,7 @@ RSpec.describe Glfm::UpdateExampleSnapshots, '#process' do
 
       ## Strong but skipped
 
-      ```````````````````````````````` example gitlab strong
+      ```````````````````````````````` example gitlab
       **this example will be skipped**
       .
       <p><strong>this example will be skipped</strong></p>
@@ -177,7 +177,7 @@ RSpec.describe Glfm::UpdateExampleSnapshots, '#process' do
 
       ## Strong but manually modified and skipped
 
-      ```````````````````````````````` example gitlab strong
+      ```````````````````````````````` example gitlab
       **This example will have its manually modified static HTML, WYSIWYG HTML, and ProseMirror JSON preserved**
       .
       <p><strong>This example will have its manually modified static HTML, WYSIWYG HTML, and ProseMirror JSON preserved</strong></p>
