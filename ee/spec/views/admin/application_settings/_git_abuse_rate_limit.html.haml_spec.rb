@@ -28,6 +28,7 @@ RSpec.describe 'admin/application_settings/_git_abuse_rate_limit' do
         expect(rendered).to have_selector('[data-max-number-of-repository-downloads="0"]')
         expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="0"]')
         expect(rendered).to have_selector('[data-git-rate-limit-users-allowlist="[]"]')
+        expect(rendered).to have_selector('[data-auto-ban-user-on-excessive-projects-download="false"]')
       end
     end
 
@@ -37,7 +38,8 @@ RSpec.describe 'admin/application_settings/_git_abuse_rate_limit' do
         build(:application_setting,
               max_number_of_repository_downloads: 10,
               max_number_of_repository_downloads_within_time_period: 100,
-              git_rate_limit_users_allowlist: allowlist
+              git_rate_limit_users_allowlist: allowlist,
+              auto_ban_user_on_excessive_projects_download: true
              )
       end
 
@@ -49,6 +51,7 @@ RSpec.describe 'admin/application_settings/_git_abuse_rate_limit' do
         expect(rendered).to have_selector('[data-max-number-of-repository-downloads="10"]')
         expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="100"]')
         expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='#{allowlist}']")
+        expect(rendered).to have_selector('[data-auto-ban-user-on-excessive-projects-download="true"]')
       end
     end
   end

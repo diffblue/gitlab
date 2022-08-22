@@ -94,11 +94,6 @@ module EE
           ]
         end
 
-        if ::Feature.enabled?(:git_abuse_rate_limit_feature_flag) &&
-          License.feature_available?(:git_abuse_rate_limit)
-          attrs += EE::ApplicationSettingsHelper.git_abuse_rate_limit_attributes
-        end
-
         if ::Gitlab::Geo.license_allows?
           attrs << :maintenance_mode
           attrs << :maintenance_mode_message
