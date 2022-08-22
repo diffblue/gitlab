@@ -106,8 +106,7 @@ RSpec.describe StatusPage::TriggerPublishService do
       let(:emoji_name) { Gitlab::StatusPage::AWARD_EMOJI }
 
       before do
-        create(:award_emoji, user: user, name: emoji_name,
-               awardable: triggered_by)
+        create(:award_emoji, user: user, name: emoji_name, awardable: triggered_by)
       end
 
       context 'for issues' do

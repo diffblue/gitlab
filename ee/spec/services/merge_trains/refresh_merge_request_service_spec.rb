@@ -20,7 +20,8 @@ RSpec.describe MergeTrains::RefreshMergeRequestService do
     subject { service.execute(merge_request) }
 
     let!(:merge_request) do
-      create(:merge_request, :on_train, train_creator: maintainer,
+      create(:merge_request, :on_train,
+        train_creator: maintainer,
         source_branch: 'feature', source_project: project,
         target_branch: 'master', target_project: project)
     end

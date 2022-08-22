@@ -21,9 +21,8 @@ RSpec.describe Ci::ProcessPipelineService, '#execute' do
   describe 'cross-project pipelines' do
     before do
       create_processable(:build, name: 'test', stage: 'test')
-      create_processable(:bridge, :variables,  name: 'cross',
-                                              stage: 'build',
-                                              downstream: downstream)
+      create_processable(:bridge, :variables,
+        name: 'cross', stage: 'build', downstream: downstream)
       create_processable(:build, name: 'deploy', stage: 'deploy')
 
       stub_ci_pipeline_to_return_yaml_file

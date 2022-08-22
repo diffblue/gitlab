@@ -17,11 +17,10 @@ RSpec.describe Ci::SubscribeBridgeService do
 
       context 'when the upstream project has a pipeline' do
         let!(:upstream_pipeline) do
-          create(
-            :ci_pipeline, project: upstream_project,
+          create(:ci_pipeline,
+            project: upstream_project,
             ref: upstream_project.default_branch,
-            sha: upstream_project.commit.sha
-          )
+            sha: upstream_project.commit.sha)
         end
 
         context 'when the user has permissions' do

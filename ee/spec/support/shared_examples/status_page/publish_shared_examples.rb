@@ -7,8 +7,7 @@ RSpec.shared_examples 'publish incidents' do
   let(:content_json) { content.to_json }
 
   let(:status_page_setting) do
-    instance_double(StatusPage::ProjectSetting, enabled?: status_page_setting_enabled,
-                    storage_client: storage_client)
+    instance_double(StatusPage::ProjectSetting, enabled?: status_page_setting_enabled, storage_client: storage_client)
   end
 
   before do

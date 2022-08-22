@@ -23,14 +23,16 @@ RSpec.describe MergeTrains::CheckStatusService do
 
     context 'when there is at least one merge request on the train' do
       let!(:merged_merge_request) do
-        create(:merge_request, :on_train, train_creator: maintainer,
+        create(:merge_request, :on_train,
+          train_creator: maintainer,
           source_branch: 'feature', source_project: project,
           target_branch: 'master', target_project: project,
           merge_status: 'unchecked', status: MergeTrain.state_machines[:status].states[:merged].value)
       end
 
       let!(:active_merge_request) do
-        create(:merge_request, :on_train, train_creator: maintainer,
+        create(:merge_request, :on_train,
+          train_creator: maintainer,
           source_branch: 'improve/awesome', source_project: project,
           target_branch: 'master', target_project: project,
           merge_status: 'unchecked')
