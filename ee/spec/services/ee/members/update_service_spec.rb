@@ -26,6 +26,14 @@ RSpec.describe Members::UpdateService do
     end
   end
 
+  shared_examples_for 'does not log an audit event' do
+    specify do
+      expect do
+        described_class.new(current_user, params).execute(member, permission: permission)
+      end.not_to change { AuditEvent.count }
+    end
+  end
+
   context 'when current user can update the given member' do
     before do
       project.add_maintainer(current_user)
@@ -38,6 +46,48 @@ RSpec.describe Members::UpdateService do
 
     it_behaves_like 'logs an audit event' do
       let(:source) { group }
+    end
+
+    context 'when the update is a noOp' do
+      subject(:service) { described_class.new(current_user, params) }
+
+      before do
+        service.execute(member, permission: permission)
+      end
+
+      it_behaves_like 'does not log an audit event' do
+        let(:source) { group }
+      end
+
+      it_behaves_like 'does not log an audit event' do
+        let(:source) { project }
+      end
+
+      context 'when access_level remains the same and expires_at changes' do
+        before do
+          described_class.new(
+            current_user,
+            params.merge(expires_at: 24.days.from_now)
+          ).execute(member, permission: permission)
+        end
+
+        it_behaves_like 'logs an audit event' do
+          let(:source) { group }
+        end
+      end
+
+      context 'when expires_at remains the same and access_level changes' do
+        before do
+          described_class.new(
+            current_user,
+            params.merge(access_level: Gitlab::Access::OWNER)
+          ).execute(member, permission: permission)
+        end
+
+        it_behaves_like 'logs an audit event' do
+          let(:source) { group }
+        end
+      end
     end
   end
 end
