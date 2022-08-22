@@ -62,6 +62,8 @@ export const valueStreams = [
 ];
 
 export const groupLabels = apiGroupLabels.map(convertObjectPropsToCamelCase);
+export const groupLabelNames = groupLabels.map(({ title }) => title);
+export const groupLabelIds = groupLabels.map(({ id }) => id);
 
 export const recentActivityData = valueStreamAnalyticsSummary;
 

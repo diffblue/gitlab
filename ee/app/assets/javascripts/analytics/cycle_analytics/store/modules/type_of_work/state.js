@@ -5,7 +5,8 @@ export default () => ({
   isLoadingTasksByTypeChartTopLabels: false,
 
   subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
-  selectedLabelIds: [],
+  selectedLabelIds: [], // TODO: we can remove in https://gitlab.com/gitlab-org/gitlab/-/issues/370085
+  selectedLabelNames: [],
   topRankedLabels: [],
   data: [],
 

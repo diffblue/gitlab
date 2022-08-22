@@ -12,7 +12,7 @@ import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore } from 'jest/cycle_analytics/mock_data';
 import createFlash from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
-import { groupLabels, endpoints, rawTasksByTypeData } from '../../../mock_data';
+import { groupLabels, groupLabelNames, endpoints, rawTasksByTypeData } from '../../../mock_data';
 
 jest.mock('~/flash');
 
@@ -26,7 +26,7 @@ describe('Type of work actions', () => {
 
     subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
     topRankedLabels: [],
-    selectedLabelIds: groupLabels.map(({ id }) => id),
+    selectedLabelNames: groupLabelNames,
     data: [],
   };
 

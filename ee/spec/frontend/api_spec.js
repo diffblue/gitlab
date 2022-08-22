@@ -226,12 +226,12 @@ describe('Api', () => {
             series: [['2019-11-03', 5]],
           },
         ];
-        const labelIds = [10, 9, 8, 7];
+        const labelNames = ['Thursday', 'Friday', 'Saturday'];
         const params = {
           ...defaultParams,
           project_ids: null,
           subject: valueStreamAnalyticsConstants.TASKS_BY_TYPE_SUBJECT_ISSUE,
-          label_ids: labelIds,
+          label_names: labelNames,
         };
         const expectedUrl = analyticsMockData.endpoints.tasksByTypeData;
         mock.onGet(expectedUrl).reply(httpStatus.OK, tasksByTypeResponse);
@@ -248,12 +248,10 @@ describe('Api', () => {
     describe('cycleAnalyticsTopLabels', () => {
       it('fetches top group level labels', async () => {
         const response = [];
-        const labelIds = [10, 9, 8, 7];
         const params = {
           ...defaultParams,
           project_ids: null,
           subject: valueStreamAnalyticsConstants.TASKS_BY_TYPE_SUBJECT_ISSUE,
-          label_ids: labelIds,
         };
 
         const expectedUrl = analyticsMockData.endpoints.tasksByTypeTopLabelsData;

@@ -89,6 +89,10 @@ export default {
     },
   },
   methods: {
+    onSelectLabel(field, event) {
+      const { id: value = null } = event;
+      this.$emit('input', { field, value });
+    },
     hasFieldErrors(key) {
       return !Object.keys(this.errors).length || this.errors[key]?.length < 1;
     },
@@ -158,7 +162,7 @@ export default {
         :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
           stage.startEventLabelId,
         ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        @update-label="$emit('input', { field: 'startEventLabelId', value: $event })"
+        @update-label="onSelectLabel('startEventLabelId', $event)"
       />
     </div>
     <div class="gl-display-flex gl-justify-content-between">
@@ -184,7 +188,7 @@ export default {
         :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
           stage.endEventLabelId,
         ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        @update-label="$emit('input', { field: 'endEventLabelId', value: $event })"
+        @update-label="onSelectLabel('endEventLabelId', $event)"
       />
     </div>
   </div>
