@@ -32,7 +32,13 @@ RSpec.describe AlertManagement::Alerts::UpdateService do
 
         let(:new_status) { :triggered }
 
-        it_behaves_like 'creates an escalation'
+        it 'creates an escalation' do
+          expect(IncidentManagement::PendingEscalations::AlertCreateWorker)
+            .to receive(:perform_async)
+            .with(a_kind_of(Integer))
+
+          subject
+        end
       end
 
       context 'moving from an open status to closed status' do
@@ -42,14 +48,16 @@ RSpec.describe AlertManagement::Alerts::UpdateService do
         let(:new_status) { :resolved }
         let(:target) { alert }
 
-        include_examples "deletes the target's escalations"
+        it "deletes the target's escalations" do
+          expect { execute }.to change(IncidentManagement::PendingEscalations::Alert, :count).by(-1)
+        end
       end
 
       context 'moving from a status of the same group' do
         let(:new_status) { :ignored }
 
         it 'does not create or delete escalations' do
-          expect { execute }.to change { IncidentManagement::PendingEscalations::Alert.count }.by(0)
+          expect { execute }.not_to change(IncidentManagement::PendingEscalations::Alert, :count)
         end
       end
     end
