@@ -25,7 +25,7 @@ export default {
       isLoading: false,
       vulnerabilities: {
         collapsed: null,
-        extended: null,
+        expanded: null,
       },
     };
   },
