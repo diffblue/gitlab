@@ -234,7 +234,7 @@ module EE
 
       def parse_raw_security_artifact_blob(security_report, blob)
         signatures_enabled = project.licensed_feature_available?(:vulnerability_finding_signatures)
-        ::Gitlab::Ci::Parsers.fabricate!(security_report.type, blob, security_report, signatures_enabled).parse!
+        ::Gitlab::Ci::Parsers.fabricate!(security_report.type, blob, security_report, signatures_enabled: signatures_enabled).parse!
       end
 
       def ee_runner_required_feature_names
