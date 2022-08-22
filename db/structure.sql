@@ -20015,7 +20015,6 @@ CREATE TABLE projects (
     mirror_user_id integer,
     shared_runners_enabled boolean DEFAULT true NOT NULL,
     runners_token character varying,
-    build_coverage_regex character varying,
     build_allow_git_fetch boolean DEFAULT true NOT NULL,
     build_timeout integer DEFAULT 3600 NOT NULL,
     mirror_trigger_builds boolean DEFAULT false NOT NULL,
