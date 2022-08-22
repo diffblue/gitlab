@@ -168,11 +168,9 @@ module EE
         ::Feature.enabled?(:auditor_group_runner_access)
       end
 
-      condition(:admin_group_protected_environment_accessible, scope: :subject) do
-        ::Feature.enabled?(
-          :group_level_protected_environment_settings_permission, @subject) &&
-          ::Feature.disabled?(
-            :override_group_level_protected_environment_settings_permission, @subject)
+      condition(:admin_group_protected_environment_accessible) do
+        ::Feature.disabled?(
+          :override_group_level_protected_environment_settings_permission, @subject)
       end
 
       rule { ~public_group & ~can?(:owner_access) & user_banned_from_group }.policy do
