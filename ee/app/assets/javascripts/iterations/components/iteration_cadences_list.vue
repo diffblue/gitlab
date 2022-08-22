@@ -16,13 +16,6 @@ export default {
     anchor: 'iteration-cadences',
   }),
   i18n: {
-    deprecationAlert: {
-      title: s__('Iterations|Your manual cadence can be converted to use automated scheduling'),
-      message: s__(
-        'Iterations|Manual management of iterations will be deprecated in GitLab 15.6. Convert your manual cadence to use automated scheduling when you are ready.',
-      ),
-      primaryButtonText: s__('Iterations|Learn more about automatic scheduling'),
-    },
     tabTitles: [s__('Iterations|Open'), s__('Iterations|Done'), s__('Iterations|All')],
   },
   components: {
@@ -90,7 +83,7 @@ export default {
       return vars;
     },
     cadences() {
-      return this.groupDeprecatedItems(this.workspace?.iterationCadences?.nodes) || [];
+      return this.workspace?.iterationCadences?.nodes || [];
     },
     pageInfo() {
       return this.workspace?.iterationCadences?.pageInfo || {};
@@ -110,9 +103,6 @@ export default {
           return 'opened';
       }
     },
-    manualCadenceExists() {
-      return this.cadences.findIndex((c) => !c.automatic) > -1;
-    },
   },
   mounted() {
     if (this.$router.currentRoute.query.createdCadenceId) {
@@ -120,9 +110,6 @@ export default {
     }
   },
   methods: {
-    groupDeprecatedItems(cadences) {
-      return [...cadences.filter((c) => !c.automatic), ...cadences.filter((c) => c.automatic)];
-    },
     nextPage() {
       this.pagination = {
         afterCursor: this.pageInfo.endCursor,
@@ -188,16 +175,6 @@ export default {
       <gl-loading-icon v-if="loading" class="gl-my-5" size="lg" />
 
       <template v-else>
-        <gl-alert
-          v-if="manualCadenceExists"
-          variant="danger"
-          :dismissible="false"
-          :title="$options.i18n.deprecationAlert.title"
-          :primary-button-text="$options.i18n.deprecationAlert.primaryButtonText"
-          :primary-button-link="$options.iterationCadencesHelpPagePath"
-        >
-          {{ $options.i18n.deprecationAlert.message }}
-        </gl-alert>
         <ul v-if="cadences.length" class="content-list">
           <iteration-cadence-list-item
             v-for="cadence in cadences"

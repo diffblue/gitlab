@@ -1,4 +1,4 @@
-import { GlBadge, GlDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
+import { GlDropdown, GlInfiniteScroll, GlModal, GlSkeletonLoader } from '@gitlab/ui';
 import { RouterLinkStub } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
@@ -136,7 +136,6 @@ describe('Iteration cadence list item', () => {
   const findAddIterationButton = () => wrapper.findByRole('menuitem', { name: i18n.addIteration });
   const findIterationItemText = (i) => wrapper.findAllByTestId('iteration-item').at(i).text();
   const findDurationBadge = () => wrapper.find('[data-testid="duration-badge"]');
-  const findDeprecationBadge = () => wrapper.findComponent(GlBadge);
   const expand = (cadence = automaticIterationCadence) =>
     wrapper.findByRole('button', { text: cadence.title }).trigger('click');
 
@@ -209,31 +208,6 @@ describe('Iteration cadence list item', () => {
       expect(findAddIterationButton().exists()).toBe(canCreateIteration);
     },
   );
-
-  describe('deprecation badge', () => {
-    it('does not show deprecation badge for automatic cadence', async () => {
-      await createComponent({
-        props: {
-          automatic: true,
-        },
-        canEditCadence: true,
-      });
-
-      expect(findDeprecationBadge().exists()).toBe(false);
-    });
-
-    it('shows deprecation badge for manual cadence', async () => {
-      await createComponent({
-        props: {
-          automatic: false,
-        },
-        canEditCadence: true,
-      });
-
-      expect(findDeprecationBadge().exists()).toBe(true);
-      expect(findDeprecationBadge().text()).toBe('Can be converted');
-    });
-  });
 
   describe('duration badge', () => {
     it('does not show duration badge for manual cadence', async () => {

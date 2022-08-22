@@ -129,7 +129,6 @@ describe('Iteration cadences list', () => {
   const findPrevPageButton = () => wrapper.findByRole('button', { name: 'Prev' });
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
   const findPagination = () => wrapper.findComponent(GlKeysetPagination);
-  const findCadenceItems = () => wrapper.findAll(IterationCadenceListItem);
 
   afterEach(() => {
     wrapper.destroy();
@@ -178,53 +177,6 @@ describe('Iteration cadences list', () => {
 
       cadences.forEach(({ title }) => {
         expect(wrapper.text()).toContain(title);
-      });
-    });
-
-    it('does not display deprecation alert when only automatic cadences are shown', async () => {
-      await createComponent();
-
-      await waitForPromises();
-
-      expect(wrapper.text()).not.toContain(
-        'Your manual cadence can be converted to use automated scheduling',
-      );
-    });
-
-    describe('when manual cadence exists', () => {
-      beforeEach(async () => {
-        const mixedCadences = [
-          ...cadences,
-          {
-            id: 'gid://gitlab/Iterations::Cadence/100',
-            title: 'Manual cadence',
-            durationInWeeks: 0,
-            automatic: false,
-          },
-          {
-            id: 'gid://gitlab/Iterations::Cadence/101',
-            title: 'Deprecated cadence',
-            durationInWeeks: 0,
-            automatic: false,
-          },
-        ];
-
-        await createComponent({
-          resolverMock: jest.fn().mockResolvedValue(querySuccessResponse(mixedCadences)),
-        });
-
-        await waitForPromises();
-      });
-
-      it('displays deprecation alert when manual cadence exists', async () => {
-        expect(wrapper.text()).toContain(
-          'Your manual cadence can be converted to use automated scheduling',
-        );
-      });
-
-      it('groups manual cadences (deprecated) and displays them first', async () => {
-        expect(findCadenceItems().at(0).text()).toContain('Manual cadence');
-        expect(findCadenceItems().at(1).text()).toContain('Deprecated cadence');
       });
     });
 
