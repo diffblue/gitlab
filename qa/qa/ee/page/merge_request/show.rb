@@ -57,6 +57,7 @@ module QA
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/modal_footer.vue' do
                 element :resolve_split_button
                 element :create_issue_button
+                element :cancel_button
               end
 
               view 'ee/app/assets/javascripts/vue_shared/security_reports/components/dismiss_button.vue' do
@@ -163,6 +164,10 @@ module QA
             wait_until(max_duration: 15, reload: false) do
               page.current_url != previous_page
             end
+          end
+
+          def cancel_vulnerability_modal
+            click_element(:cancel_button)
           end
 
           def has_vulnerability_report?(timeout: 60)
