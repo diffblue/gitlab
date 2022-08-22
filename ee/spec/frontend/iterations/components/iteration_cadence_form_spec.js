@@ -114,6 +114,7 @@ describe('Iteration cadence form', () => {
   const findDurationGroup = () => wrapper.findAllComponents(GlFormGroup).at(3);
   const findUpcomingIterationsGroup = () => wrapper.findAllComponents(GlFormGroup).at(4);
   const findRollOverGroup = () => wrapper.findAllComponents(GlFormGroup).at(5);
+  const findAutomaticSchedulingCheckbox = () => wrapper.findComponent(GlFormCheckbox);
 
   const findError = () => wrapper.findComponent(GlAlert);
 
@@ -126,11 +127,17 @@ describe('Iteration cadence form', () => {
 
   const setTitle = (value) => findTitle().vm.$emit('input', value);
   const setStartDate = (value) => findStartDate().vm.$emit('input', value);
-  const UpcomingIterations = (value) => findUpcomingIterations().vm.$emit('input', value);
+  const setUpcomingIterations = (value) => findUpcomingIterations().vm.$emit('input', value);
   const setDuration = (value) => findDuration().vm.$emit('input', value);
 
   const setRollOver = (value) => {
     const checkbox = findRollOverGroup().findComponent(GlFormCheckbox).vm;
+    checkbox.$emit('input', value);
+    checkbox.$emit('change', value);
+  };
+
+  const setAutomaticValue = (value) => {
+    const checkbox = findAutomaticSchedulingCheckbox().findComponent(GlFormCheckbox).vm;
     checkbox.$emit('input', value);
     checkbox.$emit('change', value);
   };
@@ -165,12 +172,12 @@ describe('Iteration cadence form', () => {
       expect(findStartDate().attributes('disabled')).toBe(undefined);
     });
 
-    it('does not show the description text for effective date', () => {
+    it('does not show the description text for automation start date', () => {
       expect(findStartDateGroup().text()).not.toContain('Iterations are scheduled to start on');
     });
 
-    describe('when a new effective date is selected', () => {
-      it('shows the description text with the correct weekday for effective date', async () => {
+    describe('when a new automation start date is selected', () => {
+      it('shows the description text with the correct weekday for automation start date', async () => {
         setStartDate('2022-07-13');
 
         await nextTick();
@@ -193,7 +200,7 @@ describe('Iteration cadence form', () => {
         setStartDate(startDate);
         setDuration(durationInWeeks);
         setRollOver(rollOver);
-        UpcomingIterations(iterationsInAdvance);
+        setUpcomingIterations(iterationsInAdvance);
 
         clickSave();
 
@@ -223,7 +230,7 @@ describe('Iteration cadence form', () => {
         setStartDate(startDate);
         setDuration(durationInWeeks);
         setRollOver(rollOver);
-        UpcomingIterations(iterationsInAdvance);
+        setUpcomingIterations(iterationsInAdvance);
 
         clickSave();
 
@@ -237,7 +244,7 @@ describe('Iteration cadence form', () => {
         setTitle(title);
         setStartDate(startDate);
         setDuration(durationInWeeks);
-        UpcomingIterations(iterationsInAdvance);
+        setUpcomingIterations(iterationsInAdvance);
 
         clickSave();
 
@@ -270,6 +277,49 @@ describe('Iteration cadence form', () => {
         await waitForPromises();
 
         expect(findSaveButton().props('loading')).toBe(false);
+      });
+    });
+
+    describe('automated scheduling disabled', () => {
+      beforeEach(() => {
+        setAutomaticValue(false);
+      });
+
+      it('disables the fields concerning automatic scheduling', () => {
+        expect(findUpcomingIterations().attributes('disabled')).toBe('disabled');
+        expect(findDuration().attributes('disabled')).toBe('disabled');
+        expect(findStartDate().attributes('disabled')).toBe('disabled');
+      });
+
+      it('resets the fields concerning automatic scheduling on disabling automatic scheduling', async () => {
+        const title = 'Iteration 5';
+
+        setUpcomingIterations(10);
+        setDuration(2);
+
+        setAutomaticValue(false);
+
+        await nextTick();
+
+        setTitle(title);
+
+        clickSave();
+
+        await nextTick();
+
+        expect(mutationMock).toHaveBeenCalledWith({
+          input: {
+            groupPath,
+            title,
+            automatic: false,
+            startDate: null,
+            rollOver: false,
+            durationInWeeks: null,
+            iterationsInAdvance: null,
+            description: '',
+            active: true,
+          },
+        });
       });
     });
   });
@@ -315,23 +365,13 @@ describe('Iteration cadence form', () => {
       });
     });
 
-    it('does not show the deprecation alert for automatic cadence', async () => {
-      createComponent();
-
-      await waitForPromises();
-
-      expect(wrapper.text()).not.toContain(
-        'This cadence can be converted to use automated scheduling',
-      );
-    });
-
     it('does not disable the start date field when the first iteration is upcoming', async () => {
       await waitForPromises();
 
       expect(findStartDate().attributes('disabled')).toBe(undefined);
     });
 
-    it('shows the description text with the correct weekday for effective date', async () => {
+    it('shows the description text with the correct weekday for automation start date', async () => {
       await waitForPromises();
 
       expect(findStartDateGroup().text()).toContain('Iterations are scheduled to start on Sundays');
@@ -357,12 +397,6 @@ describe('Iteration cadence form', () => {
         await waitForPromises();
 
         await nextTick();
-      });
-
-      it('displays the deprecation message', async () => {
-        expect(wrapper.text()).toContain(
-          'This cadence can be converted to use automated scheduling',
-        );
       });
 
       it('highlights fields required for automatic scheduling', async () => {
