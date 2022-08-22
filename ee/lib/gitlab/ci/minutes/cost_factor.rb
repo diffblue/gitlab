@@ -5,7 +5,8 @@ module Gitlab
     module Minutes
       class CostFactor
         DISABLED = 0.0
-        PUBLIC_OPEN_SOURCE = 0.5
+        PUBLIC_OPEN_SOURCE_PLAN = 0.5
+        OPEN_SOURCE_CONTRIBUTION = 0.008
 
         def initialize(runner_matcher)
           ensure_runner_matcher_instance(runner_matcher)
@@ -21,19 +22,15 @@ module Gitlab
           !enabled?(project)
         end
 
-        # Each runners has a public and private cost factor
+        # Each runner has a public and private cost factor
         # Pass the project to `for_project` to get a projects cost factor
-        # based on the runner cost factors and project visibility level
+        # based on the runner cost factors by project visibility level
         def for_project(project)
           return DISABLED unless @runner_matcher.instance_type?
           return DISABLED unless project.ci_minutes_usage.limit_enabled?
 
-          cost_factors = [for_visibility(project.visibility_level)]
-          cost_factors << PUBLIC_OPEN_SOURCE if public_open_source?(project)
-
-          # Exceptions to the cost per runner(for_visibility) are designed
-          # to be discounts so take the lowest value
-          cost_factors.min
+          runner_cost_factor = for_visibility(project.visibility_level)
+          apply_discount(project, runner_cost_factor)
         end
 
         # This method SHOULD NOT BE USED by new code. It is currently depended
@@ -55,9 +52,26 @@ module Gitlab
 
         private
 
-        def public_open_source?(project)
-          project.public? &&
-            project.actual_plan.open_source?
+        # Exceptions to the cost per runner are designed
+        # to be discounts so take the lowest value
+        def apply_discount(project, runner_cost_factor)
+          cost_factors = [runner_cost_factor]
+
+          if project.public?
+            cost_factors << PUBLIC_OPEN_SOURCE_PLAN if open_source_plan?(project)
+            cost_factors << OPEN_SOURCE_CONTRIBUTION if public_fork_source?(project)
+          end
+
+          cost_factors.min
+        end
+
+        def public_fork_source?(project)
+          Feature.enabled?(:ci_forked_source_public_cost_factor, project) &&
+            project&.fork_source&.public?
+        end
+
+        def open_source_plan?(project)
+          project.actual_plan.open_source?
         end
 
         def ensure_runner_matcher_instance(runner_matcher)

@@ -152,23 +152,6 @@ RSpec.describe Admin::ApplicationSettingsController do
       it_behaves_like 'settings for licensed features'
     end
 
-    context 'updating git abuse rate-limit settings' do
-      before do
-        stub_feature_flags(git_abuse_rate_limit_feature_flag: true)
-      end
-
-      let(:settings) do
-        {
-          max_number_of_repository_downloads: 10,
-          max_number_of_repository_downloads_within_time_period: 100
-        }
-      end
-
-      let(:feature) { :git_abuse_rate_limit }
-
-      it_behaves_like 'settings for licensed features'
-    end
-
     context 'updating maintenance mode setting' do
       before do
         stub_feature_flags(maintenance_mode: true)

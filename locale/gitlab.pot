@@ -40375,6 +40375,9 @@ msgstr ""
 msgid "This project is not subscribed to any project pipelines."
 msgstr ""
 
+msgid "This project is public. Non-members can guess the Service Desk email address, because it contains the group and project name. %{linkStart}How do I create a custom email address?%{linkEnd}"
+msgstr ""
+
 msgid "This project manages its dependencies using %{strong_start}%{manager_name}%{strong_end}"
 msgstr ""
 

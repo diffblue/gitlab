@@ -126,7 +126,7 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
       it { is_expected.to eq(result) }
     end
 
-    context 'plan based cost factor', :saas do
+    context 'when plan based cost factor', :saas do
       let(:runner_type) { :instance }
       let(:project) { create(:project, visibility_level: visibility_level) }
       let(:public_cost_factor) { 2 }
@@ -152,11 +152,11 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
           let(:visibility_level) { Gitlab::VisibilityLevel::PUBLIC }
 
           context 'when the public open source cost factor is lower' do
-            specify { expect(subject).to eq(described_class::PUBLIC_OPEN_SOURCE) }
+            specify { expect(subject).to eq(described_class::PUBLIC_OPEN_SOURCE_PLAN) }
           end
 
           context 'when the runner cost factor is lower' do
-            let(:public_cost_factor) { described_class::PUBLIC_OPEN_SOURCE - 0.001 }
+            let(:public_cost_factor) { described_class::PUBLIC_OPEN_SOURCE_PLAN - 0.001 }
 
             specify { expect(subject).to eq(public_cost_factor) }
           end
@@ -181,6 +181,60 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
             expect(subject).to eq(public_cost_factor)
           end
         end
+      end
+    end
+
+    context 'when project is forked' do
+      let(:runner_type) { :instance }
+      let(:project) { create(:project, visibility_level: visibility_level) }
+      let(:public_cost_factor) { 2 }
+      let(:private_cost_factor) { 4 }
+      let(:fork_source_project) { create(:project, visibility_level: source_visibility_level) }
+
+      before do
+        allow(project).to receive(:fork_source).and_return(fork_source_project)
+        allow(Gitlab::CurrentSettings).to receive(:shared_runners_minutes) { 100 }
+      end
+
+      context 'when the project is public' do
+        let(:visibility_level) { Gitlab::VisibilityLevel::PUBLIC }
+
+        context 'when the fork_source project is private' do
+          let(:source_visibility_level) { Gitlab::VisibilityLevel::PRIVATE }
+
+          it 'returns the runner public cost factor' do
+            expect(subject).to eq(public_cost_factor)
+          end
+        end
+
+        context 'when the fork_source project is public' do
+          let(:source_visibility_level) { Gitlab::VisibilityLevel::PUBLIC }
+
+          context 'when the forked source cost factor is lower' do
+            specify { expect(subject).to eq(described_class::OPEN_SOURCE_CONTRIBUTION) }
+          end
+
+          context 'when the runner cost factor is lower' do
+            let(:public_cost_factor) { described_class::OPEN_SOURCE_CONTRIBUTION - 0.001 }
+
+            specify { expect(subject).to eq(public_cost_factor) }
+          end
+
+          context 'when ci_forked_source_public_cost_factor is disabled' do
+            before do
+              stub_feature_flags(ci_forked_source_public_cost_factor: false)
+            end
+
+            specify { expect(subject).to eq(public_cost_factor) }
+          end
+        end
+      end
+
+      context 'when the project is private' do
+        let(:visibility_level) { Gitlab::VisibilityLevel::PRIVATE }
+        let(:source_visibility_level) { Gitlab::VisibilityLevel::PUBLIC }
+
+        specify { expect(subject).to eq(private_cost_factor) }
       end
     end
   end

@@ -198,7 +198,8 @@ module EE
           slack_app_verification_token: nil,
           max_number_of_repository_downloads: 0,
           max_number_of_repository_downloads_within_time_period: 0,
-          git_rate_limit_users_allowlist: []
+          git_rate_limit_users_allowlist: [],
+          auto_ban_user_on_excessive_projects_download: false
         )
       end
     end

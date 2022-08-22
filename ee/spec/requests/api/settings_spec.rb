@@ -313,7 +313,8 @@ RSpec.describe API::Settings, 'EE Settings' do
       {
         max_number_of_repository_downloads: 5,
         max_number_of_repository_downloads_within_time_period: 60,
-        git_rate_limit_users_allowlist: [user.username]
+        git_rate_limit_users_allowlist: [user.username],
+        auto_ban_user_on_excessive_projects_download: true
       }
     end
 
