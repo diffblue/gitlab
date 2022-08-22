@@ -151,7 +151,7 @@ export default () => {
   const $groupTabContent = $(GROUP_TAB_CONTENT_SELECTOR);
   const fetchHtmlForTabContent = async ($content) => {
     const response = await axios.get($content.data('initialTemplates'));
-    // eslint-disable-next-line no-param-reassign
+    // eslint-disable-next-line no-param-reassign,no-unsanitized/property
     $content[0].innerHTML = response.data;
     bindEvents();
   };
