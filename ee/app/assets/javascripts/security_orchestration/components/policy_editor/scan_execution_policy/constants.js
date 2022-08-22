@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 import {
   SAST_SHORT_NAME,
   DAST_SHORT_NAME,
@@ -14,6 +14,15 @@ export const SCAN_EXECUTION_RULES_LABELS = {
 
 export const SCAN_EXECUTION_PIPELINE_RULE = 'pipeline';
 export const SCAN_EXECUTION_SCHEDULE_RULE = 'schedule';
+
+export const SCAN_EXECUTION_RULE_SCOPE_TYPE = {
+  branch: s__('ScanExecutionPolicy|branch'),
+};
+
+export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
+  daily: __('daily'),
+  weekly: __('weekly'),
+};
 
 export const DEFAULT_SCAN = 'dast';
 

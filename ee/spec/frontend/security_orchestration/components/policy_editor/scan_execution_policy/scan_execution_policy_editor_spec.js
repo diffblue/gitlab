@@ -217,7 +217,7 @@ describe('ScanExecutionPolicyEditor', () => {
 
     it.each`
       component        | oldValue | newValue
-      ${'name'}        | ${null}  | ${'new policy name'}
+      ${'name'}        | ${''}    | ${'new policy name'}
       ${'description'} | ${''}    | ${'new description'}
       ${'enabled'}     | ${true}  | ${false}
     `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
@@ -242,6 +242,7 @@ describe('ScanExecutionPolicyEditor', () => {
       expect(findPolicyEditorLayout().props('policy').rules).toEqual([
         RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
       ]);
+
       findAddRuleButton().vm.$emit('click');
 
       await nextTick();

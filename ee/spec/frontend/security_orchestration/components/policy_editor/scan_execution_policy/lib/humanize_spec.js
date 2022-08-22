@@ -7,6 +7,7 @@ import { NO_RULE_MESSAGE } from 'ee/security_orchestration/components/policy_edi
 jest.mock('~/locale', () => ({
   getPreferredLocales: jest.fn().mockReturnValue(['en']),
   sprintf: jest.requireActual('~/locale').sprintf,
+  languageCode: jest.requireActual('~/locale').languageCode,
   s__: jest.requireActual('~/locale').s__, // eslint-disable-line no-underscore-dangle
   n__: jest.requireActual('~/locale').n__, // eslint-disable-line no-underscore-dangle
   __: jest.requireActual('~/locale').__,

@@ -88,6 +88,7 @@ export default {
       policy: fromYaml(yamlEditorValue),
       yamlEditorError: null,
       yamlEditorValue,
+      mode: EDITOR_MODE_RULE,
       documentationPath: setUrlFragment(
         this.scanPolicyDocumentationPath,
         'scan-execution-policy-editor',
@@ -131,6 +132,7 @@ export default {
       this.policy.rules.splice(ruleIndex, 1, values);
     },
     changeEditorMode(mode) {
+      this.mode = mode;
       if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
         this.yamlEditorValue = toYaml(this.policy);
       }
@@ -164,13 +166,14 @@ export default {
 
       try {
         const assignedPolicyProject = await this.getSecurityPolicyProject();
-
+        const yamlValue =
+          this.mode === EDITOR_MODE_YAML ? this.yamlEditorValue : toYaml(this.policy);
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name: this.originalName || fromYaml(this.yamlEditorValue)?.name,
+          name: this.originalName || fromYaml(this.yamlEditorValue)?.name || this.policy.name,
           namespacePath: this.namespacePath,
-          yamlEditorValue: this.yamlEditorValue,
+          yamlEditorValue: yamlValue,
         });
 
         this.redirectToMergeRequest({ mergeRequest, assignedPolicyProject });
