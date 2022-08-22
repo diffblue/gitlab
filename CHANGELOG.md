@@ -1336,6 +1336,13 @@ entry.
 - [Update GitLab Runner Helm Chart to 0.42.0](gitlab-org/gitlab@cc89200f498fe216864914c79b5b0d1d578edab3) ([merge request](gitlab-org/gitlab!90605))
 - [Address database documentation Vale warningss](gitlab-org/gitlab@e5f9a089766bace046d3bbd760a2979865a4bbc0) by @cgives ([merge request](gitlab-org/gitlab!90093))
 
+## 15.1.5 (2022-08-22)
+
+### Security (2 changes)
+
+- [Validate if values to be saved in Redis can be converted to string](gitlab-org/security/gitlab@0bc82f875f78b6a2703b294b1a5a8d941000f9f2) ([merge request](gitlab-org/security/gitlab!2725))
+- [Fix CSS selector used in specs](gitlab-org/security/gitlab@a900e65b192a8415baa6bcd4050566543107ab1f) ([merge request](gitlab-org/security/gitlab!2728))
+
 ## 15.1.4 (2022-07-28)
 
 ### Security (18 changes)
