@@ -507,6 +507,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: epics:epics_update_cached_metadata
+  :worker_name: Epics::UpdateCachedMetadataWorker
+  :feature_category: :portfolio_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 2
+  :idempotent: true
+  :tags: []
 - :name: epics:epics_update_epics_dates
   :worker_name: Epics::UpdateEpicsDatesWorker
   :feature_category: :portfolio_management

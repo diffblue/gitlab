@@ -18,6 +18,7 @@ class EpicIssue < ApplicationRecord
 
   validate :validate_confidential_epic
   validate :validate_group_structure
+  after_commit :update_cached_metadata
 
   def epic_tree_root?
     false
@@ -46,6 +47,16 @@ class EpicIssue < ApplicationRecord
 
     if epic.confidential? && !issue.confidential?
       errors.add :issue, _('Cannot assign a confidential epic to a non-confidential issue. Make the issue confidential and try again')
+    end
+  end
+
+  def update_cached_metadata
+    return unless ::Feature.enabled?(:cache_issue_sums)
+
+    ::Epics::UpdateCachedMetadataWorker.perform_async([epic_id])
+
+    if epic_id_previously_changed? && epic_id_previously_was
+      ::Epics::UpdateCachedMetadataWorker.perform_async([epic_id_previously_was])
     end
   end
 end
