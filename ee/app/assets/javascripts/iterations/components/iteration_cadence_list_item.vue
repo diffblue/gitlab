@@ -1,7 +1,6 @@
 <script>
 import {
   GlAlert,
-  GlBadge,
   GlButton,
   GlCollapse,
   GlDropdown,
@@ -13,7 +12,7 @@ import {
 } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { fetchPolicies } from '~/lib/graphql';
-import { __, s__, sprintf } from '~/locale';
+import { __, s__ } from '~/locale';
 import { getIterationPeriod } from '../utils';
 import { Namespace } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
@@ -38,14 +37,12 @@ const i18n = Object.freeze({
   ),
   modalConfirm: s__('Iterations|Delete cadence'),
   modalCancel: __('Cancel'),
-  deprecationBadgeText: s__('Iterations|Can be converted'),
 });
 
 export default {
   i18n,
   components: {
     GlAlert,
-    GlBadge,
     GlButton,
     GlCollapse,
     GlDropdown,
@@ -138,9 +135,6 @@ export default {
         firstPageSize: pageSize,
         state: this.iterationState,
       };
-    },
-    deprecationNotice() {
-      return sprintf(i18n.deprecationNotice, { cadenceTitle: this.title });
     },
     pageInfo() {
       return this.workspace.iterations?.pageInfo || {};
@@ -266,14 +260,6 @@ export default {
         <gl-icon name="clock" class="gl-mr-3" />
         {{ n__('Every week', 'Every %d weeks', durationInWeeks) }}</span
       >
-      <gl-badge
-        v-if="!automatic"
-        variant="info"
-        class="gl-mr-2 gl-display-none gl-sm-display-inline-block"
-      >
-        <gl-icon name="warning" />
-        {{ i18n.deprecationBadgeText }}
-      </gl-badge>
       <gl-dropdown
         v-if="canEditCadence"
         ref="menu"
