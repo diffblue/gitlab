@@ -60,7 +60,7 @@ export const receiveTasksByTypeDataError = ({ commit }, error) => {
 
 export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters }) => {
   const { currentGroupPath, cycleAnalyticsRequestParams } = rootGetters;
-  const { subject, selectedLabelIds } = state;
+  const { subject, selectedLabelNames } = state;
 
   const {
     project_ids,
@@ -75,7 +75,7 @@ export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters }) =
   commit(types.REQUEST_TASKS_BY_TYPE_DATA);
 
   // dont request if we have no labels selected...for now
-  if (selectedLabelIds.length) {
+  if (selectedLabelNames.length) {
     return Api.cycleAnalyticsTasksByType(currentGroupPath, {
       project_ids,
       created_after,
@@ -86,7 +86,7 @@ export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters }) =
       subject,
       // NOTE: the type of work module will continute to manage its labels, ignoring the filter bar labels
       // until we resolve: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/34524
-      label_ids: selectedLabelIds,
+      label_names: selectedLabelNames,
     })
       .then(checkForDataError)
       .then(({ data }) => commit(types.RECEIVE_TASKS_BY_TYPE_DATA_SUCCESS, data))

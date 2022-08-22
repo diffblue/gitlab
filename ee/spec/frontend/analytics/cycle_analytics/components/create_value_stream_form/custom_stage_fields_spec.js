@@ -141,7 +141,7 @@ describe('CustomStageFields', () => {
       it('will emit the `input` event when the start event label field when selected', () => {
         expect(wrapper.emitted('input')).toBeUndefined();
 
-        findStartEventLabelField().vm.$emit('update-label', firstLabel.id);
+        findStartEventLabelField().vm.$emit('update-label', firstLabel);
 
         expect(wrapper.emitted('input')[0]).toEqual([
           { field: 'startEventLabelId', value: firstLabel.id },
@@ -186,7 +186,7 @@ describe('CustomStageFields', () => {
       it('will emit the `input` event when the start event label field when selected', () => {
         expect(wrapper.emitted('input')).toBeUndefined();
 
-        findEndEventLabelField().vm.$emit('update-label', firstLabel.id);
+        findEndEventLabelField().vm.$emit('update-label', firstLabel);
 
         expect(wrapper.emitted('input')[0]).toEqual([
           { field: 'endEventLabelId', value: firstLabel.id },

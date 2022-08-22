@@ -1,7 +1,7 @@
 import { getTasksByTypeData } from '../../../utils';
 
 export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}, rootGetters = {}) => {
-  const { selectedLabelIds = [], subject } = state;
+  const { selectedLabelNames = [], selectedLabelIds = [], subject } = state;
   const { currentGroup, createdAfter = null, createdBefore = null } = rootState;
   const { selectedProjectIds = [] } = rootGetters;
   return {
@@ -10,6 +10,7 @@ export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}, rootGe
     createdAfter,
     createdBefore,
     selectedLabelIds,
+    selectedLabelNames,
     subject,
   };
 };
