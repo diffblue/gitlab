@@ -9,7 +9,7 @@ import {
   GlSprintf,
 } from '@gitlab/ui';
 import { __ } from '~/locale';
-import deploymentInstance from '~/vue_shared/components/deployment_instance.vue';
+import DeploymentInstance from '~/vue_shared/components/deployment_instance.vue';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 
 export default {
@@ -22,7 +22,7 @@ export default {
     GlLink,
     GlLoadingIcon,
     GlSprintf,
-    deploymentInstance,
+    DeploymentInstance,
   },
   props: {
     isFetching: {

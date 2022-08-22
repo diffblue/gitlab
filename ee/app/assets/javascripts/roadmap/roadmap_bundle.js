@@ -10,7 +10,7 @@ import Translate from '~/vue_shared/translate';
 import EpicItem from './components/epic_item.vue';
 import EpicItemContainer from './components/epic_item_container.vue';
 
-import roadmapApp from './components/roadmap_app.vue';
+import RoadmapApp from './components/roadmap_app.vue';
 import {
   DATE_RANGES,
   PROGRESS_WEIGHT,
@@ -49,7 +49,7 @@ export default () => {
     apolloProvider,
     store: createStore(),
     components: {
-      roadmapApp,
+      RoadmapApp,
     },
     provide() {
       const { dataset } = this.$options.el;

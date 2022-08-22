@@ -127,7 +127,7 @@ export default {
     >
       {{ $options.i18n.viewResults }}
     </gl-button>
-    <ActionButton
+    <action-button
       v-if="isCancellable"
       data-testid="cancel-scan-button"
       action-type="cancel"
@@ -135,7 +135,7 @@ export default {
       :is-loading="isCancelling"
       @click="cancelPipeline"
     />
-    <ActionButton
+    <action-button
       v-if="isRetryable"
       class="gl-ml-3"
       data-testid="retry-scan-button"
@@ -144,7 +144,7 @@ export default {
       :is-loading="isRetrying"
       @click="retryPipeline"
     />
-    <ActionButton
+    <action-button
       v-if="isEditable"
       data-testid="edit-scan-button"
       action-type="pencil"
