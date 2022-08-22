@@ -572,9 +572,6 @@ RSpec/DescribedClass:
 RSpec/ReceiveNever:
   Enabled: false
 
-RSpec/MissingExampleGroupArgument:
-  Enabled: false
-
 RSpec/UnspecifiedException:
   Enabled: false
 
