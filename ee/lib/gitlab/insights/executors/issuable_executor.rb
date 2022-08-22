@@ -60,6 +60,9 @@ module Gitlab
                 period_field: period_field
               )
             else
+              # Performance optimization to use Index Only Scan
+              issuables = issuables.select(:id).reorder(id: :desc) # rubocop:disable CodeReuse/ActiveRecord
+
               Gitlab::Insights::Reducers::CountPerLabelReducer.reduce(
                 issuables,
                 labels: collection_labels_param
