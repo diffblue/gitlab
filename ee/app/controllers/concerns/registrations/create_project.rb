@@ -13,15 +13,11 @@ module Registrations::CreateProject
       Rails.root.join('vendor', 'project_templates', LEARN_GITLAB_ULTIMATE_TEMPLATE)
     end
 
-    def create_learn_gitlab_project
-      File.open(learn_gitlab_template_path) do |archive|
-        ::Projects::GitlabProjectsImportService.new(
-          current_user,
-          namespace_id: @project.namespace_id,
-          file: archive,
-          name: learn_gitlab_project_name
-        ).execute
-      end
+    def create_learn_gitlab_project(parent_project_namespace_id)
+      ::Onboarding::CreateLearnGitlabWorker.perform_async(learn_gitlab_template_path,
+                                                          learn_gitlab_project_name,
+                                                          parent_project_namespace_id,
+                                                          current_user.id)
     end
 
     def learn_gitlab_project_name
