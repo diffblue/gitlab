@@ -99,83 +99,15 @@ RSpec.describe Resolvers::EpicsResolver do
         end
       end
 
-      context 'with search' do
-        let!(:epic3) { create(:epic, group: group, title: 'third', description: 'text 2') }
+      it_behaves_like 'graphql query for searching issuables' do
+        let_it_be(:parent) { group }
+        let_it_be(:issuable1) { epic1 }
+        let_it_be(:issuable2) { epic2 }
+        let_it_be(:issuable3) { create(:epic, group: group, title: 'third', description: 'text 2') }
+        let_it_be(:issuable4) { create(:epic, group: group) }
 
-        it 'filters epics by title' do
-          epics = resolve_epics(search: 'created')
-
-          expect(epics).to match_array([epic1, epic2])
-        end
-
-        it 'filters epics by description' do
-          epics = resolve_epics(search: 'text')
-
-          expect(epics).to match_array([epic2, epic3])
-        end
-
-        context 'with in param' do
-          it 'generates an error if param search is missing' do
-            error_message = "`search` should be present when including the `in` argument"
-
-            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, error_message) do
-              resolve_epics(in: ['title'])
-            end
-          end
-
-          it 'filters epics by description only' do
-            epics_with_text = resolve_epics(search: 'text', in: ['description'])
-            epics_with_created = resolve_epics(search: 'created', in: ['description'])
-
-            expect(epics_with_created).to be_empty
-            expect(epics_with_text).to match_array([epic2, epic3])
-          end
-
-          it 'filters epics by title only' do
-            epics_with_text = resolve_epics(search: 'text', in: ['title'])
-            epics_with_created = resolve_epics(search: 'created', in: ['title'])
-
-            expect(epics_with_created).to match_array([epic1, epic2])
-            expect(epics_with_text).to be_empty
-          end
-
-          it 'filters epics by title and description' do
-            epic4 = create(:epic, group: group, title: 'fourth text', description: ['description'])
-            epics = resolve_epics(search: 'text', in: %w(title description))
-
-            expect(epics).to match_array([epic2, epic3, epic4])
-          end
-        end
-
-        context 'with anonymous user' do
-          let_it_be(:current_user) { nil }
-
-          context 'with disable_anonymous_search enabled' do
-            before do
-              stub_feature_flags(disable_anonymous_search: true)
-            end
-
-            it 'returns an error' do
-              error_message = "User must be authenticated to include the `search` argument."
-
-              expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, error_message) do
-                resolve_epics(search: 'created')
-              end
-            end
-          end
-
-          context 'with disable_anonymous_search disabled' do
-            before do
-              stub_feature_flags(disable_anonymous_search: false)
-            end
-
-            it 'filters epics by search term' do
-              epics = resolve_epics(search: 'created')
-
-              expect(epics).to match_array([epic1, epic2])
-            end
-          end
-        end
+        let_it_be(:finder_class) { EpicsFinder }
+        let_it_be(:optimization_param) { :attempt_group_search_optimizations }
       end
 
       context 'with author_username' do
