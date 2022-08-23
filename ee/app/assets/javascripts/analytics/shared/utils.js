@@ -1,5 +1,5 @@
-import dateFormat from 'dateformat';
 import { dateFormats } from '~/analytics/shared/constants';
+import dateFormat from '~/lib/dateformat';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 

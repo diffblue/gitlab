@@ -1,5 +1,5 @@
-import dateFormat from 'dateformat';
 import { uniqBy } from 'lodash';
+import dateFormat from '~/lib/dateformat';
 import { s__, n__, sprintf } from '~/locale';
 import { dateFormats } from '~/analytics/shared/constants';
 import { toYmd } from '~/analytics/shared/utils';

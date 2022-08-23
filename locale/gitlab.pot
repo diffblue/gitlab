@@ -16816,6 +16816,9 @@ msgstr ""
 msgid "Frequently searched"
 msgstr ""
 
+msgid "Fri"
+msgstr ""
+
 msgid "Friday"
 msgstr ""
 
@@ -25579,6 +25582,9 @@ msgstr ""
 msgid "Modify merge commit"
 msgstr ""
 
+msgid "Mon"
+msgstr ""
+
 msgid "Monday"
 msgstr ""
 
@@ -34284,6 +34290,9 @@ msgstr ""
 msgid "SSL verification"
 msgstr ""
 
+msgid "Sat"
+msgstr ""
+
 msgid "Satisfied"
 msgstr ""
 
@@ -38081,6 +38090,9 @@ msgstr ""
 msgid "Summary comment (optional)"
 msgstr ""
 
+msgid "Sun"
+msgstr ""
+
 msgid "Sunday"
 msgstr ""
 
@@ -40477,6 +40489,9 @@ msgstr ""
 msgid "Throughput"
 msgstr ""
 
+msgid "Thu"
+msgstr ""
+
 msgid "Thursday"
 msgstr ""
 
@@ -40714,6 +40729,24 @@ msgstr ""
 msgid "Timezone"
 msgstr ""
 
+msgid "Time|A"
+msgstr ""
+
+msgid "Time|AM"
+msgstr ""
+
+msgid "Time|P"
+msgstr ""
+
+msgid "Time|PM"
+msgstr ""
+
+msgid "Time|a"
+msgstr ""
+
+msgid "Time|am"
+msgstr ""
+
 msgid "Time|hr"
 msgid_plural "Time|hrs"
 msgstr[0] ""
@@ -40723,6 +40756,12 @@ msgid "Time|min"
 msgid_plural "Time|mins"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Time|p"
+msgstr ""
+
+msgid "Time|pm"
+msgstr ""
 
 msgid "Time|s"
 msgstr ""
@@ -41427,6 +41466,9 @@ msgid "Trying to communicate with your device. Plug it in (if needed) and press 
 msgstr ""
 
 msgid "Trying to communicate with your device. Plug it in (if you haven't already) and press the button on the device now."
+msgstr ""
+
+msgid "Tue"
 msgstr ""
 
 msgid "Tuesday"
@@ -43970,6 +44012,9 @@ msgid "Website"
 msgstr ""
 
 msgid "Website:"
+msgstr ""
+
+msgid "Wed"
 msgstr ""
 
 msgid "Wednesday"

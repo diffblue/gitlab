@@ -1,4 +1,3 @@
-import dateFormat from 'dateformat';
 import { dateFormats } from '~/analytics/shared/constants';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import {
@@ -7,6 +6,7 @@ import {
 } from '~/cycle_analytics/store/getters';
 import { filterStagesByHiddenStatus } from '~/cycle_analytics/utils';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
+import dateFormat from '~/lib/dateformat';
 import httpStatus from '~/lib/utils/http_status';
 import { filterToQueryObject } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import { DEFAULT_VALUE_STREAM_ID, OVERVIEW_STAGE_CONFIG } from '../constants';
