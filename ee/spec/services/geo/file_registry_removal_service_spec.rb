@@ -113,46 +113,94 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
           end
 
           context 'when file exists on object storage' do
-            it 'removes the file' do
-              remote_file = double(destroy: true) # rubocop:disable RSpec/VerifiedDoubles
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+            context 'when Gitlab managed replication is enabled' do
+              it 'removes the file' do
+                remote_file = double(destroy: true) # rubocop:disable RSpec/VerifiedDoubles
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
 
-              expect_next_instances_of(Fog::Storage::AWS::Files, 2) do |files|
-                expect(files).to receive(:head).with(blob_path).once.and_return(remote_file)
+                expect_next_instances_of(Fog::Storage::AWS::Files, 2) do |files|
+                  expect(files).to receive(:head).with(blob_path).once.and_return(remote_file)
+                end
+
+                expect_to_log_a_message_with(upload.id, "Removing #{blob_path} from uploads", level: :info)
+                expect(remote_file).to receive(:destroy).once
+
+                service.execute
               end
 
-              expect_to_log_a_message_with(upload.id, "Removing #{blob_path} from uploads", level: :info)
-              expect(remote_file).to receive(:destroy).once
-
-              service.execute
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
 
-            it 'removes upload registry record' do
-              expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+            context 'when Gitlab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
+
+              it 'does not remove the file' do
+                expect(Fog::Storage).not_to receive(:new)
+
+                expect_to_log_a_message_with(
+                  upload.id,
+                  'Skipping file deletion as this secondary node is not allowed to replicate content on Object Storage',
+                  level: :info
+                )
+
+                service.execute
+              end
+
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
           end
 
           context 'when file does not exist on object storage' do
-            it 'does not remove the file' do
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+            context 'when GitLab managed replication is enabled' do
+              it 'does not remove the file' do
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
 
-              expect_next_instance_of(Fog::Storage::AWS::Files) do |files|
-                expect(files).to receive(:head).with(blob_path).once.and_return(nil)
+                expect_next_instance_of(Fog::Storage::AWS::Files) do |files|
+                  expect(files).to receive(:head).with(blob_path).once.and_return(nil)
+                end
+
+                expect_to_log_a_message_with(
+                  upload.id, "Can't find #{blob_path} in object storage path uploads"
+                )
+
+                service.execute
               end
 
-              expect_to_log_a_message_with(
-                upload.id, "Can't find #{blob_path} in object storage path uploads"
-              )
-
-              service.execute
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
 
-            it 'removes upload registry record' do
-              expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+            context 'when Gitlab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
+
+              it 'skips file removal' do
+                expect(Fog::Storage).not_to receive(:new)
+
+                expect_to_log_a_message_with(
+                  upload.id,
+                  'Skipping file deletion as this secondary node is not allowed to replicate content on Object Storage',
+                  level: :info
+                )
+
+                service.execute
+              end
+
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
           end
         end
@@ -162,18 +210,40 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
             stub_uploads_object_storage(FileUploader, enabled: false)
           end
 
-          it 'does not remove the file' do
-            expect(Fog::Storage).not_to receive(:new)
+          context 'when Gitlab managed replication is enabled' do
+            it 'does not remove the file' do
+              expect(Fog::Storage).not_to receive(:new)
 
-            expect_to_log_a_message_with(
-              upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
-            )
+              expect_to_log_a_message_with(
+                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+              )
 
-            service.execute
+              service.execute
+            end
+
+            it 'removes upload registry record' do
+              expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+            end
           end
 
-          it 'removes upload registry record' do
-            expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+          context 'when Gitlab managed replication is disabled' do
+            before do
+              allow(secondary).to receive(:sync_object_storage).and_return(false)
+            end
+
+            it 'does not remove the file' do
+              expect(Fog::Storage).not_to receive(:new)
+
+              expect_to_log_a_message_with(
+                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+              )
+
+              service.execute
+            end
+
+            it 'removes upload registry record' do
+              expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+            end
           end
         end
       end
@@ -256,44 +326,92 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
           end
 
           context 'when file exists on object storage' do
-            it 'removes the file' do
-              remote_file = double(destroy: true) # rubocop:disable RSpec/VerifiedDoubles
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+            context 'when GitLab managed replication is enabled' do
+              it 'removes the file' do
+                remote_file = double(destroy: true) # rubocop:disable RSpec/VerifiedDoubles
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
 
-              expect_next_instances_of(Fog::Storage::AWS::Files, 2) do |files|
-                expect(files).to receive(:head).with(blob_path).once.and_return(remote_file)
+                expect_next_instances_of(Fog::Storage::AWS::Files, 2) do |files|
+                  expect(files).to receive(:head).with(blob_path).once.and_return(remote_file)
+                end
+
+                expect_to_log_a_message_with(upload.id, "Removing #{blob_path} from uploads", level: :info)
+                expect(remote_file).to receive(:destroy).once
+
+                service.execute
               end
 
-              expect_to_log_a_message_with(upload.id, "Removing #{blob_path} from uploads", level: :info)
-              expect(remote_file).to receive(:destroy).once
-
-              service.execute
+              it 'does not remove an upload registry record' do
+                expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+              end
             end
 
-            it 'does not remove an upload registry record' do
-              expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+            context 'when Gitlab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
+
+              it 'skips file removal' do
+                expect(Fog::Storage).not_to receive(:new)
+
+                expect_to_log_a_message_with(
+                  upload.id,
+                  'Skipping file deletion as this secondary node is not allowed to replicate content on Object Storage',
+                  level: :info
+                )
+
+                service.execute
+              end
+
+              it 'does not remove an upload registry record' do
+                expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+              end
             end
           end
 
           context 'when file does not exist on object storage' do
-            it 'does not remove the file' do
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+            context 'when GitLab managed replicaiton is enabled' do
+              it 'does not remove the file' do
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
 
-              expect_next_instance_of(Fog::Storage::AWS::Files) do |files|
-                expect(files).to receive(:head).with(blob_path).once.and_return(nil)
+                expect_next_instance_of(Fog::Storage::AWS::Files) do |files|
+                  expect(files).to receive(:head).with(blob_path).once.and_return(nil)
+                end
+
+                expect_to_log_a_message_with(upload.id, "Can't find #{blob_path} in object storage path uploads")
+
+                service.execute
               end
 
-              expect_to_log_a_message_with(upload.id, "Can't find #{blob_path} in object storage path uploads")
-
-              service.execute
+              it 'does not remove an upload registry record' do
+                expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+              end
             end
 
-            it 'does not remove an upload registry record' do
-              expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+            context 'when Gitlab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
+
+              it 'skips file removal' do
+                expect(Fog::Storage).not_to receive(:new)
+
+                expect_to_log_a_message_with(
+                  upload.id,
+                  'Skipping file deletion as this secondary node is not allowed to replicate content on Object Storage',
+                  level: :info
+                )
+
+                service.execute
+              end
+
+              it 'does not remove an upload registry record' do
+                expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+              end
             end
           end
         end
@@ -303,18 +421,40 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
             stub_uploads_object_storage(FileUploader, enabled: false)
           end
 
-          it 'does not remove the file' do
-            expect(Fog::Storage).not_to receive(:new)
+          context 'when GitLab managed replication is enabled' do
+            it 'does not remove the file' do
+              expect(Fog::Storage).not_to receive(:new)
 
-            expect_to_log_a_message_with(
-              upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
-            )
+              expect_to_log_a_message_with(
+                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+              )
 
-            service.execute
+              service.execute
+            end
+
+            it 'does not remove an upload registry record' do
+              expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+            end
           end
 
-          it 'does not remove an upload registry record' do
-            expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+          context 'when GitLab managed replication is disabled' do
+            before do
+              allow(secondary).to receive(:sync_object_storage).and_return(false)
+            end
+
+            it 'does not remove the file' do
+              expect(Fog::Storage).not_to receive(:new)
+
+              expect_to_log_a_message_with(
+                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+              )
+
+              service.execute
+            end
+
+            it 'does not remove an upload registry record' do
+              expect { service.execute }.not_to change(Geo::UploadRegistry, :count)
+            end
           end
         end
       end
@@ -468,60 +608,132 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
               stub_uploads_object_storage(FileUploader)
             end
 
-            it 'logs an error message' do
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
-              upload.delete
+            context 'when GitLab managed replication is enabled' do
+              it 'logs an error message' do
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
 
-              expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
-              )
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                )
 
-              described_class.new('upload', upload.id, blob_path).execute
+                described_class.new('upload', upload.id, blob_path).execute
+              end
+
+              it 'removes upload registry record' do
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
+
+                expect { described_class.new('upload', upload.id, blob_path).execute }
+                  .to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
 
-            it 'removes upload registry record' do
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
-              upload.delete
+            context 'when Gitlab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
 
-              expect { described_class.new('upload', upload.id, blob_path).execute }
-                .to change(Geo::UploadRegistry, :count).by(-1)
+              it 'logs an error message' do
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
+
+                expect(Fog::Storage).not_to receive(:new)
+
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                )
+
+                described_class.new('upload', upload.id, blob_path).execute
+              end
+
+              it 'removes upload registry record' do
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
+
+                expect { described_class.new('upload', upload.id, blob_path).execute }
+                  .to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
           end
 
           context 'when object storage is disabled' do
-            it 'logs an error message' do
-              stub_uploads_object_storage(FileUploader)
+            context 'when Gitlab managed replication is enabled' do
+              it 'logs an error message' do
+                stub_uploads_object_storage(FileUploader)
 
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
-              upload.delete
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
 
-              stub_uploads_object_storage(FileUploader, enabled: false)
+                stub_uploads_object_storage(FileUploader, enabled: false)
 
-              expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
-              )
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                )
 
-              described_class.new('upload', upload.id, blob_path).execute
+                described_class.new('upload', upload.id, blob_path).execute
+              end
+
+              it 'removes upload registry record' do
+                stub_uploads_object_storage(FileUploader)
+
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
+
+                stub_uploads_object_storage(FileUploader, enabled: false)
+
+                expect { described_class.new('upload', upload.id, blob_path).execute }
+                  .to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
 
-            it 'removes upload registry record' do
-              stub_uploads_object_storage(FileUploader)
+            context 'when Gitlab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
 
-              file_uploader = upload.retrieve_uploader
-              blob_path = FileUploader.absolute_path(file_uploader)
-              blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
-              upload.delete
+              it 'logs an error message' do
+                stub_uploads_object_storage(FileUploader)
 
-              stub_uploads_object_storage(FileUploader, enabled: false)
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
 
-              expect { described_class.new('upload', upload.id, blob_path).execute }
-                .to change(Geo::UploadRegistry, :count).by(-1)
+                stub_uploads_object_storage(FileUploader, enabled: false)
+
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file from filesystem, or object storage. A file may be orphaned.'
+                )
+
+                described_class.new('upload', upload.id, blob_path).execute
+              end
+
+              it 'removes upload registry record' do
+                stub_uploads_object_storage(FileUploader)
+
+                file_uploader = upload.retrieve_uploader
+                blob_path = FileUploader.absolute_path(file_uploader)
+                blob_path = blob_path.delete_prefix("#{file_uploader.root}/")
+                upload.delete
+
+                stub_uploads_object_storage(FileUploader, enabled: false)
+
+                expect { described_class.new('upload', upload.id, blob_path).execute }
+                  .to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
           end
         end
@@ -539,16 +751,36 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
               upload.delete
             end
 
-            it 'logs an error message' do
-              expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
-              )
+            context 'when GitLab managed replication is enabled' do
+              it 'logs an error message' do
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                )
 
-              service.execute
+                service.execute
+              end
+
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
 
-            it 'removes upload registry record' do
-              expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+            context 'when Gitlab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
+
+              it 'logs an error message' do
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                )
+
+                service.execute
+              end
+
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
           end
 
@@ -561,16 +793,36 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
               upload.delete
             end
 
-            it 'logs an error message' do
-              expect_to_log_a_message_with(
-                upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
-              )
+            context 'when GitLab managed replication is enabled' do
+              it 'logs an error message' do
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                )
 
-              service.execute
+                service.execute
+              end
+
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
 
-            it 'removes upload registry record' do
-              expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+            context 'when GitLab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
+
+              it 'logs an error message' do
+                expect_to_log_a_message_with(
+                  upload.id, 'Unable to unlink file because file path is unknown. A file may be orphaned.'
+                )
+
+                service.execute
+              end
+
+              it 'removes upload registry record' do
+                expect { service.execute }.to change(Geo::UploadRegistry, :count).by(-1)
+              end
             end
           end
         end
@@ -611,8 +863,18 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
               stub_uploads_object_storage(FileUploader)
             end
 
-            it 'raises an error' do
-              expect { service.execute }.to raise_error(NoMethodError, "undefined method `registry' for nil:NilClass")
+            context 'when GitLab managed replication is enabled' do
+              it 'raises an error' do
+                expect { service.execute }.to raise_error(NoMethodError, "undefined method `registry' for nil:NilClass")
+              end
+            end
+
+            context 'when GitLab managed replication is disabled' do
+              it 'raises an error' do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+
+                expect { service.execute }.to raise_error(NoMethodError, "undefined method `registry' for nil:NilClass")
+              end
             end
           end
 
@@ -621,8 +883,20 @@ RSpec.describe Geo::FileRegistryRemovalService, :geo do
               stub_uploads_object_storage(FileUploader, enabled: false)
             end
 
-            it 'raises an error' do
-              expect { service.execute }.to raise_error(NoMethodError, "undefined method `registry' for nil:NilClass")
+            context 'when GitLab managed replication is enabled' do
+              it 'raises an error' do
+                expect { service.execute }.to raise_error(NoMethodError, "undefined method `registry' for nil:NilClass")
+              end
+            end
+
+            context 'when GitLab managed replication is disabled' do
+              before do
+                allow(secondary).to receive(:sync_object_storage).and_return(false)
+              end
+
+              it 'raises an error' do
+                expect { service.execute }.to raise_error(NoMethodError, "undefined method `registry' for nil:NilClass")
+              end
             end
           end
         end
