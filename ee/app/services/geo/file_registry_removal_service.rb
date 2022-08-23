@@ -65,11 +65,15 @@ module Geo
     end
 
     def destroy_object_storage_file
-      if object_file.nil?
-        log_error("Can't find #{object_file_path} in object storage path #{object_storage_config[:remote_directory]}")
+      if sync_object_storage_enabled?
+        if object_file.nil?
+          log_error("Can't find #{object_file_path} in object storage path #{object_storage_config[:remote_directory]}")
+        else
+          log_info("Removing #{object_file_path} from #{object_storage_config[:remote_directory]}")
+          object_file.destroy
+        end
       else
-        log_info("Removing #{object_file_path} from #{object_storage_config[:remote_directory]}")
-        object_file.destroy
+        log_info('Skipping file deletion as this secondary node is not allowed to replicate content on Object Storage')
       end
     end
 
@@ -123,6 +127,10 @@ module Geo
 
     def lease_key
       "file_registry_removal_service:#{object_type}:#{object_db_id}"
+    end
+
+    def sync_object_storage_enabled?
+      Gitlab::Geo.current_node.sync_object_storage
     end
 
     def object_storage_config
