@@ -19,7 +19,7 @@ class ApprovalWrappedAnyApproverRule < ApprovalWrappedRule
   def commented_approvers
     strong_memoize(:commented_approvers) do
       merge_request.user_note_authors.select do |user|
-        merge_request.can_approve?(user)
+        merge_request.can_be_approved_by?(user)
       end
     end
   end

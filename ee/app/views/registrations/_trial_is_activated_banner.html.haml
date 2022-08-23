@@ -1,9 +1,5 @@
-.gl-display-flex.gl-flex-direction-column.gl-align-items-center.gl-w-full.gl-mt-3
-.gl-alert-container
-.gl-alert.gl-alert-info.gl-mb-7{ role: 'alert' }
-  = sprite_icon('information-o', css_class: "gl-icon gl-alert-icon")
-  %button.js-close.gl-alert-dismiss{ type: 'button', 'aria-label' => _('Trial|Dismiss'), data: { uid: 'trial_success_banner_dismissed' } }
-    = sprite_icon('close', css_class: 'gl-icon')
-  .gl-alert-content
-    %h4.gl-alert-title= _('Congratulations, your free trial is activated.')
+= render Pajamas::AlertComponent.new(variant: :success,
+  alert_options: { class: 'gl-mt-3 gl-mb-7'},
+  close_button_options: { 'aria-label' => _('Trial|Dismiss'), data: { uid: 'trial_success_banner_dismissed' } }) do |c|
+  = c.body { _('Congratulations, your free trial is activated.') }
 
