@@ -37,6 +37,7 @@ describe('BoardScope', () => {
         AssigneeSelect: true,
         BoardMilestoneSelect: true,
         BoardLabelsSelect: true,
+        BoardIterationSelect: true,
       },
     });
   }

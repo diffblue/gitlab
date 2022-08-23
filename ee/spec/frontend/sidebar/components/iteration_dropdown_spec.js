@@ -91,7 +91,6 @@ describe('IterationDropdown', () => {
   };
 
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findDropdownItemsAt = (i) => findDropdownItems().at(i);
   const findDropdownItemWithText = (text) =>
     findDropdownItems().wrappers.find((x) => x.text().includes(text));
   const selectDropdownItemAndWait = async (text) => {
@@ -109,7 +108,7 @@ describe('IterationDropdown', () => {
   };
   const isLoading = () => wrapper.findComponent(GlLoadingIcon).exists();
 
-  const createComponent = ({ mountFn = shallowMount, iterationCadences = false } = {}) => {
+  const createComponent = ({ mountFn = shallowMount } = {}) => {
     fakeApollo = createMockApollo([[groupIterationsQuery, groupIterationsSpy]]);
 
     wrapper = mountFn(IterationDropdown, {
@@ -119,11 +118,6 @@ describe('IterationDropdown', () => {
       },
       stubs: {
         IterationTitle,
-      },
-      provide: {
-        glFeatures: {
-          iterationCadences,
-        },
       },
     });
   };
@@ -169,7 +163,7 @@ describe('IterationDropdown', () => {
 
   describe('when dropdown opens and query responds', () => {
     beforeEach(async () => {
-      createComponent();
+      createComponent({ mountFn: mount });
 
       await showDropdownAndWait();
     });
@@ -183,16 +177,23 @@ describe('IterationDropdown', () => {
       expect(findDropdownItems().wrappers.every((x) => x.props('isChecked'))).toBe(false);
     });
 
-    it('populates dropdown items with correct names', () => {
-      // "No iteration" dropdown item
-      expect(findDropdownItemsAt(0).text()).toContain(IterationDropdown.noIteration.text);
+    it('shows dropdown items grouped by iteration cadence', () => {
+      const dropdownItems = wrapper.findAll('li');
 
-      // Iteration with title
-      expect(findDropdownItemsAt(1).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
-      expect(findDropdownItemsAt(1).text()).toContain(TEST_ITERATIONS[0].title);
+      expect(dropdownItems.at(0).text()).toBe('Assign Iteration');
+      expect(dropdownItems.at(1).text()).toContain('No iteration');
 
-      // Iteration without title
-      expect(findDropdownItemsAt(2).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
+      expect(dropdownItems.at(2).findComponent(GlDropdownDivider).exists()).toBe(true);
+      expect(dropdownItems.at(3).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
+      expect(dropdownItems.at(4).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
+      expect(dropdownItems.at(4).text()).toContain('Test Title');
+      expect(dropdownItems.at(5).text()).toContain(getIterationPeriod(TEST_ITERATIONS[2]));
+
+      expect(dropdownItems.at(6).findComponent(GlDropdownDivider).exists()).toBe(true);
+      expect(dropdownItems.at(7).findComponent(GlDropdownSectionHeader).text()).toBe(
+        'My Second Cadence',
+      );
+      expect(dropdownItems.at(8).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
     });
 
     it('does not re-query if opened again', async () => {
@@ -205,28 +206,24 @@ describe('IterationDropdown', () => {
     describe.each([
       {
         text: IterationDropdown.noIteration.text,
-        dropdownText: 'Select iteration',
         iteration: IterationDropdown.noIteration,
       },
       {
         text: getIterationPeriod(TEST_ITERATIONS[0]),
-        dropdownText: getIterationPeriod(TEST_ITERATIONS[0]),
         iteration: TEST_ITERATIONS[0],
       },
       {
         text: getIterationPeriod(TEST_ITERATIONS[1]),
-        dropdownText: getIterationPeriod(TEST_ITERATIONS[1]),
         iteration: TEST_ITERATIONS[1],
       },
-    ])("when iteration '%s' is selected", ({ text, dropdownText, iteration }) => {
+    ])("when iteration '%s' is selected", ({ text, iteration }) => {
       beforeEach(async () => {
         await selectDropdownItemAndWait(text);
       });
 
       it('shows item as checked with text and emits event', () => {
-        expect(findDropdown().props('text')).toBe(dropdownText);
         expect(findDropdownItemWithText(text).props('isChecked')).toBe(true);
-        expect(wrapper.emitted('onIterationSelect')).toEqual([[iteration]]);
+        expect(wrapper.emitted('onIterationSelect')[0][0].id).toBe(iteration.id);
       });
 
       describe('when item is clicked again', () => {
@@ -263,33 +260,6 @@ describe('IterationDropdown', () => {
         state: 'opened',
         title: `"${TEST_SEARCH}"`,
       });
-    });
-  });
-
-  describe('when iteration_cadences feature flag is on', () => {
-    beforeEach(async () => {
-      createComponent({ iterationCadences: true, mountFn: mount });
-
-      await showDropdownAndWait();
-    });
-
-    it('shows dropdown items grouped by iteration cadence', () => {
-      const dropdownItems = wrapper.findAll('li');
-
-      expect(dropdownItems.at(0).text()).toBe('Assign Iteration');
-      expect(dropdownItems.at(1).text()).toContain('No iteration');
-
-      expect(dropdownItems.at(2).findComponent(GlDropdownDivider).exists()).toBe(true);
-      expect(dropdownItems.at(3).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
-      expect(dropdownItems.at(4).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
-      expect(dropdownItems.at(4).text()).toContain('Test Title');
-      expect(dropdownItems.at(5).text()).toContain(getIterationPeriod(TEST_ITERATIONS[2]));
-
-      expect(dropdownItems.at(6).findComponent(GlDropdownDivider).exists()).toBe(true);
-      expect(dropdownItems.at(7).findComponent(GlDropdownSectionHeader).text()).toBe(
-        'My Second Cadence',
-      );
-      expect(dropdownItems.at(8).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
     });
   });
 });

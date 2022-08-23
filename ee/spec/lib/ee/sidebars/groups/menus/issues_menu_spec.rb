@@ -49,28 +49,12 @@ RSpec.describe Sidebars::Groups::Menus::IssuesMenu do
         end
       end
 
-      context 'when iteration_cadences are not enabled' do
-        before do
-          stub_feature_flags(iteration_cadences: false)
-        end
-
-        it 'contains the interation link' do
-          expect(subject.link).to include "/groups/#{group.full_path}/-/iterations"
-        end
-
-        it 'includes iterations active routes' do
-          expect(subject.active_routes[:path]).to contain_exactly('iterations#index', 'iterations#show', 'iterations#new')
-        end
+      it 'contains the iteration cadences link' do
+        expect(subject.link).to include "/groups/#{group.full_path}/-/cadences"
       end
 
-      context 'when iteration_cadences is enabled' do
-        it 'contains the iteration cadences link' do
-          expect(subject.link).to include "/groups/#{group.full_path}/-/cadences"
-        end
-
-        it 'includes iteration and iteration_cadences active routes' do
-          expect(subject.active_routes[:path]).to contain_exactly('iterations#index', 'iterations#show', 'iterations#new', 'iteration_cadences#index')
-        end
+      it 'includes iteration and iteration_cadences active routes' do
+        expect(subject.active_routes[:path]).to contain_exactly('iterations#index', 'iterations#show', 'iterations#new', 'iteration_cadences#index')
       end
     end
   end

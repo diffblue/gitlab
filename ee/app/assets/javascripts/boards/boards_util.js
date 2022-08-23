@@ -156,19 +156,10 @@ function iterationObj(iterationId) {
 export function formatIssueInput(issueInput, boardConfig) {
   const { iterationId, iterationCadenceId } = boardConfig;
 
-  const iteration = gon.features?.iterationCadences
-    ? {
-        iterationCadenceId: fullIterationCadenceId(iterationCadenceId),
-        ...iterationObj(iterationId),
-      }
-    : {
-        iterationCadenceId,
-        ...iterationObj(iterationId),
-      };
-
   return {
     ...formatIssueInputCe(issueInput, boardConfig),
-    ...iteration,
+    iterationCadenceId: fullIterationCadenceId(iterationCadenceId),
+    ...iterationObj(iterationId),
   };
 }
 

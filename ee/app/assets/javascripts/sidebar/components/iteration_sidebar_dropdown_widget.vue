@@ -10,7 +10,6 @@ import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
 import { IssuableType } from '~/issues/constants';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { IssuableAttributeType } from '../constants';
 
 export default {
@@ -24,7 +23,6 @@ export default {
     SidebarDropdownWidget,
     IterationTitle,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     attrWorkspacePath: {
       required: true,
@@ -65,7 +63,7 @@ export default {
     :workspace-path="workspacePath"
   >
     <template #value="{ attributeUrl, currentAttribute }">
-      <p v-if="glFeatures.iterationCadences" class="gl-font-weight-bold gl-line-height-20 gl-m-0">
+      <p class="gl-font-weight-bold gl-line-height-20 gl-m-0">
         {{ getCadenceTitle(currentAttribute) }}
       </p>
       <gl-link
@@ -82,12 +80,8 @@ export default {
     </template>
     <template #list="{ attributesList = [], isAttributeChecked, updateAttribute }">
       <template v-for="(cadence, index) in groupByIterationCadences(attributesList)">
-        <gl-dropdown-divider v-if="index !== 0 && glFeatures.iterationCadences" :key="index" />
-        <gl-dropdown-section-header
-          v-if="glFeatures.iterationCadences"
-          :key="cadence.title"
-          data-testid="cadence-title"
-        >
+        <gl-dropdown-divider v-if="index !== 0" :key="index" />
+        <gl-dropdown-section-header :key="cadence.title" data-testid="cadence-title">
           {{ cadence.title }}
         </gl-dropdown-section-header>
         <gl-dropdown-item

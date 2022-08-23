@@ -27,8 +27,7 @@ module Iterations
       attr_reader :iteration_cadence, :current_user, :group
 
       def can_destroy_iteration_cadence?
-        group.iteration_cadences_feature_flag_enabled? &&
-          group.licensed_feature_available?(:iterations) &&
+        group.licensed_feature_available?(:iterations) &&
           can?(current_user, :admin_iteration_cadence, iteration_cadence)
       end
 

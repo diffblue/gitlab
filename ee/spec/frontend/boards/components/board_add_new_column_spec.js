@@ -40,7 +40,6 @@ describe('BoardAddNewColumn', () => {
     iterations = [],
     getListByTypeId = jest.fn(),
     actions = {},
-    glFeatures = {},
   } = {}) => {
     wrapper = extendedWrapper(
       shallowMount(BoardAddNewColumn, {
@@ -79,7 +78,6 @@ describe('BoardAddNewColumn', () => {
           milestoneListsAvailable: true,
           assigneeListsAvailable: true,
           iterationListsAvailable: true,
-          glFeatures,
         },
       }),
     );
@@ -253,26 +251,6 @@ describe('BoardAddNewColumn', () => {
       expectIterationWithoutTitle();
       expectIterationWithTitle();
     });
-  });
-
-  describe('iteration_cadences feature flag is on', () => {
-    const iterationMountOptions = {
-      iterations: mockIterations,
-      actions: {
-        fetchIterations: jest.fn(),
-      },
-    };
-
-    beforeEach(async () => {
-      mountComponent({
-        ...iterationMountOptions,
-        glFeatures: {
-          iterationCadences: true,
-        },
-      });
-
-      await selectIteration();
-    });
 
     it('finds a cadence in the dropdown', () => {
       const { iterations } = iterationMountOptions;
@@ -282,11 +260,6 @@ describe('BoardAddNewColumn', () => {
         .wrappers.map((x) => x.text());
 
       expect(cadenceTitles).toEqual(cadenceTitles.map((_, idx) => getCadenceTitleFromMocks(idx)));
-    });
-
-    it('displays iteration period optionally with title', async () => {
-      expectIterationWithoutTitle();
-      expectIterationWithTitle();
     });
   });
 });

@@ -58,14 +58,6 @@ RSpec.describe 'Destroying an iteration cadence' do
         expect(mutation_response).to include('group' => hash_including('id' => group.to_global_id.to_s))
       end
 
-      context 'when iteration_cadences feature flag is disabled' do
-        before do
-          stub_feature_flags(iteration_cadences: false)
-        end
-
-        it_behaves_like 'a mutation that returns errors in the response', errors: ["Operation not allowed"]
-      end
-
       context 'when required arguments are missing' do
         let(:params) { {} }
 

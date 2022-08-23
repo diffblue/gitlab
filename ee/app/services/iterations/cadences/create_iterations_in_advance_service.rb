@@ -112,7 +112,7 @@ module Iterations
       end
 
       def can_create_iterations_in_cadence?
-        cadence && user && cadence.group.iteration_cadences_feature_flag_enabled? &&
+        cadence && user &&
           (user.automation_bot? || user.can?(:create_iteration, cadence))
       end
     end

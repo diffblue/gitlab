@@ -5,32 +5,24 @@ class Groups::IterationsController < Groups::ApplicationController
   before_action :authorize_show_iteration!, only: [:index, :show]
   before_action :authorize_create_iteration!, only: [:new, :edit]
   before_action :set_noteable_type, only: [:show, :new, :edit]
-  before_action :set_iteration!, only: [:show, :edit], if: -> { group.iteration_cadences_feature_flag_enabled? }
+  before_action :set_iteration!, only: [:show, :edit]
 
   feature_category :team_planning
   urgency :low
 
   def index
-    return unless group.iteration_cadences_feature_flag_enabled?
-
     redirect_to group_iteration_cadences_path(group)
   end
 
   def show
-    return unless group.iteration_cadences_feature_flag_enabled?
-
     redirect_to group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
   end
 
   def new
-    return unless group.iteration_cadences_feature_flag_enabled?
-
     redirect_to group_iteration_cadences_path(group)
   end
 
   def edit
-    return unless group.iteration_cadences_feature_flag_enabled?
-
     redirect_to edit_group_iteration_cadence_iteration_path(iteration_cadence_id: cadence_id, id: params[:id])
   end
 

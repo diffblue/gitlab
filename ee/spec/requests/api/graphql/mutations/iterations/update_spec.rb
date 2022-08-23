@@ -121,41 +121,22 @@ RSpec.describe 'Updating an Iteration' do
       end
 
       context 'when updating title' do
-        context 'with iterations_cadences FF enabled' do
-          using RSpec::Parameterized::TableSyntax
+        using RSpec::Parameterized::TableSyntax
 
-          before do
-            stub_feature_flags(iteration_cadences: true)
-          end
-
-          where(:title_before, :title_after, :expected_title) do
-            nil   | "abc" | "abc"
-            "abc" | "def" | "def"
-          end
-
-          with_them do
-            let(:iteration) { create(:iteration, title: title_before, group: group, iterations_cadence: cadence) }
-            let(:attributes) { { title: title_after } }
-
-            it 'updates an iteration', :aggregate_failures do
-              post_graphql_mutation(mutation, current_user: current_user)
-
-              expect(mutation_response['iteration']['title']).to eq(expected_title)
-              expect(subject_iteration.reload.title).to eq(expected_title)
-            end
-          end
+        where(:title_before, :title_after, :expected_title) do
+          nil   | "abc" | "abc"
+          "abc" | "def" | "def"
         end
 
-        context 'with iterations_cadences FF disabled' do
-          before do
-            stub_feature_flags(iteration_cadences: false)
-          end
+        with_them do
+          let(:iteration) { create(:iteration, title: title_before, group: group, iterations_cadence: cadence) }
+          let(:attributes) { { title: title_after } }
 
-          context 'when title is not given' do
-            let(:attributes) { { title: "" } }
+          it 'updates an iteration', :aggregate_failures do
+            post_graphql_mutation(mutation, current_user: current_user)
 
-            it_behaves_like 'a mutation that returns top-level errors',
-                            errors: ["Title can't be blank"]
+            expect(mutation_response['iteration']['title']).to eq(expected_title)
+            expect(subject_iteration.reload.title).to eq(expected_title)
           end
         end
       end
@@ -182,17 +163,6 @@ RSpec.describe 'Updating an Iteration' do
 
           it_behaves_like 'a mutation that returns errors in the response',
                           errors: ["Dates cannot overlap with other existing Iterations within this iterations cadence"]
-
-          context 'with iterations_cadences FF disabled' do
-            let_it_be(:attributes) { { title: 'iteration', start_date: start_date.strftime('%F') } }
-
-            before do
-              stub_feature_flags(iteration_cadences: false)
-            end
-
-            it_behaves_like 'a mutation that returns errors in the response',
-              errors: ["Dates cannot overlap with other existing Iterations within this group"]
-          end
         end
       end
 

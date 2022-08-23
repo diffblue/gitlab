@@ -18,7 +18,6 @@ module Iterations
         iterations_batch.with_cadence.each do |iteration|
           cadence = iteration.iterations_cadence
 
-          next unless cadence.group.iteration_cadences_feature_flag_enabled? # keep this behind FF for now
           next unless cadence.can_roll_over?
 
           new_iteration = cadence.next_open_iteration(iteration.due_date)

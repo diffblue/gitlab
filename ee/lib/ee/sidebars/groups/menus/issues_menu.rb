@@ -36,20 +36,18 @@ module EE
           end
 
           def user_can_access_iterations?
-            (context.group.iteration_cadences_feature_flag_enabled? && can?(context.current_user, :read_iteration_cadence, context.group)) ||
+            can?(context.current_user, :read_iteration_cadence, context.group) ||
               can?(context.current_user, :read_iteration, context.group)
           end
 
           def iterations_link
-            strong_memoize(:iterations_link) do
-              context.group.iteration_cadences_feature_flag_enabled? ? group_iteration_cadences_path(context.group) : group_iterations_path(context.group)
-            end
+            group_iteration_cadences_path(context.group)
           end
 
           def iterations_paths
             strong_memoize(:iterations_paths) do
               %w[iterations#index iterations#show iterations#new].tap do |paths|
-                paths << 'iteration_cadences#index' if context.group.iteration_cadences_feature_flag_enabled?
+                paths << 'iteration_cadences#index'
               end
             end
           end

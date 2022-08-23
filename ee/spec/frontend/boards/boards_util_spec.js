@@ -123,19 +123,6 @@ describe('formatIssueInput', () => {
     milestoneId: undefined,
   };
 
-  it('adds iterationIds to input', () => {
-    const boardConfig = {
-      iterationId: 66,
-    };
-
-    const result = formatIssueInput(issueInput, boardConfig);
-
-    expect(result).toEqual({
-      ...expected,
-      iterationId: 'gid://gitlab/Iteration/66',
-    });
-  });
-
   it('adds iterationWildcardId to when current iteration selected', () => {
     const boardConfig = {
       iterationId: IterationIDs.CURRENT,
@@ -146,16 +133,11 @@ describe('formatIssueInput', () => {
     expect(result).toEqual({
       ...expected,
       iterationWildcardId: 'CURRENT',
-      iterationCadenceId: undefined,
+      iterationCadenceId: null,
     });
   });
 
   it('includes iterationCadenceId and iterationId', () => {
-    gon.features = {
-      ...gon.features,
-      iterationCadences: true,
-    };
-
     const boardConfig = {
       iterationId: 66,
       iterationCadenceId: 11,
@@ -168,8 +150,6 @@ describe('formatIssueInput', () => {
       iterationCadenceId: 'gid://gitlab/Iterations::Cadence/11',
       iterationId: 'gid://gitlab/Iteration/66',
     });
-
-    delete gon.features.iterationCadences;
   });
 });
 

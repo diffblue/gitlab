@@ -58,43 +58,15 @@ RSpec.describe 'User views iteration' do
     before do
       stub_licensed_features(iterations: true)
       sign_in(user)
+
+      visit url
+      wait_for_requests
     end
 
-    context 'when iteration_cadences FF is disabled' do
-      before do
-        stub_feature_flags(iteration_cadences: false)
-        visit url
-        wait_for_requests
-      end
+    it_behaves_like 'render iteration page'
 
-      it_behaves_like 'render iteration page'
-
-      context 'when grouping by label' do
-        it_behaves_like 'iteration report group by label'
-      end
-
-      context 'with old routes' do
-        # for backward compatibility we redirect /-/iterations/inherited/ID to /-/iterations/ID and render iteration page
-        let(:url) { "#{project_path(project)}/-/iterations/inherited/#{iteration.id}" }
-
-        it { expect(page).to have_current_path("#{project_path(project)}/-/iterations/#{iteration.id}", ignore_query: true) }
-
-        it_behaves_like 'render iteration page'
-      end
-    end
-
-    context 'when iteration_cadences FF is enabled' do
-      before do
-        stub_feature_flags(iteration_cadences: true)
-        visit url
-        wait_for_requests
-      end
-
-      it_behaves_like 'render iteration page'
-
-      context 'when grouping by label' do
-        it_behaves_like 'iteration report group by label'
-      end
+    context 'when grouping by label' do
+      it_behaves_like 'iteration report group by label'
     end
   end
 

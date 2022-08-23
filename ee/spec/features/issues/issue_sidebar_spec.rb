@@ -155,127 +155,60 @@ RSpec.describe 'Issue Sidebar' do
         stub_licensed_features(iterations: true)
 
         project.add_developer(user)
+
+        visit_issue(project, issue)
+
+        wait_for_all_requests
       end
 
-      context 'when `iteration_cadences` feature flag is off' do
-        before do
-          stub_feature_flags(iteration_cadences: false)
+      it 'selects and updates the right iteration', :aggregate_failures do
+        find_and_click_edit_iteration
 
-          visit_issue(project, issue)
-
-          wait_for_all_requests
+        within '[data-testid="iteration-edit"]' do
+          expect(page).to have_text(iteration_cadence.title)
+          expect(page).to have_text(iteration.period)
         end
 
-        it 'selects and updates the right iteration', :aggregate_failures do
+        select_iteration(iteration.period)
+
+        within '[data-testid="select-iteration"]' do
+          expect(page).to have_text(iteration_cadence.title)
+          expect(page).to have_text(iteration.period)
+        end
+
+        find_and_click_edit_iteration
+
+        select_iteration('No iteration')
+
+        expect(page.find('[data-testid="select-iteration"]')).to have_content('None')
+      end
+
+      context 'when searching iteration by its cadence title', :aggregate_failures do
+        let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group, active: true) }
+        let_it_be(:plan_iteration) { create(:iteration, :with_due_date, iterations_cadence: plan_cadence, start_date: 1.week.from_now) }
+
+        it "returns the correct iteration" do
           find_and_click_edit_iteration
 
           within '[data-testid="iteration-edit"]' do
+            page.find(".gl-search-box-by-type-input").send_keys('plan')
+
+            wait_for_requests
+
+            expect(page).to have_text(plan_cadence.title)
+            expect(page).to have_text(plan_iteration.period)
             expect(page).not_to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.period)
-          end
-
-          select_iteration(iteration.period)
-
-          within '[data-testid="select-iteration"]' do
-            expect(page).not_to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.period)
-          end
-
-          find_and_click_edit_iteration
-
-          select_iteration('No iteration')
-
-          expect(page.find('[data-testid="select-iteration"]')).to have_content('None')
-        end
-
-        context 'when searching iteration by its cadence title', :aggregate_failures do
-          let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group, active: true) }
-          let_it_be(:plan_iteration) { create(:iteration, :with_due_date, iterations_cadence: plan_cadence, start_date: 1.week.from_now) }
-
-          it "returns the correct iteration" do
-            find_and_click_edit_iteration
-
-            within '[data-testid="iteration-edit"]' do
-              page.find(".gl-search-box-by-type-input").send_keys('plan')
-
-              wait_for_requests
-
-              expect(page).to have_text(plan_iteration.title)
-              expect(page).to have_text(plan_iteration.period)
-              expect(page).not_to have_text(iteration_cadence.title)
-              expect(page).not_to have_text(iteration.period)
-              expect(page).not_to have_text(iteration2.period)
-            end
-          end
-        end
-
-        it 'does not show closed iterations' do
-          find_and_click_edit_iteration
-
-          page.within '[data-testid="iteration-edit"]' do
-            expect(page).not_to have_content iteration2.period
+            expect(page).not_to have_text(iteration.period)
+            expect(page).not_to have_text(iteration2.period)
           end
         end
       end
 
-      context 'when `iteration_cadences` feature flag is on' do
-        before do
-          stub_feature_flags(iteration_cadences: true)
+      it 'does not show closed iterations' do
+        find_and_click_edit_iteration
 
-          visit_issue(project, issue)
-
-          wait_for_all_requests
-        end
-
-        it 'selects and updates the right iteration', :aggregate_failures do
-          find_and_click_edit_iteration
-
-          within '[data-testid="iteration-edit"]' do
-            expect(page).to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.period)
-          end
-
-          select_iteration(iteration.period)
-
-          within '[data-testid="select-iteration"]' do
-            expect(page).to have_text(iteration_cadence.title)
-            expect(page).to have_text(iteration.period)
-          end
-
-          find_and_click_edit_iteration
-
-          select_iteration('No iteration')
-
-          expect(page.find('[data-testid="select-iteration"]')).to have_content('None')
-        end
-
-        context 'when searching iteration by its cadence title', :aggregate_failures do
-          let_it_be(:plan_cadence) { create(:iterations_cadence, title: 'plan cadence', group: group, active: true) }
-          let_it_be(:plan_iteration) { create(:iteration, :with_due_date, iterations_cadence: plan_cadence, start_date: 1.week.from_now) }
-
-          it "returns the correct iteration" do
-            find_and_click_edit_iteration
-
-            within '[data-testid="iteration-edit"]' do
-              page.find(".gl-search-box-by-type-input").send_keys('plan')
-
-              wait_for_requests
-
-              expect(page).to have_text(plan_cadence.title)
-              expect(page).to have_text(plan_iteration.period)
-              expect(page).not_to have_text(iteration_cadence.title)
-              expect(page).not_to have_text(iteration.period)
-              expect(page).not_to have_text(iteration2.period)
-            end
-          end
-        end
-
-        it 'does not show closed iterations' do
-          find_and_click_edit_iteration
-
-          page.within '[data-testid="iteration-edit"]' do
-            expect(page).not_to have_content iteration2.period
-          end
+        page.within '[data-testid="iteration-edit"]' do
+          expect(page).not_to have_content iteration2.period
         end
       end
     end

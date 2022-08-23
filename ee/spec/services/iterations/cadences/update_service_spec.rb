@@ -106,24 +106,5 @@ RSpec.describe Iterations::Cadences::UpdateService do
         it_behaves_like 'cadence update fails with message', message: 'Operation not allowed'
       end
     end
-
-    context 'when iteration cadences feature flag disabled' do
-      before do
-        stub_licensed_features(iterations: true)
-        stub_feature_flags(iteration_cadences: false)
-      end
-
-      context 'when user is authorized' do
-        before do
-          group.add_developer(user)
-        end
-
-        it_behaves_like 'cadence update fails with message', message: 'Operation not allowed'
-      end
-
-      context 'when user is not authorized' do
-        it_behaves_like 'cadence update fails with message', message: 'Operation not allowed'
-      end
-    end
   end
 end

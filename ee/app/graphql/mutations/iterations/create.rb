@@ -62,10 +62,6 @@ module Mutations
         if args.except(:group_path, :project_path).empty?
           raise Gitlab::Graphql::Errors::ArgumentError, 'The list of iteration attributes is empty'
         end
-
-        if !parent.iteration_cadences_feature_flag_enabled? && args[:title].blank?
-          raise Gitlab::Graphql::Errors::ArgumentError, "Title can't be blank"
-        end
       end
     end
   end

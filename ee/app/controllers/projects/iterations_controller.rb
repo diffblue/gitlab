@@ -4,20 +4,16 @@ class Projects::IterationsController < Projects::ApplicationController
   before_action :check_project_is_group_namespace!
   before_action :check_iterations_available!
   before_action :authorize_show_iteration!
-  before_action :set_iteration!, only: [:show], if: -> { project.group.iteration_cadences_feature_flag_enabled? }
+  before_action :set_iteration!, only: [:show]
 
   feature_category :team_planning
   urgency :low
 
   def index
-    return unless project.group.iteration_cadences_feature_flag_enabled?
-
     redirect_to project_iteration_cadences_path(project)
   end
 
   def show
-    return unless project.group.iteration_cadences_feature_flag_enabled?
-
     redirect_to project_iteration_cadence_iteration_path(project, iteration_cadence_id: cadence_id, id: params[:id])
   end
 

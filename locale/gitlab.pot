@@ -22677,9 +22677,6 @@ msgstr ""
 msgid "Iterations|Upcoming iterations"
 msgstr ""
 
-msgid "Iteration|Dates cannot overlap with other existing Iterations within this group"
-msgstr ""
-
 msgid "Iteration|Dates cannot overlap with other existing Iterations within this iterations cadence"
 msgstr ""
 
