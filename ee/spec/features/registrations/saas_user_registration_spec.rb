@@ -42,7 +42,7 @@ RSpec.describe "User registration", :js, :saas do
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 271)
+    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 136)
   end
 
   def fill_in_sign_up_form(user)
@@ -107,7 +107,7 @@ RSpec.describe "User registration", :js, :saas do
   end
 
   shared_examples 'creates new group and project' do
-    it do
+    it 'creates the project and reaches the onboarding', :sidekiq_inline do
       fill_in 'group_name', with: 'Test Group'
       fill_in 'blank_project_name', with: 'Test Project'
 
@@ -123,6 +123,11 @@ RSpec.describe "User registration", :js, :saas do
       click_on 'Create project'
 
       expect(page).to have_content 'Get started with GitLab'
+
+      click_on "Ok, let's go"
+
+      expect(page).to have_content('Learn GitLab')
+      expect(page).to have_content('GitLab is better with colleagues!')
     end
   end
 
@@ -232,7 +237,7 @@ RSpec.describe "User registration", :js, :saas do
           click_on 'Continue'
         end
 
-        it "creates my new group and project without a trial" do
+        it "creates my new group and project without a trial", :sidekiq_inline do
           fill_in 'group_name', with: 'Test Group'
           fill_in 'blank_project_name', with: 'Test Project'
 
@@ -240,6 +245,11 @@ RSpec.describe "User registration", :js, :saas do
 
           # We end up in the continuous onboarding flow here...
           expect(page).to have_content 'Get started with GitLab'
+
+          click_on "Ok, let's go"
+
+          expect(page).to have_content('Learn GitLab')
+          expect(page).to have_content('GitLab is better with colleagues!')
 
           # So have to verify the newly created project by navigating to our projects...
           visit projects_path
@@ -313,13 +323,18 @@ RSpec.describe "User registration", :js, :saas do
             click_on 'Continue'
           end
 
-          it "creates my new group and project without a trial" do
+          it "creates my new group and project without a trial", :sidekiq_inline do
             fill_in 'group_name', with: 'Test Group'
             fill_in 'blank_project_name', with: 'Test Project'
             click_on 'Create project'
 
             # We end up in the continuous onboarding flow here...
             expect(page).to have_content 'Get started with GitLab'
+
+            click_on "Ok, let's go"
+
+            expect(page).to have_content('Learn GitLab')
+            expect(page).to have_content('GitLab is better with colleagues!')
 
             # So have to verify the newly created project by navigating to our projects...
             visit projects_path

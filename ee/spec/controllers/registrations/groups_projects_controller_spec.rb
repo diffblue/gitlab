@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::GroupsProjectsController, :experiment do
-  include AfterNextHelpers
-
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
@@ -302,7 +300,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         end
       end
 
-      context 'learn gitlab project' do
+      context 'with learn gitlab project' do
         using RSpec::Parameterized::TableSyntax
 
         where(:trial, :project_name, :template) do
@@ -312,20 +310,16 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
         with_them do
           let(:path) { Rails.root.join('vendor', 'project_templates', template) }
-          let(:expected_arguments) { { namespace_id: group.id, file: handle, name: project_name } }
-          let(:handle) { double }
           let(:group_params) { { id: group.id } }
           let(:extra_params) { { trial_onboarding_flow: trial } }
 
           before do
             group.add_owner(user)
-            allow(File).to receive(:open).and_call_original
-            expect(File).to receive(:open).with(path).and_yield(handle)
           end
 
           specify do
-            expect_next(::Projects::GitlabProjectsImportService, user, expected_arguments)
-              .to receive(:execute)
+            expect(::Onboarding::CreateLearnGitlabWorker).to receive(:perform_async)
+                                                               .with(path, project_name, group.id, user.id)
 
             subject
           end
