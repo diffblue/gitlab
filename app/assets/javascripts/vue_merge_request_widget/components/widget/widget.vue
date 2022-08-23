@@ -128,6 +128,10 @@ export default {
         await this.fetch(this.fetchExpandedData, FETCH_TYPE_EXPANDED);
       } catch {
         this.error = this.errorText;
+
+        // Reset these values so that we allow refetching
+        this.isExpandedForTheFirstTime = true;
+        this.isCollapsed = true;
       }
 
       this.isLoadingExpandedContent = false;
