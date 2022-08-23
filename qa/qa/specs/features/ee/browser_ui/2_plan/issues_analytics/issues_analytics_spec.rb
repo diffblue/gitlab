@@ -3,6 +3,8 @@
 module QA
   RSpec.describe 'Plan', :reliable do
     shared_examples 'issues analytics page' do
+      let(:gitlab_address) { QA::Runtime::Scenario.gitlab_address }
+
       let(:issue) do
         Resource::Issue.fabricate_via_api!
       end
@@ -22,13 +24,13 @@ module QA
 
     describe 'Group level issues analytics', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347974' do
       it_behaves_like 'issues analytics page' do
-        let(:analytics_path) { "#{issue.project.group.web_url}/-/issues_analytics" }
+        let(:analytics_path) { "#{gitlab_address}/groups/#{issue.project.group.full_path}/-/issues_analytics" }
       end
     end
 
     describe 'Project level issues analytics', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347973' do
       it_behaves_like 'issues analytics page' do
-        let(:analytics_path) { "#{issue.project.web_url}/-/analytics/issues_analytics" }
+        let(:analytics_path) { "#{gitlab_address}/#{issue.project.full_path}/-/analytics/issues_analytics" }
       end
     end
   end
