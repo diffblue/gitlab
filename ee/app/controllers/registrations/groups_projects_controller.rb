@@ -37,10 +37,12 @@ module Registrations
 
       if @group.persisted?
         if @group.previously_new_record?
+          # project failed validation previously, but group was created or coming from trial creation
           combined_registration_experiment.track(:create_group, namespace: @group)
           helpers.require_verification_experiment.record_conversion(@group)
 
           unless apply_trial_when_in_trial_flow
+            # this means the group was created in previous trial setup step since it needed a namespace
             @project = Project.new(project_params) # #new requires a Project
             return render :new
           end
@@ -50,7 +52,7 @@ module Registrations
         if @project.saved?
           combined_registration_experiment.track(:create_project, namespace: @project.namespace)
 
-          create_learn_gitlab_project
+          create_learn_gitlab_project(@project.namespace_id)
 
           redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
 

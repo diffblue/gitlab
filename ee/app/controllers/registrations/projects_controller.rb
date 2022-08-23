@@ -52,6 +52,17 @@ module Registrations
       @namespace = Namespace.find_by_id(params[:namespace_id])
     end
 
+    def create_learn_gitlab_project
+      File.open(learn_gitlab_template_path) do |archive|
+        ::Projects::GitlabProjectsImportService.new(
+          current_user,
+          namespace_id: @project.namespace_id,
+          file: archive,
+          name: learn_gitlab_project_name
+        ).execute
+      end
+    end
+
     def url_params
       if helpers.in_trial_onboarding_flow?
         { learn_gitlab_project_id: @learn_gitlab_project.id }
