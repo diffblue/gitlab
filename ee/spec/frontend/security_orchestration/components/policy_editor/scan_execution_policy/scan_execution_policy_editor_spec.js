@@ -2,11 +2,12 @@ import { GlEmptyState } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_action_builder.vue';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/policy_rule_builder.vue';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import {
   DEFAULT_SCAN_EXECUTION_POLICY,
-  buildDefaultAction,
+  buildScannerAction,
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
 import ScanExecutionPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/scan_execution_policy_editor.vue';
@@ -24,7 +25,10 @@ import {
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
 } from 'ee/security_orchestration/components/policy_editor/constants';
-import { SCAN_EXECUTION_PIPELINE_RULE } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
+import {
+  DEFAULT_SCANNER,
+  SCAN_EXECUTION_PIPELINE_RULE,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/constants';
 import { RULE_KEY_MAP } from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib/rules';
 
 jest.mock('~/lib/utils/url_utility', () => ({
@@ -39,12 +43,15 @@ const newlyCreatedPolicyProject = {
 };
 
 jest.mock('ee/security_orchestration/components/policy_editor/scan_execution_policy/lib', () => ({
+  DEFAULT_SCANNER: jest.requireActual(
+    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
+  ).DEFAULT_SCANNER,
   DEFAULT_SCAN_EXECUTION_POLICY: jest.requireActual(
     'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
   ).DEFAULT_SCAN_EXECUTION_POLICY,
-  buildDefaultAction: jest.requireActual(
+  buildScannerAction: jest.requireActual(
     'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
-  ).buildDefaultAction,
+  ).buildScannerAction,
   buildDefaultPipeLineRule: jest.requireActual(
     'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
   ).buildDefaultPipeLineRule,
@@ -110,6 +117,8 @@ describe('ScanExecutionPolicyEditor', () => {
   const findAddRuleButton = () => wrapper.findByTestId('add-rule');
   const findEmptyState = () => wrapper.findComponent(GlEmptyState);
   const findPolicyEditorLayout = () => wrapper.findComponent(PolicyEditorLayout);
+  const findPolicyActionBuilder = () => wrapper.findComponent(PolicyActionBuilder);
+  const findAllPolicyActionBuilders = () => wrapper.findAllComponents(PolicyActionBuilder);
   const findPolicyRuleBuilder = () => wrapper.findComponent(PolicyRuleBuilder);
   const findAllPolicyRuleBuilders = () => wrapper.findAllComponents(PolicyRuleBuilder);
 
@@ -274,15 +283,40 @@ describe('ScanExecutionPolicyEditor', () => {
     });
 
     it('should add new action', async () => {
-      expect(findPolicyEditorLayout().props('policy').actions).toEqual([buildDefaultAction()]);
+      expect(findPolicyEditorLayout().props('policy').actions).toEqual([
+        buildScannerAction(DEFAULT_SCANNER),
+      ]);
       findAddActionButton().vm.$emit('click');
 
       await nextTick();
 
       expect(findPolicyEditorLayout().props('policy').actions).toEqual([
-        buildDefaultAction(),
-        buildDefaultAction(),
+        buildScannerAction(DEFAULT_SCANNER),
+        buildScannerAction(DEFAULT_SCANNER),
       ]);
+    });
+
+    it('should update action', async () => {
+      const updatedAction = buildScannerAction('sast');
+      findPolicyActionBuilder().vm.$emit('changed', updatedAction);
+      await nextTick();
+
+      expect(findAllPolicyActionBuilders()).toHaveLength(1);
+      expect(findPolicyEditorLayout().props('policy').actions[0]).toStrictEqual(updatedAction);
+    });
+
+    it('should remove action', async () => {
+      findAddActionButton().vm.$emit('click');
+      await nextTick();
+
+      expect(findAllPolicyActionBuilders()).toHaveLength(2);
+      expect(findPolicyEditorLayout().props('policy').actions).toHaveLength(2);
+
+      findPolicyActionBuilder().vm.$emit('remove', 1);
+      await nextTick();
+
+      expect(findAllPolicyActionBuilders()).toHaveLength(1);
+      expect(findPolicyEditorLayout().props('policy').actions).toHaveLength(1);
     });
   });
 });

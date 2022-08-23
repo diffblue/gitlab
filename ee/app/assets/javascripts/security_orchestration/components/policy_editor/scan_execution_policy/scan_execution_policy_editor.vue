@@ -21,14 +21,17 @@ import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import {
-  buildDefaultAction,
+  buildScannerAction,
   buildDefaultPipeLineRule,
   DEFAULT_SCAN_EXECUTION_POLICY,
   fromYaml,
   toYaml,
 } from './lib';
+import { DEFAULT_SCANNER } from './constants';
 
 export default {
+  ACTION: 'actions',
+  RULE: 'rules',
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   SECURITY_POLICY_ACTIONS,
@@ -120,16 +123,16 @@ export default {
   },
   methods: {
     addAction() {
-      this.policy.actions.push(buildDefaultAction());
+      this.policy.actions.push(buildScannerAction(DEFAULT_SCANNER));
     },
     addRule() {
       this.policy.rules.push(buildDefaultPipeLineRule());
     },
-    removeRule(ruleIndex) {
-      this.policy.rules.splice(ruleIndex, 1);
+    removeActionOrRule(type, index) {
+      this.policy[type].splice(index, 1);
     },
-    updateRule(ruleIndex, values) {
-      this.policy.rules.splice(ruleIndex, 1, values);
+    updateActionOrRule(type, index, values) {
+      this.policy[type].splice(index, 1, values);
     },
     changeEditorMode(mode) {
       this.mode = mode;
@@ -253,8 +256,8 @@ export default {
           class="gl-mb-4"
           :init-rule="rule"
           :rule-index="index"
-          @changed="updateRule(index, $event)"
-          @remove="removeRule(index)"
+          @changed="updateActionOrRule($options.RULE, index, $event)"
+          @remove="removeActionOrRule($options.RULE, index)"
         />
 
         <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
@@ -280,6 +283,8 @@ export default {
           class="gl-mb-4"
           :init-action="action"
           :action-index="index"
+          @changed="updateActionOrRule($options.ACTION, index, $event)"
+          @remove="removeActionOrRule($options.ACTION, index)"
         />
 
         <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
