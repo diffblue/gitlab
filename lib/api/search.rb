@@ -118,7 +118,7 @@ module API
       get do
         verify_search_scope!(resource: nil)
 
-        present search, with: entity
+        present search, with: entity, current_user: current_user
       end
     end
 
@@ -140,7 +140,7 @@ module API
       get ':id/(-/)search' do
         verify_search_scope!(resource: user_group)
 
-        present search(group_id: user_group.id), with: entity
+        present search(group_id: user_group.id), with: entity, current_user: current_user
       end
     end
 
@@ -161,7 +161,7 @@ module API
         use :pagination
       end
       get ':id/(-/)search' do
-        present search({ project_id: user_project.id, repository_ref: params[:ref] }), with: entity
+        present search({ project_id: user_project.id, repository_ref: params[:ref] }), with: entity, current_user: current_user
       end
     end
   end
