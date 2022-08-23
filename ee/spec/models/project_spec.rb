@@ -1938,7 +1938,7 @@ RSpec.describe Project do
     subject { project.latest_pipeline_with_reports(reports) }
 
     context 'when reports are found' do
-      let_it_be(:reports) { ::Ci::JobArtifact.sast_reports }
+      let_it_be(:reports) { ::Ci::JobArtifact.of_report_type(:sast) }
 
       it "returns the latest pipeline with reports of right type" do
         is_expected.to eq(pipeline_2)
@@ -1954,7 +1954,7 @@ RSpec.describe Project do
     end
 
     context 'when reports are not found' do
-      let(:reports) { ::Ci::JobArtifact.metrics_reports }
+      let(:reports) { ::Ci::JobArtifact.of_report_type(:metrics) }
 
       it 'returns nothing' do
         is_expected.to be_nil
