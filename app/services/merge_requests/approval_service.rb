@@ -37,7 +37,7 @@ module MergeRequests
     private
 
     def can_be_approved?(merge_request)
-      current_user.can?(:approve_merge_request, merge_request)
+      merge_request.can_be_approved_by?(current_user)
     end
 
     def save_approval(approval)

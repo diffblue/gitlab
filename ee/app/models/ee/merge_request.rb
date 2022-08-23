@@ -5,7 +5,6 @@ module EE
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
 
-    include ::Approvable
     include ::Gitlab::Allowable
     include ::Gitlab::Utils::StrongMemoize
     include FromUnion
