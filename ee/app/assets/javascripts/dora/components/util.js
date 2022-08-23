@@ -1,6 +1,6 @@
 import { dataVizBlue500, gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
-import dateFormat from 'dateformat';
 import { merge, cloneDeep } from 'lodash';
+import dateFormat from '~/lib/dateformat';
 import {
   getDatesInRange,
   nDaysBefore,

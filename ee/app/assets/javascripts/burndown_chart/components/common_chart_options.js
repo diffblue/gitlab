@@ -1,4 +1,4 @@
-import dateFormat from 'dateformat';
+import dateFormat from '~/lib/dateformat';
 
 const msInOneDay = 60 * 60 * 24 * 1000;
 

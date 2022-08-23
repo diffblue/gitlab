@@ -11,9 +11,9 @@ import {
   GlIcon,
   GlPagination,
 } from '@gitlab/ui';
-import dateFormat from 'dateformat';
 import { mapState } from 'vuex';
 import { dateFormats } from '~/analytics/shared/constants';
+import dateFormat from '~/lib/dateformat';
 import { approximateDuration, differenceInSeconds } from '~/lib/utils/datetime_utility';
 import { __, s__, n__ } from '~/locale';
 import { filterToQueryObject } from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';

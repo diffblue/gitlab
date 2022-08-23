@@ -1,9 +1,9 @@
 <script>
 import { GlAlert, GlTabs, GlTab } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
-import dateformat from 'dateformat';
 import DevopsScore from '~/analytics/devops_reports/components/devops_score.vue';
 import API from '~/api';
+import dateformat from '~/lib/dateformat';
 import { mergeUrlParams, updateHistory, getParameterValues } from '~/lib/utils/url_utility';
 import {
   I18N_GROUPS_QUERY_ERROR,

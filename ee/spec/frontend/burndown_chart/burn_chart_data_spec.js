@@ -1,7 +1,7 @@
-import dateFormat from 'dateformat';
 import timezoneMock from 'timezone-mock';
 import BurndownChartData from 'ee/burndown_chart/burn_chart_data';
 import { useFakeDate } from 'helpers/fake_date';
+import dateFormat from '~/lib/dateformat';
 
 describe('BurndownChartData', () => {
   const startDate = '2017-03-01';

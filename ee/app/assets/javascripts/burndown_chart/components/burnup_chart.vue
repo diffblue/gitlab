@@ -1,7 +1,7 @@
 <script>
 import { GlLineChart } from '@gitlab/ui/dist/charts';
-import dateFormat from 'dateformat';
 import { merge } from 'lodash';
+import dateFormat from '~/lib/dateformat';
 import { __, n__, sprintf } from '~/locale';
 import commonChartOptions from './common_chart_options';
 

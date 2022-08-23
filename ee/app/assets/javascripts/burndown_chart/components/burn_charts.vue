@@ -1,10 +1,10 @@
 <script>
 import { GlAlert, GlButton, GlButtonGroup } from '@gitlab/ui';
-import dateFormat from 'dateformat';
 import { cloneDeep } from 'lodash';
 import BurnupQueryIteration from 'shared_queries/burndown_chart/burnup.iteration.query.graphql';
 import BurnupQueryMilestone from 'shared_queries/burndown_chart/burnup.milestone.query.graphql';
 import createFlash from '~/flash';
+import dateFormat from '~/lib/dateformat';
 import axios from '~/lib/utils/axios_utils';
 import { getDayDifference, nDaysAfter, newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
 import { __ } from '~/locale';

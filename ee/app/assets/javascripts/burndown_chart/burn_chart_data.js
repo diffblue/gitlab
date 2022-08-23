@@ -1,4 +1,4 @@
-import dateFormat from 'dateformat';
+import dateFormat from '~/lib/dateformat';
 
 export default class BurnChartData {
   constructor(events, startDate, dueDate) {

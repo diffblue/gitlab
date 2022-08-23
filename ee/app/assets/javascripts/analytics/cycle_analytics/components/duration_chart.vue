@@ -1,10 +1,10 @@
 <script>
-import dateFormat from 'dateformat';
 import { mapState, mapGetters } from 'vuex';
 import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { dateFormats } from '~/analytics/shared/constants';
+import dateFormat from '~/lib/dateformat';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { sprintf } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
