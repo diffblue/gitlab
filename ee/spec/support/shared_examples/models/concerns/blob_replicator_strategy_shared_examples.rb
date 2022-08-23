@@ -98,6 +98,10 @@ RSpec.shared_examples 'a blob replicator' do
   end
 
   describe 'created event consumption' do
+    before do
+      stub_current_geo_node(secondary)
+    end
+
     context "when the blob's project is in replicables for this geo node" do
       it 'invokes Geo::BlobDownloadService' do
         expect(replicator).to receive(:in_replicables_for_current_secondary?).and_return(true)
@@ -124,6 +128,7 @@ RSpec.shared_examples 'a blob replicator' do
   describe 'deleted event consumption' do
     before do
       model_record.save!
+      stub_current_geo_node(secondary)
     end
 
     let!(:model_record_id) { replicator.model_record_id }
@@ -180,11 +185,26 @@ RSpec.shared_examples 'a blob replicator' do
           directory.files.create(key: blob_path) # rubocop:disable Rails/SaveBang
         end
 
-        it 'deletes the file from object storage' do
-          service = ::Geo::FileRegistryRemovalService.new(secondary_side_replicator.replicable_name, model_record_id, secondary_blob_path, uploader_class)
-          expect(directory.files.head(blob_path)).not_to be_nil
-          service.execute
-          expect(directory.files.head(blob_path)).to be_nil
+        context 'when GitLab managed replication is enabled' do
+          it 'deletes the file from object storage' do
+            service = ::Geo::FileRegistryRemovalService.new(secondary_side_replicator.replicable_name, model_record_id, secondary_blob_path, uploader_class)
+            expect(directory.files.head(blob_path)).not_to be_nil
+            service.execute
+            expect(directory.files.head(blob_path)).to be_nil
+          end
+        end
+
+        context 'when GitLab managed replication is disabled' do
+          before do
+            allow(secondary).to receive(:sync_object_storage).and_return(false)
+          end
+
+          it 'does not delete the file from object storage' do
+            service = ::Geo::FileRegistryRemovalService.new(secondary_side_replicator.replicable_name, model_record_id, secondary_blob_path, uploader_class)
+            expect(directory.files.head(blob_path)).not_to be_nil
+            service.execute
+            expect(directory.files.head(blob_path)).not_to be_nil
+          end
         end
       end
     end
