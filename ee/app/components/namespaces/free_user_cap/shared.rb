@@ -5,8 +5,8 @@ module Namespaces
     module Shared
       # region: constants ----------------------------------------------
 
-      ALERT_CLASS = 'js-user-over-limit-free-plan-alert'
-      CONTAINER_CLASSES = 'gl-pb-2! gl-pt-6!'
+      ALERT_CLASS = 'js-user-over-limit-free-plan-alert gl-mb-2 gl-mt-6'
+      CONTAINER_CLASSES = 'gl-overflow-auto'
       PREVIEW_IGNORE_DISMISSAL_EARLIER_THAN = 14.days.ago
 
       # region: container class ----------------------------------------
