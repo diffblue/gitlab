@@ -7,6 +7,8 @@ import {
   CLUSTER_IMAGE_SCANNING_NAME,
 } from '~/security_configuration/components/constants';
 
+export const SCANNER_DAST = 'dast';
+
 export const SCAN_EXECUTION_RULES_LABELS = {
   pipeline: s__('ScanExecutionPolicy|A pipeline is run'),
   schedule: s__('ScanExecutionPolicy|Schedule'),
@@ -24,9 +26,10 @@ export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
   weekly: __('weekly'),
 };
 
-export const DEFAULT_SCAN = 'dast';
+export const DEFAULT_SCANNER = SCANNER_DAST;
 
-export const TEMPORARY_LIST_OF_SCANS = {
+// TODO remove after https://gitlab.com/gitlab-org/gitlab/-/issues/365579
+export const TEMPORARY_LIST_OF_SCANNERS = {
   sast: SAST_SHORT_NAME,
   dast: DAST_SHORT_NAME,
   secret_detection: SECRET_DETECTION_NAME,
