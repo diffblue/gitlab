@@ -62,7 +62,7 @@ module Dora
         return error(_('The start date must be ealier than the end date.'), :bad_request)
       end
 
-      if group_project_ids.present? && !group?
+      if group_project_ids.present? && !group_container?
         return error(_('The group_project_ids parameter is only allowed for a group'), :bad_request)
       end
 
@@ -89,9 +89,9 @@ module Dora
     end
 
     def target_projects
-      if project?
+      if project_container?
         [container]
-      elsif group?
+      elsif group_container?
         # The actor definitely has read permission in all subsequent projects of the group by the following reasons:
         # - DORA metrics can be read by reporter (or above) at project-level.
         # - With `read_dora4_analytics` permission check, we make sure that the
@@ -103,14 +103,6 @@ module Dora
         projects = projects.id_in(group_project_ids) if group_project_ids.any?
         projects
       end
-    end
-
-    def project?
-      container.is_a?(Project)
-    end
-
-    def group?
-      container.is_a?(Group)
     end
 
     def start_date
