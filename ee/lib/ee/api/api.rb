@@ -54,6 +54,7 @@ module EE
         mount ::API::GroupRepositoryStorageMoves
         mount ::API::Ci::Minutes
         mount ::API::CaptchaCheck
+        mount ::API::Integrations::Slack::Events
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
         mount ::API::Internal::UpcomingReconciliations
