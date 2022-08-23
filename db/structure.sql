@@ -21887,7 +21887,6 @@ CREATE TABLE user_details (
     job_title character varying(200) DEFAULT ''::character varying NOT NULL,
     bio character varying(255) DEFAULT ''::character varying NOT NULL,
     webauthn_xid text,
-    other_role text,
     provisioned_by_group_id bigint,
     pronouns text,
     pronunciation text,
@@ -21896,7 +21895,6 @@ CREATE TABLE user_details (
     requires_credit_card_verification boolean DEFAULT false NOT NULL,
     CONSTRAINT check_245664af82 CHECK ((char_length(webauthn_xid) <= 100)),
     CONSTRAINT check_a73b398c60 CHECK ((char_length(phone) <= 50)),
-    CONSTRAINT check_b132136b01 CHECK ((char_length(other_role) <= 100)),
     CONSTRAINT check_eeeaf8d4f0 CHECK ((char_length(pronouns) <= 50)),
     CONSTRAINT check_f932ed37db CHECK ((char_length(pronunciation) <= 255))
 );

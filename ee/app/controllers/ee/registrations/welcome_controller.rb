@@ -122,7 +122,7 @@ module EE
         stored_url = stored_location_for(user)
         if ::Feature.enabled?(:about_your_company_registration_flow) &&
             stored_url&.include?(new_users_sign_up_company_path)
-          company_params = update_params.slice(:role, :other_role, :registration_objective)
+          company_params = update_params.slice(:role, :registration_objective)
                             .merge(params.permit(:jobs_to_be_done_other))
           redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, company_params)
           store_location_for(:user, redirect_uri)
