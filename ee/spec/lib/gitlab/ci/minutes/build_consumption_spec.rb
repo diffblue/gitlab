@@ -25,6 +25,12 @@ RSpec.describe Gitlab::Ci::Minutes::BuildConsumption do
     end
 
     with_them do
+      let(:expected_cost_factor) do
+        next public_cost_factor if visibility_level == Gitlab::VisibilityLevel::PUBLIC
+
+        private_cost_factor
+      end
+
       before do
         runner.update!(
           public_projects_minutes_cost_factor: public_cost_factor,
@@ -38,6 +44,19 @@ RSpec.describe Gitlab::Ci::Minutes::BuildConsumption do
 
       it 'returns the expected consumption' do
         expect(subject).to eq(result)
+      end
+
+      it 'logs the cost factor' do
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            cost_factor: expected_cost_factor,
+            project_path: project.full_path,
+            pipeline_id: build.pipeline_id,
+            gitlab_cost_factor_applied: false
+          )
+        )
+
+        subject
       end
 
       context 'when consumption comes from a GitLab contribution' do
@@ -60,10 +79,10 @@ RSpec.describe Gitlab::Ci::Minutes::BuildConsumption do
         it 'logs that the contributor cost factor was granted' do
           expect(Gitlab::AppLogger).to receive(:info).with(
             hash_including(
-              message: "GitLab contributor cost factor granted",
               cost_factor: 0.25,
               project_path: project.full_path,
-              pipeline_id: build.pipeline_id
+              pipeline_id: build.pipeline_id,
+              gitlab_cost_factor_applied: true
             )
           )
 
