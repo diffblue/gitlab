@@ -1,0 +1,37 @@
+#import "~/graphql_shared/fragments/user.fragment.graphql"
+
+fragment WorkItemWidgets on WorkItemWidget {
+  ... on WorkItemWidgetDescription {
+    type
+    description
+    descriptionHtml
+  }
+  ... on WorkItemWidgetAssignees {
+    type
+    allowsMultipleAssignees
+    canInviteMembers
+    assignees {
+      nodes {
+        ...User
+      }
+    }
+  }
+  ... on WorkItemWidgetWeight {
+    type
+    weight
+  }
+  ... on WorkItemWidgetHierarchy {
+    type
+    parent {
+      id
+      iid
+      title
+      confidential
+    }
+    children {
+      nodes {
+        id
+      }
+    }
+  }
+}
