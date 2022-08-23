@@ -10,11 +10,16 @@ import {
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapState, mapGetters, mapActions } from 'vuex';
-import { QSR_RECONCILIATION_PATH, STEP_SUBSCRIPTION_DETAILS } from 'ee/subscriptions/constants';
+import { logError } from '~/lib/logger';
+import {
+  ERROR_UNEXPECTED,
+  QSR_RECONCILIATION_PATH,
+  STEP_SUBSCRIPTION_DETAILS,
+} from 'ee/subscriptions/constants';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { sprintf, s__, __ } from '~/locale';
-import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
+import autoFocusOnShow from '~/vue_shared/directives/autofocusonshow';
 import Tracking from '~/tracking';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
@@ -31,7 +36,7 @@ export default {
     Step,
   },
   directives: {
-    autofocusonshow,
+    autoFocusOnShow,
   },
   mixins: [Tracking.mixin()],
   apollo: {
@@ -226,7 +231,8 @@ export default {
       this.showError = false;
     },
     handleError(error) {
-      this.errorMessage = error || __('An unexpected error occurred');
+      logError(error);
+      this.errorMessage = ERROR_UNEXPECTED;
       this.showError = true;
     },
     resetError() {
@@ -313,12 +319,12 @@ export default {
         class="gl-mb-5"
         variant="danger"
         @dismiss="hideError"
-        >{{ errorMessage }}</gl-alert
-      >
+        >{{ errorMessage }}
+      </gl-alert>
       <gl-form-group :label="$options.i18n.selectedPlanLabel" label-size="sm" class="mb-3">
         <gl-form-select
           v-model="selectedPlanModel"
-          v-autofocusonshow
+          v-auto-focus-on-show
           :options="availablePlans"
           data-qa-selector="plan_name"
         />
