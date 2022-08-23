@@ -22,19 +22,30 @@ module Gitlab
         private
 
         def cost_factor
-          if runner_cost_factor > 0 && gitlab_contribution_cost_factor
-            Gitlab::AppLogger.info(
-              message: "GitLab contributor cost factor granted",
-              cost_factor: gitlab_contribution_cost_factor,
-              project_path: project.full_path,
-              pipeline_id: @build.pipeline_id,
-              class: self.class.name
-            )
-
+          gitlab_cost_factor_applies = !!(
+            runner_cost_factor > 0 &&
             gitlab_contribution_cost_factor
-          else
-            runner_cost_factor
-          end
+          )
+
+          factor = if gitlab_cost_factor_applies
+                     gitlab_contribution_cost_factor
+                   else
+                     runner_cost_factor
+                   end
+
+          log_cost_factor(project, factor, gitlab_cost_factor_applies)
+
+          factor
+        end
+
+        def log_cost_factor(project, factor, gitlab_cost_factor_applies)
+          Gitlab::AppLogger.info(
+            cost_factor: factor,
+            project_path: project.full_path,
+            pipeline_id: @build.pipeline_id,
+            class: self.class.name,
+            gitlab_cost_factor_applied: gitlab_cost_factor_applies
+          )
         end
 
         def runner_cost_factor
