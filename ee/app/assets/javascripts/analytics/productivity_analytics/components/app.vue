@@ -10,10 +10,10 @@ import {
   GlAlert,
 } from '@gitlab/ui';
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
-import dateFormat from 'dateformat';
 import { mapState, mapActions, mapGetters } from 'vuex';
 import { dateFormats } from '~/analytics/shared/constants';
 import { getDataZoomOption } from '~/analytics/shared/utils';
+import dateFormat from '~/lib/dateformat';
 import { beginOfDayTime, endOfDayTime } from '~/lib/utils/datetime_utility';
 import featureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Scatterplot from '../../shared/components/scatterplot.vue';

@@ -1,7 +1,7 @@
 <script>
-import dateFormat from 'dateformat';
 import { GlStackedColumnChart } from '@gitlab/ui/dist/charts';
 import { dateFormats } from '~/analytics/shared/constants';
+import dateFormat from '~/lib/dateformat';
 import { formatNumber } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { getAdoptedCountsByCols } from '../utils/helpers';

@@ -1,6 +1,6 @@
 <script>
-import dateFormat from 'dateformat';
 import { GlBadge, GlPopover } from '@gitlab/ui';
+import dateFormat from '~/lib/dateformat';
 import {
   approximateDuration,
   differenceInMilliseconds,

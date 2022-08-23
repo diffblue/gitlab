@@ -1,5 +1,5 @@
-import dateFormat from 'dateformat';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import dateFormat from '~/lib/dateformat';
 import { nDaysBefore, nMonthsBefore, getStartOfDay, dayAfter } from '~/lib/utils/datetime_utility';
 import { __, s__, sprintf } from '~/locale';
 

@@ -29,11 +29,11 @@ RSpec.describe Namespaces::SyncNamespaceNameWorker, type: :worker do
     context 'when the sync fails' do
       it 'raises a RequestError' do
         expect(Gitlab::SubscriptionPortal::Client).to receive(:update_namespace_name)
-          .and_return({ success: false })
+          .and_return({ success: false, errors: 'foo' })
 
         expect { sync }.to raise_error(
           described_class::RequestError,
-          "Namespace name sync failed! Namespace id: #{namespace_id}"
+        %(Namespace name sync failed! Namespace id: #{namespace_id}, {:success=>false, :errors=>"foo"})
         )
       end
     end

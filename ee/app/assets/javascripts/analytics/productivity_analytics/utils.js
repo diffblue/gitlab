@@ -1,6 +1,6 @@
-import dateFormat from 'dateformat';
 import { flatten } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
+import dateFormat from '~/lib/dateformat';
 import { getDayDifference, getDateInPast } from '~/lib/utils/datetime_utility';
 import { median } from '~/lib/utils/number_utils';
 
