@@ -27,7 +27,6 @@ func NewKeyWatcher() *KeyWatcher {
 		subscribers: make(map[string][]chan string),
 		shutdown:    make(chan struct{}),
 		reconnectBackoff: backoff.Backoff{
-			//These are the defaults
 			Min:    100 * time.Millisecond,
 			Max:    60 * time.Second,
 			Factor: 2,
@@ -37,8 +36,7 @@ func NewKeyWatcher() *KeyWatcher {
 }
 
 var (
-	globalKeyWatcher = NewKeyWatcher()
-	keyWatchers      = promauto.NewGauge(
+	keyWatchers = promauto.NewGauge(
 		prometheus.GaugeOpts{
 			Name: "gitlab_workhorse_keywatcher_keywatchers",
 			Help: "The number of keys that is being watched by gitlab-workhorse",
@@ -115,11 +113,6 @@ func dialPubSub(dialer redisDialerFunc) (redis.Conn, error) {
 	return conn, nil
 }
 
-// Process redis subscriptions
-//
-// NOTE: There Can Only Be One!
-func Process() { globalKeyWatcher.Process() }
-
 func (kw *KeyWatcher) Process() {
 	log.Info("keywatcher: starting process loop")
 	for {
@@ -136,8 +129,6 @@ func (kw *KeyWatcher) Process() {
 		}
 	}
 }
-
-func Shutdown() { globalKeyWatcher.Shutdown() }
 
 func (kw *KeyWatcher) Shutdown() {
 	log.Info("keywatcher: shutting down")
@@ -218,11 +209,6 @@ const (
 	//  Also returned on errors.
 	WatchKeyStatusNoChange
 )
-
-// WatchKey waits for a key to be updated or expired
-func WatchKey(key, value string, timeout time.Duration) (WatchKeyStatus, error) {
-	return globalKeyWatcher.WatchKey(key, value, timeout)
-}
 
 func (kw *KeyWatcher) WatchKey(key, value string, timeout time.Duration) (WatchKeyStatus, error) {
 	notify := make(chan string, 1)
