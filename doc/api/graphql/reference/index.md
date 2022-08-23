@@ -15568,6 +15568,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="pipelinesecurityreportfindingassets"></a>`assets` | [`[AssetType!]`](#assettype) | List of assets associated with the vulnerability. |
 | <a id="pipelinesecurityreportfindingconfidence"></a>`confidence` | [`String`](#string) | Type of the security report that found the vulnerability. |
 | <a id="pipelinesecurityreportfindingdescription"></a>`description` | [`String`](#string) | Description of the vulnerability finding. |
+| <a id="pipelinesecurityreportfindingdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
 | <a id="pipelinesecurityreportfindingevidence"></a>`evidence` | [`VulnerabilityEvidence`](#vulnerabilityevidence) | Evidence for the vulnerability. |
 | <a id="pipelinesecurityreportfindingfalsepositive"></a>`falsePositive` | [`Boolean`](#boolean) | Indicates whether the vulnerability is a false positive. |
 | <a id="pipelinesecurityreportfindingidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifier!]!`](#vulnerabilityidentifier) | Identifiers of the vulnerability finding. |

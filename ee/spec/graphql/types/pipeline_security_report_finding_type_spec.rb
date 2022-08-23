@@ -25,7 +25,8 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'] do
        location
        falsePositive
        solution
-       state]
+       state
+       description_html]
   end
 
   before do
