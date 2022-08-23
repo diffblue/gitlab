@@ -106,7 +106,7 @@ export default {
 
 <template>
   <div
-    class="gl-responsive-table-row vulnerabilities-row p-2"
+    class="gl-responsive-table-row p-2"
     :class="{ dismissed: isDismissed, 'gl-bg-blue-50': isSelected }"
   >
     <div class="table-section section-5">
