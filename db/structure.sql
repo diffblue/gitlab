@@ -11490,6 +11490,7 @@ CREATE TABLE application_settings (
     error_tracking_api_url text,
     git_rate_limit_users_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
     error_tracking_access_token_encrypted text,
+    invitation_flow_enforcement boolean DEFAULT false NOT NULL,
     package_registry_cleanup_policies_worker_capacity integer DEFAULT 2 NOT NULL,
     deactivate_dormant_users_period integer DEFAULT 90 NOT NULL,
     auto_ban_user_on_excessive_projects_download boolean DEFAULT false NOT NULL,
