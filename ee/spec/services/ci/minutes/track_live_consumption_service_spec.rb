@@ -48,6 +48,7 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas do
       end
 
       it 'logs event' do
+        allow(Gitlab::AppLogger).to receive(:info).and_call_original
         expect(Gitlab::AppLogger).to receive(:info).with(
           message: 'Build dropped due to CI minutes limit exceeded',
           namespace: project.root_namespace.name,
