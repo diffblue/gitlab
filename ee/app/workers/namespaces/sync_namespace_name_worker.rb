@@ -23,7 +23,7 @@ module Namespaces
 
       return if response[:success]
 
-      raise RequestError, "Namespace name sync failed! Namespace id: #{namespace.id}"
+      raise RequestError, "Namespace name sync failed! Namespace id: #{namespace.id}, #{response}"
     end
 
     private
