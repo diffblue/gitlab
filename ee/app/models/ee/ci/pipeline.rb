@@ -121,7 +121,7 @@ module EE
 
       def license_scanning_report
         ::Gitlab::Ci::Reports::LicenseScanning::Report.new.tap do |license_scanning_report|
-          latest_report_builds(::Ci::JobArtifact.license_scanning_reports).each do |build|
+          latest_report_builds(::Ci::JobArtifact.of_report_type(:license_scanning)).each do |build|
             build.collect_license_scanning_reports!(license_scanning_report)
           end
         end
@@ -129,10 +129,10 @@ module EE
 
       def dependency_list_report
         ::Gitlab::Ci::Reports::DependencyList::Report.new.tap do |dependency_list_report|
-          latest_report_builds(::Ci::JobArtifact.dependency_list_reports).success.each do |build|
+          latest_report_builds(::Ci::JobArtifact.of_report_type(:dependency_list)).success.each do |build|
             build.collect_dependency_list_reports!(dependency_list_report)
           end
-          latest_report_builds(::Ci::JobArtifact.license_scanning_reports).success.each do |build|
+          latest_report_builds(::Ci::JobArtifact.of_report_type(:license_scanning)).success.each do |build|
             build.collect_licenses_for_dependency_list!(dependency_list_report)
           end
         end
@@ -140,7 +140,7 @@ module EE
 
       def metrics_report
         ::Gitlab::Ci::Reports::Metrics::Report.new.tap do |metrics_report|
-          latest_report_builds(::Ci::JobArtifact.metrics_reports).each do |build|
+          latest_report_builds(::Ci::JobArtifact.of_report_type(:metrics)).each do |build|
             build.collect_metrics_reports!(metrics_report)
           end
         end
@@ -148,7 +148,7 @@ module EE
 
       def sbom_reports
         ::Gitlab::Ci::Reports::Sbom::Reports.new.tap do |sbom_reports|
-          latest_report_builds(::Ci::JobArtifact.sbom_reports).each do |build|
+          latest_report_builds(::Ci::JobArtifact.of_report_type(:sbom)).each do |build|
             build.collect_sbom_reports!(sbom_reports)
           end
         end
@@ -183,7 +183,7 @@ module EE
       end
 
       def license_scan_completed?
-        latest_report_builds(::Ci::JobArtifact.license_scanning_reports).exists?
+        latest_report_builds(::Ci::JobArtifact.of_report_type(:license_scanning)).exists?
       end
 
       def can_ingest_sbom_reports?
@@ -220,11 +220,11 @@ module EE
       private
 
       def has_security_reports?
-        has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.license_scanning_reports))
+        has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.of_report_type(:license_scanning)))
       end
 
       def has_sbom_reports?
-        has_reports?(::Ci::JobArtifact.sbom_reports)
+        has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
       end
 
       def project_has_subscriptions?

@@ -73,7 +73,8 @@ module Projects
     end
 
     def report_service
-      @report_service ||= ::Security::ReportFetchService.new(project, ::Ci::JobArtifact.dependency_list_reports)
+      job_artifacts = ::Ci::JobArtifact.of_report_type(:dependency_list)
+      @report_service ||= ::Security::ReportFetchService.new(project, job_artifacts)
     end
 
     def serializer

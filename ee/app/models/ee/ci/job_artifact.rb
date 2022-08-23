@@ -42,42 +42,6 @@ module EE
         with_file_types(requested_file_types & SECURITY_REPORT_FILE_TYPES)
       end
 
-      scope :license_scanning_reports, -> do
-        with_file_types(file_types_for_report(:license_scanning))
-      end
-
-      scope :dependency_list_reports, -> do
-        with_file_types(file_types_for_report(:dependency_list))
-      end
-
-      scope :container_scanning_reports, -> do
-        with_file_types(file_types_for_report(:container_scanning))
-      end
-
-      scope :cluster_image_scanning_reports, -> do
-        with_file_types(file_types_for_report(:cluster_image_scanning))
-      end
-
-      scope :dast_reports, -> do
-        with_file_types(file_types_for_report(:dast))
-      end
-
-      scope :metrics_reports, -> do
-        with_file_types(file_types_for_report(:metrics))
-      end
-
-      scope :coverage_fuzzing_reports, -> do
-        with_file_types(file_types_for_report(:coverage_fuzzing))
-      end
-
-      scope :api_fuzzing_reports, -> do
-        with_file_types(file_types_for_report(:api_fuzzing))
-      end
-
-      scope :sbom_reports, -> do
-        with_file_types(file_types_for_report(:sbom))
-      end
-
       scope :with_files_stored_locally, -> { where(file_store: ::ObjectStorage::Store::LOCAL) }
       scope :with_files_stored_remotely, -> { where(file_store: ::ObjectStorage::Store::REMOTE) }
       scope :with_verification_state, ->(state) { joins(:job_artifact_state).where(verification_arel_table[:verification_state].eq(verification_state_value(state))) }
