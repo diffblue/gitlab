@@ -118,9 +118,8 @@ export default {
   <bubble-menu
     data-testid="link-bubble-menu"
     class="gl-shadow gl-rounded-base gl-bg-white"
-    :editor="tiptapEditor"
     plugin-key="bubbleMenuLink"
-    :should-show="() => shouldShow()"
+    :should-show="shouldShow"
     :tippy-options="$options.tippyOptions"
   >
     <editor-state-observer @transaction="updateLinkToState">

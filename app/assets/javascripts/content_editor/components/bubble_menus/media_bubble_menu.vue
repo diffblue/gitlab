@@ -189,9 +189,8 @@ export default {
   <bubble-menu
     data-testid="media-bubble-menu"
     class="gl-shadow gl-rounded-base gl-bg-white"
-    :editor="tiptapEditor"
     plugin-key="bubbleMenuMedia"
-    :should-show="() => shouldShow()"
+    :should-show="shouldShow"
   >
     <editor-state-observer @transaction="updateMediaInfoToState">
       <gl-button-group v-if="!isEditing" class="gl-display-flex gl-align-items-center">

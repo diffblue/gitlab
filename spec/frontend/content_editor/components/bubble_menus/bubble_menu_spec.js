@@ -75,6 +75,14 @@ describe('content_editor/components/bubble_menus/bubble_menu', () => {
     expect(tiptapEditor.registerPlugin).toHaveBeenCalledWith(pluginInitializationResult);
   });
 
+  it('does not render default slot by default', async () => {
+    createWrapper({});
+
+    await nextTick();
+
+    expect(wrapper.text()).not.toContain('menu content');
+  });
+
   describe('when onShow event handler is invoked', () => {
     const onShowArgs = {};
 
