@@ -125,7 +125,7 @@ As an experiment, we want to introduce a `local` reviewer status for database re
 focusing on work from a team/stage, but not outside of it. This helps to focus and build great domain
 knowledge. We are not introducing changes to the reviewer roulette till we evaluate the impact and feedback from this
 experiment. We ask to respect reviewers who decline reviews based on their focus on `local` reviews. For tracking purposes,
-please use in your personal YAML file entry: `- reviewer database local` instead of `- reviewer database`. 
+please use in your personal YAML file entry: `- reviewer database local` instead of `- reviewer database`.
 
 ### Approval guidelines
 
@@ -330,7 +330,7 @@ Maintainers are the DRI of assuring that the acceptance criteria of a merge requ
 In general, [quality is everyone’s responsibility](https://about.gitlab.com/handbook/engineering/quality/),
 but maintainers of an MR are held responsible for **ensuring** that an MR meets those general quality standards.
 
-If a maintainer feels that an MR is substantial enough, or requires a [domain expert](#domain-experts), 
+If a maintainer feels that an MR is substantial enough, or requires a [domain expert](#domain-experts),
 maintainers have the discretion to request a review from another reviewer, or maintainer. Here are some
 examples of maintainers proactively doing this during review:
 
