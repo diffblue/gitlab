@@ -390,6 +390,26 @@ RETURN NULL;
 END
 $$;
 
+CREATE TABLE audit_events (
+    id bigint NOT NULL,
+    author_id integer NOT NULL,
+    entity_id integer NOT NULL,
+    entity_type character varying NOT NULL,
+    details text,
+    ip_address inet,
+    author_name text,
+    entity_path text,
+    target_details text,
+    created_at timestamp without time zone NOT NULL,
+    target_type text,
+    target_id bigint,
+    CONSTRAINT check_492aaa021d CHECK ((char_length(entity_path) <= 5500)),
+    CONSTRAINT check_83ff8406e2 CHECK ((char_length(author_name) <= 255)),
+    CONSTRAINT check_97a8c868e7 CHECK ((char_length(target_type) <= 255)),
+    CONSTRAINT check_d493ec90b5 CHECK ((char_length(target_details) <= 5500))
+)
+PARTITION BY RANGE (created_at);
+
 CREATE TABLE batched_background_migration_job_transition_logs (
     id bigint NOT NULL,
     batched_background_migration_job_id bigint NOT NULL,
@@ -403,6 +423,26 @@ CREATE TABLE batched_background_migration_job_transition_logs (
     CONSTRAINT check_76e202c37a CHECK ((char_length(exception_class) <= 100))
 )
 PARTITION BY RANGE (created_at);
+
+CREATE TABLE incident_management_pending_alert_escalations (
+    id bigint NOT NULL,
+    rule_id bigint NOT NULL,
+    alert_id bigint NOT NULL,
+    process_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+)
+PARTITION BY RANGE (process_at);
+
+CREATE TABLE incident_management_pending_issue_escalations (
+    id bigint NOT NULL,
+    rule_id bigint NOT NULL,
+    issue_id bigint NOT NULL,
+    process_at timestamp with time zone NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+)
+PARTITION BY RANGE (process_at);
 
 CREATE TABLE loose_foreign_keys_deleted_records (
     id bigint NOT NULL,
@@ -11790,26 +11830,6 @@ CREATE SEQUENCE atlassian_identities_user_id_seq
 
 ALTER SEQUENCE atlassian_identities_user_id_seq OWNED BY atlassian_identities.user_id;
 
-CREATE TABLE audit_events (
-    id bigint NOT NULL,
-    author_id integer NOT NULL,
-    entity_id integer NOT NULL,
-    entity_type character varying NOT NULL,
-    details text,
-    ip_address inet,
-    author_name text,
-    entity_path text,
-    target_details text,
-    created_at timestamp without time zone NOT NULL,
-    target_type text,
-    target_id bigint,
-    CONSTRAINT check_492aaa021d CHECK ((char_length(entity_path) <= 5500)),
-    CONSTRAINT check_83ff8406e2 CHECK ((char_length(author_name) <= 255)),
-    CONSTRAINT check_97a8c868e7 CHECK ((char_length(target_type) <= 255)),
-    CONSTRAINT check_d493ec90b5 CHECK ((char_length(target_details) <= 5500))
-)
-PARTITION BY RANGE (created_at);
-
 CREATE TABLE audit_events_external_audit_event_destinations (
     id bigint NOT NULL,
     namespace_id bigint NOT NULL,
@@ -16350,16 +16370,6 @@ CREATE SEQUENCE incident_management_oncall_shifts_id_seq
 
 ALTER SEQUENCE incident_management_oncall_shifts_id_seq OWNED BY incident_management_oncall_shifts.id;
 
-CREATE TABLE incident_management_pending_alert_escalations (
-    id bigint NOT NULL,
-    rule_id bigint NOT NULL,
-    alert_id bigint NOT NULL,
-    process_at timestamp with time zone NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
-)
-PARTITION BY RANGE (process_at);
-
 CREATE SEQUENCE incident_management_pending_alert_escalations_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -16368,16 +16378,6 @@ CREATE SEQUENCE incident_management_pending_alert_escalations_id_seq
     CACHE 1;
 
 ALTER SEQUENCE incident_management_pending_alert_escalations_id_seq OWNED BY incident_management_pending_alert_escalations.id;
-
-CREATE TABLE incident_management_pending_issue_escalations (
-    id bigint NOT NULL,
-    rule_id bigint NOT NULL,
-    issue_id bigint NOT NULL,
-    process_at timestamp with time zone NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
-)
-PARTITION BY RANGE (process_at);
 
 CREATE SEQUENCE incident_management_pending_issue_escalations_id_seq
     START WITH 1
@@ -17238,8 +17238,7 @@ CREATE TABLE members (
     state smallint DEFAULT 0,
     invite_email_success boolean DEFAULT true NOT NULL,
     member_namespace_id bigint,
-    member_role_id bigint,
-    CONSTRAINT check_508774aac0 CHECK ((member_namespace_id IS NOT NULL))
+    member_role_id bigint
 );
 
 CREATE SEQUENCE members_id_seq
@@ -22306,19 +22305,6 @@ CREATE SEQUENCE users_statistics_id_seq
 
 ALTER SEQUENCE users_statistics_id_seq OWNED BY users_statistics.id;
 
-CREATE TABLE verification_codes (
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    visitor_id_code text NOT NULL,
-    code text NOT NULL,
-    phone text NOT NULL,
-    CONSTRAINT check_9b84e6aaff CHECK ((char_length(code) <= 8)),
-    CONSTRAINT check_ccc542256b CHECK ((char_length(visitor_id_code) <= 64)),
-    CONSTRAINT check_f5684c195b CHECK ((char_length(phone) <= 50))
-)
-PARTITION BY RANGE (created_at);
-
-COMMENT ON TABLE verification_codes IS 'JiHu-specific table';
-
 CREATE TABLE vulnerabilities (
     id bigint NOT NULL,
     milestone_id bigint,
@@ -22859,23 +22845,6 @@ CREATE SEQUENCE vulnerability_user_mentions_id_seq
     CACHE 1;
 
 ALTER SEQUENCE vulnerability_user_mentions_id_seq OWNED BY vulnerability_user_mentions.id;
-
-CREATE TABLE web_hook_logs (
-    id bigint NOT NULL,
-    web_hook_id integer NOT NULL,
-    trigger character varying,
-    url character varying,
-    request_headers text,
-    request_data text,
-    response_headers text,
-    response_body text,
-    response_status character varying,
-    execution_duration double precision,
-    internal_error_message character varying,
-    updated_at timestamp without time zone NOT NULL,
-    created_at timestamp without time zone NOT NULL
-)
-PARTITION BY RANGE (created_at);
 
 CREATE SEQUENCE web_hook_logs_id_seq
     START WITH 1
@@ -32385,9 +32354,6 @@ ALTER TABLE ONLY lfs_objects_projects
 ALTER TABLE ONLY vulnerability_merge_request_links
     ADD CONSTRAINT fk_2ef3954596 FOREIGN KEY (vulnerability_id) REFERENCES vulnerabilities(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY members
-    ADD CONSTRAINT fk_2f85abf8f1 FOREIGN KEY (member_namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
-
 ALTER TABLE ONLY analytics_cycle_analytics_group_stages
     ADD CONSTRAINT fk_3078345d6d FOREIGN KEY (stage_event_hash_id) REFERENCES analytics_cycle_analytics_stage_event_hashes(id) ON DELETE CASCADE;
 
@@ -32795,6 +32761,9 @@ ALTER TABLE ONLY epics
 
 ALTER TABLE ONLY dast_profiles
     ADD CONSTRAINT fk_aa76ef30e9 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY members
+    ADD CONSTRAINT fk_aa82dcc1c6 FOREIGN KEY (member_namespace_id) REFERENCES namespaces(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY alert_management_alerts
     ADD CONSTRAINT fk_aad61aedca FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE SET NULL;
