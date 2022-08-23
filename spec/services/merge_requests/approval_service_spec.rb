@@ -62,6 +62,16 @@ RSpec.describe MergeRequests::ApprovalService do
       end
     end
 
+    context 'with an already approved MR' do
+      before do
+        merge_request.approvals.create!(user: user)
+      end
+
+      it 'does not create an approval' do
+        expect { service.execute(merge_request) }.not_to change { merge_request.approvals.size }
+      end
+    end
+
     context 'with valid approval' do
       it 'resets approvals' do
         expect(merge_request.approvals).to receive(:reset)
