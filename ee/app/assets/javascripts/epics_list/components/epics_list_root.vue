@@ -200,7 +200,7 @@ export default {
           this.prevPageCursor = startCursor;
           this.nextPageCursor = '';
         }
-      } else if (propsName === 'currentState') {
+      } else if (propsName === 'currentState' || propsName === 'sortedBy') {
         this.currentPage = 1;
         this.prevPageCursor = '';
         this.nextPageCursor = '';

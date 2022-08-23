@@ -97,6 +97,8 @@ const createComponent = ({
 describe('EpicsListRoot', () => {
   let wrapper;
 
+  const getIssuableList = () => wrapper.findComponent(IssuableList);
+
   beforeEach(() => {
     wrapper = createComponent();
   });
@@ -161,7 +163,8 @@ describe('EpicsListRoot', () => {
             pageInfo: mockPageInfo,
           },
         });
-        wrapper.vm.fetchEpicsBy('currentPage', 2);
+
+        getIssuableList().vm.$emit('page-change', 2);
 
         await nextTick();
 
@@ -169,12 +172,29 @@ describe('EpicsListRoot', () => {
         expect(wrapper.vm.nextPageCursor).toBe(mockPageInfo.endCursor);
         expect(wrapper.vm.currentPage).toBe(2);
       });
+
+      it('updates prevPageCursor and nextPageCursor values when provided propsName param is "sortedBy"', async () => {
+        wrapper = createComponent({
+          provide: {
+            ...mockProvide,
+            page: 2,
+            prev: mockPageInfo.startCursor,
+            next: mockPageInfo.endCursor,
+          },
+        });
+
+        getIssuableList().vm.$emit('sort', 'TITLE_DESC');
+
+        await nextTick();
+
+        expect(wrapper.vm.prevPageCursor).toBe('');
+        expect(wrapper.vm.nextPageCursor).toBe('');
+        expect(wrapper.vm.currentPage).toBe(1);
+      });
     });
   });
 
   describe('template', () => {
-    const getIssuableList = () => wrapper.findComponent(IssuableList);
-
     it('renders issuable-list component', async () => {
       jest.spyOn(wrapper.vm, 'getFilteredSearchTokens');
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
@@ -236,11 +256,7 @@ describe('EpicsListRoot', () => {
     );
 
     it('sets previousPage prop value a number representing previous page based on currentPage value', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        currentPage: 3,
-      });
+      getIssuableList().vm.$emit('page-change', 3);
 
       await nextTick();
 
@@ -248,31 +264,23 @@ describe('EpicsListRoot', () => {
     });
 
     it('sets nextPage prop value a number representing next page based on currentPage value', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        currentPage: 1,
-        epicsCount: {
-          opened: 5,
-          closed: 0,
-          all: 5,
+      wrapper = createComponent({
+        provide: {
+          ...mockProvide,
+          page: 2,
         },
       });
 
       await nextTick();
 
-      expect(getIssuableList().props('nextPage')).toBe(2);
+      expect(getIssuableList().props('nextPage')).toBe(3);
     });
 
     it('sets nextPage prop value as `null` when currentPage is already last page', async () => {
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        currentPage: 3,
-        epicsCount: {
-          opened: 5,
-          closed: 0,
-          all: 5,
+      wrapper = createComponent({
+        provide: {
+          ...mockProvide,
+          page: 3,
         },
       });
 
