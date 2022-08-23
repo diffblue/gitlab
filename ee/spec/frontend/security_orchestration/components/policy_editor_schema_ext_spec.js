@@ -1,4 +1,4 @@
-import { setDiagnosticsOptions } from 'monaco-yaml';
+import { languages } from 'monaco-editor';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { PolicySchemaExtension } from 'ee/security_orchestration/components/policy_editor_schema_ext';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from 'ee/security_orchestration/components/constants';
@@ -40,6 +40,10 @@ describe('PolicySchemaExtension', () => {
   });
 
   describe('registerSecurityPolicySchema', () => {
+    beforeEach(() => {
+      jest.spyOn(languages.yaml.yamlDefaults, 'setDiagnosticsOptions');
+    });
+
     describe('register validations options with monaco for yaml language', () => {
       const mockNamespacePath = 'namespace1';
 
@@ -59,10 +63,10 @@ describe('PolicySchemaExtension', () => {
           });
 
           if (itRegistersASchema) {
-            expect(setDiagnosticsOptions).toHaveBeenCalledTimes(1);
+            expect(languages.yaml.yamlDefaults.setDiagnosticsOptions).toHaveBeenCalledTimes(1);
             expect(schemaFunction).toHaveBeenCalledTimes(1);
           } else {
-            expect(setDiagnosticsOptions).not.toHaveBeenCalled();
+            expect(languages.yaml.yamlDefaults.setDiagnosticsOptions).not.toHaveBeenCalled();
           }
         },
       );
