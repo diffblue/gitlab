@@ -123,6 +123,7 @@ export default {
     },
     async fetchExpandedContent() {
       this.isLoadingExpandedContent = true;
+      this.error = null;
 
       try {
         await this.fetch(this.fetchExpandedData, FETCH_TYPE_EXPANDED);
