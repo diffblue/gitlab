@@ -300,7 +300,8 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
 
     context 'with scan result policies' do
-      let(:scan_result_policy) { build(:scan_result_policy, name: 'Contains security critical severities') }
+      let(:policy_name) { 'Contains security critical severities' }
+      let(:scan_result_policy) { build(:scan_result_policy, name: policy_name) }
       let(:policy_yaml) { build(:orchestration_policy_yaml, scan_result_policy: [scan_result_policy]) }
 
       it { is_expected.to eq(true) }
@@ -324,6 +325,21 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
           let(:scan_result_policy) { build(:scan_result_policy, name: 'Contains security critical severities', actions: [action]) }
 
           it { is_expected.to eq(is_valid) }
+        end
+      end
+
+      context 'with various policy names' do
+        using RSpec::Parameterized::TableSyntax
+
+        where(:policy_name, :expected_to_be_valid) do
+          ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT                 | false
+          ApprovalRuleLike::DEFAULT_NAME_FOR_COVERAGE                       | false
+          "New #{ApprovalRuleLike::DEFAULT_NAME_FOR_LICENSE_REPORT}"        | true
+          "#{ApprovalRuleLike::DEFAULT_NAME_FOR_COVERAGE} through policies" | true
+        end
+
+        with_them do
+          it { is_expected.to eq(expected_to_be_valid) }
         end
       end
     end

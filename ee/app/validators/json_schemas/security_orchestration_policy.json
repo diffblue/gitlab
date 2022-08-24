@@ -270,7 +270,8 @@
             "description": "Name for the policy.",
             "minLength": 1,
             "maxLength": 255,
-            "type": "string"
+            "type": "string",
+            "pattern": "^(?!License-Check$|Coverage-Check$)"
           },
           "description": {
             "description": "Specifies the longer description of the policy.",
