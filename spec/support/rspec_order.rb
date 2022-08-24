@@ -30,8 +30,28 @@ module Support
 
       @todo.include?(path)
     end
+
+    # Append ` (order <ORDER>)` to the example group description if the order
+    # has been set.
+    #
+    # Previously, we've modified metadata[:description] directly but that led
+    # to bugs. See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96137
+    module DocumentationFormatterPatch
+      # See https://github.com/rspec/rspec-core/blob/v3.11.0/lib/rspec/core/formatters/documentation_formatter.rb#L24-L29
+      def example_group_started(notification)
+        output.puts if @group_level == 0
+
+        order = notification.group.metadata[:order]
+        description_suffix = " (order #{order})" if order
+        output.puts "#{current_indentation}#{notification.group.description.strip}#{description_suffix}"
+
+        @group_level += 1
+      end
+    end
   end
 end
+
+RSpec::Core::Formatters::DocumentationFormatter.prepend Support::RspecOrder::DocumentationFormatterPatch
 
 RSpec.configure do |config|
   # Useful to find order-dependent specs.
