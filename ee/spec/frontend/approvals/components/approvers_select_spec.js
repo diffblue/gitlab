@@ -6,6 +6,7 @@ import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
 import { TYPE_USER, TYPE_GROUP } from 'ee/approvals/constants';
 import { TEST_HOST } from 'helpers/test_constants';
 import waitForPromises from 'helpers/wait_for_promises';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 const TEST_PROJECT_ID = '17';
 const TEST_GROUP_AVATAR = `${TEST_HOST}/group-avatar.png`;
@@ -23,6 +24,8 @@ const TEST_USERS = [
   { id: 1, name: 'Dolar', username: 'dolar', avatar_url: TEST_USER_AVATAR },
   { id: 3, name: 'Sit', username: 'sit', avatar_url: TEST_USER_AVATAR },
 ];
+
+const TERM = 'lorem';
 
 const waitForEvent = ($input, event) =>
   new Promise((resolve) => {
@@ -56,7 +59,7 @@ describe('Approvals ApproversSelect', () => {
 
   const factory = async (options = {}) => {
     const propsData = {
-      projectId: TEST_PROJECT_ID,
+      namespaceId: TEST_PROJECT_ID,
       ...options.propsData,
     };
 
@@ -112,30 +115,34 @@ describe('Approvals ApproversSelect', () => {
     expect(items).toEqual(expected);
   });
 
-  describe('with search term', () => {
-    const term = 'lorem';
+  describe.each`
+    namespaceType              | api               | mockedValue             | expectedParams
+    ${NAMESPACE_TYPES.PROJECT} | ${'projectUsers'} | ${TEST_USERS}           | ${[TEST_PROJECT_ID, TERM, { skip_users: [] }]}
+    ${NAMESPACE_TYPES.GROUP}   | ${'groupMembers'} | ${{ data: TEST_USERS }} | ${[TEST_PROJECT_ID, { query: TERM, skip_users: [] }]}
+  `(
+    'with namespaceType: $namespaceType and search term',
+    ({ namespaceType, api, mockedValue, expectedParams }) => {
+      beforeEach(async () => {
+        jest.spyOn(Api, api).mockReturnValue(Promise.resolve(mockedValue));
+        await factory({ propsData: { namespaceType } });
 
-    beforeEach(async () => {
-      await factory();
+        search(TERM);
 
-      search(term);
-
-      await waitForEvent($input, 'select2-loaded');
-    });
-
-    it('fetches all available groups', () => {
-      expect(Api.groups).toHaveBeenCalledWith(term, {
-        skip_groups: [],
-        all_available: true,
+        await waitForEvent($input, 'select2-loaded');
       });
-    });
 
-    it('fetches users', () => {
-      expect(Api.projectUsers).toHaveBeenCalledWith(TEST_PROJECT_ID, term, {
-        skip_users: [],
+      it('fetches all available groups', () => {
+        expect(Api.groups).toHaveBeenCalledWith(TERM, {
+          skip_groups: [],
+          all_available: true,
+        });
       });
-    });
-  });
+
+      it('fetches users', () => {
+        expect(Api[api]).toHaveBeenCalledWith(...expectedParams);
+      });
+    },
+  );
 
   describe('with permitAllSharedGroupsForApproval', () => {
     beforeEach(async () => {
