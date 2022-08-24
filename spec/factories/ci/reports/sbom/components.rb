@@ -9,7 +9,11 @@ FactoryBot.define do
     skip_create
 
     initialize_with do
-      ::Gitlab::Ci::Reports::Sbom::Component.new(attributes.stringify_keys)
+      ::Gitlab::Ci::Reports::Sbom::Component.new(
+        type: type,
+        name: name,
+        version: version
+      )
     end
   end
 end
