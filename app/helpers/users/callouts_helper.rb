@@ -81,7 +81,9 @@ module Users
     end
 
     def ultimate_feature_removal_banner_dismissed?(project)
-      user_dismissed?(ULTIMATE_FEATURE_REMOVAL_BANNER, namespace: project.namespace)
+      return false unless project
+
+      user_dismissed?(ULTIMATE_FEATURE_REMOVAL_BANNER, project: project)
     end
 
     private

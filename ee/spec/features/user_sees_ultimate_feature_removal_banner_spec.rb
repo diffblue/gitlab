@@ -7,7 +7,6 @@ RSpec.describe 'Display ultimate feature removal banner', :saas, :js do
   let(:user) { create(:user) }
 
   before do
-    stub_feature_flags(ultimate_feature_removal_banner: true)
     project.add_guest(user)
     project.project_setting.update!(legacy_open_source_license_available: false)
     sign_in(user)
@@ -70,5 +69,45 @@ RSpec.describe 'Display ultimate feature removal banner', :saas, :js do
     end
 
     it_behaves_like "shows the banner"
+  end
+
+  shared_examples_for 'hides callout for that project' do
+    it 'hides callout' do
+      visit project_path(project)
+
+      expect(page).to have_css('.js-ultimate-feature-removal-banner')
+
+      close_callout
+
+      visit project_path(project)
+
+      expect(page).not_to have_css('.js-ultimate-feature-removal-banner')
+    end
+  end
+
+  context 'when user dimisses callout' do
+    it_behaves_like 'hides callout for that project'
+
+    context 'with another project' do
+      let(:other_project) { create(:project, :public, :repository) }
+
+      before do
+        other_project.add_guest(user)
+        other_project.project_setting.update!(legacy_open_source_license_available: false)
+      end
+
+      it_behaves_like 'hides callout for that project'
+
+      it 'still shows the callout in a different project' do
+        visit project_path(other_project)
+
+        expect(page).to have_css('.js-ultimate-feature-removal-banner')
+      end
+    end
+  end
+
+  def close_callout
+    find('[data-testid="dismiss-ultimate-feature-removal-banner"]').click
+    wait_for_requests
   end
 end

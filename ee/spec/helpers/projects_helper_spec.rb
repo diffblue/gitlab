@@ -279,66 +279,39 @@ RSpec.describe ProjectsHelper do
   end
 
   describe '#show_ultimate_feature_removal_banner?' do
-    let(:project) { create(:project) }
-    let(:user) { create(:user) }
+    let_it_be_with_refind(:project) { create(:project) }
+    let_it_be_with_refind(:user) { create(:user) }
 
-    context 'on dot com and user is a member' do
+    context 'when the banner should be shown' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:feature_flag_enabled, :public, :legacy_open_source_license_available, :user_dismissed_banner, :should_show_banner) do
-        true  | true | false | false | true
-        false | true | false | false | false
-        true  | false | false | false | false
-        true  | true | true  | false | false
-        true  | true | false | true  | false
+      where(:is_com, :is_guest, :feature_flag_enabled, :is_public, :legacy_open_source_license_available, :user_dismissed_banner, :should_show_banner) do
+        true | true | true | true | false | false | true
+        true | false | true  | true | false | false | false
+        false | true | true  | true | false | false | false
+        true | true | false | true | false | false | false
+        true | true | true  | false | false | false | false
+        true | true | true  | true | true  | false | false
+        true | true | true  | true | false | true  | false
       end
 
       with_them do
         before do
-          allow(Gitlab).to receive(:com?).and_return(true)
+          allow(Gitlab).to receive(:com?).and_return(is_com)
           stub_feature_flags(ultimate_feature_removal_banner: feature_flag_enabled)
           allow(helper).to receive(:current_user).and_return(user)
-          project.add_guest(user)
-          allow(project).to receive(:public?).and_return(public)
-          allow(project.project_setting).to receive(:legacy_open_source_license_available).and_return(legacy_open_source_license_available)
-          allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner', namespace: project.namespace).and_return(user_dismissed_banner)
+          project.add_guest(user) if is_guest
+          allow(project).to receive(:public?).and_return(is_public)
+          project.project_setting.update!(legacy_open_source_license_available: legacy_open_source_license_available)
+
+          if user_dismissed_banner
+            ::Users::DismissProjectCalloutService.new(container: nil, current_user: user, params: { project_id: project.id, feature_name: 'ultimate_feature_removal_banner' }).execute
+          end
         end
 
-        it 'shows the banner if required' do
+        it 'shows the banner' do
           expect(helper.show_ultimate_feature_removal_banner?(project)).to eq(should_show_banner)
         end
-      end
-    end
-
-    context 'when user is not a guest' do
-      before do
-        allow(Gitlab).to receive(:com?).and_return(true)
-        stub_feature_flags(ultimate_feature_removal_banner: true)
-        allow(helper).to receive(:current_user).and_return(user)
-        allow(project).to receive(:public?).and_return(true)
-        allow(project).to receive(:legacy_open_source_license_available).and_return(false)
-        allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner', namespace: project.namespace).and_return(false)
-      end
-
-      it 'does not show banner' do
-        expect(helper.show_ultimate_feature_removal_banner?(project)).to eq(false)
-      end
-    end
-
-    context 'when feature flag is enabled for a free project and user has not dismissed callout' do
-      before do
-        stub_feature_flags(ultimate_feature_removal_banner: true)
-        allow(project).to receive(:public?).and_return(true)
-        allow(helper).to receive(:current_user).and_return(user)
-        project.add_guest(user)
-
-        allow(project).to receive(:legacy_open_source_license_available).and_return(false)
-        allow(helper).to receive(:current_user).and_return(user)
-        allow(helper).to receive(:user_dismissed?).with('ultimate_feature_removal_banner', namespace: project.namespace).and_return(false)
-      end
-
-      it 'does not show banner' do
-        expect(helper.show_ultimate_feature_removal_banner?(project)).to eq(false)
       end
     end
   end
