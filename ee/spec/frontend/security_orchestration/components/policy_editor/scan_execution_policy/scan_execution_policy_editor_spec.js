@@ -42,30 +42,6 @@ const newlyCreatedPolicyProject = {
   fullPath: 'path/to/new-project',
 };
 
-jest.mock('ee/security_orchestration/components/policy_editor/scan_execution_policy/lib', () => ({
-  DEFAULT_SCANNER: jest.requireActual(
-    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
-  ).DEFAULT_SCANNER,
-  DEFAULT_SCAN_EXECUTION_POLICY: jest.requireActual(
-    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
-  ).DEFAULT_SCAN_EXECUTION_POLICY,
-  buildScannerAction: jest.requireActual(
-    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
-  ).buildScannerAction,
-  buildDefaultPipeLineRule: jest.requireActual(
-    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
-  ).buildDefaultPipeLineRule,
-  fromYaml: jest.requireActual(
-    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
-  ).fromYaml,
-  toYaml: jest.requireActual(
-    'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib',
-  ).toYaml,
-  SECURITY_POLICY_ACTIONS: jest.requireActual(
-    'ee/security_orchestration/components/policy_editor/constants',
-  ).SECURITY_POLICY_ACTIONS,
-}));
-
 jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
   assignSecurityPolicyProject: jest.fn().mockResolvedValue({
     branch: 'main',
