@@ -33,6 +33,8 @@ GitLab Shell handles Git SSH sessions for GitLab and modifies the list of author
 For more information, [refer to the README](https://gitlab.com/gitlab-org/gitlab-shell/-/blob/main/README.md).
 for GitLab Shell.
 
+The [Why we implemented our own SSHD solution](https://about.gitlab.com/blog/2022/08/17/why-we-have-implemented-our-own-sshd-solution-on-gitlab-sass/) Blog post explains the reasoning behind the creation of `gitlab-sshd`.
+
 ## GitLab Rails
 
 ### Gitaly touch points
