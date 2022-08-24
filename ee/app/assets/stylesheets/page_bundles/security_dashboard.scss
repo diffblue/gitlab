@@ -26,11 +26,6 @@
   }
 }
 
-.security-dashboard-accordion > ul {
-  @include gl-display-flex;
-  @include gl-flex-grow-1;
-}
-
 .security-charts {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-gap: $gl-spacing-scale-7;
