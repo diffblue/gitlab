@@ -8,7 +8,7 @@ import {
   GlSearchBoxByType,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import { mapGetters } from 'vuex';
+import { mapGetters, mapState } from 'vuex';
 import Api from 'ee/api';
 import { removeFlash } from '~/analytics/shared/utils';
 import createFlash from '~/flash';
@@ -26,11 +26,6 @@ export default {
     GlSearchBoxByType,
   },
   props: {
-    initialData: {
-      type: Array,
-      required: false,
-      default: () => [],
-    },
     maxLabels: {
       type: Number,
       required: false,
@@ -70,6 +65,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['defaultGroupLabels']),
     selectedLabel() {
       const { selectedLabelIds, labels = [] } = this;
       if (!selectedLabelIds.length || !labels.length) return null;
@@ -88,10 +84,10 @@ export default {
     },
   },
   mounted() {
-    if (!this.initialData.length) {
+    if (!this.defaultGroupLabels?.length) {
       this.fetchData();
     } else {
-      this.labels = this.initialData;
+      this.labels = this.defaultGroupLabels;
     }
   },
   methods: {
@@ -139,7 +135,7 @@ export default {
         <span v-if="selectedLabel" class="gl-new-dropdown-button-text">
           <span
             :style="{ backgroundColor: selectedLabel.color }"
-            class="d-inline-block dropdown-label-box"
+            class="gl-display-inline-block dropdown-label-box"
           >
           </span>
           {{ labelTitle(selectedLabel) }}
@@ -152,33 +148,33 @@ export default {
     <slot name="label-dropdown-list-header">
       <gl-dropdown-section-header>{{ __('Select a label') }} </gl-dropdown-section-header>
     </slot>
-    <div class="mb-3 px-3">
+    <div class="gl-mb-5 gl-px-5">
       <gl-search-box-by-type v-model.trim="searchTerm" />
     </div>
-    <div class="mb-3 px-3">
+    <div class="gl-mb-5 gl-px-5">
       <gl-dropdown-item
         v-for="label in labels"
         :key="label.id"
         :class="{
-          'pl-4': multiselect && !isSelectedLabel(label.id),
-          'cursor-not-allowed': disabled,
+          'gl-pl-6!': !isSelectedLabel(label.id),
+          'gl-cursor-not-allowed': disabled,
         }"
         :active="isSelectedLabel(label.id)"
+        :is-checked="multiselect && isSelectedLabel(label.id)"
+        :is-check-item="isSelectedLabel(label.id)"
         @click.prevent="$emit('select-label', label)"
       >
-        <gl-icon
-          v-if="multiselect && isSelectedLabel(label.id)"
-          class="text-gray-700 mr-1 vertical-align-middle"
-          name="mobile-issue-close"
-        />
-        <span :style="{ backgroundColor: label.color }" class="d-inline-block dropdown-label-box">
+        <span
+          :style="{ backgroundColor: label.color }"
+          class="gl-display-inline-block dropdown-label-box"
+        >
         </span>
         {{ labelTitle(label) }}
       </gl-dropdown-item>
-      <div v-show="loading" class="text-center">
+      <div v-show="loading" class="gl-text-center">
         <gl-loading-icon :inline="true" size="lg" />
       </div>
-      <div v-show="noMatchingLabels" class="text-secondary">
+      <div v-show="noMatchingLabels" class="gl-text-secondary">
         {{ __('No matching labels') }}
       </div>
     </div>

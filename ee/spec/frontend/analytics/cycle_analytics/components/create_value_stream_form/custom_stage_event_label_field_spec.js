@@ -55,13 +55,6 @@ describe('CustomStageEventLabelField', () => {
       expect(findEventLabelField().attributes('label')).toBe(fieldLabel);
     });
 
-    it('renders each item in the labels list', () => {
-      const lt = findEventLabelDropdownProp('initialData').map((d) => d.name);
-      const labelsText = initialGroupLabels.map(({ name }) => name);
-
-      expect(labelsText).toEqual(lt);
-    });
-
     it('has no selected labels', () => {
       const selected = findEventLabelDropdownProp('selectedLabelIds');
 

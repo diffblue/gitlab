@@ -1,6 +1,6 @@
 <script>
 import { GlFormGroup, GlFormInput } from '@gitlab/ui';
-import { isLabelEvent, getLabelEventsIdentifiers, uniqById } from '../../utils';
+import { isLabelEvent, getLabelEventsIdentifiers } from '../../utils';
 import { i18n } from './constants';
 import CustomStageEventField from './custom_stage_event_field.vue';
 import CustomStageEventLabelField from './custom_stage_event_label_field.vue';
@@ -78,15 +78,6 @@ export default {
     selectedEndEventName() {
       return this.eventName(this.stage.endEventIdentifier, 'SELECT_END_EVENT');
     },
-    initialGroupLabels() {
-      return uniqById(
-        [
-          this.stage.startEventLabelId ? this.stage.startEventLabel : null,
-          this.stage.endEventLabelId ? this.stage.endEventLabel : null,
-          ...this.defaultGroupLabels,
-        ].filter((l) => Boolean(l)),
-      );
-    },
   },
   methods: {
     onSelectLabel(field, event) {
@@ -155,7 +146,6 @@ export default {
         event-type="start-event"
         :index="index"
         :field-label="$options.i18n.FORM_FIELD_START_EVENT_LABEL"
-        :initial-group-labels="initialGroupLabels"
         :requires-label="startEventRequiresLabel"
         :label-error="fieldErrorMessage('startEventLabelId')"
         :has-label-error="hasFieldErrors('startEventLabelId')"
@@ -181,7 +171,6 @@ export default {
         event-type="end-event"
         :index="index"
         :field-label="$options.i18n.FORM_FIELD_END_EVENT_LABEL"
-        :initial-group-labels="initialGroupLabels"
         :requires-label="endEventRequiresLabel"
         :label-error="fieldErrorMessage('endEventLabelId')"
         :has-label-error="hasFieldErrors('endEventLabelId')"
