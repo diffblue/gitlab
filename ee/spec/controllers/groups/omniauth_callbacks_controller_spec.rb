@@ -69,14 +69,22 @@ RSpec.describe Groups::OmniauthCallbacksController do
       end
 
       it 'logs group audit event for authentication' do
-        audit_event_service = instance_double(AuditEventService)
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(
+          {
+            name: 'authenticated_with_group_saml',
+            author: user,
+            scope: group,
+            target: user,
+            message: "Signed in with #{provider.upcase} authentication",
+            authentication_event: true,
+            authentication_provider: provider,
+            additional_details: {
+              with: provider
+            }
+          }
+        ).and_call_original
 
-        allow(AuditEventService).to receive(:new).and_call_original
-        expect(AuditEventService).to receive(:new).with(user, group, { with: provider })
-          .and_return(audit_event_service)
-        expect(audit_event_service).to receive_message_chain(:for_authentication, :security_event)
-
-        post provider, params: { group_id: group }
+        expect { post provider, params: { group_id: group } }.to change(AuthenticationEvent, :count).by(1)
       end
 
       include_examples 'works with session enforcement'
@@ -219,7 +227,6 @@ RSpec.describe Groups::OmniauthCallbacksController do
         it 'logs group audit event for being added to the group' do
           audit_event_service = instance_double(AuditEventService)
 
-          expect(AuditEventService).to receive(:new).ordered.and_call_original
           expect(AuditEventService).to receive(:new).ordered.with(user, group, action: :create)
             .and_return(audit_event_service)
           expect(audit_event_service).to receive_message_chain(:for_member, :security_event)

@@ -3,7 +3,7 @@ import StatisticsSeatsCard from './statistics_seats_card.vue';
 
 export default {
   component: StatisticsSeatsCard,
-  title: 'usage_quotas/components/statistics_seats_card',
+  title: 'ee/usage_quotas/components/statistics_seats_card',
 };
 
 const Template = (_, { argTypes }) => ({
