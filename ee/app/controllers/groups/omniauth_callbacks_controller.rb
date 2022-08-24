@@ -162,7 +162,22 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   override :log_audit_event
   def log_audit_event(user, options = {})
-    AuditEventService.new(user, @unauthenticated_group, options)
-      .for_authentication.security_event
+    return if options[:with].blank?
+
+    provider = options[:with]
+    audit_context = {
+      name: 'authenticated_with_group_saml',
+      author: user,
+      scope: @unauthenticated_group,
+      target: user,
+      message: "Signed in with #{provider.upcase} authentication",
+      authentication_event: true,
+      authentication_provider: provider,
+      additional_details: {
+        with: provider
+      }
+    }
+
+    ::Gitlab::Audit::Auditor.audit(audit_context)
   end
 end
