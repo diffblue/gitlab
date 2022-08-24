@@ -32,12 +32,12 @@ module EE
         mount_mutation ::Mutations::RequirementsManagement::UpdateRequirement
         mount_mutation ::Mutations::Vulnerabilities::Create
         mount_mutation ::Mutations::Vulnerabilities::Dismiss
-        mount_mutation ::Mutations::SecurityFinding::Dismiss
         mount_mutation ::Mutations::Vulnerabilities::Resolve
         mount_mutation ::Mutations::Vulnerabilities::Confirm
         mount_mutation ::Mutations::Vulnerabilities::RevertToDetected
         mount_mutation ::Mutations::Vulnerabilities::CreateExternalIssueLink
         mount_mutation ::Mutations::Vulnerabilities::DestroyExternalIssueLink
+        mount_mutation ::Mutations::Vulnerabilities::Finding::Dismiss
         mount_mutation ::Mutations::Boards::UpdateEpicUserPreferences
         mount_mutation ::Mutations::Boards::EpicBoards::Create
         mount_mutation ::Mutations::Boards::EpicBoards::Destroy
