@@ -192,14 +192,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
         cadence_data = read_association(group, 'iterations_cadences').first
         iteration_data = cadence_data['iterations'].first
 
-        expect(cadence_data).to include(
-          'title' => cadence.title,
-          'description' => cadence.description,
-          'active' => cadence.active,
-          'automatic' => cadence.automatic,
-          'duration_in_weeks' => cadence.duration_in_weeks
-        )
-
+        expect(cadence_data).to include('title' => cadence.title, 'description' => cadence.description)
         expect(iteration_data).to include('iid' => iteration.iid)
       end
     end
