@@ -3,7 +3,7 @@
 require 'airborne'
 
 module QA
-  RSpec.describe 'Enablement:Search' do
+  RSpec.describe 'Data Stores' do
     describe(
       'Elasticsearch advanced global search with advanced syntax',
       :orchestrated,
@@ -24,22 +24,20 @@ module QA
       let(:elasticsearch_original_state_on?) { Runtime::Search.elasticsearch_on?(api_client) }
 
       before do
-        unless elasticsearch_original_state_on?
-          QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api!
-        end
+        QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api! unless elasticsearch_original_state_on?
 
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
-          commit.add_files([
-            { file_path: 'elasticsearch.rb', content: "elasticsearch: #{SecureRandom.hex(8)}" }
-          ])
+          commit.add_files(
+            [{
+              file_path: 'elasticsearch.rb', content: "elasticsearch: #{SecureRandom.hex(8)}"
+            }]
+          )
         end
       end
 
       after do
-        if !elasticsearch_original_state_on? && !api_client.nil?
-          Runtime::Search.disable_elasticsearch(api_client)
-        end
+        Runtime::Search.disable_elasticsearch(api_client) if !elasticsearch_original_state_on? && !api_client.nil?
       end
 
       context 'when searching for projects using advanced syntax' do
