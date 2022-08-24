@@ -91,8 +91,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeRestorer do
 
         expect(cadence.title).to eq('title')
         expect(cadence.description).to eq('description')
-        expect(cadence.active).to eq(true)
-        expect(cadence.automatic).to eq(true)
+        expect(cadence.automatic).to eq(false)
         expect(cadence.roll_over).to eq(false)
       end
 
@@ -103,6 +102,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeRestorer do
         expect(iteration.title).to be_nil
         expect(iteration.state).to eq('closed')
         expect(iteration.description).to eq('description')
+        expect(iteration.sequence).to eq(1)
       end
     end
   end
