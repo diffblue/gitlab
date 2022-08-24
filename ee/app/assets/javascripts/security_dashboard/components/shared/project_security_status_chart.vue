@@ -167,7 +167,8 @@ export default {
     </template>
 
     <accordion
-      class="security-dashboard-accordion gl-px-5 gl-display-flex gl-flex-grow-1 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+      class="gl-px-5 gl-display-flex gl-flex-grow-1 gl-border-t-1 gl-border-t-solid gl-border-t-gray-100"
+      :list-classes="['gl-display-flex', 'gl-flex-grow-1']"
     >
       <template #default="{ accordionId }">
         <accordion-item
