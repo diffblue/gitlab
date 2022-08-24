@@ -1,31 +1,6 @@
 @import 'page_bundles/mixins_and_variables_and_functions';
 @import '../components/generic_vulnerability_report';
 
-.vulnerabilities-row {
-  &.dismissed .table-mobile-content:not(.action-buttons) {
-    opacity: 0.5;
-  }
-
-  @include media-breakpoint-up(md) {
-    .action-buttons {
-      opacity: 0;
-    }
-
-    &:hover,
-    &:focus,
-    &:focus-within {
-      background: $blue-50;
-      border-bottom: 1px solid $blue-200;
-      border-top: 1px solid $blue-200;
-      margin-top: -1px;
-
-      .action-buttons {
-        opacity: 1;
-      }
-    }
-  }
-}
-
 .security-charts {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-gap: $gl-spacing-scale-7;
