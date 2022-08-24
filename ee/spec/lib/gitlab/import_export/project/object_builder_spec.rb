@@ -45,4 +45,53 @@ RSpec.describe Gitlab::ImportExport::Project::ObjectBuilder do
       expect(epic.persisted?).to be true
     end
   end
+
+  context 'iterations' do
+    it 'finds existing iteration based on iterations cadence title' do
+      cadence = create(:iterations_cadence, title: 'iterations cadence', group: project.group)
+      iteration = create(
+        :iteration,
+        iid: 2,
+        start_date: '2022-01-01',
+        due_date: '2022-02-02',
+        group: project.group,
+        iterations_cadence: cadence
+      )
+
+      object = described_class.build(
+        Iteration,
+        {
+          'iid' => 2,
+          'start_date' => '2022-01-01',
+          'due_date' => '2022-02-02',
+          'iterations_cadence' => cadence,
+          'project' => project,
+          'group' => project.group
+        }
+      )
+
+      expect(object).to eq(iteration)
+    end
+
+    context 'when existing iteration does not exist' do
+      it 'does not create a new iteration' do
+        expect(described_class.build(Iteration,
+                                     'iid' => 2,
+                                     'start_date' => '2022-01-01',
+                                     'due_date' => '2022-02-02',
+                                     'project' => project,
+                                     'group' => project.group)).to eq(nil)
+      end
+    end
+
+    context 'when project is not associated with a group' do
+      it 'returns' do
+        expect(described_class.build(Iteration,
+                                     'iid' => 2,
+                                     'start_date' => '2022-01-01',
+                                     'due_date' => '2022-02-02',
+                                     'project' => build(:project))).to eq(nil)
+      end
+    end
+  end
 end

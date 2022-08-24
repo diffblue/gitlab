@@ -153,4 +153,62 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
       expect(Project.find_by_path('project').boards.find_by_name('TestBoardABC').lists.first.milestone.name).to eq('test milestone')
     end
   end
+
+  describe 'resource iteration events' do
+    let(:user) { create(:user) }
+    let(:issue) { project.issues.find_by_title('Issue with Epic') }
+
+    before do
+      setup_import_export_config('group')
+    end
+
+    context 'when project is associated with a group' do
+      let(:group) { create(:group) }
+      let(:project) { create(:project, group: group) }
+      let(:cadence) { create(:iterations_cadence, group: group, title: 'iterations cadence') }
+
+      before do
+        group.add_maintainer(user)
+      end
+
+      it 'restores iteration events' do
+        iteration = create(:iteration, group: group, iid: 5, start_date: '2022-08-15', due_date: '2022-08-21', iterations_cadence: cadence)
+
+        expect { restored_project_json }.to change { ResourceIterationEvent.count }.from(0).to(1)
+
+        event = issue.resource_iteration_events.first
+
+        expect(event.action).to eq('add')
+        expect(event.iteration).to eq(iteration)
+      end
+
+      context 'when iterations cadence does not match' do
+        let(:cadence) { create(:iterations_cadence, group: group, title: 'non matching cadence') }
+
+        it 'does not restore iteration events' do
+          create(:iteration, group: group, iid: 5, start_date: '2022-08-15', due_date: '2022-08-21', iterations_cadence: cadence)
+
+          expect { restored_project_json }.not_to change { ResourceIterationEvent.count }
+        end
+      end
+
+      context 'when iteration could not be found' do
+        it 'does not restore iteration events' do
+          expect { restored_project_json }.not_to change { ResourceIterationEvent.count }
+
+          expect(issue.resource_iteration_events.count).to eq(0)
+        end
+      end
+    end
+
+    context 'when project is not associated with a group' do
+      let(:project) { create(:project) }
+
+      it 'does not restore iteration events' do
+        expect { restored_project_json }.not_to change { ResourceIterationEvent.count }
+
+        expect(issue.resource_iteration_events.count).to eq(0)
+      end
+    end
+  end
 end
