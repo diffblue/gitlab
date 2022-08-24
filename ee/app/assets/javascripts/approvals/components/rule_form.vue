@@ -402,7 +402,7 @@ export default {
     >
       <approvers-select
         v-model="approversToAdd"
-        :project-id="settings.projectId"
+        :namespace-id="settings.projectId"
         :skip-user-ids="userIds"
         :skip-group-ids="groupIds"
         :is-invalid="!isValidApprovers"
