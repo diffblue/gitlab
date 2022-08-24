@@ -42,6 +42,9 @@ function createComponent({ props = {}, mountFn = shallowMount } = {}) {
   return mountFn(TasksByTypeFilters, {
     store: {
       ...store,
+      state: {
+        defaultGroupLabels: groupLabels,
+      },
       getters: {
         ...getters,
         currentGroupPath: 'fake',
