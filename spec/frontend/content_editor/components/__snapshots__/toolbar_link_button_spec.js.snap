@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`content_editor/components/toolbar_link_button renders dropdown component 1`] = `
-"<div aria-label=\\"Insert link\\" title=\\"Insert link\\" lazy=\\"\\">
+"<div title=\\"Insert link\\" lazy=\\"\\">
   <li role=\\"presentation\\" class=\\"gl-px-3!\\">
     <form tabindex=\\"-1\\" class=\\"b-dropdown-form gl-p-0\\">
       <div role=\\"group\\" class=\\"input-group\\" placeholder=\\"Link URL\\">
