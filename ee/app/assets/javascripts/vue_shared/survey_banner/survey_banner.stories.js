@@ -3,7 +3,7 @@ import SurveyBanner from './survey_banner.vue';
 
 export default {
   component: SurveyBanner,
-  title: 'vue_shared/components/survey_banner',
+  title: 'ee/vue_shared/components/survey_banner',
 };
 
 const Template = (args, { argTypes }) => ({
