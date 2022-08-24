@@ -99,8 +99,7 @@ RSpec.shared_examples 'reference links for status page' do
 
     context 'with @all' do
       let(:reference) do
-        double(:reference, name: 'All Project and Group Members',
-               to_reference: '@all')
+        double(:reference, name: 'All Project and Group Members', to_reference: '@all')
       end
 
       include_examples 'mention anonymization'

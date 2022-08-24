@@ -31,7 +31,7 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
 
           expect(security_event.details).to include(
             author_name: author.name,
-            target_id:  protected_branch.id,
+            target_id: protected_branch.id,
             entity_path: entity.full_path,
             target_type: 'ProtectedBranch',
             target_details: protected_branch.name,
@@ -56,19 +56,19 @@ RSpec.describe AuditEvents::ProtectedBranchAuditEventService, :request_store do
           expect(logger).to have_received(:info).with(hash_including(
                                                         'author_id' => author.id,
                                                         'author_name' => author.name,
-                                                        'entity_id' =>  entity.id,
-                                                        'entity_type' =>  'Project',
-                                                        'entity_path' =>  entity.full_path,
-                                                        'allow_force_push' =>  true,
-                                                        'code_owner_approval_required' =>  true,
-                                                        'merge_access_levels' =>  [merge_level],
-                                                        'push_access_levels' =>  [push_level],
-                                                        'target_details' =>  protected_branch.name,
-                                                        'target_id' =>  protected_branch.id,
-                                                        'target_type' =>  'ProtectedBranch',
-                                                        'custom_message' =>  action == :add ? /Added/ : /Unprotected/,
-                                                        'ip_address' =>  ip_address,
-                                                        'created_at' =>  anything)
+                                                        'entity_id' => entity.id,
+                                                        'entity_type' => 'Project',
+                                                        'entity_path' => entity.full_path,
+                                                        'allow_force_push' => true,
+                                                        'code_owner_approval_required' => true,
+                                                        'merge_access_levels' => [merge_level],
+                                                        'push_access_levels' => [push_level],
+                                                        'target_details' => protected_branch.name,
+                                                        'target_id' => protected_branch.id,
+                                                        'target_type' => 'ProtectedBranch',
+                                                        'custom_message' => action == :add ? /Added/ : /Unprotected/,
+                                                        'ip_address' => ip_address,
+                                                        'created_at' => anything)
                                                      )
         end
 

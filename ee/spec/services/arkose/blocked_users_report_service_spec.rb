@@ -60,8 +60,9 @@ RSpec.describe Arkose::BlockedUsersReportService do
       let(:blocked_at) { DateTime.now - 1.day }
       let!(:user_custom_attributes) do
         blocked_user_without_arkose_session.custom_attributes.create! key: 'blocked_at',
-                                       value: blocked_at, created_at: DateTime.now - 1.day,
-                                       updated_at: DateTime.now - 1.day
+                                                                      value: blocked_at,
+                                                                      created_at: DateTime.now - 1.day,
+                                                                      updated_at: DateTime.now - 1.day
       end
 
       it 'does not sends the list of blocked users to Arkose' do

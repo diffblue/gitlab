@@ -107,8 +107,11 @@ RSpec.describe MergeRequests::CreatePipelineService, :clean_gitlab_redis_shared_
 
     context 'when merge request requires an approval' do
       before do
-        create(:approval_merge_request_rule, merge_request: merge_request, users: [user], name: 'some-custom-rule',
-               approvals_required: 1)
+        create(:approval_merge_request_rule,
+          merge_request: merge_request,
+          users: [user],
+          name: 'some-custom-rule',
+          approvals_required: 1)
       end
 
       it_behaves_like 'merged result pipeline'

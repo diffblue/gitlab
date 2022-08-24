@@ -7,9 +7,12 @@ RSpec.describe AutoMerge::MergeWhenPipelineSucceedsService do
   let_it_be(:project) { create(:project, :repository) }
 
   let(:mr_merge_if_green_enabled) do
-    create(:merge_request, merge_when_pipeline_succeeds: true, merge_user: user,
-           source_branch: "master", target_branch: 'feature',
-           source_project: project, target_project: project, state: "opened")
+    create(:merge_request,
+      merge_when_pipeline_succeeds: true,
+      merge_user: user,
+      source_branch: "master", target_branch: 'feature',
+      source_project: project, target_project: project,
+      state: "opened")
   end
 
   let(:pipeline) do
@@ -34,9 +37,10 @@ RSpec.describe AutoMerge::MergeWhenPipelineSucceedsService do
     let(:pipeline_status) { :running }
 
     before do
-      create(:ci_pipeline, pipeline_status, ref: mr_merge_if_green_enabled.source_branch,
-             sha: mr_merge_if_green_enabled.diff_head_sha,
-             project: mr_merge_if_green_enabled.source_project)
+      create(:ci_pipeline, pipeline_status,
+        ref: mr_merge_if_green_enabled.source_branch,
+        sha: mr_merge_if_green_enabled.diff_head_sha,
+        project: mr_merge_if_green_enabled.source_project)
       mr_merge_if_green_enabled.update_head_pipeline
     end
 

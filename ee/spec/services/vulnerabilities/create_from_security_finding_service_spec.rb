@@ -46,8 +46,8 @@ RSpec.describe Vulnerabilities::CreateFromSecurityFindingService, '#execute' do
   context 'when there is an existing vulnerability for the security finding' do
     let_it_be(:security_finding) { create(:security_finding) }
     let_it_be(:vulnerability) do
-      create(:vulnerability, project: project,
-             findings: [create(:vulnerabilities_finding, uuid: security_finding_uuid)])
+      create(:vulnerability,
+        project: project, findings: [create(:vulnerabilities_finding, uuid: security_finding_uuid)])
     end
 
     it 'does not creates a new Vulnerability' do

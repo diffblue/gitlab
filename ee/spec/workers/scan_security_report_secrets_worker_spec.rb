@@ -19,11 +19,18 @@ RSpec.describe  ScanSecurityReportSecretsWorker do
   subject(:worker) { described_class.new }
 
   before do
-    vulnerability.update!(raw_metadata: { category: 'secret_detection',
-          raw_source_code_extract: api_key,
-          location: { file: file,
-                      start_line: 40, end_line: 45 },
-                      identifiers: [{ type: identifier_type, name: 'Gitleaks rule ID AWS', value: identifier_value }] }.to_json)
+    vulnerability.update!(
+      raw_metadata: {
+        category: 'secret_detection',
+        raw_source_code_extract: api_key,
+        location: {
+          file: file,
+          start_line: 40, end_line: 45
+        },
+        identifiers: [
+          { type: identifier_type, name: 'Gitleaks rule ID AWS', value: identifier_value }
+        ]
+      }.to_json)
     create(:vulnerabilities_finding_pipeline, finding: vulnerability, pipeline: pipeline)
   end
 
