@@ -190,16 +190,6 @@ EOT
             expect(binary_diff(project).diff).not_to be_empty
           end
         end
-
-        context 'when convert_diff_to_utf8_with_replacement_symbol feature flag is disabled' do
-          before do
-            stub_feature_flags(convert_diff_to_utf8_with_replacement_symbol: false)
-          end
-
-          it 'will not try to convert invalid characters' do
-            expect(Gitlab::EncodingHelper).not_to receive(:encode_utf8_with_replacement_character?)
-          end
-        end
       end
 
       context 'when replace_invalid_utf8_chars is false' do
