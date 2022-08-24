@@ -43,9 +43,8 @@ The process also updates the following user information:
 - SSH public keys (if `sync_ssh_keys` is set)
 - Kerberos identity (if Kerberos is enabled)
 
-NOTE: 
+NOTE:
 There's currently a [sync issue](https://gitlab.com/gitlab-org/gitlab/-/issues/342598) where the `name` is not synchronized if the `Prevent users from changing their profile name` checkbox in `Admin > Settings > General > Account and Limit` is checked.
-
 
 ### Adjust LDAP user sync schedule
 
