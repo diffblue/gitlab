@@ -269,5 +269,28 @@ describe('MR Widget', () => {
       await waitForPromises();
       expect(fetchExpandedData).toHaveBeenCalledTimes(2);
     });
+
+    it('resets the error message when another request is fetched', async () => {
+      const fetchExpandedData = jest.fn().mockRejectedValue({ error: true });
+
+      createComponent({
+        propsData: {
+          isCollapsible: true,
+          fetchCollapsedData: () => Promise.resolve([]),
+          fetchExpandedData,
+        },
+      });
+
+      findToggleButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(wrapper.findByText('Failed to load').exists()).toBe(true);
+      fetchExpandedData.mockImplementation(() => new Promise(() => {}));
+
+      findToggleButton().vm.$emit('click');
+      await nextTick();
+
+      expect(wrapper.findByText('Failed to load').exists()).toBe(false);
+    });
   });
 });
