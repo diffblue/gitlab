@@ -17718,6 +17718,7 @@ CREATE TABLE ml_experiments (
     project_id bigint NOT NULL,
     user_id bigint,
     name text NOT NULL,
+    deleted_on timestamp with time zone,
     CONSTRAINT check_ee07a0be2c CHECK ((char_length(name) <= 255))
 );
 
