@@ -12,7 +12,12 @@ RSpec.describe BulkImports::Groups::Stage do
   describe '#pipelines' do
     it 'includes EE pipelines' do
       expect(subject.pipelines).to include(
-        { stage: 1, pipeline: BulkImports::Groups::Pipelines::IterationsPipeline },
+        { stage: 1, pipeline: BulkImports::Groups::Pipelines::IterationsPipeline, maximum_source_version: '15.3.0' },
+        {
+          stage: 1,
+          pipeline: BulkImports::Groups::Pipelines::IterationsCadencesPipeline,
+          minimum_source_version: '15.4.0'
+        },
         { stage: 2, pipeline: BulkImports::Groups::Pipelines::EpicsPipeline },
         { stage: 2, pipeline: BulkImports::Common::Pipelines::WikiPipeline }
       )

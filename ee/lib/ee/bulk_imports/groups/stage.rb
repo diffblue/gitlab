@@ -12,6 +12,12 @@ module EE
           @ee_config ||= {
             iterations: {
               pipeline: ::BulkImports::Groups::Pipelines::IterationsPipeline,
+              maximum_source_version: '15.3.0',
+              stage: 1
+            },
+            iterations_cadences: {
+              pipeline: ::BulkImports::Groups::Pipelines::IterationsCadencesPipeline,
+              minimum_source_version: '15.4.0',
               stage: 1
             },
             epics: {
