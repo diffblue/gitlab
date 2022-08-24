@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::Ci::Parsers::Security::Common do
   describe '#parse!' do
-    where(vulnerability_finding_signatures_enabled: [true, false])
+    where(signatures_enabled: [true, false])
     with_them do
       let_it_be(:pipeline) { create(:ci_pipeline) }
 
@@ -19,12 +19,12 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
           allow(parser).to receive(:tracking_data).and_return(tracking_data)
         end
 
-        artifact.each_blob { |blob| described_class.parse!(blob, report, vulnerability_finding_signatures_enabled) }
+        artifact.each_blob { |blob| described_class.parse!(blob, report, signatures_enabled: signatures_enabled) }
       end
 
       describe 'schema validation' do
         let(:validator_class) { Gitlab::Ci::Parsers::Security::Validators::SchemaValidator }
-        let(:parser) { described_class.new('{}', report, vulnerability_finding_signatures_enabled, validate: validate) }
+        let(:parser) { described_class.new('{}', report, signatures_enabled: signatures_enabled, validate: validate) }
 
         subject(:parse_report) { parser.parse! }
 

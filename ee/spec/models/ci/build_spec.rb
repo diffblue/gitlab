@@ -370,18 +370,18 @@ RSpec.describe Ci::Build, :saas do
         context 'vulnerability_finding_signatures' do
           let!(:artifact) { create(:ee_ci_job_artifact, :sast, job: job, project: job.project) }
 
-          where(vulnerability_finding_signatures: [true, false])
+          where(signatures_enabled: [true, false])
           with_them do
             it 'parses the report' do
               stub_licensed_features(
                 sast: true,
-                vulnerability_finding_signatures: vulnerability_finding_signatures
+                vulnerability_finding_signatures: signatures_enabled
               )
 
               expect(::Gitlab::Ci::Parsers::Security::Sast).to receive(:new).with(
                 artifact.file.read,
                 kind_of(::Gitlab::Ci::Reports::Security::Report),
-                vulnerability_finding_signatures
+                signatures_enabled: signatures_enabled
               )
 
               subject

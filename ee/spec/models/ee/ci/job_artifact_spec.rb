@@ -361,7 +361,7 @@ RSpec.describe Ci::JobArtifact do
       end
 
       let(:mock_parser) { double(:parser, parse!: true) }
-      let(:expected_parser_args) { ['sast', instance_of(String), instance_of(::Gitlab::Ci::Reports::Security::Report), false, validate: validate] }
+      let(:expected_parser_args) { ['sast', instance_of(String), instance_of(::Gitlab::Ci::Reports::Security::Report), signatures_enabled: false, validate: validate] }
 
       context 'when validate is false' do
         let(:validate) { false }
