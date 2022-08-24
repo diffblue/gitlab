@@ -18,10 +18,6 @@ module Resolvers
              required: false,
              description: 'Filter epics by state.'
 
-    argument :in, [Types::IssuableSearchableFieldEnum],
-             required: false,
-             description: 'Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'
-
     argument :sort, Types::EpicSortEnum,
              required: false,
              description: 'List epics by sort order.'
@@ -86,8 +82,6 @@ module Resolvers
     def ready?(**args)
       validate_timeframe_params!(args)
       validate_starts_with_iid!(args)
-      validate_search_in_params!(args)
-      validate_anonymous_search_access! if args[:search].present?
 
       super(**args)
     end
@@ -98,7 +92,7 @@ module Resolvers
       return [] unless resolver_object.present?
       return [] unless epic_feature_enabled?
 
-      find_epics(transform_args(args))
+      find_epics(prepare_finder_params(args))
     end
 
     private
@@ -130,12 +124,17 @@ module Resolvers
     end
 
     def transform_args(args)
-      transformed               = args.dup
-      transformed[:group_id]    = group
-      transformed[:iids]      ||= [args[:iid]].compact
-      transformed[:in]          = args[:in].join(',') if args[:in].present?
+      transformed = args.dup
+      transformed[:group_id] = group
+      transformed[:iids] ||= [args[:iid]].compact
 
       transformed.merge(transform_timeframe_parameters(args)).merge(relative_param)
+    end
+
+    def prepare_finder_params(args)
+      params = transform_args(args)
+
+      super(params)
     end
 
     def relative_param
@@ -157,6 +156,10 @@ module Resolvers
       return resolver_object if resolver_object.is_a?(Group)
 
       parent.group
+    end
+
+    def resource_parent
+      strong_memoize(:resource_parent) { group }
     end
 
     # If we're querying for multiple iids and selecting issues, then ideally
@@ -182,13 +185,6 @@ module Resolvers
       unless EpicsFinder.valid_iid_query?(args[:iid_starts_with])
         raise Gitlab::Graphql::Errors::ArgumentError, 'Invalid `iidStartsWith` query'
       end
-    end
-
-    def validate_search_in_params!(args)
-      return unless args[:in].present? && args[:search].blank?
-
-      raise Gitlab::Graphql::Errors::ArgumentError,
-        '`search` should be present when including the `in` argument'
     end
   end
 end
