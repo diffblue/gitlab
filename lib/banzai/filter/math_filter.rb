@@ -23,24 +23,15 @@ module Banzai
       DOLLAR_INLINE_PATTERN = %r{
         (?<matched>\$(?<math>\S[^$\n]+?\S)\$)(?:[^\d]|$)
       }x.freeze
-      DOLLAR_INLINE_PATTERN_COMBO = %r{
-        (?<inline>\$(?<inline_math>\S[^$\n]+?\S)\$)(?:[^\d]|$)
-      }x.freeze
 
       # Corresponds to the "$$...$$" syntax
       DOLLAR_DISPLAY_INLINE_PATTERN = %r{
         (?<matched>\$\$(?<math>\S[^$\n]+?\S)\$\$)(?:[^\d]|$)
       }x.freeze
-      DOLLAR_DISPLAY_INLINE_PATTERN_COMBO = %r{
-        (?<display_inline>\$\$(?<display_inline_math>\S[^$\n]+?\S)\$\$)(?:[^\d]|$)
-      }x.freeze
 
       # Corresponds to the $$\n...\n$$ syntax
       DOLLAR_DISPLAY_BLOCK_PATTERN = %r{
         ^(?<matched>\$\$\ *\n(?<math>.*)\n\$\$\ *)$
-      }x.freeze
-      DOLLAR_DISPLAY_BLOCK_PATTERN_COMBO = %r{
-        ^(?<display_block>\$\$\ *\n(?<display_block_math>.*)\n\$\$\ *)$
       }x.freeze
 
       # Order dependent. Handle the `$$` syntax before the `$` syntax
@@ -49,15 +40,6 @@ module Banzai
         { pattern: DOLLAR_DISPLAY_BLOCK_PATTERN, tag: :pre, style: :display },
         { pattern: DOLLAR_INLINE_PATTERN, tag: :code, style: :inline }
       ].freeze
-
-      # Order dependent. Handle the `$$` syntax before the `$` syntax
-      DOLLAR_MATH_PATTERN = %r{
-          #{DOLLAR_DISPLAY_INLINE_PATTERN_COMBO}
-        |
-          #{DOLLAR_DISPLAY_BLOCK_PATTERN_COMBO}
-        |
-          #{DOLLAR_INLINE_PATTERN_COMBO}
-      }mx.freeze
 
       # Do not recognize math inside these tags
       IGNORED_ANCESTOR_TAGS = %w[pre code tt].to_set
@@ -79,7 +61,6 @@ module Banzai
       def call
         @nodes_count = 0
 
-        # process_dollar_math if Feature.enabled?(:markdown_dollar_math, group)
         process_dollar_pipeline if Feature.enabled?(:markdown_dollar_math, group)
 
         process_dollar_backtick_inline
@@ -146,34 +127,6 @@ module Banzai
         doc.xpath(XPATH_MATH).each do |el|
           el[STYLE_ATTRIBUTE] = 'display'
           el[:class] += " #{TAG_CLASS}"
-        end
-      end
-
-      def process_dollar_math
-        doc.xpath('descendant-or-self::text()').each do |node|
-          next if has_ancestor?(node, IGNORED_ANCESTOR_TAGS)
-
-          if node.content.match?(DOLLAR_MATH_PATTERN)
-            html = node.content
-            node.content.scan(DOLLAR_MATH_PATTERN).each do |display_inline, display_inline_math,
-                                              display_block, display_block_math, inline, inline_math|
-
-              if display_inline
-                html.sub!(display_inline, math_html(tag: :code, style: :display, math: display_inline_math))
-              elsif display_block
-                html.sub!(display_block, math_html(tag: :pre, style: :display, math: display_block_math))
-              else
-                html.sub!(inline, math_html(tag: :code, style: :inline, math: inline_math))
-              end
-
-              @nodes_count += 1
-              break if @nodes_count >= RENDER_NODES_LIMIT
-            end
-
-            node.replace(html)
-
-            break if @nodes_count >= RENDER_NODES_LIMIT
-          end
         end
       end
 
