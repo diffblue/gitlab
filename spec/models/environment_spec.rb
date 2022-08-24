@@ -1583,6 +1583,12 @@ RSpec.describe Environment, :use_clean_rails_memory_store_caching do
 
             expect(environment.auto_stop_in).to eq(expected_result)
           else
+            expect(Gitlab::ErrorTracking).to receive(:track_exception).with(
+              an_instance_of(expected_result),
+              project_id: environment.project_id,
+              environment_id: environment.id
+            )
+
             expect { subject }.to raise_error(expected_result)
           end
         end

@@ -435,6 +435,9 @@ class Environment < ApplicationRecord
     return if parser.seconds_from_now.nil?
 
     self.auto_stop_at = parser.seconds_from_now
+  rescue ChronicDuration::DurationParseError => ex
+    Gitlab::ErrorTracking.track_exception(ex, project_id: self.project_id, environment_id: self.id)
+    raise ex
   end
 
   def rollout_status
