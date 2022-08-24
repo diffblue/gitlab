@@ -35,6 +35,7 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'CloudLicenseRoot',
     apolloProvider,
     provide: {
       buySubscriptionPath,

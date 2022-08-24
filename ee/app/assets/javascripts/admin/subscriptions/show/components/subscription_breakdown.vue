@@ -1,5 +1,9 @@
 <script>
-import { GlButton, GlModalDirective } from '@gitlab/ui';
+import { GlButton, GlModalDirective, GlModal, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { uniqueId } from 'lodash';
+import { createAlert } from '~/flash';
+import { __, sprintf } from '~/locale';
+import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import axios from '~/lib/utils/axios_utils';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import {
@@ -7,9 +11,6 @@ import {
   licensedToHeaderText,
   manageSubscriptionButtonText,
   subscriptionSyncStatus,
-  removeLicense,
-  removeLicenseButtonLabel,
-  removeLicenseConfirm,
   subscriptionDetailsHeaderText,
   subscriptionTypes,
   syncSubscriptionButtonText,
@@ -29,29 +30,36 @@ export const subscriptionDetailsFields = [
   'startsAt',
 ];
 export const licensedToFields = ['name', 'email', 'company'];
-export const modalId = 'subscription-activation-modal';
+
+export const i18n = Object.freeze({
+  activateCloudLicense,
+  licensedToHeaderText,
+  manageSubscriptionButtonText,
+  subscriptionDetailsHeaderText,
+  syncSubscriptionButtonText,
+  removeLicense: __('Remove license'),
+  removeLicenseConfirmSaaS: sprintf(
+    __(
+      'This change will remove %{strongOpen}ALL%{strongClose} Premium/Ultimate features for %{strongOpen}ALL%{strongClose} SaaS customers and make tests start failing.',
+    ),
+    { strongOpen: '<strong>', strongClose: '</strong>' },
+    false,
+  ),
+  removeLicenseConfirm: __('Are you sure you want to remove the license?'),
+  removeLicenseButtonLabel: __('Remove license'),
+  cancel: __('Cancel'),
+});
 
 export default {
-  i18n: {
-    activateCloudLicense,
-    licensedToHeaderText,
-    manageSubscriptionButtonText,
-    removeLicense,
-    removeLicenseConfirm,
-    removeLicenseButtonLabel,
-    subscriptionDetailsHeaderText,
-    syncSubscriptionButtonText,
-  },
-  modal: {
-    id: modalId,
-  },
   name: 'SubscriptionBreakdown',
   directives: {
-    GlModal: GlModalDirective,
+    GlModalDirective,
+    SafeHtml,
   },
   components: {
-    SubscriptionActivationBanner,
     GlButton,
+    GlModal,
+    SubscriptionActivationBanner,
     SubscriptionActivationModal,
     SubscriptionDetailsCard,
     SubscriptionDetailsHistory,
@@ -148,7 +156,39 @@ export default {
           this.hasAsyncActivity = false;
         });
     },
+    removeLicense() {
+      this.hasAsyncActivity = true;
+      return axios
+        .delete(this.licenseRemovePath)
+        .then(() => {
+          refreshCurrentPage();
+        })
+        .catch((e) => {
+          createAlert({
+            message: e,
+          });
+        })
+        .finally(() => {
+          this.hasAsyncActivity = false;
+        });
+    },
   },
+  i18n,
+  activateSubscriptionModal: {
+    id: uniqueId('activateSubscriptionModalId'),
+  },
+  removeLicenseModal: {
+    id: uniqueId('remove-license-modal-'),
+    title: i18n.removeLicense,
+    actionCancel: {
+      text: i18n.cancel,
+    },
+    actionPrimary: {
+      text: i18n.removeLicense,
+      attributes: [{ variant: 'danger' }],
+    },
+  },
+  isDotCom: gon.dot_com,
 };
 </script>
 
@@ -157,7 +197,7 @@ export default {
     <subscription-activation-modal
       v-if="hasSubscription"
       v-model="activationModalVisible"
-      :modal-id="$options.modal.id"
+      :modal-id="$options.activateSubscriptionModal.id"
       v-on="$listeners"
     />
     <user-callout-dismisser
@@ -205,7 +245,7 @@ export default {
               </gl-button>
               <gl-button
                 v-if="canActivateSubscription"
-                v-gl-modal="$options.modal.id"
+                v-gl-modal-directive="$options.activateSubscriptionModal.id"
                 category="primary"
                 variant="confirm"
                 class="gl-mr-3 gl-mb-3 gl-lg-mb-0"
@@ -224,22 +264,33 @@ export default {
               >
                 {{ $options.i18n.manageSubscriptionButtonText }}
               </gl-button>
-              <gl-button
-                v-if="canRemoveLicense"
-                category="secondary"
-                :title="$options.i18n.removeLicenseButtonLabel"
-                :aria-label="$options.i18n.removeLicenseButtonLabel"
-                variant="danger"
-                class="gl-mr-3"
-                :href="licenseRemovePath"
-                :data-confirm="$options.i18n.removeLicenseConfirm"
-                data-confirm-btn-variant="danger"
-                data-method="delete"
-                data-testid="license-remove-action"
-                data-qa-selector="remove_license_link"
-              >
-                {{ $options.i18n.removeLicense }}
-              </gl-button>
+              <div v-if="canRemoveLicense">
+                <gl-button
+                  v-gl-modal-directive="$options.removeLicenseModal.id"
+                  category="secondary"
+                  :loading="hasAsyncActivity"
+                  :title="$options.i18n.removeLicenseButtonLabel"
+                  :aria-label="$options.i18n.removeLicenseButtonLabel"
+                  variant="danger"
+                  class="gl-mr-3"
+                  data-testid="license-remove-action"
+                  data-qa-selector="remove_license_link"
+                >
+                  {{ $options.i18n.removeLicense }}
+                </gl-button>
+                <gl-modal
+                  :modal-id="$options.removeLicenseModal.id"
+                  v-bind="$options.removeLicenseModal"
+                  @primary="removeLicense"
+                >
+                  <div
+                    v-if="$options.isDotCom"
+                    v-safe-html="$options.i18n.removeLicenseConfirmSaaS"
+                  ></div>
+                  <br />
+                  <div>{{ $options.i18n.removeLicenseConfirm }}</div>
+                </gl-modal>
+              </div>
             </div>
           </template>
         </subscription-details-card>

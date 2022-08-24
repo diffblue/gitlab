@@ -8,7 +8,6 @@ import SubscriptionActivationBanner, {
 import SubscriptionActivationModal from 'ee/admin/subscriptions/show/components/subscription_activation_modal.vue';
 import SubscriptionBreakdown, {
   licensedToFields,
-  modalId,
   subscriptionDetailsFields,
 } from 'ee/admin/subscriptions/show/components/subscription_breakdown.vue';
 import SubscriptionDetailsCard from 'ee/admin/subscriptions/show/components/subscription_details_card.vue';
@@ -71,7 +70,7 @@ describe('Subscription Breakdown', () => {
     wrapper = extendedWrapper(
       mountMethod(SubscriptionBreakdown, {
         directives: {
-          glModal: {
+          GlModalDirective: {
             bind(_, { value }) {
               glModalDirective(value);
             },
@@ -157,13 +156,6 @@ describe('Subscription Breakdown', () => {
       createComponent({ stubs: { GlCard, SubscriptionDetailsCard } });
 
       expect(findDetailsCardFooter().exists()).toBe(true);
-    });
-
-    it('presents a subscription activation modal', () => {
-      expect(findSubscriptionActivationModal().props()).toMatchObject({
-        modalId,
-        visible: false,
-      });
     });
 
     it('updates visible of subscription activation modal when change emitted', async () => {
@@ -299,10 +291,10 @@ describe('Subscription Breakdown', () => {
         expect(findSubscriptionSyncNotifications().exists()).toBe(false);
       });
 
-      it('shows modal when active subscription action clicked', () => {
+      it('shows modal when activate subscription action clicked', () => {
         findActivateSubscriptionAction().vm.$emit('click');
 
-        expect(glModalDirective).toHaveBeenCalledWith(modalId);
+        expect(findSubscriptionActivationModal().isVisible()).toBe(true);
       });
 
       describe('subscription activation banner', () => {

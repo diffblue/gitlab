@@ -51,10 +51,6 @@ export const detailsLabels = {
   startsAt: __('Started'),
 };
 
-export const removeLicense = __('Remove license');
-export const removeLicenseConfirm = __('Are you sure you want to remove the license?');
-export const removeLicenseButtonLabel = __('Remove license');
-
 export const subscriptionTable = {
   activatedAt: __('Activated on'),
   expiresOn: __('Expires on'),
