@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'GitLab Geo project deletion replication' do
       include Support::API
 
@@ -25,7 +25,8 @@ module QA
         deleted_project_id = project_to_delete.id
       end
 
-      it 'replicates deletion of a project to secondary node', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348056' do
+      it 'replicates deletion of a project to secondary node',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348056' do
         QA::Runtime::Logger.debug('Visiting the secondary geo node')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
@@ -33,7 +34,7 @@ module QA
           Page::Main::Menu.perform(&:go_to_projects)
 
           Page::Dashboard::Projects.perform do |dashboard|
-            expect(dashboard.project_created?(deleted_project_name)).to be_truthy
+            expect(dashboard).to be_project_created(deleted_project_name)
           end
 
           Page::Dashboard::Projects.perform(&:clear_project_filter)
@@ -44,7 +45,7 @@ module QA
 
           # Confirm deletion is replicated to secondary node
           Page::Dashboard::Projects.perform do |dashboard|
-            expect(dashboard.project_deleted?(deleted_project_name)).to be_truthy
+            expect(dashboard).to be_project_deleted(deleted_project_name)
           end
         end
       end

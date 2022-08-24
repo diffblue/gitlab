@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'GitLab SSH push to secondary' do
       let(:file_content_primary) { 'This is a Geo project! Commit from primary.' }
       let(:file_content_secondary) { 'This is a Geo project! Commit from secondary.' }
@@ -12,8 +12,9 @@ module QA
         key&.remove_via_api!
       end
 
-      context 'regular git commit' do
-        it 'is proxied to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348058' do
+      context 'when regular git commit' do
+        it 'is proxied to the primary and ultimately replicated to the secondary',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348058' do
           file_name = 'README.md'
           key_title = "Geo SSH to 2nd #{Time.now.to_f}"
           project = nil
@@ -84,8 +85,9 @@ module QA
         end
       end
 
-      context 'git-lfs commit' do
-        it 'is proxied to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348057' do
+      context 'when git-lfs commit' do
+        it 'is proxied to the primary and ultimately replicated to the secondary',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348057' do
           key_title = "Geo SSH LFS to 2nd #{Time.now.to_f}"
           file_name_primary = 'README.md'
           file_name_secondary = 'README_MORE.md'

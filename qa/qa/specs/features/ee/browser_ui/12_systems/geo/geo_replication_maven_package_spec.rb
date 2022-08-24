@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'Maven package' do
       include Runtime::Fixtures
 
@@ -9,9 +9,7 @@ module QA
       let(:artifact_id) { 'maven' }
       let(:package_name) { "#{group_id}/#{artifact_id}".tr('.', '/') }
       let(:auth_token) do
-        unless Page::Main::Menu.perform(&:signed_in?)
-          Flow::Login.sign_in
-        end
+        Flow::Login.sign_in unless Page::Main::Menu.perform(&:signed_in?)
 
         Resource::PersonalAccessToken.fabricate!.token
       end
@@ -25,7 +23,8 @@ module QA
       let(:uri) { URI.parse(Runtime::Scenario.gitlab_address) }
       let(:gitlab_address_with_port) { "#{uri.scheme}://#{uri.host}:#{uri.port}" }
 
-      it 'replicates to the secondary site', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348012' do
+      it 'replicates to the secondary site',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348012' do
         pom_xml = {
           file_path: 'pom.xml',
           content: <<~XML

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'GitLab wiki HTTP push' do
-      context 'wiki commit' do
-        it 'is replicated to the secondary node', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348051' do
+      context 'when wiki commit' do
+        it 'is replicated to the secondary node',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348051' do
           wiki_content = 'This tests replication of wikis via HTTP'
           push_content = 'This is from the Geo wiki push!'
           project = nil
@@ -40,9 +41,7 @@ module QA
           QA::Runtime::Logger.debug('Visiting the secondary geo node')
 
           QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-            Page::Main::Menu.perform do |menu|
-              menu.go_to_projects
-            end
+            Page::Main::Menu.perform(&:go_to_projects)
 
             Page::Dashboard::Projects.perform do |dashboard|
               dashboard.wait_for_project_replication(project.name)
