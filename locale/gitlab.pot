@@ -46657,6 +46657,9 @@ msgstr ""
 msgid "is too long (%{current_value}). The maximum size is %{max_size}."
 msgstr ""
 
+msgid "is too long (%{size}). The maximum size is %{max_size}."
+msgstr ""
+
 msgid "is too long (maximum is %{count} characters)"
 msgstr ""
 
