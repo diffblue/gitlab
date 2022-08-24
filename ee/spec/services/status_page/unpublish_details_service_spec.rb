@@ -19,8 +19,7 @@ RSpec.describe StatusPage::UnpublishDetailsService do
     let(:storage_client) { instance_double(Gitlab::StatusPage::Storage::S3Client) }
 
     let(:status_page_setting) do
-      instance_double(StatusPage::ProjectSetting, enabled?: status_page_setting_enabled,
-                      storage_client: storage_client)
+      instance_double(StatusPage::ProjectSetting, enabled?: status_page_setting_enabled, storage_client: storage_client)
     end
 
     before do

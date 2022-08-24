@@ -20,13 +20,15 @@ RSpec.describe MergeTrains::RefreshService do
     subject { service.execute(merge_request.target_project_id, merge_request.target_branch) }
 
     let!(:merge_request_1) do
-      create(:merge_request, :on_train, train_creator: maintainer_1,
+      create(:merge_request, :on_train,
+        train_creator: maintainer_1,
         source_branch: 'feature', source_project: project,
         target_branch: 'master', target_project: project)
     end
 
     let!(:merge_request_2) do
-      create(:merge_request, :on_train, train_creator: maintainer_2,
+      create(:merge_request, :on_train,
+        train_creator: maintainer_2,
         source_branch: 'signed-commits', source_project: project,
         target_branch: 'master', target_project: project)
     end

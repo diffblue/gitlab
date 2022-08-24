@@ -20,8 +20,7 @@ RSpec.describe Ci::RetryPipelineService do
     let_it_be(:namespace) { create(:namespace, :with_used_build_minutes_limit) }
     let_it_be(:project) { create(:project, namespace: namespace) }
     let_it_be(:private_runner) do
-      create(:ci_runner, :project, :online, projects: [project],
-        tag_list: ['ruby'], run_untagged: false)
+      create(:ci_runner, :project, :online, projects: [project], tag_list: ['ruby'], run_untagged: false)
     end
 
     before do

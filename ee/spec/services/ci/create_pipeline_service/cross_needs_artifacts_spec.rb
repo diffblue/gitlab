@@ -71,7 +71,8 @@ RSpec.describe Ci::CreatePipelineService do
     let(:other_project) { create(:project, :repository) }
 
     let(:other_pipeline) do
-      create(:ci_pipeline, project: other_project,
+      create(:ci_pipeline,
+        project: other_project,
         sha: other_project.commit.id,
         ref: other_project.default_branch,
         status: 'success',
