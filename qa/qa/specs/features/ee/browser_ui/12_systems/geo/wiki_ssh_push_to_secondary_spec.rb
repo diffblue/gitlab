@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'GitLab wiki SSH push to secondary' do
       wiki_content = 'This tests replication of wikis via SSH to secondary'
       push_content = 'This is from the Geo wiki push via SSH to secondary!'
@@ -38,7 +38,8 @@ module QA
         key.remove_via_api!
       end
 
-      it 'proxies wiki commit to primary node and ultmately replicates to secondary node', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348054' do
+      it 'proxies wiki commit to primary node and ultmately replicates to secondary node',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348054' do
         QA::Runtime::Logger.debug('*****Visiting the secondary geo node*****')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do

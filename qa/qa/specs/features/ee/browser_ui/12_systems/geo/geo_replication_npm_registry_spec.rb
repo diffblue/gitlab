@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'npm registry' do
       include Runtime::Fixtures
 
@@ -53,7 +53,8 @@ module QA
       end
 
       # Test code is based on qa/specs/features/browser_ui/5_package/npm_registry_spec.rb
-      it 'replicates npm registry to secondary Geo site', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348085' do
+      it 'replicates npm registry to secondary Geo site',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348085' do
         # Use a Node Docker container to publish the package
         with_fixtures([npmrc, package_json]) do |dir|
           Service::DockerRun::NodeJs.new(dir).publish!

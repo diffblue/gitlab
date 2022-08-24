@@ -1,15 +1,16 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     let(:git_push_http_path_prefix) { '/-/push_from_secondary' }
 
     describe 'GitLab Geo HTTP push secondary' do
       let(:file_content_primary) { 'This is a Geo project! Commit from primary.' }
       let(:file_content_secondary) { 'This is a Geo project! Commit from secondary.' }
 
-      context 'regular git commit' do
-        it 'is redirected to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348060' do
+      context 'when regular git commit' do
+        it 'is redirected to the primary and ultimately replicated to the secondary',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348060' do
           file_name = 'README.md'
           project = nil
 
@@ -70,8 +71,9 @@ module QA
         end
       end
 
-      context 'git-lfs commit' do
-        it 'is redirected to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348059' do
+      context 'when git-lfs commit' do
+        it 'is redirected to the primary and ultimately replicated to the secondary',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348059' do
           file_name_primary = 'README.md'
           file_name_secondary = 'README_MORE.md'
           project = nil
