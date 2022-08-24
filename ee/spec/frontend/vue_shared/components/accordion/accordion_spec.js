@@ -5,8 +5,9 @@ jest.mock('lodash/uniqueId', () => () => 'foo');
 
 describe('Accordion component', () => {
   let wrapper;
-  const factory = ({ defaultSlot = '' } = {}) => {
+  const factory = ({ defaultSlot = '', propsData = {} } = {}) => {
     wrapper = shallowMount(Accordion, {
+      propsData,
       scopedSlots: {
         default: defaultSlot,
       },
@@ -34,5 +35,17 @@ describe('Accordion component', () => {
     factory({ defaultSlot });
 
     expect(wrapper.text()).toContain(mockUniqueIdValue);
+  });
+
+  it('accepts a list of CSS classes to be applied to the list element within the component', () => {
+    const listClasses = ['foo', 'bar'];
+
+    factory({
+      propsData: {
+        listClasses,
+      },
+    });
+
+    expect(wrapper.find('ul').classes()).toEqual(expect.arrayContaining(listClasses));
   });
 });
