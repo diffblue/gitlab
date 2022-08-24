@@ -2,7 +2,7 @@
 
 module QA
   # https://gitlab.com/gitlab-org/gitlab/issues/35706
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'GitLab Geo Wiki HTTP push secondary' do
       let(:wiki_content) { 'This tests wiki pushes via HTTP to secondary.' }
       let(:push_content_secondary) { 'This is from the Geo wiki push to secondary!' }
@@ -11,7 +11,8 @@ module QA
       wiki = nil
       project = nil
 
-      before do
+      it 'is redirected to the primary and ultimately replicated to the secondary',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348053' do
         QA::Flow::Login.while_signed_in(address: :geo_primary) do
           # Create a new project and wiki
           project = Resource::Project.fabricate_via_api! do |project|
@@ -38,9 +39,7 @@ module QA
             push.commit_message = 'Update Readme.md'
           end
         end
-      end
 
-      it 'is redirected to the primary and ultimately replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348053' do
         QA::Runtime::Logger.debug('Visiting the secondary geo node')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do

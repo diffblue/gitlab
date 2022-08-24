@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'GitLab Geo project rename replication' do
+      let(:geo_project_renamed) { "geo-after-rename-#{SecureRandom.hex(8)}" }
+
       it 'user renames project', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348055' do
         original_project_name = 'geo-before-rename'
         original_readme_content = "The original project name was #{original_project_name}"
@@ -33,13 +35,12 @@ module QA
 
           Page::Project::Menu.act { click_settings }
 
-          @geo_project_renamed = "geo-after-rename-#{SecureRandom.hex(8)}"
           Page::Project::Settings::Main.perform do |settings|
-            settings.rename_project_to(@geo_project_renamed)
-            expect(settings).to have_breadcrumb(@geo_project_renamed)
+            settings.rename_project_to(geo_project_renamed)
+            expect(settings).to have_breadcrumb(geo_project_renamed)
 
             settings.expand_advanced_settings do |advanced_settings|
-              advanced_settings.update_project_path_to(@geo_project_renamed)
+              advanced_settings.update_project_path_to(geo_project_renamed)
             end
           end
         end
@@ -48,14 +49,12 @@ module QA
         QA::Runtime::Logger.debug('Visiting the secondary geo node')
 
         QA::Flow::Login.while_signed_in(address: :geo_secondary) do
-          Page::Main::Menu.perform do |menu|
-            menu.go_to_projects
-          end
+          Page::Main::Menu.perform(&:go_to_projects)
 
           Page::Dashboard::Projects.perform do |dashboard|
-            dashboard.wait_for_project_replication(@geo_project_renamed)
+            dashboard.wait_for_project_replication(geo_project_renamed)
 
-            dashboard.go_to_project(@geo_project_renamed)
+            dashboard.go_to_project(geo_project_renamed)
           end
 
           Page::Project::Show.perform do |show|

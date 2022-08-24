@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Geo', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo do
     describe 'GitLab wiki SSH push' do
       key = nil
 
@@ -9,8 +9,9 @@ module QA
         key&.remove_via_api!
       end
 
-      context 'wiki commit' do
-        it 'is replicated to the secondary', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348048' do
+      context 'when wiki commit' do
+        it 'is replicated to the secondary',
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348048' do
           wiki_content = 'This tests replication of wikis via SSH'
           push_content = 'This is from the Geo wiki push via SSH!'
           project = nil
