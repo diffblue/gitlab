@@ -1,15 +1,21 @@
 import { shallowMount } from '@vue/test-utils';
 import { pick } from 'lodash';
 
-import { nextTick } from 'vue';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import EpicsListRoot from 'ee/epics_list/components/epics_list_root.vue';
 import { EpicsSortOptions } from 'ee/epics_list/constants';
+import groupEpicsQuery from 'ee/epics_list//queries/group_epics.query.graphql';
 import { mockFormattedEpic } from 'ee_jest/roadmap/mock_data';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
 import { mockAuthor, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { IssuableListTabs } from '~/vue_shared/issuable/list/constants';
+
+Vue.use(VueApollo);
 
 jest.mock('~/vue_shared/issuable/list/constants', () => ({
   DEFAULT_PAGE_SIZE: 2,
@@ -67,47 +73,47 @@ const mockPageInfo = {
   endCursor: 'eyJpZCI6IjIxIiwiY3JlYXRlZF9hdCI6IjIwMjAtMDMtMzEgMTM6MzE6MTUgVVRDIn0',
 };
 
-const createComponent = ({
-  provide = mockProvide,
-  initialFilterParams = {},
-  epicsLoading = false,
-  epicsList = mockEpics,
-} = {}) =>
-  shallowMount(EpicsListRoot, {
+let wrapper;
+let mockApollo;
+
+const groupEpicsQueryHandler = jest.fn().mockResolvedValue({
+  data: {
+    group: {
+      epics: {
+        nodes: mockEpics,
+        pageInfo: mockPageInfo,
+      },
+      id: 'gid://gitlab/Group/1',
+    },
+  },
+});
+
+const createComponent = ({ provide = mockProvide, initialFilterParams = {} } = {}) => {
+  mockApollo = createMockApollo([[groupEpicsQuery, groupEpicsQueryHandler]]);
+  wrapper = shallowMount(EpicsListRoot, {
     propsData: {
       initialFilterParams,
     },
+    apolloProvider: mockApollo,
     provide,
-    mocks: {
-      $apollo: {
-        queries: {
-          epics: {
-            loading: epicsLoading,
-            list: epicsList,
-            pageInfo: mockPageInfo,
-          },
-        },
-      },
-    },
     stubs: {
       IssuableList: stubComponent(IssuableList),
     },
   });
+};
 
 describe('EpicsListRoot', () => {
-  let wrapper;
-
   const getIssuableList = () => wrapper.findComponent(IssuableList);
-
-  beforeEach(() => {
-    wrapper = createComponent();
-  });
 
   afterEach(() => {
     wrapper.destroy();
   });
 
   describe('methods', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     describe('epicReference', () => {
       const mockEpicWithPath = {
         ...mockFormattedEpic,
@@ -153,48 +159,82 @@ describe('EpicsListRoot', () => {
         },
       );
     });
+  });
 
-    describe('fetchEpicsBy', () => {
-      it('updates prevPageCursor and nextPageCursor values when provided propsName param is "currentPage"', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          epics: {
-            pageInfo: mockPageInfo,
-          },
-        });
-
-        getIssuableList().vm.$emit('page-change', 2);
-
-        await nextTick();
-
-        expect(wrapper.vm.prevPageCursor).toBe('');
-        expect(wrapper.vm.nextPageCursor).toBe(mockPageInfo.endCursor);
-        expect(wrapper.vm.currentPage).toBe(2);
+  describe('fetchEpicsBy', () => {
+    it('updates prevPageCursor and nextPageCursor values when provided propsName param is "currentPage"', async () => {
+      createComponent({
+        provide: {
+          ...mockProvide,
+          prev: mockPageInfo.startCursor,
+          next: mockPageInfo.endCursor,
+        },
       });
 
-      it('updates prevPageCursor and nextPageCursor values when provided propsName param is "sortedBy"', async () => {
-        wrapper = createComponent({
-          provide: {
-            ...mockProvide,
-            page: 2,
-            prev: mockPageInfo.startCursor,
-            next: mockPageInfo.endCursor,
-          },
-        });
+      await waitForPromises();
+      await nextTick();
 
-        getIssuableList().vm.$emit('sort', 'TITLE_DESC');
+      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          prevPageCursor: mockPageInfo.startCursor,
+          nextPageCursor: '',
+          lastPageSize: 2,
+        }),
+      );
 
-        await nextTick();
+      getIssuableList().vm.$emit('page-change', 2);
 
-        expect(wrapper.vm.prevPageCursor).toBe('');
-        expect(wrapper.vm.nextPageCursor).toBe('');
-        expect(wrapper.vm.currentPage).toBe(1);
+      await waitForPromises();
+      await nextTick();
+
+      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          prevPageCursor: '',
+          nextPageCursor: '',
+          firstPageSize: 2,
+        }),
+      );
+    });
+
+    it('updates prevPageCursor and nextPageCursor values when provided propsName param is "sortedBy"', async () => {
+      createComponent({
+        provide: {
+          ...mockProvide,
+          page: 2,
+          prev: mockPageInfo.startCursor,
+          next: mockPageInfo.endCursor,
+        },
       });
+
+      await waitForPromises();
+      await nextTick();
+
+      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          prevPageCursor: mockPageInfo.startCursor,
+          nextPageCursor: '',
+        }),
+      );
+
+      getIssuableList().vm.$emit('sort', 'TITLE_DESC');
+
+      await waitForPromises();
+      await nextTick();
+
+      expect(groupEpicsQueryHandler).toHaveBeenCalledWith(
+        expect.objectContaining({
+          prevPageCursor: '',
+          nextPageCursor: '',
+        }),
+      );
     });
   });
 
   describe('template', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('renders issuable-list component', async () => {
       jest.spyOn(wrapper.vm, 'getFilteredSearchTokens');
       // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
@@ -264,7 +304,7 @@ describe('EpicsListRoot', () => {
     });
 
     it('sets nextPage prop value a number representing next page based on currentPage value', async () => {
-      wrapper = createComponent({
+      createComponent({
         provide: {
           ...mockProvide,
           page: 2,
@@ -277,7 +317,7 @@ describe('EpicsListRoot', () => {
     });
 
     it('sets nextPage prop value as `null` when currentPage is already last page', async () => {
-      wrapper = createComponent({
+      createComponent({
         provide: {
           ...mockProvide,
           page: 3,
