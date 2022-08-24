@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Group file templates', :requires_admin do
+    describe 'Group file templates', :requires_admin, product_group: :source_code do
       include Support::API
 
       templates = [

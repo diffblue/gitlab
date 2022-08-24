@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Setup an MR with codeowners file' do
+    describe 'Setup an MR with codeowners file', product_group: :source_code do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.initialize_with_readme = true
