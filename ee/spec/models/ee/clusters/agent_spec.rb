@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Clusters::Agent do
   it { is_expected.to include_module(EE::Clusters::Agent) }
+  it { is_expected.to have_many(:vulnerability_reads) }
 
   describe '.for_projects' do
     let_it_be(:agent_1) { create(:cluster_agent) }

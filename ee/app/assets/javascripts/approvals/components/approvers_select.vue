@@ -6,6 +6,7 @@ import { renderAvatar } from '~/helpers/avatar_helper';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { __ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { TYPE_USER, TYPE_GROUP } from '../constants';
 
 function addType(type) {
@@ -62,7 +63,7 @@ export default {
       required: false,
       default: () => [],
     },
-    projectId: {
+    namespaceId: {
       type: String,
       required: true,
     },
@@ -80,6 +81,11 @@ export default {
       type: Boolean,
       required: false,
       default: false,
+    },
+    namespaceType: {
+      type: String,
+      required: false,
+      default: NAMESPACE_TYPES.PROJECT,
     },
   },
   computed: {
@@ -137,7 +143,11 @@ export default {
   methods: {
     fetchGroupsAndUsers(term) {
       const groupsAsync = this.fetchGroups(term).then(addType(TYPE_GROUP));
-      const usersAsync = this.fetchUsers(term).then(addType(TYPE_USER));
+
+      const usersAsync =
+        this.namespaceType === NAMESPACE_TYPES.PROJECT
+          ? this.fetchProjectUsers(term).then(addType(TYPE_USER))
+          : this.fetchGroupUsers(term).then(({ data }) => addType(TYPE_USER)(data));
 
       return Promise.all([groupsAsync, usersAsync])
         .then(([groups, users]) => groups.concat(users))
@@ -148,7 +158,7 @@ export default {
         const hasTerm = term.trim().length > 0;
         const DEVELOPER_ACCESS_LEVEL = 30;
 
-        return Api.projectGroups(this.projectId, {
+        return Api.projectGroups(this.namespaceId, {
           skip_groups: this.skipGroupIds,
           ...(hasTerm ? { search: term } : {}),
           with_shared: true,
@@ -166,8 +176,14 @@ export default {
         all_available: includeAll,
       });
     },
-    fetchUsers(term) {
-      return Api.projectUsers(this.projectId, term, {
+    fetchProjectUsers(term) {
+      return Api.projectUsers(this.namespaceId, term, {
+        skip_users: this.skipUserIds,
+      });
+    },
+    fetchGroupUsers(term) {
+      return Api.groupMembers(this.namespaceId, {
+        query: term,
         skip_users: this.skipUserIds,
       });
     },

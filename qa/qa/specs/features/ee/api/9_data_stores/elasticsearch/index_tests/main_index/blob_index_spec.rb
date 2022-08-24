@@ -3,7 +3,7 @@
 require 'airborne'
 
 module QA
-  RSpec.describe 'Enablement:Search' do
+  RSpec.describe 'Data Stores' do
     describe(
       'When using elasticsearch API to search for a public blob',
       :orchestrated,
@@ -24,22 +24,18 @@ module QA
       let(:elasticsearch_original_state_on?) { Runtime::Search.elasticsearch_on?(api_client) }
 
       before do
-        unless elasticsearch_original_state_on?
-          QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api!
-        end
+        QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api! unless elasticsearch_original_state_on?
 
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.add_files([
-            { file_path: 'README.md', content: project_file_content }
-          ])
+                             { file_path: 'README.md', content: project_file_content }
+                           ])
         end
       end
 
       after do
-        if !elasticsearch_original_state_on? && !api_client.nil?
-          Runtime::Search.disable_elasticsearch(api_client)
-        end
+        Runtime::Search.disable_elasticsearch(api_client) if !elasticsearch_original_state_on? && !api_client.nil?
 
         project.remove_via_api!
       end

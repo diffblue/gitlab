@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create' do
+  RSpec.describe 'Data Stores' do
     describe(
       'Search using Elasticsearch',
       :orchestrated,
@@ -22,9 +22,7 @@ module QA
       let(:elasticsearch_original_state_on?) { Runtime::Search.elasticsearch_on?(api_client) }
 
       before do
-        unless elasticsearch_original_state_on?
-          QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api!
-        end
+        QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api! unless elasticsearch_original_state_on?
 
         Runtime::Search.assert_elasticsearch_responding
 
@@ -61,10 +59,10 @@ module QA
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347629'
       ) do
         template = {
-            file_name: 'LICENSE',
-            name: 'Mozilla Public License 2.0',
-            api_path: 'licenses',
-            api_key: 'mpl-2.0'
+          file_name: 'LICENSE',
+          name: 'Mozilla Public License 2.0',
+          api_path: 'licenses',
+          api_key: 'mpl-2.0'
         }
         content = fetch_template_from_api(template[:api_path], template[:api_key])
 
@@ -82,7 +80,10 @@ module QA
           menu.search_for content[0..33]
         end
 
-        QA::Support::Retrier.retry_on_exception(max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL) do
+        QA::Support::Retrier
+          .retry_on_exception(
+            max_attempts: Runtime::Search::RETRY_MAX_ITERATION, sleep_interval: Runtime::Search::RETRY_SLEEP_INTERVAL
+          ) do
           Page::Search::Results.perform do |search|
             search.switch_to_code
             aggregate_failures "testing expectations" do
