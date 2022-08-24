@@ -25,10 +25,6 @@ export default {
       type: Boolean,
       required: true,
     },
-    initialGroupLabels: {
-      type: Array,
-      required: true,
-    },
     hasLabelError: {
       type: Boolean,
       required: false,
@@ -64,7 +60,6 @@ export default {
         :invalid-feedback="labelError"
       >
         <labels-selector
-          :initial-data="initialGroupLabels"
           :selected-label-ids="selectedLabelIds"
           :name="fieldName"
           @select-label="$emit('update-label', $event)"

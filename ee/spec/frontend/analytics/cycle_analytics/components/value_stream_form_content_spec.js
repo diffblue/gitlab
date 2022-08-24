@@ -134,6 +134,10 @@ describe('ValueStreamFormContent', () => {
       expect(findBtn('actionPrimary').text).toBe(i18n.FORM_TITLE);
     });
 
+    it('renders the modal footer buttons', () => {
+      expect(findModal().attributes('hide-footer')).toBeUndefined();
+    });
+
     describe('Preset selector', () => {
       it('has the preset button', () => {
         expect(findPresetSelector().exists()).toBe(true);
@@ -239,6 +243,21 @@ describe('ValueStreamFormContent', () => {
           'identifiererror',
           initialFormStageErrors.stages[0].endEventIdentifier[0],
         );
+      });
+    });
+
+    describe('isFetchingGroupLabels=true', () => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          state: {
+            defaultGroupLabels: [],
+            isFetchingGroupLabels: true,
+          },
+        });
+      });
+
+      it('hides the modal footer buttons', () => {
+        expect(findModal().attributes('hide-footer')).toBe('true');
       });
     });
 
@@ -429,18 +448,6 @@ describe('ValueStreamFormContent', () => {
           });
         });
       });
-    });
-  });
-
-  describe('defaultGroupLabels set', () => {
-    beforeEach(() => {
-      wrapper = createComponent({
-        state: { defaultGroupLabels: [] },
-      });
-    });
-
-    it('does not fetch group labels', () => {
-      expect(fetchGroupLabelsMock).not.toHaveBeenCalled();
     });
   });
 

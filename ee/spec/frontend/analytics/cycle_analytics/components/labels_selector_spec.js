@@ -15,7 +15,8 @@ jest.mock('~/flash');
 Vue.use(Vuex);
 
 const selectedLabel = groupLabels[groupLabels.length - 1];
-const findActiveItem = (wrapper) =>
+
+const findCheckedItem = (wrapper) =>
   wrapper
     .findAll('gl-dropdown-item-stub')
     .filter((d) => d.attributes('active'))
@@ -27,12 +28,16 @@ const mockGroupLabelsRequest = (status = 200) =>
 describe('Value Stream Analytics LabelsSelector', () => {
   let store = null;
 
-  function createComponent({ props = { selectedLabelIds: [] }, shallow = true } = {}) {
+  function createComponent({ props = { selectedLabelIds: [] }, shallow = true, state = {} } = {}) {
     store = createStore();
     const func = shallow ? shallowMount : mount;
     return func(LabelsSelector, {
       store: {
         ...store,
+        state: {
+          defaultGroupLabels: groupLabels,
+          ...state,
+        },
         getters: {
           ...getters,
           currentGroupPath: 'fake',
@@ -70,10 +75,6 @@ describe('Value Stream Analytics LabelsSelector', () => {
       expect(wrapper.text()).toContain(name);
     });
 
-    it('will fetch the labels', () => {
-      expect(mock.history.get.length).toBe(1);
-    });
-
     it('will render with the default option selected', () => {
       const sectionHeader = wrapper.findComponent(GlDropdownSectionHeader);
 
@@ -84,7 +85,7 @@ describe('Value Stream Analytics LabelsSelector', () => {
     describe('with a failed request', () => {
       beforeEach(() => {
         mock = mockGroupLabelsRequest(404);
-        wrapper = createComponent({});
+        wrapper = createComponent({ state: { defaultGroupLabels: [] } });
 
         return waitForPromises();
       });
@@ -116,6 +117,19 @@ describe('Value Stream Analytics LabelsSelector', () => {
     });
   });
 
+  describe('with no default labels', () => {
+    beforeEach(() => {
+      mock = mockGroupLabelsRequest();
+      wrapper = createComponent({ state: { defaultGroupLabels: [] } });
+
+      return waitForPromises();
+    });
+
+    it('will fetch the labels', () => {
+      expect(mock.history.get.length).toBe(1);
+    });
+  });
+
   describe('with selectedLabelIds set', () => {
     beforeEach(() => {
       mock = mockGroupLabelsRequest();
@@ -132,7 +146,7 @@ describe('Value Stream Analytics LabelsSelector', () => {
     });
 
     it('will set the active label', () => {
-      const activeItem = findActiveItem(wrapper);
+      const activeItem = findCheckedItem(wrapper);
 
       expect(activeItem.exists()).toBe(true);
       expect(activeItem.text()).toEqual(selectedLabel.name);
