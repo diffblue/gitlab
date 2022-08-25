@@ -49,6 +49,7 @@ export default {
         return nodes ? getFormattedScanners(nodes) : [];
       },
       result() {
+        // This will trigger the emitter to refetch vulnerability list if the query string is present
         this.selectedOptions = this.querystringOptions;
       },
       error() {
