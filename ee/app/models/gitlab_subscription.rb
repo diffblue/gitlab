@@ -14,8 +14,6 @@ class GitlabSubscription < ApplicationRecord
   before_update :log_previous_state_for_update
   before_update :reset_seats_for_new_term
 
-  after_save :set_prevent_sharing_groups_outside_hierarchy
-
   # Needs to run after_commit because workers can be spawned that can't be run within a transaction
   after_commit :activate_users_post_subscription_upgrade
 
@@ -196,27 +194,6 @@ class GitlabSubscription < ApplicationRecord
   def new_term?
     persisted? && start_date_changed? && end_date_changed? &&
       (end_date_was.nil? || start_date >= end_date_was)
-  end
-
-  def prevent_sharing_groups_outside_hierarchy?
-    ::Gitlab::CurrentSettings.should_check_namespace_plan? && saved_change_to_hosted_plan_id? && namespace.root?
-  end
-
-  def set_prevent_sharing_groups_outside_hierarchy
-    free_user_cap = ::Namespaces::FreeUserCap::Standard.new(namespace)
-
-    return unless free_user_cap.feature_enabled?
-    return unless prevent_sharing_groups_outside_hierarchy?
-
-    prevent_sharing = free_user_cap.enforce_cap?
-    plan_changed_from_paid_to_paid = hosted_plan_id_before_last_save && Plan.find(hosted_plan_id_before_last_save).paid? && !prevent_sharing
-
-    return if plan_changed_from_paid_to_paid
-
-    # going from free to paid - allow
-    # going from paid to free - prevent
-    # going from paid to public free - allow
-    namespace.update_attribute(:prevent_sharing_groups_outside_hierarchy, prevent_sharing)
   end
 
   # When free groups where `free_user_cap` was enabled upgrade to a paid

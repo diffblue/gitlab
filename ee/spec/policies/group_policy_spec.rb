@@ -1021,49 +1021,6 @@ RSpec.describe GroupPolicy do
     end
   end
 
-  describe 'change_prevent_sharing_groups_outside_hierarchy' do
-    before do
-      stub_feature_flags(free_user_cap: true)
-      stub_application_setting(check_namespace_plan: true)
-    end
-
-    let(:permission) { :change_prevent_sharing_groups_outside_hierarchy }
-
-    context 'with owner' do
-      let(:current_user) { owner }
-
-      context 'with free plan', :saas do
-        it 'blocks changes' do
-          create(:gitlab_subscription, :free, namespace: group)
-
-          is_expected.to be_disallowed permission
-        end
-      end
-
-      context 'with paid plans', :saas do
-        where(plan: %i[premium ultimate])
-
-        with_them do
-          it 'allows changing the setting' do
-            create(:gitlab_subscription, plan, namespace: group)
-
-            is_expected.to be_allowed permission
-          end
-        end
-      end
-    end
-
-    context 'with non-owners role' do
-      where(role: %w[admin maintainer reporter developer guest])
-
-      with_them do
-        let(:current_user) { public_send(role) }
-
-        it { is_expected.to be_disallowed permission }
-      end
-    end
-  end
-
   describe 'security orchestration policies' do
     before do
       stub_licensed_features(security_orchestration_policies: true)
