@@ -8,7 +8,7 @@ module EE
     include ::VisibleApprovable
     extend ::Gitlab::Utils::Override
 
-    FORWARDABLE_METHODS = %i{
+    FORWARDABLE_METHODS = %i[
       approval_needed?
       approved?
       approvals_left
@@ -18,7 +18,7 @@ module EE
       approvers_overwritten?
       total_approvals_count
       wrapped_approval_rules
-    }.freeze
+    ].freeze
 
     delegate(*FORWARDABLE_METHODS, to: :approval_state)
 
