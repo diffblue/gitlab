@@ -12,6 +12,7 @@ import {
   GlTable,
   GlTooltipDirective,
   GlToggle,
+  GlSkeletonLoader,
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -58,10 +59,11 @@ export default {
     StatisticsCard,
     StatisticsSeatsCard,
     SubscriptionUpgradeInfoCard,
+    GlSkeletonLoader,
   },
   computed: {
     ...mapState([
-      'isLoading',
+      'hasError',
       'page',
       'perPage',
       'total',
@@ -86,7 +88,7 @@ export default {
       'previewFreeUserCap',
       'activeTrial',
     ]),
-    ...mapGetters(['tableItems']),
+    ...mapGetters(['tableItems', 'isLoading']),
     currentPage: {
       get() {
         return this.page;
@@ -171,6 +173,9 @@ export default {
     hasLimitedPlanOrPreviewLimitedPlan() {
       return this.hasLimitedFreePlan || this.previewFreeUserCap;
     },
+    isLoaderShown() {
+      return this.isLoading || this.hasError;
+    },
   },
   created() {
     this.fetchBillableMembersList();
@@ -180,7 +185,6 @@ export default {
     ...mapActions([
       'fetchBillableMembersList',
       'fetchGitlabSubscription',
-      'resetBillableMembers',
       'setBillableMemberToRemove',
       'changeMembershipState',
       'setSearchQuery',
@@ -217,7 +221,7 @@ export default {
         value: user.membership_state === MEMBER_ACTIVE_STATE,
       };
 
-      if (this.isLoading) {
+      if (this.isLoaderShown) {
         return { ...props, disabled: true };
       }
 
@@ -316,30 +320,52 @@ export default {
     >
       {{ pendingMembersAlertMessage }}
     </gl-alert>
-    <div class="gl-bg-gray-10 gl-display-flex gl-sm-flex-direction-column gl-p-5">
-      <statistics-card
-        :help-link="$options.i18n.seatsInUseLink"
-        :help-tooltip="seatsInUseTooltipText"
-        :description="seatsInUseText"
-        :percentage="seatsInUsePercentage"
-        :usage-value="String(totalSeatsInUse)"
-        :total-value="displayedTotalSeats"
-        class="gl-w-full gl-md-w-half gl-md-mr-5"
-      />
 
-      <subscription-upgrade-info-card
-        v-if="showUpgradeInfoCard"
-        :max-namespace-seats="maxFreeNamespaceSeats"
-        :explore-plans-path="explorePlansPath"
-        class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
-      />
-      <statistics-seats-card
-        v-else
-        :seats-used="maxSeatsUsed"
-        :seats-owed="seatsOwed"
-        :purchase-button-link="addSeatsHref"
-        class="gl-w-full gl-md-w-half gl-md-mt-0 gl-mt-5"
-      />
+    <div class="gl-bg-gray-10 gl-p-5">
+      <div
+        v-if="isLoaderShown"
+        class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5"
+        data-testid="skeleton-loader-cards"
+      >
+        <div class="gl-bg-white gl-border gl-p-5 gl-rounded-base">
+          <gl-skeleton-loader :height="64">
+            <rect width="140" height="30" x="5" y="0" rx="4" />
+            <rect width="240" height="10" x="5" y="40" rx="4" />
+            <rect width="340" height="10" x="5" y="54" rx="4" />
+          </gl-skeleton-loader>
+        </div>
+
+        <div class="gl-bg-white gl-border gl-p-5 gl-rounded-base">
+          <gl-skeleton-loader :height="64">
+            <rect width="140" height="30" x="5" y="0" rx="4" />
+            <rect width="240" height="10" x="5" y="40" rx="4" />
+            <rect width="340" height="10" x="5" y="54" rx="4" />
+          </gl-skeleton-loader>
+        </div>
+      </div>
+
+      <div v-else class="gl-display-grid gl-md-grid-template-columns-2 gl-gap-5">
+        <statistics-card
+          :help-link="$options.i18n.seatsInUseLink"
+          :help-tooltip="seatsInUseTooltipText"
+          :description="seatsInUseText"
+          :percentage="seatsInUsePercentage"
+          :usage-value="String(totalSeatsInUse)"
+          :total-value="displayedTotalSeats"
+        />
+
+        <subscription-upgrade-info-card
+          v-if="showUpgradeInfoCard"
+          :max-namespace-seats="maxFreeNamespaceSeats"
+          :explore-plans-path="explorePlansPath"
+        />
+        <statistics-seats-card
+          v-else
+          :seats-used="maxSeatsUsed"
+          :seats-owed="seatsOwed"
+          :purchase-button-link="addSeatsHref"
+        />
+      </div>
     </div>
 
     <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
@@ -367,7 +393,7 @@ export default {
       class="seats-table"
       :items="tableItems"
       :fields="fields"
-      :busy="isLoading"
+      :busy="isLoaderShown"
       :show-empty="true"
       data-testid="table"
       :empty-text="emptyText"
