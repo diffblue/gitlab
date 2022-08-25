@@ -1187,8 +1187,8 @@ RSpec.describe API::Groups do
   describe "POST /groups/:id/restore" do
     let(:group) do
       create(:group_with_deletion_schedule,
-             marked_for_deletion_on: 1.day.ago,
-             deleting_user: user)
+      marked_for_deletion_on: 1.day.ago,
+      deleting_user: user)
     end
 
     subject { post api("/groups/#{group.id}/restore", user) }
