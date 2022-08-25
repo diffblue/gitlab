@@ -18,54 +18,17 @@ RSpec.describe Namespaces::FreeUserCap::RemediationWorker, type: :worker do
 
       context 'when feature flags are on' do
         before do
-          # we need to have a concept of .com here where there is work to be done, so the callback that
-          # does this work on creation/update needs skipped
-          GitlabSubscription.skip_callback(:save, :after, :set_prevent_sharing_groups_outside_hierarchy)
-
           stub_feature_flags(
             free_user_cap_data_remediation_job: true,
-            free_user_cap: true,
-            free_user_cap_group_sharing_remediation: true
+            free_user_cap: true
           )
-        end
-
-        after do
-          GitlabSubscription.set_callback(:save, :after, :set_prevent_sharing_groups_outside_hierarchy)
         end
 
         it 'remediates data and settings according to free plan guidelines' do
           g1 = create(:group_with_plan, :private, plan: :free_plan)
-
           g2 = create(:group_with_plan, :private, plan: :free_plan)
-
-          g2_subgroup = create(:group, :private, parent: g2)
-          internal_ggl_for_g2 = create(:group_group_link,
-                                       shared_group: g2_subgroup,
-                                       shared_with_group: create(:group, :private, parent: g2))
-          create(:group_group_link, shared_group: g2_subgroup, shared_with_group: create(:group))
-
-          p1_for_g2 = create(:project, :private, group: g2)
-          internal_pgl_for_g2 = create(:project_group_link,
-                                       project: p1_for_g2,
-                                       group: create(:group, :private, parent: g2))
-          create(:project_group_link, project: p1_for_g2)
-
           g3 = create(:group_with_plan, :private, plan: :free_plan)
-
           g4 = create(:group_with_plan, :private, plan: :premium_plan)
-
-          g4_subgroup = create(:group, :private, parent: g4)
-          internal_ggl_for_g4 = create(:group_group_link,
-                                       shared_group: g4_subgroup,
-                                       shared_with_group: create(:group, :private, parent: g4))
-          external_ggl_for_g4 = create(:group_group_link, shared_group: g4_subgroup, shared_with_group: create(:group))
-
-          p1_for_g4 = create(:project, :private, group: g4)
-          internal_pgl_for_g4 = create(:project_group_link,
-                                       project: p1_for_g4,
-                                       group: create(:group, :private, parent: g4))
-          external_pgl_for_g4 = create(:project_group_link, project: p1_for_g4)
-
           g5 = create(:group, :private)
           # the below namespace should not be remediated since it is a personal namespace
           g7 = create(:namespace_with_plan, plan: :free_plan)
@@ -84,74 +47,37 @@ RSpec.describe Namespaces::FreeUserCap::RemediationWorker, type: :worker do
           # first run trims 2 namespaces: g2 and g3. g1 already within limit and is skipped
           described_class.new.perform
 
-          aggregate_failures do
-            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 0, 0, 0])
-            expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3])
-            expect(ProjectGroupLink.in_project(g2.all_projects)).to match_array([internal_pgl_for_g2])
-            expect(GroupGroupLink.in_shared_group(g2.self_and_descendants)).to match_array([internal_ggl_for_g2])
-          end
+          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 0, 0, 0])
 
           # second run skips g4 trims g5 and skips trimming g7 and g8
           described_class.new.perform
 
-          aggregate_failures do
-            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 0, 0])
-            expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5])
-            expect(ProjectGroupLink.in_project(g4.all_projects))
-              .to match_array([internal_pgl_for_g4, external_pgl_for_g4])
-            expect(GroupGroupLink.in_shared_group(g4.self_and_descendants))
-              .to match_array([internal_ggl_for_g4, external_ggl_for_g4])
-          end
+          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 0, 0])
 
           described_class.new.perform
 
-          aggregate_failures do
-            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 0, 0])
-            expect_shared_setting_remediated(namespaces: namespaces, remediated_namespaces: [g1, g2, g3, g5])
-          end
+          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 0, 4, 0, 0])
 
           # fourth run finally updates g4, which is downgraded to free
           g4.gitlab_subscription.update!(hosted_plan: create(:free_plan))
 
           described_class.new.perform
 
-          aggregate_failures do
-            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 3, 4, 0, 0])
-            expect_shared_setting_remediated(namespaces: namespaces,
-                                             remediated_namespaces: [g1, g2, g3, g5, g4])
-            expect(ProjectGroupLink.in_project(g4.all_projects)).to match_array([internal_pgl_for_g4])
-            expect(GroupGroupLink.in_shared_group(g4.self_and_descendants)).to match_array([internal_ggl_for_g4])
-          end
+          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 1, 2, 3, 4, 0, 0])
 
           # fifth run trims g2 which adds more members
           create_list(:group_member, 4, :active, source: g2)
 
           described_class.new.perform
 
-          aggregate_failures do
-            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 5, 2, 3, 4, 0, 0])
-            expect_shared_setting_remediated(namespaces: namespaces,
-                                             remediated_namespaces: [g1, g2, g3, g4, g5])
-          end
+          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 5, 2, 3, 4, 0, 0])
 
           # sixth run trims g8 which transitions to private
           g8.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
 
           described_class.new.perform
 
-          aggregate_failures do
-            expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 5, 2, 3, 4, 5, 0])
-            expect_shared_setting_remediated(namespaces: namespaces,
-                                             remediated_namespaces: [g1, g2, g3, g4, g5, g8])
-          end
-        end
-
-        def expect_shared_setting_remediated(namespaces:, remediated_namespaces:)
-          namespaces_with_sharing_set = namespaces.select do |ns|
-            sharing_set_to_true?(ns)
-          end
-
-          expect(namespaces_with_sharing_set).to match_array(remediated_namespaces)
+          expect(namespaces.map { |ns| Member.in_hierarchy(ns).awaiting.count }).to eq([0, 5, 2, 3, 4, 5, 0])
         end
       end
     end
@@ -191,14 +117,12 @@ RSpec.describe Namespaces::FreeUserCap::RemediationWorker, type: :worker do
       where(
         should_check_namespace_plan: [true, false],
         free_user_cap: [true, false],
-        free_user_cap_data_remediation_job: [true, false],
-        group_sharing_remediation: [true, false]
+        free_user_cap_data_remediation_job: [true, false]
       )
       before do
         stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
         stub_feature_flags(
           free_user_cap_data_remediation_job: free_user_cap_data_remediation_job,
-          free_user_cap_group_sharing_remediation: group_sharing_remediation,
           free_user_cap: free_user_cap
         )
       end
@@ -209,13 +133,8 @@ RSpec.describe Namespaces::FreeUserCap::RemediationWorker, type: :worker do
 
           core_flag_value = should_check_namespace_plan & free_user_cap_data_remediation_job & free_user_cap
           expect(Member.with_state(:awaiting).exists?).to be(core_flag_value)
-          expect(namespaces.all? { |ns| sharing_set_to_true?(ns) }).to be(core_flag_value & group_sharing_remediation)
         end
       end
-    end
-
-    def sharing_set_to_true?(namespace)
-      namespace.reset.prevent_sharing_groups_outside_hierarchy == true
     end
   end
 end
