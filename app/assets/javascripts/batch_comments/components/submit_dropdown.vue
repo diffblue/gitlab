@@ -92,7 +92,7 @@ export default {
         }
       } catch (e) {
         if (e.data?.message) {
-          createAlert({ message: e.data.message });
+          createAlert({ message: e.data.message, captureError: true });
         }
       }
 

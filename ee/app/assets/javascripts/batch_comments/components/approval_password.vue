@@ -28,7 +28,7 @@ export default {
       type="password"
       :value="value"
       :placeholder="__('Password')"
-      @input="(e) => $emit('input', e)"
+      @input="$emit('input', $event)"
     />
   </gl-form-group>
 </template>
