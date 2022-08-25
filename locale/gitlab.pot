@@ -21033,6 +21033,9 @@ msgstr ""
 msgid "Insert suggestion"
 msgstr ""
 
+msgid "Insert table"
+msgstr ""
+
 msgid "Insights"
 msgstr ""
 
@@ -25634,6 +25637,9 @@ msgid "Month"
 msgstr ""
 
 msgid "Months"
+msgstr ""
+
+msgid "More"
 msgstr ""
 
 msgid "More Details"
