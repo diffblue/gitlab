@@ -7,25 +7,10 @@ import {
 import * as types from './mutation_types';
 
 export default {
-  [types.REQUEST_BILLABLE_MEMBERS](state) {
-    state.isLoading = true;
-    state.hasError = false;
-  },
-
+  // Gitlab subscription
   [types.REQUEST_GITLAB_SUBSCRIPTION](state) {
-    state.isLoading = true;
+    state.isLoadingGitlabSubscription = true;
     state.hasError = false;
-  },
-
-  [types.RECEIVE_BILLABLE_MEMBERS_SUCCESS](state, payload) {
-    const { data, headers } = payload;
-    state.members = data;
-
-    state.total = Number(headers[HEADER_TOTAL_ENTRIES]);
-    state.page = Number(headers[HEADER_PAGE_NUMBER]);
-    state.perPage = Number(headers[HEADER_ITEMS_PER_PAGE]);
-
-    state.isLoading = false;
   },
 
   [types.RECEIVE_GITLAB_SUBSCRIPTION_SUCCESS](state, payload) {
@@ -43,19 +28,15 @@ export default {
       state.hasReachedFreePlanLimit = false;
     }
 
-    state.isLoading = false;
-  },
-
-  [types.RECEIVE_BILLABLE_MEMBERS_ERROR](state) {
-    state.isLoading = false;
-    state.hasError = true;
+    state.isLoadingGitlabSubscription = false;
   },
 
   [types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR](state) {
-    state.isLoading = false;
+    state.isLoadingGitlabSubscription = false;
     state.hasError = true;
   },
 
+  // Search & Sort
   [types.SET_SEARCH_QUERY](state, searchString) {
     state.search = searchString ?? null;
   },
@@ -68,16 +49,44 @@ export default {
     state.sort = sortOption;
   },
 
-  [types.RESET_BILLABLE_MEMBERS](state) {
-    state.members = [];
-
-    state.total = null;
-    state.page = null;
-    state.perPage = null;
-
-    state.isLoading = false;
+  // Membership
+  [types.CHANGE_MEMBERSHIP_STATE](state) {
+    state.isChangingMembershipState = true;
+    state.hasError = false;
   },
 
+  [types.CHANGE_MEMBERSHIP_STATE_SUCCESS](state) {
+    state.isChangingMembershipState = false;
+  },
+
+  [types.CHANGE_MEMBERSHIP_STATE_ERROR](state) {
+    state.isChangingMembershipState = false;
+    state.hasError = true;
+  },
+
+  // Billable member list
+  [types.REQUEST_BILLABLE_MEMBERS](state) {
+    state.isLoadingBillableMembers = true;
+    state.hasError = false;
+  },
+
+  [types.RECEIVE_BILLABLE_MEMBERS_SUCCESS](state, payload) {
+    const { data, headers } = payload;
+    state.members = data;
+
+    state.total = Number(headers[HEADER_TOTAL_ENTRIES]);
+    state.page = Number(headers[HEADER_PAGE_NUMBER]);
+    state.perPage = Number(headers[HEADER_ITEMS_PER_PAGE]);
+
+    state.isLoadingBillableMembers = false;
+  },
+
+  [types.RECEIVE_BILLABLE_MEMBERS_ERROR](state) {
+    state.isLoadingBillableMembers = false;
+    state.hasError = true;
+  },
+
+  // Billable member removal
   [types.SET_BILLABLE_MEMBER_TO_REMOVE](state, memberToRemove) {
     if (!memberToRemove) {
       state.billableMemberToRemove = null;
@@ -88,33 +97,22 @@ export default {
     }
   },
 
-  [types.CHANGE_MEMBERSHIP_STATE](state) {
-    state.isLoading = true;
-    state.hasError = false;
-  },
-
-  [types.CHANGE_MEMBERSHIP_STATE_ERROR](state) {
-    state.isLoading = false;
-    state.hasError = true;
-  },
-
   [types.REMOVE_BILLABLE_MEMBER](state) {
-    state.isLoading = true;
+    state.isRemovingBillableMember = true;
     state.hasError = false;
   },
 
   [types.REMOVE_BILLABLE_MEMBER_SUCCESS](state) {
-    state.isLoading = false;
-    state.hasError = false;
+    state.isRemovingBillableMember = false;
     state.billableMemberToRemove = null;
   },
 
   [types.REMOVE_BILLABLE_MEMBER_ERROR](state) {
-    state.isLoading = false;
-    state.hasError = true;
+    state.isRemovingBillableMember = false;
     state.billableMemberToRemove = null;
   },
 
+  // Billable member details
   [types.FETCH_BILLABLE_MEMBER_DETAILS](state, { memberId }) {
     Vue.set(state.userDetails, memberId, {
       isLoading: true,

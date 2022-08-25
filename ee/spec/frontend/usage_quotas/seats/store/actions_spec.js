@@ -1,4 +1,3 @@
-import MockAdapter from 'axios-mock-adapter';
 import * as GroupsApi from 'ee/api/groups_api';
 import Api from 'ee/api';
 import * as actions from 'ee/usage_quotas/seats/store/actions';
@@ -12,26 +11,19 @@ import {
 } from 'ee_jest/usage_quotas/seats/mock_data';
 import testAction from 'helpers/vuex_action_helper';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
-import axios from '~/lib/utils/axios_utils';
-import httpStatusCodes from '~/lib/utils/http_status';
 
+jest.mock('ee/api/groups_api');
+jest.mock('ee/api');
 jest.mock('~/flash');
 
-describe('seats actions', () => {
+describe('Usage Quotas Seats actions', () => {
   let state;
-  let mock;
 
   beforeEach(() => {
     state = State();
-    mock = new MockAdapter(axios);
-  });
-
-  afterEach(() => {
-    mock.reset();
   });
 
   describe('fetchBillableMembersList', () => {
-    let spy;
     const payload = {
       page: 5,
       search: 'search string',
@@ -40,8 +32,6 @@ describe('seats actions', () => {
     };
 
     beforeEach(() => {
-      gon.api_version = 'v4';
-
       state = Object.assign(state, {
         namespaceId: 1,
         page: 5,
@@ -52,7 +42,10 @@ describe('seats actions', () => {
         hasNoSubscription: false,
       });
 
-      spy = jest.spyOn(GroupsApi, 'fetchBillableGroupMembersList');
+      GroupsApi.fetchBillableGroupMembersList.mockResolvedValue({
+        data: mockDataSeats.data,
+        headers: mockDataSeats.headers,
+      });
     });
 
     it('passes correct arguments to Api call', () => {
@@ -64,7 +57,10 @@ describe('seats actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(spy).toBeCalledWith(state.namespaceId, expect.objectContaining(payload));
+      expect(GroupsApi.fetchBillableGroupMembersList).toBeCalledWith(
+        state.namespaceId,
+        expect.objectContaining(payload),
+      );
     });
 
     it('queries awaiting members when on limited free plan', () => {
@@ -82,7 +78,7 @@ describe('seats actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(spy).toBeCalledWith(
+      expect(GroupsApi.fetchBillableGroupMembersList).toBeCalledWith(
         state.namespaceId,
         expect.objectContaining({ ...payload, include_awaiting_members: true }),
       );
@@ -103,19 +99,13 @@ describe('seats actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(spy).toBeCalledWith(
+      expect(GroupsApi.fetchBillableGroupMembersList).toBeCalledWith(
         state.namespaceId,
         expect.objectContaining({ ...payload, include_awaiting_members: true }),
       );
     });
 
     describe('on success', () => {
-      beforeEach(() => {
-        mock
-          .onGet('/api/v4/groups/1/billable_members')
-          .replyOnce(httpStatusCodes.OK, mockDataSeats.data, mockDataSeats.headers);
-      });
-
       it('should dispatch the request and success actions', () => {
         testAction({
           action: actions.fetchBillableMembersList,
@@ -132,11 +122,9 @@ describe('seats actions', () => {
     });
 
     describe('on error', () => {
-      beforeEach(() => {
-        mock.onGet('/api/v4/groups/1/billable_members').replyOnce(httpStatusCodes.NOT_FOUND, {});
-      });
-
       it('should dispatch the request and error actions', () => {
+        GroupsApi.fetchBillableGroupMembersList.mockRejectedValue();
+
         testAction({
           action: actions.fetchBillableMembersList,
           state,
@@ -174,13 +162,11 @@ describe('seats actions', () => {
 
   describe('fetchGitlabSubscription', () => {
     beforeEach(() => {
-      gon.api_version = 'v4';
       state.namespaceId = 1;
+      Api.userSubscription.mockResolvedValue({ data: mockUserSubscription });
     });
 
     it('passes correct arguments to Api call', () => {
-      const spy = jest.spyOn(Api, 'userSubscription');
-
       testAction({
         action: actions.fetchGitlabSubscription,
         state,
@@ -188,16 +174,10 @@ describe('seats actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(spy).toBeCalledWith(state.namespaceId);
+      expect(Api.userSubscription).toBeCalledWith(state.namespaceId);
     });
 
     describe('on success', () => {
-      beforeEach(() => {
-        mock
-          .onGet('/api/v4/namespaces/1/gitlab_subscription')
-          .replyOnce(httpStatusCodes.OK, mockUserSubscription);
-      });
-
       it('should dispatch the request and success actions', () => {
         testAction({
           action: actions.fetchGitlabSubscription,
@@ -214,13 +194,9 @@ describe('seats actions', () => {
     });
 
     describe('on error', () => {
-      beforeEach(() => {
-        mock
-          .onGet('/api/v4/namespaces/1/gitlab_subscription')
-          .replyOnce(httpStatusCodes.NOT_FOUND, {});
-      });
-
       it('should dispatch the request and error actions', () => {
+        Api.userSubscription.mockRejectedValue();
+
         testAction({
           action: actions.fetchGitlabSubscription,
           state,
@@ -256,32 +232,21 @@ describe('seats actions', () => {
     });
   });
 
-  describe('resetBillableMembers', () => {
-    it('should commit mutation', () => {
-      testAction({
-        action: actions.resetBillableMembers,
-        state,
-        expectedMutations: [{ type: types.RESET_BILLABLE_MEMBERS }],
-      });
-    });
-  });
-
   describe('setBillableMemberToRemove', () => {
     it('should commit the set member mutation', async () => {
+      const member = { id: 'test' };
+
       await testAction({
         action: actions.setBillableMemberToRemove,
+        payload: member,
         state,
-        expectedMutations: [{ type: types.SET_BILLABLE_MEMBER_TO_REMOVE }],
+        expectedMutations: [{ type: types.SET_BILLABLE_MEMBER_TO_REMOVE, payload: member }],
       });
     });
   });
 
   describe('removeBillableMember', () => {
-    let groupsApiSpy;
-
     beforeEach(() => {
-      groupsApiSpy = jest.spyOn(GroupsApi, 'removeBillableMemberFromGroup');
-
       state = {
         namespaceId: 1,
         billableMemberToRemove: {
@@ -291,36 +256,35 @@ describe('seats actions', () => {
     });
 
     describe('on success', () => {
-      beforeEach(() => {
-        mock.onDelete('/api/v4/groups/1/billable_members/2').reply(httpStatusCodes.OK);
-      });
-
       it('dispatches the removeBillableMemberSuccess action', async () => {
+        GroupsApi.removeBillableMemberFromGroup.mockResolvedValue();
+
         await testAction({
           action: actions.removeBillableMember,
           state,
           expectedActions: [{ type: 'removeBillableMemberSuccess' }],
+          expectedMutations: [{ type: types.REMOVE_BILLABLE_MEMBER }],
         });
 
-        expect(groupsApiSpy).toHaveBeenCalled();
+        expect(GroupsApi.removeBillableMemberFromGroup).toHaveBeenCalledWith(
+          state.namespaceId,
+          state.billableMemberToRemove.id,
+        );
       });
     });
 
     describe('on error', () => {
-      beforeEach(() => {
-        mock
-          .onDelete('/api/v4/groups/1/billable_members/2')
-          .reply(httpStatusCodes.UNPROCESSABLE_ENTITY);
-      });
-
       it('dispatches the removeBillableMemberError action', async () => {
+        GroupsApi.removeBillableMemberFromGroup.mockRejectedValue();
+
         await testAction({
           action: actions.removeBillableMember,
           state,
           expectedActions: [{ type: 'removeBillableMemberError' }],
+          expectedMutations: [{ type: types.REMOVE_BILLABLE_MEMBER }],
         });
 
-        expect(groupsApiSpy).toHaveBeenCalled();
+        expect(GroupsApi.removeBillableMemberFromGroup).toHaveBeenCalled();
       });
     });
   });
@@ -369,31 +333,15 @@ describe('seats actions', () => {
       user = { id: 2, membership_state: MEMBER_ACTIVE_STATE };
     });
 
-    afterEach(() => {
-      mock.reset();
-    });
-
-    describe('on success', () => {
+    describe('Group API call', () => {
       beforeEach(() => {
-        mock
-          .onPut('/api/v4/groups/1/members/2/state')
-          .replyOnce(httpStatusCodes.OK, { success: true });
-
-        expectedActions = [
-          { type: 'fetchBillableMembersList' },
-          { type: 'fetchGitlabSubscription' },
-        ];
-
         expectedMutations = [{ type: types.CHANGE_MEMBERSHIP_STATE }];
+
+        expectedActions = [{ type: 'changeMembershipStateSuccess' }];
       });
 
       describe('for an active user', () => {
         it('passes correct arguments to Api call for an active user', () => {
-          const spy = jest.spyOn(GroupsApi, 'changeMembershipState');
-
-          jest.spyOn(GroupsApi, 'fetchBillableGroupMembersList');
-          jest.spyOn(Api, 'userSubscription');
-
           testAction({
             action: actions.changeMembershipState,
             payload: user,
@@ -402,14 +350,16 @@ describe('seats actions', () => {
             expectedActions,
           });
 
-          expect(spy).toBeCalledWith(state.namespaceId, user.id, MEMBER_AWAITING_STATE);
+          expect(GroupsApi.changeMembershipState).toBeCalledWith(
+            state.namespaceId,
+            user.id,
+            MEMBER_AWAITING_STATE,
+          );
         });
       });
 
       describe('for an awaiting user', () => {
         it('passes correct arguments to Api call for an active user', () => {
-          const spy = jest.spyOn(GroupsApi, 'changeMembershipState');
-
           testAction({
             action: actions.changeMembershipState,
             payload: { ...user, membership_state: MEMBER_AWAITING_STATE },
@@ -418,19 +368,19 @@ describe('seats actions', () => {
             expectedActions,
           });
 
-          expect(spy).toBeCalledWith(state.namespaceId, user.id, MEMBER_ACTIVE_STATE);
+          expect(GroupsApi.changeMembershipState).toBeCalledWith(
+            state.namespaceId,
+            user.id,
+            MEMBER_ACTIVE_STATE,
+          );
         });
       });
     });
 
     describe('on error', () => {
-      beforeEach(() => {
-        mock
-          .onPut('/api/v4/groups/1/members/2/state')
-          .replyOnce(httpStatusCodes.UNPROCESSABLE_ENTITY, {});
-      });
-
       it('should dispatch the request and error actions', async () => {
+        GroupsApi.changeMembershipState.mockRejectedValue();
+
         await testAction({
           action: actions.changeMembershipState,
           payload: user,
@@ -442,8 +392,26 @@ describe('seats actions', () => {
     });
   });
 
+  describe('changeMembershipStateSuccess', () => {
+    it('should dispatch billable members list and GitLab subscription', () => {
+      testAction({
+        action: actions.changeMembershipStateSuccess,
+        state,
+        expectedMutations: [
+          {
+            type: types.CHANGE_MEMBERSHIP_STATE_SUCCESS,
+          },
+        ],
+        expectedActions: [
+          { type: 'fetchBillableMembersList' },
+          { type: 'fetchGitlabSubscription' },
+        ],
+      });
+    });
+  });
+
   describe('changeMembershipStateError', () => {
-    it('ccommits mutation and calls createAlert', async () => {
+    it('commits mutation and calls createAlert', async () => {
       await testAction({
         action: actions.changeMembershipStateError,
         state,
@@ -460,9 +428,7 @@ describe('seats actions', () => {
     const member = mockDataSeats.data[0];
 
     beforeAll(() => {
-      GroupsApi.fetchBillableGroupMemberMemberships = jest
-        .fn()
-        .mockResolvedValue({ data: mockMemberDetails });
+      GroupsApi.fetchBillableGroupMemberMemberships.mockResolvedValue({ data: mockMemberDetails });
     });
 
     it('commits fetchBillableMemberDetails', async () => {
@@ -471,7 +437,7 @@ describe('seats actions', () => {
         payload: member.id,
         state,
         expectedMutations: [
-          { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: member.id },
+          { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
           {
             type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
             payload: { memberId: member.id, memberships: mockMemberDetails },
@@ -480,13 +446,13 @@ describe('seats actions', () => {
       });
     });
 
-    it('calls fetchBillableGroupMemberMemberships api', async () => {
+    it('calls fetchBillableGroupMemberMemberships API', async () => {
       await testAction({
         action: actions.fetchBillableMemberDetails,
         payload: member.id,
         state,
         expectedMutations: [
-          { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: member.id },
+          { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
           {
             type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
             payload: { memberId: member.id, memberships: mockMemberDetails },
@@ -497,13 +463,13 @@ describe('seats actions', () => {
       expect(GroupsApi.fetchBillableGroupMemberMemberships).toHaveBeenCalledWith(null, 2);
     });
 
-    it('calls fetchBillableGroupMemberMemberships api only once', async () => {
+    it('calls fetchBillableGroupMemberMemberships API only once', async () => {
       await testAction({
         action: actions.fetchBillableMemberDetails,
         payload: member.id,
         state,
         expectedMutations: [
-          { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: member.id },
+          { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
           {
             type: types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS,
             payload: { memberId: member.id, memberships: mockMemberDetails },
@@ -529,34 +495,44 @@ describe('seats actions', () => {
     });
 
     describe('on API error', () => {
-      beforeAll(() => {
-        GroupsApi.fetchBillableGroupMemberMemberships = jest.fn().mockRejectedValue();
-      });
-
       it('dispatches fetchBillableMemberDetailsError', async () => {
+        GroupsApi.fetchBillableGroupMemberMemberships.mockRejectedValue();
+
         await testAction({
-          action: actions.fetchBillableMemberDetailsError,
+          action: actions.fetchBillableMemberDetails,
+          payload: member.id,
           state,
-          expectedMutations: [{ type: types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR }],
+          expectedMutations: [
+            { type: types.FETCH_BILLABLE_MEMBER_DETAILS, payload: { memberId: member.id } },
+          ],
+          expectedActions: [{ type: 'fetchBillableMemberDetailsError', payload: member.id }],
         });
       });
     });
   });
 
   describe('fetchBillableMemberDetailsError', () => {
+    const memberId = 42;
+
     it('commits fetch billable member details error', async () => {
       await testAction({
         action: actions.fetchBillableMemberDetailsError,
+        payload: memberId,
         state,
-        expectedMutations: [{ type: types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR }],
+        expectedMutations: [
+          { type: types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR, payload: { memberId } },
+        ],
       });
     });
 
     it('calls createAlert', async () => {
       await testAction({
         action: actions.fetchBillableMemberDetailsError,
+        payload: memberId,
         state,
-        expectedMutations: [{ type: types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR }],
+        expectedMutations: [
+          { type: types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR, payload: { memberId } },
+        ],
       });
 
       expect(createAlert).toHaveBeenCalledWith({

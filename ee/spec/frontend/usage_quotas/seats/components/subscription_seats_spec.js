@@ -27,7 +27,6 @@ Vue.use(Vuex);
 const actionSpies = {
   fetchBillableMembersList: jest.fn(),
   fetchGitlabSubscription: jest.fn(),
-  resetBillableMembers: jest.fn(),
   setBillableMemberToRemove: jest.fn(),
   setSearchQuery: jest.fn(),
   changeMembershipState: jest.fn(),
@@ -50,10 +49,10 @@ const fakeStore = ({ initialState, initialGetters }) =>
     actions: actionSpies,
     getters: {
       tableItems: () => mockTableItems,
+      isLoading: () => false,
       ...initialGetters,
     },
     state: {
-      isLoading: false,
       hasError: false,
       namespaceId: 1,
       members: [...mockDataSeats.data],
@@ -95,6 +94,7 @@ describe('Subscription Seats', () => {
   const findStatisticsCard = () => wrapper.findComponent(StatisticsCard);
   const findStatisticsSeatsCard = () => wrapper.findComponent(StatisticsSeatsCard);
   const findSubscriptionUpgradeCard = () => wrapper.findComponent(SubscriptionUpgradeInfoCard);
+  const findSkeletonLoaderCards = () => wrapper.findByTestId('skeleton-loader-cards');
 
   const serializeUser = (rowWrapper) => {
     const avatarLink = rowWrapper.findComponent(GlAvatarLink);
@@ -144,13 +144,13 @@ describe('Subscription Seats', () => {
     return tableWrapper.findAll('tbody tr').wrappers.map(serializeTableRow);
   };
 
+  afterEach(() => {
+    wrapper.destroy();
+  });
+
   describe('actions', () => {
     beforeEach(() => {
       wrapper = createComponent();
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     it('correct actions are called on create', () => {
@@ -166,10 +166,6 @@ describe('Subscription Seats', () => {
           tableItems: () => mockTableItems,
         },
       });
-    });
-
-    afterEach(() => {
-      wrapper.destroy();
     });
 
     describe('export button', () => {
@@ -340,17 +336,21 @@ describe('Subscription Seats', () => {
             });
           });
 
-          it('disables the toggles when isLoading=true', () => {
+          it.each([
+            [true, false],
+            [false, true],
+          ])('disables the toggles when isLoading=%s and hasError=%s', (isLoading, hasError) => {
             wrapper = createComponent({
               mountFn: mount,
               initialGetters: {
                 tableItems: () => mockTableItems,
+                isLoading: () => isLoading,
               },
               initialState: {
-                isLoading: true,
                 hasNoSubscription: true,
                 hasLimitedFreePlan: true,
                 hasReachedFreePlanLimit: true,
+                hasError,
               },
             });
 
@@ -687,17 +687,37 @@ describe('Subscription Seats', () => {
     });
   });
 
-  describe('is loading', () => {
-    beforeEach(() => {
-      wrapper = createComponent({ initialState: { isLoading: true } });
+  describe('Loading state', () => {
+    describe('When nothing is loading', () => {
+      beforeEach(() => {
+        wrapper = createComponent();
+      });
+
+      it('displays the table in a non-busy state', () => {
+        expect(findTable().attributes('busy')).toBe(undefined);
+      });
     });
 
-    afterEach(() => {
-      wrapper.destroy();
-    });
+    describe.each([
+      [true, false],
+      [false, true],
+    ])('Busy when isLoading=%s and hasError=%s', (isLoading, hasError) => {
+      beforeEach(() => {
+        wrapper = createComponent({
+          initialGetters: { isLoading: () => isLoading },
+          initialState: { hasError },
+        });
+      });
 
-    it('displays table in loading state', () => {
-      expect(findTable().attributes('busy')).toBe('true');
+      it('displays loading skeletons instead of statistics cards', () => {
+        expect(findSkeletonLoaderCards().exists()).toBe(true);
+        expect(findStatisticsCard().exists()).toBe(false);
+        expect(findStatisticsSeatsCard().exists()).toBe(false);
+      });
+
+      it('displays table in busy state', () => {
+        expect(findTable().attributes('busy')).toBe('true');
+      });
     });
   });
 

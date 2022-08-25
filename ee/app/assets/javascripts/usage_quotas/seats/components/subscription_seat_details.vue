@@ -1,6 +1,6 @@
 <script>
 import { GlTable, GlBadge, GlLink } from '@gitlab/ui';
-import { mapActions, mapGetters } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { DETAILS_FIELDS } from '../constants';
 import SubscriptionSeatDetailsLoader from './subscription_seat_details_loader.vue';
@@ -20,15 +20,16 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['membershipsById']),
-    state() {
-      return this.membershipsById(this.seatMemberId);
-    },
+    ...mapState({
+      userDetailsEntry(state) {
+        return state.userDetails[this.seatMemberId];
+      },
+    }),
     items() {
-      return this.state.items;
+      return this.userDetailsEntry.items;
     },
-    isLoading() {
-      return this.state.isLoading;
+    isLoaderShown() {
+      return this.userDetailsEntry.isLoading || this.userDetailsEntry.hasError;
     },
   },
   created() {
@@ -43,7 +44,7 @@ export default {
 </script>
 
 <template>
-  <div v-if="isLoading">
+  <div v-if="isLoaderShown">
     <subscription-seat-details-loader />
   </div>
   <gl-table v-else :fields="$options.fields" :items="items" data-testid="seat-usage-details">

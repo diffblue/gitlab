@@ -8,6 +8,8 @@ export const tableItems = (state) => {
   }));
 };
 
-export const membershipsById = (state) => (memberId) => {
-  return state.userDetails[memberId] || { isLoading: true, items: [] };
-};
+export const isLoading = (state) =>
+  state.isLoadingBillableMembers ||
+  state.isLoadingGitlabSubscription ||
+  state.isChangingMembershipState ||
+  state.isRemovingBillableMember;
