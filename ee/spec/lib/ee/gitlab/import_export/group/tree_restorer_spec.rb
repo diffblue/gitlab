@@ -63,6 +63,14 @@ RSpec.describe Gitlab::ImportExport::Group::TreeRestorer do
       end
     end
 
+    context 'epic resource state events' do
+      it 'has resource state events' do
+        event = group.epics.first.resource_state_events.first
+
+        expect(event.state).to eq('closed')
+      end
+    end
+
     context 'board lists' do
       it 'has milestone & assignee lists' do
         lists = group.boards.find_by(name: 'first board').lists
