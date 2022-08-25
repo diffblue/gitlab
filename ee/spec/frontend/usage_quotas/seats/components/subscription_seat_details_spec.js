@@ -2,7 +2,6 @@ import { GlTable } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import Api from 'ee/api';
 import SubscriptionSeatDetails from 'ee/usage_quotas/seats/components/subscription_seat_details.vue';
 import SubscriptionSeatDetailsLoader from 'ee/usage_quotas/seats/components/subscription_seat_details_loader.vue';
 import createStore from 'ee/usage_quotas/seats/store';
@@ -18,12 +17,24 @@ describe('SubscriptionSeatDetails', () => {
     fetchBillableMemberDetails: jest.fn(),
   };
 
-  const createComponent = () => {
-    const store = createStore(initState({ namespaceId: 1, isLoading: true }));
+  const createComponent = ({ initialUserDetails } = { initialUserDetails: {} }) => {
+    const seatMemberId = 1;
+    const store = createStore(initState({ namespaceId: 1 }));
+    store.state = {
+      ...store.state,
+      userDetails: {
+        [seatMemberId]: {
+          isLoading: false,
+          hasError: false,
+          items: mockMemberDetails,
+          ...initialUserDetails,
+        },
+      },
+    };
 
     wrapper = shallowMount(SubscriptionSeatDetails, {
       propsData: {
-        seatMemberId: 1,
+        seatMemberId,
       },
       store: new Vuex.Store({ ...store, actions }),
       stubs: {
@@ -32,20 +43,42 @@ describe('SubscriptionSeatDetails', () => {
     });
   };
 
-  beforeEach(() => {
-    Api.fetchBillableGroupMemberMemberships = jest.fn(() =>
-      Promise.resolve({ data: mockMemberDetails }),
-    );
-    createComponent();
-  });
-
   afterEach(() => {
     wrapper.destroy();
   });
 
   describe('on created', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
     it('calls fetchBillableMemberDetails', () => {
       expect(actions.fetchBillableMemberDetails).toHaveBeenCalledWith(expect.any(Object), 1);
+    });
+  });
+
+  describe('loading state', () => {
+    beforeEach(() => {
+      createComponent({
+        initialUserDetails: {
+          isLoading: true,
+        },
+      });
+    });
+
+    it('displays skeleton loader', () => {
+      expect(wrapper.findComponent(SubscriptionSeatDetailsLoader).isVisible()).toBe(true);
+    });
+  });
+
+  describe('error state', () => {
+    beforeEach(() => {
+      createComponent({
+        initialUserDetails: {
+          isLoading: false,
+          hasError: true,
+        },
+      });
     });
 
     it('displays skeleton loader', () => {

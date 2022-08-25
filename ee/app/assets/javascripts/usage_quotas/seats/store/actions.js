@@ -48,10 +48,6 @@ export const receiveGitlabSubscriptionError = ({ commit }) => {
   commit(types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR);
 };
 
-export const resetBillableMembers = ({ commit }) => {
-  commit(types.RESET_BILLABLE_MEMBERS);
-};
-
 export const setBillableMemberToRemove = ({ commit }, member) => {
   commit(types.SET_BILLABLE_MEMBER_TO_REMOVE, member);
 };
@@ -64,12 +60,17 @@ export const changeMembershipState = async ({ commit, dispatch, state }, user) =
       user.membership_state === MEMBER_ACTIVE_STATE ? MEMBER_AWAITING_STATE : MEMBER_ACTIVE_STATE;
 
     await GroupsApi.changeMembershipState(state.namespaceId, user.id, newState);
-
-    await dispatch('fetchBillableMembersList');
-    await dispatch('fetchGitlabSubscription');
+    dispatch('changeMembershipStateSuccess');
   } catch {
     dispatch('changeMembershipStateError');
   }
+};
+
+export const changeMembershipStateSuccess = ({ commit, dispatch }) => {
+  dispatch('fetchBillableMembersList');
+  dispatch('fetchGitlabSubscription');
+
+  commit(types.CHANGE_MEMBERSHIP_STATE_SUCCESS);
 };
 
 export const changeMembershipStateError = ({ commit }) => {
@@ -80,7 +81,9 @@ export const changeMembershipStateError = ({ commit }) => {
   commit(types.CHANGE_MEMBERSHIP_STATE_ERROR);
 };
 
-export const removeBillableMember = ({ dispatch, state }) => {
+export const removeBillableMember = ({ dispatch, state, commit }) => {
+  commit(types.REMOVE_BILLABLE_MEMBER);
+
   return GroupsApi.removeBillableMemberFromGroup(state.namespaceId, state.billableMemberToRemove.id)
     .then(() => dispatch('removeBillableMemberSuccess'))
     .catch(() => dispatch('removeBillableMemberError'));
@@ -115,7 +118,7 @@ export const fetchBillableMemberDetails = ({ dispatch, commit, state }, memberId
     return Promise.resolve();
   }
 
-  commit(types.FETCH_BILLABLE_MEMBER_DETAILS, memberId);
+  commit(types.FETCH_BILLABLE_MEMBER_DETAILS, { memberId });
 
   return GroupsApi.fetchBillableGroupMemberMemberships(state.namespaceId, memberId)
     .then(({ data }) =>
@@ -125,7 +128,7 @@ export const fetchBillableMemberDetails = ({ dispatch, commit, state }, memberId
 };
 
 export const fetchBillableMemberDetailsError = ({ commit }, memberId) => {
-  commit(types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR, memberId);
+  commit(types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR, { memberId });
 
   createAlert({
     message: s__('Billing|An error occurred while getting a billable member details.'),

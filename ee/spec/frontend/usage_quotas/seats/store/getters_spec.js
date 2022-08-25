@@ -1,12 +1,8 @@
 import * as getters from 'ee/usage_quotas/seats/store/getters';
 import State from 'ee/usage_quotas/seats/store/state';
-import {
-  mockDataSeats,
-  mockTableItems,
-  mockMemberDetails,
-} from 'ee_jest/usage_quotas/seats/mock_data';
+import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
 
-describe('Seat usage table getters', () => {
+describe('Usage Quotas Seats getters', () => {
   let state;
 
   beforeEach(() => {
@@ -27,28 +23,27 @@ describe('Seat usage table getters', () => {
     });
   });
 
-  describe('membershipsById', () => {
-    describe('when data is not availlable', () => {
-      it('returns a base state', () => {
-        expect(getters.membershipsById(state)(0)).toEqual({
-          isLoading: true,
-          items: [],
-        });
-      });
+  describe('isLoading', () => {
+    beforeEach(() => {
+      state.isLoadingBillableMembers = false;
+      state.isLoadingGitlabSubscription = false;
+      state.isChangingMembershipState = false;
+      state.isRemovingBillableMember = false;
     });
 
-    describe('when data is available', () => {
-      it('returns user details state', () => {
-        state.userDetails[0] = {
-          isLoading: false,
-          items: mockMemberDetails,
-        };
+    it('returns false if nothing is being loaded', () => {
+      expect(getters.isLoading(state)).toEqual(false);
+    });
 
-        expect(getters.membershipsById(state)(0)).toEqual({
-          isLoading: false,
-          items: mockMemberDetails,
-        });
-      });
+    it.each([
+      'isLoadingBillableMembers',
+      'isLoadingGitlabSubscription',
+      'isChangingMembershipState',
+      'isRemovingBillableMember',
+    ])('returns true if %s is being loaded', (key) => {
+      state[key] = true;
+
+      expect(getters.isLoading(state)).toEqual(true);
     });
   });
 });

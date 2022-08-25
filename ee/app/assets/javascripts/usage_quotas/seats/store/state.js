@@ -11,7 +11,10 @@ export default ({
   freeUserCapEnabled = false,
   previewFreeUserCap = false,
 } = {}) => ({
-  isLoading: false,
+  isLoadingBillableMembers: false,
+  isLoadingGitlabSubscription: false,
+  isChangingMembershipState: false,
+  isRemovingBillableMember: false,
   hasError: false,
   namespaceId,
   namespaceName,
