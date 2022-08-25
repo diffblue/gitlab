@@ -92,7 +92,7 @@ module EE
             return super unless group.adjourned_deletion?
 
             if ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent) &&
-              ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+                ::Gitlab::Utils.to_boolean(params[:permanently_remove])
               result, error = immediately_delete_subgroup?(group)
               return super if result
 
