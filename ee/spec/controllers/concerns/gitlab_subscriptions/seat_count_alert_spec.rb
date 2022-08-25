@@ -32,14 +32,6 @@ RSpec.describe GitlabSubscriptions::SeatCountAlert do
         end
       end
 
-      context 'when the feature flag is disabled' do
-        it 'does not set the seat count data' do
-          stub_feature_flags(seat_count_alerts: false)
-
-          expect(controller.generate_seat_count_alert_data(root_ancestor)).to be_nil
-        end
-      end
-
       context 'when supplied a project' do
         it 'sets the data based on the root ancestor' do
           project = build(:project, namespace: root_ancestor)
