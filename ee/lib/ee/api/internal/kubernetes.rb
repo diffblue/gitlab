@@ -112,20 +112,6 @@ module EE
 
                   present :configurations, policies, with: EE::API::Entities::SecurityPolicyConfiguration
                 end
-
-                desc 'GET starboard scan_execution_policies' do
-                  detail 'Retrieves scan_execution_policies configured for the project'
-                end
-
-                route_setting :authentication, cluster_agent_token_allowed: true
-                get '/scan_execution_policies' do
-                  not_found! if agent.project.nil?
-                  not_found! unless agent.project.licensed_feature_available?(:security_orchestration_policies)
-
-                  policies = ::Security::ScanExecutionPoliciesFinder.new(agent, agent.project).execute
-
-                  present :policies, policies, with: EE::API::Entities::SecurityPolicy
-                end
               end
             end
           end
