@@ -5,6 +5,13 @@ module Gitlab
     module Executors
       class DoraExecutor
         DoraExecutorError = Class.new(StandardError)
+        FORMATTERS = {
+          'day' => '%d %b %y',
+          'month' => '%B %Y'
+        }.freeze
+        DEFAULT_VALUES = {
+          'deployment_frequency' => 0
+        }.freeze
 
         def initialize(query_params:, current_user:, insights_entity:, projects: {}, chart_type:)
           @query_params = query_params
@@ -23,13 +30,35 @@ module Gitlab
 
           raise(DoraExecutorError, result[:message]) if result[:status] == :error
 
-          reduced_data = Gitlab::Insights::Reducers::DoraReducer.reduce(result[:data], period: group_by, metric: metric)
-          serializer.present(reduced_data)
+          serializer.present(format_data(result[:data]))
         end
 
         private
 
         attr_reader :query_params, :current_user, :insights_entity, :projects, :chart_type
+
+        def format_data(data)
+          input = data.each_with_object({}) { |item, hash| hash[item['date']] = format_value(item['value']) }
+
+          Gitlab::Analytics::DateFiller.new(input,
+                                            from: start_date,
+                                            to: Date.today,
+                                            period: group_by.to_sym,
+                                            default_value: DEFAULT_VALUES[metric],
+                                            date_formatter: -> (date) { date.strftime(FORMATTERS[group_by]) }
+                                           ).fill
+        end
+
+        def format_value(value)
+          case metric
+          when 'lead_time_for_changes', 'time_to_restore_service'
+            value ? value.fdiv(1.day).round(1) : nil
+          when 'change_failure_rate'
+            value ? (value * 100).round(2) : 0
+          else
+            value
+          end
+        end
 
         def dora_api_params
           params = {
@@ -62,9 +91,9 @@ module Gitlab
         def start_date
           case group_by
           when 'day'
-            period_limit.days.ago.to_date
+            (period_limit - 1).days.ago.to_date
           when 'month'
-            period_limit.months.ago.to_date
+            (period_limit - 1).months.ago.to_date
           end
         end
 
@@ -88,12 +117,11 @@ module Gitlab
         end
 
         def serializer
-          case chart_type
-          when 'bar', 'line'
-            Gitlab::Insights::Serializers::Chartjs::BarSerializer
-          else
+          unless %w[bar line].include?(chart_type)
             raise DoraExecutor::DoraExecutorError, "Unsupported chart type is given: #{chart_type}"
           end
+
+          Gitlab::Insights::Serializers::Chartjs::BarSerializer
         end
       end
     end
