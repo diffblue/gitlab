@@ -47,7 +47,7 @@ RSpec.describe Gitlab::Insights::Loader do
         let(:params) do
           {
             type: 'bar',
-            query:  data_source_params
+            query: data_source_params
           }
         end
 

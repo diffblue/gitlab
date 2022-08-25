@@ -65,8 +65,7 @@ RSpec.describe ::Gitlab::Ci::Config::Entry::Need do
         describe '#value' do
           it 'returns job needs configuration' do
             expect(subject.value)
-              .to eq(artifacts: value, job: 'some/job',
-                project: 'some/project', ref: 'some/ref')
+              .to eq(artifacts: value, job: 'some/job', project: 'some/project', ref: 'some/ref')
           end
         end
 

@@ -51,8 +51,8 @@ RSpec.describe EE::Gitlab::Auth::Ldap::AccessLevels do
       it 'keeps the higher of all access values' do
         is_expected
           .to eq({
-             'uid=janedoe,ou=users,dc=example,dc=com'  => Gitlab::Access::MAINTAINER,
-             'uid=johndoe,ou=users,dc=example,dc=com'  => Gitlab::Access::MAINTAINER,
+             'uid=janedoe,ou=users,dc=example,dc=com' => Gitlab::Access::MAINTAINER,
+             'uid=johndoe,ou=users,dc=example,dc=com' => Gitlab::Access::MAINTAINER,
              'uid=jamesdoe,ou=users,dc=example,dc=com' => Gitlab::Access::DEVELOPER
           })
       end

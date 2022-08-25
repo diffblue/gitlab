@@ -28,9 +28,9 @@ RSpec.describe Gitlab::Ci::Matching::RunnerMatcher do
 
     let(:visibility_map) do
       {
-        public:   ::Gitlab::VisibilityLevel::PUBLIC,
+        public: ::Gitlab::VisibilityLevel::PUBLIC,
         internal: ::Gitlab::VisibilityLevel::INTERNAL,
-        private:  ::Gitlab::VisibilityLevel::PRIVATE
+        private: ::Gitlab::VisibilityLevel::PRIVATE
       }
     end
 
