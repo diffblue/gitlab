@@ -58,17 +58,6 @@ RSpec.describe 'approaching seat count threshold alert', :saas, :js do
     it_behaves_like 'a hidden alert'
   end
 
-  context 'when the feature flag is disabled' do
-    before do
-      group.add_owner(user)
-      sign_in(user)
-
-      stub_feature_flags(seat_count_alerts: false)
-    end
-
-    it_behaves_like 'a hidden alert'
-  end
-
   context 'when the user is eligible for the alert' do
     before do
       group.add_owner(user)
