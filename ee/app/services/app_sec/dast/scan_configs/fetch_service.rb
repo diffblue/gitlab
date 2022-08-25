@@ -57,7 +57,7 @@ module AppSec
 
           return errors.push(*result.errors) unless result.valid?
 
-          gitlab_ci_yml = Gitlab::Config::Loader::Yaml.new(result.merged_yaml || '{}').load!
+          gitlab_ci_yml = load_yml(result.merged_yaml || '{}')
 
           dast_job = find_dast_job(gitlab_ci_yml)
 
@@ -72,6 +72,16 @@ module AppSec
 
         def find_dast_job(gitlab_ci_yml)
           gitlab_ci_yml.find { |_, v| v.instance_of?(Hash) && v[:stage] == "dast" }&.last
+        end
+
+        def load_yml(data)
+          loader = Gitlab::Config::Loader::Yaml.new(data)
+
+          if loader.valid?
+            loader.load!
+          else
+            errors.push(_('The parsed YAML is too big'))
+          end
         end
       end
     end
