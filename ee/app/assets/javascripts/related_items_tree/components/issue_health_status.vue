@@ -10,6 +10,7 @@ export default {
     healthStatus: {
       type: String,
       required: true,
+      validator: (value) => Object.keys(issueHealthStatus).includes(value),
     },
   },
   computed: {

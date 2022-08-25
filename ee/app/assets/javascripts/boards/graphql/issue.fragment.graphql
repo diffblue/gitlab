@@ -17,4 +17,5 @@ fragment Issue on Issue {
       title
     }
   }
+  healthStatus
 }
