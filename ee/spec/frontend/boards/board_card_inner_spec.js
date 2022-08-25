@@ -2,6 +2,7 @@ import { GlLabel } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vuex from 'vuex';
 import IssueCardWeight from 'ee/boards/components/issue_card_weight.vue';
+import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
 import { issuableTypes } from '~/boards/constants';
 import defaultStore from '~/boards/stores';
@@ -72,6 +73,7 @@ describe('Board card component', () => {
       weight: 1,
       blocked: true,
       blockedByCount: 2,
+      healthStatus: 'onTrack',
     };
   });
 
@@ -132,6 +134,14 @@ describe('Board card component', () => {
       createComponent();
 
       expect(wrapper.findComponent(IssueCardWeight).exists()).toBe(true);
+    });
+  });
+
+  describe('health status', () => {
+    it('shows healthStatus component', () => {
+      createComponent();
+
+      expect(wrapper.findComponent(IssueHealthStatus).props('healthStatus')).toBe('onTrack');
     });
   });
 });
