@@ -12297,7 +12297,7 @@ msgstr ""
 msgid "Days to merge"
 msgstr ""
 
-msgid "Deactivate dormant users after 90 days of inactivity"
+msgid "Deactivate dormant users after a period of inactivity"
 msgstr ""
 
 msgid "Dear Administrator,"
@@ -28457,6 +28457,12 @@ msgid "PerformanceBar|wall"
 msgstr ""
 
 msgid "Period in seconds"
+msgstr ""
+
+msgid "Period of inactivity (days)"
+msgstr ""
+
+msgid "Period of inactivity before deactivation"
 msgstr ""
 
 msgid "Permalink"
