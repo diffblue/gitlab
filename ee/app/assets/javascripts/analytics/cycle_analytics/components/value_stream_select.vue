@@ -116,7 +116,7 @@ export default {
       <gl-dropdown-item
         v-for="{ id, name: streamName } in data"
         :key="id"
-        :is-check-item="true"
+        is-check-item
         :is-checked="isSelected(id)"
         data-track-action="click_dropdown"
         :data-track-label="slugify(streamName)"

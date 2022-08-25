@@ -173,7 +173,7 @@ export default {
       <gl-dropdown-item
         v-for="group in groups"
         :key="group.id"
-        :is-check-item="true"
+        is-check-item
         :is-checked="isGroupEnabled(group.id)"
         data-testid="group-row"
         @click.native.capture.stop="handleGroupSelect(group.id)"

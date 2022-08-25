@@ -139,7 +139,7 @@ export default {
     </gl-dropdown-section-header>
     <gl-search-box-by-type v-model.trim="projectSearchTerm" />
     <gl-dropdown-item
-      :is-check-item="true"
+      is-check-item
       :is-checked="selectAllProjects"
       data-testid="select-all-projects"
       @click.native.capture.stop="clickSelectAllProjects()"
@@ -148,7 +148,7 @@ export default {
     <gl-dropdown-item
       v-for="project in filteredProjects"
       :key="project.id"
-      :is-check-item="true"
+      is-check-item
       :is-checked="project.isSelected"
       :data-testid="`select-project-${project.id}`"
       @click.native.capture.stop="clickDropdownProject(project.id)"

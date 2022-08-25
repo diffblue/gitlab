@@ -82,7 +82,7 @@ export default {
       @hide="hideDropdown"
     >
       <gl-dropdown-item
-        :is-check-item="true"
+        is-check-item
         :is-checked="isSelected(null)"
         @click="handleDropdownClick(null)"
       >
@@ -94,7 +94,7 @@ export default {
       <gl-dropdown-item
         v-for="option in statusOptions"
         :key="option.key"
-        :is-check-item="true"
+        is-check-item
         :is-checked="isSelected(option.key)"
         data-testid="health-status-dropdown-item"
         @click="handleDropdownClick(option.key)"

@@ -60,18 +60,12 @@ export default {
       {{ __('Group by') }}
     </span>
     <gl-dropdown right :text="dropdownLabel" class="gl-ml-3" toggle-class="gl-line-height-normal!">
-      <gl-dropdown-item
-        :is-check-item="true"
-        :is-checked="!isShowingEpicsSwimlanes"
-        @click="onToggle()"
-        >{{ groupByNoneLabel }}</gl-dropdown-item
-      >
-      <gl-dropdown-item
-        :is-check-item="true"
-        :is-checked="isShowingEpicsSwimlanes"
-        @click="onToggle()"
-        >{{ groupByEpicLabel }}</gl-dropdown-item
-      >
+      <gl-dropdown-item is-check-item :is-checked="!isShowingEpicsSwimlanes" @click="onToggle()">{{
+        groupByNoneLabel
+      }}</gl-dropdown-item>
+      <gl-dropdown-item is-check-item :is-checked="isShowingEpicsSwimlanes" @click="onToggle()">{{
+        groupByEpicLabel
+      }}</gl-dropdown-item>
     </gl-dropdown>
   </div>
 </template>
