@@ -2,8 +2,10 @@
 
 require "spec_helper"
 
-RSpec.describe Gitlab::Git::Diff, :seed_helper do
-  let(:repository) { Gitlab::Git::Repository.new('default', TEST_REPO_PATH, '', 'group/project') }
+RSpec.describe Gitlab::Git::Diff do
+  let_it_be(:project) { create(:project, :repository) }
+  let_it_be(:repository) { project.repository }
+
   let(:gitaly_diff) do
     Gitlab::GitalyClient::Diff.new(
       from_path: '.gitmodules',
@@ -218,7 +220,7 @@ EOT
     let(:diffs) { described_class.between(repository, 'feature', 'master', options) }
 
     it 'has the correct size' do
-      expect(diffs.size).to eq(24)
+      expect(diffs.size).to eq(21)
     end
 
     context 'diff' do
