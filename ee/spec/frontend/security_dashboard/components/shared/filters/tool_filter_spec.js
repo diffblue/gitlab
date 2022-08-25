@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import VueRouter from 'vue-router';
 import { cloneDeep } from 'lodash';
 import createFlash from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -23,10 +24,14 @@ import {
 jest.mock('~/flash');
 
 describe('Tool Filter component', () => {
+  Vue.use(VueRouter);
+
   let wrapper;
   let filter;
+  let router;
 
   const fullPath = 'test/path';
+  const allOptionName = simpleScannerFilter.allOption.name;
   const projectScannersResolver = jest.fn().mockResolvedValue(projectVulnerabilityScanners);
   const groupScannersResolver = jest.fn().mockResolvedValue(groupVulnerabilityScanners);
   const instanceScannersResolver = jest.fn().mockResolvedValue(instanceVulnerabilityScanners);
@@ -51,6 +56,7 @@ describe('Tool Filter component', () => {
     wrapper = shallowMountExtended(ToolFilter, {
       propsData: { filter },
       apolloProvider: createMockApolloProvider(query, resolver),
+      router,
       provide: {
         ...defaultProvide,
         ...provide,
@@ -62,9 +68,24 @@ describe('Tool Filter component', () => {
 
   const findFilterBody = () => wrapper.findComponent(FilterBody);
   const findFilterItems = () => wrapper.findAllComponents(FilterItem);
+  const filterItemsExcludingAll = () =>
+    findFilterItems().filter((x) => x.props('text') !== allOptionName);
+  const findFilterItemByReportType = (reportType) => {
+    const testId = `option:${reportType}`;
+    return wrapper.findByTestId(testId);
+  };
+  const updateQuerystring = (queryValue) => {
+    const queryField = simpleScannerFilter.id;
+    router.replace({ query: { [queryField]: queryValue } });
+  };
+
+  beforeEach(() => {
+    router = new VueRouter({});
+  });
 
   afterEach(() => {
     wrapper.destroy();
+    router = null;
   });
 
   describe('basic structure', () => {
@@ -82,11 +103,9 @@ describe('Tool Filter component', () => {
     });
 
     it('displays the all option item', () => {
-      const { allOption } = filter;
-
       expect(findFilterItems().at(0).props()).toStrictEqual({
         isChecked: true,
-        text: allOption.name,
+        text: allOptionName,
         truncate: false,
       });
     });
@@ -136,6 +155,28 @@ describe('Tool Filter component', () => {
             .at(index + 1)
             .props(),
         ).toStrictEqual({ isChecked: false, text: name, truncate: false });
+      });
+    });
+
+    describe('querystring on pageload', () => {
+      const queryField = simpleScannerFilter.id;
+
+      it('selects the corresponding option item', async () => {
+        const queryValue = defaultFormattedScanners[0][queryField];
+
+        updateQuerystring(queryValue);
+        await createWrapper();
+
+        expect(findFilterItemByReportType(queryValue).props('isChecked')).toBe(true);
+      });
+
+      it('selects the correct amount of option items ', async () => {
+        const queryValues = defaultFormattedScanners.map((x) => x[queryField]);
+
+        updateQuerystring(queryValues);
+        await createWrapper();
+
+        expect(filterItemsExcludingAll()).toHaveLength(defaultFormattedScanners.length);
       });
     });
   });

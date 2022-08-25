@@ -48,6 +48,9 @@ export default {
 
         return nodes ? getFormattedScanners(nodes) : [];
       },
+      result() {
+        this.selectedOptions = this.querystringOptions;
+      },
       error() {
         createFlash({
           message: TOOL_FILTER_ERROR,
