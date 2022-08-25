@@ -2,11 +2,17 @@
 
 module Registrations
   class CompanyController < ApplicationController
+    include OneTrustCSP
+    include GoogleAnalyticsCSP
+
     layout 'minimal'
 
     before_action :check_if_gl_com_or_dev
     before_action :authenticate_user!
     feature_category :onboarding
+    before_action only: [:new] do
+      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+    end
 
     def new
     end
