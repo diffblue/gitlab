@@ -109,17 +109,6 @@ RSpec.describe Ci::SyncReportsToApprovalRulesService, '#execute' do
             expect { subject }
               .to change { report_approver_rule.reload.approvals_required }.from(2).to(0)
           end
-
-          context 'with a merge request pipeline' do
-            before do
-              pipeline.update!(merge_request: merge_request)
-            end
-
-            it "does not change approval_required" do
-              expect { subject }
-              .not_to change { report_approver_rule.reload.approvals_required }
-            end
-          end
         end
 
         context 'when merge_requests are merged' do

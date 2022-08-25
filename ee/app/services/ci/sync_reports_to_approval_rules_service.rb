@@ -57,13 +57,9 @@ module Ci
     end
 
     def sync_scan_finding
-      return if policy_rule_not_applicable?
+      return if policy_rule_reports.empty? && !pipeline.complete?
 
       remove_required_approvals_for_scan_finding(pipeline.merge_requests_as_head_pipeline.opened)
-    end
-
-    def policy_rule_not_applicable?
-      ( policy_rule_reports.empty? && !pipeline.complete? ) || pipeline.merge_request?
     end
 
     def policy_rule_reports
