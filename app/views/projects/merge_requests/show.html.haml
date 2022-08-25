@@ -46,7 +46,8 @@
         .d-flex.flex-wrap.align-items-center.justify-content-lg-end
           #js-vue-discussion-counter{ data: { blocks_merge: @project.only_allow_merge_if_all_discussions_are_resolved?.to_s } }
           - if moved_mr_sidebar_enabled?
-            .js-issuable-todo{ data: { project_path: @issuable_sidebar[:project_full_path], iid: @issuable_sidebar[:iid], id: @issuable_sidebar[:id] } }
+            - if !!@issuable_sidebar.dig(:current_user, :id)
+              .js-issuable-todo{ data: { project_path: @issuable_sidebar[:project_full_path], iid: @issuable_sidebar[:iid], id: @issuable_sidebar[:id] } }
             .gl-ml-auto.gl-align-items-center.gl-display-none.gl-md-display-flex.gl-ml-3.js-expand-sidebar{ class: "gl-lg-display-none!" }
               = render Pajamas::ButtonComponent.new(icon: 'chevron-double-lg-left',
                 button_options: { class: 'js-sidebar-toggle' }) do

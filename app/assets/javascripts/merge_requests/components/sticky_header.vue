@@ -51,6 +51,9 @@ export default {
     issuableIid() {
       return `${this.getNoteableData.iid}`;
     },
+    isSignedIn() {
+      return Boolean(gon.current_user_id);
+    },
   },
   watch: {
     discussionTabCounter(val) {
@@ -153,6 +156,7 @@ export default {
           <div class="gl-display-none gl-lg-display-flex gl-align-items-center gl-ml-auto">
             <discussion-counter blocks-merge hide-options />
             <todo-widget
+              v-if="isSignedIn"
               :issuable-id="issuableId"
               :issuable-iid="issuableIid"
               :full-path="projectPath"
