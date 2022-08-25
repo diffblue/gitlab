@@ -92,7 +92,7 @@ to surface flaky tests that are dependent on test order.
 
 When randomized:
 
-- We append `(order random)` to example group description.
+- The string `# order random` is added below the example group description.
 - The used seed is shown in the spec output below the test suite summary. For example, `Randomized with seed 27443`.
 
 For a list of spec files which are still run in defined order, see [`rspec_order_todo.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/spec/support/rspec_order_todo.yml).
