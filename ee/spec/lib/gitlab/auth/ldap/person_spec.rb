@@ -125,13 +125,13 @@ RSpec.describe Gitlab::Auth::Ldap::Person do
     def stub_sync_ssh_keys(value)
       stub_ldap_config(
         options: {
-          'uid'          => nil,
-          'attributes'   => {
-            'name'       => 'cn',
-            'email'      => 'mail',
-            'username'   => %w(uid mail),
+          'uid' => nil,
+          'attributes' => {
+            'name' => 'cn',
+            'email' => 'mail',
+            'username' => %w(uid mail),
             'first_name' => 'name',
-            'last_name'  => 'surname'
+            'last_name' => 'surname'
           },
           'sync_ssh_keys' => value
         }

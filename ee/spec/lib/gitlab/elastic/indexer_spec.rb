@@ -122,12 +122,12 @@ RSpec.describe Gitlab::Elastic::Indexer do
           ],
           nil,
           hash_including(
-            'GITALY_CONNECTION_INFO'  => gitaly_connection_data.to_json,
+            'GITALY_CONNECTION_INFO' => gitaly_connection_data.to_json,
             'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
-            'RAILS_ENV'               => Rails.env,
-            'CORRELATION_ID'          => Labkit::Correlation::CorrelationId.current_id,
-            'FROM_SHA'                => expected_from_sha,
-            'TO_SHA'                  => to_sha
+            'RAILS_ENV' => Rails.env,
+            'CORRELATION_ID' => Labkit::Correlation::CorrelationId.current_id,
+            'FROM_SHA' => expected_from_sha,
+            'TO_SHA' => to_sha
           )
         ).and_return(popen_success)
 
@@ -247,9 +247,9 @@ RSpec.describe Gitlab::Elastic::Indexer do
           nil,
           hash_including(
             'ELASTIC_CONNECTION_INFO' => elasticsearch_config.to_json,
-            'RAILS_ENV'               => Rails.env,
-            'FROM_SHA'                => expected_from_sha,
-            'TO_SHA'                  => to_sha
+            'RAILS_ENV' => Rails.env,
+            'FROM_SHA' => expected_from_sha,
+            'TO_SHA' => to_sha
           )
         ).and_return(popen_success)
 

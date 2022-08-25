@@ -156,10 +156,11 @@ RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
 
     it 'logs deleted records' do
       expect_next_instance_of(Gitlab::BackgroundMigration::Logger) do |instance|
-        expect(instance).to receive(:info).once.with(message: 'Removing EpicIssue records',
-                                                    migrator: 'DeleteInvalidEpicIssues',
-                                                    data: invalid_epic_issues.map(&:attributes),
-                                                    deleted_count: invalid_epic_issues.size)
+        expect(instance).to receive(:info).once.with(
+          message: 'Removing EpicIssue records',
+          migrator: 'DeleteInvalidEpicIssues',
+          data: invalid_epic_issues.map(&:attributes),
+          deleted_count: invalid_epic_issues.size)
       end
 
       subject

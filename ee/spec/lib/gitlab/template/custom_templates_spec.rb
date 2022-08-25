@@ -6,11 +6,11 @@ RSpec.describe "Custom file template classes" do
   files = {
     'Dockerfile/foo.dockerfile' => 'CustomDockerfileTemplate Foo',
     'Dockerfile/bar.dockerfile' => 'CustomDockerfileTemplate Bar',
-    'Dockerfile/bad.xyz'        => 'CustomDockerfileTemplate Bad',
+    'Dockerfile/bad.xyz' => 'CustomDockerfileTemplate Bad',
 
     'gitignore/foo.gitignore' => 'CustomGitignoreTemplate Foo',
     'gitignore/bar.gitignore' => 'CustomGitignoreTemplate Bar',
-    'gitignore/bad.xyz'       => 'CustomGitignoreTemplate Bad',
+    'gitignore/bad.xyz' => 'CustomGitignoreTemplate Bad',
 
     'gitlab-ci/foo.yml' => 'CustomGitlabCiYmlTemplate Foo',
     'gitlab-ci/bar.yml' => 'CustomGitlabCiYmlTemplate Bar',
@@ -25,9 +25,9 @@ RSpec.describe "Custom file template classes" do
     'metrics-dashboards/bad.xyz' => 'CustomMetricsDashboardYmlTemplate Bad',
 
     'Dockerfile/category/baz.txt' => 'CustomDockerfileTemplate category baz',
-    'gitignore/category/baz.txt'  => 'CustomGitignoreTemplate category baz',
-    'gitlab-ci/category/baz.yml'  => 'CustomGitlabCiYmlTemplate category baz',
-    'LICENSE/category/baz.txt'    => 'CustomLicenseTemplate category baz',
+    'gitignore/category/baz.txt' => 'CustomGitignoreTemplate category baz',
+    'gitlab-ci/category/baz.yml' => 'CustomGitlabCiYmlTemplate category baz',
+    'LICENSE/category/baz.txt' => 'CustomLicenseTemplate category baz',
 
     '.gitlab/issue_templates/bar.md' => 'IssueTemplate Bar',
     '.gitlab/issue_templates/foo.md' => 'IssueTemplate Foo',

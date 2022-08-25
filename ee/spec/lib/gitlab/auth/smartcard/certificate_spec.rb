@@ -116,7 +116,7 @@ RSpec.describe Gitlab::Auth::Smartcard::Certificate do
                         username: 'gitlab-user',
                         email: 'gitlab-user@random-corp.org',
                         password_automatically_set: true,
-                        certificate_subject:  subject_dn,
+                        certificate_subject: subject_dn,
                         certificate_issuer: issuer_dn,
                         skip_confirmation: true }
         expect(Users::AuthorizedBuildService).to(

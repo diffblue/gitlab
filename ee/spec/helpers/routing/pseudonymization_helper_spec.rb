@@ -22,16 +22,17 @@ RSpec.describe ::Routing::PseudonymizationHelper do
     context 'when project/insights page is loaded' do
       let(:masked_url) { "http://localhost/namespace#{group.id}/project#{project.id}/insights" }
       let(:request) do
-        double(:Request,
+        double(
+          :Request,
           path_parameters: {
-                controller: 'projects/insights',
-                action: 'show',
-                namespace_id: group.name,
-                project_id: project.name
-               },
-               protocol: 'http',
-               host: 'localhost',
-               query_string: '')
+            controller: 'projects/insights',
+            action: 'show',
+            namespace_id: group.name,
+            project_id: project.name
+          },
+          protocol: 'http',
+          host: 'localhost',
+          query_string: '')
       end
 
       before do
@@ -44,15 +45,16 @@ RSpec.describe ::Routing::PseudonymizationHelper do
     context 'when groups/insights page is loaded' do
       let(:masked_url) { "http://localhost/groups/namespace#{group.id}/-/insights" }
       let(:request) do
-        double(:Request,
+        double(
+          :Request,
           path_parameters: {
-                controller: 'groups/insights',
-                action: 'show',
-                group_id: group.name
-               },
-               protocol: 'http',
-               host: 'localhost',
-               query_string: '')
+            controller: 'groups/insights',
+            action: 'show',
+            group_id: group.name
+          },
+          protocol: 'http',
+          host: 'localhost',
+          query_string: '')
       end
 
       before do
@@ -65,16 +67,17 @@ RSpec.describe ::Routing::PseudonymizationHelper do
     context 'when severity, sortBy, sortDesc is present' do
       let(:masked_url) { "http://localhost/namespace#{group.id}/project#{project.id}/-/security/vulnerability_report?severity=high&sortBy=reportType&sortDesc=false&state=all" }
       let(:request) do
-        double(:Request,
-               path_parameters: {
-                controller: 'projects/security/vulnerability_report',
-                action: 'index',
-                namespace_id: group.name,
-                project_id: project.name
-               },
-               protocol: 'http',
-               host: 'localhost',
-               query_string: 'severity=high&sortBy=reportType&sortDesc=false&state=all')
+        double(
+          :Request,
+          path_parameters: {
+            controller: 'projects/security/vulnerability_report',
+            action: 'index',
+            namespace_id: group.name,
+            project_id: project.name
+          },
+          protocol: 'http',
+          host: 'localhost',
+          query_string: 'severity=high&sortBy=reportType&sortDesc=false&state=all')
       end
 
       before do
@@ -87,16 +90,17 @@ RSpec.describe ::Routing::PseudonymizationHelper do
     context 'when glm_content and gml_source is present' do
       let(:masked_url) { "http://localhost/namespace#{group.id}/project#{project.id}/-/security/vulnerability_report?glm_content=register&glm_source=gitlab.com" }
       let(:request) do
-        double(:Request,
-               path_parameters: {
-                controller: 'projects/security/vulnerability_report',
-                action: 'index',
-                namespace_id: group.name,
-                project_id: project.name
-               },
-               protocol: 'http',
-               host: 'localhost',
-               query_string: 'glm_content=register&glm_source=gitlab.com')
+        double(
+          :Request,
+          path_parameters: {
+            controller: 'projects/security/vulnerability_report',
+            action: 'index',
+            namespace_id: group.name,
+            project_id: project.name
+          },
+          protocol: 'http',
+          host: 'localhost',
+          query_string: 'glm_content=register&glm_source=gitlab.com')
       end
 
       before do

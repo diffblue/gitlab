@@ -10,17 +10,17 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
 
   let!(:root_group) do
     namespace.create!(id: 1, name: 'root-group', path: 'root-group',
-                       type: 'Group', traversal_ids: [1])
+                      type: 'Group', traversal_ids: [1])
   end
 
   let!(:group) do
     namespace.create!(id: 2, name: 'group', path: 'group', parent_id: root_group.id,
-                       type: 'Group', traversal_ids: [1, 2])
+                      type: 'Group', traversal_ids: [1, 2])
   end
 
   let!(:sub_group) do
     namespace.create!(id: 3, name: 'subgroup', path: 'subgroup', parent_id: group.id,
-                       type: 'Group', traversal_ids: [1, 2, 3])
+                      type: 'Group', traversal_ids: [1, 2, 3])
   end
 
   let!(:namespace1) do

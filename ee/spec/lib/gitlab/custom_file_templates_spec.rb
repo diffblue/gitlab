@@ -15,18 +15,18 @@ RSpec.describe Gitlab::CustomFileTemplates do
   def template_files(prefix)
     {
       "Dockerfile/#{prefix}_dockerfile.dockerfile" => "#{prefix}_dockerfile content",
-      "gitignore/#{prefix}_gitignore.gitignore"    => "#{prefix}_gitignore content",
-      "gitlab-ci/#{prefix}_gitlab_ci_yml.yml"      => "#{prefix}_gitlab_ci_yml content",
-      "LICENSE/#{prefix}_license.txt"              => "#{prefix}_license content"
+      "gitignore/#{prefix}_gitignore.gitignore" => "#{prefix}_gitignore content",
+      "gitlab-ci/#{prefix}_gitlab_ci_yml.yml" => "#{prefix}_gitlab_ci_yml content",
+      "LICENSE/#{prefix}_license.txt" => "#{prefix}_license content"
     }
   end
 
   describe '#enabled?' do
     where(
-      instance_licensed:  [false, true],
+      instance_licensed: [false, true],
       namespace_licensed: [false, true],
-      instance_enabled:   [false, true],
-      namespace_enabled:  [false, true]
+      instance_enabled: [false, true],
+      namespace_enabled: [false, true]
     )
 
     with_them do
