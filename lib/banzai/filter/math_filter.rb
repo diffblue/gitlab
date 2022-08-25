@@ -72,13 +72,16 @@ module Banzai
       def process_dollar_pipeline
         doc.xpath('descendant-or-self::text()').each do |node|
           next if has_ancestor?(node, IGNORED_ANCESTOR_TAGS)
-          next unless node.content.include?(DOLLAR_SIGN)
 
-          temp_doc = Nokogiri::HTML.fragment(node.content)
+          content = node.content
+          next unless content.match?(DOLLAR_INLINE_PATTERN) ||
+            content.match?(DOLLAR_DISPLAY_INLINE_PATTERN) ||
+            content.match?(DOLLAR_DISPLAY_BLOCK_PATTERN)
+
+          temp_doc = Nokogiri::HTML.fragment(content)
           DOLLAR_MATH_PIPELINE.each do |pipeline|
             temp_doc.xpath('descendant-or-self::text()').each do |temp_node|
               next if has_ancestor?(node, IGNORED_ANCESTOR_TAGS)
-              next unless temp_node.content.match?(pipeline[:pattern])
 
               html = temp_node.content
               temp_node.content.scan(pipeline[:pattern]).each do |matched, math|
