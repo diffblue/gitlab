@@ -67,7 +67,7 @@ To restrict group access by IP address:
 
 1. Go to the group's **Settings > General** page.
 1. Expand the **Permissions and group features** section.
-1. In the **Allow access to the following IP addresses** field, enter IPv4 or IPv6 address ranges in CIDR notation.
+1. In the **Restrict access by IP address** field, enter IPv4 or IPv6 address ranges in CIDR notation.
 1. Select **Save changes**.
 
 In self-managed installations of GitLab 15.1 and later, you can also configure
@@ -130,7 +130,7 @@ To prevent sharing outside of the group's hierarchy:
 1. On the top bar, select **Menu > Groups** and find your group.
 1. On the left sidebar, select **Settings > General**.
 1. Expand **Permissions and group features**.
-1. Select **Prevent members from sending invitations to groups outside of `<group_name>` and its subgroups**.
+1. Select **Members cannot invite groups outside of `<group_name>` and its subgroups**.
 1. Select **Save changes**.
 
 ## Prevent a project from being shared with groups
@@ -143,7 +143,7 @@ To prevent a project from being shared with other groups:
 
 1. Go to the group's **Settings > General** page.
 1. Expand the **Permissions and group features** section.
-1. Select **Prevent sharing a project in `<group_name>` with other groups**.
+1. Select **Projects in `<group_name>` cannot be shared with other groups**.
 1. Select **Save changes**.
 
 This setting applies to all subgroups unless overridden by a group owner. Groups already
@@ -199,7 +199,7 @@ To prevent members from being added to projects in a group:
 
 1. Go to the group's **Settings > General** page.
 1. Expand the **Permissions and group features** section.
-1. Under **Membership**, select **Prevent adding new members to projects within this group**.
+1. Under **Membership**, select **Users cannot be added to projects in this group**.
 1. Select **Save changes**.
 
 All users who previously had permissions can no longer add members to a group.
