@@ -1,14 +1,16 @@
 <script>
-import { GlTooltip, GlIcon } from '@gitlab/ui';
+import { GlAlert, GlPopover, GlIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 
 import { issuableTypesMap } from '~/related_issues/constants';
+import { i18n } from '../constants';
 import EpicHealthStatus from './epic_health_status.vue';
 import EpicActionsSplitButton from './epic_issue_actions_split_button.vue';
 
 export default {
   components: {
-    GlTooltip,
+    GlAlert,
+    GlPopover,
     GlIcon,
     EpicHealthStatus,
     EpicActionsSplitButton,
@@ -27,6 +29,9 @@ export default {
     },
     totalIssuesCount() {
       return this.descendantCounts.openedIssues + this.descendantCounts.closedIssues;
+    },
+    totalChildrenCount() {
+      return this.totalEpicsCount + this.totalIssuesCount;
     },
     showHealthStatus() {
       return this.healthStatus && this.allowIssuableHealthStatus;
@@ -66,6 +71,7 @@ export default {
       });
     },
   },
+  i18n,
 };
 </script>
 
@@ -81,7 +87,7 @@ export default {
           {{ allowSubEpics ? __('Child issues and epics') : __('Issues') }}
         </h3>
         <div class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-5 gl-flex-wrap">
-          <gl-tooltip :target="() => $refs.countBadge">
+          <gl-popover :target="() => $refs.countBadge">
             <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
               {{ __('Epics') }} &#8226;
               <span class="gl-font-weight-normal"
@@ -108,7 +114,14 @@ export default {
               {{ __('Total weight') }} &#8226;
               <span class="gl-font-weight-normal">{{ totalWeight }} </span>
             </p>
-          </gl-tooltip>
+            <gl-alert
+              v-if="totalChildrenCount > 0"
+              :dismissible="false"
+              class="gl-max-w-26 gl-mt-3"
+            >
+              {{ $options.i18n.permissionAlert }}
+            </gl-alert>
+          </gl-popover>
           <div
             ref="countBadge"
             class="issue-count-badge gl-display-inline-flex gl-text-secondary gl-p-0 gl-pr-5"

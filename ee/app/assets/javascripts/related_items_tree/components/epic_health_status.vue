@@ -1,9 +1,12 @@
 <script>
-import { GlTooltip } from '@gitlab/ui';
+import { GlAlert, GlPopover } from '@gitlab/ui';
+
+import { i18n } from '../constants';
 
 export default {
   components: {
-    GlTooltip,
+    GlAlert,
+    GlPopover,
   },
   props: {
     healthStatus: {
@@ -19,6 +22,7 @@ export default {
       return totalHealthStatuses > 0;
     },
   },
+  i18n,
 };
 </script>
 
@@ -28,7 +32,7 @@ export default {
     ref="healthStatus"
     class="health-status d-inline-flex align-items-center"
   >
-    <gl-tooltip :target="() => $refs.healthStatus" placement="top">
+    <gl-popover :target="() => $refs.healthStatus" placement="top">
       <span
         ><strong>{{ healthStatus.issuesOnTrack }}</strong
         >&nbsp;<span>{{ __('issues on track') }}</span
@@ -43,7 +47,10 @@ export default {
         ><strong>{{ healthStatus.issuesAtRisk }}</strong
         >&nbsp;<span>{{ __('issues at risk') }}</span></span
       >
-    </gl-tooltip>
+      <gl-alert :dismissible="false" class="gl-max-w-26 gl-mt-3">
+        {{ $options.i18n.permissionAlert }}
+      </gl-alert>
+    </gl-popover>
 
     <span class="gl-label gl-label-text-dark gl-label-sm status-on-track gl-mr-2">
       <span class="gl-label-text">

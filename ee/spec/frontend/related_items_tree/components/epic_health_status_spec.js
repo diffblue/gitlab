@@ -1,4 +1,4 @@
-import { GlTooltip } from '@gitlab/ui';
+import { GlPopover, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
@@ -48,10 +48,10 @@ describe('EpicHealthStatus', () => {
       });
     });
 
-    it('renders tooltip', () => {
-      const tooltip = wrapper.findComponent(GlTooltip);
+    it('renders popover', () => {
+      const popover = wrapper.findComponent(GlPopover);
 
-      expect(tooltip.exists()).toBe(true);
+      expect(popover.exists()).toBe(true);
     });
 
     it('hasHealthStatus computed property returns false', () => {
@@ -80,6 +80,12 @@ describe('EpicHealthStatus', () => {
       shortLabels.wrappers.forEach((shortLabelWrapper, index) => {
         expect(shortLabelWrapper.text()).toEqual(expectedShortLabels[index]);
       });
+    });
+
+    it('displays warning', () => {
+      expect(wrapper.findComponent(GlAlert).text()).toBe(
+        'Counts reflect children you may not have access to.',
+      );
     });
   });
 });

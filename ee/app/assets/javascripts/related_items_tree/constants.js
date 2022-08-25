@@ -71,3 +71,7 @@ export const ITEM_TABS = {
   TREE: 'tree',
   ROADMAP: 'roadmap',
 };
+
+export const i18n = {
+  permissionAlert: __('Counts reflect children you may not have access to.'),
+};
