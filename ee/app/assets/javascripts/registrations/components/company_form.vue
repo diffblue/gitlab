@@ -22,6 +22,7 @@ import {
   TRIAL_PHONE_DESCRIPTION,
   TRIAL_FORM_SUBMIT_TEXT,
 } from 'ee/trials/constants';
+import { trackCompanyForm } from '~/google_tag_manager';
 
 export default {
   csrf,
@@ -69,12 +70,18 @@ export default {
         ? this.$options.i18n.description.trial
         : this.$options.i18n.description.registration;
     },
+    aboutYourCompanyType() {
+      return this.trial ? 'ultimate_trial' : 'free_account';
+    },
   },
   methods: {
     toggleTrial() {
       this.$emit('changed', {
         trialOnboardingFlow: this.trialOnboardingFlow,
       });
+    },
+    trackCompanyForm() {
+      trackCompanyForm(this.aboutYourCompanyType);
     },
   },
   i18n: {
@@ -99,7 +106,7 @@ export default {
 </script>
 
 <template>
-  <gl-form :action="submitPath" method="post">
+  <gl-form :action="submitPath" method="post" @submit="trackCompanyForm">
     <input :value="$options.csrf.token" type="hidden" name="authenticity_token" />
     <gl-form-text class="gl-font-base gl-text-gray-400 gl-pb-3">{{ descriptionText }}</gl-form-text>
     <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-mt-5">
