@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
+  include JavascriptFormHelper
+
   let!(:google_tag_manager_id) { 'GTM-WWKMTWS' }
   let!(:user_attrs) { attributes_for(:user, first_name: 'GitLab', last_name: 'GitLab', company_name: 'GitLab', phone_number: '555-555-5555') }
 
@@ -21,7 +23,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
       it 'tracks form submissions in the dataLayer' do
         visit new_trial_registration_path
 
-        evaluate_script('document.getElementById("new_new_user").addEventListener("submit", e => e.preventDefault())')
+        prevent_submit_for('#new_new_user')
 
         fill_in 'new_user_first_name', with: user_attrs[:first_name]
         fill_in 'new_user_last_name',  with: user_attrs[:last_name]
@@ -44,7 +46,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
       it 'track form submissions in the dataLayer' do
         visit new_user_registration_path
 
-        evaluate_script('document.getElementById("new_new_user").addEventListener("submit", e => e.preventDefault())')
+        prevent_submit_for('#new_new_user')
 
         fill_in 'new_user_first_name', with: user_attrs[:first_name]
         fill_in 'new_user_last_name',  with: user_attrs[:last_name]
@@ -69,7 +71,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
       sign_in user
       visit select_trials_path
 
-      evaluate_script('document.querySelector(".js-saas-trial-group").addEventListener("submit", e => e.preventDefault())')
+      prevent_submit_for('.js-saas-trial-group')
 
       fill_in 'new_group_name', with: group.name
       find('#trial_entity_company').click
@@ -87,7 +89,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
       sign_in user
       visit new_users_sign_up_group_path
 
-      evaluate_script('document.getElementById("new_group").addEventListener("submit", e => e.preventDefault())')
+      prevent_submit_for('#new_group')
 
       fill_in 'group_name', with: 'Test Group'
 
@@ -107,7 +109,7 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
         group.add_owner(user)
         visit new_users_sign_up_project_path(namespace_id: group.id)
 
-        evaluate_script('document.getElementById("new_project").addEventListener("submit", e => e.preventDefault())')
+        prevent_submit_for('#new_project')
 
         fill_in 'project_name', with: 'Test Project'
 
