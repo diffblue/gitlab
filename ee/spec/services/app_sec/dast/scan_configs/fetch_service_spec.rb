@@ -80,6 +80,28 @@ RSpec.describe AppSec::Dast::ScanConfigs::FetchService do
         end
       end
 
+      context 'with a large .gitlab-ci.yml' do
+        before do
+          allow_next_instance_of(::Gitlab::Config::Loader::Yaml) do |loader|
+            allow(loader).to receive(:valid?).and_return(false)
+          end
+        end
+
+        let(:fake_result) do
+          Gitlab::Ci::Lint::Result.new(
+            jobs: [],
+            merged_yaml: content,
+            errors: [],
+            warnings: [],
+            includes: []
+          )
+        end
+
+        it_behaves_like 'an error occurred' do
+          let(:error_message) { _('The parsed YAML is too big') }
+        end
+      end
+
       context 'with a valid .gitlab-ci.yml' do
         let(:payload) do
           {
