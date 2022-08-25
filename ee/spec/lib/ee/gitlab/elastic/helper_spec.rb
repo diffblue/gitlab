@@ -50,10 +50,10 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       settings = described_class.connection_settings(uri: "http://localhost:9200")
 
       expect(settings).to eq({
-        scheme:   "http",
-        host:     "localhost",
-        path:     "",
-        port:     9200
+        scheme: "http",
+        host: "localhost",
+        path: "",
+        port: 9200
       })
     end
 
@@ -61,10 +61,10 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       settings = described_class.connection_settings(uri: Addressable::URI.parse("http://localhost:9200"))
 
       expect(settings).to eq({
-        scheme:   "http",
-        host:     "localhost",
-        path:     "",
-        port:     9200
+        scheme: "http",
+        host: "localhost",
+        path: "",
+        port: 9200
       })
     end
 
@@ -72,12 +72,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       settings = described_class.connection_settings(uri: "http://elastic:myp%40ssword@localhost:9200")
 
       expect(settings).to eq({
-        scheme:   "http",
-        host:     "localhost",
-        user:     "elastic",
+        scheme: "http",
+        host: "localhost",
+        user: "elastic",
         password: "myp@ssword",
-        path:     "",
-        port:     9200
+        path: "",
+        port: 9200
       })
     end
 
@@ -85,12 +85,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       settings = described_class.connection_settings(uri: "http://elastic:password@localhost:9200", user: "myuser", password: "p@ssword")
 
       expect(settings).to eq({
-        scheme:   "http",
-        host:     "localhost",
-        user:     "myuser",
+        scheme: "http",
+        host: "localhost",
+        user: "myuser",
         password: "p@ssword",
-        path:     "",
-        port:     9200
+        path: "",
+        port: 9200
       })
     end
 
@@ -98,12 +98,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       settings = described_class.connection_settings(uri: "http://localhost:9200", user: "myuser", password: nil)
 
       expect(settings).to eq({
-        scheme:   "http",
-        host:     "localhost",
-        user:     "myuser",
+        scheme: "http",
+        host: "localhost",
+        user: "myuser",
         password: "",
-        path:     "",
-        port:     9200
+        path: "",
+        port: 9200
       })
     end
   end
@@ -111,12 +111,12 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
   describe '.`url_string`' do
     it 'returns a percent encoded url string' do
       settings = {
-        scheme:   "http",
-        host:     "localhost",
-        user:     "myuser",
+        scheme: "http",
+        host: "localhost",
+        user: "myuser",
         password: "p@ssword",
-        path:     "/foo",
-        port:     9200
+        path: "/foo",
+        port: 9200
       }
 
       expect(described_class.url_string(settings)).to eq("http://myuser:p%40ssword@localhost:9200/foo")

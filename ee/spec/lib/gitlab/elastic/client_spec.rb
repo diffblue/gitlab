@@ -103,15 +103,15 @@ RSpec.describe Gitlab::Elastic::Client do
           stub_request(:get, 'http://example-elastic:9200/foo/_doc/1')
             .with(
               headers: {
-                'Authorization'         => /^AWS4-HMAC-SHA256 Credential=0/,
-                'Content-Type'          => 'application/json',
-                'Expect'                => '',
-                'Host'                  => 'example-elastic:9200',
-                'User-Agent'            => /^elasticsearch-ruby/,
-                'X-Amz-Content-Sha256'  => 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
-                'X-Amz-Date'            => '20170303T133952Z',
+                'Authorization' => /^AWS4-HMAC-SHA256 Credential=0/,
+                'Content-Type' => 'application/json',
+                'Expect' => '',
+                'Host' => 'example-elastic:9200',
+                'User-Agent' => /^elasticsearch-ruby/,
+                'X-Amz-Content-Sha256' => 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+                'X-Amz-Date' => '20170303T133952Z',
                 'X-Elastic-Client-Meta' => "es=7.13.3,rb=#{RUBY_VERSION},t=7.13.3,fd=1.10.0,ty=1.4.0",
-                'X-Opaque-Id'           => 'new-correlation-id'
+                'X-Opaque-Id' => 'new-correlation-id'
               }
             ).to_return(status: 200, body: [:fake_response])
 

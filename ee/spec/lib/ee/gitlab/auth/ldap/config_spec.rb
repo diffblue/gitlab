@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Auth::Ldap::Config do
       stub_ldap_setting(
         'enabled' => true,
         'servers' => {
-          'main'      => { 'provider_name' => 'ldapmain' },
+          'main' => { 'provider_name' => 'ldapmain' },
           'secondary' => { 'provider_name' => 'ldapsecondary' }
         }
       )

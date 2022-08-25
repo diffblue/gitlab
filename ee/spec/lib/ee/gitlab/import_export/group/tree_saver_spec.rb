@@ -157,9 +157,9 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
 
       expect(board_data).to include(
         'milestone_id' => milestone.id,
-        'milestone'    => {
-          'id'    => milestone.id,
-          'name'  => milestone.name,
+        'milestone' => {
+          'id' => milestone.id,
+          'name' => milestone.name,
           'title' => milestone.title
         }
       )
@@ -175,8 +175,8 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
 
       expect(board_data).to include(
         'milestone_id' => milestone.id,
-        'milestone'    => a_hash_including(
-          'id'    => milestone.id,
+        'milestone' => a_hash_including(
+          'id' => milestone.id,
           'title' => milestone.title
         )
       )

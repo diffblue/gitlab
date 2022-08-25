@@ -35,9 +35,15 @@ RSpec.describe Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed, :saas do
 
       namespace = namespaces.create!(name: 'gitlab', path: 'gitlab-org', type: 'Group')
       plan = plans.create!(name: 'gold')
-      gs = Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed::GitlabSubscription.create!(namespace_id: namespace.id,
-                  seats: seats, seats_in_use: seats_in_use, max_seats_used: max_seats_used, seats_owed: seats_owed,
-                  start_date: initial_start_date, end_date: initial_end_date, hosted_plan_id: plan.id)
+      gs = Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed::GitlabSubscription.create!(
+        namespace_id: namespace.id,
+        seats: seats,
+        seats_in_use: seats_in_use,
+        max_seats_used: max_seats_used,
+        seats_owed: seats_owed,
+        start_date: initial_start_date,
+        end_date: initial_end_date,
+        hosted_plan_id: plan.id)
 
       renewed_count.downto(1) do |i|
         old_seats_attributes = { seats: gs.seats, max_seats_used: gs.max_seats_used, seats_owed: gs.seats_owed, seats_in_use: gs.seats_in_use }
