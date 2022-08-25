@@ -80,19 +80,25 @@ module EE
           end
 
           def immediately_delete_subgroup?(group)
-            return false unless ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent)
+            return false, "permanently_remove option is only available for subgroups." unless group.subgroup?
+            return false, 'Group is not marked for deletion.' unless group.marked_for_deletion?
+            return false, "Wrong value for full_path." if group.full_path != params[:full_path]
 
-            group.subgroup? &&
-              group.marked_for_deletion? &&
-              group.full_path == params[:full_path] &&
-              ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+            true
           end
 
           override :delete_group
           def delete_group(group)
             return super unless group.adjourned_deletion?
 
-            return super if immediately_delete_subgroup?(group)
+            if ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent) &&
+              ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+              result, error = immediately_delete_subgroup?(group)
+              return super if result
+
+              render_api_error!(error, 400)
+              return
+            end
 
             result = destroy_conditionally!(group) do |group|
               ::Groups::MarkForDeletionService.new(group, current_user).execute
@@ -158,7 +164,7 @@ module EE
               # rubocop: disable CodeReuse/ActiveRecord, Rails/FindById
               # This is not `find_by!` from ActiveRecord
               audit_event = AuditEventFinder.new(level: level, params: audit_event_finder_params)
-                .find_by!(id: params[:audit_event_id])
+                                            .find_by!(id: params[:audit_event_id])
               # rubocop: enable CodeReuse/ActiveRecord, Rails/FindById
 
               present audit_event, with: EE::API::Entities::AuditEvent
