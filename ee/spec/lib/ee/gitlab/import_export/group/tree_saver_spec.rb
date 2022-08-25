@@ -107,6 +107,16 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
         expect(epic_label['description']).to eq(label.description)
         expect(epic_label['color']).to be_color(label.color)
       end
+
+      it 'saves resource state events' do
+        epic.resource_state_events.create!(user: user, state: 'closed')
+
+        expect_successful_save(group_tree_saver)
+
+        event = epic_json['resource_state_events'].first
+
+        expect(event['state']).to eq('closed')
+      end
     end
 
     context 'boards relation' do
