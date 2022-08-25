@@ -34,7 +34,7 @@ export const REPORT_TYPES_WITH_CLUSTER_IMAGE = {
 
 export const REPORT_TYPES_WITH_MANUALLY_ADDED = {
   ...REPORT_TYPES_DEFAULT,
-  generic: s__('ciReport|Manually Added'),
+  generic: s__('ciReport|Manually added'),
 };
 
 export const REPORT_TYPES_ALL = {

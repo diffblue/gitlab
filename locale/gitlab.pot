@@ -46185,7 +46185,7 @@ msgstr ""
 msgid "ciReport|Manage licenses"
 msgstr ""
 
-msgid "ciReport|Manually Added"
+msgid "ciReport|Manually added"
 msgstr ""
 
 msgid "ciReport|New"
