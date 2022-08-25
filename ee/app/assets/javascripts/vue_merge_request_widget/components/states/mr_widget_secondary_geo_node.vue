@@ -1,11 +1,11 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
-import statusIcon from '~/vue_merge_request_widget/components/mr_widget_status_icon.vue';
+import StatusIcon from '~/vue_merge_request_widget/components/mr_widget_status_icon.vue';
 
 export default {
   components: {
     GlIcon,
-    statusIcon,
+    StatusIcon,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
