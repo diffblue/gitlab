@@ -8418,6 +8418,75 @@ The edge type for [`ProjectMember`](#projectmember).
 | <a id="projectmemberedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="projectmemberedgenode"></a>`node` | [`ProjectMember`](#projectmember) | The item at the end of the edge. |
 
+#### `ProtectedEnvironmentApprovalRuleConnection`
+
+The connection type for [`ProtectedEnvironmentApprovalRule`](#protectedenvironmentapprovalrule).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentapprovalruleconnectionedges"></a>`edges` | [`[ProtectedEnvironmentApprovalRuleEdge]`](#protectedenvironmentapprovalruleedge) | A list of edges. |
+| <a id="protectedenvironmentapprovalruleconnectionnodes"></a>`nodes` | [`[ProtectedEnvironmentApprovalRule]`](#protectedenvironmentapprovalrule) | A list of nodes. |
+| <a id="protectedenvironmentapprovalruleconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ProtectedEnvironmentApprovalRuleEdge`
+
+The edge type for [`ProtectedEnvironmentApprovalRule`](#protectedenvironmentapprovalrule).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentapprovalruleedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="protectedenvironmentapprovalruleedgenode"></a>`node` | [`ProtectedEnvironmentApprovalRule`](#protectedenvironmentapprovalrule) | The item at the end of the edge. |
+
+#### `ProtectedEnvironmentConnection`
+
+The connection type for [`ProtectedEnvironment`](#protectedenvironment).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentconnectionedges"></a>`edges` | [`[ProtectedEnvironmentEdge]`](#protectedenvironmentedge) | A list of edges. |
+| <a id="protectedenvironmentconnectionnodes"></a>`nodes` | [`[ProtectedEnvironment]`](#protectedenvironment) | A list of nodes. |
+| <a id="protectedenvironmentconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ProtectedEnvironmentDeployAccessLevelConnection`
+
+The connection type for [`ProtectedEnvironmentDeployAccessLevel`](#protectedenvironmentdeployaccesslevel).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentdeployaccesslevelconnectionedges"></a>`edges` | [`[ProtectedEnvironmentDeployAccessLevelEdge]`](#protectedenvironmentdeployaccessleveledge) | A list of edges. |
+| <a id="protectedenvironmentdeployaccesslevelconnectionnodes"></a>`nodes` | [`[ProtectedEnvironmentDeployAccessLevel]`](#protectedenvironmentdeployaccesslevel) | A list of nodes. |
+| <a id="protectedenvironmentdeployaccesslevelconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ProtectedEnvironmentDeployAccessLevelEdge`
+
+The edge type for [`ProtectedEnvironmentDeployAccessLevel`](#protectedenvironmentdeployaccesslevel).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentdeployaccessleveledgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="protectedenvironmentdeployaccessleveledgenode"></a>`node` | [`ProtectedEnvironmentDeployAccessLevel`](#protectedenvironmentdeployaccesslevel) | The item at the end of the edge. |
+
+#### `ProtectedEnvironmentEdge`
+
+The edge type for [`ProtectedEnvironment`](#protectedenvironment).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="protectedenvironmentedgenode"></a>`node` | [`ProtectedEnvironment`](#protectedenvironment) | The item at the end of the edge. |
+
 #### `PushAccessLevelConnection`
 
 The connection type for [`PushAccessLevel`](#pushaccesslevel).
@@ -11669,6 +11738,7 @@ Describes where code is deployed for a project.
 | <a id="environmentlatestopenedmostseverealert"></a>`latestOpenedMostSevereAlert` | [`AlertManagementAlert`](#alertmanagementalert) | Most severe open alert for the environment. If multiple alerts have equal severity, the most recent is returned. |
 | <a id="environmentname"></a>`name` | [`String!`](#string) | Human-readable name of the environment. |
 | <a id="environmentpath"></a>`path` | [`String!`](#string) | Path to the environment. |
+| <a id="environmentprotectedenvironments"></a>`protectedEnvironments` | [`ProtectedEnvironmentConnection`](#protectedenvironmentconnection) | Protected Environments for the environment. (see [Connections](#connections)) |
 | <a id="environmentslug"></a>`slug` | [`String`](#string) | Slug of the environment. |
 | <a id="environmentstate"></a>`state` | [`String!`](#string) | State of the environment, for example: available/stopped. |
 | <a id="environmenttier"></a>`tier` | [`DeploymentTier`](#deploymenttier) | Deployment tier of the environment. |
@@ -17146,6 +17216,45 @@ The alert condition for Prometheus.
 | ---- | ---- | ----------- |
 | <a id="prometheusalerthumanizedtext"></a>`humanizedText` | [`String!`](#string) | Human-readable text of the alert condition. |
 | <a id="prometheusalertid"></a>`id` | [`ID!`](#id) | ID of the alert condition. |
+
+### `ProtectedEnvironment`
+
+Protected Environments of the environment.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentapprovalrules"></a>`approvalRules` | [`ProtectedEnvironmentApprovalRuleConnection`](#protectedenvironmentapprovalruleconnection) | Which group, user or role is allowed to approve deployments to the environment. (see [Connections](#connections)) |
+| <a id="protectedenvironmentdeployaccesslevels"></a>`deployAccessLevels` | [`ProtectedEnvironmentDeployAccessLevelConnection`](#protectedenvironmentdeployaccesslevelconnection) | Which group, user or role is allowed to execute deployments to the environment. (see [Connections](#connections)) |
+| <a id="protectedenvironmentgroup"></a>`group` | [`Group`](#group) | Group details. Present if it's group-level protected environment. |
+| <a id="protectedenvironmentname"></a>`name` | [`String`](#string) | Name of the environment if it's a project-level protected environment. Tier of the environment if it's a group-level protected environment. |
+| <a id="protectedenvironmentproject"></a>`project` | [`Project`](#project) | Project details. Present if it's project-level protected environment. |
+
+### `ProtectedEnvironmentApprovalRule`
+
+Which group, user or role is allowed to approve deployments to the environment.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentapprovalruleaccesslevel"></a>`accessLevel` | [`AccessLevel`](#accesslevel) | Role details. Present if it's role specific access control. |
+| <a id="protectedenvironmentapprovalrulegroup"></a>`group` | [`Group`](#group) | Group details. Present if it's group specific access control. |
+| <a id="protectedenvironmentapprovalrulerequiredapprovals"></a>`requiredApprovals` | [`Int`](#int) | Number of required approvals. |
+| <a id="protectedenvironmentapprovalruleuser"></a>`user` | [`UserCore`](#usercore) | User details. Present if it's user specific access control. |
+
+### `ProtectedEnvironmentDeployAccessLevel`
+
+Which group, user or role is allowed to execute deployments to the environment.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentdeployaccesslevelaccesslevel"></a>`accessLevel` | [`AccessLevel`](#accesslevel) | Role details. Present if it's role specific access control. |
+| <a id="protectedenvironmentdeployaccesslevelgroup"></a>`group` | [`Group`](#group) | Group details. Present if it's group specific access control. |
+| <a id="protectedenvironmentdeployaccessleveluser"></a>`user` | [`UserCore`](#usercore) | User details. Present if it's user specific access control. |
 
 ### `PushAccessLevel`
 

@@ -48,7 +48,7 @@ RSpec.describe API::ProtectedEnvironments do
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-      expect(json_response['deploy_access_levels'].length).to eq(3) # protected environments factory creates one by default, second by trait
+      expect(json_response['deploy_access_levels'].length).to eq(2)
       expect(json_response['deploy_access_levels'].last['user_id']).to eq(user_id)
     end
 
@@ -64,11 +64,28 @@ RSpec.describe API::ProtectedEnvironments do
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-      expect(json_response['deploy_access_levels'].length).to eq(2) # protected environments factory creates one by default, second by trait
+      expect(json_response['deploy_access_levels'].length).to eq(1)
       expect(json_response['deploy_access_levels'].last['user_id']).to eq(user_id)
     end
 
-    it 'updates the environment / deleting deploy access level' do
+    it 'updates the environment / deleting deploy access level / failed' do
+      put request_url, params: {
+        deploy_access_levels: [
+          {
+            id: protected_environment.deploy_access_levels.last.id,
+            user_id: user_id,
+            _destroy: true
+          }
+        ]
+      }
+
+      expect(response).to have_gitlab_http_status(:unprocessable_entity)
+      expect(json_response['message']).to include('Deploy access levels is too short (minimum is 1 character)')
+    end
+
+    it 'updates the environment / deleting deploy access level / succeed' do
+      protected_environment.deploy_access_levels << build(:protected_environment_deploy_access_level)
+
       put request_url, params: {
         deploy_access_levels: [
           {
@@ -81,7 +98,7 @@ RSpec.describe API::ProtectedEnvironments do
 
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-      expect(json_response['deploy_access_levels'].length).to eq(1) # protected environments factory creates one by default, second by trait
+      expect(json_response['deploy_access_levels'].length).to eq(1)
     end
 
     it 'updates the environment / updating required approval count' do
@@ -646,7 +663,7 @@ RSpec.describe API::ProtectedEnvironments do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-        expect(json_response['deploy_access_levels'].length).to eq(2)
+        expect(json_response['deploy_access_levels'].length).to eq(1)
         expect(json_response['deploy_access_levels'].first['group_id']).to eq(shared_group.id)
         expect(json_response['required_approval_count']).to eq(1)
       end
@@ -665,7 +682,7 @@ RSpec.describe API::ProtectedEnvironments do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
-        expect(json_response['deploy_access_levels'].length).to eq(2)
+        expect(json_response['deploy_access_levels'].length).to eq(1)
         expect(json_response['deploy_access_levels'].last['group_id']).to eq(subgroup.id)
         expect(json_response['deploy_access_levels'].last['group_inheritance_type']).to eq(::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
         expect(json_response['required_approval_count']).to eq(1)

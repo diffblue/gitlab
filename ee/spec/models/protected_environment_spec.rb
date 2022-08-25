@@ -22,13 +22,13 @@ RSpec.describe ProtectedEnvironment do
     it 'can not belong to both group and project' do
       group = build(:group)
       project = build(:project)
-      protected_environment = build(:protected_environment, group: group, project: project)
+      protected_environment = build(:protected_environment, :maintainers_can_deploy, group: group, project: project)
 
       expect { protected_environment.save! }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
     end
 
     it 'must belong to one of group or project' do
-      protected_environment = build(:protected_environment, group: nil, project: nil)
+      protected_environment = build(:protected_environment, :maintainers_can_deploy, group: nil, project: nil)
 
       expect { protected_environment.save! }.to raise_error(ActiveRecord::StatementInvalid, /PG::CheckViolation/)
     end
@@ -37,7 +37,7 @@ RSpec.describe ProtectedEnvironment do
       let_it_be(:group) { create(:group) }
 
       it 'passes the validation when the name is listed in the tiers' do
-        protection = build(:protected_environment, name: 'production', group: group)
+        protection = build(:protected_environment, :maintainers_can_deploy, name: 'production', group: group)
 
         expect(protection).to be_valid
       end

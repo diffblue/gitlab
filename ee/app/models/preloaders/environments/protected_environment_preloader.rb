@@ -13,11 +13,11 @@ module Preloaders
         end
       end
 
-      def execute
+      def execute(association_attributes)
         return if environments.empty?
 
         associated_protected_environments =
-          ProtectedEnvironment.for_environments(environments).preload(:deploy_access_levels, :project)
+          ProtectedEnvironment.for_environments(environments).preload(association_attributes)
 
         project_protected_environments = associated_protected_environments.select(&:project_level?).index_by(&:name)
         group_protected_environments = associated_protected_environments.select(&:group_level?).index_by(&:name)

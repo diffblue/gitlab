@@ -26,13 +26,17 @@ module EE
     def batch_load(resource)
       environments = super
 
-      ::Preloaders::Environments::ProtectedEnvironmentPreloader.new(environments).execute
+      ::Preloaders::Environments::ProtectedEnvironmentPreloader.new(environments).execute(association_attributes)
 
       environments.each do |environment|
         # JobEntity loads environment for permission checks in #cancelable?, #retryable?, #playable?
         environment.last_deployment&.deployable&.persisted_environment = environment
         environment.upcoming_deployment&.deployable&.persisted_environment = environment
       end
+    end
+
+    def association_attributes
+      [:deploy_access_levels, :project]
     end
   end
 end
