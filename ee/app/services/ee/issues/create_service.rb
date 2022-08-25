@@ -19,15 +19,6 @@ module EE
         super
       end
 
-      override :execute
-      def execute(skip_system_notes: false)
-        super.tap do |issue|
-          if issue.previous_changes.include?(:milestone_id) && issue.epic_issue
-            ::Epics::UpdateDatesService.new([issue.epic_issue.epic]).execute
-          end
-        end
-      end
-
       override :transaction_create
       def transaction_create(issue)
         return super unless issue.requirement?
@@ -38,6 +29,16 @@ module EE
         issue.requirement_sync_error! unless requirement.valid?
 
         super
+      end
+
+      private
+
+      override :after_create
+      def after_create(issue)
+        super
+        return unless issue.previous_changes.include?(:milestone_id) && issue.epic_issue
+
+        ::Epics::UpdateDatesService.new([issue.epic_issue.epic]).execute
       end
     end
   end

@@ -47,6 +47,8 @@ RSpec.describe MergeRequests::CreateService do
 
     it_behaves_like 'new issuable with scoped labels' do
       let(:parent) { project }
+      let(:service_result) { described_class.new(**args).execute }
+      let(:issuable) { service_result }
     end
 
     it_behaves_like 'service with multiple reviewers' do

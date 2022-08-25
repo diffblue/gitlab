@@ -168,7 +168,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
         assignees: [project.team.users.sample]
       }
 
-      Issues::CreateService.new(project: @project, current_user: project.team.users.sample, params: issue_params, spam_params: nil).execute
+      Issues::CreateService.new(project: @project, current_user: project.team.users.sample, params: issue_params, spam_params: nil).execute[:issue]
     end
   end
 

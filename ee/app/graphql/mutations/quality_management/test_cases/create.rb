@@ -41,11 +41,9 @@ module Mutations
             **args
           ).execute
 
-          test_case = result.payload[:issue]
-
           {
-            test_case: test_case&.persisted? ? test_case : nil,
-            errors: Array.wrap(result.message)
+            test_case: result.success? ? result[:issue] : nil,
+            errors: result.errors
           }
         end
       end

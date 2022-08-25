@@ -14,7 +14,7 @@ module QualityManagement
       end
 
       def execute
-        issue = Issues::CreateService.new(
+        Issues::CreateService.new(
           project: project,
           current_user: current_user,
           params: {
@@ -25,23 +25,11 @@ module QualityManagement
           },
           spam_params: nil
         ).execute
-
-        return error(issue.errors.full_messages.to_sentence, issue) unless issue.valid?
-
-        success(issue)
       end
 
       private
 
       attr_reader :title, :description, :label_ids
-
-      def success(issue)
-        ServiceResponse.success(payload: { issue: issue })
-      end
-
-      def error(message, issue = nil)
-        ServiceResponse.error(payload: { issue: issue }, message: message)
-      end
     end
   end
 end

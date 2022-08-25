@@ -30,8 +30,10 @@ RSpec.describe Boards::Issues::CreateService do
                       label_ids: [board_label.id],
                       weight: 4)
 
-        issue = service.execute
+        result = service.execute
+        issue = result[:issue]
 
+        expect(result).to be_success
         expect(issue.assignees).to eq([board_assignee])
         expect(issue.weight).to eq(board.weight)
         expect(issue.milestone).to eq(board_milestone)
@@ -42,8 +44,10 @@ RSpec.describe Boards::Issues::CreateService do
         it 'creates issue weight 0 weight' do
           board.update!(weight: 0)
 
-          issue = service.execute
+          result = service.execute
+          issue = result[:issue]
 
+          expect(result).to be_success
           expect(issue.weight).to be_zero
           expect(issue).to be_valid
         end
@@ -51,8 +55,10 @@ RSpec.describe Boards::Issues::CreateService do
         it 'creates issue with nil weight' do
           board.update!(weight: nil)
 
-          issue = service.execute
+          result = service.execute
+          issue = result[:issue]
 
+          expect(result).to be_success
           expect(issue.weight).to be_nil
           expect(issue).to be_valid
         end
@@ -61,8 +67,10 @@ RSpec.describe Boards::Issues::CreateService do
           it 'creates issue with nil weight' do
             board.update!(weight: -1)
 
-            issue = service.execute
+            result = service.execute
+            issue = result[:issue]
 
+            expect(result).to be_success
             expect(issue.weight).to be_nil
             expect(issue).to be_valid
           end
@@ -80,8 +88,10 @@ RSpec.describe Boards::Issues::CreateService do
       end
 
       it 'assigns the issue to the List assignee' do
-        issue = service.execute
+        result = service.execute
+        issue = result[:issue]
 
+        expect(result).to be_success
         expect(issue.assignees).to eq([user])
       end
     end
@@ -97,8 +107,10 @@ RSpec.describe Boards::Issues::CreateService do
       end
 
       it 'assigns the issue to the list milestone' do
-        issue = service.execute
+        result = service.execute
+        issue = result[:issue]
 
+        expect(result).to be_success
         expect(issue.milestone).to eq(milestone)
       end
     end
