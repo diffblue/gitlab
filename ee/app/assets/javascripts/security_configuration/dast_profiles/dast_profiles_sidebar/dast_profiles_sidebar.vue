@@ -216,7 +216,7 @@ export default {
     </template>
     <template #default>
       <template v-if="isLoading">
-        <DastProfilesLoader />
+        <dast-profiles-loader />
       </template>
       <template v-else>
         <!-- Empty state -->
@@ -239,7 +239,7 @@ export default {
         />
 
         <!-- Profile list - reading mode -->
-        <DastProfilesSidebarList
+        <dast-profiles-sidebar-list
           v-if="isReadingMode"
           class="gl-p-1!"
           :profiles="profiles"

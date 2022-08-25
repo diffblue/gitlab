@@ -15,7 +15,7 @@ import { __, s__, n__, sprintf } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BaseDastProfileForm from '../../components/base_dast_profile_form.vue';
 import dastProfileFormMixin from '../../dast_profile_form_mixin';
-import tooltipIcon from '../../dast_scanner_profiles/components/tooltip_icon.vue';
+import TooltipIcon from '../../dast_scanner_profiles/components/tooltip_icon.vue';
 import {
   MAX_CHAR_LIMIT_EXCLUDED_URLS,
   MAX_CHAR_LIMIT_REQUEST_HEADERS,
@@ -41,7 +41,7 @@ export default {
     GlFormRadioGroup,
     GlFormText,
     GlFormTextarea,
-    tooltipIcon,
+    TooltipIcon,
     GlFormSelect,
     GlLink,
   },

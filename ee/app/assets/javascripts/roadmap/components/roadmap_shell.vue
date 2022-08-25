@@ -4,15 +4,15 @@ import { mapActions, mapState } from 'vuex';
 import eventHub from '../event_hub';
 import { MILESTONES_GROUP, MILESTONES_SUBGROUP, MILESTONES_PROJECT } from '../constants';
 
-import epicsListSection from './epics_list_section.vue';
-import milestonesListSection from './milestones_list_section.vue';
-import roadmapTimelineSection from './roadmap_timeline_section.vue';
+import EpicsListSection from './epics_list_section.vue';
+import MilestonesListSection from './milestones_list_section.vue';
+import RoadmapTimelineSection from './roadmap_timeline_section.vue';
 
 export default {
   components: {
-    epicsListSection,
-    milestonesListSection,
-    roadmapTimelineSection,
+    EpicsListSection,
+    MilestonesListSection,
+    RoadmapTimelineSection,
   },
   props: {
     presetType: {

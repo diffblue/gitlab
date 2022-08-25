@@ -16,7 +16,7 @@ import dastProfileFormMixin from '../../dast_profile_form_mixin';
 import { SCAN_TYPE, SCAN_TYPE_OPTIONS } from '../constants';
 import dastScannerProfileCreateMutation from '../graphql/dast_scanner_profile_create.mutation.graphql';
 import dastScannerProfileUpdateMutation from '../graphql/dast_scanner_profile_update.mutation.graphql';
-import tooltipIcon from './tooltip_icon.vue';
+import TooltipIcon from './tooltip_icon.vue';
 
 const SPIDER_TIMEOUT_MIN = 0;
 const SPIDER_TIMEOUT_MAX = 2880;
@@ -36,7 +36,7 @@ export default {
     GlFormRadioGroup,
     GlFormRadio,
     GlInputGroupText,
-    tooltipIcon,
+    TooltipIcon,
   },
   mixins: [dastProfileFormMixin()],
   data() {
