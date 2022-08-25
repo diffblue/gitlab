@@ -42,7 +42,7 @@ class MergeRequestNoteableEntity < IssuableEntity
     end
 
     expose :can_approve do |merge_request|
-      can?(current_user, :approve_merge_request, merge_request)
+      merge_request.can_be_approved_by?(current_user)
     end
   end
 
