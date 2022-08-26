@@ -93,7 +93,7 @@ export default {
         <gl-dropdown-item
           v-for="iteration in cadence.iterations"
           :key="iteration.id"
-          :is-check-item="true"
+          is-check-item
           :is-checked="isAttributeChecked(iteration.id)"
           :data-testid="`${$options.issuableAttribute}-items`"
           @click="updateAttribute(iteration.id)"

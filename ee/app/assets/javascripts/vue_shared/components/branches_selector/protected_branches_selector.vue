@@ -141,7 +141,7 @@ export default {
     <gl-dropdown-item
       v-for="branch in branches"
       :key="branch.id"
-      :is-check-item="true"
+      is-check-item
       :is-checked="isSelectedBranch(branch.id)"
       @click="onSelect(branch)"
     >

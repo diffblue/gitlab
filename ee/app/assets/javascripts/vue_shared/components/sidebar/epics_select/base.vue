@@ -277,7 +277,7 @@ export default {
           <gl-dropdown-item
             :active="!selectedEpic"
             active-class="is-active"
-            :is-check-item="true"
+            is-check-item
             :is-checked="selectedEpic.id === $options.noneEpic.id"
             @click="handleItemSelect($options.noneEpic)"
           >
@@ -289,7 +289,7 @@ export default {
             :key="epic.id"
             :active="selectedEpic.id === epic.id"
             active-class="is-active"
-            :is-check-item="true"
+            is-check-item
             :is-checked="selectedEpic.id === epic.id"
             @click="handleItemSelect(epic)"
             >{{ epic.title }}</gl-dropdown-item
