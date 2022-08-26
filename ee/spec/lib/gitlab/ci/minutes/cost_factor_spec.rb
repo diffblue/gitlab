@@ -219,14 +219,6 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
 
             specify { expect(subject).to eq(public_cost_factor) }
           end
-
-          context 'when ci_forked_source_public_cost_factor is disabled' do
-            before do
-              stub_feature_flags(ci_forked_source_public_cost_factor: false)
-            end
-
-            specify { expect(subject).to eq(public_cost_factor) }
-          end
         end
       end
 

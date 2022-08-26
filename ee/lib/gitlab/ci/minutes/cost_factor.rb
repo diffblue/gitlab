@@ -66,8 +66,7 @@ module Gitlab
         end
 
         def public_fork_source?(project)
-          Feature.enabled?(:ci_forked_source_public_cost_factor, project) &&
-            project&.fork_source&.public?
+          project&.fork_source&.public?
         end
 
         def open_source_plan?(project)
