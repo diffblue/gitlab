@@ -59,9 +59,9 @@ You can submit your completed review in multiple ways:
 - Select **Finish review** and then **Submit review** in the footer at the bottom of the screen.
 
 Selecting **Finish review** opens a modal window to add an optional comment to summarize your review.
-You can also include quick actions:
+You can also approve the merge request by selecting **Approve merge request**, and include quick actions:
 
-![Finish review with comment](img/mr_summary_comment_v15_3.png)
+![Finish review with comment](img/mr_summary_comment_v15_4.png)
 
 When you submit your review, GitLab:
 
@@ -69,6 +69,7 @@ When you submit your review, GitLab:
 - Sends a single email to every notifiable user of the merge request, with your
   review comments attached. Replying to this email creates a new comment on the merge request.
 - Perform any quick actions you added to your review comments.
+- Optionally, approves the merge request
 
 ### Resolve or unresolve thread with a comment
 
