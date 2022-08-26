@@ -652,6 +652,19 @@
     - changes: *ci-build-images-patterns
     - changes: *code-qa-patterns
 
+#################
+# Caching rules #
+#################
+.caching:rules:cache-workhorse:
+  rules:
+    - <<: *if-dot-com-gitlab-org-default-branch
+      changes: ["workhorse/**/*"]
+    - <<: *if-dot-com-gitlab-org-default-branch
+      when: manual
+    - <<: *if-dot-com-gitlab-org-merge-request
+      when: manual
+      allow_failure: true
+
 ######################
 # CI Templates Rules #
 ######################
@@ -969,16 +982,6 @@
 ###############
 # Rails rules #
 ###############
-.rails:rules:build-components:
-  rules:
-    - <<: *if-dot-com-ee-schedule
-    - <<: *if-dot-com-gitlab-org-default-branch
-      changes:
-        - "workhorse/**/*"
-    - <<: *if-dot-com-gitlab-org-merge-request
-      when: manual
-      allow_failure: true
-
 .rails:rules:setup-test-env:
   rules:
     - changes: *setup-test-env-patterns
