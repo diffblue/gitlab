@@ -140,7 +140,7 @@ export default {
     <gl-dropdown-item
       v-for="group in availableGroups"
       :key="group.id"
-      :is-check-item="true"
+      is-check-item
       :is-checked="isGroupSelected(group.id)"
       @click.prevent="onClick({ group, isSelected: isGroupSelected(group.id) })"
     >

@@ -218,7 +218,7 @@ export default {
       <filter-item
         v-for="project in selectedOptions"
         :key="project.id"
-        :is-checked="true"
+        is-checked
         :text="project.name"
         @click="toggleOption(project)"
       />

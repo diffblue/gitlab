@@ -106,7 +106,7 @@ export default {
     }}</gl-dropdown-section-header>
     <gl-search-box-by-type v-model="searchTerm" />
     <gl-dropdown-item
-      :is-check-item="true"
+      is-check-item
       :is-checked="isIterationChecked($options.noIteration.id)"
       @click="onClick($options.noIteration)"
     >
@@ -118,7 +118,7 @@ export default {
       <gl-dropdown-item
         v-for="iterationItem in iterations"
         :key="iterationItem.id"
-        :is-check-item="true"
+        is-check-item
         :is-checked="isIterationChecked(iterationItem.id)"
         @click="onClick(iterationItem)"
       >
@@ -135,7 +135,7 @@ export default {
         <gl-dropdown-item
           v-for="iterationItem in cadence.iterations"
           :key="iterationItem.id"
-          :is-check-item="true"
+          is-check-item
           :is-checked="isIterationChecked(iterationItem.id)"
           @click="onClick(iterationItem)"
         >

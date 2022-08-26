@@ -51,7 +51,7 @@ export default {
     <gl-dropdown-item
       v-for="option in $options.SORTING_OPTIONS"
       :key="option.key"
-      :is-check-item="true"
+      is-check-item
       :is-checked="isChecked(option.key)"
       @click="onItemClick(option.key)"
     >
