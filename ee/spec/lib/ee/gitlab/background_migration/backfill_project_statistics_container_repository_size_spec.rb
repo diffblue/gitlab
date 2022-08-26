@@ -86,67 +86,96 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRe
                         connection: ApplicationRecord.connection)
   end
 
-  subject(:perform_migration) { migration.perform }
+  before do
+    stub_const('DATE_BEFORE_PHASE_1', Date.new(2022, 01, 20).freeze)
+    stub_const('DATE_AFTER_PHASE_1', Date.new(2022, 02, 20).freeze)
+  end
 
-  context 'when project_statistics backfill runs' do
-    before do
-      stub_const('DATE_BEFORE_PHASE_1', Date.new(2022, 01, 20).freeze)
-      stub_const('DATE_AFTER_PHASE_1', Date.new(2022, 02, 20).freeze)
-      allow(::Gitlab).to receive(:com?).and_return(true)
-      allow(::ContainerRegistry::GitlabApiClient).to receive(:supports_gitlab_api?).and_return(true)
+  describe '#filter_batch' do
+    let(:proj_namespace5) do
+      namespace.create!(
+        name: 'proj5', path: 'proj5', type: 'Project', parent_id: sub_group.id
+      )
     end
 
-    context 'when project_statistics.container_registry_size is zero' do
+    let(:proj5) do
+      project.create!(
+        name: 'proj5', path: 'proj5', namespace_id: sub_group.id, project_namespace_id: proj_namespace5.id
+      )
+    end
+
+    it 'filters out container repositories out of scope' do
+      generate_records
+      add_container_registries_and_project_statistics(proj5.id, 1, 'default', DATE_BEFORE_PHASE_1, sub_group.id)
+
+      expected = container_repositories_table.where.not(project_id: proj5.id).pluck(:project_id).uniq
+      actual = migration.filter_batch(container_repositories_table).pluck(:project_id)
+
+      expect(actual).to match_array(expected)
+    end
+  end
+
+  describe '#perform' do
+    subject(:perform_migration) { migration.perform }
+
+    context 'when project_statistics backfill runs' do
       before do
-        generate_records
-        allow(::ContainerRegistry::GitlabApiClient).to receive(:deduplicated_size).and_return(3000)
+        allow(::Gitlab).to receive(:com?).and_return(true)
+        allow(::ContainerRegistry::GitlabApiClient).to receive(:supports_gitlab_api?).and_return(true)
       end
 
-      it 'calls deduplicated_size API' do
-        allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+      context 'when project_statistics.container_registry_size is zero' do
+        before do
+          generate_records
+          allow(::ContainerRegistry::GitlabApiClient).to receive(:deduplicated_size).and_return(3000)
+        end
 
-        perform_migration
+        it 'calls deduplicated_size API' do
+          allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
 
-        expect(::ContainerRegistry::GitlabApiClient).to have_received(:supports_gitlab_api?).exactly(4).times
+          perform_migration
+
+          expect(::ContainerRegistry::GitlabApiClient).to have_received(:supports_gitlab_api?).exactly(4).times
+        end
+
+        context 'when the Container Registry deduplicated_size is non-zero' do
+          it 'schedules Namespaces::ScheduleAggregationWorker' do
+            allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
+            allow(::Rails).to receive_message_chain(:cache, :delete).and_return(true)
+
+            perform_migration
+
+            expect(::Rails.cache).to have_received(:delete).exactly(4).times
+            expect(::Namespaces::ScheduleAggregationWorker).to have_received(:perform_async).exactly(4).times
+          end
+        end
+
+        context 'when the Container Registry deduplicated_size is zero' do
+          it 'does not schedules Namespaces::ScheduleAggregationWorker' do
+            allow(::ContainerRegistry::GitlabApiClient).to receive(:deduplicated_size).and_return(0)
+
+            perform_migration
+
+            expect(::Namespaces::ScheduleAggregationWorker).not_to receive(:perform_async)
+          end
+        end
       end
 
-      context 'when the Container Registry deduplicated_size is non-zero' do
-        it 'schedules Namespaces::ScheduleAggregationWorker' do
+      context 'when project_statistics.container_registry_size is non-zero' do
+        before do
+          generate_records(333)
+        end
+
+        it "doesn't call deduplicated_size API and schedules Namespaces::ScheduleAggregationWorker" do
           allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
           allow(::Rails).to receive_message_chain(:cache, :delete).and_return(true)
 
           perform_migration
 
+          expect(::ContainerRegistry::GitlabApiClient).not_to receive(:deduplicated_size)
           expect(::Rails.cache).to have_received(:delete).exactly(4).times
           expect(::Namespaces::ScheduleAggregationWorker).to have_received(:perform_async).exactly(4).times
         end
-      end
-
-      context 'when the Container Registry deduplicated_size is zero' do
-        it 'does not schedules Namespaces::ScheduleAggregationWorker' do
-          allow(::ContainerRegistry::GitlabApiClient).to receive(:deduplicated_size).and_return(0)
-
-          perform_migration
-
-          expect(::Namespaces::ScheduleAggregationWorker).not_to receive(:perform_async)
-        end
-      end
-    end
-
-    context 'when project_statistics.container_registry_size is non-zero' do
-      before do
-        generate_records(333)
-      end
-
-      it "doesn't call deduplicated_size API and schedules Namespaces::ScheduleAggregationWorker" do
-        allow(::Namespaces::ScheduleAggregationWorker).to receive(:perform_async)
-        allow(::Rails).to receive_message_chain(:cache, :delete).and_return(true)
-
-        perform_migration
-
-        expect(::ContainerRegistry::GitlabApiClient).not_to receive(:deduplicated_size)
-        expect(::Rails.cache).to have_received(:delete).exactly(4).times
-        expect(::Namespaces::ScheduleAggregationWorker).to have_received(:perform_async).exactly(4).times
       end
     end
   end
