@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Codeowners' do
+    describe 'Codeowners', product_group: :source_code do
       let(:files) do
         [
           {

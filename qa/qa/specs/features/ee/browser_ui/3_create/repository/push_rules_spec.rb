@@ -3,7 +3,7 @@
 module QA
   RSpec.describe 'Create' do
     context 'Push Rules' do
-      describe 'using non signed commits' do
+      describe 'using non signed commits', product_group: :source_code do
         before(:context) do
           prepare
 
