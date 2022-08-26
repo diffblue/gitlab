@@ -6,7 +6,6 @@ RSpec.describe 'Update Epic', :js do
   include DropzoneHelper
 
   let(:user) { create(:user) }
-  let(:group) { create(:group, :public) }
 
   let(:markdown) do
     <<-MARKDOWN.strip_heredoc
@@ -17,8 +16,6 @@ RSpec.describe 'Update Epic', :js do
     MARKDOWN
   end
 
-  let(:epic) { create(:epic, group: group, description: markdown) }
-
   before do
     stub_licensed_features(epics: true)
 
@@ -26,6 +23,9 @@ RSpec.describe 'Update Epic', :js do
   end
 
   context 'when user who is not a group member displays the epic' do
+    let(:group) { create(:group, :public) }
+    let(:epic) { create(:epic, group: group, description: markdown) }
+
     it 'does not show the Edit button' do
       visit group_epic_path(group, epic)
 
@@ -33,7 +33,7 @@ RSpec.describe 'Update Epic', :js do
     end
   end
 
-  context 'when user with developer access displays the epic' do
+  shared_examples 'updates epic' do
     before do
       group.add_developer(user)
       visit group_epic_path(group, epic)
@@ -176,7 +176,27 @@ RSpec.describe 'Update Epic', :js do
     end
   end
 
+  context 'when user with developer access displays the epic' do
+    let_it_be(:group) { create(:group, :public) }
+
+    let(:epic) { create(:epic, group: group, description: markdown) }
+
+    it_behaves_like 'updates epic'
+  end
+
+  context 'when user with developer access displays the epic from a subgroup' do
+    let_it_be(:parent_group) { create(:group, :public) }
+    let_it_be(:group) { create(:group, parent: parent_group) }
+
+    let(:epic) { create(:epic, group: group, description: markdown) }
+
+    it_behaves_like 'updates epic'
+  end
+
   context 'when user with owner access displays the epic' do
+    let(:group) { create(:group, :public) }
+    let(:epic) { create(:epic, group: group, description: markdown) }
+
     before do
       group.add_owner(user)
       visit group_epic_path(group, epic)
