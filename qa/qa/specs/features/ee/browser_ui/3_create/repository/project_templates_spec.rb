@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Create' do
-    describe 'Project templates' do
+    describe 'Project templates', product_group: :source_code do
       let(:files) do
         [
           {
