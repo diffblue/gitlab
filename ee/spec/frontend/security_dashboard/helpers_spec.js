@@ -76,7 +76,7 @@ describe('getFormattedScanners', () => {
     reportType: 'GENERIC',
     vendor: 'GitLab',
   };
-  const manuallyAddedName = 'Manually Added';
+  const manuallyAddedName = 'Manually added';
 
   it('returns a formatted array', () => {
     const vulnerabilityScanners = [
@@ -114,7 +114,7 @@ describe('getFormattedScanners', () => {
     ]);
   });
 
-  it('renames "GENERIC" report type to "Manually Added"', () => {
+  it('renames "GENERIC" report type to "Manually added"', () => {
     const vulnerabilityScanners = [{ ...manuallyAddedScanner }];
 
     expect(getFormattedScanners(vulnerabilityScanners)[0].name).toBe(manuallyAddedName);
