@@ -13,7 +13,8 @@ RSpec.describe 'groups/settings/reporting/show' do
     group.namespace_settings.update!(
       unique_project_download_limit: 1,
       unique_project_download_limit_interval_in_seconds: 2,
-      unique_project_download_limit_allowlist: allowlist
+      unique_project_download_limit_allowlist: allowlist,
+      auto_ban_user_on_excessive_projects_download: true
     )
 
     assign(:group, group)
@@ -28,6 +29,7 @@ RSpec.describe 'groups/settings/reporting/show' do
     expect(rendered).to have_selector('[data-max-number-of-repository-downloads="1"]')
     expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="2"]')
     expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='#{allowlist}']")
+    expect(rendered).to have_selector("[data-auto-ban-user-on-excessive-projects-download='true']")
   end
 
   context 'when group has no settings record' do
@@ -45,6 +47,7 @@ RSpec.describe 'groups/settings/reporting/show' do
       expect(rendered).to have_selector('[data-max-number-of-repository-downloads="0"]')
       expect(rendered).to have_selector('[data-max-number-of-repository-downloads-within-time-period="0"]')
       expect(rendered).to have_selector("[data-git-rate-limit-users-allowlist='[]']")
+      expect(rendered).to have_selector("[data-auto-ban-user-on-excessive-projects-download='false']")
     end
   end
 

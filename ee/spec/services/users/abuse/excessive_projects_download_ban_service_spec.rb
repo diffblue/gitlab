@@ -16,6 +16,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService, :clean_gitlab_
     before do
       stub_application_setting(max_number_of_repository_downloads: limit)
       stub_application_setting(max_number_of_repository_downloads_within_time_period: time_period_in_seconds)
+      stub_application_setting(auto_ban_user_on_excessive_projects_download: true)
     end
 
     shared_examples 'sends email to admins' do
@@ -86,9 +87,9 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService, :clean_gitlab_
       end
     end
 
-    context 'when auto_ban_user_on_excessive_projects_download feature flag is disabled' do
+    context 'when auto_ban_user_on_excessive_projects_download is disabled' do
       before do
-        stub_feature_flags(auto_ban_user_on_excessive_projects_download: false)
+        stub_application_setting(auto_ban_user_on_excessive_projects_download: false)
         limit.times { described_class.execute(user, build_stubbed(:project)) }
       end
 

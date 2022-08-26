@@ -19,6 +19,7 @@ describe('SettingsFormContainer', () => {
   const MAX_DOWNLOADS = 10;
   const TIME_PERIOD = 300;
   const ALLOWLIST = ['user1', 'user2'];
+  const AUTO_BAN_USERS = true;
 
   const createComponent = () => {
     wrapper = shallowMountExtended(SettingsFormContainer, {
@@ -27,6 +28,7 @@ describe('SettingsFormContainer', () => {
         maxDownloads: MAX_DOWNLOADS,
         timePeriod: TIME_PERIOD,
         allowlist: ALLOWLIST,
+        autoBanUsers: AUTO_BAN_USERS,
       },
     });
   };
@@ -46,6 +48,7 @@ describe('SettingsFormContainer', () => {
       maxDownloads: MAX_DOWNLOADS,
       timePeriod: TIME_PERIOD,
       allowlist: ALLOWLIST,
+      autoBanUsers: AUTO_BAN_USERS,
     });
   });
 
@@ -54,6 +57,7 @@ describe('SettingsFormContainer', () => {
       maxDownloads: MAX_DOWNLOADS,
       timePeriod: TIME_PERIOD,
       allowlist: ALLOWLIST,
+      autoBanUsers: AUTO_BAN_USERS,
     };
 
     it('calls updateGroupSettings with the correct payload', () => {
@@ -64,6 +68,7 @@ describe('SettingsFormContainer', () => {
         unique_project_download_limit: MAX_DOWNLOADS,
         unique_project_download_limit_interval_in_seconds: TIME_PERIOD,
         unique_project_download_limit_allowlist: ALLOWLIST,
+        auto_ban_user_on_excessive_projects_download: AUTO_BAN_USERS,
       });
     });
 

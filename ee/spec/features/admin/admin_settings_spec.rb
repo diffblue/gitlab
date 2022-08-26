@@ -454,6 +454,13 @@ RSpec.describe 'Admin updates EE-only settings' do
         expect(page).to have_field(s_('GitAbuse|Number of repositories'))
         expect(page).to have_field(s_('GitAbuse|Reporting time period (seconds)'))
         expect(page).to have_field(s_('GitAbuse|Excluded users'))
+        expect(page).to have_selector(
+          '[data-testid="auto-ban-users-toggle"] .gl-toggle-label',
+          text: format(
+            s_('GitAbuse|Automatically ban users from this %{scope} when they exceed the specified limits'),
+            scope: 'application'
+          )
+        )
       end
 
       it 'saves the settings' do
@@ -463,7 +470,9 @@ RSpec.describe 'Admin updates EE-only settings' do
           fill_in(s_('GitAbuse|Excluded users'), with: user.name)
 
           wait_for_requests
+
           click_button user.name
+          find('[data-testid="auto-ban-users-toggle"] .gl-toggle').click
 
           click_button _('Save changes')
         end
@@ -471,6 +480,7 @@ RSpec.describe 'Admin updates EE-only settings' do
         expect(page).to have_field(s_('GitAbuse|Number of repositories'), with: 5)
         expect(page).to have_field(s_('GitAbuse|Reporting time period (seconds)'), with: 300)
         expect(page).to have_content(user.name)
+        expect(page).to have_selector('[data-testid="auto-ban-users-toggle"] > .gl-toggle.is-checked')
       end
 
       it 'shows form errors when the input value is blank' do

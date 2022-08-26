@@ -6,6 +6,7 @@ describe('Git abuse rate limit settings utils', () => {
       maxNumberOfRepositoryDownloads: '10',
       maxNumberOfRepositoryDownloadsWithinTimePeriod: '300',
       gitRateLimitUsersAllowlist: '["user1", "user2"]',
+      autoBanUserOnExcessiveProjectsDownload: 'false',
     };
 
     it('returns the expected result', () => {
@@ -13,6 +14,7 @@ describe('Git abuse rate limit settings utils', () => {
         maxNumberOfRepositoryDownloads: 10,
         maxNumberOfRepositoryDownloadsWithinTimePeriod: 300,
         gitRateLimitUsersAllowlist: ['user1', 'user2'],
+        autoBanUserOnExcessiveProjectsDownload: false,
       });
     });
   });

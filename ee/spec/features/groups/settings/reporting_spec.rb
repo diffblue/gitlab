@@ -37,10 +37,18 @@ RSpec.describe 'Group reporting settings', :js do
     limit_label = s_('GitAbuse|Number of repositories')
     interval_label = s_('GitAbuse|Reporting time period (seconds)')
     allowlist_label = s_('GitAbuse|Excluded users')
+    auto_ban_label = format(
+      s_('GitAbuse|Automatically ban users from this %{scope} when they exceed the specified limits'),
+      scope: 'namespace'
+    )
 
     expect(page).to have_field(limit_label, with: current_limit)
     expect(page).to have_field(interval_label, with: current_interval)
     expect(page).to have_field(allowlist_label)
+    expect(page).to have_selector(
+      '[data-testid="auto-ban-users-toggle"] .gl-toggle-label',
+      text: auto_ban_label
+    )
 
     new_limit = 5
     new_interval = 300
@@ -52,6 +60,7 @@ RSpec.describe 'Group reporting settings', :js do
     wait_for_requests
 
     click_button user.name
+    find('[data-testid="auto-ban-users-toggle"] .gl-toggle').click
 
     click_button _('Save changes')
 
@@ -60,6 +69,7 @@ RSpec.describe 'Group reporting settings', :js do
     expect(page).to have_field(limit_label, with: new_limit)
     expect(page).to have_field(interval_label, with: new_interval)
     expect(page).to have_content(user.name)
+    expect(page).to have_selector('[data-testid="auto-ban-users-toggle"] > .gl-toggle.is-checked')
 
     group.reload
 
@@ -67,6 +77,7 @@ RSpec.describe 'Group reporting settings', :js do
     expect(settings.unique_project_download_limit).to eq new_limit
     expect(settings.unique_project_download_limit_interval_in_seconds).to eq new_interval
     expect(settings.unique_project_download_limit_allowlist).to contain_exactly(user.username)
+    expect(settings.auto_ban_user_on_excessive_projects_download).to eq true
   end
 
   it 'displays validation errors' do

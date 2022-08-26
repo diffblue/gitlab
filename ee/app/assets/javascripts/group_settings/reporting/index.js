@@ -22,6 +22,7 @@ export const initSettingsForm = () => {
     maxNumberOfRepositoryDownloads,
     maxNumberOfRepositoryDownloadsWithinTimePeriod,
     gitRateLimitUsersAllowlist,
+    autoBanUserOnExcessiveProjectsDownload,
   } = parseFormProps(el.dataset);
 
   const { groupFullPath } = el.dataset;
@@ -38,6 +39,7 @@ export const initSettingsForm = () => {
           maxDownloads: maxNumberOfRepositoryDownloads,
           timePeriod: maxNumberOfRepositoryDownloadsWithinTimePeriod,
           allowlist: gitRateLimitUsersAllowlist,
+          autoBanUsers: autoBanUserOnExcessiveProjectsDownload,
         },
       }),
   });

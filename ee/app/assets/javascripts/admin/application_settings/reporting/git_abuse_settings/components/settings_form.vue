@@ -1,5 +1,6 @@
 <script>
-import { GlForm, GlFormGroup, GlFormInput, GlButton } from '@gitlab/ui';
+import { GlForm, GlFormGroup, GlFormInput, GlButton, GlToggle } from '@gitlab/ui';
+import { sprintf } from '~/locale';
 
 import {
   validateNumberOfRepos,
@@ -13,6 +14,7 @@ import {
   REPORTING_TIME_PERIOD_LABEL,
   EXCLUDED_USERS_LABEL,
   EXCLUDED_USERS_DESCRIPTION,
+  AUTO_BAN_TOGGLE_LABEL,
   SAVE_CHANGES,
 } from '../constants';
 
@@ -25,6 +27,7 @@ export default {
     GlFormGroup,
     GlFormInput,
     GlButton,
+    GlToggle,
     UsersAllowlist,
   },
   i18n: {
@@ -33,6 +36,7 @@ export default {
     REPORTING_TIME_PERIOD_LABEL,
     EXCLUDED_USERS_LABEL,
     EXCLUDED_USERS_DESCRIPTION,
+    AUTO_BAN_TOGGLE_LABEL,
     SAVE_CHANGES,
   },
   props: {
@@ -56,12 +60,23 @@ export default {
       required: false,
       default: () => [],
     },
+    autoBanUsers: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    scope: {
+      type: String,
+      required: false,
+      default: 'application',
+    },
   },
   data() {
     return {
       excludedUsers: this.allowlist,
       numberOfRepos: this.maxDownloads,
       reportingTimePeriod: this.timePeriod,
+      autoBanningEnabled: this.autoBanUsers,
       formErrors: {
         numberOfRepos: '',
         reportingTimePeriod: '',
@@ -73,6 +88,9 @@ export default {
     formHasError() {
       return Object.values(this.formErrors).some(Boolean);
     },
+    autoBanToggleLabel() {
+      return sprintf(this.$options.i18n.AUTO_BAN_TOGGLE_LABEL, { scope: this.scope });
+    },
   },
   methods: {
     updateGitAbuseRateLimitSettings() {
@@ -80,6 +98,7 @@ export default {
         maxDownloads: this.numberOfRepos,
         timePeriod: this.reportingTimePeriod,
         allowlist: this.excludedUsers,
+        autoBanUsers: this.autoBanningEnabled,
       });
     },
     addToExcludedUsers(username) {
@@ -150,6 +169,14 @@ export default {
         :excluded-usernames="excludedUsers"
         @user-added="addToExcludedUsers"
         @user-removed="removeFromExcludedUsers"
+      />
+    </gl-form-group>
+    <gl-form-group>
+      <gl-toggle
+        v-model="autoBanningEnabled"
+        :label="autoBanToggleLabel"
+        class="gl-mb-4"
+        data-testid="auto-ban-users-toggle"
       />
     </gl-form-group>
     <gl-button

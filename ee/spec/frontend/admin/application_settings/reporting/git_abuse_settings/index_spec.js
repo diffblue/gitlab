@@ -9,6 +9,7 @@ jest.mock('ee/admin/application_settings/reporting/git_abuse_settings/utils', ()
     maxNumberOfRepositoryDownloads: 10,
     maxNumberOfRepositoryDownloadsWithinTimePeriod: 300,
     gitRateLimitUsersAllowlist: ['user1', 'user2'],
+    autoBanUserOnExcessiveProjectsDownload: true,
   }),
 }));
 
@@ -24,6 +25,7 @@ describe('initGitAbuseRateLimitSettingsForm', () => {
     el.dataset.maxNumberOfRepositoryDownloads = 10;
     el.dataset.maxNumberOfRepositoryDownloadsWithinTimePeriod = 300;
     el.dataset.gitRateLimitUsersAllowlist = ['user1', 'user2'];
+    el.dataset.autoBanUserOnExcessiveProjectsDownload = true;
     document.body.appendChild(el);
 
     wrapper = createWrapper(initGitAbuseRateLimitSettingsForm());
@@ -58,6 +60,7 @@ describe('initGitAbuseRateLimitSettingsForm', () => {
         maxDownloads: 10,
         timePeriod: 300,
         allowlist: ['user1', 'user2'],
+        autoBanUsers: true,
       });
     });
   });
