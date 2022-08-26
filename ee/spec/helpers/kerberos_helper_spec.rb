@@ -3,12 +3,12 @@
 require 'spec_helper'
 require 'gssapi'
 
-RSpec.describe KerberosSpnegoHelper do
+RSpec.describe KerberosHelper do
   describe '#spnego_credentials!' do
     let(:gss) { double('GSSAPI::Simple') }
     let(:gss_service_name) { 'gss_service_name' }
 
-    subject { Class.new { include KerberosSpnegoHelper }.new }
+    subject { Class.new { include KerberosHelper }.new }
 
     context 'with successful remote call' do
       before do

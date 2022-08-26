@@ -17,7 +17,7 @@ module EE
 
       override :build_omniauth_customized_providers
       def build_omniauth_customized_providers
-        super.concat(%i[kerberos_spnego group_saml])
+        super.concat(%i[kerberos group_saml])
       end
 
       override :setup_provider

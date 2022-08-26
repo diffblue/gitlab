@@ -34,7 +34,7 @@ RSpec.describe 'Git HTTP requests' do
       let(:env) { { spnego_request_token: 'opaque_request_token' } }
 
       before do
-        allow_any_instance_of(Repositories::GitHttpController).to receive(:allow_kerberos_spnego_auth?).and_return(true)
+        allow_any_instance_of(Repositories::GitHttpController).to receive(:allow_kerberos_auth?).and_return(true)
       end
 
       context "when authentication fails because of invalid Kerberos token" do

@@ -896,8 +896,8 @@ Gitlab.ee do
   Settings.kerberos['https'] = Settings.gitlab.https if Settings.kerberos['https'].nil?
   Settings.kerberos['port'] ||= Settings.kerberos.https ? 8443 : 8088
 
-  if Settings.kerberos['enabled'] && !Settings.omniauth.providers.map(&:name).include?('kerberos_spnego')
-    Settings.omniauth.providers << Settingslogic.new({ 'name' => 'kerberos_spnego' })
+  if Settings.kerberos['enabled'] && !Settings.omniauth.providers.map(&:name).include?('kerberos')
+    Settings.omniauth.providers << Settingslogic.new({ 'name' => 'kerberos' })
   end
 end
 

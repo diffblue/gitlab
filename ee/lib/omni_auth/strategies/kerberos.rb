@@ -4,13 +4,13 @@ require 'omniauth'
 
 module OmniAuth
   module Strategies
-    class KerberosSpnego
+    class Kerberos
       include OmniAuth::Strategy
       include Gitlab::Routing.url_helpers
 
-      SESSION_KEY = :kerberos_spnego_principal_name
+      SESSION_KEY = :kerberos_principal_name
 
-      option :name, 'kerberos_spnego'
+      option :name, 'kerberos'
 
       uid { principal_name }
 
@@ -33,7 +33,7 @@ module OmniAuth
       end
 
       def request_phase
-        redirect users_auth_kerberos_spnego_negotiate_path
+        redirect users_auth_kerberos_negotiate_path
       end
     end
   end
