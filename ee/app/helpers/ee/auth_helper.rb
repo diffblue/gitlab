@@ -28,11 +28,6 @@ module EE
       super << 'smartcard'
     end
 
-    override :form_based_provider?
-    def form_based_provider?(name)
-      super || name.to_s == 'kerberos'
-    end
-
     override :form_based_providers
     def form_based_providers
       providers = super

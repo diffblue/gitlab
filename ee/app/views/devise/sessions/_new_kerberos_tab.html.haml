@@ -1,4 +1,0 @@
-- if kerberos_enabled?
-  .login-box.tab-pane{ id: "kerberos", role: 'tabpanel', class: active_when(form_based_auth_provider_has_active_class?(:kerberos)) }
-    .login-body
-      = render 'devise/sessions/new_kerberos'
