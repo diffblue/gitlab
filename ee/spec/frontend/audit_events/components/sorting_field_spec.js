@@ -53,7 +53,7 @@ describe('SortingField component', () => {
     });
 
     it('should emit the "selected" event with clicked option', () => {
-      expect(wrapper.emitted().selected).toBeTruthy();
+      expect(wrapper.emitted().selected).toHaveLength(1);
       expect(wrapper.emitted().selected[0]).toEqual(['created_asc']);
     });
   });
