@@ -21,6 +21,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
   <boardsidebartitle-stub />
    
   <sidebarassigneeswidget-stub
+    editable="true"
     fullpath="gitlab-org/gitlab-test"
     iid="27"
     initialassignees="[object Object],[object Object]"
@@ -572,6 +573,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
   <boardsidebartitle-stub />
    
   <sidebarassigneeswidget-stub
+    editable="true"
     fullpath="gitlab-org/gitlab-test"
     iid="27"
     initialassignees="[object Object],[object Object]"
