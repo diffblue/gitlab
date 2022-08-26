@@ -11,7 +11,7 @@ RSpec.shared_examples 'invalid multiple deployment access levels' do
   end
 
   it 'does not create deploy access level' do
-    expect { subject }.not_to change(ProtectedEnvironment::DeployAccessLevel, :count)
+    expect { subject }.not_to change(ProtectedEnvironments::DeployAccessLevel, :count)
   end
 end
 
@@ -19,7 +19,7 @@ RSpec.shared_examples 'invalid protected environment group' do
   let(:group) { create(:group, :private) }
 
   it 'does not create deploy access level' do
-    expect { subject }.not_to change(ProtectedEnvironment::DeployAccessLevel, :count)
+    expect { subject }.not_to change(ProtectedEnvironments::DeployAccessLevel, :count)
   end
 end
 
@@ -29,7 +29,7 @@ RSpec.shared_examples 'valid protected environment group' do
   let(:project) { project_group_link.project }
 
   it 'creates deploy access level' do
-    expect { subject }.to change(ProtectedEnvironment::DeployAccessLevel, :count).by(1)
+    expect { subject }.to change(ProtectedEnvironments::DeployAccessLevel, :count).by(1)
   end
 end
 
@@ -41,7 +41,7 @@ RSpec.shared_examples 'invalid protected environment user' do
   end
 
   it 'does not create deploy access level' do
-    expect { subject }.not_to change(ProtectedEnvironment::DeployAccessLevel, :count)
+    expect { subject }.not_to change(ProtectedEnvironments::DeployAccessLevel, :count)
   end
 end
 
@@ -53,6 +53,6 @@ RSpec.shared_examples 'valid protected environment user' do
   end
 
   it 'creates deploy access level' do
-    expect { subject }.to change(ProtectedEnvironment::DeployAccessLevel, :count).by(1)
+    expect { subject }.to change(ProtectedEnvironments::DeployAccessLevel, :count).by(1)
   end
 end

@@ -8,7 +8,7 @@ module EE
           extend ActiveSupport::Concern
 
           EE_OVERRIDES = {
-            deploy_access_levels: 'ProtectedEnvironment::DeployAccessLevel',
+            deploy_access_levels: 'ProtectedEnvironments::DeployAccessLevel',
             unprotect_access_levels: 'ProtectedBranch::UnprotectAccessLevel',
             security_setting: 'ProjectSecuritySetting'
           }.freeze

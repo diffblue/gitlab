@@ -21,7 +21,7 @@ RSpec.describe ProtectedEnvironments::DestroyService, '#execute' do
     it 'deletes the related DeployAccessLevel' do
       expect do
         subject
-      end.to change { ProtectedEnvironment::DeployAccessLevel.count }.from(1).to(0)
+      end.to change { ProtectedEnvironments::DeployAccessLevel.count }.from(1).to(0)
     end
   end
 
