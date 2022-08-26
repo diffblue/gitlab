@@ -619,9 +619,12 @@ RSpec.describe Ci::Build, :saas do
 
       it 'adds each report to the reports list and parses it' do
         subject
-        expect(sbom_reports_list.reports.count).to eq(2)
-        expect(sbom_reports_list.reports.first.components.count).to eq(352)
-        expect(sbom_reports_list.reports.last.components.count).to eq(1448)
+
+        aggregate_failures do
+          expect(sbom_reports_list.reports.count).to eq(2)
+          expect(sbom_reports_list.reports.first.components.count).to eq(15)
+          expect(sbom_reports_list.reports.last.components.count).to eq(352)
+        end
       end
     end
   end
