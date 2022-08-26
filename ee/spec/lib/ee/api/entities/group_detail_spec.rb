@@ -70,4 +70,36 @@ RSpec.describe API::Entities::GroupDetail do
       it_behaves_like 'does not expose the attributes'
     end
   end
+
+  describe 'ip_restriction_ranges attribute' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:user) { create(:user) }
+
+    subject { described_class.new(group, current_user: user).as_json }
+
+    before do
+      stub_licensed_features(group_ip_restriction: true)
+      update_group_ip_restriction(group, user, { ip_restriction_ranges: "192.168.0.0/24,10.0.0.0/8" })
+    end
+
+    it 'exposes the attributes' do
+      expect(subject[:ip_restriction_ranges]).to eq("192.168.0.0/24,10.0.0.0/8")
+    end
+
+    context 'when ip_restriction feature is not enabled' do
+      before do
+        stub_licensed_features(group_ip_restriction: false)
+      end
+
+      it 'does not expose ip_restriction_ranges attributes' do
+        expect(subject.keys).not_to include(
+          :ip_restriction_ranges
+        )
+      end
+    end
+  end
+
+  def update_group_ip_restriction(group, user, params)
+    ::Groups::UpdateService.new(group, user, params).execute
+  end
 end

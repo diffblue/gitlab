@@ -35,6 +35,9 @@ module EE
             optional :auto_ban_user_on_excessive_projects_download,
               type: Grape::API::Boolean,
               desc: 'Ban users from the group when they exceed maximum number of unique projects download in the specified time period'
+            optional :ip_restriction_ranges,
+              type: String,
+              desc: 'List of IP addresses which need to be restricted for group'
           end
 
           params :optional_projects_params_ee do
