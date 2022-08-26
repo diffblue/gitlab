@@ -11,7 +11,7 @@ module Gitlab
         end
 
         def reduce
-          data.reverse_each.each_with_object({}) do |item, hash|
+          data.each_with_object({}) do |item, hash|
             hash[format_date(item['date'])] = format_value(item['value'])
           end
         end
