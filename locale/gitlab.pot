@@ -24266,9 +24266,6 @@ msgstr ""
 msgid "Maximum allowable lifetime for access token (days)"
 msgstr ""
 
-msgid "Maximum allowable lifetime for personal access token (days)"
-msgstr ""
-
 msgid "Maximum allowed lifetime for SSH keys (in days)"
 msgstr ""
 
