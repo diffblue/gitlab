@@ -46,9 +46,6 @@ RSpec.describe JwtController do
       stub_container_registry_config(enabled: true, key: 'spec/fixtures/x509_certificate_pk.key')
       allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
       stub_licensed_features(group_ip_restriction: true)
-
-      # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
-      stub_feature_flags(container_registry_legacy_authentication_for_deploy_tokens: false)
     end
 
     context 'group with restriction' do
@@ -97,31 +94,6 @@ RSpec.describe JwtController do
       context 'address is outside the range' do
         let(:range) { '10.0.0.0/8' }
 
-        # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
-        shared_examples 'allowing access if the root group is in the feature flag' do
-          before do
-            stub_feature_flags(container_registry_legacy_authentication_for_deploy_tokens: group)
-          end
-
-          it_behaves_like 'successful JWT auth with token'
-
-          it 'logs the ip restriction' do
-            token.update!(read_registry: true, write_registry: true)
-            logger_parameters = {
-              class: ::Auth::ContainerRegistryAuthenticationService.name,
-              message: 'IP restriction violation',
-              deploy_token_id: token.id,
-              project_id: project.id,
-              project_path: project.full_path,
-              ip: '192.168.0.2'
-            }
-
-            expect(Gitlab::AuthLogger).to receive(:warn).at_least(:once).with(logger_parameters)
-
-            get '/jwt/auth', params: parameters, headers: headers
-          end
-        end
-
         it_behaves_like 'unsuccessful JWT auth'
 
         context 'with deploy token credentials' do
@@ -131,16 +103,12 @@ RSpec.describe JwtController do
             let(:token) { project_deploy_token }
 
             it_behaves_like 'unsuccessful JWT auth'
-
-            it_behaves_like 'allowing access if the root group is in the feature flag'
           end
 
           context 'with group deploy token' do
             let(:token) { group_deploy_token }
 
             it_behaves_like 'unsuccessful JWT auth'
-
-            it_behaves_like 'allowing access if the root group is in the feature flag'
           end
         end
       end

@@ -42,58 +42,6 @@ module EE
         })
       end
 
-      # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
-      override :deploy_token_can_pull?
-      def deploy_token_can_pull?(requested_project)
-        return false unless has_authentication_ability?(:read_container_image) && deploy_token.present?
-
-        root_group = requested_project.group&.root_ancestor
-        if root_group && ::Feature.enabled?(:container_registry_legacy_authentication_for_deploy_tokens, root_group)
-          read_granted = deploy_token.has_access_to?(requested_project) && deploy_token.read_registry?
-
-          log_ip_restriction(requested_project) if read_granted && ip_restricted?(requested_project)
-
-          read_granted
-        else
-          super
-        end
-      end
-
-      # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
-      override :deploy_token_can_push?
-      def deploy_token_can_push?(requested_project)
-        return false unless has_authentication_ability?(:create_container_image) && deploy_token.present?
-
-        root_group = requested_project.group&.root_ancestor
-
-        if root_group && ::Feature.enabled?(:container_registry_legacy_authentication_for_deploy_tokens, root_group)
-          push_granted = deploy_token.has_access_to?(requested_project) && deploy_token.write_registry?
-
-          log_ip_restriction(requested_project) if push_granted && ip_restricted?(requested_project)
-
-          push_granted
-        else
-          super
-        end
-      end
-
-      # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
-      def ip_restricted?(requested_project)
-        !::Gitlab::IpRestriction::Enforcer.new(requested_project.group).allows_current_ip?
-      end
-
-      # TODO : to remove along with container_registry_legacy_authentication_for_deploy_tokens
-      def log_ip_restriction(requested_project)
-        ::Gitlab::AuthLogger.warn(
-          class: self.class.name,
-          message: 'IP restriction violation',
-          deploy_token_id: deploy_token.id,
-          project_id: requested_project&.id,
-          project_path: requested_project&.full_path,
-          ip: ::Gitlab::IpAddressState.current
-        )
-      end
-
       def access_denied_in_maintenance_mode?
         @access_denied_in_maintenance_mode
       end
