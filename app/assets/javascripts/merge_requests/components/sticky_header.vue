@@ -8,6 +8,7 @@ import {
 } from '@gitlab/ui';
 import { mapGetters, mapState } from 'vuex';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { isLoggedIn } from '~/lib/utils/common_utils';
 import StatusBox from '~/issuable/components/status_box.vue';
 import DiscussionCounter from '~/notes/components/discussion_counter.vue';
 import TodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
@@ -52,7 +53,7 @@ export default {
       return `${this.getNoteableData.iid}`;
     },
     isSignedIn() {
-      return Boolean(gon.current_user_id);
+      return isLoggedIn();
     },
   },
   watch: {
