@@ -18,7 +18,7 @@ module EE
     end
 
     def show_deployment_approval?(deployment)
-      can_approve_deployment?(deployment)
+      can?(current_user, :read_deployment, deployment)
     end
 
     def can_approve_deployment?(deployment)

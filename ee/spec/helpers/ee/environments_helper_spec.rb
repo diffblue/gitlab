@@ -56,9 +56,14 @@ RSpec.describe EnvironmentsHelper do
   describe '#show_deployment_approval?' do
     subject { helper.show_deployment_approval?(deployment) }
 
-    context 'can approve deployment' do
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+    end
+
+    context 'can read deployment' do
       before do
-        allow(helper).to receive(:can_approve_deployment?)
+        allow(helper).to receive(:can?)
+          .with(user, :read_deployment, deployment)
           .and_return(true)
       end
 
@@ -67,9 +72,10 @@ RSpec.describe EnvironmentsHelper do
       end
     end
 
-    context 'cannot approve deployment' do
+    context 'cannot read deployment' do
       before do
-        allow(helper).to receive(:can_approve_deployment?)
+        allow(helper).to receive(:can?)
+          .with(user, :read_deployment, deployment)
           .and_return(false)
       end
 
