@@ -6,13 +6,14 @@ export CURL_TOKEN_HEADER="${CURL_TOKEN_HEADER:-"JOB-TOKEN"}"
 
 # We only want to store/retrieve packages from the canonical `gitlab.org/gitlab` project
 export CANONICAL_PACKAGES_PROJECT_ID="278964"
+export API_PACKAGES_PATH="https://gitlab.com/api/v4/projects/${CANONICAL_PACKAGES_PROJECT_ID}/packages/generic"
 
 # Workhorse constants
 export GITLAB_WORKHORSE_BINARIES_LIST="gitlab-resize-image gitlab-zip-cat gitlab-zip-metadata gitlab-workhorse"
 export GITLAB_WORKHORSE_PACKAGE_FILES_LIST="${GITLAB_WORKHORSE_BINARIES_LIST} WORKHORSE_TREE"
 export GITLAB_WORKHORSE_TREE=${GITLAB_WORKHORSE_TREE:-$(git rev-parse HEAD:workhorse)}
 export GITLAB_WORKHORSE_PACKAGE="workhorse-${GITLAB_WORKHORSE_TREE}.tar.gz"
-export GITLAB_WORKHORSE_PACKAGE_URL="https://gitlab.com/api/v4/projects/${CANONICAL_PACKAGES_PROJECT_ID}/packages/generic/${GITLAB_WORKHORSE_FOLDER}/${GITLAB_WORKHORSE_TREE}/${GITLAB_WORKHORSE_PACKAGE}"
+export GITLAB_WORKHORSE_PACKAGE_URL="${API_PACKAGES_PATH}/${GITLAB_WORKHORSE_FOLDER}/${GITLAB_WORKHORSE_TREE}/${GITLAB_WORKHORSE_PACKAGE}"
 
 # Assets constants
 export GITLAB_ASSETS_PATHS_LIST="assets-hash.txt app/assets/javascripts/locale/ public/assets/ tmp/cache/assets/sprockets/ tmp/cache/babel-loader/ tmp/cache/vue-loader/"
@@ -24,7 +25,7 @@ else
 fi
 export GITLAB_ASSETS_HASH="${GITLAB_ASSETS_HASH:-"NO_HASH"}"
 export GITLAB_ASSETS_PACKAGE="assets-${NODE_ENV}-${GITLAB_EDITION}-${GITLAB_ASSETS_HASH}.tar.gz"
-export GITLAB_ASSETS_PACKAGE_URL="https://gitlab.com/api/v4/projects/${CANONICAL_PACKAGES_PROJECT_ID}/packages/generic/assets/${NODE_ENV}-${GITLAB_EDITION}-${GITLAB_ASSETS_HASH}/${GITLAB_ASSETS_PACKAGE}"
+export GITLAB_ASSETS_PACKAGE_URL="${API_PACKAGES_PATH}/assets/${NODE_ENV}-${GITLAB_EDITION}-${GITLAB_ASSETS_HASH}/${GITLAB_ASSETS_PACKAGE}"
 
 # Generic helper functions
 function archive_doesnt_exist() {
@@ -53,6 +54,7 @@ function upload_package() {
 
   # We only want to upload artifacts to GitLab.com/gitlab-org/gitlab
   if [[ "${CI_SERVER_HOST:-gitlab.com}" != "gitlab.com" ]] || [[ "${CI_PROJECT_ID}" != "${CANONICAL_PACKAGES_PROJECT_ID}" ]]; then
+    echoerr "The archive ${archive_filename} isn't supposed to be uploaded for this instance (${CI_SERVER_HOST}) & project (${CI_PROJECT_PATH})!"
     exit 1
   fi
 

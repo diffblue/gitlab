@@ -249,8 +249,20 @@
   - "babel.config.js"
   - "config/webpack.config.js"
   - "config/**/*.js"
-  - "vendor/assets/**/*"
   - "{,ee/,jh/}app/assets/**/*"
+  - "vendor/assets/**/*"
+
+# .frontend-build-patterns + fixtures/emojis/**/* + locale/gitlab.pot
+.assets-compilation-patterns: &assets-compilation-patterns
+  - "{package.json,yarn.lock}"
+  - ".browserslistrc"
+  - "babel.config.js"
+  - "config/webpack.config.js"
+  - "config/**/*.js"
+  - "{,ee/,jh/}app/assets/**/*"
+  - "vendor/assets/**/*"
+  - "fixtures/emojis/**/*"
+  - "locale/gitlab.pot"
 
 .frontend-patterns-for-as-if-foss: &frontend-patterns-for-as-if-foss
   - "{package.json,yarn.lock}"
@@ -657,11 +669,29 @@
 #################
 .caching:rules:cache-workhorse:
   rules:
+    - <<: *if-dot-com-ee-schedule
     - <<: *if-dot-com-gitlab-org-default-branch
       changes: ["workhorse/**/*"]
-    - <<: *if-dot-com-gitlab-org-default-branch
-      when: manual
     - <<: *if-dot-com-gitlab-org-merge-request
+      changes:
+        - ".gitlab/ci/caching.gitlab-ci.yml"
+        - "scripts/gitlab_component_helpers.sh"
+      when: manual
+      allow_failure: true
+
+.caching:rules:cache-assets:
+  rules:
+    # The new strategy to cache assets as generic packages is experimental and can be disabled by removing the `CACHE_ASSETS_AS_PACKAGE` variable
+    - if: '$CACHE_ASSETS_AS_PACKAGE != "true"'
+      when: never
+    - <<: *if-dot-com-ee-schedule
+    - <<: *if-dot-com-gitlab-org-default-branch
+      changes: *assets-compilation-patterns
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes:
+        - ".gitlab/ci/caching.gitlab-ci.yml"
+        - "scripts/gitlab_component_helpers.sh"
+        - "lib/tasks/gitlab/assets.rake"
       when: manual
       allow_failure: true
 
