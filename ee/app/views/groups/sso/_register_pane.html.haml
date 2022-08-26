@@ -12,15 +12,15 @@
 
       .form-group
         = f.label :email, class: 'label-bold'
-        = f.email_field :email, class: "form-control", required: true, disabled: true, data: { qa_selector: 'new_user_email_field' }
+        = f.email_field :email, class: "form-control", required: true, disabled: true
 
       .name.form-group
         = f.label :name, _('Full name'), class: 'label-bold'
-        = f.text_field :name, class: "form-control top js-block-emoji", required: true, data: { qa_selector: 'new_user_username_field' }, disabled: resource.name.present?
+        = f.text_field :name, class: "form-control top js-block-emoji", required: true, disabled: resource.name.present?
 
       .username.form-group
         = f.label :username, class: 'label-bold'
-        = f.text_field :username, class: "form-control qa-new-user-username js-block-emoji", pattern: Gitlab::PathRegex::NAMESPACE_FORMAT_REGEX_JS, required: true, title: _("Please create a username with only alphanumeric characters.")
+        = f.text_field :username, class: "form-control js-block-emoji", pattern: Gitlab::PathRegex::NAMESPACE_FORMAT_REGEX_JS, required: true, title: _("Please create a username with only alphanumeric characters.")
         %p.validation-error.hide= _('Username is already taken.')
         %p.validation-success.hide= _('Username is available.')
         %p.validation-pending.hide= _('Checking username availability...')
@@ -36,7 +36,7 @@
           = render 'user_info'
 
         .submit-container
-          = f.submit _("Sign out & Register"), class: "btn-confirm gl-button btn qa-new-user-register-button", data: { qa_selector: 'sign_out_and_register_button' }
+          = f.submit _("Sign out & Register"), class: "btn-confirm gl-button btn"
       - else
         .submit-container
-          = f.submit _("Register"), class: "btn-confirm gl-button btn qa-new-user-register-button"
+          = f.submit _("Register"), class: "btn-confirm gl-button btn"

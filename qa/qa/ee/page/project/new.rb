@@ -20,12 +20,12 @@ module QA
 
               view 'ee/app/views/users/available_group_templates.html.haml' do
                 element :use_template_button
-                element :template_option_row
+                element :template_option_container
               end
 
               view 'ee/app/views/users/available_project_templates.html.haml' do
                 element :use_template_button
-                element :template_option_row
+                element :template_option_container
               end
 
               view 'app/assets/javascripts/vue_shared/new_namespace/components/welcome.vue' do

@@ -5,7 +5,7 @@
   = render Pajamas::ButtonComponent.new(icon: 'retry', icon_classes: 'gl-spin', button_options: { class: 'gl-mr-3', disabled: true }) do
     = _('Pending sync…')
 - else
-  = render Pajamas::ButtonComponent.new(icon: 'retry', button_options: { class: 'gl-mr-3 js-ldap-sync-now-button qa-sync-now-button', data: ldap_sync_now_button_data(@group) }) do
+  = render Pajamas::ButtonComponent.new(icon: 'retry', button_options: { class: 'gl-mr-3 js-ldap-sync-now-button', data: ldap_sync_now_button_data(@group) }) do
     = _('Sync now')
 - if @group.ldap_sync_ready? && @group.ldap_sync_last_successful_update_at
   %p.inline.gl-ml-3

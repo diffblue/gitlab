@@ -1,6 +1,6 @@
 - return unless @group.licensed_feature_available?(:custom_file_templates_for_namespace)
 
-%section.settings.no-animate#js-templates{ class: ('expanded' if expanded), data: { qa_selector: 'file_template_repositories' } }
+%section.settings.no-animate#js-templates{ class: ('expanded' if expanded), data: { qa_selector: 'file_template_repositories_container' } }
   .settings-header
     %h4
       = _('Templates')
@@ -17,7 +17,7 @@
         .form-group
           = f.label :file_template_project_id, class: 'label-light' do
             = _('Select a template repository')
-          = project_select_tag('group[file_template_project_id]', class: 'project-item-select hidden-filter-value qa-file-template-repository-dropdown', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
+          = project_select_tag('group[file_template_project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
             placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true }, value: @group.checked_file_template_project_id)
           = s_('Create common files more quickly, and standardize their format.')
           = link_to s_("How do I use file templates?"), help_page_path('user/project/repository/web_editor.md', anchor: 'template-dropdowns'), target: '_blank', rel: 'noopener noreferrer'

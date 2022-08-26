@@ -16,8 +16,7 @@ module QA
                 prepend ::QA::Page::Settings::Common
 
                 view 'ee/app/views/groups/_custom_project_templates_setting.html.haml' do
-                  element :custom_project_template_select
-                  element :custom_project_templates
+                  element :custom_project_templates_container
                   element :save_changes_button
                 end
 
@@ -38,28 +37,27 @@ module QA
                 end
 
                 view 'ee/app/views/groups/_templates_setting.html.haml' do
-                  element :file_template_repository_dropdown
-                  element :file_template_repositories
+                  element :file_template_repositories_container
                   element :save_changes_button
                 end
               end
             end
 
             def current_custom_project_template
-              expand_content(:custom_project_templates)
+              expand_content(:custom_project_templates_container)
 
-              within_element(:custom_project_template_select) do
+              within_element(:custom_project_templates_container) do
                 current_selection
               end
             end
 
             def choose_custom_project_template(path)
-              expand_content(:custom_project_templates)
+              expand_content(:custom_project_templates_container)
 
-              within_element(:custom_project_template_select) do
+              within_element(:custom_project_templates_container) do
                 clear_current_selection_if_present
+                expand_select_list
               end
-              click_element(:custom_project_template_select)
               search_and_select(path)
               click_element(:save_changes_button)
             end
@@ -109,20 +107,20 @@ module QA
             end
 
             def current_file_template_repository
-              expand_content(:file_template_repositories)
+              expand_content(:file_template_repositories_container)
 
-              within_element(:file_template_repository_dropdown) do
+              within_element(:file_template_repositories_container) do
                 current_selection
               end
             end
 
             def choose_file_template_repository(path)
-              expand_content(:file_template_repositories)
+              expand_content(:file_template_repositories_container)
 
-              within_element(:file_template_repository_dropdown) do
+              within_element(:file_template_repositories_container) do
                 clear_current_selection_if_present
+                expand_select_list
               end
-              click_element(:file_template_repository_dropdown)
               search_and_select(path)
               click_element(:save_changes_button)
             end
