@@ -20,6 +20,40 @@ RSpec.describe Issues::UpdateService do
       described_class.new(project: project, current_user: user, params: opts).execute(issue)
     end
 
+    context 'updating weight' do
+      before do
+        stub_licensed_features(issue_weights: true)
+
+        project.add_developer(user)
+
+        issue.update!(weight: 1)
+      end
+
+      context 'when weight is changed' do
+        it "triggers 'issuableWeightUpdated' for issuable weight update subscription" do
+          expect(GraphqlTriggers).to receive(:issuable_weight_updated).with(issue).and_call_original
+
+          update_issue(weight: nil)
+        end
+      end
+
+      context 'when weight remains unchanged' do
+        it "does not trigger 'issuableWeightUpdated' for issuable weight update subscription" do
+          expect(GraphqlTriggers).not_to receive(:issuable_weight_updated)
+
+          update_issue(weight: 1)
+        end
+      end
+
+      context 'when weight param is not provided' do
+        it "does not trigger 'issuableWeightUpdated' for issuable weight update subscription" do
+          expect(GraphqlTriggers).not_to receive(:issuable_weight_updated)
+
+          update_issue(title: "foobar")
+        end
+      end
+    end
+
     context 'refresh epic dates' do
       before do
         issue.update!(epic: epic)

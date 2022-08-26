@@ -36,6 +36,7 @@ module EE
         super
 
         handle_iteration_change(issue)
+        handle_weight_change(issue)
       end
 
       override :before_update
@@ -58,6 +59,12 @@ module EE
         return unless issue.previous_changes.include?('sprint_id')
 
         send_iteration_change_notification(issue)
+      end
+
+      def handle_weight_change(issue)
+        return unless issue.previous_changes.key?(:weight)
+
+        ::GraphqlTriggers.issuable_weight_updated(issue)
       end
 
       def send_iteration_change_notification(issue)
