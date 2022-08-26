@@ -66,6 +66,7 @@ module EE
         unique_project_download_limit
         unique_project_download_limit_interval_in_seconds
         unique_project_download_limit_allowlist
+        auto_ban_user_on_excessive_projects_download
       ].freeze
 
       override :allowed_namespace_settings_params

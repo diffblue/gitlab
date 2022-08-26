@@ -20,6 +20,7 @@ describe('SettingsFormContainer', () => {
       propsData: {
         timePeriod: 1,
         allowlist: ['user1'],
+        autoBanUsers: true,
         ...props,
       },
     });
@@ -40,6 +41,7 @@ describe('SettingsFormContainer', () => {
       maxDownloads: 0,
       timePeriod: 1,
       allowlist: ['user1'],
+      autoBanUsers: true,
     });
   });
 
@@ -48,6 +50,7 @@ describe('SettingsFormContainer', () => {
       maxDownloads: 1,
       timePeriod: 2,
       allowlist: ['user2'],
+      autoBanUsers: true,
     };
 
     it('calls Api.updateApplicationSettings with the correct payload', () => {
@@ -58,6 +61,7 @@ describe('SettingsFormContainer', () => {
         max_number_of_repository_downloads: 1,
         max_number_of_repository_downloads_within_time_period: 2,
         git_rate_limit_users_allowlist: ['user2'],
+        auto_ban_user_on_excessive_projects_download: true,
       });
     });
 

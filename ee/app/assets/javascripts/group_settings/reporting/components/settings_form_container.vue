@@ -36,10 +36,15 @@ export default {
       required: false,
       default: () => [],
     },
+    autoBanUsers: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data: () => ({ isLoading: false }),
   methods: {
-    async updateSettings({ maxDownloads, timePeriod, allowlist }) {
+    async updateSettings({ maxDownloads, timePeriod, allowlist, autoBanUsers }) {
       try {
         this.isLoading = true;
 
@@ -47,6 +52,7 @@ export default {
           unique_project_download_limit: maxDownloads,
           unique_project_download_limit_interval_in_seconds: timePeriod,
           unique_project_download_limit_allowlist: allowlist,
+          auto_ban_user_on_excessive_projects_download: autoBanUsers,
         });
 
         createFlash({
@@ -72,6 +78,8 @@ export default {
     :max-downloads="maxDownloads"
     :time-period="timePeriod"
     :allowlist="allowlist"
+    :auto-ban-users="autoBanUsers"
+    scope="namespace"
     @submit="updateSettings"
   />
 </template>

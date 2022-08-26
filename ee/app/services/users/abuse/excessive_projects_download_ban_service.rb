@@ -47,7 +47,7 @@ module Users
       end
 
       def ban_user!
-        return false unless ::Feature.enabled?(:auto_ban_user_on_excessive_projects_download)
+        return false unless auto_ban_users
 
         result = current_user.ban!
 
@@ -95,6 +95,10 @@ module Users
 
       def users_allowlist
         @git_rate_limit_users_allowlist ||= settings.git_rate_limit_users_allowlist
+      end
+
+      def auto_ban_users
+        @auto_ban_users ||= settings.auto_ban_user_on_excessive_projects_download
       end
 
       def settings

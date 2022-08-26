@@ -22,6 +22,7 @@ export const initGitAbuseRateLimitSettingsForm = () => {
     maxNumberOfRepositoryDownloads,
     maxNumberOfRepositoryDownloadsWithinTimePeriod,
     gitRateLimitUsersAllowlist,
+    autoBanUserOnExcessiveProjectsDownload,
   } = parseFormProps(el.dataset);
 
   return new Vue({
@@ -34,6 +35,7 @@ export const initGitAbuseRateLimitSettingsForm = () => {
           maxDownloads: maxNumberOfRepositoryDownloads,
           timePeriod: maxNumberOfRepositoryDownloadsWithinTimePeriod,
           allowlist: gitRateLimitUsersAllowlist,
+          autoBanUsers: autoBanUserOnExcessiveProjectsDownload,
         },
       }),
   });

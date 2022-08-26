@@ -1,6 +1,7 @@
-import { GlButton, GlForm } from '@gitlab/ui';
+import { GlButton, GlForm, GlToggle } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { sprintf } from '~/locale';
 
 import SettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
 import UsersAllowlist from 'ee/admin/application_settings/reporting/git_abuse_settings/components/users_allowlist.vue';
@@ -18,6 +19,7 @@ import {
   EXCLUDED_USERS_LABEL,
   MAX_EXCLUDED_USERS,
   EXCLUDED_USERS_LIMIT_ERROR,
+  AUTO_BAN_TOGGLE_LABEL,
 } from 'ee/admin/application_settings/reporting/git_abuse_settings/constants';
 
 describe('Git abuse rate limit settings form component', () => {
@@ -33,6 +35,8 @@ describe('Git abuse rate limit settings form component', () => {
   const findExcludedUsersFormGroup = () => wrapper.findByTestId('excluded-users-group');
 
   const findUsersAllowlist = () => wrapper.findComponent(UsersAllowlist);
+
+  const findAutoBanToggle = () => wrapper.findComponent(GlToggle);
 
   const findSubmitButton = () => wrapper.findComponent(GlButton);
 
@@ -232,19 +236,50 @@ describe('Git abuse rate limit settings form component', () => {
     });
   });
 
-  it('emits "submit" event with the correct arguments when form is submitted', () => {
-    createComponent({ props: { timePeriod: 1, allowlist: ['user1'] } });
-
-    wrapper.findComponent(GlForm).vm.$emit('submit', {
-      preventDefault: jest.fn(),
+  describe('Auto ban users toggle', () => {
+    beforeEach(() => {
+      createComponent();
     });
 
-    const submitEvents = wrapper.emitted().submit;
-    expect(submitEvents.length).toEqual(1);
-    expect(submitEvents[0][0]).toMatchObject({
-      maxDownloads: 0,
-      timePeriod: 1,
-      allowlist: ['user1'],
+    it('renders component properly', () => {
+      expect(findAutoBanToggle().exists()).toBe(true);
+    });
+
+    it('shows the toggle component', () => {
+      expect(findAutoBanToggle().props('label')).toBe(
+        sprintf(AUTO_BAN_TOGGLE_LABEL, { scope: 'application' }),
+      );
+    });
+
+    it('sets the default value to be false', () => {
+      expect(findAutoBanToggle().props('value')).toBe(false);
+    });
+
+    it('emits toggle event', async () => {
+      findAutoBanToggle().vm.$emit('change', true);
+
+      await nextTick();
+
+      expect(findAutoBanToggle().props('value')).toBe(true);
+    });
+  });
+
+  describe('Form submission', () => {
+    it('emits "submit" event with the correct arguments when form is submitted', () => {
+      createComponent({ props: { timePeriod: 1, allowlist: ['user1'], autoBanUsers: true } });
+
+      wrapper.findComponent(GlForm).vm.$emit('submit', {
+        preventDefault: jest.fn(),
+      });
+
+      const submitEvents = wrapper.emitted().submit;
+      expect(submitEvents.length).toEqual(1);
+      expect(submitEvents[0][0]).toMatchObject({
+        maxDownloads: 0,
+        timePeriod: 1,
+        allowlist: ['user1'],
+        autoBanUsers: true,
+      });
     });
   });
 });

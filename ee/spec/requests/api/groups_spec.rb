@@ -339,7 +339,8 @@ RSpec.describe API::Groups do
           {
             unique_project_download_limit: 1,
             unique_project_download_limit_interval_in_seconds: 2,
-            unique_project_download_limit_allowlist: [allowed_username]
+            unique_project_download_limit_allowlist: [allowed_username],
+            auto_ban_user_on_excessive_projects_download: true
           }
         end
 
@@ -363,6 +364,7 @@ RSpec.describe API::Groups do
             expect(settings.unique_project_download_limit).to eq 1
             expect(settings.unique_project_download_limit_interval_in_seconds).to eq 2
             expect(settings.unique_project_download_limit_allowlist).to contain_exactly(allowed_username)
+            expect(settings.auto_ban_user_on_excessive_projects_download).to eq true
           end
         end
 
@@ -382,6 +384,7 @@ RSpec.describe API::Groups do
             expect(settings.unique_project_download_limit).to eq 0
             expect(settings.unique_project_download_limit_interval_in_seconds).to eq 0
             expect(settings.unique_project_download_limit_allowlist).to be_empty
+            expect(settings.auto_ban_user_on_excessive_projects_download).to eq false
           end
         end
       end
