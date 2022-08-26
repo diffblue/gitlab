@@ -13,8 +13,10 @@
   - code_push_count = @data_collector.total_push_count
   - commits_count = @data_collector.total_commit_count
   - person_count = @data_collector.total_push_author_count
-  - person_count_string = pluralize person_count, 'person'
-  - pushes_string = html_escape(s_('ContributionAnalytics|%{pushes} pushes, more than %{commits} commits by %{people} contributors.')) % { pushes: tag.strong(code_push_count), commits: tag.strong(commits_count), people: tag.strong(person_count_string) }
+  - pushes = n_('%d push', '%d pushes', code_push_count) % code_push_count
+  - commits = n_('%d commit', '%d commits', commits_count) % commits_count
+  - contributor_count = n_('%d contributor', '%d contributors', person_count) % person_count
+  - pushes_string = html_escape(s_('ContributionAnalytics|%{pushes}, more than %{commits} by %{contributors}.')) % { pushes: tag.strong(pushes), commits: tag.strong(commits), contributors: tag.strong(contributor_count) }
   - if code_push_count > 0 || commits_count > 0 || person_count > 0
     = pushes_string
   - else
