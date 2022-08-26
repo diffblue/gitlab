@@ -1,5 +1,5 @@
 - if ::Gitlab::CurrentSettings.custom_project_templates_enabled?
-  %section.settings.as-custom-project-templates.no-animate#js-custom-project-templates-settings{ class: ('expanded' if expanded), data: { qa_selector: 'custom_project_template_content' } }
+  %section.settings.as-custom-project-templates.no-animate#js-custom-project-templates-settings{ class: ('expanded' if expanded), data: { qa_selector: 'custom_project_template_container' } }
     .settings-header
       %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
         = _('Custom project templates')
@@ -18,7 +18,7 @@
             = f.label :file_template_project_id, class: 'label-bold' do
               .form-text
                 = _('Select group')
-            = groups_select_tag('application_setting[custom_project_templates_group_id]', selected: @application_setting.custom_project_templates_group_id, class: 'input-clamp allowClear qa-custom-project-template-select', multiple: false)
+            = groups_select_tag('application_setting[custom_project_templates_group_id]', selected: @application_setting.custom_project_templates_group_id, class: 'input-clamp allowClear', multiple: false)
             - link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('user/admin_area/custom_project_templates.md') }
             = s_("AdminSettings|The projects in this group can be selected as templates for new projects created on the instance. %{link_start}Learn more.%{link_end} ").html_safe % { link_start: link_start, link_end: "</a>".html_safe }
 

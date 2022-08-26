@@ -10,7 +10,7 @@ module QA
 
             view 'ee/app/views/ldap_group_links/_form.html.haml' do
               element :add_sync_button
-              element :ldap_group_cn_select
+              element :ldap_group_field
               element :ldap_sync_group_radio
               element :ldap_user_filter_field
             end
@@ -20,7 +20,9 @@ module QA
             end
 
             def set_group_cn(group_cn)
-              click_element(:ldap_group_cn_select)
+              within_element(:ldap_group_field) do
+                expand_select_list
+              end
               search_and_select(group_cn)
             end
 

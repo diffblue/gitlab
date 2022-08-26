@@ -5,7 +5,7 @@ module QA
     module Page
       module Group
         class Members < QA::Page::Base
-          view 'ee/app/views/groups/group_members/_sync_button.html.haml' do
+          view 'ee/app/helpers/groups/ldap_sync_helper.rb' do
             element :sync_now_button
           end
 

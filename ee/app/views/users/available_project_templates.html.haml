@@ -1,7 +1,7 @@
 .custom-project-templates
   - if @custom_project_templates.present?
     - @custom_project_templates.each do |template|
-      .template-option.d-flex.align-items-center{ data: { qa_selector: 'template_option_row' } }
+      .template-option.d-flex.align-items-center{ data: { qa_selector: 'template_option_container' } }
         .avatar-container.s40
           = project_icon(template, alt: template.name, class: 'btn-template-icon avatar s40 avatar-tile', lazy: false)
         .description

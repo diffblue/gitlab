@@ -5,6 +5,7 @@ module Groups::LdapSyncHelper
     {
       method: :put,
       path: sync_group_ldap_path(group),
+      qa_selector: 'sync_now_button',
       modal_attributes: {
         message: _("Warning: Synchronizing LDAP removes direct members' access."),
         title: _('Synchronize LDAP'),

@@ -6,11 +6,11 @@ module EE
       saml_link(text, provider.group.full_path, **args)
     end
 
-    def saml_link(text, group_path, redirect: nil, html_class: 'btn', id: nil)
+    def saml_link(text, group_path, redirect: nil, html_class: 'btn', id: nil, data: nil)
       redirect ||= group_path(group_path)
       url = omniauth_authorize_path(:user, :group_saml, group_path: group_path, redirect_to: redirect)
 
-      link_to(text, url, method: :post, class: html_class, id: id)
+      link_to(text, url, method: :post, class: html_class, id: id, data: data)
     end
   end
 end
