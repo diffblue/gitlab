@@ -36,6 +36,47 @@ describe('ee/environments/components/environment_approval.vue', () => {
       .findByRole('textbox', { name: (content) => content.startsWith(__('Comment')) })
       .setValue(comment);
 
+  describe('button', () => {
+    it('shows the button so long as the environment has approvals', () => {
+      wrapper = createWrapper();
+      expect(findButton().exists()).toBe(true);
+    });
+
+    it('shows the button while the deployment still needs approving', () => {
+      wrapper = createWrapper({
+        propsData: {
+          environment: {
+            ...environment,
+            upcomingDeployment: {
+              ...environment.upcomingDeployment,
+              approvals: [],
+            },
+          },
+        },
+      });
+
+      expect(findButton().exists()).toBe(true);
+    });
+
+    it('hides the button if no approvals were required (a deployment happened before the environment was protected)', () => {
+      wrapper = createWrapper({
+        propsData: {
+          environment: {
+            ...environment,
+            requiredApprovalCount: 3,
+            upcomingDeployment: {
+              ...environment.upcomingDeployment,
+              approvals: [],
+              pendingApprovalCount: 0,
+            },
+          },
+        },
+      });
+
+      expect(findButton().exists()).toBe(false);
+    });
+  });
+
   describe('modal', () => {
     let modal;
 
@@ -240,30 +281,49 @@ describe('ee/environments/components/environment_approval.vue', () => {
     });
   });
 
-  describe('showing approvals', () => {
+  describe.each([
+    { status: 'approved', text: 'Approved' },
+    { status: 'rejected', text: 'Rejected' },
+  ])('showing approvals that have been $status', ({ status, text }) => {
     const approval = environment.upcomingDeployment.approvals[0];
 
     beforeEach(async () => {
-      wrapper = createWrapper();
+      wrapper = createWrapper({
+        propsData: {
+          environment: {
+            ...environment,
+            upcomingDeployment: {
+              ...environment.upcomingDeployment,
+              approvals: [{ ...approval, status }],
+            },
+          },
+        },
+      });
       await findButton().trigger('click');
     });
 
-    it('should show the avatar for who approved the deployment', () => {
+    it(`should show the avatar for who ${status} the deployment`, () => {
       const avatar = wrapper.findByRole('img', { name: 'avatar' });
 
       expect(avatar.attributes('src')).toBe(approval.user.avatarUrl);
     });
 
-    it('should show who approved the deployment', () => {
+    it(`should show who ${status} the deployment`, () => {
       const link = wrapper.findByRole('link', { name: `@${approval.user.username}` });
 
       expect(link.attributes('href')).toBe(approval.user.webUrl);
     });
 
-    it('should show when they approved the deployment', () => {
+    it(`should show when they ${status} the deployment`, () => {
       const time = wrapper.find('time');
 
       expect(time.text()).toBe('just now');
+    });
+
+    it(`should show that the deployment has been ${status}`, () => {
+      const statusText = wrapper.findByText(text);
+
+      expect(statusText.exists()).toBe(true);
     });
 
     it('should show the comment associated with the approval', () => {
