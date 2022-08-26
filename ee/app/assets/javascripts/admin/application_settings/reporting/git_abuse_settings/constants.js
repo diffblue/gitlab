@@ -52,6 +52,10 @@ export const EXCLUDED_USERS_DESCRIPTION = s__(
   'GitAbuse|Users who are excluded from the Git abuse rate limit.',
 );
 
+export const AUTO_BAN_TOGGLE_LABEL = s__(
+  'GitAbuse|Automatically ban users from this %{scope} when they exceed the specified limits',
+);
+
 export const SEARCH_USERS = __('Search users');
 export const SEARCH_TERM_TOO_SHORT = __('Enter at least three characters to search');
 export const NO_RESULTS = __('No results');

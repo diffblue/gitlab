@@ -17,7 +17,8 @@ RSpec.describe API::Entities::GroupDetail do
       group&.namespace_settings&.update!(
         unique_project_download_limit: 1,
         unique_project_download_limit_interval_in_seconds: 2,
-        unique_project_download_limit_allowlist: [user.username]
+        unique_project_download_limit_allowlist: [user.username],
+        auto_ban_user_on_excessive_projects_download: true
       )
     end
 
@@ -27,6 +28,7 @@ RSpec.describe API::Entities::GroupDetail do
       expect(subject[:unique_project_download_limit]).to eq 1
       expect(subject[:unique_project_download_limit_interval_in_seconds]).to eq 2
       expect(subject[:unique_project_download_limit_allowlist]).to contain_exactly(user.username)
+      expect(subject[:auto_ban_user_on_excessive_projects_download]).to eq true
     end
 
     shared_examples 'does not expose the attributes' do
@@ -34,7 +36,8 @@ RSpec.describe API::Entities::GroupDetail do
         expect(subject.keys).not_to include(
           :unique_project_download_limit,
           :unique_project_download_limit_interval,
-          :unique_project_download_limit_allowlist
+          :unique_project_download_limit_allowlist,
+          :auto_ban_user_on_excessive_projects_download
         )
       end
     end

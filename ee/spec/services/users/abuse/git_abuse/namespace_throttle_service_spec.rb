@@ -16,7 +16,8 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
         :group,
         namespace_settings: create(:namespace_settings,
           unique_project_download_limit: limit,
-          unique_project_download_limit_interval_in_seconds: time_period_in_seconds
+          unique_project_download_limit_interval_in_seconds: time_period_in_seconds,
+          auto_ban_user_on_excessive_projects_download: true
         )
       )
     end
@@ -61,7 +62,6 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
 
     context 'when user exceeds the download limit within the set time period for a namespace' do
       before do
-        stub_feature_flags(auto_ban_user_on_namespace_excessive_projects_download: true)
         limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
       end
 
@@ -102,11 +102,19 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
       end
     end
 
+    context 'when user is already banned' do
+      before do
+        create(:namespace_ban, namespace: namespace, user: user)
+        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
+      end
+
+      it { is_expected.to include(banned: true) }
+    end
+
     context 'when owner exceeds the download limit within the set time period for a namespace' do
       let(:user) { owner }
 
       before do
-        stub_feature_flags(auto_ban_user_on_namespace_excessive_projects_download: true)
         limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), owner) }
       end
 
@@ -141,9 +149,12 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
       end
     end
 
-    context 'when auto_ban_user_on_namespace_excessive_projects_download feature flag is disabled' do
+    context 'when auto_ban_user_on_excessive_projects_download is disabled' do
       before do
-        stub_feature_flags(auto_ban_user_on_namespace_excessive_projects_download: false)
+        namespace.namespace_settings.update!({
+          auto_ban_user_on_excessive_projects_download: false
+        })
+
         limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
       end
 
@@ -175,15 +186,6 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
 
         execute
       end
-    end
-
-    context 'when user is already banned' do
-      before do
-        create(:namespace_ban, namespace: namespace, user: user)
-        limit.times { described_class.execute(build_stubbed(:project, namespace: namespace), user) }
-      end
-
-      it { is_expected.to include(banned: true) }
     end
 
     context 'when allowlisted user exceeds the download limit within the set time period' do

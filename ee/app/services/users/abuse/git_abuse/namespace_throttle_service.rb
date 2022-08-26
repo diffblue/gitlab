@@ -52,7 +52,7 @@ module Users
         end
 
         def ban_user!
-          return false unless ::Feature.enabled?(:auto_ban_user_on_namespace_excessive_projects_download, namespace)
+          return false unless auto_ban_users
           return false if user_owns_namespace?
 
           result = ::Users::Abuse::NamespaceBans::CreateService.new(namespace: namespace, user: current_user).execute
@@ -104,6 +104,10 @@ module Users
 
         def allowlist
           @allowlist ||= namespace_settings&.unique_project_download_limit_allowlist
+        end
+
+        def auto_ban_users
+          @auto_ban_users ||= namespace_settings&.auto_ban_user_on_excessive_projects_download
         end
       end
     end
