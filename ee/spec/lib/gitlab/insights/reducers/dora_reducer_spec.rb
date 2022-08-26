@@ -12,8 +12,9 @@ RSpec.describe Gitlab::Insights::Reducers::DoraReducer do
 
       result = described_class
         .reduce(data, period: 'day', metric: 'change_failure_rate')
+        .to_a
 
-      expect(result).to eq({ '01 Jan 20' => 50, '02 Jan 20' => 10 })
+      expect(result).to eq({ '01 Jan 20' => 50, '02 Jan 20' => 10 }.to_a)
     end
   end
 
@@ -26,8 +27,9 @@ RSpec.describe Gitlab::Insights::Reducers::DoraReducer do
 
       result = described_class
         .reduce(data, period: 'month', metric: 'deployment_frequency')
+        .to_a
 
-      expect(result).to eq({ 'January 2020' => 100, 'February 2020' => 20 })
+      expect(result).to eq({ 'January 2020' => 100, 'February 2020' => 20 }.to_a)
     end
   end
 
@@ -41,8 +43,9 @@ RSpec.describe Gitlab::Insights::Reducers::DoraReducer do
 
       result = described_class
         .reduce(data, period: 'day', metric: 'lead_time_for_changes')
+        .to_a
 
-      expect(result).to eq({ '01 Jan 20' => 1, '02 Jan 20' => 0.5, '03 Jan 20' => nil })
+      expect(result).to match({ '01 Jan 20' => 1, '02 Jan 20' => 0.5, '03 Jan 20' => nil }.to_a)
     end
   end
 
@@ -56,8 +59,9 @@ RSpec.describe Gitlab::Insights::Reducers::DoraReducer do
 
       result = described_class
         .reduce(data, period: 'day', metric: 'time_to_restore_service')
+        .to_a
 
-      expect(result).to eq({ '01 Jan 20' => 1, '02 Jan 20' => 0.5, '03 Jan 20' => nil })
+      expect(result).to eq({ '01 Jan 20' => 1, '02 Jan 20' => 0.5, '03 Jan 20' => nil }.to_a)
     end
   end
 

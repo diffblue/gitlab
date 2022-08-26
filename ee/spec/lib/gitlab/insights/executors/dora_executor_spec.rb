@@ -84,7 +84,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
     let(:insights_entity) { group }
 
     it_behaves_like 'serialized_data examples' do
-      let(:expected_result) { [25, 50] }
+      let(:expected_result) { [50, 25] }
     end
 
     context 'when filtering environment tiers' do
@@ -93,7 +93,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
       end
 
       it_behaves_like 'serialized_data examples' do
-        let(:expected_result) { [25, 150] }
+        let(:expected_result) { [150, 25] }
       end
     end
 
@@ -142,7 +142,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
     let(:insights_entity) { project1 }
 
     it_behaves_like 'serialized_data examples' do
-      let(:expected_result) { [5, 50] }
+      let(:expected_result) { [50, 5] }
     end
 
     context 'when filtering projects' do
@@ -150,7 +150,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
         let(:projects) { { only: [project1.id] } }
 
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [5, 50] }
+          let(:expected_result) { [50, 5] }
         end
       end
 
@@ -159,7 +159,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
 
         # ignores the filter
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [5, 50] }
+          let(:expected_result) { [50, 5] }
         end
       end
     end
