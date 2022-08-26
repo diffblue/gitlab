@@ -338,7 +338,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
         subject { described_class.new(pipeline: pipeline).execute }
 
         it 'returns all vulnerabilities with all scanners available' do
-          expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium trivy zaproxy]
+          expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium-maven trivy zaproxy]
         end
       end
 
@@ -421,11 +421,11 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
     context 'by all filters' do
       context 'with found entity' do
-        let(:params) { { report_type: %w[sast dast container_scanning dependency_scanning], scanner: %w[find_sec_bugs gemnasium trivy zaproxy], scope: 'all' } }
+        let(:params) { { report_type: %w[sast dast container_scanning dependency_scanning], scanner: %w[find_sec_bugs gemnasium-maven trivy zaproxy], scope: 'all' } }
 
         it 'filters by all params' do
           expect(subject.findings.count).to eq(cs_count + dast_count + ds_count + sast_count)
-          expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium trivy zaproxy]
+          expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium-maven trivy zaproxy]
           expect(subject.findings.map(&:confidence).uniq).to match_array(%w[unknown low medium high])
           expect(subject.findings.map(&:severity).uniq).to match_array(%w[unknown low medium high critical info])
         end
