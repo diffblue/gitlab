@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 export const ZUORA_SCRIPT_URL = 'https://static.zuora.com/Resources/libs/hosted/1.3.1/zuora-min.js';
 
@@ -10,6 +10,7 @@ export const ZUORA_IFRAME_OVERRIDE_PARAMS = {
   retainValues: 'true',
 };
 
+export const ERROR_UNEXPECTED = __('An unexpected error occurred');
 export const ERROR_FETCHING_COUNTRIES = s__('Checkout|Failed to load countries. Please try again.');
 export const ERROR_FETCHING_STATES = s__('Checkout|Failed to load states. Please try again.');
 export const ERROR_LOADING_PAYMENT_FORM = s__(
