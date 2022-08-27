@@ -3,7 +3,7 @@ import { GlLink } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import { mockTracking } from 'helpers/tracking_helper';
-import { QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
+import { ERROR_UNEXPECTED, QSR_RECONCILIATION_PATH, STEPS } from 'ee/subscriptions/constants';
 import Component from 'ee/subscriptions/new/components/checkout/subscription_details.vue';
 import { NEW_GROUP } from 'ee/subscriptions/new/constants';
 import createStore from 'ee/subscriptions/new/store';
@@ -13,17 +13,17 @@ import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import getBillableMembersCountQuery from 'ee/subscriptions/graphql/queries/billable_members_count.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
+import { logError } from '~/lib/logger';
+
+jest.mock('~/lib/logger');
 
 const availablePlans = [
   { id: 'firstPlanId', code: 'bronze', price_per_year: 48, name: 'bronze' },
   { id: 'secondPlanId', code: 'silver', price_per_year: 228, name: 'silver' },
 ];
-
 const firstGroup = { id: 132, name: 'My first group', full_path: 'my-first-group' };
 const secondGroup = { id: 483, name: 'My second group', full_path: 'my-second-group' };
-
 const groupData = [firstGroup, secondGroup];
-
 const createDefaultInitialStoreData = (initialData) => ({
   availablePlans: JSON.stringify(availablePlans),
   groupData: JSON.stringify(groupData),
@@ -32,7 +32,6 @@ const createDefaultInitialStoreData = (initialData) => ({
   fullName: 'Full Name',
   ...initialData,
 });
-
 const defaultBillableMembersCountMock = jest.fn().mockResolvedValue({
   data: {
     group: {
@@ -717,6 +716,7 @@ describe('Subscription Details', () => {
 
   describe('when errored', () => {
     const errorMessage = 'Oopsie, something went wrong';
+
     beforeEach(() => {
       const mockError = new Error(errorMessage);
       const billableMembersCountMock = jest.fn().mockRejectedValue(mockError);
@@ -727,8 +727,14 @@ describe('Subscription Details', () => {
 
     it('should show an alert with the error message', () => {
       expect(findErrorAlert().exists()).toBe(true);
+    });
 
-      expect(findErrorAlert().text()).toContain(errorMessage);
+    it('shows the correct error message', () => {
+      expect(findErrorAlert().text()).toContain(ERROR_UNEXPECTED);
+    });
+
+    it('invokes the error logger', () => {
+      expect(logError).toHaveBeenCalledWith(new Error(errorMessage));
     });
 
     it('should not show the error alert when dismissed', async () => {
