@@ -23225,6 +23225,9 @@ msgstr ""
 msgid "Learn more about groups."
 msgstr ""
 
+msgid "Learn more about issues."
+msgstr ""
+
 msgid "Learn more about max seats used"
 msgstr ""
 
@@ -42438,6 +42441,9 @@ msgid "Use issue count"
 msgstr ""
 
 msgid "Use issue weight"
+msgstr ""
+
+msgid "Use issues to collaborate on ideas, solve problems, and plan work"
 msgstr ""
 
 msgid "Use one line per URI"
