@@ -69,6 +69,58 @@ RSpec.describe Groups::DependencyProxyForContainersController do
     end
   end
 
+  shared_examples 'logging ip restriction offenses' do
+    before do
+      allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
+      stub_licensed_features(group_ip_restriction: true)
+      group.add_maintainer(user)
+    end
+
+    shared_examples 'logging the violation' do
+      it 'logs the group and user' do
+        expect(::Gitlab::AuthLogger).to receive(:warn).with(
+          class: described_class.name,
+          message: 'IP restriction violation',
+          authenticated_subject_id: authenticated_subject.id,
+          authenticated_subject_type: authenticated_subject.class.name,
+          authenticated_subject_username: authenticated_subject.username,
+          group_id: group.id,
+          group_path: group.full_path,
+          ip: ::Gitlab::IpAddressState.current
+        )
+
+        subject
+      end
+    end
+
+    it 'does not log anything' do
+      expect(::Gitlab::AuthLogger).not_to receive(:warn)
+
+      subject
+    end
+
+    context 'in group with restriction' do
+      let(:range) { '10.0.0.0/8' }
+      let(:authenticated_subject) { user }
+
+      before do
+        create(:ip_restriction, group: group, range: range)
+      end
+
+      it_behaves_like 'logging the violation'
+
+      context 'when user is a deploy token' do
+        let_it_be(:deploy_token) { create(:deploy_token, read_package_registry: true, write_package_registry: true) }
+        let_it_be(:group_deploy_token) { create(:group_deploy_token, deploy_token: deploy_token, group: group) }
+
+        let(:authenticated_subject) { deploy_token }
+        let(:jwt) { build_jwt(deploy_token) }
+
+        it_behaves_like 'logging the violation'
+      end
+    end
+  end
+
   before do
     allow(Gitlab.config.dependency_proxy)
       .to receive(:enabled).and_return(true)
@@ -101,6 +153,7 @@ RSpec.describe Groups::DependencyProxyForContainersController do
     end
 
     it_behaves_like 'when sso is enabled for the group', 'a successful manifest pull'
+    it_behaves_like 'logging ip restriction offenses'
   end
 
   describe 'GET #blob' do
@@ -113,5 +166,6 @@ RSpec.describe Groups::DependencyProxyForContainersController do
     end
 
     it_behaves_like 'when sso is enabled for the group', 'a successful blob pull'
+    it_behaves_like 'logging ip restriction offenses'
   end
 end
