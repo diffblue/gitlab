@@ -13,7 +13,7 @@ module QA
       end
     end
 
-    describe 'Project' do
+    describe 'Project', :reliable do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|
           project.name = 'awesome-project'
