@@ -32,6 +32,10 @@ module Gitlab
         file
       end
 
+      def delete
+        FileUtils.rm_rf File.dirname(filepath)
+      end
+
       private
 
       def raise_error(message)

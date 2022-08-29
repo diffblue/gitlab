@@ -33,9 +33,12 @@ module Gitlab
           url = extract_url_from_markdown(markdown_url)
           name_prefix = extract_name_from_markdown(markdown_url)
 
-          file = ::Gitlab::GithubImport::AttachmentsDownloader.new(url).perform
+          downloader = ::Gitlab::GithubImport::AttachmentsDownloader.new(url)
+          file = downloader.perform
           uploader = UploadService.new(project, file, FileUploader).execute
           "#{name_prefix}(#{uploader.to_h[:url]})"
+        ensure
+          downloader&.delete
         end
 
         # in: "![image-icon](https://user-images.githubusercontent.com/..)"

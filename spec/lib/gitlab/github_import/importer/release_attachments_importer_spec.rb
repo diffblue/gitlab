@@ -37,6 +37,7 @@ RSpec.describe Gitlab::GithubImport::Importer::ReleaseAttachmentsImporter do
         allow(Gitlab::GithubImport::AttachmentsDownloader).to receive(:new).with(image_url)
           .and_return(downloader_stub)
         allow(downloader_stub).to receive(:perform).and_return(tmp_stub_doc, tmp_stub_image)
+        allow(downloader_stub).to receive(:delete).twice
 
         allow(UploadService).to receive(:new)
           .with(project, tmp_stub_doc, FileUploader).and_call_original
