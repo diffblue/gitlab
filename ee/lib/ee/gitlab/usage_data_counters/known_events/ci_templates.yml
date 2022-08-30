@@ -1,0 +1,8 @@
+- name: p_ci_templates_implicit_security_dast_on_demand_api_scan
+  category: ci_templates
+  redis_slot: ci_templates
+  aggregation: weekly
+- name: p_ci_templates_security_dast_on_demand_api_scan
+  category: ci_templates
+  redis_slot: ci_templates
+  aggregation: weekly
