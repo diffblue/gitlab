@@ -31,6 +31,16 @@ RSpec.describe 'load_balancing', :delete, :reestablished_active_record_base do
       load Rails.root.join('config/initializers/load_balancing.rb')
     end
 
+    it 'configures load balancer with two replica hosts' do
+      expect(ApplicationRecord.connection.load_balancer.configuration.hosts.size).to eq(0)
+      expect(Ci::ApplicationRecord.connection.load_balancer.configuration.hosts.size).to eq(0)
+
+      initialize_load_balancer
+
+      expect(ApplicationRecord.connection.load_balancer.configuration.hosts.size).to eq(2)
+      expect(Ci::ApplicationRecord.connection.load_balancer.configuration.hosts.size).to eq(2)
+    end
+
     context 'for a clustered puma worker' do
       let!(:group) { create(:group, name: 'my group') }
 
