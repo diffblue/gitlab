@@ -193,3 +193,5 @@ module Registrations
     end
   end
 end
+
+Registrations::GroupsProjectsController.prepend_mod
