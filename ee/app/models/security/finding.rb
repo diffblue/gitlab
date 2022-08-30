@@ -51,7 +51,8 @@ module Security
     scope :deduplicated, -> { where(deduplicated: true) }
     scope :grouped_by_scan_type, -> { joins(:scan).group('security_scans.scan_type') }
 
-    delegate :scan_type, to: :scan, allow_nil: true
+    delegate :scan_type, :pipeline, to: :scan, allow_nil: true
+    delegate :project, to: :pipeline
 
     def self.count_by_scan_type
       grouped_by_scan_type.count
