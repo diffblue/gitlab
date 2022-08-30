@@ -17,7 +17,7 @@ module EE
                   requires :vulnerability, type: Hash, desc: 'Vulnerability details matching the `vulnerability` object on the security report schema' do
                     requires :name, type: String
                     requires :severity, type: String, coerce_with: ->(s) { s.downcase }
-                    requires :confidence, type: String, coerce_with: ->(c) { c.downcase }
+                    optional :confidence, type: String, coerce_with: ->(c) { c.downcase }
 
                     requires :location, type: Hash do
                       requires :image, type: String
