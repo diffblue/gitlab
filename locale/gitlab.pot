@@ -46972,6 +46972,9 @@ msgid_plural "mrWidget|Mentions issues"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "mrWidget|Merge blocked: a Jira issue key must be mentioned in the title or description."
+msgstr ""
+
 msgid "mrWidget|Merge blocked: all required approvals must be given."
 msgstr ""
 
@@ -47105,9 +47108,6 @@ msgid "mrWidget|To change this default message, edit the template for merge comm
 msgstr ""
 
 msgid "mrWidget|To change this default message, edit the template for squash commit messages. %{linkStart}Learn more.%{linkEnd}"
-msgstr ""
-
-msgid "mrWidget|To merge, a Jira issue key must be mentioned in the title or description."
 msgstr ""
 
 msgid "mrWidget|Users who can write to the source or target branches can resolve the conflicts."

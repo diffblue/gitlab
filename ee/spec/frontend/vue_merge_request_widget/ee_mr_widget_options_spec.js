@@ -446,7 +446,11 @@ describe('ee merge request widget options', () => {
 
       it('shows success icon', () => {
         expect(
-          wrapper.find('.js-browser-performance-widget .js-ci-status-icon-success').exists(),
+          wrapper
+            .find(
+              '.js-browser-performance-widget [data-testid="status-success-icon"] use[href="#status-success"]',
+            )
+            .exists(),
         ).toBe(true);
       });
     });
@@ -556,7 +560,11 @@ describe('ee merge request widget options', () => {
 
       it('shows success icon', () => {
         expect(
-          wrapper.find('.js-load-performance-widget .js-ci-status-icon-success').exists(),
+          wrapper
+            .find(
+              '.js-load-performance-widget [data-testid="status-success-icon"] use[href="#status-success"]',
+            )
+            .exists(),
         ).toBe(true);
       });
     });
