@@ -3,12 +3,38 @@
   "description": "Information about where an sbom component originated from",
   "type": "object",
   "properties": {
-    "dependency_file": { "type": "string" },
-    "package_manager_name": { "type": "string" },
-    "language": { "type": "string" }
+    "category": { "type": "string" },
+    "input_file": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" }
+      },
+      "required": ["path"]
+    },
+    "source_file": {
+      "type": "object",
+      "properties": {
+        "path": { "type": "string" }
+      },
+      "required": ["path"]
+    },
+    "package_manager": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    },
+    "language": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "required": ["name"]
+    }
   },
   "required": [
-    "dependency_file"
+    "input_file"
   ],
   "additionalProperties": false
 }
