@@ -45,8 +45,8 @@ describe('Codequality report app', () => {
   };
 
   const findStatus = () => wrapper.find('.js-code-text');
-  const findSuccessIcon = () => wrapper.find('.js-ci-status-icon-success');
-  const findWarningIcon = () => wrapper.find('.js-ci-status-icon-warning');
+  const findSuccessIcon = () => wrapper.find('svg[aria-label~="Success"]');
+  const findWarningIcon = () => wrapper.find('svg[aria-label~="Warning"]');
   const findPagination = () => wrapper.findComponent(PaginationLinks);
 
   describe('when loading', () => {
