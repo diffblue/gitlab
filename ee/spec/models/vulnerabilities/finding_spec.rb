@@ -45,7 +45,6 @@ RSpec.describe Vulnerabilities::Finding do
       it { is_expected.to validate_presence_of(:metadata_version) }
       it { is_expected.to validate_presence_of(:raw_metadata) }
       it { is_expected.to validate_presence_of(:severity) }
-      it { is_expected.to validate_presence_of(:confidence) }
       it { is_expected.to validate_presence_of(:detection_method) }
 
       it { is_expected.to validate_length_of(:description).is_at_most(15000) }

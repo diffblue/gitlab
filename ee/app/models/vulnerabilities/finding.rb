@@ -68,7 +68,6 @@ module Vulnerabilities
     validates :name, presence: true
     validates :report_type, presence: true
     validates :severity, presence: true
-    validates :confidence, presence: true
     validates :detection_method, presence: true
 
     validates :metadata_version, presence: true
