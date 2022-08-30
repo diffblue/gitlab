@@ -30,7 +30,7 @@ RSpec.describe 'Admin views Subscription', :js do
         click_button('Remove license')
 
         within_modal do |modal|
-          expect(page).not_to have_content('This change will remove ALL Premium/Ultimate features for ALL SaaS customers and make tests start failing.')
+          expect(page).not_to have_content('This change will remove ALL Premium and Ultimate features for ALL SaaS customers and make tests start failing.')
           click_button('Remove license')
         end
 
@@ -51,7 +51,7 @@ RSpec.describe 'Admin views Subscription', :js do
         click_button 'Remove license'
 
         within_modal do |modal|
-          expect(page).to have_content('This change will remove ALL Premium/Ultimate features for ALL SaaS customers and make tests start failing.')
+          expect(page).to have_content('This change will remove ALL Premium and Ultimate features for ALL SaaS customers and make tests start failing.')
         end
       end
     end

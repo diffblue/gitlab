@@ -40,7 +40,7 @@ export const i18n = Object.freeze({
   removeLicense: __('Remove license'),
   removeLicenseConfirmSaaS: sprintf(
     __(
-      'This change will remove %{strongOpen}ALL%{strongClose} Premium/Ultimate features for %{strongOpen}ALL%{strongClose} SaaS customers and make tests start failing.',
+      'This change will remove %{strongOpen}ALL%{strongClose} Premium and Ultimate features for %{strongOpen}ALL%{strongClose} SaaS customers and make tests start failing.',
     ),
     { strongOpen: '<strong>', strongClose: '</strong>' },
     false,

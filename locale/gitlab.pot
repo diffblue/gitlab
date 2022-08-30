@@ -40046,7 +40046,7 @@ msgstr ""
 msgid "This board's scope is reduced"
 msgstr ""
 
-msgid "This change will remove %{strongOpen}ALL%{strongClose} Premium/Ultimate features for %{strongOpen}ALL%{strongClose} SaaS customers and make tests start failing."
+msgid "This change will remove %{strongOpen}ALL%{strongClose} Premium and Ultimate features for %{strongOpen}ALL%{strongClose} SaaS customers and make tests start failing."
 msgstr ""
 
 msgid "This chart could not be displayed"
