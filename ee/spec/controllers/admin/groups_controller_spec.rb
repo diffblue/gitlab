@@ -30,4 +30,14 @@ RSpec.describe Admin::GroupsController do
       end
     end
   end
+
+  describe 'PUT #update' do
+    it 'converts the user entered MB value into bytes' do
+      put :update, params: { id: group, group: { repository_size_limit: '5000' } }
+
+      expect(controller).to set_flash[:notice].to 'Group was successfully updated.'
+      expect(response).to redirect_to(admin_group_path(group))
+      expect(group.reload.repository_size_limit).to eq(5000.megabytes)
+    end
+  end
 end

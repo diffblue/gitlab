@@ -33,6 +33,17 @@ module EE
       def groups
         super.with_deletion_schedule
       end
+
+      override :group_params
+      def group_params
+        modify_group_params(super)
+      end
+
+      def modify_group_params(params)
+        limit = params.delete(:repository_size_limit)
+        params[:repository_size_limit] = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
+        params
+      end
     end
   end
 end
