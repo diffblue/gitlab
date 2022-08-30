@@ -1,11 +1,11 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
-import StatusIcon from '~/vue_merge_request_widget/components/mr_widget_status_icon.vue';
+import StateContainer from '~/vue_merge_request_widget/components/state_container.vue';
 
 export default {
   components: {
     GlIcon,
-    StatusIcon,
+    StateContainer,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -18,22 +18,20 @@ export default {
   },
 };
 </script>
+
 <template>
-  <div class="mr-widget-body media gl-flex-wrap">
-    <status-icon status="warning" show-disabled-button />
-    <div class="media-body">
-      <span class="gl-ml-0! gl-text-body! bold">
-        {{ __('Merge unavailable: merge requests are read-only in a secondary Geo node.') }}
-      </span>
-      <a
-        v-gl-tooltip
-        :href="mr.geoSecondaryHelpPath"
-        :title="__('About this feature')"
-        target="_blank"
-        rel="noopener noreferrer nofollow"
-      >
-        <gl-icon name="question-o" />
-      </a>
-    </div>
-  </div>
+  <state-container status="failed">
+    <span class="gl-font-weight-bold">
+      {{ __('Merge unavailable: merge requests are read-only in a secondary Geo node.') }}
+    </span>
+    <a
+      v-gl-tooltip
+      :href="mr.geoSecondaryHelpPath"
+      :title="__('About this feature')"
+      target="_blank"
+      rel="noopener noreferrer nofollow"
+    >
+      <gl-icon name="question-o" />
+    </a>
+  </state-container>
 </template>

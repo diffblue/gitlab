@@ -80,19 +80,31 @@ exports[`License Compliance extension expanded data with new licenses displays a
               class="gl-display-flex"
             >
               <div
-                class="gl-rounded-full gl-mr-3 gl-relative gl-p-2 gl-pl-0 gl-text-green-500"
+                class="gl-mr-3 gl-p-2 gl-pl-0 gl-text-green-500"
               >
-                <svg
-                  aria-label="Success "
-                  class="gl-display-block gl-icon s12"
-                  data-qa-selector="status_success_icon"
-                  data-testid="status-success-icon"
-                  role="img"
+                <div
+                  class="gl-rounded-full gl-relative gl-display-flex"
                 >
-                  <use
-                    href="#status-success"
-                  />
-                </svg>
+                  <div
+                    class="gl-absolute gl-top-half gl-left-50p gl-translate-x-n50 gl-display-flex gl-m-auto"
+                  >
+                    <div
+                      class="gl-display-flex gl-m-auto gl-translate-y-n50"
+                    >
+                      <svg
+                        aria-label="Success "
+                        class="gl-display-block gl-icon s12"
+                        data-qa-selector="status_success_icon"
+                        data-testid="status-success-icon"
+                        role="img"
+                      >
+                        <use
+                          href="#status-success"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </div>
                
               <div
@@ -301,19 +313,31 @@ exports[`License Compliance extension expanded data with new licenses displays d
               class="gl-display-flex"
             >
               <div
-                class="gl-rounded-full gl-mr-3 gl-relative gl-p-2 gl-pl-0 gl-text-red-500"
+                class="gl-mr-3 gl-p-2 gl-pl-0 gl-text-red-500"
               >
-                <svg
-                  aria-label="Failed "
-                  class="gl-display-block gl-icon s12"
-                  data-qa-selector="status_failed_icon"
-                  data-testid="status-failed-icon"
-                  role="img"
+                <div
+                  class="gl-rounded-full gl-relative gl-display-flex"
                 >
-                  <use
-                    href="#status-failed"
-                  />
-                </svg>
+                  <div
+                    class="gl-absolute gl-top-half gl-left-50p gl-translate-x-n50 gl-display-flex gl-m-auto"
+                  >
+                    <div
+                      class="gl-display-flex gl-m-auto gl-translate-y-n50"
+                    >
+                      <svg
+                        aria-label="Failed "
+                        class="gl-display-block gl-icon s12"
+                        data-qa-selector="status_failed_icon"
+                        data-testid="status-failed-icon"
+                        role="img"
+                      >
+                        <use
+                          href="#status-failed"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </div>
                
               <div
@@ -460,19 +484,31 @@ exports[`License Compliance extension expanded data with new licenses displays u
               class="gl-display-flex"
             >
               <div
-                class="gl-rounded-full gl-mr-3 gl-relative gl-p-2 gl-pl-0 gl-text-gray-500"
+                class="gl-mr-3 gl-p-2 gl-pl-0 gl-text-gray-500"
               >
-                <svg
-                  aria-label="Notice "
-                  class="gl-display-block gl-icon s12"
-                  data-qa-selector="status_notice_icon"
-                  data-testid="status-alert-icon"
-                  role="img"
+                <div
+                  class="gl-rounded-full gl-relative gl-display-flex"
                 >
-                  <use
-                    href="#status-alert"
-                  />
-                </svg>
+                  <div
+                    class="gl-absolute gl-top-half gl-left-50p gl-translate-x-n50 gl-display-flex gl-m-auto"
+                  >
+                    <div
+                      class="gl-display-flex gl-m-auto gl-translate-y-n50"
+                    >
+                      <svg
+                        aria-label="Notice "
+                        class="gl-display-block gl-icon s12"
+                        data-qa-selector="status_notice_icon"
+                        data-testid="status-alert-icon"
+                        role="img"
+                      >
+                        <use
+                          href="#status-alert"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
               </div>
                
               <div

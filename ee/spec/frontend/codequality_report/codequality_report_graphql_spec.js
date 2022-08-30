@@ -1,11 +1,14 @@
 import { GlInfiniteScroll } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import waitForPromises from 'helpers/wait_for_promises';
+import { RENDER_ALL_SLOTS_TEMPLATE, stubComponent } from 'helpers/stub_component';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report_graphql.vue';
+import ReportSection from '~/reports/components/report_section.vue';
 import getCodeQualityViolations from 'ee/codequality_report/graphql/queries/get_code_quality_violations.query.graphql';
+import { LOADING, ERROR, SUCCESS } from '~/reports/constants';
 import { mockGetCodeQualityViolationsResponse, codeQualityViolations } from './mock_data';
 
 Vue.use(VueApollo);
@@ -15,23 +18,25 @@ describe('Codequality report app', () => {
 
   const createComponent = (
     mockReturnValue = jest.fn().mockResolvedValue(mockGetCodeQualityViolationsResponse),
-    mountFn = mount,
   ) => {
     const apolloProvider = createMockApollo([[getCodeQualityViolations, mockReturnValue]]);
 
-    wrapper = mountFn(CodequalityReportApp, {
+    wrapper = shallowMount(CodequalityReportApp, {
       apolloProvider,
       provide: {
         projectPath: 'project-path',
         pipelineIid: 'pipeline-iid',
         blobPath: '/blob/path',
       },
+      stubs: {
+        ReportSection: stubComponent(ReportSection, {
+          template: RENDER_ALL_SLOTS_TEMPLATE,
+        }),
+      },
     });
   };
 
-  const findStatus = () => wrapper.find('.js-code-text');
-  const findSuccessIcon = () => wrapper.find('.js-ci-status-icon-success');
-  const findWarningIcon = () => wrapper.find('.js-ci-status-icon-warning');
+  const findReportSection = () => wrapper.findComponent(ReportSection);
   const findInfiniteScroll = () => wrapper.findComponent(GlInfiniteScroll);
 
   afterEach(() => {
@@ -44,7 +49,7 @@ describe('Codequality report app', () => {
     });
 
     it('shows a loading state', () => {
-      expect(findStatus().text()).toBe('Loading Code Quality report');
+      expect(findReportSection().props().status).toBe(LOADING);
     });
   });
 
@@ -54,9 +59,9 @@ describe('Codequality report app', () => {
       await waitForPromises();
     });
 
-    it('shows a warning icon and error message', () => {
-      expect(findWarningIcon().exists()).toBe(true);
-      expect(findStatus().text()).toBe('Failed to load Code Quality report');
+    it('shows error message', () => {
+      expect(findReportSection().props().status).toBe(ERROR);
+      expect(findReportSection().props().errorText).toBe('Failed to load Code Quality report');
     });
   });
 
@@ -69,38 +74,21 @@ describe('Codequality report app', () => {
     it('renders the codequality issues', () => {
       const expectedIssueTotal = codeQualityViolations.count;
 
-      expect(findWarningIcon().exists()).toBe(true);
+      expect(findReportSection().props().status).toBe(SUCCESS);
       expect(findInfiniteScroll().exists()).toBe(true);
-      expect(findStatus().text()).toContain(`Found ${expectedIssueTotal} code quality issues`);
-      expect(findStatus().text()).toContain(
-        `This report contains all Code Quality issues in the source branch.`,
+      expect(findReportSection().props().successText).toBe(
+        `Found ${expectedIssueTotal} code quality issues`,
       );
-      expect(wrapper.findAll('.report-block-list-issue')).toHaveLength(expectedIssueTotal);
-    });
-
-    it('renders a link to the line where the issue was found', () => {
-      const issueLink = wrapper.find('.report-block-list-issue a');
-
-      expect(issueLink.text()).toBe('foo.rb:10');
-      expect(issueLink.attributes('href')).toBe('/blob/path/foo.rb#L10');
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(expectedIssueTotal);
     });
 
     it('loads the next page when the end of the list is reached', async () => {
-      jest
-        .spyOn(wrapper.vm.$apollo.queries.codequalityViolations, 'fetchMore')
-        .mockResolvedValue({});
-
+      const expectedIssueTotal = codeQualityViolations.count * 2;
       findInfiniteScroll().vm.$emit('bottomReached');
 
       await waitForPromises();
 
-      expect(wrapper.vm.$apollo.queries.codequalityViolations.fetchMore).toHaveBeenCalledWith(
-        expect.objectContaining({
-          variables: expect.objectContaining({
-            after: codeQualityViolations.pageInfo.endCursor,
-          }),
-        }),
-      );
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(expectedIssueTotal);
     });
   });
 
@@ -127,9 +115,9 @@ describe('Codequality report app', () => {
     });
 
     it('shows a message that no codequality issues were found', () => {
-      expect(findSuccessIcon().exists()).toBe(true);
-      expect(findStatus().text()).toBe('No code quality issues found');
-      expect(wrapper.findAll('.report-block-list-issue')).toHaveLength(0);
+      expect(findReportSection().props().status).toBe(SUCCESS);
+      expect(findReportSection().props().successText).toBe('No code quality issues found');
+      expect(findReportSection().props().unresolvedIssues).toHaveLength(0);
     });
   });
 });
