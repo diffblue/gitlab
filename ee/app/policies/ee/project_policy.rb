@@ -382,6 +382,7 @@ module EE
         prevent :read_milestone
         prevent :read_container_image
         prevent :create_container_image
+        prevent(*create_read_update_admin_destroy(:package))
       end
 
       rule { locked_approvers_rules }.policy do
