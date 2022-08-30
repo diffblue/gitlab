@@ -47,6 +47,9 @@ RSpec.describe 'load_balancing', :delete, :reestablished_active_record_base do
     # but run into bugs where GPRC cannot be used before forking processes.
     # See https://gitlab.com/gitlab-org/gitlab/-/issues/333184#note_1081658113
     def simulate_puma_worker
+      # Called in https://github.com/rails/rails/blob/6-1-stable/activerecord/lib/active_record/connection_adapters/pool_config.rb#L73
+      ActiveRecord::ConnectionAdapters::PoolConfig.discard_pools!
+
       # Called in config/puma.rb
       Gitlab::Cluster::LifecycleEvents.do_worker_start
 
