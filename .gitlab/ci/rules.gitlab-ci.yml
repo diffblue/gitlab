@@ -809,9 +809,7 @@
 .frontend:rules:jest:minimal:as-if-foss:
   rules:
     - !reference [".strict-ee-only-rules", rules]
-    - <<: *if-security-merge-request
-      changes: *code-backstage-patterns
-      when: never
+    - !reference [".rails:rules:minimal-default-rules", rules]
     - <<: *if-merge-request-labels-as-if-foss
       when: never
     - <<: *if-merge-request-labels-run-all-jest
