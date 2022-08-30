@@ -33,10 +33,8 @@ module Gitlab
           apply_discount(project, runner_cost_factor)
         end
 
-        # This method SHOULD NOT BE USED by new code. It is currently depended
-        # on by `BuildQueueService`. That dependency will be removed by
-        # https://gitlab.com/groups/gitlab-org/-/epics/5909, and this method
-        # should be made private at that time. Please use #for_project instead.
+        private
+
         def for_visibility(visibility_level)
           return 0.0 unless @runner_matcher.instance_type?
 
@@ -49,8 +47,6 @@ module Gitlab
             raise ArgumentError, 'Invalid visibility level'
           end
         end
-
-        private
 
         # Exceptions to the cost per runner are designed
         # to be discounts so take the lowest value
