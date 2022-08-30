@@ -115,7 +115,7 @@ export default {
             'DastProfiles|Run the AJAX spider, in addition to the traditional spider, to crawl the target site.',
           ),
           debugMessage: s__('DastProfiles|Include debug messages in the DAST console output.'),
-          disabledProfileName: s__('DastProfiles|Profile is currently in-use'),
+          disabledProfileName: s__('DastProfiles|Profile in use and cannot be renamed'),
         },
       };
     },

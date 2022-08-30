@@ -140,7 +140,7 @@ export default {
           helpText: s__('DastProfiles|What does each method do?'),
           defaultOption: s__('DastProfiles|Choose a scan method'),
         },
-        disabledProfileName: s__('DastProfiles| Profile is currently in-use'),
+        disabledProfileName: s__('DastProfiles|Profile in use and cannot be renamed'),
       };
     },
     dastApiDocsPath() {
