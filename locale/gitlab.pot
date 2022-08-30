@@ -35255,6 +35255,9 @@ msgstr ""
 msgid "SecurityOrchestration|This %{namespaceType} does not contain any security policies."
 msgstr ""
 
+msgid "SecurityOrchestration|This %{namespaceType} is not linked to a security policy project"
+msgstr ""
+
 msgid "SecurityOrchestration|This group"
 msgstr ""
 

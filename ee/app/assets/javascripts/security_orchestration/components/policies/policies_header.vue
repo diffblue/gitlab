@@ -46,7 +46,7 @@ export default {
     },
   },
   methods: {
-    updateAlertText({ text, variant }) {
+    updateAlertText({ text, variant, hasPolicyProject }) {
       this.projectIsBeingLinked = false;
 
       if (text) {
@@ -54,7 +54,7 @@ export default {
         this.alertVariant = variant;
         this.alertText = text;
       }
-      this.$emit('update-policy-list', true);
+      this.$emit('update-policy-list', { hasPolicyProject, shouldUpdatePolicyList: true });
     },
     isUpdatingProject() {
       this.projectIsBeingLinked = true;
