@@ -67,18 +67,6 @@ RSpec.describe Ci::Runner do
 
         it { is_expected.to eq(1.1) }
       end
-
-      context 'with invalid visibility level' do
-        let(:project) { create(:project) }
-
-        before do
-          allow(project).to receive(:visibility_level).and_return(123)
-        end
-
-        it 'raises an error' do
-          expect { subject }.to raise_error(ArgumentError)
-        end
-      end
     end
   end
 
