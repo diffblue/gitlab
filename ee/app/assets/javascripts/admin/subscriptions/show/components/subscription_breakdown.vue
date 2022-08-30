@@ -175,7 +175,7 @@ export default {
   },
   i18n,
   activateSubscriptionModal: {
-    id: uniqueId('activateSubscriptionModalId'),
+    id: uniqueId('subscription-activation-modal-'),
   },
   removeLicenseModal: {
     id: uniqueId('remove-license-modal-'),

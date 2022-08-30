@@ -122,7 +122,7 @@ RSpec.describe 'Admin views Subscription', :js do
       end
 
       it 'shows the activation modal' do
-        page.within(find('#subscription-activation-modal', match: :first)) do
+        within_modal do
           expect(page).to have_content('Activate subscription')
         end
       end
@@ -130,7 +130,7 @@ RSpec.describe 'Admin views Subscription', :js do
       it 'displays an error when the activation fails' do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: 422, body: '', headers: {})
 
-        page.within(find('#subscription-activation-modal', match: :first)) do
+        within_modal do
           fill_activation_form
 
           expect(page).to have_content('An error occurred while adding your subscription.')
@@ -141,7 +141,7 @@ RSpec.describe 'Admin views Subscription', :js do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
           .to_return(status: 500, body: '', headers: {})
 
-        page.within(find('#subscription-activation-modal', match: :first)) do
+        within_modal do
           fill_activation_form
 
           expect(page).to have_content('Cannot activate instance due to a connectivity issue.')
