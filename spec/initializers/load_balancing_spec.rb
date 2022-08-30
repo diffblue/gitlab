@@ -34,38 +34,39 @@ RSpec.describe 'load_balancing', :delete, :reestablished_active_record_base do
       load Rails.root.join('config/initializers/load_balancing.rb')
     end
 
-    def simulate_puma_worker
-      pid = Process.fork do
-        # We call this in config/puma.rb
-        Gitlab::Cluster::LifecycleEvents.do_worker_start
+    it 'configures load balancer to have two replica hosts' do
+      initialize_load_balancer
 
-        yield
+      simulate_puma_worker do
+        expect(ApplicationRecord.connection.load_balancer.configuration.hosts.size).to eq(2)
+        expect(Ci::ApplicationRecord.connection.load_balancer.configuration.hosts.size).to eq(2)
       end
-
-      Process.waitpid(pid)
-      expect($?).to be_success
     end
 
-    it 'makes a query to a replica successfully' do
+    # We tried using Process.fork for a more realistic simulation
+    # but run into bugs where GPRC cannot be used before forking processes.
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/333184#note_1081658113
+    def simulate_puma_worker
+      # Called in config/puma.rb
+      Gitlab::Cluster::LifecycleEvents.do_worker_start
+
+      yield
+    end
+
+    it 'makes a read query successfully' do
       # Clear any previous sticky writes
       ::Gitlab::Database::LoadBalancing::Session.clear_session
 
       initialize_load_balancer
 
-      process_read, process_write = IO.pipe
-
-      simulate_puma_worker do
-        process_read.close
-
-        group = Group.find_by_name('my group')
-        process_write.write group.name
+      group_name = simulate_puma_worker do
+        Group.find_by_name('my group').name
       end
 
-      process_write.close
-      expect(process_read.read).to eq(group.name)
+      expect(group_name).to eq(group.name)
     end
 
-    it 'makes a query to the primary successfully' do
+    it 'makes a write query successfully' do
       initialize_load_balancer
 
       expect do
