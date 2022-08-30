@@ -24,7 +24,7 @@ module EE
             relation = [id_relation, iteration_relation].compact
             return ::Iteration.none if relation.all?(::Iteration.none)
 
-            ::Iteration.from_union(relation).includes(:project, :group, :iterations_cadence) # rubocop: disable CodeReuse/ActiveRecord
+            ::Iteration.from_union(relation).includes(:group, :iterations_cadence) # rubocop: disable CodeReuse/ActiveRecord
           end
 
           def find_object(parent_object, id)
@@ -124,14 +124,7 @@ module EE
           end
 
           def object_link_text(object, matches)
-            iteration_link = escape_once(super)
-            reference = object.project&.to_reference_base(project)
-
-            if reference.present?
-              "#{iteration_link} <i>in #{reference}</i>".html_safe
-            else
-              iteration_link
-            end
+            escape_once(super)
           end
 
           def object_link_title(_object, _matches)
