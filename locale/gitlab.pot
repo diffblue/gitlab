@@ -26857,6 +26857,9 @@ msgstr ""
 msgid "Notify|%{mr_highlight}Merge request%{highlight_end} %{mr_link} %{approved_highlight}was approved by%{highlight_end} %{approver_avatar} %{approver_link}"
 msgstr ""
 
+msgid "Notify|A new GPG key was added to your account:"
+msgstr ""
+
 msgid "Notify|Assignee changed from %{fromNames} to %{toNames}"
 msgstr ""
 
@@ -26870,6 +26873,15 @@ msgid "Notify|Auto DevOps pipeline was disabled for %{project}"
 msgstr ""
 
 msgid "Notify|CI/CD project settings"
+msgstr ""
+
+msgid "Notify|Fingerprint: %{fingerprint}"
+msgstr ""
+
+msgid "Notify|Hi %{user}!"
+msgstr ""
+
+msgid "Notify|If this key was added in error, you can remove it under %{removal_link}"
 msgstr ""
 
 msgid "Notify|If you no longer wish to use this domain with GitLab Pages, please remove it from your GitLab project and delete any related DNS records."
@@ -35253,6 +35265,9 @@ msgid "SecurityOrchestration|There was a problem creating the new security polic
 msgstr ""
 
 msgid "SecurityOrchestration|This %{namespaceType} does not contain any security policies."
+msgstr ""
+
+msgid "SecurityOrchestration|This %{namespaceType} is not linked to a security policy project"
 msgstr ""
 
 msgid "SecurityOrchestration|This group"

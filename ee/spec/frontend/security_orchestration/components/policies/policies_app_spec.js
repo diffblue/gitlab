@@ -10,35 +10,45 @@ describe('Policies App', () => {
   const findPoliciesHeader = () => wrapper.findComponent(PoliciesHeader);
   const findPoliciesList = () => wrapper.findComponent(PoliciesList);
 
-  const createWrapper = () => {
-    wrapper = shallowMountExtended(PoliciesApp, {});
+  const createWrapper = (assignedPolicyProject = null) => {
+    wrapper = shallowMountExtended(PoliciesApp, { provide: { assignedPolicyProject } });
   };
 
   afterEach(() => {
     wrapper.destroy();
   });
 
-  describe('when does have an environment enabled', () => {
+  describe('default', () => {
     beforeEach(() => {
       createWrapper();
     });
 
-    it('mounts the policies header component', () => {
-      expect(findPoliciesHeader().exists()).toBe(true);
+    it('renders the policies list correctly', () => {
+      expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(false);
+      expect(findPoliciesList().props('hasPolicyProject')).toBe(false);
     });
 
     it.each`
-      component         | findFn
-      ${'PolicyHeader'} | ${findPoliciesHeader}
-      ${'PolicyList'}   | ${findPoliciesList}
+      component         | emitFn                | emitData                                                    | finalPropStates
+      ${'PolicyHeader'} | ${findPoliciesHeader} | ${{ shouldUpdatePolicyList: true, hasPolicyProject: true }} | ${true}
+      ${'PolicyList'}   | ${findPoliciesList}   | ${{ shouldUpdatePolicyList: false }}                        | ${false}
     `(
-      'sets the `shouldUpdatePolicyList` variable from the $component component',
-      async ({ findFn }) => {
+      'updates the policy list when a change is made from the $component component',
+      async ({ emitFn, emitData, finalPropStates }) => {
         expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(false);
-        findFn().vm.$emit('update-policy-list', true);
+        expect(findPoliciesList().props('hasPolicyProject')).toBe(false);
+        emitFn().vm.$emit('update-policy-list', emitData);
         await nextTick();
-        expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(true);
+        expect(findPoliciesList().props('shouldUpdatePolicyList')).toBe(finalPropStates);
+        expect(findPoliciesList().props('hasPolicyProject')).toBe(finalPropStates);
       },
     );
+  });
+
+  it('renders correctly when a policy project is linked', async () => {
+    createWrapper({ id: '1' });
+    await nextTick();
+
+    expect(findPoliciesList().props('hasPolicyProject')).toBe(true);
   });
 });
