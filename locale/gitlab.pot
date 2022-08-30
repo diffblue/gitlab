@@ -28089,12 +28089,6 @@ msgstr ""
 msgid "PackageRegistry|RubyGems"
 msgstr ""
 
-msgid "PackageRegistry|Settings for Generic packages"
-msgstr ""
-
-msgid "PackageRegistry|Settings for Maven packages"
-msgstr ""
-
 msgid "PackageRegistry|Show Composer commands"
 msgstr ""
 
