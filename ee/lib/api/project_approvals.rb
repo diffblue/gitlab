@@ -49,7 +49,7 @@ module API
         params do
           optional :approvals_before_merge, type: Integer, desc: 'The amount of approvals required before an MR can be merged'
           optional :reset_approvals_on_push, type: Boolean, desc: 'Should the approval count be reset on a new push'
-          optional :selective_code_owner_removals, type: Boolean, desc: 'Retain approvals on rules unaffected by a new push'
+          optional :selective_code_owner_removals, type: Boolean, desc: 'Reset approvals from Code Owners if their files changed'
           optional :disable_overriding_approvers_per_merge_request, type: Boolean, desc: 'Should MRs be able to override approvers and approval count'
           optional :merge_requests_author_approval, type: Boolean, desc: 'Should merge request authors be able to self approve merge requests; `true` means authors cannot self approve'
           optional :merge_requests_disable_committers_approval, type: Boolean, desc: 'Should committers be able to self approve merge requests'
