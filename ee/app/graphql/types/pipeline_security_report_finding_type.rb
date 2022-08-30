@@ -107,6 +107,8 @@ module Types
           null: true,
           description: "Finding status."
 
+    markdown_field :description_html, null: true
+
     def location
       object.location&.merge(report_type: object.report_type)
     end
@@ -115,6 +117,10 @@ module Types
       return unless expose_false_positive?
 
       object.vulnerability_flags.any?(&:false_positive?) || false
+    end
+
+    def description_html_resolver
+      ::MarkupHelper.markdown(object.description, context.to_h.dup)
     end
 
     private

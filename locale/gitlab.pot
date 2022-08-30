@@ -19825,9 +19825,6 @@ msgstr ""
 msgid "If you add %{codeStart}needs%{codeEnd} to jobs in your pipeline you'll be able to view the %{codeStart}needs%{codeEnd} relationships between jobs in this tab as a %{linkStart}Directed Acyclic Graph (DAG)%{linkEnd}."
 msgstr ""
 
-msgid "If you are added to a project, it will be displayed here."
-msgstr ""
-
 msgid "If you did not initiate these sign-in attempts, please reach out to your administrator or enable two-factor authentication (2FA) on your account."
 msgstr ""
 
@@ -28096,12 +28093,6 @@ msgid "PackageRegistry|Required Python: %{pythonVersion}"
 msgstr ""
 
 msgid "PackageRegistry|RubyGems"
-msgstr ""
-
-msgid "PackageRegistry|Settings for Generic packages"
-msgstr ""
-
-msgid "PackageRegistry|Settings for Maven packages"
 msgstr ""
 
 msgid "PackageRegistry|Show Composer commands"
@@ -45237,6 +45228,9 @@ msgid "You need to upload a GitLab project export archive (ending in .gz)."
 msgstr ""
 
 msgid "You need to verify your primary email first before enabling Two-Factor Authentication."
+msgstr ""
+
+msgid "You see projects here when you're added to a group or project."
 msgstr ""
 
 msgid "You successfully declined the invitation"
