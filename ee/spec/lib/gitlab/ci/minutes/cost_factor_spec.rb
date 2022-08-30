@@ -230,35 +230,4 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
       end
     end
   end
-
-  describe '#for_visibility' do
-    subject(:for_visibility) { described_class.new(runner.runner_matcher).for_visibility(visibility_level) }
-
-    where(:runner_type, :visibility_level, :public_cost_factor, :private_cost_factor, :result) do
-      :project  | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | 0
-      :project  | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | 0
-      :project  | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0
-      :group    | Gitlab::VisibilityLevel::PRIVATE  | 1 | 1 | 0
-      :group    | Gitlab::VisibilityLevel::INTERNAL | 1 | 1 | 0
-      :group    | Gitlab::VisibilityLevel::PUBLIC   | 1 | 1 | 0
-      :instance | Gitlab::VisibilityLevel::PUBLIC   | 1 | 5 | 1
-      :instance | Gitlab::VisibilityLevel::INTERNAL | 1 | 5 | 5
-      :instance | Gitlab::VisibilityLevel::PRIVATE  | 1 | 5 | 5
-    end
-
-    with_them do
-      it { is_expected.to eq(result) }
-    end
-
-    context 'with invalid visibility level' do
-      let(:visibility_level) { 123 }
-      let(:public_cost_factor) { 5 }
-      let(:private_cost_factor) { 5 }
-      let(:runner_type) { :instance }
-
-      it 'raises an error' do
-        expect { subject }.to raise_error(ArgumentError)
-      end
-    end
-  end
 end
