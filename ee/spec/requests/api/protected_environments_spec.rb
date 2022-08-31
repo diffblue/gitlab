@@ -36,7 +36,121 @@ RSpec.describe API::ProtectedEnvironments do
     it { expect { request }.to be_allowed_for(:maintainer).of(group) }
   end
 
-  describe "GET /projects/:id/protected_environments" do
+  shared_examples 'requests to update deploy access levels' do
+    it 'updates the environment / creating deploy access level' do
+      put request_url, params: {
+        deploy_access_levels: [
+          {
+            user_id: user_id
+          }
+        ]
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+      expect(json_response['deploy_access_levels'].length).to eq(3) # protected environments factory creates one by default, second by trait
+      expect(json_response['deploy_access_levels'].last['user_id']).to eq(user_id)
+    end
+
+    it 'updates the environment / updating deploy access level' do
+      put request_url, params: {
+        deploy_access_levels: [
+          {
+            id: protected_environment.deploy_access_levels.last.id,
+            user_id: user_id
+          }
+        ]
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+      expect(json_response['deploy_access_levels'].length).to eq(2) # protected environments factory creates one by default, second by trait
+      expect(json_response['deploy_access_levels'].last['user_id']).to eq(user_id)
+    end
+
+    it 'updates the environment / deleting deploy access level' do
+      put request_url, params: {
+        deploy_access_levels: [
+          {
+            id: protected_environment.deploy_access_levels.last.id,
+            user_id: user_id,
+            _destroy: true
+          }
+        ]
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+      expect(json_response['deploy_access_levels'].length).to eq(1) # protected environments factory creates one by default, second by trait
+    end
+
+    it 'updates the environment / updating required approval count' do
+      put request_url, params: {
+        required_approval_count: 3
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+      expect(json_response['required_approval_count']).to eq(3)
+    end
+  end
+
+  shared_examples 'requests to update approval rules' do
+    it 'updates the environment / creating approval rule' do
+      put request_url, params: {
+        approval_rules: [
+          {
+            user_id: user_id
+          }
+        ]
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+      expect(json_response['approval_rules'].length).to eq(1)
+      expect(json_response['approval_rules'].last['user_id']).to eq(user_id)
+    end
+
+    it 'updates the environment / updating approval rule' do
+      create(:protected_environment_approval_rule, protected_environment: protected_environment, user_id: user.id)
+
+      put request_url, params: {
+        approval_rules: [
+          {
+            id: protected_environment.approval_rules.last.id,
+            user_id: user_id,
+            required_approvals: 2
+          }
+        ]
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+      expect(json_response['approval_rules'].length).to eq(1)
+      expect(json_response['approval_rules'].last['user_id']).to eq(user_id)
+      expect(json_response['approval_rules'].last['required_approvals']).to eq(2)
+    end
+
+    it 'updates the environment / deleting approval rule' do
+      create(:protected_environment_approval_rule, protected_environment: protected_environment, user_id: user.id)
+
+      put request_url, params: {
+        approval_rules: [
+          {
+            id: protected_environment.approval_rules.last.id,
+            user_id: user_id,
+            _destroy: true
+          }
+        ]
+      }
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+      expect(json_response['approval_rules'].length).to eq(0)
+    end
+  end
+
+  describe 'GET /projects/:id/protected_environments' do
     let(:route) { "/projects/#{project.id}/protected_environments" }
     let(:request) { get api(route, user), params: { per_page: 100 } }
 
@@ -60,7 +174,7 @@ RSpec.describe API::ProtectedEnvironments do
     it_behaves_like 'requests for non-maintainers'
   end
 
-  describe "GET /projects/:id/protected_environments/:environment" do
+  describe 'GET /projects/:id/protected_environments/:environment' do
     let(:requested_environment_name) { protected_environment_name }
     let(:route) { "/projects/#{project.id}/protected_environments/#{requested_environment_name}" }
     let(:request) { get api(route, user) }
@@ -197,6 +311,55 @@ RSpec.describe API::ProtectedEnvironments do
     end
   end
 
+  describe 'PUT /projects/:id/protected_environments/:name' do
+    let(:api_url) { api("/projects/#{project.id}/protected_environments/#{project_protected_environment.name}", user) }
+    let(:developer_access) { Gitlab::Access::DEVELOPER }
+
+    context 'when authenticated as maintainer' do
+      let_it_be(:deployer) { create(:user) }
+      let_it_be(:group) { create(:project_group_link, project: project).group }
+
+      before do
+        project.add_maintainer(user)
+        project.add_developer(deployer)
+      end
+
+      it_behaves_like 'requests to update deploy access levels' do
+        let(:request_url) { api_url }
+        let(:user_id) { deployer.id }
+        let(:protected_environment) { project_protected_environment }
+      end
+
+      it_behaves_like 'requests to update approval rules' do
+        let(:request_url) { api_url }
+        let(:user_id) { deployer.id }
+        let(:protected_environment) { project_protected_environment }
+      end
+
+      context 'with invalid deploy_access_level' do
+        it 'returns error with invalid deploy access level' do
+          put api_url, params: { deploy_access_levels: [{ access_level: nil }] }
+
+          expect(response).to have_gitlab_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'when protected environment does not exist' do
+        let(:api_url) { api("/projects/#{project.id}/protected_environments/invalid", user) }
+
+        it 'returns a not found error' do
+          put api_url, params: { deploy_access_levels: [{ access_level: developer_access }] }
+
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+    end
+
+    it_behaves_like 'requests for non-maintainers' do
+      let(:request) { put api_url, params: { name: 'production' } }
+    end
+  end
+
   describe 'DELETE /projects/:id/protected_environments/:environment' do
     let(:route) { "/projects/#{project.id}/protected_environments/production" }
     let(:request) { delete api(route, user) }
@@ -218,7 +381,7 @@ RSpec.describe API::ProtectedEnvironments do
     it_behaves_like 'requests for non-maintainers'
   end
 
-  describe "GET /groups/:id/protected_environments" do
+  describe 'GET /groups/:id/protected_environments' do
     let(:route) { "/groups/#{group.id}/protected_environments" }
     let(:request) { get api(route, user), params: { per_page: 100 } }
 
@@ -258,7 +421,7 @@ RSpec.describe API::ProtectedEnvironments do
     end
   end
 
-  describe "GET /groups/:id/protected_environments/:environment" do
+  describe 'GET /groups/:id/protected_environments/:environment' do
     let(:requested_environment_name) { protected_environment_name }
     let(:route) { "/groups/#{group.id}/protected_environments/#{requested_environment_name}" }
     let(:request) { get api(route, user) }
@@ -432,6 +595,99 @@ RSpec.describe API::ProtectedEnvironments do
 
         expect(response).to have_gitlab_http_status(:unprocessable_entity)
       end
+    end
+  end
+
+  describe 'PUT /groups/:id/protected_environments/:name' do
+    let(:api_url) { api("/groups/#{group.id}/protected_environments/#{group_protected_environment.name}", user) }
+    let(:maintainer_access) { Gitlab::Access::MAINTAINER }
+
+    it_behaves_like 'group-level request is disallowed for maintainer' do
+      let(:request) { put api_url, params: { name: 'production' } }
+    end
+
+    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+      before do
+        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+      end
+
+      it_behaves_like 'group-level request is allowed for maintainer' do
+        let(:deployer) { create(:user).tap { |u| group.add_maintainer(u) } }
+        let(:request) { put api_url, params: { deploy_access_levels: [{ user_id: deployer.id }] } }
+      end
+    end
+
+    context 'when authenticated as a owner' do
+      let_it_be(:deployer) { create(:user) }
+      let_it_be(:shared_group) { create(:group) }
+      let_it_be(:subgroup) { create(:group, parent: group) }
+
+      before do
+        group.add_owner(user)
+        group.add_maintainer(deployer)
+
+        create(:group_group_link, shared_group: group, shared_with_group: shared_group)
+      end
+
+      it_behaves_like 'requests to update deploy access levels' do
+        let(:request_url) { api_url }
+        let(:user_id) { deployer.id }
+        let(:protected_environment) { group_protected_environment }
+      end
+
+      it_behaves_like 'requests to update approval rules' do
+        let(:request_url) { api_url }
+        let(:user_id) { deployer.id }
+        let(:protected_environment) { group_protected_environment }
+      end
+
+      it 'updates the environment with shared group allowed to deploy' do
+        put api_url, params: {
+          deploy_access_levels: [
+            {
+              id: group_protected_environment.deploy_access_levels.first.id,
+              group_id: shared_group.id
+            }
+          ],
+          required_approval_count: 1
+        }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+        expect(json_response['deploy_access_levels'].length).to eq(2)
+        expect(json_response['deploy_access_levels'].first['group_id']).to eq(shared_group.id)
+        expect(json_response['required_approval_count']).to eq(1)
+      end
+
+      it 'updates the environment with group allowed to deploy with inheritance' do
+        put api_url, params: {
+          deploy_access_levels: [
+            {
+              id: group_protected_environment.deploy_access_levels.last.id,
+              group_id: subgroup.id,
+              group_inheritance_type: ::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL]
+            }
+          ],
+          required_approval_count: 1
+        }
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to match_response_schema('public_api/v4/protected_environment', dir: 'ee')
+        expect(json_response['deploy_access_levels'].length).to eq(2)
+        expect(json_response['deploy_access_levels'].last['group_id']).to eq(subgroup.id)
+        expect(json_response['deploy_access_levels'].last['group_inheritance_type']).to eq(::ProtectedEnvironments::Authorizable::GROUP_INHERITANCE_TYPE[:ALL])
+        expect(json_response['required_approval_count']).to eq(1)
+      end
+
+      it 'returns error with invalid deploy access level' do
+        put api_url, params: { name: 'production', deploy_access_levels: [{ access_level: nil }] }
+
+        expect(response).to have_gitlab_http_status(:unprocessable_entity)
+      end
+    end
+
+    it_behaves_like 'requests for non-maintainers' do
+      let(:request) { put api_url, params: { name: 'production' } }
     end
   end
 

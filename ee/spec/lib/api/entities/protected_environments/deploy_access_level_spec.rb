@@ -8,7 +8,7 @@ RSpec.describe API::Entities::ProtectedEnvironments::DeployAccessLevel do
   let(:deploy_access_level) { build(:protected_environment_deploy_access_level) }
 
   it 'exposes correct attributes' do
-    expect(subject.keys).to contain_exactly(:user_id, :group_id,
+    expect(subject.keys).to contain_exactly(:id, :user_id, :group_id,
                                             :access_level, :access_level_description,
                                             :group_inheritance_type)
   end
