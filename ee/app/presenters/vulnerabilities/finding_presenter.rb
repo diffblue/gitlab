@@ -25,10 +25,7 @@ module Vulnerabilities
     def add_line_numbers(start_line, end_line)
       return vulnerability_path unless start_line
 
-      vulnerability_path.tap do |complete_path|
-        complete_path << "#L#{start_line}"
-        complete_path << "-#{end_line}" if end_line
-      end
+      path_with_line_numbers(vulnerability_path, start_line, end_line)
     end
 
     def vulnerability_path
