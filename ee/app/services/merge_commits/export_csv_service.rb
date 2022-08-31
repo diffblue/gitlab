@@ -52,7 +52,8 @@ module MergeCommits
       {
         group_id: group.id,
         state: 'merged',
-        merge_commit_sha: filter_params[:commit_sha]
+        merge_commit_sha: filter_params[:commit_sha],
+        include_subgroups: true
       }
     end
 

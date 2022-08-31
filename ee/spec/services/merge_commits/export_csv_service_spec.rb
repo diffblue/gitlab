@@ -6,10 +6,13 @@ RSpec.describe MergeCommits::ExportCsvService do
   let(:service) { described_class.new(user, group) }
 
   let_it_be(:group) { create(:group, name: 'Kombucha lovers') }
+  let_it_be(:sub_group) { create(:group, name: 'sub-group', parent: group) }
   let_it_be(:user) { create(:user, name: 'John Cena') }
   let_it_be(:project) { create(:project, :repository, namespace: group, name: 'Starter kit') }
+  let_it_be(:sub_group_project) { create(:project, :repository, namespace: sub_group, name: 'Alpha') }
   let_it_be(:merge_user) { create(:user, name: 'Brock Lesnar') }
   let_it_be(:merge_request) { create(:merge_request_with_diffs, :with_merged_metrics, merged_by: merge_user, source_project: project, target_project: project, author: user, merge_commit_sha: '347yrv45') }
+  let_it_be(:sub_group_merge_request) { create(:merge_request_with_diffs, :with_merged_metrics, merged_by: merge_user, source_project: sub_group_project, target_project: sub_group_project, author: user, state: :merged, merge_commit_sha: '6f4907e7') }
   let_it_be(:approval) { create(:approval, merge_request: merge_request, user: merge_user) }
   let_it_be(:approval2) { create(:approval, merge_request: merge_request, user_id: create(:user, name: 'Kane').id) }
   let_it_be(:open_merge_request) { create(:merge_request, source_project: project, target_project: project, author: user) }
@@ -33,6 +36,7 @@ RSpec.describe MergeCommits::ExportCsvService do
   describe '#csv_data' do
     before_all do
       project.add_maintainer(user)
+      sub_group_project.add_maintainer(user)
     end
 
     it { expect(service.csv_data).to be_success }
@@ -82,7 +86,7 @@ RSpec.describe MergeCommits::ExportCsvService do
     context 'with multiple merge requests' do
       let_it_be(:merge_request_2) { create(:merge_request_with_diffs, source_project: project, target_project: project, state: :merged, merge_commit_sha: 'rurebf') }
 
-      it { expect(csv.count).to eq 2 }
+      it { expect(csv.count).to eq 3 }
 
       context 'by commit_sha filter' do
         context 'when valid' do
@@ -97,6 +101,18 @@ RSpec.describe MergeCommits::ExportCsvService do
           end
         end
 
+        context 'when project inside a subgroup' do
+          let(:service) { described_class.new(user, group, { commit_sha: sub_group_merge_request.merge_commit_sha }) }
+
+          it { expect(service.csv_data).to be_success }
+
+          it { expect(csv.count).to eq 1 }
+
+          it do
+            expect(csv[0]['Merge Commit']).to eq sub_group_merge_request.merge_commit_sha
+          end
+        end
+
         context 'when merge commit does not exist' do
           let(:service) { described_class.new(user, group, { commit_sha: 'inexistent' }) }
 
@@ -106,7 +122,7 @@ RSpec.describe MergeCommits::ExportCsvService do
     end
 
     context 'possible merge commit SHA values' do
-      subject { csv[1]['Merge Commit'] }
+      subject { csv[2]['Merge Commit'] }
 
       context 'when squash_commit_sha is present' do
         let_it_be(:squash_commit_merge_request) do
