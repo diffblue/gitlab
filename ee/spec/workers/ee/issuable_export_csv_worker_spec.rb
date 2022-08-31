@@ -66,9 +66,22 @@ RSpec.describe IssuableExportCsvWorker do
     end
   end
 
+  context 'when issuable type is :issue' do
+    let(:issuable_type) { :issue }
+
+    context 'when issuable type is :issue' do
+      it 'calls Issues::ExportCsvService with specific parameters' do
+        expect(Issues::ExportCsvService)
+          .to receive(:new).with(anything, project, user).once.and_call_original
+
+        subject
+      end
+    end
+  end
+
   context 'when issuable type is not :requirement' do
     context 'with a valid type' do
-      let(:issuable_type) { :issue }
+      let(:issuable_type) { :merge_request }
 
       it 'does not raise an exception' do
         expect { subject }.not_to raise_error
