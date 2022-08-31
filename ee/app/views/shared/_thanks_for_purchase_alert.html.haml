@@ -3,9 +3,9 @@
                          user: current_user,
                          namespace: @group)
 
-= render Pajamas::AlertComponent.new(variant: :info,
-  title: s_('Thanks for your purchase!'),
+= render Pajamas::AlertComponent.new(variant: :success,
+  title: _('Thanks for your purchase!'),
   alert_options: { class: 'gl-mt-6 gl-mb-3', data: { uid: 'purchase_success_alert_dismissed' } }) do |c|
   - number_of_users = n_('1 user', '%{num} users', quantity) % { num: quantity }
   = c.body do
-    = s_('You have successfully purchased a %{plan} plan subscription for %{seats}. You’ll receive a receipt via email.') % { plan: plan_title, seats: number_of_users }
+    = _('You have successfully purchased a %{plan} plan subscription for %{seats}. You’ll receive a receipt via email. It might take a moment for GitLab.com to fully reflect your purchase.') % { plan: plan_title, seats: number_of_users }
