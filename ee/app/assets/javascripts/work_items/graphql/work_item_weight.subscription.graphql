@@ -1,0 +1,12 @@
+subscription issuableWeightUpdated($issuableId: IssuableID!) {
+  issuableWeightUpdated(issuableId: $issuableId) {
+    ... on WorkItem {
+      id
+      widgets {
+        ... on WorkItemWidgetWeight {
+          weight
+        }
+      }
+    }
+  }
+}
