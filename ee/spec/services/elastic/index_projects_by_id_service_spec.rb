@@ -14,7 +14,7 @@ RSpec.describe Elastic::IndexProjectsByIdService do
         described_class.new.execute(project_ids: [project1.id, project2.id], namespace_ids: [3, 4])
       end
 
-      jobs = Sidekiq::Queues[ElasticNamespaceIndexerWorker.queue]
+      jobs = Sidekiq::Queues.jobs_by_worker[ElasticNamespaceIndexerWorker.name]
 
       expect(jobs.size).to eq(2)
       expect(jobs[0]['args']).to eq([3, 'index'])
