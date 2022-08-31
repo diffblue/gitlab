@@ -13,8 +13,15 @@ Gitlab::Cluster::LifecycleEvents.on_worker_start do
       Gitlab::Memory::Watchdog::NullHandler.instance
     end
 
-  watchdog = Gitlab::Memory::Watchdog.new(
-    handler: handler, logger: Gitlab::AppLogger
-  )
+  watchdog = Gitlab::Memory::Watchdog.new
+  watchdog.configure do |config|
+    config.handler = handler
+    config.logger = Gitlab::AppLogger
+
+    # config.monitor.use MonitorClass, args**, &block
+    config.monitors.use Gitlab::Memory::Watchdog::Monitors::HeapFragmentationMonitor
+    config.monitors.use Gitlab::Memory::Watchdog::Monitors::MemoryGrowthMonitor
+  end
+
   Gitlab::BackgroundTask.new(watchdog).start
 end

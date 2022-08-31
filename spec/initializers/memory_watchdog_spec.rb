@@ -4,7 +4,7 @@ require 'fast_spec_helper'
 
 RSpec.describe 'memory watchdog' do
   subject(:run_initializer) do
-    load Rails.root.join('config/initializers/memory_watchdog.rb')
+    load rails_root_join('config/initializers/memory_watchdog.rb')
   end
 
   context 'when GITLAB_MEMORY_WATCHDOG_ENABLED is truthy' do
@@ -28,11 +28,23 @@ RSpec.describe 'memory watchdog' do
         run_initializer
       end
 
-      shared_examples 'starts watchdog with handler' do |handler_class|
+      shared_examples 'starts configured watchdog with handler' do |handler_class|
+        let(:configuration) { instance_double(Gitlab::Memory::Watchdog::Configuration) }
+        let(:monitor_stack) { instance_double(Gitlab::Memory::Watchdog::Configuration::MonitorStack) }
+
+        before do
+          allow(configuration).to receive(:monitors).and_return(monitor_stack)
+        end
+
         it "uses the #{handler_class} and starts the watchdog" do
-          expect(Gitlab::Memory::Watchdog).to receive(:new).with(
-            handler: an_instance_of(handler_class),
-            logger: Gitlab::AppLogger).and_return(watchdog)
+          expect(watchdog).to receive(:configure).and_yield(configuration)
+          expect(configuration).to receive(:handler=).with(an_instance_of(handler_class))
+          expect(configuration).to receive(:logger=).with(Gitlab::AppLogger)
+          expect(configuration.monitors).to receive(:use)
+            .with(Gitlab::Memory::Watchdog::Monitors::HeapFragmentationMonitor)
+          expect(configuration.monitors).to receive(:use)
+            .with(Gitlab::Memory::Watchdog::Monitors::MemoryGrowthMonitor)
+          expect(Gitlab::Memory::Watchdog).to receive(:new).and_return(watchdog)
           expect(Gitlab::BackgroundTask).to receive(:new).with(watchdog).and_return(background_task)
           expect(background_task).to receive(:start)
           expect(Gitlab::Cluster::LifecycleEvents).to receive(:on_worker_start).and_yield
@@ -59,7 +71,7 @@ RSpec.describe 'memory watchdog' do
           allow(Gitlab::Runtime).to receive(:puma?).and_return(true)
         end
 
-        it_behaves_like 'starts watchdog with handler', Gitlab::Memory::Watchdog::PumaHandler
+        it_behaves_like 'starts configured watchdog with handler', Gitlab::Memory::Watchdog::PumaHandler
       end
       # rubocop: enable RSpec/VerifiedDoubles
 
@@ -68,11 +80,11 @@ RSpec.describe 'memory watchdog' do
           allow(Gitlab::Runtime).to receive(:sidekiq?).and_return(true)
         end
 
-        it_behaves_like 'starts watchdog with handler', Gitlab::Memory::Watchdog::TermProcessHandler
+        it_behaves_like 'starts configured watchdog with handler', Gitlab::Memory::Watchdog::TermProcessHandler
       end
 
       context 'when other runtime' do
-        it_behaves_like 'starts watchdog with handler', Gitlab::Memory::Watchdog::NullHandler
+        it_behaves_like 'starts configured watchdog with handler', Gitlab::Memory::Watchdog::NullHandler
       end
     end
 
