@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Config::Entry::Variables do
+RSpec.describe Gitlab::Ci::Config::Entry::LegacyVariables do
   let(:config) { {} }
   let(:metadata) { {} }
 
@@ -79,8 +79,11 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variables do
 
   context 'when key is an array' do
     let(:config) { { ['VAR1'] => 'val1' } }
+    let(:result) do
+      { 'VAR1' => 'val1' }
+    end
 
-    it_behaves_like 'invalid config', /must be an alphanumeric string/
+    it_behaves_like 'invalid config', /should be a hash of key value pairs/
   end
 
   context 'when value is a symbol' do
@@ -94,8 +97,11 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variables do
 
   context 'when value is a boolean' do
     let(:config) { { 'VAR1' => true } }
+    let(:result) do
+      { 'VAR1' => 'val1' }
+    end
 
-    it_behaves_like 'invalid config', /must be either a string or a hash/
+    it_behaves_like 'invalid config', /should be a hash of key value pairs/
   end
 
   context 'when entry config value has key-value pair and hash' do
@@ -104,10 +110,10 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variables do
         'VARIABLE_2' => 'value 2' }
     end
 
-    it_behaves_like 'invalid config', /variable_1 config must be a string/
+    it_behaves_like 'invalid config', /should be a hash of key value pairs/
 
-    context 'when metadata has allowed_value_data' do
-      let(:metadata) { { allowed_value_data: %i[value description] } }
+    context 'when metadata has use_value_data: true' do
+      let(:metadata) { { use_value_data: true } }
 
       let(:result) do
         { 'VARIABLE_1' => 'value 1', 'VARIABLE_2' => 'value 2' }
@@ -129,11 +135,11 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variables do
   context 'when entry value is an array' do
     let(:config) { [:VAR, 'test'] }
 
-    it_behaves_like 'invalid config', /variables config should be a hash/
+    it_behaves_like 'invalid config', /should be a hash of key value pairs/
   end
 
-  context 'when metadata has allowed_value_data' do
-    let(:metadata) { { allowed_value_data: %i[value description] } }
+  context 'when metadata has use_value_data: true' do
+    let(:metadata) { { use_value_data: true } }
 
     context 'when entry value has hash with other key-pairs' do
       let(:config) do
@@ -141,7 +147,7 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variables do
           'VARIABLE_2' => 'value 2' }
       end
 
-      it_behaves_like 'invalid config', /variable_1 config uses invalid data keys: hello/
+      it_behaves_like 'invalid config', /should be a hash of key value pairs, value can be a hash/
     end
 
     context 'when entry config value has hash with nil description' do
@@ -149,7 +155,7 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variables do
         { 'VARIABLE_1' => { value: 'value 1', description: nil } }
       end
 
-      it_behaves_like 'invalid config', /variable_1 config description must be an alphanumeric string/
+      it_behaves_like 'invalid config', /should be a hash of key value pairs, value can be a hash/
     end
 
     context 'when entry config value has hash without description' do
