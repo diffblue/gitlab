@@ -143,9 +143,12 @@ RSpec.describe Projects::UpdateService, '#execute' do
     describe '#name' do
       include_examples 'audit event logging' do
         let!(:old_name) { project.full_name }
-        let(:operation) { update_project(project, user, name: 'foobar') }
         let(:fail_condition!) do
           allow_any_instance_of(Project).to receive(:update).and_return(false)
+        end
+
+        def operation
+          update_project(project, user, name: 'foobar')
         end
 
         let(:attributes) do
@@ -163,9 +166,12 @@ RSpec.describe Projects::UpdateService, '#execute' do
 
     describe '#path' do
       include_examples 'audit event logging' do
-        let(:operation) { update_project(project, user, path: 'foobar1') }
         let(:fail_condition!) do
           allow_any_instance_of(Project).to receive(:update).and_return(false)
+        end
+
+        def operation
+          update_project(project, user, path: 'foobar1')
         end
 
         let(:attributes) do
@@ -183,11 +189,14 @@ RSpec.describe Projects::UpdateService, '#execute' do
 
     describe '#default_branch' do
       include_examples 'audit event logging' do
-        let(:operation) { update_project(project, user, default_branch: 'feature') }
         let(:fail_condition!) do
           allow_next_instance_of(Project) do |project|
             allow(project).to receive(:change_head).and_return(false)
           end
+        end
+
+        def operation
+          update_project(project, user, default_branch: 'feature')
         end
 
         let(:attributes) do
@@ -203,12 +212,12 @@ RSpec.describe Projects::UpdateService, '#execute' do
 
     describe '#visibility' do
       include_examples 'audit event logging' do
-        let(:operation) do
-          update_project(project, user, visibility_level: Gitlab::VisibilityLevel::INTERNAL)
-        end
-
         let(:fail_condition!) do
           allow_any_instance_of(Project).to receive(:update).and_return(false)
+        end
+
+        def operation
+          update_project(project, user, visibility_level: Gitlab::VisibilityLevel::INTERNAL)
         end
 
         let(:attributes) do

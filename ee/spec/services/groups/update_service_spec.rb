@@ -28,12 +28,12 @@ RSpec.describe Groups::UpdateService, '#execute' do
 
     describe '#visibility' do
       include_examples 'audit event logging' do
-        let(:operation) do
-          update_group(group, user, visibility_level: Gitlab::VisibilityLevel::PRIVATE)
-        end
-
         let(:fail_condition!) do
           allow(group).to receive(:save).and_return(false)
+        end
+
+        def operation
+          update_group(group, user, visibility_level: Gitlab::VisibilityLevel::PRIVATE)
         end
 
         let(:attributes) do
@@ -56,12 +56,12 @@ RSpec.describe Groups::UpdateService, '#execute' do
         end
 
         include_examples 'audit event logging' do
-          let(:operation) do
-            update_group(group, user, ip_restriction_ranges: '192.168.0.0/24,10.0.0.0/8' )
-          end
-
           let(:fail_condition!) do
             allow(group).to receive(:save).and_return(false)
+          end
+
+          def operation
+            update_group(group, user, ip_restriction_ranges: '192.168.0.0/24,10.0.0.0/8' )
           end
 
           let(:attributes) do
