@@ -15,7 +15,7 @@
 #     exclude_group_ids: array of integers
 #     include_parent_descendants: boolean (defaults to false) - includes descendant groups when
 #                                 filtering by parent. The parent param must be present.
-#
+#     include_ancestors: boolean (defaults to true)
 # Users with full private access can see all groups. The `owned` and `parent`
 # params can be used to restrict the groups that are returned.
 #
@@ -55,7 +55,12 @@ class GroupsFinder < UnionFinder
 
     if current_user
       if Feature.enabled?(:use_traversal_ids_groups_finder, current_user)
-        groups << current_user.authorized_groups.self_and_ancestors
+        groups << if include_ancestors?
+                    current_user.authorized_groups.self_and_ancestors
+                  else
+                    groups_for_ancestors
+                  end
+
         groups << current_user.groups.self_and_descendants
       else
         groups << Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
@@ -135,5 +140,9 @@ class GroupsFinder < UnionFinder
 
   def min_access_level?
     current_user && params[:min_access_level].present?
+  end
+
+  def include_ancestors?
+    params.fetch(:include_ancestors, true)
   end
 end
