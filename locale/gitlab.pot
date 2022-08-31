@@ -17889,6 +17889,9 @@ msgstr ""
 msgid "Global Shortcuts"
 msgstr ""
 
+msgid "Global notification level"
+msgstr ""
+
 msgid "Global notification settings"
 msgstr ""
 
@@ -26596,6 +26599,9 @@ msgid "Note|The created date provided is too far in the past."
 msgstr ""
 
 msgid "Nothing to preview."
+msgstr ""
+
+msgid "Notification Email"
 msgstr ""
 
 msgid "Notification events"
