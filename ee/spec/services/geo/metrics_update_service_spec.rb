@@ -88,7 +88,7 @@ RSpec.describe Geo::MetricsUpdateService, :geo, :prometheus do
       end
 
       it 'skips posting the status' do
-        expect_any_instance_of(Geo::NodeStatusRequestService).to receive(:execute).never
+        expect_any_instance_of(Geo::NodeStatusRequestService).not_to receive(:execute)
 
         subject.execute
       end
