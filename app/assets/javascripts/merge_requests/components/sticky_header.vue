@@ -93,7 +93,7 @@ export default {
       class="issue-sticky-header merge-request-sticky-header gl-fixed gl-bg-white gl-border-1 gl-border-b-solid gl-border-b-gray-100 gl-pt-3 gl-display-none gl-md-display-block"
     >
       <div
-        class="issue-sticky-header-text gl-display-flex gl-flex-direction-column gl-align-items-center gl-mx-auto gl-px-5"
+        class="issue-sticky-header-text gl-layout-w-fixed gl-display-flex gl-flex-direction-column gl-align-items-center gl-mx-auto gl-px-5"
       >
         <div class="gl-w-full gl-display-flex gl-align-items-center">
           <status-box :initial-state="getNoteableData.state" issuable-type="merge_request" />
