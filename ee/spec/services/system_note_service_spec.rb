@@ -7,12 +7,13 @@ RSpec.describe SystemNoteService do
   include Gitlab::Routing
   include RepoHelpers
 
-  let_it_be(:group)    { create(:group) }
-  let_it_be(:project)  { create(:project, :repository, group: group) }
-  let_it_be(:author)   { create(:user) }
-  let_it_be(:noteable) { create(:issue, project: project) }
-  let_it_be(:issue)    { noteable }
-  let_it_be(:epic)     { create(:epic, group: group) }
+  let_it_be(:group)         { create(:group) }
+  let_it_be(:project)       { create(:project, :repository, group: group) }
+  let_it_be(:author)        { create(:user) }
+  let_it_be(:noteable)      { create(:issue, project: project) }
+  let_it_be(:issue)         { noteable }
+  let_it_be(:epic)          { create(:epic, group: group) }
+  let_it_be(:noteable_ref)  { create(:issue, project: project) }
 
   describe '.change_health_status_note' do
     it 'calls IssuableService' do
@@ -171,6 +172,26 @@ RSpec.describe SystemNoteService do
       end
 
       described_class.start_escalation(noteable, policy, author)
+    end
+  end
+
+  describe '.block_issuable' do
+    it 'calls IssuablesService' do
+      expect_next_instance_of(::SystemNotes::IssuablesService) do |service|
+        expect(service).to receive(:block_issuable).with(noteable_ref)
+      end
+
+      described_class.block_issuable(noteable, noteable_ref, author)
+    end
+  end
+
+  describe '.blocked_by_issuable' do
+    it 'calls IssuablesService' do
+      expect_next_instance_of(::SystemNotes::IssuablesService) do |service|
+        expect(service).to receive(:blocked_by_issuable).with(noteable_ref)
+      end
+
+      described_class.blocked_by_issuable(noteable, noteable_ref, author)
     end
   end
 end

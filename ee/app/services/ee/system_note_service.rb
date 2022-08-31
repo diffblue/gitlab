@@ -120,6 +120,28 @@ module EE
       escalations_service(noteable, noteable.project).start_escalation(escalation_policy, author)
     end
 
+    # Called when Issuable got linked using `blocks` link
+    #
+    # noteable      - Noteable object
+    # noteable_ref  - Noteable object
+    # author        - User performing the linking action
+    #
+    # Returns the created Note object
+    def block_issuable(noteable, noteable_ref, user)
+      issuables_service(noteable, noteable.project, user).block_issuable(noteable_ref)
+    end
+
+    # Called when Issuable got blocked
+    #
+    # noteable      - Noteable object
+    # noteable_ref  - Noteable object
+    # author        - User performing the linking action
+    #
+    # Returns the created Note object
+    def blocked_by_issuable(noteable, noteable_ref, user)
+      issuables_service(noteable, noteable.project, user).blocked_by_issuable(noteable_ref)
+    end
+
     private
 
     def issuables_service(noteable, project, author)
