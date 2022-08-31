@@ -12058,7 +12058,10 @@ CREATE TABLE board_group_recent_visits (
     updated_at timestamp with time zone NOT NULL,
     user_id integer,
     board_id integer,
-    group_id integer
+    group_id integer,
+    CONSTRAINT check_409f6caea4 CHECK ((user_id IS NOT NULL)),
+    CONSTRAINT check_ddc74243ef CHECK ((group_id IS NOT NULL)),
+    CONSTRAINT check_fa7711a898 CHECK ((board_id IS NOT NULL))
 );
 
 CREATE SEQUENCE board_group_recent_visits_id_seq
@@ -12091,7 +12094,10 @@ CREATE TABLE board_project_recent_visits (
     updated_at timestamp with time zone NOT NULL,
     user_id integer,
     project_id integer,
-    board_id integer
+    board_id integer,
+    CONSTRAINT check_0386e26981 CHECK ((board_id IS NOT NULL)),
+    CONSTRAINT check_d9cc9b79da CHECK ((project_id IS NOT NULL)),
+    CONSTRAINT check_df7762a99a CHECK ((user_id IS NOT NULL))
 );
 
 CREATE SEQUENCE board_project_recent_visits_id_seq
