@@ -21,12 +21,37 @@ RSpec.describe 'Admin views Subscription', :js do
   shared_examples 'license removal' do
     context 'when removing a license file' do
       before do
-        accept_gl_confirm(button_text: 'Remove license') { click_on 'Remove license' }
+        allow(Gitlab).to receive(:com?).and_return(false)
       end
 
       it 'shows a message saying the license was correctly removed' do
+        visit(admin_subscription_path)
+
+        click_button('Remove license')
+
+        within_modal do |modal|
+          expect(page).not_to have_content('This change will remove ALL Premium and Ultimate features for ALL SaaS customers and make tests start failing.')
+          click_button('Remove license')
+        end
+
         page.within(find('#content-body', match: :first)) do
           expect(page).to have_content('The license was removed.')
+        end
+      end
+    end
+
+    context 'when the instance is SaaS' do
+      before do
+        allow(Gitlab).to receive(:com?).and_return(true)
+      end
+
+      it 'shows a message with a warning affecting all customers' do
+        visit(admin_subscription_path)
+
+        click_button 'Remove license'
+
+        within_modal do |modal|
+          expect(page).to have_content('This change will remove ALL Premium and Ultimate features for ALL SaaS customers and make tests start failing.')
         end
       end
     end
@@ -97,7 +122,7 @@ RSpec.describe 'Admin views Subscription', :js do
       end
 
       it 'shows the activation modal' do
-        page.within(find('#subscription-activation-modal', match: :first)) do
+        within_modal do
           expect(page).to have_content('Activate subscription')
         end
       end
@@ -105,7 +130,7 @@ RSpec.describe 'Admin views Subscription', :js do
       it 'displays an error when the activation fails' do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_return(status: 422, body: '', headers: {})
 
-        page.within(find('#subscription-activation-modal', match: :first)) do
+        within_modal do
           fill_activation_form
 
           expect(page).to have_content('An error occurred while adding your subscription.')
@@ -116,7 +141,7 @@ RSpec.describe 'Admin views Subscription', :js do
         stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
           .to_return(status: 500, body: '', headers: {})
 
-        page.within(find('#subscription-activation-modal', match: :first)) do
+        within_modal do
           fill_activation_form
 
           expect(page).to have_content('Cannot activate instance due to a connectivity issue.')

@@ -36,13 +36,17 @@ class Admin::LicensesController < Admin::ApplicationController
   def destroy
     Licenses::DestroyService.new(license, current_user).execute
 
-    if License.current
-      flash[:notice] = _('The license was removed. GitLab has fallen back on the previous license.')
-    else
-      flash[:alert] = _('The license was removed. GitLab now no longer has a valid license.')
-    end
+    respond_to do |format|
+      format.json do
+        if License.current
+          flash[:notice] = _('The license was removed. GitLab has fallen back on the previous license.')
+        else
+          flash[:alert] = _('The license was removed. GitLab now no longer has a valid license.')
+        end
 
-    redirect_to admin_subscription_path, status: :found
+        render json: { success: true }
+      end
+    end
   end
 
   def sync_seat_link

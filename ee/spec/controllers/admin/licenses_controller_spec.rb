@@ -148,9 +148,10 @@ RSpec.describe Admin::LicensesController do
 
     shared_examples 'license removal' do
       it 'removes the license' do
-        delete :destroy
+        delete :destroy, format: :json
 
-        expect(response).to redirect_to(admin_subscription_path)
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to eq({ 'success' => true })
         expect(flash[:notice]).to match('The license was removed. GitLab has fallen back on the previous license.')
         expect(cloud_licenses).to be_empty
       end
