@@ -23,6 +23,12 @@ RSpec.shared_examples 'audit event logging' do
 
       expect { operation }.not_to change(AuditEvent, :count)
     end
+
+    it 'does not log audit event if operation results in no change' do
+      operation
+
+      expect { operation }.not_to change(AuditEvent, :count)
+    end
   end
 
   context 'when not licensed' do
