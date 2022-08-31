@@ -2,7 +2,7 @@ import StatusBadge, { VARIANTS } from './status_badge.vue';
 
 export default {
   component: StatusBadge,
-  title: 'ee/vue_shared/security_reports/components/status_badge',
+  title: 'ee/vue_shared/security_reports/status_badge',
   argTypes: {
     state: {
       control: 'select',
