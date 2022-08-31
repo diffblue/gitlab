@@ -26,9 +26,9 @@ module QA
 
           Page::Project::Show.perform(&:fork_project)
 
-          all_namespaces_for_fork = Page::Project::Fork::New.perform(&:fork_namespace_dropdown_values)
-
-          expect(all_namespaces_for_fork).to include(group_for_fork.path)
+          Page::Project::Fork::New.perform do |fork_new|
+            fork_new.fork_project(group_for_fork.path)
+          end
         end
       end
 
@@ -42,9 +42,13 @@ module QA
 
           Page::Project::Show.perform(&:fork_project)
 
-          all_namespaces_for_fork = Page::Project::Fork::New.perform(&:fork_namespace_dropdown_values)
+          Page::Project::Fork::New.perform do |fork_new|
+            namespaces = fork_new.get_list_of_namespaces
+            root_namespace_full_path = project.group.full_path.split('/').first
 
-          expect(all_namespaces_for_fork).not_to include(group_for_fork.path)
+            expect(namespaces).to all(start_with(root_namespace_full_path))
+            expect(namespaces).not_to include(group_for_fork)
+          end
         end
       end
 
