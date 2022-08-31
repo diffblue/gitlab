@@ -172,7 +172,7 @@ RSpec.describe Group do
         group.custom_project_templates_group_id = create(:group).id
 
         expect(group).not_to be_valid
-        expect(group.errors.messages[:custom_project_templates_group_id]).to eq ['has to be a subgroup of the group']
+        expect(group.errors.messages[:custom_project_templates_group_id]).to match_array(['has to be a subgroup of the group'])
       end
 
       it 'allows value if the assigned value is from a subgroup' do
@@ -298,7 +298,7 @@ RSpec.describe Group do
         it 'uses filter optmization to return groups with access' do
           expect(Group).not_to receive(:filter_groups_user_can)
 
-          expect(subject).to eq expected_groups
+          expect(subject).to match_array(expected_groups)
         end
 
         context 'when use_traversal_ids is disabled' do
@@ -308,7 +308,7 @@ RSpec.describe Group do
 
           it 'does not use filter optimization' do
             expect(Group).not_to receive(:filter_groups_user_can)
-            expect(subject).to eq expected_groups
+            expect(subject).to match_array(expected_groups)
           end
         end
 
@@ -320,7 +320,7 @@ RSpec.describe Group do
           it 'does not use filter optimization' do
             expect(Group).not_to receive(:filter_groups_user_can)
 
-            expect(subject).to eq expected_groups
+            expect(subject).to match_array(expected_groups)
           end
         end
 
@@ -328,7 +328,7 @@ RSpec.describe Group do
           it 'does not use filter optimization' do
             expect(Group).not_to receive(:filter_groups_user_can)
 
-            expect(subject).to eq expected_groups
+            expect(subject).to match_array(expected_groups)
           end
         end
       end
@@ -2797,14 +2797,14 @@ RSpec.describe Group do
     end
 
     it "returns all but 5 memberships in groups and projects" do
-      expect(group.memberships_to_be_deactivated.map(&:state)).to eq([::Member::STATE_ACTIVE] * 6)
+      expect(group.memberships_to_be_deactivated.map(&:state)).to match_array([::Member::STATE_ACTIVE] * 6)
     end
 
     context 'with some awaiting members' do
       it "returns only active members ignoring awaiting ones" do
         create(:project_member, :awaiting, project: project)
 
-        expect(group.memberships_to_be_deactivated.map(&:state)).to eq([::Member::STATE_ACTIVE] * 6)
+        expect(group.memberships_to_be_deactivated.map(&:state)).to match_array([::Member::STATE_ACTIVE] * 6)
       end
     end
   end
