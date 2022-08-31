@@ -35,6 +35,8 @@ RSpec.describe 'epics list', :js do
       let!(:epic1) { create(:epic, group: group, start_date: '2020-12-15', end_date: '2021-1-15', labels: [docs_label]) }
       let!(:epic2) { create(:epic, group: group, start_date: '2020-12-15', labels: [docs_label, enhancement_label]) }
       let!(:epic3) { create(:epic, group: group, end_date: '2021-1-15', labels: [enhancement_label]) }
+      let!(:blocked_epic) { create(:epic, group: group, end_date: '2022-1-15') }
+      let!(:epic_link) { create(:related_epic_link, source: epic2, target: blocked_epic, link_type: IssuableLink::TYPE_BLOCKS) }
       let!(:award_emoji_star) { create(:award_emoji, name: 'star', user: user, awardable: epic1) }
       let!(:award_emoji_upvote) { create(:award_emoji, :upvote, user: user, awardable: epic1) }
       let!(:award_emoji_downvote) { create(:award_emoji, :downvote, user: user, awardable: epic2) }
@@ -44,7 +46,7 @@ RSpec.describe 'epics list', :js do
           page.within('.issuable-list-container') do
             expect(page).to have_selector('.gl-tabs')
             expect(page).to have_selector('.vue-filtered-search-bar-container')
-            expect(page.find('.issuable-list')).to have_selector('li.issue', count: 3)
+            expect(page.find('.issuable-list')).to have_selector('li.issue', count: 4)
           end
         end
 
@@ -53,6 +55,7 @@ RSpec.describe 'epics list', :js do
             expect(page).to have_link(epic2.title)
             expect(page).to have_text("&#{epic2.iid}")
             expect(page).to have_selector('.issuable-meta [data-testid="issuable-downvotes"]')
+            expect(page.find('.issuable-meta [data-testid="issuable-blocking-count"]')).to have_content('1')
             expect(page).to have_text("created just now by #{epic2.author.name}")
           end
 
@@ -66,7 +69,7 @@ RSpec.describe 'epics list', :js do
 
           expect(issues[0]).to have_text('Dec 15, 2020 – No due date')
           expect(issues[1]).to have_text('Dec 15, 2020 – Jan 15, 2021')
-          expect(issues[2]).to have_text('No start date – Jan 15, 2021')
+          expect(issues[3]).to have_text('No start date – Jan 15, 2021')
         end
       end
 

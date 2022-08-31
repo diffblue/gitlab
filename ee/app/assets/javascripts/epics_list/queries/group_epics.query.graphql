@@ -47,6 +47,7 @@ query groupEpics(
         webUrl
         userDiscussionsCount @include(if: $isSignedIn)
         confidential
+        blockingCount
         upvotes
         downvotes
         group {

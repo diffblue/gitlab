@@ -24,6 +24,8 @@ query epicBoardListEpics(
                 referencePath: reference(full: true)
                 confidential
                 subscribed
+                blocked
+                blockedByCount
                 labels {
                   nodes {
                     ...Label
