@@ -37,6 +37,42 @@ module EE
         create_note(NoteSummary.new(noteable, project, author, body, action: 'published'))
       end
 
+      # Called when an issuable is linked as blocking
+      #
+      # noteable_ref - Referenced noteable object
+      #
+      # Example Note text:
+      #
+      #   "marked this issue as blocking gitlab-foss#9001"
+      #   "marked this epic as blocking &9"
+      #
+      # Returns the created Note object
+      def block_issuable(noteable_ref)
+        body = block_message(noteable_name, noteable_ref.to_reference(noteable.resource_parent), 'blocking')
+
+        track_issue_event(:track_issue_related_action)
+
+        create_note(NoteSummary.new(noteable, project, author, body, action: 'relate'))
+      end
+
+      # Called when an issuable is linked as a blocked by
+      #
+      # noteable_ref - Referenced noteable object
+      #
+      # Example Note text:
+      #
+      #   "marked this issue as blocked by gitlab-foss#9001"
+      #   "marked this epic as blocked by &9"
+      #
+      # Returns the created Note object
+      def blocked_by_issuable(noteable_ref)
+        body = block_message(noteable_name, noteable_ref.to_reference(noteable.resource_parent), 'blocked by')
+
+        track_issue_event(:track_issue_related_action)
+
+        create_note(NoteSummary.new(noteable, project, author, body, action: 'relate'))
+      end
+
       override :track_cross_reference_action
       def track_cross_reference_action
         super
@@ -46,6 +82,16 @@ module EE
         counter = ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter
 
         counter.track_epic_cross_referenced(author: author, namespace: noteable.group)
+      end
+
+      private
+
+      def block_message(issuable_type, noteable_reference, type)
+        "marked this #{issuable_type} as #{type} #{noteable_reference}"
+      end
+
+      def noteable_name
+        noteable.to_ability_name.humanize(capitalize: false)
       end
     end
   end

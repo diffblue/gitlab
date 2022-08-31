@@ -37,6 +37,16 @@ module EE
           link.link_type = params[:link_type]
         end
       end
+
+      override :create_notes
+      def create_notes(issuable_link)
+        if issuable_link.blocks?
+          ::SystemNoteService.block_issuable(issuable_link.source, issuable_link.target, current_user)
+          ::SystemNoteService.blocked_by_issuable(issuable_link.target, issuable_link.source, current_user)
+        else
+          super
+        end
+      end
     end
   end
 end

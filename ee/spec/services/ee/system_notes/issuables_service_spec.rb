@@ -119,4 +119,32 @@ RSpec.describe ::SystemNotes::IssuablesService do
       expect(result.note).to eq("removed the relation with #{target.to_reference(noteable.group)}")
     end
   end
+
+  describe '#block_issuable' do
+    let(:noteable_ref) { create(:issue) }
+
+    subject { service.block_issuable(noteable_ref) }
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'relate' }
+    end
+
+    it 'creates system note when issues gets marked as blocking' do
+      expect(subject.note).to eq "marked this issue as blocking #{noteable_ref.to_reference(project)}"
+    end
+  end
+
+  describe '#blocked_by_issuable' do
+    let(:noteable_ref) { create(:issue) }
+
+    subject { service.blocked_by_issuable(noteable_ref) }
+
+    it_behaves_like 'a system note' do
+      let(:action) { 'relate' }
+    end
+
+    it 'creates system note when issues gets marked as blocked by noteable' do
+      expect(subject.note).to eq "marked this issue as blocked by #{noteable_ref.to_reference(project)}"
+    end
+  end
 end
