@@ -53,6 +53,15 @@ RSpec.describe Vulnerabilities::FindingPresenter do
         it { is_expected.to end_with('#L1-2') }
       end
 
+      context 'when start_line and end_line are the same' do
+        before do
+          allow(presenter).to receive(:location)
+            .and_return({ 'file' => 'a.txt', 'start_line' => 1, 'end_line' => 1 })
+        end
+
+        it { is_expected.to end_with('#L1') }
+      end
+
       context 'without file' do
         before do
           allow(presenter).to receive(:location)
