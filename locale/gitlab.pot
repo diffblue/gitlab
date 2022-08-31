@@ -16806,6 +16806,9 @@ msgstr ""
 msgid "ForkProject|Select a namespace"
 msgstr ""
 
+msgid "ForkProject|Something went wrong while loading data. Please refresh the page to try again."
+msgstr ""
+
 msgid "ForkProject|The project can be accessed by any logged in user."
 msgstr ""
 
