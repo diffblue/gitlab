@@ -47,22 +47,31 @@ class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Databas
     LIMIT 1
   SQL
 
+  CURRENT_CHECK_CONSTRAINT_SQL = <<~SQL
+    SELECT
+      pg_get_constraintdef(oid)
+    FROM
+      pg_catalog.pg_constraint
+    WHERE
+      conname = 'check_partition_number'
+  SQL
+
   def up
     execute(<<~SQL)
       LOCK TABLE vulnerability_scanners, security_scans, security_findings IN ACCESS EXCLUSIVE MODE
     SQL
 
     execute(<<~SQL)
-      ALTER TABLE security_findings RENAME TO security_findings_1;
+      ALTER TABLE security_findings RENAME TO security_findings_#{candidate_partition_number};
     SQL
 
     execute(<<~SQL)
-      ALTER INDEX security_findings_pkey RENAME TO security_findings_1_pkey;
+      ALTER INDEX security_findings_pkey RENAME TO security_findings_#{candidate_partition_number}_pkey;
     SQL
 
     execute(<<~SQL)
       CREATE TABLE security_findings (
-        LIKE security_findings_1 INCLUDING ALL
+        LIKE security_findings_#{candidate_partition_number} INCLUDING ALL
       ) PARTITION BY LIST (partition_number);
     SQL
 
@@ -81,18 +90,22 @@ class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Databas
     SQL
 
     execute(<<~SQL)
-      ALTER TABLE security_findings_1 SET SCHEMA gitlab_partitions_dynamic;
+      ALTER TABLE security_findings_#{candidate_partition_number} SET SCHEMA gitlab_partitions_dynamic;
     SQL
 
     execute(<<~SQL)
-      ALTER TABLE security_findings ATTACH PARTITION gitlab_partitions_dynamic.security_findings_1 FOR VALUES IN (1);
+      ALTER TABLE security_findings ATTACH PARTITION gitlab_partitions_dynamic.security_findings_#{candidate_partition_number} FOR VALUES IN (#{candidate_partition_number});
     SQL
 
     execute(<<~SQL)
       ALTER TABLE security_findings DROP CONSTRAINT check_partition_number;
     SQL
 
-    rename_indices('gitlab_partitions_dynamic', INDEX_MAPPING_OF_PARTITION)
+    index_mapping = INDEX_MAPPING_OF_PARTITION.transform_values do |value|
+      value.to_s.sub('partition_name_placeholder', "security_findings_#{candidate_partition_number}")
+    end
+
+    rename_indices('gitlab_partitions_dynamic', index_mapping)
   end
 
   def down
@@ -112,6 +125,14 @@ class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Databas
   end
 
   private
+
+  def current_check_constraint
+    execute(CURRENT_CHECK_CONSTRAINT_SQL).first['pg_get_constraintdef']
+  end
+
+  def candidate_partition_number
+    @candidate_partition_number ||= current_check_constraint.match(/partition_number\s?=\s?(\d+)/).captures.first
+  end
 
   def latest_partition
     @latest_partition ||= execute(LATEST_PARTITION_SQL).first&.fetch('partition_name', nil)

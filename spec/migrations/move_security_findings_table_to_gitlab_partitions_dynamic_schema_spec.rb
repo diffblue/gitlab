@@ -4,19 +4,19 @@ require 'spec_helper'
 require_migration!
 
 RSpec.describe MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema do
-  describe '#up' do
-    let(:partitions_sql) do
-      <<~SQL
-        SELECT
-          partitions.relname AS partition_name
-        FROM pg_inherits
-        JOIN pg_class parent ON pg_inherits.inhparent = parent.oid
-        JOIN pg_class partitions ON pg_inherits.inhrelid = partitions.oid
-        WHERE
-          parent.relname = 'security_findings'
-      SQL
-    end
+  let(:partitions_sql) do
+    <<~SQL
+      SELECT
+        partitions.relname AS partition_name
+      FROM pg_inherits
+      JOIN pg_class parent ON pg_inherits.inhparent = parent.oid
+      JOIN pg_class partitions ON pg_inherits.inhrelid = partitions.oid
+      WHERE
+        parent.relname = 'security_findings'
+    SQL
+  end
 
+  describe '#up' do
     it 'changes the `security_findings` table to be partitioned' do
       expect { migrate! }.to change { security_findings_partitioned? }.from(false).to(true)
                          .and change { execute(partitions_sql) }.from([]).to(['security_findings_1'])
@@ -78,7 +78,9 @@ RSpec.describe MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema do
       before do
         migrate!
 
-        execute('DROP TABLE gitlab_partitions_dynamic.security_findings_1')
+        execute(partitions_sql).each do |partition_name|
+          execute("DROP TABLE gitlab_partitions_dynamic.#{partition_name}")
+        end
       end
 
       it 'creates the original table' do
