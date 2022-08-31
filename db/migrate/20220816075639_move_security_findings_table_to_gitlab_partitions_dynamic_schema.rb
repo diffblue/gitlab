@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
+# rubocop:disable Migration/WithLockRetriesDisallowedMethod
 class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Database::Migration[2.0]
-  enable_lock_retries!
+  disable_ddl_transaction!
 
   INDEX_MAPPING_OF_PARTITION = {
     index_security_findings_on_unique_columns: :security_findings_1_uuid_scan_id_partition_number_idx,
@@ -49,70 +50,68 @@ class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Databas
 
   CURRENT_CHECK_CONSTRAINT_SQL = <<~SQL
     SELECT
-      pg_get_constraintdef(oid)
+      pg_get_constraintdef(pg_catalog.pg_constraint.oid)
     FROM
       pg_catalog.pg_constraint
+    INNER JOIN pg_class ON pg_class.oid = pg_catalog.pg_constraint.conrelid
     WHERE
-      conname = 'check_partition_number'
+      conname = 'check_partition_number' AND
+      pg_class.relname = 'security_findings'
   SQL
 
   def up
-    execute(<<~SQL)
-      LOCK TABLE vulnerability_scanners, security_scans, security_findings IN ACCESS EXCLUSIVE MODE
-    SQL
+    with_lock_retries do
+      lock_tables
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings RENAME TO security_findings_#{candidate_partition_number};
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings RENAME TO security_findings_#{candidate_partition_number};
+      SQL
 
-    execute(<<~SQL)
-      ALTER INDEX security_findings_pkey RENAME TO security_findings_#{candidate_partition_number}_pkey;
-    SQL
+      execute(<<~SQL)
+        ALTER INDEX security_findings_pkey RENAME TO security_findings_#{candidate_partition_number}_pkey;
+      SQL
 
-    execute(<<~SQL)
-      CREATE TABLE security_findings (
-        LIKE security_findings_#{candidate_partition_number} INCLUDING ALL
-      ) PARTITION BY LIST (partition_number);
-    SQL
+      execute(<<~SQL)
+        CREATE TABLE security_findings (
+          LIKE security_findings_#{candidate_partition_number} INCLUDING ALL
+        ) PARTITION BY LIST (partition_number);
+      SQL
 
-    execute(<<~SQL)
-      ALTER SEQUENCE security_findings_id_seq OWNED BY #{connection.current_schema}.security_findings.id;
-    SQL
+      execute(<<~SQL)
+        ALTER SEQUENCE security_findings_id_seq OWNED BY #{connection.current_schema}.security_findings.id;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings
-      ADD CONSTRAINT fk_rails_729b763a54 FOREIGN KEY (scanner_id) REFERENCES vulnerability_scanners(id) ON DELETE CASCADE;
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings
+        ADD CONSTRAINT fk_rails_729b763a54 FOREIGN KEY (scanner_id) REFERENCES vulnerability_scanners(id) ON DELETE CASCADE;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings
-      ADD CONSTRAINT fk_rails_bb63863cf1 FOREIGN KEY (scan_id) REFERENCES security_scans(id) ON DELETE CASCADE;
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings
+        ADD CONSTRAINT fk_rails_bb63863cf1 FOREIGN KEY (scan_id) REFERENCES security_scans(id) ON DELETE CASCADE;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings_#{candidate_partition_number} SET SCHEMA gitlab_partitions_dynamic;
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings_#{candidate_partition_number} SET SCHEMA gitlab_partitions_dynamic;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings ATTACH PARTITION gitlab_partitions_dynamic.security_findings_#{candidate_partition_number} FOR VALUES IN (#{candidate_partition_number});
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings ATTACH PARTITION gitlab_partitions_dynamic.security_findings_#{candidate_partition_number} FOR VALUES IN (#{candidate_partition_number});
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings DROP CONSTRAINT check_partition_number;
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings DROP CONSTRAINT check_partition_number;
+      SQL
 
-    index_mapping = INDEX_MAPPING_OF_PARTITION.transform_values do |value|
-      value.to_s.sub('partition_name_placeholder', "security_findings_#{candidate_partition_number}")
+      index_mapping = INDEX_MAPPING_OF_PARTITION.transform_values do |value|
+        value.to_s.sub('partition_name_placeholder', "security_findings_#{candidate_partition_number}")
+      end
+
+      rename_indices('gitlab_partitions_dynamic', index_mapping)
     end
-
-    rename_indices('gitlab_partitions_dynamic', index_mapping)
   end
 
   def down
-    execute(<<~SQL)
-      LOCK TABLE vulnerability_scanners, security_scans, security_findings IN ACCESS EXCLUSIVE MODE
-    SQL
-
     # If there is already a partition for the `security_findings` table,
     # we can promote that table to be the original one to save the data.
     # Otherwise, we have to bring back the non-partitioned `security_findings`
@@ -125,6 +124,12 @@ class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Databas
   end
 
   private
+
+  def lock_tables
+    execute(<<~SQL)
+      LOCK TABLE vulnerability_scanners, security_scans, security_findings IN ACCESS EXCLUSIVE MODE
+    SQL
+  end
 
   def current_check_constraint
     execute(CURRENT_CHECK_CONSTRAINT_SQL).first['pg_get_constraintdef']
@@ -144,71 +149,75 @@ class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Databas
 
   # rubocop:disable Migration/DropTable (These methods are called from the `down` method)
   def create_non_partitioned_security_findings_with_data
-    execute(<<~SQL)
-      ALTER TABLE security_findings DETACH PARTITION gitlab_partitions_dynamic.#{latest_partition};
-    SQL
+    with_lock_retries do
+      lock_tables
 
-    execute(<<~SQL)
-      ALTER TABLE gitlab_partitions_dynamic.#{latest_partition} SET SCHEMA #{connection.current_schema};
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings DETACH PARTITION gitlab_partitions_dynamic.#{latest_partition};
+      SQL
 
-    execute(<<~SQL)
-      ALTER SEQUENCE security_findings_id_seq OWNED BY #{latest_partition}.id;
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE gitlab_partitions_dynamic.#{latest_partition} SET SCHEMA #{connection.current_schema};
+      SQL
 
-    execute(<<~SQL)
-      DROP TABLE security_findings;
-    SQL
+      execute(<<~SQL)
+        ALTER SEQUENCE security_findings_id_seq OWNED BY #{latest_partition}.id;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE #{latest_partition} RENAME TO security_findings;
-    SQL
+      execute(<<~SQL)
+        DROP TABLE security_findings;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings ADD CONSTRAINT check_partition_number CHECK ((partition_number = #{latest_partition_number}));
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE #{latest_partition} RENAME TO security_findings;
+      SQL
 
-    index_mapping = INDEX_MAPPING_AFTER_CREATING_FROM_PARTITION.transform_keys do |key|
-      key.to_s.sub('partition_name_placeholder', latest_partition)
+      index_mapping = INDEX_MAPPING_AFTER_CREATING_FROM_PARTITION.transform_keys do |key|
+        key.to_s.sub('partition_name_placeholder', latest_partition)
+      end
+
+      rename_indices(connection.current_schema, index_mapping)
     end
 
-    rename_indices(connection.current_schema, index_mapping)
+    add_check_constraint(:security_findings, "(partition_number = #{latest_partition_number})", :check_partition_number)
   end
 
   def create_non_partitioned_security_findings_without_data
-    execute(<<~SQL)
-      ALTER TABLE security_findings RENAME TO security_findings_1;
-    SQL
+    with_lock_retries do
+      lock_tables
 
-    execute(<<~SQL)
-      CREATE TABLE security_findings (
-        LIKE security_findings_1 INCLUDING ALL
-      );
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE security_findings RENAME TO security_findings_1;
+      SQL
 
-    execute(<<~SQL)
-      ALTER SEQUENCE security_findings_id_seq OWNED BY #{connection.current_schema}.security_findings.id;
-    SQL
+      execute(<<~SQL)
+        CREATE TABLE security_findings (
+          LIKE security_findings_1 INCLUDING ALL
+        );
+      SQL
 
-    execute(<<~SQL)
-      DROP TABLE security_findings_1;
-    SQL
+      execute(<<~SQL)
+        ALTER SEQUENCE security_findings_id_seq OWNED BY #{connection.current_schema}.security_findings.id;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE security_findings ADD CONSTRAINT check_partition_number CHECK ((partition_number = 1));
-    SQL
+      execute(<<~SQL)
+        DROP TABLE security_findings_1;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE ONLY security_findings
-      ADD CONSTRAINT fk_rails_729b763a54 FOREIGN KEY (scanner_id) REFERENCES vulnerability_scanners(id) ON DELETE CASCADE;
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE ONLY security_findings
+        ADD CONSTRAINT fk_rails_729b763a54 FOREIGN KEY (scanner_id) REFERENCES vulnerability_scanners(id) ON DELETE CASCADE;
+      SQL
 
-    execute(<<~SQL)
-      ALTER TABLE ONLY security_findings
-      ADD CONSTRAINT fk_rails_bb63863cf1 FOREIGN KEY (scan_id) REFERENCES security_scans(id) ON DELETE CASCADE;
-    SQL
+      execute(<<~SQL)
+        ALTER TABLE ONLY security_findings
+        ADD CONSTRAINT fk_rails_bb63863cf1 FOREIGN KEY (scan_id) REFERENCES security_scans(id) ON DELETE CASCADE;
+      SQL
 
-    rename_indices(connection.current_schema, INDEX_MAPPING_AFTER_CREATING_FROM_ITSELF)
+      rename_indices(connection.current_schema, INDEX_MAPPING_AFTER_CREATING_FROM_ITSELF)
+    end
+
+    add_check_constraint(:security_findings, "(partition_number = 1)", :check_partition_number)
   end
 
   def rename_indices(schema, mapping)
@@ -220,3 +229,4 @@ class MoveSecurityFindingsTableToGitlabPartitionsDynamicSchema < Gitlab::Databas
   end
   # rubocop:enable Migration/DropTable
 end
+# rubocop:enable Migration/WithLockRetriesDisallowedMethod
