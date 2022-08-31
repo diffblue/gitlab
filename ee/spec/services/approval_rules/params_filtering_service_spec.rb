@@ -7,6 +7,7 @@ RSpec.describe ApprovalRules::ParamsFilteringService do
   let(:project_member) { create(:user) }
   let(:outsider) { create(:user) }
   let(:accessible_group) { create(:group, :private) }
+  let(:accessible_subgroup) { create(:group, :private, parent: accessible_group) }
   let(:inaccessible_group) { create(:group, :private) }
   let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
@@ -73,11 +74,28 @@ RSpec.describe ApprovalRules::ParamsFilteringService do
         let(:approval_rules_attributes) do
           [
             { name: 'foo', user_ids: [project_member.id, outsider.id] },
-            { name: 'bar', user_ids: [outsider.id], group_ids: [accessible_group.id, inaccessible_group.id] }
+            { name: 'bar', user_ids: [outsider.id], group_ids: [accessible_group.id, accessible_subgroup.id, inaccessible_group.id] }
           ]
         end
 
-        let(:expected_groups) { [accessible_group] }
+        let(:expected_groups) { [accessible_group, accessible_subgroup] }
+      end
+
+      context 'when subgroups_approval_rules is disabled' do
+        before do
+          stub_feature_flags(subgroups_approval_rules: false)
+        end
+
+        it_behaves_like :assigning_users_and_groups do
+          let(:approval_rules_attributes) do
+            [
+              { name: 'foo', user_ids: [project_member.id, outsider.id] },
+              { name: 'bar', user_ids: [outsider.id], group_ids: [accessible_group.id, accessible_subgroup.id, inaccessible_group.id] }
+            ]
+          end
+
+          let(:expected_groups) { [accessible_group] }
+        end
       end
 
       # When a project approval rule is genuinely empty, it should not be converted
