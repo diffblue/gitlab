@@ -29,22 +29,17 @@ module Gitlab
           return DISABLED unless @runner_matcher.instance_type?
           return DISABLED unless project.ci_minutes_usage.limit_enabled?
 
-          runner_cost_factor = for_visibility(project.visibility_level)
+          runner_cost_factor = cost_factor_for_runner(project)
           apply_discount(project, runner_cost_factor)
         end
 
         private
 
-        def for_visibility(visibility_level)
-          return 0.0 unless @runner_matcher.instance_type?
-
-          case visibility_level
-          when ::Gitlab::VisibilityLevel::PUBLIC
+        def cost_factor_for_runner(project)
+          if project.public?
             @runner_matcher.public_projects_minutes_cost_factor
-          when ::Gitlab::VisibilityLevel::PRIVATE, ::Gitlab::VisibilityLevel::INTERNAL
-            @runner_matcher.private_projects_minutes_cost_factor
           else
-            raise ArgumentError, 'Invalid visibility level'
+            @runner_matcher.private_projects_minutes_cost_factor
           end
         end
 
