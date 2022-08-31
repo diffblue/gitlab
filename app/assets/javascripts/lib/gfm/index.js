@@ -6,6 +6,8 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkRehype, { all } from 'remark-rehype';
 import rehypeRaw from 'rehype-raw';
+import glfmTableOfContents from './parser_extensions/glfm_table_of_contents';
+import * as glfmMdastToHastHandlers from './mdast_to_hast_handlers/glfm_mdast_to_hast_handlers';
 
 const skipFrontmatterHandler = (language) => (h, node) =>
   h(node.position, 'frontmatter', { language }, [{ type: 'text', value: node.value }]);
@@ -65,23 +67,18 @@ const skipRenderingHandlers = {
       all(h, node),
     );
   },
+  tableOfContents: (h, node) => h(node.position, 'tableOfContents'),
   toml: skipFrontmatterHandler('toml'),
   yaml: skipFrontmatterHandler('yaml'),
   json: skipFrontmatterHandler('json'),
 };
 
-const createParser = ({ skipRendering = [] }) => {
+const createParser = () => {
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkFrontmatter, ['yaml', 'toml', { type: 'json', marker: ';' }])
-    .use(remarkRehype, {
-      allowDangerousHtml: true,
-      handlers: {
-        ...pick(skipRenderingHandlers, skipRendering),
-      },
-    })
-    .use(rehypeRaw);
+    .use(glfmTableOfContents);
 };
 
 const compilerFactory = (renderer) =>
@@ -99,17 +96,25 @@ const compilerFactory = (renderer) =>
  * tree in any desired representation
  *
  * @param {String} params.markdown Markdown to parse
- * @param {(tree: MDast -> any)} params.renderer A function that accepts mdast
+ * @param {Function} params.renderer A function that accepts mdast
  * AST tree and returns an object of any type that represents the result of
  * rendering the tree. See the references below to for more information
  * about MDast.
  *
  * MDastTree documentation https://github.com/syntax-tree/mdast
- * @returns {Promise<any>} Returns a promise with the result of rendering
+ * @returns {Promise} Returns a promise with the result of rendering
  * the MDast tree
  */
 export const render = async ({ markdown, renderer, skipRendering = [] }) => {
   const { result } = await createParser({ skipRendering })
+    .use(remarkRehype, {
+      allowDangerousHtml: true,
+      handlers: {
+        ...glfmMdastToHastHandlers,
+        ...pick(skipRenderingHandlers, skipRendering),
+      },
+    })
+    .use(rehypeRaw)
     .use(compilerFactory(renderer))
     .process(markdown);
 
