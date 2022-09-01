@@ -85,8 +85,6 @@ export default {
     updateLinkToState() {
       const editor = this.tiptapEditor;
 
-      if (!editor.isActive(Link.name)) return;
-
       const { href, title, canonicalSrc } = editor.getAttributes(Link.name);
 
       if (
@@ -124,16 +122,16 @@ export default {
 };
 </script>
 <template>
-  <editor-state-observer @selectionUpdate="updateLinkToState">
-    <bubble-menu
-      data-testid="link-bubble-menu"
-      class="gl-shadow gl-rounded-base gl-bg-white"
-      plugin-key="bubbleMenuLink"
-      :should-show="shouldShow"
-      :tippy-options="$options.tippyOptions"
-      @show="updateLinkToState"
-      @hidden="resetBubbleMenuState"
-    >
+  <bubble-menu
+    data-testid="link-bubble-menu"
+    class="gl-shadow gl-rounded-base gl-bg-white"
+    plugin-key="bubbleMenuLink"
+    :should-show="shouldShow"
+    :tippy-options="$options.tippyOptions"
+    @show="updateLinkToState"
+    @hidden="resetBubbleMenuState"
+  >
+    <editor-state-observer @selectionUpdate="updateLinkToState">
       <gl-button-group v-if="!isEditing" class="gl-display-flex gl-align-items-center">
         <gl-link
           v-gl-tooltip
@@ -195,6 +193,6 @@ export default {
           </gl-button>
         </div>
       </gl-form>
-    </bubble-menu>
-  </editor-state-observer>
+    </editor-state-observer>
+  </bubble-menu>
 </template>
