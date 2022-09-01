@@ -103,7 +103,9 @@ module EE
     end
 
     def verify_arkose_token(user)
-      if Arkose::UserVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
+      result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token], user: user).execute
+
+      if result.success? && result.payload[:low_risk]
         increment_successful_login_captcha_counter
       else
         failed_login_captcha

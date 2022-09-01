@@ -27,6 +27,23 @@ RSpec.describe Arkose::VerifyResponse do
     parse_json('ee/spec/fixtures/arkose/allowlisted_response.json')
   end
 
+  describe '.new' do
+    context 'when response is not a Hash' do
+      it 'raises an InvalidResponseFormatError error' do
+        expect { described_class.new('a_string') }.to raise_error(
+          described_class::InvalidResponseFormatError,
+          "Arkose Labs Verify API returned a String instead of of an object"
+        )
+      end
+    end
+
+    context 'when response is a Hash' do
+      it 'does not raise an InvalidResponseFormatError error' do
+        expect { described_class.new({}) }.not_to raise_error
+      end
+    end
+  end
+
   describe '#invalid_token?' do
     subject { described_class.new(json_response).invalid_token? }
 

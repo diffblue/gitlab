@@ -4,9 +4,15 @@ module Arkose
   class VerifyResponse
     attr_reader :response
 
+    InvalidResponseFormatError = Class.new(StandardError)
+
     ALLOWLIST_TELLTALE = 'gitlab1-whitelist-qa-team'
 
     def initialize(response)
+      unless response.is_a? Hash
+        raise InvalidResponseFormatError, "Arkose Labs Verify API returned a #{response.class} instead of of an object"
+      end
+
       @response = response
     end
 
