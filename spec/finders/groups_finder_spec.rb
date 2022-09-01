@@ -281,26 +281,26 @@ RSpec.describe GroupsFinder do
       it 'returns ancestors too if include_ancestors is true' do
         params = { include_ancestors: true }
         expect(described_class.new(user, params).execute).to contain_exactly(
-                                                               parent_group,
-                                                               public_subgroup,
-                                                               internal_sub_subgroup,
-                                                               public_sub_subgroup,
-                                                               private_subgroup2,
-                                                               private_sub_subgroup,
-                                                               private_sub_sub_subgroup
-                                                             )
+          parent_group,
+          public_subgroup,
+          internal_sub_subgroup,
+          public_sub_subgroup,
+          private_subgroup2,
+          private_sub_subgroup,
+          private_sub_sub_subgroup
+        )
       end
 
       it 'do not return ancestors if include_ancestors is false' do
         params = { include_ancestors: false }
         expect(described_class.new(user, params).execute).to contain_exactly(
-                                                               parent_group,
-                                                               public_subgroup,
-                                                               internal_sub_subgroup,
-                                                               public_sub_subgroup,
-                                                               private_sub_subgroup,
-                                                               private_sub_sub_subgroup
-                                                             )
+          parent_group,
+          public_subgroup,
+          internal_sub_subgroup,
+          public_sub_subgroup,
+          private_sub_subgroup,
+          private_sub_sub_subgroup
+        )
       end
     end
   end

@@ -52,25 +52,7 @@ class GroupsFinder < UnionFinder
     return [groups_with_min_access_level] if min_access_level?
     return [Group.all] if current_user&.can_read_all_resources? && all_available?
 
-    groups = []
-
-    if current_user
-      if Feature.enabled?(:use_traversal_ids_groups_finder, current_user)
-        groups << if include_ancestors?
-                    current_user.authorized_groups.self_and_ancestors
-                  else
-                    current_user.authorized_groups
-                  end
-
-        groups << current_user.groups.self_and_descendants
-      else
-        groups << if include_ancestors?
-                    Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
-                  else
-                    Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).base_and_descendants
-                  end
-      end
-    end
+    groups = get_groups_for_user if current_user
 
     groups << Group.unscoped.public_to_user(current_user) if include_public_groups?
     groups << Group.none if groups.empty?
@@ -149,5 +131,27 @@ class GroupsFinder < UnionFinder
 
   def include_ancestors?
     params.fetch(:include_ancestors, true)
+  end
+
+  def get_groups_for_user
+    groups = []
+
+    if Feature.enabled?(:use_traversal_ids_groups_finder, current_user)
+      groups << if include_ancestors?
+                  current_user.authorized_groups.self_and_ancestors
+                else
+                  current_user.authorized_groups
+                end
+
+      groups << current_user.groups.self_and_descendants
+    else
+      groups << if include_ancestors?
+                  Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
+                else
+                  Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).base_and_descendants
+                end
+    end
+
+    groups
   end
 end
