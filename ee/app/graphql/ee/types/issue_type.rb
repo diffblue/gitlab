@@ -8,6 +8,12 @@ module EE
       prepended do
         field :epic, ::Types::EpicType, null: true, description: 'Epic to which this issue belongs.'
 
+        field :has_epic, GraphQL::Types::Boolean,
+          null: false,
+          description: "Indicates if the issue belongs to an epic.
+            Can return true and not show an associated epic when the user has no access to the epic.",
+          method: :has_epic?
+
         field :iteration, ::Types::IterationType, null: true, description: 'Iteration of the issue.'
 
         field :weight, GraphQL::Types::Int, null: true, description: 'Weight of the issue.'

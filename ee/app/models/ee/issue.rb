@@ -318,6 +318,10 @@ module EE
       super
     end
 
+    def has_epic?
+      epic_issue.present?
+    end
+
     private
 
     def blocking_issues_ids
