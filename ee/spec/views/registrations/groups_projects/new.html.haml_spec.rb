@@ -12,7 +12,11 @@ RSpec.describe 'registrations/groups_projects/new' do
   before do
     assign(:group, group)
     assign(:project, project)
-    stub_config(extra: { google_tag_manager_id: google_tag_manager_id, google_tag_manager_nonce_id: google_tag_manager_id })
+    stub_config(extra:
+                  {
+                    google_tag_manager_id: google_tag_manager_id,
+                    google_tag_manager_nonce_id: google_tag_manager_id
+                  })
     allow(view).to receive(:current_user).and_return(user)
     allow(view).to receive(:import_sources_enabled?).and_return(false)
   end

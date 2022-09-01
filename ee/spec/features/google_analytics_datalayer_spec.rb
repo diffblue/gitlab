@@ -83,43 +83,4 @@ RSpec.describe 'GitLab.com Google Analytics DataLayer', :js do
       expect(last_event_in_data_layer["event"]).to eq("saasTrialGroup")
     end
   end
-
-  context 'on new registration groups page' do
-    it 'tracks saasTrialGroup events in the dataLayer' do
-      sign_in user
-      visit new_users_sign_up_group_path
-
-      prevent_submit_for('#new_group')
-
-      fill_in 'group_name', with: 'Test Group'
-
-      click_button 'Create group'
-
-      data_layer = execute_script('return window.dataLayer')
-      last_event_in_data_layer = data_layer[-1]
-
-      expect(last_event_in_data_layer["event"]).to eq("saasTrialGroup")
-    end
-  end
-
-  context 'on new registration projects page' do
-    context 'when creating a new project through the form' do
-      it 'tracks saasTrialProject events in the dataLayer' do
-        sign_in user
-        group.add_owner(user)
-        visit new_users_sign_up_project_path(namespace_id: group.id)
-
-        prevent_submit_for('#new_project')
-
-        fill_in 'project_name', with: 'Test Project'
-
-        click_button 'Create project'
-
-        data_layer = execute_script('return window.dataLayer')
-        last_event_in_data_layer = data_layer[-1]
-
-        expect(last_event_in_data_layer["event"]).to eq("saasTrialProject")
-      end
-    end
-  end
 end

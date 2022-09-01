@@ -42,25 +42,6 @@ RSpec.describe EE::WelcomeHelper do
     end
   end
 
-  describe '#show_trial_during_signup?' do
-    before do
-      allow(helper).to receive(:current_user).and_return(user)
-    end
-
-    where(:setup_for_company, :expected_result) do
-      true  | true
-      false | false
-    end
-
-    with_them do
-      let(:user) { create(:user, setup_for_company: setup_for_company) }
-
-      it 'returns the expected_result' do
-        expect(helper.show_trial_during_signup?).to eq(expected_result)
-      end
-    end
-  end
-
   describe '#in_oauth_flow?' do
     where(:user_return_to_path, :expected_result) do
       '/oauth/authorize?client_id=x&redirect_uri=y&response_type=code&state=z' | true

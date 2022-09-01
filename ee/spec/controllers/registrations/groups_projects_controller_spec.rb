@@ -3,43 +3,71 @@
 require 'spec_helper'
 
 RSpec.describe Registrations::GroupsProjectsController, :experiment do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
   describe 'GET #new' do
-    it_behaves_like "Registrations::GroupsController GET #new"
+    subject { get :new }
 
-    context 'not shared behavior' do
-      subject { get :new }
+    context 'with an unauthenticated user' do
+      it { is_expected.to have_gitlab_http_status(:redirect) }
+      it { is_expected.to redirect_to(new_user_session_path) }
+    end
 
+    context 'with an authenticated user' do
       before do
-        allow(::Gitlab).to receive(:com?).and_return(true)
         sign_in(user)
       end
 
-      it 'builds a project object' do
-        subject
+      context 'when on .com', :saas do
+        it { is_expected.to have_gitlab_http_status(:ok) }
+        it { is_expected.to render_template(:new) }
 
-        expect(assigns(:project)).to be_a_new(Project)
-      end
+        it 'assigns the group variable to a new Group with the default group visibility', :aggregate_failures do
+          subject
 
-      it 'tracks an event for the combined_registration experiment' do
-        expect(experiment(:combined_registration)).to track(:view_new_group_action).on_next_instance
-
-        subject
-      end
-
-      it 'publishes the required verification experiment to the database' do
-        expect_next_instance_of(RequireVerificationForNamespaceCreationExperiment) do |experiment|
-          expect(experiment).to receive(:publish_to_database)
+          expect(assigns(:group)).to be_a_new(Group)
+          expect(assigns(:group).visibility_level).to eq(Gitlab::CurrentSettings.default_group_visibility)
         end
 
-        subject
+        it 'builds a project object' do
+          subject
+
+          expect(assigns(:project)).to be_a_new(Project)
+        end
+
+        it 'tracks the new group view event' do
+          subject
+
+          expect_snowplow_event(category: described_class.name, action: 'view_new_group_action', user: user)
+        end
+
+        it 'publishes the required verification experiment to the database' do
+          expect_next_instance_of(RequireVerificationForNamespaceCreationExperiment) do |experiment|
+            expect(experiment).to receive(:publish_to_database)
+          end
+
+          subject
+        end
+
+        context 'when user does not have the ability to create a group' do
+          let(:user) { create(:user, can_create_group: false) }
+
+          it { is_expected.to have_gitlab_http_status(:not_found) }
+        end
       end
+
+      context 'when not on .com' do
+        it { is_expected.to have_gitlab_http_status(:not_found) }
+      end
+
+      it_behaves_like 'hides email confirmation warning'
     end
   end
 
-  shared_context 'records a conversion event' do
+  shared_context 'with recording a conversion event' do
     let_it_be(:user_created_at) { RequireVerificationForNamespaceCreationExperiment::EXPERIMENT_START_DATE + 1.hour }
     let_it_be(:user) { create(:user, created_at: user_created_at) }
     let_it_be(:experiment) { create(:experiment, name: :require_verification_for_namespace_creation) }
@@ -51,20 +79,34 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
     it 'records a conversion event for the required verification experiment' do
       expect { subject }.to change { experiment_subject.reload.converted_at }.from(nil)
-        .and change { experiment_subject.context }.to include('namespace_id')
+        .and change(experiment_subject, :context).to include('namespace_id')
     end
   end
 
   describe 'POST #create' do
     subject(:post_create) { post :create, params: params }
 
-    let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
-    let(:extra_params) { {} }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, setup_for_company: setup_for_company } }
-    let(:project_params) { { name: 'New project', path: 'project-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE, initialize_with_readme: 'true' } }
     let(:com) { true }
     let(:setup_for_company) { nil }
-    let(:combined_registration?) { true }
+    let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
+    let(:extra_params) { {} }
+    let(:group_params) do
+      {
+        name: 'Group name',
+        path: 'group-path',
+        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s,
+        setup_for_company: setup_for_company
+      }
+    end
+
+    let(:project_params) do
+      {
+        name: 'New project',
+        path: 'project-path',
+        visibility_level: Gitlab::VisibilityLevel::PRIVATE,
+        initialize_with_readme: 'true'
+      }
+    end
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -79,15 +121,18 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
       it_behaves_like 'hides email confirmation warning'
 
-      it_behaves_like 'records a conversion event'
+      it_behaves_like 'with recording a conversion event'
 
       context 'when group and project can be created' do
         it 'creates a group' do
-          expect { post_create }.to change { Group.count }.by(1)
+          expect { post_create }.to change(Group, :count).by(1)
         end
 
         it 'passes create_event: true to the Groups::CreateService' do
-          expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_call_original
+          expect(Groups::CreateService).to receive(:new)
+                                             .with(user, ActionController::Parameters
+                                                           .new(group_params.merge(create_event: true)).permit!)
+                                             .and_call_original
 
           post_create
         end
@@ -103,17 +148,21 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           post_create
         end
 
-        it 'tracks create events for the combined_registration experiment' do
+        it 'tracks group and project creation events' do
           allow_next_instance_of(::Projects::CreateService) do |service|
             allow(service).to receive(:after_create_actions)
           end
 
-          wrapped_experiment(experiment(:combined_registration)) do |e|
-            expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group))
-            expect(e).to receive(:track).with(:create_project, namespace: an_instance_of(Group))
-          end
-
           post_create
+
+          expect_snowplow_event(category: described_class.name,
+                                action: 'create_group',
+                                namespace: an_instance_of(Group),
+                                user: user)
+          expect_snowplow_event(category: described_class.name,
+                                action: 'create_project',
+                                namespace: an_instance_of(Group),
+                                user: user)
         end
       end
 
@@ -121,7 +170,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:group_params) { { name: '⛄⛄⛄', path: '' } }
 
         it 'creates a group' do
-          expect { subject }.to change { Group.count }.by(1)
+          expect { subject }.to change(Group, :count).by(1)
         end
       end
 
@@ -129,20 +178,18 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:group_params) { { name: '', path: '' } }
 
         it 'does not create a group', :aggregate_failures do
-          expect { post_create }.not_to change { Group.count }
+          expect { post_create }.not_to change(Group, :count)
           expect(assigns(:group).errors).not_to be_blank
         end
 
-        it 'does not tracks events for the combined_registration experiment' do
-          wrapped_experiment(experiment(:combined_registration)) do |e|
-            expect(e).not_to receive(:track).with(:create_group)
-            expect(e).not_to receive(:track).with(:create_project)
-          end
-
+        it 'does not track events for group or project creation' do
           post_create
+
+          expect_no_snowplow_event(category: described_class.name, action: 'create_group')
+          expect_no_snowplow_event(category: described_class.name, action: 'create_project')
         end
 
-        it 'the project is not disgarded completely' do
+        it 'the project is not disregarded completely' do
           post_create
 
           expect(assigns(:project).name).to eq('New project')
@@ -162,18 +209,19 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:project_params) { { name: '', path: '', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
 
         it 'does not create a project', :aggregate_failures do
-          expect { post_create }.to change { Group.count }
-          expect { post_create }.not_to change { Project.count }
+          expect { post_create }.to change(Group, :count)
+          expect { post_create }.not_to change(Project, :count)
           expect(assigns(:project).errors).not_to be_blank
         end
 
-        it 'selectively tracks events for the combined_registration experiment' do
-          wrapped_experiment(experiment(:combined_registration)) do |e|
-            expect(e).to receive(:track).with(:create_group, namespace: an_instance_of(Group))
-            expect(e).not_to receive(:track).with(:create_project)
-          end
-
+        it 'selectively tracks events for group and project creation' do
           post_create
+
+          expect_snowplow_event(category: described_class.name,
+                                action: 'create_group',
+                                namespace: an_instance_of(Group),
+                                user: user)
+          expect_no_snowplow_event(category: described_class.name, action: 'create_project')
         end
 
         it { is_expected.to have_gitlab_http_status(:ok) }
@@ -188,25 +236,26 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:group_params) { { id: group.id } }
 
         it 'creates a project and not another group', :aggregate_failures do
-          expect { post_create }.to change { Project.count }
-          expect { post_create }.not_to change { Group.count }
+          expect { post_create }.to change(Project, :count)
+          expect { post_create }.not_to change(Group, :count)
         end
 
-        it 'selectively tracks events for the combined_registration experiment' do
+        it 'selectively tracks events group and project creation' do
           allow_next_instance_of(::Projects::CreateService) do |service|
             allow(service).to receive(:after_create_actions)
           end
 
-          wrapped_experiment(experiment(:combined_registration)) do |e|
-            expect(e).not_to receive(:track).with(:create_group, namespace: an_instance_of(Group))
-            expect(e).to receive(:track).with(:create_project, namespace: an_instance_of(Group))
-          end
-
           post_create
+
+          expect_no_snowplow_event(category: described_class.name, action: 'create_group')
+          expect_snowplow_event(category: described_class.name,
+                                action: 'create_project',
+                                namespace: an_instance_of(Group),
+                                user: user)
         end
       end
 
-      context 'it redirects' do
+      context 'when redirecting' do
         let_it_be(:project) { create(:project) }
 
         let(:success_path) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project.id) }
@@ -285,7 +334,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           end
 
           expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-            expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: success })
+            expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: success }) # rubocop:disable RSpec/ExpectInHook
           end
         end
 
@@ -301,8 +350,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       end
 
       context 'with learn gitlab project' do
-        using RSpec::Parameterized::TableSyntax
-
         where(:trial, :project_name, :template) do
           false | 'Learn GitLab' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
           true  | 'Learn GitLab - Ultimate trial' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
@@ -331,9 +378,16 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
   describe 'POST #import' do
     subject(:post_import) { post :import, params: params }
 
-    let(:params) { { group: group_params, import_url: new_import_github_path } }
-    let(:group_params) { { name: 'Group name', path: 'group-path', visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s, setup_for_company: nil } }
     let(:com) { true }
+    let(:params) { { group: group_params, import_url: new_import_github_path } }
+    let(:group_params) do
+      {
+        name: 'Group name',
+        path: 'group-path',
+        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s,
+        setup_for_company: nil
+      }
+    end
 
     context 'with an unauthenticated user' do
       it { is_expected.to have_gitlab_http_status(:redirect) }
@@ -348,7 +402,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
       it_behaves_like 'hides email confirmation warning'
 
-      it_behaves_like 'records a conversion event'
+      it_behaves_like 'with recording a conversion event'
 
       context "when a group can't be created" do
         before do
@@ -357,10 +411,10 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           end
         end
 
-        it "doesn't track for the combined_registration experiment" do
-          expect(experiment(:combined_registration)).not_to track(:create_group)
-
+        it "doesn't track for group creation" do
           post_import
+
+          expect_no_snowplow_event(category: described_class.name, action: 'create_group_import')
         end
 
         it { is_expected.to render_template(:new) }
@@ -370,27 +424,32 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         let(:group_params) { { name: '⛄⛄⛄', path: '' } }
 
         it 'creates a group, and redirects' do
-          expect { subject }.to change { Group.count }.by(1)
+          expect { subject }.to change(Group, :count).by(1)
           expect(subject).to have_gitlab_http_status(:redirect)
         end
       end
 
       context 'when group can be created' do
         it 'creates a group' do
-          expect { post_import }.to change { Group.count }.by(1)
+          expect { post_import }.to change(Group, :count).by(1)
         end
 
         it 'passes create_event: true to the Groups::CreateService' do
-          expect(Groups::CreateService).to receive(:new).with(user, ActionController::Parameters.new(group_params.merge(create_event: true)).permit!).and_call_original
+          expect(Groups::CreateService).to receive(:new)
+                                             .with(user, ActionController::Parameters
+                                                           .new(group_params.merge(create_event: true)).permit!)
+                                             .and_call_original
 
           post_import
         end
 
-        it 'tracks an event for the combined_registration experiment' do
-          expect(experiment(:combined_registration)).to track(:create_group, namespace: an_instance_of(Group))
-                                                    .on_next_instance
-
+        it 'tracks an event for group creation' do
           post_import
+
+          expect_snowplow_event(category: described_class.name,
+                                action: 'create_group_import',
+                                namespace: an_instance_of(Group),
+                                user: user)
         end
 
         it 'redirects to the import url with a namespace_id parameter' do
