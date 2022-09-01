@@ -1258,4 +1258,22 @@ RSpec.describe Issue do
       end
     end
   end
+
+  describe "#has_epic?" do
+    let(:issue) { build(:issue, epic: epic) }
+
+    subject(:has_epic) { issue.has_epic? }
+
+    context 'when when there is no associated epic' do
+      let(:epic) { nil }
+
+      it { is_expected.to eq false }
+    end
+
+    context 'when when there is an associated epic' do
+      let(:epic) { build(:epic) }
+
+      it { is_expected.to eq true }
+    end
+  end
 end

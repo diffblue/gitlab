@@ -11827,6 +11827,7 @@ Relationship between an epic and an issue.
 | <a id="epicissueepicissueid"></a>`epicIssueId` | [`ID!`](#id) | ID of the epic-issue relation. |
 | <a id="epicissueescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | Escalation policy associated with the issue. Available for issues which support escalation. |
 | <a id="epicissueescalationstatus"></a>`escalationStatus` | [`IssueEscalationStatus`](#issueescalationstatus) | Escalation status of the issue. |
+| <a id="epicissuehasepic"></a>`hasEpic` | [`Boolean!`](#boolean) | Indicates if the issue belongs to an epic. Can return true and not show an associated epic when the user has no access to the epic. |
 | <a id="epicissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Current health status. |
 | <a id="epicissuehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates the issue is hidden because the author has been banned. Will always return `null` if `ban_user_feature_flag` feature flag is disabled. |
 | <a id="epicissuehumantimeestimate"></a>`humanTimeEstimate` | [`String`](#string) | Human-readable time estimate of the issue. |
@@ -13332,6 +13333,7 @@ Describes an issuable resource link for incident issues.
 | <a id="issueepic"></a>`epic` | [`Epic`](#epic) | Epic to which this issue belongs. |
 | <a id="issueescalationpolicy"></a>`escalationPolicy` | [`EscalationPolicyType`](#escalationpolicytype) | Escalation policy associated with the issue. Available for issues which support escalation. |
 | <a id="issueescalationstatus"></a>`escalationStatus` | [`IssueEscalationStatus`](#issueescalationstatus) | Escalation status of the issue. |
+| <a id="issuehasepic"></a>`hasEpic` | [`Boolean!`](#boolean) | Indicates if the issue belongs to an epic. Can return true and not show an associated epic when the user has no access to the epic. |
 | <a id="issuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Current health status. |
 | <a id="issuehidden"></a>`hidden` | [`Boolean`](#boolean) | Indicates the issue is hidden because the author has been banned. Will always return `null` if `ban_user_feature_flag` feature flag is disabled. |
 | <a id="issuehumantimeestimate"></a>`humanTimeEstimate` | [`String`](#string) | Human-readable time estimate of the issue. |
