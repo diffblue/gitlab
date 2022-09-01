@@ -489,7 +489,7 @@ If you need to manually remove **all** job artifacts associated with multiple jo
      print "Ci::Build ID #{build.id}... "
 
      if build.erasable?
-       build.erase(erased_by: admin_user)
+       Ci::BuildEraseService.new(build, admin_user).execute
        puts "Erased"
      else
        puts "Skipped (Nothing to erase or not erasable)"
