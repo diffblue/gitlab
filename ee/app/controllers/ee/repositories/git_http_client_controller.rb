@@ -182,14 +182,10 @@ module EE
           batch_request? && operation == 'download'
         end
 
-        def transfer_download?
-          geo_route_helper.match?('lfs_storage', 'download')
-        end
-
         def out_of_date_redirect?
           return false unless project
 
-          (batch_download? || transfer_download?) && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
+          batch_download? && ::Geo::ProjectRegistry.repository_out_of_date?(project.id)
         end
 
         def wanted_version
