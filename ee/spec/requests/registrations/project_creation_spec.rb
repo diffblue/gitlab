@@ -33,7 +33,7 @@ RSpec.describe 'Project creation via Registrations::GroupsProjectsController', t
 
       context 'when group and project can be created' do
         it 'creates a group' do
-          stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 128) # 204 before creating learn gitlab in worker
+          stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 138) # 204 before creating learn gitlab in worker
 
           expect { post users_sign_up_groups_projects_path, params: params }.to change(Group, :count).by(1)
         end

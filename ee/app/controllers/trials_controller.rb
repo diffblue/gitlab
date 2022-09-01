@@ -88,8 +88,7 @@ class TrialsController < ApplicationController
   private
 
   def stored_location_or_provided_path(path)
-    if current_user.setup_for_company &&
-        experiment(:combined_registration, user: current_user).assigned.name == 'candidate'
+    if current_user.setup_for_company
       stored_location_for(:user) || path
     else
       path
@@ -225,7 +224,7 @@ class TrialsController < ApplicationController
     @result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
 
     if @result&.dig(:success)
-      experiment(:combined_registration, user: current_user).track(:create_trial)
+      Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
 
       if discover_group_security_flow?
         redirect_to group_security_dashboard_url(@namespace, { trial: true })

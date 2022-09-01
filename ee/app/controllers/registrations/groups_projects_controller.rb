@@ -2,15 +2,18 @@
 
 module Registrations
   class GroupsProjectsController < ApplicationController
-    include Registrations::CreateProject
-    include Registrations::CreateGroup
-    include Registrations::ApplyTrial
+    include LearnGitlabHelper
     include OneTrustCSP
     include GoogleAnalyticsCSP
 
     skip_before_action :require_verification, only: :new
+    skip_before_action :set_confirm_warning
+    before_action :check_if_gl_com_or_dev
+    before_action :authorize_create_group!, only: :new
     before_action :set_requires_verification, only: :new, if: -> { helpers.require_verification_experiment.candidate? }
-    before_action :require_verification, only: [:create, :import], if: -> { current_user.requires_credit_card_verification }
+    before_action :require_verification,
+                  only: [:create, :import],
+                  if: -> { current_user.requires_credit_card_verification }
     before_action only: [:new] do
       push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     end
@@ -25,7 +28,7 @@ module Registrations
       @group = Group.new(visibility_level: helpers.default_group_visibility)
       @project = Project.new(namespace: @group)
 
-      combined_registration_experiment.track(:view_new_group_action)
+      Gitlab::Tracking.event(self.class.name, 'view_new_group_action', user: current_user)
     end
 
     def create
@@ -38,7 +41,7 @@ module Registrations
       if @group.persisted?
         if @group.previously_new_record?
           # project failed validation previously, but group was created or coming from trial creation
-          combined_registration_experiment.track(:create_group, namespace: @group)
+          Gitlab::Tracking.event(self.class.name, 'create_group', namespace: @group, user: current_user)
           helpers.require_verification_experiment.record_conversion(@group)
 
           unless apply_trial_when_in_trial_flow
@@ -50,7 +53,7 @@ module Registrations
 
         @project = ::Projects::CreateService.new(current_user, create_project_params).execute
         if @project.saved?
-          combined_registration_experiment.track(:create_project, namespace: @project.namespace)
+          Gitlab::Tracking.event(self.class.name, 'create_project', namespace: @project.namespace, user: current_user)
 
           create_learn_gitlab_project(@project.namespace_id)
 
@@ -77,7 +80,7 @@ module Registrations
     def import
       @group = Groups::CreateService.new(current_user, modified_group_params).execute
       if @group.persisted? && apply_trial_when_in_trial_flow
-        combined_registration_experiment.track(:create_group, namespace: @group)
+        Gitlab::Tracking.event(self.class.name, 'create_group_import', namespace: @group, user: current_user)
         helpers.require_verification_experiment.record_conversion(@group)
 
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{@group.id}").to_s
@@ -100,8 +103,8 @@ module Registrations
 
     private
 
-    def combined_registration_experiment
-      @combined_registration_experiment ||= experiment(:combined_registration, user: current_user)
+    def authorize_create_group!
+      access_denied! unless can?(current_user, :create_group)
     end
 
     def create_project_params
@@ -122,12 +125,69 @@ module Registrations
       modifed_group_params
     end
 
+    def group_params
+      params.require(:group).permit(
+        :name,
+        :path,
+        :visibility_level
+      ).merge(
+        create_event: true,
+        setup_for_company: current_user.setup_for_company
+      )
+    end
+
     def offer_trial?
       current_user.setup_for_company && !helpers.in_trial_onboarding_flow? && !params[:skip_trial].present?
     end
 
     def apply_trial_when_in_trial_flow
       !helpers.in_trial_onboarding_flow? || apply_trial
+    end
+
+    def apply_trial
+      apply_trial_params = {
+        uid: current_user.id,
+        trial_user: params.permit(:glm_source, :glm_content).merge({
+                                                                     namespace_id: @group.id,
+                                                                     gitlab_com_trial: true,
+                                                                     sync_to_gl: true
+                                                                   })
+      }
+
+      result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
+      flash.now[:alert] = result&.dig(:errors) unless result&.dig(:success)
+
+      result&.dig(:success)
+    end
+
+    LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
+
+    def learn_gitlab_template_path
+      Rails.root.join('vendor', 'project_templates', LEARN_GITLAB_ULTIMATE_TEMPLATE)
+    end
+
+    def create_learn_gitlab_project(parent_project_namespace_id)
+      ::Onboarding::CreateLearnGitlabWorker.perform_async(learn_gitlab_template_path, # rubocop:disable CodeReuse/Worker
+                                                          learn_gitlab_project_name,
+                                                          parent_project_namespace_id,
+                                                          current_user.id)
+    end
+
+    def learn_gitlab_project_name
+      if helpers.in_trial_onboarding_flow?
+        LearnGitlab::Project::PROJECT_NAME_ULTIMATE_TRIAL
+      else
+        LearnGitlab::Project::PROJECT_NAME
+      end
+    end
+
+    def project_params_attributes
+      [
+        :namespace_id,
+        :name,
+        :path,
+        :visibility_level
+      ]
     end
   end
 end

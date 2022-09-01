@@ -14,11 +14,6 @@ RSpec.describe "User registration", :js, :saas do
 
   before do
     stub_feature_flags(
-      # This is an experiment that we want to clean up, but can't yet because of
-      # query limit concerns:
-      # https://gitlab.com/gitlab-org/gitlab/-/issues/350754
-      combined_registration: true,
-
       # This is the feature flag for the new registration flows where the user is
       # required to provide company details when registering for their company in
       # both the standard registration and trial flows.
@@ -229,8 +224,6 @@ RSpec.describe "User registration", :js, :saas do
       end
 
       context "wanting to create a project" do
-        # This flow is behind the combined_registration feature flag.
-
         before do
           choose 'Create a new project'
 
@@ -281,8 +274,7 @@ RSpec.describe "User registration", :js, :saas do
       end
 
       context "wanting to create a project" do
-        # This flow is behind the combined_registration and the
-        # about_your_company_registration_flow feature flags.
+        # This flow is behind the about_your_company_registration_flow feature flag.
 
         before do
           choose 'Create a new project'
@@ -309,6 +301,41 @@ RSpec.describe "User registration", :js, :saas do
           end
 
           it_behaves_like 'creates new group and project'
+
+          it 'creates group but fails to apply a trial, then resubmits and does not apply trial', :sidekiq_inline do
+            apply_trial_response = {
+              success: false,
+              errors: 'BAD STUFF HAPPENED'
+            }
+
+            fill_in 'group_name', with: 'Test Group'
+            fill_in 'blank_project_name', with: 'Test Project'
+
+            expect_next(GitlabSubscriptions::ApplyTrialService)
+              .to receive(:execute).with({
+                                           uid: user.id,
+                                           trial_user: hash_including(
+                                             namespace_id: anything,
+                                             gitlab_com_trial: true,
+                                             sync_to_gl: true
+                                           )
+                                         }).and_return(apply_trial_response)
+
+            click_on 'Create project'
+
+            expect(page).to have_content 'Create or import your first project'
+            expect(page).to have_content apply_trial_response[:errors]
+            expect(GitlabSubscriptions::ApplyTrialService).not_to receive(:new)
+
+            click_on 'Create project'
+
+            expect(page).to have_content 'Get started with GitLab'
+
+            click_on "Ok, let's go"
+
+            expect(page).to have_content('Learn GitLab')
+            expect(page).to have_content('GitLab is better with colleagues!')
+          end
         end
 
         context "without a trial" do

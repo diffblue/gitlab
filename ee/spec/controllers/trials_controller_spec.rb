@@ -113,10 +113,13 @@ RSpec.describe TrialsController, :saas do
             post_create_lead
           end
 
-          it 'tracks for the combined_registration experiment' do
-            expect(experiment(:combined_registration)).to track(:create_trial).on_next_instance
-
+          it 'tracks for the trial creation' do
             post_create_lead
+
+            expect_snowplow_event(category: described_class.name,
+                                  action: 'create_trial',
+                                  namespace: namespace,
+                                  user: user)
           end
 
           context 'when the user is `setup_for_company: true`' do
@@ -129,15 +132,7 @@ RSpec.describe TrialsController, :saas do
                 controller.store_location_for(:user, stored_location_for)
               end
 
-              context 'when the user is receiving the combined_registration candidate', :experiment do
-                before do
-                  stub_experiments(combined_registration: :candidate)
-                end
-
-                it { is_expected.to redirect_to(stored_location_for) }
-              end
-
-              it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
+              it { is_expected.to redirect_to(stored_location_for) }
             end
 
             it { is_expected.to redirect_to(group_url(namespace, { trial: true })) }
@@ -332,15 +327,18 @@ RSpec.describe TrialsController, :saas do
     it_behaves_like 'an authenticated endpoint'
     it_behaves_like 'a dot-com only feature'
 
-    context 'on success', :experiment do
+    context 'on success' do
       let(:apply_trial_result) { true }
 
       it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
 
-      it 'calls tracking event for combined_registration experiment', :experiment do
-        expect(experiment(:combined_registration)).to track(:create_trial).on_next_instance
-
+      it 'tracks the trial creation event' do
         subject
+
+        expect_snowplow_event(category: described_class.name,
+                              action: 'create_trial',
+                              namespace: namespace,
+                              user: user)
       end
 
       context 'redirect trial user to feature' do
@@ -567,15 +565,7 @@ RSpec.describe TrialsController, :saas do
           controller.store_location_for(:user, new_trial_path)
         end
 
-        it { is_expected.to redirect_to(dashboard_projects_path) }
-
-        context 'when the user is receiving the combined_registration candidate', :experiment do
-          before do
-            stub_experiments(combined_registration: :candidate)
-          end
-
-          it { is_expected.to redirect_to(new_trial_path) }
-        end
+        it { is_expected.to redirect_to(new_trial_path) }
       end
     end
 

@@ -16,14 +16,6 @@ module EE
       params[:trial_onboarding_flow] == 'true'
     end
 
-    def show_trial_during_signup?
-      current_user.setup_for_company
-    end
-
-    def in_trial_during_signup_flow?
-      params[:trial] == 'true'
-    end
-
     def in_oauth_flow?
       redirect_path&.starts_with?(oauth_authorization_path)
     end

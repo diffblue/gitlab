@@ -22,23 +22,6 @@ RSpec.describe 'OneTrust in the sign up flow' do
     end
   end
 
-  context 'when user visits /users/sign_up/groups/new' do
-    before do
-      visit new_users_sign_up_group_path
-    end
-
-    it_behaves_like 'one trust settings'
-  end
-
-  context 'when user visits /users/sign_up/projects/new' do
-    before do
-      group.add_owner(user)
-      visit new_users_sign_up_project_path(namespace_id: group.id)
-    end
-
-    it_behaves_like 'one trust settings'
-  end
-
   context 'when user visits /users/sign_up/groups_projects/new' do
     before do
       visit new_users_sign_up_groups_project_path

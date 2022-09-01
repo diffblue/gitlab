@@ -19,10 +19,6 @@ module EE
                         :trial_onboarding_board
                       ]
 
-        before_action only: :show do
-          publish_combined_registration_experiment
-        end
-
         before_action only: [:trial_getting_started] do
           push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
         end
@@ -90,14 +86,6 @@ module EE
         end
       end
 
-      def publish_combined_registration_experiment
-        combined_registration_experiment.publish if show_signup_onboarding?
-      end
-
-      def combined_registration_experiment
-        experiment(:combined_registration, user: current_user)
-      end
-
       def passed_through_params
         update_params.slice(:role, :registration_objective).merge(params.permit(:jobs_to_be_done_other))
       end
@@ -110,7 +98,7 @@ module EE
           if show_company_form?
             new_users_sign_up_company_path(passed_through_params)
           else
-            experiment(:combined_registration, user: current_user).redirect_path
+            new_users_sign_up_groups_project_path
           end
         end
       end

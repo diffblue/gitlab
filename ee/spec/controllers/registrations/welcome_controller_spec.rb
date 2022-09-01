@@ -7,19 +7,6 @@ RSpec.describe Registrations::WelcomeController do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project) }
 
-  describe '#show' do
-    it 'publishes combined_registration experiment data to the client' do
-      sign_in(user)
-      allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
-
-      wrapped_experiment(experiment(:combined_registration)) do |e|
-        expect(e).to receive(:publish)
-      end
-
-      get :show
-    end
-  end
-
   describe '#continuous_onboarding_getting_started' do
     let_it_be(:project) { create(:project, group: group) }
 
@@ -273,12 +260,9 @@ RSpec.describe Registrations::WelcomeController do
           end
 
           context 'when joining_project is "false"' do
-            context 'when combined_registration is candidate variant' do
+            context 'with group and project creation' do
               before do
                 stub_feature_flags(about_your_company_registration_flow: false)
-
-                allow(controller).to receive(:experiment).and_call_original
-                stub_experiments(combined_registration: :candidate)
               end
 
               it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
@@ -301,7 +285,7 @@ RSpec.describe Registrations::WelcomeController do
           context 'when setup_for_company is "false"' do
             let(:setup_for_company) { 'false' }
 
-            it { is_expected.to redirect_to new_users_sign_up_group_path }
+            it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
           end
 
           context 'when in subscription flow' do
@@ -309,7 +293,7 @@ RSpec.describe Registrations::WelcomeController do
               allow(controller.helpers).to receive(:in_subscription_flow?).and_return(true)
             end
 
-            it { is_expected.not_to redirect_to new_users_sign_up_group_path }
+            it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
           end
 
           context 'when in invitation flow' do
@@ -317,7 +301,7 @@ RSpec.describe Registrations::WelcomeController do
               allow(controller.helpers).to receive(:user_has_memberships?).and_return(true)
             end
 
-            it { is_expected.not_to redirect_to new_users_sign_up_group_path }
+            it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
           end
 
           context 'when in trial flow' do
@@ -325,7 +309,7 @@ RSpec.describe Registrations::WelcomeController do
               allow(controller.helpers).to receive(:in_trial_flow?).and_return(true)
             end
 
-            it { is_expected.not_to redirect_to new_users_sign_up_group_path }
+            it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
           end
         end
       end
