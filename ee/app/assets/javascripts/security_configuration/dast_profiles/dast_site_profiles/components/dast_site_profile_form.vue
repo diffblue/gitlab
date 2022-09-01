@@ -174,7 +174,7 @@ export default {
       return SCAN_METHODS[this.form.fields.scanMethod.value];
     },
     isAuthEnabled() {
-      return this.authSection.fields.enabled && !this.isTargetAPI;
+      return this.authSection.fields.enabled;
     },
     isSubmitBlocked() {
       return !this.form.state || (this.isAuthEnabled && !this.authSection.state);
@@ -195,7 +195,7 @@ export default {
         profileName,
         targetUrl,
         targetType,
-        ...(!this.isTargetAPI && { auth: this.serializedAuthFields }),
+        auth: this.serializedAuthFields,
         ...(excludedUrls && {
           excludedUrls: this.parsedExcludedUrls,
         }),
@@ -398,8 +398,8 @@ export default {
     </gl-form-group>
 
     <dast-site-auth-section
-      v-if="!isTargetAPI"
       v-model="authSection"
+      :is-target-api="isTargetAPI"
       :disabled="isPolicyProfile"
       :show-validation="form.showValidation"
       :is-edit-mode="isEdit"

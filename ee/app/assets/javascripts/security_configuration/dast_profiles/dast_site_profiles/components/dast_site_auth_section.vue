@@ -1,5 +1,6 @@
 <script>
 import { GlFormGroup, GlFormInput, GlFormCheckbox } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { initFormField } from 'ee/security_configuration/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
 import validation from '~/vue_shared/directives/validation';
@@ -39,6 +40,10 @@ export default {
       required: false,
       default: false,
     },
+    isTargetApi: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     const {
@@ -57,18 +62,38 @@ export default {
         state: false,
         fields: {
           enabled: initFormField({ value: enabled, skipValidation: true }),
-          url: initFormField({ value: url }),
+          url: initFormField({ value: url, required: false, skipValidation: true }),
           username: initFormField({ value: username }),
           password: this.isEditMode
             ? initFormField({ value: password, required: false, skipValidation: true })
             : initFormField({ value: password }),
-          usernameField: initFormField({ value: usernameField }),
-          passwordField: initFormField({ value: passwordField }),
+          usernameField: initFormField({
+            value: usernameField,
+            required: false,
+            skipValidation: true,
+          }),
+          passwordField: initFormField({
+            value: passwordField,
+            required: false,
+            skipValidation: true,
+          }),
           submitField: initFormField({ value: submitField, required: false, skipValidation: true }),
         },
       },
       isSensitiveFieldRequired: !this.isEditMode,
     };
+  },
+  computed: {
+    showBasicAuthOption() {
+      return this.isTargetApi;
+    },
+    i18n() {
+      return {
+        enableAuth: this.showBasicAuthOption
+          ? s__('DastProfiles|Enable Basic Authentication')
+          : s__('DastProfiles|Enable Authentication'),
+      };
+    },
   },
   watch: {
     form: { handler: 'emitUpdate', immediate: true, deep: true },
@@ -92,11 +117,11 @@ export default {
     <gl-form-group data-testid="dast-site-auth-parent-group" :disabled="disabled">
       <gl-form-group :label="s__('DastProfiles|Authentication')">
         <gl-form-checkbox v-model="form.fields.enabled.value" data-testid="auth-enable-checkbox">{{
-          s__('DastProfiles|Enable Authentication')
+          i18n.enableAuth
         }}</gl-form-checkbox>
       </gl-form-group>
       <div v-if="form.fields.enabled.value" data-testid="auth-form">
-        <div class="row">
+        <div v-if="!showBasicAuthOption" class="row">
           <gl-form-group
             :label="s__('DastProfiles|Authentication URL')"
             :invalid-feedback="form.fields.url.feedback"
@@ -147,7 +172,7 @@ export default {
             />
           </gl-form-group>
         </div>
-        <div class="row">
+        <div v-if="!showBasicAuthOption" class="row">
           <gl-form-group
             :label="s__('DastProfiles|Username form field')"
             :invalid-feedback="form.fields.usernameField.feedback"
@@ -179,7 +204,7 @@ export default {
             />
           </gl-form-group>
         </div>
-        <div class="row">
+        <div v-if="!showBasicAuthOption" class="row">
           <gl-form-group
             :label="s__('DastProfiles|Submit button (optional)')"
             :invalid-feedback="form.fields.submitField.feedback"

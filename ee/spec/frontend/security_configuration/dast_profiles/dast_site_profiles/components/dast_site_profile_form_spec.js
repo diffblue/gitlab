@@ -218,8 +218,8 @@ describe('DastSiteProfileForm', () => {
         setTargetType(TARGET_TYPES.API.value);
       });
 
-      it('should hide auth section', () => {
-        expect(findAuthSection().exists()).toBe(false);
+      it('should show the auth section', () => {
+        expect(findAuthSection().exists()).toBe(true);
       });
 
       describe('scan method option', () => {
@@ -263,16 +263,9 @@ describe('DastSiteProfileForm', () => {
           const baseDastProfileForm = findBaseDastProfileForm();
           expect(baseDastProfileForm.props('mutation')).toBe(mutation);
           expect(baseDastProfileForm.props('mutationType')).toBe(mutationKind);
-          expect(baseDastProfileForm.props('mutationVariables')).toEqual({
-            profileName,
-            targetUrl,
-            excludedUrls: excludedUrls.split(', '),
-            requestHeaders,
-            targetType: 'API',
-            scanMethod: 'HAR',
-            scanFilePath,
-            ...mutationVars,
-          });
+          expect(baseDastProfileForm.props('mutationVariables')).toEqual(
+            expect.objectContaining(mutationVars),
+          );
         });
       });
     });

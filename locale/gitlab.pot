@@ -11915,6 +11915,9 @@ msgstr ""
 msgid "DastProfiles|Enable Authentication"
 msgstr ""
 
+msgid "DastProfiles|Enable Basic Authentication"
+msgstr ""
+
 msgid "DastProfiles|Enter URLs in a comma-separated list."
 msgstr ""
 

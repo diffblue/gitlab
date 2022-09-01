@@ -7,12 +7,18 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 describe('DastSiteAuthSection', () => {
   let wrapper;
 
-  const createComponent = ({ mountFn = mount, fields = {}, disabled = false } = {}) => {
+  const createComponent = ({
+    mountFn = mount,
+    fields = {},
+    disabled = false,
+    isTargetApi = false,
+  } = {}) => {
     wrapper = extendedWrapper(
       mountFn(DastSiteAuthSection, {
         propsData: {
           disabled,
           value: { fields },
+          isTargetApi,
         },
       }),
     );
@@ -25,6 +31,15 @@ describe('DastSiteAuthSection', () => {
   afterEach(() => {
     wrapper.destroy();
   });
+
+  const inputFieldsWithValues = {
+    url: 'http://www.gitlab.com',
+    username: 'foo',
+    password: 'foo',
+    usernameField: 'foo',
+    passwordField: 'foo',
+    submitField: 'submit',
+  };
 
   const findParentFormGroup = () => wrapper.findByTestId('dast-site-auth-parent-group');
   const findByNameAttribute = (name) => wrapper.find(`[name="${name}"]`);
@@ -74,15 +89,6 @@ describe('DastSiteAuthSection', () => {
     beforeEach(async () => {
       await setAuthentication({ enabled: true });
     });
-
-    const inputFieldsWithValues = {
-      url: 'http://www.gitlab.com',
-      username: 'foo',
-      password: 'foo',
-      usernameField: 'foo',
-      passwordField: 'foo',
-      submitField: 'submit',
-    };
 
     const inputFieldNames = Object.keys(inputFieldsWithValues);
 
@@ -148,6 +154,68 @@ describe('DastSiteAuthSection', () => {
       it('should disable all form groups', () => {
         createComponent({ mountFn: shallowMount, disabled: true, fields: { enabled: true } });
         expect(findParentFormGroup().attributes('disabled')).toBe('true');
+      });
+    });
+  });
+
+  describe('API Authentication', () => {
+    const { username, password, ...nonAPIInputFieldsWithValues } = inputFieldsWithValues;
+    const APIInputFieldsWithValues = { username, password };
+
+    beforeEach(async () => {
+      createComponent({
+        fields: { ...APIInputFieldsWithValues },
+        isTargetApi: true,
+      });
+      await setAuthentication({ enabled: true });
+    });
+
+    const APIInputFieldNames = Object.keys(APIInputFieldsWithValues);
+    const nonAPIInputFieldNames = Object.keys(nonAPIInputFieldsWithValues);
+
+    describe.each(APIInputFieldNames)('input field "%s"', (inputFieldName) => {
+      it('is rendered', () => {
+        expect(findByNameAttribute(inputFieldName).exists()).toBe(true);
+      });
+
+      it('makes the component emit an "input" event when its value changes', async () => {
+        const input = findByNameAttribute(inputFieldName);
+        const newValue = 'bar';
+        await input.setValue(newValue);
+        expect(getLatestInputEventPayload().fields[inputFieldName]).toBe(newValue);
+      });
+    });
+
+    it.each(nonAPIInputFieldNames)('input field "%s" is not rendered', (inputFieldName) => {
+      expect(findByNameAttribute(inputFieldName).exists()).toBe(false);
+    });
+
+    describe('validity', () => {
+      it('is not valid per default', async () => {
+        createComponent({
+          isTargetApi: true,
+        });
+        await setAuthentication({ enabled: true });
+
+        expect(getLatestInputEventPayload().state).toBe(false);
+      });
+
+      it('is valid when correct values are passed in via the "fields" prop', async () => {
+        createComponent({ fields: APIInputFieldsWithValues, isTargetApi: true });
+
+        await setAuthentication({ enabled: true });
+
+        expect(getLatestInputEventPayload().state).toBe(true);
+      });
+
+      it('is valid once all fields have been entered correctly', async () => {
+        Object.entries(APIInputFieldsWithValues).forEach(([inputFieldName, inputFieldValue]) => {
+          const input = findByNameAttribute(inputFieldName);
+          input.setValue(inputFieldValue);
+          input.trigger('blur');
+        });
+        await nextTick();
+        expect(getLatestInputEventPayload().state).toBe(true);
       });
     });
   });
