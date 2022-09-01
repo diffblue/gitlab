@@ -426,6 +426,18 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
 
             it_behaves_like 'a Geo 302 redirect to Primary'
           end
+
+          context 'when the repository has been updated' do
+            let_it_be(:project) { project_with_repo }
+
+            before do
+              allow(::Geo::ProjectRegistry).to receive(:repository_out_of_date?).with(project.id).and_return(true)
+            end
+
+            it 'is handled by the secondary' do
+              is_expected.to have_gitlab_http_status(:ok)
+            end
+          end
         end
       end
 
