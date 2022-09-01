@@ -117,7 +117,11 @@ RSpec.describe 'Project navbar' do
   end
 
   context 'when harbor registry is available' do
+    let(:harbor_integration) { create(:harbor_integration) }
+
     before do
+      project.update!(harbor_integration: harbor_integration)
+
       stub_feature_flags(harbor_registry_integration: true)
 
       insert_harbor_registry_nav(_('Infrastructure Registry'))
