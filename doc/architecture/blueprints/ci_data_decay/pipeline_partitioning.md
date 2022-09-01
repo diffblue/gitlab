@@ -159,21 +159,32 @@ and artifacts, will share the same value. We want to add the `partition_id`
 column into all 6 problematic tables because we can avoid backfilling this data
 when we decide it is time to start partitioning them.
 
-We want to partition CI/CD data iteratively, so we will start with the
-pipelines table, and create at least one, but likely two, partitions. The
-pipelines table will be partitioned using the `LIST` partitioning strategy. It
-is possible that, after some time, `p_ci_pipelines` will store data in two
-partitions with IDs of `100` and `101`. Then we will try partitioning
-`ci_builds`. Therefore we might want to use `RANGE` partitioning in
-`p_ci_builds` with IDs `100` and `101`, because builds for the two logical
-partitions used will still be stored in a single table.
+We want to partition CI/CD data iteratively. We plan to start with the
+`ci_builds_metadata` table, because this is the fastest growing table in the CI
+database and want to contain this rapid growth. This table has also the most
+simple access patterns - a row from it is being read when a build is exposed to
+a runner, and other access patterns are relatively simple too. Starting with
+`p_ci_builds_metadata` will allow us to achieve tangible and quantifiable
+results earlier, and will become a new pattern that makes partitioning the
+largest table possible. We will partition builds metadata using the `LIST`
+partitioning strategy.
+
+Once we have many partitions attached to `p_ci_builds_metadata`, with many
+`partition_ids` we will choose another CI table to partition next. In that case
+we might want to use `RANGE` partitioning in for that next table because
+`p_ci_builds_metadata` will already have many physical partitions, and
+therefore many logical `partition_ids` will be used at that time. For example,
+if we choose `ci_builds` as the next partitioning candidate, after having
+partitioned `p_ci_builds_metadata`, it will have many different values stored
+in `ci_builds.partition_id`. Using `RANGE` partitioning in that case might be
+easier.
 
 Physical partitioning and logical partitioning will be separated, and a
-strategy will be determined when we implement partitioning for the respective
-database tables. Using `RANGE` partitioning works similarly to using `LIST`
-partitioning in database tables other than `ci_pipelines`, but because we can
-guarantee continuity of `partition_id` values, using `RANGE` partitioning might
-be a better strategy.
+strategy will be determined when we implement physical partitioning for the
+respective database tables. Using `RANGE` partitioning works similarly to using
+`LIST` partitioning in database tables, but because we can guarantee continuity
+of `partition_id` values, using `RANGE` partitioning might be a better
+strategy.
 
 ## Why do we want to use explicit logical partition ids?
 
