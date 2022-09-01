@@ -17,7 +17,7 @@ module QA
       end
     end
 
-    describe 'Instance', :requires_admin do
+    describe 'Instance', :requires_admin, :reliable do
       context 'Failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
