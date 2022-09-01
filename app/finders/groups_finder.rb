@@ -52,6 +52,7 @@ class GroupsFinder < UnionFinder
     return [groups_with_min_access_level] if min_access_level?
     return [Group.all] if current_user&.can_read_all_resources? && all_available?
 
+    groups = []
     groups = get_groups_for_user if current_user
 
     groups << Group.unscoped.public_to_user(current_user) if include_public_groups?
