@@ -361,8 +361,6 @@ module EE
             attribute_name: column_name.to_s,
             column_expression: column_expression,
             order_expression: column_expression_with_direction.nulls_last,
-            reversed_order_expression: column_expression_with_direction.reverse.nulls_last,
-            order_direction: direction,
             distinct: false,
             nullable: :nulls_last
           ),
