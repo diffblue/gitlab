@@ -175,20 +175,38 @@ RSpec.describe SessionsController, :geo do
       end
 
       context 'when the user was verified by Arkose' do
-        it 'successfully logs in a user when reCAPTCHA is solved' do
-          allow_next_instance_of(Arkose::UserVerificationService) do |instance|
-            allow(instance).to receive(:execute).and_return(true)
+        before do
+          allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
+            response = ServiceResponse.success(payload: { low_risk: low_risk })
+            allow(instance).to receive(:execute).and_return(response)
           end
-          post(:create, params: params, session: {})
 
-          expect(subject.current_user).to eq user
+          post(:create, params: params, session: {})
+        end
+
+        context 'when user is low risk' do
+          let(:low_risk) { true }
+
+          it 'successfully logs in the user' do
+            expect(subject.current_user).to eq user
+          end
+        end
+
+        context 'when user is NOT low risk' do
+          let(:low_risk) { false }
+
+          it 'prevents the user from logging in' do
+            expect(response).to render_template(:new)
+            expect(flash[:alert]).to include 'Login failed. Please retry from your primary device and network'
+            expect(subject.current_user).to be_nil
+          end
         end
       end
 
       context 'when the user was not verified by Arkose' do
         before do
-          allow_next_instance_of(Arkose::UserVerificationService) do |instance|
-            allow(instance).to receive(:execute).and_return(false)
+          allow_next_instance_of(Arkose::TokenVerificationService) do |instance|
+            allow(instance).to receive(:execute).and_return(ServiceResponse.error(message: 'Captcha was not solved'))
           end
         end
 

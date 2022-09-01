@@ -1,78 +1,71 @@
 # frozen_string_literal: true
+
 module Arkose
-  class UserVerificationService
-    attr_reader :url, :session_token, :user, :response
+  class TokenVerificationService
+    attr_reader :session_token, :user
 
     ARKOSE_LABS_DEFAULT_NAMESPACE = 'client'
     ARKOSE_LABS_DEFAULT_SUBDOMAIN = 'verify-api'
 
-    def initialize(session_token:, user:)
+    def initialize(session_token:, user: nil)
       @session_token = session_token
       @user = user
     end
 
     def execute
-      json_response = Gitlab::HTTP.perform_request(Net::HTTP::Post, arkose_verify_url, body: body).parsed_response
-      @response = VerifyResponse.new(json_response)
+      response = Gitlab::HTTP.perform_request(Net::HTTP::Post, arkose_verify_url, body: body).parsed_response
+      response = ::Arkose::VerifyResponse.new(response)
 
-      logger.info(build_message)
+      logger.info(build_message(response))
 
-      return false if response.invalid_token?
+      return ServiceResponse.error(message: response.error) if response.invalid_token?
 
-      add_or_update_arkose_attributes
+      RecordUserDataService.new(response: response, user: user).execute
 
-      response.allowlisted? || (response.challenge_solved? && response.low_risk?)
+      if response.allowlisted? || response.challenge_solved?
+        ServiceResponse.success(payload: { low_risk: response.allowlisted? || response.low_risk? })
+      else
+        ServiceResponse.error(message: 'Captcha was not solved')
+      end
     rescue StandardError => error
-      payload = { session_token: session_token, log_data: user.id }
+      payload = {
+        # Allow user to proceed when we can't verify the token for some
+        # unexpected reason (e.g. ArkoseLabs is down)
+        low_risk: true,
+        session_token: session_token,
+        log_data: user&.id
+      }.compact
       Gitlab::ExceptionLogFormatter.format!(error, payload)
       Gitlab::ErrorTracking.track_exception(error)
       logger.error("Error verifying user on Arkose: #{payload}")
 
-      true
+      ServiceResponse.success(payload: payload)
     end
 
     private
-
-    def add_or_update_arkose_attributes
-      return if Gitlab::Database.read_only?
-
-      UserCustomAttribute.upsert_custom_attributes(custom_attributes)
-    end
-
-    def custom_attributes
-      custom_attributes = []
-      custom_attributes.push({ key: 'arkose_session', value: response.session_id })
-      custom_attributes.push({ key: 'arkose_risk_band', value: response.risk_band })
-      custom_attributes.push({ key: 'arkose_global_score', value: response.global_score })
-      custom_attributes.push({ key: 'arkose_custom_score', value: response.custom_score })
-
-      custom_attributes.map! { |custom_attribute| custom_attribute.merge({ user_id: user.id }) }
-      custom_attributes
-    end
 
     def body
       {
         private_key: Settings.arkose_private_api_key,
         session_token: session_token,
-        log_data: user.id
-      }
+        log_data: user&.id
+      }.compact
     end
 
     def logger
       Gitlab::AppLogger
     end
 
-    def build_message
+    def build_message(response)
       Gitlab::ApplicationContext.current.symbolize_keys.merge(
         {
           message: 'Arkose verify response',
           response: response.response,
-          username: user.username
-        }.merge(arkose_payload)
-      )
+          username: user&.username
+        }.compact).merge(arkose_payload(response))
     end
 
-    def arkose_payload
+    def arkose_payload(response)
       {
         'arkose.session_id': response.session_id,
         'arkose.global_score': response.global_score,
