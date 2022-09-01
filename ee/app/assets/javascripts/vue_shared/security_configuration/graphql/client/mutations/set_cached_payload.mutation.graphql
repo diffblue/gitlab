@@ -1,0 +1,3 @@
+mutation setCachedPayload($cachedPayload: CachedPayloadInput!) {
+  setCachedPayload(cachedPayload: $cachedPayload) @client
+}

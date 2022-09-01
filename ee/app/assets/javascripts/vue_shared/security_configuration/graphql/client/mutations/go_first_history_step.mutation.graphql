@@ -1,0 +1,3 @@
+mutation goFirstStep($profileType: String!, $mode: String!) {
+  goFirstStep(profileType: $profileType, mode: $mode) @client
+}

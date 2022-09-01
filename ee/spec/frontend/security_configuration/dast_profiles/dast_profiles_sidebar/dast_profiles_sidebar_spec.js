@@ -1,24 +1,39 @@
 import { GlDrawer, GlLink } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { __ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
-import { scannerProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
-import { SCANNER_TYPE, SITE_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
+import {
+  scannerProfiles,
+  mockSharedData,
+} from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
+import { SCANNER_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
+import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
+import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
 
 describe('DastProfilesSidebar', () => {
   let wrapper;
+  let fakeApollo;
   const projectPath = 'projectPath';
   const libraryLink = 'libraryLink';
 
+  Vue.use(VueApollo);
+
   const createComponent = (options = {}) => {
+    fakeApollo = createMockApollo([], resolvers, { typePolicies });
+
     wrapper = mountExtended(DastProfilesSidebar, {
+      apolloProvider: fakeApollo,
       propsData: {
         ...options,
       },
       stubs: {
         GlDrawer: true,
+        GlModal: true,
       },
       provide: {
         projectPath,
@@ -26,6 +41,9 @@ describe('DastProfilesSidebar', () => {
     });
   };
 
+  const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
+  const findModal = () => wrapper.findByTestId('dast-profile-form-cancel-modal');
+  const findEditButton = () => wrapper.findByTestId('profile-edit-btn');
   const findSidebarHeader = () => wrapper.findByTestId('sidebar-header');
   const findEmptyStateHeader = () => wrapper.findByTestId('empty-state-header');
   const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
@@ -36,70 +54,61 @@ describe('DastProfilesSidebar', () => {
   const findSkeletonLoader = () => wrapper.findComponent(DastProfilesLoader);
   const findGlDrawer = () => wrapper.findComponent(GlDrawer);
 
+  const openEditForm = async () => {
+    findEditButton().vm.$emit('click');
+    await waitForPromises();
+  };
+
   afterEach(() => {
-    wrapper.destroy();
+    mockSharedData.history = [];
   });
 
-  describe.each`
-    scannerType     | header       | expectedResult
-    ${SCANNER_TYPE} | ${'Scanner'} | ${SCANNER_TYPE}
-    ${SITE_TYPE}    | ${'Site'}    | ${SITE_TYPE}
-  `('should emit correct event', ({ scannerType, header, expectedResult }) => {
-    createComponent({ profileType: scannerType });
+  it('should render empty state', async () => {
+    createComponent();
+
+    await waitForPromises();
+
     expect(findEmptyStateHeader().exists()).toBe(true);
-    expect(findEmptyStateHeader().text()).toContain(`No ${expectedResult} profiles found for DAST`);
-    expect(findSidebarHeader().text()).toContain(`${header} profile library`);
+    expect(findEmptyStateHeader().text()).toContain(`No ${SCANNER_TYPE} profiles found for DAST`);
+    expect(findSidebarHeader().text()).toContain('Scanner profile library');
   });
 
-  it('should render new scan button when profiles exists', () => {
+  it('should render new scan button when profiles exists', async () => {
     createComponent({ profiles: scannerProfiles });
+    await waitForPromises();
     expect(findNewScanButton().exists()).toBe(true);
   });
 
-  it('should hide new scan button when no profiles exists', () => {
+  it('should hide new scan button when no profiles exists', async () => {
     createComponent();
-
+    await waitForPromises();
     expect(findNewScanButton().exists()).toBe(false);
   });
 
-  it('should open new scanner profile form when in editing mode', async () => {
-    createComponent({
-      profileType: SCANNER_TYPE,
-      profiles: scannerProfiles,
-      sidebarViewMode: SIDEBAR_VIEW_MODE.EDITING_MODE,
-    });
-
-    await nextTick();
-
-    expect(findNewDastScannerProfileForm().exists()).toBe(true);
-    expect(findSidebarHeader().text()).toContain('New scanner profile');
-  });
-
   describe('new profile form', () => {
-    describe.each`
-      scannerType     | expectedResult
-      ${SCANNER_TYPE} | ${SCANNER_TYPE}
-      ${SITE_TYPE}    | ${SITE_TYPE}
-    `('should emit correct event', ({ scannerType, expectedResult }) => {
-      createComponent({ profileType: scannerType });
+    it('should emit correct event', async () => {
+      createComponent();
+      await waitForPromises();
+
       findEmptyNewScanButton().vm.$emit('click');
+      await waitForPromises();
 
       expect(wrapper.emitted()).toEqual({
-        'reopen-drawer': [[{ mode: SIDEBAR_VIEW_MODE.EDITING_MODE, profileType: expectedResult }]],
+        'reopen-drawer': [[{ mode: SIDEBAR_VIEW_MODE.EDITING_MODE, profileType: SCANNER_TYPE }]],
       });
       expect(findNewScanButton().exists()).toBe(false);
     });
 
     it('should close form when cancelled', async () => {
-      createComponent({ profileType: SITE_TYPE, sidebarViewMode: SIDEBAR_VIEW_MODE.EDITING_MODE });
+      createComponent({ profiles: scannerProfiles });
+      await waitForPromises();
+
+      await openEditForm();
 
       findCancelButton().vm.$emit('click');
+      await waitForPromises();
 
-      await nextTick();
-
-      expect(wrapper.emitted()).toEqual({
-        'reopen-drawer': [[{ mode: SIDEBAR_VIEW_MODE.READING_MODE, profileType: SITE_TYPE }]],
-      });
+      expect(wrapper.emitted()['close-drawer']).toBeTruthy();
     });
   });
 
@@ -113,12 +122,11 @@ describe('DastProfilesSidebar', () => {
   describe('editing mode', () => {
     it('should be possible to edit profile', async () => {
       createComponent({
-        profileType: SCANNER_TYPE,
         profiles: scannerProfiles,
-        sidebarViewMode: SIDEBAR_VIEW_MODE.EDITING_MODE,
       });
-      wrapper.setProps({ activeProfile: scannerProfiles[0] });
-      await nextTick();
+      await waitForPromises();
+
+      await openEditForm();
 
       expect(findNewDastScannerProfileForm().exists()).toBe(true);
       expect(findNewScanButton().exists()).toBe(false);
@@ -127,36 +135,108 @@ describe('DastProfilesSidebar', () => {
   });
 
   describe('sticky header', () => {
-    it('should have sticky header always enabled', () => {
+    it('should have sticky header always enabled', async () => {
       createComponent();
+      await waitForPromises();
 
-      expect(findGlDrawer().props('headerSticky')).toEqual(true);
+      expect(findGlDrawer().props('headerSticky')).toBe(true);
     });
   });
 
   describe('sticky footer', () => {
-    it.each`
-      profileType     | expectedResult
-      ${SCANNER_TYPE} | ${__(`Manage ${SCANNER_TYPE} profiles`)}
-      ${SITE_TYPE}    | ${__(`Manage ${SITE_TYPE} profiles`)}
-    `('renders correctly for $profileType profiles', ({ profileType, expectedResult }) => {
-      createComponent({ profileType, libraryLink });
+    it('renders correctly', async () => {
+      createComponent({ libraryLink });
+      await waitForPromises();
 
-      expect(findFooterLink().text()).toBe(expectedResult);
+      expect(findFooterLink().text()).toBe(__(`Manage ${SCANNER_TYPE} profiles`));
       expect(findFooterLink().attributes('href')).toEqual(libraryLink);
     });
 
-    it.each`
-      sidebarViewMode                   | expectedResult
-      ${SIDEBAR_VIEW_MODE.READING_MODE} | ${true}
-      ${SIDEBAR_VIEW_MODE.EDITING_MODE} | ${false}
-    `(
-      'should set footer visibility as $expectedResult for $sidebarViewMode mode',
-      ({ sidebarViewMode, expectedResult }) => {
-        createComponent({ profiles: scannerProfiles, sidebarViewMode, libraryLink });
+    it('should have footer in reading mode', async () => {
+      createComponent({ profiles: scannerProfiles, libraryLink });
+      await waitForPromises();
 
-        expect(findFooterLink().exists()).toBe(expectedResult);
-      },
-    );
+      expect(findFooterLink().exists()).toBe(true);
+    });
+
+    it('should have footer hidden in editing mode', async () => {
+      createComponent({ profiles: scannerProfiles, libraryLink });
+      await waitForPromises();
+
+      await openEditForm();
+
+      expect(findFooterLink().exists()).toBe(false);
+    });
+  });
+
+  describe('warning modal', () => {
+    it('should show modal on cancel if there are unsaved changes', async () => {
+      const showModalMock = jest.spyOn(resolvers.Mutation, 'toggleModal');
+      createComponent({ profiles: scannerProfiles });
+      await waitForPromises();
+
+      await openEditForm();
+
+      findProfileNameInput().vm.$emit('input', 'another value');
+      await waitForPromises();
+
+      findCancelButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(findModal().attributes('visible')).toEqual(String(true));
+      expect(showModalMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('should show modal before closing drawer if there are unsaved changes', async () => {
+      const showModalMock = jest.spyOn(resolvers.Mutation, 'toggleModal');
+      createComponent({ profiles: scannerProfiles });
+      await waitForPromises();
+
+      await openEditForm();
+
+      findProfileNameInput().vm.$emit('input', 'another value');
+      await waitForPromises();
+
+      findGlDrawer().vm.$emit('close');
+      await waitForPromises();
+
+      expect(findModal().attributes('visible')).toEqual(String(true));
+      expect(showModalMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('should reset state history and close drawer if there are no unsaved changes', async () => {
+      const resetHistoryMock = jest.spyOn(resolvers.Mutation, 'resetHistory');
+      createComponent({ profiles: scannerProfiles });
+      await waitForPromises();
+
+      findGlDrawer().vm.$emit('close');
+      await waitForPromises();
+
+      expect(resetHistoryMock).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted()['close-drawer']).toBeTruthy();
+    });
+
+    it('should discard changes from warning modal', async () => {
+      const goBackMock = jest.spyOn(resolvers.Mutation, 'goBack');
+      const setCachedPayloadMock = jest.spyOn(resolvers.Mutation, 'setCachedPayload');
+      createComponent({ profiles: scannerProfiles });
+      await waitForPromises();
+
+      await openEditForm();
+
+      findProfileNameInput().vm.$emit('input', 'another value');
+      await waitForPromises();
+
+      findGlDrawer().vm.$emit('close');
+      await waitForPromises();
+
+      findModal().vm.$emit('primary');
+      await waitForPromises();
+
+      expect(findModal().exists()).toBe(false);
+      expect(goBackMock).toHaveBeenCalledTimes(1);
+      expect(setCachedPayloadMock).toHaveBeenCalledTimes(1);
+      expect(wrapper.emitted()['close-drawer']).toBeTruthy();
+    });
   });
 });

@@ -1,0 +1,33 @@
+type CachedPayload {
+  profileType: String!
+  mode: String!
+}
+
+input CachedPayloadInput {
+  profileType: String!
+  mode: String!
+}
+
+type SharedData {
+  showDiscardChangesModal: Boolean
+  formTouched: Boolean
+  history: [CachedPayload!]!
+  cachedPayload: CachedPayload!
+  resetAndClose: Boolean
+}
+
+extend type Query {
+  sharedData: SharedData
+}
+
+extend type Mutation {
+  discardChanges: LocalErrors
+  goBack: LocalErrors
+  goFirstStep(profileType: String!, mode: String!): LocalErrors
+  goForward(profileType: String!, mode: String!): LocalErrors
+  resetHistory: LocalErrors
+  setCachedPayload(cachedPayload: CachedPayloadInput): LocalErrors
+  setFormTouched(formTouched: Boolean!): LocalErrors
+  setResetAndClose(resetAndClose: Boolean!): LocalErrors
+  toggleModal(showDiscardChangesModal: Boolean!): LocalErrors
+}

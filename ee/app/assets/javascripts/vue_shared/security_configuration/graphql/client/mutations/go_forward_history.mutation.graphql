@@ -1,0 +1,3 @@
+mutation goForward($profileType: String!, $mode: String!) {
+  goForward(profileType: $profileType, mode: $mode) @client
+}

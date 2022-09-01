@@ -1,0 +1,3 @@
+mutation toggleModal($showDiscardChangesModal: Boolean!) {
+  toggleModal(showDiscardChangesModal: $showDiscardChangesModal) @client
+}

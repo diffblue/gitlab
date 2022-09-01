@@ -10,7 +10,7 @@ import {
 } from '@gitlab/ui';
 import { initFormField } from 'ee/security_configuration/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
 import BaseDastProfileForm from '../../components/base_dast_profile_form.vue';
 import dastProfileFormMixin from '../../dast_profile_form_mixin';
 import { SCAN_TYPE, SCAN_TYPE_OPTIONS } from '../constants';
@@ -94,13 +94,6 @@ export default {
         errorMessage: isEdit
           ? s__('DastProfiles|Could not update the scanner profile. Please try again.')
           : s__('DastProfiles|Could not create the scanner profile. Please try again.'),
-        modal: {
-          title: isEdit
-            ? s__('DastProfiles|Do you want to discard your changes?')
-            : s__('DastProfiles|Do you want to discard this scanner profile?'),
-          okTitle: __('Discard'),
-          cancelTitle: __('Cancel'),
-        },
         tooltips: {
           spiderTimeout: s__(
             'DastProfiles|The maximum number of minutes allowed for the spider to traverse the site.',
@@ -142,11 +135,6 @@ export default {
     :is-policy-profile="isPolicyProfile"
     :block-submit="!form.state"
     :show-header="!stacked"
-    :modal-props="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-      title: i18n.modal.title,
-      okTitle: i18n.modal.okTitle,
-      cancelTitle: i18n.modal.cancelTitle,
-    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     @submit="form.showValidation = true"
     v-on="$listeners"
   >
