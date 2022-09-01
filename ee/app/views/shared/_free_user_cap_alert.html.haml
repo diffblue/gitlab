@@ -2,8 +2,8 @@
   - if ::Namespaces::FreeUserCap::Standard.new(source.root_ancestor).feature_enabled?
     = render Namespaces::FreeUserCap::AlertComponent.new(namespace: source.root_ancestor,
       user: current_user,
-      content_class: @content_class)
+      content_class: full_content_class)
   - else
     = render Namespaces::FreeUserCap::PreviewAlertComponent.new(namespace: source.root_ancestor,
       user: current_user,
-      content_class: @content_class)
+      content_class: full_content_class)

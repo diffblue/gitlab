@@ -15,10 +15,6 @@ module Namespaces
         "#{CONTAINER_CLASSES} #{content_class}"
       end
 
-      def self.fluid_container_class(content_class)
-        "container-fluid container-limited #{container_class(content_class)}"
-      end
-
       # region: standard shared ----------------------------------------
 
       def self.default_render?(user:, namespace:)

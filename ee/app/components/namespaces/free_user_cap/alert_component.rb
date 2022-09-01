@@ -102,7 +102,7 @@ module Namespaces
       end
 
       def container_class
-        Shared.fluid_container_class(content_class)
+        Shared.container_class(content_class)
       end
 
       def free_user_limit
