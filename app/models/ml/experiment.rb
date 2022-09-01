@@ -17,16 +17,18 @@ module Ml
       'not_implemented'
     end
 
-    def self.by_project_id_and_iid(project_id, iid)
-      find_by(project_id: project_id, iid: iid)
-    end
+    class << self
+      def by_project_id_and_iid(project_id, iid)
+        find_by(project_id: project_id, iid: iid)
+      end
 
-    def self.by_project_id_and_name(project_id, name)
-      find_by(project_id: project_id, name: name)
-    end
+      def by_project_id_and_name(project_id, name)
+        find_by(project_id: project_id, name: name)
+      end
 
-    def self.has_record?(project_id, name)
-      where(project_id: project_id, name: name).exists?
+      def has_record?(project_id, name)
+        where(project_id: project_id, name: name).exists?
+      end
     end
   end
 end
