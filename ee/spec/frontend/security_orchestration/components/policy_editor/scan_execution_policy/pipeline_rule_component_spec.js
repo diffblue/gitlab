@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import { s__ } from '~/locale';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PipelineRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/pipeline_rule_component.vue';
+import BaseRuleComponent from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/base_rule_component.vue';
 import {
   SCAN_EXECUTION_PIPELINE_RULE,
   SCAN_EXECUTION_RULES_LABELS,
@@ -23,14 +24,18 @@ describe('PipelineRuleComponent', () => {
         ruleLabel,
         ...options,
       },
+      stubs: {
+        BaseRuleComponent,
+      },
     });
   };
 
   const findTypeDropDownItem = () => wrapper.findComponent(GlDropdownItem);
   const findPipelineRuleComponentLabel = () => wrapper.findByTestId('rule-component-label');
   const findRuleDropDown = () => wrapper.findByTestId('rule-component-type');
-  const findBranchesInputField = () => wrapper.findByTestId('pipeline-rule-branches');
+  const findBranchesInputField = () => wrapper.findByTestId('rule-branches');
   const findDeleteButton = () => wrapper.findByTestId('remove-rule');
+  const findBaseRuleComponent = () => wrapper.findComponent(BaseRuleComponent);
 
   it('should render pipeline rule component by default', () => {
     createComponent();
@@ -47,35 +52,10 @@ describe('PipelineRuleComponent', () => {
       await nextTick();
     };
 
-    it('should render comma separated list of branched', () => {
-      const branches = ['main', 'test1', 'test2'];
-      createComponent({
-        initRule: {
-          type: SCAN_EXECUTION_PIPELINE_RULE,
-          branches,
-        },
-      });
-
-      expect(findBranchesInputField().element.value).toEqual(branches.join(','));
-    });
-
-    it('should filter out empty spaces', () => {
-      const branches = ['main', '  ', 'test2', undefined, null];
-
-      createComponent({
-        initRule: {
-          type: SCAN_EXECUTION_PIPELINE_RULE,
-          branches,
-        },
-      });
-
-      expect(findBranchesInputField().element.value).toEqual('main,test2');
-    });
-
     it('should emit array of branches and correct type', async () => {
       await selectBranches('main, branch');
 
-      expect(wrapper.emitted()).toEqual({
+      expect(findBaseRuleComponent().emitted()).toEqual({
         changed: [[{ branches: ['main', 'branch'], type: SCAN_EXECUTION_PIPELINE_RULE }]],
       });
     });
@@ -83,7 +63,7 @@ describe('PipelineRuleComponent', () => {
     it('should trim branch names from white spaces', async () => {
       await selectBranches('main , branch  ,    branch2    ');
 
-      expect(wrapper.emitted()).toEqual({
+      expect(findBaseRuleComponent().emitted()).toEqual({
         changed: [
           [{ branches: ['main', 'branch', 'branch2'], type: SCAN_EXECUTION_PIPELINE_RULE }],
         ],
@@ -98,7 +78,7 @@ describe('PipelineRuleComponent', () => {
 
       await nextTick();
 
-      expect(wrapper.emitted()).toEqual({
+      expect(findBaseRuleComponent().emitted()).toEqual({
         'select-rule': [[SCAN_EXECUTION_PIPELINE_RULE]],
       });
     });
@@ -111,7 +91,7 @@ describe('PipelineRuleComponent', () => {
 
       await nextTick();
 
-      expect(wrapper.emitted()).toEqual({
+      expect(findBaseRuleComponent().emitted()).toEqual({
         remove: [[]],
       });
     });

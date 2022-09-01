@@ -31,14 +31,13 @@ describe('ScheduleRuleComponent', () => {
         ruleLabel,
         ...options,
       },
-      stubs: { GlDropdownItems: true },
+      stubs: { GlDropdownItem: true },
     });
   };
 
   const findScheduleRuleLabel = () => wrapper.findByTestId('rule-component-label');
   const findScheduleRuleScopeDropDown = () => wrapper.findByTestId('rule-component-scope');
   const findScheduleRuleTypeDropDown = () => wrapper.findByTestId('rule-component-type');
-  const findScheduleRuleBranchesInput = () => wrapper.findByTestId('pipeline-rule-branches');
   const findScheduleRulePeriodDropDown = () => wrapper.findByTestId('rule-component-period');
   const findScheduleRulePeriodWeeklyItem = () =>
     findScheduleRulePeriodDropDown().findAllComponents(GlDropdownItem).at(1);
@@ -70,20 +69,6 @@ describe('ScheduleRuleComponent', () => {
   describe('select branch scope', () => {
     beforeEach(() => {
       createComponent();
-    });
-
-    it('should select list of branches', async () => {
-      const branches = 'main,branch1,branch2';
-
-      findScheduleRuleBranchesInput().vm.$emit('input', branches);
-      await nextTick();
-      const [eventPayload] = wrapper.emitted().changed;
-
-      expect(eventPayload[0]).toEqual({
-        type: SCAN_EXECUTION_SCHEDULE_RULE,
-        branches: branches.split(','),
-        cadence: CRON_DEFAULT_TIME,
-      });
     });
   });
 
