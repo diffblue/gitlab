@@ -20,7 +20,7 @@ export default {
 </script>
 
 <template>
-  <state-container status="failed">
+  <state-container :mr="mr" status="failed">
     <span class="gl-font-weight-bold">
       {{ __('Merge unavailable: merge requests are read-only in a secondary Geo node.') }}
     </span>

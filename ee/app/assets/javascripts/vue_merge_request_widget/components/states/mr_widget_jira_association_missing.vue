@@ -6,11 +6,17 @@ export default {
   components: {
     StateContainer,
   },
+  props: {
+    mr: {
+      type: Object,
+      required: true,
+    },
+  },
 };
 </script>
 
 <template>
-  <state-container status="failed">
+  <state-container :mr="mr" status="failed">
     <span class="gl-font-weight-bold">
       {{
         s__(

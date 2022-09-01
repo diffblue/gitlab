@@ -524,7 +524,12 @@ export default {
 
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />
-        <ready-to-merge v-if="mr.commitsCount" :mr="mr" :service="service" />
+        <ready-to-merge
+          v-if="mr.commitsCount"
+          v-show="shouldShowMergeDetails"
+          :mr="mr"
+          :service="service"
+        />
       </div>
     </div>
     <mr-widget-pipeline-container

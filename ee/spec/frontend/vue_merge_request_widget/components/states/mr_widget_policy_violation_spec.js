@@ -5,7 +5,11 @@ describe('EE MrWidgetPolicyViolation', () => {
   let wrapper;
 
   const createComponent = () => {
-    wrapper = shallowMount(MrWidgetPolicyViolation, {});
+    wrapper = shallowMount(MrWidgetPolicyViolation, {
+      propsData: {
+        mr: {},
+      },
+    });
   };
 
   afterEach(() => {
