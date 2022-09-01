@@ -1851,6 +1851,9 @@ msgstr ""
 msgid "AWS Access Key"
 msgstr ""
 
+msgid "AWS OpenSearch IAM credentials"
+msgstr ""
+
 msgid "AWS Secret Access Key"
 msgstr ""
 
@@ -2910,7 +2913,7 @@ msgstr ""
 msgid "AdminSettings|Total number of jobs in currently active pipelines"
 msgstr ""
 
-msgid "AdminSettings|Use AWS hosted Elasticsearch with IAM credentials"
+msgid "AdminSettings|Use AWS OpenSearch Service with IAM credentials"
 msgstr ""
 
 msgid "AdminSettings|Users and groups must accept the invitation before they're added to a group or project."
@@ -14292,9 +14295,6 @@ msgstr ""
 msgid "Elapsed time"
 msgstr ""
 
-msgid "Elasticsearch AWS IAM credentials"
-msgstr ""
-
 msgid "Elasticsearch HTTP client timeout value in seconds."
 msgstr ""
 
@@ -14317,9 +14317,6 @@ msgid "Elasticsearch reindexing was not started: %{errors}"
 msgstr ""
 
 msgid "Elasticsearch zero-downtime reindexing"
-msgstr ""
-
-msgid "Elasticsearch's region."
 msgstr ""
 
 msgid "Elastic|None. Select namespaces to index."
@@ -27605,6 +27602,9 @@ msgid "OpenAPI"
 msgstr ""
 
 msgid "OpenAPI Specification file path or URL"
+msgstr ""
+
+msgid "OpenSearch's region."
 msgstr ""
 
 msgid "Opened"

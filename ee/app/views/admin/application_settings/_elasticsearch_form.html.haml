@@ -167,14 +167,14 @@
 
         = render Pajamas::CardComponent.new(**component_params) do |c|
           = c.body do
-            %h4= _('Elasticsearch AWS IAM credentials')
+            %h4= _('AWS OpenSearch IAM credentials')
             .form-group
-              = f.gitlab_ui_checkbox_component :elasticsearch_aws, s_('AdminSettings|Use AWS hosted Elasticsearch with IAM credentials')
+              = f.gitlab_ui_checkbox_component :elasticsearch_aws, s_('AdminSettings|Use AWS OpenSearch Service with IAM credentials')
             .form-group
               = f.label :elasticsearch_aws_region, 'AWS region', class: 'label-bold'
               = f.text_field :elasticsearch_aws_region, value: @application_setting.elasticsearch_aws_region, class: 'form-control gl-form-input'
               .form-text.gl-text-gray-600.gl-mt-0
-                = _('Elasticsearch\'s region.')
+                = _('OpenSearch\'s region.')
 
             .form-group
               = f.label :elasticsearch_aws_access_key, _('AWS Access Key'), class: 'label-bold'
