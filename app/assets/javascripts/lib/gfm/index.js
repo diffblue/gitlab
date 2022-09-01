@@ -73,12 +73,20 @@ const skipRenderingHandlers = {
   json: skipFrontmatterHandler('json'),
 };
 
-const createParser = () => {
+const createParser = ({ skipRendering }) => {
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkFrontmatter, ['yaml', 'toml', { type: 'json', marker: ';' }])
-    .use(glfmTableOfContents);
+    .use(glfmTableOfContents)
+    .use(remarkRehype, {
+      allowDangerousHtml: true,
+      handlers: {
+        ...glfmMdastToHastHandlers,
+        ...pick(skipRenderingHandlers, skipRendering),
+      },
+    })
+    .use(rehypeRaw);
 };
 
 const compilerFactory = (renderer) =>
@@ -107,14 +115,6 @@ const compilerFactory = (renderer) =>
  */
 export const render = async ({ markdown, renderer, skipRendering = [] }) => {
   const { result } = await createParser({ skipRendering })
-    .use(remarkRehype, {
-      allowDangerousHtml: true,
-      handlers: {
-        ...glfmMdastToHastHandlers,
-        ...pick(skipRenderingHandlers, skipRendering),
-      },
-    })
-    .use(rehypeRaw)
     .use(compilerFactory(renderer))
     .process(markdown);
 
