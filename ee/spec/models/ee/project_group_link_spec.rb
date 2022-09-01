@@ -72,7 +72,7 @@ RSpec.describe ProjectGroupLink do
 
       let(:access_levels) { protected_environment.deploy_access_levels }
 
-      it_behaves_like 'deleted related access levels', ProtectedEnvironment::DeployAccessLevel
+      it_behaves_like 'deleted related access levels', ProtectedEnvironments::DeployAccessLevel
 
       context 'with approval rules' do
         let(:access_levels) { protected_environment.approval_rules }

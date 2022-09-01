@@ -5,7 +5,7 @@ class ProtectedEnvironment < ApplicationRecord
 
   belongs_to :project
   belongs_to :group, inverse_of: :protected_environments
-  has_many :deploy_access_levels, inverse_of: :protected_environment
+  has_many :deploy_access_levels, class_name: 'ProtectedEnvironments::DeployAccessLevel', inverse_of: :protected_environment
   has_many :approval_rules, class_name: 'ProtectedEnvironments::ApprovalRule', inverse_of: :protected_environment
 
   accepts_nested_attributes_for :deploy_access_levels, allow_destroy: true
@@ -32,7 +32,7 @@ class ProtectedEnvironment < ApplicationRecord
   class << self
     def revoke_user(user)
       transaction do
-        ProtectedEnvironment::DeployAccessLevel
+        ProtectedEnvironments::DeployAccessLevel
           .where(protected_environment_id: select(:id))
           .where(user: user)
           .delete_all
@@ -46,7 +46,7 @@ class ProtectedEnvironment < ApplicationRecord
 
     def revoke_group(group)
       transaction do
-        ProtectedEnvironment::DeployAccessLevel
+        ProtectedEnvironments::DeployAccessLevel
           .where(protected_environment_id: select(:id))
           .where(group: group)
           .delete_all

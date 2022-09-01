@@ -133,7 +133,7 @@ RSpec.describe ProjectMember do
 
     it 'deletes associated protected environment access cascadingly' do
       expect { member.destroy! }
-        .to change { ProtectedEnvironment::DeployAccessLevel.count }.by(-1)
+        .to change { ProtectedEnvironments::DeployAccessLevel.count }.by(-1)
 
       expect { deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
       expect(protected_environment.reload.deploy_access_levels)
@@ -146,7 +146,7 @@ RSpec.describe ProjectMember do
 
       it 'deletes all associated protected environment accesses in the project' do
         expect { member.destroy! }
-          .to change { ProtectedEnvironment::DeployAccessLevel.count }.by(-2)
+          .to change { ProtectedEnvironments::DeployAccessLevel.count }.by(-2)
 
         expect { deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { other_deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
@@ -160,7 +160,7 @@ RSpec.describe ProjectMember do
 
       it 'deletes all associated protected environment accesses in the project' do
         expect { member.destroy! }
-          .to change { ProtectedEnvironment::DeployAccessLevel.count }.by(-1)
+          .to change { ProtectedEnvironments::DeployAccessLevel.count }.by(-1)
 
         expect { deploy_access.reload }.to raise_error(ActiveRecord::RecordNotFound)
         expect { other_deploy_access.reload }.not_to raise_error

@@ -12,7 +12,7 @@ module ProtectedEnvironments
     end
 
     def self.human_access_levels
-      ::ProtectedEnvironment::DeployAccessLevel::HUMAN_ACCESS_LEVELS
+      ::ProtectedEnvironments::DeployAccessLevel::HUMAN_ACCESS_LEVELS
     end
   end
 end

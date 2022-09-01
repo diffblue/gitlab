@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 FactoryBot.define do
-  factory :protected_environment_deploy_access_level, class: 'ProtectedEnvironment::DeployAccessLevel' do
+  factory :protected_environment_deploy_access_level, class: 'ProtectedEnvironments::DeployAccessLevel' do
     user { nil }
     group { nil }
     protected_environment

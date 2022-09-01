@@ -29,7 +29,7 @@ RSpec.describe ProtectedEnvironments::UpdateService, '#execute' do
     it 'updates the deploy access levels' do
       expect do
         subject
-      end.to change { ProtectedEnvironment::DeployAccessLevel.count }.from(1).to(2)
+      end.to change { ProtectedEnvironments::DeployAccessLevel.count }.from(1).to(2)
     end
   end
 
@@ -41,7 +41,7 @@ RSpec.describe ProtectedEnvironments::UpdateService, '#execute' do
     it 'does not update the deploy access levels' do
       expect do
         subject
-      end.not_to change { ProtectedEnvironment::DeployAccessLevel.count }
+      end.not_to change { ProtectedEnvironments::DeployAccessLevel.count }
     end
 
     context 'multiple deploy access levels' do

@@ -25,7 +25,7 @@ module API
         requires :deploy_access_levels, as: :deploy_access_levels_attributes, type: Array, desc: 'An array of users/groups allowed to deploy environment' do
           use :shared_params
 
-          optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
+          optional :access_level, type: Integer, values: ::ProtectedEnvironments::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
         end
       end
 
@@ -46,7 +46,7 @@ module API
           use :shared_params
           use :shared_update_params
 
-          optional :access_level, type: Integer, values: ::ProtectedEnvironment::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
+          optional :access_level, type: Integer, values: ::ProtectedEnvironments::DeployAccessLevel::ALLOWED_ACCESS_LEVELS
         end
       end
     end

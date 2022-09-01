@@ -21,7 +21,7 @@ RSpec.describe ProtectedEnvironments::CreateService, '#execute' do
     end
 
     it 'creates a record on ProtectedEnvironment record' do
-      expect { subject }.to change(ProtectedEnvironment::DeployAccessLevel, :count).by(1)
+      expect { subject }.to change(ProtectedEnvironments::DeployAccessLevel, :count).by(1)
     end
   end
 
