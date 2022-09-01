@@ -80,7 +80,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
               class="gl-display-flex"
             >
               <div
-                class="gl-h-5 gl-display-flex"
+                class="report-block-child-icon gl-display-flex"
               >
                 <div
                   class="gl-mr-3 gl-p-2 gl-m-auto gl-text-green-500"
@@ -151,7 +151,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   >
                     <div
                       class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
-                      id="__BVID__619"
+                      id="__BVID__651"
                       lazy=""
                       no-caret=""
                     >
@@ -160,7 +160,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                         aria-expanded="false"
                         aria-haspopup="true"
                         class="btn dropdown-toggle btn-default btn-sm gl-p-2! gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret"
-                        id="__BVID__619__BV_toggle_"
+                        id="__BVID__651__BV_toggle_"
                         type="button"
                       >
                         <!---->
@@ -194,7 +194,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                         </svg>
                       </button>
                       <ul
-                        aria-labelledby="__BVID__619__BV_toggle_"
+                        aria-labelledby="__BVID__651__BV_toggle_"
                         class="dropdown-menu dropdown-menu-right"
                         role="menu"
                         tabindex="-1"
@@ -317,7 +317,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
               class="gl-display-flex"
             >
               <div
-                class="gl-h-5 gl-display-flex"
+                class="report-block-child-icon gl-display-flex"
               >
                 <div
                   class="gl-mr-3 gl-p-2 gl-m-auto gl-text-red-500"
@@ -492,7 +492,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
               class="gl-display-flex"
             >
               <div
-                class="gl-h-5 gl-display-flex"
+                class="report-block-child-icon gl-display-flex"
               >
                 <div
                   class="gl-mr-3 gl-p-2 gl-m-auto gl-text-gray-500"
@@ -563,7 +563,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   >
                     <div
                       class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
-                      id="__BVID__527"
+                      id="__BVID__557"
                       lazy=""
                       no-caret=""
                     >
@@ -572,7 +572,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                         aria-expanded="false"
                         aria-haspopup="true"
                         class="btn dropdown-toggle btn-default btn-sm gl-p-2! gl-button gl-dropdown-toggle btn-default-tertiary dropdown-icon-only dropdown-toggle-no-caret"
-                        id="__BVID__527__BV_toggle_"
+                        id="__BVID__557__BV_toggle_"
                         type="button"
                       >
                         <!---->
@@ -606,7 +606,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                         </svg>
                       </button>
                       <ul
-                        aria-labelledby="__BVID__527__BV_toggle_"
+                        aria-labelledby="__BVID__557__BV_toggle_"
                         class="dropdown-menu dropdown-menu-right"
                         role="menu"
                         tabindex="-1"

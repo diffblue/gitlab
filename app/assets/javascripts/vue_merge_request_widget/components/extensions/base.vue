@@ -315,6 +315,7 @@ export default {
     data-qa-selector="mr_widget_extension"
   >
     <state-container
+      :mr="mr"
       :status="statusIconName"
       :is-loading="isLoadingSummary"
       :class="{ 'gl-cursor-pointer': isCollapsible }"
