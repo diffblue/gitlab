@@ -211,7 +211,25 @@ RSpec.describe Gitlab::Ci::Minutes::CostFactor do
           let(:source_visibility_level) { Gitlab::VisibilityLevel::PUBLIC }
 
           context 'when the forked source cost factor is lower' do
-            specify { expect(subject).to eq(described_class::OPEN_SOURCE_CONTRIBUTION) }
+            context 'when the forked source plan is open source' do
+              before do
+                create(:gitlab_subscription, namespace: project.fork_source.namespace, hosted_plan: create(:opensource_plan))
+              end
+
+              specify { expect(subject).to eq(described_class::OPEN_SOURCE_CONTRIBUTION) }
+            end
+
+            context 'when the plan is not open source' do
+              specify { expect(subject).to eq(public_cost_factor) }
+
+              context 'when the ci_cost_factors_narrow_os_contribution_by_plan flag is disabled' do
+                before do
+                  stub_feature_flags(ci_cost_factors_narrow_os_contribution_by_plan: false)
+                end
+
+                specify { expect(subject).to eq(described_class::OPEN_SOURCE_CONTRIBUTION) }
+              end
+            end
           end
 
           context 'when the runner cost factor is lower' do
