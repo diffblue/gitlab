@@ -21,6 +21,10 @@ module MergeTrains
       @target_project_id = target_project_id
       @target_branch = target_branch
 
+      # To prevent concurrent refreshes, `MergeTrains::RefreshWorker` implements a locking mechanism through the
+      # `deduplicate :until_executed, if_deduplicated: :reschedule_once` option
+      return unsafe_refresh if Feature.enabled?(:bypass_batch_pop_queueing_for_merge_trains)
+
       queue = Gitlab::BatchPopQueueing.new('merge_trains', queue_id)
       result = queue.safe_execute([SIGNAL_FOR_REFRESH_REQUEST], lock_timeout: TRAIN_PROCESSING_LOCK_TIMEOUT) do |items|
         unsafe_refresh

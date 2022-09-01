@@ -11,7 +11,9 @@ module MergeTrains
     queue_namespace :auto_merge
     feature_category :continuous_integration
     worker_resource_boundary :cpu
-    deduplicate :until_executing
+
+    # Required, since `MergeTrains::RefreshService#execute` is concurrent-unsafe
+    deduplicate :until_executed, if_deduplicated: :reschedule_once
     idempotent!
 
     def perform(target_project_id, target_branch)
