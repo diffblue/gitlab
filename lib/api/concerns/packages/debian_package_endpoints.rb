@@ -83,6 +83,7 @@ module API
 
           namespace 'dists/*distribution', requirements: DISTRIBUTION_REQUIREMENTS do
             # GET {projects|groups}/:id/packages/debian/dists/*distribution/Release.gpg
+            # https://wiki.debian.org/DebianRepository/Format#A.22Release.22_files
             desc 'The Release file signature' do
               detail 'This feature was introduced in GitLab 13.5'
             end
@@ -93,6 +94,7 @@ module API
             end
 
             # GET {projects|groups}/:id/packages/debian/dists/*distribution/Release
+            # https://wiki.debian.org/DebianRepository/Format#A.22Release.22_files
             desc 'The unsigned Release file' do
               detail 'This feature was introduced in GitLab 13.5'
             end
@@ -103,6 +105,7 @@ module API
             end
 
             # GET {projects|groups}/:id/packages/debian/dists/*distribution/InRelease
+            # https://wiki.debian.org/DebianRepository/Format#A.22Release.22_files
             desc 'The signed Release file' do
               detail 'This feature was introduced in GitLab 13.5'
             end
