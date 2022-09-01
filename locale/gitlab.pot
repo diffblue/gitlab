@@ -26962,6 +26962,9 @@ msgstr ""
 msgid "Notify|You have been mentioned in an issue."
 msgstr ""
 
+msgid "Notify|You have been mentioned in merge request %{mr_link}"
+msgstr ""
+
 msgid "Notify|Your request to join the %{target_to_join} %{target_type} has been %{denied_tag}."
 msgstr ""
 
