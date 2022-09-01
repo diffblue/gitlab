@@ -8,7 +8,7 @@ import { getParticipantColor } from 'ee/oncall_schedules/utils/common_utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { truncate } from '~/lib/utils/text_utility';
-import mockRotations from '../../mocks/mock_rotation.json';
+import { mockRotations } from '../../mocks/apollo_mock';
 
 jest.mock('lodash/uniqueId', () => (prefix) => `${prefix}fakeUniqueId`);
 jest.mock('~/lib/utils/color_utils');

@@ -1,5 +1,21 @@
+import mockQueryResponse from 'test_fixtures/graphql/oncall_schedules/graphql/queries/get_oncall_schedules_with_rotations_shifts.query.graphql.json';
 import invalidUrl from '~/lib/utils/invalid_url';
-import mockRotations from './mock_rotation.json';
+
+const {
+  data: {
+    project: {
+      incidentManagementOncallSchedules: {
+        nodes: [
+          {
+            rotations: { nodes: mockRotations },
+          },
+        ],
+      },
+    },
+  },
+} = mockQueryResponse;
+
+export { mockRotations };
 
 export const scheduleIid = '37';
 
