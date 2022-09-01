@@ -888,82 +888,67 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query do
       end
     end
 
-    context 'searches with special characters' do
-      shared_examples_for 'finds the file' do
-        before do
-          examples.each do |file_content, _|
-            file_name = Digest::SHA256.hexdigest(file_content)
-            project_1.repository.create_file(user, file_name, file_content, message: 'Some commit message', branch_name: 'master')
-          end
-
-          project_1.repository.index_commits_and_blobs
-          ensure_elasticsearch_index!
-        end
-
-        it 'finds all examples' do
-          examples.each do |file_content, search_term|
-            file_name = Digest::SHA256.hexdigest(file_content)
-
-            expect(search_for(search_term)).to include(file_name), "failed to find #{search_term}"
-          end
-        end
+    context 'searches with special characters', :aggregate_failures do
+      let(:examples) do
+        {
+          'perlMethodCall' => '$my_perl_object->perlMethodCall',
+          '"absolute_with_specials.txt"' => '/a/longer/file-path/absolute_with_specials.txt',
+          '"components-within-slashes"' => '/file-path/components-within-slashes/',
+          'bar\(x\)' => 'Foo.bar(x)',
+          'someSingleColonMethodCall' => 'LanguageWithSingleColon:someSingleColonMethodCall',
+          'javaLangStaticMethodCall' => 'MyJavaClass::javaLangStaticMethodCall',
+          'tokenAfterParentheses' => 'ParenthesesBetweenTokens)tokenAfterParentheses',
+          'ruby_call_method_123' => 'RubyClassInvoking.ruby_call_method_123(with_arg)',
+          'ruby_method_call' => 'RubyClassInvoking.ruby_method_call(with_arg)',
+          '#ambitious-planning' => 'We [plan ambitiously](#ambitious-planning).',
+          'ambitious-planning' => 'We [plan ambitiously](#ambitious-planning).',
+          'tokenAfterCommaWithNoSpace' => 'WouldHappenInManyLanguages,tokenAfterCommaWithNoSpace',
+          'missing_token_around_equals' => 'a.b.c=missing_token_around_equals',
+          'and;colons:too$' => 'and;colons:too$',
+          '"differeñt-lønguage.txt"' => 'another/file-path/differeñt-lønguage.txt',
+          '"relative-with-specials.txt"' => 'another/file-path/relative-with-specials.txt',
+          'ruby_method_123' => 'def self.ruby_method_123(ruby_another_method_arg)',
+          'ruby_method_name' => 'def self.ruby_method_name(ruby_method_arg)',
+          '"dots.also.need.testing"' => 'dots.also.need.testing',
+          '.testing' => 'dots.also.need.testing',
+          'dots' => 'dots.also.need.testing',
+          'also.need' => 'dots.also.need.testing',
+          'need' => 'dots.also.need.testing',
+          'tests-image' => 'extends: .gitlab-tests-image',
+          'gitlab-tests' => 'extends: .gitlab-tests-image',
+          'gitlab-tests-image' => 'extends: .gitlab-tests-image',
+          'foo/bar' => 'https://s3.amazonaws.com/foo/bar/baz.png',
+          'https://test.or.dev.com/repository' => 'https://test.or.dev.com/repository/maven-all',
+          'test.or.dev.com/repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
+          'repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
+          'https://test.or.dev.com/repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
+          'bar-baz-conventions' => 'id("foo.bar-baz-conventions")',
+          'baz-conventions' => 'id("foo.bar-baz-conventions")',
+          'baz' => 'id("foo.bar-baz-conventions")',
+          'bikes-3.4' => 'include "bikes-3.4"',
+          'sql_log_bin' => 'q = "SET @@session.sql_log_bin=0;"',
+          'sql_log_bin=0' => 'q = "SET @@session.sql_log_bin=0;"',
+          'v3/delData' => 'uri: "v3/delData"',
+          '"us-east-2"' => 'us-east-2'
+        }
       end
 
-      context 'unsupported', :aggregate_failures, quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/346914' do
-        let(:examples) do
-          {
-            'https://s3.amazonaws.com/foo/bar/baz.png' => 'foo/bar',
-            'https://test.or.dev.com/repository/maven-all v1' => 'https://test.or.dev.com/repository',
-            'https://test.or.dev.com/repository/maven-all v2' => 'test.or.dev.com/repository/maven-all',
-            'https://test.or.dev.com/repository/maven-all v3' => 'repository/maven-all',
-            'id("foo.bar-baz-conventions") v1' => 'bar-baz-conventions',
-            'id("foo.bar-baz-conventions") v2' => 'baz-conventions',
-            'extends: .gitlab-tests-image v1' => 'tests-image',
-            'extends: .gitlab-tests-image v2' => 'gitlab-tests',
-            'We [plan ambitiously](#ambitious-planning).' => '#ambitious-planning',
-            'dots.also.need.testing v1' => '.testing',
-            'dots.also.need.testing v2' => 'dots.need',
-            'q = "SET @@session.sql_log_bin=0;"' => 'sql_log_bin=0',
-            'uri: "v3/delData",' => 'v3/delData'
-          }
+      before do
+        examples.values.uniq.each do |file_content|
+          file_name = Digest::SHA256.hexdigest(file_content)
+          project_1.repository.create_file(user, file_name, file_content, message: 'Some commit message', branch_name: 'master')
         end
 
-        it_behaves_like 'finds the file'
+        project_1.repository.index_commits_and_blobs
+        ensure_elasticsearch_index!
       end
 
-      context 'currently supported', :aggregate_failures do
-        let(:examples) do
-          {
-            'https://test.or.dev.com/repository/maven-all' => 'https://test.or.dev.com/repository/maven-all',
-            'id("foo.bar-baz-conventions")' => 'baz',
-            'extends: .gitlab-tests-image' => 'gitlab-tests-image',
-            'We [plan ambitiously](#ambitious-planning).' => 'ambitious-planning',
-            'us-east-2' => '"us-east-2"',
-            'include "bikes-3.4"' => 'bikes-3.4',
-            'dots.also.need.testing v1' => '"dots.also.need.testing"',
-            'dots.also.need.testing v2' => 'dots',
-            'dots.also.need.testing v3' => 'need',
-            'and;colons:too$' => "and;colons:too$",
-            'Foo.bar(x)' => 'bar\(x\)',
-            '/a/longer/file-path/absolute_with_specials.txt' => '"absolute_with_specials.txt"',
-            'another/file-path/relative-with-specials.txt' => '"relative-with-specials.txt"',
-            '/file-path/components-within-slashes/' => '"components-within-slashes"',
-            'another/file-path/differeñt-lønguage.txt' => '"differeñt-lønguage.txt"',
-            'MyJavaClass::javaLangStaticMethodCall' => 'javaLangStaticMethodCall',
-            '$my_perl_object->perlMethodCall' => 'perlMethodCall',
-            'LanguageWithSingleColon:someSingleColonMethodCall' => 'someSingleColonMethodCall',
-            'WouldHappenInManyLanguages,tokenAfterCommaWithNoSpace' => 'tokenAfterCommaWithNoSpace',
-            'ParenthesesBetweenTokens)tokenAfterParentheses' => 'tokenAfterParentheses',
-            'a.b.c=missing_token_around_equals' => 'missing_token_around_equals',
-            'def self.ruby_method_name(ruby_method_arg)' => 'ruby_method_name',
-            'def self.ruby_method_123(ruby_another_method_arg)' => 'ruby_method_123',
-            'RubyClassInvoking.ruby_method_call(with_arg)' => 'ruby_method_call',
-            'RubyClassInvoking.ruby_call_method_123(with_arg)' => 'ruby_call_method_123',
-            'q = "SET @@session.sql_log_bin=0;"' => 'sql_log_bin'
-          }
-        end
+      it 'finds all examples' do
+        examples.each do |search_term, file_content|
+          file_name = Digest::SHA256.hexdigest(file_content)
 
-        it_behaves_like 'finds the file'
+          expect(search_for(search_term)).to include(file_name), "failed to find #{search_term}"
+        end
       end
     end
 
