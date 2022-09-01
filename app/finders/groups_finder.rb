@@ -16,6 +16,7 @@
 #     include_parent_descendants: boolean (defaults to false) - includes descendant groups when
 #                                 filtering by parent. The parent param must be present.
 #     include_ancestors: boolean (defaults to true)
+#
 # Users with full private access can see all groups. The `owned` and `parent`
 # params can be used to restrict the groups that are returned.
 #
@@ -58,12 +59,16 @@ class GroupsFinder < UnionFinder
         groups << if include_ancestors?
                     current_user.authorized_groups.self_and_ancestors
                   else
-                    groups_for_ancestors
+                    current_user.authorized_groups
                   end
 
         groups << current_user.groups.self_and_descendants
       else
-        groups << Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
+        groups << if include_ancestors?
+                    Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
+                  else
+                    Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).base_and_descendants
+                  end
       end
     end
 
