@@ -2,6 +2,7 @@ import {
   buildGroupFromDataset,
   buildProjectFromDataset,
   buildCycleAnalyticsInitialData,
+  buildNullSeries,
   toLocalDate,
 } from 'ee/analytics/shared/utils';
 
@@ -40,6 +41,8 @@ const rawProjects = `[
     "project_path_with_namespace": "my-group/my-project"
   }
 ]`;
+
+const NO_DATA_MESSAGE = 'No data available';
 
 describe('buildGroupFromDataset', () => {
   it('returns null if groupId is missing', () => {
@@ -185,6 +188,165 @@ describe('buildCycleAnalyticsInitialData', () => {
 
     it('will return null if omitted', () => {
       expect(buildCycleAnalyticsInitialData()).toMatchObject({ [field]: null });
+    });
+  });
+
+  describe('buildNullSeries', () => {
+    it('returns series data with the expected styles and text', () => {
+      const inputSeries = [
+        {
+          name: 'Chart title',
+          data: [],
+        },
+      ];
+
+      const expectedSeries = [
+        {
+          name: NO_DATA_MESSAGE,
+          data: expect.any(Array),
+          lineStyle: {
+            color: expect.any(String),
+            type: 'dashed',
+          },
+          areaStyle: {
+            color: 'none',
+          },
+          itemStyle: {
+            color: expect.any(String),
+          },
+        },
+        {
+          name: 'Chart title',
+          showAllSymbol: true,
+          showSymbol: true,
+          symbolSize: 8,
+          data: expect.any(Array),
+          lineStyle: {
+            color: expect.any(String),
+          },
+          areaStyle: {
+            color: expect.any(String),
+            opacity: 0,
+          },
+          itemStyle: {
+            color: expect.any(String),
+          },
+        },
+      ];
+
+      expect(buildNullSeries(inputSeries, NO_DATA_MESSAGE)).toEqual(expectedSeries);
+    });
+
+    describe('series data', () => {
+      describe('non-empty series', () => {
+        it('returns the provided non-empty series data unmodified as the second series', () => {
+          const inputSeries = [
+            {
+              data: [
+                ['Mar 1', 4],
+                ['Mar 2', null],
+                ['Mar 3', null],
+                ['Mar 4', 10],
+              ],
+            },
+          ];
+
+          const actualSeries = buildNullSeries(inputSeries, NO_DATA_MESSAGE);
+
+          expect(actualSeries[1]).toMatchObject(inputSeries[0]);
+        });
+      });
+
+      describe('empty series', () => {
+        const compareSeriesData = (inputSeriesData, expectedEmptySeriesData) => {
+          const actualEmptySeriesData = buildNullSeries(
+            [{ data: inputSeriesData }],
+            NO_DATA_MESSAGE,
+          )[0].data;
+
+          expect(actualEmptySeriesData).toEqual(expectedEmptySeriesData);
+        };
+
+        describe('when the data contains a gap in the middle of the data set', () => {
+          it('builds the "no data" series by linealy interpolating between the provided data points', () => {
+            const inputSeriesData = [
+              ['Mar 1', 4],
+              ['Mar 2', null],
+              ['Mar 3', null],
+              ['Mar 4', 10],
+            ];
+
+            const expectedEmptySeriesData = [
+              ['Mar 1', 4],
+              ['Mar 2', 6],
+              ['Mar 3', 8],
+              ['Mar 4', 10],
+            ];
+
+            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
+          });
+        });
+
+        describe('when the data contains a gap at the beginning of the data set', () => {
+          it('fills in the gap using the first non-null data point value', () => {
+            const inputSeriesData = [
+              ['Mar 1', null],
+              ['Mar 2', null],
+              ['Mar 3', null],
+              ['Mar 4', 10],
+            ];
+
+            const expectedEmptySeriesData = [
+              ['Mar 1', 10],
+              ['Mar 2', 10],
+              ['Mar 3', 10],
+              ['Mar 4', 10],
+            ];
+
+            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
+          });
+        });
+
+        describe('when the data contains a gap at the end of the data set', () => {
+          it('fills in the gap using the last non-null data point value', () => {
+            const inputSeriesData = [
+              ['Mar 1', 10],
+              ['Mar 2', null],
+              ['Mar 3', null],
+              ['Mar 4', null],
+            ];
+
+            const expectedEmptySeriesData = [
+              ['Mar 1', 10],
+              ['Mar 2', 10],
+              ['Mar 3', 10],
+              ['Mar 4', 10],
+            ];
+
+            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
+          });
+        });
+
+        describe('when the data contains all null values', () => {
+          it('fills the empty series with all zeros', () => {
+            const inputSeriesData = [
+              ['Mar 1', null],
+              ['Mar 2', null],
+              ['Mar 3', null],
+              ['Mar 4', null],
+            ];
+
+            const expectedEmptySeriesData = [
+              ['Mar 1', 0],
+              ['Mar 2', 0],
+              ['Mar 3', 0],
+              ['Mar 4', 0],
+            ];
+
+            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
+          });
+        });
+      });
     });
   });
 });

@@ -7,6 +7,7 @@ import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
 import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
+import { buildNullSeries } from '../../analytics/shared/utils';
 import ChartTooltipText from '../../analytics/shared/components/chart_tooltip_text.vue';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
@@ -21,12 +22,7 @@ import {
   LAST_90_DAYS,
   CHART_TITLE,
 } from './static_data/time_to_restore_service';
-import {
-  buildNullSeries,
-  apiDataToChartSeries,
-  seriesToMedianSeries,
-  extractTimeSeriesTooltip,
-} from './util';
+import { apiDataToChartSeries, seriesToMedianSeries, extractTimeSeriesTooltip } from './util';
 
 const VISIBLE_METRICS = [DoraApi.TIME_TO_RESTORE_SERVICE];
 

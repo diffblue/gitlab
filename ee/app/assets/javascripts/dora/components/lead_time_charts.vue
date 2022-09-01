@@ -3,6 +3,7 @@ import * as DoraApi from 'ee/api/dora_api';
 import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
+import { buildNullSeries } from '../../analytics/shared/utils';
 import ChartTooltipText from '../../analytics/shared/components/chart_tooltip_text.vue';
 import DoraChartHeader from './dora_chart_header.vue';
 import {
@@ -18,12 +19,7 @@ import {
   CHART_TITLE,
   NO_DATA_MESSAGE,
 } from './static_data/lead_time';
-import {
-  buildNullSeries,
-  apiDataToChartSeries,
-  seriesToMedianSeries,
-  extractTimeSeriesTooltip,
-} from './util';
+import { apiDataToChartSeries, seriesToMedianSeries, extractTimeSeriesTooltip } from './util';
 
 export default {
   name: 'LeadTimeCharts',
