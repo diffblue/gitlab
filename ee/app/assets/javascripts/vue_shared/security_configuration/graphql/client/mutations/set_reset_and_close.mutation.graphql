@@ -1,0 +1,3 @@
+mutation setResetAndClose($resetAndClose: Boolean!) {
+  setResetAndClose(resetAndClose: $resetAndClose) @client
+}

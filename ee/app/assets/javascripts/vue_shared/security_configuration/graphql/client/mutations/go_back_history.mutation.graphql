@@ -1,0 +1,3 @@
+mutation goBack {
+  goBack @client
+}

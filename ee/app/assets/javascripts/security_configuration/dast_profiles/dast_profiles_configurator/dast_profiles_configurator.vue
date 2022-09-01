@@ -8,6 +8,7 @@ import { TYPE_SCANNER_PROFILE, TYPE_SITE_PROFILE } from '~/graphql_shared/consta
 import DastProfilesSidebar from 'ee/security_configuration/dast_profiles/dast_profiles_sidebar/dast_profiles_sidebar.vue';
 import ScannerProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/scanner_profile_selector.vue';
 import SiteProfileSelector from 'ee/security_configuration/dast_profiles/dast_profile_selector/site_profile_selector.vue';
+import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 import {
   DAST_CONFIGURATION_HELP_PATH,
   SCANNER_TYPE,
@@ -83,6 +84,7 @@ export default {
       SITE_PROFILES_QUERY,
     ),
   },
+  mixins: [dastProfileConfiguratorMixin()],
   props: {
     configurationHeader: {
       type: String,
@@ -124,11 +126,9 @@ export default {
     return {
       scannerProfiles: [],
       siteProfiles: [],
-      sidebarViewMode: SIDEBAR_VIEW_MODE.READING_MODE,
       errorType: null,
       isSideDrawerOpen: false,
-      profileType: '',
-      activeProfile: {},
+      activeProfile: undefined,
       selectedScannerProfileId: this.savedProfiles?.dastScannerProfile.id || null,
       selectedSiteProfileId: this.savedProfiles?.dastSiteProfile.id || null,
     };
@@ -196,14 +196,31 @@ export default {
     findSavedProfileId(profiles, name) {
       return profiles.find(({ profileName }) => name === profileName)?.id || null;
     },
-    enableEditingMode(type) {
-      this.selectActiveProfile(type);
-      this.openProfileDrawer({ profileType: type, mode: SIDEBAR_VIEW_MODE.EDITING_MODE });
+    enableEditingMode({ profileType }) {
+      this.resetActiveProfile();
+
+      this.$nextTick(() => {
+        this.selectActiveProfile(profileType);
+        this.openProfileDrawer({ profileType, mode: SIDEBAR_VIEW_MODE.EDITING_MODE });
+      });
     },
-    openProfileDrawer({ profileType, mode }) {
+    reopenProfileDrawer() {
       this.isSideDrawerOpen = false;
-      this.sidebarViewMode = mode;
-      this.profileType = profileType;
+      this.$nextTick(() => {
+        this.isSideDrawerOpen = true;
+      });
+    },
+    async openProfileDrawer({ profileType, mode }) {
+      if (this.sharedData.formTouched) {
+        this.toggleModal({ showModal: true });
+        await this.setCachedPayload({ profileType, mode });
+
+        return;
+      }
+
+      await this.goFirstStep({ profileType, mode });
+
+      this.isSideDrawerOpen = false;
       this.$nextTick(() => {
         this.isSideDrawerOpen = true;
       });
@@ -211,14 +228,15 @@ export default {
     closeProfileDrawer() {
       this.isSideDrawerOpen = false;
       this.activeProfile = {};
-      this.sidebarViewMode = SIDEBAR_VIEW_MODE.READING_MODE;
     },
     selectActiveProfile(type) {
       this.activeProfile =
         type === SCANNER_TYPE ? this.selectedScannerProfile : this.selectedSiteProfile;
     },
-    selectProfile(payload) {
+    async selectProfile(payload) {
       this.updateProfileFromSelector(payload);
+      await this.goBack();
+
       this.closeProfileDrawer();
     },
     isNewProfile(id) {
@@ -251,6 +269,9 @@ export default {
       const type = `${profileType}Profiles`;
       this.$apollo.queries[type].refetch();
     },
+    resetActiveProfile() {
+      this.activeProfile = undefined;
+    },
   },
 };
 </script>
@@ -282,7 +303,11 @@ export default {
               mode: $options.SIDEBAR_VIEW_MODE.READING_MODE,
             })
           "
-          @edit="enableEditingMode($options.SCANNER_TYPE)"
+          @edit="
+            enableEditingMode({
+              profileType: $options.SCANNER_TYPE,
+            })
+          "
         />
 
         <site-profile-selector
@@ -295,7 +320,11 @@ export default {
               mode: $options.SIDEBAR_VIEW_MODE.READING_MODE,
             })
           "
-          @edit="enableEditingMode($options.SITE_TYPE)"
+          @edit="
+            enableEditingMode({
+              profileType: $options.SITE_TYPE,
+            })
+          "
         />
       </template>
     </section-layout>
@@ -305,13 +334,11 @@ export default {
       :profile-id-in-use="profileIdInUse"
       :active-profile="activeProfile"
       :library-link="libraryLink"
-      :profile-type="profileType"
       :is-open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"
       :selected-profile-id="selectedProfileId"
-      :sidebar-view-mode="sidebarViewMode"
       @close-drawer="closeProfileDrawer"
-      @reopen-drawer="openProfileDrawer"
+      @reopen-drawer="reopenProfileDrawer"
       @select-profile="selectProfile"
       @profile-submitted="onScannerProfileCreated"
     />

@@ -106,13 +106,6 @@ export default {
         errorMessage: isEdit
           ? s__('DastProfiles|Could not update the site profile. Please try again.')
           : s__('DastProfiles|Could not create the site profile. Please try again.'),
-        modal: {
-          title: isEdit
-            ? s__('DastProfiles|Do you want to discard your changes?')
-            : s__('DastProfiles|Do you want to discard this site profile?'),
-          okTitle: __('Discard'),
-          cancelTitle: __('Cancel'),
-        },
         excludedUrls: {
           label: this.isTargetAPI
             ? s__('DastProfiles|Excluded paths (optional)')
@@ -233,11 +226,6 @@ export default {
     :is-policy-profile="isPolicyProfile"
     :block-submit="isSubmitBlocked"
     :show-header="!stacked"
-    :modal-props="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ {
-      title: i18n.modal.title,
-      okTitle: i18n.modal.okTitle,
-      cancelTitle: i18n.modal.cancelTitle,
-    } /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
     @submit="form.showValidation = true"
     v-on="$listeners"
   >

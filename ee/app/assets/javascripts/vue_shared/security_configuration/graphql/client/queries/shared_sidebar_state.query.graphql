@@ -1,0 +1,15 @@
+query sharedData {
+  sharedData @client {
+    showDiscardChangesModal
+    formTouched
+    history {
+      profileType
+      mode
+    }
+    cachedPayload {
+      profileType
+      mode
+    }
+    resetAndClose
+  }
+}

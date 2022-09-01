@@ -1,7 +1,6 @@
 import { merge } from 'lodash';
 import { GlLink } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
-import { nextTick } from 'vue';
 import { createLocalVue, mount, shallowMount } from '@vue/test-utils';
 import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
@@ -18,6 +17,9 @@ import SectionLayout from '~/vue_shared/security_configuration/components/sectio
 import SectionLoader from '~/vue_shared/security_configuration/components/section_loader.vue';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
+import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
+import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
+import waitForPromises from 'helpers/wait_for_promises';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import {
@@ -31,21 +33,27 @@ describe('DastProfilesConfigurator', () => {
   let requestHandlers;
   const projectPath = 'projectPath';
 
-  const createMockApolloProvider = (handlers) => {
+  const createMockApolloProvider = () => {
     localVue.use(VueApollo);
 
     requestHandlers = {
       dastScannerProfiles: jest.fn().mockResolvedValue(scannerProfilesFixtures),
       dastSiteProfiles: jest.fn().mockResolvedValue(siteProfilesFixtures),
-      ...handlers,
     };
 
-    return createApolloProvider([
-      [dastScannerProfilesQuery, requestHandlers.dastScannerProfiles],
-      [dastSiteProfilesQuery, requestHandlers.dastSiteProfiles],
-    ]);
+    return createApolloProvider(
+      [
+        [dastScannerProfilesQuery, requestHandlers.dastScannerProfiles],
+        [dastSiteProfilesQuery, requestHandlers.dastSiteProfiles],
+      ],
+      resolvers,
+      { typePolicies },
+    );
   };
 
+  const findModal = () => wrapper.findByTestId('dast-profile-form-cancel-modal');
+  const findProfileNameInput = () => wrapper.findByTestId('profile-name-input');
+  const findEditBtn = () => wrapper.findByTestId('profile-edit-btn');
   const findNewScanButton = () => wrapper.findByTestId('new-profile-button');
   const findOpenDrawerButton = () => wrapper.findByTestId('select-profile-action-btn');
   const findCancelButton = () => wrapper.findByTestId('dast-profile-form-cancel-button');
@@ -62,25 +70,14 @@ describe('DastProfilesConfigurator', () => {
 
   const openDrawer = async () => {
     findOpenDrawerButton().vm.$emit('click');
-    await nextTick();
+    await waitForPromises();
   };
 
-  const createComponentFactory = (mountFn = shallowMount) => (options = {}, withHandlers) => {
+  const createComponentFactory = (mountFn = shallowMount) => (options = {}) => {
     localVue = createLocalVue();
-    let defaultMocks = {
-      $apollo: {
-        mutate: jest.fn(),
-        queries: {
-          scannerProfiles: jest.fn(),
-          siteProfiles: jest.fn(),
-        },
-      },
-    };
-    let apolloProvider;
-    if (withHandlers) {
-      apolloProvider = createMockApolloProvider(withHandlers);
-      defaultMocks = {};
-    }
+
+    const apolloProvider = createMockApolloProvider();
+
     wrapper = extendedWrapper(
       mountFn(
         DastProfilesConfigurator,
@@ -90,18 +87,17 @@ describe('DastProfilesConfigurator', () => {
             propsData: {
               ...options,
             },
-            mocks: defaultMocks,
             stubs: {
               SectionLayout,
               ScannerProfileSelector,
               SiteProfileSelector,
+              GlModal: true,
             },
             provide: {
               projectPath,
             },
           },
           { ...options, localVue, apolloProvider },
-
           {
             data() {
               return {
@@ -125,9 +121,10 @@ describe('DastProfilesConfigurator', () => {
   });
 
   describe('when default state', () => {
-    it('renders properly', () => {
+    it('renders properly', async () => {
       const sectionHeader = s__('OnDemandScans|DAST configuration');
       createComponent({ configurationHeader: sectionHeader });
+      await waitForPromises();
 
       expect(findSectionLayout().find('h2').text()).toContain(sectionHeader);
       expect(findScannerProfilesSelector().exists()).toBe(true);
@@ -144,40 +141,22 @@ describe('DastProfilesConfigurator', () => {
       );
     });
 
-    it.each`
-      scannerProfilesLoading | siteProfilesLoading | isLoading
-      ${true}                | ${true}             | ${true}
-      ${false}               | ${true}             | ${true}
-      ${true}                | ${false}            | ${true}
-      ${false}               | ${false}            | ${false}
-    `(
-      'sets loading state to $isLoading if scanner profiles loading is $scannerProfilesLoading and site profiles loading is $siteProfilesLoading',
-      ({ scannerProfilesLoading, siteProfilesLoading, isLoading }) => {
-        createShallowComponent({
-          mocks: {
-            $apollo: {
-              queries: {
-                scannerProfiles: { loading: scannerProfilesLoading },
-                siteProfiles: { loading: siteProfilesLoading },
-              },
-            },
-          },
-        });
+    it('shows loader in loading state', () => {
+      createShallowComponent();
 
-        expect(findSectionLoader().exists()).toBe(isLoading);
-      },
-    );
+      expect(findSectionLoader().exists()).toBe(true);
+    });
   });
 
   describe('profile drawer', () => {
-    beforeEach(() => {
-      createComponent();
+    beforeEach(async () => {
+      createComponent({}, true);
+      await waitForPromises();
     });
 
     it('should open drawer with scanner profiles', async () => {
       findScannerProfilesSelector().vm.$emit('open-drawer');
-
-      await nextTick();
+      await waitForPromises();
 
       expect(findDastProfileSidebar().exists()).toBe(true);
       expect(findAllScannerProfileSummary()).toHaveLength(scannerProfiles.length);
@@ -185,8 +164,7 @@ describe('DastProfilesConfigurator', () => {
 
     it('should open drawer with site profiles', async () => {
       findSiteProfilesSelector().vm.$emit('open-drawer');
-
-      await nextTick();
+      await waitForPromises();
 
       expect(findDastProfileSidebar().exists()).toBe(true);
       expect(findAllSiteProfileSummary()).toHaveLength(siteProfiles.length);
@@ -199,8 +177,9 @@ describe('DastProfilesConfigurator', () => {
       dastSiteProfile: { id: siteProfiles[0].id },
     };
 
-    it('should have profiles selected if saved profiles exist', () => {
+    it('should have profiles selected if saved profiles exist', async () => {
       createComponent({ savedProfiles });
+      await waitForPromises();
 
       expect(findScannerProfilesSelector().find('h3').text()).toContain(
         scannerProfiles[0].profileName,
@@ -215,7 +194,7 @@ describe('DastProfilesConfigurator', () => {
 
     beforeEach(async () => {
       createComponent({ savedSiteProfileName, savedScannerProfileName }, true);
-      await nextTick();
+      await waitForPromises();
     });
 
     it('should have saved profiles selected', async () => {
@@ -230,13 +209,14 @@ describe('DastProfilesConfigurator', () => {
   });
 
   describe('switching between modes', () => {
-    beforeEach(() => {
-      createComponent();
+    beforeEach(async () => {
+      createComponent({}, true);
+      await waitForPromises();
     });
 
     const expectEditingMode = async () => {
       findNewScanButton().vm.$emit('click');
-      await nextTick();
+      await waitForPromises();
       expect(findDastProfilesSidebarForm().exists()).toBe(true);
     };
 
@@ -256,9 +236,35 @@ describe('DastProfilesConfigurator', () => {
       await expectEditingMode();
 
       findCancelButton().vm.$emit('click');
-      await nextTick();
+      await waitForPromises();
 
       expect(findDastProfilesSidebarList().exists()).toBe(true);
+    });
+  });
+
+  describe('warning modal', () => {
+    beforeEach(async () => {
+      createComponent({}, true);
+      await waitForPromises();
+    });
+
+    it('should show warning modal when changes are unsaved', async () => {
+      const mutateMock = jest.spyOn(wrapper.vm.$apollo, 'mutate');
+
+      findOpenDrawerButton().vm.$emit('click');
+      await waitForPromises();
+
+      findEditBtn().vm.$emit('click');
+      await waitForPromises();
+
+      findProfileNameInput().vm.$emit('input', 'another value');
+      await waitForPromises();
+
+      findOpenDrawerButton().vm.$emit('click');
+      await waitForPromises();
+
+      expect(findModal().attributes('visible')).toEqual(String(true));
+      expect(mutateMock).toHaveBeenCalledTimes(3);
     });
   });
 });

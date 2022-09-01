@@ -1,6 +1,5 @@
 import Vue from 'vue';
-import VueApollo from 'vue-apollo';
-import createDefaultClient from '~/lib/graphql';
+import apolloProvider from 'ee/vue_shared/security_configuration/graphql/provider';
 import DastConfigurationApp from './components/app.vue';
 
 export default function init() {
@@ -9,12 +8,6 @@ export default function init() {
   if (!el) {
     return undefined;
   }
-
-  Vue.use(VueApollo);
-
-  const apolloProvider = new VueApollo({
-    defaultClient: createDefaultClient(),
-  });
 
   const {
     securityConfigurationPath,

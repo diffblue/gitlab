@@ -1,6 +1,6 @@
 import Vue from 'vue';
+import apolloProvider from 'ee/vue_shared/security_configuration/graphql/provider';
 import OnDemandScansForm from './components/on_demand_scans_form.vue';
-import apolloProvider from './graphql/provider';
 
 export default () => {
   const el = document.querySelector('#js-on-demand-scans-form');

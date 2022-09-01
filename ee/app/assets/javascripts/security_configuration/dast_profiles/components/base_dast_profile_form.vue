@@ -1,6 +1,8 @@
 <script>
 import { GlAlert, GlButton, GlForm, GlModal } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import { s__ } from '~/locale';
+import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 
 export default {
   components: {
@@ -9,6 +11,22 @@ export default {
     GlForm,
     GlModal,
   },
+  i18n: {
+    discardChangesHeader: s__('OnDemandScans|You have unsaved changes'),
+    discardChangesText: s__(
+      'OnDemandScans|Do you want to discard the changes or keep editing this profile? Unsaved changes will be lost.',
+    ),
+  },
+  modal: {
+    actionPrimary: {
+      text: s__('OnDemandScans|Discard changes'),
+      attributes: { variant: 'danger', 'data-testid': 'form-touched-warning' },
+    },
+    actionCancel: {
+      text: s__('OnDemandScans|Keep editing'),
+    },
+  },
+  mixins: [dastProfileConfiguratorMixin()],
   props: {
     profile: {
       type: Object,
@@ -47,17 +65,19 @@ export default {
       required: false,
       default: false,
     },
-    modalProps: {
-      type: Object,
-      required: true,
-    },
   },
   data() {
     return {
       isLoading: false,
       showAlert: false,
       errors: [],
+      sharedData: {},
     };
+  },
+  watch: {
+    formTouched(isTouched) {
+      this.setFormTouched({ isTouched });
+    },
   },
   methods: {
     onSubmit() {
@@ -100,15 +120,19 @@ export default {
           this.isLoading = false;
         });
     },
-    onCancelClicked() {
+    async onCancelClicked() {
       if (!this.formTouched) {
-        this.discard();
+        this.$emit('cancel');
       } else {
-        this.$refs[this.$options.modalId].show();
+        await this.toggleModal({ showModal: true });
       }
     },
-    discard() {
+    async discard() {
+      await this.discardChanges();
       this.$emit('cancel');
+    },
+    async keepEditing() {
+      await this.toggleModal({ showModal: false });
     },
     showErrors(errors = []) {
       this.errors = errors;
@@ -174,12 +198,19 @@ export default {
 
     <gl-modal
       :ref="$options.modalId"
+      size="sm"
       :modal-id="$options.modalId"
-      v-bind="modalProps"
+      :visible="sharedData.showDiscardChangesModal"
+      :title="$options.i18n.discardChangesHeader"
+      :action-primary="$options.modal.actionPrimary"
+      :action-cancel="$options.modal.actionCancel"
       ok-variant="danger"
-      body-class="gl-display-none"
       data-testid="dast-profile-form-cancel-modal"
-      @ok="discard"
-    />
+      @change="keepEditing"
+      @canceled="keepEditing"
+      @primary="discard"
+    >
+      {{ $options.i18n.discardChangesText }}
+    </gl-modal>
   </gl-form>
 </template>

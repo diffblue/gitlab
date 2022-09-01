@@ -5,6 +5,8 @@ import VueApollo from 'vue-apollo';
 import BaseDastProfileForm from 'ee/security_configuration/dast_profiles/components/base_dast_profile_form.vue';
 import dastSiteProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_create.mutation.graphql';
 import { dastSiteProfileCreate } from 'ee_jest/security_configuration/dast_profiles/dast_site_profiles/mock_data/apollo_mock';
+import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
+import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -42,7 +44,11 @@ describe('BaseDastProfileForm', () => {
   const expectSubmitNotLoading = () => expect(findSubmitButton().props('loading')).toBe(false);
 
   const createComponent = (options) => {
-    const apolloProvider = createMockApollo([[dastSiteProfileCreateMutation, requestHandler]]);
+    const apolloProvider = createMockApollo(
+      [[dastSiteProfileCreateMutation, requestHandler]],
+      resolvers,
+      { typePolicies },
+    );
 
     const mountOpts = merge(
       {},
@@ -145,10 +151,6 @@ describe('BaseDastProfileForm', () => {
         },
       });
     });
-
-    it('passes props to the modal', () => {
-      expect(findCancelModal().props()).toEqual(expect.objectContaining(modalProps));
-    });
   });
 
   describe('when submitting the form', () => {
@@ -248,24 +250,35 @@ describe('BaseDastProfileForm', () => {
     });
 
     describe('after changing the form', () => {
-      beforeEach(() => {
+      it('asks the user to confirm the action', async () => {
         createComponent({
           propsData: {
             formTouched: true,
           },
           stubs: { GlModal },
         });
-      });
 
-      it('asks the user to confirm the action', () => {
-        jest.spyOn(findCancelModal().vm, 'show').mockReturnValue();
+        await waitForPromises();
+
+        const toggleModalMock = jest.spyOn(resolvers.Mutation, 'toggleModal').mockReturnValue();
         findCancelButton().vm.$emit('click');
 
-        expect(findCancelModal().vm.show).toHaveBeenCalled();
+        await waitForPromises();
+
+        expect(toggleModalMock).toHaveBeenCalled();
       });
 
-      it('emits cancel event upon confirming', () => {
-        findCancelModal().vm.$emit('ok');
+      it('emits cancel event upon confirming', async () => {
+        createComponent({
+          propsData: {
+            formTouched: false,
+          },
+          stubs: { GlModal },
+        });
+        await waitForPromises();
+
+        findCancelModal().vm.$emit('primary');
+        await waitForPromises();
 
         expect(wrapper.emitted('cancel')).toHaveLength(1);
       });

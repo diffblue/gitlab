@@ -22,3 +22,16 @@ export const scannerProfiles = scannerProfilesFixtures.data.project.scannerProfi
 
 export const failedSiteValidations =
   dastFailedSiteValidationsFixtures.data.project.validations.nodes;
+
+export const mockSharedData = {
+  showDiscardChangesModal: false,
+  formTouched: false,
+  history: [],
+  cashedPayload: {
+    __typename: 'CachedPayload',
+    profileType: '',
+    mode: '',
+  },
+  resetAndClose: false,
+  __typename: 'SharedData',
+};

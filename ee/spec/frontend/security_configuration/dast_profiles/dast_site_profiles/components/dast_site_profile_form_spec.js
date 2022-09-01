@@ -1,3 +1,5 @@
+import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlForm } from '@gitlab/ui';
 import { within } from '@testing-library/dom';
 import merge from 'lodash/merge';
@@ -8,7 +10,11 @@ import DastSiteProfileForm from 'ee/security_configuration/dast_profiles/dast_si
 import dastSiteProfileCreateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_create.mutation.graphql';
 import dastSiteProfileUpdateMutation from 'ee/security_configuration/dast_profiles/dast_site_profiles/graphql/dast_site_profile_update.mutation.graphql';
 import { policySiteProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
+import resolvers from 'ee/vue_shared/security_configuration/graphql/resolvers/resolvers';
+import { typePolicies } from 'ee/vue_shared/security_configuration/graphql/provider';
 import { TEST_HOST } from 'helpers/test_constants';
+import waitForPromises from 'helpers/wait_for_promises';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   SCAN_METHODS,
@@ -29,6 +35,8 @@ const defaultProps = {
   onDemandScansPath,
   projectFullPath,
 };
+
+Vue.use(VueApollo);
 
 describe('DastSiteProfileForm', () => {
   let wrapper;
@@ -79,12 +87,17 @@ describe('DastSiteProfileForm', () => {
     return radio.trigger('change');
   };
 
-  const createComponentFactory = (mountFn = mountExtended) => (options) => {
+  const createComponentFactory = (mountFn = mountExtended) => (options = {}) => {
+    const apolloProvider = createMockApollo([], resolvers, { typePolicies });
+
     const mountOpts = merge(
       {},
       {
         propsData: defaultProps,
         provide: { glFeatures: { dastApiScanner: true } },
+      },
+      {
+        apolloProvider,
       },
       options,
     );
@@ -119,8 +132,9 @@ describe('DastSiteProfileForm', () => {
   describe('target URL input', () => {
     const errorMessage = 'Please enter a valid URL format, ex: http://www.example.com/home';
 
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
+      await waitForPromises();
     });
 
     it.each(['asd', 'example.com'])(
@@ -140,8 +154,9 @@ describe('DastSiteProfileForm', () => {
   });
 
   describe('additional fields', () => {
-    beforeEach(() => {
+    beforeEach(async () => {
       createComponent();
+      await waitForPromises();
     });
 
     it('should render correctly with default values', () => {
@@ -246,12 +261,13 @@ describe('DastSiteProfileForm', () => {
         ${'New site profile'}  | ${{}}                     | ${{ fullPath: projectFullPath }}     | ${dastSiteProfileCreateMutation} | ${'dastSiteProfileCreate'}
         ${'Edit site profile'} | ${siteProfileWithSecrets} | ${{ id: siteProfileWithSecrets.id }} | ${dastSiteProfileUpdateMutation} | ${'dastSiteProfileUpdate'}
       `('$title', ({ profile, mutationVars, mutation, mutationKind }) => {
-        beforeEach(() => {
+        beforeEach(async () => {
           createComponent({
             propsData: {
               profile,
             },
           });
+          await waitForPromises();
         });
 
         it('passes correct props to base component', async () => {

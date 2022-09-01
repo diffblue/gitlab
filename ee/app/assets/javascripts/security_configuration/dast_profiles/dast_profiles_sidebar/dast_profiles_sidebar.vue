@@ -2,34 +2,14 @@
 import { isEmpty } from 'lodash';
 import { GlDrawer, GlLink } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
-import { SCANNER_TYPE, SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
-import { REFERRAL } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
+import { SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
 import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
+import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 import DastProfilesSidebarHeader from './dast_profiles_sidebar_header.vue';
 import DastProfilesSidebarEmptyState from './dast_profiles_sidebar_empty_state.vue';
 import DastProfilesSidebarForm from './dast_profiles_sidebar_form.vue';
 import DastProfilesSidebarList from './dast_profiles_sidebar_list.vue';
-
-/**
- *                   Referral
- *                  /        \
- *            Parent          Self
- *           /      \        /    \
- *        New      Edit     New     Edit
- *      /   \      /  \     / \     / \
- *     C     R    C    C   C   R   R   R
- *
- * New profile or edit existing can be called both from component and parent
- * When form is opened it can be closed either by submit or cancel
- * This tree represent behaviour of a drawer.
- * Bottom level left subtree is after submit right subtree is after cancel
- *
- * For example Opened from parent -> new profile -> close after submit or reopen after cancel
- *
- * C-close
- * R-reopen
- */
 
 export default {
   SIDEBAR_VIEW_MODE,
@@ -45,6 +25,7 @@ export default {
     DastProfilesSidebarForm,
     DastProfilesSidebarList,
   },
+  mixins: [dastProfileConfiguratorMixin()],
   props: {
     isOpen: {
       type: Boolean,
@@ -66,15 +47,6 @@ export default {
       required: false,
       default: null,
     },
-    /**
-     * String type in case
-     * there will be more types
-     */
-    profileType: {
-      type: String,
-      required: false,
-      default: SCANNER_TYPE,
-    },
     isLoading: {
       type: Boolean,
       required: false,
@@ -92,11 +64,6 @@ export default {
       required: false,
       default: () => ({}),
     },
-    sidebarViewMode: {
-      type: String,
-      required: false,
-      default: SIDEBAR_VIEW_MODE.READING_MODE,
-    },
     libraryLink: {
       type: String,
       required: false,
@@ -106,7 +73,7 @@ export default {
   data() {
     return {
       profileForEditing: {},
-      referral: REFERRAL.SELF,
+      sharedData: {},
     };
   },
   computed: {
@@ -144,53 +111,73 @@ export default {
   watch: {
     activeProfile(newVal) {
       if (!isEmpty(newVal)) {
-        this.referral = REFERRAL.PARENT;
-        this.enableEditingMode({
-          profile: this.activeProfile,
-          mode: SIDEBAR_VIEW_MODE.EDITING_MODE,
-        });
+        this.profileForEditing = this.activeProfile;
       }
     },
   },
   methods: {
-    resetAndEmitCloseEvent() {
+    async resetAndEmitCloseEvent() {
+      if (this.sharedData.formTouched) {
+        await this.toggleModal({ showModal: true });
+        await this.setResetAndClose({ resetAndClose: true });
+
+        return;
+      }
+
       this.resetEditingMode();
+      await this.resetHistory();
       this.$emit('close-drawer');
     },
     resetEditingMode() {
       this.profileForEditing = {};
-      this.referral = REFERRAL.SELF;
     },
     enableEditingMode({ profile = {}, mode }) {
       this.profileForEditing = profile;
+
+      this.goForward({ profileType: this.profileType, mode });
       this.$emit('reopen-drawer', { profileType: this.profileType, mode });
     },
     /**
      * reopen even for closing editing layer
      * and opening drawer with profiles list
      */
-    cancelEditingMode() {
-      const event = this.referral === REFERRAL.PARENT ? 'close-drawer' : 'reopen-drawer';
+    async cancelEditingMode() {
+      if (this.sharedData.resetAndClose) {
+        await this.resetAndEmitCloseEvent();
+        this.setResetAndClose({ resetAndClose: false });
+      }
 
-      this.$emit(event, { profileType: this.profileType, mode: SIDEBAR_VIEW_MODE.READING_MODE });
-      this.resetEditingMode();
+      await this.goBack();
+
+      if (this.hasCachedPayload) {
+        await this.goFirstStep(this.cachedPayload);
+      }
+
+      this.$emit(this.eventName, { profileType: this.profileType, mode: this.sidebarViewMode });
+      await this.setCachedPayload(undefined);
     },
-    profileCreated(profile) {
+    async profileCreated(profile) {
       this.$emit('profile-submitted', { profile, profileType: this.profileType });
-      this.$emit('close-drawer', {
+
+      await this.resetHistory();
+      this.$emit(this.eventName, {
         profileType: this.profileType,
         mode: SIDEBAR_VIEW_MODE.READING_MODE,
       });
+
+      await this.discardChanges();
       this.resetEditingMode();
     },
-    profileEdited(profile) {
+    async profileEdited(profile) {
       this.$emit('profile-submitted', { profile, profileType: this.profileType });
 
-      const secondaryEvent = this.referral === REFERRAL.PARENT ? 'close-drawer' : 'reopen-drawer';
-      this.$emit(secondaryEvent, {
+      await this.goBack();
+      this.$emit(this.eventName, {
         profileType: this.profileType,
         mode: SIDEBAR_VIEW_MODE.READING_MODE,
       });
+
+      await this.discardChanges();
       this.resetEditingMode();
     },
   },
