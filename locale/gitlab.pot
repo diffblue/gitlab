@@ -3977,6 +3977,9 @@ msgstr ""
 msgid "Allow use of licensed EE features"
 msgstr ""
 
+msgid "Allow users to create top-level groups"
+msgstr ""
+
 msgid "Allow users to dismiss the broadcast message"
 msgstr ""
 
