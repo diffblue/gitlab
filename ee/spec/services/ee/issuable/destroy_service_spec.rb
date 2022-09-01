@@ -32,6 +32,55 @@ RSpec.describe Issuable::DestroyService do
 
         subject.execute(issuable)
       end
+
+      RSpec.shared_examples 'logs delete issuable audit event' do
+        it 'logs audit event' do
+          audit_context = {
+            name: "delete_#{issuable.to_ability_name}",
+            stream_only: true,
+            author: user,
+            scope: scope,
+            target: issuable,
+            message: "Removed #{issuable_name}(#{issuable.title} with IID: #{issuable.iid} and ID: #{issuable.id})",
+            target_details: { title: issuable.title, iid: issuable.iid, id: issuable.id, type: issuable_name }
+          }
+
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+
+          service.execute(issuable)
+        end
+      end
+
+      context 'when issuable is an issue' do
+        let(:issuable_name) { issuable.work_item_type.name }
+        let(:scope) { issuable.project }
+
+        it_behaves_like 'logs delete issuable audit event'
+      end
+
+      context 'when issuable is an epic' do
+        let(:issuable) { create(:epic) }
+        let(:issuable_name) { 'Epic' }
+        let(:scope) { issuable.group }
+
+        it_behaves_like 'logs delete issuable audit event'
+      end
+
+      context 'when issuable is a task' do
+        let(:issuable) { create(:work_item, :task) }
+        let(:issuable_name) { issuable.work_item_type.name }
+        let(:scope) { issuable.project }
+
+        it_behaves_like 'logs delete issuable audit event'
+      end
+
+      context 'when issuable is a merge_request' do
+        let(:issuable) { create(:merge_request) }
+        let(:issuable_name) { 'MergeRequest' }
+        let(:scope) { issuable.project }
+
+        it_behaves_like 'logs delete issuable audit event'
+      end
     end
   end
 end
