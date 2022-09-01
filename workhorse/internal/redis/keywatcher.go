@@ -156,10 +156,11 @@ func (kw *KeyWatcher) notifySubscribers(key, value string) {
 
 	countAction("deliver-message")
 	for _, c := range chanList {
-		c <- value
-		keyWatchers.Dec()
+		select {
+		case c <- value:
+		default:
+		}
 	}
-	delete(kw.subscribers, key)
 }
 
 func (kw *KeyWatcher) addSubscription(key string, notify chan string) {
@@ -179,6 +180,8 @@ func (kw *KeyWatcher) delSubscription(key string, notify chan string) {
 
 	chans, ok := kw.subscribers[key]
 	if !ok {
+		// This can happen if the pubsub connection dropped while we were
+		// waiting.
 		return
 	}
 
