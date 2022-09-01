@@ -1128,7 +1128,7 @@ EE licensed features that enhance existing functionality in the UI add new
 elements or interactions to your Vue application as components.
 
 To separate template differences, use a child EE component to separate Vue template differences.
-You must import the EE component [asynchronously](https://vuejs.org/v2/guide/components-dynamic-async.html#Async-Components).
+You must import the EE component [asynchronously](https://v2.vuejs.org/v2/guide/components-dynamic-async.html#Async-Components).
 
 This allows GitLab to load the correct component in EE, while in CE GitLab loads an empty component
 that renders nothing. This code **must** exist in the CE repository, in addition to the EE repository.
