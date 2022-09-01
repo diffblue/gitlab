@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
 import EpicHeader from 'ee/epic/components/epic_header.vue';
+import DeleteIssueModal from '~/issues/show/components/delete_issue_modal.vue';
 import { statusType } from 'ee/epic/constants';
 import createStore from 'ee/epic/store';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -30,6 +31,9 @@ describe('EpicHeaderComponent', () => {
     wrapper = null;
   });
 
+  const modalId = 'delete-modal-id';
+
+  const findModal = () => wrapper.findComponent(DeleteIssueModal);
   const findStatusBox = () => wrapper.find('[data-testid="status-box"]');
   const findStatusIcon = () => wrapper.find('[data-testid="status-icon"]');
   const findStatusText = () => wrapper.find('[data-testid="status-text"]');
@@ -38,6 +42,7 @@ describe('EpicHeaderComponent', () => {
   const findActionButtons = () => wrapper.find('[data-testid="action-buttons"]');
   const findToggleStatusButton = () => wrapper.find('[data-testid="toggle-status-button"]');
   const findNewEpicButton = () => wrapper.find('[data-testid="new-epic-button"]');
+  const findDeleteEpicButton = () => wrapper.find('[data-testid="delete-epic-button"]');
   const findSidebarToggle = () => wrapper.find('[data-testid="sidebar-toggle"]');
 
   describe('computed', () => {
@@ -176,6 +181,31 @@ describe('EpicHeaderComponent', () => {
 
       await nextTick();
       expect(findNewEpicButton().exists()).toBe(true);
+    });
+
+    it('does not render delete epic button if user cannot create it', async () => {
+      store.state.canDestroy = false;
+
+      await nextTick();
+      expect(findDeleteEpicButton().exists()).toBe(false);
+    });
+
+    it('renders delete epic button if user can create it', async () => {
+      store.state.canDestroy = true;
+
+      await nextTick();
+      expect(findDeleteEpicButton().exists()).toBe(true);
+    });
+
+    describe('delete issue modal', () => {
+      it('renders', () => {
+        expect(findModal().props()).toEqual({
+          issuePath: '',
+          issueType: 'epic',
+          modalId,
+          title: 'Delete epic',
+        });
+      });
     });
   });
 });

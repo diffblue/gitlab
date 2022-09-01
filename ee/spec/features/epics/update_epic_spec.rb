@@ -192,21 +192,4 @@ RSpec.describe 'Update Epic', :js do
 
     it_behaves_like 'updates epic'
   end
-
-  context 'when user with owner access displays the epic' do
-    let(:group) { create(:group, :public) }
-    let(:epic) { create(:epic, group: group, description: markdown) }
-
-    before do
-      group.add_owner(user)
-      visit group_epic_path(group, epic)
-      wait_for_requests
-    end
-
-    it 'shows delete button inside the edit form' do
-      find('.btn-edit').click
-
-      expect(page).to have_selector('.issuable-details .btn-danger')
-    end
-  end
 end

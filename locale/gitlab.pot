@@ -12502,6 +12502,9 @@ msgstr ""
 msgid "Delete deploy key"
 msgstr ""
 
+msgid "Delete epic"
+msgstr ""
+
 msgid "Delete file"
 msgstr ""
 
@@ -14984,6 +14987,9 @@ msgid "Epic"
 msgstr ""
 
 msgid "Epic Boards"
+msgstr ""
+
+msgid "Epic actions"
 msgstr ""
 
 msgid "Epic cannot be found."

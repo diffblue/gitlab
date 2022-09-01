@@ -18,7 +18,7 @@ RSpec.describe 'Delete Epic', :js do
     it 'does not show the Delete button' do
       visit group_epic_path(group, epic)
 
-      expect(page).not_to have_selector('.detail-page-header button')
+      expect(page).not_to have_css('[data-testid="desktop-dropdown"]')
     end
   end
 
@@ -27,11 +27,11 @@ RSpec.describe 'Delete Epic', :js do
       group.add_owner(user)
       visit group_epic_path(group, epic)
       wait_for_requests
-      find('.js-issuable-edit').click
+      find('[data-testid="desktop-dropdown"]').click
     end
 
     it 'deletes the issue and redirect to epic list' do
-      click_button 'Delete epic'
+      click_on 'Delete epic'
       wait_for_requests
 
       find('.js-modal-action-primary').click
