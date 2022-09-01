@@ -6,7 +6,11 @@ describe('MrWidgetJiraAssociationMissing', () => {
   let wrapper;
 
   beforeEach(() => {
-    wrapper = shallowMount(MrWidgetJiraAssociationMissing);
+    wrapper = shallowMount(MrWidgetJiraAssociationMissing, {
+      propsData: {
+        mr: {},
+      },
+    });
   });
 
   afterEach(() => {

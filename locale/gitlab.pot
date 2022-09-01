@@ -9388,6 +9388,9 @@ msgstr ""
 msgid "Collapse jobs"
 msgstr ""
 
+msgid "Collapse merge details"
+msgstr ""
+
 msgid "Collapse milestones"
 msgstr ""
 
@@ -15688,6 +15691,9 @@ msgid "Expand issues"
 msgstr ""
 
 msgid "Expand jobs"
+msgstr ""
+
+msgid "Expand merge details"
 msgstr ""
 
 msgid "Expand milestones"
