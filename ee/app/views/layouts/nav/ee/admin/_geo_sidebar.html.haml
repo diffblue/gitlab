@@ -1,5 +1,5 @@
 = nav_link(controller: %w[admin/geo/nodes admin/geo/projects admin/geo/uploads admin/geo/settings admin/geo/designs admin/geo/replicables]) do
-  = link_to admin_geo_nodes_path, class: "qa-link-geo-menu has-sub-items" do
+  = link_to admin_geo_nodes_path, class: "has-sub-items", data: { qa_selector: "admin_geo_menu_link" } do
     .nav-icon-container
       = sprite_icon('location-dot')
     %span.nav-item-name
