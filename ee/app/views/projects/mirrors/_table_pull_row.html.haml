@@ -22,14 +22,14 @@
         = clipboard_button(text: ssh_public_key, class: 'gl-button btn btn-default btn-icon rspec-copy-ssh-public-key', title: _('Copy SSH public key'), qa_selector: 'copy_public_key_button')
       - if import_state.mirror_update_due? || import_state.updating_mirror?
         = render Pajamas::ButtonComponent.new(icon: 'retry',
-          button_options: { class: 'disabled', title: _('Updating'), data: { container: 'body', toggle: 'tooltip', qa_selector: 'updating_button' } },
+          button_options: { class: 'disabled', title: _('Updating'), data: { container: 'body', toggle: 'tooltip', qa_selector: 'updating_button', testid: 'updating-button' } },
           icon_classes: 'spin')
       - elsif @project.archived?
         = render Pajamas::ButtonComponent.new(icon: 'retry',
-          button_options: { class: 'disabled', title: _('This Project is currently archived and read-only. Please unarchive the project first if you want to resume Pull mirroring'), data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button' } },
+          button_options: { class: 'disabled', title: _('This Project is currently archived and read-only. Please unarchive the project first if you want to resume Pull mirroring'), data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button', testid: 'update-now-button' } },
           icon_classes: 'spin')
       - else
-        = link_to update_now_project_mirror_path(@project), method: :post, class: 'btn gl-button btn-icon btn-default js-force-update-mirror', data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button' }, title: _('Update now') do
+        = link_to update_now_project_mirror_path(@project), method: :post, class: 'btn gl-button btn-icon btn-default js-force-update-mirror', data: { container: 'body', toggle: 'tooltip', qa_selector: 'update_now_button', testid: 'update-now-button' }, title: _('Update now') do
           = sprite_icon("retry")
       = render Pajamas::ButtonComponent.new(variant: :danger,
         icon: 'remove',
