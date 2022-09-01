@@ -4,7 +4,7 @@ group: Product Analytics
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
-# Product Analytics API **ALPHA**
+# Product analytics API
 
 > Introduced in GitLab 15.4 [with a flag](../administration/feature_flags.md) named `cube_api_proxy`. Disabled by default.
 
@@ -18,15 +18,15 @@ Make sure to define the `cube_api_base_url` and `cube_api_key` application setti
 
 ## Send request to Cube
 
-Generate an access token that can be used to query the Cube API.
+Generate an access token that can be used to query the Cube API. For example:
 
 ```plaintext
 POST /projects/:id/product_analytics/request
 ```
 
-| Attribute | Type           | Required | Description                                                   |
-| --------- | -------------- | -------- |---------------------------------------------------------------|
-| `id`      | integer/string | yes      | The ID of a project that the current user has read access to. |
+| Attribute | Type             | Required | Description                                                   |
+| --------- |------------------| -------- |---------------------------------------------------------------|
+| `id`      | integer          | yes      | The ID of a project that the current user has read access to. |
 
 ### Request body
 
