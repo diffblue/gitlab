@@ -166,7 +166,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   end
 
   def check_mirror_plans_in_query?
-    ::Gitlab::CurrentSettings.should_check_namespace_plan?
+    ::Gitlab::CurrentSettings.should_check_namespace_plan? && Feature.disabled?(:skip_checking_namespace_in_query)
   end
 
   # rubocop: disable CodeReuse/ActiveRecord

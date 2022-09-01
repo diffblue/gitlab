@@ -404,4 +404,24 @@ RSpec.describe UpdateAllMirrorsWorker do
       end
     end
   end
+
+  describe '#check_mirror_plans_in_query?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:should_check_namespace_plan, :skip_checking_namespace_in_query, :check_mirror_plans_in_query) do
+      false | false | false
+      false | true | false
+      true | false | true
+      true | true | false
+    end
+
+    with_them do
+      it 'defines whether a mirror plans are checked in query' do
+        allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(should_check_namespace_plan)
+        stub_feature_flags(skip_checking_namespace_in_query: skip_checking_namespace_in_query)
+
+        expect(subject.send(:check_mirror_plans_in_query?)).to eq(check_mirror_plans_in_query)
+      end
+    end
+  end
 end
