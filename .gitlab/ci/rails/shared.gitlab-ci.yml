@@ -1,3 +1,15 @@
+include:
+  - local: .gitlab/ci/global.gitlab-ci.yml
+  - local: .gitlab/ci/rules.gitlab-ci.yml
+
+.rules:dont-interrupt:
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      allow_failure: true
+    - if: $CI_MERGE_REQUEST_IID
+      when: manual
+      allow_failure: true
+
 #######################
 # rspec job base specs
 .rails-job-base:
@@ -41,6 +53,7 @@
     RUBY_GC_MALLOC_LIMIT_MAX: 134217728
     RECORD_DEPRECATIONS: "true"
     GEO_SECONDARY_PROXY: 0
+    RSPEC_TESTS_FILTER_FILE: "${RSPEC_MATCHING_TESTS_PATH}"
   needs: ["setup-test-env", "retrieve-tests-metadata", "compile-test-assets", "detect-tests"]
   script:
     - !reference [.base-script, script]
@@ -65,6 +78,8 @@
   extends:
     - .base-artifacts
     - .rails:rules:ee-and-foss-migration
+  variables:
+    RSPEC_TESTS_FILTER_FILE: "${RSPEC_MATCHING_TESTS_PATH}"
   script:
     - !reference [.base-script, script]
     - rspec_paralellized_job "--tag ~quarantine --tag level:migration"

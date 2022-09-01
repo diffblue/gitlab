@@ -772,22 +772,41 @@ rspec fail-fast:
     paths:
       - tmp/capybara/
 
-rspec foss-impact:
+rspec-foss-impact:pipeline-generate:
   extends:
-    - .rspec-base-pg12-as-if-foss
     - .rails:rules:rspec-foss-impact
-  needs: ["setup-test-env", "retrieve-tests-metadata", "compile-test-assets as-if-foss", "detect-tests"]
+  stage: prepare
+  needs: ["detect-tests"]
   script:
-    - !reference [.base-script, script]
-    - rspec_matched_foss_tests "${RSPEC_MATCHING_TESTS_PATH}" "--tag ~quarantine"
+    - scripts/generate-rspec-foss-impact-pipeline "${RSPEC_MATCHING_TESTS_FOSS_PATH}" "${RSPEC_FOSS_IMPACT_PIPELINE_YML}"
   artifacts:
-    expire_in: 7d
+    expire_in: 1 day
     paths:
-      - tmp/capybara/
-  # Temporary allow failure because of the high rate of failure due to the job
-  # running a lot more tests since https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96152.
-  # This should be reverted once https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96797 is merged.
-  allow_failure: true
+      - $RSPEC_FOSS_IMPACT_PIPELINE_YML
+
+rspec-foss-impact:trigger:
+  extends:
+    - .rails:rules:rspec-foss-impact
+  stage: test
+  needs:
+    - job: "setup-test-env"
+      artifacts: false
+    - job: "retrieve-tests-metadata"
+      artifacts: false
+    - job: "compile-test-assets as-if-foss"
+      artifacts: false
+    - job: "rspec-foss-impact:pipeline-generate"
+      artifacts: true
+  variables:
+    PARENT_PIPELINE_ID: $CI_PIPELINE_ID
+  trigger:
+    strategy: depend
+    forward:
+      yaml_variables: true
+      pipeline_variables: true
+    include:
+      - artifact: $RSPEC_FOSS_IMPACT_PIPELINE_YML
+        job: rspec-foss-impact:pipeline-generate
 
 fail-pipeline-early:
   extends:
