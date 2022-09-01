@@ -17,10 +17,10 @@ module QA
                 end
 
                 view 'ee/app/views/projects/protected_branches/ee/_create_protected_branch.html.haml' do
-                  element :allowed_to_push_select
                   element :allowed_to_push_dropdown
-                  element :allowed_to_merge_select
+                  element :allowed_to_push_dropdown_content
                   element :allowed_to_merge_dropdown
+                  element :allowed_to_merge_dropdown_content
                 end
 
                 view 'ee/app/views/projects/protected_branches/ee/_protected_branch_access_summary.html.haml' do
@@ -40,7 +40,7 @@ module QA
               super
 
               # Click the select element again to close the dropdown
-              click_element(:"allowed_to_#{action}_select")
+              click_element(:"allowed_to_#{action}_dropdown")
             end
           end
         end

@@ -69,7 +69,7 @@ RSpec.describe 'Project mirror', :js do
           import_state.update!(next_execution_timestamp: timestamp - 1.minute)
         end
 
-        let(:disabled_updating_button) { '[data-qa-selector="updating_button"].disabled' } # rubocop:disable QA/SelectorUsage
+        let(:disabled_updating_button) { '[data-testid="updating-button"].disabled' }
 
         it 'disables Update now button' do
           travel_to(timestamp) do
@@ -81,7 +81,7 @@ RSpec.describe 'Project mirror', :js do
       end
 
       context 'when the project is archived' do
-        let(:disabled_update_now_button) { '[data-qa-selector="update_now_button"].disabled' } # rubocop:disable QA/SelectorUsage
+        let(:disabled_update_now_button) { '[data-testid="update-now-button"].disabled' }
 
         before do
           project.update!(archived: true)
