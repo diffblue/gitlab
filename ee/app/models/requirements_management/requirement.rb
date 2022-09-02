@@ -111,10 +111,6 @@ module RequirementsManagement
         super.except('name_asc', 'name_desc')
       end
 
-      def sync_params
-        [:title, :description, :state, :project_id, :author_id]
-      end
-
       def to_issue_state_id(state)
         name = STATE_MAP.invert[state.to_s]
         Issue.available_states[name]

@@ -33,16 +33,22 @@ module Mutations
         project_path = args.delete(:project_path)
         requirement_iid = args.delete(:iid)
         requirement = authorized_find!(project_path: project_path, iid: requirement_iid)
+        spam_params = ::Spam::SpamParams.new_from_request(request: context[:request])
 
-        requirement = ::RequirementsManagement::UpdateRequirementService.new(
-          requirement.project,
-          context[:current_user],
-          args
-        ).execute(requirement)
+        # Keeps the mutation state argument backwards compatible
+        # because this now updates an issue.
+        args[:state] = 'closed' if args[:state].to_s == 'archived'
+
+        issue = ::Issues::UpdateService.new(
+          project: requirement.project,
+          current_user: context[:current_user],
+          params: args,
+          spam_params: spam_params
+        ).execute(requirement.requirement_issue)
 
         {
-          requirement: requirement.reset,
-          errors: errors_on_object(requirement)
+          requirement: issue.reset.requirement,
+          errors: errors_on_object(issue)
         }
       end
 
