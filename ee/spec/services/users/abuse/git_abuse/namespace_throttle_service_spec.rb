@@ -76,13 +76,13 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
       end
 
       it 'logs the event', :aggregate_failures do
-        expect(Gitlab::AppLogger).to receive(:info).with(
+        expect(Gitlab::AppLogger).to receive(:info).with({
           message: "User exceeded max projects download within set time period for namespace",
           username: user.username,
           max_project_downloads: limit,
           time_period_s: time_period_in_seconds,
           namespace_id: namespace.id
-        )
+        })
 
         expect(Gitlab::AppLogger).to receive(:info).with({
           message: "Namespace-level user ban",
@@ -129,13 +129,13 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
       end
 
       it 'logs the notification event but not the ban event', :aggregate_failures do
-        expect(Gitlab::AppLogger).to receive(:info).with(
+        expect(Gitlab::AppLogger).to receive(:info).with({
           message: "User exceeded max projects download within set time period for namespace",
           username: owner.username,
           max_project_downloads: limit,
           time_period_s: time_period_in_seconds,
           namespace_id: namespace.id
-        )
+        })
 
         expect(Gitlab::AppLogger).not_to receive(:info).with({
           message: "Namespace-level user ban",
@@ -169,20 +169,20 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
       end
 
       it 'logs the notification event but not the ban event' do
-        expect(Gitlab::AppLogger).to receive(:info).with(
+        expect(Gitlab::AppLogger).to receive(:info).with({
           message: "User exceeded max projects download within set time period for namespace",
           username: user.username,
           max_project_downloads: limit,
           time_period_s: time_period_in_seconds,
           namespace_id: namespace.id
-        )
+        })
 
-        expect(Gitlab::AppLogger).not_to receive(:info).with(
+        expect(Gitlab::AppLogger).not_to receive(:info).with({
           message: "Namespace-level user ban",
           username: user.username,
           namespace_id: namespace.id,
           ban_by: described_class.name
-        )
+        })
 
         execute
       end
