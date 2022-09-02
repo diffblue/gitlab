@@ -41,7 +41,9 @@ module QA
           end
 
           def filter_by_status(statuses)
-            click_element(:filter_status_dropdown)
+            retry_on_exception(sleep_interval: 5, reload: true) do
+              click_element(:filter_status_dropdown)
+            end
             click_element("filter_all_statuses_dropdown")
             statuses.each do |status|
               # The data-qa-selector for this element is dynamically computed in qaSelector method in
