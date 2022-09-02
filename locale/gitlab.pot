@@ -4197,6 +4197,9 @@ msgstr ""
 msgid "An error occurred while loading all the files."
 msgstr ""
 
+msgid "An error occurred while loading branch rules. Please try again."
+msgstr ""
+
 msgid "An error occurred while loading chart data"
 msgstr ""
 
