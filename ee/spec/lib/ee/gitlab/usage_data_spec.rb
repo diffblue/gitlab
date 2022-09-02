@@ -581,15 +581,6 @@ RSpec.describe Gitlab::UsageData do
     it 'includes accurate usage_activity_by_stage data' do
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         user_preferences_group_overview_security_dashboard: 3,
-        user_container_scanning_jobs: 1,
-        user_api_fuzzing_jobs: 1,
-        user_api_fuzzing_dnd_jobs: 1,
-        user_coverage_fuzzing_jobs: 1,
-        user_dast_jobs: 1,
-        user_dependency_scanning_jobs: 1,
-        user_license_management_jobs: 1,
-        user_sast_jobs: 1,
-        user_secret_detection_jobs: 1,
         sast_pipeline: be_within(error_rate).percent_of(0),
         sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
@@ -626,12 +617,6 @@ RSpec.describe Gitlab::UsageData do
 
       expect(described_class.usage_activity_by_stage_secure({})).to include(
         user_preferences_group_overview_security_dashboard: 3,
-        user_container_scanning_jobs: 1,
-        user_dast_jobs: 1,
-        user_dependency_scanning_jobs: 1,
-        user_license_management_jobs: 1,
-        user_sast_jobs: 1,
-        user_secret_detection_jobs: 1,
         user_unique_users_all_secure_scanners: 1,
         sast_scans: 2,
         dependency_scanning_scans: 6,
@@ -643,15 +628,6 @@ RSpec.describe Gitlab::UsageData do
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         user_preferences_group_overview_security_dashboard: 3,
-        user_api_fuzzing_jobs: 1,
-        user_api_fuzzing_dnd_jobs: 1,
-        user_container_scanning_jobs: 1,
-        user_coverage_fuzzing_jobs: 1,
-        user_dast_jobs: 1,
-        user_dependency_scanning_jobs: 1,
-        user_license_management_jobs: 1,
-        user_sast_jobs: 1,
-        user_secret_detection_jobs: 1,
         sast_pipeline: be_within(error_rate).percent_of(1),
         dependency_scanning_pipeline: be_within(error_rate).percent_of(2),
         container_scanning_pipeline: be_within(error_rate).percent_of(1),
@@ -679,15 +655,6 @@ RSpec.describe Gitlab::UsageData do
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         user_preferences_group_overview_security_dashboard: 3,
-        user_api_fuzzing_jobs: 1,
-        user_api_fuzzing_dnd_jobs: 1,
-        user_container_scanning_jobs: 1,
-        user_coverage_fuzzing_jobs: 1,
-        user_dast_jobs: 3,
-        user_dependency_scanning_jobs: 1,
-        user_license_management_jobs: 1,
-        user_sast_jobs: 2,
-        user_secret_detection_jobs: 1,
         sast_pipeline: be_within(error_rate).percent_of(0),
         sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
@@ -713,15 +680,6 @@ RSpec.describe Gitlab::UsageData do
 
       expect(described_class.usage_activity_by_stage_secure(described_class.monthly_time_range_db_params)).to include(
         user_preferences_group_overview_security_dashboard: 3,
-        user_api_fuzzing_jobs: 1,
-        user_api_fuzzing_dnd_jobs: 1,
-        user_container_scanning_jobs: 1,
-        user_coverage_fuzzing_jobs: 1,
-        user_dast_jobs: 1,
-        user_dependency_scanning_jobs: 1,
-        user_license_management_jobs: 2,
-        user_sast_jobs: 1,
-        user_secret_detection_jobs: 1,
         sast_pipeline: be_within(error_rate).percent_of(0),
         sast_scans: 0,
         dependency_scanning_pipeline: be_within(error_rate).percent_of(0),
@@ -769,15 +727,6 @@ RSpec.describe Gitlab::UsageData do
 
           expect(subject).to include(
             user_preferences_group_overview_security_dashboard: -1,
-            user_api_fuzzing_jobs: -1,
-            user_api_fuzzing_dnd_jobs: -1,
-            user_container_scanning_jobs: -1,
-            user_coverage_fuzzing_jobs: -1,
-            user_dast_jobs: -1,
-            user_dependency_scanning_jobs: -1,
-            user_license_management_jobs: -1,
-            user_sast_jobs: -1,
-            user_secret_detection_jobs: -1,
             sast_pipeline: -1,
             sast_scans: -1,
             dependency_scanning_pipeline: -1,
