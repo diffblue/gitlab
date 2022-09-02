@@ -1,0 +1,4 @@
+- return unless current_user
+- context = local_assigns.fetch(:context)
+
+= render Namespaces::Storage::ProjectPreEnforcementAlertComponent.new(context: context, user: current_user)
