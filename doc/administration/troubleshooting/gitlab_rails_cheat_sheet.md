@@ -797,18 +797,6 @@ You can use this method when a configured external authentication provider (thro
 Gitlab::CurrentSettings.update!(password_authentication_enabled_for_web: true)
 ```
 
-## SCIM
-
-### Find groups using an SQL query
-
-Find and store an array of groups based on an SQL query:
-
-```ruby
-# Finds groups and subgroups that end with '%oup'
-Group.find_by_sql("SELECT * FROM namespaces WHERE name LIKE '%oup'")
-=> [#<Group id:3 @test-group>, #<Group id:4 @template-group/template-subgroup>]
-```
-
 ## Routes
 
 ### Remove redirecting routes
