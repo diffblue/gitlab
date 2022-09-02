@@ -62,7 +62,7 @@ module EE
     end
 
     def group_seats_usage_quota_app_data(group)
-      pending_members_page_path = group.apply_user_cap? ? pending_members_group_usage_quotas_path(group) : nil
+      pending_members_page_path = group.user_cap_available? ? pending_members_group_usage_quotas_path(group) : nil
       pending_members_count = ::Member.in_hierarchy(group).with_state("awaiting").count
 
       {

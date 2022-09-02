@@ -137,36 +137,6 @@ describe('Usage Quotas Seats mutations', () => {
     });
   });
 
-  describe('Changing membership state', () => {
-    it(types.CHANGE_MEMBERSHIP_STATE, () => {
-      state.isChangingMembershipState = false;
-      state.hasError = true;
-      mutations[types.CHANGE_MEMBERSHIP_STATE](state);
-      expect(state).toMatchObject({
-        isChangingMembershipState: true,
-        hasError: false,
-      });
-    });
-
-    it(types.CHANGE_MEMBERSHIP_STATE_SUCCESS, () => {
-      state.isChangingMembershipState = true;
-      mutations[types.CHANGE_MEMBERSHIP_STATE_SUCCESS](state);
-      expect(state).toMatchObject({
-        isChangingMembershipState: false,
-      });
-    });
-
-    it(types.CHANGE_MEMBERSHIP_STATE_ERROR, () => {
-      state.isChangingMembershipState = true;
-      state.hasError = false;
-      mutations[types.CHANGE_MEMBERSHIP_STATE_ERROR](state);
-      expect(state).toMatchObject({
-        isChangingMembershipState: false,
-        hasError: true,
-      });
-    });
-  });
-
   describe('Billable member list', () => {
     it(types.REQUEST_BILLABLE_MEMBERS, () => {
       state.isLoadingBillableMembers = false;

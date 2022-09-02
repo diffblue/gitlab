@@ -292,7 +292,7 @@ RSpec.describe GroupsHelper do
 
     before do
       stub_const("::Namespaces::FreeUserCap::FREE_USER_LIMIT", 10)
-      expect(group).to receive(:apply_user_cap?).and_return(user_cap_applied)
+      expect(group).to receive(:user_cap_available?).and_return(user_cap_applied)
 
       expect_next_instance_of(::Namespaces::FreeUserCap::Standard, group) do |instance|
         expect(instance).to receive(:enforce_cap?).and_return(enforce_free_user_cap)

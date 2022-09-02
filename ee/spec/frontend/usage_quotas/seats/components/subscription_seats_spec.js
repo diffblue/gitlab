@@ -6,7 +6,6 @@ import {
   GlAvatarLabeled,
   GlBadge,
   GlModal,
-  GlToggle,
 } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
@@ -113,21 +112,6 @@ describe('Subscription Seats', () => {
     };
   };
 
-  const serializeToggle = (rowWrapper) => {
-    const toggle = rowWrapper.findComponent(GlToggle);
-
-    if (!toggle.exists()) {
-      return null;
-    }
-
-    return {
-      disabled: toggle.props().disabled,
-      title: toggle.attributes('title'),
-      value: toggle.props().value,
-      label: toggle.props().label,
-    };
-  };
-
   const serializeTableRow = (rowWrapper) => {
     const emailWrapper = rowWrapper.find('[data-testid="email"]');
 
@@ -135,7 +119,6 @@ describe('Subscription Seats', () => {
       user: serializeUser(rowWrapper),
       email: emailWrapper.text(),
       tooltip: emailWrapper.find('span').attributes('title'),
-      toggle: serializeToggle(rowWrapper),
       removeUserButtonExists: rowWrapper.findComponent(GlButton).exists(),
     };
   };
@@ -179,199 +162,6 @@ describe('Subscription Seats', () => {
         const serializedTable = findSerializedTable(findTable());
 
         expect(serializedTable).toMatchSnapshot();
-      });
-
-      describe('membership toggles', () => {
-        it.each`
-          hasNoSubscription | hasLimitedFreePlan | previewFreeUserCap | shouldBeRendered
-          ${false}          | ${false}           | ${false}           | ${false}
-          ${true}           | ${false}           | ${false}           | ${false}
-          ${true}           | ${true}            | ${false}           | ${true}
-          ${true}           | ${false}           | ${true}            | ${true}
-        `(
-          'rendering toggles $shouldBeRendered when hasLimitedFreePlan=$hasLimitedFreePlan and hasNoSubscription=$hasNoSubscription and previewFreeUserCap=$previewFreeUserCap',
-          ({ hasNoSubscription, hasLimitedFreePlan, previewFreeUserCap, shouldBeRendered }) => {
-            wrapper = createComponent({
-              mountFn: mount,
-              initialGetters: {
-                tableItems: () => mockTableItems,
-              },
-              initialState: {
-                hasNoSubscription,
-                hasLimitedFreePlan,
-                previewFreeUserCap,
-              },
-            });
-
-            const toggles = findTable().findAllComponents(GlToggle);
-            expect(toggles.exists()).toBe(shouldBeRendered);
-          },
-        );
-
-        describe('when limited free plan reached limit', () => {
-          let serializedTable;
-
-          const forEachUser = (callback) => {
-            serializedTable.forEach((serializedRow) => {
-              const currentItem = mockTableItems.find(
-                (item) => item.user.name === serializedRow.user.avatarLink.alt,
-              );
-              callback(currentItem.user, serializedRow);
-            });
-          };
-
-          beforeEach(() => {
-            global.gon.current_user_id = mockTableItems[mockTableItems.length - 1].user.id;
-
-            wrapper = createComponent({
-              mountFn: mount,
-              initialGetters: {
-                tableItems: () => mockTableItems,
-              },
-              initialState: {
-                hasNoSubscription: true,
-                hasLimitedFreePlan: true,
-                hasReachedFreePlanLimit: true,
-              },
-            });
-
-            serializedTable = findSerializedTable(findTable());
-          });
-
-          it('sets toggle label correctly', () => {
-            forEachUser((_, serializedRow) => {
-              expect(serializedRow.toggle.label).toBe('In a seat');
-            });
-          });
-
-          it('sets toggle value correctly for active users', () => {
-            forEachUser((user, serializedRow) => {
-              if (user.membership_state === 'active') {
-                expect(serializedRow.toggle.value).toBe(true);
-              }
-            });
-          });
-
-          it('sets toggle value correctly for awaiting users', () => {
-            forEachUser((user, serializedRow) => {
-              if (user.membership_state === 'awaiting') {
-                expect(serializedRow.toggle.value).toBe(false);
-              }
-            });
-          });
-
-          it('sets toggle props correctly for last owners', () => {
-            forEachUser((user, serializedRow) => {
-              if (user.is_last_owner) {
-                expect(serializedRow.toggle.disabled).toBe(true);
-                expect(serializedRow.toggle.title).toBe(
-                  'The last owner cannot be removed from a seat.',
-                );
-              }
-            });
-          });
-
-          it('sets toggle props correctly for group or project invites', () => {
-            forEachUser((user, serializedRow) => {
-              if (
-                user.membership_type === 'group_invite' ||
-                user.membership_type === 'project_invite'
-              ) {
-                expect(serializedRow.toggle.disabled).toBe(true);
-                expect(serializedRow.toggle.title).toBe(
-                  "You can't change the seat status of a user who was invited via a group or project.",
-                );
-              }
-            });
-          });
-
-          it('sets toggle props correctly for awaiting group or project members', () => {
-            forEachUser((user, serializedRow) => {
-              if (user.membership_state === 'active') {
-                return;
-              }
-
-              if (
-                user.membership_type === 'group_member' ||
-                user.membership_type === 'project_member'
-              ) {
-                expect(serializedRow.toggle.disabled).toBe(true);
-                expect(serializedRow.toggle.title).toBe(
-                  'To make this member active, you must first remove an existing active member, or toggle them to over limit.',
-                );
-              }
-            });
-          });
-
-          it('sets toggle props correctly for the current user', () => {
-            forEachUser((user, serializedRow) => {
-              if (user.id !== gon.current_user_id) {
-                return;
-              }
-
-              expect(serializedRow.toggle.disabled).toBe(true);
-              expect(serializedRow.toggle.title).toBe(
-                "You can't remove yourself from a seat, but you can leave the group.",
-              );
-            });
-          });
-
-          it('sets toggle props correctly for active group or project members', () => {
-            forEachUser((user, serializedRow) => {
-              if (
-                user.membership_state === 'awaiting' ||
-                user.is_last_owner ||
-                user.id === gon.current_user_id
-              ) {
-                return;
-              }
-
-              if (
-                user.membership_type === 'group_member' ||
-                user.membership_type === 'project_member'
-              ) {
-                expect(serializedRow.toggle.disabled).toBe(false);
-                expect(serializedRow.toggle.title).toBe('');
-              }
-            });
-          });
-
-          it.each([
-            [true, false],
-            [false, true],
-          ])('disables the toggles when isLoading=%s and hasError=%s', (isLoading, hasError) => {
-            wrapper = createComponent({
-              mountFn: mount,
-              initialGetters: {
-                tableItems: () => mockTableItems,
-                isLoading: () => isLoading,
-              },
-              initialState: {
-                hasNoSubscription: true,
-                hasLimitedFreePlan: true,
-                hasReachedFreePlanLimit: true,
-                hasError,
-              },
-            });
-
-            serializedTable = findSerializedTable(findTable());
-
-            serializedTable.forEach((serializedRow) => {
-              expect(serializedRow.toggle.disabled).toBe(true);
-            });
-          });
-
-          it('calls the changeMembershipState action when clicking the toggle', () => {
-            const toggles = findTable().findComponent(GlToggle);
-
-            toggles.vm.$emit('change', false);
-
-            expect(actionSpies.changeMembershipState).toHaveBeenCalledWith(
-              expect.any(Object),
-              mockTableItems[0].user,
-            );
-          });
-        });
       });
     });
 

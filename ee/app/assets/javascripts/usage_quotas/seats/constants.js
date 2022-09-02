@@ -7,7 +7,7 @@ export const HEADER_TOTAL_ENTRIES = 'x-total';
 export const HEADER_PAGE_NUMBER = 'x-page';
 export const HEADER_ITEMS_PER_PAGE = 'x-per-page';
 
-const ALL_FIELDS = [
+export const FIELDS = [
   {
     key: 'user',
     label: __('User'),
@@ -24,20 +24,12 @@ const ALL_FIELDS = [
     thClass: thWidthPercent(20),
   },
   {
-    key: 'membershipState',
-    label: __('In a seat'),
-    thClass: thWidthPercent(10),
-  },
-  {
     key: 'actions',
     label: '',
     thClass: thWidthPercent(20),
     tdClass: 'text-right',
   },
 ];
-
-export const STANDARD_FIELDS = ALL_FIELDS.filter(({ key }) => key !== 'membershipState');
-export const FIELDS_WITH_MEMBERSHIP_TOGGLE = ALL_FIELDS;
 
 export const DETAILS_FIELDS = [
   {
@@ -84,6 +76,4 @@ export const SORT_OPTIONS = [
   },
 ];
 
-export const MEMBER_AWAITING_STATE = 'awaiting';
-export const MEMBER_ACTIVE_STATE = 'active';
 export const EXPLORE_PAID_PLANS_CLICKED = 'explore_paid_plans_clicked';

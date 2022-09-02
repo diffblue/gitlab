@@ -49,21 +49,6 @@ export default {
     state.sort = sortOption;
   },
 
-  // Membership
-  [types.CHANGE_MEMBERSHIP_STATE](state) {
-    state.isChangingMembershipState = true;
-    state.hasError = false;
-  },
-
-  [types.CHANGE_MEMBERSHIP_STATE_SUCCESS](state) {
-    state.isChangingMembershipState = false;
-  },
-
-  [types.CHANGE_MEMBERSHIP_STATE_ERROR](state) {
-    state.isChangingMembershipState = false;
-    state.hasError = true;
-  },
-
   // Billable member list
   [types.REQUEST_BILLABLE_MEMBERS](state) {
     state.isLoadingBillableMembers = true;
