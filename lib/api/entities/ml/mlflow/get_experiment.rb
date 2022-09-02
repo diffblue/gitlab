@@ -15,7 +15,7 @@ module API
           private
 
           def lifecycle_stage
-            object.deleted_on.present? ? 'deleted' : 'active'
+            object.deleted_on? ? 'deleted' : 'active'
           end
 
           def experiment_id

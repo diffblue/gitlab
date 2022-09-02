@@ -8,23 +8,14 @@ RSpec.describe API::Ml::Mlflow do
   include ApiHelpers
   include HttpBasicAuthHelpers
 
-  let(:user) { create(:user) }
-  let(:developer) { create(:user).tap { |u| project.add_developer(u) } }
-  let(:current_user) { developer }
-
-  let(:project) do
-    create(:project,
-           :private,
-           creator_id: user.id,
-           namespace: user.namespace,
-           path: 'my.project',
-           id: 123454)
+  let_it_be(:project) { create(:project, :private) }
+  let_it_be(:developer) { create(:user).tap { |u| project.add_developer(u) } }
+  let_it_be(:experiment) do
+    create(:ml_experiments, user: project.creator, project: project)
   end
 
+  let(:current_user) { developer }
   let(:ff_value) { true }
-
-  let(:experiment) { create(:ml_experiments, name: 'the_experiment', user: user, project: project) }
-
   let(:scopes) { %w[api] }
   let(:headers) do
     { 'Authorization' => "Bearer #{create(:personal_access_token, scopes: scopes, user: current_user).token}" }
@@ -35,8 +26,6 @@ RSpec.describe API::Ml::Mlflow do
 
   before do
     stub_feature_flags(ml_experiment_tracking: ff_value)
-
-    create(:ml_experiments, name: 'existing_experiment', user: user, project: project)
 
     request
   end
@@ -88,16 +77,16 @@ RSpec.describe API::Ml::Mlflow do
   end
 
   describe 'GET /projects/:id/ml/mflow/api/2.0/mlflow/get' do
-    let(:route) { "/projects/#{project.id}/ml/mflow/api/2.0/mlflow/experiments/get?experiment_id=#{experiment_id}" }
-    let(:experiment_id) { experiment.iid.to_s }
+    let(:experiment_iid) { experiment.iid.to_s }
+    let(:route) { "/projects/#{project.id}/ml/mflow/api/2.0/mlflow/experiments/get?experiment_id=#{experiment_iid}" }
 
     it 'returns the experiment' do
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to match_response_schema('ml/get_experiment')
       expect(json_response).to include({
                                          'experiment' => {
-                                           'experiment_id' => '2',
-                                           'name' => 'the_experiment',
+                                           'experiment_id' => experiment_iid,
+                                           'name' => experiment.name,
                                            'lifecycle_stage' => 'active',
                                            'artifact_location' => 'not_implemented'
                                          }
@@ -107,7 +96,7 @@ RSpec.describe API::Ml::Mlflow do
     describe 'Error States' do
       context 'when has access' do
         context 'and experiment does not exist' do
-          let(:experiment_id) { '2' }
+          let(:experiment_iid) { non_existing_record_iid.to_s }
 
           it_behaves_like 'Not Found - Resource Does Not Exist'
         end
@@ -124,19 +113,18 @@ RSpec.describe API::Ml::Mlflow do
   end
 
   describe 'GET /projects/:id/ml/mflow/api/2.0/mlflow/experiments/get-by-name' do
+    let(:experiment_name) { experiment.name }
     let(:route) do
       "/projects/#{project.id}/ml/mflow/api/2.0/mlflow/experiments/get-by-name?experiment_name=#{experiment_name}"
     end
-
-    let(:experiment_name) { experiment.name }
 
     it 'returns the experiment' do
       expect(response).to have_gitlab_http_status(:ok)
       expect(response).to match_response_schema('ml/get_experiment')
       expect(json_response).to include({
                                          'experiment' => {
-                                           'experiment_id' => '2',
-                                           'name' => 'the_experiment',
+                                           'experiment_id' => experiment.iid.to_s,
+                                           'name' => experiment_name,
                                            'lifecycle_stage' => 'active',
                                            'artifact_location' => 'not_implemented'
                                          }
@@ -170,7 +158,7 @@ RSpec.describe API::Ml::Mlflow do
 
     it 'creates the experiment' do
       expect(response).to have_gitlab_http_status(:created)
-      expect(json_response).to include({ 'experiment_id' => '2' })
+      expect(json_response).to include('experiment_id' )
     end
 
     describe 'Error States' do
@@ -181,13 +169,17 @@ RSpec.describe API::Ml::Mlflow do
       end
 
       context 'when experiment name already exists' do
-        let(:params) { { name: 'existing_experiment' } }
+        let(:existing_experiment) do
+          create(:ml_experiments, user: current_user, project: project)
+        end
+
+        let(:params) { { name: existing_experiment.name } }
 
         it_behaves_like 'Bad Request', 'RESOURCE_ALREADY_EXISTS'
       end
 
       context 'when project does not exist' do
-        let(:route) { "/projects/9999999/ml/mflow/api/2.0/mlflow/experiments/create" }
+        let(:route) { "/projects/#{non_existing_record_id}/ml/mflow/api/2.0/mlflow/experiments/create" }
 
         it_behaves_like 'Not Found', '404 Project Not Found'
       end

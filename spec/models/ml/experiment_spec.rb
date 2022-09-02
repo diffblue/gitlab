@@ -20,7 +20,7 @@ RSpec.describe Ml::Experiment do
     end
 
     context 'if does not exist' do
-      let(:iid) { 3 }
+      let(:iid) { non_existing_record_id }
 
       it { is_expected.to be(nil) }
     end

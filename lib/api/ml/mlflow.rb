@@ -43,7 +43,7 @@ module API
               detail 'https://www.mlflow.org/docs/1.28.0/rest-api.html#get-experiment'
             end
             params do
-              optional :experiment_id, type: String, default: '', desc: 'Experiment ID (<project_id>:<experiment_name>)'
+              optional :experiment_id, type: String, default: '', desc: 'Experiment ID, in reference to the project'
             end
             get 'get', urgency: :low do
               experiment = ::Ml::Experiment.by_project_id_and_iid(user_project.id, params[:experiment_id])
