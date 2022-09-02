@@ -329,8 +329,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
 
     context 'when no feature flag enabled' do
-      it 'shows active users and does not show seat toggles' do
-        expect(page).not_to have_selector("[data-testid='seat-toggle']")
+      it 'shows active users' do
         expect(page.text).not_to include(*awaiting_user_names)
         expect(page.text).to include(*active_user_names)
         expect(page).to have_content("You have 3 pending members")
@@ -338,58 +337,20 @@ RSpec.describe 'Groups > Usage Quotas' do
       end
     end
 
-    context 'when preview_free_user_cap enabled' do
-      let(:preview_free_user_cap) { true }
-
-      it 'can change seat state but does not enforce limits' do
-        expect(page).to have_content("4 / Unlimited Seats in use")
-        expect(find_toggles.count).to eq(7)
-        expect(find_toggles(:disabled).count).to eq(1)
-        expect(find_toggles(:checked).count).to eq(4)
-        expect(find_toggles(:unchecked).count).to eq(3)
-
-        find_toggles(:unchecked).first.click
-        wait_for_requests
-
-        find_toggles(:unchecked).first.click
-        wait_for_requests
-
-        expect(page).to have_content("6 / Unlimited Seats in use")
-        expect(find_toggles.count).to eq(7)
-        expect(find_toggles(:disabled).count).to eq(1)
-        expect(find_toggles(:checked).count).to eq(6)
-        expect(find_toggles(:unchecked).count).to eq(1)
-      end
-    end
-
     context 'when free_user_cap enabled' do
       let(:free_user_cap) { true }
 
       context 'when on a free plan' do
-        it 'can change seat state and enforces limit' do
+        it 'has correct seats in use and plans link' do
           expect(page).to have_content("4 / 5 Seats in use")
           expect(page).to have_link("Explore all plans")
-          expect(find_toggles.count).to eq(7)
-          expect(find_toggles(:disabled).count).to eq(1)
-          expect(find_toggles(:checked).count).to eq(4)
-          expect(find_toggles(:unchecked).count).to eq(3)
-
-          find_toggles(:unchecked).first.click
-          wait_for_requests
-
-          expect(page).to have_content("5 / 5 Seats in use")
-          expect(find_toggles.count).to eq(7)
-          expect(find_toggles(:disabled).count).to eq(3)
-          expect(find_toggles(:checked).count).to eq(5)
-          expect(find_toggles(:unchecked).count).to eq(2)
         end
       end
 
       context 'when on a paid plan' do
         let_it_be(:gitlab_subscription) { create(:gitlab_subscription, seats_in_use: 4, seats: 10, namespace: group) }
 
-        it 'shows active users and does not show seat toggles' do
-          expect(page).not_to have_selector("[data-testid='seat-toggle']")
+        it 'shows active users' do
           expect(page.text).not_to include(*awaiting_user_names)
           expect(page.text).to include(*active_user_names)
           expect(page).to have_content("You have 3 pending members")
@@ -419,8 +380,7 @@ RSpec.describe 'Groups > Usage Quotas' do
       context 'when on a trial' do
         let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :active_trial, seats_in_use: 4, seats: 10, namespace: group) }
 
-        it 'shows active users and does not show seat toggles' do
-          expect(page).not_to have_selector("[data-testid='seat-toggle']")
+        it 'shows active users' do
           expect(page.text).not_to include(*awaiting_user_names)
           expect(page.text).to include(*active_user_names)
           expect(page).to have_content("You have 3 pending members")
@@ -437,20 +397,5 @@ RSpec.describe 'Groups > Usage Quotas' do
   def click_next_page_pipeline_projects
     page.find('.gl-pagination .pagination .js-next-button').click
     wait_for_requests
-  end
-
-  def find_toggles(state = nil)
-    query = case state
-            when :checked
-              '.is-checked'
-            when :disabled
-              '.is-disabled'
-            when :unchecked
-              ':not(.is-checked)'
-            else
-              ''
-            end
-
-    page.find_all("[data-testid='seat-toggle'] button#{query}")
   end
 end

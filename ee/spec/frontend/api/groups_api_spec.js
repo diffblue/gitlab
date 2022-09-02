@@ -104,30 +104,6 @@ describe('GroupsApi', () => {
     });
   });
 
-  describe('changeMembershipState', () => {
-    const userId = 3;
-    const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}/members/${userId}/state`;
-
-    beforeEach(() => {
-      jest.spyOn(axios, 'put');
-      mock.onPut(expectedUrl).replyOnce(httpStatus.OK, []);
-    });
-
-    it('changes the state for the member to awaiting', async () => {
-      const { data } = await GroupsApi.changeMembershipState(namespaceId, userId, 'awaiting');
-
-      expect(data).toEqual([]);
-      expect(axios.put).toHaveBeenCalledWith(expectedUrl, { state: 'awaiting' });
-    });
-
-    it('changes the state for the member to active', async () => {
-      const { data } = await GroupsApi.changeMembershipState(namespaceId, userId, 'active');
-
-      expect(data).toEqual([]);
-      expect(axios.put).toHaveBeenCalledWith(expectedUrl, { state: 'active' });
-    });
-  });
-
   describe('updateGroupSettings', () => {
     const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${namespaceId}`;
 

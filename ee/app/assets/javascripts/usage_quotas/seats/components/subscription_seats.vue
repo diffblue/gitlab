@@ -11,23 +11,19 @@ import {
   GlPagination,
   GlTable,
   GlTooltipDirective,
-  GlToggle,
   GlSkeletonLoader,
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
-  STANDARD_FIELDS,
-  FIELDS_WITH_MEMBERSHIP_TOGGLE,
+  FIELDS,
   AVATAR_SIZE,
   REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
   CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
   SORT_OPTIONS,
-  MEMBER_ACTIVE_STATE,
-  MEMBER_AWAITING_STATE,
 } from 'ee/usage_quotas/seats/constants';
 import { s__, __, sprintf, n__ } from '~/locale';
 import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
@@ -52,7 +48,6 @@ export default {
     GlIcon,
     GlPagination,
     GlTable,
-    GlToggle,
     RemoveBillableMemberModal,
     SubscriptionSeatDetails,
     FilterSortContainerRoot,
@@ -159,11 +154,6 @@ export default {
         ? String(this.totalSeatsAvailable)
         : this.$options.i18n.unlimited;
     },
-    fields() {
-      return this.hasLimitedPlanOrPreviewLimitedPlan
-        ? FIELDS_WITH_MEMBERSHIP_TOGGLE
-        : STANDARD_FIELDS;
-    },
     showUpgradeInfoCard() {
       if (!this.hasNoSubscription) {
         return false;
@@ -186,7 +176,6 @@ export default {
       'fetchBillableMembersList',
       'fetchGitlabSubscription',
       'setBillableMemberToRemove',
-      'changeMembershipState',
       'setSearchQuery',
       'setCurrentPage',
       'setSortOption',
@@ -214,49 +203,6 @@ export default {
     isProjectInvite(user) {
       return user.membership_type === 'project_invite';
     },
-    toggleProps(user) {
-      const props = {
-        disabled: false,
-        title: '',
-        value: user.membership_state === MEMBER_ACTIVE_STATE,
-      };
-
-      if (this.isLoaderShown) {
-        return { ...props, disabled: true };
-      }
-
-      if (user.id === gon.current_user_id) {
-        return {
-          ...props,
-          disabled: true,
-          title: this.$options.i18n.removeOwnSeatRestrictedText,
-        };
-      }
-
-      if (user.is_last_owner) {
-        return {
-          ...props,
-          disabled: true,
-          title: this.$options.i18n.removeLastOwnerSeatRestrictedText,
-        };
-      }
-
-      if (this.restrictActivatingUser(user)) {
-        const title = this.isProjectOrGroupInvite(user)
-          ? this.$options.i18n.activateGroupOrProjectMemberRestrictedText
-          : this.$options.i18n.activateMemberRestrictedText;
-
-        return { ...props, disabled: true, title };
-      }
-
-      return props;
-    },
-    restrictActivatingUser(user) {
-      return (
-        (this.hasReachedFreePlanLimit && user.membership_state === MEMBER_AWAITING_STATE) ||
-        this.isProjectOrGroupInvite(user)
-      );
-    },
     shouldShowDetails(item) {
       return !this.isProjectOrGroupInvite(item.user);
     },
@@ -283,22 +229,10 @@ export default {
     seatsInUseLink: helpPagePath('subscriptions/gitlab_com/index', {
       anchor: 'how-seat-usage-is-determined',
     }),
-    removeLastOwnerSeatRestrictedText: s__(
-      'Billings|The last owner cannot be removed from a seat.',
-    ),
-    removeOwnSeatRestrictedText: s__(
-      "Billings|You can't remove yourself from a seat, but you can leave the group.",
-    ),
-    activateMemberRestrictedText: s__(
-      'Billings|To make this member active, you must first remove an existing active member, or toggle them to over limit.',
-    ),
     unlimited: __('Unlimited'),
-    activateGroupOrProjectMemberRestrictedText: s__(
-      "Billings|You can't change the seat status of a user who was invited via a group or project.",
-    ),
   },
   avatarSize: AVATAR_SIZE,
-
+  fields: FIELDS,
   removeBillableMemberModalId: REMOVE_BILLABLE_MEMBER_MODAL_ID,
   cannotRemoveModalId: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_ID,
   cannotRemoveModalTitle: CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_TITLE,
@@ -392,7 +326,7 @@ export default {
     <gl-table
       class="seats-table"
       :items="tableItems"
-      :fields="fields"
+      :fields="$options.fields"
       :busy="isLoaderShown"
       :show-empty="true"
       data-testid="table"
@@ -452,17 +386,6 @@ export default {
         <span>
           {{ data.item.user.last_activity_on ? data.item.user.last_activity_on : __('Never') }}
         </span>
-      </template>
-
-      <template #cell(membershipState)="{ item: { user } }">
-        <gl-toggle
-          v-gl-tooltip
-          :label="$options.i18n.inASeatLabel"
-          label-position="hidden"
-          data-testid="seat-toggle"
-          v-bind="toggleProps(user)"
-          @change="changeMembershipState(user)"
-        />
       </template>
 
       <template #cell(actions)="data">

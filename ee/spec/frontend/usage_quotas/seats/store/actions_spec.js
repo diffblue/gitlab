@@ -1,7 +1,6 @@
 import * as GroupsApi from 'ee/api/groups_api';
 import Api from 'ee/api';
 import * as actions from 'ee/usage_quotas/seats/store/actions';
-import { MEMBER_ACTIVE_STATE, MEMBER_AWAITING_STATE } from 'ee/usage_quotas/seats/constants';
 import * as types from 'ee/usage_quotas/seats/store/mutation_types';
 import State from 'ee/usage_quotas/seats/store/state';
 import {
@@ -28,7 +27,6 @@ describe('Usage Quotas Seats actions', () => {
       page: 5,
       search: 'search string',
       sort: 'last_activity_on_desc',
-      include_awaiting_members: false,
     };
 
     beforeEach(() => {
@@ -60,48 +58,6 @@ describe('Usage Quotas Seats actions', () => {
       expect(GroupsApi.fetchBillableGroupMembersList).toBeCalledWith(
         state.namespaceId,
         expect.objectContaining(payload),
-      );
-    });
-
-    it('queries awaiting members when on limited free plan', () => {
-      state = Object.assign(state, {
-        ...payload,
-        hasLimitedFreePlan: true,
-        hasNoSubscription: true,
-      });
-
-      testAction({
-        action: actions.fetchBillableMembersList,
-        payload,
-        state,
-        expectedMutations: expect.anything(),
-        expectedActions: expect.anything(),
-      });
-
-      expect(GroupsApi.fetchBillableGroupMembersList).toBeCalledWith(
-        state.namespaceId,
-        expect.objectContaining({ ...payload, include_awaiting_members: true }),
-      );
-    });
-
-    it('queries awaiting members when previewFreeCap is enabled', () => {
-      state = Object.assign(state, {
-        ...payload,
-        previewFreeUserCap: true,
-        hasNoSubscription: true,
-      });
-
-      testAction({
-        action: actions.fetchBillableMembersList,
-        payload,
-        state,
-        expectedMutations: expect.anything(),
-        expectedActions: expect.anything(),
-      });
-
-      expect(GroupsApi.fetchBillableGroupMembersList).toBeCalledWith(
-        state.namespaceId,
-        expect.objectContaining({ ...payload, include_awaiting_members: true }),
       );
     });
 
@@ -319,107 +275,6 @@ describe('Usage Quotas Seats actions', () => {
 
       expect(createAlert).toHaveBeenCalledWith({
         message: 'An error occurred while removing a billable member.',
-      });
-    });
-  });
-
-  describe('changeMembershipState', () => {
-    let user;
-    let expectedActions;
-    let expectedMutations;
-
-    beforeEach(() => {
-      state.namespaceId = 1;
-      user = { id: 2, membership_state: MEMBER_ACTIVE_STATE };
-    });
-
-    describe('Group API call', () => {
-      beforeEach(() => {
-        expectedMutations = [{ type: types.CHANGE_MEMBERSHIP_STATE }];
-
-        expectedActions = [{ type: 'changeMembershipStateSuccess' }];
-      });
-
-      describe('for an active user', () => {
-        it('passes correct arguments to Api call for an active user', () => {
-          testAction({
-            action: actions.changeMembershipState,
-            payload: user,
-            state,
-            expectedMutations,
-            expectedActions,
-          });
-
-          expect(GroupsApi.changeMembershipState).toBeCalledWith(
-            state.namespaceId,
-            user.id,
-            MEMBER_AWAITING_STATE,
-          );
-        });
-      });
-
-      describe('for an awaiting user', () => {
-        it('passes correct arguments to Api call for an active user', () => {
-          testAction({
-            action: actions.changeMembershipState,
-            payload: { ...user, membership_state: MEMBER_AWAITING_STATE },
-            state,
-            expectedMutations,
-            expectedActions,
-          });
-
-          expect(GroupsApi.changeMembershipState).toBeCalledWith(
-            state.namespaceId,
-            user.id,
-            MEMBER_ACTIVE_STATE,
-          );
-        });
-      });
-    });
-
-    describe('on error', () => {
-      it('should dispatch the request and error actions', async () => {
-        GroupsApi.changeMembershipState.mockRejectedValue();
-
-        await testAction({
-          action: actions.changeMembershipState,
-          payload: user,
-          state,
-          expectedMutations: [{ type: types.CHANGE_MEMBERSHIP_STATE }],
-          expectedActions: [{ type: 'changeMembershipStateError' }],
-        });
-      });
-    });
-  });
-
-  describe('changeMembershipStateSuccess', () => {
-    it('should dispatch billable members list and GitLab subscription', () => {
-      testAction({
-        action: actions.changeMembershipStateSuccess,
-        state,
-        expectedMutations: [
-          {
-            type: types.CHANGE_MEMBERSHIP_STATE_SUCCESS,
-          },
-        ],
-        expectedActions: [
-          { type: 'fetchBillableMembersList' },
-          { type: 'fetchGitlabSubscription' },
-        ],
-      });
-    });
-  });
-
-  describe('changeMembershipStateError', () => {
-    it('commits mutation and calls createAlert', async () => {
-      await testAction({
-        action: actions.changeMembershipStateError,
-        state,
-        expectedMutations: [{ type: types.CHANGE_MEMBERSHIP_STATE_ERROR }],
-      });
-
-      expect(createAlert).toHaveBeenCalledWith({
-        message: 'Something went wrong. Please try again.',
       });
     });
   });

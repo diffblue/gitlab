@@ -6,7 +6,6 @@ const GROUPS_BILLABLE_MEMBERS_SINGLE_PATH = '/api/:version/groups/:group_id/bill
 const GROUPS_BILLABLE_MEMBERS_PATH = '/api/:version/groups/:id/billable_members';
 const GROUPS_BILLABLE_MEMBERS_SINGLE_MEMBERSHIPS_PATH =
   '/api/:version/groups/:group_id/billable_members/:member_id/memberships';
-const GROUPS_MEMBERS_CHANGE_STATE_PATH = '/api/:version/groups/:group_id/members/:user_id/state';
 
 export const fetchBillableGroupMembersList = (namespaceId, options = {}) => {
   const url = buildApiUrl(GROUPS_BILLABLE_MEMBERS_PATH).replace(':id', namespaceId);
@@ -37,14 +36,6 @@ export const removeBillableMemberFromGroup = (groupId, memberId) => {
     .replace(':id', memberId);
 
   return axios.delete(url);
-};
-
-export const changeMembershipState = (groupId, userId, state) => {
-  const url = buildApiUrl(GROUPS_MEMBERS_CHANGE_STATE_PATH)
-    .replace(':group_id', groupId)
-    .replace(':user_id', userId);
-
-  return axios.put(url, { state });
 };
 
 const GROUPS_PENDING_MEMBERS_PATH = '/api/:version/groups/:id/pending_members';
