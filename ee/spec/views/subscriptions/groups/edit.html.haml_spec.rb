@@ -34,7 +34,8 @@ RSpec.describe 'subscriptions/groups/edit' do
     it 'displays the correct notification for 1 user' do
       render
 
-      expect(rendered).to have_text('You have successfully purchased a Bronze plan subscription for 1 user. You’ll receive a receipt via email.')
+      expect(rendered).to have_text('You have successfully purchased a Bronze plan subscription for 1 user. ' \
+                                    'You’ll receive a receipt via email. It might take a moment')
     end
   end
 
@@ -44,7 +45,8 @@ RSpec.describe 'subscriptions/groups/edit' do
     it 'displays the correct notification for 2 users' do
       render
 
-      expect(rendered).to have_text('You have successfully purchased a Bronze plan subscription for 2 users. You’ll receive a receipt via email.')
+      expect(rendered).to have_text('You have successfully purchased a Bronze plan subscription for 2 users. ' \
+                                    'You’ll receive a receipt via email. It might take a moment')
     end
   end
 
