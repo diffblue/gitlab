@@ -39644,6 +39644,9 @@ msgstr ""
 msgid "There are currently no events."
 msgstr ""
 
+msgid "There are currently no mirrored repositories."
+msgstr ""
+
 msgid "There are merge conflicts"
 msgstr ""
 
