@@ -4,12 +4,9 @@ import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 
 import axios from '~/lib/utils/axios_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { __, s__, sprintf } from '~/locale';
+import { __ } from '~/locale';
 
-import { statusType, statusEvent, dateTypes } from '../constants';
-
-import epicSetSubscription from '../queries/epic_set_subscription.mutation.graphql';
-import updateEpic from '../queries/update_epic.mutation.graphql';
+import { statusType, statusEvent } from '../constants';
 import epicUtils from '../utils/epic_utils';
 
 import * as types from './mutation_types';
@@ -153,154 +150,10 @@ export const toggleTodo = ({ state, dispatch }) => {
 };
 
 /**
- * Methods to handle Epic start and due date manipulations from sidebar
+ * Methods to handle Epic confidentiality manipulations from sidebar
  */
-export const toggleStartDateType = ({ commit }, data) =>
-  commit(types.TOGGLE_EPIC_START_DATE_TYPE, data);
-export const toggleDueDateType = ({ commit }, data) =>
-  commit(types.TOGGLE_EPIC_DUE_DATE_TYPE, data);
-export const requestEpicDateSave = ({ commit }, data) => commit(types.REQUEST_EPIC_DATE_SAVE, data);
-export const requestEpicDateSaveSuccess = ({ commit }, data) =>
-  commit(types.REQUEST_EPIC_DATE_SAVE_SUCCESS, data);
-export const requestEpicDateSaveFailure = ({ commit }, data) => {
-  commit(types.REQUEST_EPIC_DATE_SAVE_FAILURE, data);
-  createFlash({
-    message: sprintf(s__('Epics|An error occurred while saving the %{epicDateType} date'), {
-      epicDateType: dateTypes.start === data.dateType ? s__('Epics|start') : s__('Epics|due'),
-    }),
-  });
-};
-export const saveDate = ({ state, dispatch }, { dateType, dateTypeIsFixed, newDate }) => {
-  const updateEpicInput = {
-    iid: `${state.epicIid}`,
-    groupPath: state.fullPath,
-    [dateType === dateTypes.start ? 'startDateIsFixed' : 'dueDateIsFixed']: dateTypeIsFixed,
-  };
-
-  if (dateTypeIsFixed) {
-    updateEpicInput[dateType === dateTypes.start ? 'startDateFixed' : 'dueDateFixed'] = newDate;
-  }
-
-  dispatch('requestEpicDateSave', { dateType });
-  epicUtils.gqClient
-    .mutate({
-      mutation: updateEpic,
-      variables: {
-        updateEpicInput,
-      },
-    })
-    .then(({ data }) => {
-      if (!data?.updateEpic?.errors.length) {
-        dispatch('requestEpicDateSaveSuccess', {
-          dateType,
-          dateTypeIsFixed,
-          newDate,
-        });
-      } else {
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        throw new Error('An error occurred while saving the date');
-      }
-    })
-    .catch(() => {
-      dispatch('requestEpicDateSaveFailure', {
-        dateType,
-        dateTypeIsFixed: !dateTypeIsFixed,
-      });
-    });
-};
-
 export const updateConfidentialityOnIssuable = ({ commit }, confidential) => {
   commit(types.SET_EPIC_CONFIDENTIAL, confidential);
-};
-
-/**
- * Methods to handle Epic labels selection from sidebar
- */
-export const requestEpicLabelsSelect = ({ commit }) => commit(types.REQUEST_EPIC_LABELS_SELECT);
-export const receiveEpicLabelsSelectSuccess = ({ commit }, labels) =>
-  commit(types.RECEIVE_EPIC_LABELS_SELECT_SUCCESS, labels);
-export const receiveEpicLabelsSelectFailure = ({ commit }) => {
-  commit(types.RECEIVE_EPIC_LABELS_SELECT_FAILURE);
-  createFlash({
-    message: s__('Epics|An error occurred while updating labels.'),
-  });
-};
-export const updateEpicLabels = ({ dispatch, state }, labels) => {
-  const addLabelIds = labels.filter((label) => label.set).map((label) => label.id);
-  const removeLabelIds = labels.filter((label) => !label.set).map((label) => label.id);
-  const updateEpicInput = {
-    iid: `${state.epicIid}`,
-    groupPath: state.fullPath,
-    addLabelIds,
-    removeLabelIds,
-  };
-
-  dispatch('requestEpicLabelsSelect');
-  epicUtils.gqClient
-    .mutate({
-      mutation: updateEpic,
-      variables: {
-        updateEpicInput,
-      },
-    })
-    .then(({ data }) => {
-      if (!data?.updateEpic?.errors.length) {
-        dispatch('receiveEpicLabelsSelectSuccess', labels);
-      } else {
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        throw new Error('An error occurred while updating labels');
-      }
-    })
-    .catch(() => {
-      dispatch('receiveEpicLabelsSelectFailure');
-    });
-};
-
-/**
- * Methods to handle Epic subscription (AKA Notifications) toggle from sidebar
- */
-export const requestEpicSubscriptionToggle = ({ commit }) =>
-  commit(types.REQUEST_EPIC_SUBSCRIPTION_TOGGLE);
-export const requestEpicSubscriptionToggleSuccess = ({ commit }, data) =>
-  commit(types.REQUEST_EPIC_SUBSCRIPTION_TOGGLE_SUCCESS, data);
-export const requestEpicSubscriptionToggleFailure = ({ commit, state }) => {
-  commit(types.REQUEST_EPIC_SUBSCRIPTION_TOGGLE_FAILURE);
-  if (state.subscribed) {
-    createFlash({
-      message: __('An error occurred while unsubscribing to notifications.'),
-    });
-  } else {
-    createFlash({
-      message: __('An error occurred while subscribing to notifications.'),
-    });
-  }
-};
-export const toggleEpicSubscription = ({ state, dispatch }) => {
-  dispatch('requestEpicSubscriptionToggle');
-  epicUtils.gqClient
-    .mutate({
-      mutation: epicSetSubscription,
-      variables: {
-        epicSetSubscriptionInput: {
-          iid: `${state.epicIid}`,
-          groupPath: state.fullPath,
-          subscribedState: !state.subscribed,
-        },
-      },
-    })
-    .then(({ data }) => {
-      if (!data?.epicSetSubscription?.errors.length) {
-        dispatch('requestEpicSubscriptionToggleSuccess', {
-          subscribed: !state.subscribed,
-        });
-      } else {
-        // eslint-disable-next-line @gitlab/require-i18n-strings
-        throw new Error('An error occurred while toggling to notifications.');
-      }
-    })
-    .catch(() => {
-      dispatch('requestEpicSubscriptionToggleFailure');
-    });
 };
 
 /**
