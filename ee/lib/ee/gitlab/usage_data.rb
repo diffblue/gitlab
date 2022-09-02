@@ -203,7 +203,7 @@ module EE
                 geo_nodes: count(::GeoNode),
                 geo_event_log_max_id: alt_usage_data { maximum_id(Geo::EventLog) || 0 },
                 ldap_group_links: count(::LdapGroupLink),
-                issues_with_health_status: count(::Issue.with_health_status, start: minimum_id(::Issue), finish: maximum_id(::Issue)),
+                issues_with_health_status: count(::Issue.with_any_health_status, start: minimum_id(::Issue), finish: maximum_id(::Issue)),
                 ldap_keys: count(::LDAPKey),
                 ldap_users: count(::User.ldap, 'users.id'),
                 merged_merge_requests_using_approval_rules: count(::MergeRequest.merged.joins(:approval_rules), # rubocop: disable CodeReuse/ActiveRecord

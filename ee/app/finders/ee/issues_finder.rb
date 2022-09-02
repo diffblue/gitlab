@@ -25,7 +25,8 @@ module EE
       issues = by_weight(super)
       issues = by_epic(issues)
       issues = by_iteration(issues)
-      by_iteration_cadence(issues)
+      issues = by_iteration_cadence(issues)
+      by_health_status(issues)
     end
 
     private
@@ -76,6 +77,12 @@ module EE
       return items unless params.by_iteration_cadence?
 
       items.in_iteration_cadences(params.iteration_cadence_id)
+    end
+
+    def by_health_status(items)
+      return items unless params.by_health_status?
+
+      items.with_health_status(params[:health_status])
     end
 
     override :filter_negated_items

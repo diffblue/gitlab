@@ -17,10 +17,10 @@ RSpec.describe Resolvers::IssuesResolver do
       let_it_be(:iteration1) { create(:iteration, group: group, start_date: 2.weeks.ago, due_date: 1.week.ago) }
       let_it_be(:current_iteration) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now) }
 
-      let_it_be(:issue1) { create :issue, project: project, epic: epic1, iteration: iteration1, blocking_issues_count: 2 }
+      let_it_be(:issue1) { create :issue, project: project, epic: epic1, iteration: iteration1, blocking_issues_count: 2, health_status: 'at_risk' }
       let_it_be(:issue2) { create :issue, project: project, epic: epic2, weight: 1, blocking_issues_count: 2 }
-      let_it_be(:issue3) { create :issue, project: project, weight: 3, iteration: current_iteration, blocking_issues_count: 4 }
-      let_it_be(:issue4) { create :issue, :published, project: project }
+      let_it_be(:issue3) { create :issue, project: project, weight: 3, iteration: current_iteration, blocking_issues_count: 4, health_status: 'on_track' }
+      let_it_be(:issue4) { create :issue, :published, project: project, health_status: 'needs_attention' }
 
       before do
         project.add_developer(current_user)
@@ -156,6 +156,14 @@ RSpec.describe Resolvers::IssuesResolver do
         context 'when filtering by specific weight' do
           it 'only returns issues that have the specified weight assigned' do
             expect(resolve_issues(weight: '3')).to contain_exactly(issue3)
+          end
+        end
+      end
+
+      describe 'filter by health status' do
+        context 'when filtering by specific health status' do
+          it 'only returns issues that have the specified health status assigned' do
+            expect(resolve_issues(health_status: Issue.health_statuses[:at_risk])).to contain_exactly(issue1)
           end
         end
       end

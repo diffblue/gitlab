@@ -65,6 +65,10 @@ module EE
       def filter_by_iteration_title?
         params[:iteration_title].present?
       end
+
+      def by_health_status?
+        params[:health_status].present?
+      end
     end
   end
 end

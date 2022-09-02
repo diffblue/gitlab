@@ -325,6 +325,34 @@ RSpec.describe IssuesFinder do
           end
         end
       end
+
+      context 'when filtering by health status' do
+        let_it_be(:issue1) { create(:issue, project: project1, health_status: :needs_attention) }
+        let_it_be(:issue2) { create(:issue, project: project1, health_status: :needs_attention) }
+        let_it_be(:issue3) { create(:issue, project: project2, health_status: :needs_attention) }
+
+        before_all do
+          create(:issue, project: project1, health_status: nil)
+          create(:issue, project: project1, health_status: :at_risk)
+          create(:issue, project: project1, health_status: :on_track)
+        end
+
+        context 'filter issues by health status' do
+          let(:params) { { health_status: :needs_attention } }
+
+          it 'returns filtered issues' do
+            expect(items).to contain_exactly(issue1, issue2, issue3)
+          end
+
+          context 'when searching within a specific project' do
+            let(:params) { { project_id: project1.id, health_status: :needs_attention } }
+
+            it 'returns filtered issues' do
+              expect(items).to contain_exactly(issue1, issue2)
+            end
+          end
+        end
+      end
     end
   end
 
