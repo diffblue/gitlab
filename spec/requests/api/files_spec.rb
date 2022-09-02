@@ -6,11 +6,18 @@ RSpec.describe API::Files do
   include RepoHelpers
 
   let(:user) { create(:user) }
+  let(:group) { create(:group, :public) }
+  let(:inherited_guest) { create(:user) { |u| group.add_guest(u) } }
+  let(:inherited_reporter) { create(:user) { |u| group.add_reporter(u) } }
+  let(:inherited_developer) { create(:user) { |u| group.add_developer(u) } }
   let!(:project) { create(:project, :repository, namespace: user.namespace ) }
   let(:guest) { create(:user) { |u| project.add_guest(u) } }
   let(:file_path) { "files%2Fruby%2Fpopen%2Erb" }
+  let(:file_name) { 'popen.rb' }
+  let(:last_commit_id) { '570e7b2abdd848b95f2f578043fc23bd6f6fd24d' }
+  let(:content_sha256) { 'c440cd09bae50c4632cc58638ad33c6aa375b6109d811e76a9cc3a613c1e8887' }
   let(:executable_file_path) { "files%2Fexecutables%2Fls" }
-  let(:rouge_file_path) { "%2e%2e%2f" }
+  let(:invalid_file_path) { "%2e%2e%2f" }
   let(:absolute_path) { "%2Fetc%2Fpasswd.rb" }
   let(:invalid_file_message) { 'file_path should be a valid file path' }
   let(:params) do
@@ -92,7 +99,7 @@ RSpec.describe API::Files do
       let(:options) { {} }
 
       it 'returns 400 when file path is invalid' do
-        head api(route(rouge_file_path), current_user, **options), params: params
+        head api(route(invalid_file_path), current_user, **options), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
       end
@@ -106,16 +113,16 @@ RSpec.describe API::Files do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response.headers['X-Gitlab-File-Path']).to eq(CGI.unescape(file_path))
-        expect(response.headers['X-Gitlab-File-Name']).to eq('popen.rb')
-        expect(response.headers['X-Gitlab-Last-Commit-Id']).to eq('570e7b2abdd848b95f2f578043fc23bd6f6fd24d')
-        expect(response.headers['X-Gitlab-Content-Sha256']).to eq('c440cd09bae50c4632cc58638ad33c6aa375b6109d811e76a9cc3a613c1e8887')
+        expect(response.headers['X-Gitlab-File-Name']).to eq(file_name)
+        expect(response.headers['X-Gitlab-Last-Commit-Id']).to eq(last_commit_id)
+        expect(response.headers['X-Gitlab-Content-Sha256']).to eq(content_sha256)
       end
 
       it 'caches sha256 of the content', :use_clean_rails_redis_caching do
         head api(route(file_path), current_user, **options), params: params
 
         expect(Rails.cache.fetch("blob_content_sha256:#{project.full_path}:#{response.headers['X-Gitlab-Blob-Id']}"))
-          .to eq('c440cd09bae50c4632cc58638ad33c6aa375b6109d811e76a9cc3a613c1e8887')
+          .to eq(content_sha256)
 
         expect_next_instance_of(Gitlab::Git::Blob) do |instance|
           expect(instance).not_to receive(:load_all_data!)
@@ -204,11 +211,25 @@ RSpec.describe API::Files do
   end
 
   describe "GET /projects/:id/repository/files/:file_path" do
-    shared_examples_for 'repository files' do
-      let(:options) { {} }
+    let(:options) { {} }
 
+    shared_examples 'returns non-executable file attributes as json' do
+      specify do
+        get api(route(file_path), api_user, **options), params: params
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['file_path']).to eq(CGI.unescape(file_path))
+        expect(json_response['file_name']).to eq(file_name)
+        expect(json_response['last_commit_id']).to eq(last_commit_id)
+        expect(json_response['content_sha256']).to eq(content_sha256)
+        expect(json_response['execute_filemode']).to eq(false)
+        expect(Base64.decode64(json_response['content']).lines.first).to eq("require 'fileutils'\n")
+      end
+    end
+
+    shared_examples_for 'repository files' do
       it 'returns 400 for invalid file path' do
-        get api(route(rouge_file_path), api_user, **options), params: params
+        get api(route(invalid_file_path), api_user, **options), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response['error']).to eq(invalid_file_message)
@@ -218,17 +239,7 @@ RSpec.describe API::Files do
         subject { get api(route(absolute_path), api_user, **options), params: params }
       end
 
-      it 'returns file attributes as json' do
-        get api(route(file_path), api_user, **options), params: params
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response['file_path']).to eq(CGI.unescape(file_path))
-        expect(json_response['file_name']).to eq('popen.rb')
-        expect(json_response['last_commit_id']).to eq('570e7b2abdd848b95f2f578043fc23bd6f6fd24d')
-        expect(json_response['content_sha256']).to eq('c440cd09bae50c4632cc58638ad33c6aa375b6109d811e76a9cc3a613c1e8887')
-        expect(json_response['execute_filemode']).to eq(false)
-        expect(Base64.decode64(json_response['content']).lines.first).to eq("require 'fileutils'\n")
-      end
+      it_behaves_like 'returns non-executable file attributes as json'
 
       context 'for executable file' do
         it 'returns file attributes as json' do
@@ -307,7 +318,7 @@ RSpec.describe API::Files do
 
         get api(url, api_user, **options), params: params
 
-        expect(headers['Content-Disposition']).to eq(%q(inline; filename="popen.rb"; filename*=UTF-8''popen.rb))
+        expect(headers['Content-Disposition']).to eq(%Q(inline; filename="#{file_name}"; filename*=UTF-8''#{file_name}))
       end
 
       context 'when mandatory params are not given' do
@@ -334,40 +345,92 @@ RSpec.describe API::Files do
       end
     end
 
-    context 'when unauthenticated', 'and project is public' do
-      it_behaves_like 'repository files' do
-        let(:project) { create(:project, :public, :repository) }
-        let(:current_user) { nil }
-        let(:api_user) { nil }
+    context 'when unauthenticated' do
+      context 'and project is public' do
+        it_behaves_like 'repository files' do
+          let(:project) { create(:project, :public, :repository) }
+          let(:current_user) { nil }
+          let(:api_user) { nil }
+        end
+      end
+
+      context 'and project is private' do
+        it_behaves_like '404 response' do
+          let(:request) { get api(route(file_path)), params: params }
+          let(:message) { '404 Project Not Found' }
+        end
       end
     end
 
-    context 'when PATs are used' do
-      it_behaves_like 'repository files' do
-        let(:token) { create(:personal_access_token, scopes: ['read_repository'], user: user) }
-        let(:current_user) { user }
-        let(:api_user) { nil }
-        let(:options) { { personal_access_token: token } }
+    context 'when authenticated', 'as a direct project member' do
+      context 'and project is private' do
+        context 'and user is a developer' do
+          it_behaves_like 'repository files' do
+            let(:current_user) { user }
+            let(:api_user) { user }
+          end
+
+          context 'and PATs are used' do
+            it_behaves_like 'repository files' do
+              let(:token) { create(:personal_access_token, scopes: ['read_repository'], user: user) }
+              let(:current_user) { user }
+              let(:api_user) { nil }
+              let(:options) { { personal_access_token: token } }
+            end
+          end
+        end
+
+        context 'and user is a guest' do
+          it_behaves_like '403 response' do
+            let(:request) { get api(route(file_path), guest), params: params }
+          end
+        end
       end
     end
 
-    context 'when unauthenticated', 'and project is private' do
-      it_behaves_like '404 response' do
-        let(:request) { get api(route(file_path)), params: params }
-        let(:message) { '404 Project Not Found' }
-      end
-    end
+    context 'when authenticated', 'as an inherited member from the group' do
+      context 'when project is public with private repository' do
+        let(:project) { create(:project, :public, :repository, :repository_private, group: group) }
 
-    context 'when authenticated', 'as a developer' do
-      it_behaves_like 'repository files' do
-        let(:current_user) { user }
-        let(:api_user) { user }
-      end
-    end
+        context 'and user is a guest' do
+          it_behaves_like 'returns non-executable file attributes as json' do
+            let(:api_user) { inherited_guest }
+          end
+        end
 
-    context 'when authenticated', 'as a guest' do
-      it_behaves_like '403 response' do
-        let(:request) { get api(route(file_path), guest), params: params }
+        context 'and user is a reporter' do
+          it_behaves_like 'returns non-executable file attributes as json' do
+            let(:api_user) { inherited_reporter }
+          end
+        end
+
+        context 'and user is a developer' do
+          it_behaves_like 'returns non-executable file attributes as json' do
+            let(:api_user) { inherited_developer }
+          end
+        end
+      end
+
+      context 'when project is private' do
+        let(:project) { create(:project, :private, :repository, group: group) }
+
+        context 'and user is a guest' do
+          it_behaves_like '403 response' do
+            let(:request) { get api(route(file_path), inherited_guest), params: params }
+          end
+        end
+
+        context 'and user is a reporter' do
+          it_behaves_like 'returns non-executable file attributes as json' do
+            let(:api_user) { inherited_reporter }
+          end
+        end
+
+        context 'and user is a developer' do
+          it_behaves_like 'returns non-executable file attributes as json' do
+            let(:api_user) { inherited_developer }
+          end
+        end
       end
     end
   end
@@ -406,10 +469,9 @@ RSpec.describe API::Files do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(response.headers['X-Gitlab-File-Path']).to eq(CGI.unescape(file_path))
-        expect(response.headers['X-Gitlab-File-Name']).to eq('popen.rb')
-        expect(response.headers['X-Gitlab-Last-Commit-Id']).to eq('570e7b2abdd848b95f2f578043fc23bd6f6fd24d')
-        expect(response.headers['X-Gitlab-Content-Sha256'])
-          .to eq('c440cd09bae50c4632cc58638ad33c6aa375b6109d811e76a9cc3a613c1e8887')
+        expect(response.headers['X-Gitlab-File-Name']).to eq(file_name)
+        expect(response.headers['X-Gitlab-Last-Commit-Id']).to eq(last_commit_id)
+        expect(response.headers['X-Gitlab-Content-Sha256']).to eq(content_sha256)
         expect(response.headers['X-Gitlab-Execute-Filemode']).to eq("false")
       end
 
@@ -430,7 +492,7 @@ RSpec.describe API::Files do
       end
 
       it 'returns 400 when file path is invalid' do
-        get api(route(rouge_file_path) + '/blame', current_user), params: params
+        get api(route(invalid_file_path) + '/blame', current_user), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response['error']).to eq(invalid_file_message)
@@ -617,7 +679,7 @@ RSpec.describe API::Files do
   describe "GET /projects/:id/repository/files/:file_path/raw" do
     shared_examples_for 'repository raw files' do
       it 'returns 400 when file path is invalid' do
-        get api(route(rouge_file_path) + "/raw", current_user), params: params
+        get api(route(invalid_file_path) + "/raw", current_user), params: params
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response['error']).to eq(invalid_file_message)
@@ -735,6 +797,7 @@ RSpec.describe API::Files do
 
   describe "POST /projects/:id/repository/files/:file_path" do
     let!(:file_path) { "new_subfolder%2Fnewfile%2Erb" }
+
     let(:params) do
       {
         branch: "master",
@@ -752,106 +815,159 @@ RSpec.describe API::Files do
       }
     end
 
-    it 'returns 400 when file path is invalid' do
-      post api(route(rouge_file_path), user), params: params
-
-      expect(response).to have_gitlab_http_status(:bad_request)
-      expect(json_response['error']).to eq(invalid_file_message)
-    end
-
-    it_behaves_like 'when path is absolute' do
-      subject { post api(route(absolute_path), user), params: params }
-    end
-
-    it "creates a new file in project repo" do
-      post api(route(file_path), user), params: params
-
-      expect(response).to have_gitlab_http_status(:created)
-      expect(json_response["file_path"]).to eq(CGI.unescape(file_path))
-      last_commit = project.repository.commit.raw
-      expect(last_commit.author_email).to eq(user.email)
-      expect(last_commit.author_name).to eq(user.name)
-      expect(project.repository.blob_at_branch(params[:branch], CGI.unescape(file_path)).executable?).to eq(false)
-    end
-
-    it "creates a new executable file in project repo" do
-      post api(route(file_path), user), params: executable_params
-
-      expect(response).to have_gitlab_http_status(:created)
-      expect(json_response["file_path"]).to eq(CGI.unescape(file_path))
-      last_commit = project.repository.commit.raw
-      expect(last_commit.author_email).to eq(user.email)
-      expect(last_commit.author_name).to eq(user.name)
-      expect(project.repository.blob_at_branch(params[:branch], CGI.unescape(file_path)).executable?).to eq(true)
-    end
-
-    it "returns a 400 bad request if no mandatory params given" do
-      post api(route("any%2Etxt"), user)
-
-      expect(response).to have_gitlab_http_status(:bad_request)
-    end
-
-    it 'returns a 400 bad request if the commit message is empty' do
-      params[:commit_message] = ''
-
-      post api(route(file_path), user), params: params
-
-      expect(response).to have_gitlab_http_status(:bad_request)
-    end
-
-    it "returns a 400 if editor fails to create file" do
-      allow_next_instance_of(Repository) do |instance|
-        allow(instance).to receive(:create_file).and_raise(Gitlab::Git::CommitError, 'Cannot create file')
-      end
-
-      post api(route("any%2Etxt"), user), params: params
-
-      expect(response).to have_gitlab_http_status(:bad_request)
-    end
-
-    context 'with PATs' do
-      it 'returns 403 with `read_repository` scope' do
-        token = create(:personal_access_token, scopes: ['read_repository'], user: user)
-
-        post api(route(file_path), personal_access_token: token), params: params
-
-        expect(response).to have_gitlab_http_status(:forbidden)
-      end
-
-      it 'returns 201 with `api` scope' do
-        token = create(:personal_access_token, scopes: ['api'], user: user)
-
-        post api(route(file_path), personal_access_token: token), params: params
+    shared_examples 'creates a new file in the project repo' do
+      specify do
+        post api(route(file_path), current_user), params: params
 
         expect(response).to have_gitlab_http_status(:created)
-      end
-    end
-
-    context "when specifying an author" do
-      it "creates a new file with the specified author" do
-        params.merge!(author_email: author_email, author_name: author_name)
-
-        post api(route("new_file_with_author%2Etxt"), user), params: params
-
-        expect(response).to have_gitlab_http_status(:created)
-        expect(response.media_type).to eq('application/json')
+        expect(json_response["file_path"]).to eq(CGI.unescape(file_path))
         last_commit = project.repository.commit.raw
-        expect(last_commit.author_email).to eq(author_email)
-        expect(last_commit.author_name).to eq(author_name)
+        expect(last_commit.author_email).to eq(current_user.email)
+        expect(last_commit.author_name).to eq(current_user.name)
+        expect(project.repository.blob_at_branch(params[:branch], CGI.unescape(file_path)).executable?).to eq(false)
       end
     end
 
-    context 'when the repo is empty' do
-      let!(:project) { create(:project_empty_repo, namespace: user.namespace ) }
+    context 'when authenticated', 'as a direct project member' do
+      context 'when project is private' do
+        context 'and user is a developer' do
+          it 'returns 400 when file path is invalid' do
+            post api(route(invalid_file_path), user), params: params
 
-      it "creates a new file in project repo" do
-        post api(route("newfile%2Erb"), user), params: params
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['error']).to eq(invalid_file_message)
+          end
 
-        expect(response).to have_gitlab_http_status(:created)
-        expect(json_response['file_path']).to eq('newfile.rb')
-        last_commit = project.repository.commit.raw
-        expect(last_commit.author_email).to eq(user.email)
-        expect(last_commit.author_name).to eq(user.name)
+          it_behaves_like 'when path is absolute' do
+            subject { post api(route(absolute_path), user), params: params }
+          end
+
+          it_behaves_like 'creates a new file in the project repo' do
+            let(:current_user) { user }
+          end
+
+          it "creates a new executable file in project repo" do
+            post api(route(file_path), user), params: executable_params
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response["file_path"]).to eq(CGI.unescape(file_path))
+            last_commit = project.repository.commit.raw
+            expect(last_commit.author_email).to eq(user.email)
+            expect(last_commit.author_name).to eq(user.name)
+            expect(project.repository.blob_at_branch(params[:branch], CGI.unescape(file_path)).executable?).to eq(true)
+          end
+
+          it "returns a 400 bad request if no mandatory params given" do
+            post api(route("any%2Etxt"), user)
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+
+          it 'returns a 400 bad request if the commit message is empty' do
+            params[:commit_message] = ''
+
+            post api(route(file_path), user), params: params
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+
+          it "returns a 400 if editor fails to create file" do
+            allow_next_instance_of(Repository) do |instance|
+              allow(instance).to receive(:create_file).and_raise(Gitlab::Git::CommitError, 'Cannot create file')
+            end
+
+            post api(route("any%2Etxt"), user), params: params
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+          end
+
+          context 'and PATs are used' do
+            it 'returns 403 with `read_repository` scope' do
+              token = create(:personal_access_token, scopes: ['read_repository'], user: user)
+
+              post api(route(file_path), personal_access_token: token), params: params
+
+              expect(response).to have_gitlab_http_status(:forbidden)
+            end
+
+            it 'returns 201 with `api` scope' do
+              token = create(:personal_access_token, scopes: ['api'], user: user)
+
+              post api(route(file_path), personal_access_token: token), params: params
+
+              expect(response).to have_gitlab_http_status(:created)
+            end
+          end
+
+          context 'and the repo is empty' do
+            let!(:project) { create(:project_empty_repo, namespace: user.namespace ) }
+
+            it_behaves_like 'creates a new file in the project repo' do
+              let(:current_user) { user }
+              let(:file_path) { "newfile%2Erb" }
+            end
+          end
+
+          context "when specifying an author" do
+            it "creates a new file with the specified author" do
+              params.merge!(author_email: author_email, author_name: author_name)
+
+              post api(route("new_file_with_author%2Etxt"), user), params: params
+
+              expect(response).to have_gitlab_http_status(:created)
+              expect(response.media_type).to eq('application/json')
+              last_commit = project.repository.commit.raw
+              expect(last_commit.author_email).to eq(author_email)
+              expect(last_commit.author_name).to eq(author_name)
+            end
+          end
+        end
+      end
+    end
+
+    context 'when authenticated', 'as an inherited member from the group' do
+      context 'and project is public with private repository' do
+        let(:project) { create(:project, :public, :repository, :repository_private, group: group) }
+
+        context 'and user is a guest' do
+          it_behaves_like '403 response' do
+            let(:request) { post api(route(file_path), inherited_guest), params: params }
+          end
+        end
+
+        context 'and user is a reporter' do
+          it_behaves_like '403 response' do
+            let(:request) { post api(route(file_path), inherited_reporter), params: params }
+          end
+        end
+
+        context 'and user is a developer' do
+          it_behaves_like 'creates a new file in the project repo' do
+            let(:current_user) { inherited_developer }
+          end
+        end
+      end
+
+      context 'and project is private' do
+        let(:project) { create(:project, :private, :repository, group: group) }
+
+        context 'and user is a guest' do
+          it_behaves_like '403 response' do
+            let(:request) { post api(route(file_path), inherited_guest), params: params }
+          end
+        end
+
+        context 'and user is a reporter' do
+          it_behaves_like '403 response' do
+            let(:request) { post api(route(file_path), inherited_reporter), params: params }
+          end
+        end
+
+        context 'and user is a developer' do
+          it_behaves_like 'creates a new file in the project repo' do
+            let(:current_user) { inherited_developer }
+          end
+        end
       end
     end
   end
@@ -907,7 +1023,7 @@ RSpec.describe API::Files do
                         .last_for_path(project.repository, 'master', Addressable::URI.unencode_component(file_path))
       params_with_correct_id = params.merge(last_commit_id: last_commit.id)
 
-      put api(route(rouge_file_path), user), params: params_with_correct_id
+      put api(route(invalid_file_path), user), params: params_with_correct_id
 
       expect(response).to have_gitlab_http_status(:bad_request)
       expect(json_response['error']).to eq(invalid_file_message)
@@ -991,7 +1107,7 @@ RSpec.describe API::Files do
     end
 
     it 'returns 400 when file path is invalid' do
-      delete api(route(rouge_file_path), user), params: params
+      delete api(route(invalid_file_path), user), params: params
 
       expect(response).to have_gitlab_http_status(:bad_request)
       expect(json_response['error']).to eq(invalid_file_message)

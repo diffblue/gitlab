@@ -5,9 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Creation of a new branch' do
   include GraphqlHelpers
 
-  let_it_be(:current_user) { create(:user) }
-  let_it_be(:project) { create(:project, :public, :empty_repo) }
-
+  let(:group) { create(:group, :public) }
+  let(:current_user) { create(:user) }
   let(:input) { { project_path: project.full_path, name: new_branch, ref: ref } }
   let(:new_branch) { 'new_branch' }
   let(:ref) { 'master' }
@@ -15,16 +14,8 @@ RSpec.describe 'Creation of a new branch' do
   let(:mutation) { graphql_mutation(:create_branch, input) }
   let(:mutation_response) { graphql_mutation_response(:create_branch) }
 
-  context 'the user is not allowed to create a branch' do
-    it_behaves_like 'a mutation that returns a top-level access error'
-  end
-
-  context 'when user has permissions to create a branch' do
-    before do
-      project.add_developer(current_user)
-    end
-
-    it 'creates a new branch' do
+  shared_examples 'creates a new branch' do
+    specify do
       post_graphql_mutation(mutation, current_user: current_user)
 
       expect(response).to have_gitlab_http_status(:success)
@@ -33,14 +24,75 @@ RSpec.describe 'Creation of a new branch' do
         'commit' => a_hash_including('id')
       )
     end
+  end
 
-    context 'when ref is not correct' do
-      err_msg = 'Failed to create branch \'another_branch\': invalid reference name \'unknown\''
-      let(:new_branch) { 'another_branch' }
-      let(:ref) { 'unknown' }
+  context 'when project is public' do
+    let(:project) { create(:project, :public, :empty_repo) }
 
-      it_behaves_like 'a mutation that returns errors in the response',
-                      errors: [err_msg]
+    context 'when user is not allowed to create a branch' do
+      it_behaves_like 'a mutation that returns a top-level access error'
+    end
+
+    context 'when user is a direct project member' do
+      context 'and user is a developer' do
+        before do
+          project.add_developer(current_user)
+        end
+
+        it_behaves_like 'creates a new branch'
+
+        context 'when ref is not correct' do
+          err_msg = 'Failed to create branch \'another_branch\': invalid reference name \'unknown\''
+          let(:new_branch) { 'another_branch' }
+          let(:ref) { 'unknown' }
+
+          it_behaves_like 'a mutation that returns errors in the response', errors: [err_msg]
+        end
+      end
+    end
+
+    context 'when user is an inherited member from the group' do
+      context 'when project has a private repository' do
+        let(:project) { create(:project, :public, :empty_repo, :repository_private, group: group) }
+
+        context 'and user is a guest' do
+          before do
+            group.add_guest(current_user)
+          end
+
+          it_behaves_like 'a mutation that returns a top-level access error'
+        end
+
+        context 'and user is a developer' do
+          before do
+            group.add_developer(current_user)
+          end
+
+          it_behaves_like 'creates a new branch'
+        end
+      end
+    end
+  end
+
+  context 'when project is private' do
+    let(:project) { create(:project, :private, :empty_repo, group: group) }
+
+    context 'when user is an inherited member from the group' do
+      context 'and user is a guest' do
+        before do
+          group.add_guest(current_user)
+        end
+
+        it_behaves_like 'a mutation that returns a top-level access error'
+      end
+
+      context 'and user is a developer' do
+        before do
+          group.add_developer(current_user)
+        end
+
+        it_behaves_like 'creates a new branch'
+      end
     end
   end
 end
