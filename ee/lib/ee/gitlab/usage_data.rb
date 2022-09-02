@@ -378,12 +378,6 @@ module EE
             user_preferences_group_overview_security_dashboard: count(::User.active.group_view_security_dashboard.where(time_period))
           }
 
-          time_frame = metric_time_period(time_period)
-
-          SECURE_PRODUCT_TYPES.each do |secure_type, attribs|
-            results["#{prefix}#{attribs[:name]}".to_sym] = add_metric('CountUsersCreatingCiBuildsMetric', time_frame: time_frame, options: { secure_type: secure_type })
-          end
-
           results.merge!(count_secure_pipelines(time_period))
           results.merge!(count_secure_scans(time_period))
 
