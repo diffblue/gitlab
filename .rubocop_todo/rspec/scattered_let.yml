@@ -1,6 +1,7 @@
 ---
 # Cop supports --auto-correct.
 RSpec/ScatteredLet:
+  Details: grace period
   Exclude:
     - 'ee/spec/features/groups/group_roadmap_spec.rb'
     - 'ee/spec/features/merge_trains/two_merge_requests_on_train_spec.rb'

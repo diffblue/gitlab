@@ -1,0 +1,4 @@
+---
+# Cop supports --auto-correct.
+Style/RedundantBegin:
+  Details: grace period

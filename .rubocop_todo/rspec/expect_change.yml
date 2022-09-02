@@ -1,6 +1,7 @@
 ---
 # Cop supports --auto-correct.
 RSpec/ExpectChange:
+  Details: grace period
   Exclude:
     - 'ee/spec/controllers/admin/applications_controller_spec.rb'
     - 'ee/spec/controllers/ee/groups_controller_spec.rb'
