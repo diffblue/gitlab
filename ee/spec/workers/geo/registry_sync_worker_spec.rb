@@ -46,7 +46,7 @@ RSpec.describe Geo::RegistrySyncWorker, :geo, :use_sql_query_cache_for_tracking_
     package_file_2 = create(:geo_package_file_registry)
 
     stub_const('Geo::Scheduler::SchedulerWorker::DB_RETRIEVE_BATCH_SIZE', 5)
-    secondary.update!(files_max_capacity: 4)
+    secondary.update!(files_max_capacity: 2)
     allow(Gitlab::SidekiqStatus).to receive(:job_status).with([]).and_return([]).twice
     allow(Gitlab::SidekiqStatus).to receive(:job_status).with(array_including('123', '456')).and_return([true, true], [true, true], [false, false])
 
@@ -70,8 +70,7 @@ RSpec.describe Geo::RegistrySyncWorker, :geo, :use_sql_query_cache_for_tracking_
 
     # We retrieve all the items in a single batch
     stub_const('Geo::Scheduler::SchedulerWorker::DB_RETRIEVE_BATCH_SIZE', 2)
-    # 8 / 4 = 2 We use one quarter of common files_max_capacity in the Geo::RegistrySyncWorker
-    secondary.update!(files_max_capacity: 4)
+    secondary.update!(files_max_capacity: 2)
 
     expect(Geo::EventWorker).to receive(:perform_async).with('package_file', :created, { model_record_id: package_file_1.package_file.id }).once do
       Thread.new do
@@ -93,8 +92,7 @@ RSpec.describe Geo::RegistrySyncWorker, :geo, :use_sql_query_cache_for_tracking_
   # 2. We send 2, wait for 1 to finish, and then send again.
   it 'attempts to load a new batch without pending downloads' do
     stub_const('Geo::Scheduler::SchedulerWorker::DB_RETRIEVE_BATCH_SIZE', 5)
-    # 8 / 4 = 2 We use one quarter of common files_max_capacity in the Geo::RegistrySyncWorker
-    secondary.update!(files_max_capacity: 4)
+    secondary.update!(files_max_capacity: 2)
 
     result_object = double(
       :result,
@@ -114,7 +112,7 @@ RSpec.describe Geo::RegistrySyncWorker, :geo, :use_sql_query_cache_for_tracking_
     # 1. Load the first batch of 5.
     # 2. 4 get sent out, 1 remains. This triggers another reload, which loads in the next 5.
     # 3. Those 4 get sent out, and 1 remains.
-    # 3. Since the second reload filled the pipe with 4, we need to do a final reload to ensure
+    # 4. Since the second reload filled the pipe with 4, we need to do a final reload to ensure
     #    zero are left.
     expect(subject).to receive(:load_pending_resources).exactly(4).times.and_call_original
 
