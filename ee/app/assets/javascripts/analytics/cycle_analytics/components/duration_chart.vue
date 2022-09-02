@@ -6,7 +6,7 @@ import { GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
 import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { sprintf } from '~/locale';
+import { n__, sprintf } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import {
   DURATION_STAGE_TIME_DESCRIPTION,
@@ -17,6 +17,7 @@ import {
   DURATION_TOTAL_TIME_LABEL,
   DURATION_CHART_X_AXIS_TITLE,
   DURATION_CHART_Y_AXIS_TITLE,
+  DURATION_CHART_Y_AXIS_TOOLTIP_TITLE,
 } from '../constants';
 
 const formatTooltipDate = (date) => dateFormat(date, dateFormats.defaultDate);
@@ -110,13 +111,14 @@ export default {
     renderTooltip({ seriesData }) {
       const [dateTime, metric] = seriesData[0].data;
       this.tooltipTitle = formatTooltipDate(dateTime);
-      this.tooltipContent = metric;
+      this.tooltipContent = n__('%d day', '%d days', metric);
     },
   },
   durationChartTooltipDateFormat: dateFormats.defaultDate,
   i18n: {
     xAxisTitle: DURATION_CHART_X_AXIS_TITLE,
     yAxisTitle: DURATION_CHART_Y_AXIS_TITLE,
+    yAxisTooltipTitle: DURATION_CHART_Y_AXIS_TOOLTIP_TITLE,
   },
 };
 </script>
@@ -136,11 +138,11 @@ export default {
       :show-legend="false"
     >
       <template #tooltip-title>
-        <div>{{ tooltipTitle }} ({{ $options.i18n.xAxisTitle }})</div>
+        <div>{{ tooltipTitle }}</div>
       </template>
       <template #tooltip-content>
         <p class="gl-m-0">
-          {{ $options.i18n.yAxisTitle }}:
+          {{ $options.i18n.yAxisTooltipTitle }}:
           <span class="gl-font-weight-bold">{{ tooltipContent }}</span>
         </p>
       </template>
