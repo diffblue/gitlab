@@ -42,11 +42,14 @@ module Gitlab
       def build
         menu = @menu_builder.build
 
+        show_menu_text = true
+
         menu.merge({
           views: @views,
           shortcuts: @shortcuts,
-          activeTitle: _('Menu')
-        })
+          menuTitle: (_('Menu') if show_menu_text),
+          menuTooltip: (_('Main menu') unless show_menu_text)
+        }.compact)
       end
     end
   end

@@ -3,8 +3,8 @@
   %li
     %a.top-nav-toggle{ href: '#', type: 'button', data: { toggle: "dropdown" } }
       = sprite_icon('hamburger')
-      - if view_model[:activeTitle]
-        .gl-ml-3= view_model[:activeTitle]
+      - if view_model[:menuTitle]
+        .gl-ml-3= view_model[:menuTitle]
 
 .hidden
   - view_model[:shortcuts].each do |shortcut|
