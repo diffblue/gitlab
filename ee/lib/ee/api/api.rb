@@ -30,6 +30,7 @@ module EE
         mount ::API::ProjectPushRule
         mount ::API::GroupPushRule
         mount ::API::MergeTrains
+        mount ::API::MemberRoles
         mount ::API::GroupHooks
         mount ::API::MergeRequestApprovalSettings
         mount ::API::Scim
