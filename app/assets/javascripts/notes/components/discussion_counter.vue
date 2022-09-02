@@ -97,7 +97,10 @@ export default {
           <template #button-content>
             <gl-icon name="ellipsis_v" class="mr-0" />
           </template>
-          <gl-dropdown-item @click="handleExpandDiscussions">
+          <gl-dropdown-item
+            data-testid="toggle-all-discussions-btn"
+            @click="handleExpandDiscussions"
+          >
             {{ toggleThreadsLabel }}
           </gl-dropdown-item>
         </gl-dropdown>
@@ -139,7 +142,10 @@ export default {
             <template #button-content>
               <gl-icon name="ellipsis_v" class="mr-0" />
             </template>
-            <gl-dropdown-item @click="handleExpandDiscussions">
+            <gl-dropdown-item
+              data-testid="toggle-all-discussions-btn"
+              @click="handleExpandDiscussions"
+            >
               {{ toggleThreadsLabel }}
             </gl-dropdown-item>
             <gl-dropdown-item
