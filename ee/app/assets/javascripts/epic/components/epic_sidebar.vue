@@ -19,12 +19,10 @@ import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/c
 import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
-import { dateTypes } from '../constants';
 import epicUtils from '../utils/epic_utils';
 import SidebarHeader from './sidebar_items/sidebar_header.vue';
 
 export default {
-  dateTypes,
   components: {
     SidebarHeader,
     SidebarDateWidget,

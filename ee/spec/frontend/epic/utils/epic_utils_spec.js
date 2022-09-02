@@ -61,23 +61,4 @@ describe('epicUtils', () => {
       expect(Cookies.get('collapsed_gutter')).toBe(`${collapsedGutterVal}`); // Cookie value will always be string
     });
   });
-
-  describe('getDateFromMilestonesTooltip', () => {
-    it('Sanitizes html in milestone title', () => {
-      const tooltipText = epicUtils.getDateFromMilestonesTooltip({
-        dateType: 'start',
-        startDateSourcingMilestoneTitle:
-          '<svg width="100"><use xlink:href="/h5bp/html5-boilerplate/-/raw/main/demo.svg#x" /></svg>',
-        startDateSourcingMilestoneDates: {
-          startDate: '2020-12-23',
-          dueDate: '2021-01-28',
-        },
-        startDateTimeFromMilestones: '2020-12-22T18:30:00.000Z',
-        dueDateTimeFromMilestones: '2021-01-27T18:30:00.000Z',
-      });
-
-      const sanitizedTitle = '<svg width="100"><use></use></svg>';
-      expect(tooltipText.startsWith(sanitizedTitle)).toBe(true);
-    });
-  });
 });
