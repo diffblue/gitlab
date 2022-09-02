@@ -56,6 +56,9 @@ export default {
 
       return __('Select a project');
     },
+    isIssueCreationDisabled() {
+      return !this.selectedProject || this.itemCreateInProgress || !this.title;
+    },
   },
   watch: {
     /**
@@ -87,13 +90,21 @@ export default {
       this.$emit('cancel');
     },
     createIssue() {
-      if (!this.selectedProject) {
+      if (this.isIssueCreationDisabled) {
         return;
       }
 
       const { selectedProject, title } = this;
       const { issues: issuesEndpoint } = selectedProject._links;
       this.$emit('submit', { issuesEndpoint, title });
+      this.resetForm();
+    },
+    resetForm() {
+      /**
+       * We do not reset the selected project as it's common to create multiple
+       * issues in one project at once.
+       */
+      this.title = '';
     },
     handleDropdownShow() {
       this.searchKey = '';
@@ -165,10 +176,12 @@ export default {
         <gl-form-input
           ref="titleInput"
           v-model.trim="title"
+          data-testid="title-input"
           :placeholder="
             parentItem.confidential ? __('New confidential issue title') : __('New issue title')
           "
           autofocus
+          @keyup.enter="createIssue"
         />
       </div>
       <div class="col-sm-6">
@@ -219,6 +232,7 @@ export default {
               <gl-dropdown-item
                 v-for="project in projects"
                 :key="project.id"
+                :data-testid="`project-item-${project.id}`"
                 class="gl-w-full select-project-dropdown"
                 @click="selectedProject = project"
               >
@@ -249,7 +263,8 @@ export default {
           class="w-100"
           variant="confirm"
           category="primary"
-          :disabled="!selectedProject || itemCreateInProgress"
+          data-testid="submit-button"
+          :disabled="isIssueCreationDisabled"
           :loading="itemCreateInProgress || recentItemFetchInProgress"
           @click="createIssue"
           >{{ __('Create issue') }}</gl-button
