@@ -14,7 +14,8 @@ describe('search_settings/components/search_settings.vue', () => {
   const EXTRA_SETTINGS_ID = 'js-extra-settings';
   const TEXT_CONTAIN_SEARCH_TERM = `This text contain ${SEARCH_TERM}.`;
   const TEXT_WITH_SIBLING_ELEMENTS = `${SEARCH_TERM} <a data-testid="sibling" href="#">Learn more</a>.`;
-
+  const EMPTY_STATE_CLASS = 'empty-state';
+  const HIDE_WHEN_EMPTY_CLASS = 'js-hide-when-nothing-matches-search';
   let wrapper;
 
   const buildWrapper = () => {
@@ -22,6 +23,7 @@ describe('search_settings/components/search_settings.vue', () => {
       propsData: {
         searchRoot: document.querySelector(`#${ROOT_ID}`),
         sectionSelector: SECTION_SELECTOR,
+        hideWhenEmptySelector: `.${HIDE_WHEN_EMPTY_CLASS}`,
         isExpandedFn: isExpanded,
       },
       // Add real listeners so we can simplify and strengthen some tests.
@@ -46,6 +48,8 @@ describe('search_settings/components/search_settings.vue', () => {
 
   const findMatchSiblingElement = () => document.querySelector(`[data-testid="sibling"]`);
   const findSearchBox = () => wrapper.find(GlSearchBoxByType);
+  const findEmptyState = () => document.querySelector(`.${EMPTY_STATE_CLASS}`);
+  const findHideWhenEmpty = () => document.querySelector(`.${HIDE_WHEN_EMPTY_CLASS}`);
   const search = (term) => {
     findSearchBox().vm.$emit('input', term);
   };
@@ -67,6 +71,9 @@ describe('search_settings/components/search_settings.vue', () => {
           <span>${TEXT_CONTAIN_SEARCH_TERM}</span>
           <span>${TEXT_WITH_SIBLING_ELEMENTS}</span>
         </section>
+        <div class="row ${HIDE_WHEN_EMPTY_CLASS}">
+          <button type="submit">Save</button>
+        </div>
       </div>
     </div>
     `);
@@ -93,13 +100,41 @@ describe('search_settings/components/search_settings.vue', () => {
     expect(wrapper.emitted('expand')).toEqual([[section]]);
   });
 
+  describe('when nothing matches the search term', () => {
+    beforeEach(() => {
+      search('xxxxxxxxxxx');
+    });
+
+    it('shows an empty state', () => {
+      expect(findEmptyState()).toBeDefined();
+    });
+
+    it('hides the form buttons', () => {
+      expect(findHideWhenEmpty()).toHaveClass('gl-display-none');
+    });
+  });
+
+  describe('when something matches the search term', () => {
+    beforeEach(() => {
+      search(SEARCH_TERM);
+    });
+
+    it('shows no empty state', () => {
+      expect(findEmptyState()).toBeNull();
+    });
+
+    it('shows the form buttons', () => {
+      expect(findHideWhenEmpty()).not.toHaveClass('gl-display-none');
+    });
+  });
+
   it('highlight elements that match the search term', () => {
     search(SEARCH_TERM);
 
     expect(highlightedElementsCount()).toBe(3);
   });
 
-  it('highlight only search term and not the whole line', () => {
+  it('highlights only search term and not the whole line', () => {
     search(SEARCH_TERM);
 
     expect(highlightedTextNodes()).toBe(true);
@@ -140,6 +175,10 @@ describe('search_settings/components/search_settings.vue', () => {
 
       it('displays all sections', () => {
         expect(visibleSectionsCount()).toBe(sectionsCount());
+      });
+
+      it('hides the empty state', () => {
+        expect(findEmptyState()).toBeNull();
       });
 
       it('removes the highlight from all elements', () => {
