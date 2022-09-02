@@ -61,7 +61,7 @@ module Epics
       strong_memoize(:issue_health_statuses) do
         Issue.in_epics(accessible_epics)
           .opened
-          .with_health_status
+          .with_any_health_status
           .counts_by_health_status
       end
     end

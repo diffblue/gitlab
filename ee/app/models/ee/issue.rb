@@ -82,7 +82,8 @@ module EE
         .public_only
       end
       scope :counts_by_health_status, -> { reorder(nil).group(:health_status).count }
-      scope :with_health_status, -> { where.not(health_status: nil) }
+      scope :with_health_status, ->(status) { where(health_status: status) }
+      scope :with_any_health_status, -> { where.not(health_status: nil) }
       scope :distinct_epic_ids, -> do
         epic_ids = except(:order, :select).joins(:epic_issue).reselect('epic_issues.epic_id').distinct
         epic_ids = epic_ids.group('epic_issues.epic_id') if epic_ids.group_values.present?

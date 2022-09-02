@@ -22,6 +22,9 @@ module EE
         argument :weight, GraphQL::Types::String,
                  required: false,
                  description: 'Weight applied to the issue, "none" and "any" values are supported.'
+        argument :health_status, ::Types::HealthStatusEnum,
+                 required: false,
+                 description: 'Health status of the issue.'
       end
 
       override :resolve_with_lookahead
