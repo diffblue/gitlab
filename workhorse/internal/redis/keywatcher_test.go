@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 	"time"
@@ -48,13 +49,25 @@ func (kw *KeyWatcher) processMessages(t *testing.T, numWatchers int, value strin
 	psc := redigomock.NewConn()
 	psc.ReceiveWait = true
 
-	// Setup the initial subscription message
-	psc.Command("SUBSCRIBE", keySubChannel).Expect(createSubscribeMessage(keySubChannel))
-	psc.Command("UNSUBSCRIBE", keySubChannel).Expect(createUnsubscribeMessage(keySubChannel))
-	psc.AddSubscriptionMessage(createSubscriptionMessage(keySubChannel, runnerKey+"="+value))
+	if kw.channelPerKey {
+		channel := channelPrefix + runnerKey
+		psc.Command("SUBSCRIBE", channel).Expect(createSubscribeMessage(channel))
+		psc.Command("UNSUBSCRIBE", channel).Expect(createUnsubscribeMessage(channel))
+		psc.AddSubscriptionMessage(createSubscriptionMessage(channel, value))
+	} else {
+		psc.Command("SUBSCRIBE", keySubChannel).Expect(createSubscribeMessage(keySubChannel))
+		psc.Command("UNSUBSCRIBE", keySubChannel).Expect(createUnsubscribeMessage(keySubChannel))
+		psc.AddSubscriptionMessage(createSubscriptionMessage(keySubChannel, runnerKey+"="+value))
+	}
 
 	errC := make(chan error)
 	go func() { errC <- kw.receivePubSubStream(psc) }()
+
+	require.Eventually(t, func() bool {
+		kw.mu.Lock()
+		defer kw.mu.Unlock()
+		return kw.conn != nil
+	}, time.Second, time.Millisecond)
 	close(ready)
 
 	require.Eventually(t, func() bool {
@@ -76,6 +89,12 @@ type keyChangeTestCase struct {
 }
 
 func TestKeyChangesInstantReturn(t *testing.T) {
+	for _, v := range []bool{false, true} {
+		t.Run(fmt.Sprintf("channelPerKey:%v", v), func(t *testing.T) { testKeyChangesInstantReturn(t, v) })
+	}
+}
+
+func testKeyChangesInstantReturn(t *testing.T, channelPerKey bool) {
 	testCases := []keyChangeTestCase{
 		// WatchKeyStatusAlreadyChanged
 		{
@@ -121,8 +140,9 @@ func TestKeyChangesInstantReturn(t *testing.T) {
 				conn.Command("GET", runnerKey).Expect(tc.returnValue)
 			}
 
-			kw := NewKeyWatcher()
+			kw := NewKeyWatcher(channelPerKey)
 			defer kw.Shutdown()
+			kw.conn = &redis.PubSubConn{Conn: redigomock.NewConn()}
 
 			val, err := kw.WatchKey(runnerKey, tc.watchValue, tc.timeout)
 
@@ -133,6 +153,12 @@ func TestKeyChangesInstantReturn(t *testing.T) {
 }
 
 func TestKeyChangesWhenWatching(t *testing.T) {
+	for _, v := range []bool{false, true} {
+		t.Run(fmt.Sprintf("channelPerKey:%v", v), func(t *testing.T) { testKeyChangesWhenWatching(t, v) })
+	}
+}
+
+func testKeyChangesWhenWatching(t *testing.T, channelPerKey bool) {
 	testCases := []keyChangeTestCase{
 		// WatchKeyStatusSeenChange
 		{
@@ -170,7 +196,7 @@ func TestKeyChangesWhenWatching(t *testing.T) {
 				conn.Command("GET", runnerKey).Expect(tc.returnValue)
 			}
 
-			kw := NewKeyWatcher()
+			kw := NewKeyWatcher(channelPerKey)
 			defer kw.Shutdown()
 
 			wg := &sync.WaitGroup{}
@@ -193,6 +219,12 @@ func TestKeyChangesWhenWatching(t *testing.T) {
 }
 
 func TestKeyChangesParallel(t *testing.T) {
+	for _, v := range []bool{false, true} {
+		t.Run(fmt.Sprintf("channelPerKey:%v", v), func(t *testing.T) { testKeyChangesParallel(t, v) })
+	}
+}
+
+func testKeyChangesParallel(t *testing.T, channelPerKey bool) {
 	testCases := []keyChangeTestCase{
 		{
 			desc:           "massively parallel, sees change with key existing",
@@ -231,7 +263,7 @@ func TestKeyChangesParallel(t *testing.T) {
 			wg.Add(runTimes)
 			ready := make(chan struct{})
 
-			kw := NewKeyWatcher()
+			kw := NewKeyWatcher(channelPerKey)
 			defer kw.Shutdown()
 
 			for i := 0; i < runTimes; i++ {
@@ -255,7 +287,8 @@ func TestShutdown(t *testing.T) {
 	conn, td := setupMockPool()
 	defer td()
 
-	kw := NewKeyWatcher()
+	kw := NewKeyWatcher(false)
+	kw.conn = &redis.PubSubConn{Conn: redigomock.NewConn()}
 	defer kw.Shutdown()
 
 	conn.Command("GET", runnerKey).Expect("something")
