@@ -120,6 +120,14 @@ module EE
       escalations_service(noteable, noteable.project).start_escalation(escalation_policy, author)
     end
 
+    def issuable_resource_link_added(incident, project, author, link_type)
+      issuable_resource_links_service(incident, project, author).issuable_resource_link_added(link_type)
+    end
+
+    def issuable_resource_link_removed(incident, project, author, link_type)
+      issuable_resource_links_service(incident, project, author).issuable_resource_link_removed(link_type)
+    end
+
     # Called when Issuable got linked using `blocks` link
     #
     # noteable      - Noteable object
@@ -162,6 +170,10 @@ module EE
 
     def escalations_service(noteable, project)
       ::SystemNotes::EscalationsService.new(noteable: noteable, project: project)
+    end
+
+    def issuable_resource_links_service(noteable, project, author)
+      ::SystemNotes::IssuableResourceLinksService.new(noteable: noteable, project: project, author: author)
     end
   end
 end

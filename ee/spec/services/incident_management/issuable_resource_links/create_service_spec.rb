@@ -32,6 +32,7 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
 
         expect(execute).to be_error
         expect(execute.message).to eq(error_message_string)
+        expect(SystemNoteService).not_to receive(:issuable_resource_link_added)
       end
 
       it_behaves_like 'does not track incident management event', :incident_management_issuable_resource_link_created
@@ -47,6 +48,14 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
         expect(result.issue).to eq(incident)
         expect(result.link_text).to eq(link_text)
         expect(result.link_type).to eq(link_type.to_s)
+      end
+
+      it 'creates a system note notification' do
+        expect(SystemNoteService).to receive(:issuable_resource_link_added).with(incident, project, current_user,
+          link_type.to_s)
+        expect(SystemNoteService).not_to receive(:issuable_resource_link_removed)
+
+        execute
       end
 
       it_behaves_like 'an incident management tracked event', :incident_management_issuable_resource_link_created

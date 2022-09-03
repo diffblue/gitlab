@@ -46044,6 +46044,9 @@ msgstr ""
 msgid "added %{emails}"
 msgstr ""
 
+msgid "added a %{link_type} link"
+msgstr ""
+
 msgid "added a Zoom call to this issue"
 msgstr ""
 
@@ -47696,6 +47699,9 @@ msgid "remove weight"
 msgstr ""
 
 msgid "removed"
+msgstr ""
+
+msgid "removed a %{link_type} link"
 msgstr ""
 
 msgid "removed a Zoom call from this issue"
