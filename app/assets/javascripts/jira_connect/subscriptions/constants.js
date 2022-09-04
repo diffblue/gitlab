@@ -28,6 +28,8 @@ export const I18N_ADD_SUBSCRIPTIONS_ERROR_MESSAGE = s__(
   'Integrations|Failed to link namespace. Please try again.',
 );
 
+export const GITLAB_COM_BASE_PATH = 'https://gitlab.com';
+
 const OAUTH_WINDOW_SIZE = 800;
 export const OAUTH_WINDOW_OPTIONS = [
   'resizable=yes',
