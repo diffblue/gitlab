@@ -3,6 +3,11 @@ import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 
+import {
+  registerExtension,
+  registeredExtensions,
+} from '~/vue_merge_request_widget/components/extensions';
+
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
 import _GroupedBrowserPerformanceReportsApp from 'ee/reports/browser_performance_report/grouped_browser_performance_reports_app.vue';
@@ -15,6 +20,10 @@ import MrWidgetOptions from 'ee/vue_merge_request_widget/mr_widget_options.vue';
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
 import _GroupedSecurityReportsApp from 'ee/vue_shared/security_reports/grouped_security_reports_app.vue';
+
+// EE Widget Extensions
+import licenseComplianceExtension from 'ee/vue_merge_request_widget/extensions/license_compliance';
+
 import {
   sastDiffSuccessMock,
   dastDiffSuccessMock,
@@ -935,38 +944,6 @@ describe('ee merge request widget options', () => {
     });
   });
 
-  describe('license scanning report', () => {
-    const licenseManagementApiUrl = `${TEST_HOST}/manage_license_api`;
-
-    it('should be rendered if license scanning data is set', () => {
-      gl.mrWidgetData = {
-        ...mockData,
-        enabled_reports: {
-          license_scanning: true,
-        },
-        license_scanning: {
-          managed_licenses_path: licenseManagementApiUrl,
-          can_manage_licenses: false,
-        },
-      };
-
-      createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-      expect(wrapper.find('.license-report-widget').exists()).toBe(true);
-    });
-
-    it('should not be rendered if license scanning data is not set', () => {
-      gl.mrWidgetData = {
-        ...mockData,
-        license_scanning: {},
-      };
-
-      createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-      expect(wrapper.find('.license-report-widget').exists()).toBe(false);
-    });
-  });
-
   describe('CE security report', () => {
     describe.each`
       context                               | canReadVulnerabilities | hasPipeline | shouldRender
@@ -1187,10 +1164,54 @@ describe('ee merge request widget options', () => {
           },
         },
       });
+
       wrapper.vm.mr.state = mergeState;
       await nextTick();
 
       expect(findStatusChecksReport().exists()).toBe(shouldRender);
+    });
+  });
+
+  describe('license scanning report', () => {
+    afterEach(() => {
+      registeredExtensions.extensions = [];
+    });
+
+    it('should be rendered if license widget is registered', async () => {
+      const licenseComparisonPath =
+        '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
+      const licenseComparisonPathCollapsed =
+        '/group-name/project-name/-/merge_requests/78/license_scanning_reports_collapsed';
+      const fullReportPath = '/group-name/project-name/-/merge_requests/78/full_report';
+      const settingsPath = '/group-name/project-name/-/licenses#licenses';
+      const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
+
+      gl.mrWidgetData = {
+        ...mockData,
+        license_scanning_comparison_path: licenseComparisonPath,
+        license_scanning_comparison_collapsed_path: licenseComparisonPathCollapsed,
+        api_approvals_path: apiApprovalsPath,
+        license_scanning: {
+          settings_path: settingsPath,
+          full_report_path: fullReportPath,
+        },
+      };
+
+      registerExtension(licenseComplianceExtension);
+
+      await createComponent({ propsData: { mrData: gl.mrWidgetData } });
+
+      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(true);
+    });
+
+    it('should not be rendered if license widget is not registered', () => {
+      gl.mrWidgetData = {
+        ...mockData,
+      };
+
+      createComponent({ propsData: { mrData: gl.mrWidgetData } });
+
+      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(false);
     });
   });
 });

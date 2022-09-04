@@ -19,11 +19,6 @@ module QA
                 element :icon_status, ':data-qa-selector="`status_${status}_icon`" ' # rubocop:disable QA/ElementWithPattern
               end
 
-              view 'ee/app/assets/javascripts/vue_shared/license_compliance/mr_widget_license_report.vue' do
-                element :license_report_widget
-                element :manage_licenses_button
-              end
-
               view 'app/assets/javascripts/vue_merge_request_widget/components/extensions/base.vue' do
                 element :mr_widget_extension
               end
@@ -39,19 +34,13 @@ module QA
           end
 
           def has_approved_license?(name)
-            content_element = feature_flag_controlled_element(:refactor_license_compliance_extension,
-                                            :child_content,
-                                            :report_item_row)
-            within_element(content_element, text: name) do
+            within_element(:child_content, text: name) do
               has_element?(:status_success_icon, wait: 1)
             end
           end
 
           def has_denied_license?(name)
-            content_element = feature_flag_controlled_element(:refactor_license_compliance_extension,
-                                                              :child_content,
-                                                              :report_item_row)
-            within_element(content_element, text: name) do
+            within_element(:child_content, text: name) do
               has_element?(:status_failed_icon, wait: 1)
             end
           end
@@ -59,15 +48,8 @@ module QA
           def click_manage_licenses_button
             previous_page = page.current_url
 
-            widget_element = feature_flag_controlled_element(:refactor_license_compliance_extension,
-                                                             :mr_widget_extension,
-                                                             :license_report_widget)
-            within_element(widget_element) do
-              if widget_element == :mr_widget_extension
-                click_element(:mr_widget_extension_actions_button, text: 'Manage Licenses')
-              else
-                click_element(:manage_licenses_button)
-              end
+            within_element(:mr_widget_extension) do
+              click_element(:mr_widget_extension_actions_button, text: 'Manage Licenses')
             end
             # TODO workaround for switched to a new window UI
             wait_until(max_duration: 15, reload: false) do

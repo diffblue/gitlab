@@ -19,7 +19,6 @@ module EE
           push_frontend_feature_flag(:refactor_mr_widgets_extensions, @project)
           push_frontend_feature_flag(:refactor_mr_widget_test_summary, @project)
           push_frontend_feature_flag(:refactor_mr_widgets_extensions_user, current_user)
-          push_frontend_feature_flag(:refactor_license_compliance_extension, @project)
           push_frontend_feature_flag(:suggested_reviewers, @project)
         end
 
