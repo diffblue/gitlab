@@ -145,12 +145,11 @@ class GroupsFinder < UnionFinder
                 end
 
       groups << current_user.groups.self_and_descendants
+    elsif include_ancestors?
+      groups << Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
     else
-      groups << if include_ancestors?
-                  Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
-                else
-                  Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).base_and_descendants
-                end
+      groups << current_user.authorized_groups
+      groups << Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).base_and_descendants
     end
 
     groups
