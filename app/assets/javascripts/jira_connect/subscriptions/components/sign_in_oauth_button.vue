@@ -73,7 +73,7 @@ export default {
 
       window.open(
         oauthAuthorizeURLWithChallenge,
-        this.$options.i18n.defaultButtonText,
+        I18N_DEFAULT_SIGN_IN_BUTTON_TEXT,
         OAUTH_WINDOW_OPTIONS,
       );
     },
