@@ -6,8 +6,12 @@ RSpec.describe 'Query.work_item(id)' do
   include GraphqlHelpers
 
   let_it_be(:guest) { create(:user) }
-  let_it_be(:project) { create(:project, :private) }
-  let_it_be(:work_item) { create(:work_item, project: project, description: '- List item', weight: 1) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, :private, group: group) }
+  let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: project.group)) }
+  # rubocop:disable Layout/LineLength
+  let_it_be(:work_item) { create(:work_item, project: project, description: '- List item', weight: 1, iteration: iteration) }
+  # rubocop:enable Layout/LineLength
 
   let(:current_user) { guest }
   let(:work_item_data) { graphql_data['workItem'] }
@@ -24,6 +28,60 @@ RSpec.describe 'Query.work_item(id)' do
     end
 
     context 'when querying widgets' do
+      describe 'iteration widget' do
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetIteration {
+                iteration {
+                  id
+                }
+              }
+            }
+          GRAPHQL
+        end
+
+        context 'when iterations feature is licensed' do
+          before do
+            stub_licensed_features(iterations: true)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns widget information' do
+            expect(work_item_data).to include(
+              'id' => work_item.to_gid.to_s,
+              'widgets' => include(
+                hash_including(
+                  'type' => 'ITERATION',
+                  'iteration' => {
+                    'id' => work_item.iteration.to_global_id.to_s
+                  }
+                )
+              )
+            )
+          end
+        end
+
+        context 'when iteration feature is unlicensed' do
+          before do
+            stub_licensed_features(iterations: false)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns without iteration' do
+            expect(work_item_data).not_to include(
+              'widgets' => include(
+                hash_including('type' => 'ITERATION')
+              )
+            )
+          end
+        end
+      end
+
       describe 'weight widget' do
         let(:work_item_fields) do
           <<~GRAPHQL
