@@ -70,9 +70,6 @@ export default {
         ? this.$options.i18n.description.trial
         : this.$options.i18n.description.registration;
     },
-    aboutYourCompanyType() {
-      return this.trial ? 'ultimate_trial' : 'free_account';
-    },
   },
   methods: {
     toggleTrial() {
@@ -81,7 +78,8 @@ export default {
       });
     },
     trackCompanyForm() {
-      trackCompanyForm(this.aboutYourCompanyType);
+      const aboutYourCompanyType = this.trialOnboardingFlow ? 'ultimate_trial' : 'free_account';
+      trackCompanyForm(aboutYourCompanyType);
     },
   },
   i18n: {
