@@ -7,8 +7,9 @@ import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
 import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
+import { buildNullSeries } from '../../analytics/shared/utils';
+import ChartTooltipText from '../../analytics/shared/components/chart_tooltip_text.vue';
 import DoraChartHeader from './dora_chart_header.vue';
-import DoraChartTooltipText from './dora_chart_tooltip_text.vue';
 import {
   allChartDefinitions,
   areaChartOptions,
@@ -22,7 +23,6 @@ import {
   CHART_TITLE,
 } from './static_data/change_failure_rate';
 import {
-  buildNullSeries,
   apiDataToChartSeries,
   seriesToMedianSeries,
   extractTimeSeriesTooltip,
@@ -40,7 +40,7 @@ export default {
   components: {
     CiCdAnalyticsCharts,
     DoraChartHeader,
-    DoraChartTooltipText,
+    ChartTooltipText,
     ValueStreamMetrics,
   },
   inject: {
@@ -195,7 +195,7 @@ export default {
       </template>
       <template #tooltip-title> {{ tooltipTitle }} </template>
       <template #tooltip-content>
-        <dora-chart-tooltip-text
+        <chart-tooltip-text
           :empty-value-text="$options.i18n.noIncidents"
           :tooltip-value="tooltipValue"
         />

@@ -1,6 +1,6 @@
 <script>
 export default {
-  name: 'DoraChartTooltipText',
+  name: 'ChartTooltipText',
   props: {
     emptyValueText: {
       type: String,
@@ -16,7 +16,7 @@ export default {
 </script>
 <template>
   <div>
-    <template v-if="tooltipValue === null">
+    <template v-if="!tooltipValue.length">
       {{ emptyValueText }}
     </template>
     <div v-else class="gl-display-flex gl-flex-direction-column">
