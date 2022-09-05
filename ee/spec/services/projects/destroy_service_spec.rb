@@ -129,4 +129,40 @@ RSpec.describe Projects::DestroyService do
       expect { project.reload }.to raise_error(ActiveRecord::RecordNotFound)
     end
   end
+
+  context 'when project issues are associated with some epics' do
+    let!(:group) { create(:group) }
+    let!(:project) { create(:project, group: group) }
+    let!(:issue1) { create(:issue, project: project) }
+    let!(:issue2) { create(:issue, project: project) }
+    let!(:issue3) { create(:issue, project: project) }
+    let!(:epic_issue1) { create(:epic_issue, issue: issue1) }
+    let!(:epic_issue2) { create(:epic_issue, issue: issue2) }
+    let!(:epic_issue3) { create(:epic_issue, issue: issue3) }
+
+    before do
+      group.add_owner(user)
+    end
+
+    it 'schedules cache update for associated epics in batches' do
+      stub_const('::Epics::UpdateCachedMetadataWorker::BATCH_SIZE', 2)
+
+      expect(::Epics::UpdateCachedMetadataWorker).to receive(:bulk_perform_in)
+        .with(1.minute, [[[epic_issue1.epic_id, epic_issue2.epic_id]], [[epic_issue3.epic_id]]]).once
+
+      subject.execute
+    end
+
+    context 'when cache_issue_sums flag is disabled' do
+      before do
+        stub_feature_flags(cache_issue_sums: false)
+      end
+
+      it 'does nothing' do
+        expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:bulk_perform_in)
+
+        subject.execute
+      end
+    end
+  end
 end

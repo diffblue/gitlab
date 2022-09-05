@@ -14,6 +14,7 @@ module EE
     include FromUnion
 
     GIT_LFS_DOWNLOAD_OPERATION = 'download'
+    ISSUE_BATCH_SIZE = 500
 
     prepended do
       include Elastic::ProjectsSearch
@@ -898,6 +899,15 @@ module EE
     override :inactive?
     def inactive?
       ::Gitlab.com? && root_namespace.paid? ? false : super
+    end
+
+    def epic_ids_referenced_by_issues
+      epic_ids = Set.new
+      issues.each_batch(of: ISSUE_BATCH_SIZE, column: :iid) do |batch|
+        epic_ids += ::EpicIssue.where(issue_id: batch).limit(ISSUE_BATCH_SIZE).pluck(:epic_id)
+      end
+
+      epic_ids.to_a
     end
 
     private

@@ -17,6 +17,7 @@ module EE
       include ReactiveCaching
 
       ALLOWED_ACTIONS_TO_USE_FILTERING_OPTIMIZATION = [:read_epic, :read_confidential_epic].freeze
+      EPIC_BATCH_SIZE = 500
 
       self.reactive_cache_work_type = :no_dependency
       self.reactive_cache_refresh_interval = 10.minutes
@@ -761,6 +762,15 @@ module EE
 
     def cluster_agents
       ::Clusters::Agent.for_projects(all_projects)
+    end
+
+    def parent_epic_ids_in_ancestor_groups
+      ids = Set.new
+      epics.has_parent.each_batch(of: EPIC_BATCH_SIZE, column: :iid) do |batch|
+        ids += ::Epic.id_in(batch.select(:parent_id)).where.not(group_id: id).limit(EPIC_BATCH_SIZE).pluck(:id)
+      end
+
+      ids.to_a
     end
 
     private

@@ -2905,4 +2905,22 @@ RSpec.describe Group do
       it { is_expected.to eq false }
     end
   end
+
+  describe '#parent_epic_ids_in_ancestor_groups' do
+    let_it_be(:root_group) { create(:group) }
+    let_it_be(:group) { create(:group, parent: root_group) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:root_epic) { create(:epic, group: root_group) }
+    let_it_be(:unrelated_epic) { create(:epic, group: root_group) }
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:subepic1) { create(:epic, parent: root_epic, group: subgroup) }
+    let_it_be(:subepic2) { create(:epic, parent: epic, group: subgroup) }
+    let_it_be(:subepic3) { create(:epic, parent: subepic1, group: subgroup) }
+
+    it 'returns parent ids of epics of the given group that belongs to ancestor groups' do
+      stub_const('Group::EPIC_BATCH_SIZE', 1)
+
+      expect(subgroup.parent_epic_ids_in_ancestor_groups).to match_array([epic.id, root_epic.id])
+    end
+  end
 end

@@ -99,4 +99,42 @@ RSpec.describe Groups::DestroyService do
       subject.execute
     end
   end
+
+  context 'when group epics have parent epic outside of group' do
+    let!(:parent_group) { create(:group) }
+    let!(:group) { create(:group, parent: parent_group) }
+    let!(:parent_epic1) { create(:epic, group: parent_group) }
+    let!(:parent_epic2) { create(:epic, group: parent_group) }
+    let!(:parent_epic3) { create(:epic, group: parent_group) }
+    let!(:epic1) { create(:epic, group: group, parent: parent_epic1) }
+    let!(:epic2) { create(:epic, group: group, parent: parent_epic2) }
+    let!(:epic3) { create(:epic, group: group, parent: parent_epic3) }
+    # update should not be called for this as parent is in the same group:
+    let!(:epic4) { create(:epic, group: group, parent: epic2) }
+
+    before do
+      group.add_maintainer(user)
+    end
+
+    it 'schedules cache update for associated epics in batches' do
+      stub_const('::Epics::UpdateCachedMetadataWorker::BATCH_SIZE', 2)
+
+      expect(::Epics::UpdateCachedMetadataWorker).to receive(:bulk_perform_in)
+        .with(1.minute, [[[parent_epic1.id, parent_epic2.id]], [[parent_epic3.id]]]).once
+
+      subject.execute
+    end
+
+    context 'when cache_issue_sums flag is disabled' do
+      before do
+        stub_feature_flags(cache_issue_sums: false)
+      end
+
+      it 'does nothing' do
+        expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:bulk_perform_in)
+
+        subject.execute
+      end
+    end
+  end
 end

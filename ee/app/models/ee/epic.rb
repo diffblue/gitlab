@@ -20,6 +20,7 @@ module EE
       include IdInOrdered
       include Todoable
       include SortableTitle
+      include EachBatch
 
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
 
