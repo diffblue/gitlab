@@ -116,7 +116,7 @@ RSpec.describe 'Group navbar' do
 
           insert_after_sub_nav_item(
             _('Package Registry'),
-            within: _('Packages & Registries'),
+            within: _('Packages and registries'),
             new_sub_nav_item_name: _('Container Registry')
           )
 
