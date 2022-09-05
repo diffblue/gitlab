@@ -56,7 +56,7 @@ describe('RunnerDetails', () => {
       });
 
       it('displays upgrade available badge', () => {
-        expect(findRunnerUpgradeStatusBadge().text()).toBe(s__('Runners|upgrade available'));
+        expect(findRunnerUpgradeStatusBadge().text()).toBe(s__('Runners|Upgrade available'));
       });
     });
   });

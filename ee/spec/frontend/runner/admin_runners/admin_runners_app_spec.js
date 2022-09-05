@@ -88,8 +88,8 @@ describe('AdminRunnersApp', () => {
     it.each`
       version     | description                                 | upgradeText                           | index
       ${'15.1.1'} | ${'displays no upgrade badge (up to date)'} | ${''}                                 | ${1}
-      ${'15.1.0'} | ${'displays upgrade recommended'}           | ${s__('Runners|upgrade recommended')} | ${2}
-      ${'15.0.0'} | ${'displays upgrade available'}             | ${s__('Runners|upgrade available')}   | ${3}
+      ${'15.1.0'} | ${'displays upgrade recommended'}           | ${s__('Runners|Upgrade recommended')} | ${2}
+      ${'15.0.0'} | ${'displays upgrade available'}             | ${s__('Runners|Upgrade available')}   | ${3}
     `('with $version $description', ({ version, index, upgradeText }) => {
       rows = findRunnerRows().wrappers.map(extendedWrapper);
 
