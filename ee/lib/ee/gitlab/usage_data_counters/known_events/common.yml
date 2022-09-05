@@ -58,3 +58,8 @@
   category: compliance
   redis_slot: compliance
   aggregation: weekly
+# Container Security - Network Policies
+- name: clusters_using_network_policies_ui
+  redis_slot: network_policies
+  category: network_policies
+  aggregation: weekly
