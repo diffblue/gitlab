@@ -1218,37 +1218,6 @@ RSpec.describe Projects::JobsController, :clean_gitlab_redis_shared_state do
       end
     end
 
-    context "when job has a trace in database" do
-      let(:job) { create(:ci_build, pipeline: pipeline) }
-
-      before do
-        job.update_column(:trace, "Sample trace")
-      end
-
-      it 'sends a trace file' do
-        response = subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(response.headers['Content-Type']).to eq('text/plain; charset=utf-8')
-        expect(response.headers['Content-Disposition']).to match(/^inline/)
-        expect(response.body).to eq('Sample trace')
-      end
-
-      context 'when trace format is not text/plain' do
-        before do
-          job.update_column(:trace, '<html></html>')
-        end
-
-        it 'sets content disposition to attachment' do
-          response = subject
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response.headers['Content-Type']).to eq('text/plain; charset=utf-8')
-          expect(response.headers['Content-Disposition']).to match(/^attachment/)
-        end
-      end
-    end
-
     context 'when job does not have a trace file' do
       let(:job) { create(:ci_build, pipeline: pipeline) }
 
