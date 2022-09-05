@@ -24040,6 +24040,9 @@ msgstr ""
 msgid "Mailgun events"
 msgstr ""
 
+msgid "Main menu"
+msgstr ""
+
 msgid "Maintenance mode"
 msgstr ""
 
