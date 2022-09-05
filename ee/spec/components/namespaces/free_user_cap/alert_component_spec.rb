@@ -30,7 +30,7 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
         expect(rendered_component).to have_css('.gl-alert-actions')
 
         expect(rendered_component)
-          .to match("container-fluid container-limited gl-overflow-auto #{content_class}")
+          .to match("gl-overflow-auto #{content_class}")
 
         expect(rendered_component)
           .to have_css("[data-testid='user-over-limit-free-plan-alert']" \
