@@ -3412,4 +3412,23 @@ RSpec.describe Project do
       end
     end
   end
+
+  describe '#epic_ids_referenced_by_issues' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: group) }
+    let_it_be(:project) { create(:project, group: subgroup) }
+    let_it_be(:issue1) { create(:issue, project: project) }
+    let_it_be(:issue2) { create(:issue, project: project) }
+    let_it_be(:epic1) { create(:epic, group: group) }
+    let_it_be(:epic2) { create(:epic, group: subgroup) }
+    let_it_be(:unrelated_epic) { create(:epic, group: subgroup) }
+    let_it_be(:epic_issue1) { create(:epic_issue, epic: epic1, issue: issue1) }
+    let_it_be(:epic_issue2) { create(:epic_issue, epic: epic2, issue: issue2) }
+
+    it 'returns epic ids referenced by issues in this project' do
+      stub_const('Project::ISSUE_BATCH_SIZE', 1)
+
+      expect(project.epic_ids_referenced_by_issues).to match_array([epic1.id, epic2.id])
+    end
+  end
 end

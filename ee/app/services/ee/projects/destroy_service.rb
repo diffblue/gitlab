@@ -37,8 +37,25 @@ module EE
 
       override :destroy_project_related_records
       def destroy_project_related_records(project)
-        super && log_destroy_events
+        with_scheduling_epic_cache_update do
+          super && log_destroy_events
+        end
       end
+
+      # rubocop:disable Scalability/BulkPerformWithContext
+      def with_scheduling_epic_cache_update
+        return yield unless ::Feature.enabled?(:cache_issue_sums)
+
+        ids = project.epic_ids_referenced_by_issues
+
+        yield
+
+        ::Epics::UpdateCachedMetadataWorker.bulk_perform_in(
+          1.minute,
+          ids.each_slice(::Epics::UpdateCachedMetadataWorker::BATCH_SIZE).map { |ids| [ids] }
+        )
+      end
+      # rubocop:enable Scalability/BulkPerformWithContext
 
       def log_destroy_events
         log_geo_event(project)
