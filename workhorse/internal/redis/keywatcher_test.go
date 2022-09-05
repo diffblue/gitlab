@@ -1,7 +1,6 @@
 package redis
 
 import (
-	"errors"
 	"sync"
 	"testing"
 	"time"
@@ -74,19 +73,6 @@ type keyChangeTestCase struct {
 	processedValue string
 	expectedStatus WatchKeyStatus
 	timeout        time.Duration
-}
-
-func TestKeyChangesBubblesUpError(t *testing.T) {
-	conn, td := setupMockPool()
-	defer td()
-
-	kw := NewKeyWatcher()
-	defer kw.Shutdown()
-
-	conn.Command("GET", runnerKey).ExpectError(errors.New("test error"))
-
-	_, err := kw.WatchKey(runnerKey, "something", time.Second)
-	require.Error(t, err, "Expected error")
 }
 
 func TestKeyChangesInstantReturn(t *testing.T) {
