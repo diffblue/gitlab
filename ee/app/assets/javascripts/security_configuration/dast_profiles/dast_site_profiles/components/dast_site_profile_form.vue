@@ -163,6 +163,9 @@ export default {
     isAPISecurityEnabled() {
       return this.glFeatures.dastApiScanner && this.isTargetAPI;
     },
+    isAuthFieldSupport() {
+      return !this.isTargetAPI || this.isAPISecurityEnabled;
+    },
     shouldRenderScanMethod() {
       return this.isAPISecurityEnabled;
     },
@@ -170,7 +173,7 @@ export default {
       return SCAN_METHODS[this.form.fields.scanMethod.value];
     },
     isAuthEnabled() {
-      return this.authSection.fields.enabled && (!this.isTargetAPI || this.isAPISecurityEnabled);
+      return this.isAuthFieldSupport && this.authSection.fields.enabled;
     },
     isSubmitBlocked() {
       return !this.form.state || (this.isAuthEnabled && !this.authSection.state);
@@ -191,7 +194,7 @@ export default {
         profileName,
         targetUrl,
         targetType,
-        ...((!this.isTargetAPI || this.isAPISecurityEnabled) && {
+        ...(this.isAuthFieldSupport && {
           auth: this.serializedAuthFields,
         }),
         ...(excludedUrls && {
@@ -391,7 +394,7 @@ export default {
     </gl-form-group>
 
     <dast-site-auth-section
-      v-if="!isTargetAPI || isAPISecurityEnabled"
+      v-if="isAuthFieldSupport"
       v-model="authSection"
       :is-target-api="isTargetAPI"
       :disabled="isPolicyProfile"
