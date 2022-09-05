@@ -17,6 +17,9 @@ export const SEVERITY_LEVELS = {
   info: s__('severity|Info'),
 };
 
+// The GraphQL type (`VulnerabilitySeverity`) for severities is an enum with uppercase values
+export const SEVERITY_LEVELS_GRAPHQL = Object.keys(SEVERITY_LEVELS).map((k) => k.toUpperCase());
+
 export const REPORT_TYPES_DEFAULT = {
   api_fuzzing: s__('ciReport|API Fuzzing'),
   container_scanning: s__('ciReport|Container Scanning'),
