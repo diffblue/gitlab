@@ -48,12 +48,18 @@ class Projects::EnvironmentsController < Projects::ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        @environments = project.environments
-          .with_state(params[:scope] || :available)
+        environments_count_by_state = {}
+
+        if Feature.enabled?(:environments_search, project)
+          @environments = search_environments.with_state(params[:scope] || :available)
+          environments_count_by_state = search_environments.count_by_state
+        else
+          @environments = project.environments
+            .with_state(params[:scope] || :available)
+          environments_count_by_state = project.environments.count_by_state
+        end
 
         Gitlab::PollingInterval.set_header(response, interval: 3_000)
-        environments_count_by_state = project.environments.count_by_state
-
         render json: {
           environments: serialize_environments(request, response, params[:nested]),
           review_app: serialize_review_app,
@@ -72,7 +78,13 @@ class Projects::EnvironmentsController < Projects::ApplicationController
     respond_to do |format|
       format.html
       format.json do
-        folder_environments = project.environments.where(environment_type: params[:id])
+        folder_environments =
+          if Feature.enabled?(:environments_search, project)
+            search_environments(type: params[:id])
+          else
+            project.environments.where(environment_type: params[:id])
+          end
+
         @environments = folder_environments.with_state(params[:scope] || :available)
           .order(:name)
 
@@ -247,6 +259,13 @@ class Projects::EnvironmentsController < Projects::ApplicationController
 
   def environment
     @environment ||= project.environments.find(params[:id])
+  end
+
+  def search_environments(type: nil)
+    Environments::EnvironmentsFinder.new(project,
+                                         current_user,
+                                         type: type,
+                                         search: params[:search]).execute
   end
 
   def metrics_params
