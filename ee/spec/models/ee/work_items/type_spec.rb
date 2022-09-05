@@ -10,6 +10,7 @@ RSpec.describe WorkItems::Type do
       is_expected.to contain_exactly(
         ::WorkItems::Widgets::Description,
         ::WorkItems::Widgets::Hierarchy,
+        ::WorkItems::Widgets::Iteration,
         ::WorkItems::Widgets::Labels,
         ::WorkItems::Widgets::Assignees,
         ::WorkItems::Widgets::Weight,

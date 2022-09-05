@@ -16,6 +16,8 @@ module EE
               ::Types::WorkItems::Widgets::WeightType
             when ::WorkItems::Widgets::VerificationStatus
               ::Types::WorkItems::Widgets::VerificationStatusType
+            when ::WorkItems::Widgets::Iteration
+              ::Types::WorkItems::Widgets::IterationType
             else
               super
             end
@@ -25,7 +27,8 @@ module EE
         prepended do
           EE_ORPHAN_TYPES = [
             ::Types::WorkItems::Widgets::WeightType,
-            ::Types::WorkItems::Widgets::VerificationStatusType
+            ::Types::WorkItems::Widgets::VerificationStatusType,
+            ::Types::WorkItems::Widgets::IterationType
           ].freeze
 
           orphan_types(*ce_orphan_types, *EE_ORPHAN_TYPES)

@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe 'Update a work item' do
   include GraphqlHelpers
 
-  let_it_be(:project) { create(:project) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group) }
   let_it_be(:reporter) { create(:user).tap { |user| project.add_reporter(user) } }
   let_it_be(:guest) { create(:user).tap { |user| project.add_guest(user) } }
   let_it_be(:work_item, refind: true) { create(:work_item, project: project) }
@@ -13,6 +14,111 @@ RSpec.describe 'Update a work item' do
   let(:mutation) { graphql_mutation(:workItemUpdate, input.merge('id' => work_item.to_global_id.to_s), fields) }
 
   let(:mutation_response) { graphql_mutation_response(:work_item_update) }
+
+  shared_examples 'work item is not updated' do
+    it 'ignores the update' do
+      expect do
+        post_graphql_mutation(mutation, current_user: current_user)
+      end.not_to change { work_item.reload }
+    end
+  end
+
+  shared_examples 'user without permission to admin work item cannot update the attribute' do
+    # A guest user who is also the author of a work item can update some of its attrs (policy :update_work_item.)
+    # Only a reporter (or above) may update the weight (policy :admin_work_item.)
+    context 'when a guest user is also an author of the work item' do
+      let(:current_user) { guest }
+
+      let_it_be(:work_item) { create(:work_item, project: project, author: guest) }
+
+      it_behaves_like 'work item is not updated'
+    end
+  end
+
+  context 'with iteration widget input' do
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:old_iteration) { create(:iteration, iterations_cadence: cadence) }
+    let_it_be(:new_iteration) { create(:iteration, iterations_cadence: cadence) }
+
+    let(:fields) do
+      <<~FIELDS
+        workItem {
+          widgets {
+            type
+            ... on WorkItemWidgetIteration {
+              iteration {
+                id
+              }
+            }
+          }
+        }
+        errors
+      FIELDS
+    end
+
+    let(:iteration_id) { new_iteration.to_global_id.to_s }
+    let(:input) { { 'iterationWidget' => { 'iterationId' => iteration_id } } }
+
+    before do
+      work_item.update!(iteration: old_iteration)
+    end
+
+    context 'when iterations feature is unlicensed' do
+      let(:current_user) { reporter }
+
+      before do
+        stub_licensed_features(iterations: false)
+      end
+
+      it_behaves_like 'work item is not updated'
+    end
+
+    context 'when iterations feature is licensed' do
+      before do
+        stub_licensed_features(iterations: true)
+      end
+
+      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+
+      context 'when user has permissions to admin a work item' do
+        let(:current_user) { reporter }
+
+        shared_examples "work item's iteration is updated" do
+          it "updates the work item's iteration" do
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+
+              work_item.reload
+            end.to change(work_item, :iteration).from(old_iteration).to(new_iteration)
+
+            expect(response).to have_gitlab_http_status(:success)
+          end
+        end
+
+        context 'when setting to a new iteration' do
+          it_behaves_like "work item's iteration is updated"
+        end
+
+        context 'when setting iteration to null' do
+          let(:new_iteration) { nil }
+          let(:iteration_id) { nil }
+
+          it_behaves_like "work item's iteration is updated"
+        end
+      end
+
+      context 'when the user does not have permission to update the work item' do
+        let(:current_user) { guest }
+
+        it_behaves_like 'a mutation that returns top-level errors', errors: [
+          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+          'perform this action'
+        ]
+
+        it_behaves_like 'work item is not updated'
+      end
+    end
+  end
 
   context 'with weight widget input' do
     let(:new_weight) { 2 }
@@ -39,11 +145,7 @@ RSpec.describe 'Update a work item' do
         stub_licensed_features(issue_weights: false)
       end
 
-      it 'ignores the update' do
-        expect do
-          post_graphql_mutation(mutation, current_user: current_user)
-        end.not_to change { work_item.reload }
-      end
+      it_behaves_like 'work item is not updated'
     end
 
     context 'when issuable weights is licensed' do
@@ -65,7 +167,7 @@ RSpec.describe 'Update a work item' do
             work_item.update!(weight: 2)
           end
 
-          it 'closes and updates the work item' do
+          it 'updates the work item' do
             expect do
               post_graphql_mutation(mutation, current_user: current_user)
               work_item.reload
@@ -76,33 +178,17 @@ RSpec.describe 'Update a work item' do
         end
       end
 
-      context 'when user has permissions to update a work item' do
-        let(:current_user) { guest }
-
-        let_it_be(:work_item) { create(:work_item, project: project, author: guest) }
-
-        # A guest user who is also the author of a work item can update some of its attrs (policy :update_work_item.)
-        # Only a reporter (or above) may update the weight (policy :admin_work_item.)
-        it 'ignores the update' do
-          expect do
-            post_graphql_mutation(mutation, current_user: current_user)
-          end.not_to change { work_item.reload }
-        end
-      end
+      it_behaves_like 'user without permission to admin work item cannot update the attribute'
 
       context 'when the user does not have permission to update the work item' do
         let(:current_user) { guest }
 
-        it 'returns an error if the user is not allowed to update the work item' do
-          error = "The resource that you are attempting to access does not exist or you "\
-                  "don't have permission to perform this action"
+        it_behaves_like 'a mutation that returns top-level errors', errors: [
+          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+          'perform this action'
+        ]
 
-          expect do
-            post_graphql_mutation(mutation, current_user: current_user)
-          end.not_to change { work_item.reload }
-
-          expect(graphql_errors).to include(a_hash_including('message' => error))
-        end
+        it_behaves_like 'work item is not updated'
       end
     end
   end
