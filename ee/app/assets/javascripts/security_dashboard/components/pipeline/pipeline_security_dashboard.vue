@@ -127,8 +127,7 @@ export default {
       `SecurityReports|Results show vulnerabilities introduced by the merge request, in addition to existing vulnerabilities from the latest successful pipeline in your project's default branch.`,
     ),
     pageDescriptionHelpLink: helpPagePath(
-      'user/application_security/security_dashboard/index.html',
-      { anchor: 'view-vulnerabilities-in-a-pipeline' },
+      'user/application_security/vulnerability_report/pipeline.html',
     ),
   },
 };
