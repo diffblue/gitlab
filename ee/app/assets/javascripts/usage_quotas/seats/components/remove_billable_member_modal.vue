@@ -83,7 +83,7 @@ export default {
     :action-primary="actionPrimaryProps"
     :action-cancel="actionCancelProps"
     :title="modalTitle"
-    data-qa-selector="remove_billable_member_modal"
+    data-testid="remove-billable-member-modal"
     :ok-disabled="!canSubmit"
     @primary="removeBillableMember"
     @hide="setBillableMemberToRemove(null)"
