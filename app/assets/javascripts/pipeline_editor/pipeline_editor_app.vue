@@ -55,7 +55,7 @@ export default {
       shouldSkipStartScreen: false,
       showFailure: false,
       showResetConfirmationModal: false,
-      showStartScreen: false,
+      showStartScreen: true,
       showSuccess: false,
       starterTemplate: '',
       starterTemplateName: STARTER_TEMPLATE_NAME,
@@ -321,6 +321,7 @@ export default {
     },
     reportFailure(type, reasons = []) {
       this.showFailure = true;
+      this.showStartScreen = false;
       this.failureType = type;
       this.failureReasons = reasons;
       window.scrollTo({ top: 0, behavior: 'smooth' });
