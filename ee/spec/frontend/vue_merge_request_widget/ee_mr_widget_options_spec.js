@@ -1177,41 +1177,42 @@ describe('ee merge request widget options', () => {
       registeredExtensions.extensions = [];
     });
 
-    it('should be rendered if license widget is registered', async () => {
-      const licenseComparisonPath =
-        '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
-      const licenseComparisonPathCollapsed =
-        '/group-name/project-name/-/merge_requests/78/license_scanning_reports_collapsed';
-      const fullReportPath = '/group-name/project-name/-/merge_requests/78/full_report';
-      const settingsPath = '/group-name/project-name/-/licenses#licenses';
-      const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
+    it.each`
+      shouldRegisterExtension | description
+      ${true}                 | ${'extension is registered'}
+      ${false}                | ${'extension is not registered'}
+    `(
+      'should render license widget is "$shouldRegisterExtension" when $description',
+      ({ shouldRegisterExtension }) => {
+        const licenseComparisonPath =
+          '/group-name/project-name/-/merge_requests/78/license_scanning_reports';
+        const licenseComparisonPathCollapsed =
+          '/group-name/project-name/-/merge_requests/78/license_scanning_reports_collapsed';
+        const fullReportPath = '/group-name/project-name/-/merge_requests/78/full_report';
+        const settingsPath = '/group-name/project-name/-/licenses#licenses';
+        const apiApprovalsPath = '/group-name/project-name/-/licenses#policies';
 
-      gl.mrWidgetData = {
-        ...mockData,
-        license_scanning_comparison_path: licenseComparisonPath,
-        license_scanning_comparison_collapsed_path: licenseComparisonPathCollapsed,
-        api_approvals_path: apiApprovalsPath,
-        license_scanning: {
-          settings_path: settingsPath,
-          full_report_path: fullReportPath,
-        },
-      };
+        gl.mrWidgetData = {
+          ...mockData,
+          license_scanning_comparison_path: licenseComparisonPath,
+          license_scanning_comparison_collapsed_path: licenseComparisonPathCollapsed,
+          api_approvals_path: apiApprovalsPath,
+          license_scanning: {
+            settings_path: settingsPath,
+            full_report_path: fullReportPath,
+          },
+        };
 
-      registerExtension(licenseComplianceExtension);
+        if (shouldRegisterExtension) {
+          registerExtension(licenseComplianceExtension);
+        }
 
-      await createComponent({ propsData: { mrData: gl.mrWidgetData } });
+        createComponent({ propsData: { mrData: gl.mrWidgetData } });
 
-      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(true);
-    });
-
-    it('should not be rendered if license widget is not registered', () => {
-      gl.mrWidgetData = {
-        ...mockData,
-      };
-
-      createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-      expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(false);
-    });
+        expect(wrapper.findComponent({ name: 'WidgetLicenseCompliance' }).exists()).toBe(
+          shouldRegisterExtension,
+        );
+      },
+    );
   });
 });
