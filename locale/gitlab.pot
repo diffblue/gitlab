@@ -29231,9 +29231,6 @@ msgstr ""
 msgid "Pipeline|Date"
 msgstr ""
 
-msgid "Pipeline|Detached merge request pipeline"
-msgstr ""
-
 msgid "Pipeline|Failed"
 msgstr ""
 
@@ -29241,6 +29238,9 @@ msgid "Pipeline|In progress"
 msgstr ""
 
 msgid "Pipeline|Manual"
+msgstr ""
+
+msgid "Pipeline|Merge request pipeline"
 msgstr ""
 
 msgid "Pipeline|Merge train pipeline"
