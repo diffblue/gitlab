@@ -26,7 +26,7 @@ RSpec.describe "Admin Runners" do
       shared_examples 'upgrade is recommended' do
         it 'shows upgrade recommended badge' do
           within_runner_row(runner.id) do
-            expect(page).to have_selector '.badge', text: s_('Runners|upgrade recommended')
+            expect(page).to have_selector '.badge', text: s_('Runners|Upgrade recommended')
           end
         end
       end
@@ -34,7 +34,7 @@ RSpec.describe "Admin Runners" do
       shared_examples 'upgrade is available' do
         it 'shows upgrade available badge' do
           within_runner_row(runner.id) do
-            expect(page).to have_selector '.badge', text: s_('Runners|upgrade available')
+            expect(page).to have_selector '.badge', text: s_('Runners|Upgrade available')
           end
         end
       end
@@ -42,8 +42,8 @@ RSpec.describe "Admin Runners" do
       shared_examples 'no upgrade shown' do
         it 'shows no upgrade badge' do
           within_runner_row(runner.id) do
-            expect(page).not_to have_selector '.badge', text: s_('Runners|upgrade recommended')
-            expect(page).not_to have_selector '.badge', text: s_('Runners|upgrade available')
+            expect(page).not_to have_selector '.badge', text: s_('Runners|Upgrade recommended')
+            expect(page).not_to have_selector '.badge', text: s_('Runners|Upgrade available')
           end
         end
       end

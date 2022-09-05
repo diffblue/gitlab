@@ -1,3 +1,5 @@
+import { s__ } from '~/locale';
+
 // Filtered search parameter names
 // - Used for URL params names
 // - GlFilteredSearch tokens type
@@ -9,6 +11,14 @@ export const PARAM_KEY_UPGRADE_STATUS = 'upgrade_status';
 export const UPGRADE_STATUS_AVAILABLE = 'AVAILABLE';
 export const UPGRADE_STATUS_RECOMMENDED = 'RECOMMENDED';
 export const UPGRADE_STATUS_NOT_AVAILABLE = 'NOT_AVAILABLE';
+
+export const I18N_UPGRADE_STATUS_AVAILABLE = s__('Runners|Upgrade available');
+export const I18N_UPGRADE_STATUS_RECOMMENDED = s__('Runners|Upgrade recommended');
+
+export const I18N_UPGRADE_STATUS_AVAILABLE_TOOLTIP = s__('Runners|A new version is available');
+export const I18N_UPGRADE_STATUS_RECOMMENDED_TOOLTIP = s__(
+  'Runners|This runner is outdated, an upgrade is recommended',
+);
 
 // Help pages
 

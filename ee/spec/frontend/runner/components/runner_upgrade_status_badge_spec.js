@@ -6,6 +6,8 @@ import {
   UPGRADE_STATUS_AVAILABLE,
   UPGRADE_STATUS_RECOMMENDED,
   UPGRADE_STATUS_NOT_AVAILABLE,
+  I18N_UPGRADE_STATUS_AVAILABLE,
+  I18N_UPGRADE_STATUS_RECOMMENDED,
 } from 'ee/runner/constants';
 
 describe('RunnerStatusCell', () => {
@@ -14,13 +16,14 @@ describe('RunnerStatusCell', () => {
 
   const findBadge = () => wrapper.findComponent(GlBadge);
 
-  const createComponent = ({ runner = {} } = {}) => {
+  const createComponent = ({ props = {} } = {}) => {
     wrapper = mount(RunnerUpgradeStatusBadge, {
       propsData: {
         runner: {
           upgradeStatus: UPGRADE_STATUS_AVAILABLE,
-          ...runner,
+          ...props.runner,
         },
+        ...props,
       },
       provide: {
         glFeatures,
@@ -52,31 +55,39 @@ describe('RunnerStatusCell', () => {
       });
 
       it('Displays upgrade available status', () => {
-        createComponent({
-          runner: {
-            upgradeStatus: UPGRADE_STATUS_AVAILABLE,
-          },
-        });
+        createComponent();
 
-        expect(findBadge().text()).toBe('upgrade available');
+        expect(findBadge().text()).toBe(I18N_UPGRADE_STATUS_AVAILABLE);
+        expect(findBadge().props('icon')).toBe('upgrade');
         expect(findBadge().props('variant')).toBe('info');
+      });
+
+      it('Displays no icon when size is "sm"', () => {
+        createComponent({ props: { size: 'sm' } });
+
+        expect(findBadge().props('icon')).toBe(null);
       });
 
       it('Displays upgrade recommended status', () => {
         createComponent({
-          runner: {
-            upgradeStatus: UPGRADE_STATUS_RECOMMENDED,
+          props: {
+            runner: {
+              upgradeStatus: UPGRADE_STATUS_RECOMMENDED,
+            },
           },
         });
 
-        expect(findBadge().text()).toBe('upgrade recommended');
+        expect(findBadge().text()).toBe(I18N_UPGRADE_STATUS_RECOMMENDED);
+        expect(findBadge().props('icon')).toBe('upgrade');
         expect(findBadge().props('variant')).toBe('warning');
       });
 
       it('Displays no unavailable status', () => {
         createComponent({
-          runner: {
-            upgradeStatus: UPGRADE_STATUS_NOT_AVAILABLE,
+          props: {
+            runner: {
+              upgradeStatus: UPGRADE_STATUS_NOT_AVAILABLE,
+            },
           },
         });
 
@@ -85,8 +96,10 @@ describe('RunnerStatusCell', () => {
 
       it('Displays no status for unknown status', () => {
         createComponent({
-          runner: {
-            upgradeStatus: 'SOME_UNKNOWN_STATUS',
+          props: {
+            runner: {
+              upgradeStatus: 'SOME_UNKNOWN_STATUS',
+            },
           },
         });
 

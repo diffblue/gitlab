@@ -1,8 +1,14 @@
 <script>
 import { GlBadge, GlTooltipDirective } from '@gitlab/ui';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { s__ } from '~/locale';
-import { UPGRADE_STATUS_AVAILABLE, UPGRADE_STATUS_RECOMMENDED } from '../constants';
+import {
+  UPGRADE_STATUS_AVAILABLE,
+  UPGRADE_STATUS_RECOMMENDED,
+  I18N_UPGRADE_STATUS_AVAILABLE,
+  I18N_UPGRADE_STATUS_RECOMMENDED,
+  I18N_UPGRADE_STATUS_AVAILABLE_TOOLTIP,
+  I18N_UPGRADE_STATUS_RECOMMENDED_TOOLTIP,
+} from '../constants';
 
 export default {
   name: 'RunnerUpgradeStatusBadge',
@@ -17,6 +23,11 @@ export default {
     runner: {
       required: true,
       type: Object,
+    },
+    size: {
+      type: String,
+      default: null,
+      required: false,
     },
   },
   computed: {
@@ -38,24 +49,34 @@ export default {
         case UPGRADE_STATUS_AVAILABLE:
           return {
             variant: 'info',
-            label: s__('Runners|upgrade available'),
-            tooltip: s__('Runners|A new version is available'),
+            label: I18N_UPGRADE_STATUS_AVAILABLE,
+            tooltip: I18N_UPGRADE_STATUS_AVAILABLE_TOOLTIP,
           };
         case UPGRADE_STATUS_RECOMMENDED:
           return {
             variant: 'warning',
-            label: s__('Runners|upgrade recommended'),
-            tooltip: s__('Runners|This runner is outdated, an upgrade is recommended'),
+            label: I18N_UPGRADE_STATUS_RECOMMENDED,
+            tooltip: I18N_UPGRADE_STATUS_RECOMMENDED_TOOLTIP,
           };
         default:
           return null;
       }
     },
+    icon() {
+      return this.size === 'sm' ? null : 'upgrade';
+    },
   },
 };
 </script>
 <template>
-  <gl-badge v-if="badge" v-gl-tooltip="badge.tooltip" :variant="badge.variant" v-bind="$attrs">
+  <gl-badge
+    v-if="badge"
+    v-gl-tooltip="badge.tooltip"
+    :variant="badge.variant"
+    :size="size"
+    :icon="icon"
+    v-bind="$attrs"
+  >
     {{ badge.label }}
   </gl-badge>
 </template>
