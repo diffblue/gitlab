@@ -6,7 +6,7 @@ import remarkFrontmatter from 'remark-frontmatter';
 import remarkGfm from 'remark-gfm';
 import remarkRehype, { all } from 'remark-rehype';
 import rehypeRaw from 'rehype-raw';
-import glfmTableOfContents from './parser_extensions/glfm_table_of_contents';
+import glfmTableOfContents from './glfm_extensions/table_of_contents';
 import * as glfmMdastToHastHandlers from './mdast_to_hast_handlers/glfm_mdast_to_hast_handlers';
 
 const skipFrontmatterHandler = (language) => (h, node) =>
