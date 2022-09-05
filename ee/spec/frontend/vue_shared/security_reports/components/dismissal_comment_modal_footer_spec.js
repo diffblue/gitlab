@@ -31,10 +31,13 @@ describe('DismissalCommentModalFooter', () => {
     });
 
     it('should emit the "addCommentAndDismiss" event when clicked', async () => {
+      expect(wrapper.emitted('addCommentAndDismiss')).toBeUndefined();
+
       findAddAndDismissButton().trigger('click');
 
       await nextTick();
-      expect(wrapper.emitted().addCommentAndDismiss).toBeTruthy();
+
+      expect(wrapper.emitted('addCommentAndDismiss')).toHaveLength(1);
       expect(Tracking.event).toHaveBeenCalledWith(
         '_track_category_',
         'click_add_comment_and_dismiss',
@@ -42,10 +45,11 @@ describe('DismissalCommentModalFooter', () => {
     });
 
     it('should emit the cancel event when the cancel button is clicked', async () => {
+      expect(wrapper.emitted('cancel')).toBeUndefined();
       wrapper.find('.js-cancel').trigger('click');
 
       await nextTick();
-      expect(wrapper.emitted().cancel).toBeTruthy();
+      expect(wrapper.emitted('cancel')).toHaveLength(1);
     });
   });
 
@@ -63,10 +67,11 @@ describe('DismissalCommentModalFooter', () => {
       });
 
       it('should emit the "addCommentAndDismiss" event when clicked', async () => {
+        expect(wrapper.emitted('addDismissalComment')).toBeUndefined();
         findAddAndDismissButton().trigger('click');
 
         await nextTick();
-        expect(wrapper.emitted().addDismissalComment).toBeTruthy();
+        expect(wrapper.emitted('addDismissalComment')).toHaveLength(1);
         expect(Tracking.event).toHaveBeenCalledWith('_track_category_', 'click_add_comment');
       });
     });
@@ -85,10 +90,11 @@ describe('DismissalCommentModalFooter', () => {
       });
 
       it('should emit the "addCommentAndDismiss" event when clicked', async () => {
+        expect(wrapper.emitted('addDismissalComment')).toBeUndefined();
         findAddAndDismissButton().trigger('click');
 
         await nextTick();
-        expect(wrapper.emitted().addDismissalComment).toBeTruthy();
+        expect(wrapper.emitted('addDismissalComment')).toHaveLength(1);
         expect(Tracking.event).toHaveBeenCalledWith('_track_category_', 'click_edit_comment');
       });
     });
