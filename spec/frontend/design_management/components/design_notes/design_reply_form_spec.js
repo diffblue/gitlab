@@ -14,6 +14,7 @@ const GlModal = {
 
 describe('Design reply form component', () => {
   let wrapper;
+  let originalGon;
 
   const findTextarea = () => wrapper.find('textarea');
   const findSubmitButton = () => wrapper.findComponent({ ref: 'submitButton' });
@@ -34,11 +35,13 @@ describe('Design reply form component', () => {
   }
 
   beforeEach(() => {
+    originalGon = window.gon;
     window.gon.current_user_id = 1;
   });
 
   afterEach(() => {
     wrapper.destroy();
+    window.gon = originalGon;
   });
 
   it('textarea has focus after component mount', () => {
