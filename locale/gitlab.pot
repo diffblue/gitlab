@@ -27769,9 +27769,6 @@ msgstr ""
 msgid "PQL|Thank you for reaching out! Our sales team will get back to you soon."
 msgstr ""
 
-msgid "Package & registry settings"
-msgstr ""
-
 msgid "Package Registry"
 msgstr ""
 
@@ -27782,6 +27779,9 @@ msgid "Package Registry: unauthenticated API requests"
 msgstr ""
 
 msgid "Package already exists"
+msgstr ""
+
+msgid "Package and registry settings"
 msgstr ""
 
 msgid "Package deleted successfully"
@@ -28210,7 +28210,7 @@ msgstr ""
 msgid "PackageRegistry|published by %{author}"
 msgstr ""
 
-msgid "Packages & Registries"
+msgid "Packages and registries"
 msgstr ""
 
 msgid "Page not found"
