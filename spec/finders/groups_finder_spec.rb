@@ -301,15 +301,15 @@ RSpec.describe GroupsFinder do
           project.add_developer(user)
 
           expect(described_class.new(user, params).execute).to contain_exactly(
-                                                                 parent_group,
-                                                                 public_subgroup,
-                                                                 public_subgroup2,
-                                                                 internal_sub_subgroup,
-                                                                 public_sub_subgroup,
-                                                                 private_subgroup2,
-                                                                 private_sub_subgroup,
-                                                                 private_sub_sub_subgroup
-                                                               )
+            parent_group,
+            public_subgroup,
+            public_subgroup2,
+            internal_sub_subgroup,
+            public_sub_subgroup,
+            private_subgroup2,
+            private_sub_subgroup,
+            private_sub_sub_subgroup
+          )
         end
       end
 
