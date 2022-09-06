@@ -283,7 +283,7 @@ RSpec.describe GroupsFinder do
 
         let(:params) { { include_ancestors: true } }
 
-        it 'return ancestors of user groups' do
+        it 'returns ancestors of user groups' do
           expect(described_class.new(user, params).execute).to contain_exactly(
             parent_group,
             public_subgroup,
@@ -296,7 +296,7 @@ RSpec.describe GroupsFinder do
           )
         end
 
-        it 'return subgroup if user is member of project of subgroup' do
+        it 'returns subgroup if user is member of project of subgroup' do
           project = create(:project, :private, namespace: private_sub_subgroup)
           project.add_developer(user)
 
@@ -316,7 +316,7 @@ RSpec.describe GroupsFinder do
       context 'if include_ancestors is false' do
         let(:params) { { include_ancestors: false } }
 
-        it 'do not return ancestors of user groups' do
+        it 'does not return private ancestors of user groups' do
           private_sub_subgroup.add_developer(user)
           public_sub_subgroup.add_developer(user)
 
@@ -331,7 +331,7 @@ RSpec.describe GroupsFinder do
           )
         end
 
-        it 'return subgroup if user is member of project of subgroup' do
+        it 'returns subgroup if user is member of project of subgroup' do
           project = create(:project, :private, namespace: private_sub_subgroup)
           project.add_developer(user)
 

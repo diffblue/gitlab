@@ -149,7 +149,7 @@ class GroupsFinder < UnionFinder
       groups << Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).all_objects
     else
       groups << current_user.authorized_groups
-      groups << Gitlab::ObjectHierarchy.new(groups_for_ancestors, groups_for_descendants).base_and_descendants
+      groups << Gitlab::ObjectHierarchy.new(groups_for_descendants).base_and_descendants
     end
 
     groups
