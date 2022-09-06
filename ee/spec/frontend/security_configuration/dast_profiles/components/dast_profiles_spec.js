@@ -103,8 +103,8 @@ describe('EE - DastProfiles', () => {
 
     it.each`
       itemName             | href
-      ${'Site Profile'}    | ${TEST_NEW_DAST_SITE_PROFILE_PATH}
-      ${'Scanner Profile'} | ${TEST_NEW_DAST_SCANNER_PROFILE_PATH}
+      ${'Site profile'}    | ${TEST_NEW_DAST_SITE_PROFILE_PATH}
+      ${'Scanner profile'} | ${TEST_NEW_DAST_SCANNER_PROFILE_PATH}
     `('shows a "$itemName" dropdown item that links to $href', ({ itemName, href }) => {
       createComponent();
 
@@ -126,8 +126,8 @@ describe('EE - DastProfiles', () => {
 
       it.each`
         tabName               | shouldBeSelectedByDefault
-        ${'Site Profiles'}    | ${true}
-        ${'Scanner Profiles'} | ${false}
+        ${'Site profiles'}    | ${true}
+        ${'Scanner profiles'} | ${false}
       `(
         'shows a "$tabName" tab which has "selected" set to "$shouldBeSelectedByDefault"',
         ({ tabName, shouldBeSelectedByDefault }) => {
@@ -143,8 +143,8 @@ describe('EE - DastProfiles', () => {
 
     describe.each`
       tabName               | index | givenLocationHash
-      ${'Site Profiles'}    | ${0}  | ${'#site-profiles'}
-      ${'Scanner Profiles'} | ${1}  | ${'#scanner-profiles'}
+      ${'Site profiles'}    | ${0}  | ${'#site-profiles'}
+      ${'Scanner profiles'} | ${1}  | ${'#scanner-profiles'}
     `('with location hash set to "$givenLocationHash"', ({ tabName, index, givenLocationHash }) => {
       beforeEach(() => {
         setWindowLocation(givenLocationHash);

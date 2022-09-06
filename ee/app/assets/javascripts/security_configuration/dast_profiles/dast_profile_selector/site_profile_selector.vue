@@ -13,13 +13,13 @@ const SCANNER_PROFILE_INFO = helpPagePath('user/application_security/dast/index'
 export default {
   name: 'DastSiteProfileSelector',
   i18n: {
-    emptyStateHeader: s__('DastProfiles|Site Profile'),
+    emptyStateHeader: s__('DastProfiles|Site profile'),
     emptyStateContentHeader: s__('DastProfiles|No site profile selected'),
     emptyStateContent: s__('DastProfiles|Select a site profile to run a DAST scan'),
     selectProfileButton: s__('DastProfiles|Select site profile'),
     changeProfileButton: s__('DastProfiles|Change site profile'),
     siteProfileDescription: s__(
-      'DastProfiles|Site profiles define the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}.',
+      'DastProfiles|A site profile defines the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}.',
     ),
   },
   SCANNER_PROFILE_INFO,

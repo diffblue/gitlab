@@ -12,13 +12,13 @@ exports[`ScannerProfileSelector renders properly with no profiles 1`] = `
       class="gl-font-lg gl-mt-0 gl-mb-2"
     >
       
-      Scanner Profile
+      Scanner profile
     
     </h4>
      
     <p>
       <gl-sprintf-stub
-        message="Scanner profiles define the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}."
+        message="A scanner profile defines the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}."
       />
     </p>
   </div>
@@ -54,13 +54,13 @@ exports[`ScannerProfileSelector renders properly with profiles 1`] = `
       class="gl-font-lg gl-mt-0 gl-mb-2"
     >
       
-      Scanner Profile
+      Scanner profile
     
     </h4>
      
     <p>
       <gl-sprintf-stub
-        message="Scanner profiles define the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}."
+        message="A scanner profile defines the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}."
       />
     </p>
   </div>
