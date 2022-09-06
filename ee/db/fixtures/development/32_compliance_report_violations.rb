@@ -11,7 +11,10 @@ class Gitlab::Seeder::ComplianceReportViolations
 
   def seed!
     Array.new(rand(2..10)).each do
-      merge_request = create_merge_request([{ user: project.members.sample.user }])
+      user = project.members.sample&.user
+      next unless user
+
+      merge_request = create_merge_request([{ user: user }])
 
       ::Enums::MergeRequests::ComplianceViolation.reasons.keys.each do |reason|
         FactoryBot.create(
