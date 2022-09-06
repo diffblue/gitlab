@@ -30,7 +30,7 @@ module Types
       field :ref_path, GraphQL::Types::String, null: true, description: 'Path to the ref that triggered the pipeline.'
 
       field :for_tag, GraphQL::Types::Boolean,
-            null: false, description: 'Determines if a pipelines schedule belongs to a tag.'
+            null: false, description: 'Indicates if a pipelines schedule belongs to a tag.'
 
       field :cron, GraphQL::Types::String, null: false, description: 'Cron notation for the schedule.'
 

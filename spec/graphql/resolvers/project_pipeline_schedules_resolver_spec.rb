@@ -21,15 +21,26 @@ RSpec.describe Resolvers::ProjectPipelineSchedulesResolver do
     end
 
     it 'shows active pipeline schedules' do
-      schedules = resolve(described_class, obj: project, ctx: { current_user: user })
+      schedules = resolve_pipeline_schedules
 
       expect(schedules).to contain_exactly(pipeline_schedule)
     end
 
     it 'shows the inactive pipeline schedules' do
-      schedules = resolve(described_class, obj: project, ctx: { current_user: user }, args: { status: 'INACTIVE' })
+      schedules = resolve_pipeline_schedules(args:
+                 { status: ::Types::Ci::PipelineScheduleStatusEnum.values['INACTIVE'].value })
 
       expect(schedules).to be_empty
     end
+
+    it 'avoids N+1 queries' do
+      control = ActiveRecord::QueryRecorder.new { resolve_pipeline_schedules(args: {}) }
+
+      expect(control.count).to be_zero
+    end
+  end
+
+  def resolve_pipeline_schedules(args: {})
+    resolve(described_class, obj: project, ctx: { current_user: user }, args: args)
   end
 end

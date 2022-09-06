@@ -15854,7 +15854,7 @@ Represents pipeline counts for the project.
 | <a id="pipelineschedulecron"></a>`cron` | [`String!`](#string) | Cron notation for the schedule. |
 | <a id="pipelineschedulecrontimezone"></a>`cronTimezone` | [`String!`](#string) | Timezone for the pipeline schedule. |
 | <a id="pipelinescheduledescription"></a>`description` | [`String`](#string) | Description of the pipeline schedule. |
-| <a id="pipelineschedulefortag"></a>`forTag` | [`Boolean!`](#boolean) | Determines if a pipelines schedule belongs to a tag. |
+| <a id="pipelineschedulefortag"></a>`forTag` | [`Boolean!`](#boolean) | Indicates if a pipelines schedule belongs to a tag. |
 | <a id="pipelinescheduleid"></a>`id` | [`ID!`](#id) | ID of the pipeline schedule. |
 | <a id="pipelineschedulelastpipeline"></a>`lastPipeline` | [`Pipeline!`](#pipeline) | Last pipeline object. |
 | <a id="pipelineschedulenextrunat"></a>`nextRunAt` | [`Time!`](#time) | Time when the next pipeline will run. |
@@ -16757,7 +16757,7 @@ Returns [`PipelineCounts`](#pipelinecounts).
 
 ##### `Project.pipelineSchedules`
 
-Pipeline schedules of the project. This field can only be resolved for one project in any single request.
+Pipeline schedules of the project. This field can only be resolved for one project per request.
 
 Returns [`PipelineScheduleConnection`](#pipelinescheduleconnection).
 

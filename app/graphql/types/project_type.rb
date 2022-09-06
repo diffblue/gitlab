@@ -312,7 +312,7 @@ module Types
     field :pipeline_schedules,
             type: Types::Ci::PipelineScheduleType.connection_type,
             null: true,
-            description: 'Pipeline schedules of the project. This field can only be resolved for one project in any single request.',
+            description: 'Pipeline schedules of the project. This field can only be resolved for one project per request.',
             resolver: Resolvers::ProjectPipelineSchedulesResolver
 
     field :pipeline, Types::Ci::PipelineType,
