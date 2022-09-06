@@ -10,9 +10,16 @@
 module Security
   class Finding < ApplicationRecord
     include EachBatch
+    include PartitionedTable
 
     self.table_name = 'security_findings'
     self.primary_key = :id # As ActiveRecord does not support compound PKs
+    self.ignored_columns = [:partition_number] # This is temporary as we will change the partition logic
+
+    partitioned_by :partition_number,
+                   strategy: :sliding_list,
+                   next_partition_if: -> (_) { false },
+                   detach_partition_if: -> (_) { false }
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
