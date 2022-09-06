@@ -31873,7 +31873,7 @@ msgstr ""
 msgid "ProtectedEnvironment|%{environment_name} will be writable for developers. Are you sure?"
 msgstr ""
 
-msgid "ProtectedEnvironment|All environments specivied with the deployment tiers below are protected by a parent group. %{link_start}Learn More%{link_end}."
+msgid "ProtectedEnvironment|All environments specified with the deployment tiers below are protected by a parent group. %{link_start}Learn More%{link_end}."
 msgstr ""
 
 msgid "ProtectedEnvironment|Allowed to deploy"
@@ -31891,7 +31891,7 @@ msgstr ""
 msgid "ProtectedEnvironment|Failed to load details for this group."
 msgstr ""
 
-msgid "ProtectedEnvironment|No environments in this project are projected."
+msgid "ProtectedEnvironment|No environments in this project are protected."
 msgstr ""
 
 msgid "ProtectedEnvironment|Only specified groups can execute deployments in protected environments."
