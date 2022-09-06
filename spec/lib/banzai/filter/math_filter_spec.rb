@@ -41,6 +41,7 @@ RSpec.describe Banzai::Filter::MathFilter do
         '$22 and $2+2$'                          | '$22 and <math>2+2</math>'
         '$2+2$ $22 and flightjs/Flight$22 $2+2$' | '<math>2+2</math> $22 and flightjs/Flight$22 <math>2+2</math>'
         '$1/2$ &lt;b&gt;test&lt;/b&gt;'          | '<math>1/2</math> &lt;b&gt;test&lt;/b&gt;'
+        '$a!$'                                   | '<math>a!</math>'
       end
 
       with_them do
@@ -80,6 +81,7 @@ RSpec.describe Banzai::Filter::MathFilter do
         '$22 and $$2+2$$'                            | '$22 and <math>2+2</math>'
         '$$2+2$$ $22 and flightjs/Flight$22 $$2+2$$' | '<math>2+2</math> $22 and flightjs/Flight$22 <math>2+2</math>'
         'flightjs/Flight$22 and $$a^2 + b^2 = c^2$$' | 'flightjs/Flight$22 and <math>a^2 + b^2 = c^2</math>'
+        '$$a!$$'                                     | '<math>a!</math>'
       end
 
       with_them do
