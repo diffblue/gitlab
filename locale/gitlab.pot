@@ -13345,6 +13345,9 @@ msgstr ""
 msgid "DesignManagement|Discard comment"
 msgstr ""
 
+msgid "DesignManagement|Discussion"
+msgstr ""
+
 msgid "DesignManagement|Download design"
 msgstr ""
 
