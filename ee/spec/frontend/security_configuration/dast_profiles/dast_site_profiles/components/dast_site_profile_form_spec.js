@@ -351,7 +351,7 @@ describe('DastSiteProfileForm', () => {
     beforeEach(() => {
       createShallowComponent({
         propsData: {
-          profile: policySiteProfiles[0],
+          profile: { ...policySiteProfiles[0], targetType: TARGET_TYPES.API.value },
         },
         provide: { glFeatures: { dastApiScanner: false } },
       });
@@ -360,6 +360,10 @@ describe('DastSiteProfileForm', () => {
     it('should not show scan method options', () => {
       expect(findScanMethodInput().exists()).toBe(false);
       expect(scanFilePathInput().exists()).toBe(false);
+    });
+
+    it('should not show authentication section', async () => {
+      expect(findAuthSection().exists()).toBe(false);
     });
   });
 
