@@ -7,6 +7,10 @@ RSpec.describe Users::DestroyService do
 
   subject(:service) { described_class.new(current_user) }
 
+  before do
+    stub_feature_flags(user_destroy_with_limited_execution_time_worker: false)
+  end
+
   describe '#execute' do
     let!(:user) { create(:user) }
 
