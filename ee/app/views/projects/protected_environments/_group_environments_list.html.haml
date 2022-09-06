@@ -2,7 +2,7 @@
   - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_url('ci/environments/protected_environments.md', anchor: 'group-level-protected-environments') }
   - link_end = '</a>'.html_safe
   %h5= s_('ProtectedEnvironment|Environments protected upstream')
-  %p= s_('ProtectedEnvironment|All environments specivied with the deployment tiers below are protected by a parent group. %{link_start}Learn More%{link_end}.').html_safe % { link_start: link_start, link_end: link_end }
+  %p= s_('ProtectedEnvironment|All environments specified with the deployment tiers below are protected by a parent group. %{link_start}Learn More%{link_end}.').html_safe % { link_start: link_start, link_end: link_end }
 
   .group-protected-branches-list
     .flash-container
