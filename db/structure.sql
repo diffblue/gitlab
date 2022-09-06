@@ -12993,6 +12993,7 @@ CREATE TABLE ci_pipeline_artifacts (
     verification_retry_count smallint,
     verification_checksum bytea,
     verification_failure text,
+    locked smallint DEFAULT 2,
     CONSTRAINT check_191b5850ec CHECK ((char_length(file) <= 255)),
     CONSTRAINT check_abeeb71caf CHECK ((file IS NOT NULL)),
     CONSTRAINT ci_pipeline_artifacts_verification_failure_text_limit CHECK ((char_length(verification_failure) <= 255))
