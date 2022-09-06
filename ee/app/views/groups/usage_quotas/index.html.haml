@@ -10,40 +10,47 @@
 - if show_product_purchase_success_alert?
   = render 'product_purchase_success_alert', product_name: params[:purchased_product]
 
-%h1.page-title.gl-font-size-h-display
-  = s_('UsageQuota|Usage Quotas')
+- if Feature.enabled?(:usage_quotas_for_all_editions, @group)
+  .gl-alert.gl-alert-no-icon.gl-alert-info.gl-mt-6
+    %h2.gl-alert-title
+      Development
+    .gl-alert-content
+      Placeholder for usage quotas Vue app
+- else
+  %h1.page-title.gl-font-size-h-display
+    = s_('UsageQuota|Usage Quotas')
 
-.row
-  .col-sm-6
-    = s_('UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group').html_safe % { strong_start: '<strong>'.html_safe, strong_end: '</strong>'.html_safe, group_name: @group.name }
+  .row
+    .col-sm-6
+      = s_('UsageQuota|Usage of group resources across the projects in the %{strong_start}%{group_name}%{strong_end} group').html_safe % { strong_start: '<strong>'.html_safe, strong_end: '</strong>'.html_safe, group_name: @group.name }
 
-= gl_tabs_nav({ class: 'js-storage-tabs' }) do
-  = gl_tab_link_to '#seats-quota-tab', data: { qa_selector: 'seats_tab' }, item_active: true do
-    = s_('UsageQuota|Seats')
-  = gl_tab_link_to '#pipelines-quota-tab', data: { qa_selector: 'pipelines_tab' } do
-    =  s_('UsageQuota|Pipelines')
-  = gl_tab_link_to '#storage-quota-tab', data: { qa_selector: 'storage_tab' } do
-    = s_('UsageQuota|Storage')
+  = gl_tabs_nav({ class: 'js-storage-tabs' }) do
+    = gl_tab_link_to '#seats-quota-tab', data: { qa_selector: 'seats_tab' }, item_active: true do
+      = s_('UsageQuota|Seats')
+    = gl_tab_link_to '#pipelines-quota-tab', data: { qa_selector: 'pipelines_tab' } do
+      =  s_('UsageQuota|Pipelines')
+    = gl_tab_link_to '#storage-quota-tab', data: { qa_selector: 'storage_tab' } do
+      = s_('UsageQuota|Storage')
 
-.tab-content
-  .tab-pane.active#seats-quota-tab
-    = render Namespaces::FreeUserCap::UsageQuotaAlertComponent.new(namespace: @group.root_ancestor,
-      user: current_user,
-      content_class: 'gl-my-3')
+  .tab-content
+    .tab-pane.active#seats-quota-tab
+      = render Namespaces::FreeUserCap::UsageQuotaAlertComponent.new(namespace: @group.root_ancestor,
+        user: current_user,
+        content_class: 'gl-my-3')
 
-    = render Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent.new(namespace: @group.root_ancestor,
-      user: current_user,
-      content_class: 'gl-my-3')
+      = render Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent.new(namespace: @group.root_ancestor,
+        user: current_user,
+        content_class: 'gl-my-3')
 
-    #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
-  .tab-pane#pipelines-quota-tab
-    - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
-      #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
-    - else
-      = render "namespaces/pipelines_quota/ci_minutes_report",
-        locals: { namespace: @group, projects_usage: @projects_usage }
-      #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
-      = render "namespaces/pipelines_quota/list",
-        locals: { namespace: @group, projects_usage: @projects_usage }
-  .tab-pane#storage-quota-tab
-    #js-storage-counter-app{ data: usage_quotas_storage_app_data(@group) }
+      #js-seat-usage-app{ data: group_seats_usage_quota_app_data(@group) }
+    .tab-pane#pipelines-quota-tab
+      - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
+        #js-pipeline-usage-app{ data: pipeline_usage_app_data(@group) }
+      - else
+        = render "namespaces/pipelines_quota/ci_minutes_report",
+          locals: { namespace: @group, projects_usage: @projects_usage }
+        #js-ci-minutes-usage-group{ data: { namespace_id: @group.id } }
+        = render "namespaces/pipelines_quota/list",
+          locals: { namespace: @group, projects_usage: @projects_usage }
+    .tab-pane#storage-quota-tab
+      #js-storage-counter-app{ data: usage_quotas_storage_app_data(@group) }
