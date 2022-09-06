@@ -7,7 +7,7 @@ module Resolvers
 
       argument :search, GraphQL::Types::String,
                required: false,
-               description: 'Search query for project name, path, or description.'
+               description: 'Search query, which can be for the project name, a path, or a description.'
 
       alias_method :dashboard, :object
 
