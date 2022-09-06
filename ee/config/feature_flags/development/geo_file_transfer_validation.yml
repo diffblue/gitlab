@@ -1,8 +1,0 @@
----
-name: geo_file_transfer_validation
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/16382
-rollout_issue_url: 
-milestone: '12.3'
-type: development
-group: group::geo
-default_enabled: true
