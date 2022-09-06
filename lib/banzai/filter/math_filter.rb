@@ -26,7 +26,7 @@ module Banzai
 
       # Corresponds to the "$$...$$" syntax
       DOLLAR_DISPLAY_INLINE_PATTERN = %r{
-        (?<matched>\$\$(?<math>\S[^$\n]*?\S)\$\$)(?:[^\d]|$)
+        (?<matched>\$\$\ *(?<math>[^$\n]+?)\ *\$\$)
       }x.freeze
 
       # Corresponds to the $$\n...\n$$ syntax
