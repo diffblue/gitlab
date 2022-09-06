@@ -21,9 +21,12 @@ workhorse:verify:
   script:
     - make -C workhorse test
 
-workhorse:test using go 1.17:
+workhorse:test using go:
   extends: .workhorse:test
-  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images:debian-${DEBIAN_VERSION}-ruby-${RUBY_VERSION}-golang-1.17-git-2.31
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/debian-${DEBIAN_VERSION}-ruby-${RUBY_VERSION}-golang-${GO_VERSION}:git-2.36
+  parallel:
+    matrix:
+      - GO_VERSION: ["1.17", "1.18"]
 
 workhorse:test using go 1.17 with FIPS:
   extends: .workhorse:test
