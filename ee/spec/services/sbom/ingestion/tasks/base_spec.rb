@@ -8,6 +8,6 @@ RSpec.describe Sbom::Ingestion::Tasks::Base do
   let(:implementation) { Class.new(described_class) }
 
   it 'raises error when execute is not implemented' do
-    expect { implementation.execute(pipeline, occurrence_maps) }.to raise_error(NotImplementedError)
+    expect { implementation.execute(pipeline, occurrence_maps) }.to raise_error(NoMethodError)
   end
 end

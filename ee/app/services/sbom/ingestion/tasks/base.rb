@@ -14,7 +14,7 @@ module Sbom
         end
 
         def execute
-          raise NotImplementedError, "Implement the `execute` template method!"
+          raise NoMethodError, "Implement the `execute` template method!"
         end
 
         private
