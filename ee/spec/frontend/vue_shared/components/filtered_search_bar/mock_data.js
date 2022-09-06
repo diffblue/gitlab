@@ -1,5 +1,6 @@
 import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
+import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 
@@ -102,4 +103,13 @@ export const mockWeightToken = {
   title: 'Weight',
   unique: true,
   token: WeightToken,
+};
+
+export const mockHealthToken = {
+  type: 'health',
+  icon: 'status-health',
+  title: 'Health',
+  unique: true,
+  operators: OPERATOR_IS_ONLY,
+  token: HealthToken,
 };
