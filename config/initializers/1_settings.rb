@@ -632,6 +632,9 @@ Settings.cron_jobs['loose_foreign_keys_cleanup_worker']['job_class'] = 'LooseFor
 Settings.cron_jobs['ci_runner_versions_reconciliation_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['ci_runner_versions_reconciliation_worker']['cron'] ||= '@daily'
 Settings.cron_jobs['ci_runner_versions_reconciliation_worker']['job_class'] = 'Ci::Runners::ReconcileExistingRunnerVersionsCronWorker'
+Settings.cron_jobs['users_migrate_records_to_ghost_user_in_batches_worker'] ||= Settingslogic.new({})
+Settings.cron_jobs['users_migrate_records_to_ghost_user_in_batches_worker']['cron'] ||= '*/1 * * * *'
+Settings.cron_jobs['users_migrate_records_to_ghost_user_in_batches_worker']['job_class'] = 'Users::MigrateRecordsToGhostUserInBatchesWorker'
 
 Gitlab.ee do
   Settings.cron_jobs['analytics_devops_adoption_create_all_snapshots_worker'] ||= Settingslogic.new({})
