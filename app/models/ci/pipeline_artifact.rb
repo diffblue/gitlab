@@ -7,6 +7,7 @@ module Ci
     include UpdateProjectStatistics
     include Artifactable
     include FileStoreMounter
+    include Lockable
     include Presentable
 
     FILE_SIZE_LIMIT = 10.megabytes.freeze
@@ -38,17 +39,6 @@ module Ci
       code_coverage: 1,
       code_quality_mr_diff: 2
     }
-
-    # `locked` will be populated from the source of truth on Ci::Pipeline
-    # in order to clean up expired job artifacts in a performant way.
-    # The values should be the same as `Ci::Pipeline.locked` with the
-    # additional value of `unknown` to indicate rows that have not
-    # yet been populated from the parent Ci::Pipeline
-    enum locked: {
-      unlocked: 0,
-      artifacts_locked: 1,
-      unknown: 2
-    }, _prefix: :artifact
 
     scope :unlocked, -> { joins(:pipeline).merge(::Ci::Pipeline.unlocked) }
 
