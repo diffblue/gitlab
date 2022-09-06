@@ -43,21 +43,27 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
 
     create(:dora_daily_metrics,
            deployment_frequency: 5,
+           lead_time_for_changes_in_seconds: 100,
            environment: environment1,
            date: date1)
 
     create(:dora_daily_metrics,
            deployment_frequency: 20,
+           lead_time_for_changes_in_seconds: 10000,
+           incidents_count: 5,
            environment: environment2,
            date: date1)
 
     create(:dora_daily_metrics,
            deployment_frequency: 50,
+           lead_time_for_changes_in_seconds: 20000,
+           incidents_count: 15,
            environment: environment1,
            date: date2)
 
     create(:dora_daily_metrics,
            deployment_frequency: 100,
+           lead_time_for_changes_in_seconds: 40000,
            environment: environment3,
            date: date2)
   end
@@ -84,7 +90,27 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
     let(:insights_entity) { group }
 
     it_behaves_like 'serialized_data examples' do
-      let(:expected_result) { [50, 25] }
+      let(:expected_result) { [0, 50, 0, 0, 25] }
+    end
+
+    context 'when requesting the lead_time_for_changes metric' do
+      before do
+        query_params[:metric] = 'lead_time_for_changes'
+      end
+
+      it_behaves_like 'serialized_data examples' do
+        let(:expected_result) { [nil, 0.2, nil, nil, 0.1] }
+      end
+    end
+
+    context 'when requesting the change_failure_rate metric' do
+      before do
+        query_params[:metric] = 'change_failure_rate'
+      end
+
+      it_behaves_like 'serialized_data examples' do
+        let(:expected_result) { [nil, 30, nil, nil, 20] }
+      end
     end
 
     context 'when filtering environment tiers' do
@@ -93,7 +119,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
       end
 
       it_behaves_like 'serialized_data examples' do
-        let(:expected_result) { [150, 25] }
+        let(:expected_result) { [0, 150, 0, 0, 25] }
       end
     end
 
@@ -102,7 +128,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
         let(:projects) { { only: [project2.id] } }
 
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [20] }
+          let(:expected_result) { [0, 0, 0, 0, 20] }
         end
       end
 
@@ -110,7 +136,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
         let(:projects) { { only: [project2.full_path] } }
 
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [20] }
+          let(:expected_result) { [0, 0, 0, 0, 20] }
         end
       end
     end
@@ -142,7 +168,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
     let(:insights_entity) { project1 }
 
     it_behaves_like 'serialized_data examples' do
-      let(:expected_result) { [50, 5] }
+      let(:expected_result) { [0, 50, 0, 0, 5] }
     end
 
     context 'when filtering projects' do
@@ -150,7 +176,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
         let(:projects) { { only: [project1.id] } }
 
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [50, 5] }
+          let(:expected_result) { [0, 50, 0, 0, 5] }
         end
       end
 
@@ -159,7 +185,7 @@ RSpec.describe Gitlab::Insights::Executors::DoraExecutor do
 
         # ignores the filter
         it_behaves_like 'serialized_data examples' do
-          let(:expected_result) { [50, 5] }
+          let(:expected_result) { [0, 50, 0, 0, 5] }
         end
       end
     end

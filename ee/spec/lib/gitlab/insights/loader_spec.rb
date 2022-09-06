@@ -73,7 +73,8 @@ RSpec.describe Gitlab::Insights::Loader do
     let(:data_source_params) do
       {
         metric: 'time_to_restore_service',
-        group_by: 'day'
+        group_by: 'day',
+        period_limit: 3
       }
     end
 
@@ -97,7 +98,7 @@ RSpec.describe Gitlab::Insights::Loader do
     end
 
     it 'returns the serialized data' do
-      expect(serialized_data['datasets'].first['data']).to eq([2])
+      expect(serialized_data['datasets'].first['data']).to eq([nil, nil, 2])
     end
   end
 end
