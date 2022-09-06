@@ -113,7 +113,7 @@ This example shows reviewers and approval rules in a merge request sidebar:
 ### Reviewer limits on GitLab.com **(PREMIUM SAAS)**
 
 > - Limits for reviewers and assignees [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366485) in GitLab 15.3
-    [with a flag](../../../administration/feature_flags.md) named `limit_reviewer_and_assignee_size`. Disabled by default.
+    [with a flag](../../../../administration/feature_flags.md) named `limit_reviewer_and_assignee_size`. Disabled by default.
 > - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91406) in GitLab 15.3.
 
 FLAG:
