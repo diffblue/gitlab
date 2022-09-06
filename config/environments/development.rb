@@ -49,6 +49,7 @@ Rails.application.configure do
   config.view_component.preview_paths << "#{config.root}/spec/components/previews"
   # Push preview path now to prevent FrozenError during view_component's initialzer
   config.autoload_paths.push("#{config.root}/spec/components/previews")
+
   config.lookbook.page_paths = ["#{config.root}/spec/components/docs"]
 
   # Adds additional error checking when serving assets at runtime.
