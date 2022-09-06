@@ -10,6 +10,4 @@ export const scatterChartLineProps = {
   },
 };
 
-export const NO_DRAG_CLASS = 'no-drag';
-
 export const DATA_REFETCH_DELAY = DEFAULT_DEBOUNCE_AND_THROTTLE_MS;
