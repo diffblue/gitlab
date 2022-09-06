@@ -46,6 +46,44 @@ RSpec.describe Security::Scan do
     it { is_expected.to delegate_method(:name).to(:build) }
   end
 
+  describe '#findings_can_be_purged?' do
+    let(:scan) { create(:security_scan, created_at: created_at, status: status) }
+
+    subject { scan.findings_can_be_purged? }
+
+    context 'when the record is created in less than 3 months ago' do
+      let(:created_at) { 2.months.ago }
+
+      context 'when the record is not purged' do
+        let(:status) { :succeeded }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the record is purged' do
+        let(:status) { :purged }
+
+        it { is_expected.to be_falsey }
+      end
+    end
+
+    context 'when the record is created in more than 3 months ago' do
+      let(:created_at) { 4.months.ago }
+
+      context 'when the record is not purged' do
+        let(:status) { :succeeded }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the record is purged' do
+        let(:status) { :purged }
+
+        it { is_expected.to be_truthy }
+      end
+    end
+  end
+
   describe '#has_warnings?' do
     let(:scan) { build(:security_scan, info: info) }
 
