@@ -165,7 +165,7 @@ RSpec.describe EpicIssues::CreateService do
               # and we insert 5 issues instead of 1 which we do for control count
               expect { described_class.new(epic, user, params).execute }
                 .not_to exceed_query_limit(control_count)
-                .with_threshold(29)
+                .with_threshold(25)
             end
           end
 

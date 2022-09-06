@@ -32,40 +32,65 @@ RSpec.describe EpicIssue do
     end
 
     context 'group hierarchy' do
-      let(:issue) { build(:issue, project: project) }
-      let(:error_message) do
-        'Issue Cannot assign an issue that does not belong under the same group (or descendant) as the epic.'
-      end
-
       subject { described_class.new(epic: epic, issue: issue) }
 
-      context 'when epic and issue belong to the same group' do
-        let_it_be(:project) { project }
+      shared_examples 'group hierarchy validation' do
+        let(:issue) { build(:issue, project: project) }
 
-        it { is_expected.to be_valid }
-      end
+        context 'when epic and issue belong to the same group' do
+          it { is_expected.to be_valid }
+        end
 
-      context 'when epic is in an ancestor group' do
-        let_it_be(:project) { create(:project, group: create(:group, parent: group)) }
+        context 'when epic is in an ancestor group' do
+          let_it_be_with_refind(:project) { create(:project, group: create(:group, parent: group)) }
 
-        it { is_expected.to be_valid }
-      end
+          it { is_expected.to be_valid }
+        end
 
-      context 'when epic is in a descendant group' do
-        let_it_be(:project) { create(:project, group: ancestor) }
+        context 'when epic is in a descendant group' do
+          let_it_be(:project) { create(:project, group: ancestor) }
 
-        it 'is invalid' do
-          expect(subject).not_to be_valid
-          expect(subject.errors.full_messages).to include(error_message)
+          it 'is invalid' do
+            expect(subject).not_to be_valid
+            expect(subject.errors.full_messages.to_sentence).to include(error_message)
+          end
         end
       end
 
-      context 'when epic and issue are at different group hierarchies' do
-        let_it_be(:project) { create(:project, group: create(:group)) }
+      context 'when epic_issues_from_different_hierarchies flag is disabled' do
+        let(:error_message) do
+          'Cannot assign an issue that does not belong under the same group (or descendant) as the epic.'
+        end
 
-        it 'is invalid' do
-          expect(subject).not_to be_valid
-          expect(subject.errors.full_messages).to include(error_message)
+        before do
+          stub_feature_flags(epic_issues_from_different_hierarchies: false)
+        end
+
+        it_behaves_like 'group hierarchy validation'
+
+        context 'when epic and issue are from different group hierarchies' do
+          let_it_be(:issue) { create(:issue) }
+
+          it 'is invalid' do
+            expect(subject).not_to be_valid
+            expect(subject.errors.full_messages.to_sentence).to include(error_message)
+          end
+        end
+      end
+
+      context 'when epic_issues_from_different_hierarchies is enabled' do
+        let(:error_message) do
+          'Issue Cannot assign an issue from same hierarchy that does not belong under the same group (or descendant)'
+        end
+
+        it_behaves_like 'group hierarchy validation'
+
+        context 'when epic and issue are from different group hierarchies' do
+          let_it_be(:issue) { create(:issue) }
+
+          it 'is valid' do
+            expect(subject).to be_valid
+          end
         end
       end
     end
