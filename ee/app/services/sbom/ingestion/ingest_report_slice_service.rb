@@ -3,11 +3,11 @@
 module Sbom
   module Ingestion
     class IngestReportSliceService
-      TASKS = %i[
-        IngestComponents
-        IngestComponentVersions
-        IngestSources
-        IngestOccurrences
+      TASKS = [
+        ::Sbom::Ingestion::Tasks::IngestComponents,
+        ::Sbom::Ingestion::Tasks::IngestComponentVersions,
+        ::Sbom::Ingestion::Tasks::IngestSources,
+        ::Sbom::Ingestion::Tasks::IngestOccurrences
       ].freeze
 
       def self.execute(pipeline, occurrence_maps)
@@ -21,17 +21,13 @@ module Sbom
 
       def execute
         ApplicationRecord.transaction do
-          TASKS.each { |task| execute_task(task) }
+          TASKS.each { |task| task.execute(pipeline, occurrence_maps) }
         end
       end
 
       private
 
       attr_reader :pipeline, :occurrence_maps
-
-      def execute_task(task)
-        Tasks.const_get(task, false).execute(pipeline, occurrence_maps)
-      end
     end
   end
 end
