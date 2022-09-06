@@ -6,6 +6,7 @@ import { __, sprintf } from '~/locale';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import axios from '~/lib/utils/axios_utils';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
+import SubscriptionDetailsHistory from 'jh_else_ee/admin/subscriptions/show/components/subscription_details_history.vue';
 import {
   activateCloudLicense,
   licensedToHeaderText,
@@ -18,7 +19,6 @@ import {
 import SubscriptionActivationBanner from './subscription_activation_banner.vue';
 import SubscriptionActivationModal from './subscription_activation_modal.vue';
 import SubscriptionDetailsCard from './subscription_details_card.vue';
-import SubscriptionDetailsHistory from './subscription_details_history.vue';
 import SubscriptionDetailsUserInfo from './subscription_details_user_info.vue';
 
 export const subscriptionDetailsFields = [
