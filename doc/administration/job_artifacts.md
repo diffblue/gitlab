@@ -437,8 +437,8 @@ If you need to manually remove job artifacts associated with multiple jobs while
    ```ruby
    builds_to_clear = builds_with_artifacts.where("finished_at < ?", 1.week.ago)
    builds_to_clear.find_each do |build|
-     build.artifacts_expire_at = Time.now
-     build.erase_erasable_artifacts!
+     Ci::JobArtifacts::DeleteService.new(build).execute
+     build.update!(artifacts_expire_at: Time.now)
    end
    ```
 
