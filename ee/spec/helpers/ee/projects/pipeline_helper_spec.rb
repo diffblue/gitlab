@@ -20,13 +20,16 @@ RSpec.describe Projects::PipelineHelper do
     it 'returns pipeline tabs data' do
       expect(pipeline_tabs_data).to include({
         can_generate_codequality_reports: pipeline.can_generate_codequality_reports?.to_json,
+        can_manage_licenses: 'false',
         codequality_report_download_path: helper.codequality_report_download_path(project, pipeline),
+        codequality_blob_path: codequality_blob_path(project, pipeline),
+        codequality_project_path: codequality_project_path(project, pipeline),
         expose_license_scanning_data: pipeline.expose_license_scanning_data?.to_json,
         expose_security_dashboard: pipeline.expose_security_dashboard?.to_json,
+        is_full_codequality_report_available: project.licensed_feature_available?(:full_codequality_report).to_json,
         license_management_api_url: license_management_api_url(project),
         license_management_settings_path: helper.license_management_path(user, project),
         licenses_api_path: helper.licenses_api_path(project, pipeline),
-        can_manage_licenses: 'false',
         failed_jobs_count: pipeline.failed_builds.count,
         failed_jobs_summary: prepare_failed_jobs_summary_data(pipeline.failed_builds),
         full_path: project.full_path,
@@ -52,6 +55,76 @@ RSpec.describe Projects::PipelineHelper do
         "can_admin_vulnerability" => 'false',
         "can_view_false_positive" => 'false'
       })
+    end
+  end
+
+  describe 'codequality_project_path' do
+    before do
+      project.add_developer(user)
+    end
+
+    subject(:codequality_report_path) { helper.codequality_project_path(project, pipeline) }
+
+    describe 'when `full_codequality_report` feature is not available' do
+      before do
+        stub_licensed_features(full_codequality_report: false)
+      end
+
+      it 'returns nil' do
+        is_expected.to be(nil)
+      end
+    end
+
+    describe 'when `full_code_quality_report` feature is available' do
+      before do
+        stub_licensed_features(full_codequality_report: true)
+      end
+
+      describe 'and there is an artefact for codequality' do
+        before do
+          create(:ci_build, :codequality_report, pipeline: raw_pipeline)
+        end
+
+        it 'returns the downloadable path for `codequality`' do
+          is_expected.not_to be(nil)
+          is_expected.to eq(project_path(project, pipeline))
+        end
+      end
+    end
+  end
+
+  describe 'codequality_blob_path' do
+    before do
+      project.add_developer(user)
+    end
+
+    subject(:codequality_report_path) { helper.codequality_blob_path(project, pipeline) }
+
+    describe 'when `full_codequality_report` feature is not available' do
+      before do
+        stub_licensed_features(full_codequality_report: false)
+      end
+
+      it 'returns nil' do
+        is_expected.to be(nil)
+      end
+    end
+
+    describe 'when `full_code_quality_report` feature is available' do
+      before do
+        stub_licensed_features(full_codequality_report: true)
+      end
+
+      describe 'and there is an artefact for codequality' do
+        before do
+          create(:ci_build, :codequality_report, pipeline: raw_pipeline)
+        end
+
+        it 'returns the downloadable path for `codequality`' do
+          is_expected.not_to be(nil)
+          is_expected.to eq(project_blob_path(project, pipeline))
+        end
+      end
     end
   end
 
