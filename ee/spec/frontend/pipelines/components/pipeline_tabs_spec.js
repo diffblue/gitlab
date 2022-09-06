@@ -27,13 +27,18 @@ describe('The Pipeline Tabs', () => {
   const findSecurityApp = () => wrapper.findComponent(PipelineSecurityDashboard);
 
   const getLicenseCount = () => wrapper.findByTestId('license-counter').text();
+  const getCodequalityCount = () => wrapper.findByTestId('codequality-counter').text();
 
   const defaultProvide = {
     canGenerateCodequalityReports: false,
     codequalityReportDownloadPath: '',
+    codequalityProjectPath: '',
+    codequalityBlobPath: '',
+    pipelineIid: '0',
     defaultTabValue: '',
     exposeSecurityDashboard: false,
     exposeLicenseScanningData: false,
+    isFullCodequalityReportAvailable: true,
     licenseManagementApiUrl: '/path/to/license_management_api_url',
     licensesApiPath: '/path/to/licenses_api',
     licenseManagementSettingsPath: '/path/to/license_management_settings',
@@ -123,12 +128,23 @@ describe('The Pipeline Tabs', () => {
                   graphqlCodeQualityFullReport: true,
                 },
               },
+              stubs: { GlTab },
             });
           });
 
           it('shows the graphql code quality report app', () => {
             expect(findCodeQualityAppGraphql().exists()).toBe(true);
             expect(findCodeQualityApp().exists()).toBe(false);
+          });
+
+          it('updates the codequality badge after a new count has been emitted', async () => {
+            const newLicenseCount = 100;
+            expect(getCodequalityCount()).toBe('0');
+
+            findCodeQualityAppGraphql().vm.$emit('updateBadgeCount', newLicenseCount);
+            await nextTick();
+
+            expect(getCodequalityCount()).toBe(`${newLicenseCount}`);
           });
         });
 
@@ -141,6 +157,7 @@ describe('The Pipeline Tabs', () => {
                   graphqlCodeQualityFullReport: false,
                 },
               },
+              stubs: { GlTab },
             });
           });
 
@@ -148,20 +165,36 @@ describe('The Pipeline Tabs', () => {
             expect(findCodeQualityAppGraphql().exists()).toBe(false);
             expect(findCodeQualityApp().exists()).toBe(true);
           });
+
+          it('updates the codequality badge after a new count has been emitted', async () => {
+            const newLicenseCount = 100;
+
+            expect(getCodequalityCount()).toBe('0');
+
+            findCodeQualityApp().vm.$emit('updateBadgeCount', newLicenseCount);
+            await nextTick();
+
+            expect(getCodequalityCount()).toBe(`${newLicenseCount}`);
+          });
         });
       });
 
       it.each`
-        provideValue | isVisible | codequalityReportDownloadPath | text
-        ${true}      | ${true}   | ${''}                         | ${'shows'}
-        ${false}     | ${false}  | ${''}                         | ${'hides'}
-        ${false}     | ${true}   | ${'/path'}                    | ${'shows'}
-        ${true}      | ${true}   | ${'/path'}                    | ${'shows'}
+        provideValue | isVisible | codequalityReportDownloadPath | isReportAvailable | text
+        ${true}      | ${true}   | ${''}                         | ${true}           | ${'shows'}
+        ${false}     | ${false}  | ${''}                         | ${true}           | ${'hides'}
+        ${false}     | ${true}   | ${'/path'}                    | ${true}           | ${'shows'}
+        ${true}      | ${true}   | ${'/path'}                    | ${true}           | ${'shows'}
+        ${true}      | ${false}  | ${'/path'}                    | ${false}          | ${'hides'}
       `(
         '$text Code Quality and its associated component when canGenerateCodequalityReports is $provideValue and codequalityReportDownloadPath is $codequalityReportDownloadPath',
-        ({ provideValue, isVisible, codequalityReportDownloadPath }) => {
+        ({ provideValue, isReportAvailable, isVisible, codequalityReportDownloadPath }) => {
           createComponent({
-            provide: { canGenerateCodequalityReports: provideValue, codequalityReportDownloadPath },
+            provide: {
+              isFullCodequalityReportAvailable: isReportAvailable,
+              canGenerateCodequalityReports: provideValue,
+              codequalityReportDownloadPath,
+            },
           });
           expect(findCodeQualityTab().exists()).toBe(isVisible);
           expect(findCodeQualityApp().exists()).toBe(isVisible);

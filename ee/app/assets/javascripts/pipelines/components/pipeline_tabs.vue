@@ -35,24 +35,31 @@ export default {
   mixins: [glFeatureFlagMixin()],
   inject: [
     'canGenerateCodequalityReports',
+    'canManageLicenses',
+    'codequalityBlobPath',
     'codequalityReportDownloadPath',
+    'codequalityProjectPath',
     'defaultTabValue',
     'exposeSecurityDashboard',
     'exposeLicenseScanningData',
-    'licenseManagementApiUrl',
+    'isFullCodequalityReportAvailable',
     'licensesApiPath',
+    'licenseManagementApiUrl',
     'licenseManagementSettingsPath',
-    'canManageLicenses',
+    'pipelineIid',
   ],
   data() {
-    return { licenseCount: 0 };
+    return { licenseCount: 0, codeQualityCount: 0 };
   },
   computed: {
     isGraphqlCodeQuality() {
       return this.glFeatures.graphqlCodeQualityFullReport;
     },
     showCodeQualityTab() {
-      return Boolean(this.codequalityReportDownloadPath || this.canGenerateCodequalityReports);
+      return Boolean(
+        this.isFullCodequalityReportAvailable &&
+          (this.codequalityReportDownloadPath || this.canGenerateCodequalityReports),
+      );
     },
     showLicenseTab() {
       return Boolean(this.exposeLicenseScanningData);
@@ -67,6 +74,9 @@ export default {
     },
     updateLicenseCount(count) {
       this.licenseCount = count;
+    },
+    updateCodeQualityCount(count) {
+      this.codeQualityCount = count;
     },
   },
 };
@@ -111,8 +121,23 @@ export default {
       data-track-action="click_button"
       data-track-label="get_codequality_report"
     >
-      <codequality-report-app-graphql v-if="isGraphqlCodeQuality" />
-      <codequality-report-app v-else />
+      <template #title>
+        <span class="gl-mr-2">{{ $options.i18n.tabs.codeQualityTitle }}</span>
+        <gl-badge size="sm" data-testid="codequality-counter">{{ codeQualityCount }}</gl-badge>
+      </template>
+
+      <codequality-report-app-graphql
+        v-if="isGraphqlCodeQuality"
+        @updateBadgeCount="updateCodeQualityCount"
+      />
+      <codequality-report-app
+        v-else
+        :endpoint="codequalityReportDownloadPath"
+        :blob-path="codequalityBlobPath"
+        :project-path="codequalityProjectPath"
+        :pipeline-iid="pipelineIid"
+        @updateBadgeCount="updateCodeQualityCount"
+      />
     </gl-tab>
   </base-pipeline-tabs>
 </template>

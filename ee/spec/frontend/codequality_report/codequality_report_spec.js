@@ -87,6 +87,7 @@ describe('Codequality report app', () => {
       expect(findStatus().text()).toContain(
         `This report contains all Code Quality issues in the source branch.`,
       );
+      expect(wrapper.emitted().updateBadgeCount).toBeDefined();
       expect(wrapper.findAll('.report-block-list-issue')).toHaveLength(expectedIssueTotal);
     });
 

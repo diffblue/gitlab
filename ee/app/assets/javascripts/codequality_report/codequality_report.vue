@@ -14,26 +14,21 @@ export default {
   },
   mixins: [reportsMixin],
   props: {
-    // Todo make these props mandatory once the pipeline tabs component is implemented https://gitlab.com/gitlab-org/gitlab/-/issues/360797
     endpoint: {
       type: String,
-      required: false,
-      default: '',
+      required: true,
     },
     blobPath: {
       type: String,
-      required: false,
-      default: '',
+      required: true,
     },
     projectPath: {
       type: String,
-      required: false,
-      default: '',
+      required: true,
     },
     pipelineIid: {
       type: String,
-      required: false,
-      default: '',
+      required: true,
     },
   },
   componentNames,
@@ -50,6 +45,7 @@ export default {
     codequalityText() {
       const text = [];
       const { codequalityIssueTotal } = this;
+      this.$emit('updateBadgeCount', codequalityIssueTotal);
 
       if (codequalityIssueTotal === 0) {
         return s__('ciReport|No code quality issues found');
