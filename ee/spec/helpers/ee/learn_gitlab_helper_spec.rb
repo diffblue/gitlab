@@ -14,7 +14,7 @@ RSpec.describe LearnGitlabHelper do
       allow(learn_gitlab).to receive(:project).and_return(project)
     end
 
-    OnboardingProgress.onboard(namespace)
+    Onboarding::Progress.onboard(namespace)
     sign_in(user)
   end
 

@@ -108,7 +108,7 @@ module SCA
     def record_onboarding_progress
       return unless pipeline
 
-      OnboardingProgress.register(pipeline.project.root_namespace, :license_scanning_run)
+      Onboarding::Progress.register(pipeline.project.root_namespace, :license_scanning_run)
     end
   end
 end
