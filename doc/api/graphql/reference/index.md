@@ -10267,11 +10267,8 @@ CI/CD variables for a GitLab instance.
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="cijobartifactdownloadpath"></a>`downloadPath` | [`String`](#string) | URL for downloading the artifact's file. |
-| <a id="cijobartifactexpireat"></a>`expireAt` | [`Time`](#time) | Expiry date of the artifact. |
 | <a id="cijobartifactfiletype"></a>`fileType` | [`JobArtifactFileType`](#jobartifactfiletype) | File type of the artifact. |
-| <a id="cijobartifactid"></a>`id` | [`CiJobArtifactID!`](#cijobartifactid) | ID of the artifact. |
 | <a id="cijobartifactname"></a>`name` | [`String`](#string) | File name of the artifact. |
-| <a id="cijobartifactsize"></a>`size` | [`Int!`](#int) | Size of the artifact in bytes. |
 
 ### `CiJobTokenScopeType`
 
@@ -21287,12 +21284,6 @@ Represents `true` or `false` values.
 A `CiBuildID` is a global ID. It is encoded as a string.
 
 An example `CiBuildID` is: `"gid://gitlab/Ci::Build/1"`.
-
-### `CiJobArtifactID`
-
-A `CiJobArtifactID` is a global ID. It is encoded as a string.
-
-An example `CiJobArtifactID` is: `"gid://gitlab/Ci::JobArtifact/1"`.
 
 ### `CiPipelineID`
 
