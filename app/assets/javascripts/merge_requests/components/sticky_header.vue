@@ -35,6 +35,7 @@ export default {
     projectPath: { default: null },
     title: { default: '' },
     tabs: { default: () => [] },
+    isFluidLayout: { default: false },
   },
   data() {
     return {
