@@ -311,7 +311,6 @@ describe('Pipeline editor app component', () => {
           stubs: {
             PipelineEditorHome,
             PipelineEditorEmptyState,
-            GlButton,
           },
         });
 
