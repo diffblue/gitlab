@@ -13,13 +13,13 @@ const SCANNER_PROFILE_INFO = helpPagePath('user/application_security/dast/index'
 export default {
   name: 'DastScannerProfileSelector',
   i18n: {
-    emptyStateHeader: s__('DastProfiles|Scanner Profile'),
+    emptyStateHeader: s__('DastProfiles|Scanner profile'),
     emptyStateContentHeader: s__('DastProfiles|No scanner profile selected'),
     emptyStateContent: s__('DastProfiles|Select a scanner profile to run a DAST scan'),
     selectProfileButton: s__('DastProfiles|Select scanner profile'),
     changeProfileButton: s__('DastProfiles|Change scanner profile'),
     scannerProfileDescription: s__(
-      'DastProfiles|Scanner profiles define the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}.',
+      'DastProfiles|A scanner profile defines the configuration details of a security scanner. %{linkStart}Learn more%{linkEnd}.',
     ),
   },
   SCANNER_PROFILE_INFO,

@@ -29,8 +29,8 @@ export const getProfileSettings = ({ createNewProfilePaths }) => ({
       { label: s__('DastProfiles|Validation status'), key: 'validationStatus' },
     ],
     i18n: {
-      createNewLinkText: s__('DastProfiles|Site Profile'),
-      name: s__('DastProfiles|Site Profiles'),
+      createNewLinkText: s__('DastProfiles|Site profile'),
+      name: s__('DastProfiles|Site profiles'),
       errorMessages: {
         fetchNetworkError: s__(
           'DastProfiles|Could not fetch site profiles. Please refresh the page, or try again later.',
@@ -63,8 +63,8 @@ export const getProfileSettings = ({ createNewProfilePaths }) => ({
       { label: s__('DastProfiles|Scan mode'), key: 'scanType' },
     ],
     i18n: {
-      createNewLinkText: s__('DastProfiles|Scanner Profile'),
-      name: s__('DastProfiles|Scanner Profiles'),
+      createNewLinkText: s__('DastProfiles|Scanner profile'),
+      name: s__('DastProfiles|Scanner profiles'),
       errorMessages: {
         fetchNetworkError: s__(
           'DastProfiles|Could not fetch scanner profiles. Please refresh the page, or try again later.',

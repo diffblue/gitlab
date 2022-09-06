@@ -12,13 +12,13 @@ exports[`SiteProfileSelector renders properly with no profiles 1`] = `
       class="gl-font-lg gl-mt-0 gl-mb-2"
     >
       
-      Site Profile
+      Site profile
     
     </h4>
      
     <p>
       <gl-sprintf-stub
-        message="Site profiles define the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
+        message="A site profile defines the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
       />
     </p>
   </div>
@@ -54,13 +54,13 @@ exports[`SiteProfileSelector renders properly with profiles 1`] = `
       class="gl-font-lg gl-mt-0 gl-mb-2"
     >
       
-      Site Profile
+      Site profile
     
     </h4>
      
     <p>
       <gl-sprintf-stub
-        message="Site profiles define the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
+        message="A site profile defines the attributes and configuration details of your deployed application, website, or API. %{linkStart}Learn more%{linkEnd}."
       />
     </p>
   </div>
