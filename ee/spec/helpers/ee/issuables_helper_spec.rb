@@ -22,6 +22,7 @@ RSpec.describe IssuablesHelper do
           canAdmin: true,
           canDestroy: true,
           canUpdate: true,
+          canUpdateTimelineEvent: true,
           confidential: epic.confidential,
           endpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}",
           epicLinksEndpoint: "/groups/#{@group.full_path}/-/epics/#{epic.iid}/links",
