@@ -3,7 +3,7 @@
 
 %section.settings.no-animate{ class: ('expanded' if expanded), data: { qa_selector: 'custom_project_templates_container' } }
   .settings-header
-    %h4
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
       = s_('GroupSettings|Custom project templates')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
