@@ -40,6 +40,7 @@ RSpec.describe Banzai::Filter::MathFilter do
         '$22+1$ and $22 + a^2$'                  | '<math>22+1</math> and <math>22 + a^2</math>'
         '$22 and $2+2$'                          | '$22 and <math>2+2</math>'
         '$2+2$ $22 and flightjs/Flight$22 $2+2$' | '<math>2+2</math> $22 and flightjs/Flight$22 <math>2+2</math>'
+        '$1/2$ &lt;b&gt;test&lt;/b&gt;'          | '<math>1/2</math> &lt;b&gt;test&lt;/b&gt;'
       end
 
       with_them do
@@ -159,6 +160,14 @@ RSpec.describe Banzai::Filter::MathFilter do
         expect(filter(text).to_s).to eq text
       end
     end
+  end
+
+  it 'handles multiple styles in one text block' do
+    doc = filter('$<code>2+2</code>$ + $3+3$ + $$4+4$$')
+
+    expect(doc.search('.js-render-math').count).to eq(3)
+    expect(doc.search('[data-math-style="inline"]').count).to eq(2)
+    expect(doc.search('[data-math-style="display"]').count).to eq(1)
   end
 
   it 'limits how many elements can be marked as math' do

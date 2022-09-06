@@ -73,17 +73,15 @@ module Banzai
         doc.xpath('descendant-or-self::text()').each do |node|
           next if has_ancestor?(node, IGNORED_ANCESTOR_TAGS)
 
-          content = node.content
-          next unless content.match?(DOLLAR_INLINE_PATTERN) ||
-            content.match?(DOLLAR_DISPLAY_INLINE_PATTERN) ||
-            content.match?(DOLLAR_DISPLAY_BLOCK_PATTERN)
+          node_html = node.to_html
+          next unless node_html.match?(DOLLAR_INLINE_PATTERN) ||
+            node_html.match?(DOLLAR_DISPLAY_INLINE_PATTERN) ||
+            node_html.match?(DOLLAR_DISPLAY_BLOCK_PATTERN)
 
-          temp_doc = Nokogiri::HTML.fragment(content)
+          temp_doc = Nokogiri::HTML.fragment(node_html)
           DOLLAR_MATH_PIPELINE.each do |pipeline|
-            temp_doc.xpath('descendant-or-self::text()').each do |temp_node|
-              next if has_ancestor?(node, IGNORED_ANCESTOR_TAGS)
-
-              html = temp_node.content
+            temp_doc.xpath('child::text()').each do |temp_node|
+              html = temp_node.to_html
               temp_node.content.scan(pipeline[:pattern]).each do |matched, math|
                 html.sub!(matched, math_html(tag: pipeline[:tag], style: pipeline[:style], math: math))
 
