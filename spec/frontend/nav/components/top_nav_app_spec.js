@@ -30,9 +30,11 @@ describe('~/nav/components/top_nav_app.vue', () => {
     it('renders nav item dropdown', () => {
       expect(findNavItemDropdown().attributes('href')).toBeUndefined();
       expect(findNavItemDropdown().attributes()).toMatchObject({
-        icon: 'hamburger',
-        text: TEST_NAV_DATA.menuTitle,
+        icon: '',
+        text: '',
+        'data-qa-title': TEST_NAV_DATA.menuTitle,
         'no-flip': '',
+        'no-caret': '',
       });
     });
 
