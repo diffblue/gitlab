@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User manages merge pipelines option', :js do
+RSpec.describe 'EE > Projects > Settings > Merge requests > User manages merge pipelines', :js do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 

@@ -5,9 +5,17 @@ module QA
     module Page
       module Project
         module Settings
-          class MergeRequestApprovals < QA::Page::Base
-            view 'ee/app/assets/javascripts/approvals/components/mr_edit/rule_input.vue' do
-              element :approvals_number_field
+          module MergeRequestApprovals
+            extend QA::Page::PageConcern
+
+            def self.prepended(base)
+              super
+
+              base.class_eval do
+                view 'ee/app/assets/javascripts/approvals/components/mr_edit/rule_input.vue' do
+                  element :approvals_number_field
+                end
+              end
             end
 
             def set_default_number_of_approvals_required(number)

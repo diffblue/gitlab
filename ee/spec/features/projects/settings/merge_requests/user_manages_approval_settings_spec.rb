@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe 'EE > Projects > Settings > User manages approval rule settings' do
+RSpec.describe 'EE > Projects > Settings > Merge requests > User manages approval rules' do
   let(:project) { create(:project) }
-  let(:user) { project.first_owner }
-  let(:path) { project_settings_merge_requests_path(project) }
+  let(:user) { project.owner }
+  let(:path) { edit_project_path(project) }
   let(:licensed_features) { {} }
   let(:project_features) { {} }
 
@@ -15,7 +15,7 @@ RSpec.describe 'EE > Projects > Settings > User manages approval rule settings' 
 
     project.project_feature.update!(project_features)
 
-    visit path
+    visit project_settings_merge_requests_path(project)
   end
 
   context 'when merge requests is not available' do

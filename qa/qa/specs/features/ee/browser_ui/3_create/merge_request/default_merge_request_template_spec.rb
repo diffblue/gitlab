@@ -18,10 +18,9 @@ module QA
       it 'uses default template when creating a merge request', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347721' do
         default_template_project.visit!
 
-        Page::Project::Menu.perform(&:go_to_general_settings)
-        Page::Project::Settings::Main.perform(&:expand_merge_requests_settings)
-        Page::Project::Settings::MergeRequest.perform do |mr_settings|
-          mr_settings.set_default_merge_request_template(template_content)
+        Page::Project::Menu.perform(&:go_to_merge_request_settings)
+        Page::Project::Settings::MergeRequest.perform do |settings|
+          settings.set_default_merge_request_template(template_content)
         end
 
         Resource::MergeRequest.fabricate_via_browser_ui! do |merge_request|

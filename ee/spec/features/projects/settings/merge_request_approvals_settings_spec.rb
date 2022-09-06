@@ -22,7 +22,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js do
   end
 
   it 'adds approver' do
-    visit edit_project_path(project)
+    visit project_settings_merge_requests_path(project)
 
     open_modal(text: 'Add approval rule', expand: false)
     open_approver_select
@@ -49,7 +49,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js do
   end
 
   it 'adds approver group' do
-    visit edit_project_path(project)
+    visit project_settings_merge_requests_path(project)
 
     open_modal(text: 'Add approval rule', expand: false)
     open_approver_select
@@ -78,7 +78,7 @@ RSpec.describe 'Project settings > [EE] Merge Request Approvals', :js do
     end
 
     it 'removes approver group' do
-      visit edit_project_path(project)
+      visit project_settings_merge_requests_path(project)
 
       expect_avatar(find('.js-members'), rule.approvers)
 

@@ -2,12 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe 'EE > Projects > Settings > User manages merge requests template' do
+RSpec.describe 'EE > Projects > Settings > Merge requests > User manages merge requests template' do
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository, namespace: user.namespace) }
 
   before do
     sign_in(user)
+
     visit project_settings_merge_requests_path(project)
   end
 

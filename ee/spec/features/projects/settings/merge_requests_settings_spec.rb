@@ -48,7 +48,7 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js do
         end
 
         it 'adds a status check' do
-          visit edit_project_path(project)
+          visit project_settings_merge_requests_path(project)
 
           click_button 'Add status check'
 
@@ -68,7 +68,7 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js do
           let_it_be(:rule) { create(:external_status_check, project: project) }
 
           it 'updates the status check' do
-            visit edit_project_path(project)
+            visit project_settings_merge_requests_path(project)
 
             expect(find('[data-testid="status-checks-table"]')).to have_content(rule.name)
 
@@ -88,7 +88,7 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js do
           end
 
           it 'removes the status check' do
-            visit edit_project_path(project)
+            visit project_settings_merge_requests_path(project)
 
             expect(find('[data-testid="status-checks-table"]')).to have_content(rule.name)
 
@@ -116,13 +116,13 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js do
       end
 
       it 'input to configure merge request template is not shown' do
-        visit edit_project_path(project)
+        visit project_settings_merge_requests_path(project)
 
         expect(page).not_to have_selector('#project_merge_requests_template')
       end
 
       it "does not mention the merge request template in the section's description text" do
-        visit edit_project_path(project)
+        visit project_settings_merge_requests_path(project)
 
         expect(page).to have_content('Choose your merge method, options, checks, and squash options.')
       end
@@ -134,13 +134,13 @@ RSpec.describe 'Project settings > [EE] Merge Requests', :js do
       end
 
       it 'input to configure merge request template is shown' do
-        visit edit_project_path(project)
+        visit project_settings_merge_requests_path(project)
 
         expect(page).to have_selector('#project_merge_requests_template')
       end
 
       it "mentions the merge request template in the section's description text" do
-        visit edit_project_path(project)
+        visit project_settings_merge_requests_path(project)
 
         expect(page).to have_content('Choose the method, options, checks, and squash options for merge requests. You can also set up merge request templates for different actions.')
       end

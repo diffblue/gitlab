@@ -142,7 +142,7 @@ RSpec.describe 'Projects > Audit Events', :js do
     end
 
     it "appears in the project's audit events", :js do
-      visit edit_project_path(project)
+      visit project_settings_merge_requests_path(project)
 
       page.within('[data-testid="merge-request-approval-settings"]') do
         find('[data-testid="prevent-author-approval"] > input').set(false)
