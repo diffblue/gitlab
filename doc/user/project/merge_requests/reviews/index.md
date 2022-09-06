@@ -96,7 +96,7 @@ If you have a review in progress, you can also add a comment from the **Overview
 ### Approval Rule information for Reviewers **(PREMIUM)**
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/233736) in GitLab 13.8.
-> - [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/293742) in GitLab 13.9.
+> - [Feature flag `reviewer_approval_rules` removed](https://gitlab.com/gitlab-org/gitlab/-/issues/293742) in GitLab 13.9.
 
 When editing the **Reviewers** field in a new or existing merge request, GitLab
 displays the name of the matching [approval rule](../approvals/rules.md)
@@ -110,9 +110,19 @@ This example shows reviewers and approval rules in a merge request sidebar:
 
 ![Reviewer approval rules in sidebar](img/reviewer_approval_rules_sidebar_v13_8.png)
 
-  WARNING:
-  There is currently a **100 reviewer limit** on [the GitLab project](https://gitlab.com/gitlab-org/gitlab/).
-  This can be enabled or disabled on other projects by using the `limit_reviewer_and_assignee_size` feature flag.
+### Reviewer limits on GitLab.com **(PREMIUM SAAS)**
+
+> - Limits for reviewers and assignees [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366485) in GitLab 15.3
+    [with a flag](../../../administration/feature_flags.md) named `limit_reviewer_and_assignee_size`. Disabled by default.
+> - [Enabled on GitLab.com](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91406) in GitLab 15.3.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available. To make it available,
+ask an administrator to [enable the feature flag](../../../../administration/feature_flags.md)
+named `limit_reviewer_and_assignee_size`.
+On GitLab.com, this feature is available.
+
+GitLab.com enforces a 100 reviewer limit on [the GitLab project](https://gitlab.com/gitlab-org/gitlab/).
 
 ### Request a new review
 
