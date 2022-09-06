@@ -14,10 +14,11 @@ workhorse:verify:
   stage: test
   needs:
     - setup-test-env
-  script:
+  before_script:
     - go version
     - apt-get update && apt-get -y install libimage-exiftool-perl
     - scripts/gitaly-test-build
+  script:
     - make -C workhorse test
 
 workhorse:test using go 1.17:
@@ -29,3 +30,9 @@ workhorse:test using go 1.17 with FIPS:
   variables:
     WORKHORSE_TEST_FIPS_ENABLED: 1
   image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images:debian-${DEBIAN_VERSION}-ruby-${RUBY_VERSION}-golang-1.17-git-2.31
+
+workhorse:test race:
+  extends: .workhorse:test
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images:debian-${DEBIAN_VERSION}-ruby-${RUBY_VERSION}-golang-1.17-git-2.31
+  script:
+    - make -C workhorse test-race

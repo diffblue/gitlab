@@ -84,7 +84,7 @@ test: prepare-tests
 	else \
 		$(MAKE) run-gitaly ; \
 	fi
-	@go test -tags "$(BUILD_TAGS)" ./... ;\
+	@go test ${TEST_OPTIONS} -tags "$(BUILD_TAGS)" ./... ;\
 	status="$$?" ;\
 	if [ -f "$(GITALY_PID_FILE)" ] ; then \
 		echo "Clean up Gitaly server for workhorse integration test" ;\
@@ -95,6 +95,10 @@ test: prepare-tests
 	fi ;\
 	exit "$$status"
 	@echo SUCCESS
+
+.PHONY: test-race
+test-race: TEST_OPTIONS = -race
+test-race: test
 
 .PHONY:	clean
 clean: clean-workhorse clean-build
