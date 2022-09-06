@@ -3,7 +3,7 @@ import { objectToQuery } from '~/lib/utils/url_utility';
 import { ALERT_LOCALSTORAGE_KEY, BASE_URL_LOCALSTORAGE_KEY } from './constants';
 
 const isFunction = (fn) => typeof fn === 'function';
-const canUseLocalStorage = () => AccessorUtilities.canUseLocalStorage();
+const { canUseLocalStorage } = AccessorUtilities;
 
 const persistToStorage = (key, payload) => {
   localStorage.setItem(key, payload);

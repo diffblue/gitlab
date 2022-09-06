@@ -18,8 +18,11 @@ export default {
     };
   },
   computed: {
+    hasSelectedVersion() {
+      return this.gitlabBasePath !== null;
+    },
     subtitle() {
-      return this.gitlabBasePath
+      return this.hasSelectedVersion
         ? this.$options.i18n.signInSubtitle
         : this.$options.i18n.versionSelectSubtitle;
     },
@@ -51,7 +54,7 @@ export default {
       <p data-testid="subtitle">{{ subtitle }}</p>
     </div>
 
-    <version-select-form v-if="!gitlabBasePath" class="gl-mt-7" @submit="onVersionSelect" />
+    <version-select-form v-if="!hasSelectedVersion" class="gl-mt-7" @submit="onVersionSelect" />
 
     <div v-else class="gl-text-center">
       <sign-in-oauth-button

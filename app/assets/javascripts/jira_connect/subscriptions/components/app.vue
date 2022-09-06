@@ -83,8 +83,7 @@ export default {
      * if the jiraConnectOauth flag is enabled.
      */
     fetchSubscriptionsOauth() {
-      if (!this.isOauthEnabled) return;
-      if (!this.userSignedIn) return;
+      if (!this.isOauthEnabled || !this.userSignedIn) return;
 
       this.fetchSubscriptions(this.subscriptionsPath);
     },
