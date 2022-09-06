@@ -41,7 +41,6 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
       stub_application_setting(inactive_projects_delete_after_months: 14)
       stub_application_setting(deletion_adjourned_period: 7)
       stub_application_setting(delete_inactive_projects: true)
-      stub_feature_flags(inactive_projects_deletion: true)
     end
 
     it 'does not send deletion warning email for inactive projects that are already marked for deletion' do
