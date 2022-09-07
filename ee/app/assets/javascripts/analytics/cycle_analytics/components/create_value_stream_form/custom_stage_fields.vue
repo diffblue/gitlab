@@ -103,81 +103,82 @@ export default {
 </script>
 <template>
   <div data-testid="value-stream-stage-fields">
-    <div class="gl-display-flex">
-      <gl-form-group
-        class="gl-flex-grow-1"
-        :label="stageLabel"
-        :state="hasFieldErrors('name')"
-        :invalid-feedback="fieldErrorMessage('name')"
-        :data-testid="`custom-stage-name-${index}`"
-      >
-        <!-- eslint-disable vue/no-mutating-props -->
-        <gl-form-input
-          v-model.trim="stage.name"
-          :name="`custom-stage-name-${index}`"
-          :placeholder="$options.i18n.FORM_FIELD_STAGE_NAME_PLACEHOLDER"
-          required
-          @input="$emit('input', { field: 'name', value: $event })"
-        />
-        <!-- eslint-enable vue/no-mutating-props -->
-      </gl-form-group>
+    <div class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row">
+      <div class="gl-flex-grow-1 gl-mr-2">
+        <gl-form-group
+          :label="stageLabel"
+          :state="hasFieldErrors('name')"
+          :invalid-feedback="fieldErrorMessage('name')"
+          :data-testid="`custom-stage-name-${index}`"
+        >
+          <!-- eslint-disable vue/no-mutating-props -->
+          <gl-form-input
+            v-model.trim="stage.name"
+            :name="`custom-stage-name-${index}`"
+            :placeholder="$options.i18n.FORM_FIELD_STAGE_NAME_PLACEHOLDER"
+            required
+            @input="$emit('input', { field: 'name', value: $event })"
+          />
+          <!-- eslint-enable vue/no-mutating-props -->
+        </gl-form-group>
+        <div class="gl-display-flex gl-justify-content-between gl-mt-3">
+          <custom-stage-event-field
+            event-type="start-event"
+            :index="index"
+            :field-label="$options.i18n.FORM_FIELD_START_EVENT"
+            :selected-event-name="selectedStartEventName"
+            :events-list="startEvents"
+            :identifier-error="fieldErrorMessage('startEventIdentifier')"
+            :has-identifier-error="hasFieldErrors('startEventIdentifier')"
+            @update-identifier="$emit('input', { field: 'startEventIdentifier', value: $event })"
+          />
+          <custom-stage-event-label-field
+            event-type="start-event"
+            :index="index"
+            :field-label="$options.i18n.FORM_FIELD_START_EVENT_LABEL"
+            :requires-label="startEventRequiresLabel"
+            :label-error="fieldErrorMessage('startEventLabelId')"
+            :has-label-error="hasFieldErrors('startEventLabelId')"
+            :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+              stage.startEventLabelId,
+            ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+            @update-label="onSelectLabel('startEventLabelId', $event)"
+          />
+        </div>
+        <div class="gl-display-flex gl-justify-content-between">
+          <custom-stage-event-field
+            event-type="end-event"
+            :index="index"
+            :disabled="!hasStartEvent"
+            :field-label="$options.i18n.FORM_FIELD_END_EVENT"
+            :selected-event-name="selectedEndEventName"
+            :events-list="endEvents"
+            :identifier-error="fieldErrorMessage('endEventIdentifier')"
+            :has-identifier-error="hasFieldErrors('endEventIdentifier')"
+            @update-identifier="$emit('input', { field: 'endEventIdentifier', value: $event })"
+          />
+          <custom-stage-event-label-field
+            event-type="end-event"
+            :index="index"
+            :field-label="$options.i18n.FORM_FIELD_END_EVENT_LABEL"
+            :requires-label="endEventRequiresLabel"
+            :label-error="fieldErrorMessage('endEventLabelId')"
+            :has-label-error="hasFieldErrors('endEventLabelId')"
+            :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
+              stage.endEventLabelId,
+            ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+            @update-label="onSelectLabel('endEventLabelId', $event)"
+          />
+        </div>
+      </div>
       <stage-field-actions
         v-if="hasMultipleStages"
-        class="gl-mt-6"
+        class="gl-mt-0 gl-sm-mt-6!"
         :index="index"
         :stage-count="totalStages"
         :can-remove="true"
         @move="$emit('move', $event)"
         @remove="$emit('remove', $event)"
-      />
-    </div>
-    <div class="gl-display-flex gl-justify-content-between">
-      <custom-stage-event-field
-        event-type="start-event"
-        :index="index"
-        :field-label="$options.i18n.FORM_FIELD_START_EVENT"
-        :selected-event-name="selectedStartEventName"
-        :events-list="startEvents"
-        :identifier-error="fieldErrorMessage('startEventIdentifier')"
-        :has-identifier-error="hasFieldErrors('startEventIdentifier')"
-        @update-identifier="$emit('input', { field: 'startEventIdentifier', value: $event })"
-      />
-      <custom-stage-event-label-field
-        event-type="start-event"
-        :index="index"
-        :field-label="$options.i18n.FORM_FIELD_START_EVENT_LABEL"
-        :requires-label="startEventRequiresLabel"
-        :label-error="fieldErrorMessage('startEventLabelId')"
-        :has-label-error="hasFieldErrors('startEventLabelId')"
-        :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
-          stage.startEventLabelId,
-        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        @update-label="onSelectLabel('startEventLabelId', $event)"
-      />
-    </div>
-    <div class="gl-display-flex gl-justify-content-between">
-      <custom-stage-event-field
-        event-type="end-event"
-        :index="index"
-        :disabled="!hasStartEvent"
-        :field-label="$options.i18n.FORM_FIELD_END_EVENT"
-        :selected-event-name="selectedEndEventName"
-        :events-list="endEvents"
-        :identifier-error="fieldErrorMessage('endEventIdentifier')"
-        :has-identifier-error="hasFieldErrors('endEventIdentifier')"
-        @update-identifier="$emit('input', { field: 'endEventIdentifier', value: $event })"
-      />
-      <custom-stage-event-label-field
-        event-type="end-event"
-        :index="index"
-        :field-label="$options.i18n.FORM_FIELD_END_EVENT_LABEL"
-        :requires-label="endEventRequiresLabel"
-        :label-error="fieldErrorMessage('endEventLabelId')"
-        :has-label-error="hasFieldErrors('endEventLabelId')"
-        :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
-          stage.endEventLabelId,
-        ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
-        @update-label="onSelectLabel('endEventLabelId', $event)"
       />
     </div>
   </div>
