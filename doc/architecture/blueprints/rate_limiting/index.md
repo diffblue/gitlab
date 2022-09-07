@@ -77,7 +77,7 @@ monitoring capabilities.
 
 1. Build a framework to define and enforce limits in GitLab Rails.
 2. Build an API to consume limits in satellite service and expose them to users.
-3. Build a GitLab Policy Service in place of the Pipeline Validation Service.
+3. Extract the framework into a dedicated GitLab Limits Service.
 
 <!-- markdownlint-enable MD029 -->
 
