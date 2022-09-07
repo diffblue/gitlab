@@ -155,7 +155,7 @@ export default {
 
   [mutationTypes.MOVE_EPIC]: (
     state,
-    { originalEpic, fromListId, toListId, moveBeforeId, moveAfterId },
+    { originalEpic, fromListId, toListId, moveBeforeId, moveAfterId, listPosition },
   ) => {
     const fromList = state.boardLists[fromListId];
     const toList = state.boardLists[toListId];
@@ -164,7 +164,14 @@ export default {
     Vue.set(state.boardItems, epic.id, epic);
 
     removeItemFromList({ state, listId: fromListId, itemId: epic.id });
-    addItemToList({ state, listId: toListId, itemId: epic.id, moveBeforeId, moveAfterId });
+    addItemToList({
+      state,
+      listId: toListId,
+      itemId: epic.id,
+      moveBeforeId,
+      moveAfterId,
+      listPosition,
+    });
   },
 
   [mutationTypes.MOVE_EPIC_FAILURE]: (
