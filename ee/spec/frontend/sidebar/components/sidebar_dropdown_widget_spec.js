@@ -22,6 +22,7 @@ import {
   mockEpicMutationResponse,
   mockEpic2,
   emptyGroupEpicsResponse,
+  mockNoPermissionEpicResponse,
 } from '../mock_data';
 
 jest.mock('~/flash');
@@ -32,9 +33,20 @@ describe('SidebarDropdownWidget', () => {
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findAllDropdownItems = () => wrapper.findAll(GlDropdownItem);
+  const findPopoverCta = () => wrapper.findByTestId('confirm-edit-cta');
+  const findPopoverCancel = () => wrapper.findByTestId('confirm-edit-cancel');
   const findDropdownItemWithText = (text) =>
     findAllDropdownItems().wrappers.find((x) => x.text() === text);
   const findSelectedAttribute = () => wrapper.findByTestId('select-epic');
+
+  const waitForDropdown = async () => {
+    /** This sequence is important to wait for
+     * dropdown to render
+     */
+    await waitForPromises();
+    jest.runOnlyPendingTimers();
+    await waitForPromises();
+  };
 
   const createComponentWithApollo = async ({
     requestHandlers = [],
@@ -50,7 +62,11 @@ describe('SidebarDropdownWidget', () => {
 
     wrapper = extendedWrapper(
       mount(SidebarDropdownWidget, {
-        provide: { canUpdate: true, issuableAttributesQueries },
+        provide: {
+          canUpdate: true,
+          issuableAttributesQueries,
+          glFeatures: { epicWidgetEditConfirmation: true },
+        },
         apolloProvider: mockApollo,
         propsData: {
           workspacePath: mockIssue.projectPath,
@@ -220,6 +236,52 @@ describe('SidebarDropdownWidget', () => {
             message: 'An error occurred while fetching the assigned epic of the selected issue.',
             captureError: true,
             error: expect.any(Error),
+          });
+        });
+      });
+
+      describe("when attribute type is 'epic'", () => {
+        describe("when user doesn't have permission", () => {
+          it('opens popover on edit click', async () => {
+            await createComponentWithApollo({
+              currentEpicSpy: jest.fn().mockResolvedValue(mockNoPermissionEpicResponse),
+            });
+
+            const spy = jest.spyOn(wrapper.vm.$children[0].$refs.popover, '$emit');
+
+            await clickEdit(wrapper);
+
+            expect(spy).toHaveBeenCalledWith('open');
+
+            spy.mockRestore();
+          });
+
+          it('renders dropdown when popover is confirmed', async () => {
+            await createComponentWithApollo({
+              currentEpicSpy: jest.fn().mockResolvedValue(mockNoPermissionEpicResponse),
+            });
+
+            await clickEdit(wrapper);
+
+            const button = findPopoverCta();
+            button.trigger('click');
+            await waitForDropdown();
+
+            expect(findDropdown().isVisible()).toBe(true);
+          });
+
+          it('does not render dropdown when popover is canceled', async () => {
+            await createComponentWithApollo({
+              currentEpicSpy: jest.fn().mockResolvedValue(mockNoPermissionEpicResponse),
+            });
+
+            await clickEdit(wrapper);
+
+            const button = findPopoverCancel();
+            button.trigger('click');
+            await waitForDropdown();
+
+            expect(findDropdown().exists()).toBe(false);
           });
         });
       });
