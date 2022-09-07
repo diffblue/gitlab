@@ -3,12 +3,12 @@
 module Gitlab
   module QuickActions
     class TimelineTextAndDateTimeSeparator
-      DATETIME_REGEX = %r{(\d{2,4}[/\-.]\d{1,2}[/\-.]\d{1,2} \d{1,2}:\d{2})}.freeze
+      DATETIME_REGEX = %r{(\d{2,4}[\-.]\d{1,2}[\-.]\d{1,2} \d{1,2}:\d{2})}.freeze
       TIME_REGEX = %r{(\d{1,2}:\d{2})}.freeze
 
       def initialize(timeline_event_arg)
         @timeline_event_arg = timeline_event_arg
-        @timeline_text = timeline_event_arg.split('|')[0]&.strip
+        @timeline_text = get_text
         @timeline_date_string = get_raw_date_string
       end
 
@@ -17,7 +17,7 @@ module Gitlab
         return [@timeline_text, get_current_date_time] unless date_time_present?
         return unless valid_date?
 
-        [get_text, get_actual_date_time]
+        [@timeline_text, get_actual_date_time]
       end
 
       private

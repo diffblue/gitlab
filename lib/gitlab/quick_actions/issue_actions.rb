@@ -320,7 +320,7 @@ module Gitlab
 
         desc { _('Add a timeline event to incident') }
         explanation { _('Adds a timeline event to incident.') }
-        params '<timeline comment> | <date(YYYY-MM-DD)> time<HH:MM>'
+        params '<timeline comment> | <date(YYYY-MM-DD)> <time(HH:MM)>'
         types Issue
         condition do
           quick_action_target.incident? &&

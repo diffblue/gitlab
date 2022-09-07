@@ -39,7 +39,7 @@ RSpec.describe Gitlab::QuickActions::TimelineTextAndDateTimeSeparator do
         end
       end
 
-      context 'when date is trash in arg line' do
+      context 'when date is invalid in arg line' do
         let(:invalid_arg) { 'timeline comment | wrong data type' }
 
         it 'return current date' do
