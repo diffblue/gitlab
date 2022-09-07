@@ -382,8 +382,6 @@ RSpec.describe API::Members do
       end
     end
 
-    let_it_be(:awaiting_user) { create(:group_member, :awaiting, group: group, user: create(:user)).user }
-
     describe 'GET /groups/:id/billable_members' do
       let(:url) { "/groups/#{group.id}/billable_members" }
       let(:params) { {} }
@@ -482,16 +480,6 @@ RSpec.describe API::Members do
             get_billable_members
 
             expect_paginated_array_response(users[0].id)
-          end
-        end
-
-        context 'with include_awaiting_members is true' do
-          let(:params) { { include_awaiting_members: true } }
-
-          it 'includes awaiting users' do
-            get_billable_members
-
-            expect_paginated_array_response(*[owner, maintainer, nested_user, awaiting_user, project_user, linked_group_user].map(&:id))
           end
         end
       end
@@ -646,16 +634,6 @@ RSpec.describe API::Members do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response.map { |m| m['source_full_name'] }).to include(project.full_name)
-      end
-
-      it 'includes awaiting memberships' do
-        membership = developer.members.first
-        membership.wait
-
-        get api("/groups/#{group.id}/billable_members/#{developer.id}/memberships", owner)
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response.map { |m| m['id'] }).to include(membership.id)
       end
 
       it 'paginates results' do

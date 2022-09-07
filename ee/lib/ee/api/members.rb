@@ -118,7 +118,6 @@ module EE
             use :pagination
             optional :search, type: String, desc: 'The exact name of the subscribed member'
             optional :sort, type: String, desc: 'The sorting option', values: Helpers::MembersHelpers.member_sort_options
-            optional :include_awaiting_members, type: Grape::API::Boolean, desc: 'Determines if awaiting members are included', default: false
           end
           get ":id/billable_members", feature_category: :subgroups do
             group = find_group!(params[:id])
@@ -128,10 +127,7 @@ module EE
 
             sorting = params[:sort] || 'id_asc'
 
-            result = BilledUsersFinder.new(group,
-                                            search_term: params[:search],
-                                            order_by: sorting,
-                                            include_awaiting_members: params[:include_awaiting_members]).execute
+            result = BilledUsersFinder.new(group, search_term: params[:search], order_by: sorting).execute
 
             present paginate(result[:users]),
                     with: ::EE::API::Entities::BillableMember,
@@ -140,8 +136,7 @@ module EE
                     group_member_user_ids: result[:group_member_user_ids],
                     project_member_user_ids: result[:project_member_user_ids],
                     shared_group_user_ids: result[:shared_group_user_ids],
-                    shared_project_user_ids: result[:shared_project_user_ids],
-                    awaiting_user_ids: result[:awaiting_user_ids]
+                    shared_project_user_ids: result[:shared_project_user_ids]
           end
 
           desc 'Changes the state of the memberships of a user in the group'
