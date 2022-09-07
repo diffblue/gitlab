@@ -11,6 +11,7 @@ import {
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
+import { ENTER_KEY } from '~/lib/utils/keys';
 
 import mockProjects from 'test_fixtures_static/projects.json';
 import CreateIssueForm from 'ee/related_items_tree/components/create_issue_form.vue';
@@ -26,34 +27,46 @@ import {
 
 Vue.use(Vuex);
 
-const createComponent = () => {
-  const store = createDefaultStore();
-
-  store.dispatch('setInitialConfig', mockInitialConfig);
-  store.dispatch('setInitialParentItem', mockParentItem);
-
-  return shallowMount(CreateIssueForm, {
-    store,
-  });
-};
-
-const getLocalstorageKey = () => {
-  return 'root/frequent-projects';
-};
-
-const setLocalstorageFrequentItems = (json = mockFrequentlyUsedProjects) => {
-  localStorage.setItem(getLocalstorageKey(), JSON.stringify(json));
-};
-
-const removeLocalstorageFrequentItems = () => {
-  localStorage.removeItem(getLocalstorageKey());
-};
-
 describe('CreateIssueForm', () => {
+  const defaultProject = mockProjects[1];
   let wrapper;
 
+  const createComponent = () => {
+    const store = createDefaultStore();
+
+    store.dispatch('setInitialConfig', mockInitialConfig);
+    store.dispatch('setInitialParentItem', mockParentItem);
+
+    wrapper = shallowMount(CreateIssueForm, {
+      store,
+    });
+  };
+
+  const getLocalstorageKey = () => {
+    return 'root/frequent-projects';
+  };
+
+  const setLocalstorageFrequentItems = (json = mockFrequentlyUsedProjects) => {
+    localStorage.setItem(getLocalstorageKey(), JSON.stringify(json));
+  };
+
+  const removeLocalstorageFrequentItems = () => {
+    localStorage.removeItem(getLocalstorageKey());
+  };
+
+  const selectProject = async (project = defaultProject) => {
+    wrapper.vm.$store.dispatch('receiveProjectsSuccess', mockProjects);
+    await nextTick();
+
+    const item = wrapper.find(`[data-testid="project-item-${project.id}"]`);
+    item.vm.$emit('click');
+  };
+
+  const findSubmitButton = () => wrapper.find('[data-testid="submit-button"]');
+  const findTitleInput = () => wrapper.find('[data-testid="title-input"]');
+
   beforeEach(() => {
-    wrapper = createComponent();
+    createComponent();
     gon.current_username = 'root';
   });
 
@@ -73,24 +86,18 @@ describe('CreateIssueForm', () => {
   describe('computed', () => {
     describe('dropdownToggleText', () => {
       it('returns project name with name_with_namespace when `selectedProject` is not empty', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          selectedProject: mockProjects[0],
-        });
+        await selectProject();
 
-        await nextTick();
-        expect(wrapper.vm.dropdownToggleText).toBe(mockProjects[0].name_with_namespace);
+        expect(wrapper.vm.dropdownToggleText).toBe(defaultProject.name_with_namespace);
       });
       it('returns project name with namespace when `selectedProject` is not empty and dont have name_with_namespace', async () => {
-        const project = { ...mockProjects[0], name_with_namespace: undefined, namespace: 'foo' };
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          selectedProject: project,
-        });
+        const project = {
+          ...defaultProject,
+          name_with_namespace: undefined,
+          namespace: 'H5bp / Html5 Boilerplate',
+        };
 
-        await nextTick();
+        await selectProject(project);
 
         expect(wrapper.vm.dropdownToggleText).toBe(project.namespace);
       });
@@ -109,24 +116,50 @@ describe('CreateIssueForm', () => {
 
     describe('createIssue', () => {
       it('emits event `submit` on component when `selectedProject` is not empty', async () => {
-        // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-        // eslint-disable-next-line no-restricted-syntax
-        wrapper.setData({
-          selectedProject: {
-            ...mockProjects[0],
-            _links: {
-              issues: 'foo',
-            },
-          },
-          title: 'Some issue',
-        });
+        const input = findTitleInput();
 
-        wrapper.vm.createIssue();
+        await selectProject();
+        await input.vm.$emit('input', 'Some issue');
+        await findSubmitButton().vm.$emit('click');
 
-        await nextTick();
         expect(wrapper.emitted('submit')[0]).toEqual(
-          expect.arrayContaining([{ issuesEndpoint: 'foo', title: 'Some issue' }]),
+          expect.arrayContaining([
+            { issuesEndpoint: defaultProject._links.issues, title: 'Some issue' },
+          ]),
         );
+        expect(input.attributes('value')).toBe('');
+      });
+
+      it('emits event `submit` on enter', async () => {
+        const input = findTitleInput();
+
+        await selectProject();
+        await input.vm.$emit('input', 'Some issue');
+        await input.vm.$emit('keyup', new KeyboardEvent({ key: ENTER_KEY }));
+
+        expect(wrapper.emitted('submit')[0]).toEqual(
+          expect.arrayContaining([
+            { issuesEndpoint: defaultProject._links.issues, title: 'Some issue' },
+          ]),
+        );
+        expect(input.attributes('value')).toBe('');
+      });
+
+      it('does not emit event `submit` when `selectedProject` is empty', async () => {
+        const input = findTitleInput();
+
+        await input.vm.$emit('input', 'Some issue');
+        await findSubmitButton().vm.$emit('click');
+
+        expect(wrapper.emitted('submit')).toBeUndefined();
+        expect(input.attributes('value')).toBe('Some issue');
+      });
+
+      it('does not emit event `submit` when `title` is empty', async () => {
+        await selectProject();
+        await findSubmitButton().vm.$emit('click');
+
+        expect(wrapper.emitted('submit')).toBeUndefined();
       });
     });
 

@@ -8,6 +8,7 @@ module Groups
 
       before_action do
         push_frontend_feature_flag(:group_level_security_policies, group)
+        push_frontend_feature_flag(:group_level_scan_result_policies, group)
       end
 
       feature_category :security_orchestration

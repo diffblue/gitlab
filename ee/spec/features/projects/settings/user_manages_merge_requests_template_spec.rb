@@ -8,7 +8,7 @@ RSpec.describe 'EE > Projects > Settings > User manages merge requests template'
 
   before do
     sign_in(user)
-    visit edit_project_path(project)
+    visit project_settings_merge_requests_path(project)
   end
 
   it 'saves merge request template' do

@@ -14,14 +14,14 @@ RSpec.describe 'User manages merge pipelines option', :js do
   end
 
   it 'sees unchecked merge pipeline checkbox' do
-    visit edit_project_path(project)
+    visit project_settings_merge_requests_path(project)
 
     expect(page.find('#project_merge_pipelines_enabled')).not_to be_checked
   end
 
   context 'when user enabled the checkbox' do
     before do
-      visit edit_project_path(project)
+      visit project_settings_merge_requests_path(project)
 
       check('Enable merged results pipelines')
     end

@@ -15,7 +15,7 @@
     window.gl.mrWidgetData.coverage_fuzzing_help_path = '#{help_page_path("user/application_security/coverage_fuzzing/index")}';
     window.gl.mrWidgetData.visual_review_app_available = '#{@project.feature_available?(:visual_review_app)}' === 'true';
     window.gl.mrWidgetData.license_scanning_comparison_path = '#{license_scanning_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:license_scanning)}'
-    window.gl.mrWidgetData.license_scanning_comparison_collapsed_path = '#{license_scanning_reports_collapsed_project_merge_request_path(@project, @merge_request) if Feature.enabled?(:refactor_license_compliance_extension, @project) && @project.feature_available?(:license_scanning)}'
+    window.gl.mrWidgetData.license_scanning_comparison_collapsed_path = '#{license_scanning_reports_collapsed_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:license_scanning)}'
     window.gl.mrWidgetData.container_scanning_comparison_path = '#{container_scanning_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:container_scanning)}'
     window.gl.mrWidgetData.dependency_scanning_comparison_path = '#{dependency_scanning_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:dependency_scanning)}'
     window.gl.mrWidgetData.sast_comparison_path = '#{sast_reports_project_merge_request_path(@project, @merge_request) if @project.feature_available?(:sast)}'

@@ -97,6 +97,11 @@ export default {
       return this.checkReportStatus(this.isLoading && !this.hasCodequalityViolations, this.errored);
     },
   },
+  watch: {
+    codequalityViolations() {
+      this.$emit('updateBadgeCount', this.codequalityViolations.count);
+    },
+  },
   i18n: {
     subHeading: s__('ciReport|This report contains all Code Quality issues in the source branch.'),
     loadingText: s__('ciReport|Loading Code Quality report'),

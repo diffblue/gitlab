@@ -4,8 +4,8 @@ import { identity } from 'lodash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
+import SubscriptionDetailsTable from 'jh_else_ee/admin/subscriptions/show/components/subscription_details_table.vue';
 import { getLicenseTypeLabel } from '../utils';
-import SubscriptionDetailsTable from './subscription_details_table.vue';
 
 const subscriptionDetailsFormatRules = {
   id: getIdFromGraphQLId,

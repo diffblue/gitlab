@@ -211,4 +211,32 @@ RSpec.describe EE::Issuable do
       expect(issue.allows_scoped_labels?).to be(false)
     end
   end
+
+  describe '#issuable_resource_links_available?' do
+    let_it_be(:project) { build_stubbed(:project) }
+
+    it 'returns false for issuable type as issue' do
+      issue = build_stubbed(:issue, project: project)
+
+      stub_licensed_features(issuable_resource_links: true)
+
+      expect(issue.issuable_resource_links_available?).to be(false)
+    end
+
+    it 'returns true for issuable type as incident' do
+      issue = build_stubbed(:incident, project: project)
+
+      stub_licensed_features(issuable_resource_links: true)
+
+      expect(issue.issuable_resource_links_available?).to be(true)
+    end
+
+    it 'returns false when feature is not avaiable' do
+      issue = build_stubbed(:incident, project: project)
+
+      stub_licensed_features(issuable_resource_links: false)
+
+      expect(issue.issuable_resource_links_available?).to be(false)
+    end
+  end
 end

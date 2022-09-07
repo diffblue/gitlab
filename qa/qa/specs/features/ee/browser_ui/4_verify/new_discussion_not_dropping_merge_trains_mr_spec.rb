@@ -34,7 +34,7 @@ module QA
           project.visit!
 
           Flow::MergeRequest.enable_merge_trains
-          Page::Project::Settings::Main.perform(&:expand_merge_requests_settings)
+          Page::Project::Menu.perform(&:go_to_merge_request_settings)
           Page::Project::Settings::MergeRequest.perform(&:enable_merge_if_all_disscussions_are_resolved)
 
           commit_ci_file

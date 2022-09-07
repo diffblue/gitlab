@@ -176,11 +176,7 @@ export default {
 
 <template>
   <div class="related-items-tree-container gl-mt-5">
-    <div v-if="itemsFetchInProgress" class="mt-2">
-      <gl-loading-icon size="lg" />
-    </div>
     <div
-      v-else
       class="related-items-tree card card-slim"
       :class="{
         'disabled-content': disableContents,
@@ -257,19 +253,19 @@ export default {
           />
         </template>
       </slot-switch>
+      <div v-if="itemsFetchInProgress" class="gl-p-3">
+        <gl-loading-icon size="lg" />
+      </div>
+      <div v-else-if="!itemsFetchResultEmpty">
+        <related-items-tree-actions :active-tab="activeTab" @tab-change="handleTabChange" />
 
-      <related-items-tree-actions
-        v-if="!itemsFetchResultEmpty"
-        :active-tab="activeTab"
-        @tab-change="handleTabChange"
-      />
-
-      <related-items-tree-body
-        v-if="!itemsFetchResultEmpty && activeTab === $options.ITEM_TABS.TREE"
-        :parent-item="parentItem"
-        :children="directChildren"
-      />
-      <related-items-roadmap-app v-if="activeTab === $options.ITEM_TABS.ROADMAP" />
+        <related-items-tree-body
+          v-if="activeTab === $options.ITEM_TABS.TREE"
+          :parent-item="parentItem"
+          :children="directChildren"
+        />
+        <related-items-roadmap-app v-if="activeTab === $options.ITEM_TABS.ROADMAP" />
+      </div>
       <tree-item-remove-modal />
     </div>
   </div>

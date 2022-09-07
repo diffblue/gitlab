@@ -1,0 +1,119 @@
+@import 'page_bundles/mixins_and_variables_and_functions';
+
+.requirements-container {
+  .requirement-form-drawer {
+    &.zen-mode {
+      // We need to override `z-index` provided to GlDrawer
+      // in Zen mode to enable full-screen editing.
+      z-index: auto !important;
+    }
+
+    // Following overrides are done to
+    // elements within `issuable_body.vue`
+    // and are specific to requirements.
+    .title-container {
+      @include gl-border-b-solid;
+      @include gl-border-b-gray-100;
+      @include gl-border-b-1;
+
+      &,
+      .title {
+        @include gl-mb-3;
+      }
+
+      .title {
+        @include gl-font-size-markdown-h2;
+      }
+    }
+
+    .issuable-details {
+      @include gl-py-0;
+
+      li.md-header-toolbar {
+        @include gl-py-3;
+      }
+
+      .detail-page-description {
+        @include gl-border-none;
+      }
+    }
+  }
+}
+
+.requirements-list-container {
+  .requirements-list {
+    li .issuable-main-info {
+      // These rules prevent adjecant REQ ID from wrapping
+      // when requirement title is too long.
+      flex-basis: inherit;
+      // Value `100` ensures that requirement title
+      // takes up maximum available horizontal space
+      // while still preventing REQ ID from wrapping.
+      flex-grow: 100;
+    }
+  }
+
+  .issuable-info {
+    // The size here is specific to correctly
+    // align info row perfectly with action buttons & updated date.
+    margin-top: 9px;
+  }
+
+  .controls {
+    align-items: flex-start;
+
+    @include media-breakpoint-down(xs) {
+      .requirement-archive {
+        margin-top: $gl-padding-4;
+      }
+
+      .requirement-edit {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.requirement-status-tooltip {
+  .tooltip-inner {
+    max-width: 100%;
+  }
+}
+
+#export-requirements {
+  .scrollbox {
+    border: 1px solid var(--gray-200, $gray-200);
+    border-radius: $border-radius-default;
+    position: relative;
+
+    .scrollbox-header {
+      border-bottom: 1px solid var(--gray-200, $gray-200);
+    }
+
+    .scrollbox-body {
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .scrollbox-fade {
+      position: absolute;
+      bottom: 0;
+      height: 20px;
+      width: 100%;
+      background-image: linear-gradient(180deg, transparent 0%, $white 100%);
+      z-index: 1;
+      border-radius: $border-radius-default;
+    }
+  }
+
+  .modal-content {
+    align-self: flex-start;
+    margin-top: $gl-spacing-scale-11;
+  }
+
+  @media (max-width: $breakpoint-sm) {
+    .modal-dialog {
+      margin-top: $gl-spacing-scale-11;
+    }
+  }
+}

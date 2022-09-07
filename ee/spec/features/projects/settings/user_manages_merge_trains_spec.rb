@@ -15,7 +15,7 @@ RSpec.describe 'User manages merge trains option', :js do
   end
 
   it 'sees unchecked merge trains checkbox' do
-    visit edit_project_path(project)
+    visit project_settings_merge_requests_path(project)
     wait_for_requests
 
     expect(page.find('#project_merge_trains_enabled')).not_to be_checked
@@ -23,7 +23,7 @@ RSpec.describe 'User manages merge trains option', :js do
 
   context 'when user enabled the checkbox' do
     before do
-      visit edit_project_path(project)
+      visit project_settings_merge_requests_path(project)
       wait_for_requests
 
       check('Enable merge trains')

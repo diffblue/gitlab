@@ -8,6 +8,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
   ONE_WEEK_IN_HOURS = 168
   ISSUE_COUNT = 15
   MERGE_REQUEST_COUNT = 10
+  GROUP_LABEL_COUNT = 10
 
   def initialize(project)
     @project = project
@@ -20,6 +21,7 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
       Sidekiq::Testing.inline! do
         create_stages!
 
+        seed_group_labels!
         seed_issue_based_stages!
         seed_issue_label_based_stages!
 
@@ -81,6 +83,17 @@ class Gitlab::Seeder::CustomizableCycleAnalytics
       next if ::Analytics::CycleAnalytics::GroupStage.where(group: group).find_by(name: params[:name])
 
       ::Analytics::CycleAnalytics::Stages::CreateService.new(parent: group, current_user: user, params: params).execute
+    end
+  end
+
+  def seed_group_labels!
+    GROUP_LABEL_COUNT.times do
+      label_title = FFaker::Product.brand
+      label_color = ::Gitlab::Color.color_for(label_title).to_s
+
+      Labels::CreateService
+        .new(title: label_title, color: label_color)
+        .execute(group: @group)
     end
   end
 
@@ -180,9 +193,11 @@ end
 
 Gitlab::Seeder.quiet do
   flag = 'SEED_CUSTOMIZABLE_CYCLE_ANALYTICS'
+  project_id = ENV['VSA_SEED_PROJECT_ID']
+  projects = project_id ? [Project.find(project_id)] : Project.find_each
 
   if ENV[flag]
-    Project.find_each do |project|
+    projects.each do |project|
       next unless project.group
       # This seed naively assumes that every project has a repository, and every
       # repository has a `master` branch, which may be the case for a pristine

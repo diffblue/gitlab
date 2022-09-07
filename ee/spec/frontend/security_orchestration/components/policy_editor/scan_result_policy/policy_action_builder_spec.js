@@ -57,6 +57,7 @@ describe('PolicyActionBuilder', () => {
       },
       provide: {
         namespaceId: '1',
+        namespaceType: 'project',
       },
     });
   };

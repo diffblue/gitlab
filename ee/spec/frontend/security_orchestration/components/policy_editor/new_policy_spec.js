@@ -75,6 +75,40 @@ describe('NewPolicy component', () => {
         expect(findPolicySelection().exists()).toBe(false);
         expect(findPolicyEditor().exists()).toBe(true);
       });
+
+      describe('with groupLevelScanResultPolicies enabled', () => {
+        beforeEach(() => {
+          factory({
+            provide: {
+              namespaceType: NAMESPACE_TYPES.GROUP,
+              glFeatures: { groupLevelScanResultPolicies: true },
+            },
+          });
+        });
+
+        it('should display the title correctly', () => {
+          expect(wrapper.findByText(NewPolicy.i18n.titles.default).exists()).toBe(true);
+        });
+
+        it('should display the path items correctly', () => {
+          expect(findPath().props('items')).toMatchObject([
+            {
+              selected: true,
+              title: NewPolicy.i18n.choosePolicyType,
+            },
+            {
+              disabled: true,
+              selected: false,
+              title: NewPolicy.i18n.policyDetails,
+            },
+          ]);
+        });
+
+        it('should display the correct view', () => {
+          expect(findPolicySelection().exists()).toBe(true);
+          expect(findPolicyEditor().exists()).toBe(false);
+        });
+      });
     });
   });
 

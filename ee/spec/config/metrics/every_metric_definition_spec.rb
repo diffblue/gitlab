@@ -40,18 +40,6 @@ RSpec.describe 'Every metric definition' do
 
   let(:events_not_defined_yet) do
     %w(
-      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_commit_monthly
-      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_commit_weekly
-      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_monthly
-      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_mr_monthly
-      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_mr_weekly
-      redis_hll_counters.code_review.i_code_review_create_note_in_ipynb_diff_weekly
-      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_commit_monthly
-      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_commit_weekly
-      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_monthly
-      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_mr_monthly
-      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_mr_weekly
-      redis_hll_counters.code_review.i_code_review_user_create_note_in_ipynb_diff_weekly
       redis_hll_counters.incident_management.incident_management_timeline_event_created_monthly
       redis_hll_counters.incident_management.incident_management_timeline_event_created_weekly
       redis_hll_counters.incident_management.incident_management_timeline_event_deleted_monthly

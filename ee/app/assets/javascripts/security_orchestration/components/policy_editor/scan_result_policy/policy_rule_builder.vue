@@ -1,9 +1,11 @@
 <script>
 import { GlSprintf, GlForm, GlButton, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { REPORT_TYPES_DEFAULT, SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { ALL_BRANCHES } from 'ee/vue_shared/components/branches_selector/constants';
 import { APPROVAL_VULNERABILITY_STATES } from './lib';
 
@@ -20,7 +22,8 @@ export default {
     GlFormGroup,
     PolicyRuleMultiSelect,
   },
-  inject: ['namespaceId'],
+  mixins: [glFeatureFlagMixin()],
+  inject: ['namespaceId', 'namespaceType'],
   props: {
     initRule: {
       type: Object,
@@ -33,6 +36,18 @@ export default {
     };
   },
   computed: {
+    enteredBranch: {
+      get() {
+        return this.initRule.branches.length === 0 ? '*' : this.initRule.branches.join();
+      },
+      set(value) {
+        const branches = value
+          .split(',')
+          .map((branch) => branch.trim())
+          .filter((branch) => branch !== '*');
+        this.triggerChanged({ branches });
+      },
+    },
     branchesToAdd: {
       get() {
         return this.initRule.branches;
@@ -76,6 +91,15 @@ export default {
         this.triggerChanged({ vulnerabilities_allowed: parseInt(value, 10) });
       },
     },
+    displayBranchSelector() {
+      return (
+        !this.glFeatures.groupLevelScanResultPolicies ||
+        NAMESPACE_TYPES.PROJECT === this.namespaceType
+      );
+    },
+    isgroupLevelBranchesValid() {
+      return this.enteredBranch.length > 0;
+    },
   },
   methods: {
     triggerChanged(value) {
@@ -114,9 +138,17 @@ export default {
         <template #branches>
           <gl-form-group class="gl-ml-3 gl-mr-3 gl-mb-3!" data-testid="branches-group">
             <protected-branches-selector
+              v-if="displayBranchSelector"
               v-model="branchesToAdd"
               :project-id="namespaceId"
               :selected-branches-names="branchesToAdd"
+            />
+            <gl-form-input
+              v-else
+              v-model="enteredBranch"
+              :state="isgroupLevelBranchesValid"
+              type="text"
+              data-testid="group-level-branch"
             />
           </gl-form-group>
         </template>
