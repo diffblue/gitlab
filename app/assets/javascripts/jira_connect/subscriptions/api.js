@@ -7,6 +7,7 @@ import { getJwt } from './utils';
 const CURRENT_USER_PATH = '/api/:version/user';
 const JIRA_CONNECT_SUBSCRIPTIONS_PATH = '/api/:version/integrations/jira_connect/subscriptions';
 const JIRA_CONNECT_INSTALLATIONS_PATH = '/-/jira_connect/installations';
+const JIRA_CONNECT_OAUTH_APPLICATION_ID_PATH = '/-/jira_connect/oauth_application_id';
 
 // This export is only used for testing purposes
 export const axiosInstance = axios.create();
@@ -85,4 +86,8 @@ export const updateInstallation = async (instanceUrl) => {
       instance_url: instanceUrl === GITLAB_COM_BASE_PATH ? null : instanceUrl,
     },
   });
+};
+
+export const fetchOauthApplicationId = async () => {
+  return axiosInstance.get(JIRA_CONNECT_OAUTH_APPLICATION_ID_PATH);
 };
