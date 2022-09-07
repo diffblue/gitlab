@@ -143,4 +143,32 @@ RSpec.describe UsersHelper do
       it { is_expected.to be false }
     end
   end
+
+  describe '#impersonation_enabled?' do
+    subject { helper.impersonation_enabled? }
+
+    context 'when impersonation is enabled' do
+      before do
+        stub_config_setting(impersonation_enabled: true)
+      end
+
+      it { is_expected.to eq(true) }
+
+      context 'when personal access tokens are disabled' do
+        before do
+          stub_ee_application_setting(personal_access_tokens_disabled?: true)
+        end
+
+        it { is_expected.to eq(false) }
+      end
+    end
+
+    context 'when impersonation is disabled' do
+      before do
+        stub_config_setting(impersonation_enabled: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+  end
 end

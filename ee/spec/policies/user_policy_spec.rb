@@ -138,4 +138,16 @@ RSpec.describe UserPolicy do
       end
     end
   end
+
+  describe ':create_user_personal_access_token' do
+    subject { described_class.new(current_user, current_user) }
+
+    context 'when personal access tokens are disabled' do
+      before do
+        stub_ee_application_setting(personal_access_tokens_disabled?: true)
+      end
+
+      it { is_expected.to be_disallowed(:create_user_personal_access_token) }
+    end
+  end
 end

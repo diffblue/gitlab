@@ -12,6 +12,11 @@ module EE
       !::Feature.enabled?(:hide_public_email_on_profile, user.provisioned_by_group)
     end
 
+    override :impersonation_enabled?
+    def impersonation_enabled?
+      super && !::Gitlab::CurrentSettings.personal_access_tokens_disabled?
+    end
+
     def users_sentence(users, link_class: nil)
       users.map { |user| link_to(user.name, user, class: link_class) }.to_sentence.html_safe
     end
