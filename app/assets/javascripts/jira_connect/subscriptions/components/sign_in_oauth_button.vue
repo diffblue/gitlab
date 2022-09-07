@@ -1,8 +1,8 @@
 <script>
 import { mapActions, mapMutations } from 'vuex';
 import { GlButton } from '@gitlab/ui';
-import axios from '~/lib/utils/axios_utils';
 import { sprintf } from '~/locale';
+
 import {
   I18N_DEFAULT_SIGN_IN_BUTTON_TEXT,
   I18N_CUSTOM_SIGN_IN_BUTTON_TEXT,
@@ -12,7 +12,7 @@ import {
   OAUTH_WINDOW_OPTIONS,
   PKCE_CODE_CHALLENGE_DIGEST_ALGORITHM,
 } from '~/jira_connect/subscriptions/constants';
-import { fetchOauthApplicationId } from '~/jira_connect/subscriptions/api';
+import { fetchOAuthApplicationId, fetchOAuthToken } from '~/jira_connect/subscriptions/api';
 import { setUrlParams } from '~/lib/utils/url_utility';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { createCodeVerifier, createCodeChallenge } from '../pkce';
@@ -62,7 +62,7 @@ export default {
     async fetchOauthClientId() {
       const {
         data: { application_id: clientId },
-      } = await fetchOauthApplicationId();
+      } = await fetchOAuthApplicationId();
       return clientId;
     },
     async getOauthAuthorizeURL() {
@@ -150,7 +150,7 @@ export default {
         oauth_token_payload: oauthTokenPayload,
         oauth_token_url: oauthTokenURL,
       } = this.oauthMetadata;
-      const { data } = await axios.post(oauthTokenURL, {
+      const { data } = await fetchOAuthToken(oauthTokenURL, {
         ...oauthTokenPayload,
         code,
         code_verifier: this.codeVerifier,

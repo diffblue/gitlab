@@ -1,6 +1,5 @@
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 
 import SignInOauthButton from '~/jira_connect/subscriptions/components/sign_in_oauth_button.vue';
@@ -8,11 +7,13 @@ import {
   I18N_DEFAULT_SIGN_IN_BUTTON_TEXT,
   OAUTH_WINDOW_OPTIONS,
 } from '~/jira_connect/subscriptions/constants';
-import axios from '~/lib/utils/axios_utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import httpStatus from '~/lib/utils/http_status';
 import AccessorUtilities from '~/lib/utils/accessor';
-import { getCurrentUser } from '~/jira_connect/subscriptions/api';
+import {
+  getCurrentUser,
+  fetchOAuthApplicationId,
+  fetchOAuthToken,
+} from '~/jira_connect/subscriptions/api';
 import createStore from '~/jira_connect/subscriptions/store';
 import { SET_ACCESS_TOKEN } from '~/jira_connect/subscriptions/store/mutation_types';
 
@@ -32,8 +33,8 @@ const mockOauthMetadata = {
 
 describe('SignInOauthButton', () => {
   let wrapper;
-  let mockAxios;
   let store;
+  const mockClientId = '543678901';
 
   const createComponent = ({ slots, props } = {}) => {
     store = createStore();
@@ -50,13 +51,8 @@ describe('SignInOauthButton', () => {
     });
   };
 
-  beforeEach(() => {
-    mockAxios = new MockAdapter(axios);
-  });
-
   afterEach(() => {
     wrapper.destroy();
-    mockAxios.restore();
   });
 
   const findButton = () => wrapper.findComponent(GlButton);
@@ -96,6 +92,7 @@ describe('SignInOauthButton', () => {
 
   describe('on click', () => {
     beforeEach(async () => {
+      fetchOAuthApplicationId.mockReturnValue({ data: { application_id: mockClientId } });
       jest.spyOn(window, 'open').mockReturnValue();
       createComponent();
 
@@ -110,7 +107,7 @@ describe('SignInOauthButton', () => {
 
     it('calls `window.open` with correct arguments', () => {
       expect(window.open).toHaveBeenCalledWith(
-        `${mockOauthMetadata.oauth_authorize_url}?code_challenge=mock-challenge&code_challenge_method=S256`,
+        `${mockOauthMetadata.oauth_authorize_url}?code_challenge=mock-challenge&code_challenge_method=S256&client_id=${mockClientId}`,
         I18N_DEFAULT_SIGN_IN_BUTTON_TEXT,
         OAUTH_WINDOW_OPTIONS,
       );
@@ -165,11 +162,7 @@ describe('SignInOauthButton', () => {
 
         describe('when API requests succeed', () => {
           beforeEach(async () => {
-            jest.spyOn(axios, 'post');
-            jest.spyOn(axios, 'get');
-            mockAxios
-              .onPost(mockOauthMetadata.oauth_token_url)
-              .replyOnce(httpStatus.OK, { access_token: mockAccessToken });
+            fetchOAuthToken.mockResolvedValue({ data: { access_token: mockAccessToken } });
             getCurrentUser.mockResolvedValue({ data: mockUser });
 
             window.dispatchEvent(new MessageEvent('message', mockEvent));
@@ -178,9 +171,10 @@ describe('SignInOauthButton', () => {
           });
 
           it('executes POST request to Oauth token endpoint', () => {
-            expect(axios.post).toHaveBeenCalledWith(mockOauthMetadata.oauth_token_url, {
+            expect(fetchOAuthToken).toHaveBeenCalledWith(mockOauthMetadata.oauth_token_url, {
               code: '1234',
               code_verifier: 'mock-verifier',
+              client_id: mockClientId,
             });
           });
 
@@ -199,10 +193,7 @@ describe('SignInOauthButton', () => {
 
         describe('when API requests fail', () => {
           beforeEach(async () => {
-            jest.spyOn(axios, 'post');
-            mockAxios
-              .onPost(mockOauthMetadata.oauth_token_url)
-              .replyOnce(httpStatus.INTERNAL_SERVER_ERROR);
+            fetchOAuthToken.mockRejectedValue();
 
             window.dispatchEvent(new MessageEvent('message', mockEvent));
 

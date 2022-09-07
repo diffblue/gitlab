@@ -80,7 +80,7 @@ export const addJiraConnectSubscription = (namespacePath, { jwt, accessToken }) 
 export const updateInstallation = async (instanceUrl) => {
   const jwt = await getJwt();
 
-  await axiosInstance.put(JIRA_CONNECT_INSTALLATIONS_PATH, {
+  return axiosInstance.put(JIRA_CONNECT_INSTALLATIONS_PATH, {
     jwt,
     installation: {
       instance_url: instanceUrl === GITLAB_COM_BASE_PATH ? null : instanceUrl,
@@ -88,6 +88,10 @@ export const updateInstallation = async (instanceUrl) => {
   });
 };
 
-export const fetchOauthApplicationId = async () => {
+export const fetchOAuthApplicationId = () => {
   return axiosInstance.get(JIRA_CONNECT_OAUTH_APPLICATION_ID_PATH);
+};
+
+export const fetchOAuthToken = (oauthTokenURL, data = {}) => {
+  return axiosInstance.post(oauthTokenURL, data);
 };
