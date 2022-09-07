@@ -42,6 +42,7 @@ RSpec.describe Banzai::Filter::MathFilter do
         '$2+2$ $22 and flightjs/Flight$22 $2+2$' | '<math>2+2</math> $22 and flightjs/Flight$22 <math>2+2</math>'
         '$1/2$ &lt;b&gt;test&lt;/b&gt;'          | '<math>1/2</math> &lt;b&gt;test&lt;/b&gt;'
         '$a!$'                                   | '<math>a!</math>'
+        '$x$'                                    | '<math>x</math>'
       end
 
       with_them do
@@ -83,6 +84,7 @@ RSpec.describe Banzai::Filter::MathFilter do
         '$$2+2$$ $22 and flightjs/Flight$22 $$2+2$$' | '<math>2+2</math> $22 and flightjs/Flight$22 <math>2+2</math>'
         'flightjs/Flight$22 and $$a^2 + b^2 = c^2$$' | 'flightjs/Flight$22 and <math>a^2 + b^2 = c^2</math>'
         '$$a!$$'                                     | '<math>a!</math>'
+        '$$x$$'                                      | '<math>x</math>'
         '$$20,000 and $$30,000'                      | '<math>20,000 and</math>30,000'
       end
 
@@ -153,7 +155,10 @@ RSpec.describe Banzai::Filter::MathFilter do
         'test <code>2+2</code>$ test',
         '<em>$</em><code>2+2</code><em>$</em>',
         '$20,000 and $30,000',
-        "test $$\n2+2\n$$"
+        '$20,000 in $USD',
+        '$ a^2 $',
+        "test $$\n2+2\n$$",
+        "$\n$"
       ]
     end
 
