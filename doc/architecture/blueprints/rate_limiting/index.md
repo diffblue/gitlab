@@ -58,13 +58,14 @@ Inc._
 - It is difficult to introduce new limits, even more to define policies.
 - Finding what limits are defined requires performing a codebase audit.
 - We don't have a good way to expose limits to satellite services like Registry.
-- We enforce a number of different policies via opaque external systems (Pipeline Validation Service, Bouncer, Watchtower).
+- We enforce a number of different policies via opaque external systems (Pipeline Validation Service, Bouncer, Watchtower, Cloudflare, Haproxy).
 - There is not standardized way to define policies in a way consistent with defining limits.
 - It is difficult to understand when a user is approaching a limit threshold.
 - There is no way to automatically notify a user when they are approaching thresholds.
 - There is no single way to change limits for a namespace / project / user / customer.
 - There is no single way to monitor limits through real-time metrics.
 - There is no framework for hierarchical limit configuration (instance / namespace / sub-group / project).
+- We allow disabling rate-limiting for some marquee SaaS customers but this mechanism introduces a risk also for those same customers. We should instead be able to set higher limits.
 
 ## Opportunity
 
@@ -84,6 +85,8 @@ The most important opportunity here is consolidation happening on multiple
 levels:
 
 1. Consolidate on the application limits tooling used in GitLab Rails.
+1. Consolidate on the process of adding and managing application limits.
+1. Consolidate on the behavior of hierarchical cascade of limits and overrides.
 1. Consolidate on the application limits tooling used across entire application stack.
 1. Consolidate on the policies enforcement tooling used across entire company.
 
@@ -186,7 +189,7 @@ Things we want to build and support by default:
 
 ### API to expose limits and policies
 
-Once we have an established and consistent way to define application limits we
+Once we have an established a consistent way to define application limits we
 can build a few API endpoints that will allow us to expose them to our users,
 customers and other satellite services that may want to consume them.
 
