@@ -8,6 +8,7 @@ mutation issueMoveListEE(
   $toListId: ID
   $moveBeforeId: ID
   $moveAfterId: ID
+  $positionInList: Int
   $epicId: EpicID
 ) {
   issueMoveList(
@@ -19,6 +20,7 @@ mutation issueMoveListEE(
       toListId: $toListId
       moveBeforeId: $moveBeforeId
       moveAfterId: $moveAfterId
+      positionInList: $positionInList
       epicId: $epicId
     }
   ) {
