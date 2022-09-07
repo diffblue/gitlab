@@ -497,6 +497,9 @@ If you need to manually remove **all** job artifacts associated with multiple jo
    end
    ```
 
+   In [GitLab 15.3 and earlier](https://gitlab.com/gitlab-org/gitlab/-/issues/369132), replace
+   `Ci::BuildEraseService.new(build, admin_user).execute` with `build.erase(erased_by: admin_user)`.
+
    `1.week.ago` is a Rails `ActiveSupport::Duration` method which calculates a new
    date or time in the past. Other valid examples are:
 
