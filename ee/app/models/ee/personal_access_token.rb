@@ -27,6 +27,8 @@ module EE
     end
 
     class_methods do
+      extend ::Gitlab::Utils::Override
+
       def pluck_names
         pluck(:name)
       end
@@ -38,6 +40,12 @@ module EE
             with_expires_at_after(max_lifetime).limit(limit)
           ]
         )
+      end
+
+      # Disable lookup by token (token auth) when PATs disabled (FIPS)
+      override :find_by_token
+      def find_by_token(token)
+        super unless ::Gitlab::CurrentSettings.personal_access_tokens_disabled?
       end
     end
 

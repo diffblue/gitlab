@@ -415,6 +415,16 @@ module EE
       ::Gitlab::CurrentSettings.new_user_signups_cap.present?
     end
 
+    override :personal_access_tokens_disabled?
+    def personal_access_tokens_disabled?
+      License.feature_available?(:fips_disable_personal_access_tokens) && ::Gitlab::FIPS.enabled?
+    end
+
+    def disable_feed_token
+      personal_access_tokens_disabled? || read_attribute(:disable_feed_token)
+    end
+    alias_method :disable_feed_token?, :disable_feed_token
+
     private
 
     def elasticsearch_limited_project_exists?(project)
