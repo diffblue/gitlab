@@ -3,18 +3,18 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::QuickActions::TimelineTextAndDateTimeSeparator do
-  subject { described_class }
+  subject(:timeline_text_and_datetime_separator) { described_class }
 
   shared_examples 'arg line with invalid parameters' do
     it 'returns nil' do
-      expect(subject.new(invalid_arg).execute).to eq(nil)
+      expect(timeline_text_and_datetime_separator.new(invalid_arg).execute).to eq(nil)
     end
   end
 
   shared_examples 'arg line with valid parameters' do
     it 'returns text and date time array' do
       freeze_time do
-        expect(subject.new(valid_arg).execute).to eq(expected_response)
+        expect(timeline_text_and_datetime_separator.new(valid_arg).execute).to eq(expected_response)
       end
     end
   end
@@ -43,7 +43,7 @@ RSpec.describe Gitlab::QuickActions::TimelineTextAndDateTimeSeparator do
         let(:invalid_arg) { 'timeline comment | wrong data type' }
 
         it 'return current date' do
-          timeline_args = subject.new(invalid_arg).execute
+          timeline_args = timeline_text_and_datetime_separator.new(invalid_arg).execute
 
           expect(timeline_args).to be_an_instance_of(Array)
           expect(timeline_args.first).to eq('timeline comment')
