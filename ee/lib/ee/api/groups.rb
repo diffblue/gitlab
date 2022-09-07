@@ -97,7 +97,6 @@ module EE
               return super if result
 
               render_api_error!(error, 400)
-              return
             end
 
             result = destroy_conditionally!(group) do |group|
