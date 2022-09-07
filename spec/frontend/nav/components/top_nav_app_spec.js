@@ -32,7 +32,6 @@ describe('~/nav/components/top_nav_app.vue', () => {
       expect(findNavItemDropdown().attributes()).toMatchObject({
         icon: '',
         text: '',
-        'data-qa-title': TEST_NAV_DATA.menuTitle,
         'no-flip': '',
         'no-caret': '',
       });
