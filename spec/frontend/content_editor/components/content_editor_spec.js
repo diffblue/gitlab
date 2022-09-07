@@ -49,8 +49,8 @@ describe('ContentEditor', () => {
     wrapper.destroy();
   });
 
-  it('triggers initialized event', async () => {
-    await createWrapper();
+  it('triggers initialized event', () => {
+    createWrapper();
 
     expect(wrapper.emitted('initialized')).toHaveLength(1);
   });
