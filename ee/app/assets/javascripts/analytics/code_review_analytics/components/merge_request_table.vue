@@ -103,7 +103,7 @@ export default {
   >
     <template #cell(mr_details)="items">
       <div class="d-flex flex-column flex-grow align-items-end align-items-sm-start">
-        <div class="mr-title str-truncated my-2">
+        <div class="gl-max-w-34 str-truncated my-2">
           <gl-link :href="items.item.web_url" target="_blank" class="font-weight-bold text-plain">{{
             items.item.title
           }}</gl-link>
