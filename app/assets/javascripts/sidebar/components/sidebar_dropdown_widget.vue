@@ -408,7 +408,6 @@ export default {
         <div class="gl-display-flex gl-align-items-center">
           <gl-button
             size="small"
-            name="edit_anyway"
             variant="confirm"
             category="primary"
             data-testid="confirm-edit-cta"
