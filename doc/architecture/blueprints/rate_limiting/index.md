@@ -105,17 +105,22 @@ for us to manage not only rate limits, but also quotas and policies.
 Below you can find a short definition of what we understand by a limit, by a
 quota and by a policy.
 
-- **Limit:** A constraint in application usage that is time-bound. For example:
-  a number of API calls per second that we allow.
-- **Quota:** A constraint in application usage that is a counter, that is not
-  time-bound. Instead this is usually a constraint that is scoped to a
-  resource, instead of a time. For example: number of jobs you can create per
-  pipeline.
-- **Policy:** A constraint in how users can use the application that is
-  stateless, and don't need a global counter. It resembles a boolean function
-  that takes input parameters and returns true or false. It can also be bound to
-  a resource, but this resource becomes an input argument for the policy.
-  Example: IP address restriction per group.
+- **Limit:** A constraint on application usage, typically used to mitigate
+  risks to performance, stability, and security.
+  * _Example:_ API calls per second for a given IP address
+  * _Example:_ `git clone` events per minute for a given user
+  * _Example:_ maximum artifact upload size of 1GB
+- **Quota:** A global constraint in application usage that is aggregated across an
+  entire namespace over the duration of their billing cycle.
+  * _Example:_ 400 CI/CD minutes per namespace per month
+  * _Example:_ 10GB transfer per namespace per month
+- **Policy:** A representation of business logic that is decoupled from application
+  code. Decoupled policy definitions allow logic to be shared across multiple services
+  and/or "hot-loaded" at runtime without releasing a new version of the application.
+  * _Example:_ decode and verify a JWT, determine whether the user has access to the
+    given resource based on the JWT's scopes and claims
+  * _Example:_ deny access based on group-level constraints
+    (such as IP allowlist, SSO, and 2FA) across all services
 
 Technically, all of these are limits, because rate limiting is still
 "limiting", quota is a limit that is not time-bound, and policy limits what you
