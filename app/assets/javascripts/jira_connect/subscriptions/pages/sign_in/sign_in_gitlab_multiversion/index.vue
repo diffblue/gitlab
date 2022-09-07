@@ -2,7 +2,9 @@
 import { GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
+import { reloadPage, persistBaseUrl, retrieveBaseUrl } from '~/jira_connect/subscriptions/utils';
 import SignInOauthButton from '../../../components/sign_in_oauth_button.vue';
+import { updateInstallation, setApiBaseURL } from '../../../api';
 import VersionSelectForm from './version_select_form.vue';
 
 export default {
@@ -27,12 +29,22 @@ export default {
         : this.$options.i18n.versionSelectSubtitle;
     },
   },
+  mounted() {
+    this.gitlabBasePath = retrieveBaseUrl();
+    setApiBaseURL(this.gitlabBasePath);
+  },
   methods: {
     resetGitlabBasePath() {
       this.gitlabBasePath = null;
+      setApiBaseURL(null);
     },
     onVersionSelect(gitlabBasePath) {
-      this.gitlabBasePath = gitlabBasePath;
+      updateInstallation(gitlabBasePath)
+        .then(() => {
+          persistBaseUrl(gitlabBasePath);
+          reloadPage();
+        })
+        .catch(() => {});
     },
     onSignInError() {
       this.$emit('error');
