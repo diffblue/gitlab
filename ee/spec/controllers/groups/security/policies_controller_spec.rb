@@ -78,6 +78,13 @@ RSpec.describe Groups::Security::PoliciesController, type: :request do
             expect(app.attributes['data-namespace-id'].value).to eq(group.id.to_s)
           end
 
+          it 'propagates group_level_scan_result_policies feature flag' do
+            stub_feature_flags(group_level_scan_result_policies: true)
+            get edit
+
+            expect(response.body).to have_pushed_frontend_feature_flags(groupLevelScanResultPolicies: true)
+          end
+
           context 'when type is missing' do
             let(:policy_type) { nil }
 

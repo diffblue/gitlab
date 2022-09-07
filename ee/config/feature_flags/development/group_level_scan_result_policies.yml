@@ -1,0 +1,8 @@
+---
+name: group_level_scan_result_policies
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96563
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/369473
+milestone: '15.4'
+type: development
+group: group::security policies
+default_enabled: false

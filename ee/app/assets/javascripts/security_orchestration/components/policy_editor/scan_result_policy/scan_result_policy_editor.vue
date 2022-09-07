@@ -3,6 +3,7 @@ import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   EDITOR_MODE_YAML,
   EDITOR_MODE_RULE,
@@ -59,6 +60,7 @@ export default {
     'namespacePath',
     'scanPolicyDocumentationPath',
     'scanResultPolicyApprovers',
+    'namespaceType',
   ],
   props: {
     assignedPolicyProject: {
@@ -219,7 +221,7 @@ export default {
       } else if (mode === EDITOR_MODE_RULE && !this.hasParsingError) {
         if (this.invalidForRuleMode()) {
           this.yamlEditorError = new Error();
-        } else {
+        } else if (this.namespaceType === NAMESPACE_TYPES.PROJECT) {
           this.fetchBranches({ branches: this.allBranches(), projectId: this.namespaceId });
         }
       }
