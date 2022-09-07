@@ -109,7 +109,8 @@ RSpec.describe Issue, :elastic do
     let_it_be(:group) { create(:group) }
     let_it_be(:subgroup) { create(:group, parent: group) }
     let_it_be(:project) { create(:project, :internal, namespace: subgroup) }
-    let_it_be(:issue) { create(:issue, project: project, assignees: [assignee]) }
+    let_it_be(:label) { create(:label) }
+    let_it_be(:issue) { create(:labeled_issue, project: project, assignees: [assignee], labels: [label]) }
     let_it_be(:award_emoji) { create(:award_emoji, :upvote, awardable: issue) }
 
     it "returns json with all needed elements" do
@@ -127,7 +128,9 @@ RSpec.describe Issue, :elastic do
                 'type' => issue.es_type,
                 'state' => issue.state,
                 'upvotes' => 1,
-                'namespace_ancestry_ids' => "#{group.id}-#{subgroup.id}-"
+                'namespace_ancestry_ids' => "#{group.id}-#{subgroup.id}-",
+                'label_ids' => [label.id.to_s],
+                'schema_version' => 22_08
               })
 
       expected_hash['assignee_id'] = [assignee.id]

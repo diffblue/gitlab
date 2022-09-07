@@ -37,6 +37,9 @@ module Elastic
         indexes :upvotes, type: :integer
         indexes :namespace_ancestry, type: :text, index_prefixes: { min_chars: 1, max_chars: 19 } # deprecated
         indexes :namespace_ancestry_ids, type: :keyword
+        indexes :label_ids, type: :keyword
+
+        indexes :schema_version, type: :short
       end
     end
   end
