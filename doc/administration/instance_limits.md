@@ -213,6 +213,15 @@ displaying commits, titles (the first line of the commit message)
 limits to 1KiB, and descriptions (the rest of the message) limits to
 1MiB.
 
+## Number of Reviewers in a Merge Request
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/91406) in GitLab 15.3
+
+  There is a maximum number of 100 reviewers for Merge Requests when the
+  `limit_reviewer_and_assignee_size` feature flag is enabled.
+
+- **Default Max limit**: No limit by default, 100 with the feature flag enabled
+
 ## Number of issues in the milestone overview
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/39453) in GitLab 12.10.
