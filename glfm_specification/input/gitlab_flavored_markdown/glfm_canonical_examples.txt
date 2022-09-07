@@ -254,7 +254,7 @@ Reference definitions work video as well:
 ## Table of contents
 
 See
-[table of contents ](https://docs.gitlab.com/ee/user/markdown.html#table-of-contents)
+[table of contents](https://docs.gitlab.com/ee/user/markdown.html#table-of-contents)
 in the GitLab Flavored Markdown documentation.
 
 A table of contents is an unordered list that links to subheadings in the document.
