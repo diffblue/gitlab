@@ -26862,6 +26862,9 @@ msgstr ""
 msgid "Notify|CI/CD project settings"
 msgstr ""
 
+msgid "Notify|Don't want to receive updates from GitLab administrators?"
+msgstr ""
+
 msgid "Notify|Fingerprint: %{fingerprint}"
 msgstr ""
 
