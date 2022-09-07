@@ -29,7 +29,9 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService, :clean_gitlab_r
     end
 
     shared_examples 'sends email notification to namespace owners' do
-      it 'sends email notification to namespace owners', :aggregate_failures do
+      it 'sends email notification to namespace owners',
+        :aggregate_failures,
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/370812' do
         double = instance_double(ActionMailer::MessageDelivery, deliver_later: nil)
         expect(Notify).to receive(:user_auto_banned_email)
           .once
