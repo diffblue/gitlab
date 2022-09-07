@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'migration backfills a field' do
+RSpec.shared_examples 'migration backfills fields' do
   let(:migration) { described_class.new(version) }
   let(:klass) { objects.first.class }
 
@@ -102,20 +102,26 @@ RSpec.shared_examples 'migration backfills a field' do
   private
 
   def add_field_for_objects(objects)
+    source_script = expected_fields.map do |field_name, _|
+      "ctx._source['#{field_name}'] = params.#{field_name};"
+    end.join
+
     script =  {
-      source: "ctx._source['#{field_name}'] = params.#{field_name};",
+      source: source_script,
       lang: "painless",
-      params: {
-        field_name => field_value
-      }
+      params: expected_fields
     }
 
     update_by_query(objects, script)
   end
 
   def remove_field_from_objects(objects)
-    script =  {
-      source: "ctx._source.remove('#{field_name}')"
+    source_script = expected_fields.map do |field_name, _|
+      "ctx._source.remove('#{field_name}');"
+    end.join
+
+    script = {
+      source: source_script
     }
 
     update_by_query(objects, script)
