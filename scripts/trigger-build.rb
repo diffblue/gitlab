@@ -429,8 +429,6 @@ end
 
 if $0 == __FILE__
   case ARGV[0]
-  when 'omnibus'
-    Trigger::Omnibus.new.invoke!(downstream_job_name: 'Trigger:qa-test').wait!
   when 'cng'
     Trigger::CNG.new.invoke!.wait!
   when 'gitlab-com-database-testing'
