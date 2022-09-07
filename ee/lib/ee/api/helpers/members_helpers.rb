@@ -74,7 +74,7 @@ module EE
         end
 
         def billable_member?(group, user)
-          billed_users_finder = BilledUsersFinder.new(group, include_awaiting_members: true)
+          billed_users_finder = BilledUsersFinder.new(group)
           users = billed_users_finder.execute[:users]
 
           users.include?(user)

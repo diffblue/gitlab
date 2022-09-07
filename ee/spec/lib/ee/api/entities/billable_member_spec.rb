@@ -15,8 +15,7 @@ RSpec.describe ::EE::API::Entities::BillableMember do
       group_member_user_ids: [],
       project_member_user_ids: [],
       shared_group_user_ids: [],
-      shared_project_user_ids: [],
-      awaiting_user_ids: []
+      shared_project_user_ids: []
     }
   end
 
@@ -51,32 +50,6 @@ RSpec.describe ::EE::API::Entities::BillableMember do
     end
   end
 
-  context 'membership_state' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:key, :result) do
-      :group_member_user_ids   | 'active'
-      :project_member_user_ids | 'active'
-      :shared_group_user_ids   | 'active'
-      :shared_project_user_ids | 'active'
-      :awaiting_user_ids       | 'awaiting'
-    end
-
-    with_them do
-      let(:options) { super().merge(key => [user.id]) }
-
-      it { expect(entity_representation[:membership_state]).to eq(result) }
-    end
-
-    context 'with multiple states' do
-      let(:options) { super().merge(group_member_user_ids: [user.id], awaiting_user_ids: [user.id]) }
-
-      it 'returns the expected membership status' do
-        expect(entity_representation[:membership_state]).to eq 'active'
-      end
-    end
-  end
-
   context 'when the user has no public_email assigned' do
     before do
       user.update!(public_email: nil)
@@ -98,7 +71,6 @@ RSpec.describe ::EE::API::Entities::BillableMember do
       :project_member_user_ids | 'project_member' | true
       :shared_group_user_ids   | 'group_invite'   | false
       :shared_project_user_ids | 'project_invite' | false
-      :awaiting_user_ids       | nil              | true
     end
 
     with_them do

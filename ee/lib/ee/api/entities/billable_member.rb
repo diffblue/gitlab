@@ -9,7 +9,6 @@ module EE
         expose :membership_type
         expose :removable
         expose :created_at
-        expose :membership_state
         expose :last_owner?, as: :is_last_owner
 
         private
@@ -21,25 +20,12 @@ module EE
           return 'project_invite' if user_in_array?(:shared_project_user_ids)
         end
 
-        def membership_state
-          has_any_active_membership? ? 'active' : 'awaiting'
-        end
-
-        def has_any_active_membership?
-          user_in_array?(:group_member_user_ids) ||
-            user_in_array?(:project_member_user_ids) ||
-            user_in_array?(:shared_group_user_ids) ||
-            user_in_array?(:shared_project_user_ids)
-        end
-
         def last_owner?
           options[:group].last_owner?(object)
         end
 
         def removable
-          user_in_array?(:group_member_user_ids) ||
-            user_in_array?(:project_member_user_ids) ||
-            user_in_array?(:awaiting_user_ids)
+          user_in_array?(:group_member_user_ids) || user_in_array?(:project_member_user_ids)
         end
 
         def user_in_array?(name)
