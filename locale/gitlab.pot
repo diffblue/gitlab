@@ -18046,6 +18046,12 @@ msgstr ""
 msgid "GlobalSearch|project"
 msgstr ""
 
+msgid "GlobalShortcuts|Copied source branch name to clipboard."
+msgstr ""
+
+msgid "GlobalShortcuts|Unable to copy the source branch name at this time."
+msgstr ""
+
 msgid "Globally-allowed IP ranges"
 msgstr ""
 
