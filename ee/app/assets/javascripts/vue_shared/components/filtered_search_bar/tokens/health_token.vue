@@ -22,16 +22,12 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {
-      healthSuggestions: HEALTH_SUGGESTIONS,
-    };
-  },
   computed: {
     defaultHealth() {
       return this.config.defaultHealth || [];
     },
   },
+  HEALTH_SUGGESTIONS,
 };
 </script>
 
@@ -41,7 +37,7 @@ export default {
     :config="config"
     :value="value"
     :default-suggestions="defaultHealth"
-    :suggestions="healthSuggestions"
+    :suggestions="$options.HEALTH_SUGGESTIONS"
     v-bind="$attrs"
     v-on="$listeners"
   >
