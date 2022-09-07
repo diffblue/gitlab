@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import { GlEmptyState } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
+import Api from 'ee/api';
 import waitForPromises from 'helpers/wait_for_promises';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import {
@@ -10,7 +11,10 @@ import {
   fromYaml,
 } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
 import ScanResultPolicyEditor from 'ee/security_orchestration/components/policy_editor/scan_result_policy/scan_result_policy_editor.vue';
-import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
+import {
+  DEFAULT_ASSIGNED_POLICY_PROJECT,
+  NAMESPACE_TYPES,
+} from 'ee/security_orchestration/constants';
 import {
   mockScanResultManifest,
   mockScanResultObject,
@@ -80,6 +84,7 @@ describe('ScanResultPolicyEditor', () => {
         policyEditorEmptyStateSvgPath,
         namespaceId: 1,
         namespacePath: defaultProjectPath,
+        namespaceType: NAMESPACE_TYPES.PROJECT,
         scanPolicyDocumentationPath,
         scanResultPolicyApprovers,
         ...provide,
@@ -88,13 +93,14 @@ describe('ScanResultPolicyEditor', () => {
     nextTick();
   };
 
-  const factoryWithExistingPolicy = (policy = {}) => {
+  const factoryWithExistingPolicy = (policy = {}, provide = {}) => {
     return factory({
       propsData: {
         assignedPolicyProject,
         existingPolicy: { ...mockScanResultObject, ...policy },
         isEditing: true,
       },
+      provide,
     });
   };
 
@@ -382,4 +388,15 @@ describe('ScanResultPolicyEditor', () => {
       expect(errors[errors.length - 1]).toEqual([errorMessage]);
     },
   );
+
+  it('does not query protected branches when namespaceType is other than project', async () => {
+    jest.spyOn(Api, 'projectProtectedBranch');
+
+    factoryWithExistingPolicy({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+
+    await findPolicyEditorLayout().vm.$emit('update-editor-mode', EDITOR_MODE_RULE);
+    await waitForPromises();
+
+    expect(Api.projectProtectedBranch).not.toHaveBeenCalled();
+  });
 });

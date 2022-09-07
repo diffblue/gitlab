@@ -17,7 +17,7 @@ export default {
   directives: {
     GlModalDirective,
   },
-  inject: ['namespaceId'],
+  inject: ['namespaceId', 'namespaceType'],
   props: {
     initAction: {
       type: Object,
@@ -116,6 +116,7 @@ export default {
           :skip-user-ids="userIds"
           :skip-group-ids="groupIds"
           :namespace-id="namespaceId"
+          :namespace-type="namespaceType"
         />
       </div>
       <div class="gl-bg-white gl-w-full gl-mt-3 gl-border gl-rounded-base gl-overflow-auto h-12em">

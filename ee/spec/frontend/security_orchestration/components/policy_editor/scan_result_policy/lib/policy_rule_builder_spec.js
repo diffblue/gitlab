@@ -5,6 +5,7 @@ import Api from 'ee/api';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
 import PolicyRuleMultiSelect from 'ee/security_orchestration/components/policy_rule_multi_select.vue';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 describe('PolicyRuleBuilder', () => {
   let wrapper;
@@ -29,7 +30,7 @@ describe('PolicyRuleBuilder', () => {
     vulnerability_states: ['newly_detected'],
   };
 
-  const factory = (propsData = {}) => {
+  const factory = (propsData = {}, provide = {}) => {
     wrapper = mount(PolicyRuleBuilder, {
       propsData: {
         initRule: DEFAULT_RULE,
@@ -37,11 +38,14 @@ describe('PolicyRuleBuilder', () => {
       },
       provide: {
         namespaceId: '1',
+        namespaceType: NAMESPACE_TYPES.PROJECT,
+        ...provide,
       },
     });
   };
 
   const findBranches = () => wrapper.findComponent(ProtectedBranchesSelector);
+  const findGroupLevelBranches = () => wrapper.find('[data-testid="group-level-branch"]');
   const findScanners = () => wrapper.find('[data-testid="scanners-select"]');
   const findSeverities = () => wrapper.find('[data-testid="severities-select"]');
   const findVulnStates = () => wrapper.find('[data-testid="vulnerability-states-select"]');
@@ -65,6 +69,7 @@ describe('PolicyRuleBuilder', () => {
       await nextTick();
 
       expect(findBranches().exists()).toBe(true);
+      expect(findGroupLevelBranches().exists()).toBe(false);
       expect(findScanners().exists()).toBe(true);
       expect(findSeverities().exists()).toBe(true);
       expect(findVulnStates().exists()).toBe(true);
@@ -117,5 +122,53 @@ describe('PolicyRuleBuilder', () => {
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
       },
     );
+  });
+
+  describe('when namespaceType is other than project', () => {
+    it('does not display group level branches', () => {
+      factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+
+      expect(findBranches().exists()).toBe(true);
+      expect(findGroupLevelBranches().exists()).toBe(false);
+    });
+
+    describe('when groupLevelScanResultPolicies feature flag is enabled', () => {
+      beforeEach(() => {
+        factory(
+          {},
+          {
+            namespaceType: NAMESPACE_TYPES.GROUP,
+            glFeatures: { groupLevelScanResultPolicies: true },
+          },
+        );
+      });
+
+      it('displays group level branches', () => {
+        expect(findBranches().exists()).toBe(false);
+        expect(findGroupLevelBranches().exists()).toBe(true);
+      });
+
+      it('triggers a changed event with the updated rule', async () => {
+        const INPUT_BRANCHES = 'main, test';
+        const EXPECTED_BRANCHES = ['main', 'test'];
+        await findGroupLevelBranches().vm.$emit('input', INPUT_BRANCHES);
+
+        expect(wrapper.emitted().changed).toEqual([
+          [expect.objectContaining({ branches: EXPECTED_BRANCHES })],
+        ]);
+      });
+
+      it('group level branches is invalid when empty', () => {
+        factory(
+          { initRule: { ...DEFAULT_RULE, branches: [''] } },
+          {
+            namespaceType: NAMESPACE_TYPES.GROUP,
+            glFeatures: { groupLevelScanResultPolicies: true },
+          },
+        );
+
+        expect(findGroupLevelBranches().classes('is-invalid')).toBe(true);
+      });
+    });
   });
 });
