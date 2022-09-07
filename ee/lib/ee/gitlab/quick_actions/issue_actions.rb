@@ -5,6 +5,7 @@ module EE
     module QuickActions
       module IssueActions
         extend ActiveSupport::Concern
+        extend ::Gitlab::Utils::Override
         include ::Gitlab::QuickActions::Dsl
 
         included do
@@ -202,6 +203,38 @@ module EE
         end
 
         private
+
+        override :zoom_link_service
+        def zoom_link_service
+          if quick_action_target.issuable_resource_links_available?
+            ::IncidentManagement::IssuableResourceLinks::ZoomLinkService.new(project: quick_action_target.project, current_user: current_user, incident: quick_action_target)
+          else
+            super
+          end
+        end
+
+        override :zoom_link_params
+        def zoom_link_params
+          if quick_action_target.issuable_resource_links_available?
+            '<Zoom meeting URL>, <link description (optional)>'
+          else
+            super
+          end
+        end
+
+        override :add_zoom_link
+        def add_zoom_link(link, link_text)
+          if quick_action_target.issuable_resource_links_available?
+            zoom_link_service.add_link(link, link_text)
+          else
+            super
+          end
+        end
+
+        override :merge_updates
+        def merge_updates(result, update_hash)
+          super unless quick_action_target.issuable_resource_links_available?
+        end
 
         def find_health_status(health_status_param)
           return unless health_status_param
