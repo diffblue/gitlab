@@ -102,15 +102,8 @@ module QA
           end
 
           def expand_license_report
-            widget_name = feature_flag_controlled_element(:refactor_license_compliance_extension,
-                                                          :mr_widget_extension,
-                                                          :license_report_widget)
-            within_element(widget_name) do
-              if widget_name == :mr_widget_extension
-                click_element(:toggle_button)
-              else
-                click_element(:expand_report_button)
-              end
+            within_element(:mr_widget_extension) do
+              click_element(:toggle_button)
             end
           end
 

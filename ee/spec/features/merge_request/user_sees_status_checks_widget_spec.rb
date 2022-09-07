@@ -26,7 +26,6 @@ RSpec.describe 'Merge request > User sees status checks widget', :js do
     stub_feature_flags(refactor_mr_widgets_extensions: false)
     stub_feature_flags(refactor_mr_widgets_extensions_user: false)
     stub_feature_flags(refactor_security_extension: false)
-    stub_feature_flags(refactor_license_compliance_extension: false)
   end
 
   context 'user is authorized' do

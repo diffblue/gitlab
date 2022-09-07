@@ -1,6 +1,5 @@
 <script>
 import { GlSprintf, GlLink, GlSafeHtmlDirective } from '@gitlab/ui';
-import MrWidgetLicenses from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import { s__, __, sprintf } from '~/locale';
@@ -20,7 +19,6 @@ export default {
   components: {
     GlSprintf,
     GlLink,
-    MrWidgetLicenses,
     WidgetContainer,
     MrWidgetGeoSecondaryNode,
     MrWidgetPolicyViolation,
@@ -92,9 +90,6 @@ export default {
         this.hasBrowserPerformanceDegradation &&
         !this.shouldShowExtension
       );
-    },
-    shouldShowLicenseComplianceExtension() {
-      return window.gon?.features?.refactorLicenseComplianceExtension;
     },
     hasLoadPerformanceMetrics() {
       return (
@@ -224,7 +219,7 @@ export default {
   },
   methods: {
     registerLicenseCompliance() {
-      if (this.shouldShowLicenseComplianceExtension) {
+      if (this.shouldShowExtension) {
         registerExtension(licenseComplianceExtension);
       }
     },
@@ -485,19 +480,6 @@ export default {
           </template>
         </gl-sprintf>
       </mr-widget-enable-feature-prompt>
-
-      <mr-widget-licenses
-        v-if="shouldRenderLicenseReport && !shouldShowLicenseComplianceExtension"
-        :api-url="mr.licenseScanning.managed_licenses_path"
-        :approvals-api-path="mr.apiApprovalsPath"
-        :licenses-api-path="licensesApiPath"
-        :pipeline-path="mr.pipeline.path"
-        :can-manage-licenses="mr.licenseScanning.can_manage_licenses"
-        :full-report-path="mr.licenseScanning.full_report_path"
-        :license-management-settings-path="mr.licenseScanning.settings_path"
-        :license-compliance-docs-path="mr.licenseComplianceDocsPath"
-        report-section-class="mr-widget-border-top"
-      />
 
       <grouped-test-reports-app
         v-if="shouldRenderTestReport && !shouldRenderRefactoredTestReport"
