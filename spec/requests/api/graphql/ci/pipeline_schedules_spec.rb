@@ -16,9 +16,19 @@ RSpec.describe 'Query.project.pipelineSchedules' do
   let(:fields) do
     <<~QUERY
       nodes {
+        id
+        description
+        active
+        nextRunAt
+        realNextRun
+        lastPipeline {
+             id
+        }
         refForDisplay
         refPath
         forTag
+        cron
+        cronTimezone
       }
     QUERY
   end
@@ -35,19 +45,44 @@ RSpec.describe 'Query.project.pipelineSchedules' do
     )
   end
 
-  before do
-    pipeline_schedule.pipelines << build(:ci_pipeline, project: project)
+  describe 'computed graphql fields' do
+    before do
+      pipeline_schedule.pipelines << build(:ci_pipeline, project: project)
 
-    post_graphql(query, current_user: user)
+      post_graphql(query, current_user: user)
+    end
+
+    it_behaves_like 'a working graphql query'
+
+    it 'returns calculated fields for a pipeline schedule' do
+      ref_for_display = pipeline_schedule_graphql_data['refForDisplay']
+
+      expect(ref_for_display).to eq('master')
+      expect(pipeline_schedule_graphql_data['refPath']).to eq("/#{project.full_path}/-/commits/#{ref_for_display}")
+      expect(pipeline_schedule_graphql_data['forTag']).to be(false)
+    end
   end
 
-  it_behaves_like 'a working graphql query'
+  it 'avoids N+1 queries' do
+    create_pipeline_schedules(1)
 
-  it 'returns calculated fields for a pipeline schedule' do
-    ref_for_display = pipeline_schedule_graphql_data['refForDisplay']
+    control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: user) }
 
-    expect(ref_for_display).to eq('master')
-    expect(pipeline_schedule_graphql_data['refPath']).to eq("/#{project.full_path}/-/commits/#{ref_for_display}")
-    expect(pipeline_schedule_graphql_data['forTag']).to be(false)
+    create_pipeline_schedules(3)
+
+    action = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: user) }
+
+    expect(action).not_to exceed_query_limit(control)
+  end
+
+  def create_pipeline_schedules(count)
+    create_list(:ci_pipeline_schedule, count, project: project)
+      .each do |pipeline_schedule|
+      create(:user).tap do |user|
+        project.add_developer(user)
+        pipeline_schedule.update!(owner: user)
+      end
+      pipeline_schedule.pipelines << build(:ci_pipeline, project: project)
+    end
   end
 end

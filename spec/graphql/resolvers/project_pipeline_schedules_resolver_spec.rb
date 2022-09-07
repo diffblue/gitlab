@@ -32,12 +32,6 @@ RSpec.describe Resolvers::ProjectPipelineSchedulesResolver do
 
       expect(schedules).to be_empty
     end
-
-    it 'avoids N+1 queries' do
-      control = ActiveRecord::QueryRecorder.new { resolve_pipeline_schedules(args: {}) }
-
-      expect(control.count).to be_zero
-    end
   end
 
   def resolve_pipeline_schedules(args: {})
