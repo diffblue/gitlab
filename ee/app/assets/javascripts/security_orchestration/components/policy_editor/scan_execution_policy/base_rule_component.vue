@@ -7,7 +7,7 @@ import { SCAN_EXECUTION_RULES_LABELS } from './constants';
 export default {
   SCAN_EXECUTION_RULES_LABELS,
   i18n: {
-    scanResultExecutionCopy: s__(
+    scanExecutionRuleCopy: s__(
       'ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} actions for the %{scopes} %{branches}',
     ),
     selectedBranchesPlaceholder: s__('ScanExecutionPolicy|Select branches'),
@@ -68,7 +68,7 @@ export default {
 <template>
   <div class="gl-bg-gray-10 gl-rounded-base gl-px-3 gl-pt-3 gl-relative gl-pb-4">
     <div class="gl-w-full gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
-      <gl-sprintf :message="$options.i18n.scanResultExecutionCopy">
+      <gl-sprintf :message="$options.i18n.scanExecutionRuleCopy">
         <template #ifLabel>
           <label
             for="scanners"

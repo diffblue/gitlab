@@ -35,7 +35,6 @@ describe('ScheduleRuleComponent', () => {
     });
   };
 
-  const findScheduleRuleLabel = () => wrapper.findByTestId('rule-component-label');
   const findScheduleRuleScopeDropDown = () => wrapper.findByTestId('rule-component-scope');
   const findScheduleRuleTypeDropDown = () => wrapper.findByTestId('rule-component-type');
   const findScheduleRulePeriodDropDown = () => wrapper.findByTestId('rule-component-period');
@@ -45,26 +44,6 @@ describe('ScheduleRuleComponent', () => {
   const findScheduleRuleDayDropDown = () => wrapper.findByTestId('rule-component-day');
   const findScheduleRuleDayDropDownItem = () =>
     findScheduleRuleDayDropDown().findAllComponents(GlDropdownItem);
-
-  describe('default component state', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('should render default schedule rule with branches', () => {
-      expect(findScheduleRuleLabel().text()).toEqual(ruleLabel);
-      expect(findScheduleRuleTypeDropDown().props('text')).toEqual(
-        capitalizeFirstCharacter(initRule.type),
-      );
-      expect(findScheduleRuleScopeDropDown().props('text')).toEqual(
-        SCAN_EXECUTION_RULE_SCOPE_TYPE.branch,
-      );
-      expect(findScheduleRuleTimeDropDown().props('text')).toEqual(HOUR_MINUTE_LIST[0]);
-      expect(findScheduleRulePeriodDropDown().props('text')).toEqual(
-        SCAN_EXECUTION_RULE_PERIOD_TYPE.daily,
-      );
-    });
-  });
 
   describe('select branch scope', () => {
     beforeEach(() => {
