@@ -10,6 +10,7 @@ query pipelineSecuritySummary(
     id
     pipeline(iid: $pipelineIid) {
       id
+      # eslint-disable-next-line @graphql-eslint/require-id-when-available
       ...JobArtifacts
       securityReportSummary {
         dast {
