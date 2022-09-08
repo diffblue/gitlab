@@ -139,19 +139,19 @@ module EE
 
       condition(:eligible_for_trial, scope: :subject) { @subject.eligible_for_trial? }
 
-      condition(:compliance_framework_available) do
+      condition(:compliance_framework_available, scope: :subject) do
         @subject.feature_available?(:custom_compliance_frameworks)
       end
 
-      condition(:group_level_compliance_pipeline_available) do
+      condition(:group_level_compliance_pipeline_available, scope: :subject) do
         @subject.feature_available?(:evaluate_group_level_compliance_pipeline)
       end
 
-      condition(:security_orchestration_policies_enabled) do
+      condition(:security_orchestration_policies_enabled, scope: :subject) do
         @subject.feature_available?(:security_orchestration_policies)
       end
 
-      condition(:group_level_compliance_dashboard_enabled) do
+      condition(:group_level_compliance_dashboard_enabled, scope: :subject) do
         @subject.feature_available?(:group_level_compliance_dashboard)
       end
 
@@ -164,7 +164,7 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
-      condition(:enable_auditor_group_runner_access, scope: :subject) do
+      condition(:enable_auditor_group_runner_access, scope: :global) do
         ::Feature.enabled?(:auditor_group_runner_access)
       end
 
