@@ -71,7 +71,7 @@ export default {
       const codeChallenge = await createCodeChallenge(this.codeVerifier);
       this.clientId = this.gitlabBasePath
         ? await this.fetchOauthClientId()
-        : this.oauthMetadata.oauth_token_payload.client_id;
+        : this.oauthMetadata?.oauth_token_payload?.client_id;
 
       // Build the initial OAuth authorization URL
       const { oauth_authorize_url: oauthAuthorizeURL } = this.oauthMetadata;
@@ -110,10 +110,9 @@ export default {
           message: this.gitlabBasePath ? I18N_OAUTH_FAILED_MESSAGE : '',
           variant: 'danger',
         });
+        this.loading = false;
 
         throw e;
-      } finally {
-        this.loading = false;
       }
     },
     async handleWindowMessage(event) {

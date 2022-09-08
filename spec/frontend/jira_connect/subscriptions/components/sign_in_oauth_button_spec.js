@@ -25,16 +25,17 @@ jest.mock('~/jira_connect/subscriptions/pkce', () => ({
   createCodeChallenge: jest.fn().mockResolvedValue('mock-challenge'),
 }));
 
-const mockOauthMetadata = {
-  oauth_authorize_url: 'https://gitlab.com/mockOauth',
-  oauth_token_url: 'https://gitlab.com/mockOauthToken',
-  state: 'good-state',
-};
-
 describe('SignInOauthButton', () => {
   let wrapper;
   let store;
-  const mockClientId = '543678901';
+  const mockOauthMetadata = {
+    oauth_authorize_url: 'https://gitlab.com/mockOauth',
+    oauth_token_url: 'https://gitlab.com/mockOauthToken',
+    oauth_token_payload: {
+      client_id: '543678901',
+    },
+    state: 'good-state',
+  };
 
   const createComponent = ({ slots, props } = {}) => {
     store = createStore();
@@ -66,7 +67,7 @@ describe('SignInOauthButton', () => {
   });
 
   describe('when `gitlabBasePath` is passed', () => {
-    const mockBasePath = 'gitlab.mycompany.com';
+    const mockBasePath = 'https://gitlab.mycompany.com';
 
     it('uses custom text for button', () => {
       createComponent({
@@ -76,6 +77,32 @@ describe('SignInOauthButton', () => {
       });
 
       expect(findButton().text()).toBe(`Sign in to ${mockBasePath}`);
+    });
+
+    describe('on click', () => {
+      const mockClientId = '798412381';
+
+      beforeEach(async () => {
+        fetchOAuthApplicationId.mockReturnValue({ data: { application_id: mockClientId } });
+        jest.spyOn(window, 'open').mockReturnValue();
+        createComponent({
+          props: {
+            gitlabBasePath: mockBasePath,
+          },
+        });
+
+        findButton().vm.$emit('click');
+
+        await nextTick();
+      });
+
+      it('calls `window.open` with correct arguments', () => {
+        expect(window.open).toHaveBeenCalledWith(
+          `${mockBasePath}/mockOauth?code_challenge=mock-challenge&code_challenge_method=S256&client_id=${mockClientId}`,
+          I18N_DEFAULT_SIGN_IN_BUTTON_TEXT,
+          OAUTH_WINDOW_OPTIONS,
+        );
+      });
     });
   });
 
@@ -92,7 +119,6 @@ describe('SignInOauthButton', () => {
 
   describe('on click', () => {
     beforeEach(async () => {
-      fetchOAuthApplicationId.mockReturnValue({ data: { application_id: mockClientId } });
       jest.spyOn(window, 'open').mockReturnValue();
       createComponent();
 
@@ -107,7 +133,7 @@ describe('SignInOauthButton', () => {
 
     it('calls `window.open` with correct arguments', () => {
       expect(window.open).toHaveBeenCalledWith(
-        `${mockOauthMetadata.oauth_authorize_url}?code_challenge=mock-challenge&code_challenge_method=S256&client_id=${mockClientId}`,
+        `${mockOauthMetadata.oauth_authorize_url}?code_challenge=mock-challenge&code_challenge_method=S256&client_id=${mockOauthMetadata.oauth_token_payload.client_id}`,
         I18N_DEFAULT_SIGN_IN_BUTTON_TEXT,
         OAUTH_WINDOW_OPTIONS,
       );
@@ -174,7 +200,7 @@ describe('SignInOauthButton', () => {
             expect(fetchOAuthToken).toHaveBeenCalledWith(mockOauthMetadata.oauth_token_url, {
               code: '1234',
               code_verifier: 'mock-verifier',
-              client_id: mockClientId,
+              client_id: mockOauthMetadata.oauth_token_payload.client_id,
             });
           });
 
