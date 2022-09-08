@@ -16657,13 +16657,13 @@ msgstr ""
 msgid "Flags"
 msgstr ""
 
-msgid "FloC|Configure whether you want to participate in FloC."
+msgid "FloC|Configure whether you want to participate in FLoC. %{floc_link_start}What is FLoC?%{floc_link_end}"
 msgstr ""
 
-msgid "FloC|Enable FloC (Federated Learning of Cohorts)"
+msgid "FloC|Federated Learning of Cohorts (FLoC)"
 msgstr ""
 
-msgid "FloC|Federated Learning of Cohorts"
+msgid "FloC|Participate in FLoC"
 msgstr ""
 
 msgid "FlowdockService|Enter your Flowdock token."
