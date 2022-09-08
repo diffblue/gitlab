@@ -48,9 +48,9 @@ Impacted users are notified via email and in-app notifications at least 60 days 
 Projects on GitLab SaaS have a 10GB storage limit on their Git repository and LFS storage.
 Once namespace-level storage limits are enforced, the project limit will be removed. A namespace has either a namespace-level storage limit or a project-level storage limit, but not both.
 
-When a project's repository reaches the quota, the project is locked. You cannot push changes to a locked project. To monitor the size of each
+When a project's repository and LFS reaches the quota, the project is locked. You cannot push changes to a locked project. To monitor the size of each
 repository in a namespace, including a breakdown for each project, you can
-[view storage usage](#view-storage-usage). To allow a project's repository to exceed the free quota
+[view storage usage](#view-storage-usage). To allow a project's repository and LFS to exceed the free quota
 you must purchase additional storage. For more details, see [Excess storage usage](#excess-storage-usage).
 
 ## View storage usage
@@ -97,7 +97,7 @@ For more information, see the following pages:
 
 ## Excess storage usage
 
-Excess storage usage is the amount that a project's repository exceeds the free storage quota. If no
+Excess storage usage is the amount that a project's repository and LFS exceeds the free storage quota. If no
 purchased storage is available the project is locked. You cannot push changes to a locked project.
 To unlock a project you must [purchase more storage](../subscriptions/gitlab_com/index.md#purchase-more-storage-and-transfer)
 for the namespace. When the purchase is completed, locked projects are automatically unlocked. The
@@ -122,12 +122,12 @@ The following example describes an excess storage scenario for a namespace:
 | Yellow     | 2 GB         | 0 GB           | 10 GB  | Not locked        |
 | **Totals** | **30 GB**    | **0 GB**       | -      | -                 |
 
-The Red and Green projects are locked because their repositories have reached the quota. In this
+The Red and Green projects are locked because their repositories and LFS have reached the quota. In this
 example, no additional storage has yet been purchased.
 
 To unlock the Red and Green projects, 50 GB additional storage is purchased.
 
-Assuming the Green and Red projects' repositories grow past the 10 GB quota, the purchased storage
+Assuming the Green and Red projects' repositories and LFS grow past the 10 GB quota, the purchased storage
 available decreases. All projects remain unlocked because 40 GB purchased storage is available:
 50 GB (purchased storage) - 10 GB (total excess storage used).
 
