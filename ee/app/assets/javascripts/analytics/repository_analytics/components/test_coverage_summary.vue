@@ -8,7 +8,13 @@ import {
   GlPopover,
 } from '@gitlab/ui';
 import { GlSingleStat, GlAreaChart } from '@gitlab/ui/dist/charts';
-import { formatDate, getTimeago, isToday, newDateAsLocaleTime } from '~/lib/utils/datetime_utility';
+import {
+  formatDate,
+  getTimeago,
+  isToday,
+  newDateAsLocaleTime,
+  timeagoLanguageCode,
+} from '~/lib/utils/datetime_utility';
 import { SUPPORTED_FORMATS, getFormatter } from '~/lib/utils/unit_format';
 import { __ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -160,7 +166,7 @@ export default {
       if (isToday(newDateAsLocaleTime(this.latestCoverageDate))) {
         return __('today');
       }
-      return getTimeago().format(this.latestCoverageDate);
+      return getTimeago().format(this.latestCoverageDate, timeagoLanguageCode);
     },
   },
   methods: {
