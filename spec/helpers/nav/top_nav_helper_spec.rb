@@ -30,7 +30,7 @@ RSpec.describe Nav::TopNavHelper do
     let(:menu_title) { 'Menu' }
 
     before do
-      stub_feature_flags(hide_navbar_menu_label: false)
+      stub_feature_flags(new_navbar_layout: false)
 
       allow(Gitlab::CurrentSettings).to receive(:admin_mode) { with_current_settings_admin_mode }
       allow(helper).to receive(:header_link?).with(:admin_mode) { with_header_link_admin_mode }

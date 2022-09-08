@@ -1,5 +1,5 @@
 ---
-name: hide_navbar_menu_label
+name: new_navbar_layout
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96853
 rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/366082
 milestone: '15.4'
