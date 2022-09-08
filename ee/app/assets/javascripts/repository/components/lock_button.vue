@@ -56,6 +56,11 @@ export default {
       });
     },
   },
+  watch: {
+    isLocked(val) {
+      this.locked = val;
+    },
+  },
   methods: {
     hideModal() {
       this.isModalVisible = false;
@@ -68,20 +73,21 @@ export default {
     },
     toggleLock() {
       this.lockLoading = true;
+      const locked = !this.locked;
       this.$apollo
         .mutate({
           mutation: lockPathMutation,
           variables: {
             filePath: this.path,
             projectPath: this.projectPath,
-            lock: !this.locked,
+            lock: locked,
           },
         })
         .catch((error) => {
           createFlash({ message: error, captureError: true, error });
         })
         .finally(() => {
-          this.locked = !this.locked;
+          this.locked = locked;
           this.lockLoading = false;
         });
     },
