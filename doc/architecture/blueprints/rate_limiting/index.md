@@ -110,20 +110,20 @@ quota and by a policy.
 
 - **Limit:** A constraint on application usage, typically used to mitigate
   risks to performance, stability, and security.
-    - _Example:_ API calls per second for a given IP address
-    - _Example:_ `git clone` events per minute for a given user
-    - _Example:_ maximum artifact upload size of 1GB
+  - _Example:_ API calls per second for a given IP address
+  - _Example:_ `git clone` events per minute for a given user
+  - _Example:_ maximum artifact upload size of 1GB
 - **Quota:** A global constraint in application usage that is aggregated across an
   entire namespace over the duration of their billing cycle.
-    - _Example:_ 400 CI/CD minutes per namespace per month
-    - _Example:_ 10GB transfer per namespace per month
+  - _Example:_ 400 CI/CD minutes per namespace per month
+  - _Example:_ 10GB transfer per namespace per month
 - **Policy:** A representation of business logic that is decoupled from application
   code. Decoupled policy definitions allow logic to be shared across multiple services
   and/or "hot-loaded" at runtime without releasing a new version of the application.
-    - _Example:_ decode and verify a JWT, determine whether the user has access to the
-      given resource based on the JWT's scopes and claims
-    - _Example:_ deny access based on group-level constraints
-      (such as IP allowlist, SSO, and 2FA) across all services
+  - _Example:_ decode and verify a JWT, determine whether the user has access to the
+    given resource based on the JWT's scopes and claims
+  - _Example:_ deny access based on group-level constraints
+    (such as IP allowlist, SSO, and 2FA) across all services
 
 Technically, all of these are limits, because rate limiting is still
 "limiting", quota is usually a business limit, and policy limits what you can
