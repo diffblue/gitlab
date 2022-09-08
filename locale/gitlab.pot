@@ -15126,6 +15126,9 @@ msgstr ""
 msgid "Error deleting project. Check logs for error details."
 msgstr ""
 
+msgid "Error fetching branches"
+msgstr ""
+
 msgid "Error fetching burnup chart data"
 msgstr ""
 
