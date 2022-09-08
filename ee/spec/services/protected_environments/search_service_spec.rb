@@ -8,7 +8,7 @@ RSpec.describe ProtectedEnvironments::SearchService, '#execute' do
   subject { described_class.new(container: project, current_user: user).execute(environment_name) }
 
   before do
-    %w(production staging review/app_1 review/app_2 test canary).each do |environment_name|
+    %w(production staging review/App_1 review/app_2 test canary).each do |environment_name|
       create(:environment, name: environment_name, project: project)
     end
 
@@ -20,17 +20,17 @@ RSpec.describe ProtectedEnvironments::SearchService, '#execute' do
     let(:environment_name) { '' }
 
     it 'returns unfiltered unprotected environments' do
-      unprotected_environments = %w(review/app_1 review/app_2 test canary)
+      unprotected_environments = %w(review/App_1 review/app_2 test canary)
 
       expect(subject).to match_array(unprotected_environments)
     end
   end
 
   context 'with specific search' do
-    let(:environment_name) { 'review' }
+    let(:environment_name) { 'review/aPp' }
 
-    it 'returns specific unprotected environemtns' do
-      expect(subject).to match_array(['review/app_1', 'review/app_2'])
+    it 'returns specific unprotected environments and matches case insensitively' do
+      expect(subject).to match_array(['review/App_1', 'review/app_2'])
     end
   end
 

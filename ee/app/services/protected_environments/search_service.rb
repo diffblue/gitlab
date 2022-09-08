@@ -10,7 +10,7 @@ module ProtectedEnvironments
       container
         .environments
         .where.not(name: container.protected_environments.select(:name))
-        .where('environments.name LIKE ?', "#{name}%")
+        .for_name_like(name, limit: nil)
         .order_by_last_deployed_at
         .limit(20)
         .pluck(:name)
