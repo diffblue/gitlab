@@ -69,7 +69,9 @@ export default {
       // Generate state necessary for PKCE OAuth flow
       this.codeVerifier = createCodeVerifier();
       const codeChallenge = await createCodeChallenge(this.codeVerifier);
-      this.clientId = await this.fetchOauthClientId();
+      this.clientId = this.gitlabBasePath
+        ? await this.fetchOauthClientId()
+        : this.oauthMetadata.oauth_token_payload.client_id;
 
       // Build the initial OAuth authorization URL
       const { oauth_authorize_url: oauthAuthorizeURL } = this.oauthMetadata;
