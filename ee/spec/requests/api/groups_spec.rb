@@ -959,7 +959,7 @@ RSpec.describe API::Groups do
       end
     end
 
-    shared_examples_for 'do not immediately enqueues the job to delete the group' do |error_message|
+    shared_examples_for 'does not immediately enqueues the job to delete the group' do |error_message|
       specify do
         Sidekiq::Testing.fake! do
           expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)

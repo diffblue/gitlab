@@ -163,7 +163,7 @@ module EE
               # rubocop: disable CodeReuse/ActiveRecord, Rails/FindById
               # This is not `find_by!` from ActiveRecord
               audit_event = AuditEventFinder.new(level: level, params: audit_event_finder_params)
-                                            .find_by!(id: params[:audit_event_id])
+                .find_by!(id: params[:audit_event_id])
               # rubocop: enable CodeReuse/ActiveRecord, Rails/FindById
 
               present audit_event, with: EE::API::Entities::AuditEvent
