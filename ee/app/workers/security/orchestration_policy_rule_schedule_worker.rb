@@ -10,7 +10,7 @@ module Security
     include CronjobQueue
     # rubocop:enable Scalability/CronWorkerContext
 
-    feature_category :security_orchestration
+    feature_category :security_policy_management
 
     def perform
       Security::OrchestrationPolicyRuleSchedule.with_configuration_and_project_or_namespace.with_owner.runnable_schedules.find_in_batches do |schedules|

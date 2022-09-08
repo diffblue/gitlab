@@ -11,7 +11,7 @@ module Groups
         push_frontend_feature_flag(:group_level_scan_result_policies, group)
       end
 
-      feature_category :security_orchestration
+      feature_category :security_policy_management
       urgency :default, [:edit]
       urgency :low, [:index, :new]
 
