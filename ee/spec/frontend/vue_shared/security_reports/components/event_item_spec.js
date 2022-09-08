@@ -8,8 +8,15 @@ import NoteHeader from '~/notes/components/note_header.vue';
 describe('Event Item', () => {
   let wrapper;
 
-  const mountComponent = (options, mountFn = shallowMountExtended) => {
-    wrapper = mountFn(Component, options);
+  const mountComponent = (propsData, mountFn = shallowMountExtended) => {
+    wrapper = mountFn(Component, {
+      ...propsData,
+      provide: {
+        glFeatures: {
+          removeUserAttributes: false,
+        },
+      },
+    });
   };
 
   const noteHeader = () => wrapper.findComponent(NoteHeader);

@@ -23,6 +23,11 @@ describe('Security Reports modal', () => {
         isCreatingMergeRequest: false,
         ...propsData,
       },
+      provide: {
+        glFeatures: {
+          removeUserAttributes: false,
+        },
+      },
     });
     modal = wrapper.findComponent(GlModal);
   };
