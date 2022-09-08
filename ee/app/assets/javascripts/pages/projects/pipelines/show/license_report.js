@@ -1,10 +1,12 @@
 import Vue from 'vue';
+import Vuex from 'vuex';
 import LicenseReportApp from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import Translate from '~/vue_shared/translate';
 import { updateBadgeCount } from './utils';
 
 Vue.use(Translate);
+Vue.use(Vuex);
 
 export default () => {
   const licensesTab = document.getElementById('js-licenses-app');
@@ -23,6 +25,7 @@ export default () => {
       components: {
         LicenseReportApp,
       },
+      store: new Vuex.Store(),
       render(createElement) {
         return createElement('license-report-app', {
           props: {
