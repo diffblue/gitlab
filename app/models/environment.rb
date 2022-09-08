@@ -432,7 +432,8 @@ class Environment < ApplicationRecord
     return unless value
 
     parser = ::Gitlab::Ci::Build::DurationParser.new(value)
-    return if parser.seconds_from_now.nil?
+
+    return if parser.seconds_from_now.nil? && auto_stop_at.nil?
 
     self.auto_stop_at = parser.seconds_from_now
   end
