@@ -58,14 +58,17 @@ Inc._
 - It is difficult to introduce new limits, even more to define policies.
 - Finding what limits are defined requires performing a codebase audit.
 - We don't have a good way to expose limits to satellite services like Registry.
-- We enforce a number of different policies via opaque external systems (Pipeline Validation Service, Bouncer, Watchtower, Cloudflare, Haproxy).
+- We enforce a number of different policies via opaque external systems
+  (Pipeline Validation Service, Bouncer, Watchtower, Cloudflare, Haproxy).
 - There is not standardized way to define policies in a way consistent with defining limits.
 - It is difficult to understand when a user is approaching a limit threshold.
 - There is no way to automatically notify a user when they are approaching thresholds.
 - There is no single way to change limits for a namespace / project / user / customer.
 - There is no single way to monitor limits through real-time metrics.
 - There is no framework for hierarchical limit configuration (instance / namespace / sub-group / project).
-- We allow disabling rate-limiting for some marquee SaaS customers but this mechanism introduces a risk also for those same customers. We should instead be able to set higher limits.
+- We allow disabling rate-limiting for some marquee SaaS customers, but this
+  increases a risk for those same customers. We should instead be able to set
+  higher limits.
 
 ## Opportunity
 
@@ -77,7 +80,7 @@ monitoring capabilities.
 
 1. Build a framework to define and enforce limits in GitLab Rails.
 2. Build an API to consume limits in satellite service and expose them to users.
-3. Extract the framework into a dedicated GitLab Limits Service.
+3. Extract parts of this framework into a dedicated GitLab Limits Service.
 
 <!-- markdownlint-enable MD029 -->
 
@@ -107,32 +110,26 @@ quota and by a policy.
 
 - **Limit:** A constraint on application usage, typically used to mitigate
   risks to performance, stability, and security.
-  * _Example:_ API calls per second for a given IP address
-  * _Example:_ `git clone` events per minute for a given user
-  * _Example:_ maximum artifact upload size of 1GB
+    - _Example:_ API calls per second for a given IP address
+    - _Example:_ `git clone` events per minute for a given user
+    - _Example:_ maximum artifact upload size of 1GB
 - **Quota:** A global constraint in application usage that is aggregated across an
   entire namespace over the duration of their billing cycle.
-  * _Example:_ 400 CI/CD minutes per namespace per month
-  * _Example:_ 10GB transfer per namespace per month
+    - _Example:_ 400 CI/CD minutes per namespace per month
+    - _Example:_ 10GB transfer per namespace per month
 - **Policy:** A representation of business logic that is decoupled from application
   code. Decoupled policy definitions allow logic to be shared across multiple services
   and/or "hot-loaded" at runtime without releasing a new version of the application.
-  * _Example:_ decode and verify a JWT, determine whether the user has access to the
-    given resource based on the JWT's scopes and claims
-  * _Example:_ deny access based on group-level constraints
-    (such as IP allowlist, SSO, and 2FA) across all services
+    - _Example:_ decode and verify a JWT, determine whether the user has access to the
+      given resource based on the JWT's scopes and claims
+    - _Example:_ deny access based on group-level constraints
+      (such as IP allowlist, SSO, and 2FA) across all services
 
 Technically, all of these are limits, because rate limiting is still
-"limiting", quota is a limit that is not time-bound, and policy limits what you
-can do with the application. By referring to a "limit" in this document we mean
-a limit that is time-bound.
-
-Some of the quotas can be also time-bound, but quota has always a stronger
-affinity to resource that is its scope that to a time. For example: a number of
-API requests per second per group are a limit, but number of builds that can be
-processed per pipeline per day would be a quota. Sometime there is a small or
-no difference between a quota and a limit, hence our simplification to use a
-term "limit" for all three makes it easier to avoid confusion.
+"limiting", quota is usually a business limit, and policy limits what you can
+do with the application to enforce specific rules. By referring to a "limit" in
+this document we mean a limit that is defined to protect business, availability
+and security.
 
 ### Framework to define and enforce limits
 
@@ -212,6 +209,9 @@ application limits those are supposed to enforce. This will still allow us to
 define all of them in a single place.
 
 ### GitLab Policy Service
+
+_Disclaimer_: Extracting a GitLab Policy Service might be out of scope of the
+current workstream organized around implementing this blueprint.
 
 Not all limits can be easily described in YAML. There are some more complex
 policies that require a bit more sophisticated approach and a declarative
@@ -306,6 +306,7 @@ Request For Comments.
 - 2022-06-15: We started [scoring proposals](https://docs.google.com/spreadsheets/d/1DFHU1kSdTnpydwM5P2RK8NhVBNWgEHvzT72eOhB8F9E) submitted by Working Group members.
 - 2022-07-06: A fourth, [consolidated proposal](https://gitlab.com/gitlab-org/gitlab/-/issues/364524#note_1017640650), has been submitted.
 - 2022-07-12: Started working on the design document following [Architecture Evolution Workflow](https://about.gitlab.com/handbook/engineering/architecture/workflow/).
+- 2022-09-08: The initial version of the blueprint has been merged.
 
 ## Who
 
