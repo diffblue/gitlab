@@ -60,4 +60,8 @@
           - current_line += line_count
 
   - if blame_pagination
+    %a{ href: namespace_project_blame_path(namespace_id: @project.namespace, project_id: @project, no_pagination: 1) }
+      View entire blame
+
+
     = paginate(blame_pagination, theme: "gitlab")

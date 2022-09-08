@@ -23,7 +23,7 @@ class Projects::BlameController < Projects::ApplicationController
     environment_params[:find_latest] = true
     @environment = ::Environments::EnvironmentsByDeploymentsFinder.new(@project, current_user, environment_params).execute.last
 
-    blame_service = Projects::BlameService.new(@blob, @commit, params.permit(:page))
+    blame_service = Projects::BlameService.new(@blob, @commit, params.permit(:page, :no_pagination))
 
     @blame = Gitlab::View::Presenter::Factory.new(blame_service.blame, project: @project, path: @path, page: blame_service.page).fabricate!
 
