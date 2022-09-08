@@ -5,6 +5,7 @@ query projectIssueEpic($fullPath: ID!, $iid: String!) {
     id
     issuable: issue(iid: $iid) {
       id
+      hasEpic
       attribute: epic {
         ...EpicFragment
       }

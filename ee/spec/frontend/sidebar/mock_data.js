@@ -130,7 +130,17 @@ export const noCurrentEpicResponse = {
   data: {
     workspace: {
       id: '1',
-      issuable: { id: mockIssueId, attribute: null, __typename: 'Issue' },
+      issuable: { id: mockIssueId, hasEpic: false, attribute: null, __typename: 'Issue' },
+      __typename: 'Project',
+    },
+  },
+};
+
+export const mockNoPermissionEpicResponse = {
+  data: {
+    workspace: {
+      id: '1',
+      issuable: { id: mockIssueId, hasEpic: true, attribute: null, __typename: 'Issue' },
       __typename: 'Project',
     },
   },
