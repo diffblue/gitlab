@@ -8,7 +8,7 @@ class CiMinutesUsageMailer < ApplicationMailer
   def notify(namespace, recipients)
     @namespace = namespace
 
-    mail(
+    mail_with_locale(
       bcc: recipients,
       subject: "Action required: There are no remaining Pipeline minutes for #{@namespace.name}"
     )
@@ -18,7 +18,7 @@ class CiMinutesUsageMailer < ApplicationMailer
     @namespace = namespace
     @percentage_of_available_mins = percentage_of_available_mins
 
-    mail(
+    mail_with_locale(
       bcc: recipients,
       subject: "Action required: Less than #{percentage_of_available_mins}% " \
                "of Pipeline minutes remain for #{@namespace.name}"

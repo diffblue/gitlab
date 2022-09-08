@@ -10,7 +10,7 @@ class LicenseMailer < ApplicationMailer
 
     return unless @license
 
-    mail(
+    mail_with_locale(
       bcc: recipients,
       subject: "Your subscription is nearing its user limit"
     )

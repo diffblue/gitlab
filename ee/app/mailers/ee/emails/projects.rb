@@ -7,8 +7,8 @@ module EE
         @project = ::Project.find(project_id)
         user = ::User.find(user_id)
 
-        mail(to: user.notification_email_for(@project.group),
-             subject: subject('Repository mirroring paused'))
+        mail_with_locale(to: user.notification_email_for(@project.group),
+                         subject: subject('Repository mirroring paused'))
       end
 
       def mirror_was_disabled_email(project_id, user_id, deleted_user_name)
@@ -18,8 +18,8 @@ module EE
 
         return unless user
 
-        mail(to: user.notification_email_for(@project.group),
-             subject: subject('Repository mirroring disabled'))
+        mail_with_locale(to: user.notification_email_for(@project.group),
+                         subject: subject('Repository mirroring disabled'))
       end
 
       def project_mirror_user_changed_email(new_mirror_user_id, deleted_user_name, project_id)
@@ -27,8 +27,8 @@ module EE
         @deleted_user_name = deleted_user_name
         user = ::User.find(new_mirror_user_id)
 
-        mail(to: user.notification_email_for(@project.group),
-             subject: subject('Mirror user changed'))
+        mail_with_locale(to: user.notification_email_for(@project.group),
+                         subject: subject('Mirror user changed'))
       end
 
       def user_escalation_rule_deleted_email(user, project, rules, recipient)
@@ -51,7 +51,7 @@ module EE
         add_incident_headers
 
         subject_text = "Incident: #{@incident.title}"
-        mail(to: user.notification_email_for(@project.group), subject: subject(subject_text))
+        mail_with_locale(to: user.notification_email_for(@project.group), subject: subject(subject_text))
       end
     end
   end
