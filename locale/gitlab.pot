@@ -2721,7 +2721,7 @@ msgstr ""
 msgid "AdminSettings|Enable Service Ping"
 msgstr ""
 
-msgid "AdminSettings|Enable a Prometheus endpoint that exposes health and performance statistics. The Health Check menu item appears in the Monitoring section of the Admin Area. Restart required. %{link_start}Learn more.%{link_end}"
+msgid "AdminSettings|Enable collection of application metrics. Restart required. %{link_start}Learn how to export metrics to Prometheus%{link_end}."
 msgstr ""
 
 msgid "AdminSettings|Enable kuromoji custom analyzer: Indexing"
@@ -14454,6 +14454,9 @@ msgstr ""
 msgid "Enable GitLab Error Tracking"
 msgstr ""
 
+msgid "Enable GitLab Prometheus metrics endpoint"
+msgstr ""
+
 msgid "Enable Gitpod"
 msgstr ""
 
@@ -14536,9 +14539,6 @@ msgid "Enable group runners"
 msgstr ""
 
 msgid "Enable header and footer in emails"
-msgstr ""
-
-msgid "Enable health and performance metrics endpoint"
 msgstr ""
 
 msgid "Enable in-product marketing emails"
@@ -25657,10 +25657,10 @@ msgstr ""
 msgid "Monitor"
 msgstr ""
 
-msgid "Monitor Settings"
+msgid "Monitor GitLab with Prometheus."
 msgstr ""
 
-msgid "Monitor the health and performance of GitLab with Prometheus."
+msgid "Monitor Settings"
 msgstr ""
 
 msgid "Monitor your errors by integrating with Sentry."
