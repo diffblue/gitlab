@@ -26,7 +26,7 @@ module EE
         protected_branch.present? && group_access?(protected_branch)
       end
 
-      condition(:approval_rules_licence_enabled) do
+      condition(:approval_rules_licence_enabled, scope: :subject) do
         @subject.target_project.licensed_feature_available?(:coverage_check_approval_rule) ||
         @subject.target_project.licensed_feature_available?(:report_approver_rules)
       end

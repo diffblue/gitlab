@@ -16,6 +16,7 @@ module EE
 
       rule { auditor }.enable :read_all_resources
 
+      with_scope :global
       condition(:allow_to_manage_default_branch_protection) do
         # When un-licensed: Always allow access.
         # When licensed: Allow or deny access based on the

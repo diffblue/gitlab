@@ -4,10 +4,12 @@ module Vulnerabilities
   class FeedbackPolicy < BasePolicy
     delegate { @subject.project }
 
-    condition(:issue) { @subject.for_issue? }
-    condition(:merge_request) { @subject.for_merge_request? }
-    condition(:dismissal) { @subject.for_dismissal? }
-    condition(:auto_fix_enabled) { @subject.project.security_setting&.auto_fix_enabled? }
+    condition(:issue, scope: :subject) { @subject.for_issue? }
+    condition(:merge_request, scope: :subject) { @subject.for_merge_request? }
+    condition(:dismissal, scope: :subject) { @subject.for_dismissal? }
+    condition(:auto_fix_enabled, scope: :subject) do
+      @subject.project.security_setting&.auto_fix_enabled?
+    end
 
     rule { issue & ~can?(:create_issue) }.prevent :create_vulnerability_feedback
 

@@ -10,7 +10,9 @@ class EpicPolicy < BasePolicy
     @subject.confidential?
   end
 
-  condition(:related_epics_available) { @subject.group.licensed_feature_available?(:related_epics) }
+  condition(:related_epics_available, scope: :subject) do
+    @subject.group.licensed_feature_available?(:related_epics)
+  end
 
   rule { can?(:read_epic) }.policy do
     enable :read_epic_iid
