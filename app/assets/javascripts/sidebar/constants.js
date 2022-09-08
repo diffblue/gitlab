@@ -1,4 +1,4 @@
-import { s__, sprintf } from '~/locale';
+import { s__, __, sprintf } from '~/locale';
 import updateIssueLabelsMutation from '~/boards/graphql/issue_set_labels.mutation.graphql';
 import userSearchQuery from '~/graphql_shared/queries/users_search.query.graphql';
 import userSearchWithMRPermissionsQuery from '~/graphql_shared/queries/users_search_with_mr_permissions.graphql';
@@ -318,3 +318,5 @@ export function dropdowni18nText(issuableAttribute, issuableType) {
 
 export const escalationStatusQuery = getEscalationStatusQuery;
 export const escalationStatusMutation = updateEscalationStatusMutation;
+
+export const HOW_TO_TRACK_TIME = __('How to track time');
