@@ -80,9 +80,9 @@ module EE
           end
 
           def immediately_delete_subgroup?(group)
-            return false, "permanently_remove option is only available for subgroups." unless group.subgroup?
-            return false, 'Group is not marked for deletion.' unless group.marked_for_deletion?
-            return false, "Wrong value for full_path." if group.full_path != params[:full_path]
+            return false, 'permanently_remove option is only available for subgroups.' unless group.subgroup?
+            return false, 'Group must be marked for deletion first.' unless group.marked_for_deletion?
+            return false, 'full_path has wrong value.' if group.full_path != params[:full_path]
 
             true
           end
