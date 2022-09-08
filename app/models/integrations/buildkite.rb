@@ -52,7 +52,7 @@ module Integrations
 
     def ensure_ssl_verification
       return unless service_hook
-      
+
       update_web_hook!
     end
 
