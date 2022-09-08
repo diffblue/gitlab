@@ -39,7 +39,7 @@ To prevent exceeding the namespace storage quota, you can:
 
 ### Namespace storage limit enforcement schedule
 
-Storage limits for GitLab SaaS Free tier namespaces will not be enforced prior to 2022-10-19. Storage limits for GitLab SaaS Paid tier namespaces will not be enforced for prior to 2023-02-15. Enforcement will not occur until all storage types are accurately measured, including deduplication of forks for [git](https://gitlab.com/gitlab-org/gitlab/-/issues/371671) and [LFS](https://gitlab.com/gitlab-org/gitlab/-/issues/370242).
+Storage limits for GitLab SaaS Free tier namespaces will not be enforced prior to 2022-10-19. Storage limits for GitLab SaaS Paid tier namespaces will not be enforced for prior to 2023-02-15. Enforcement will not occur until all storage types are accurately measured, including deduplication of forks for [Git](https://gitlab.com/gitlab-org/gitlab/-/issues/371671) and [LFS](https://gitlab.com/gitlab-org/gitlab/-/issues/370242).
 
 Impacted users are notified via email and in-app notifications at least 60 days prior to enforcement.
 
