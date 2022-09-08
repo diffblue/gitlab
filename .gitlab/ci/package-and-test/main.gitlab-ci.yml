@@ -440,6 +440,17 @@ ee:packages:
     - !reference [.rules:test:qa, rules]
     - if: $QA_SUITES =~ /Test::Instance::Packages/
 
+ee:elasticsearch:
+  extends: .qa
+  variables:
+    QA_SCENARIO: "Test::Integration::Elasticsearch"
+  script:
+    - unset ELASTIC_URL # unset url which is globally defined in .gitlab-ci.yml
+    - !reference [.qa, script]
+  rules:
+    - !reference [.rules:test:qa, rules]
+    - if: $QA_SUITES =~ /Test::Integration::Elasticsearch/
+
 ee:object-storage:
   extends: .qa
   variables:
