@@ -2289,6 +2289,9 @@ msgstr ""
 msgid "Add label(s)"
 msgstr ""
 
+msgid "Add license"
+msgstr ""
+
 msgid "Add list"
 msgstr ""
 
