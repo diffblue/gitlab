@@ -3,8 +3,8 @@ import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import SecurityTrainingPromoBanner from 'ee/security_dashboard/components/project/security_training_promo_banner.vue';
 import ProjectSecurityDashboard from 'ee/security_dashboard/components/project/project_security_dashboard.vue';
-import SecurityTrainingPromo from 'ee/security_dashboard/components/shared/security_training_promo.vue';
 import projectsHistoryQuery from 'ee/security_dashboard/graphql/queries/project_vulnerabilities_by_day_and_count.query.graphql';
 import { useFakeDate } from 'helpers/fake_date';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -23,7 +23,7 @@ describe('Project Security Dashboard component', () => {
 
   const findLineChart = () => wrapper.findComponent(GlLineChart);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findSecurityTrainingPromo = () => wrapper.findComponent(SecurityTrainingPromo);
+  const findSecurityTrainingPromoBanner = () => wrapper.findComponent(SecurityTrainingPromoBanner);
 
   const createApolloProvider = (...queries) => {
     return createMockApollo([...queries]);
@@ -48,7 +48,7 @@ describe('Project Security Dashboard component', () => {
       createWrapper();
 
       expect(findLineChart().exists()).toBe(false);
-      expect(findSecurityTrainingPromo().exists()).toBe(false);
+      expect(findSecurityTrainingPromoBanner().exists()).toBe(false);
       expect(findLoadingIcon().exists()).toBe(true);
     });
   });
@@ -90,7 +90,7 @@ describe('Project Security Dashboard component', () => {
     });
 
     it('contains a promotion for the security training feature', () => {
-      expect(findSecurityTrainingPromo().exists()).toBe(true);
+      expect(findSecurityTrainingPromoBanner().exists()).toBe(true);
     });
   });
 });
