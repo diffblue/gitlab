@@ -49,16 +49,22 @@ RSpec.describe Projects::SlackApplicationInstallService do
   end
 
   context 'Slack responds with an access token' do
+    let_it_be(:team_id) { 'T11111' }
+    let_it_be(:team_name) { 'Team name' }
+    let_it_be(:user_id) { 'U11111' }
+    let_it_be(:bot_user_id) { 'U99999' }
+    let_it_be(:bot_access_token) { 'token-XXXXX' }
+
     let(:response) do
       {
         ok: true,
         app_id: 'A12345',
-        authed_user: { id: 'U12345' },
+        authed_user: { id: user_id },
         scope: 'commands',
         token_type: 'bot',
-        access_token: 'token-XXXXX',
-        bot_user_id: 'U99999',
-        team: { id: 'T12345', name: 'Team name' },
+        access_token: bot_access_token,
+        bot_user_id: bot_user_id,
+        team: { id: team_id, name: 'Team name' },
         enterprise: { is_enterprise_install: false }
       }
     end
@@ -72,12 +78,12 @@ RSpec.describe Projects::SlackApplicationInstallService do
         expect(installation).to be_present
         expect(installation).to have_attributes(
           integration_id: integration.id,
-          team_id: 'T12345',
-          team_name: 'Team name',
+          team_id: team_id,
+          team_name: team_name,
           alias: project.full_path,
-          user_id: 'U12345',
-          bot_user_id: 'U99999',
-          bot_access_token: 'token-XXXXX'
+          user_id: user_id,
+          bot_user_id: bot_user_id,
+          bot_access_token: bot_access_token
         )
       end
     end
@@ -104,6 +110,39 @@ RSpec.describe Projects::SlackApplicationInstallService do
         end
 
         it_behaves_like 'success response'
+      end
+    end
+
+    context 'when the team has legacy Slack installation records' do
+      let_it_be_with_reload(:other_legacy_installation) { create(:slack_integration, :legacy, team_id: team_id) }
+      let_it_be_with_reload(:legacy_installation_for_other_team) { create(:slack_integration, :legacy) }
+
+      it_behaves_like 'success response'
+
+      it 'updates related legacy records' do
+        travel_to(1.minute.from_now) do
+          expected_attributes = {
+            'user_id' => user_id,
+            'bot_user_id' => bot_user_id,
+            'bot_access_token' => bot_access_token,
+            'updated_at' => Time.current
+          }
+
+          service.execute
+
+          expect(other_legacy_installation).to have_attributes(expected_attributes)
+          expect(legacy_installation_for_other_team).not_to have_attributes(expected_attributes)
+        end
+      end
+
+      context 'when the update_legacy_slack_installations flag is disabled' do
+        before do
+          stub_feature_flags(update_legacy_slack_installations: false)
+        end
+
+        it 'does not update related records' do
+          expect { service.execute }.not_to change { other_legacy_installation.reload.attributes }
+        end
       end
     end
   end
