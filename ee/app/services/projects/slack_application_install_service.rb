@@ -36,6 +36,8 @@ module Projects
         user_id: slack_data.dig('authed_user', 'id')
       )
 
+      update_legacy_installations!(installation)
+
       success
     end
 
@@ -52,6 +54,26 @@ module Projects
       }
 
       Gitlab::HTTP.get(SLACK_EXCHANGE_TOKEN_URL, query: query).to_hash
+    end
+
+    # Update any legacy SlackIntegration records for the Slack Workspace. Legacy SlackIntegration records
+    # are any created before our Slack App was upgraded to use Granular Bot Permissions and issue a
+    # bot_access_token. Any SlackIntegration records for the Slack Workspace will already have the same
+    # bot_access_token.
+    def update_legacy_installations!(installation)
+      return if Feature.disabled?(:update_legacy_slack_installations, project)
+
+      updatable_attributes = installation.attributes.slice(
+        'user_id',
+        'bot_user_id',
+        'encrypted_bot_access_token',
+        'encrypted_bot_access_token_iv',
+        'updated_at'
+      )
+
+      SlackIntegration.legacy_by_team(installation.team_id).each_batch do |batch|
+        batch.update_all(updatable_attributes)
+      end
     end
   end
 end

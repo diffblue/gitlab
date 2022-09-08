@@ -8,12 +8,30 @@ RSpec.describe SlackIntegration do
   end
 
   describe 'Scopes' do
-    let_it_be(:with_bot) { create(:slack_integration) }
-    let_it_be(:without_bot) { create(:slack_integration, :legacy) }
+    let_it_be(:slack_integration) { create(:slack_integration) }
+    let_it_be(:legacy_slack_integration) { create(:slack_integration, :legacy) }
 
     describe '#with_bot' do
       it 'returns records with bot data' do
-        expect(described_class.with_bot).to contain_exactly(with_bot)
+        expect(described_class.with_bot).to contain_exactly(slack_integration)
+      end
+    end
+
+    describe '#by_team' do
+      it 'returns records with shared team_id' do
+        team_id = slack_integration.team_id
+        team_slack_integration = create(:slack_integration, team_id: team_id)
+
+        expect(described_class.by_team(team_id)).to contain_exactly(slack_integration, team_slack_integration)
+      end
+    end
+
+    describe '#legacy_by_team' do
+      it 'returns records with shared team_id and no bot data' do
+        team_id = legacy_slack_integration.team_id
+        create(:slack_integration, team_id: team_id)
+
+        expect(described_class.legacy_by_team(team_id)).to contain_exactly(legacy_slack_integration)
       end
     end
   end
