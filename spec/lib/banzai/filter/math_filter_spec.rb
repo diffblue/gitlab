@@ -158,7 +158,8 @@ RSpec.describe Banzai::Filter::MathFilter do
         '$20,000 in $USD',
         '$ a^2 $',
         "test $$\n2+2\n$$",
-        "$\n$"
+        "$\n$",
+        '$$$'
       ]
     end
 

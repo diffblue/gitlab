@@ -21,7 +21,7 @@ module Banzai
       # a math statement does not work correctly.
       # Corresponds to the "$...$" syntax
       DOLLAR_INLINE_PATTERN = %r{
-        (?<matched>\$(?<math>(?:\S[^$\n]*?\S|\S{1}))\$)(?:[^\d]|$)
+        (?<matched>\$(?<math>(?:\S[^$\n]*?\S|[^$\s]))\$)(?:[^\d]|$)
       }x.freeze
 
       # Corresponds to the "$$...$$" syntax
