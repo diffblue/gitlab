@@ -104,13 +104,15 @@ RSpec.describe API::Admin::BatchedBackgroundMigrations do
       end
     end
 
-    context 'when multiple database is enabled', :add_ci_connection do
+    context 'when multiple database is enabled' do
       let(:ci_model) { Ci::ApplicationRecord }
       let(:database) { :ci }
 
-      it 'uses the correct connection' do
+      before do
         skip_if_multiple_databases_not_setup
+      end
 
+      it 'uses the correct connection' do
         expect(Gitlab::Database::SharedModel).to receive(:using_connection).with(ci_model.connection).and_yield
 
         resume
