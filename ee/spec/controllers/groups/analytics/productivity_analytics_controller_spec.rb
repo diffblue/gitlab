@@ -73,6 +73,18 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController do
         let(:request_params) { { group_id: group } }
         let(:target_id) { 'g_analytics_productivity' }
       end
+
+      it_behaves_like 'Snowplow event tracking' do
+        subject { get :show, params: { group_id: group } }
+
+        let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
+        let(:category) { described_class.name }
+        let(:action) { 'perform_analytics_usage_action' }
+        let(:label) { 'redis_hll_counters.analytics.analytics_total_unique_counts_monthly' }
+        let(:property) { 'g_analytics_productivity' }
+        let(:user) { current_user }
+        let(:namespace) { group }
+      end
     end
 
     context 'when user is an auditor' do
