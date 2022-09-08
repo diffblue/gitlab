@@ -289,6 +289,11 @@ One way in which we can simplify limits management in general is to:
 1. Build a dashboard showing actors with non-standard limits / overrides.
 1. Build a observability around this showing in Kibana when non-standard limits are being used.
 
+The points above represent an idea to use precedence score (or Z-Index for
+limits), but there may be better solutions, like just defining a direction of
+overrides - a lower limit might always override a limit defined higher in the
+hierarchy. Choosing a proper solution will require a thoughtful research.
+
 ## Principles
 
 1. Try to avoid building rate limiting framework in a tightly coupled way.
