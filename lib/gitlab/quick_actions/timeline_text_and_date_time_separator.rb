@@ -4,7 +4,7 @@ module Gitlab
   module QuickActions
     class TimelineTextAndDateTimeSeparator
       DATETIME_REGEX = %r{(\d{2,4}[\-.]\d{1,2}[\-.]\d{1,2} \d{1,2}:\d{2})}.freeze
-      MIXED_DELIMITER = %r{([\/.])}.freeze
+      MIXED_DELIMITER = %r{([/.])}.freeze
       TIME_REGEX = %r{(\d{1,2}:\d{2})}.freeze
 
       def initialize(timeline_event_arg)
