@@ -31,6 +31,14 @@ RSpec.describe Gitlab::QuickActions::TimelineTextAndDateTimeSeparator do
         it_behaves_like 'arg line with invalid parameters' do
           let(:invalid_arg) { 'timeline comment | 2022-13-13 09:30' }
         end
+
+        it_behaves_like 'arg line with invalid parameters' do
+          let(:invalid_arg) { 'timeline comment | 2022-09/09 09:30' }
+        end
+
+        it_behaves_like 'arg line with invalid parameters' do
+          let(:invalid_arg) { 'timeline comment | 2022-09.09 09:30' }
+        end
       end
 
       context 'with invalid time' do
@@ -59,6 +67,16 @@ RSpec.describe Gitlab::QuickActions::TimelineTextAndDateTimeSeparator do
           let(:valid_arg) { timeline_text }
           let(:date) { DateTime.current.strftime("%Y-%m-%d %H:%M:00 UTC") }
           let(:expected_response) { [timeline_text, date] }
+        end
+      end
+
+      context 'when only timeline text and time present in arg line' do
+        it_behaves_like 'arg line with valid parameters' do
+          let(:timeline_text) { 'timeline comment' }
+          let(:date) { '09:30' }
+          let(:valid_arg) { "#{timeline_text} | #{date}" }
+          let(:parsed_date) { DateTime.parse(date) }
+          let(:expected_response) { [timeline_text, parsed_date] }
         end
       end
 

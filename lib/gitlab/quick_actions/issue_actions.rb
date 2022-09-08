@@ -330,7 +330,7 @@ module Gitlab
           Gitlab::QuickActions::TimelineTextAndDateTimeSeparator.new(event_params).execute
         end
         command :timeline do |event_text, date_time|
-          if date_time
+          if event_text && date_time
             timeline_event = timeline_event_create_service(event_text, date_time).execute
 
             @execution_message[:timeline] =

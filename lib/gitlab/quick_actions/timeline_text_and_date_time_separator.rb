@@ -4,6 +4,7 @@ module Gitlab
   module QuickActions
     class TimelineTextAndDateTimeSeparator
       DATETIME_REGEX = %r{(\d{2,4}[\-.]\d{1,2}[\-.]\d{1,2} \d{1,2}:\d{2})}.freeze
+      MIXED_DELIMITER = %r{([\/.])}.freeze
       TIME_REGEX = %r{(\d{1,2}:\d{2})}.freeze
 
       def initialize(timeline_event_arg)
@@ -14,6 +15,7 @@ module Gitlab
 
       def execute
         return if @timeline_event_arg.blank?
+        return if date_contains_mixed_delimeters?
         return [@timeline_text, get_current_date_time] unless date_time_present?
         return unless valid_date?
 
@@ -40,6 +42,10 @@ module Gitlab
 
       def date_time_present?
         DATETIME_REGEX =~ @timeline_date_string || TIME_REGEX =~ @timeline_date_string
+      end
+
+      def date_contains_mixed_delimeters?
+        MIXED_DELIMITER =~ @timeline_date_string
       end
 
       def valid_date?
