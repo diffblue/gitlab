@@ -8,15 +8,12 @@ import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import ReportItem from '~/reports/components/report_item.vue';
 import ReportSection from '~/reports/components/report_section.vue';
 import SmartVirtualList from '~/vue_shared/components/smart_virtual_list.vue';
-import createStore from './store';
-
-const store = createStore();
+import { setupStore } from './store';
 
 export default {
   name: 'MrWidgetLicenses',
   componentNames,
   iconComponentNames,
-  store,
   components: {
     GlButton,
     GlLink,
@@ -97,6 +94,9 @@ export default {
     licenseReport() {
       this.$emit('updateBadgeCount', this.licenseReport.length);
     },
+  },
+  beforeCreate() {
+    setupStore(this.$store);
   },
   mounted() {
     const { apiUrl, canManageLicenses, licensesApiPath, approvalsApiPath } = this;

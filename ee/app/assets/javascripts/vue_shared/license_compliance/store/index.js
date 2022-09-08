@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
 import * as actions from './actions';
 import * as getters from './getters';
 import mutations from './mutations';
@@ -14,6 +15,13 @@ export const licenseManagementModule = () => ({
   getters,
   mutations,
 });
+
+export const setupStore = (store) => {
+  if (store.hasModule(LICENSE_MANAGEMENT)) {
+    return;
+  }
+  store.registerModule(LICENSE_MANAGEMENT, licenseManagementModule());
+};
 
 export default () =>
   new Vuex.Store({
