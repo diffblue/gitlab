@@ -21263,6 +21263,9 @@ msgstr ""
 msgid "Integrations|Add namespace"
 msgstr ""
 
+msgid "Integrations|Adding a namespace only works in browsers that allow cross-site cookies. %{linkStart}Learn more%{linkEnd}."
+msgstr ""
+
 msgid "Integrations|All details"
 msgstr ""
 
@@ -21321,6 +21324,9 @@ msgid "Integrations|Enable SSL verification"
 msgstr ""
 
 msgid "Integrations|Enable comments"
+msgstr ""
+
+msgid "Integrations|Ensure your instance URL is correct and your instance is configured correctly. %{linkStart}Learn more%{linkEnd}."
 msgstr ""
 
 msgid "Integrations|Enter your alias"
