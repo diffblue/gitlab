@@ -53,5 +53,43 @@ RSpec.describe 'Query.runners' do
         end
       end
     end
+
+    context 'with membership argument' do
+      let_it_be(:group) { create(:group) }
+      let_it_be(:sub_group) { create(:group, parent: group) }
+      let_it_be(:group_runner) { create(:ci_runner, :group, groups: [group]) }
+      let_it_be(:sub_group_runner) { create(:ci_runner, :group, groups: [sub_group]) }
+
+      let(:runner_ids) { graphql_data['group']['runners']['nodes'].map { |n| n['id'] } }
+      let(:query) do
+        %(
+           query getGroupRunners($membership: #{membership_graphql_type}) {
+             group(fullPath: "#{group.full_path}") {
+               runners(membership: $membership) {
+                 nodes {
+                   id
+                 }
+               }
+             }
+           }
+         )
+      end
+
+      context 'with deprecated RunnerMembershipFilter enum type' do
+        let(:membership_graphql_type) { 'RunnerMembershipFilter' }
+
+        it 'returns ids of expected runners' do
+          expect(runner_ids).to match_array([group_runner, sub_group_runner].map { |g| g.to_global_id.to_s })
+        end
+      end
+
+      context 'with new CiRunnerMembershipFilter enum type' do
+        let(:membership_graphql_type) { 'CiRunnerMembershipFilter' }
+
+        it 'returns ids of expected runners' do
+          expect(runner_ids).to match_array([group_runner, sub_group_runner].map { |g| g.to_global_id.to_s })
+        end
+      end
+    end
   end
 end
