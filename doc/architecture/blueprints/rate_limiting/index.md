@@ -140,6 +140,10 @@ abstraction that will tell engineers how to define a limit in a structured way
 (presumably using YAML or Cue format) and then how to consume the limit in the
 application itself.
 
+We already do have many limits defined in the application, we can use them to
+triangulate to find a reasonable abstraction that will consolidate how we
+define, use and enforce limits.
+
 We envision building a simple Ruby library here (we can add it to LabKit) that
 will make it trivial for engineers to check if a certain limit has been
 exceeded or not.
