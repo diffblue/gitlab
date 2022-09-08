@@ -6731,6 +6731,12 @@ msgstr ""
 msgid "BranchRules|Require approval from code owners."
 msgstr ""
 
+msgid "BranchRules|default"
+msgstr ""
+
+msgid "BranchRules|protected"
+msgstr ""
+
 msgid "Branches"
 msgstr ""
 
