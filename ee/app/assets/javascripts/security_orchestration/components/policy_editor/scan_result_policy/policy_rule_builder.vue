@@ -97,7 +97,7 @@ export default {
         NAMESPACE_TYPES.PROJECT === this.namespaceType
       );
     },
-    isgroupLevelBranchesValid() {
+    isGroupLevelBranchesValid() {
       return this.enteredBranch.length > 0;
     },
   },
@@ -146,7 +146,7 @@ export default {
             <gl-form-input
               v-else
               v-model="enteredBranch"
-              :state="isgroupLevelBranchesValid"
+              :state="isGroupLevelBranchesValid"
               type="text"
               data-testid="group-level-branch"
             />
