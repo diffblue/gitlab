@@ -68,7 +68,7 @@ export const defaultConfig = {
   connectionError: false,
   invalidPathError: false,
   isGroupPage: false,
-  helpPagePath: '',
+  helpPagePath: 'user/packages/harbor_container_registry/index',
   containersErrorImage: 'containersErrorImage',
 };
 

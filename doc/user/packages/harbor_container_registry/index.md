@@ -8,7 +8,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 With the successful integration of the Harbor Registry into GitLab, you can use Harbor as the container registry for your GitLab project to store images.
 
-Please read [Harbor container registry integration](https://docs.gitlab.com/ee/user/project/integrations/harbor.html#harbor-container-registry-integration) for more information about Harbor integration.
+Please read [Harbor container registry integration](../../../user/project/integrations/harbor.md#harbor-container-registry-integration) for more information about Harbor integration.
 
 ## View the Harbor Registry
 
@@ -20,7 +20,7 @@ You can view the Harbor Registry for a project or group.
 
 You can search, sort, and filter images on this page. You can share a filtered view by copying the URL from your browser.
 
-At the project level, you can see **CLI Commands** in the upper right corner, where you can copy corresponding commands to log in, build images, and push images. However, **CLI Commands** does not show at the group level. 
+At the project level, you can see **CLI Commands** in the upper right corner, where you can copy corresponding commands to log in, build images, and push images. However, **CLI Commands** does not show at the group level.
 
 NOTE:
 Default settings for Harbor integration at the project level are inherited from the group level.
@@ -34,7 +34,7 @@ To download and run a Harbor image hosted in the GitLab Harbor Registry:
       and find the image you want.
     - Next to the image name, click the **Copy** icon.
 
-   ![Harbor registry image url.](img/Harbor registry image url.png)
+   ![Harbor Registry image URL.](img/harbor_registry_image_url.png)
 
 1. Use the command to run the container image you want.
 
@@ -44,7 +44,7 @@ To view the list of tags associated with a given artifact:
 
 1. Go to your project or group.
 1. Go to **Packages and registries > Harbor Registry**.
-1. Click the image name to view its artifacts. 
+1. Click the image name to view its artifacts.
 1. Select the artifact you want.
 
 This brings up the list of tags. You can view the tag count and the time published.
@@ -57,7 +57,7 @@ To build and push to the Harbor Registry:
 
 1. Authenticate with the Harbor Registry.
 
-1. Run the command to build or push. 
+1. Run the command to build or push.
 
 To view these commands, go to your project's **Packages and registries > Harbor Registry > CLI Commands**.
 

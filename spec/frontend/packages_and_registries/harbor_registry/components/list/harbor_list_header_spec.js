@@ -8,6 +8,7 @@ import {
   HARBOR_REGISTRY_TITLE,
   LIST_INTRO_TEXT,
 } from '~/packages_and_registries/harbor_registry/constants/index';
+import { defaultConfig } from '../../mock_data';
 
 describe('harbor_list_header', () => {
   let wrapper;
@@ -77,10 +78,10 @@ describe('harbor_list_header', () => {
   describe('info messages', () => {
     describe('default message', () => {
       it('is correctly bound to title_area props', () => {
-        mountComponent({ helpPagePath: 'foo' });
+        mountComponent({ helpPagePath: defaultConfig.helpPagePath });
 
         expect(findTitleArea().props('infoMessages')).toEqual([
-          { text: LIST_INTRO_TEXT, link: 'foo' },
+          { text: LIST_INTRO_TEXT, link: defaultConfig.helpPagePath },
         ]);
       });
     });
