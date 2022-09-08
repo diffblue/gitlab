@@ -176,7 +176,7 @@ export default {
             </template>
           </gl-form-input-group>
           <template v-if="email && hasCustomEmail" #description>
-            <span class="gl-mt-2 d-inline-block">
+            <span class="gl-mt-2 gl-display-inline-block">
               <gl-sprintf :message="__('Emails sent to %{email} are also supported.')">
                 <template #email>
                   <code>{{ incomingEmail }}</code>
@@ -216,22 +216,24 @@ export default {
             </gl-sprintf>
           </template>
           <template v-else #description>
-            <gl-sprintf
-              :message="
-                __(
-                  'To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}',
-                )
-              "
-            >
-              <template #link="{ content }">
-                <gl-link
-                  :href="customEmailAddressHelpUrl"
-                  target="_blank"
-                  class="gl-text-blue-600 font-size-inherit"
-                  >{{ content }}
-                </gl-link>
-              </template>
-            </gl-sprintf>
+            <span class="gl-text-gray-900">
+              <gl-sprintf
+                :message="
+                  __(
+                    'To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}',
+                  )
+                "
+              >
+                <template #link="{ content }">
+                  <gl-link
+                    :href="customEmailAddressHelpUrl"
+                    target="_blank"
+                    class="gl-text-blue-600 font-size-inherit"
+                    >{{ content }}
+                  </gl-link>
+                </template>
+              </gl-sprintf>
+            </span>
           </template>
 
           <template v-if="hasProjectKeySupport && projectKeyError" #invalid-feedback>
@@ -266,7 +268,27 @@ export default {
           />
 
           <template v-if="hasProjectKeySupport" #description>
-            {{ __('Emails sent from Service Desk have this name.') }}
+            {{ __('Name to be used as the sender for emails from Service Desk.') }}
+          </template>
+          <template v-else #description>
+            <span class="gl-text-gray-900">
+              <gl-sprintf
+                :message="
+                  __(
+                    'To add display name, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}',
+                  )
+                "
+              >
+                <template #link="{ content }">
+                  <gl-link
+                    :href="customEmailAddressHelpUrl"
+                    target="_blank"
+                    class="gl-text-blue-600 font-size-inherit"
+                    >{{ content }}
+                  </gl-link>
+                </template>
+              </gl-sprintf>
+            </span>
           </template>
         </gl-form-group>
 
