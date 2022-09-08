@@ -14,7 +14,7 @@ module Emails
       @usage_quotas_url = usage_quotas_url(namespace, anchor: 'storage-quota-tab')
       @buy_storage_url = buy_storage_url(namespace)
 
-      mail(
+      mail_with_locale(
         bcc: recipients,
         subject: s_("NamespaceStorage|Action required: Storage has been exceeded for %{namespace_name}" % { namespace_name: namespace.name })
       )
@@ -27,7 +27,7 @@ module Emails
       @percentage_of_available_storage = percentage_of_available_storage
       @size_of_available_storage = size_of_available_storage
 
-      mail(
+      mail_with_locale(
         bcc: recipients,
         subject: s_("NamespaceStorage|Action required: Approximately %{percentage_of_available_storage}%% of namespace storage remains for %{namespace_name}" %
                     { percentage_of_available_storage: percentage_of_available_storage, namespace_name: namespace.name })

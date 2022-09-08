@@ -9,7 +9,7 @@ class CredentialsInventoryMailer < ApplicationMailer
     @revoked_by = revoked_by
     @token = token
 
-    mail(
+    mail_with_locale(
       to: token.user.notification_email_or_default,
       subject: _('Your Personal Access Token was revoked')
     )
@@ -19,7 +19,7 @@ class CredentialsInventoryMailer < ApplicationMailer
     @deleted_by = deleted_by
     @params = params
 
-    mail(
+    mail_with_locale(
       to: params[:notification_email],
       subject: _('Your SSH key was deleted')
     )

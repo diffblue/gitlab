@@ -34,5 +34,16 @@ RSpec.describe LicenseMailer do
         expect { subject }.not_to change(ActionMailer::Base.deliveries, :count)
       end
     end
+
+    context 'when send with I18n.default_locale' do
+      let(:users) { [create(:user, preferred_language: :zh_CN, email: '123@abc'), create(:user, preferred_language: :zh_CN, email: 'hjk@123')] }
+      let(:recipients) { [users[0].email, users[1].email] }
+
+      it { is_expected.to have_subject subject_text }
+      it { is_expected.to bcc_to recipients }
+      it { is_expected.to have_body_text "your subscription #{subscription_name}" }
+      it { is_expected.to have_body_text "You have #{active_user_count} active users" }
+      it { is_expected.to have_body_text "the user limit of #{license.restricted_user_count}" }
+    end
   end
 end
