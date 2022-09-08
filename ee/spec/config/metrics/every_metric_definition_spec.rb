@@ -40,10 +40,6 @@ RSpec.describe 'Every metric definition' do
 
   let(:events_not_defined_yet) do
     %w(
-      redis_hll_counters.ci_templates.p_ci_templates_implicit_jobs_sast_iac_monthly
-      redis_hll_counters.ci_templates.p_ci_templates_implicit_jobs_sast_iac_weekly
-      redis_hll_counters.ci_templates.p_ci_templates_implicit_security_sast_iac_monthly
-      redis_hll_counters.ci_templates.p_ci_templates_implicit_security_sast_iac_weekly
       redis_hll_counters.incident_management.incident_management_timeline_event_created_monthly
       redis_hll_counters.incident_management.incident_management_timeline_event_created_weekly
       redis_hll_counters.incident_management.incident_management_timeline_event_deleted_monthly
