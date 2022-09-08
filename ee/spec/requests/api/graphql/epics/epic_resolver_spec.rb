@@ -201,6 +201,48 @@ RSpec.describe 'getting epics information' do
     end
   end
 
+  describe 'query for epics including their count' do
+    let(:query) do
+      <<~QUERY
+        query groupEpics($groupPath: ID!, $firstPageSize: Int) {
+          group(fullPath: $groupPath) {
+            id
+            epics(
+              first: $firstPageSize
+            ) {
+              count
+              nodes {
+                id
+                iid
+              }
+            }
+          }
+        }
+      QUERY
+    end
+
+    before do
+      create_list(:epic, 10, group: group)
+    end
+
+    it 'returns epics total count' do
+      page_size = 5
+
+      post_graphql(
+        query,
+        current_user: user,
+        variables: {
+          groupPath: group.full_path,
+          firstPageSize: page_size
+        }
+      )
+
+      epics = graphql_dig_at(graphql_data, :group, :epics)
+      expect(epics['nodes'].size).to eq(page_size)
+      expect(epics['count']).to eq(10)
+    end
+  end
+
   def query_epics_with_events(number)
     epics_field = <<~NODE
       epics {
