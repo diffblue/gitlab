@@ -52,10 +52,8 @@ module Integrations
 
     def ensure_ssl_verification
       return unless service_hook
-
-      service_hook.url = hook_url if service_hook.url != hook_url # Avoid reencryption
-      service_hook.enable_ssl_verification = true # SSL verification for buildkite should always be enabled
-      service_hook.save! if service_hook.changed?
+      
+      update_web_hook!
     end
 
     override :hook_url
