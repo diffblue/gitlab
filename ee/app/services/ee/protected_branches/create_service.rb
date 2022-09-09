@@ -63,7 +63,7 @@ module EE
       def track_onboarding_progress
         return unless protected_branch.code_owner_approval_required
 
-        OnboardingProgressService.new(project.namespace).execute(action: :code_owners_enabled)
+        Onboarding::ProgressService.new(project.namespace).execute(action: :code_owners_enabled)
       end
     end
   end
