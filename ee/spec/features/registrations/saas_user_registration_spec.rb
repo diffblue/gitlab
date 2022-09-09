@@ -106,14 +106,15 @@ RSpec.describe "User registration", :js, :saas do
       fill_in 'group_name', with: 'Test Group'
       fill_in 'blank_project_name', with: 'Test Project'
 
-      expect_next(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with({
-        uid: user.id,
-        trial_user: hash_including(
-          namespace_id: anything,
-          gitlab_com_trial: true,
-          sync_to_gl: true
-        )
-      }).and_return(success: true)
+      expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
+        .to receive(:perform_async).with({
+                                           uid: user.id,
+                                           trial_user: hash_including(
+                                             namespace_id: anything,
+                                             gitlab_com_trial: true,
+                                             sync_to_gl: true
+                                           )
+                                         })
 
       click_on 'Create project'
 
@@ -301,41 +302,6 @@ RSpec.describe "User registration", :js, :saas do
           end
 
           it_behaves_like 'creates new group and project'
-
-          it 'creates group but fails to apply a trial, then resubmits and does not apply trial', :sidekiq_inline do
-            apply_trial_response = {
-              success: false,
-              errors: 'BAD STUFF HAPPENED'
-            }
-
-            fill_in 'group_name', with: 'Test Group'
-            fill_in 'blank_project_name', with: 'Test Project'
-
-            expect_next(GitlabSubscriptions::ApplyTrialService)
-              .to receive(:execute).with({
-                                           uid: user.id,
-                                           trial_user: hash_including(
-                                             namespace_id: anything,
-                                             gitlab_com_trial: true,
-                                             sync_to_gl: true
-                                           )
-                                         }).and_return(apply_trial_response)
-
-            click_on 'Create project'
-
-            expect(page).to have_content 'Create or import your first project'
-            expect(page).to have_content apply_trial_response[:errors]
-            expect(GitlabSubscriptions::ApplyTrialService).not_to receive(:new)
-
-            click_on 'Create project'
-
-            expect(page).to have_content 'Get started with GitLab'
-
-            click_on "Ok, let's go"
-
-            expect(page).to have_content('Learn GitLab')
-            expect(page).to have_content('GitLab is better with colleagues!')
-          end
         end
 
         context "without a trial" do

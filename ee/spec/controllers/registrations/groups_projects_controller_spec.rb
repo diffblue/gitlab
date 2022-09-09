@@ -297,9 +297,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             let(:extra_params) { { trial_onboarding_flow: true } }
 
             before do
-              allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-                allow(service).to receive(:execute).and_return({ success: true })
-              end
+              allow(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async)
             end
 
             it { is_expected.to redirect_to(success_path) }
@@ -333,9 +331,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             allow(service).to receive(:execute).and_return(group)
           end
 
-          expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-            expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: success }) # rubocop:disable RSpec/ExpectInHook
-          end
+          expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async).with(apply_trial_params) # rubocop:disable RSpec/ExpectInHook
         end
 
         it 'applies a trial' do
