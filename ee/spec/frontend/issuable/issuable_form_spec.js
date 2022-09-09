@@ -38,9 +38,10 @@ describe('IssuableForm', () => {
     it('creates weight autosave when weight input exist', () => {
       $form.append('<input name="[weight]" />');
       const $weight = $form.find('input[name*="[weight]"]');
+      const totalAutosaveFormFields = $form.children().length;
       createIssuable($form);
 
-      expect(Autosave).toHaveBeenCalledTimes(3);
+      expect(Autosave).toHaveBeenCalledTimes(totalAutosaveFormFields);
       expect(Autosave).toHaveBeenLastCalledWith($weight, ['/', '', 'weight'], 'autosave///=weight');
     });
   });
@@ -58,7 +59,7 @@ describe('IssuableForm', () => {
       const instance = createIssuable($form);
       instance.resetAutosave();
 
-      expect(instance.autosaveWeight.reset).toHaveBeenCalledTimes(1);
+      expect(instance.autosaves.get('weight').reset).toHaveBeenCalledTimes(1);
     });
   });
 });
