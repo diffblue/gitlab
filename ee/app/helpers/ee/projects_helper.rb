@@ -242,6 +242,18 @@ module EE
       project&.licensed_feature_available?(:custom_compliance_frameworks) && project&.compliance_framework_setting&.compliance_management_framework.present?
     end
 
+    def show_ultimate_feature_removal_banner?(project)
+      return false unless ::Feature.enabled?(:ultimate_feature_removal_banner, project)
+
+      return false unless ::Gitlab.com?
+
+      return false unless project.team.member?(current_user)
+
+      return false if ultimate_feature_removal_banner_dismissed?(project)
+
+      project.public? && !project.project_setting.legacy_open_source_license_available
+    end
+
     def scheduled_for_deletion?(project)
       project.marked_for_deletion_at.present?
     end
