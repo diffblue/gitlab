@@ -1,11 +1,11 @@
 import { SCANNER_DAST } from '../constants';
 
-export function buildScannerAction(scan) {
-  const action = { scan };
+export function buildScannerAction({ scanner, siteProfile = '', scannerProfile = '' }) {
+  const action = { scan: scanner };
 
-  if (scan === SCANNER_DAST) {
-    action.site_profile = '';
-    action.scanner_profile = '';
+  if (scanner === SCANNER_DAST) {
+    action.site_profile = siteProfile;
+    action.scanner_profile = scannerProfile;
   }
 
   return action;

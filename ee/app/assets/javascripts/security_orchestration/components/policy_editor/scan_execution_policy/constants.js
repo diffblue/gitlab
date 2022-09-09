@@ -28,6 +28,14 @@ export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
 
 export const DEFAULT_SCANNER = SCANNER_DAST;
 
+export const SCANNER_HUMANIZED_TEMPLATE = s__(
+  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run',
+);
+
+export const DAST_HUMANIZED_TEMPLATE = s__(
+  'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile}',
+);
+
 // TODO remove after https://gitlab.com/gitlab-org/gitlab/-/issues/365579
 export const TEMPORARY_LIST_OF_SCANNERS = {
   sast: SAST_SHORT_NAME,

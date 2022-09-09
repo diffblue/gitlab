@@ -123,7 +123,7 @@ export default {
   },
   methods: {
     addAction() {
-      this.policy.actions.push(buildScannerAction(DEFAULT_SCANNER));
+      this.policy.actions.push(buildScannerAction({ scanner: DEFAULT_SCANNER }));
     },
     addRule() {
       this.policy.rules.push(buildDefaultPipeLineRule());

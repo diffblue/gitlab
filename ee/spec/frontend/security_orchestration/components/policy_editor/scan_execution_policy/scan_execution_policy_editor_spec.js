@@ -260,20 +260,20 @@ describe('ScanExecutionPolicyEditor', () => {
 
     it('should add new action', async () => {
       expect(findPolicyEditorLayout().props('policy').actions).toEqual([
-        buildScannerAction(DEFAULT_SCANNER),
+        buildScannerAction({ scanner: DEFAULT_SCANNER }),
       ]);
       findAddActionButton().vm.$emit('click');
 
       await nextTick();
 
       expect(findPolicyEditorLayout().props('policy').actions).toEqual([
-        buildScannerAction(DEFAULT_SCANNER),
-        buildScannerAction(DEFAULT_SCANNER),
+        buildScannerAction({ scanner: DEFAULT_SCANNER }),
+        buildScannerAction({ scanner: DEFAULT_SCANNER }),
       ]);
     });
 
     it('should update action', async () => {
-      const updatedAction = buildScannerAction('sast');
+      const updatedAction = buildScannerAction({ scanner: 'sast' });
       findPolicyActionBuilder().vm.$emit('changed', updatedAction);
       await nextTick();
 
