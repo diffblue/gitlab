@@ -31,6 +31,7 @@ RSpec.describe 'File blame', :js do
 
       expect(page).to have_css('.blame-commit')
       expect(page).to have_css('.gl-pagination')
+      expect(page).to have_css('#view-entire-blame')
 
       expect(page).to have_css('#L1')
       expect(page).not_to have_css('#L3')
@@ -57,6 +58,20 @@ RSpec.describe 'File blame', :js do
       end
     end
 
+    context 'when user clicks on View entire blame button' do
+      before do
+        visit_blob_blame(path)
+
+        find('#view-entire-blame').click
+      end
+
+      it 'displays the blame page without pagination' do
+        expect(page).to have_css('#L1')
+        expect(page).to have_css('#L3')
+        expect(page).not_to have_css('.gl-pagination')
+      end
+    end
+
     context 'when feature flag disabled' do
       before do
         stub_feature_flags(blame_page_pagination: false)
@@ -67,6 +82,7 @@ RSpec.describe 'File blame', :js do
 
         expect(page).to have_css('.blame-commit')
         expect(page).not_to have_css('.gl-pagination')
+        expect(page).not_to have_css('#view-entire-blame')
       end
     end
   end

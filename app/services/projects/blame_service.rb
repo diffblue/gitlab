@@ -10,7 +10,7 @@ module Projects
       @blob = blob
       @commit = commit
       @page = extract_page(params)
-      @pagination_enabled = params['no_pagination'] == '1' ? false : feature_flag_enabled?
+      @pagination_enabled = pagination_state(params)
     end
 
     attr_reader :page
@@ -52,7 +52,9 @@ module Projects
       PER_PAGE
     end
 
-    def feature_flag_enabled?
+    def pagination_state(params)
+      return false if params.fetch(:no_pagination, 0).to_s == '1'
+
       Feature.enabled?(:blame_page_pagination, commit.project)
     end
 
