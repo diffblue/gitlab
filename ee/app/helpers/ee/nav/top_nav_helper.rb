@@ -61,7 +61,7 @@ module EE
       def projects_submenu_items(builder:)
         super
 
-        if current_user.can?(:list_removable_projects)
+        if current_user.can?(:list_removable_projects) && ::Feature.disabled?(:remove_extra_primary_submenu_options)
           title = _('Pending deletion')
 
           builder.add_primary_menu_item(
