@@ -14,6 +14,7 @@ module EE
         if dashboard_nav_link?(:environments)
           builder.add_primary_menu_item(
             id: 'environments',
+            header: top_nav_localized_headers[:your_dashboard],
             title: _('Environments'),
             icon: 'environment',
             data: { qa_selector: 'environment_link', **menu_data_tracking_attrs('environments') },
@@ -24,6 +25,7 @@ module EE
         if dashboard_nav_link?(:operations)
           builder.add_primary_menu_item(
             id: 'operations',
+            header: top_nav_localized_headers[:your_dashboard],
             title: _('Operations'),
             icon: 'cloud-gear',
             data: { qa_selector: 'operations_link', **menu_data_tracking_attrs('operations') },
@@ -34,6 +36,7 @@ module EE
         if dashboard_nav_link?(:security)
           builder.add_primary_menu_item(
             id: 'security',
+            header: top_nav_localized_headers[:your_dashboard],
             title: _('Security'),
             icon: 'shield',
             data: { qa_selector: 'security_link', **menu_data_tracking_attrs('security') },
@@ -68,6 +71,13 @@ module EE
             href: removed_dashboard_projects_path
           )
         end
+      end
+
+      override :top_nav_localized_headers
+      def top_nav_localized_headers
+        super.merge(
+          your_dashboard: s_('TopNav|Your dashboard')
+        )
       end
     end
   end

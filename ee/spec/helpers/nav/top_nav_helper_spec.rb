@@ -39,6 +39,9 @@ RSpec.describe Nav::TopNavHelper do
       let(:with_environments) { true }
 
       it 'has expected :primary' do
+        expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
+          title: "Your dashboard"
+        )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
             qa_selector: 'environment_link',
@@ -49,7 +52,7 @@ RSpec.describe Nav::TopNavHelper do
           id: 'environments',
           title: 'Environments'
         )
-        expect(subject[:primary]).to eq([expected_primary])
+        expect(subject[:primary]).to eq([expected_header, expected_primary])
       end
     end
 
@@ -57,6 +60,9 @@ RSpec.describe Nav::TopNavHelper do
       let(:with_operations) { true }
 
       it 'has expected :primary' do
+        expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
+          title: "Your dashboard"
+        )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
             qa_selector: 'operations_link',
@@ -67,7 +73,7 @@ RSpec.describe Nav::TopNavHelper do
           id: 'operations',
           title: 'Operations'
         )
-        expect(subject[:primary]).to eq([expected_primary])
+        expect(subject[:primary]).to eq([expected_header, expected_primary])
       end
     end
 
@@ -75,6 +81,9 @@ RSpec.describe Nav::TopNavHelper do
       let(:with_security) { true }
 
       it 'has expected :primary' do
+        expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
+          title: "Your dashboard"
+        )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
             qa_selector: 'security_link',
@@ -85,7 +94,7 @@ RSpec.describe Nav::TopNavHelper do
           id: 'security',
           title: 'Security'
         )
-        expect(subject[:primary]).to eq([expected_primary])
+        expect(subject[:primary]).to eq([expected_header, expected_primary])
       end
     end
 
@@ -119,6 +128,9 @@ RSpec.describe Nav::TopNavHelper do
       let(:projects_view) { subject[:views][:projects] }
 
       it 'has expected :primary' do
+        expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
+          title: "Switch to"
+        )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           css_class: 'qa-projects-dropdown',
           data: {
@@ -130,7 +142,7 @@ RSpec.describe Nav::TopNavHelper do
           title: 'Projects',
           view: 'projects'
         )
-        expect(subject[:primary]).to eq([expected_primary])
+        expect(subject[:primary]).to eq([expected_header, expected_primary])
       end
 
       context 'when licensed feature is available' do
