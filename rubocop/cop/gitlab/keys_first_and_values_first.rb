@@ -6,19 +6,17 @@ module RuboCop
       class KeysFirstAndValuesFirst < RuboCop::Cop::Cop
         FIRST_PATTERN = /\Afirst\z/.freeze
 
-        def message(used_method)
-          <<~MSG
+        MSG = <<~TEXT
           Don't use `.keys.first` and `.values.first`.
           Instead use `.each_key.first` and `.each_value.first` (or `.first.first` and `first.second`)
 
           This will reduce memory usage and execution time.
-          MSG
-        end
+        TEXT
 
         def on_send(node)
-          if find_on_keys_or_values?(node)
-            add_offense(node, location: :selector, message: message(node.method_name))
-          end
+          return unless find_on_keys_or_values?(node)
+
+          add_offense(node, location: :selector)
         end
 
         def autocorrect(node)
