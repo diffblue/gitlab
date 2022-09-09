@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlDropdown, GlSprintf, GlAlert, GlModal } from '@gitlab/ui';
+import { GlAlert, GlButton, GlDropdown, GlModal, GlSprintf, GlTooltipDirective } from '@gitlab/ui';
 import { s__, __ } from '~/locale';
 import linkSecurityPolicyProject from '../../graphql/mutations/link_security_policy_project.mutation.graphql';
 import unlinkSecurityPolicyProject from '../../graphql/mutations/unlink_security_policy_project.mutation.graphql';
@@ -35,12 +35,15 @@ export default {
     emptyPlaceholder: s__('SecurityOrchestration|Choose a project'),
   },
   components: {
+    GlAlert,
     GlButton,
     GlDropdown,
-    GlSprintf,
     GlModal,
-    GlAlert,
+    GlSprintf,
     InstanceProjectSelector,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   inject: [
     'disableSecurityPolicyProject',
@@ -65,6 +68,9 @@ export default {
     };
   },
   computed: {
+    dropdownText() {
+      return this.selectedProjectName || this.$options.i18n.emptyPlaceholder;
+    },
     selectedProjects() {
       return [this.selectedProject];
     },
@@ -220,10 +226,13 @@ export default {
       <div class="gl-display-flex gl-mb-3">
         <gl-dropdown
           ref="dropdown"
-          class="gl-w-full"
+          v-gl-tooltip
+          :title="dropdownText"
+          class="gl-min-w-0 gl-flex-grow-1"
           menu-class="gl-w-full! gl-max-w-full!"
+          toggle-class="gl-min-w-0"
           :disabled="disableSecurityPolicyProject"
-          :text="selectedProjectName || $options.i18n.emptyPlaceholder"
+          :text="dropdownText"
         >
           <instance-project-selector
             class="gl-w-full"
