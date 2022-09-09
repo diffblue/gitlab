@@ -169,12 +169,16 @@ export const getDurationChartData = (data, startDate, endDate) => {
   ) {
     const currentISODate = dateFormat(newDate(currentDate), dateFormats.isoDate);
     const valuesForDay = flattenedData.filter((object) => object.date === currentISODate);
-    const averagedData =
-      valuesForDay.reduce((total, value) => total + value.average_duration_in_seconds, 0) /
-      valuesForDay.length;
-    const averagedDataInDays = secondsToDays(averagedData);
 
-    if (averagedDataInDays) eventData.push([currentISODate, averagedDataInDays]);
+    if (!valuesForDay.length) {
+      eventData.push([currentISODate, null]);
+    } else {
+      const averagedData =
+        valuesForDay.reduce((total, value) => total + value.average_duration_in_seconds, 0) /
+        valuesForDay.length;
+      const averagedDataInDays = secondsToDays(averagedData);
+      eventData.push([currentISODate, averagedDataInDays]);
+    }
   }
 
   return eventData;

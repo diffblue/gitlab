@@ -26407,6 +26407,9 @@ msgstr ""
 msgid "No credit card required."
 msgstr ""
 
+msgid "No data available"
+msgstr ""
+
 msgid "No data found"
 msgstr ""
 

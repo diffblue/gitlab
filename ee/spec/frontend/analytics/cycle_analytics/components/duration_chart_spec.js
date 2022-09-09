@@ -1,6 +1,5 @@
 import { GlIcon } from '@gitlab/ui';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
-import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
 import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
@@ -9,17 +8,17 @@ import {
   DURATION_TOTAL_TIME_DESCRIPTION,
   DURATION_STAGE_TIME_NO_DATA,
   DURATION_TOTAL_TIME_NO_DATA,
-  DURATION_CHART_Y_AXIS_TITLE,
 } from 'ee/analytics/cycle_analytics/constants';
 import DurationChart from 'ee/analytics/cycle_analytics/components/duration_chart.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import { allowedStages as stages, durationChartPlottableData as durationData } from '../mock_data';
+import {
+  allowedStages as stages,
+  durationChartPlottableData as durationData,
+  durationDataSeries,
+  durationDataNullSeries,
+} from '../mock_data';
 
 Vue.use(Vuex);
-
-const actionSpies = {
-  fetchDurationData: jest.fn(),
-};
 
 const fakeStore = ({ initialGetters, initialState, rootGetters, rootState }) =>
   new Vuex.Store({
@@ -41,7 +40,6 @@ const fakeStore = ({ initialGetters, initialState, rootGetters, rootState }) =>
           isLoading: false,
           ...initialState,
         },
-        actions: actionSpies,
       },
     },
   });
@@ -87,6 +85,17 @@ describe('DurationChart', () => {
 
     it('renders the duration chart', () => {
       expect(wrapper.element).toMatchSnapshot();
+    });
+
+    it('correctly sets the chart options data property', () => {
+      const chartDataProps = findDurationChart(wrapper).props('data');
+      const [dataSeries, nullSeries] = chartDataProps;
+      const expectedParams = ['areaStyle', 'data', 'itemStyle', 'lineStyle', 'name', 'showSymbol'];
+
+      expectedParams.forEach((param) => {
+        expect(dataSeries[param]).toEqual(durationDataSeries[param]);
+        expect(nullSeries[param]).toEqual(durationDataNullSeries[param]);
+      });
     });
 
     it('renders the chart', () => {
@@ -138,13 +147,8 @@ describe('DurationChart', () => {
 
     it('sets the chart data', () => {
       expect(findDurationChart(wrapper).props('data')).toEqual([
-        {
-          data: durationData,
-          name: DURATION_CHART_Y_AXIS_TITLE,
-          lineStyle: {
-            color: dataVizBlue500,
-          },
-        },
+        expect.objectContaining(durationDataSeries),
+        durationDataNullSeries,
       ]);
     });
 

@@ -45,6 +45,7 @@ export const METRICS_REQUESTS = [
 export const DURATION_CHART_X_AXIS_TITLE = s__('CycleAnalytics|Date');
 export const DURATION_CHART_Y_AXIS_TITLE = s__('CycleAnalytics|Average time to completion (days)');
 export const DURATION_CHART_Y_AXIS_TOOLTIP_TITLE = s__('CycleAnalytics|Average time to completion');
+export const DURATION_CHART_TOOLTIP_NO_DATA = __('No data available');
 export const DURATION_TOTAL_TIME_LABEL = s__('CycleAnalytics|Total time');
 export const DURATION_TOTAL_TIME_NO_DATA = s__(
   "CycleAnalytics|There is no data for 'Total time' available. Adjust the current filters.",

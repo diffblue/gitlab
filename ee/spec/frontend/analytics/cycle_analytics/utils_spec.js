@@ -25,7 +25,7 @@ import { createdAfter, createdBefore, rawStageMedians } from 'jest/cycle_analyti
 import { toYmd } from '~/analytics/shared/utils';
 import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
-import { getDatesInRange } from '~/lib/utils/datetime_utility';
+import { getDatesInRange, getDayDifference } from '~/lib/utils/datetime_utility';
 import {
   customStageEvents as events,
   customStageLabelEvents as labelEvents,
@@ -139,14 +139,36 @@ describe('Value Stream Analytics utils', () => {
   });
 
   describe('cycleAnalyticsDurationChart', () => {
-    it('computes the plottable data as expected', () => {
-      const plottableData = getDurationChartData(
-        transformedDurationData,
-        createdAfter,
-        createdBefore,
-      );
+    let plottableData;
 
-      expect(plottableData).toStrictEqual(durationChartPlottableData);
+    const totalDays = getDayDifference(createdAfter, createdBefore);
+
+    const nulledData = [{ data: [] }, { data: [] }];
+    const zerodData = [
+      { data: [{ average_duration_in_seconds: 0, date: '2019-01-01T00:00:00.000Z' }] },
+      { data: [{ average_duration_in_seconds: 0, date: '2019-01-02T00:00:00.000Z' }] },
+    ];
+
+    const nulledPlottableData = [
+      ['2019-01-01', null],
+      ['2019-01-02', null],
+    ];
+
+    const zeroedPlottableData = [
+      ['2019-01-01', 0],
+      ['2019-01-02', 0],
+    ];
+
+    it.each`
+      description                          | rawData                    | result
+      ${'with positive average durations'} | ${transformedDurationData} | ${durationChartPlottableData}
+      ${'with zeroes'}                     | ${zerodData}               | ${zeroedPlottableData}
+      ${'with nulls'}                      | ${nulledData}              | ${nulledPlottableData}
+    `('computes the plottable data for each day $description', ({ rawData, result }) => {
+      plottableData = getDurationChartData(rawData, createdAfter, createdBefore);
+
+      expect(plottableData).toEqual(expect.arrayContaining(result));
+      expect(plottableData).toHaveLength(totalDays + 1);
     });
   });
 
@@ -187,7 +209,7 @@ describe('Value Stream Analytics utils', () => {
 
     it('returns the same number of error objects as stages', () => {
       const res = prepareStageErrors(stages, stageErrors);
-      expect(res.length).toEqual(stages.length);
+      expect(res).toHaveLength(stages.length);
     });
 
     it('returns an empty object for each stage if there are no errors', () => {
