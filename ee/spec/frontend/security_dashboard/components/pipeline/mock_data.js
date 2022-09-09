@@ -66,6 +66,17 @@ export const pipelineSecurityReportSummary = {
               ],
             },
           },
+          secretDetection: {
+            vulnerabilitiesCount: 2,
+            scans: {
+              nodes: [
+                {
+                  name: 'secret-detection',
+                  errors: [],
+                },
+              ],
+            },
+          },
         },
         jobs: {
           nodes: [

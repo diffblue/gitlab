@@ -95,6 +95,7 @@ describe('Security reports summary component', () => {
     ${{ apiFuzzing: { vulnerabilitiesCount: 123 } }}           | ${'API Fuzzing'}
     ${{ coverageFuzzing: { vulnerabilitiesCount: 123 } }}      | ${'Coverage Fuzzing'}
     ${{ clusterImageScanning: { vulnerabilitiesCount: 123 } }} | ${'Cluster Image Scanning'}
+    ${{ secretDetection: { vulnerabilitiesCount: 123 } }}      | ${'Secret Detection'}
   `('shows user-friendly scanner name for $string', ({ summaryProp, string }) => {
     createWrapper({
       propsData: {
@@ -132,6 +133,7 @@ describe('Security reports summary component', () => {
     ${{ apiFuzzing: null }}           | ${'API Fuzzing'}
     ${{ coverageFuzzing: null }}      | ${'Coverage Fuzzing'}
     ${{ clusterImageScanning: null }} | ${'Cluster Image Scanning'}
+    ${{ secretDetection: null }}      | ${'Secret Detection'}
   `('does not show $report report if scanner did not run', ({ summaryProp, report }) => {
     createWrapper({
       propsData: {

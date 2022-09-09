@@ -1,5 +1,6 @@
 import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { mapValues, pick } from 'lodash';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -305,25 +306,40 @@ describe('Pipeline Security Dashboard component', () => {
   });
 
   describe('security reports summary', () => {
-    it.each`
-      response                              | shouldShowReportSummary
-      ${pipelineSecurityReportSummary}      | ${true}
-      ${pipelineSecurityReportSummaryEmpty} | ${false}
-    `(
-      'shows the summary is "$shouldShowReportSummary"',
-      async ({ response, shouldShowReportSummary }) => {
-        factoryWithApollo({
-          requestHandlers: [
-            [pipelineSecurityReportSummaryQuery, jest.fn().mockResolvedValueOnce(response)],
+    it('when response is empty, does not show report summary', async () => {
+      factoryWithApollo({
+        requestHandlers: [
+          [
+            pipelineSecurityReportSummaryQuery,
+            jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummaryEmpty),
           ],
-        });
+        ],
+      });
 
-        await waitForPromises();
+      await waitForPromises();
 
-        expect(wrapper.findComponent(SecurityReportsSummary).exists()).toBe(
-          shouldShowReportSummary,
-        );
-      },
-    );
+      expect(wrapper.findComponent(SecurityReportsSummary).exists()).toBe(false);
+    });
+
+    it('with non-empty response, shows report summary', async () => {
+      factoryWithApollo({
+        requestHandlers: [
+          [
+            pipelineSecurityReportSummaryQuery,
+            jest.fn().mockResolvedValueOnce(pipelineSecurityReportSummary),
+          ],
+        ],
+      });
+
+      await waitForPromises();
+
+      expect(wrapper.findComponent(SecurityReportsSummary).props()).toEqual({
+        jobs: [],
+        summary: mapValues(
+          pipelineSecurityReportSummary.data.project.pipeline.securityReportSummary,
+          (obj) => pick(obj, 'vulnerabilitiesCount', 'scannedResourcesCsvPath'),
+        ),
+      });
+    });
   });
 });
