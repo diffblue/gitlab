@@ -20,7 +20,9 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService, :clean_gitlab_
     end
 
     shared_examples 'sends email to admins' do
-      it 'sends email to admins', :aggregate_failures do
+      it 'sends email to admins',
+        :aggregate_failure,
+        quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/370812' do
         double = instance_double(ActionMailer::MessageDelivery, deliver_later: nil)
         expect(Notify).to receive(:user_auto_banned_email) { double }
           .with(admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
