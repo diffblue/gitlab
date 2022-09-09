@@ -9,7 +9,7 @@ RSpec.describe Issues::ExportCsvService do
   let(:project) { create(:project, :public, group: group) }
   let!(:issue) { create(:issue, project: project, author: user) }
   let!(:issue2) { create(:issue, project: project, author: user) }
-  let(:subject) { described_class.new(Issue.all, project) }
+  let(:subject) { described_class.new(Issue.all, project, user) }
 
   def csv
     CSV.parse(subject.csv_data, headers: true)
@@ -39,7 +39,7 @@ RSpec.describe Issues::ExportCsvService do
     end
   end
 
-  context 'includes' do
+  context 'with epic' do
     context 'when epic and issue are from the same group' do
       let(:epic) { create(:epic, group: group) }
 
@@ -60,6 +60,25 @@ RSpec.describe Issues::ExportCsvService do
       end
 
       it_behaves_like 'including issues with epics'
+    end
+
+    context 'when some epics are not readable by user' do
+      let(:unauthorized_epic) { create(:epic, group: create(:group, :private)) }
+      let(:epic) { create(:epic, group: group) }
+
+      before do
+        stub_licensed_features(epics: true)
+        # TODO - Remove the (validate: false) with https://gitlab.com/gitlab-org/gitlab/-/issues/371081
+        build(:epic_issue, issue: issue, epic: unauthorized_epic).save!(validate: false)
+        create(:epic_issue, issue: issue2, epic: epic)
+      end
+
+      it 'redacts epic title' do
+        expect(csv[0]['Epic ID']).to eq(unauthorized_epic.id.to_s)
+        expect(csv[0]['Epic Title']).to eq(nil)
+        expect(csv[1]['Epic ID']).to eq(epic.id.to_s)
+        expect(csv[1]['Epic Title']).to eq(epic.title)
+      end
     end
   end
 end

@@ -6,6 +6,16 @@ module EE
       extend ::Gitlab::Utils::Override
       include ::Gitlab::Utils::StrongMemoize
 
+      attr_accessor :user, :cached_redacted_epics
+
+      override :initialize
+      def initialize(issuables_relation, project, user = nil)
+        super
+
+        @cached_redacted_epics = {}
+        @user = user
+      end
+
       override :associations_to_preload
       def associations_to_preload
         return super unless epics_available?
@@ -25,11 +35,25 @@ module EE
 
       def epic_issue_safe(attribute)
         lambda do |issue|
-          epic = issue.epic
+          epic = redacted_epic_for(issue)
+
           next if epic.nil?
 
           epic[attribute]
         end
+      end
+
+      def redacted_epic_for(issue)
+        epic = issue.epic
+
+        return unless epic
+        return cached_redacted_epics[epic.id] if cached_redacted_epics.has_key?(epic.id)
+
+        epic.title = nil unless Ability.allowed?(user, :read_epic, epic)
+
+        cached_redacted_epics[epic.id] = epic
+
+        epic
       end
 
       def epics_available?
