@@ -220,11 +220,11 @@ module EE
       private
 
       def has_security_reports?
-        has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.of_report_type(:license_scanning)))
+        complete_and_has_reports?(::Ci::JobArtifact.security_reports.or(::Ci::JobArtifact.of_report_type(:license_scanning)))
       end
 
       def has_sbom_reports?
-        has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
+        complete_and_has_reports?(::Ci::JobArtifact.of_report_type(:sbom))
       end
 
       def project_has_subscriptions?
