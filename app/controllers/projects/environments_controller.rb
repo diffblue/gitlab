@@ -262,10 +262,11 @@ class Projects::EnvironmentsController < Projects::ApplicationController
   end
 
   def search_environments(type: nil)
-    Environments::EnvironmentsFinder.new(project,
-                                         current_user,
-                                         type: type,
-                                         search: params[:search]).execute
+    @search_environments ||=
+      Environments::EnvironmentsFinder.new(project,
+                                           current_user,
+                                           type: type,
+                                           search: params[:search]).execute
   end
 
   def metrics_params
