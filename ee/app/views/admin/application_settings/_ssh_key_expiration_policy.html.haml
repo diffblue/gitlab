@@ -2,6 +2,6 @@
 - form = local_assigns.fetch(:form)
 
 .form-group
-  = form.label :max_ssh_key_lifetime, _('Maximum allowed lifetime for SSH keys (in days)'), class: 'label-light'
+  = form.label :max_ssh_key_lifetime, _('Maximum allowed lifetime for SSH keys (days)'), class: 'label-light'
   = form.number_field :max_ssh_key_lifetime, class: 'form-control gl-form-input input-xs'
   %span.form-text.text-muted#max_ssh_key_lifetime= _('When enabled, SSH keys with no expiry date or an invalid expiration date are no longer accepted. Leave blank for no limit.')
