@@ -15,7 +15,7 @@ RSpec.describe World do
     it 'returns list of country name and iso_code in alphabetical format' do
       result = described_class.countries_for_select
 
-      expect(result.first).to eq(%w[Afghanistan AF])
+      expect(result.first).to eq(%w[Afghanistan AF 🇦🇫 93])
     end
   end
 

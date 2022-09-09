@@ -1,9 +1,9 @@
 export const COUNTRY_WITH_STATES = 'US';
 export const STATE = 'CA';
 export const COUNTRIES = [
-  { id: COUNTRY_WITH_STATES, name: 'United States' },
-  { id: 'CA', name: 'Canada' },
-  { id: 'NL', name: 'Netherlands' },
+  { id: COUNTRY_WITH_STATES, name: 'United States', flag: 'US', internationalDialCode: '1' },
+  { id: 'CA', name: 'Canada', flag: 'CA', internationalDialCode: '1' },
+  { id: 'NL', name: 'Netherlands', flag: 'NL', internationalDialCode: '31' },
 ];
 
 export const STATES = [

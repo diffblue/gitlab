@@ -2,5 +2,7 @@ query Countries {
   countries @client {
     id
     name
+    flag
+    internationalDialCode
   }
 }

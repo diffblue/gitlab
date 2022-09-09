@@ -43,8 +43,8 @@ const subscription = {
 };
 
 const countries = [
-  ['United States of America', 'US'],
-  ['Uruguay', 'UY'],
+  ['United States of America', 'US', 'US', '1'],
+  ['Uruguay', 'UY', 'UY', '598'],
 ];
 
 const states = { California: 'CA' };
@@ -62,8 +62,20 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
 
           expect(createFlash).not.toHaveBeenCalled();
           expect(result).toStrictEqual([
-            { name: 'United States of America', id: 'US', __typename: 'Country' },
-            { name: 'Uruguay', id: 'UY', __typename: 'Country' },
+            {
+              name: 'United States of America',
+              id: 'US',
+              flag: 'US',
+              internationalDialCode: '1',
+              __typename: 'Country',
+            },
+            {
+              name: 'Uruguay',
+              id: 'UY',
+              flag: 'UY',
+              internationalDialCode: '598',
+              __typename: 'Country',
+            },
           ]);
         });
       });

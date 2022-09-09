@@ -45,7 +45,13 @@ export const gitLabResolvers = {
     countries: () => {
       return Api.fetchCountries()
         .then(({ data }) =>
-          data.map(([name, alpha2]) => ({ name, id: alpha2, __typename: COUNTRY_TYPE })),
+          data.map(([name, alpha2, flag, internationalDialCode]) => ({
+            name,
+            id: alpha2,
+            flag,
+            internationalDialCode,
+            __typename: COUNTRY_TYPE,
+          })),
         )
         .catch(() => createFlash({ message: ERROR_FETCHING_COUNTRIES }));
     },

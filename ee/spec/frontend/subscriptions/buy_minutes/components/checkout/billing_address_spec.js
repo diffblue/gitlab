@@ -19,8 +19,8 @@ describe('Billing Address', () => {
   const apolloResolvers = {
     Query: {
       countries: jest.fn().mockResolvedValue([
-        { id: 'NL', name: 'Netherlands' },
-        { id: 'US', name: 'United States of America' },
+        { id: 'NL', name: 'Netherlands', flag: 'NL', internationalDialCode: '31' },
+        { id: 'US', name: 'United States of America', flag: 'US', internationalDialCode: '1' },
       ]),
       states: jest.fn().mockResolvedValue([{ id: 'CA', name: 'California' }]),
     },
