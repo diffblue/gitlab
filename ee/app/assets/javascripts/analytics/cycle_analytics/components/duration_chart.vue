@@ -3,8 +3,11 @@ import { mapState, mapGetters } from 'vuex';
 import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
 import { GlLineChart } from '@gitlab/ui/dist/charts';
 import { GlAlert, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import ChartTooltipText from 'ee/analytics/shared/components/chart_tooltip_text.vue';
+import { buildNullSeries } from 'ee/analytics/shared/utils';
 import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
+import { isNumeric } from '~/lib/utils/number_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { n__, sprintf } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
@@ -18,6 +21,7 @@ import {
   DURATION_CHART_X_AXIS_TITLE,
   DURATION_CHART_Y_AXIS_TITLE,
   DURATION_CHART_Y_AXIS_TOOLTIP_TITLE,
+  DURATION_CHART_TOOLTIP_NO_DATA,
 } from '../constants';
 
 const formatTooltipDate = (date) => dateFormat(date, dateFormats.defaultDate);
@@ -29,6 +33,7 @@ export default {
     GlIcon,
     GlLineChart,
     ChartSkeletonLoader,
+    ChartTooltipText,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -40,7 +45,7 @@ export default {
     },
   },
   data() {
-    return { tooltipTitle: '', tooltipContent: '' };
+    return { tooltipTitle: '', tooltipContent: [] };
   },
   computed: {
     ...mapState(['selectedStage']),
@@ -71,7 +76,7 @@ export default {
         : DURATION_STAGE_TIME_DESCRIPTION;
     },
     chartData() {
-      return [
+      const valuesSeries = [
         {
           name: this.$options.i18n.yAxisTitle,
           data: this.durationChartPlottableData,
@@ -80,6 +85,13 @@ export default {
           },
         },
       ];
+
+      const nullSeries = buildNullSeries(
+        valuesSeries,
+        `${DURATION_CHART_Y_AXIS_TITLE} no data series`,
+      );
+      const [nullData, nonNullData] = nullSeries;
+      return [nonNullData, { ...nullData, showSymbol: false }];
     },
     chartOptions() {
       return {
@@ -111,7 +123,14 @@ export default {
     renderTooltip({ seriesData }) {
       const [dateTime, metric] = seriesData[0].data;
       this.tooltipTitle = formatTooltipDate(dateTime);
-      this.tooltipContent = n__('%d day', '%d days', metric);
+      this.tooltipContent = isNumeric(metric)
+        ? [
+            {
+              title: this.$options.i18n.yAxisTooltipTitle,
+              value: n__('%d day', '%d days', metric),
+            },
+          ]
+        : [];
     },
   },
   durationChartTooltipDateFormat: dateFormats.defaultDate,
@@ -119,6 +138,7 @@ export default {
     xAxisTitle: DURATION_CHART_X_AXIS_TITLE,
     yAxisTitle: DURATION_CHART_Y_AXIS_TITLE,
     yAxisTooltipTitle: DURATION_CHART_Y_AXIS_TOOLTIP_TITLE,
+    noData: DURATION_CHART_TOOLTIP_NO_DATA,
   },
 };
 </script>
@@ -141,10 +161,10 @@ export default {
         <div>{{ tooltipTitle }}</div>
       </template>
       <template #tooltip-content>
-        <p class="gl-m-0">
-          {{ $options.i18n.yAxisTooltipTitle }}:
-          <span class="gl-font-weight-bold">{{ tooltipContent }}</span>
-        </p>
+        <chart-tooltip-text
+          :empty-value-text="$options.i18n.noData"
+          :tooltip-value="tooltipContent"
+        />
       </template>
     </gl-line-chart>
     <gl-alert v-else variant="info" :dismissible="false" class="gl-mt-3">

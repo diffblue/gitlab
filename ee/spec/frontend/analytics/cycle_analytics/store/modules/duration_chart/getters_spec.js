@@ -18,6 +18,31 @@ describe('DurationChart getters', () => {
     ['2019-01-02', 27],
   ];
 
+  const stateWithDurationData = {
+    durationData: transformedDurationData,
+  };
+
+  const stateWithDurationZeros = {
+    durationData: [
+      { data: [{ average_duration_in_seconds: 0 }] },
+      { data: [{ average_duration_in_seconds: null }] },
+    ],
+  };
+
+  describe('hasPlottableData', () => {
+    it('returns false if there is no data', () => {
+      expect(getters.hasPlottableData({ durationData: [] })).toBe(false);
+    });
+
+    it('returns true if there is plottable data', () => {
+      expect(getters.hasPlottableData(stateWithDurationData)).toBe(true);
+    });
+
+    it('returns true if the values are 0', () => {
+      expect(getters.hasPlottableData(stateWithDurationZeros)).toBe(true);
+    });
+  });
+
   describe('durationChartPlottableData', () => {
     describe('with a VSA stage selected', () => {
       beforeEach(() => {
@@ -25,51 +50,43 @@ describe('DurationChart getters', () => {
       });
 
       it('returns plottable data for the currently selected stage', () => {
-        const stateWithDurationData = {
-          durationData: transformedDurationData,
-        };
+        const res = getters.durationChartPlottableData(
+          stateWithDurationData,
+          getters,
+          rootState,
+          rootGetters,
+        );
 
-        expect(
-          getters.durationChartPlottableData(
-            stateWithDurationData,
-            getters,
-            rootState,
-            rootGetters,
-          ),
-        ).toEqual(selectedStageDurationData);
+        expect(res).toEqual(expect.arrayContaining(selectedStageDurationData));
       });
 
-      it('returns an empty array if there is no plottable data for the selected stages', () => {
-        const stateWithDurationData = {
-          durationData: [],
-        };
+      it('returns an empty array if there is no plottable data for the selected stage', () => {
+        const res = getters.durationChartPlottableData(
+          { durationData: [] },
+          getters,
+          rootState,
+          rootGetters,
+        );
 
-        expect(
-          getters.durationChartPlottableData(
-            stateWithDurationData,
-            getters,
-            rootState,
-            rootGetters,
-          ),
-        ).toEqual([]);
+        expect(res).toEqual([]);
       });
     });
-  });
 
-  describe('with the overview stage selected', () => {
-    beforeEach(() => {
-      rootGetters.isOverviewStageSelected = true;
-    });
+    describe('with the overview stage selected', () => {
+      beforeEach(() => {
+        rootGetters.isOverviewStageSelected = true;
+      });
 
-    it('returns plottable data for all available stages', () => {
-      const stateWithDurationData = {
-        durationData: transformedDurationData,
-        isOverviewStageSelected: true,
-      };
+      it('returns plottable data for all available stages', () => {
+        const res = getters.durationChartPlottableData(
+          { ...stateWithDurationData, isOverviewStageSelected: true },
+          getters,
+          rootState,
+          rootGetters,
+        );
 
-      expect(
-        getters.durationChartPlottableData(stateWithDurationData, getters, rootState, rootGetters),
-      ).toEqual(mockDurationChartPlottableData);
+        expect(res).toEqual(expect.arrayContaining(mockDurationChartPlottableData));
+      });
     });
   });
 });

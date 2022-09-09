@@ -1,3 +1,4 @@
+import { dataVizBlue500 } from '@gitlab/ui/scss_to_js/scss_variables';
 import { uniq } from 'lodash';
 import valueStreamAnalyticsStages from 'test_fixtures/analytics/value_stream_analytics/stages.json';
 import valueStreamAnalyticsSummary from 'test_fixtures/analytics/metrics/value_stream_analytics/summary.json';
@@ -22,6 +23,7 @@ import stagingCountFixture from 'test_fixtures/analytics/value_stream_analytics/
 import {
   TASKS_BY_TYPE_SUBJECT_ISSUE,
   OVERVIEW_STAGE_CONFIG,
+  DURATION_CHART_Y_AXIS_TITLE,
 } from 'ee/analytics/cycle_analytics/constants';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import mutations from 'ee/analytics/cycle_analytics/store/mutations';
@@ -319,4 +321,37 @@ export const aggregationData = {
   enabled: true,
   lastRunAt: '2022-03-11T04:34:59Z',
   nextRunAt: '2022-03-11T05:21:01Z',
+};
+
+export const durationDataSeries = {
+  areaStyle: {
+    color: '#5772ff',
+    opacity: 0,
+  },
+  data: durationChartPlottableData,
+  name: DURATION_CHART_Y_AXIS_TITLE,
+  itemStyle: { color: '#5772ff' },
+  lineStyle: {
+    color: dataVizBlue500,
+  },
+  showSymbol: true,
+};
+
+export const durationDataNullSeries = {
+  areaStyle: {
+    color: 'none',
+  },
+  data: [
+    ['2019-01-01', null],
+    ['2019-01-02', null],
+  ],
+  itemStyle: {
+    color: '#999',
+  },
+  lineStyle: {
+    color: '#999',
+    type: 'dashed',
+  },
+  name: `${DURATION_CHART_Y_AXIS_TITLE} no data series`,
+  showSymbol: false,
 };

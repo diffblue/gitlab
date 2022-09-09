@@ -19,7 +19,7 @@ exports[`DurationChart with the overiew stage selected renders the duration char
    
   <gl-line-chart-stub
     annotations=""
-    data="[object Object]"
+    data="[object Object],[object Object]"
     formattooltiptext="[Function]"
     legendaveragetext="Avg"
     legendcurrenttext="Current"
