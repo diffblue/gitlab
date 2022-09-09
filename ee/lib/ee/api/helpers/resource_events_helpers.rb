@@ -3,16 +3,16 @@
 module EE
   module API
     module Helpers
-      module ResourceLabelEventsHelpers
+      module ResourceEventsHelpers
         extend ActiveSupport::Concern
 
         class_methods do
           extend ::Gitlab::Utils::Override
 
-          override :feature_category_per_eventable_type
-          def feature_category_per_eventable_type
+          override :eventable_types
+          def eventable_types
             super.merge!(
-              ::Epic => :portfolio_management
+              ::Epic => { feature_category: :portfolio_management, id_field: 'ID' }
             )
           end
         end
