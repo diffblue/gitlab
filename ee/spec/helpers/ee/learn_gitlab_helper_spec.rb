@@ -6,11 +6,11 @@ RSpec.describe LearnGitlabHelper do
   include Devise::Test::ControllerHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, name: LearnGitlab::Project::PROJECT_NAME, namespace: user.namespace) }
+  let_it_be(:project) { create(:project, name: Onboarding::LearnGitlab::PROJECT_NAME, namespace: user.namespace) }
   let_it_be(:namespace) { project.namespace }
 
   before do
-    allow_next_instance_of(LearnGitlab::Project) do |learn_gitlab|
+    allow_next_instance_of(Onboarding::LearnGitlab) do |learn_gitlab|
       allow(learn_gitlab).to receive(:project).and_return(project)
     end
 
