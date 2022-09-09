@@ -153,16 +153,13 @@ module Registrations
     end
 
     def apply_trial
-      apply_trial_params = {
-        uid: current_user.id,
-        trial_user: params.permit(:glm_source, :glm_content).merge({
-                                                                     namespace_id: @group.id,
-                                                                     gitlab_com_trial: true,
-                                                                     sync_to_gl: true
-                                                                   })
-      }
+      trial_user_information = params.permit(:glm_source, :glm_content).merge({
+                                                                                namespace_id: @group.id,
+                                                                                gitlab_com_trial: true,
+                                                                                sync_to_gl: true
+                                                                              })
 
-      GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(apply_trial_params) # rubocop:todo CodeReuse/Worker
+      GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(current_user.id, trial_user_information) # rubocop:todo CodeReuse/Worker
     end
 
     LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
