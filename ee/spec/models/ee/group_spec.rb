@@ -312,18 +312,6 @@ RSpec.describe Group do
           end
         end
 
-        context 'when find_epics_performance_improvement is disabled' do
-          before do
-            stub_feature_flags(find_epics_performance_improvement: false)
-          end
-
-          it 'does not use filter optimization' do
-            expect(Group).not_to receive(:filter_groups_user_can)
-
-            expect(subject).to match_array(expected_groups)
-          end
-        end
-
         context 'when same_root is false' do
           let(:params) { { same_root: false } }
 
