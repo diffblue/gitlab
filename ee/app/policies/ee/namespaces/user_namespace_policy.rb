@@ -7,7 +7,7 @@ module EE
 
       prepended do
         condition(:over_storage_limit, scope: :subject) { @subject.over_storage_limit? }
-        condition(:compliance_framework_available) do
+        condition(:compliance_framework_available, scope: :subject) do
           @subject.licensed_feature_available?(:custom_compliance_frameworks)
         end
 

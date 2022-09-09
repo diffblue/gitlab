@@ -4,11 +4,11 @@ module ComplianceManagement
   class FrameworkPolicy < BasePolicy
     delegate { @subject.namespace }
 
-    condition(:custom_compliance_frameworks_enabled) do
+    condition(:custom_compliance_frameworks_enabled, scope: :subject) do
       @subject.namespace.feature_available?(:custom_compliance_frameworks)
     end
 
-    condition(:group_level_compliance_pipeline_enabled) do
+    condition(:group_level_compliance_pipeline_enabled, scope: :subject) do
       @subject.namespace.feature_available?(:evaluate_group_level_compliance_pipeline)
     end
 

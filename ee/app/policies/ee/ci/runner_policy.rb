@@ -6,11 +6,11 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        condition(:is_group_runner) do
+        condition(:is_group_runner, scope: :subject) do
           @subject.group_type?
         end
 
-        condition(:is_project_runner) do
+        condition(:is_project_runner, scope: :subject) do
           @subject.project_type?
         end
 

@@ -8,55 +8,54 @@ module EE
     prepended do
       include CrudPolicyHelpers
 
-      with_scope :subject
-      condition(:ldap_synced) { @subject.ldap_synced? }
-      condition(:epics_available) { @subject.feature_available?(:epics) }
-      condition(:iterations_available) { @subject.feature_available?(:iterations) }
-      condition(:subepics_available) { @subject.feature_available?(:subepics) }
-      condition(:external_audit_events_available) do
+      condition(:ldap_synced, scope: :subject) { @subject.ldap_synced? }
+      condition(:epics_available, scope: :subject) { @subject.feature_available?(:epics) }
+      condition(:iterations_available, scope: :subject) { @subject.feature_available?(:iterations) }
+      condition(:subepics_available, scope: :subject) { @subject.feature_available?(:subepics) }
+      condition(:external_audit_events_available, scope: :subject) do
         @subject.feature_available?(:external_audit_events)
       end
-      condition(:contribution_analytics_available) do
+      condition(:contribution_analytics_available, scope: :subject) do
         @subject.feature_available?(:contribution_analytics)
       end
 
-      condition(:cycle_analytics_available) do
+      condition(:cycle_analytics_available, scope: :subject) do
         @subject.feature_available?(:cycle_analytics_for_groups)
       end
 
-      condition(:group_ci_cd_analytics_available) do
+      condition(:group_ci_cd_analytics_available, scope: :subject) do
         @subject.feature_available?(:group_ci_cd_analytics)
       end
 
-      condition(:group_merge_request_analytics_available) do
+      condition(:group_merge_request_analytics_available, scope: :subject) do
         @subject.feature_available?(:group_merge_request_analytics)
       end
 
-      condition(:group_repository_analytics_available) do
+      condition(:group_repository_analytics_available, scope: :subject) do
         @subject.feature_available?(:group_repository_analytics)
       end
 
-      condition(:group_coverage_reports_available) do
+      condition(:group_coverage_reports_available, scope: :subject) do
         @subject.feature_available?(:group_coverage_reports)
       end
 
-      condition(:group_activity_analytics_available) do
+      condition(:group_activity_analytics_available, scope: :subject) do
         @subject.feature_available?(:group_activity_analytics)
       end
 
-      condition(:group_devops_adoption_available) do
+      condition(:group_devops_adoption_available, scope: :subject) do
         @subject.feature_available?(:group_level_devops_adoption)
       end
 
-      condition(:group_devops_adoption_enabled) do
+      condition(:group_devops_adoption_enabled, scope: :global) do
         ::License.feature_available?(:group_level_devops_adoption)
       end
 
-      condition(:dora4_analytics_available) do
+      condition(:dora4_analytics_available, scope: :subject) do
         @subject.feature_available?(:dora4_analytics)
       end
 
-      condition(:group_membership_export_available) do
+      condition(:group_membership_export_available, scope: :subject) do
         @subject.feature_available?(:export_user_permissions)
       end
 
@@ -72,11 +71,11 @@ module EE
         ldap_lock_bypassable?
       end
 
-      condition(:security_dashboard_enabled) do
+      condition(:security_dashboard_enabled, scope: :subject) do
         @subject.feature_available?(:security_dashboard)
       end
 
-      condition(:prevent_group_forking_available) do
+      condition(:prevent_group_forking_available, scope: :subject) do
         @subject.feature_available?(:group_forking_protection)
       end
 
@@ -88,11 +87,11 @@ module EE
         sso_session_prevents_access?
       end
 
-      condition(:ip_enforcement_prevents_access) do
+      condition(:ip_enforcement_prevents_access, scope: :subject) do
         !::Gitlab::IpRestriction::Enforcer.new(subject).allows_current_ip?
       end
 
-      condition(:cluster_deployments_available) do
+      condition(:cluster_deployments_available, scope: :subject) do
         @subject.feature_available?(:cluster_deployments)
       end
 
@@ -120,19 +119,19 @@ module EE
         @subject.saml_group_sync_available?
       end
 
-      condition(:commit_committer_check_available) do
+      condition(:commit_committer_check_available, scope: :subject) do
         @subject.feature_available?(:commit_committer_check)
       end
 
-      condition(:reject_unsigned_commits_available) do
+      condition(:reject_unsigned_commits_available, scope: :subject) do
         @subject.feature_available?(:reject_unsigned_commits)
       end
 
-      condition(:push_rules_available) do
+      condition(:push_rules_available, scope: :subject) do
         @subject.feature_available?(:push_rules)
       end
 
-      condition(:group_merge_request_approval_settings_enabled) do
+      condition(:group_merge_request_approval_settings_enabled, scope: :subject) do
         @subject.feature_available?(:merge_request_approvers) && @subject.root?
       end
 
@@ -140,19 +139,19 @@ module EE
 
       condition(:eligible_for_trial, scope: :subject) { @subject.eligible_for_trial? }
 
-      condition(:compliance_framework_available) do
+      condition(:compliance_framework_available, scope: :subject) do
         @subject.feature_available?(:custom_compliance_frameworks)
       end
 
-      condition(:group_level_compliance_pipeline_available) do
+      condition(:group_level_compliance_pipeline_available, scope: :subject) do
         @subject.feature_available?(:evaluate_group_level_compliance_pipeline)
       end
 
-      condition(:security_orchestration_policies_enabled) do
+      condition(:security_orchestration_policies_enabled, scope: :subject) do
         @subject.feature_available?(:security_orchestration_policies)
       end
 
-      condition(:group_level_compliance_dashboard_enabled) do
+      condition(:group_level_compliance_dashboard_enabled, scope: :subject) do
         @subject.feature_available?(:group_level_compliance_dashboard)
       end
 
@@ -165,11 +164,11 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
-      condition(:enable_auditor_group_runner_access) do
+      condition(:enable_auditor_group_runner_access, scope: :global) do
         ::Feature.enabled?(:auditor_group_runner_access)
       end
 
-      condition(:admin_group_protected_environment_accessible) do
+      condition(:admin_group_protected_environment_accessible, scope: :subject) do
         ::Feature.enabled?(
           :group_level_protected_environment_settings_permission, @subject) &&
           ::Feature.disabled?(

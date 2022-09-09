@@ -354,14 +354,17 @@ module EE
 
       rule { ~admin & owner & owner_cannot_destroy_project }.prevent :remove_project
 
+      with_scope :subject
       condition(:needs_new_sso_session) do
         ::Gitlab::Auth::GroupSaml::SsoEnforcer.group_access_restricted?(subject.group)
       end
 
+      with_scope :subject
       condition(:ip_enforcement_prevents_access) do
         !::Gitlab::IpRestriction::Enforcer.new(subject.group).allows_current_ip? if subject.group
       end
 
+      with_scope :global
       condition(:owner_cannot_destroy_project) do
         ::Gitlab::CurrentSettings.current_application_settings
           .default_project_deletion_protection
