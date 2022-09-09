@@ -43398,7 +43398,13 @@ msgstr ""
 msgid "View all environments."
 msgstr ""
 
+msgid "View all groups"
+msgstr ""
+
 msgid "View all issues"
+msgstr ""
+
+msgid "View all projects"
 msgstr ""
 
 msgid "View blame"

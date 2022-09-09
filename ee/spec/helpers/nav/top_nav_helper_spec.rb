@@ -155,60 +155,82 @@ RSpec.describe Nav::TopNavHelper do
             ::Gitlab::Nav::TopNavMenuItem.build(
               data: {
                 qa_selector: 'menu_item_link',
-                qa_title: 'Your projects',
-                **menu_data_tracking_attrs('your_projects')
+                qa_title: 'View all projects',
+                **menu_data_tracking_attrs('view_all_projects')
               },
               href: '/dashboard/projects',
               id: 'your',
-              title: 'Your projects'
-            ),
-
-            ::Gitlab::Nav::TopNavMenuItem.build(
-              data: {
-                qa_selector: 'menu_item_link',
-                qa_title: 'Starred projects',
-                **menu_data_tracking_attrs('starred_projects')
-              },
-              href: '/dashboard/projects/starred',
-              id: 'starred',
-              title: 'Starred projects'
-            ),
-
-            ::Gitlab::Nav::TopNavMenuItem.build(
-              data: {
-                qa_selector: 'menu_item_link',
-                qa_title: 'Explore projects',
-                **menu_data_tracking_attrs('explore_projects')
-              },
-              href: '/explore',
-              id: 'explore',
-              title: 'Explore projects'
-            ),
-
-            ::Gitlab::Nav::TopNavMenuItem.build(
-              data: {
-                qa_selector: 'menu_item_link',
-                qa_title: 'Explore topics',
-                **menu_data_tracking_attrs('explore_topics')
-              },
-              href: '/explore/projects/topics',
-              id: 'topics',
-              title: 'Explore topics'
-            ),
-
-            ::Gitlab::Nav::TopNavMenuItem.build(
-              data: {
-                qa_selector: 'menu_item_link',
-                qa_title: 'Pending deletion',
-                **menu_data_tracking_attrs('pending_deletion')
-              },
-              href: '/dashboard/projects/removed',
-              id: 'deleted',
-              title: 'Pending deletion'
+              title: 'View all projects'
             )
           ]
-
           expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
+        end
+
+        context 'when submenu options are not hidden' do
+          before do
+            stub_feature_flags(remove_extra_primary_submenu_options: false)
+          end
+
+          it 'has expected :linksPrimary' do
+            expected_links_primary = [
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                data: {
+                  qa_selector: 'menu_item_link',
+                  qa_title: 'Your projects',
+                  **menu_data_tracking_attrs('your_projects')
+                },
+                href: '/dashboard/projects',
+                id: 'your',
+                title: 'Your projects'
+              ),
+
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                data: {
+                  qa_selector: 'menu_item_link',
+                  qa_title: 'Starred projects',
+                  **menu_data_tracking_attrs('starred_projects')
+                },
+                href: '/dashboard/projects/starred',
+                id: 'starred',
+                title: 'Starred projects'
+              ),
+
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                data: {
+                  qa_selector: 'menu_item_link',
+                  qa_title: 'Explore projects',
+                  **menu_data_tracking_attrs('explore_projects')
+                },
+                href: '/explore',
+                id: 'explore',
+                title: 'Explore projects'
+              ),
+
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                data: {
+                  qa_selector: 'menu_item_link',
+                  qa_title: 'Explore topics',
+                  **menu_data_tracking_attrs('explore_topics')
+                },
+                href: '/explore/projects/topics',
+                id: 'topics',
+                title: 'Explore topics'
+              ),
+
+              ::Gitlab::Nav::TopNavMenuItem.build(
+                data: {
+                  qa_selector: 'menu_item_link',
+                  qa_title: 'Pending deletion',
+                  **menu_data_tracking_attrs('pending_deletion')
+                },
+                href: '/dashboard/projects/removed',
+                id: 'deleted',
+                title: 'Pending deletion'
+              )
+            ]
+
+            expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
+          end
         end
       end
     end
