@@ -10,7 +10,6 @@ export default {
   i18n: {
     title: __('Code owners'),
     about: __('About this feature'),
-    andSeparator: __('and'),
     errorMessage: __('An error occurred while loading code owners.'),
   },
   codeOwnersHelpPath: helpPagePath('user/project/code_owners'),
@@ -78,13 +77,7 @@ export default {
       return this.filePath && Boolean(this.codeOwners.length);
     },
     commaSeparateList() {
-      return this.codeOwners.length > 2;
-    },
-    showAndSeparator() {
       return this.codeOwners.length > 1;
-    },
-    lastListItem() {
-      return this.codeOwners.length - 1;
     },
   },
   watch: {
@@ -116,9 +109,6 @@ export default {
       data-testid="code-owners"
     >
       <span v-if="commaSeparateList && index > 0" data-testid="comma-separator">,</span>
-      <span v-if="showAndSeparator && index === lastListItem" data-testid="and-separator">{{
-        $options.i18n.andSeparator
-      }}</span>
       <gl-link :href="owner.webPath" target="_blank" :title="$options.i18n.about">
         {{ owner.name }}
       </gl-link>
