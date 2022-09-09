@@ -86,6 +86,7 @@ export default {
           :items="suggestedApproversTrimmed"
           :img-size="24"
           :breakpoint="0"
+          class="gl-pt-2"
           empty-text=""
         />
         <gl-button
