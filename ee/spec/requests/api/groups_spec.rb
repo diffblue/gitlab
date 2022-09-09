@@ -1037,13 +1037,13 @@ RSpec.describe API::Groups do
                 end
 
                 context 'when full_path param is not passed' do
-                  it_behaves_like 'do not immediately enqueues the job to delete the group', 'Wrong value for full_path.'
+                  it_behaves_like 'does not immediately enqueues the job to delete the group', 'full_path has wrong value.'
                 end
 
                 context 'when full_path param is not equal to full_path' do
                   let(:params) { { permanently_remove: true, full_path: subgroup.path } }
 
-                  it_behaves_like 'do not immediately enqueues the job to delete the group', 'Wrong value for full_path.'
+                  it_behaves_like 'does not immediately enqueues the job to delete the group', 'full_path has wrong value.'
                 end
 
                 context 'when the full_path param is passed and it matches the full path of subgroup' do
@@ -1068,14 +1068,14 @@ RSpec.describe API::Groups do
               end
 
               context 'when group is not marked for deletion' do
-                it_behaves_like 'do not immediately enqueues the job to delete the group', 'Group is not marked for deletion.'
+                it_behaves_like 'does not immediately enqueues the job to delete the group', 'Group must be marked for deletion first.'
               end
             end
 
             context 'if group is not a subgroup' do
               subject { delete api("/groups/#{group.id}", user), params: params }
 
-              it_behaves_like 'do not immediately enqueues the job to delete the group', 'permanently_remove option is only available for subgroups.'
+              it_behaves_like 'does not immediately enqueues the job to delete the group', 'permanently_remove option is only available for subgroups.'
             end
           end
 
