@@ -15,7 +15,7 @@ module Gitlab
 
       def execute
         return if @timeline_event_arg.blank?
-        return if date_contains_mixed_delimeters?
+        return if date_contains_mixed_delimiters?
         return [@timeline_text, get_current_date_time] unless date_time_present?
         return unless valid_date?
 
@@ -44,13 +44,13 @@ module Gitlab
         DATETIME_REGEX =~ @timeline_date_string || TIME_REGEX =~ @timeline_date_string
       end
 
-      def date_contains_mixed_delimeters?
+      def date_contains_mixed_delimiters?
         MIXED_DELIMITER =~ @timeline_date_string
       end
 
       def valid_date?
         get_actual_date_time
-      rescue StandardError
+      rescue Date::Error
         nil
       end
     end
