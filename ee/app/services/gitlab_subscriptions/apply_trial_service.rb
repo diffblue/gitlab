@@ -25,7 +25,7 @@ module GitlabSubscriptions
       namespace = Namespace.find_by(id: namespace_id) # rubocop: disable CodeReuse/ActiveRecord
       return unless namespace
 
-      OnboardingProgressService.new(namespace).execute(action: :trial_started)
+      Onboarding::ProgressService.new(namespace).execute(action: :trial_started)
     end
   end
 end
