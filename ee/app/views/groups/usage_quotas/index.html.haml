@@ -11,10 +11,8 @@
   = render 'product_purchase_success_alert', product_name: params[:purchased_product]
 
 - if Feature.enabled?(:usage_quotas_for_all_editions, @group)
-  .gl-alert.gl-alert-no-icon.gl-alert-info.gl-mt-6
-    %h2.gl-alert-title
-      Development
-    .gl-alert-content
+  = render Pajamas::AlertComponent.new(title: _('Development')) do |c|
+    = c.body do
       Placeholder for usage quotas Vue app
 - else
   %h1.page-title.gl-font-size-h-display
