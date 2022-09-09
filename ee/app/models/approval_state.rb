@@ -10,7 +10,7 @@ class ApprovalState
 
   attr_reader :merge_request, :project
 
-  def_delegators :@merge_request, :merge_status, :approved_by_users, :approvals, :approval_feature_available?
+  def_delegators :@merge_request, :merge_status, :approved_by_users, :approvals, :approval_feature_available?, :approved_by?
   alias_method :approved_approvers, :approved_by_users
 
   def initialize(merge_request, target_branch: nil)
@@ -149,7 +149,7 @@ class ApprovalState
 
     return true if unactioned_approvers.include?(user)
     # Users can only approve once.
-    return false if approvals.where(user: user).any?
+    return false if approved_by?(user)
     # At this point, follow self-approval rules. Otherwise authors must
     # have been in the list of unactioned_approvers to have been approved.
     return false if !authors_can_approve? && merge_request.author == user
