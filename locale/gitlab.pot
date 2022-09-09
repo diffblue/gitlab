@@ -34514,7 +34514,13 @@ msgstr ""
 msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run"
 msgstr ""
 
+msgid "ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile}"
+msgstr ""
+
 msgid "ScanExecutionPolicy|A pipeline is run"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Scanner profile"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Schedule"
@@ -34524,6 +34530,15 @@ msgid "ScanExecutionPolicy|Schedule rule component"
 msgstr ""
 
 msgid "ScanExecutionPolicy|Select branches"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Select scanner profile"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Select site profile"
+msgstr ""
+
+msgid "ScanExecutionPolicy|Site profile"
 msgstr ""
 
 msgid "ScanExecutionPolicy|branch"
