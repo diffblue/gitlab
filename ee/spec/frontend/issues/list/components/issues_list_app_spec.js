@@ -24,6 +24,7 @@ import {
   TOKEN_TYPE_RELEASE,
   TOKEN_TYPE_TYPE,
   TOKEN_TYPE_WEIGHT,
+  TOKEN_TYPE_HEALTH,
 } from '~/issues/list/constants';
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import IssuesListApp from 'ee/issues/list/components/issues_list_app.vue';
@@ -175,6 +176,7 @@ describe('EE IssuesListApp component', () => {
           { type: TOKEN_TYPE_CONFIDENTIAL },
           { type: TOKEN_TYPE_CONTACT },
           { type: TOKEN_TYPE_EPIC },
+          { type: TOKEN_TYPE_HEALTH },
           { type: TOKEN_TYPE_ITERATION },
           { type: TOKEN_TYPE_LABEL },
           { type: TOKEN_TYPE_MILESTONE },
