@@ -16,7 +16,7 @@ const mockData = [
 
 describe('normalizeData', () => {
   it('normalizes data into LogTreeCommit object', () => {
-    expect(normalizeData(mockData, '')).toEqual([
+    expect(normalizeData(mockData, '/')).toEqual([
       {
         sha: '123',
         message: 'testing message',
@@ -35,7 +35,7 @@ describe('normalizeData', () => {
     const mock = [...mockData];
     delete mock[0].lock_label;
 
-    expect(normalizeData(mock, '')).toEqual([
+    expect(normalizeData(mock, '/')).toEqual([
       {
         sha: '123',
         message: 'testing message',
