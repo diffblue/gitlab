@@ -2,11 +2,11 @@
 
 module GitlabSubscriptions
   class ApplyTrialService
-    def execute(apply_trial_params)
-      response = client.generate_trial(apply_trial_params)
+    def execute(uid:, trial_user:)
+      response = client.generate_trial(uid: uid, trial_user: trial_user)
 
       if response[:success]
-        namespace_id = apply_trial_params.dig(:trial_user, :namespace_id)
+        namespace_id = trial_user[:namespace_id]
         record_onboarding_progress(namespace_id) if namespace_id
 
         { success: true }

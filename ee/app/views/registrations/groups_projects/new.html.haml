@@ -30,7 +30,6 @@
             = form_tag users_sign_up_groups_projects_path(form_params), class: 'gl-show-field-errors gl-w-full gl-p-4 js-groups-projects-form' do
               = form_errors(@group, type: "Group")
               = form_errors(@project, type: "Project")
-              = render 'layouts/flash'
 
               = fields_for :group do |gf|
                 .row

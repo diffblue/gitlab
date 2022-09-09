@@ -32,61 +32,34 @@ module Registrations
     end
 
     def create
-      @group = if group_id = params[:group][:id]
-                 Group.find_by_id(group_id)
-               else
-                 Groups::CreateService.new(current_user, modified_group_params).execute
-               end
+      group_id = params[:group][:id]
 
-      if @group.persisted?
-        if @group.previously_new_record?
-          # project failed validation previously, but group was created or coming from trial creation
-          Gitlab::Tracking.event(self.class.name, 'create_group', namespace: @group, user: current_user)
-          helpers.require_verification_experiment.record_conversion(@group)
+      if group_id # sad path: partial failure scenario where group was created, but project wasn't
+        @group = Group.find_by_id(group_id)
 
-          unless apply_trial_when_in_trial_flow
-            # this means the group was created in previous trial setup step since it needed a namespace
-            @project = Project.new(project_params) # #new requires a Project
-            return render :new
-          end
-        end
-
-        @project = ::Projects::CreateService.new(current_user, create_project_params).execute
-        if @project.saved?
-          Gitlab::Tracking.event(self.class.name, 'create_project', namespace: @project.namespace, user: current_user)
-
-          create_learn_gitlab_project(@project.namespace_id)
-
-          redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
-
-          if helpers.registration_verification_enabled?
-            store_location_for(:user, redirect_path)
-            redirect_to new_users_sign_up_verification_path(project_id: @project.id, offer_trial: offer_trial?)
-          elsif offer_trial?
-            store_location_for(:user, redirect_path)
-            redirect_to new_trial_path
-          else
-            redirect_to redirect_path
-          end
-        else
-          render :new
-        end
+        create_project_flow
       else
-        @project = Project.new(project_params) # #new requires a Project
-        render :new
+        # happy path: first time submit
+        @group = Groups::CreateService.new(current_user, modified_group_params).execute
+
+        create_with_new_group_flow
       end
     end
 
     def import
       @group = Groups::CreateService.new(current_user, modified_group_params).execute
-      if @group.persisted? && apply_trial_when_in_trial_flow
+
+      if @group.persisted?
         Gitlab::Tracking.event(self.class.name, 'create_group_import', namespace: @group, user: current_user)
         helpers.require_verification_experiment.record_conversion(@group)
+
+        apply_trial if helpers.in_trial_onboarding_flow?
 
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{@group.id}").to_s
         redirect_to import_url
       else
         @project = Project.new(namespace: @group) # #new requires a Project
+
         render :new
       end
     end
@@ -102,6 +75,45 @@ module Registrations
     end
 
     private
+
+    def create_with_new_group_flow
+      if @group.persisted?
+        Gitlab::Tracking.event(self.class.name, 'create_group', namespace: @group, user: current_user)
+        helpers.require_verification_experiment.record_conversion(@group)
+
+        apply_trial if helpers.in_trial_onboarding_flow?
+
+        create_project_flow
+      else
+        @project = Project.new(project_params) # #new requires a Project
+
+        render :new
+      end
+    end
+
+    def create_project_flow
+      @project = ::Projects::CreateService.new(current_user, create_project_params).execute
+
+      if @project.persisted?
+        Gitlab::Tracking.event(self.class.name, 'create_project', namespace: @project.namespace, user: current_user)
+
+        create_learn_gitlab_project(@project.namespace_id)
+
+        redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
+
+        if helpers.registration_verification_enabled?
+          store_location_for(:user, redirect_path)
+          redirect_to new_users_sign_up_verification_path(project_id: @project.id, offer_trial: offer_trial?)
+        elsif offer_trial?
+          store_location_for(:user, redirect_path)
+          redirect_to new_trial_path
+        else
+          redirect_to redirect_path
+        end
+      else
+        render :new
+      end
+    end
 
     def authorize_create_group!
       access_denied! unless can?(current_user, :create_group)
@@ -140,10 +152,6 @@ module Registrations
       current_user.setup_for_company && !helpers.in_trial_onboarding_flow? && !params[:skip_trial].present?
     end
 
-    def apply_trial_when_in_trial_flow
-      !helpers.in_trial_onboarding_flow? || apply_trial
-    end
-
     def apply_trial
       apply_trial_params = {
         uid: current_user.id,
@@ -154,10 +162,7 @@ module Registrations
                                                                    })
       }
 
-      result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
-      flash.now[:alert] = result&.dig(:errors) unless result&.dig(:success)
-
-      result&.dig(:success)
+      GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(apply_trial_params) # rubocop:todo CodeReuse/Worker
     end
 
     LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
@@ -167,7 +172,7 @@ module Registrations
     end
 
     def create_learn_gitlab_project(parent_project_namespace_id)
-      ::Onboarding::CreateLearnGitlabWorker.perform_async(learn_gitlab_template_path, # rubocop:disable CodeReuse/Worker
+      ::Onboarding::CreateLearnGitlabWorker.perform_async(learn_gitlab_template_path, # rubocop:todo CodeReuse/Worker
                                                           learn_gitlab_project_name,
                                                           parent_project_namespace_id,
                                                           current_user.id)

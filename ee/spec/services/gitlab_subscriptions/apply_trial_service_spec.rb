@@ -3,12 +3,14 @@
 require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::ApplyTrialService do
-  subject(:execute) { described_class.new.execute(apply_trial_params) }
+  subject(:execute) { described_class.new.execute(**apply_trial_params) }
 
   let_it_be(:namespace) { create(:namespace) }
 
+  let(:user) { namespace.owner }
   let(:apply_trial_params) do
     {
+      uid: user.id,
       trial_user: {
         namespace_id: namespace.id
       }
@@ -20,7 +22,7 @@ RSpec.describe GitlabSubscriptions::ApplyTrialService do
       allow(Gitlab::SubscriptionPortal::Client).to receive(:generate_trial).and_return(response)
     end
 
-    context 'trial applied successfully' do
+    context 'when trial is applied successfully' do
       let(:response) { { success: true } }
 
       it 'returns success: true' do
@@ -30,7 +32,7 @@ RSpec.describe GitlabSubscriptions::ApplyTrialService do
       it_behaves_like 'records an onboarding progress action', :trial_started
     end
 
-    context 'error while applying the trial' do
+    context 'with error while applying the trial' do
       let(:response) { { success: false, data: { errors: ['some error'] } } }
 
       it 'returns success: false with errors' do
