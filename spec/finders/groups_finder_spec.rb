@@ -276,14 +276,11 @@ RSpec.describe GroupsFinder do
       let_it_be(:private_sub_sub_subgroup) { create(:group, :private, parent: private_sub_subgroup) }
 
       context 'if include_ancestors is true' do
-        before do
-          private_sub_subgroup.add_developer(user)
-          public_sub_subgroup.add_developer(user)
-        end
-
         let(:params) { { include_ancestors: true } }
 
         it 'returns ancestors of user groups' do
+          private_sub_subgroup.add_developer(user)
+
           expect(described_class.new(user, params).execute).to contain_exactly(
             parent_group,
             public_subgroup,
@@ -307,6 +304,17 @@ RSpec.describe GroupsFinder do
             internal_sub_subgroup,
             public_sub_subgroup,
             private_subgroup2,
+            private_sub_subgroup
+          )
+        end
+
+        it 'returns only groups related to user groups if all_available is false' do
+          params[:all_available] = false
+          private_sub_subgroup.add_developer(user)
+
+          expect(described_class.new(user, params).execute).to contain_exactly(
+            parent_group,
+            private_subgroup2,
             private_sub_subgroup,
             private_sub_sub_subgroup
           )
@@ -318,7 +326,6 @@ RSpec.describe GroupsFinder do
 
         it 'does not return private ancestors of user groups' do
           private_sub_subgroup.add_developer(user)
-          public_sub_subgroup.add_developer(user)
 
           expect(described_class.new(user, params).execute).to contain_exactly(
             parent_group,
@@ -342,6 +349,16 @@ RSpec.describe GroupsFinder do
             internal_sub_subgroup,
             public_sub_subgroup,
             private_sub_subgroup
+          )
+        end
+
+        it 'returns only user groups and their descendants if all_available is false' do
+          params[:all_available] = false
+          private_sub_subgroup.add_developer(user)
+
+          expect(described_class.new(user, params).execute).to contain_exactly(
+            private_sub_subgroup,
+            private_sub_sub_subgroup
           )
         end
       end
