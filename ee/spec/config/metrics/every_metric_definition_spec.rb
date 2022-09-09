@@ -56,6 +56,7 @@ RSpec.describe 'Every metric definition' do
       redis_hll_counters.manage.unique_active_user_weekly
       redis_hll_counters.quickactions.i_quickactions_ready_monthly
       redis_hll_counters.quickactions.i_quickactions_ready_weekly
+      redis_hll_counters.environments.users_visiting_environments_pages_weekly
     )
   end
 
