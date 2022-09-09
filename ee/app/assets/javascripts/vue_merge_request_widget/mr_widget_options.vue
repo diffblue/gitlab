@@ -219,9 +219,7 @@ export default {
   },
   methods: {
     registerLicenseCompliance() {
-      if (this.shouldShowExtension) {
-        registerExtension(licenseComplianceExtension);
-      }
+      registerExtension(licenseComplianceExtension);
     },
     registerLoadPerformance() {
       if (this.shouldShowExtension) {
