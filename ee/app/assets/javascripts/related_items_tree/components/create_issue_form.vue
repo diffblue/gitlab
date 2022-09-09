@@ -18,6 +18,7 @@ import createFlash from '~/flash';
 import { STORAGE_KEY } from '~/frequent_items/constants';
 import { getTopFrequentItems } from '~/frequent_items/utils';
 import AccessorUtilities from '~/lib/utils/accessor';
+import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { SEARCH_DEBOUNCE } from '../constants';
@@ -44,7 +45,13 @@ export default {
     };
   },
   computed: {
-    ...mapState(['projectsFetchInProgress', 'itemCreateInProgress', 'projects', 'parentItem']),
+    ...mapState([
+      'projectsFetchInProgress',
+      'itemCreateInProgress',
+      'projects',
+      'parentItem',
+      'defaultProjectForIssueCreation',
+    ]),
     dropdownToggleText() {
       if (this.selectedProject) {
         /** When selectedProject is fetched from localStorage
@@ -60,6 +67,7 @@ export default {
       return !this.selectedProject || this.itemCreateInProgress || !this.title;
     },
   },
+
   watch: {
     /**
      * We're using `debounce` here as `GlSearchBoxByType` doesn't
@@ -84,10 +92,25 @@ export default {
       }
     },
   },
+  mounted() {
+    this.selectedProject = this.dataForDefaultProject(this.defaultProjectForIssueCreation);
+  },
   methods: {
     ...mapActions(['fetchProjects']),
     cancel() {
       this.$emit('cancel');
+    },
+    dataForDefaultProject(defaultProject) {
+      if (!defaultProject) {
+        return null;
+      }
+
+      const { id: globalId, nameWithNamespace } = defaultProject;
+
+      return {
+        id: getIdFromGraphQLId(globalId),
+        namespace: nameWithNamespace,
+      };
     },
     createIssue() {
       if (this.isIssueCreationDisabled) {
@@ -95,8 +118,12 @@ export default {
       }
 
       const { selectedProject, title } = this;
-      const { issues: issuesEndpoint } = selectedProject._links;
-      this.$emit('submit', { issuesEndpoint, title });
+      const url = Api.buildUrl(Api.projectCreateIssuePath).replace(
+        ':id',
+        encodeURIComponent(selectedProject.id),
+      );
+
+      this.$emit('submit', { issuesEndpoint: url, title });
       this.resetForm();
     },
     resetForm() {

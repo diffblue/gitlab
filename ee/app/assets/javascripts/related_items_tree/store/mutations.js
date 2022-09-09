@@ -48,6 +48,10 @@ export default {
     state.healthStatus = data;
   },
 
+  [types.SET_DEFAULT_PROJECT_FOR_ISSUE_CREATION](state, data) {
+    state.defaultProjectForIssueCreation = data;
+  },
+
   [types.SET_ITEM_CHILDREN](state, { parentItem, children, append }) {
     if (append) {
       state.children[parentItem.reference].push(...children);

@@ -63,4 +63,5 @@ export default () => ({
 
   descendantGroups: [],
   descendantGroupsFetchInProgress: false,
+  defaultProjectForIssueCreation: null,
 });

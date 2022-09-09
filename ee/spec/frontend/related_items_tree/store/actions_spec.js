@@ -34,6 +34,7 @@ import {
   mockEpics,
   mockIssues,
   mockEpic1,
+  mockDefaultProjectForIssueCreation,
 } from '../mock_data';
 
 jest.mock('~/flash');
@@ -421,6 +422,10 @@ describe('RelatedItemTree', () => {
                 },
               },
               {
+                type: 'setDefaultProjectForIssueCreation',
+                payload: mockDefaultProjectForIssueCreation,
+              },
+              {
                 type: 'setEpicPageInfo',
                 payload: {
                   parentItem: mockParentItem,
@@ -500,6 +505,10 @@ describe('RelatedItemTree', () => {
                   isSubItem: true,
                   children,
                 },
+              },
+              {
+                type: 'setDefaultProjectForIssueCreation',
+                payload: mockDefaultProjectForIssueCreation,
               },
               {
                 type: 'setEpicPageInfo',
@@ -1814,6 +1823,23 @@ describe('RelatedItemTree', () => {
                 type: 'receiveProjectsFailure',
               },
             ],
+          );
+        });
+      });
+
+      describe('setDefaultProjectForIssueCreation', () => {
+        it('should set defaultProjectForIssueCreation on state', () => {
+          testAction(
+            actions.setDefaultProjectForIssueCreation,
+            mockDefaultProjectForIssueCreation,
+            {},
+            [
+              {
+                type: types.SET_DEFAULT_PROJECT_FOR_ISSUE_CREATION,
+                payload: mockDefaultProjectForIssueCreation,
+              },
+            ],
+            [],
           );
         });
       });

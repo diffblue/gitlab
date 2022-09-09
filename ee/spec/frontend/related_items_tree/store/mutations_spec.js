@@ -713,6 +713,15 @@ describe('RelatedItemsTree', () => {
           expect(state.weightSum).toBe(payload);
         });
       });
+
+      describe(types.SET_DEFAULT_PROJECT, () => {
+        it('should set `defaultProjectForIssueCreation` within state', () => {
+          const payload = { id: 'gid://gitlab/Project/1', nameWithNamespace: 'gitlab-org' };
+          mutations[types.SET_DEFAULT_PROJECT_FOR_ISSUE_CREATION](state, payload);
+
+          expect(state.defaultProjectForIssueCreation).toBe(payload);
+        });
+      });
     });
   });
 });
