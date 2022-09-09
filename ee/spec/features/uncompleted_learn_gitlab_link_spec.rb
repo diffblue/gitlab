@@ -4,11 +4,11 @@ require 'spec_helper'
 
 RSpec.describe 'Uncompleted learn gitlab link', :feature, :js do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:project, name: LearnGitlab::Project::PROJECT_NAME, namespace: user.namespace) }
+  let_it_be(:project) { create(:project, name: Onboarding::LearnGitlab::PROJECT_NAME, namespace: user.namespace) }
   let_it_be(:namespace) { project.namespace }
 
   before do
-    allow_next_instance_of(LearnGitlab::Project) do |learn_gitlab|
+    allow_next_instance_of(Onboarding::LearnGitlab) do |learn_gitlab|
       allow(learn_gitlab).to receive(:available?).and_return(true)
     end
   end
@@ -16,7 +16,8 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js do
   context 'with completed links' do
     before do
       yesterday = Date.yesterday
-      create(:onboarding_progress,
+      create(
+        :onboarding_progress,
         namespace: namespace,
         issue_created_at: yesterday,
         git_write_at: yesterday,
@@ -58,7 +59,8 @@ RSpec.describe 'Uncompleted learn gitlab link', :feature, :js do
       expect_correct_candidate_link(find_link('Add code owners'), project_issues_path(project, 10))
       expect_correct_candidate_link(find_link('Enable require merge approvals'), project_issues_path(project, 11))
       expect_correct_candidate_link(find_link('Submit a merge request (MR)'), project_merge_requests_path(project))
-      expect_correct_candidate_link(find_link('Run a Security scan using CI/CD'), project_security_configuration_path(project))
+      expect_correct_candidate_link(find_link('Run a Security scan using CI/CD'),
+                                    project_security_configuration_path(project))
 
       issue_link.click
       expect(page).to have_current_path(project_issues_path(project))

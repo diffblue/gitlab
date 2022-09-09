@@ -16,7 +16,7 @@ module Onboarding
     def perform(template_path, project_name, parent_project_namespace_id, user_id)
       user = User.find(user_id)
 
-      return if LearnGitlab::Project.new(user).project.present?
+      return if Onboarding::LearnGitlab.new(user).project.present?
 
       File.open(template_path) do |archive|
         ::Projects::GitlabProjectsImportService.new(

@@ -180,9 +180,9 @@ module Registrations
 
     def learn_gitlab_project_name
       if helpers.in_trial_onboarding_flow?
-        LearnGitlab::Project::PROJECT_NAME_ULTIMATE_TRIAL
+        Onboarding::LearnGitlab::PROJECT_NAME_ULTIMATE_TRIAL
       else
-        LearnGitlab::Project::PROJECT_NAME
+        Onboarding::LearnGitlab::PROJECT_NAME
       end
     end
 
