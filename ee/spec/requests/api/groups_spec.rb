@@ -1037,13 +1037,15 @@ RSpec.describe API::Groups do
                 end
 
                 context 'when full_path param is not passed' do
-                  it_behaves_like 'does not immediately enqueues the job to delete the group', 'full_path has wrong value.'
+                  it_behaves_like 'does not immediately enqueues the job to delete the group',
+                                  'full_path value is incorrect. You must enter the complete path for the subgroup.'
                 end
 
                 context 'when full_path param is not equal to full_path' do
                   let(:params) { { permanently_remove: true, full_path: subgroup.path } }
 
-                  it_behaves_like 'does not immediately enqueues the job to delete the group', 'full_path has wrong value.'
+                  it_behaves_like 'does not immediately enqueues the job to delete the group',
+                                  'full_path value is incorrect. You must enter the complete path for the subgroup.'
                 end
 
                 context 'when the full_path param is passed and it matches the full path of subgroup' do
