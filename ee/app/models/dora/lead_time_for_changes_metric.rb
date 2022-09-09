@@ -30,9 +30,38 @@ module Dora
         )
         .where(eligible_deployments)
 
+      if Feature.enabled?(:dora_configuration, environment.project)
+        merge_requests = MergeRequest.arel_table
+        dora_configurations = Dora::Configuration.arel_table
+
+        query = query
+          .join(merge_requests).on(
+            merge_requests[:id].eq(deployment_merge_requests[:merge_request_id])
+          )
+          .outer_join(dora_configurations).on(
+            dora_configurations[:project_id].eq(deployments[:project_id])
+          )
+          .where(eligible_merge_requests)
+      end
+
       {
         lead_time_for_changes_in_seconds: query.to_sql
       }
+    end
+
+    private
+
+    def eligible_merge_requests
+      merge_requests = MergeRequest.arel_table
+      dora_configurations = Dora::Configuration.arel_table
+
+      [
+        dora_configurations[:branches_for_lead_time_for_changes].eq(nil),
+        dora_configurations[:branches_for_lead_time_for_changes].eq([]),
+        merge_requests[:target_branch].eq(
+          Arel::Nodes::NamedFunction.new("ANY", [dora_configurations[:branches_for_lead_time_for_changes]])
+        )
+      ].reduce(&:or)
     end
   end
 end
