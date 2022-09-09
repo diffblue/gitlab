@@ -106,15 +106,19 @@ RSpec.describe "User registration", :js, :saas do
       fill_in 'group_name', with: 'Test Group'
       fill_in 'blank_project_name', with: 'Test Project'
 
+      expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
+        expect(service).to receive(:execute).and_return({ success: true })
+      end
+
       expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
-        .to receive(:perform_async).with({
-                                           uid: user.id,
-                                           trial_user: hash_including(
-                                             namespace_id: anything,
-                                             gitlab_com_trial: true,
-                                             sync_to_gl: true
-                                           )
-                                         })
+        .to receive(:perform_async).with(
+          user.id,
+          hash_including(
+            namespace_id: anything,
+            gitlab_com_trial: true,
+            sync_to_gl: true
+          )
+        ).and_call_original
 
       click_on 'Create project'
 

@@ -311,19 +311,16 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           { trial_onboarding_flow: true, glm_source: 'about.gitlab.com', glm_content: 'content' }
         end
 
-        let(:apply_trial_params) do
-          {
-            uid: user.id,
-            trial_user: ActionController::Parameters.new(
-              {
-                glm_source: 'about.gitlab.com',
-                glm_content: 'content',
-                namespace_id: group.id,
-                gitlab_com_trial: true,
-                sync_to_gl: true
-              }
-            ).permit!
-          }
+        let(:trial_user_information) do
+          ActionController::Parameters.new(
+            {
+              glm_source: 'about.gitlab.com',
+              glm_content: 'content',
+              namespace_id: group.id,
+              gitlab_com_trial: true,
+              sync_to_gl: true
+            }
+          ).permit!
         end
 
         before do
@@ -331,7 +328,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             allow(service).to receive(:execute).and_return(group)
           end
 
-          expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async).with(apply_trial_params) # rubocop:disable RSpec/ExpectInHook
+          expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async).with(user.id, trial_user_information) # rubocop:disable RSpec/ExpectInHook
         end
 
         it 'applies a trial' do
