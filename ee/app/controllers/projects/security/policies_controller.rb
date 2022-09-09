@@ -12,7 +12,7 @@ module Projects
         push_frontend_feature_flag(:scan_execution_rule_mode, project)
       end
 
-      feature_category :security_orchestration
+      feature_category :security_policy_management
       urgency :default, [:edit]
       urgency :low, [:index, :new]
 

@@ -11,7 +11,7 @@ module Security
 
     idempotent!
 
-    feature_category :security_orchestration
+    feature_category :security_policy_management
 
     def perform(configuration_id)
       configuration = Security::OrchestrationPolicyConfiguration.find(configuration_id)

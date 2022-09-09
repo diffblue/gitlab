@@ -4,7 +4,7 @@ module Security
   class OrchestrationPolicyRuleScheduleNamespaceWorker
     include ApplicationWorker
 
-    feature_category :security_orchestration
+    feature_category :security_policy_management
 
     data_consistency :sticky
 
