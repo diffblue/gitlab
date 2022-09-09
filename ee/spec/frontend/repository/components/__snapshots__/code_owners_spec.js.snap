@@ -36,8 +36,6 @@ exports[`Code owners component matches the snapshot 2`] = `
   >
     <!---->
      
-    <!---->
-     
     <gl-link-stub
       href="path/to/@johnDoe"
       target="_blank"
@@ -80,11 +78,9 @@ exports[`Code owners component matches the snapshot 3`] = `
   :
   
   <div
-    class="gl-display-inline"
+    class="gl-display-inline-block"
     data-testid="code-owners"
   >
-    <!---->
-     
     <!---->
      
     <gl-link-stub
@@ -98,15 +94,13 @@ exports[`Code owners component matches the snapshot 3`] = `
     </gl-link-stub>
   </div>
   <div
-    class="gl-display-inline"
+    class="gl-display-inline-block"
     data-testid="code-owners"
   >
-    <!---->
-     
     <span
-      data-testid="and-separator"
+      data-testid="comma-separator"
     >
-      and
+      ,
     </span>
      
     <gl-link-stub
@@ -156,8 +150,6 @@ exports[`Code owners component matches the snapshot 4`] = `
   >
     <!---->
      
-    <!---->
-     
     <gl-link-stub
       href="path/to/@johnDoe"
       target="_blank"
@@ -178,8 +170,6 @@ exports[`Code owners component matches the snapshot 4`] = `
       ,
     </span>
      
-    <!---->
-     
     <gl-link-stub
       href="path/to/@johnDoe"
       target="_blank"
@@ -198,12 +188,6 @@ exports[`Code owners component matches the snapshot 4`] = `
       data-testid="comma-separator"
     >
       ,
-    </span>
-     
-    <span
-      data-testid="and-separator"
-    >
-      and
     </span>
      
     <gl-link-stub

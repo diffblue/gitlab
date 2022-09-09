@@ -46,7 +46,6 @@ describe('Code owners component', () => {
   const findUsersIcon = () => wrapper.findByTestId('users-icon');
   const findCodeOwners = () => wrapper.findAllByTestId('code-owners');
   const findCommaSeparators = () => wrapper.findAllByTestId('comma-separator');
-  const findAndSeparator = () => wrapper.findAllByTestId('and-separator');
   const findLink = () => wrapper.findComponent(GlLink);
 
   beforeEach(() => createComponent());
@@ -73,16 +72,15 @@ describe('Code owners component', () => {
   });
 
   it.each`
-    codeOwners                                       | commaSeparators | hasAndSeparator
-    ${[]}                                            | ${0}            | ${false}
-    ${[codeOwnerMock]}                               | ${0}            | ${false}
-    ${[codeOwnerMock, codeOwnerMock]}                | ${0}            | ${true}
-    ${[codeOwnerMock, codeOwnerMock, codeOwnerMock]} | ${2}            | ${true}
-  `('matches the snapshot', async ({ codeOwners, commaSeparators, hasAndSeparator }) => {
+    codeOwners                                       | commaSeparators
+    ${[]}                                            | ${0}
+    ${[codeOwnerMock]}                               | ${0}
+    ${[codeOwnerMock, codeOwnerMock]}                | ${1}
+    ${[codeOwnerMock, codeOwnerMock, codeOwnerMock]} | ${2}
+  `('matches the snapshot', async ({ codeOwners, commaSeparators }) => {
     await createComponent(codeOwners);
 
     expect(findCommaSeparators().length).toBe(commaSeparators);
-    expect(findAndSeparator().exists()).toBe(hasAndSeparator);
     expect(findCodeOwners().length).toBe(codeOwners.length);
     expect(wrapper.element).toMatchSnapshot();
   });
