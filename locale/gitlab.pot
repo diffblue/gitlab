@@ -6910,6 +6910,9 @@ msgstr ""
 msgid "Browse templates"
 msgstr ""
 
+msgid "Build cannot be erased"
+msgstr ""
+
 msgid "BuildArtifacts|An error occurred while fetching the artifacts"
 msgstr ""
 
