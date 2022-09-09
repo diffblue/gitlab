@@ -51,6 +51,10 @@ query pipelineSecuritySummary(
           vulnerabilitiesCount
           ...SecurityReportSummaryScans
         }
+        secretDetection {
+          vulnerabilitiesCount
+          ...SecurityReportSummaryScans
+        }
       }
     }
   }
