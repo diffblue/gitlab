@@ -28,6 +28,23 @@ RSpec.describe 'Filter issues health status', :js do
     expect(page).to have_issuable_counts(open: open_count, closed: closed_count, all: all_count)
     page.within '.issues-list' do
       expect(page).to have_selector('.issue', count: open_count)
+      expect(page).to have_selector('.issue', count: all_count)
+    end
+  end
+
+  def expect_issues_list_to_contain(issues)
+    page.within '.issues-list' do
+      issues.each do |issue|
+        expect(page).to have_text(issue.title)
+      end
+    end
+  end
+
+  def expect_issues_list_to_not_contain(issues)
+    page.within '.issues-list' do
+      issues.each do |issue|
+        expect(page).not_to have_text(issue.title)
+      end
     end
   end
 
@@ -53,6 +70,8 @@ RSpec.describe 'Filter issues health status', :js do
       select_tokens 'Health', 'On track', submit: true
 
       expect_issues_list_count(1)
+      expect_issues_list_to_contain([issue1])
+      expect_issues_list_to_not_contain([issue2])
     end
   end
 
@@ -62,6 +81,8 @@ RSpec.describe 'Filter issues health status', :js do
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
+      expect_issues_list_to_contain([issue2])
+      expect_issues_list_to_not_contain([issue1])
       expect_search_term 'bug'
     end
 
@@ -70,6 +91,8 @@ RSpec.describe 'Filter issues health status', :js do
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
+      expect_issues_list_to_contain([issue2])
+      expect_issues_list_to_not_contain([issue1])
       expect_search_term 'bug'
     end
 
@@ -78,6 +101,8 @@ RSpec.describe 'Filter issues health status', :js do
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
+      expect_issues_list_to_contain([issue2])
+      expect_issues_list_to_not_contain([issue1])
       expect_search_term 'bug'
     end
 
@@ -87,6 +112,8 @@ RSpec.describe 'Filter issues health status', :js do
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
+      expect_issues_list_to_contain([issue2])
+      expect_issues_list_to_not_contain([issue1])
       expect_search_term 'bug'
     end
 
@@ -95,6 +122,8 @@ RSpec.describe 'Filter issues health status', :js do
       send_keys 'bug', :enter
 
       expect_issues_list_count 1
+      expect_issues_list_to_contain([issue2])
+      expect_issues_list_to_not_contain([issue1])
       expect_search_term 'bug'
     end
   end
