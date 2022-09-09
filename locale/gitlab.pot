@@ -10152,6 +10152,9 @@ msgstr ""
 msgid "ContainerRegistry|Docker connection error"
 msgstr ""
 
+msgid "ContainerRegistry|Edit cleanup rules"
+msgstr ""
+
 msgid "ContainerRegistry|Enable expiration policy"
 msgstr ""
 
@@ -10254,6 +10257,12 @@ msgid "ContainerRegistry|Run cleanup:"
 msgstr ""
 
 msgid "ContainerRegistry|Save storage space by automatically deleting tags from the container registry and keeping the ones you want. %{linkStart}How does cleanup work?%{linkEnd}"
+msgstr ""
+
+msgid "ContainerRegistry|Set cleanup rules"
+msgstr ""
+
+msgid "ContainerRegistry|Set rules to automatically remove unused packages to save storage space."
 msgstr ""
 
 msgid "ContainerRegistry|Set up cleanup"
