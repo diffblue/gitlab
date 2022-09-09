@@ -8,7 +8,7 @@ module World
   JH_MARKET = ['China', 'Hong Kong', 'Macao'].freeze
 
   def countries_for_select
-    strong_memoize(:countries_for_select) { all_countries.sort_by(&:name).map { |c| [c.name, c.alpha2] } }
+    strong_memoize(:countries_for_select) { all_countries.sort_by(&:name).map { |c| [c.name, c.alpha2, c.emoji_flag, c.country_code] } }
   end
 
   def states_for_country(country_code)
