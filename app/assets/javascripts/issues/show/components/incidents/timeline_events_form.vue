@@ -16,6 +16,7 @@ export default {
     'collapsible-section',
     'table',
     'full-screen',
+    'attach-file',
   ],
   components: {
     MarkdownField,
