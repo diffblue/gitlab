@@ -123,7 +123,7 @@ describe('Pipelines', () => {
     });
 
     it('shows loading state when the app is loading', () => {
-      expect(wrapper.find(GlLoadingIcon).exists()).toBe(true);
+      expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('does not display tabs when the first request has not yet been made', () => {
@@ -375,7 +375,7 @@ describe('Pipelines', () => {
     const [firstPage, secondPage] = chunk(mockPipelinesResponse.pipelines, mockPageSize);
 
     const goToPage = (page) => {
-      findTablePagination().find(GlPagination).vm.$emit('input', page);
+      findTablePagination().findComponent(GlPagination).vm.$emit('input', page);
     };
 
     beforeEach(async () => {
@@ -583,7 +583,7 @@ describe('Pipelines', () => {
           'This project is not currently set up to run pipelines.',
         );
 
-        expect(findEmptyState().find(GlButton).exists()).toBe(false);
+        expect(findEmptyState().findComponent(GlButton).exists()).toBe(false);
       });
 
       it('does not render tabs or buttons', () => {

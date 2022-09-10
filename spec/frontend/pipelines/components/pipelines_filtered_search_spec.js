@@ -12,7 +12,7 @@ describe('Pipelines filtered search', () => {
   let wrapper;
   let mock;
 
-  const findFilteredSearch = () => wrapper.find(GlFilteredSearch);
+  const findFilteredSearch = () => wrapper.findComponent(GlFilteredSearch);
   const getSearchToken = (type) =>
     findFilteredSearch()
       .props('availableTokens')
