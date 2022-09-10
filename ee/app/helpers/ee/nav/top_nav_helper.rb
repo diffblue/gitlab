@@ -76,7 +76,7 @@ module EE
       override :top_nav_localized_headers
       def top_nav_localized_headers
         super.merge(
-          your_dashboard: s_('TopNav|Your dashboard')
+          your_dashboard: s_('TopNav|Your dashboards')
         )
       end
     end

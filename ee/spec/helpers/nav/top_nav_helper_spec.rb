@@ -40,7 +40,7 @@ RSpec.describe Nav::TopNavHelper do
 
       it 'has expected :primary' do
         expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
-          title: "Your dashboard"
+          title: "Your dashboards"
         )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
@@ -61,7 +61,7 @@ RSpec.describe Nav::TopNavHelper do
 
       it 'has expected :primary' do
         expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
-          title: "Your dashboard"
+          title: "Your dashboards"
         )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
@@ -82,7 +82,7 @@ RSpec.describe Nav::TopNavHelper do
 
       it 'has expected :primary' do
         expected_header = ::Gitlab::Nav::TopNavMenuHeader.build(
-          title: "Your dashboard"
+          title: "Your dashboards"
         )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
           data: {
