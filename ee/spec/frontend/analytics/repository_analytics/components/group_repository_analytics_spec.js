@@ -26,8 +26,8 @@ describe('Group repository analytics app', () => {
     });
 
     it('renders coverage summary and coverage table components', () => {
-      expect(wrapper.find(TestCoverageSummary).exists()).toBe(true);
-      expect(wrapper.find(TestCoverageTable).exists()).toBe(true);
+      expect(wrapper.findComponent(TestCoverageSummary).exists()).toBe(true);
+      expect(wrapper.findComponent(TestCoverageTable).exists()).toBe(true);
     });
   });
 

@@ -90,7 +90,7 @@ describe('OnDemandScansForm', () => {
   const findSaveButton = () => findByTestId('on-demand-scan-save-button');
   const findCancelButton = () => findByTestId('on-demand-scan-cancel-button');
   const findProfileSummary = () => findByTestId('selected-profile-summary');
-  const findDastProfilesConfigurator = () => wrapper.find(DastProfilesConfigurator);
+  const findDastProfilesConfigurator = () => wrapper.findComponent(DastProfilesConfigurator);
 
   const hasSiteProfileAttributes = () => {
     expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.dastScannerProfile.id);

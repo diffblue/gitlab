@@ -76,7 +76,7 @@ describe('ComplianceReport component', () => {
   };
 
   const viewDetails = async (idx) => {
-    await findRow(idx).find(GlButton).trigger('click');
+    await findRow(idx).findComponent(GlButton).trigger('click');
     await nextTick();
   };
 

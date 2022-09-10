@@ -103,9 +103,9 @@ describe('Iteration Form', () => {
   const findTitle = () => wrapper.findByLabelText('Title');
   const findDescription = () => wrapper.findByLabelText('Description');
   const findStartDate = () => wrapper.findByTestId('start-date');
-  const findStartDateInputText = () => findStartDate().find(GlFormInput).element.value;
+  const findStartDateInputText = () => findStartDate().findComponent(GlFormInput).element.value;
   const findDueDate = () => wrapper.findByTestId('due-date');
-  const findDueDateInputText = () => findDueDate().find(GlFormInput).element.value;
+  const findDueDateInputText = () => findDueDate().findComponent(GlFormInput).element.value;
   const findSaveButton = () => wrapper.findByTestId('save-iteration');
   const findCancelButton = () => wrapper.findByTestId('cancel-iteration');
   const clickSave = () => findSaveButton().trigger('click');

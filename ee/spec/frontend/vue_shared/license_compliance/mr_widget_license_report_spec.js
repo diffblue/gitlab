@@ -241,7 +241,7 @@ describe('License Report MR Widget', () => {
           },
         });
 
-        expect(wrapper.find({ ref: 'reportSectionBody' }).element).toMatchSnapshot();
+        expect(wrapper.findComponent({ ref: 'reportSectionBody' }).element).toMatchSnapshot();
       });
 
       it.each`
