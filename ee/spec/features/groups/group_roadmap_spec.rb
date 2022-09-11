@@ -318,12 +318,12 @@ RSpec.describe 'group epic roadmap', :js do
           epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
 
           expect(epic_titles).to eq([
-            closed_epic.title,
-            epic_with_critical.title,
-            parent_epic1.title,
-            parent_epic2.title,
-            epic_with_bug.title
-          ])
+                                      closed_epic.title,
+                                      epic_with_critical.title,
+                                      parent_epic1.title,
+                                      parent_epic2.title,
+                                      epic_with_bug.title
+                                    ])
 
           expand_epic_at(0)
 
@@ -331,14 +331,14 @@ RSpec.describe 'group epic roadmap', :js do
           epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
 
           expect(epic_titles).to eq([
-            closed_epic.title,
-            epic_with_critical.title,
-            parent_epic1.title,
-            child_epic1.title,
-            child_epic2.title,
-            parent_epic2.title,
-            epic_with_bug.title
-          ])
+                                      closed_epic.title,
+                                      epic_with_critical.title,
+                                      parent_epic1.title,
+                                      child_epic1.title,
+                                      child_epic2.title,
+                                      parent_epic2.title,
+                                      epic_with_bug.title
+                                    ])
         end
 
         toggle_sort_direction
@@ -348,12 +348,12 @@ RSpec.describe 'group epic roadmap', :js do
           epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
 
           expect(epic_titles).to eq([
-            epic_with_bug.title,
-            parent_epic2.title,
-            parent_epic1.title,
-            closed_epic.title,
-            epic_with_critical.title
-          ])
+                                      epic_with_bug.title,
+                                      parent_epic2.title,
+                                      parent_epic1.title,
+                                      closed_epic.title,
+                                      epic_with_critical.title
+                                    ])
 
           expand_epic_at(2)
 
@@ -361,14 +361,14 @@ RSpec.describe 'group epic roadmap', :js do
           epic_titles = page.all('.epics-list-item .epic-title').collect(&:text)
 
           expect(epic_titles).to eq([
-            epic_with_bug.title,
-            parent_epic2.title,
-            parent_epic1.title,
-            child_epic2.title,
-            child_epic1.title,
-            closed_epic.title,
-            epic_with_critical.title
-          ])
+                                      epic_with_bug.title,
+                                      parent_epic2.title,
+                                      parent_epic1.title,
+                                      child_epic2.title,
+                                      child_epic1.title,
+                                      closed_epic.title,
+                                      epic_with_critical.title
+                                    ])
         end
       end
 

@@ -45,9 +45,9 @@ RSpec.describe 'Boards licensed features', :js do
         enable_namespace_license_check!
         allow(License).to receive(:current).and_return(global_license)
         allow(global_license).to receive(:features).and_return([
-          :epics,
-          :iterations
-          ])
+                                                                 :epics,
+                                                                 :iterations
+                                                               ])
       end
 
       context "Public project under Free plan under group namespace" do

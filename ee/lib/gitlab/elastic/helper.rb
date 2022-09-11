@@ -4,13 +4,13 @@ module Gitlab
   module Elastic
     class Helper
       ES_MAPPINGS_CLASSES = [
-          Project,
-          MergeRequest,
-          Snippet,
-          Note,
-          Milestone,
-          ProjectWiki,
-          Repository
+        Project,
+        MergeRequest,
+        Snippet,
+        Note,
+        Milestone,
+        ProjectWiki,
+        Repository
       ].freeze
 
       ES_SEPARATE_CLASSES = [

@@ -267,7 +267,7 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
             auth_username: "from-policy@example.com",
             project: project
           )
-      ]
+        ]
       end
 
       let_it_be(:dast_scanner_profiles) do
@@ -282,13 +282,13 @@ RSpec.describe 'DAST profiles (GraphQL fixtures)' do
             show_debug_messages: true,
             project: project
           )
-      ]
+        ]
       end
 
       let(:policy1) do
         build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: %w[master] }], actions: [
-          { scan: 'dast', site_profile: dast_site_profiles.first.name, scanner_profile: dast_scanner_profiles.first.name }
-        ])
+                { scan: 'dast', site_profile: dast_site_profiles.first.name, scanner_profile: dast_scanner_profiles.first.name }
+              ])
       end
 
       let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1]) }

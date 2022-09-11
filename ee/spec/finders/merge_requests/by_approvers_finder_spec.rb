@@ -51,16 +51,18 @@ RSpec.describe MergeRequests::ByApproversFinder do
 
   context 'filter by any approver' do
     it 'returns only merge requests with approvers' do
-      expect(merge_requests(ids: 'Any')).to match_array([
-        merge_request_with_approver, merge_request_with_two_approvers,
-        merge_request_with_group_approver, merge_request_with_project_approver,
-        merge_request_with_project_group_approver
-      ])
-      expect(merge_requests(names: ['Any'])).to match_array([
-        merge_request_with_approver, merge_request_with_two_approvers,
-        merge_request_with_group_approver, merge_request_with_project_approver,
-        merge_request_with_project_group_approver
-      ])
+      expect(merge_requests(ids: 'Any')).to match_array(
+        [
+          merge_request_with_approver, merge_request_with_two_approvers,
+          merge_request_with_group_approver, merge_request_with_project_approver,
+          merge_request_with_project_group_approver
+        ])
+      expect(merge_requests(names: ['Any'])).to match_array(
+        [
+          merge_request_with_approver, merge_request_with_two_approvers,
+          merge_request_with_group_approver, merge_request_with_project_approver,
+          merge_request_with_project_group_approver
+        ])
     end
   end
 
@@ -88,16 +90,18 @@ RSpec.describe MergeRequests::ByApproversFinder do
 
   context 'pass empty params' do
     it 'returns all merge requests' do
-      expect(merge_requests(ids: [])).to match_array([
-        merge_request, merge_request_with_approver,
-        merge_request_with_two_approvers, merge_request_with_group_approver,
-        merge_request_with_project_approver, merge_request_with_project_group_approver
-      ])
-      expect(merge_requests(names: [])).to match_array([
-        merge_request, merge_request_with_approver,
-        merge_request_with_two_approvers, merge_request_with_group_approver,
-        merge_request_with_project_approver, merge_request_with_project_group_approver
-      ])
+      expect(merge_requests(ids: [])).to match_array(
+        [
+          merge_request, merge_request_with_approver,
+          merge_request_with_two_approvers, merge_request_with_group_approver,
+          merge_request_with_project_approver, merge_request_with_project_group_approver
+        ])
+      expect(merge_requests(names: [])).to match_array(
+        [
+          merge_request, merge_request_with_approver,
+          merge_request_with_two_approvers, merge_request_with_group_approver,
+          merge_request_with_project_approver, merge_request_with_project_group_approver
+        ])
     end
   end
 

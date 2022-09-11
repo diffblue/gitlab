@@ -116,8 +116,8 @@ RSpec.describe Projects::MergeRequestsController do
           users.each { |user| project.add_developer(user) }
 
           update_merge_request(approval_rules_attributes: [
-            { name: 'foo', user_ids: users.map(&:id), approvals_required: 3 }
-          ])
+                                 { name: 'foo', user_ids: users.map(&:id), approvals_required: 3 }
+                               ])
 
           expect(merge_request.reload.approval_rules.size).to eq(1)
 

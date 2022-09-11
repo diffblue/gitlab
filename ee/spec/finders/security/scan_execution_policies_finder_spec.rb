@@ -129,19 +129,19 @@ RSpec.describe Security::ScanExecutionPoliciesFinder do
 
           it 'returns scan execution policies defined for both project and namespace' do
             is_expected.to match_array([
-                                policy.merge({
-                                  config: policy_configuration,
-                                  project: object,
-                                  namespace: nil,
-                                  inherited: false
-                                }),
-                                policy.merge({
-                                 config: group_policy_configuration,
-                                 project: nil,
-                                 namespace: group,
-                                 inherited: true
-                               })
-            ])
+                                         policy.merge({
+                                           config: policy_configuration,
+                                           project: object,
+                                           namespace: nil,
+                                           inherited: false
+                                         }),
+                                         policy.merge({
+                                          config: group_policy_configuration,
+                                          project: nil,
+                                          namespace: group,
+                                          inherited: true
+                                        })
+                                       ])
           end
         end
 

@@ -64,27 +64,27 @@ RSpec.describe Groups::Security::MergeCommitReportsController do
             subject
 
             expect(csv_response).to eq([
-              [
-                'Merge Commit',
-                'Author',
-                'Merge Request',
-                'Merged By',
-                'Pipeline',
-                'Group',
-                'Project',
-                'Approver(s)'
-              ],
-              [
-                '12bsr67h',
-                'John Cena',
-                '10034',
-                'Brock Lesnar',
-                '2301',
-                'Kombucha lovers',
-                'Starter kit',
-                'Brock Lesnar | Kane'
-              ]
-            ])
+                                         [
+                                           'Merge Commit',
+                                           'Author',
+                                           'Merge Request',
+                                           'Merged By',
+                                           'Pipeline',
+                                           'Group',
+                                           'Project',
+                                           'Approver(s)'
+                                         ],
+                                         [
+                                           '12bsr67h',
+                                           'John Cena',
+                                           '10034',
+                                           'Brock Lesnar',
+                                           '2301',
+                                           'Kombucha lovers',
+                                           'Starter kit',
+                                           'Brock Lesnar | Kane'
+                                         ]
+                                       ])
           end
         end
 

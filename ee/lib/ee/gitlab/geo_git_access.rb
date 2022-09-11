@@ -71,8 +71,8 @@ module EE
 
       def custom_action_pull_api_endpoints
         [
-         api_v4_geo_proxy_git_ssh_info_refs_upload_pack_path,
-         api_v4_geo_proxy_git_ssh_upload_pack_path
+          api_v4_geo_proxy_git_ssh_info_refs_upload_pack_path,
+          api_v4_geo_proxy_git_ssh_upload_pack_path
         ]
       end
 
