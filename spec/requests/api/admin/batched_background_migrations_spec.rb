@@ -36,7 +36,11 @@ RSpec.describe API::Admin::BatchedBackgroundMigrations do
       end
     end
 
-    context 'when multiple database is enabled', :add_ci_connection do
+    context 'when multiple database is enabled' do
+      before do
+        skip_if_multiple_databases_not_setup
+      end
+
       let(:ci_model) { Ci::ApplicationRecord }
       let(:database) { :ci }
 
