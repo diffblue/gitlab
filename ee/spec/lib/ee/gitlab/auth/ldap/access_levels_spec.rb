@@ -7,9 +7,9 @@ RSpec.describe EE::Gitlab::Auth::Ldap::AccessLevels do
     let(:access_levels) { described_class.new }
     let(:dns) do
       %w(
-      uid=johndoe,ou=users,dc=example,dc=com
-      uid=janedoe,ou=users,dc=example,dc=com
-    )
+        uid=johndoe,ou=users,dc=example,dc=com
+        uid=janedoe,ou=users,dc=example,dc=com
+      )
     end
 
     subject { access_levels }

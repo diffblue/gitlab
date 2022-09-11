@@ -103,20 +103,21 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
           let(:args) { { relationship: :inherited } }
 
           it 'returns scan execution policies for groups only' do
-            expect(resolve_scan_policies).to eq([
-              {
-                name: 'Run DAST in every pipeline',
-                description: 'This policy enforces to run DAST for every pipeline within the project',
-                enabled: true,
-                yaml: YAML.dump(policy.deep_stringify_keys),
-                updated_at: group_policy_configuration.policy_last_updated_at,
-                source: {
-                  project: nil,
-                  namespace: group,
-                  inherited: true
+            expect(resolve_scan_policies).to eq(
+              [
+                {
+                  name: 'Run DAST in every pipeline',
+                  description: 'This policy enforces to run DAST for every pipeline within the project',
+                  enabled: true,
+                  yaml: YAML.dump(policy.deep_stringify_keys),
+                  updated_at: group_policy_configuration.policy_last_updated_at,
+                  source: {
+                    project: nil,
+                    namespace: group,
+                    inherited: true
+                  }
                 }
-              }
-            ])
+              ])
           end
         end
       end
@@ -149,32 +150,33 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
           let(:args) { { relationship: :inherited } }
 
           it 'returns scan execution policies defined for both project and namespace' do
-            expect(resolve_scan_policies).to match_array([
-              {
-                name: 'Run DAST in every pipeline',
-                description: 'This policy enforces to run DAST for every pipeline within the project',
-                enabled: true,
-                yaml: YAML.dump(policy.deep_stringify_keys),
-                updated_at: policy_configuration.policy_last_updated_at,
-                source: {
-                  project: project,
-                  namespace: nil,
-                  inherited: false
+            expect(resolve_scan_policies).to match_array(
+              [
+                {
+                  name: 'Run DAST in every pipeline',
+                  description: 'This policy enforces to run DAST for every pipeline within the project',
+                  enabled: true,
+                  yaml: YAML.dump(policy.deep_stringify_keys),
+                  updated_at: policy_configuration.policy_last_updated_at,
+                  source: {
+                    project: project,
+                    namespace: nil,
+                    inherited: false
+                  }
+                },
+                {
+                  name: 'Run DAST in every pipeline',
+                  description: 'This policy enforces to run DAST for every pipeline within the project',
+                  enabled: true,
+                  yaml: YAML.dump(policy.deep_stringify_keys),
+                  updated_at: group_policy_configuration.policy_last_updated_at,
+                  source: {
+                    project: nil,
+                    namespace: group,
+                    inherited: true
+                  }
                 }
-              },
-              {
-                name: 'Run DAST in every pipeline',
-                description: 'This policy enforces to run DAST for every pipeline within the project',
-                enabled: true,
-                yaml: YAML.dump(policy.deep_stringify_keys),
-                updated_at: group_policy_configuration.policy_last_updated_at,
-                source: {
-                  project: nil,
-                  namespace: group,
-                  inherited: true
-                }
-              }
-            ])
+              ])
           end
         end
       end

@@ -93,9 +93,10 @@ RSpec.describe PaidFeatureCalloutHelper do
 
     before do
       allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService, plan: :free) do |instance|
-        allow(instance).to receive(:execute).and_return([
-          { 'code' => 'premium', 'id' => 'premium-plan-id' }
-        ])
+        allow(instance).to receive(:execute).and_return(
+          [
+            { 'code' => 'premium', 'id' => 'premium-plan-id' }
+          ])
       end
     end
 

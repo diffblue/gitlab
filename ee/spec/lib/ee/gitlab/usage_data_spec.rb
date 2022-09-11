@@ -64,24 +64,25 @@ RSpec.describe Gitlab::UsageData do
     subject { described_class.data }
 
     it 'gathers usage data', :fips_mode do
-      expect(subject.keys).to include(*%i(
-        historical_max_users
-        license_add_ons
-        license_plan
-        license_expires_at
-        license_starts_at
-        license_user_count
-        license_trial
-        license_subscription_id
-        licensee
-        license_md5
-        license_sha256
-        license_id
-        elasticsearch_enabled
-        geo_enabled
-        license_trial_ends_on
-        license_billable_users
-      ))
+      expect(subject.keys).to include(
+        *%i(
+          historical_max_users
+          license_add_ons
+          license_plan
+          license_expires_at
+          license_starts_at
+          license_user_count
+          license_trial
+          license_subscription_id
+          licensee
+          license_md5
+          license_sha256
+          license_id
+          elasticsearch_enabled
+          geo_enabled
+          license_trial_ends_on
+          license_billable_users
+        ))
 
       expect(subject[:license_md5]).to eq(nil)
     end
@@ -96,40 +97,41 @@ RSpec.describe Gitlab::UsageData do
     it 'gathers usage counts', :aggregate_failures do
       expect(count_data[:projects]).to eq(3)
 
-      expect(count_data.keys).to include(*%i(
-        confidential_epics
-        container_scanning_jobs
-        coverage_fuzzing_jobs
-        dast_jobs
-        dependency_scanning_jobs
-        epics
-        epics_deepest_relationship_level
-        epic_issues
-        geo_nodes
-        geo_event_log_max_id
-        issues_with_health_status
-        ldap_group_links
-        ldap_keys
-        ldap_users
-        license_management_jobs
-        licenses_list_views
-        operations_dashboard_default_dashboard
-        operations_dashboard_users_with_projects_added
-        projects_jira_issuelist_active
-        projects_mirrored_with_pipelines_enabled
-        projects_reporting_ci_cd_back_to_github
-        sast_jobs
-        secret_detection_jobs
-        status_page_incident_publishes
-        status_page_incident_unpublishes
-        status_page_issues
-        status_page_projects
-        user_preferences_group_overview_details
-        user_preferences_group_overview_security_dashboard
-        template_repositories
-        users_visiting_testing_license_compliance_full_report
-        users_clicking_license_testing_visiting_external_website
-      ))
+      expect(count_data.keys).to include(
+        *%i(
+          confidential_epics
+          container_scanning_jobs
+          coverage_fuzzing_jobs
+          dast_jobs
+          dependency_scanning_jobs
+          epics
+          epics_deepest_relationship_level
+          epic_issues
+          geo_nodes
+          geo_event_log_max_id
+          issues_with_health_status
+          ldap_group_links
+          ldap_keys
+          ldap_users
+          license_management_jobs
+          licenses_list_views
+          operations_dashboard_default_dashboard
+          operations_dashboard_users_with_projects_added
+          projects_jira_issuelist_active
+          projects_mirrored_with_pipelines_enabled
+          projects_reporting_ci_cd_back_to_github
+          sast_jobs
+          secret_detection_jobs
+          status_page_incident_publishes
+          status_page_incident_unpublishes
+          status_page_issues
+          status_page_projects
+          user_preferences_group_overview_details
+          user_preferences_group_overview_security_dashboard
+          template_repositories
+          users_visiting_testing_license_compliance_full_report
+          users_clicking_license_testing_visiting_external_website
+        ))
 
       expect(count_data[:status_page_projects]).to eq(1)
       expect(count_data[:status_page_issues]).to eq(1)
@@ -268,9 +270,9 @@ RSpec.describe Gitlab::UsageData do
 
     it 'gathers data on operations dashboard' do
       expect(subject.keys).to include(*%i(
-        operations_dashboard_default_dashboard
-        operations_dashboard_users_with_projects_added
-      ))
+                                        operations_dashboard_default_dashboard
+                                        operations_dashboard_users_with_projects_added
+                                      ))
     end
 
     it 'bases counts on active users', :aggregate_failures do
