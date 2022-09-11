@@ -21,7 +21,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountUsersCreatingCiBui
         coverage_fuzzing
         apifuzzer_fuzz
         apifuzzer_fuzz_dnd
-     ].freeze
+      ].freeze
 
       secure_types.each do |secure_type|
         create(:ci_build, name: secure_type, user: user, created_at: 3.days.ago)

@@ -1814,13 +1814,14 @@ RSpec.describe Project do
 
     before do
       allow(License).to receive(:current).and_return(global_license)
-      allow(global_license).to receive(:features).and_return([
-        :subepics, # Ultimate only
-        :epics, # Premium and up
-        :push_rules, # Premium and up
-        :audit_events, # Bronze and up
-        :geo # Global feature, should not be checked at namespace level
-      ])
+      allow(global_license).to receive(:features).and_return(
+        [
+          :subepics, # Ultimate only
+          :epics, # Premium and up
+          :push_rules, # Premium and up
+          :audit_events, # Bronze and up
+          :geo # Global feature, should not be checked at namespace level
+        ])
     end
 
     subject { project.licensed_features }

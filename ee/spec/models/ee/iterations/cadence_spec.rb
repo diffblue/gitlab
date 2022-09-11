@@ -347,11 +347,39 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
 
       with_them do
         before do
-          Iteration.insert_all!([
-            {  sequence: nil, title: 'iteration', start_date: start_date, due_date: start_date + 4.days, iterations_cadence_id: iterations_cadence.id, iid: 1, created_at: Time.zone.now, updated_at: Time.zone.now },
-            {  sequence: nil, title: 'a', start_date: 1.week.from_now, due_date: 1.week.from_now + 4.days, iterations_cadence_id: iterations_cadence.id, iid: 2, created_at: Time.zone.now, updated_at: Time.zone.now },
-            {  sequence: nil, title: 'b', start_date: 3.weeks.from_now, due_date: 3.weeks.from_now + 4.days, iterations_cadence_id: iterations_cadence.id, iid: 3, created_at: Time.zone.now, updated_at: Time.zone.now }
-          ])
+          Iteration.insert_all!(
+            [
+              {
+                sequence: nil,
+                title: 'iteration',
+                start_date: start_date,
+                due_date: start_date + 4.days,
+                iterations_cadence_id: iterations_cadence.id,
+                iid: 1,
+                created_at: Time.zone.now,
+                updated_at: Time.zone.now
+              },
+              {
+                sequence: nil,
+                title: 'a',
+                start_date: 1.week.from_now,
+                due_date: 1.week.from_now + 4.days,
+                iterations_cadence_id: iterations_cadence.id,
+                iid: 2,
+                created_at: Time.zone.now,
+                updated_at: Time.zone.now
+              },
+              {
+                sequence: nil,
+                title: 'b',
+                start_date: 3.weeks.from_now,
+                due_date: 3.weeks.from_now + 4.days,
+                iterations_cadence_id: iterations_cadence.id,
+                iid: 3,
+                created_at: Time.zone.now,
+                updated_at: Time.zone.now
+              }
+            ])
         end
 
         it 'sequence numbers are correctly updated' do

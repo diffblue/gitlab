@@ -17,17 +17,18 @@ RSpec.describe Burndown do
     subject { described_class.new(milestone.issues_visible_to_user(user), milestone.start_date, milestone.due_date).as_json }
 
     it 'generates an array of issues with date, issue weight and action' do
-      expect(subject).to match_array([
-        { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'created' },
-        { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'closed' },
-        { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
-        { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
-        { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'created' },
-        { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'closed' },
-        { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'closed' },
-        { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'created' },
-        { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'reopened' }
-      ])
+      expect(subject).to match_array(
+        [
+          { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'created' },
+          { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'closed' },
+          { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
+          { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
+          { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'created' },
+          { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'closed' },
+          { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'closed' },
+          { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'created' },
+          { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'reopened' }
+        ])
     end
 
     context 'when issues belong to a public project' do
@@ -39,15 +40,16 @@ RSpec.describe Burndown do
       end
 
       it 'does not include confidential issues for users who are not project members' do
-        expect(subject).to match_array([
-          { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'closed' },
-          { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'closed' },
-          { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'reopened' }
-        ])
+        expect(subject).to match_array(
+          [
+            { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'closed' },
+            { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'closed' },
+            { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'reopened' }
+          ])
       end
     end
 
@@ -84,16 +86,17 @@ RSpec.describe Burndown do
       end
 
       it "considers closed_at as milestone start date" do
-        expect(subject).to match_array([
-          { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'closed' },
-          { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'closed' },
-          { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'created' },
-          { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'reopened' }
-        ])
+        expect(subject).to match_array(
+          [
+            { created_at: Date.new(2017, 2, 28).beginning_of_day, weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'closed' },
+            { created_at: Date.new(2017, 3, 1).beginning_of_day,  weight: 2, action: 'closed' },
+            { created_at: Date.new(2017, 3, 2).beginning_of_day,  weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'created' },
+            { created_at: Date.new(2017, 3, 3).beginning_of_day,  weight: 2, action: 'reopened' }
+          ])
       end
     end
   end

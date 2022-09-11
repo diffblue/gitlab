@@ -15,9 +15,9 @@ RSpec.describe Gitlab::Vulnerabilities::Parser do
     context 'with standard categories' do
       let(:categories) do
         %w(
-        sast
-        dast
-        dependency_scanning
+          sast
+          dast
+          dependency_scanning
         )
       end
 

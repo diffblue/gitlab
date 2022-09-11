@@ -80,29 +80,32 @@ RSpec.describe GroupWikiRepository, :geo do
 
       describe '#replicables_for_current_secondary' do
         it 'returns all group wiki repositories without selective sync' do
-          expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array([
-            root_group_wiki_repository,
-            subgroup_wiki_repository,
-            broken_wiki_repository
-          ])
+          expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array(
+            [
+              root_group_wiki_repository,
+              subgroup_wiki_repository,
+              broken_wiki_repository
+            ])
         end
 
         context 'with selective sync by namespace' do
           it 'returns group wiki repositories that belong to the namespaces and descendants' do
             node.update!(selective_sync_type: 'namespaces', namespaces: [root_group])
 
-            expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array([
-              root_group_wiki_repository,
-              subgroup_wiki_repository
-            ])
+            expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array(
+              [
+                root_group_wiki_repository,
+                subgroup_wiki_repository
+              ])
           end
 
           it 'returns group wiki repositories that belong to the namespace' do
             node.update!(selective_sync_type: 'namespaces', namespaces: [subgroup])
 
-            expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array([
-              subgroup_wiki_repository
-            ])
+            expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array(
+              [
+                subgroup_wiki_repository
+              ])
           end
         end
 
@@ -110,10 +113,11 @@ RSpec.describe GroupWikiRepository, :geo do
           it 'returns group wiki repositories that belong to the shards' do
             node.update!(selective_sync_type: 'shards', selective_sync_shards: ['default'])
 
-            expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array([
-              root_group_wiki_repository,
-              subgroup_wiki_repository
-            ])
+            expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array(
+              [
+                root_group_wiki_repository,
+                subgroup_wiki_repository
+              ])
           end
         end
 

@@ -55,10 +55,11 @@ RSpec.describe Geo::VerificationState do
       describe '.verification_pending_batch' do
         # Insert 2 records for a total of 3 with subject
         let!(:other_pending_records) do
-          DummyModel.insert_all([
-            { verification_state: pending_value, verified_at: 7.days.ago },
-            { verification_state: pending_value, verified_at: 6.days.ago }
-          ], returning: [:id])
+          DummyModel.insert_all(
+            [
+              { verification_state: pending_value, verified_at: 7.days.ago },
+              { verification_state: pending_value, verified_at: 6.days.ago }
+            ], returning: [:id])
         end
 
         let(:pending_value) { DummyModel.verification_state_value(:verification_pending) }
@@ -109,10 +110,11 @@ RSpec.describe Geo::VerificationState do
       describe '.verification_failed_batch' do
         # Insert 2 records for a total of 3 with subject
         let!(:other_failed_records) do
-          DummyModel.insert_all([
-            { verification_state: failed_value, verification_retry_at: 7.days.ago },
-            { verification_state: failed_value, verification_retry_at: 6.days.ago }
-          ], returning: [:id])
+          DummyModel.insert_all(
+            [
+              { verification_state: failed_value, verification_retry_at: 7.days.ago },
+              { verification_state: failed_value, verification_retry_at: 6.days.ago }
+            ], returning: [:id])
         end
 
         let(:failed_value) { DummyModel.verification_state_value(:verification_failed) }
@@ -208,19 +210,21 @@ RSpec.describe Geo::VerificationState do
         let(:succeeded_value) { DummyModel.verification_state_value(:verification_succeeded) }
 
         it 'includes verification_succeeded with expired checksum' do
-          DummyModel.insert_all([
-            { verification_state: succeeded_value, verified_at: 15.days.ago }
-          ])
+          DummyModel.insert_all(
+            [
+              { verification_state: succeeded_value, verified_at: 15.days.ago }
+            ])
 
           expect(subject.class.needs_reverification.count).to eq 1
         end
 
         it 'excludes non-success verification states and fresh checksums' do
-          DummyModel.insert_all([
-            { verification_state: pending_value, verified_at: 7.days.ago },
-            { verification_state: failed_value, verified_at: 6.days.ago },
-            { verification_state: succeeded_value, verified_at: 3.days.ago }
-          ])
+          DummyModel.insert_all(
+            [
+              { verification_state: pending_value, verified_at: 7.days.ago },
+              { verification_state: failed_value, verified_at: 6.days.ago },
+              { verification_state: succeeded_value, verified_at: 3.days.ago }
+            ])
 
           expect(subject.class.needs_reverification.count).to eq 0
         end
@@ -228,10 +232,11 @@ RSpec.describe Geo::VerificationState do
 
       describe '.reverify_batch' do
         let!(:other_verified_records) do
-          DummyModel.insert_all([
-            { verification_state: succeeded_value, verified_at: 3.days.ago },
-            { verification_state: succeeded_value, verified_at: 4.days.ago }
-          ])
+          DummyModel.insert_all(
+            [
+              { verification_state: succeeded_value, verified_at: 3.days.ago },
+              { verification_state: succeeded_value, verified_at: 4.days.ago }
+            ])
         end
 
         let(:succeeded_value) { DummyModel.verification_state_value(:verification_succeeded) }

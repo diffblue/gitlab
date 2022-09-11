@@ -395,10 +395,11 @@ RSpec.describe ApplicationSetting do
       let(:elasticsearch_url) { 'http://username:password@example.com,https://test:test@example.org:9200' }
 
       it 'ignores them and uses elasticsearch_username and elasticsearch_password settings' do
-        expect(setting.elasticsearch_url_with_credentials).to match_array([
-          { scheme: 'http', user: elasticsearch_username, password: elasticsearch_password, host: 'example.com', path: '', port: 80 },
-          { scheme: 'https', user: elasticsearch_username, password: elasticsearch_password, host: 'example.org', path: '', port: 9200 }
-        ])
+        expect(setting.elasticsearch_url_with_credentials).to match_array(
+          [
+            { scheme: 'http', user: elasticsearch_username, password: elasticsearch_password, host: 'example.com', path: '', port: 80 },
+            { scheme: 'https', user: elasticsearch_username, password: elasticsearch_password, host: 'example.org', path: '', port: 9200 }
+          ])
       end
     end
 
@@ -407,20 +408,22 @@ RSpec.describe ApplicationSetting do
       let(:elasticsearch_password) { nil }
 
       it 'does not return credential info' do
-        expect(setting.elasticsearch_url_with_credentials).to match_array([
-          { scheme: 'http', host: 'example.com', path: '', port: 80 },
-          { scheme: 'https', host: 'example.org', path: '', port: 9200 }
-        ])
+        expect(setting.elasticsearch_url_with_credentials).to match_array(
+          [
+            { scheme: 'http', host: 'example.com', path: '', port: 80 },
+            { scheme: 'https', host: 'example.org', path: '', port: 9200 }
+          ])
       end
 
       context 'and url contains credentials' do
         let(:elasticsearch_url) { 'http://username:password@example.com,https://test:test@example.org:9200' }
 
         it 'returns credentials from url' do
-          expect(setting.elasticsearch_url_with_credentials).to match_array([
-            { scheme: 'http', user: 'username', password: 'password', host: 'example.com', path: '', port: 80 },
-            { scheme: 'https', user: 'test', password: 'test', host: 'example.org', path: '', port: 9200 }
-          ])
+          expect(setting.elasticsearch_url_with_credentials).to match_array(
+            [
+              { scheme: 'http', user: 'username', password: 'password', host: 'example.com', path: '', port: 80 },
+              { scheme: 'https', user: 'test', password: 'test', host: 'example.org', path: '', port: 9200 }
+            ])
         end
       end
 
@@ -428,9 +431,10 @@ RSpec.describe ApplicationSetting do
         let(:elasticsearch_url) { 'http://admin:p%40ssword@localhost:9200/' }
 
         it 'returns decoded credentials from url' do
-          expect(setting.elasticsearch_url_with_credentials).to match_array([
-            { scheme: 'http', user: 'admin', password: 'p@ssword', host: 'localhost', path: '', port: 9200 }
-          ])
+          expect(setting.elasticsearch_url_with_credentials).to match_array(
+            [
+              { scheme: 'http', user: 'admin', password: 'p@ssword', host: 'localhost', path: '', port: 9200 }
+            ])
         end
       end
     end
@@ -440,10 +444,11 @@ RSpec.describe ApplicationSetting do
       let(:elasticsearch_password) { 'b@r+baz!$' }
 
       it 'returns the correct values' do
-        expect(setting.elasticsearch_url_with_credentials).to match_array([
-          { scheme: 'http', user: elasticsearch_username, password: elasticsearch_password, host: 'example.com', path: '', port: 80 },
-          { scheme: 'https', user: elasticsearch_username, password: elasticsearch_password, host: 'example.org', path: '', port: 9200 }
-        ])
+        expect(setting.elasticsearch_url_with_credentials).to match_array(
+          [
+            { scheme: 'http', user: elasticsearch_username, password: elasticsearch_password, host: 'example.com', path: '', port: 80 },
+            { scheme: 'https', user: elasticsearch_username, password: elasticsearch_password, host: 'example.org', path: '', port: 9200 }
+          ])
       end
     end
   end

@@ -1441,9 +1441,10 @@ RSpec.describe ApprovalState do
 
       context 'and multiple approval rules is disabled' do
         it 'returns the first rule' do
-          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array([
-            project_rule
-          ])
+          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+            [
+              project_rule
+            ])
         end
       end
 
@@ -1453,10 +1454,11 @@ RSpec.describe ApprovalState do
         end
 
         it 'returns the rules as is' do
-          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array([
-            project_rule,
-            another_project_rule
-          ])
+          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+            [
+              project_rule,
+              another_project_rule
+            ])
         end
 
         context 'and rules are scoped by protected branches' do
@@ -1470,18 +1472,20 @@ RSpec.describe ApprovalState do
           end
 
           it 'returns the rules that are applicable to the merge request target branch' do
-            expect(subject.user_defined_rules.map(&:approval_rule)).to eq([
-              another_project_rule
-            ])
+            expect(subject.user_defined_rules.map(&:approval_rule)).to eq(
+              [
+                another_project_rule
+              ])
           end
 
           context 'and target_branch is specified' do
             subject { described_class.new(merge_request, target_branch: 'v1-stable') }
 
             it 'returns the rules that are applicable to the specified target_branch' do
-              expect(subject.user_defined_rules.map(&:approval_rule)).to eq([
-                project_rule
-              ])
+              expect(subject.user_defined_rules.map(&:approval_rule)).to eq(
+                [
+                  project_rule
+                ])
             end
           end
         end
@@ -1498,9 +1502,10 @@ RSpec.describe ApprovalState do
 
       context 'when multiple approval rules is disabled' do
         it 'returns the first rule' do
-          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array([
-            mr_rule
-          ])
+          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+            [
+              mr_rule
+            ])
         end
       end
 
@@ -1510,10 +1515,11 @@ RSpec.describe ApprovalState do
         end
 
         it 'returns the rules as is' do
-          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array([
-            mr_rule,
-            another_mr_rule
-          ])
+          expect(subject.user_defined_rules.map(&:approval_rule)).to match_array(
+            [
+              mr_rule,
+              another_mr_rule
+            ])
         end
 
         context 'and rules have source rules that are scoped by protected branches' do
@@ -1545,18 +1551,17 @@ RSpec.describe ApprovalState do
           end
 
           it 'returns the rules that are applicable to the merge request target branch' do
-            expect(subject.user_defined_rules.map(&:approval_rule)).to eq([
-              another_mr_rule
-            ])
+            expect(subject.user_defined_rules.map(&:approval_rule)).to eq(
+              [
+                another_mr_rule
+              ])
           end
 
           context 'and target_branch is specified' do
             subject { described_class.new(merge_request, target_branch: 'v1-stable') }
 
             it 'returns the rules that are applicable to the specified target_branch' do
-              expect(subject.user_defined_rules.map(&:approval_rule)).to eq([
-                mr_rule
-              ])
+              expect(subject.user_defined_rules.map(&:approval_rule)).to eq([mr_rule])
             end
           end
         end

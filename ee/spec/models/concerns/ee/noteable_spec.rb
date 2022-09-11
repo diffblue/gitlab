@@ -26,11 +26,12 @@ RSpec.describe EE::Noteable do
         { table_name: n.table_name, discussion_id: n.discussion_id, id: n.id }
       end
 
-      expect(discussions).to match([
-        a_hash_including(table_name: 'resource_weight_events', id: weight_event.id),
-        a_hash_including(table_name: 'notes', discussion_id: regular_note.discussion_id),
-        a_hash_including(table_name: 'resource_iteration_events', id: iteration_event.id)
-      ])
+      expect(discussions).to match(
+        [
+          a_hash_including(table_name: 'resource_weight_events', id: weight_event.id),
+          a_hash_including(table_name: 'notes', discussion_id: regular_note.discussion_id),
+          a_hash_including(table_name: 'resource_iteration_events', id: iteration_event.id)
+        ])
     end
 
     it 'filters by comments only' do
@@ -38,9 +39,10 @@ RSpec.describe EE::Noteable do
         { table_name: n.table_name, discussion_id: n.discussion_id, id: n.id }
       end
 
-      expect(discussions).to match([
-        a_hash_including(table_name: 'notes', discussion_id: regular_note.discussion_id)
-      ])
+      expect(discussions).to match(
+        [
+          a_hash_including(table_name: 'notes', discussion_id: regular_note.discussion_id)
+        ])
     end
 
     it 'filters by system notes only' do
@@ -48,10 +50,11 @@ RSpec.describe EE::Noteable do
         { table_name: n.table_name, discussion_id: n.discussion_id, id: n.id }
       end
 
-      expect(discussions).to match([
-        a_hash_including(table_name: 'resource_weight_events', id: weight_event.id),
-        a_hash_including(table_name: 'resource_iteration_events', id: iteration_event.id)
-      ])
+      expect(discussions).to match(
+        [
+          a_hash_including(table_name: 'resource_weight_events', id: weight_event.id),
+          a_hash_including(table_name: 'resource_iteration_events', id: iteration_event.id)
+        ])
     end
   end
 end
