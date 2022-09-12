@@ -80,9 +80,10 @@ RSpec.describe Ci::CreatePipelineService do
     end
 
     let!(:dependency) do
+      deploy_stage = create(:ci_stage, name: 'deploy', pipeline: other_pipeline, position: 3)
       create(:ci_build, :success,
         pipeline: other_pipeline, ref: other_pipeline.ref,
-        name: 'dependency', stage_idx: 3, stage: 'deploy', user: user
+        name: 'dependency', stage_idx: deploy_stage.position, stage: deploy_stage, user: user
       )
     end
 
