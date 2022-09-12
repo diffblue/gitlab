@@ -65,23 +65,13 @@ describe('PaginatedDependenciesTable component', () => {
     expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchDependencies`, { page });
   });
 
-  describe.each`
-    context                         | isLoading | errorLoading | isListEmpty
-    ${'the list is loading'}        | ${true}   | ${false}     | ${false}
-    ${'there was an error loading'} | ${false}  | ${true}      | ${false}
-    ${'the list is empty'}          | ${false}  | ${false}     | ${true}
-  `('given $context', ({ isLoading, errorLoading, isListEmpty }) => {
+  describe('when the list is loading', () => {
     let module;
 
     beforeEach(async () => {
       module = store.state[namespace];
-      if (isListEmpty) {
-        module.dependencies = [];
-        module.pageInfo.total = 0;
-      }
-
-      module.isLoading = isLoading;
-      module.errorLoading = errorLoading;
+      module.isLoading = true;
+      module.errorLoading = false;
 
       await nextTick();
     });
@@ -89,7 +79,56 @@ describe('PaginatedDependenciesTable component', () => {
     it('passes the correct props to the dependencies table', () => {
       expectComponentWithProps(DependenciesTable, {
         dependencies: module.dependencies,
-        isLoading,
+        isLoading: true,
+      });
+    });
+
+    it('does not render pagination', () => {
+      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+    });
+  });
+
+  describe('when an error occured on load', () => {
+    let module;
+
+    beforeEach(async () => {
+      module = store.state[namespace];
+      module.isLoading = false;
+      module.errorLoading = true;
+
+      await nextTick();
+    });
+
+    it('passes the correct props to the dependencies table', () => {
+      expectComponentWithProps(DependenciesTable, {
+        dependencies: module.dependencies,
+        isLoading: false,
+      });
+    });
+
+    it('does not render pagination', () => {
+      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+    });
+  });
+
+  describe('when the list is empty', () => {
+    let module;
+
+    beforeEach(async () => {
+      module = store.state[namespace];
+      module.dependencies = [];
+      module.pageInfo.total = 0;
+
+      module.isLoading = false;
+      module.errorLoading = false;
+
+      await nextTick();
+    });
+
+    it('passes the correct props to the dependencies table', () => {
+      expectComponentWithProps(DependenciesTable, {
+        dependencies: module.dependencies,
+        isLoading: false,
       });
     });
 
