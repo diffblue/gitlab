@@ -18,6 +18,7 @@ module Gitlab
       ServiceUsageDataCounter,
       MergeRequestWidgetExtensionCounter
     ].freeze
+
     COUNTERS_MIGRATED_TO_INSTRUMENTATION_CLASSES = [
       PackageEventCounter
     ].freeze

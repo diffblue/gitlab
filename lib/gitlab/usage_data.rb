@@ -261,10 +261,12 @@ module Gitlab
         }
       end
 
+      # @return [Hash<Symbol, Integer>]
       def usage_counters
         usage_data_counters.map { |counter| redis_usage_data(counter) }.reduce({}, :merge)
       end
 
+      # @return [Array<#totals>] An array of objects that respond to `#totals`
       def usage_data_counters
         Gitlab::UsageDataCounters.unmigrated_counters
       end
