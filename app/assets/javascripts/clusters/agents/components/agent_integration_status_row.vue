@@ -31,12 +31,12 @@ export default {
     helpUrl: {
       required: false,
       type: String,
-      default: '',
+      default: null,
     },
     featureName: {
       required: false,
       type: String,
-      default: '',
+      default: null,
     },
   },
   computed: {
@@ -51,8 +51,8 @@ export default {
   <li class="gl-mb-3">
     <gl-icon :name="icon" :size="16" :class="iconClass" class="gl-mr-2" />
 
-    <span v-if="!helpUrl">{{ text }}</span>
-    <gl-link v-else :href="helpUrl">{{ text }}</gl-link>
+    <gl-link v-if="helpUrl" :href="helpUrl">{{ text }}</gl-link>
+    <span v-else>{{ text }}</span>
 
     <gl-badge
       v-if="showPremiumBadge"

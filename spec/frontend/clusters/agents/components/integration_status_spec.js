@@ -101,8 +101,8 @@ describe('IntegrationStatus', () => {
             icon: integrationStatus.icon,
             iconClass: integrationStatus.iconClass,
             text: integrationStatus.text,
-            helpUrl: integrationStatus.helpUrl || '',
-            featureName: integrationStatus.featureName || '',
+            helpUrl: integrationStatus.helpUrl || null,
+            featureName: integrationStatus.featureName || null,
           });
         });
       },
