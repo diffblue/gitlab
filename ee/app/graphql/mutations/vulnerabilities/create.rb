@@ -94,21 +94,22 @@ module Mutations
       end
 
       def build_vulnerability_params(params)
-        vulnerability_params = params.slice(*%i[
-          name
-          state
-          severity
-          confidence
-          message
-          description
-          solution
-          detected_at
-          confirmed_at
-          resolved_at
-          dismissed_at
-          identifiers
-          scanner
-        ])
+        vulnerability_params = params.slice(
+          *%i[
+            name
+            state
+            severity
+            confidence
+            message
+            description
+            solution
+            detected_at
+            confirmed_at
+            resolved_at
+            dismissed_at
+            identifiers
+            scanner
+          ])
 
         {
           vulnerability: vulnerability_params

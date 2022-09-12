@@ -51,10 +51,11 @@ module MergeRequests
     end
 
     def with_any_approvers(items)
-      items.select_from_union([
-        items.joins(:approval_rules),
-        items.joins('INNER JOIN approval_project_rules ON approval_project_rules.project_id = merge_requests.target_project_id')
-      ])
+      items.select_from_union(
+        [
+          items.joins(:approval_rules),
+          items.joins('INNER JOIN approval_project_rules ON approval_project_rules.project_id = merge_requests.target_project_id')
+        ])
     end
 
     def find_approvers_by_names(items)

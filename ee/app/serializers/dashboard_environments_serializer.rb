@@ -15,13 +15,15 @@ class DashboardEnvironmentsSerializer < BaseSerializer
 
   # rubocop: disable CodeReuse/ActiveRecord
   def batch_load(projects)
-    ActiveRecord::Associations::Preloader.new.preload(projects, [
-      :route,
-      environments_for_dashboard: [
-        project: [:project_feature, :group, namespace: :route]
-      ],
-      namespace: [:route, :owner]
-    ])
+    ActiveRecord::Associations::Preloader.new.preload(
+      projects,
+      [
+        :route,
+        environments_for_dashboard: [
+          project: [:project_feature, :group, namespace: :route]
+        ],
+        namespace: [:route, :owner]
+      ])
 
     environments = projects.map(&:environments_for_dashboard).flatten
 
