@@ -44,7 +44,6 @@ export default {
     'next',
     'initialState',
     'initialSortBy',
-    'epicsCount',
     'epicNewPath',
     'groupFullPath',
     'listEpicsPath',
@@ -92,6 +91,9 @@ export default {
         return {
           list: epicsRoot?.nodes || [],
           pageInfo: epicsRoot?.pageInfo || {},
+          opened: data.group?.totalOpenedEpics?.count,
+          closed: data.group?.totalClosedEpics?.count,
+          all: data.group?.totalEpics?.count,
         };
       },
       error(error) {
@@ -127,6 +129,14 @@ export default {
     };
   },
   computed: {
+    epicsCount() {
+      const { opened, closed, all } = this.epics;
+      return {
+        opened,
+        closed,
+        all,
+      };
+    },
     epicsListLoading() {
       return this.$apollo.queries.epics.loading;
     },

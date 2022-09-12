@@ -25,20 +25,19 @@ jest.mock('~/vue_shared/issuable/list/constants', () => ({
 }));
 
 const mockRawEpic = {
-  ...pick(mockFormattedEpic, [
-    'title',
-    'createdAt',
-    'updatedAt',
-    'webUrl',
-    'userDiscussionsCount',
-    'confidential',
-  ]),
+  ...pick(mockFormattedEpic, ['title', 'webUrl', 'userDiscussionsCount', 'confidential']),
   author: mockAuthor,
   labels: {
     nodes: mockLabels,
   },
   startDate: '2021-04-01',
   dueDate: '2021-06-30',
+  createdAt: '2021-04-01',
+  updatedAt: '2021-05-01',
+  blockingCount: 0,
+  upvotes: 0,
+  downvotes: 0,
+  group: null,
 };
 
 const mockEpics = new Array(5)
@@ -54,11 +53,6 @@ const mockProvide = {
   next: '',
   initialState: 'opened',
   initialSortBy: 'created_desc',
-  epicsCount: {
-    opened: 5,
-    closed: 0,
-    all: 5,
-  },
   epicNewPath: '/groups/gitlab-org/-/epics/new',
   groupFullPath: 'gitlab-org',
   groupLabelsPath: '/gitlab-org/-/labels.json',
@@ -83,13 +77,36 @@ const groupEpicsQueryHandler = jest.fn().mockResolvedValue({
         nodes: mockEpics,
         pageInfo: mockPageInfo,
       },
+      totalEpics: {
+        count: 5,
+      },
+      totalOpenedEpics: {
+        count: 5,
+      },
+      totalClosedEpics: {
+        count: 0,
+      },
       id: 'gid://gitlab/Group/1',
     },
   },
 });
 
 const createComponent = ({ provide = mockProvide, initialFilterParams = {} } = {}) => {
-  mockApollo = createMockApollo([[groupEpicsQuery, groupEpicsQueryHandler]]);
+  mockApollo = createMockApollo(
+    [[groupEpicsQuery, groupEpicsQueryHandler]],
+    {},
+    {
+      typePolicies: {
+        Query: {
+          fields: {
+            group: {
+              merge: true,
+            },
+          },
+        },
+      },
+    },
+  );
   wrapper = shallowMount(EpicsListRoot, {
     propsData: {
       initialFilterParams,
@@ -231,19 +248,14 @@ describe('EpicsListRoot', () => {
   });
 
   describe('template', () => {
-    beforeEach(() => {
-      createComponent();
-    });
-
     it('renders issuable-list component', async () => {
+      createComponent();
+      await waitForPromises();
       jest.spyOn(wrapper.vm, 'getFilteredSearchTokens');
-      // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
-      // eslint-disable-next-line no-restricted-syntax
-      wrapper.setData({
-        filterParams: {
-          search: 'foo',
-        },
-      });
+
+      getIssuableList().vm.$emit('filter', [
+        { id: 'token-1', type: 'filtered-search-term', value: { data: 'foo' } },
+      ]);
 
       await nextTick();
 
@@ -252,7 +264,11 @@ describe('EpicsListRoot', () => {
         namespace: mockProvide.groupFullPath,
         tabs: IssuableListTabs,
         currentTab: 'opened',
-        tabCounts: mockProvide.epicsCount,
+        tabCounts: {
+          all: 5,
+          closed: 0,
+          opened: 5,
+        },
         searchInputPlaceholder: 'Search or filter results...',
         sortOptions: EpicsSortOptions,
         initialFilterValue: ['foo'],
@@ -278,6 +294,7 @@ describe('EpicsListRoot', () => {
     `(
       'sets showPaginationControls prop value as $returnValue when hasPreviousPage is $hasPreviousPage and hasNextPage is $hasNextPage within `epics.pageInfo`',
       async ({ hasPreviousPage, hasNextPage, returnValue }) => {
+        createComponent();
         // setData usage is discouraged. See https://gitlab.com/groups/gitlab-org/-/epics/7330 for details
         // eslint-disable-next-line no-restricted-syntax
         wrapper.setData({
@@ -296,6 +313,7 @@ describe('EpicsListRoot', () => {
     );
 
     it('sets previousPage prop value a number representing previous page based on currentPage value', async () => {
+      createComponent();
       getIssuableList().vm.$emit('page-change', 3);
 
       await nextTick();
@@ -324,7 +342,7 @@ describe('EpicsListRoot', () => {
         },
       });
 
-      await nextTick();
+      await waitForPromises();
 
       expect(getIssuableList().props('nextPage')).toBeNull();
     });

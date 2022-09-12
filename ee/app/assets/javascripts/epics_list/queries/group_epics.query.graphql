@@ -67,5 +67,43 @@ query groupEpics(
         ...PageInfo
       }
     }
+    totalEpics: epics(
+      authorUsername: $authorUsername
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      myReactionEmoji: $myReactionEmoji
+      confidential: $confidential
+      not: $not
+      search: $search
+      sort: $sortBy
+    ) {
+      count
+    }
+    totalOpenedEpics: epics(
+      state: opened
+      authorUsername: $authorUsername
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      myReactionEmoji: $myReactionEmoji
+      confidential: $confidential
+      not: $not
+      search: $search
+      sort: $sortBy
+    ) {
+      count
+    }
+    totalClosedEpics: epics(
+      state: closed
+      authorUsername: $authorUsername
+      labelName: $labelName
+      milestoneTitle: $milestoneTitle
+      myReactionEmoji: $myReactionEmoji
+      confidential: $confidential
+      not: $not
+      search: $search
+      sort: $sortBy
+    ) {
+      count
+    }
   }
 }
