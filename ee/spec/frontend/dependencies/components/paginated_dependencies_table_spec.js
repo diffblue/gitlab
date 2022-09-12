@@ -86,9 +86,6 @@ describe('PaginatedDependenciesTable component', () => {
       await nextTick();
     });
 
-    // See https://github.com/jest-community/eslint-plugin-jest/issues/229 for
-    // a similar reason for disabling the rule on the next line
-    // eslint-disable-next-line jest/no-identical-title
     it('passes the correct props to the dependencies table', () => {
       expectComponentWithProps(DependenciesTable, {
         dependencies: module.dependencies,
