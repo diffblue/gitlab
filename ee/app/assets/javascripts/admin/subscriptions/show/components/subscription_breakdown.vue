@@ -185,7 +185,7 @@ export default {
     },
     actionPrimary: {
       text: i18n.removeLicense,
-      attributes: [{ variant: 'danger' }],
+      attributes: [{ variant: 'danger', 'data-qa-selector': 'confirm_remove_license' }],
     },
   },
   isDotCom: gon.dot_com,
@@ -274,7 +274,7 @@ export default {
                   variant="danger"
                   class="gl-mr-3"
                   data-testid="license-remove-action"
-                  data-qa-selector="remove_license_link"
+                  data-qa-selector="remove_license"
                 >
                   {{ $options.i18n.removeLicense }}
                 </gl-button>
