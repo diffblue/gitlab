@@ -36,7 +36,7 @@ describe('Members Utils', () => {
   });
 
   describe('canOverride', () => {
-    test.each`
+    it.each`
       member                                        | expected
       ${{ ...directMember, canOverride: true }}     | ${true}
       ${{ ...inheritedMember, canOverride: true }}  | ${false}
@@ -48,7 +48,7 @@ describe('Members Utils', () => {
   });
 
   describe('canUnban', () => {
-    test.each`
+    it.each`
       member                                               | expected
       ${{ ...memberMock, banned: true, canUnban: true }}   | ${true}
       ${{ ...memberMock, banned: true, canUnban: false }}  | ${false}
