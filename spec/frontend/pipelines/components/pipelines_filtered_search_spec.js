@@ -191,7 +191,7 @@ describe('Pipelines filtered search', () => {
       findFilteredSearch().vm.$emit('submit', mockSearch);
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_filtered_search', {
-        label: TRACKING_CATEGORIES.index,
+        label: TRACKING_CATEGORIES.search,
       });
     });
   });
