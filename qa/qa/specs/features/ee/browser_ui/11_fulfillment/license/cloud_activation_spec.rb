@@ -3,7 +3,7 @@
 module QA
   include QA::Support::Helpers::Plan
 
-  RSpec.describe 'Fulfillment', :requires_admin, :orchestrated, :cloud_activation do
+  RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, :orchestrated, :cloud_activation do
     let(:user) { 'GitLab QA' }
     let(:company) { 'QA User' }
     let(:user_count) { 10_000 }
@@ -63,8 +63,7 @@ module QA
 
       it 'successfully removes a cloud activation and shows flash notice', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364831' do
         Gitlab::Page::Admin::Subscription.perform do |subscription|
-          subscription.remove_license
-          subscription.confirm_ok_button
+          subscription.remove_license_file
 
           expect { subscription.no_valid_license_alert? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30)
           expect { subscription.no_active_subscription_title? }.to eventually_be_truthy.within(max_duration: 60, max_attempts: 30, reload_page: page)
