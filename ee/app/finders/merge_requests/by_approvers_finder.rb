@@ -9,8 +9,8 @@ module MergeRequests
     attr_reader :usernames, :ids
 
     def initialize(usernames, ids)
-      @usernames = usernames.to_a.map(&:to_s)
-      @ids = ids
+      @usernames = Array(usernames).map(&:to_s).uniq
+      @ids = Array(ids).uniq
     end
 
     def execute(items)
@@ -38,7 +38,7 @@ module MergeRequests
     end
 
     def includes_custom_label?(label)
-      ids.to_s.downcase == label || usernames.map(&:downcase).include?(label)
+      ids.first.to_s.downcase == label || usernames.map(&:downcase).include?(label)
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
