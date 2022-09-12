@@ -39,12 +39,28 @@ RSpec.describe Vulnerabilities::Advisory, type: :model do
           "vector string may not be longer than #{described_class::VECTOR_MAX_LENGTH} characters")
       end
 
-      it 'delegates validation to CVSS class when vector is present' do
-        expect_next_instance_of(::Gitlab::Vulnerabilities::Cvss::V3) do |cvss|
-          expect(cvss).to receive(:valid?).and_call_original
-        end
+      context 'when vector is valid' do
+        it 'delegates validation to Cvss::V3' do
+          expect_next_instance_of(::Gitlab::Vulnerabilities::Cvss::V3) do |cvss|
+            expect(cvss).to receive(:valid?).and_call_original
+          end
 
-        expect(advisory).to be_valid
+          expect(advisory).to be_valid
+        end
+      end
+
+      context 'when vector is invalid' do
+        let(:errors) { %w[error1 error2] }
+
+        it 'delegates validation to Cvss::V3 and uses returned errors' do
+          expect_next_instance_of(::Gitlab::Vulnerabilities::Cvss::V3) do |cvss|
+            expect(cvss).to receive(:valid?).and_return(false)
+            expect(cvss).to receive(:errors).and_return(errors)
+          end
+
+          expect(advisory).to be_invalid
+          expect(advisory.errors[:cvss_v3]).to match_array(errors)
+        end
       end
 
       context 'when vector is not present' do
