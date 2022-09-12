@@ -134,16 +134,6 @@ RSpec.describe Projects::SlackApplicationInstallService do
           expect(legacy_installation_for_other_team).not_to have_attributes(expected_attributes)
         end
       end
-
-      context 'when the update_legacy_slack_installations flag is disabled' do
-        before do
-          stub_feature_flags(update_legacy_slack_installations: false)
-        end
-
-        it 'does not update related records' do
-          expect { service.execute }.not_to change { other_legacy_installation.reload.attributes }
-        end
-      end
     end
   end
 end
