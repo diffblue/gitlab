@@ -8,7 +8,7 @@ RSpec.describe 'Thread Comments Epic', :js do
 
   before do
     stub_licensed_features(epics: true)
-    stub_feature_flags(remove_user_attributes: false)
+    stub_feature_flags(remove_user_attributes_groups: false)
     epic.group.add_maintainer(user)
     sign_in(user)
 

@@ -13,7 +13,8 @@ describe('Event Item', () => {
       ...propsData,
       provide: {
         glFeatures: {
-          removeUserAttributes: false,
+          removeUserAttributesProjects: false,
+          removeUserAttributesGroups: false,
         },
       },
     });
