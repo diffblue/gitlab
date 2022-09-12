@@ -6,9 +6,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Harbor Registry **(FREE)**
 
-With the successful integration of the Harbor Registry into GitLab, you can use Harbor as the container registry for your GitLab project to store images.
-
-Please read [Harbor container registry integration](../../../user/project/integrations/harbor.md#harbor-container-registry-integration) for more information about the Harbor integration.
+You can integrate the [Harbor container registry](../../../user/project/integrations/harbor.md#harbor-container-registry-integration) into GitLab and use Harbor as the container registry for your GitLab project to store images.
 
 ## View the Harbor Registry
 
