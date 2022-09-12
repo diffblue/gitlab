@@ -34,7 +34,7 @@ module Ci
 
     DEPLOYMENT_NAMES = %w[deploy release rollout].freeze
 
-    has_one :deployment, as: :deployable, class_name: 'Deployment'
+    has_one :deployment, as: :deployable, class_name: 'Deployment', inverse_of: :deployable
     has_one :pending_state, class_name: 'Ci::BuildPendingState', inverse_of: :build
     has_one :queuing_entry, class_name: 'Ci::PendingBuild', foreign_key: :build_id
     has_one :runtime_metadata, class_name: 'Ci::RunningBuild', foreign_key: :build_id
@@ -441,6 +441,15 @@ module Ci
 
     def waiting_for_deployment_approval?
       manual? && starts_environment? && deployment&.blocked?
+    end
+
+    def prevent_rollback_deployment?
+      strong_memoize(:prevent_rollback_deployment) do
+        Feature.enabled?(:prevent_outdated_deployment_jobs, project) &&
+          starts_environment? &&
+          project.ci_forward_deployment_enabled? &&
+          deployment&.older_than_last_successful_deployment?
+      end
     end
 
     def schedulable?
