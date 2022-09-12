@@ -25,7 +25,8 @@ describe('Security Reports modal', () => {
       },
       provide: {
         glFeatures: {
-          removeUserAttributes: false,
+          removeUserAttributesProjects: false,
+          removeUserAttributesGroups: false,
         },
       },
     });

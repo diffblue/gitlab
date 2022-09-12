@@ -8,7 +8,7 @@ RSpec.shared_examples 'status page quick actions' do
 
     before do
       stub_licensed_features(status_page: true)
-      stub_feature_flags(remove_user_attributes: false)
+      stub_feature_flags(remove_user_attributes_projects: false)
     end
 
     shared_examples 'skip silently' do

@@ -19,7 +19,7 @@ class Groups::EpicsController < Groups::ApplicationController
   before_action do
     push_frontend_feature_flag(:realtime_labels, group)
     push_frontend_feature_flag(:epic_color_highlight, @group)
-    push_frontend_feature_flag(:remove_user_attributes, @group)
+    push_frontend_feature_flag(:remove_user_attributes_groups, @group)
   end
 
   feature_category :portfolio_management
