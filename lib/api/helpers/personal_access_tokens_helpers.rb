@@ -3,12 +3,43 @@
 module API
   module Helpers
     module PersonalAccessTokensHelpers
+      InvalidParamsError = Class.new(StandardError)
+
       def finder_params(current_user)
-        if current_user.can_admin_all_resources?
-          { user: user(params[:user_id]) }
-        else
-          { user: current_user, impersonation: false }
+        user_param =
+          if current_user.can_admin_all_resources?
+            { user: user(params[:user_id]) }
+          else
+            { user: current_user, impersonation: false }
+          end
+
+        declared(params, include_missing: false).merge(user_param)
+      end
+
+      def params_validator!
+        # rubocop:disable Style/GuardClause
+        unless filter_by_created_at_valid?
+          raise InvalidParamsError, 'The filter which searches for token created after a specific date cannot be larger
+           than creation date'
         end
+
+        unless filter_by_last_used_at_valid?
+          raise InvalidParamsError, 'When using last used date filter, last_used_before date should be greater than or
+           equal to last_used_after date.'
+        end
+        # rubocop:enable Style/GuardClause
+      end
+
+      def filter_by_created_at_valid?
+        return true unless params[:created_before] && params[:created_after]
+
+        params[:created_after] <= params[:created_before]
+      end
+
+      def filter_by_last_used_at_valid?
+        return true unless params[:last_used_before] && params[:last_used_after]
+
+        params[:last_used_after] <= params[:last_used_before]
       end
 
       def user(user_id)
