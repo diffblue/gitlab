@@ -16080,9 +16080,6 @@ msgstr ""
 msgid "Failed to load deploy keys."
 msgstr ""
 
-msgid "Failed to load emoji list."
-msgstr ""
-
 msgid "Failed to load error details from Sentry."
 msgstr ""
 
@@ -30172,13 +30169,7 @@ msgstr ""
 msgid "Profiles|Add key"
 msgstr ""
 
-msgid "Profiles|Add status emoji"
-msgstr ""
-
 msgid "Profiles|An error occurred while updating your username, please try again."
-msgstr ""
-
-msgid "Profiles|An indicator appears next to your name and avatar."
 msgstr ""
 
 msgid "Profiles|Avatar cropper"
@@ -30191,9 +30182,6 @@ msgid "Profiles|Begins with %{ssh_key_algorithms}."
 msgstr ""
 
 msgid "Profiles|Bio"
-msgstr ""
-
-msgid "Profiles|Busy"
 msgstr ""
 
 msgid "Profiles|Change username"
@@ -30209,9 +30197,6 @@ msgid "Profiles|Choose to show contributions of private projects on your public 
 msgstr ""
 
 msgid "Profiles|City, country"
-msgstr ""
-
-msgid "Profiles|Clear status"
 msgstr ""
 
 msgid "Profiles|Commit email"
@@ -30463,9 +30448,6 @@ msgstr ""
 msgid "Profiles|Website url"
 msgstr ""
 
-msgid "Profiles|What's your status?"
-msgstr ""
-
 msgid "Profiles|Who you represent or work for."
 msgstr ""
 
@@ -30509,9 +30491,6 @@ msgid "Profiles|Your name was automatically set based on your %{provider_label} 
 msgstr ""
 
 msgid "Profiles|Your name was automatically set based on your %{provider_label} account, so people you know can recognize you."
-msgstr ""
-
-msgid "Profiles|Your status"
 msgstr ""
 
 msgid "Profiles|https://website.com"
