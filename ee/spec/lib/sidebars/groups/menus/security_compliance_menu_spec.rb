@@ -167,38 +167,12 @@ RSpec.describe Sidebars::Groups::Menus::SecurityComplianceMenu do
         end
 
         context 'when group security policies feature is disabled' do
-          before do
-            stub_feature_flags(group_level_security_policies: true)
-          end
-
           it_behaves_like 'menu access rights'
         end
 
-        context 'when group security policies feature is enabled' do
+        context 'when scan_policies feature is not enabled' do
           before do
-            stub_feature_flags(group_level_security_policies: false)
-          end
-
-          specify { is_expected.to be_nil }
-        end
-      end
-
-      context 'when scan_policies feature is not enabled' do
-        before do
-          stub_licensed_features(security_orchestration_policies: false)
-        end
-
-        context 'when group security policies feature is disabled' do
-          before do
-            stub_feature_flags(group_level_security_policies: true)
-          end
-
-          specify { is_expected.to be_nil }
-        end
-
-        context 'when group security policies feature is enabled' do
-          before do
-            stub_feature_flags(group_level_security_policies: false)
+            stub_licensed_features(security_orchestration_policies: false)
           end
 
           specify { is_expected.to be_nil }

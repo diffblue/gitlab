@@ -7,7 +7,6 @@ module Groups
       before_action :validate_policy_configuration, only: :edit
 
       before_action do
-        push_frontend_feature_flag(:group_level_security_policies, group)
         push_frontend_feature_flag(:group_level_scan_result_policies, group)
       end
 
@@ -65,8 +64,7 @@ module Groups
       end
 
       def group_security_policy_available?
-        can?(current_user, :read_security_orchestration_policies, group) &&
-          Feature.enabled?(:group_level_security_policies, group)
+        can?(current_user, :read_security_orchestration_policies, group)
       end
 
       def authorize_group_security_policies!
