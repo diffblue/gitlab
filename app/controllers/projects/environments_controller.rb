@@ -5,6 +5,8 @@ class Projects::EnvironmentsController < Projects::ApplicationController
   # into app/controllers/projects/metrics_dashboard_controller.rb
   # See https://gitlab.com/gitlab-org/gitlab/-/issues/226002 for more details.
 
+  MIN_SEARCH_LENGTH = 3
+
   include MetricsDashboard
   include ProductAnalyticsTracking
 
@@ -262,11 +264,13 @@ class Projects::EnvironmentsController < Projects::ApplicationController
   end
 
   def search_environments(type: nil)
+    search = params[:search] if params[:search] && params[:search].length >= MIN_SEARCH_LENGTH
+
     @search_environments ||=
       Environments::EnvironmentsFinder.new(project,
                                            current_user,
                                            type: type,
-                                           search: params[:search]).execute
+                                           search: search).execute
   end
 
   def metrics_params

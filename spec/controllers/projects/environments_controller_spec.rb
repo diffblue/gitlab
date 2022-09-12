@@ -70,6 +70,16 @@ RSpec.describe Projects::EnvironmentsController do
           expect(json_response['stopped_count']).to eq 1
         end
 
+        it 'ignores search option if is shorter than a minimum' do
+          get :index, params: environment_params(format: :json, search: 'st')
+
+          expect(environments.map { |env| env['name'] } ).to contain_exactly('production',
+                                                                             'staging/review-1',
+                                                                             'staging/review-2')
+          expect(json_response['available_count']).to eq 3
+          expect(json_response['stopped_count']).to eq 1
+        end
+
         it 'sets the polling interval header' do
           subject
 
