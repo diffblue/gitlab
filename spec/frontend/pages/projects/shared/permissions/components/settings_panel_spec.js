@@ -859,6 +859,14 @@ describe('Settings Panel', () => {
         expect(findMonitorSettings().exists()).toBe(true);
         expect(findOperationsSettings().exists()).toBe(false);
       });
+      it('when monitorAccessLevel is for project members, it is also for everyone', () => {
+        wrapper = mountComponent({
+          glFeatures: { splitOperationsVisibilityPermissions: true },
+          currentSettings: { monitorAccessLevel: featureAccessLevel.PROJECT_MEMBERS },
+        });
+
+        expect(findMetricsVisibilityInput().props('value')).toBe(featureAccessLevel.EVERYONE);
+      });
     });
     describe('without feature flag', () => {
       it('shows Operations toggle instead of Monitor toggle', () => {
