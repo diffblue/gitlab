@@ -63,7 +63,7 @@ describe('Timeline events form', () => {
   };
 
   it('renders markdown-field component with correct list of toolbar items', () => {
-    mountComponent({ mountMethod: mountExtended })
+    mountComponent({ mountMethod: mountExtended });
 
     expect(findMarkdownField().props('restrictedToolBarItems')).toEqual([
       'quote',
