@@ -296,17 +296,30 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           context 'when the trial_onboarding_flow param is set' do
             let(:extra_params) { { trial_onboarding_flow: true } }
 
-            before do
-              allow(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async)
+            context 'when trial is in background' do
+              before do
+                allow(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async)
+              end
+
+              it { is_expected.to redirect_to(success_path) }
             end
 
-            it { is_expected.to redirect_to(success_path) }
+            context 'when trial is in the foreground' do
+              before do
+                allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
+                  allow(service).to receive(:execute).and_return({ success: true })
+                end
+
+                stub_feature_flags(registration_trial_in_background: false)
+              end
+
+              it { is_expected.to redirect_to(success_path) }
+            end
           end
         end
       end
 
       context 'when in the trial onboarding flow' do
-        let(:success) { true }
         let(:extra_params) do
           { trial_onboarding_flow: true, glm_source: 'about.gitlab.com', glm_content: 'content' }
         end
@@ -323,22 +336,50 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           ).permit!
         end
 
-        before do
-          allow_next_instance_of(::Groups::CreateService) do |service|
-            allow(service).to receive(:execute).and_return(group)
+        context 'when trial is in background' do
+          before do
+            allow_next_instance_of(::Groups::CreateService) do |service|
+              allow(service).to receive(:execute).and_return(group)
+            end
+
+            expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async).with(user.id, trial_user_information) # rubocop:disable RSpec/ExpectInHook
           end
 
-          expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async).with(user.id, trial_user_information) # rubocop:disable RSpec/ExpectInHook
+          it 'applies a trial' do
+            post_create
+          end
         end
 
-        it 'applies a trial' do
-          post_create
-        end
+        context 'when trial is in the foreground' do
+          let(:result) { { success: true } }
 
-        context 'when failing to apply trial' do
-          let(:success) { false }
+          before do
+            stub_feature_flags(registration_trial_in_background: false)
 
-          it { is_expected.to render_template(:new) }
+            allow_next_instance_of(::Groups::CreateService) do |service|
+              allow(service).to receive(:execute).and_return(group)
+            end
+
+            expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
+              expect(service).to receive(:execute).with(uid: user.id, trial_user: trial_user_information) # rubocop:disable RSpec/ExpectInHook
+                                                  .and_return(result)
+            end
+          end
+
+          it 'applies a trial' do
+            post_create
+          end
+
+          context 'when failing to apply trial' do
+            let(:result) { { success: false, errors: '_error_' } }
+
+            it 'logs an error' do
+              expect(Gitlab::AppLogger).to receive(:error).with("Failed to apply a trial with #{result[:errors]}")
+                                                          .and_call_original
+
+              post_create
+            end
+          end
         end
       end
 

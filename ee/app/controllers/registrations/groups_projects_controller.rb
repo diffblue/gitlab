@@ -159,7 +159,19 @@ module Registrations
                                                                                 sync_to_gl: true
                                                                               })
 
-      GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(current_user.id, trial_user_information) # rubocop:todo CodeReuse/Worker
+      if Feature.enabled?(:registration_trial_in_background)
+        GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(current_user.id, trial_user_information) # rubocop:todo CodeReuse/Worker
+      else
+        apply_trial_params = {
+          uid: current_user.id,
+          trial_user: trial_user_information
+        }
+
+        result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
+        trial_errors = result&.dig(:errors)
+
+        Gitlab::AppLogger.error "Failed to apply a trial with #{trial_errors}" if trial_errors.present?
+      end
     end
 
     LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
