@@ -569,6 +569,51 @@ RSpec.describe Ci::Build do
     end
   end
 
+  describe '#prevent_rollback_deployment?' do
+    subject { build.prevent_rollback_deployment? }
+
+    let(:build) { create(:ci_build, :created, :with_deployment, project: project, environment: 'production') }
+
+    context 'when build has no environment' do
+      let(:build) { create(:ci_build, :created, project: project, environment: nil) }
+
+      it { expect(subject).to be_falsey }
+    end
+
+    context 'when project has forward deployment disabled' do
+      before do
+        project.ci_cd_settings.update!(forward_deployment_enabled: false)
+      end
+
+      it { expect(subject).to be_falsey }
+    end
+
+    context 'when deployment cannot rollback' do
+      before do
+        expect(build.deployment).to receive(:older_than_last_successful_deployment?).and_return(false)
+      end
+
+      it { expect(subject).to be_falsey }
+    end
+
+    context 'when prevent_outdated_deployment_jobs FF is disabled' do
+      before do
+        stub_feature_flags(prevent_outdated_deployment_jobs: false)
+        expect(build.deployment).not_to receive(:rollback?)
+      end
+
+      it { expect(subject).to be_falsey }
+    end
+
+    context 'when build can prevent rollback deployment' do
+      before do
+        expect(build.deployment).to receive(:older_than_last_successful_deployment?).and_return(true)
+      end
+
+      it { expect(subject).to be_truthy }
+    end
+  end
+
   describe '#schedulable?' do
     subject { build.schedulable? }
 

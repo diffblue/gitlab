@@ -12,6 +12,7 @@ RSpec.describe Deployments::AutoRollbackService, :clean_gitlab_redis_rate_limiti
 
   before_all do
     project.add_maintainer(maintainer)
+    project.ci_forward_deployment_enabled = false
     project.update!(auto_rollback_enabled: true)
   end
 

@@ -23,6 +23,8 @@ module EE
           return build.drop!(:protected_environment_failure)
         end
 
+        return build.drop!(:failed_outdated_deployment_job) if build.prevent_rollback_deployment?
+
         super
       end
     end
