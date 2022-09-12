@@ -5,12 +5,13 @@ require "spec_helper"
 RSpec.describe "User creates branch", :js do
   include Spec::Support::Helpers::Features::BranchesHelpers
 
-  let(:group) { create(:group, :public) }
+  let_it_be(:group) { create(:group, :public) }
+
   let(:user) { create(:user) }
 
   shared_examples 'creates new branch' do
     specify do
-      branch_name = "deploy_keys"
+      branch_name = "deploy_keys_#{SecureRandom.hex(4)}"
 
       create_branch(branch_name)
 
@@ -26,7 +27,7 @@ RSpec.describe "User creates branch", :js do
   end
 
   context 'when project is public with private repository' do
-    let(:project) { create(:project, :public, :repository, :repository_private, group: group) }
+    let_it_be(:project) { create(:project, :public, :repository, :repository_private, group: group) }
 
     context 'when user is an inherited member from the group' do
       context 'and user is a guest' do
@@ -54,7 +55,7 @@ RSpec.describe "User creates branch", :js do
   end
 
   context 'when project is private' do
-    let(:project) { create(:project, :private, :repository, group: group) }
+    let_it_be(:project) { create(:project, :private, :repository, group: group) }
 
     context 'when user is a direct project member' do
       context 'and user is a developer' do

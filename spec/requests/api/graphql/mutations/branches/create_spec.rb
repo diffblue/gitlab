@@ -5,10 +5,11 @@ require 'spec_helper'
 RSpec.describe 'Creation of a new branch' do
   include GraphqlHelpers
 
-  let(:group) { create(:group, :public) }
+  let_it_be(:group) { create(:group, :public) }
+
   let(:current_user) { create(:user) }
   let(:input) { { project_path: project.full_path, name: new_branch, ref: ref } }
-  let(:new_branch) { 'new_branch' }
+  let(:new_branch) { "new_branch_#{SecureRandom.hex(4)}" }
   let(:ref) { 'master' }
 
   let(:mutation) { graphql_mutation(:create_branch, input) }
@@ -27,7 +28,7 @@ RSpec.describe 'Creation of a new branch' do
   end
 
   context 'when project is public' do
-    let(:project) { create(:project, :public, :empty_repo) }
+    let_it_be(:project) { create(:project, :public, :empty_repo) }
 
     context 'when user is not allowed to create a branch' do
       it_behaves_like 'a mutation that returns a top-level access error'
@@ -53,7 +54,7 @@ RSpec.describe 'Creation of a new branch' do
 
     context 'when user is an inherited member from the group' do
       context 'when project has a private repository' do
-        let(:project) { create(:project, :public, :empty_repo, :repository_private, group: group) }
+        let_it_be(:project) { create(:project, :public, :empty_repo, :repository_private, group: group) }
 
         context 'and user is a guest' do
           before do
@@ -75,7 +76,7 @@ RSpec.describe 'Creation of a new branch' do
   end
 
   context 'when project is private' do
-    let(:project) { create(:project, :private, :empty_repo, group: group) }
+    let_it_be(:project) { create(:project, :private, :empty_repo, group: group) }
 
     context 'when user is an inherited member from the group' do
       context 'and user is a guest' do

@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe API::Files do
   include RepoHelpers
 
+  let_it_be(:group) { create(:group, :public) }
+
   let(:user) { create(:user) }
-  let(:group) { create(:group, :public) }
   let(:inherited_guest) { create(:user) { |u| group.add_guest(u) } }
   let(:inherited_reporter) { create(:user) { |u| group.add_reporter(u) } }
   let(:inherited_developer) { create(:user) { |u| group.add_developer(u) } }
@@ -392,7 +393,7 @@ RSpec.describe API::Files do
 
     context 'when authenticated', 'as an inherited member from the group' do
       context 'when project is public with private repository' do
-        let(:project) { create(:project, :public, :repository, :repository_private, group: group) }
+        let_it_be(:project) { create(:project, :public, :repository, :repository_private, group: group) }
 
         context 'and user is a guest' do
           it_behaves_like 'returns non-executable file attributes as json' do
@@ -414,7 +415,7 @@ RSpec.describe API::Files do
       end
 
       context 'when project is private' do
-        let(:project) { create(:project, :private, :repository, group: group) }
+        let_it_be(:project) { create(:project, :private, :repository, group: group) }
 
         context 'and user is a guest' do
           it_behaves_like '403 response' do
@@ -939,7 +940,7 @@ RSpec.describe API::Files do
 
     context 'when authenticated', 'as an inherited member from the group' do
       context 'and project is public with private repository' do
-        let(:project) { create(:project, :public, :repository, :repository_private, group: group) }
+        let_it_be(:project) { create(:project, :public, :repository, :repository_private, group: group) }
 
         context 'and user is a guest' do
           it_behaves_like '403 response' do
@@ -961,7 +962,7 @@ RSpec.describe API::Files do
       end
 
       context 'and project is private' do
-        let(:project) { create(:project, :private, :repository, group: group) }
+        let_it_be(:project) { create(:project, :private, :repository, group: group) }
 
         context 'and user is a guest' do
           it_behaves_like '403 response' do
