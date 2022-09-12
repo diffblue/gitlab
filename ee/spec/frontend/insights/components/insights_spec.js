@@ -230,7 +230,7 @@ describe('Insights component', () => {
       vuexStore.state.insights.configData = null;
     });
 
-    it('it displays a warning', async () => {
+    it('displays a warning', async () => {
       await nextTick();
       expect(wrapper.findComponent(GlEmptyState).attributes()).toMatchObject({
         title: 'Invalid Insights config file detected',
@@ -249,7 +249,7 @@ describe('Insights component', () => {
       vuexStore.state.insights.configData = {};
     });
 
-    it('it displays a warning', async () => {
+    it('displays a warning', async () => {
       await nextTick();
       expect(wrapper.findComponent(GlAlert).text()).toContain(
         'This project is filtered out in the insights.yml file',

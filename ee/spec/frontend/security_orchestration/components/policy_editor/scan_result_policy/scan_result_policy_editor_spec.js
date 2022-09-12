@@ -132,7 +132,7 @@ describe('ScanResultPolicyEditor', () => {
   });
 
   describe('default', () => {
-    it('it does not display an error', async () => {
+    it('does not display an error', async () => {
       factory();
       await nextTick();
 

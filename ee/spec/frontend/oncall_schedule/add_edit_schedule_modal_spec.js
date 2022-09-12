@@ -286,14 +286,14 @@ describe('AddScheduleModal', () => {
     describe('when the schedule timezone is updated', () => {
       useMockLocationHelper();
 
-      it('it should not reload the page if the timezone has not changed', async () => {
+      it('should not reload the page if the timezone has not changed', async () => {
         mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [] } } });
         submitForm();
         await waitForPromises();
         expect(window.location.reload).not.toHaveBeenCalled();
       });
 
-      it('it should reload the page if the timezone has changed', async () => {
+      it('should reload the page if the timezone has changed', async () => {
         mutate.mockResolvedValueOnce({ data: { oncallScheduleUpdate: { errors: [] } } });
         updateForm();
         await nextTick();

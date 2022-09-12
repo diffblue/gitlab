@@ -621,7 +621,7 @@ describe('EE Approvals RuleForm', () => {
           });
         });
 
-        it(`it does not disable the name text field`, () => {
+        it('does not disable the name text field', () => {
           expect(findNameInput().props('disabled')).toBe(false);
         });
       });
@@ -633,7 +633,7 @@ describe('EE Approvals RuleForm', () => {
           });
         });
 
-        it(`it disables the name text field`, () => {
+        it('disables the name text field', () => {
           expect(findNameInput().props('disabled')).toBe(true);
         });
       });

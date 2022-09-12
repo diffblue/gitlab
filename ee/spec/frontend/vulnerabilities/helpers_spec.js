@@ -93,7 +93,7 @@ describe('Vulnerabilities helpers', () => {
       ${'OWASP'} | ${false}
       ${'cve'}   | ${false}
       ${'CVE'}   | ${false}
-    `('it renders $expected for $type', ({ type, expected }) => {
+    `('renders $expected for $type', ({ type, expected }) => {
       expect(isSupportedIdentifier(type)).toBe(expected);
     });
   });

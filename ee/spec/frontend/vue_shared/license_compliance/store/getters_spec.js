@@ -131,7 +131,7 @@ describe('getters', () => {
     });
 
     it.each(['failed', 'neutral', 'success'])(
-      `it filters report-groups that don't have the given status: %s`,
+      `filters report-groups that don't have the given status: %s`,
       (status) => {
         const newLicenses = [{ status }];
 

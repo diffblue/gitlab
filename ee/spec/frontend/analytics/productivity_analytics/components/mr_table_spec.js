@@ -73,7 +73,7 @@ describe('MergeRequestTable component', () => {
   });
 
   describe('columnMetricChange', () => {
-    it('it emits the metric key when item is selected from the dropdown', async () => {
+    it('emits the metric key when item is selected from the dropdown', async () => {
       findFirstDropdownItem().vm.$emit('click');
 
       await nextTick();

@@ -253,7 +253,7 @@ describe('Zuora', () => {
       });
 
       describe('when dispatching an empty event', () => {
-        it('it shows the loading icon', () => {
+        it('shows the loading icon', () => {
           window.dispatchEvent(new MessageEvent('message', { data: '' }));
 
           expect(findLoading().exists()).toBe(true);
@@ -261,7 +261,7 @@ describe('Zuora', () => {
       });
 
       describe('when dispatching an event with the wrong format', () => {
-        it('it shows the loading icon', () => {
+        it('shows the loading icon', () => {
           window.dispatchEvent(new MessageEvent('message', { data: [] }));
 
           expect(findLoading().exists()).toBe(true);

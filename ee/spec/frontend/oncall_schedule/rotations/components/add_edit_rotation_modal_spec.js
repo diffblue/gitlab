@@ -309,7 +309,7 @@ describe('AddEditRotationModal', () => {
   });
 
   describe('with mocked Apollo client', () => {
-    it('it calls the `searchProjectMembersQuery` query with the search parameter and project path', async () => {
+    it('calls the `searchProjectMembersQuery` query with the search parameter and project path', async () => {
       userSearchQueryHandler = jest.fn().mockResolvedValue({
         data: {
           users: {

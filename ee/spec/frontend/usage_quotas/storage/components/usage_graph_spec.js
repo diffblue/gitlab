@@ -97,7 +97,7 @@ describe('Storage Counter usage graph component', () => {
       mountComponent(data);
     });
 
-    it('it does not render', () => {
+    it('does not render', () => {
       expect(wrapper.html()).toEqual('');
     });
   });
@@ -128,7 +128,7 @@ describe('Storage Counter usage graph component', () => {
       mountComponent(data);
     });
 
-    it('it does render correclty', () => {
+    it('does render correclty', () => {
       expect(findStorageTypeUsagesSerialized()).toStrictEqual([
         '0.29411764705882354',
         '0.23529411764705882',
