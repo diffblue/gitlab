@@ -22,11 +22,11 @@ module Gitlab
           full_path = group.full_path
 
           [
-           "#{base_url}#{full_path}",
-           "#{base_url}groups/#{full_path}/-/issues",
-           "#{base_url}groups/#{full_path}/-/merge_requests",
-           "#{base_url}groups/#{full_path}/-/packages",
-           "#{base_url}groups/#{full_path}/-/epics"
+            "#{base_url}#{full_path}",
+            "#{base_url}groups/#{full_path}/-/issues",
+            "#{base_url}groups/#{full_path}/-/merge_requests",
+            "#{base_url}groups/#{full_path}/-/packages",
+            "#{base_url}groups/#{full_path}/-/epics"
           ]
         end
 
@@ -34,7 +34,7 @@ module Gitlab
           full_path = project.full_path
 
           [
-           "#{base_url}#{full_path}"
+            "#{base_url}#{full_path}"
           ].tap do |urls|
             urls << "#{base_url}#{full_path}/-/merge_requests" if project.feature_available?(:merge_requests, nil)
             urls << "#{base_url}#{full_path}/-/issues" if project.feature_available?(:issues, nil)

@@ -76,11 +76,12 @@ RSpec.describe Groups::Analytics::CoverageReportsController do
         )
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(csv_response).to eq([
-          %w[date group_name project_name coverage],
-          [last_coverage.date.to_s, last_coverage.group_name, project.name, last_coverage.data['coverage'].to_s],
-          [first_coverage.date.to_s, first_coverage.group_name, project.name, first_coverage.data['coverage'].to_s]
-        ])
+        expect(csv_response).to eq(
+          [
+            %w[date group_name project_name coverage],
+            [last_coverage.date.to_s, last_coverage.group_name, project.name, last_coverage.data['coverage'].to_s],
+            [first_coverage.date.to_s, first_coverage.group_name, project.name, first_coverage.data['coverage'].to_s]
+          ])
       end
 
       context 'when ref_path is nil' do

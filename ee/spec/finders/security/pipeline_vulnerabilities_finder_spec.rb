@@ -61,14 +61,15 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
         it 'orders by severity and confidence' do
           allow_next_instance_of(described_class) do |pipeline_vulnerabilities_finder|
-            allow(pipeline_vulnerabilities_finder).to receive(:filter).and_return([
-                 unknown_low,
-                 unknown_medium,
-                 critical_high,
-                 unknown_high,
-                 critical_medium,
-                 high_high
-          ])
+            allow(pipeline_vulnerabilities_finder).to receive(:filter).and_return(
+              [
+                unknown_low,
+                unknown_medium,
+                critical_high,
+                unknown_high,
+                critical_medium,
+                high_high
+              ])
 
             expect(subject.findings).to eq([critical_high, critical_medium, high_high, unknown_high, unknown_medium, unknown_low])
           end

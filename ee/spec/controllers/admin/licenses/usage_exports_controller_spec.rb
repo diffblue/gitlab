@@ -105,10 +105,10 @@ RSpec.describe Admin::Licenses::UsageExportsController do
         export_license_usage_file
 
         expect(CSV.parse(response.body)).to eq([
-          ['Date', 'Billable User Count'],
-          %w[2020-08-26 1],
-          %w[2020-08-27 2]
-        ])
+                                                 ['Date', 'Billable User Count'],
+                                                 %w[2020-08-26 1],
+                                                 %w[2020-08-27 2]
+                                               ])
       end
     end
   end

@@ -7,19 +7,19 @@ RSpec.describe 'DevOps Reports page', :js do
   tab_item_selector = '.nav-item'
   active_tab_selector = '.nav-link.active'
   tabs = [
-      {
-        value: 'sec',
-        text: 'Sec'
-      },
-      {
-        value: 'ops',
-        text: 'Ops'
-      },
-      {
-        value: 'devops-score',
-        text: 'DevOps Score'
-      }
-    ]
+    {
+      value: 'sec',
+      text: 'Sec'
+    },
+    {
+      value: 'ops',
+      text: 'Ops'
+    },
+    {
+      value: 'devops-score',
+      text: 'DevOps Score'
+    }
+  ]
 
   before do
     admin = create(:admin)

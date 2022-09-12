@@ -75,12 +75,13 @@ RSpec.describe Admin::AuditLogReportsController do
         it 'returns a csv file in response', :aggregate_failures do
           subject
 
-          expect(csv_response).to eq([
-            ["ID", "Author Name", "Action", "Entity Type", "Target Details"],
-            ["18", "タンさん", "Added new project", "Project", "gitlab-org/awesome-rails"],
-            ["19", "Ru'by McRüb\"Face", "!@#$%^&*()`~ new project", "Project", "¯\\_(ツ)_/¯"],
-            ["20", "sǝʇʎq ƃuᴉpoɔǝp", ",./;'[]\-= old project", "Project", "¯\\_(ツ)_/¯"]
-          ])
+          expect(csv_response).to eq(
+            [
+              ["ID", "Author Name", "Action", "Entity Type", "Target Details"],
+              ["18", "タンさん", "Added new project", "Project", "gitlab-org/awesome-rails"],
+              ["19", "Ru'by McRüb\"Face", "!@#$%^&*()`~ new project", "Project", "¯\\_(ツ)_/¯"],
+              ["20", "sǝʇʎq ƃuᴉpoɔǝp", ",./;'[]\-= old project", "Project", "¯\\_(ツ)_/¯"]
+            ])
         end
 
         context 'when date range params are not provided' do

@@ -150,10 +150,13 @@ module Gitlab
 
         events_from_date = ::Event.where(cte_condition).where(Event.arel_table[:created_at].gteq(from))
 
-        ::Event.with(cte.to_arel).from_union([
-          events_from_date.where(action: :pushed, target_type: nil),
-          events_from_date.where(action: [:created, :closed, :merged, :approved], target_type: [::MergeRequest.name, ::Issue.name])
-        ], remove_duplicates: false)
+        ::Event.with(cte.to_arel).from_union(
+          [
+            events_from_date.where(action: :pushed, target_type: nil),
+            events_from_date.where(
+              action: [:created, :closed, :merged, :approved],
+              target_type: [::MergeRequest.name, ::Issue.name])
+          ], remove_duplicates: false)
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
