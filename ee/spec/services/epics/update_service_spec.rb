@@ -30,6 +30,11 @@ RSpec.describe Epics::UpdateService do
       described_class.new(group: group, current_user: user, params: opts).execute(epic)
     end
 
+    it_behaves_like 'issuable update service updating last_edited_at values' do
+      let(:issuable) { epic }
+      subject(:update_issuable) { update_epic(update_params) }
+    end
+
     context 'multiple values update' do
       let(:opts) do
         {
@@ -55,10 +60,6 @@ RSpec.describe Epics::UpdateService do
           confidential: true
         )
         expect(epic).to be_closed
-      end
-
-      it 'updates the last_edited_at value' do
-        expect { update_epic(opts) }.to change { epic.last_edited_at }
       end
     end
 
