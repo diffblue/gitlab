@@ -8,6 +8,10 @@ class Groups::RunnersController < Groups::ApplicationController
     push_frontend_feature_flag(:runner_list_stacked_layout, @group)
   end
 
+  before_action only: [:show] do
+    push_frontend_feature_flag(:enforce_runner_token_expires_at)
+  end
+
   feature_category :runner
   urgency :low
 
