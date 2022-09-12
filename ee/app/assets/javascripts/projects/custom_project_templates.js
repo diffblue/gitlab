@@ -17,7 +17,6 @@ const bindEvents = () => {
   const $projectTemplateButtons = $('.project-templates-buttons');
   const $projectFieldsFormInput = $('.project-fields-form input#project_use_custom_template');
   const $subgroupWithTemplatesIdInput = $('.js-project-group-with-project-templates-id');
-  const $namespaceSelect = $projectFieldsForm.find('.js-select-namespace');
   const $pagination = $('.gl-pagination');
   let hasUserDefinedProjectName = false;
 
@@ -31,28 +30,6 @@ const bindEvents = () => {
 
   function disableCustomTemplate() {
     $projectFieldsFormInput.val(false);
-  }
-
-  function hideNonRootParentPathOptions() {
-    const rootParent = `/${
-      $namespaceSelect.find('option:selected').data('show-path')?.split('/')[1]
-    }`;
-
-    $namespaceSelect
-      .find('option')
-      .filter(function doesNotMatchParent() {
-        return !$(this).data('show-path').includes(rootParent);
-      })
-      .addClass('hidden');
-  }
-
-  function hideOptionlessOptgroups() {
-    $namespaceSelect
-      .find('optgroup')
-      .filter(function noVisibleOptions() {
-        return !$(this).find('option:not(.hidden)').length;
-      })
-      .addClass('hidden');
   }
 
   function chooseTemplate() {
@@ -70,11 +47,6 @@ const bindEvents = () => {
       );
 
       $subgroupWithTemplatesIdInput.val(subgroupId);
-      $namespaceSelect.val(groupId).trigger('change');
-
-      hideNonRootParentPathOptions();
-
-      hideOptionlessOptgroups();
     }
 
     $projectTemplateButtons.addClass('hidden');
@@ -108,8 +80,6 @@ const bindEvents = () => {
         hasUserDefinedProjectName,
       ),
     );
-
-    $projectFieldsForm.find('.js-select-namespace').first().val(groupId);
   }
 
   $useCustomTemplateBtn.on('change', chooseTemplate);
@@ -117,10 +87,6 @@ const bindEvents = () => {
   $changeTemplateBtn.on('click', () => {
     $projectTemplateButtons.removeClass('hidden');
     $useCustomTemplateBtn.prop('checked', false);
-    $namespaceSelect
-      .val($namespaceSelect.find('option[data-options-parent="users"]').val())
-      .trigger('change');
-    $namespaceSelect.find('option, optgroup').removeClass('hidden');
     disableCustomTemplate();
   });
 
