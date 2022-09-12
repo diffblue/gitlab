@@ -338,7 +338,7 @@ RSpec.describe GroupsFinder do
           )
         end
 
-        it 'returns project's parent group if user is member of project' do
+        it "returns project's parent group if user is member of project" do
           project = create(:project, :private, namespace: private_sub_subgroup)
           project.add_developer(user)
 
