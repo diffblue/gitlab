@@ -1,4 +1,4 @@
-import { GlSearchBoxByType } from '@gitlab/ui';
+import { GlEmptyState, GlSearchBoxByType } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { setHTMLFixture } from 'helpers/fixtures';
 import SearchSettings from '~/search_settings/components/search_settings.vue';
@@ -14,7 +14,6 @@ describe('search_settings/components/search_settings.vue', () => {
   const EXTRA_SETTINGS_ID = 'js-extra-settings';
   const TEXT_CONTAIN_SEARCH_TERM = `This text contain ${SEARCH_TERM}.`;
   const TEXT_WITH_SIBLING_ELEMENTS = `${SEARCH_TERM} <a data-testid="sibling" href="#">Learn more</a>.`;
-  const EMPTY_STATE_CLASS = 'empty-state';
   const HIDE_WHEN_EMPTY_CLASS = 'js-hide-when-nothing-matches-search';
   let wrapper;
 
@@ -48,7 +47,7 @@ describe('search_settings/components/search_settings.vue', () => {
 
   const findMatchSiblingElement = () => document.querySelector(`[data-testid="sibling"]`);
   const findSearchBox = () => wrapper.find(GlSearchBoxByType);
-  const findEmptyState = () => document.querySelector(`.${EMPTY_STATE_CLASS}`);
+  const findEmptyState = () => wrapper.find(GlEmptyState);
   const findHideWhenEmpty = () => document.querySelector(`.${HIDE_WHEN_EMPTY_CLASS}`);
   const search = (term) => {
     findSearchBox().vm.$emit('input', term);
@@ -106,11 +105,11 @@ describe('search_settings/components/search_settings.vue', () => {
     });
 
     it('shows an empty state', () => {
-      expect(findEmptyState()).toBeDefined();
+      expect(findEmptyState().exists()).toBe(true);
     });
 
     it('hides the form buttons', () => {
-      expect(findHideWhenEmpty()).toHaveClass('gl-display-none');
+      expect(findHideWhenEmpty()).toHaveClass(HIDE_CLASS);
     });
   });
 
@@ -120,11 +119,11 @@ describe('search_settings/components/search_settings.vue', () => {
     });
 
     it('shows no empty state', () => {
-      expect(findEmptyState()).toBeNull();
+      expect(findEmptyState().exists()).toBe(false);
     });
 
     it('shows the form buttons', () => {
-      expect(findHideWhenEmpty()).not.toHaveClass('gl-display-none');
+      expect(findHideWhenEmpty()).not.toHaveClass(HIDE_CLASS);
     });
   });
 
@@ -178,7 +177,7 @@ describe('search_settings/components/search_settings.vue', () => {
       });
 
       it('hides the empty state', () => {
-        expect(findEmptyState()).toBeNull();
+        expect(findEmptyState().exists()).toBe(false);
       });
 
       it('removes the highlight from all elements', () => {
