@@ -387,14 +387,6 @@ RSpec.describe API::ProtectedEnvironments do
 
     it_behaves_like 'group-level request is disallowed for maintainer'
 
-    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
-      before do
-        stub_feature_flags(group_level_protected_environment_settings_permission: false)
-      end
-
-      it_behaves_like 'group-level request is allowed for maintainer'
-    end
-
     context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
       before do
         stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
@@ -428,9 +420,9 @@ RSpec.describe API::ProtectedEnvironments do
 
     it_behaves_like 'group-level request is disallowed for maintainer'
 
-    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
       before do
-        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
       end
 
       it_behaves_like 'group-level request is allowed for maintainer'
@@ -486,9 +478,9 @@ RSpec.describe API::ProtectedEnvironments do
       let(:request) { post api_url, params: { name: 'staging' } }
     end
 
-    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
       before do
-        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
       end
 
       it_behaves_like 'group-level request is allowed for maintainer' do
@@ -606,9 +598,9 @@ RSpec.describe API::ProtectedEnvironments do
       let(:request) { put api_url, params: { name: 'production' } }
     end
 
-    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
       before do
-        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
       end
 
       it_behaves_like 'group-level request is allowed for maintainer' do
@@ -697,9 +689,9 @@ RSpec.describe API::ProtectedEnvironments do
 
     it_behaves_like 'group-level request is disallowed for maintainer'
 
-    context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
       before do
-        stub_feature_flags(group_level_protected_environment_settings_permission: false)
+        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
       end
 
       it_behaves_like 'group-level request is allowed for maintainer'

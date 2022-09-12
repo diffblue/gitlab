@@ -70,9 +70,9 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
         expect(response).to have_gitlab_http_status(:not_found)
       end
 
-      context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+      context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
         before do
-          stub_feature_flags(group_level_protected_environment_settings_permission: false)
+          stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
         end
 
         it 'creates a new ProtectedEnvironment' do
@@ -132,9 +132,9 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
         expect(response).to have_gitlab_http_status(:not_found)
       end
 
-      context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+      context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
         before do
-          stub_feature_flags(group_level_protected_environment_settings_permission: false)
+          stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
         end
 
         it 'updates the protected environment' do
@@ -192,9 +192,9 @@ RSpec.describe Groups::ProtectedEnvironmentsController do
         expect(response).to have_gitlab_http_status(:not_found)
       end
 
-      context 'when group_level_protected_environment_settings_permission feature flag is disabled' do
+      context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
         before do
-          stub_feature_flags(group_level_protected_environment_settings_permission: false)
+          stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
         end
 
         it 'deletes the requested protected environment' do
