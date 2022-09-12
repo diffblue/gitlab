@@ -9,13 +9,17 @@ const monthsForQuarters = {
   4: [9, 10, 11],
 };
 
+export const getFirstDay = () => {
+  return window?.gon?.first_day_of_week ?? 0;
+};
+
 export const getWeeksForDates = (startDate, endDate) => {
   const timeframe = [];
   const start = newDate(startDate);
   const end = newDate(endDate);
 
   // Move to Sunday that comes just before startDate
-  start.setDate(start.getDate() - start.getDay());
+  start.setDate(start.getDate() - start.getDay() + getFirstDay());
 
   while (start.getTime() < end.getTime()) {
     // Push date to timeframe only when day is
