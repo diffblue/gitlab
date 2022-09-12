@@ -914,7 +914,7 @@ module Gitlab
       end
 
       # rubocop:disable Metrics/ParameterLists
-      def multi_action(
+      def commit_files(
         user, branch_name:, message:, actions:,
         author_email: nil, author_name: nil,
         start_branch_name: nil, start_sha: nil, start_repository: nil,
