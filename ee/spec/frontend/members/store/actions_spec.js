@@ -61,7 +61,7 @@ describe('Vuex members actions', () => {
               type: types.RECEIVE_LDAP_OVERRIDE_ERROR,
             },
           ]),
-        ).rejects.toThrowError(new Error('Network Error'));
+        ).rejects.toThrow(new Error('Network Error'));
       });
     });
   });

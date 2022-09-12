@@ -53,7 +53,7 @@ describe('dora_api.js', () => {
     it('throws an error when an invalid metric type is provided', () => {
       const callFunction = () => DoraApi[functionName](1, 'invalid_metric_type');
 
-      expect(callFunction).toThrowError('Unsupported metric type: "invalid_metric_type"');
+      expect(callFunction).toThrow('Unsupported metric type: "invalid_metric_type"');
 
       expect(axios.get).not.toHaveBeenCalled();
     });

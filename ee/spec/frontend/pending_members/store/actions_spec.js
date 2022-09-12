@@ -45,7 +45,7 @@ describe('Pending members actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(spy).toBeCalledWith(state.namespaceId, expect.objectContaining(payload));
+      expect(spy).toHaveBeenCalledWith(state.namespaceId, expect.objectContaining(payload));
     });
 
     describe('on success', () => {
@@ -110,7 +110,7 @@ describe('Pending members actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(spy).toBeCalledWith(state.namespaceId, memberId);
+      expect(spy).toHaveBeenCalledWith(state.namespaceId, memberId);
     });
 
     describe('on success', () => {

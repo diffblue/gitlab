@@ -55,7 +55,7 @@ describe('Usage Quotas Seats actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(GroupsApi.fetchBillableGroupMembersList).toBeCalledWith(
+      expect(GroupsApi.fetchBillableGroupMembersList).toHaveBeenCalledTimes(
         state.namespaceId,
         expect.objectContaining(payload),
       );
@@ -130,7 +130,7 @@ describe('Usage Quotas Seats actions', () => {
         expectedActions: expect.anything(),
       });
 
-      expect(Api.userSubscription).toBeCalledWith(state.namespaceId);
+      expect(Api.userSubscription).toHaveBeenCalledWith(state.namespaceId);
     });
 
     describe('on success', () => {

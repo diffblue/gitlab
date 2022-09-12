@@ -76,7 +76,7 @@ describe('assignSecurityPolicyProject', () => {
   it('throws when an error is detected', async () => {
     gqClient.mutate.mockImplementation(mockApolloResponses(true));
 
-    await expect(assignSecurityPolicyProject(projectPath)).rejects.toThrowError(error);
+    await expect(assignSecurityPolicyProject(projectPath)).rejects.toThrow(error);
   });
 });
 
@@ -100,7 +100,7 @@ describe('modifyPolicy', () => {
   it('throws when an error is detected', async () => {
     gqClient.mutate.mockImplementation(mockApolloResponses(true));
 
-    await expect(modifyPolicy(createSavePolicyInput())).rejects.toThrowError(error);
+    await expect(modifyPolicy(createSavePolicyInput())).rejects.toThrow(error);
   });
 });
 
