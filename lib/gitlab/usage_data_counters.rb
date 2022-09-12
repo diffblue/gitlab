@@ -18,13 +18,22 @@ module Gitlab
       ServiceUsageDataCounter,
       MergeRequestWidgetExtensionCounter
     ].freeze
+    COUNTERS_MIGRATED_TO_INSTRUMENTATION_CLASSES = [
+      PackageEventCounter
+    ].freeze
 
     UsageDataCounterError = Class.new(StandardError)
     UnknownEvent = Class.new(UsageDataCounterError)
 
     class << self
+      def unmigrated_counters
+        # we are using the #counters method instead of the COUNTERS const
+        # to make sure it's working correctly for `ee` version of UsageDataCounters
+        counters - self::COUNTERS_MIGRATED_TO_INSTRUMENTATION_CLASSES
+      end
+
       def counters
-        self::COUNTERS
+        self::COUNTERS + self::COUNTERS_MIGRATED_TO_INSTRUMENTATION_CLASSES
       end
 
       def count(event_name)
