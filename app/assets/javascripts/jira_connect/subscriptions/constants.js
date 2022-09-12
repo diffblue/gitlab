@@ -23,6 +23,12 @@ export const I18N_ADD_SUBSCRIPTION_SUCCESS_ALERT_MESSAGE = s__(
 export const I18N_ADD_SUBSCRIPTIONS_ERROR_MESSAGE = s__(
   'Integrations|Failed to link namespace. Please try again.',
 );
+export const I18N_UPDATE_INSTALLATION_ERROR_MESSAGE = s__(
+  'Integrations|Failed to update GitLab version. Please try again.',
+);
+export const I18N_OAUTH_APPLICATION_ID_ERROR_MESSAGE = s__(
+  'Integrations|Failed to load Jira Connect Application ID. Please try again.',
+);
 export const I18N_OAUTH_FAILED_TITLE = s__('Integrations|Failed to sign in to GitLab.');
 export const I18N_OAUTH_FAILED_MESSAGE = s__(
   'Integrations|Ensure your instance URL is correct and your instance is configured correctly. %{linkStart}Learn more%{linkEnd}.',

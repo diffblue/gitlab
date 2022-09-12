@@ -6,6 +6,7 @@ import { sprintf } from '~/locale';
 import {
   I18N_DEFAULT_SIGN_IN_BUTTON_TEXT,
   I18N_CUSTOM_SIGN_IN_BUTTON_TEXT,
+  I18N_OAUTH_APPLICATION_ID_ERROR_MESSAGE,
   I18N_OAUTH_FAILED_TITLE,
   I18N_OAUTH_FAILED_MESSAGE,
   OAUTH_SELF_MANAGED_DOC_LINK,
@@ -69,9 +70,13 @@ export default {
       // Generate state necessary for PKCE OAuth flow
       this.codeVerifier = createCodeVerifier();
       const codeChallenge = await createCodeChallenge(this.codeVerifier);
-      this.clientId = this.gitlabBasePath
-        ? await this.fetchOauthClientId()
-        : this.oauthMetadata?.oauth_token_payload?.client_id;
+      try {
+        this.clientId = this.gitlabBasePath
+          ? await this.fetchOauthClientId()
+          : this.oauthMetadata?.oauth_token_payload?.client_id;
+      } catch {
+        throw new Error(I18N_OAUTH_APPLICATION_ID_ERROR_MESSAGE);
+      }
 
       // Build the initial OAuth authorization URL
       const { oauth_authorize_url: oauthAuthorizeURL } = this.oauthMetadata;
@@ -104,15 +109,20 @@ export default {
 
         window.open(oauthAuthorizeURL, I18N_DEFAULT_SIGN_IN_BUTTON_TEXT, OAUTH_WINDOW_OPTIONS);
       } catch (e) {
-        this.setAlert({
-          linkUrl: OAUTH_SELF_MANAGED_DOC_LINK,
-          title: I18N_OAUTH_FAILED_TITLE,
-          message: this.gitlabBasePath ? I18N_OAUTH_FAILED_MESSAGE : '',
-          variant: 'danger',
-        });
+        if (e.message) {
+          this.setAlert({
+            message: e.message,
+            variant: 'danger',
+          });
+        } else {
+          this.setAlert({
+            linkUrl: OAUTH_SELF_MANAGED_DOC_LINK,
+            title: I18N_OAUTH_FAILED_TITLE,
+            message: this.gitlabBasePath ? I18N_OAUTH_FAILED_MESSAGE : '',
+            variant: 'danger',
+          });
+        }
         this.loading = false;
-
-        throw e;
       }
     },
     async handleWindowMessage(event) {

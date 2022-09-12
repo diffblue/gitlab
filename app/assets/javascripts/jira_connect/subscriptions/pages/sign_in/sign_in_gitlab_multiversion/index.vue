@@ -1,10 +1,14 @@
 <script>
+import { mapMutations } from 'vuex';
 import { GlButton } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 import { reloadPage, persistBaseUrl, retrieveBaseUrl } from '~/jira_connect/subscriptions/utils';
+import { updateInstallation, setApiBaseURL } from '~/jira_connect/subscriptions/api';
+import { I18N_UPDATE_INSTALLATION_ERROR_MESSAGE } from '~/jira_connect/subscriptions/constants';
+import { SET_ALERT } from '~/jira_connect/subscriptions/store/mutation_types';
+
 import SignInOauthButton from '../../../components/sign_in_oauth_button.vue';
-import { updateInstallation, setApiBaseURL } from '../../../api';
 import VersionSelectForm from './version_select_form.vue';
 
 export default {
@@ -17,6 +21,7 @@ export default {
   data() {
     return {
       gitlabBasePath: null,
+      loadingVersionSelect: false,
     };
   },
   computed: {
@@ -34,17 +39,27 @@ export default {
     setApiBaseURL(this.gitlabBasePath);
   },
   methods: {
+    ...mapMutations({
+      setAlert: SET_ALERT,
+    }),
     resetGitlabBasePath() {
       this.gitlabBasePath = null;
-      setApiBaseURL(null);
+      setApiBaseURL();
     },
     onVersionSelect(gitlabBasePath) {
+      this.loadingVersionSelect = true;
       updateInstallation(gitlabBasePath)
         .then(() => {
           persistBaseUrl(gitlabBasePath);
           reloadPage();
         })
-        .catch(() => {});
+        .catch(() => {
+          this.setAlert({
+            message: I18N_UPDATE_INSTALLATION_ERROR_MESSAGE,
+            variant: 'danger',
+          });
+          this.loadingVersionSelect = false;
+        });
     },
     onSignInError() {
       this.$emit('error');
@@ -66,7 +81,12 @@ export default {
       <p data-testid="subtitle">{{ subtitle }}</p>
     </div>
 
-    <version-select-form v-if="!hasSelectedVersion" class="gl-mt-7" @submit="onVersionSelect" />
+    <version-select-form
+      v-if="!hasSelectedVersion"
+      class="gl-mt-7"
+      :loading="loadingVersionSelect"
+      @submit="onVersionSelect"
+    />
 
     <div v-else class="gl-text-center">
       <sign-in-oauth-button

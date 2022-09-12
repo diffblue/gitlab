@@ -21335,6 +21335,9 @@ msgstr ""
 msgid "Integrations|Failed to link namespace. Please try again."
 msgstr ""
 
+msgid "Integrations|Failed to load Jira Connect Application ID. Please try again."
+msgstr ""
+
 msgid "Integrations|Failed to load namespaces. Please try again."
 msgstr ""
 
@@ -21345,6 +21348,9 @@ msgid "Integrations|Failed to sign in to GitLab."
 msgstr ""
 
 msgid "Integrations|Failed to unlink namespace. Please try again."
+msgstr ""
+
+msgid "Integrations|Failed to update GitLab version. Please try again."
 msgstr ""
 
 msgid "Integrations|GitLab administrators can set up integrations that all groups and projects inherit and use by default. These integrations apply to all groups and projects that don't already use custom settings. You can override custom settings for a group or project if the settings are necessary at that level. Learn more about %{integrations_link_start}instance-level integration management%{link_end}."

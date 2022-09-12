@@ -12,7 +12,7 @@ const JIRA_CONNECT_OAUTH_APPLICATION_ID_PATH = '/-/jira_connect/oauth_applicatio
 // This export is only used for testing purposes
 export const axiosInstance = axios.create();
 
-export const setApiBaseURL = (baseURL) => {
+export const setApiBaseURL = (baseURL = null) => {
   axiosInstance.defaults.baseURL = baseURL;
 };
 
