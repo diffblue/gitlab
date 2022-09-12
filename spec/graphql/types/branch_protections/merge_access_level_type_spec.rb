@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['BranchProtection'] do
+RSpec.describe GitlabSchema.types['MergeAccessLevel'] do
   subject { described_class }
 
-  let(:fields) { %i[merge_access_levels allow_force_push] }
+  let(:fields) { %i[access_level access_level_description] }
 
   specify { is_expected.to require_graphql_authorizations(:read_protected_branch) }
 
