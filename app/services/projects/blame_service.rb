@@ -53,7 +53,7 @@ module Projects
     end
 
     def pagination_state(params)
-      return false if params.fetch(:no_pagination, 0).to_s == '1'
+      return false if Gitlab::Utils.to_boolean(params[:no_pagination], default: false)
 
       Feature.enabled?(:blame_page_pagination, commit.project)
     end

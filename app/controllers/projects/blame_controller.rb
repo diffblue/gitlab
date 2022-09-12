@@ -26,8 +26,7 @@ class Projects::BlameController < Projects::ApplicationController
     blame_service = Projects::BlameService.new(@blob, @commit, params.permit(:page, :no_pagination))
 
     @blame = Gitlab::View::Presenter::Factory.new(blame_service.blame, project: @project, path: @path, page: blame_service.page).fabricate!
-
-    render locals: { blame_pagination: blame_service.pagination }
+    @blame_pagination = blame_service.pagination
   end
 end
 

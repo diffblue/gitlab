@@ -1,6 +1,6 @@
 - page_title _("Blame"), @blob.path, @ref
 
-#blob-content-holder.tree-holder
+#blob-content-holder.tree-holder{ data: { testid: 'blob-content-holder' } }
   = render "projects/blob/breadcrumb", blob: @blob, blame: true
 
   .file-holder.gl-overflow-hidden
@@ -59,11 +59,11 @@
 
           - current_line += line_count
 
-    - if blame_pagination
+    - if @blame_pagination
       .gl-display-flex.gl-justify-content-center.gl-flex-direction-column.gl-align-items-center.gl-p-3.gl-bg-gray-50.gl-border-t-solid.gl-border-t-1.gl-border-gray-100
         = _('For faster browsing, not all history is shown.')
-        = render Pajamas::ButtonComponent.new(href: namespace_project_blame_path(namespace_id: @project.namespace, project_id: @project, id: @id, no_pagination: 1), size: :small, button_options: { id: 'view-entire-blame', class: 'gl-mt-3' }) do |c|
+        = render Pajamas::ButtonComponent.new(href: namespace_project_blame_path(namespace_id: @project.namespace, project_id: @project, id: @id, no_pagination: true), size: :small, button_options: { class: 'gl-mt-3' }) do |c|
           = _('View entire blame')
 
-  - if blame_pagination
-    = paginate(blame_pagination, theme: "gitlab")
+  - if @blame_pagination
+    = paginate(@blame_pagination, theme: "gitlab")
