@@ -47,8 +47,8 @@ class FindChanges # rubocop:disable Gitlab/NamespacedClass
         end
 
         mr_changes.changes.flat_map do |change|
-          change.to_h.values_at('old_path', 'new_path').uniq
-        end
+          change.to_h.values_at('old_path', 'new_path')
+        end.uniq
       end
   end
 
