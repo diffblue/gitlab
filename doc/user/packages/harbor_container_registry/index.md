@@ -18,7 +18,9 @@ You can view the Harbor Registry for a project or group.
 
 You can search, sort, and filter images on this page. You can share a filtered view by copying the URL from your browser.
 
-At the project level, you can see **CLI Commands** in the upper right corner, where you can copy corresponding commands to log in, build images, and push images. However, **CLI Commands** does not show at the group level.
+At the project level, you can see **CLI Commands** in the upper right corner, where you can copy
+corresponding commands to log in, build images, and push images. **CLI Commands** is not shown at
+the group level.
 
 NOTE:
 Default settings for the Harbor integration at the project level are inherited from the group level.
