@@ -100,21 +100,21 @@ module EE
       password_complexity_attributes +
       git_abuse_rate_limit_attributes +
        %i[
-        email_additional_text
-        file_template_project_id
-        git_two_factor_session_expiry
-        group_owners_can_manage_default_branch_protection
-        default_project_deletion_protection
-        delayed_project_deletion
-        delayed_group_deletion
-        deletion_adjourned_period
-        updating_name_disabled_for_users
-        npm_package_requests_forwarding
-        pypi_package_requests_forwarding
-        maintenance_mode
-        maintenance_mode_message
-        globally_allowed_ips
-      ]
+         email_additional_text
+         file_template_project_id
+         git_two_factor_session_expiry
+         group_owners_can_manage_default_branch_protection
+         default_project_deletion_protection
+         delayed_project_deletion
+         delayed_group_deletion
+         deletion_adjourned_period
+         updating_name_disabled_for_users
+         npm_package_requests_forwarding
+         pypi_package_requests_forwarding
+         maintenance_mode
+         maintenance_mode_message
+         globally_allowed_ips
+       ]
     end
 
     def self.merge_request_appovers_rules_attributes

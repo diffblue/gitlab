@@ -14,18 +14,19 @@ class Analytics::DevopsAdoption::EnabledNamespace < ApplicationRecord
   validates :namespace, uniqueness: { scope: :display_namespace_id }, presence: true
 
   scope :ordered_by_name, -> do
-    order = ::Gitlab::Pagination::Keyset::Order.build([
-      ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-        attribute_name: 'namespaces_name',
-        order_expression: Namespace.arel_table[:name].asc,
-        distinct: false,
-        add_to_projections: true
-      ),
-      ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-        attribute_name: 'id',
-        order_expression: arel_table[:id].desc
-      )
-    ])
+    order = ::Gitlab::Pagination::Keyset::Order.build(
+      [
+        ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: 'namespaces_name',
+          order_expression: Namespace.arel_table[:name].asc,
+          distinct: false,
+          add_to_projections: true
+        ),
+        ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+          attribute_name: 'id',
+          order_expression: arel_table[:id].desc
+        )
+      ])
     query = includes(:namespace).order(order)
     order.apply_cursor_conditions(query)
   end

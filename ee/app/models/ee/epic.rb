@@ -357,19 +357,20 @@ module EE
         column_expression = ::Epic.arel_table[column_name]
         column_expression_with_direction = direction == 'ASC' ? column_expression.asc : column_expression.desc
 
-        ::Gitlab::Pagination::Keyset::Order.build([
-          ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-            attribute_name: column_name.to_s,
-            column_expression: column_expression,
-            order_expression: column_expression_with_direction.nulls_last,
-            distinct: false,
-            nullable: :nulls_last
-          ),
-          ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-            attribute_name: 'id',
-            order_expression: ::Epic.arel_table[:id].desc
-          )
-        ])
+        ::Gitlab::Pagination::Keyset::Order.build(
+          [
+            ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+              attribute_name: column_name.to_s,
+              column_expression: column_expression,
+              order_expression: column_expression_with_direction.nulls_last,
+              distinct: false,
+              nullable: :nulls_last
+            ),
+            ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+              attribute_name: 'id',
+              order_expression: ::Epic.arel_table[:id].desc
+            )
+          ])
       end
 
       def epics_readable_by_user(epics, user = nil)

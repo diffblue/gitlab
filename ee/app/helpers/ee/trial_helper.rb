@@ -5,14 +5,15 @@ module EE
     TRIAL_ONBOARDING_SOURCE_URLS = %w(about.gitlab.com docs.gitlab.com learn.gitlab.com).freeze
 
     def company_size_options_for_select(selected = '')
-      options_for_select([
-        [_('Please select'), ''],
-        ['1 - 99', '1-99'],
-        ['100 - 499', '100-499'],
-        ['500 - 1,999', '500-1,999'],
-        ['2,000 - 9,999', '2,000-9,999'],
-        ['10,000 +', '10,000+']
-      ], selected)
+      options_for_select(
+        [
+          [_('Please select'), ''],
+          ['1 - 99', '1-99'],
+          ['100 - 499', '100-499'],
+          ['500 - 1,999', '500-1,999'],
+          ['2,000 - 9,999', '2,000-9,999'],
+          ['10,000 +', '10,000+']
+        ], selected)
     end
 
     def create_lead_form_data

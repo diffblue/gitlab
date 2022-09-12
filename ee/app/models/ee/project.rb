@@ -189,21 +189,22 @@ module EE
                    ::ProjectStatistics.arel_table[:lfs_objects_size] -
                    arel_table.coalesce(arel_table[:repository_size_limit], limit, 0)
 
-        order = ::Gitlab::Pagination::Keyset::Order.build([
-          ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-            attribute_name: 'excess_storage',
-            order_expression: excess_arel.desc,
-            add_to_projections: true,
-            distinct: false
-          ),
-          ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-            attribute_name: 'projects_id',
-            order_expression: arel_table[:id].desc,
-            add_to_projections: true,
-            nullable: :not_nullable,
-            distinct: true
-          )
-        ])
+        order = ::Gitlab::Pagination::Keyset::Order.build(
+          [
+            ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+              attribute_name: 'excess_storage',
+              order_expression: excess_arel.desc,
+              add_to_projections: true,
+              distinct: false
+            ),
+            ::Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+              attribute_name: 'projects_id',
+              order_expression: arel_table[:id].desc,
+              add_to_projections: true,
+              nullable: :not_nullable,
+              distinct: true
+            )
+          ])
 
         order.apply_cursor_conditions(joins(:statistics)).order(order)
       end

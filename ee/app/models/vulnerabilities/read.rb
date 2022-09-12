@@ -75,14 +75,15 @@ module Vulnerabilities
       # `ordered_items` from Gitlab::Graphql::Pagination::Keyset::Connection in GraphQL API. `distinct` option must be
       # set to true in `Gitlab::Pagination::Keyset::ColumnOrderDefinition` to return the collection in proper order.
 
-      keyset_order = Gitlab::Pagination::Keyset::Order.build([
-        Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
-          attribute_name: :location_image,
-          column_expression: arel_table[:location_image],
-          order_expression: arel_table[:location_image].asc,
-          distinct: true
-        )
-      ])
+      keyset_order = Gitlab::Pagination::Keyset::Order.build(
+        [
+          Gitlab::Pagination::Keyset::ColumnOrderDefinition.new(
+            attribute_name: :location_image,
+            column_expression: arel_table[:location_image],
+            order_expression: arel_table[:location_image].asc,
+            distinct: true
+          )
+        ])
 
       where(report_type: [:container_scanning, :cluster_image_scanning])
         .where.not(location_image: nil)
