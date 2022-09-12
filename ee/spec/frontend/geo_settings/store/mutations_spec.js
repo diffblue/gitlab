@@ -18,7 +18,7 @@ describe('GeoSettings Store Mutations', () => {
     ${types.RECEIVE_GEO_SETTINGS_ERROR}        | ${null}                     | ${true}       | ${false}
     ${types.REQUEST_UPDATE_GEO_SETTINGS}       | ${null}                     | ${false}      | ${true}
     ${types.RECEIVE_UPDATE_GEO_SETTINGS_ERROR} | ${null}                     | ${true}       | ${false}
-  `(`Loading Mutations: `, ({ mutation, data, loadingBefore, loadingAfter }) => {
+  `(`Loading Mutations:`, ({ mutation, data, loadingBefore, loadingAfter }) => {
     describe(`${mutation}`, () => {
       it(`sets isLoading to ${loadingAfter}`, () => {
         state.isLoading = loadingBefore;

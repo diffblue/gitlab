@@ -68,7 +68,7 @@ describe('OnDemandScansScannerProfileSelector', () => {
     expect(wrapper.element).toMatchSnapshot();
   });
 
-  it('render summary component ', () => {
+  it('renders summary component', () => {
     const selectedProfile = profiles[0];
 
     createComponent({

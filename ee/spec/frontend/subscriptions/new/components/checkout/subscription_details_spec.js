@@ -304,7 +304,7 @@ describe('Subscription Details', () => {
       });
     });
 
-    describe('when enforceFreeUserCap is true ', () => {
+    describe('when enforceFreeUserCap is true', () => {
       beforeEach(async () => {
         const billableMembersCountMock = jest.fn().mockResolvedValue({
           data: {
@@ -328,7 +328,7 @@ describe('Subscription Details', () => {
         return nextTick();
       });
 
-      it('should set the label description ', () => {
+      it('should set the label description', () => {
         expect(findNumberOfUsersFormGroup().props().labelDescription).toBe(
           'Must be 12 (your seats in use, plus all over limit members) or more. To buy fewer seats, remove members from the group.',
         );

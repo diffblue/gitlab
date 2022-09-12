@@ -106,7 +106,7 @@ describe('The Pipeline Tabs', () => {
         ${'License'}  | ${findLicenseTab}  | ${findLicenseApp}  | ${'exposeLicenseScanningData'} | ${true}   | ${'shows'}
         ${'License'}  | ${findLicenseTab}  | ${findLicenseApp}  | ${'exposeLicenseScanningData'} | ${false}  | ${'hides'}
       `(
-        '$text $tabName and its associated component when $provideKey is $provideKey ',
+        '$text $tabName and its associated component when $provideKey is $provideKey',
         ({ tabComponent, appComponent, provideKey, isVisible }) => {
           createComponent({
             provide: { [provideKey]: isVisible },

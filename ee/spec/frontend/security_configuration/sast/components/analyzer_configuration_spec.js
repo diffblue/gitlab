@@ -46,7 +46,7 @@ describe('AnalyzerConfiguration component', () => {
     initiallyChecked
     ${false}
     ${true}
-  `('with checkbox initially checked $initiallyChecked ', ({ initiallyChecked }) => {
+  `('with checkbox initially checked $initiallyChecked', ({ initiallyChecked }) => {
     beforeEach(() => {
       createComponent({
         props: { entity: { ...entity, enabled: initiallyChecked } },

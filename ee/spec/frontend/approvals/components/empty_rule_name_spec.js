@@ -26,7 +26,7 @@ describe('Empty Rule Name', () => {
     expect(wrapper.text()).toContain('All eligible users');
   });
 
-  it('renders a "more information" link ', () => {
+  it('renders a "more information" link', () => {
     createComponent();
 
     expect(wrapper.findComponent(GlLink).attributes('href')).toBe(

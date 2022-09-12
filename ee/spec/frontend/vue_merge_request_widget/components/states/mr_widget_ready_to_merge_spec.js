@@ -248,7 +248,7 @@ describe('ReadyToMerge', () => {
       expect(vm.shouldShowMergeImmediatelyDropdown).toBe(true);
     });
 
-    it('should return true when the merge train auto merge stategy is available ', () => {
+    it('should return true when the merge train auto merge stategy is available', () => {
       factory({
         preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
         isPipelineActive: false,

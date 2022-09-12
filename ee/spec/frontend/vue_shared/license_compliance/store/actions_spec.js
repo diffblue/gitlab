@@ -426,7 +426,7 @@ describe('License store actions', () => {
     });
   });
 
-  describe('fetchLicenseCheckApprovalRule ', () => {
+  describe('fetchLicenseCheckApprovalRule', () => {
     it('dispatches request/receive with detected approval rule', async () => {
       const APPROVAL_RULE_RESPONSE = {
         approval_rules_left: [{ name: LICENSE_CHECK_NAME }],

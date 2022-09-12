@@ -177,7 +177,7 @@ describe('GeoReplicable Store Mutations', () => {
     ${types.REQUEST_INITIATE_REPLICABLE_SYNC}              | ${false}      | ${true}
     ${types.RECEIVE_INITIATE_REPLICABLE_SYNC_SUCCESS}      | ${true}       | ${false}
     ${types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR}        | ${true}       | ${false}
-  `(`Sync Mutations: `, ({ mutation, loadingBefore, loadingAfter }) => {
+  `(`Sync Mutations:`, ({ mutation, loadingBefore, loadingAfter }) => {
     describe(`${mutation}`, () => {
       it(`sets isLoading to ${loadingAfter}`, () => {
         state.isLoading = loadingBefore;
