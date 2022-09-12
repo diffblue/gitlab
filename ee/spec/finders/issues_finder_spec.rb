@@ -352,6 +352,22 @@ RSpec.describe IssuesFinder do
             end
           end
         end
+
+        context 'filter issues with no health status' do
+          let(:params) { { health_status: ::IssuableFinder::Params::FILTER_NONE } }
+
+          it 'returns filtered issues' do
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5, issue4)
+          end
+        end
+
+        context 'filter issues with any health status' do
+          let(:params) { { health_status: ::IssuableFinder::Params::FILTER_ANY } }
+
+          it 'returns filtered issues' do
+            expect(items).to contain_exactly(issue1, issue2, issue3, issue5)
+          end
+        end
       end
     end
   end
