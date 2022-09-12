@@ -4,7 +4,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import GitlabTeamMemberBadge from 'ee/vue_shared/components/user_avatar/badges/gitlab_team_member_badge.vue';
 import NoteHeader from '~/notes/components/note_header.vue';
-import { AVAILABILITY_STATUS } from '~/set_status_modal/utils';
+import { AVAILABILITY_STATUS } from '~/set_status_modal/constants';
 
 Vue.use(Vuex);
 
