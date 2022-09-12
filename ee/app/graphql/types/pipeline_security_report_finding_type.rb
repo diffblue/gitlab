@@ -34,7 +34,11 @@ module Types
     field :confidence,
           type: GraphQL::Types::String,
           null: true,
-          description: 'Type of the security report that found the vulnerability.'
+          description: 'Type of the security report that found the vulnerability.',
+          deprecated: {
+            reason: 'This field will be removed from the Finding domain model',
+            milestone: '15.4'
+          }
 
     field :false_positive,
           type: GraphQL::Types::Boolean,
