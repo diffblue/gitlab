@@ -16,22 +16,25 @@ RSpec.describe GitlabSubscriptions::Features do
   describe '.plans_with_feature' do
     subject { described_class.plans_with_feature(feature) }
 
-    context 'when params is a Starter feature' do
-      let(:feature) { described_class::STARTER_FEATURES.sample }
-
-      it { is_expected.to contain_exactly(License::STARTER_PLAN, License::PREMIUM_PLAN, License::ULTIMATE_PLAN) }
+    it 'starter feature is in all plans' do
+      (described_class::STARTER_FEATURES - described_class::GLOBAL_FEATURES).each do |feature|
+        expectd_plans = described_class.plans_with_feature(feature)
+        expect(expectd_plans).to contain_exactly(License::STARTER_PLAN, License::PREMIUM_PLAN, License::ULTIMATE_PLAN)
+      end
     end
 
-    context 'when params is a Premium feature' do
-      let(:feature) { described_class::PREMIUM_FEATURES.sample }
-
-      it { is_expected.to contain_exactly(License::PREMIUM_PLAN, License::ULTIMATE_PLAN) }
+    it 'premium feature is in premium and ultimate plans' do
+      (described_class::PREMIUM_FEATURES - described_class::GLOBAL_FEATURES).each do |feature|
+        expectd_plans = described_class.plans_with_feature(feature)
+        expect(expectd_plans).to contain_exactly(License::PREMIUM_PLAN, License::ULTIMATE_PLAN)
+      end
     end
 
-    context 'when params is a Ultimate feature' do
-      let(:feature) { described_class::ULTIMATE_FEATURES.sample }
-
-      it { is_expected.to contain_exactly(License::ULTIMATE_PLAN) }
+    it 'ultimate feature is in ultimate plan' do
+      (described_class::ULTIMATE_FEATURES - described_class::GLOBAL_FEATURES).each do |feature|
+        expectd_plans = described_class.plans_with_feature(feature)
+        expect(expectd_plans).to contain_exactly(License::ULTIMATE_PLAN)
+      end
     end
 
     context 'when param is a global feature' do
@@ -114,33 +117,23 @@ RSpec.describe GitlabSubscriptions::Features do
 
     let(:add_ons) { {} }
 
-    let_it_be(:starter_feature)  { described_class::STARTER_FEATURES.sample }
-    let_it_be(:premium_feature)  { described_class::PREMIUM_FEATURES.sample }
-    let_it_be(:ultimate_feature) { described_class::ULTIMATE_FEATURES.sample }
-    let_it_be(:add_on_feature)   { :geo }
+    let_it_be(:add_on_feature) { :geo }
     let_it_be(:geo_addon) { { 'GitLab_Geo' => 1 } }
 
     context 'when plan is Starter' do
       let(:plan) { License::STARTER_PLAN }
 
       it 'includes only Starter features' do
-        expect(features).to include(starter_feature)
-
-        expect(features).not_to include(premium_feature)
-        expect(features).not_to include(ultimate_feature)
+        expect(features).to include(*described_class::STARTER_FEATURES)
+        expect(features.intersect?(described_class::PREMIUM_FEATURES.to_set)).to be(false)
+        expect(features.intersect?(described_class::ULTIMATE_FEATURES.to_set)).to be(false)
       end
 
       context 'when add-ons are present' do
         let(:add_ons) { geo_addon }
 
-        it 'includes only Starter features' do
-          expect(features).to include(starter_feature)
-
-          expect(features).not_to include(premium_feature)
-          expect(features).not_to include(ultimate_feature)
-        end
-
-        it 'includes also add-on features' do
+        it 'includes Starter features and add-on features' do
+          expect(features).to include(*described_class::STARTER_FEATURES)
           expect(features).to include(add_on_feature)
         end
       end
@@ -150,23 +143,17 @@ RSpec.describe GitlabSubscriptions::Features do
       let(:plan) { License::PREMIUM_PLAN }
 
       it 'includes Starter and Premium features' do
-        expect(features).to include(starter_feature)
-        expect(features).to include(premium_feature)
-
-        expect(features).not_to include(ultimate_feature)
+        expect(features).to include(*described_class::STARTER_FEATURES)
+        expect(features).to include(*described_class::PREMIUM_FEATURES)
+        expect(features.intersect?(described_class::ULTIMATE_FEATURES.to_set)).to be(false)
       end
 
       context 'when add-ons are present' do
         let(:add_ons) { geo_addon }
 
-        it 'includes Starter and Premium features' do
-          expect(features).to include(starter_feature)
-          expect(features).to include(premium_feature)
-
-          expect(features).not_to include(ultimate_feature)
-        end
-
-        it 'includes also add-on features' do
+        it 'includes Starter and Premium features and add-on features' do
+          expect(features).to include(*described_class::STARTER_FEATURES)
+          expect(features).to include(*described_class::PREMIUM_FEATURES)
           expect(features).to include(add_on_feature)
         end
       end
@@ -176,18 +163,18 @@ RSpec.describe GitlabSubscriptions::Features do
       let(:plan) { License::ULTIMATE_PLAN }
 
       it 'includes Starter, Premium and Ultimate features' do
-        expect(features).to include(starter_feature)
-        expect(features).to include(premium_feature)
-        expect(features).to include(ultimate_feature)
+        expect(features).to include(*described_class::STARTER_FEATURES)
+        expect(features).to include(*described_class::PREMIUM_FEATURES)
+        expect(features).to include(*described_class::ULTIMATE_FEATURES)
       end
 
       context 'when add-ons are present' do
         let(:add_ons) { geo_addon }
 
         it 'includes Starter, Premium and Ultimate features' do
-          expect(features).to include(starter_feature)
-          expect(features).to include(premium_feature)
-          expect(features).to include(ultimate_feature)
+          expect(features).to include(*described_class::STARTER_FEATURES)
+          expect(features).to include(*described_class::PREMIUM_FEATURES)
+          expect(features).to include(*described_class::ULTIMATE_FEATURES)
         end
 
         it 'includes also add-on features' do
