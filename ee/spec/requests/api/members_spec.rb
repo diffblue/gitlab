@@ -414,7 +414,7 @@ RSpec.describe API::Members do
           expect_paginated_array_response(*[owner, maintainer, nested_user, project_user, linked_group_user].map(&:id))
         end
 
-        context 'when the current user does not have the :admin_group_member ability' do
+        context 'when the current user does not have the :read_billable_member ability' do
           it 'is a bad request' do
             not_an_owner = create(:user)
 

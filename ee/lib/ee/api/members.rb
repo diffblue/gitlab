@@ -123,7 +123,7 @@ module EE
             group = find_group!(params[:id])
 
             bad_request!(nil) if group.subgroup?
-            bad_request!(nil) unless ::Ability.allowed?(current_user, :admin_group_member, group)
+            bad_request!(nil) unless ::Ability.allowed?(current_user, :read_billable_member, group)
 
             sorting = params[:sort] || 'id_asc'
 

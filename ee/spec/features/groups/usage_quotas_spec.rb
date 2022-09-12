@@ -308,6 +308,32 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
+  context 'storage limit', :js do
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:active_members) { create_list(:group_member, 3, source: group) }
+
+    before do
+      stub_application_setting(check_namespace_plan: true)
+    end
+
+    context 'when over storage limit' do
+      before do
+        allow_next_found_instance_of(Group) do |instance|
+          allow(instance).to receive(:over_storage_limit?).and_return true
+        end
+      end
+
+      it 'shows active users' do
+        visit_usage_quotas_page
+        wait_for_requests
+
+        active_user_names =  active_members.map { |m| m.user.name }
+
+        expect(page.text).to include(*active_user_names)
+      end
+    end
+  end
+
   context 'free user limit', :js, :saas do
     let(:preview_free_user_cap) { false }
     let(:free_user_cap) { false }
