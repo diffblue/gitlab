@@ -119,8 +119,11 @@ RSpec.describe Groups::DestroyService do
     it 'schedules cache update for associated epics in batches' do
       stub_const('::Epics::UpdateCachedMetadataWorker::BATCH_SIZE', 2)
 
-      expect(::Epics::UpdateCachedMetadataWorker).to receive(:bulk_perform_in)
-        .with(1.minute, [[[parent_epic1.id, parent_epic2.id]], [[parent_epic3.id]]]).once
+      expect(::Epics::UpdateCachedMetadataWorker).to receive(:bulk_perform_in) do |delay, ids|
+        expect(delay).to eq(1.minute)
+        expect(ids.map(&:first).map(&:length)).to eq([2, 1])
+        expect(ids.flatten).to match_array([parent_epic1.id, parent_epic2.id, parent_epic3.id])
+      end.once
 
       subject.execute
     end
