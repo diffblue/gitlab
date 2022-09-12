@@ -65,6 +65,7 @@ RSpec.describe 'SAST.gitlab-ci.yml' do
             'C'                    | { 'app.c' => '' }                               | {}                                         | %w(flawfinder-sast)
             'C++'                  | { 'app.cpp' => '' }                             | {}                                         | %w(flawfinder-sast)
             'C#'                   | { 'app.csproj' => '' }                          | {}                                         | %w(security-code-scan-sast)
+            'C#'                   | { 'app.cs' => '' }                              | {}                                         | %w(semgrep-sast)
             'Elixir'               | { 'mix.exs' => '' }                             | {}                                         | %w(sobelow-sast)
             'Golang'               | { 'main.go' => '' }                             | {}                                         | %w(gosec-sast)
             'Groovy'               | { 'app.groovy' => '' }                          | {}                                         | %w(spotbugs-sast)
