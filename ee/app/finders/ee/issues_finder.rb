@@ -82,7 +82,13 @@ module EE
     def by_health_status(items)
       return items unless params.by_health_status?
 
-      items.with_health_status(params[:health_status])
+      if params.filter_by_no_health_status?
+        items.with_no_health_status
+      elsif params.filter_by_any_health_status?
+        items.with_any_health_status
+      else
+        items.with_health_status(params[:health_status])
+      end
     end
 
     override :filter_negated_items

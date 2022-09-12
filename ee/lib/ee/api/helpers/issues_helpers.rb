@@ -29,6 +29,7 @@ module EE
           params :issues_stats_params_ee do
             optional :weight, types: [Integer, String], integer_none_any: true, desc: 'The weight of the issue'
             optional :epic_id, types: [Integer, String], integer_none_any: true, desc: 'The ID of an epic associated with the issues'
+            optional :health_status, type: String, values: %w[at_risk needs_attention on_track none any None Any], desc: 'The health status of the issue'
             optional :iteration_id,
               types: [Integer, String],
               integer_or_custom_value: ::Iteration::Predefined::ALL.map { |iteration| iteration.name.downcase },
