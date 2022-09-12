@@ -23,7 +23,7 @@ exports[`MergeRequestTableRow component on creation matches the snapshot 1`] = `
       class="d-flex flex-column flex-grow overflow-auto gl-mr-1"
     >
       <h5
-        class="item-title mr-title my-0 d-block str-truncated"
+        class="item-title gl-max-w-34 my-0 d-block str-truncated"
       >
         <gl-link-stub
           href="http://gitlab.example.com/gitlab-org/gitlab-test/merge_requests/10"

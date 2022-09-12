@@ -50,7 +50,7 @@ describe('MergeRequestTableRow component', () => {
     });
 
     it('renders the merge request title', () => {
-      const title = findMrDetails().find('.mr-title');
+      const title = findMrDetails().find('.item-title');
 
       expect(title.exists()).toBe(true);
       expect(title.text()).toContain(defaultProps.mergeRequest.title);
