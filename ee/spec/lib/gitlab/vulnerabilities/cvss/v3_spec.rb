@@ -36,6 +36,10 @@ RSpec.describe Gitlab::Vulnerabilities::Cvss::V3 do
 
   subject(:cvss) { described_class.new(vector) }
 
+  before do
+    cvss.validate
+  end
+
   describe 'validation for', :aggregate_failures do
     describe 'version' do
       context 'when version is valid' do
@@ -47,6 +51,13 @@ RSpec.describe Gitlab::Vulnerabilities::Cvss::V3 do
 
         with_them do
           it { is_expected.to be_invalid }
+
+          it 'reports correct error' do
+            supported_versions = described_class::SUPPORTED_VERSIONS.join(', ')
+
+            expect(cvss.errors).to match_array(
+              ["version `#{cvss_version}` is not supported. Supported versions are: #{supported_versions}"])
+          end
         end
       end
     end
@@ -75,6 +86,12 @@ RSpec.describe Gitlab::Vulnerabilities::Cvss::V3 do
 
           with_them do
             it { is_expected.to be_invalid }
+
+            it 'reports correct error' do
+              shortname = parameter.to_s.split('_').map { |word| word[0].upcase }.join('')
+
+              expect(cvss.errors).to include("`#{send(parameter)}` is not a valid value for `#{shortname}`")
+            end
           end
         end
       end
@@ -83,6 +100,10 @@ RSpec.describe Gitlab::Vulnerabilities::Cvss::V3 do
         let(:vector) { "CVSS:3.1/AV:N/AV:N/AC:H/PR:L/UI:N/S:C/C:N/I:L/A:L" }
 
         it { is_expected.to be_invalid }
+
+        it 'reports correct error' do
+          expect(cvss.errors).to match_array(['vector contains multiple values for parameter `AV`'])
+        end
       end
 
       context 'when parameter ordering is non-standard' do
@@ -91,11 +112,25 @@ RSpec.describe Gitlab::Vulnerabilities::Cvss::V3 do
         it { is_expected.to be_valid }
       end
 
-      %i[CVSS AV AC PR UI S C I A].each do |parameter|
+      %i[AV AC PR UI S C I A].each do |parameter|
         context "when #{parameter} is missing" do
           let(:params) { base_params.except(parameter) }
 
           it { is_expected.to be_invalid }
+
+          it 'reports correct error' do
+            expect(cvss.errors).to match_array(["`#{parameter}` parameter is required"])
+          end
+        end
+
+        context 'when version is missing' do
+          let(:params) { base_params.except(:CVSS) }
+
+          it { is_expected.to be_invalid }
+
+          it 'reports correct error' do
+            expect(cvss.errors).to include("first parameter must be `CVSS`")
+          end
         end
       end
 
