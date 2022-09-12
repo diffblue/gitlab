@@ -15,8 +15,8 @@ export default {
     'task-list',
     'collapsible-section',
     'table',
-    'full-screen',
     'attach-file',
+    'full-screen',
   ],
   components: {
     MarkdownField,
