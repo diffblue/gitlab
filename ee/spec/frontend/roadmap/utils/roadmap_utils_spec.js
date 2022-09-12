@@ -16,6 +16,9 @@ const mockTimeframeMonths = getTimeframeForRangeType({
   initialDate: mockTimeframeInitialDate,
 });
 const getDateString = (date) => date.toISOString().split('T')[0];
+window.gon = {
+  first_day_of_week: 0,
+};
 
 describe('getWeeksForDates', () => {
   it('returns weeks for given dates', () => {
@@ -25,6 +28,24 @@ describe('getWeeksForDates', () => {
     expect(getDateString(weeks[0])).toBe('2017-12-31');
     expect(getDateString(weeks[7])).toBe('2018-02-18');
     expect(getDateString(weeks[17])).toBe('2018-04-29');
+  });
+
+  describe('when different first day of week', () => {
+    beforeAll(() => {
+      window.gon.first_day_of_week = 1;
+    });
+    afterAll(() => {
+      window.gon.first_day_of_week = 0;
+    });
+
+    it('returns correct weeks', () => {
+      const weeks = getWeeksForDates(mockTimeframeInitialDate, mockTimeframeMonths[4]);
+
+      expect(weeks).toHaveLength(18);
+      expect(getDateString(weeks[0])).toBe('2018-01-01');
+      expect(getDateString(weeks[7])).toBe('2018-02-19');
+      expect(getDateString(weeks[17])).toBe('2018-04-30');
+    });
   });
 });
 
