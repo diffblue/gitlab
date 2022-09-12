@@ -166,6 +166,14 @@ RSpec.describe Resolvers::IssuesResolver do
             expect(resolve_issues(health_status: Issue.health_statuses[:at_risk])).to contain_exactly(issue1)
           end
         end
+
+        context 'when filtering by any health status' do
+          specify { expect(resolve_issues(health_status: 'any')).to contain_exactly(issue1, issue3, issue4) }
+        end
+
+        context 'when filtering by no health status' do
+          specify { expect(resolve_issues(health_status: 'none')).to contain_exactly(issue2) }
+        end
       end
 
       describe 'filtering by negated params' do

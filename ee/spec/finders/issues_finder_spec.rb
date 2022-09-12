@@ -330,12 +330,9 @@ RSpec.describe IssuesFinder do
         let_it_be(:issue1) { create(:issue, project: project1, health_status: :needs_attention) }
         let_it_be(:issue2) { create(:issue, project: project1, health_status: :needs_attention) }
         let_it_be(:issue3) { create(:issue, project: project2, health_status: :needs_attention) }
-
-        before_all do
-          create(:issue, project: project1, health_status: nil)
-          create(:issue, project: project1, health_status: :at_risk)
-          create(:issue, project: project1, health_status: :on_track)
-        end
+        let_it_be(:issue4) { create(:issue, project: project1, health_status: nil) }
+        let_it_be(:issue5) { create(:issue, project: project1, health_status: :at_risk) }
+        let_it_be(:issue6) { create(:issue, project: project1, health_status: :on_track) }
 
         context 'filter issues by health status' do
           let(:params) { { health_status: :needs_attention } }
@@ -365,7 +362,7 @@ RSpec.describe IssuesFinder do
           let(:params) { { health_status: ::IssuableFinder::Params::FILTER_ANY } }
 
           it 'returns filtered issues' do
-            expect(items).to contain_exactly(issue1, issue2, issue3, issue5)
+            expect(items).to contain_exactly(issue1, issue2, issue3, issue5, issue6)
           end
         end
       end

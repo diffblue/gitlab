@@ -80,6 +80,8 @@ module EE
     end
 
     def by_health_status(items)
+      return items unless params.by_health_status?
+
       if params.filter_by_no_health_status?
         items.with_no_health_status
       elsif params.filter_by_any_health_status?
