@@ -168,6 +168,19 @@ RSpec.describe Vulnerabilities::ManuallyCreateService do
         expect(primary_identifier.fingerprint).to eq(identifier_fingerprint)
       end
 
+      it 'creates separate vulnerabilities when submitted twice with the same details' do
+        first = described_class.new(project, user, params: params).execute
+        second = described_class.new(project, user, params: params).execute
+        results = [first, second]
+
+        expect(results).to all(be_success)
+
+        uuids = results.map { |result| result.payload[:vulnerability].finding_uuid }
+
+        expect(uuids).to all(be_present)
+        expect(uuids.first).not_to eq(uuids.last)
+      end
+
       context "when state fields match state" do
         let(:params) do
           {

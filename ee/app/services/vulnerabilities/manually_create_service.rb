@@ -4,8 +4,6 @@ module Vulnerabilities
     include Gitlab::Allowable
 
     METADATA_VERSION = "manual:1.0"
-    MANUAL_LOCATION_FINGERPRINT = Digest::SHA1.hexdigest("manually added").freeze
-
     CONFIRMED_MESSAGE = "confirmed_at can only be set when state is confirmed"
     RESOLVED_MESSAGE = "resolved_at can only be set when state is resolved"
     DISMISSED_MESSAGE = "dismissed_at can only be set when state is dismissed"
@@ -52,7 +50,9 @@ module Vulnerabilities
     private
 
     def location_fingerprint(_location_hash)
-      MANUAL_LOCATION_FINGERPRINT
+      uuid = SecureRandom.uuid
+
+      Digest::SHA1.hexdigest("manually-created-vulnerability-#{uuid}")
     end
 
     def metadata_version
