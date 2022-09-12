@@ -1,3 +1,4 @@
+import '~/pages/admin/application_settings/ci_cd/index';
 import Vue from 'vue';
 import CiTemplateDropdown from './ci_template_dropdown.vue';
 
