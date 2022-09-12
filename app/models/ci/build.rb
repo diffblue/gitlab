@@ -807,21 +807,6 @@ module Ci
       end
     end
 
-    def erase_erasable_artifacts!
-      if project.refreshing_build_artifacts_size?
-        Gitlab::ProjectStatsRefreshConflictsLogger.warn_artifact_deletion_during_stats_refresh(
-          method: 'Ci::Build#erase_erasable_artifacts!',
-          project_id: project_id
-        )
-      end
-
-      destroyed_artifacts = job_artifacts.erasable.destroy_all # rubocop: disable Cop/DestroyAll
-
-      Gitlab::Ci::Artifacts::Logger.log_deleted(destroyed_artifacts, 'Ci::Build#erase_erasable_artifacts!')
-
-      destroyed_artifacts
-    end
-
     def erasable?
       complete? && (artifacts? || has_job_artifacts? || has_trace?)
     end

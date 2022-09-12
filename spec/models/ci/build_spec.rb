@@ -1865,49 +1865,6 @@ RSpec.describe Ci::Build do
     end
   end
 
-  describe '#erase_erasable_artifacts!' do
-    let!(:build) { create(:ci_build, :success) }
-
-    subject { build.erase_erasable_artifacts! }
-
-    before do
-      Ci::JobArtifact.file_types.keys.each do |file_type|
-        create(:ci_job_artifact, job: build, file_type: file_type, file_format: Ci::JobArtifact::TYPE_AND_FORMAT_PAIRS[file_type.to_sym])
-      end
-    end
-
-    it "erases erasable artifacts" do
-      subject
-
-      expect(build.job_artifacts.erasable).to be_empty
-    end
-
-    it "keeps non erasable artifacts" do
-      subject
-
-      Ci::JobArtifact::NON_ERASABLE_FILE_TYPES.each do |file_type|
-        expect(build.send("job_artifacts_#{file_type}")).not_to be_nil
-      end
-    end
-
-    context 'when the project is undergoing stats refresh' do
-      before do
-        allow(build.project).to receive(:refreshing_build_artifacts_size?).and_return(true)
-      end
-
-      it 'logs and continues with deleting the artifacts' do
-        expect(Gitlab::ProjectStatsRefreshConflictsLogger).to receive(:warn_artifact_deletion_during_stats_refresh).with(
-          method: 'Ci::Build#erase_erasable_artifacts!',
-          project_id: build.project.id
-        )
-
-        subject
-
-        expect(build.job_artifacts.erasable).to be_empty
-      end
-    end
-  end
-
   describe '#failed_but_allowed?' do
     subject { build.failed_but_allowed? }
 
