@@ -448,11 +448,7 @@ module EE
     def billable_members_count(requested_hosted_plan = nil)
       billable_ids = billed_user_ids(requested_hosted_plan)
 
-      if ::Namespaces::FreeUserCap.enforce_preview_or_standard?(self)
-        billable_ids[:user_ids].merge(awaiting_user_ids).count
-      else
-        billable_ids[:user_ids].count
-      end
+      billable_ids[:user_ids].count
     end
 
     def free_plan_members_count
@@ -475,10 +471,6 @@ module EE
     override :billed_user_ids
     def billed_user_ids(requested_hosted_plan = nil)
       exclude_guests?(requested_hosted_plan) ? billed_user_ids_excluding_guests : billed_user_ids_including_guests
-    end
-
-    def awaiting_user_ids
-      awaiting_members_without_invites_and_requests.pluck(:id).to_set
     end
 
     override :supports_events?
@@ -659,10 +651,6 @@ module EE
       user_cap <= members_count
     end
 
-    def user_limit_reached?(use_cache: false)
-      free_user_cap.reached_limit? || user_cap_reached?(use_cache: use_cache)
-    end
-
     def shared_externally?
       strong_memoize(:shared_externally) do
         internal_groups = ::Group.groups_including_descendants_by([self])
@@ -696,68 +684,14 @@ module EE
 
     override :capacity_left_for_user?
     def capacity_left_for_user?(user)
-      return true unless apply_user_cap?
+      return true unless user_cap_available?
       return true if ::Member.in_hierarchy(root_ancestor).with_user(user).with_state(:active).exists?
 
-      !user_limit_reached?
-    end
-
-    def apply_user_cap?
-      user_cap_available? || enforce_free_user_cap?
+      !user_cap_reached?
     end
 
     def enforce_free_user_cap?
-      free_user_cap.enforce_cap?
-    end
-
-    def trimmable_user_ids
-      strong_memoize(:trimmable_user_ids) do
-        active_members = ::Member.in_hierarchy(self).active_state
-
-        users_without_project_bots(active_members)
-          .with_state(:active)
-          .pluck(:id)
-      end
-    end
-
-    def recent_activity_by_users_in_hierarchy
-      strong_memoize(:recent_activity_by_users_in_hierarchy) do
-        ::Event.from_union(
-          [
-            ::Event.where(author: trimmable_user_ids).where(project: root_ancestor.all_projects),
-            ::Event.where(author: trimmable_user_ids).where(group: root_ancestor.self_and_descendants)
-          ]
-        ).group(:author_id).maximum(:id)
-      end
-    end
-
-    def staying_in_user_ids
-      strong_memoize(:staying_in_user_ids) do
-        if trimmable_user_ids.count <= ::Namespaces::FreeUserCap::FREE_USER_LIMIT
-          trimmable_user_ids
-        elsif owner_ids.count == ::Namespaces::FreeUserCap::FREE_USER_LIMIT
-          owner_ids
-        elsif owner_ids.count > ::Namespaces::FreeUserCap::FREE_USER_LIMIT
-          take_high_activity_user_ids(owner_ids)
-        else
-          additional_non_owners = take_high_activity_user_ids(trimmable_user_ids, ::Namespaces::FreeUserCap::FREE_USER_LIMIT) - owner_ids
-          owners_and_users = take_high_activity_user_ids(owner_ids) + additional_non_owners
-          owners_and_users.take(::Namespaces::FreeUserCap::FREE_USER_LIMIT)
-        end
-      end
-    end
-
-    def take_high_activity_user_ids(user_ids, count = ::Namespaces::FreeUserCap::FREE_USER_LIMIT)
-      user_ids
-        .sort_by { |e| -recent_activity_by_users_in_hierarchy[e].to_i }
-        .take(count)
-    end
-
-    def memberships_to_be_deactivated
-      ::Member
-        .in_hierarchy(self)
-        .active_state
-        .excluding_users(staying_in_user_ids)
+      ::Namespaces::FreeUserCap::Standard.new(self).enforce_cap?
     end
 
     def cluster_agents
@@ -921,22 +855,8 @@ module EE
       ::User.where(id: members.distinct.select(:user_id)).without_project_bot
     end
 
-    def free_user_cap
-      @free_user_cap ||= ::Namespaces::FreeUserCap::Standard.new(self)
-    end
-
     def projects_for_group_and_its_subgroups_without_deleted
       ::Project.for_group_and_its_subgroups(self).non_archived.without_deleted
-    end
-
-    def awaiting_members_without_invites_and_requests
-      groups = self_and_descendants + invited_group_in_groups + invited_groups_in_projects
-      projects = ::Project.where(namespace: self_and_descendants)
-      sources = groups + projects
-
-      members = ::Member.awaiting_without_invites_and_requests.where(source_id: sources)
-
-      users_without_project_bots(members).distinct
     end
 
     override :_safe_read_repository_read_only_column

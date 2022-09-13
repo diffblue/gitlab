@@ -421,22 +421,6 @@ RSpec.describe GitlabSubscription, :saas do
 
   describe 'callbacks' do
     context 'after_commit', :saas do
-      context 'activate_users_post_subscription_upgrade' do
-        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, hosted_plan: free_plan) }
-
-        it 'calls ActivateAwaitingUsersService' do
-          expect_next_instance_of(
-            GitlabSubscriptions::ActivateAwaitingUsersService,
-            gitlab_subscription: gitlab_subscription,
-            previous_plan_id: free_plan.id
-          ) do |instance|
-            expect(instance).to receive(:execute)
-          end
-
-          gitlab_subscription.update!(hosted_plan: ultimate_plan)
-        end
-      end
-
       context 'index_namespace' do
         let_it_be(:namespace) { create(:namespace) }
 

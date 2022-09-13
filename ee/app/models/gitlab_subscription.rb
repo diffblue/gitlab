@@ -14,9 +14,6 @@ class GitlabSubscription < ApplicationRecord
   before_update :log_previous_state_for_update
   before_update :reset_seats_for_new_term
 
-  # Needs to run after_commit because workers can be spawned that can't be run within a transaction
-  after_commit :activate_users_post_subscription_upgrade
-
   after_commit :index_namespace, on: [:create, :update]
   after_destroy_commit :log_previous_state_for_destroy
 
@@ -194,16 +191,5 @@ class GitlabSubscription < ApplicationRecord
   def new_term?
     persisted? && start_date_changed? && end_date_changed? &&
       (end_date_was.nil? || start_date >= end_date_was)
-  end
-
-  # When free groups where `free_user_cap` was enabled upgrade to a paid
-  # plan we want to activate all the memberships that got set to
-  # awaiting due to the limit.
-  def activate_users_post_subscription_upgrade
-    # rubocop: disable CodeReuse/ServiceClass
-    GitlabSubscriptions::ActivateAwaitingUsersService
-      .new(gitlab_subscription: self, previous_plan_id: hosted_plan_id_before_last_save)
-      .execute
-    # rubocop: enable CodeReuse/ServiceClass
   end
 end

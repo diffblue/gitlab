@@ -5,11 +5,11 @@ require 'spec_helper'
 RSpec.describe Member, type: :model do
   let_it_be(:user) { build :user }
   let_it_be(:group) { create :group }
-  let_it_be(:member) { build :group_member, group: group, user: user }
+  let_it_be(:member) { build :group_member, source: group, user: user }
   let_it_be(:sub_group) { create(:group, parent: group) }
-  let_it_be(:sub_group_member) { build(:group_member, group: sub_group, user: user) }
+  let_it_be(:sub_group_member) { build(:group_member, source: sub_group, user: user) }
   let_it_be(:project) { create(:project, namespace: group) }
-  let_it_be(:project_member) { build(:project_member, project: project, user: user) }
+  let_it_be(:project_member) { build(:project_member, source: project, user: user) }
 
   describe '#notification_service' do
     it 'returns a NullNotificationService instance for LDAP users' do
@@ -275,279 +275,67 @@ RSpec.describe Member, type: :model do
     end
   end
 
-  context 'when checking if free user cap has been reached', :saas do
-    let_it_be(:group, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
-    let_it_be(:subgroup) { create(:group, :private, parent: group) }
-    let_it_be(:project, refind: true) { create(:project, :private, group: group) }
-    let_it_be(:user) { create(:user) }
-
-    before_all do
-      group.add_developer(create(:user))
-    end
-
-    before do
-      allow(group).to receive(:user_cap_available?).and_return(false)
-      stub_ee_application_setting(should_check_namespace_plan: true)
-    end
-
-    context 'when the :free_user_cap feature flag is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
-      end
-
-      it 'sets the group member state to active' do
-        group.add_developer(user)
-
-        expect(user.group_members.last).to be_active
-      end
-
-      it 'sets the project member state to active' do
-        project.add_developer(user)
-
-        expect(user.project_members.last).to be_active
-      end
-    end
-
-    context 'when the :free_user_cap feature flag is enabled' do
-      before do
-        stub_feature_flags(free_user_cap: true)
-      end
-
-      context 'when the free user cap has not been reached' do
-        it 'sets the group member to active' do
-          group.add_developer(user)
-
-          expect(user.group_members.last).to be_active
-        end
-
-        it 'sets the project member to active' do
-          project.add_developer(user)
-
-          expect(user.project_members.last).to be_active
-        end
-
-        context 'when user is added to a group-less project' do
-          let(:project) do
-            namespace = create(:namespace, :with_namespace_settings)
-            project = create(:project, namespace: namespace)
-            create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-            project
-          end
-
-          it 'adds project member and leaves the state to active' do
-            project.root_ancestor.clear_memoization(:existing_free_plan)
-            project.add_developer(create(:user))
-            project.add_developer(user)
-
-            expect(user.project_members.last).to be_active
-          end
-        end
-      end
-
-      context 'when the free user cap has been reached' do
-        before do
-          stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
-        end
-
-        it 'sets the group member to awaiting' do
-          group.add_developer(user)
-
-          expect(user.group_members.last).to be_awaiting
-        end
-
-        it 'sets the group member to awaiting when added to a subgroup' do
-          subgroup.add_developer(user)
-
-          expect(user.group_members.last).to be_awaiting
-        end
-
-        it 'sets the project member to awaiting' do
-          project.add_developer(user)
-
-          expect(user.project_members.last).to be_awaiting
-        end
-
-        context 'when the namespace is public' do
-          before do
-            group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-          end
-
-          it 'sets the group member to awaiting' do
-            group.add_developer(user)
-
-            expect(user.group_members.last).to be_active
-          end
-        end
-
-        context 'when multiple members are added' do
-          before do
-            stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
-          end
-
-          it 'sets members to the correct status' do
-            over_limit_user = create(:user)
-            project.root_namespace.clear_memoization(:billed_user_ids_including_guests)
-            project.add_developer(user)
-            project.root_namespace.clear_memoization(:billed_user_ids_including_guests)
-            project.add_developer(over_limit_user)
-
-            expect(user.project_members.last).to be_active
-            expect(over_limit_user.project_members.last).to be_awaiting
-          end
-        end
-
-        context 'when the user is already an active root group member' do
-          it 'sets the group member to active' do
-            create(:group_member, :active, group: group, user: user)
-
-            subgroup.add_owner(user)
-
-            expect(user.group_members.last).to be_active
-          end
-        end
-
-        context 'when the user is already an active subgroup member' do
-          it 'sets the group member to active' do
-            other_subgroup = create(:group, :private, parent: group)
-            create(:group_member, :active, group: other_subgroup, user: user)
-
-            subgroup.add_developer(user)
-
-            expect(user.group_members.last).to be_active
-          end
-        end
-
-        context 'when the user is already an active project member' do
-          it 'sets the group member to active' do
-            create(:project_member, :active, project: project, user: user)
-
-            expect { subgroup.add_owner(user) }.to change { ::Member.with_state(:active).count }.by(1)
-            expect(user.group_members.last).to be_active
-          end
-        end
-
-        context 'when user is added to a group-less project' do
-          let(:project) do
-            namespace = create(:namespace, :with_namespace_settings)
-            project = create(:project, namespace: namespace)
-            create(:gitlab_subscription, hosted_plan: create(:free_plan), namespace: namespace)
-            project
-          end
-
-          before do
-            stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
-          end
-
-          it 'adds multiple members and correctly shows the state' do
-            project.root_ancestor.clear_memoization(:has_free_or_no_subscription)
-            over_limit_user = create(:user)
-
-            project.add_developer(user)
-            project.add_developer(over_limit_user)
-
-            expect(user.project_members.last).to be_active
-            expect(over_limit_user.project_members.last).to be_active
-          end
-        end
-      end
-    end
-  end
-
   context 'when activating a member', :saas do
-    let(:user_cap) { true }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:active_member) { create(:group_member, :maintainer, source: group) }
+    let_it_be(:active_user) { active_member.user }
+    let_it_be(:user) { member.user }
 
-    let_it_be(:group, refind: true) { create(:group_with_plan, :private, plan: :free_plan) }
-    let_it_be(:project) { create(:project, :private, group: group) }
-    let_it_be(:active_user) { create(:user) }
-    let_it_be(:active_member) { create(:group_member, :maintainer, group: group, user: active_user) }
-    let_it_be(:user) { create(:user) }
-    let_it_be(:member, refind: true) { create(:group_member, :awaiting, :maintainer, group: group, user: user) }
+    let(:root_ancestor) { group }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
-      stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
-
-      allow_next_found_instance_of(Group) do |group|
-        allow(group).to receive(:apply_user_cap?).and_return(apply_user_cap)
-      end
-
-      expect(member).to be_awaiting
+      allow(root_ancestor).to receive(:user_cap_reached?).and_return(user_cap_reached)
     end
 
     context 'when limit has been reached and user cap does not apply' do
-      let(:apply_user_cap) { false }
+      let(:user_cap_reached) { false }
+      let(:member) { create(:group_member, :awaiting, :maintainer, source: group) }
 
       it 'activates user' do
-        member.activate
-
-        expect(member).to be_active
+        expect do
+          member.activate
+        end.to change(member, :state).from(described_class::STATE_AWAITING).to(described_class::STATE_ACTIVE)
       end
     end
 
-    context 'when user cap applies' do
-      let(:apply_user_cap) { true }
+    context 'when user cap is reached' do
+      let(:user_cap_reached) { true }
 
-      context 'when limit has been reached' do
-        it 'keeps user awaiting' do
-          member.activate
+      let(:member) { create(:group_member, :awaiting, :maintainer, source: group) }
 
-          expect(member).to be_awaiting
-        end
+      it 'keeps user awaiting' do
+        expect { member.activate }.not_to change(member, :state).from(described_class::STATE_AWAITING)
+      end
 
-        context 'when namespace is public' do
-          before do
-            group.update!(visibility_level: Gitlab::VisibilityLevel::PUBLIC)
-          end
+      context 'when user already has another active membership' do
+        context 'with project membership' do
+          let(:member) { create(:project_member, :awaiting, :maintainer, source: project, user: active_user) }
 
-          it 'activates member' do
-            member.activate
-
-            expect(member.reload).to be_active
-          end
-        end
-
-        context 'when user already has an other active membership' do
-          context 'when project membership' do
-            let(:member) { create(:project_member, :awaiting, :maintainer, project: project, user: active_user) }
-
-            it 'activates member for the same user' do
+          it 'activates member for the same user' do
+            expect do
               member.activate
-
-              expect(member).to be_active
-            end
-          end
-
-          context 'when sub-group membership' do
-            let(:member) { create(:group_member, :awaiting, :maintainer, group: sub_group, user: active_user) }
-
-            it 'activates member for the same user' do
-              member.activate
-
-              expect(member).to be_active
-            end
+            end.to change(member, :state).from(described_class::STATE_AWAITING).to(described_class::STATE_ACTIVE)
           end
         end
 
-        context 'when user has an other awaiting membership' do
-          let(:member) { create(:project_member, :awaiting, :maintainer, project: project, user: user) }
+        context 'with sub-group membership' do
+          let(:member) { create(:group_member, :awaiting, :maintainer, source: sub_group, user: active_user) }
 
-          it 'keeps the member awaiting' do
-            member.activate
-
-            expect(member).to be_awaiting
+          it 'activates member for the same user' do
+            expect do
+              member.activate
+            end.to change(member, :state).from(described_class::STATE_AWAITING).to(described_class::STATE_ACTIVE)
           end
         end
       end
 
-      context 'when there is enough capacity' do
-        before do
-          stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
-        end
+      context 'when user has another awaiting membership' do
+        let(:member) { create(:project_member, :awaiting, :maintainer, source: project, user: user) }
+        let(:root_ancestor) { member.source.root_ancestor }
 
-        it 'activates member' do
-          member.activate
-
-          expect(member).to be_active
+        it 'keeps the member awaiting' do
+          expect { member.activate }.not_to change(member, :state).from(described_class::STATE_AWAITING)
         end
       end
     end
@@ -640,32 +428,5 @@ RSpec.describe Member, type: :model do
         awaiting_previously_invited_member.invite_email
       )
     end
-  end
-
-  describe '.awaiting_without_invites_and_requests' do
-    let_it_be(:awaiting_group_member) { create(:group_member, :awaiting, group: group) }
-    let_it_be(:awaiting_project_member) { create(:project_member, :awaiting, project: project) }
-    let_it_be(:active_group_member) { create(:group_member, group: group) }
-    let_it_be(:invited_member) { create(:group_member, :invited, group: group) }
-    let_it_be(:invited_awaiting_member) { create(:group_member, :invited, :awaiting, group: group) }
-    let_it_be(:accepted_invite_member) { create(:group_member, :invited, group: group).accept_request }
-    let_it_be(:requested_member) { create(:group_member, :access_request, group: group) }
-    let_it_be(:requested_awaiting_member) { create(:group_member, :awaiting, :access_request, group: group) }
-    let_it_be(:accepted_request_member) { create(:group_member, :access_request, group: group).accept_request }
-    let_it_be(:blocked_member) { create(:group_member, :blocked, group: group) }
-
-    subject(:results) { described_class.awaiting_without_invites_and_requests }
-
-    it { is_expected.to include awaiting_group_member }
-    it { is_expected.to include awaiting_project_member }
-
-    it { is_expected.not_to include active_group_member }
-    it { is_expected.not_to include invited_member }
-    it { is_expected.not_to include invited_awaiting_member }
-    it { is_expected.not_to include accepted_invite_member }
-    it { is_expected.not_to include requested_member }
-    it { is_expected.not_to include requested_awaiting_member }
-    it { is_expected.not_to include accepted_request_member }
-    it { is_expected.not_to include blocked_member }
   end
 end
