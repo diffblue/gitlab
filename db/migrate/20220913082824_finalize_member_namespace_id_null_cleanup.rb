@@ -22,5 +22,4 @@ class FinalizeMemberNamespaceIdNullCleanup < Gitlab::Database::Migration[2.0]
   def down
     # noop
   end
-
 end
