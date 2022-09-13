@@ -124,43 +124,6 @@ RSpec.describe Members::CreateService do
     end
   end
 
-  context 'when reaching the free user cap limit', :saas do
-    let_it_be(:project_user) { project_users.first }
-    let_it_be(:over_limit_user) { project_users.last }
-
-    before do
-      stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 3)
-      stub_ee_application_setting(should_check_namespace_plan: true)
-    end
-
-    context 'with a group-less project' do
-      let_it_be(:project) { create(:project) }
-
-      before do
-        project.add_maintainer(user)
-      end
-
-      it 'does not set any to awaiting' do
-        expect(execute_service[:status]).to eq(:success)
-        expect(project_user.project_members.last).to be_active
-        expect(over_limit_user.project_members.last).to be_active
-      end
-    end
-
-    context 'with a group project' do
-      before do
-        project.add_developer(create(:user))
-        project.update!(group: create(:group, :private))
-      end
-
-      it 'sets members to the correct status' do
-        expect(execute_service[:status]).to eq(:success)
-        expect(project_user.project_members.last).to be_active
-        expect(over_limit_user.project_members.last).to be_awaiting
-      end
-    end
-  end
-
   context 'streaming audit event' do
     let(:group) { root_ancestor }
     let(:params) do

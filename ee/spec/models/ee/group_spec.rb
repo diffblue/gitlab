@@ -1362,95 +1362,6 @@ RSpec.describe Group do
     end
   end
 
-  describe '#awaiting_user_ids' do
-    let_it_be(:group, refind: true) { create(:group) }
-    let_it_be(:awaiting_user) { create(:user) }
-    let_it_be(:project_bot) { create(:user, :project_bot) }
-    let_it_be(:project) { create(:project, group: group) }
-    let_it_be(:shared_group, refind: true) { create(:group) }
-    let_it_be(:sub_group) { create(:group, parent: group) }
-
-    subject(:awaiting_user_ids) { group.awaiting_user_ids }
-
-    context 'when awaiting user is member of the group' do
-      before do
-        create(:group_member, :awaiting, user: awaiting_user, source: group)
-        create(:group_member, :awaiting, user: project_bot, source: group)
-      end
-
-      it { is_expected.to match_array([awaiting_user.id]) }
-    end
-
-    context 'when awaiting user is member of a sub-group within the group' do
-      before do
-        create(:group_member, :awaiting, user: awaiting_user, source: sub_group)
-      end
-
-      it { is_expected.to match_array([awaiting_user.id]) }
-    end
-
-    context 'when awaiting user is member of a project in the group' do
-      before do
-        create(:project_member, :awaiting, user: awaiting_user, source: project)
-        create(:project_member, :awaiting, user: project_bot, source: project)
-      end
-
-      it { is_expected.to match_array([awaiting_user.id]) }
-    end
-
-    context 'when other group with awaiting users is member of the group' do
-      let_it_be(:invited_group) { create(:group) }
-
-      before_all do
-        create(:group_member, :awaiting, user: awaiting_user, source: invited_group)
-        create(:group_member, :awaiting, user: project_bot, source: invited_group)
-
-        create(:project_group_link, project: project, group: invited_group)
-      end
-
-      it { is_expected.to match_array([awaiting_user.id]) }
-    end
-
-    context 'when other group with awaiting users is member of a project in the group' do
-      before_all do
-        create(:group_member, :awaiting, user: awaiting_user, source: shared_group)
-        create(:group_member, :awaiting, user: project_bot, source: shared_group)
-        create(:group_group_link, { shared_with_group: shared_group,
-                                    shared_group: group })
-      end
-
-      it { is_expected.to match_array([awaiting_user.id]) }
-    end
-
-    context 'when a user is member multiple times' do
-      before do
-        create(:group_member, :awaiting, :developer, user: awaiting_user, source: group)
-        create(:project_member, :awaiting, :maintainer, user: awaiting_user, source: project)
-        create(:group_member, :awaiting, user: awaiting_user, source: shared_group)
-        create(:group_group_link, { shared_with_group: shared_group,
-                                    shared_group: group })
-      end
-
-      it { is_expected.to match_array([awaiting_user.id]) }
-    end
-
-    context 'when there are multiple awaiting users' do
-      let_it_be(:shared_group_awaiting_user) { create(:user) }
-      let_it_be(:project_awaiting_user) { create(:user) }
-
-      before do
-        create(:group_member, :awaiting, user: awaiting_user, source: group)
-        create(:group_member, :awaiting, user: shared_group_awaiting_user, source: shared_group)
-        create(:project_member, :awaiting, user: project_awaiting_user, source: project)
-
-        create(:group_group_link, { shared_with_group: shared_group,
-                                    shared_group: group })
-      end
-
-      it { is_expected.to match_array([awaiting_user.id, shared_group_awaiting_user.id, project_awaiting_user.id]) }
-    end
-  end
-
   describe '#billable_members_count', :saas do
     let_it_be(:bronze_plan) { create(:bronze_plan) }
     let_it_be(:premium_plan) { create(:premium_plan) }
@@ -1601,112 +1512,13 @@ RSpec.describe Group do
         end
       end
     end
-
-    context 'for free group' do
-      before do
-        allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?).with(group).and_return(free_user_cap_enabled)
-      end
-
-      context 'when free_user_cap is enabled' do
-        let(:free_user_cap_enabled) { true }
-
-        it 'includes awaiting members' do
-          expect(group.billable_members_count).to eq(3)
-        end
-      end
-
-      context 'when free_user_cap is disabled' do
-        let(:free_user_cap_enabled) { false }
-
-        it 'does not include awaiting members' do
-          expect(group.billable_members_count).to eq(2)
-        end
-      end
-    end
-  end
-
-  describe '#take_high_activity_user_ids' do
-    let_it_be(:example_activity_by_user) do
-      { 1 => 321, 2 => 5112, 3 => 511, 4 => 51, 5 => 15, 6 => 52, 7 => 0, 8 => 12, 9 => 100 }
-    end
-
-    before do
-      allow(group).to receive(:recent_activity_by_users_in_hierarchy).and_return(example_activity_by_user)
-    end
-
-    it 'takes 5 most recently active users' do
-      expect(group.take_high_activity_user_ids(Array(1..9))).to eq([2, 3, 1, 9, 6])
-    end
-
-    it 'takes 3 most recently active users when given 3 users' do
-      expect(group.take_high_activity_user_ids(Array(1..3))).to eq([2, 3, 1])
-    end
-
-    it 'takes 5 most recently active users when given some other users' do
-      expect(group.take_high_activity_user_ids(Array(3..9))).to eq([3, 9, 6, 4, 5])
-    end
-  end
-
-  describe '#staying_in_user_ids' do
-    let(:user_ids) { Array(1..20) }
-    let(:activity_by_user) { user_ids.to_h { |k| [k, k] } }
-
-    before do
-      allow(group).to receive(:recent_activity_by_users_in_hierarchy).and_return(activity_by_user)
-    end
-
-    subject(:staying_in_user_ids) { group.staying_in_user_ids }
-
-    it "returns all users when namespace has exactly 5 users" do
-      allow(group).to receive(:trimmable_user_ids).and_return(user_ids.take(5))
-
-      expect(staying_in_user_ids).to eq([1, 2, 3, 4, 5])
-    end
-
-    it "returns all users when namespace has less than 5 users" do
-      allow(group).to receive(:trimmable_user_ids).and_return(user_ids.take(3))
-
-      expect(staying_in_user_ids).to eq([1, 2, 3])
-    end
-
-    it "returns all owners if namespace has 5 owners and even more users" do
-      allow(group).to receive(:trimmable_user_ids).and_return(user_ids.take(10))
-      allow(group).to receive(:owner_ids).and_return(user_ids.take(5))
-
-      expect(staying_in_user_ids).to eq([1, 2, 3, 4, 5])
-    end
-
-    it "returns top 5 most active owners when namespace has more than 5 owners" do
-      allow(group).to receive(:trimmable_user_ids).and_return(user_ids.take(15))
-      allow(group).to receive(:owner_ids).and_return(user_ids.take(10))
-
-      expect(staying_in_user_ids).to eq([10, 9, 8, 7, 6])
-    end
-
-    it "returns 3 owners and top 2 users when namespace has 3 owners and over limit users" do
-      allow(group).to receive(:trimmable_user_ids).and_return(user_ids.take(10))
-      allow(group).to receive(:owner_ids).and_return(user_ids.take(3))
-
-      expect(staying_in_user_ids).to eq([3, 2, 1, 10, 9])
-    end
-
-    context 'owners are also top active users' do
-      let(:activity_by_user) { user_ids.to_h { |k| [k, 100 - k] } }
-
-      it "returns 3 owners and top 2 non owner users when top active users include owners too" do
-        allow(group).to receive(:trimmable_user_ids).and_return(user_ids.take(6))
-        allow(group).to receive(:owner_ids).and_return(user_ids.take(3))
-
-        expect(staying_in_user_ids).to eq([1, 2, 3, 4, 5])
-      end
-    end
   end
 
   describe '#capacity_left_for_user?' do
-    let(:group) { create(:group) }
-    let(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
+    let_it_be(:user) { create(:user) }
 
-    where(:apply_user_cap, :user_limit_reached, :existing_membership, :result) do
+    where(:user_cap_available, :user_cap_reached, :existing_membership, :result) do
       false           | false              | false               | true
       false           | false              | true                | true
       false           | true               | true                | true
@@ -1720,15 +1532,10 @@ RSpec.describe Group do
 
     with_them do
       before do
-        create(:group_member, group: group, user: user) if existing_membership
+        create(:group_member, source: group, user: user) if existing_membership
 
-        free_user_cap = instance_double(
-          Namespaces::FreeUserCap::Standard,
-          enforce_cap?: apply_user_cap,
-          reached_limit?: user_limit_reached
-        )
-
-        allow(group).to receive(:free_user_cap).and_return(free_user_cap)
+        allow(group).to receive(:user_cap_available?).and_return(user_cap_available)
+        allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
       end
 
       it { is_expected.to eq(result) }
@@ -1799,29 +1606,6 @@ RSpec.describe Group do
           expect(subgroup.has_free_or_no_subscription?).to be(true)
         end
       end
-    end
-  end
-
-  describe '#apply_user_cap?' do
-    let(:group) { build(:group) }
-
-    where(:user_cap_available, :enforce_free_cap, :result) do
-      false | false | false
-      false | true  | true
-      true  | false | true
-      true  | true  | true
-    end
-
-    subject { group.apply_user_cap? }
-
-    with_them do
-      before do
-        free_user_cap = instance_double(Namespaces::FreeUserCap::Standard, enforce_cap?: enforce_free_cap)
-        allow(group).to receive(:user_cap_available?).and_return(user_cap_available)
-        allow(group).to receive(:free_user_cap).and_return(free_user_cap)
-      end
-
-      it { is_expected.to eq(result) }
     end
   end
 
@@ -2695,27 +2479,6 @@ RSpec.describe Group do
     end
   end
 
-  describe '#user_limit_reached?' do
-    where(:user_cap_reached, :reached_free_limit, :result) do
-      false | false | false
-      false | true  | true
-      true  | false | true
-      true  | true  | true
-    end
-
-    subject { group.user_limit_reached? }
-
-    with_them do
-      before do
-        allow(group).to receive(:user_cap_reached?).and_return(user_cap_reached)
-        free_user_cap = instance_double(Namespaces::FreeUserCap::Standard, reached_limit?: reached_free_limit)
-        allow(group).to receive(:free_user_cap).and_return(free_user_cap)
-      end
-
-      it { is_expected.to eq(result) }
-    end
-  end
-
   describe '#free_plan_members_count' do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:owner) { create(:user) }
@@ -2783,73 +2546,10 @@ RSpec.describe Group do
     end
   end
 
-  describe '#recent_activity_by_users_in_hierarchy' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:group_user) { create(:group_member, :owner, group: group, user: create(:user)).user }
-    let_it_be(:epic) { create(:epic, group: group) }
-    let_it_be(:epic_event) { create(:event, :created, target: epic, group: group, author: group_user) }
-
-    it 'returns a separate hash for another group' do
-      expect(group.recent_activity_by_users_in_hierarchy)
-        .to include(group_user.id => epic_event.id)
-    end
-  end
-
   it_behaves_like 'can move repository storage' do
     let_it_be(:container) { create(:group, :wiki_repo) }
 
     let(:repository) { container.wiki.repository }
-  end
-
-  describe '#memberships_to_be_deactivated' do
-    let(:group) { create(:group) }
-    let(:project) { create(:project, group: group) }
-
-    before do
-      create_list(:group_member, 4, :active, group: group)
-      create_list(:project_member, 7, :active, project: project)
-    end
-
-    it "returns all but 5 memberships in groups and projects" do
-      expect(group.memberships_to_be_deactivated.map(&:state)).to match_array([::Member::STATE_ACTIVE] * 6)
-    end
-
-    context 'with some awaiting members' do
-      it "returns only active members ignoring awaiting ones" do
-        create(:project_member, :awaiting, project: project)
-
-        expect(group.memberships_to_be_deactivated.map(&:state)).to match_array([::Member::STATE_ACTIVE] * 6)
-      end
-    end
-  end
-
-  describe '#trimmable_user_ids' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:owner1) { create(:user) }
-    let_it_be(:owner2) { create(:user) }
-    let_it_be(:project) { create(:project, group: group) }
-    let_it_be(:project_user) { create(:project_member, project: project).user }
-    let_it_be(:project_2) { create(:project, group: group) }
-    let_it_be(:project2_user) { create(:project_member, project: project_2).user }
-    let_it_be(:bot_project_user) { create(:project_member, project: project, user: create(:user, :bot)).user }
-    let_it_be(:requesting_user) { create(:project_member, :access_request, project: project).user }
-    let_it_be(:group_user) { create(:group_member, :owner, group: group, user: create(:user)).user }
-
-    before do
-      group.add_owner(owner1)
-      group.add_owner(owner2)
-      create(:project_member, :invited, project: project)
-      create(:project_member) # a random project member with project not under our group
-      create(:group_member) # a random group member with group not under our group
-      create(:project_member, project: project_2, user: project_user) # member using same user as project_user
-      create(:project_member, project: project, user: create(:user, :project_bot)) # project bot
-      create(:project_member, project: project, user: create(:user, :blocked)) # not active user
-    end
-
-    it 'only includes users from projects of a group and the owners of the group' do
-      expect(group.trimmable_user_ids)
-        .to contain_exactly(project_user.id, owner1.id, owner2.id, project2_user.id, bot_project_user.id, requesting_user.id, group_user.id)
-    end
   end
 
   describe '#cluster_agents' do

@@ -399,15 +399,6 @@
   :weight: 1
   :idempotent: false
   :tags: []
-- :name: cronjob:namespaces_free_user_cap_remediation
-  :worker_name: Namespaces::FreeUserCap::RemediationWorker
-  :feature_category: :experimentation_conversion
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :cpu
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: cronjob:projects_disable_legacy_open_source_license_for_inactive_projects
   :worker_name: Projects::DisableLegacyOpenSourceLicenseForInactiveProjectsWorker
   :feature_category: :projects
