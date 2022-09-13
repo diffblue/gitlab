@@ -1,384 +1,384 @@
 {
-    "@generated": "Fri, 13 Apr 2018 09:22:01", 
-    "@version": "2.7.0", 
-    "site": [
+  "@generated": "Fri, 13 Apr 2018 09:22:01",
+  "@version": "2.7.0",
+  "site": [
+    {
+      "@host": "goat",
+      "@name": "http://goat:8080",
+      "@port": "8080",
+      "@ssl": "false",
+      "alerts": [
         {
-            "@host": "goat", 
-            "@name": "http://goat:8080", 
-            "@port": "8080", 
-            "@ssl": "false", 
-            "alerts": [
-                {
-                    "alert": "Cookie No HttpOnly Flag", 
-                    "confidence": "2", 
-                    "count": "1", 
-                    "cweid": "120", 
-                    "desc": "<p>A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.</p>", 
-                    "instances": [
-                        {
-                            "attack": "", 
-                            "evidence": "Set-Cookie: JSESSIONID", 
-                            "method": "GET", 
-                            "param": "JSESSIONID", 
-                            "uri": "http://goat:8080/WebGoat/login?logout"
-                        }
-                    ], 
-                    "name": "Cookie No HttpOnly Flag", 
-                    "otherinfo": "", 
-                    "pluginid": "10010", 
-                    "reference": "<p>http://www.owasp.org/index.php/HttpOnly</p>", 
-                    "riskcode": "1", 
-                    "riskdesc": "Low (Medium)", 
-                    "solution": "<p>Ensure that the HttpOnly flag is set for all cookies.</p>", 
-                    "sourceid": "3", 
-                    "wascid": "13"
-                }, 
-                {
-                    "alert": "Information Disclosure - Suspicious Comments", 
-                    "confidence": "2", 
-                    "count": "4", 
-                    "cweid": "201", 
-                    "desc": "<p>The response appears to contain suspicious comments which may help an attacker.</p>", 
-                    "instances": [
-                        {
-                            "attack": "", 
-                            "evidence": "", 
-                            "method": "GET", 
-                            "param": "", 
-                            "uri": "http://goat:8080/WebGoat/start_new.mvc"
-                        }
-                    ], 
-                    "name": "Information Disclosure - Suspicious Comments", 
-                    "otherinfo": "<p><!--<button type=\"button\" id=\"admin-button\" class=\"btn btn-default right_nav_button\" title=\"Administrator\">--></p><p><!--<button type=\"button\" id=\"user-management\" class=\"btn btn-default right_nav_button\"--></p><p><!--title=\"User management\">--></p><p></p>", 
-                    "pluginid": "10027", 
-                    "reference": "<p></p>", 
-                    "riskcode": "0", 
-                    "riskdesc": "Informational (Medium)", 
-                    "solution": "<p>Remove all comments that return information that may help an attacker and fix any underlying problems they refer to.</p>", 
-                    "sourceid": "3", 
-                    "wascid": "13"
-                }
-            ]
+          "alert": "Cookie No HttpOnly Flag",
+          "confidence": "2",
+          "count": "1",
+          "cweid": "120",
+          "desc": "<p>A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "Set-Cookie: JSESSIONID",
+              "method": "GET",
+              "param": "JSESSIONID",
+              "uri": "http://goat:8080/WebGoat/login?logout"
+            }
+          ],
+          "name": "Cookie No HttpOnly Flag",
+          "otherinfo": "",
+          "pluginid": "10010",
+          "reference": "<p>http://www.owasp.org/index.php/HttpOnly</p>",
+          "riskcode": "1",
+          "riskdesc": "Low (Medium)",
+          "solution": "<p>Ensure that the HttpOnly flag is set for all cookies.</p>",
+          "sourceid": "3",
+          "wascid": "13"
+        },
+        {
+          "alert": "Information Disclosure - Suspicious Comments",
+          "confidence": "2",
+          "count": "4",
+          "cweid": "201",
+          "desc": "<p>The response appears to contain suspicious comments which may help an attacker.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/start_new.mvc"
+            }
+          ],
+          "name": "Information Disclosure - Suspicious Comments",
+          "otherinfo": "<p><!--<button type=\"button\" id=\"admin-button\" class=\"btn btn-default right_nav_button\" title=\"Administrator\">--></p><p><!--<button type=\"button\" id=\"user-management\" class=\"btn btn-default right_nav_button\"--></p><p><!--title=\"User management\">--></p><p></p>",
+          "pluginid": "10027",
+          "reference": "<p></p>",
+          "riskcode": "0",
+          "riskdesc": "Informational (Medium)",
+          "solution": "<p>Remove all comments that return information that may help an attacker and fix any underlying problems they refer to.</p>",
+          "sourceid": "3",
+          "wascid": "13"
         }
-    ], 
-    "spider": {
-        "progress": "100", 
-        "result": {
-            "urlsInScope": [
-                {
-                    "method": "GET", 
-                    "processed": "false", 
-                    "reasonNotProcessed": "Not Text", 
-                    "statusCode": "404", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "302", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "302", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/attack"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/css/animate.css"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/css/coderay.css"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/css/font-awesome.min.css"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/css/lessons.css"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/css/main.css"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "404", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/images/favicon.ico"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/js/html5shiv.js"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/js/libs/require.min.js"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/js/modernizr-2.6.2.min.js"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/js/respond.min.js"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/login"
-                }, 
-                {
-                    "method": "POST", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "302", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/login"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "false", 
-                    "reasonNotProcessed": "Max Depth", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/login?error"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "302", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/login?logout"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "302", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/logout"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
-                }, 
-                {
-                    "method": "POST", 
-                    "processed": "false", 
-                    "reasonNotProcessed": "Max Depth", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/register.mvc"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/registration"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "200", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/start.mvc"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "302", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat/welcome.mvc"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "302", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/WebGoat"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "404", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/robots.txt"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "true", 
-                    "reasonNotProcessed": "", 
-                    "statusCode": "404", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080/sitemap.xml"
-                }, 
-                {
-                    "method": "GET", 
-                    "processed": "false", 
-                    "reasonNotProcessed": "Not Text", 
-                    "statusCode": "404", 
-                    "statusReason": "", 
-                    "url": "http://goat:8080"
-                }
-            ], 
-            "urlsIoError": [], 
-            "urlsOutOfScope": [
-                "http://daneden.me/animate", 
-                "http://fontawesome.io/", 
-                "http://fontawesome.io/license", 
-                "http://getbootstrap.com/", 
-                "https://github.com/nickpettit/glide", 
-                "https://github.com/twbs/bootstrap/blob/master/LICENSE"
-            ]
-        }, 
-        "state": "FINISHED"
-    }, 
-    "version": "2.5", 
-    "vulnerabilities": [
+      ]
+    }
+  ],
+  "spider": {
+    "progress": "100",
+    "result": {
+      "urlsInScope": [
         {
-            "category": "dast", 
-            "confidence": "medium", 
-            "cve": "10010", 
-            "description": "A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.", 
-            "identifiers": [
-                {
-                    "name": "Cookie No HttpOnly Flag", 
-                    "type": "ZAProxy_PluginId", 
-                    "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md", 
-                    "value": "10010"
-                }, 
-                {
-                    "name": "CWE-120", 
-                    "type": "CWE", 
-                    "url": "https://cwe.mitre.org/data/definitions/120.html", 
-                    "value": "120"
-                }, 
-                {
-                    "name": "WASC-13", 
-                    "type": "WASC", 
-                    "url": "https://projects.webappsec.org/Information-Leakage", 
-                    "value": "13"
-                }
-            ], 
-            "links": [
-                {
-                    "url": "http://www.owasp.org/index.php/HttpOnly"
-                }
-            ], 
-            "location": {
-                "hostname": "http://goat:8080", 
-                "method": "GET", 
-                "param": "JSESSIONID", 
-                "path": "/WebGoat/login?logout"
-            }, 
-            "message": "Cookie No HttpOnly Flag", 
-            "scanner": {
-                "id": "zaproxy", 
-                "name": "ZAProxy"
-            }, 
-            "severity": "low", 
-            "solution": "Ensure that the HttpOnly flag is set for all cookies."
-        }, 
+          "method": "GET",
+          "processed": "false",
+          "reasonNotProcessed": "Not Text",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/"
+        },
         {
-            "category": "dast", 
-            "confidence": "medium", 
-            "cve": "10027", 
-            "description": "The response appears to contain suspicious comments which may help an attacker.", 
-            "identifiers": [
-                {
-                    "name": "Information Disclosure - Suspicious Comments", 
-                    "type": "ZAProxy_PluginId", 
-                    "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md", 
-                    "value": "10027"
-                }, 
-                {
-                    "name": "CWE-201", 
-                    "type": "CWE", 
-                    "url": "https://cwe.mitre.org/data/definitions/201.html", 
-                    "value": "201"
-                }, 
-                {
-                    "name": "WASC-13", 
-                    "type": "WASC", 
-                    "url": "https://projects.webappsec.org/Information-Leakage", 
-                    "value": "13"
-                }
-            ], 
-            "links": [], 
-            "location": {
-                "hostname": "http://goat:8080", 
-                "method": "GET", 
-                "param": "", 
-                "path": "/WebGoat/start_new.mvc"
-            }, 
-            "message": "Information Disclosure - Suspicious Comments", 
-            "scanner": {
-                "id": "zaproxy", 
-                "name": "ZAProxy"
-            }, 
-            "severity": "info", 
-            "solution": "Remove all comments that return information that may help an attacker and fix any underlying problems they refer to."
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/attack"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/animate.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/coderay.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/font-awesome.min.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/lessons.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/main.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/images/favicon.ico"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/html5shiv.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/libs/require.min.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/modernizr-2.6.2.min.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/respond.min.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login"
+        },
+        {
+          "method": "POST",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login"
+        },
+        {
+          "method": "GET",
+          "processed": "false",
+          "reasonNotProcessed": "Max Depth",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login?error"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login?logout"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/logout"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+        },
+        {
+          "method": "POST",
+          "processed": "false",
+          "reasonNotProcessed": "Max Depth",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/register.mvc"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/registration"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/start.mvc"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/welcome.mvc"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/robots.txt"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/sitemap.xml"
+        },
+        {
+          "method": "GET",
+          "processed": "false",
+          "reasonNotProcessed": "Not Text",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080"
         }
-    ]
+      ],
+      "urlsIoError": [],
+      "urlsOutOfScope": [
+        "http://daneden.me/animate",
+        "http://fontawesome.io/",
+        "http://fontawesome.io/license",
+        "http://getbootstrap.com/",
+        "https://github.com/nickpettit/glide",
+        "https://github.com/twbs/bootstrap/blob/master/LICENSE"
+      ]
+    },
+    "state": "FINISHED"
+  },
+  "version": "2.5",
+  "vulnerabilities": [
+    {
+      "category": "dast",
+      "confidence": "medium",
+      "cve": "10010",
+      "description": "A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.",
+      "identifiers": [
+        {
+          "name": "Cookie No HttpOnly Flag",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10010"
+        },
+        {
+          "name": "CWE-120",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/120.html",
+          "value": "120"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://www.owasp.org/index.php/HttpOnly"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "JSESSIONID",
+        "path": "/WebGoat/login?logout"
+      },
+      "message": "Cookie No HttpOnly Flag",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "low",
+      "solution": "Ensure that the HttpOnly flag is set for all cookies."
+    },
+    {
+      "category": "dast",
+      "confidence": "medium",
+      "cve": "10027",
+      "description": "The response appears to contain suspicious comments which may help an attacker.",
+      "identifiers": [
+        {
+          "name": "Information Disclosure - Suspicious Comments",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10027"
+        },
+        {
+          "name": "CWE-201",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/201.html",
+          "value": "201"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/start_new.mvc"
+      },
+      "message": "Information Disclosure - Suspicious Comments",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "info",
+      "solution": "Remove all comments that return information that may help an attacker and fix any underlying problems they refer to."
+    }
+  ]
 }

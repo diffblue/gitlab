@@ -30,7 +30,9 @@
         "name": "a",
         "url": "https://example.org/a",
         "description": "Dependency A.",
-        "pathes": [ "." ]
+        "pathes": [
+          "."
+        ]
       }
     },
     {
@@ -48,7 +50,9 @@
         "name": "b",
         "url": "https://example.org/b",
         "description": "Dependency B.",
-        "pathes": [ "." ]
+        "pathes": [
+          "."
+        ]
       }
     },
     {
@@ -70,7 +74,9 @@
         "name": "c",
         "url": "https://example.org/c",
         "description": "Dependency C.",
-        "pathes": [ "." ]
+        "pathes": [
+          "."
+        ]
       }
     },
     {
@@ -87,7 +93,9 @@
         "name": "d",
         "url": "https://example.org/d",
         "description": "Dependency D.",
-        "pathes": [ "." ]
+        "pathes": [
+          "."
+        ]
       }
     }
   ]

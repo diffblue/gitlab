@@ -25,29 +25,46 @@
       "name": "a",
       "url": "https://example.org/a",
       "description": "Dependency A.",
-      "paths": ["."],
-      "licenses": ["MIT"]
+      "paths": [
+        "."
+      ],
+      "licenses": [
+        "MIT"
+      ]
     },
     {
       "name": "b",
       "url": "https://example.com/b",
       "description": "Dependency B.",
-      "paths": [ "." ],
-      "licenses": [ "BSD-3-Clause" ]
+      "paths": [
+        "."
+      ],
+      "licenses": [
+        "BSD-3-Clause"
+      ]
     },
     {
       "name": "c",
       "url": "https://example.org/c",
       "description": "Dependency C.",
-      "paths": [ "." ],
-      "licenses": [ "MIT", "BSD-3-Clause" ]
+      "paths": [
+        "."
+      ],
+      "licenses": [
+        "MIT",
+        "BSD-3-Clause"
+      ]
     },
     {
       "name": "d",
       "url": "https://example.org/d",
       "description": "Dependency D.",
-      "paths": [ "." ],
-      "licenses": [ "unknown" ]
+      "paths": [
+        "."
+      ],
+      "licenses": [
+        "unknown"
+      ]
     }
   ]
 }

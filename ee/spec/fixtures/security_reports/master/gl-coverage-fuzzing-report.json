@@ -1,46 +1,46 @@
 {
-    "version": "14.1.2",
-    "vulnerabilities": [
+  "version": "14.1.2",
+  "vulnerabilities": [
+    {
+      "id": "0e9148e513ed08ee1973cc149e939ef260cbfa1d7d2242760377c5749b953ddd",
+      "category": "coverage_fuzzing",
+      "name": "name",
+      "message": "Heap-buffer-overflow\nREAD 1",
+      "cve": "",
+      "severity": "Critical",
+      "scanner": {
+        "id": "libfuzzer",
+        "name": "libfuzzer"
+      },
+      "location": {
+        "crash_address": "0x602000001573",
+        "crash_type": "Heap-buffer-overflow\nREAD 1",
+        "crash_state": "FuzzMe\nstart\nstart+0x0\n\n",
+        "stacktrace_snippet": "INFO: Seed: 3415817494\nINFO: Loaded 1 modules"
+      },
+      "identifiers": [
         {
-            "id": "0e9148e513ed08ee1973cc149e939ef260cbfa1d7d2242760377c5749b953ddd",
-            "category": "coverage_fuzzing",
-            "name": "name",
-            "message": "Heap-buffer-overflow\nREAD 1",
-            "cve": "",
-            "severity": "Critical",
-            "scanner": {
-                "id": "libfuzzer",
-                "name": "libfuzzer"
-            },
-            "location": {
-                "crash_address": "0x602000001573",
-                "crash_type": "Heap-buffer-overflow\nREAD 1",
-                "crash_state": "FuzzMe\nstart\nstart+0x0\n\n",
-                "stacktrace_snippet": "INFO: Seed: 3415817494\nINFO: Loaded 1 modules"
-            },
-            "identifiers": [
-                {
-                    "type": "cwe",
-                    "name": "Heap-buffer-overflow\nREAD 1",
-                    "value": "Heap-buffer-overflow\nREAD 1"
-                }
-            ]
+          "type": "cwe",
+          "name": "Heap-buffer-overflow\nREAD 1",
+          "value": "Heap-buffer-overflow\nREAD 1"
         }
-    ],
-    "remediations": [],
-    "scan": {
-        "scanner": {
-            "id": "libfuzzer",
-            "name": "libfuzzer",
-            "url": "https://docs.gitlab.com/ee/user/application_security/coverage_fuzzing",
-            "vendor": {
-                "name": "GitLab"
-            },
-            "version": "v2.0.46"
-        },
-        "type": "coverage_fuzzing",
-        "start_time": "2020-11-10T09:02:02",
-        "end_time": "2020-11-10T09:02:04",
-        "status": "success"
+      ]
     }
+  ],
+  "remediations": [],
+  "scan": {
+    "scanner": {
+      "id": "libfuzzer",
+      "name": "libfuzzer",
+      "url": "https://docs.gitlab.com/ee/user/application_security/coverage_fuzzing",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "v2.0.46"
+    },
+    "type": "coverage_fuzzing",
+    "start_time": "2020-11-10T09:02:02",
+    "end_time": "2020-11-10T09:02:04",
+    "status": "success"
+  }
 }

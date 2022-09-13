@@ -145,7 +145,7 @@
       "message": "ruby-ffi DDL loading issue on Windows OS",
       "cve": "ffi:1.9.18:CVE-2018-1000201",
       "severity": "High",
-      "solution": "upgrade to \u003e= 1.9.24",
+      "solution": "upgrade to \\u003e= 1.9.24",
       "scanner": {
         "id": "gemnasium",
         "name": "gemnasium"
@@ -193,5 +193,4 @@
     "end_time": "placeholder-value",
     "status": "success"
   }
-
 }

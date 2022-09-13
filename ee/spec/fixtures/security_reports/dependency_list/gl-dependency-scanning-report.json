@@ -308,7 +308,7 @@
           },
           "version": "0.2.10",
           "iid": 1,
-          "direct":true
+          "direct": true
         },
         {
           "package": {
@@ -331,7 +331,7 @@
           },
           "version": "1.0.5",
           "iid": 3,
-          "direct":true
+          "direct": true
         },
         {
           "package": {
@@ -339,7 +339,7 @@
           },
           "version": "0.8.8",
           "iid": 4,
-          "direct":true
+          "direct": true
         },
         {
           "package": {
@@ -362,7 +362,7 @@
           },
           "version": "0.2.24",
           "iid": 6,
-          "direct":true
+          "direct": true
         },
         {
           "package": {
@@ -370,7 +370,7 @@
           },
           "version": "1.5.0",
           "iid": 7,
-          "direct":true
+          "direct": true
         },
         {
           "package": {
@@ -411,7 +411,7 @@
           },
           "version": "1.6.0",
           "iid": 10,
-          "direct":true
+          "direct": true
         },
         {
           "package": {
@@ -431,13 +431,13 @@
           },
           "version": "0.7.4",
           "iid": 12,
-          "direct":true
+          "direct": true
         },
         {
           "package": {
             "name": "xml2js"
           },
-          "version":"0.4.19",
+          "version": "0.4.19",
           "iid": 13,
           "dependency_path": [
             {
@@ -451,7 +451,7 @@
           },
           "version": "2.1.0",
           "iid": 14,
-          "dependency_path":[
+          "dependency_path": [
             {
               "iid": 12
             },
@@ -487,8 +487,7 @@
           },
           "version": "0.1.19",
           "iid": 16,
-          "dependency_path":
-          [
+          "dependency_path": [
             {
               "iid": 7
             }
@@ -530,7 +529,7 @@
           },
           "version": "0.0.5",
           "iid": 19,
-          "direct":true
+          "direct": true
         }
       ]
     }
