@@ -2939,12 +2939,6 @@ class Project < ApplicationRecord
     end
   end
 
-  def remove_project_authorizations(user_ids, per_batch = 1000)
-    user_ids.each_slice(per_batch) do |user_ids_batch|
-      project_authorizations.where(user_id: user_ids_batch).delete_all
-    end
-  end
-
   def enforced_runner_token_expiration_interval
     all_parent_groups = Gitlab::ObjectHierarchy.new(Group.where(id: group)).base_and_ancestors
     all_group_settings = NamespaceSetting.where(namespace_id: all_parent_groups)
