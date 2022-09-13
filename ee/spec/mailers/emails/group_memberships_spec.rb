@@ -10,7 +10,7 @@ RSpec.describe Emails::GroupMemberships do
 
   let(:csv) { CSV.parse_line("a,b,c\nd,e,f") }
 
-  describe "#user_cap_reached" do
+  describe "#memberships_export_email" do
     subject { Notify.memberships_export_email(csv_data: csv, requested_by: owner.user, group: group) }
 
     it { is_expected.to have_subject('Exported group membership list') }
@@ -22,6 +22,13 @@ RSpec.describe Emails::GroupMemberships do
         expect(subject.attachments[0].content_type).to eq('text/csv')
         expect(subject.attachments[0].filename).to eq("#{group.full_path.parameterize}_group_memberships_#{Date.current.iso8601}.csv")
       end
+    end
+
+    it 'properly renders email' do
+      email_content = "Hi, Attached to this email is the list of members of #{group.name} in CSV format."
+
+      expect(subject.html_part.body).to have_content(email_content)
+      expect(subject.text_part.body).to have_content(email_content)
     end
   end
 end
