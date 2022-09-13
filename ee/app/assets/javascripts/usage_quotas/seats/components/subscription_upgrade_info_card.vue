@@ -17,15 +17,23 @@ export default {
       type: String,
       required: true,
     },
+    activeTrial: {
+      type: Boolean,
+      required: true,
+    },
   },
   i18n: {
     description: s__(
       'Billing|To ensure all members can access the group when your trial ends, you can upgrade to a paid tier.',
     ),
-    cta: s__('Billing|Explore all plans'),
+    cta: s__('Billing|Explore paid plans'),
   },
   computed: {
     title() {
+      if (this.activeTrial) {
+        return s__('Billing|Unlimited members during your trial');
+      }
+
       return n__(
         'Billing|Groups in the Free tier are limited to %d seat',
         'Billing|Groups in the Free tier are limited to %d seats',
