@@ -394,7 +394,7 @@ module Gitlab
       elsif user
         user.can?(:read_project, project)
       elsif ci?
-        true # allow CI (build without a user) for backwards compatibility
+        raise ForbiddenError
       end || Guest.can?(:read_project, project)
     end
 
@@ -446,7 +446,6 @@ module Gitlab
         when Key
           actor.user
         when :ci
-          Gitlab::AppJsonLogger.info(message: 'Actor was :ci', project_id: project.id)
           nil
         end
       end

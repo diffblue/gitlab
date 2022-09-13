@@ -144,21 +144,12 @@ RSpec.describe Gitlab::GitAccess, :aggregate_failures do
           let(:actor) { :ci }
           let(:authentication_abilities) { build_authentication_abilities }
 
-          it 'allows pull access' do
-            expect { pull_access_check }.not_to raise_error
+          it 'disallows pull access' do
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
           end
 
           it 'does not block pushes with "not found"' do
             expect { push_access_check }.to raise_forbidden(described_class::ERROR_MESSAGES[:auth_upload])
-          end
-
-          it 'logs' do
-            expect(Gitlab::AppJsonLogger).to receive(:info).with(
-              message: 'Actor was :ci',
-              project_id: project.id
-            ).once
-
-            pull_access_check
           end
         end
 
@@ -741,18 +732,7 @@ RSpec.describe Gitlab::GitAccess, :aggregate_failures do
       describe 'generic CI (build without a user)' do
         let(:actor) { :ci }
 
-        context 'pull code' do
-          it { expect { pull_access_check }.not_to raise_error }
-
-          it 'logs' do
-            expect(Gitlab::AppJsonLogger).to receive(:info).with(
-              message: 'Actor was :ci',
-              project_id: project.id
-            ).once
-
-            pull_access_check
-          end
-        end
+        specify { expect { pull_access_check }.to raise_error Gitlab::GitAccess::ForbiddenError }
       end
     end
   end
