@@ -26,15 +26,15 @@ initAccessRestrictionField({
   customValidator: validateRestrictedIpAddress,
 });
 
-const complianceFrameworksList = document.querySelector('#js-compliance-frameworks-list');
+const complianceFrameworksTable = document.querySelector('#js-compliance-frameworks-list');
 
-if (complianceFrameworksList) {
+if (complianceFrameworksTable) {
   (async () => {
     try {
-      const { createComplianceFrameworksListApp } = await import(
-        /* webpackChunkName: 'createComplianceFrameworksListApp' */ 'ee/groups/settings/compliance_frameworks/init_list'
+      const { createComplianceFrameworksTableApp } = await import(
+        /* webpackChunkName: 'createComplianceFrameworksTableApp' */ 'ee/groups/settings/compliance_frameworks/init_table'
       );
-      createComplianceFrameworksListApp(complianceFrameworksList);
+      createComplianceFrameworksTableApp(complianceFrameworksTable);
     } catch {
       createFlash({ message: __('An error occurred while loading a section of this page.') });
     }
