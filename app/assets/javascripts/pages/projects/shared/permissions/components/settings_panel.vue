@@ -5,7 +5,11 @@ import settingsMixin from 'ee_else_ce/pages/projects/shared/permissions/mixins/s
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __, s__ } from '~/locale';
 import {
-  visibilityOptions,
+  VISIBILITY_LEVEL_PRIVATE_INTEGER,
+  VISIBILITY_LEVEL_INTERNAL_INTEGER,
+  VISIBILITY_LEVEL_PUBLIC_INTEGER,
+} from '~/visibility_level/constants';
+import {
   visibilityLevelDescriptions,
   featureAccessLevelMembers,
   featureAccessLevelEveryone,
@@ -62,6 +66,9 @@ export default {
     ),
     confirmButtonText: __('Save changes'),
   },
+  VISIBILITY_LEVEL_PRIVATE_INTEGER,
+  VISIBILITY_LEVEL_INTERNAL_INTEGER,
+  VISIBILITY_LEVEL_PUBLIC_INTEGER,
 
   components: {
     ProjectFeatureSetting,
@@ -104,9 +111,9 @@ export default {
       type: Array,
       required: false,
       default: () => [
-        visibilityOptions.PRIVATE,
-        visibilityOptions.INTERNAL,
-        visibilityOptions.PUBLIC,
+        VISIBILITY_LEVEL_PRIVATE_INTEGER,
+        VISIBILITY_LEVEL_INTERNAL_INTEGER,
+        VISIBILITY_LEVEL_PUBLIC_INTEGER,
       ],
     },
     lfsAvailable: {
@@ -220,8 +227,7 @@ export default {
   },
   data() {
     const defaults = {
-      visibilityOptions,
-      visibilityLevel: visibilityOptions.PUBLIC,
+      visibilityLevel: VISIBILITY_LEVEL_PUBLIC_INTEGER,
       issuesAccessLevel: featureAccessLevel.EVERYONE,
       repositoryAccessLevel: featureAccessLevel.EVERYONE,
       forkingAccessLevel: featureAccessLevel.EVERYONE,
@@ -259,7 +265,7 @@ export default {
   computed: {
     featureAccessLevelOptions() {
       const options = [featureAccessLevelMembers];
-      if (this.visibilityLevel !== visibilityOptions.PRIVATE) {
+      if (this.visibilityLevel !== VISIBILITY_LEVEL_PRIVATE_INTEGER) {
         options.push(featureAccessLevelEveryone);
       }
       return options;
@@ -280,9 +286,9 @@ export default {
     packageRegistryFeatureAccessLevelOptions() {
       const options = [FEATURE_ACCESS_LEVEL_ANONYMOUS];
 
-      if (this.visibilityLevel === visibilityOptions.PRIVATE) {
+      if (this.visibilityLevel === VISIBILITY_LEVEL_PRIVATE_INTEGER) {
         options.unshift(featureAccessLevelMembers);
-      } else if (this.visibilityLevel === visibilityOptions.INTERNAL) {
+      } else if (this.visibilityLevel === VISIBILITY_LEVEL_INTERNAL_INTEGER) {
         options.unshift(featureAccessLevelEveryone);
       }
 
@@ -293,15 +299,15 @@ export default {
       const options = [featureAccessLevelMembers];
 
       if (this.pagesAccessControlForced) {
-        if (this.visibilityLevel === visibilityOptions.INTERNAL) {
+        if (this.visibilityLevel === VISIBILITY_LEVEL_INTERNAL_INTEGER) {
           options.push(featureAccessLevelEveryone);
         }
       } else {
-        if (this.visibilityLevel !== visibilityOptions.PRIVATE) {
+        if (this.visibilityLevel !== VISIBILITY_LEVEL_PRIVATE_INTEGER) {
           options.push(featureAccessLevelEveryone);
         }
 
-        if (this.visibilityLevel !== visibilityOptions.PUBLIC) {
+        if (this.visibilityLevel !== VISIBILITY_LEVEL_PUBLIC_INTEGER) {
           options.push(FEATURE_ACCESS_LEVEL_ANONYMOUS);
         }
       }
@@ -326,13 +332,13 @@ export default {
 
     showContainerRegistryPublicNote() {
       return (
-        this.visibilityLevel === visibilityOptions.PUBLIC &&
+        this.visibilityLevel === VISIBILITY_LEVEL_PUBLIC_INTEGER &&
         this.containerRegistryAccessLevel === featureAccessLevel.EVERYONE
       );
     },
 
     repositoryHelpText() {
-      if (this.visibilityLevel === visibilityOptions.PRIVATE) {
+      if (this.visibilityLevel === VISIBILITY_LEVEL_PRIVATE_INTEGER) {
         return s__('ProjectSettings|View and edit files in this project.');
       }
 
@@ -341,7 +347,7 @@ export default {
       );
     },
     cveIdRequestIsDisabled() {
-      return this.visibilityLevel !== visibilityOptions.PUBLIC;
+      return this.visibilityLevel !== VISIBILITY_LEVEL_PUBLIC_INTEGER;
     },
     isVisibilityReduced() {
       return (
@@ -359,7 +365,7 @@ export default {
 
   watch: {
     visibilityLevel(value, oldValue) {
-      if (value === visibilityOptions.PRIVATE) {
+      if (value === VISIBILITY_LEVEL_PRIVATE_INTEGER) {
         // when private, features are restricted to "only team members"
         this.issuesAccessLevel = Math.min(
           featureAccessLevel.PROJECT_MEMBERS,
@@ -381,7 +387,7 @@ export default {
           if (
             this.packageRegistryAccessLevel === featureAccessLevel.EVERYONE ||
             (this.packageRegistryAccessLevel > featureAccessLevel.EVERYONE &&
-              oldValue === visibilityOptions.PUBLIC)
+              oldValue === VISIBILITY_LEVEL_PUBLIC_INTEGER)
           ) {
             this.packageRegistryAccessLevel = featureAccessLevel.PROJECT_MEMBERS;
           }
@@ -432,7 +438,7 @@ export default {
           this.pagesAccessLevel = featureAccessLevel.PROJECT_MEMBERS;
         }
         this.highlightChanges();
-      } else if (oldValue === visibilityOptions.PRIVATE) {
+      } else if (oldValue === VISIBILITY_LEVEL_PRIVATE_INTEGER) {
         // if changing away from private, make enabled features more permissive
         if (this.issuesAccessLevel > featureAccessLevel.NOT_ENABLED)
           this.issuesAccessLevel = featureAccessLevel.EVERYONE;
@@ -472,13 +478,13 @@ export default {
         this.highlightChanges();
       } else if (this.packageRegistryAccessLevelEnabled) {
         if (
-          value === visibilityOptions.PUBLIC &&
+          value === VISIBILITY_LEVEL_PUBLIC_INTEGER &&
           this.packageRegistryAccessLevel === featureAccessLevel.EVERYONE
         ) {
           // eslint-disable-next-line prefer-destructuring
           this.packageRegistryAccessLevel = FEATURE_ACCESS_LEVEL_ANONYMOUS[0];
         } else if (
-          value === visibilityOptions.INTERNAL &&
+          value === VISIBILITY_LEVEL_INTERNAL_INTEGER &&
           this.packageRegistryAccessLevel === FEATURE_ACCESS_LEVEL_ANONYMOUS[0]
         ) {
           this.packageRegistryAccessLevel = featureAccessLevel.EVERYONE;
@@ -548,20 +554,20 @@ export default {
               data-qa-selector="project_visibility_dropdown"
             >
               <option
-                :value="visibilityOptions.PRIVATE"
-                :disabled="!visibilityAllowed(visibilityOptions.PRIVATE)"
+                :value="$options.VISIBILITY_LEVEL_PRIVATE_INTEGER"
+                :disabled="!visibilityAllowed($options.VISIBILITY_LEVEL_PRIVATE_INTEGER)"
               >
                 {{ s__('ProjectSettings|Private') }}
               </option>
               <option
-                :value="visibilityOptions.INTERNAL"
-                :disabled="!visibilityAllowed(visibilityOptions.INTERNAL)"
+                :value="$options.VISIBILITY_LEVEL_INTERNAL_INTEGER"
+                :disabled="!visibilityAllowed($options.VISIBILITY_LEVEL_INTERNAL_INTEGER)"
               >
                 {{ s__('ProjectSettings|Internal') }}
               </option>
               <option
-                :value="visibilityOptions.PUBLIC"
-                :disabled="!visibilityAllowed(visibilityOptions.PUBLIC)"
+                :value="$options.VISIBILITY_LEVEL_PUBLIC_INTEGER"
+                :disabled="!visibilityAllowed($options.VISIBILITY_LEVEL_PUBLIC_INTEGER)"
               >
                 {{ s__('ProjectSettings|Public') }}
               </option>
@@ -592,7 +598,7 @@ export default {
         <div class="gl-mt-4">
           <strong class="gl-display-block">{{ s__('ProjectSettings|Additional options') }}</strong>
           <label
-            v-if="visibilityLevel !== visibilityOptions.PRIVATE"
+            v-if="visibilityLevel !== $options.VISIBILITY_LEVEL_PRIVATE_INTEGER"
             class="gl-line-height-28 gl-font-weight-normal gl-mb-0"
           >
             <input
@@ -604,7 +610,7 @@ export default {
             {{ s__('ProjectSettings|Users can request access') }}
           </label>
           <label
-            v-if="visibilityLevel !== visibilityOptions.PUBLIC"
+            v-if="visibilityLevel !== $options.VISIBILITY_LEVEL_PUBLIC_INTEGER"
             class="gl-line-height-28 gl-font-weight-normal gl-display-block gl-mb-0"
           >
             <input
