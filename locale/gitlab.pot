@@ -41322,6 +41322,9 @@ msgstr ""
 msgid "This will remove the fork relationship between this project and other projects in the fork network."
 msgstr ""
 
+msgid "Thread options"
+msgstr ""
+
 msgid "Thread to reply to cannot be found"
 msgstr ""
 
@@ -41918,9 +41921,6 @@ msgid "Toggle commit description"
 msgstr ""
 
 msgid "Toggle commit list"
-msgstr ""
-
-msgid "Toggle dropdown"
 msgstr ""
 
 msgid "Toggle emoji award"
