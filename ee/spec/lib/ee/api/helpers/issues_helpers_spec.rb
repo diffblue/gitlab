@@ -38,18 +38,6 @@ RSpec.describe API::Helpers::IssuesHelpers do
         expect { issues_helpers.find_issues.map(&:epic) }.not_to exceed_query_limit(recorder)
       end
     end
-
-    context 'with health status' do
-      let_it_be(:issues) { create_issues(2, project: project, health_status: :at_risk) }
-
-      before do
-        allow(issues_helpers).to receive(:declared_params).and_return(project_id: project.id)
-      end
-
-      it 'returns results' do
-        expect(issues_helpers.find_issues.count).to be(issues.count)
-      end
-    end
   end
 
   private

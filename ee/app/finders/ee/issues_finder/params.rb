@@ -69,14 +69,6 @@ module EE
       def by_health_status?
         params[:health_status].present?
       end
-
-      def filter_by_no_health_status?
-        params[:health_status].to_s.downcase == ::IssuableFinder::Params::FILTER_NONE
-      end
-
-      def filter_by_any_health_status?
-        params[:health_status].to_s.downcase == ::IssuableFinder::Params::FILTER_ANY
-      end
     end
   end
 end
