@@ -75,7 +75,7 @@ export default {
   <div
     v-if="shouldShowRelatedFeatureFlags"
     id="related-feature-flags"
-    class="card card-slim gl-overflow-hidden"
+    class="card card-slim gl-overflow-hidden gl-mt-5 gl-mb-0"
   >
     <div
       :class="cardHeaderClass"
