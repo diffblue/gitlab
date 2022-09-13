@@ -1,12 +1,17 @@
 <script>
 import { s__ } from '~/locale';
 import { RULE_IF_LABEL, RULE_OR_LABEL } from '../constants';
-import PipelineRuleComponent from './pipeline_rule_component.vue';
+import BaseRuleComponent from './base_rule_component.vue';
 import ScheduleRuleComponent from './schedule_rule_component.vue';
 import { RULE_KEY_MAP } from './lib';
-import { SCAN_EXECUTION_PIPELINE_RULE, SCAN_EXECUTION_SCHEDULE_RULE } from './constants';
+import {
+  SCAN_EXECUTION_PIPELINE_RULE,
+  SCAN_EXECUTION_SCHEDULE_RULE,
+  SCAN_EXECUTION_RULES_LABELS,
+} from './constants';
 
 export default {
+  SCAN_EXECUTION_RULES_LABELS,
   name: 'PolicyRuleBuilder',
   RULE_IF_LABEL,
   RULE_OR_LABEL,
@@ -14,7 +19,7 @@ export default {
     scheduleComponentPlaceholder: s__('ScanExecutionPolicy|Schedule rule component'),
   },
   components: {
-    PipelineRuleComponent,
+    BaseRuleComponent,
     ScheduleRuleComponent,
   },
   props: {
@@ -49,12 +54,13 @@ export default {
 
 <template>
   <div>
-    <pipeline-rule-component
+    <base-rule-component
       v-if="isPipelineRule"
+      :default-selected-rule="$options.SCAN_EXECUTION_RULES_LABELS.pipeline"
       :init-rule="initRule"
       :rule-label="ruleLabel"
-      @select-rule="selectRuleType"
       v-on="$listeners"
+      @select-rule="selectRuleType"
     />
     <schedule-rule-component
       v-else-if="isScheduleRule"

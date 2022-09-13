@@ -34614,9 +34614,6 @@ msgstr ""
 msgid "ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} actions for the %{scopes} %{branches}"
 msgstr ""
 
-msgid "ScanExecutionPolicy|%{ifLabelStart}if%{ifLabelEnd} %{rules} for the %{branches} branch(es)"
-msgstr ""
-
 msgid "ScanExecutionPolicy|%{period} %{days} at %{time}"
 msgstr ""
 
