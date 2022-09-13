@@ -65,6 +65,20 @@ In GitLab 16.0, any personal, project, or group access token that does not have 
 We recommend giving your tokens an expiration date in line with your company's security policies before the default is applied in GitLab 16.0.
 
 </div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### Toggle behavior of `/draft` quick action in merge requests
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2022-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+In order to make the behavior of toggling the draft status of a merge request more clear via a quick action, we're deprecating and removing the toggle behavior of the `/draft` quick action. Beginning with the 16.0 release of GitLab, `/draft` will only set a merge request to Draft and a new `/ready` quick action will be used to remove the draft status.
+
+</div>
 </div>
 
 <div class="announcement-milestone">
