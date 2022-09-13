@@ -33,11 +33,8 @@ module Gitlab
 
         def partition
           assert_existing_constraints_partitionable
-
           assert_partitioning_constraint_present
-
           create_parent_table
-
           attach_foreign_keys_to_parent
 
           migration_context.with_lock_retries do
@@ -65,25 +62,6 @@ module Gitlab
           end
 
           add_partitioning_check_constraint
-        end
-
-        def sequences_owned_by(table_name)
-          sequence_data = connection.exec_query(<<~SQL, nil, [table_name])
-            SELECT seq_pg_class.relname AS seq_name,
-                   dep_pg_class.relname AS table_name,
-                   pg_attribute.attname AS col_name
-            FROM pg_class seq_pg_class
-                 INNER JOIN pg_depend ON seq_pg_class.oid = pg_depend.objid
-                 INNER JOIN pg_class dep_pg_class ON pg_depend.refobjid = dep_pg_class.oid
-                 INNER JOIN pg_attribute ON dep_pg_class.oid = pg_attribute.attrelid
-                                         AND pg_depend.refobjsubid = pg_attribute.attnum
-            WHERE seq_pg_class.relkind = 'S'
-              AND dep_pg_class.relname = $1
-          SQL
-          sequence_data.map do |seq_info|
-            name, column_name = seq_info.values_at('seq_name', 'col_name')
-            { name: name, column_name: column_name }
-          end
         end
 
         private
@@ -152,9 +130,7 @@ module Gitlab
         def add_partitioning_check_constraint
           raise 'Check constraint already exists' if partitioning_constraint.present?
 
-          check_body = <<~SQL
-            #{partitioning_column} = #{connection.quote(zero_partition_value)}
-          SQL
+          check_body = "#{partitioning_column} = #{connection.quote(zero_partition_value)}"
           # Any constraint name would work. The constraint is found based on its definition before partitioning
           migration_context.add_check_constraint(table_name, check_body, 'partitioning_constraint')
 
@@ -210,6 +186,26 @@ module Gitlab
             ALTER TABLE #{quote_table_name(parent_table_name)}
             DROP CONSTRAINT #{quote_table_name(partitioning_constraint.name)}
           SQL
+        end
+
+        def sequences_owned_by(table_name)
+          sequence_data = connection.exec_query(<<~SQL, nil, [table_name])
+            SELECT seq_pg_class.relname AS seq_name,
+                   dep_pg_class.relname AS table_name,
+                   pg_attribute.attname AS col_name
+            FROM pg_class seq_pg_class
+                 INNER JOIN pg_depend ON seq_pg_class.oid = pg_depend.objid
+                 INNER JOIN pg_class dep_pg_class ON pg_depend.refobjid = dep_pg_class.oid
+                 INNER JOIN pg_attribute ON dep_pg_class.oid = pg_attribute.attrelid
+                                         AND pg_depend.refobjsubid = pg_attribute.attnum
+            WHERE seq_pg_class.relkind = 'S'
+              AND dep_pg_class.relname = $1
+          SQL
+
+          sequence_data.map do |seq_info|
+            name, column_name = seq_info.values_at('seq_name', 'col_name')
+            { name: name, column_name: column_name }
+          end
         end
       end
     end

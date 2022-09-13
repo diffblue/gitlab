@@ -242,8 +242,8 @@ RSpec.describe Gitlab::Database::Partitioning::ConvertTableToFirstListPartition 
     end
 
     it 'moves sequences back to the original table' do
-      expect { revert_conversion }.to change { converter.sequences_owned_by(table_name).count }.from(0)
-                                 .and change { converter.sequences_owned_by(parent_table_name).count }.to(0)
+      expect { revert_conversion }.to change { converter.send(:sequences_owned_by, table_name).count }.from(0)
+                                 .and change { converter.send(:sequences_owned_by, parent_table_name).count }.to(0)
     end
   end
 end
