@@ -12,6 +12,8 @@ module Security
     include EachBatch
     include PartitionedTable
 
+    MAX_PARTITION_SIZE = 10.gigabyte
+
     self.table_name = 'security_findings'
     self.primary_key = :id # As ActiveRecord does not support compound PKs
 
@@ -72,7 +74,7 @@ module Security
       end
 
       def partition_full?(partition)
-        partition.data_size >= 10.gigabyte
+        partition.data_size >= MAX_PARTITION_SIZE
       end
 
       def detach_partition?(partition_number)
