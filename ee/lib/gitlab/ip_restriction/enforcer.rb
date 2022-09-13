@@ -33,25 +33,17 @@ module Gitlab
         allowed = root_ancestor_ip_restrictions.any? { |ip_restriction| ip_restriction.allows_address?(address) }
 
         # Check against configured internal ranges
-        if allow_globally_configured_addresses? && !allowed
-          allowed = true if globally_configured_ip_ranges.match?(address)
-        end
+        allowed ||= globally_configured_ip_ranges.match?(address)
 
         logger.info(
           message: 'Attempting to access IP restricted group',
           group_full_path: group.full_path,
           ip_address: address,
           allowed: allowed,
-          globally_allowed: allow_globally_configured_addresses?
+          globally_allowed: globally_configured_ip_ranges.present?
         )
 
         allowed
-      end
-
-      def allow_globally_configured_addresses?
-        return false if globally_configured_ip_ranges.empty?
-
-        Feature.enabled?(:group_ip_restrictions_allow_global, group)
       end
 
       def globally_configured_ip_ranges
