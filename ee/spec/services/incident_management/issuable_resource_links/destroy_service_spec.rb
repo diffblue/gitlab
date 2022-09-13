@@ -31,6 +31,7 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::DestroyService do
 
         expect(execute).to be_error
         expect(execute.message).to eq(error_message_string)
+        expect(SystemNoteService).not_to receive(:issuable_resource_link_removed)
       end
 
       it_behaves_like 'does not track incident management event', :incident_management_issuable_resource_link_deleted
@@ -83,6 +84,14 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::DestroyService do
 
         expect(result).to be_a(::IncidentManagement::IssuableResourceLink)
         expect(result.id).to eq(issuable_resource_link.id)
+      end
+
+      it 'creates a system note notification' do
+        expect(SystemNoteService).not_to receive(:issuable_resource_link_added)
+        expect(SystemNoteService).to receive(:issuable_resource_link_removed).with(incident, project, current_user,
+          issuable_resource_link.link_type)
+
+        execute
       end
 
       it_behaves_like 'an incident management tracked event', :incident_management_issuable_resource_link_deleted

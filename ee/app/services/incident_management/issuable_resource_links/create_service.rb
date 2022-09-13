@@ -19,6 +19,8 @@ module IncidentManagement
 
         if issuable_resource_link.save
           track_usage_event(:incident_management_issuable_resource_link_created, user.id)
+          SystemNoteService.issuable_resource_link_added(@incident, @incident.project, @user,
+            issuable_resource_link.link_type)
           success(issuable_resource_link)
         else
           error_in_save(issuable_resource_link)

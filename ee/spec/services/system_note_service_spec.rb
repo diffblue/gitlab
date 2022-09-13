@@ -194,4 +194,24 @@ RSpec.describe SystemNoteService do
       described_class.blocked_by_issuable(noteable, noteable_ref, author)
     end
   end
+
+  describe '.issuable_resource_link_added' do
+    it 'calls IssuableResourceLinksService' do
+      expect_next_instance_of(::SystemNotes::IssuableResourceLinksService) do |service|
+        expect(service).to receive(:issuable_resource_link_added).with('zoom')
+      end
+
+      described_class.issuable_resource_link_added(noteable, project, author, 'zoom')
+    end
+  end
+
+  describe '.issuable_resource_link_removed' do
+    it 'calls IssuableResourceLinksService' do
+      expect_next_instance_of(::SystemNotes::IssuableResourceLinksService) do |service|
+        expect(service).to receive(:issuable_resource_link_removed).with('zoom')
+      end
+
+      described_class.issuable_resource_link_removed(noteable, project, author, 'zoom')
+    end
+  end
 end
