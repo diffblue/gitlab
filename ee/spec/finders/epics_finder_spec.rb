@@ -235,57 +235,6 @@ RSpec.describe EpicsFinder do
               end
             end
 
-            context 'query counts' do
-              let_it_be(:current_user) { create(:user) }
-              let_it_be(:subgroup_1) { create(:group, :private, parent_id: group.id) }
-              let_it_be(:subgroup_2) { create(:group, :private, parent_id: subgroup_1.id) }
-              let_it_be(:subgroup_3) { create(:group, :private, parent_id: subgroup_2.id) }
-
-              let(:finder) { described_class.new(current_user, finder_params) }
-              let(:finder_params) { { include_descendant_groups: true, include_ancestor_groups: true, group_id: subgroup_1.id } }
-
-              before do
-                subgroup_1.add_reporter(current_user)
-              end
-
-              it 'executes less queries with find_epics_performance_improvement flag on' do
-                count_with_feature_flag = ActiveRecord::QueryRecorder.new(query_recorder_debug: true) do
-                  described_class.new(current_user, finder_params).execute
-                end
-
-                stub_feature_flags(find_epics_performance_improvement: false)
-                ::Gitlab::SafeRequestStore.clear!
-
-                count_without_feature_flag = ActiveRecord::QueryRecorder.new(query_recorder_debug: true) do
-                  described_class.new(current_user, finder_params).execute
-                end
-
-                # Giving a context of 21 subgroups in the hierarchy:
-                # - Without feature flag enabled ran 37 queries
-                # - With feature flag enabled ran 26 queries
-                expect(count_with_feature_flag.count).to be < count_without_feature_flag.count
-              end
-
-              context 'when find_epics_performance_improvement is disabled' do
-                let(:finder_params) { { include_descendant_groups: true, include_ancestor_groups: true, group_id: subgroup2.id } }
-
-                before do
-                  stub_feature_flags(find_epics_performance_improvement: false)
-                end
-
-                # Added to fulfill test coverage, can be removed when
-                # find_epics_performance_improvement flag roll out.
-                it 'filters an array of confidential groups instead of relation' do
-                  subgroup.add_reporter(current_user)
-
-                  expect(finder).to receive(:groups_with_confidential_access)
-                    .with(an_instance_of(Array)).and_call_original
-                  expect(finder.execute)
-                    .to contain_exactly(subgroup_epic, subgroup2_epic, confidential_epic)
-                end
-              end
-            end
-
             context 'when user is a member of an ancestor group that is not the root ancestor' do
               let_it_be(:subgroup_reporter) { create(:user) }
 
@@ -371,9 +320,7 @@ RSpec.describe EpicsFinder do
                 create_list(:group, 5, :private, parent: group)
                 ::Gitlab::SafeRequestStore.clear!
 
-                # there is still N+1 to check access for each sub-group
-                unresolved_n_plus_ones = 5
-                expect { epics.to_a }.not_to exceed_all_query_limit(control).with_threshold(unresolved_n_plus_ones)
+                expect { epics.to_a }.not_to exceed_all_query_limit(control)
               end
             end
           end

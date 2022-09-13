@@ -193,8 +193,8 @@ module EE
 
     class_methods do
       def groups_user_can(groups, user, action, same_root: false)
-        # If :find_epics_performance_improvement and :use_traversal_ids
-        # are enabled we can use filter optmization to skip some permission check queries in group descendants.
+        # If :use_traversal_ids is enabled we can use filter optmization
+        # to skip some permission check queries in group descendants.
         if same_root && can_use_epics_filtering_optimization?(groups)
           filter_groups_user_can(groups: groups, user: user, action: action)
         else
@@ -217,9 +217,7 @@ module EE
 
         group = groups.first
 
-        return false unless group.use_traversal_ids?
-
-        ::Feature.enabled?(:find_epics_performance_improvement)
+        group.use_traversal_ids?
       end
 
       private
