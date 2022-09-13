@@ -55,11 +55,11 @@ describe('RelatedItemsTree', () => {
 
       describe('ToggleLabels', () => {
         it('renders when view is tree', () => {
-          expect(wrapper.find(ToggleLabels).exists()).toBe(true);
+          expect(wrapper.findComponent(ToggleLabels).exists()).toBe(true);
         });
         it('does not render when view is roadmap', async () => {
           await wrapper.setProps({ activeTab: ITEM_TABS.ROADMAP });
-          expect(wrapper.find(ToggleLabels).exists()).toBe(false);
+          expect(wrapper.findComponent(ToggleLabels).exists()).toBe(false);
         });
       });
     });

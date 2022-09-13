@@ -11,7 +11,7 @@ jest.mock('~/flash');
 describe('Upload dropzone component', () => {
   let wrapper;
 
-  const findUploadDropzone = () => wrapper.find(UploadDropzone);
+  const findUploadDropzone = () => wrapper.findComponent(UploadDropzone);
 
   function createComponent() {
     wrapper = shallowMount(LicenseDropzone, {

@@ -20,6 +20,6 @@ describe('MemberAvatar', () => {
   it('renders UserAvatar', () => {
     createComponent({ memberType: MEMBER_TYPES.banned, member: bannedMember });
 
-    expect(wrapper.find(UserAvatar).exists()).toBe(true);
+    expect(wrapper.findComponent(UserAvatar).exists()).toBe(true);
   });
 });

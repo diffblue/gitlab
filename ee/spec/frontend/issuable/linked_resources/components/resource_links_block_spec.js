@@ -60,7 +60,7 @@ function createMockApolloCreateProvider() {
 describe('ResourceLinksBlock', () => {
   let wrapper;
 
-  const findResourceLinkAddButton = () => wrapper.find(GlButton);
+  const findResourceLinkAddButton = () => wrapper.findComponent(GlButton);
   const resourceLinkForm = () => wrapper.findComponent(AddIssuableResourceLinkForm);
   const helpPath = '/help/user/project/issues/linked_resources';
   const issuableId = 1;

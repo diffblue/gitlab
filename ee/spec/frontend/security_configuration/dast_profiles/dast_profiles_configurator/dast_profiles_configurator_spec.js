@@ -133,7 +133,7 @@ describe('DastProfilesConfigurator', () => {
 
     it('renders a link to the docs', () => {
       createComponent();
-      const link = findSectionLayout().find(GlLink);
+      const link = findSectionLayout().findComponent(GlLink);
 
       expect(link.exists()).toBe(true);
       expect(link.attributes('href')).toBe(

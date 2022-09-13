@@ -155,7 +155,7 @@ describe('EE MRWidget approvals list', () => {
 
     it('renders pending object (instance of NumberOfApprovals)', () => {
       const pendingObject = findRowElement(row, 'pending');
-      const numberOfApprovals = pendingObject.find(NumberOfApprovals);
+      const numberOfApprovals = pendingObject.findComponent(NumberOfApprovals);
 
       expect(numberOfApprovals.exists()).toBe(true);
       expect(numberOfApprovals.props('invalidApproversRules')).toEqual(testInvalidRules());
@@ -282,7 +282,7 @@ describe('EE MRWidget approvals list', () => {
     it('renders pending object (instance of NumberOfApprovals)', () => {
       const pendingObject = findRowElement(row, 'pending');
 
-      expect(pendingObject.find(NumberOfApprovals).exists()).toBe(true);
+      expect(pendingObject.findComponent(NumberOfApprovals).exists()).toBe(true);
     });
 
     it('renders optional summary text', () => {

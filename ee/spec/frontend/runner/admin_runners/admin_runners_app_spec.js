@@ -94,7 +94,7 @@ describe('AdminRunnersApp', () => {
       rows = findRunnerRows().wrappers.map(extendedWrapper);
 
       expect(rows[index].findByText(version).exists()).toBe(true);
-      expect(rows[index].find(RunnerUpgradeStatusBadge).text()).toBe(upgradeText);
+      expect(rows[index].findComponent(RunnerUpgradeStatusBadge).text()).toBe(upgradeText);
     });
   });
 });

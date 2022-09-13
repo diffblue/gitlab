@@ -54,7 +54,7 @@ describe('MembersFilteredSearchBar', () => {
     });
   };
 
-  const findFilteredSearchBar = () => wrapper.find(FilteredSearchBar);
+  const findFilteredSearchBar = () => wrapper.findComponent(FilteredSearchBar);
 
   describe('when `canFilterByEnterprise` is `true`', () => {
     it('includes `enterprise` token in `filteredSearchBar.tokens`', () => {
