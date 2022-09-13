@@ -116,6 +116,9 @@ export default {
     hasEnvironments() {
       return this.environments.length > 0 || this.folders.length > 0;
     },
+    hasSearch() {
+      return Boolean(this.search);
+    },
     availableCount() {
       return this.environmentApp?.availableCount;
     },
@@ -278,7 +281,12 @@ export default {
         @change="resetPolling"
       />
     </template>
-    <empty-state v-else :help-path="helpPagePath" :scope="scope" />
+    <empty-state
+      v-else-if="!$apollo.queries.environmentApp.loading"
+      :help-path="helpPagePath"
+      :scope="scope"
+      :has-term="hasSearch"
+    />
     <gl-pagination
       align="center"
       :total-items="totalItems"

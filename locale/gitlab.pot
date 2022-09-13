@@ -15000,6 +15000,9 @@ msgstr ""
 msgid "Environments|Deployment %{status}"
 msgstr ""
 
+msgid "Environments|Edit your search and try again"
+msgstr ""
+
 msgid "Environments|Enable review app"
 msgstr ""
 
@@ -15031,6 +15034,9 @@ msgid "Environments|No deployed environments"
 msgstr ""
 
 msgid "Environments|No deployments yet"
+msgstr ""
+
+msgid "Environments|No results found"
 msgstr ""
 
 msgid "Environments|Note that this action will stop the environment, but it will %{emphasisStart}not%{emphasisEnd} have an effect on any existing deployment due to no “stop environment action” being defined in the %{ciConfigLinkStart}.gitlab-ci.yml%{ciConfigLinkEnd} file."
