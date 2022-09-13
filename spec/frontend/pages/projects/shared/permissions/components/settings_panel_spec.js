@@ -850,6 +850,10 @@ describe('Settings Panel', () => {
     });
   });
   describe('Monitor', () => {
+    const expectedAccessLevel = [
+      [10, 'Only Project Members'],
+      [20, 'Everyone With Access'],
+    ];
     describe('with feature flag', () => {
       it('shows Monitor toggle instead of Operations toggle', () => {
         wrapper = mountComponent({
@@ -858,6 +862,9 @@ describe('Settings Panel', () => {
 
         expect(findMonitorSettings().exists()).toBe(true);
         expect(findOperationsSettings().exists()).toBe(false);
+        expect(findMonitorSettings().findComponent(ProjectFeatureSetting).props('options')).toEqual(
+          expectedAccessLevel,
+        );
       });
       it('when monitorAccessLevel is for project members, it is also for everyone', () => {
         wrapper = mountComponent({
@@ -874,6 +881,9 @@ describe('Settings Panel', () => {
 
         expect(findMonitorSettings().exists()).toBe(false);
         expect(findOperationsSettings().exists()).toBe(true);
+        expect(
+          findOperationsSettings().findComponent(ProjectFeatureSetting).props('options'),
+        ).toEqual(expectedAccessLevel);
       });
     });
   });
