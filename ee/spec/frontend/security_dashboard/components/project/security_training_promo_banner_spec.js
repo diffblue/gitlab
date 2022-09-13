@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import { GlBanner } from '@gitlab/ui';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
-import SecurityTrainingPromo from 'ee/security_dashboard/components/shared/security_training_promo.vue';
+import SecurityTrainingPromoBanner from 'ee/security_dashboard/components/project/security_training_promo_banner.vue';
 import {
   TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION,
   TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
@@ -12,12 +12,12 @@ const SECURITY_CONFIGURATION_PATH = 'foo/bar';
 const VULNERABILITY_MANAGEMENT_TAB_NAME = 'vulnerability-management';
 const PROJECT_FULL_PATH = 'namespace/project';
 
-describe('Security training promo component', () => {
+describe('Security training promo banner component', () => {
   let wrapper;
   const userCalloutDismissSpy = jest.fn();
 
   const createWrapper = ({ shouldShowCallout = true } = {}) =>
-    shallowMount(SecurityTrainingPromo, {
+    shallowMount(SecurityTrainingPromoBanner, {
       provide: {
         projectFullPath: PROJECT_FULL_PATH,
         securityConfigurationPath: SECURITY_CONFIGURATION_PATH,
@@ -42,7 +42,7 @@ describe('Security training promo component', () => {
     });
 
     it('should be an introduction that announces the security training feature', () => {
-      const { title, buttonText, content } = SecurityTrainingPromo.i18n;
+      const { title, buttonText, content } = SecurityTrainingPromoBanner.i18n;
 
       expect(findBanner().props()).toMatchObject({
         variant: 'introduction',
