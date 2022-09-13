@@ -8,7 +8,8 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import BlobButtonGroup from '~/repository/components/blob_button_group.vue';
 import BlobContentViewer from '~/repository/components/blob_content_viewer.vue';
-import blobInfoQuery from '~/repository/queries/blob_info.query.graphql';
+import blobInfoQuery from 'shared_queries/repository/blob_info.query.graphql';
+import projectInfoQuery from '~/repository/queries/project_info.query.graphql';
 import { isLoggedIn } from '~/lib/utils/common_utils';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import {
@@ -52,14 +53,21 @@ const createComponent = async (mockData = {}) => {
       downloadCode,
       createMergeRequestIn,
     },
-    repository: { empty, blobs: { nodes: [blob] } },
+    repository: {
+      __typename: 'Repository',
+      empty,
+      blobs: { __typename: 'RepositoryBlobConnection', nodes: [blob] },
+    },
   };
 
   mockResolver = jest.fn().mockResolvedValue({
     data: { isBinary, project },
   });
 
-  const fakeApollo = createMockApollo([[blobInfoQuery, mockResolver]]);
+  const fakeApollo = createMockApollo([
+    [blobInfoQuery, mockResolver],
+    [projectInfoQuery, mockResolver],
+  ]);
 
   wrapper = mountExtended(BlobContentViewer, {
     store: createMockStore(),
