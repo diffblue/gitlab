@@ -332,6 +332,29 @@ RSpec.describe API::Groups do
       end
     end
 
+    context 'when ip_restriction_ranges is specified' do
+      let(:params) { { ip_restriction_ranges: "192.168.0.0/24,10.0.0.0/8" } }
+
+      context " when feature is available" do
+        before do
+          stub_licensed_features(group_ip_restriction: true)
+        end
+
+        it 'updates ip restriction range for the group' do
+          expect { subject }.to change { group.reload.ip_restriction_ranges }.to("192.168.0.0/24,10.0.0.0/8")
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response['ip_restriction_ranges']).to eq("192.168.0.0/24,10.0.0.0/8")
+        end
+      end
+
+      context "when feature is not available" do
+        it 'does not update the ip restriction range for the group' do
+          expect { subject }.not_to change { group.reload.ip_restriction_ranges }
+          expect(json_response).not_to have_key 'ip_restriction_ranges'
+        end
+      end
+    end
+
     describe 'unique_project_download* attributes' do
       context 'when authenticated as group owner' do
         let(:allowed_username) { create(:user).username }
