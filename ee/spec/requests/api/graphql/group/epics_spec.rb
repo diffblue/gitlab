@@ -425,6 +425,29 @@ RSpec.describe 'Epics through GroupQuery' do
     end
   end
 
+  describe 'Get default project for issue creation' do
+    let(:default_project_for_issue_creation) { epic_data['defaultProjectForIssueCreation'] }
+    let(:query) do
+      graphql_query_for('group', { 'fullPath' => group.full_path },
+                         query_graphql_field('epic', { iid: epic.iid }, 'defaultProjectForIssueCreation { id }')
+      )
+    end
+
+    let_it_be(:issue_creation_event) do
+      create(:event, :created, project: project, target: create(:issue, project: project), author: user)
+    end
+
+    before do
+      stub_licensed_features(epics: true)
+    end
+
+    it 'returns the default project for issue based on the last event' do
+      post_graphql(query, current_user: user)
+
+      expect(default_project_for_issue_creation["id"]).to eq(project.to_global_id.to_s)
+    end
+  end
+
   def execute_query
     query = graphql_query_for(
       :group,
