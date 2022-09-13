@@ -74,6 +74,12 @@ RSpec.describe Arkose::TokenVerificationService do
               )
             end
 
+            let(:mock_verify_response) { Arkose::VerifyResponse.new(arkose_ec_response) }
+
+            before do
+              allow(Arkose::VerifyResponse).to receive(:new).with(arkose_ec_response).and_return(mock_verify_response)
+            end
+
             it 'makes a request to the Verify API' do
               subject
 
@@ -82,34 +88,18 @@ RSpec.describe Arkose::TokenVerificationService do
 
             it_behaves_like 'returns success response with the correct payload'
 
-            it 'logs Arkose verify response' do
-              allow(Gitlab::AppLogger).to receive(:info)
-              allow(Gitlab::ApplicationContext).to receive(:current).and_return(
-                { 'correlation_id': 'be025cf83013ac4f52ffd2bf712b11a2' }
-              )
+            it 'logs the event' do
+              init_args = { session_token: session_token, user: user, verify_response: mock_verify_response }
+              expect_next_instance_of(::Arkose::Logger, init_args) do |logger|
+                expect(logger).to receive(:log_successful_token_verification)
+              end
 
               subject
-
-              expect(Gitlab::AppLogger).to have_received(:info).with(
-                correlation_id: 'be025cf83013ac4f52ffd2bf712b11a2',
-                message: 'Arkose verify response',
-                response: arkose_ec_response,
-                username: user.username,
-                'arkose.session_id': '22612c147bb418c8.2570749403',
-                'arkose.global_score': '0',
-                'arkose.global_telltale_list': [],
-                'arkose.custom_score': '0',
-                'arkose.custom_telltale_list': [],
-                'arkose.risk_band': 'Low',
-                'arkose.risk_category': 'NO-THREAT'
-              )
             end
 
             it "records user's Arkose data" do
-              mock_response = Arkose::VerifyResponse.new(arkose_ec_response)
-              expect(Arkose::VerifyResponse).to receive(:new).with(arkose_ec_response).and_return(mock_response)
-
-              expect_next_instance_of(Arkose::RecordUserDataService, response: mock_response, user: user) do |service|
+              init_args = { response: mock_verify_response, user: user }
+              expect_next_instance_of(Arkose::RecordUserDataService, init_args) do |service|
                 expect(service).to receive(:execute)
               end
 
@@ -191,7 +181,10 @@ RSpec.describe Arkose::TokenVerificationService do
         end
 
         it 'logs the error' do
-          expect(Gitlab::AppLogger).to receive(:error).with(a_string_matching(/Error verifying user on Arkose: /))
+          init_args = { session_token: session_token, user: user, verify_response: nil }
+          expect_next_instance_of(::Arkose::Logger, init_args) do |logger|
+            expect(logger).to receive(:log_failed_token_verification)
+          end
 
           subject
         end
@@ -213,35 +206,6 @@ RSpec.describe Arkose::TokenVerificationService do
         end
 
         it_behaves_like 'returns success response with correct payload and logs the error'
-      end
-
-      context 'when user is nil' do
-        let(:user) { nil }
-        let(:arkose_ec_response) do
-          Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
-        end
-
-        it 'logs Arkose verify response without username' do
-          allow(Gitlab::AppLogger).to receive(:info)
-          allow(Gitlab::ApplicationContext).to receive(:current).and_return(
-            { 'correlation_id': 'be025cf83013ac4f52ffd2bf712b11a2' }
-          )
-
-          subject
-
-          expect(Gitlab::AppLogger).to have_received(:info).with(
-            correlation_id: 'be025cf83013ac4f52ffd2bf712b11a2',
-            message: 'Arkose verify response',
-            response: arkose_ec_response,
-            'arkose.session_id': '22612c147bb418c8.2570749403',
-            'arkose.global_score': '0',
-            'arkose.global_telltale_list': [],
-            'arkose.custom_score': '0',
-            'arkose.custom_telltale_list': [],
-            'arkose.risk_band': 'Low',
-            'arkose.risk_category': 'NO-THREAT'
-          )
-        end
       end
     end
 
