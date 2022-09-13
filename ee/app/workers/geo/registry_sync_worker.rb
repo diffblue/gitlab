@@ -17,9 +17,12 @@ module Geo
     end
 
     def max_capacity
-      # Transition-period-solution.
-      # Explained in https://gitlab.com/gitlab-org/gitlab/-/issues/213872#note_336828581
-      [current_node.files_max_capacity / 2, 1].max
+      # All blob types are handled by this worker.
+      #
+      # Note that Group wiki Git repos and Snippet repos are also handled by
+      # this worker at the moment.
+      # See https://gitlab.com/gitlab-org/gitlab/-/issues/372488
+      current_node.files_max_capacity
     end
 
     def schedule_job(replicable_name, model_record_id)
