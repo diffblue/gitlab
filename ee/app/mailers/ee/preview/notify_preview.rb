@@ -67,6 +67,14 @@ module EE
             'filename.csv'
           ).message
         end
+
+        def user_auto_banned_instance_email
+          ::Notify.user_auto_banned_email(user.id, user.id, max_project_downloads: 5, within_seconds: 600).message
+        end
+
+        def user_auto_banned_namespace_email
+          ::Notify.user_auto_banned_email(user.id, user.id, max_project_downloads: 5, within_seconds: 600, group: group).message
+        end
       end
 
       private
