@@ -5,7 +5,8 @@ require 'spec_helper'
 RSpec.describe ProductivityAnalyticsFinder do
   subject { described_class.new(current_user, search_params.merge(state: :merged)) }
 
-  let(:project) { create(:project) }
+  let_it_be(:project) { create(:project) }
+
   let(:current_user) { project.first_owner }
   let(:search_params) { {} }
 
@@ -24,12 +25,12 @@ RSpec.describe ProductivityAnalyticsFinder do
   describe '#execute' do
     let(:long_mr) do
       metrics_data = { merged_at: 1.day.ago }
-      create(:merge_request, :merged, :with_productivity_metrics, project: project, created_at: 31.days.ago, metrics_data: metrics_data)
+      create(:merge_request, :merged, :with_productivity_metrics, source_project: project, created_at: 31.days.ago, metrics_data: metrics_data)
     end
 
     let(:short_mr) do
       metrics_data = { merged_at: 28.days.ago }
-      create(:merge_request, :merged, :with_productivity_metrics, project: project, created_at: 31.days.ago, metrics_data: metrics_data)
+      create(:merge_request, :merged, :with_productivity_metrics, source_project: project, created_at: 31.days.ago, metrics_data: metrics_data)
     end
 
     context 'allows to filter by days_to_merge' do
@@ -91,7 +92,7 @@ RSpec.describe ProductivityAnalyticsFinder do
 
         it 'uses start_date as filter value' do
           metrics_data = { merged_at: (2.years + 1.day).ago }
-          create(:merge_request, :merged, :with_productivity_metrics, project: project, created_at: 800.days.ago, metrics_data: metrics_data)
+          create(:merge_request, :merged, :with_productivity_metrics, source_project: project, created_at: 800.days.ago, metrics_data: metrics_data)
           long_mr
 
           expect(subject.execute).to match_array([long_mr])
