@@ -6,6 +6,6 @@
 - push_rule = local_assigns.fetch(:push_rule)
 
 = form.gitlab_ui_checkbox_component :reject_unsigned_commits,
-    "Reject unsigned commits",
+    s_("PushRules|Reject unsigned commits"),
     checkbox_options: { data: { qa_selector: 'reject_unsigned_commits_checkbox' }, disabled: !can_change_push_rule?(form.object, :reject_unsigned_commits, context) },
     help_text: reject_unsigned_commits_description(push_rule)
