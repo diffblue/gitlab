@@ -30,9 +30,8 @@ Default settings for the Harbor integration at the project level are inherited f
 To download and run a Harbor image hosted in the GitLab Harbor Registry:
 
 1. Copy the link to your container image:
-    - Go to your project or group's **Packages and registries > Harbor Registry**
-      and find the image you want.
-    - Next to the image name, click the **Copy** icon.
+    1. Go to your project or group's **Packages and registries > Harbor Registry** and find the image you want.
+    1. Click the **Copy** icon next to the image name.
 
 1. Use the command to run the container image you want.
 
