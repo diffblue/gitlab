@@ -14,8 +14,7 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
 
       context 'with restriction' do
         before do
-          stub_feature_flags(group_ip_restrictions_allow_global: false)
-          stub_application_setting(globally_allowed_ips: "10.0.0.0/8, 192.168.0.0/24")
+          stub_application_setting(globally_allowed_ips: "")
 
           ranges.each do |range|
             create(:ip_restriction, group: group, range: range)
@@ -32,26 +31,21 @@ RSpec.describe Gitlab::IpRestriction::Enforcer do
           let(:ranges) { ['10.0.0.0/8', '255.255.255.224/27'] }
 
           it { is_expected.to be_falsey }
-        end
 
-        context 'global allowlist feature is enabled' do
-          let(:current_ip) { '10.64.0.1' }
-          let(:ranges) { ['192.168.1.0/24'] }
-
-          before do
-            stub_feature_flags(group_ip_restrictions_allow_global: group)
-          end
-
-          context 'global ranges are set' do
-            it { is_expected.to be_truthy }
-          end
-
-          context 'global ranges are not set' do
+          context 'address is in globally allowed ip range' do
             before do
-              stub_application_setting(globally_allowed_ips: "")
+              stub_application_setting(globally_allowed_ips: "192.168.0.0/24")
             end
 
-            it { is_expected.to be_falsey }
+            it { is_expected.to be_truthy }
+
+            context 'address is outside globally allowed ip range' do
+              before do
+                stub_application_setting(globally_allowed_ips: "255.168.0.0/24")
+              end
+
+              it { is_expected.to be_falsey }
+            end
           end
         end
       end
