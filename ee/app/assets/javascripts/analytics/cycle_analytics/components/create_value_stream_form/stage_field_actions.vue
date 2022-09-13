@@ -59,7 +59,7 @@ export default {
 </script>
 <template>
   <div>
-    <gl-button-group class="gl-px-2">
+    <gl-button-group class="gl-pr-2">
       <gl-button
         v-gl-tooltip
         :data-testid="`stage-action-move-down-${index}`"
