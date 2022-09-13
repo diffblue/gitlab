@@ -11,6 +11,10 @@ RSpec.describe Ci::ProcessPipelineService, '#execute' do
     create(:ci_empty_pipeline, ref: 'master', project: project, user: user)
   end
 
+  let_it_be(:build_stage) { create(:ci_stage, name: 'build', pipeline: pipeline, position: 0) }
+  let_it_be(:test_stage) { create(:ci_stage, name: 'test', pipeline: pipeline, position: 1) }
+  let_it_be(:deploy_stage) { create(:ci_stage, name: 'deploy', pipeline: pipeline, position: 2) }
+
   let(:service) { described_class.new(pipeline) }
 
   before do
@@ -20,10 +24,10 @@ RSpec.describe Ci::ProcessPipelineService, '#execute' do
 
   describe 'cross-project pipelines' do
     before do
-      create_processable(:build, name: 'test', stage: 'test')
+      create_processable(:build, name: 'build', ci_stage: build_stage, stage_idx: build_stage.position)
       create_processable(:bridge, :variables,
-        name: 'cross', stage: 'build', downstream: downstream)
-      create_processable(:build, name: 'deploy', stage: 'deploy')
+                         name: 'cross', ci_stage: test_stage, downstream: downstream, stage_idx: test_stage.position)
+      create_processable(:build, name: 'deploy', ci_stage: deploy_stage, stage_idx: deploy_stage.position)
 
       stub_ci_pipeline_to_return_yaml_file
     end
@@ -32,12 +36,12 @@ RSpec.describe Ci::ProcessPipelineService, '#execute' do
       service.execute
       Sidekiq::Worker.drain_all
 
-      expect_statuses(%w[test pending], %w[cross created], %w[deploy created])
+      expect_statuses(%w[build pending], %w[cross created], %w[deploy created])
 
-      update_build_status(:test, :success)
+      update_build_status(:build, :success)
       Sidekiq::Worker.drain_all
 
-      expect_statuses(%w[test success], %w[cross success], %w[deploy pending])
+      expect_statuses(%w[build success], %w[cross success], %w[deploy pending])
 
       expect(downstream.ci_pipelines).to be_one
       expect(downstream.ci_pipelines.first).to be_pending
@@ -60,12 +64,8 @@ RSpec.describe Ci::ProcessPipelineService, '#execute' do
   end
 
   def create_processable(type, *traits, **opts)
-    stages = %w[test build deploy]
-    index = stages.index(opts.fetch(:stage, 'test'))
-
     create("ci_#{type}", *traits, status: :created,
                                   pipeline: pipeline,
-                                  stage_idx: index,
                                   user: user,
                                   **opts)
   end
