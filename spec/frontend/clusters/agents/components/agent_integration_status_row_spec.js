@@ -30,22 +30,19 @@ describe('IntegrationStatus', () => {
   });
 
   describe('icon', () => {
-    it('displays correct icon when provided in props', () => {
-      const props = {
-        icon: 'status-success',
-        iconClass: 'text-success-500',
-      };
+    const icon = 'status-success';
+    const iconClass = 'text-success-500';
+    it.each`
+      props                  | iconName         | iconClassName
+      ${{ icon, iconClass }} | ${icon}          | ${iconClass}
+      ${{ icon }}            | ${icon}          | ${'text-info'}
+      ${{ iconClass }}       | ${'information'} | ${iconClass}
+      ${null}                | ${'information'} | ${'text-info'}
+    `('displays correct icon when props are $props', ({ props, iconName, iconClassName }) => {
       createWrapper({ props });
 
-      expect(findIcon().props('name')).toBe(props.icon);
-      expect(findIcon().attributes('class')).toContain(props.iconClass);
-    });
-
-    it("displays default icon when it's not provided", () => {
-      createWrapper();
-
-      expect(findIcon().props('name')).toBe('information');
-      expect(findIcon().attributes('class')).toContain('text-info');
+      expect(findIcon().props('name')).toBe(iconName);
+      expect(findIcon().attributes('class')).toContain(iconClassName);
     });
   });
 

@@ -77,7 +77,6 @@ export default {
     ><span data-testid="agent-status">
       <gl-icon
         :name="$options.AGENT_STATUSES[agentStatus].icon"
-        :size="16"
         :class="$options.AGENT_STATUSES[agentStatus].class"
         class="gl-mr-2"
       />{{ $options.AGENT_STATUSES[agentStatus].name }}

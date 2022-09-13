@@ -15,16 +15,14 @@ export function getAgentConfigPath(clusterAgentName) {
   return `.gitlab/agents/${clusterAgentName}`;
 }
 
-export function getAgentLastContact(tokens) {
+export function getAgentLastContact(tokens = []) {
   let lastContact = null;
-  if (tokens?.length) {
-    tokens.forEach((token) => {
-      const lastContactToDate = new Date(token.lastUsedAt).getTime();
-      if (lastContactToDate > lastContact) {
-        lastContact = lastContactToDate;
-      }
-    });
-  }
+  tokens.forEach((token) => {
+    const lastContactToDate = new Date(token.lastUsedAt).getTime();
+    if (lastContactToDate > lastContact) {
+      lastContact = lastContactToDate;
+    }
+  });
   return lastContact;
 }
 
