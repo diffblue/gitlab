@@ -1,16 +1,16 @@
 <script>
-import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon, GlTableLite, GlLabel } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { s__ } from '~/locale';
 
-import { DANGER, INFO } from '../constants';
+import { DANGER, INFO, EDIT_BUTTON_LABEL } from '../constants';
 import getComplianceFrameworkQuery from '../graphql/queries/get_compliance_framework.query.graphql';
 import { injectIdIntoEditPath } from '../utils';
 import DeleteModal from './delete_modal.vue';
-import EmptyState from './list_empty_state.vue';
-import ListItem from './list_item.vue';
+import EmptyState from './table_empty_state.vue';
+import TableActions from './table_actions.vue';
 
 export default {
   components: {
@@ -19,7 +19,9 @@ export default {
     GlAlert,
     GlButton,
     GlLoadingIcon,
-    ListItem,
+    GlTableLite,
+    GlLabel,
+    TableActions,
   },
   props: {
     addFrameworkPath: {
@@ -48,6 +50,26 @@ export default {
       complianceFrameworks: [],
       error: '',
       message: '',
+      tableFields: [
+        {
+          key: 'name',
+          label: this.$options.i18n.name,
+          thClass: 'w-30p',
+          tdClass: 'gl-vertical-align-middle!',
+        },
+        {
+          key: 'description',
+          label: this.$options.i18n.description,
+          thClass: 'w-60p',
+          tdClass: 'gl-vertical-align-middle!',
+        },
+        {
+          key: 'actions',
+          label: '',
+          thClass: 'w-10p',
+          tdClass: 'gl-vertical-align-middle!',
+        },
+      ],
     };
   },
   apollo: {
@@ -141,6 +163,9 @@ export default {
       'ComplianceFrameworks|Error fetching compliance frameworks data. Please refresh the page',
     ),
     addBtn: s__('ComplianceFrameworks|Add framework'),
+    name: s__('ComplianceFrameworks|Name'),
+    description: s__('ComplianceFrameworks|Description'),
+    editFramework: EDIT_BUTTON_LABEL,
   },
 };
 </script>
@@ -162,19 +187,36 @@ export default {
       :add-framework-path="addFrameworkPath"
     />
 
-    <list-item
-      v-for="framework in complianceFrameworks"
-      :key="framework.parsedId"
-      :framework="framework"
-      :loading="isDeleting(framework.id)"
-      @delete="markForDeletion"
-    />
+    <gl-table-lite v-if="hasFrameworks" :items="complianceFrameworks" :fields="tableFields">
+      <template #cell(name)="{ item: framework }">
+        <gl-label
+          :background-color="framework.color"
+          :description="$options.i18n.editFramework"
+          :title="framework.name"
+          :target="framework.editPath"
+        />
+      </template>
+      <template #cell(description)="{ item: framework }">
+        <p data-testid="compliance-framework-description" class="gl-mb-0">
+          {{ framework.description }}
+        </p>
+      </template>
+      <template #cell(actions)="{ item: framework }">
+        <table-actions
+          :key="framework.parsedId"
+          :framework="framework"
+          :loading="isDeleting(framework.id)"
+          @delete="markForDeletion"
+        />
+      </template>
+    </gl-table-lite>
 
     <gl-button
       v-if="showAddButton"
       class="gl-mt-3"
-      category="primary"
+      category="secondary"
       variant="confirm"
+      size="small"
       :href="addFrameworkPath"
     >
       {{ $options.i18n.addBtn }}

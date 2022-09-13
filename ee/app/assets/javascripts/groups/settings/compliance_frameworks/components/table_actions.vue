@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlTooltipDirective, GlLabel } from '@gitlab/ui';
+import { GlButton, GlTooltipDirective } from '@gitlab/ui';
 import { DELETE_BUTTON_LABEL, EDIT_BUTTON_LABEL } from '../constants';
 
 export default {
@@ -8,7 +8,6 @@ export default {
   },
   components: {
     GlButton,
-    GlLabel,
   },
   props: {
     framework: {
@@ -27,21 +26,7 @@ export default {
 };
 </script>
 <template>
-  <div
-    class="gl-display-flex gl-align-items-center gl-justify-content-space-between gl-inset-border-1-gray-100 gl-px-5 gl-p-6 gl-mb-4 gl-rounded-base"
-  >
-    <div class="gl-w-quarter gl-mr-3 gl-flex-shrink-0">
-      <gl-label
-        :background-color="framework.color"
-        :description="$options.i18n.editFramework"
-        :disabled="loading"
-        :title="framework.name"
-        :target="framework.editPath"
-      />
-    </div>
-    <p class="gl-w-full gl-m-0!" data-testid="compliance-framework-description">
-      {{ framework.description }}
-    </p>
+  <div>
     <div v-if="framework.editPath" class="gl-display-flex">
       <gl-button
         v-gl-tooltip="$options.i18n.editFramework"

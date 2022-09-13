@@ -1,6 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
-import { GlLabel } from '@gitlab/ui';
-import ListItem from 'ee/groups/settings/compliance_frameworks/components/list_item.vue';
+import TableActions from 'ee/groups/settings/compliance_frameworks/components/table_actions.vue';
 import {
   DELETE_BUTTON_LABEL,
   EDIT_BUTTON_LABEL,
@@ -8,7 +7,7 @@ import {
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 
-describe('ListItem', () => {
+describe('TableActions', () => {
   let wrapper;
 
   const framework = {
@@ -19,14 +18,12 @@ describe('ListItem', () => {
     editPath: 'group/framework/1/edit',
   };
 
-  const findLabel = () => wrapper.findComponent(GlLabel);
-  const findDescription = () => wrapper.findByTestId('compliance-framework-description');
   const findEditButton = () => wrapper.findByTestId('compliance-framework-edit-button');
   const findDeleteButton = () => wrapper.findByTestId('compliance-framework-delete-button');
 
   const createComponent = (props = {}) => {
     wrapper = extendedWrapper(
-      shallowMount(ListItem, {
+      shallowMount(TableActions, {
         propsData: {
           framework,
           loading: false,
@@ -59,24 +56,6 @@ describe('ListItem', () => {
     expect(findDeleteButton().exists()).toBe(false);
   });
 
-  it('displays the description defined by the framework', () => {
-    createComponent();
-
-    expect(findDescription().text()).toBe('a framework');
-  });
-
-  it('displays the label', () => {
-    createComponent();
-
-    expect(findLabel().props()).toMatchObject({
-      title: framework.name,
-      backgroundColor: framework.color,
-      target: framework.editPath,
-      disabled: false,
-      description: 'Edit framework',
-    });
-  });
-
   it('displays the edit button', () => {
     createComponent();
 
@@ -107,10 +86,6 @@ describe('ListItem', () => {
   describe('when loading', () => {
     beforeEach(() => {
       createComponent({ loading: true });
-    });
-
-    it('disables the label', () => {
-      expect(findLabel().props('disabled')).toBe(true);
     });
 
     it('disables the delete button and shows loading', () => {

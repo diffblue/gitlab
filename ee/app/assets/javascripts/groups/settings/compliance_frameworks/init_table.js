@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 
 import createDefaultClient from '~/lib/graphql';
-import Form from './components/list.vue';
+import Table from './components/table.vue';
 
 Vue.use(VueApollo);
 
@@ -10,7 +10,7 @@ const apolloProvider = new VueApollo({
   defaultClient: createDefaultClient(),
 });
 
-const createComplianceFrameworksListApp = (el) => {
+const createComplianceFrameworksTableApp = (el) => {
   if (!el) {
     return false;
   }
@@ -21,7 +21,7 @@ const createComplianceFrameworksListApp = (el) => {
     el,
     apolloProvider,
     render(createElement) {
-      return createElement(Form, {
+      return createElement(Table, {
         props: {
           addFrameworkPath,
           editFrameworkPath,
@@ -33,4 +33,4 @@ const createComplianceFrameworksListApp = (el) => {
   });
 };
 
-export { createComplianceFrameworksListApp };
+export { createComplianceFrameworksTableApp };
