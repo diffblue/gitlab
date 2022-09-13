@@ -89,26 +89,30 @@ RSpec.describe TrialsController, :saas do
       context 'when user has 1 trial eligible namespace', :experiment do
         let_it_be(:namespace) { create(:group, path: 'namespace-test') }
 
-        let(:apply_trial_result) { true }
+        let(:apply_trial_result) do
+          instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.success)
+        end
 
         before do
           namespace.add_owner(user)
 
-          allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-            allow(service).to receive(:execute).and_return({ success: apply_trial_result })
-          end
+          allow(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(apply_trial_result)
         end
 
         context 'when the ApplyTrialService is successful' do
           it 'applies a trial to the namespace' do
             apply_trial_params = {
               uid: user.id,
-              trial_user: ActionController::Parameters.new(post_params).permit(:namespace_id).merge(namespace_id: namespace.id, gitlab_com_trial: true, sync_to_gl: true)
+              trial_user_information: ActionController::Parameters.new(post_params).permit(:namespace_id)
+                                                      .merge(namespace_id: namespace.id,
+                                                             gitlab_com_trial: true,
+                                                             sync_to_gl: true)
             }
+            service_instance = instance_double(GitlabSubscriptions::ApplyTrialService)
+            allow(GitlabSubscriptions::ApplyTrialService).to receive(:new).with(apply_trial_params)
+                                                                           .and_return(service_instance)
 
-            expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-              expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: true })
-            end
+            expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
 
             post_create_lead
           end
@@ -142,7 +146,9 @@ RSpec.describe TrialsController, :saas do
         end
 
         context 'when the ApplyTrialService is unsuccessful' do
-          let(:apply_trial_result) { false }
+          let(:apply_trial_result) do
+            instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.error(message: '_fail_'))
+          end
 
           it { is_expected.to render_template(:select) }
         end
@@ -307,15 +313,15 @@ RSpec.describe TrialsController, :saas do
   describe '#apply' do
     let_it_be(:namespace) { create(:group, path: 'namespace-test') }
 
-    let(:apply_trial_result) { nil }
     let(:post_params) { { namespace_id: namespace.id } }
+    let(:apply_trial_result) do
+      instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.error(message: '_fail_'))
+    end
 
     before do
       namespace.add_owner(user)
 
-      allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-        allow(service).to receive(:execute).and_return({ success: apply_trial_result })
-      end
+      allow(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(apply_trial_result)
       allow(controller).to receive(:experiment).and_call_original
     end
 
@@ -328,7 +334,9 @@ RSpec.describe TrialsController, :saas do
     it_behaves_like 'a dot-com only feature'
 
     context 'on success' do
-      let(:apply_trial_result) { true }
+      let(:apply_trial_result) do
+        instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.success)
+      end
 
       it { is_expected.to redirect_to("/#{namespace.path}?trial=true") }
 
@@ -367,7 +375,9 @@ RSpec.describe TrialsController, :saas do
     end
 
     context 'on failure' do
-      let(:apply_trial_result) { false }
+      let(:apply_trial_result) do
+        instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.error(message: '_failed_'))
+      end
 
       it { is_expected.to render_template(:select) }
 
@@ -396,12 +406,19 @@ RSpec.describe TrialsController, :saas do
       }
       apply_trial_params = {
         uid: user.id,
-        trial_user: ActionController::Parameters.new(post_params).permit(:namespace_id, :trial_entity, :glm_source, :glm_content).merge(gl_com_params)
+        trial_user_information: ActionController::Parameters.new(post_params)
+                                                            .permit(:namespace_id,
+                                                              :trial_entity,
+                                                              :glm_source,
+                                                              :glm_content
+                                                            ).merge(gl_com_params)
       }
 
-      expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-        expect(service).to receive(:execute).with(apply_trial_params).and_return({ success: true })
-      end
+      service_instance = instance_double(GitlabSubscriptions::ApplyTrialService)
+      allow(GitlabSubscriptions::ApplyTrialService).to receive(:new).with(apply_trial_params)
+                                                                    .and_return(service_instance)
+
+      expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
 
       post :apply, params: post_params
     end

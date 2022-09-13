@@ -51,13 +51,10 @@ RSpec.describe 'Trial Select Namespace', :js do
 
       context 'enters a valid new group name' do
         context 'when user can create groups' do
-          before do
-            expect_any_instance_of(GitlabSubscriptions::ApplyTrialService).to receive(:execute) do
-              { success: true }
-            end
-          end
-
           it 'proceeds to the next step' do
+            service = instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.success)
+            expect(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(service)
+
             fill_in 'New Group Name', with: new_group_name
 
             click_button 'Start your free trial'
@@ -87,13 +84,10 @@ RSpec.describe 'Trial Select Namespace', :js do
       context 'enters an existing group name' do
         let!(:namespace) { create(:namespace, owner_id: user.id, path: 'gitlab') }
 
-        before do
-          expect_any_instance_of(GitlabSubscriptions::ApplyTrialService).to receive(:execute) do
-            { success: true }
-          end
-        end
-
         it 'proceeds to the next step with a unique url' do
+          service = instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.success)
+          expect(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(service)
+
           fill_in 'New Group Name', with: namespace.path
 
           click_button 'Start your free trial'
@@ -129,9 +123,8 @@ RSpec.describe 'Trial Select Namespace', :js do
         end
 
         it 'applies trial and redirects to dashboard' do
-          expect_any_instance_of(GitlabSubscriptions::ApplyTrialService).to receive(:execute) do
-            { success: true }
-          end
+          service = instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.success)
+          expect(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(service)
 
           click_button 'Start your free trial'
 
@@ -145,9 +138,9 @@ RSpec.describe 'Trial Select Namespace', :js do
         let!(:error_message) { 'Validation failed: Gl namespace can have only one trial' }
 
         it 'shows validation error' do
-          expect_any_instance_of(GitlabSubscriptions::ApplyTrialService).to receive(:execute) do
-            { success: false, errors: error_message }
-          end
+          service = instance_double(GitlabSubscriptions::ApplyTrialService,
+                                    execute: ServiceResponse.error(message: error_message))
+          expect(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(service)
 
           click_button 'Start your free trial'
 

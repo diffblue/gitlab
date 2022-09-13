@@ -306,14 +306,15 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
             context 'when trial is in the foreground' do
               before do
-                allow_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-                  allow(service).to receive(:execute).and_return({ success: true })
-                end
-
                 stub_feature_flags(registration_trial_in_background: false)
               end
 
-              it { is_expected.to redirect_to(success_path) }
+              specify do
+                expect(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with(anything)
+                                                                                   .and_return(ServiceResponse.success)
+
+                is_expected.to redirect_to(success_path)
+              end
             end
           end
         end
@@ -342,7 +343,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
               allow(service).to receive(:execute).and_return(group)
             end
 
-            expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async).with(user.id, trial_user_information) # rubocop:disable RSpec/ExpectInHook
+            expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async) # rubocop:disable RSpec/ExpectInHook
+                                                                       .with(user.id, trial_user_information)
           end
 
           it 'applies a trial' do
@@ -351,7 +353,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         end
 
         context 'when trial is in the foreground' do
-          let(:result) { { success: true } }
+          let(:result) { ServiceResponse.success }
 
           before do
             stub_feature_flags(registration_trial_in_background: false)
@@ -360,10 +362,13 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
               allow(service).to receive(:execute).and_return(group)
             end
 
-            expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-              expect(service).to receive(:execute).with({ uid: user.id, trial_user: trial_user_information }) # rubocop:disable RSpec/ExpectInHook
-                                                  .and_return(result)
-            end
+            expect(GitlabSubscriptions::ApplyTrialService).to receive(:execute) # rubocop:disable RSpec/ExpectInHook
+                                                                .with(
+                                                                  {
+                                                                    uid: user.id,
+                                                                    trial_user_information: trial_user_information
+                                                                  }
+                                                                ).and_return(result)
           end
 
           it 'applies a trial' do
@@ -371,10 +376,10 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           end
 
           context 'when failing to apply trial' do
-            let(:result) { { success: false, errors: '_error_' } }
+            let(:result) { ServiceResponse.error(message: '_error_') }
 
             it 'logs an error' do
-              expect(Gitlab::AppLogger).to receive(:error).with("Failed to apply a trial with #{result[:errors]}")
+              expect(Gitlab::AppLogger).to receive(:error).with("Failed to apply a trial with #{result.errors}")
                                                           .and_call_original
 
               post_create

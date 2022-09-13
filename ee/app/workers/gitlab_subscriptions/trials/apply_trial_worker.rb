@@ -17,19 +17,20 @@ module GitlabSubscriptions
       feature_category :purchase
 
       def perform(current_user_id, trial_user_information)
-        result = GitlabSubscriptions::ApplyTrialService.new.execute(uid: current_user_id,
-                                                                    trial_user: trial_user_information)
+        service = GitlabSubscriptions::ApplyTrialService.new(uid: current_user_id,
+                                                             trial_user_information: trial_user_information)
+        result = service.execute
 
-        return if result[:success]
+        return if result.success?
 
         logger.error(
           structured_payload(
-            params: { uid: current_user_id, trial_user: trial_user_information },
-            message: result[:errors]
+            params: { uid: current_user_id, trial_user_information: trial_user_information },
+            message: result.errors
           )
         )
 
-        raise ApplyTrialError
+        raise ApplyTrialError if service.valid_to_generate_trial?
       end
     end
   end
