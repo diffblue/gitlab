@@ -32,7 +32,7 @@ describe('SidebarDropdownWidget', () => {
   let mockApollo;
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findAllDropdownItems = () => wrapper.findAll(GlDropdownItem);
+  const findAllDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findPopoverCta = () => wrapper.findByTestId('confirm-edit-cta');
   const findPopoverCancel = () => wrapper.findByTestId('confirm-edit-cancel');
   const findDropdownItemWithText = (text) =>
