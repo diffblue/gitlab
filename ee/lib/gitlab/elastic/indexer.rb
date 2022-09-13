@@ -103,7 +103,23 @@ module Gitlab
 
         output, status = Gitlab::Popen.popen(command, nil, vars)
 
-        raise Error, output unless status&.zero?
+        return unless status.present?
+
+        payload = {
+          message: output,
+          status: status,
+          project_id: project.id,
+          from_sha: base_sha,
+          to_sha: to_sha,
+          index_wiki: index_wiki?
+        }
+
+        if status == 0
+          logger.info(payload)
+        else
+          logger.error(payload)
+          raise Error, output
+        end
       end
 
       # Remove all indexed data for commits and blobs for a project.
