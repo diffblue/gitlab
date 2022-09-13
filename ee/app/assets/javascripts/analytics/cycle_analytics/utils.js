@@ -8,6 +8,7 @@ import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
 import createFlash from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
+import { isNumeric } from '~/lib/utils/number_utils';
 import httpStatus from '~/lib/utils/http_status';
 
 const EVENT_TYPE_LABEL = 'label';
@@ -168,7 +169,9 @@ export const getDurationChartData = (data, startDate, endDate) => {
     currentDate = dayAfter(currentDate)
   ) {
     const currentISODate = dateFormat(newDate(currentDate), dateFormats.isoDate);
-    const valuesForDay = flattenedData.filter((object) => object.date === currentISODate);
+    const valuesForDay = flattenedData.filter(
+      (object) => object.date === currentISODate && isNumeric(object.average_duration_in_seconds),
+    );
 
     if (!valuesForDay.length) {
       eventData.push([currentISODate, null]);

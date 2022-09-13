@@ -162,7 +162,7 @@ describe('DurationChart', () => {
       beforeEach(() => {
         wrapper = createComponent({
           initialGetters: {
-            durationChartPlottableData: () => [],
+            durationChartPlottableData: () => [[new Date(), null]],
           },
           rootState: {
             selectedStage,

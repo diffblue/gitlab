@@ -5,7 +5,7 @@
     "required": ["average_duration_in_seconds", "date"],
     "properties": {
       "average_duration_in_seconds": {
-        "type": "integer"
+        "type": ["integer", "null"]
       },
       "date": {
         "type": "string"
