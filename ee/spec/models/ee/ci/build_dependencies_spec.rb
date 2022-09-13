@@ -24,12 +24,14 @@ RSpec.describe Ci::BuildDependencies do
       status: 'success')
   end
 
+  let(:deploy_stage) { create(:ci_stage, pipeline: pipeline, name: 'deploy') }
+
   let!(:job) do
     create(:ci_build,
       pipeline: pipeline,
       name: 'final',
       stage_idx: 3,
-      stage: 'deploy',
+      ci_stage: deploy_stage,
       user: user,
       options: { cross_dependencies: dependencies })
   end
@@ -63,12 +65,14 @@ RSpec.describe Ci::BuildDependencies do
     end
 
     context 'with cross_dependencies to the same project' do
+      let(:build_stage) { create(:ci_stage, pipeline: pipeline2, name: 'build') }
+
       let!(:dependency) do
         create(:ci_build, :success,
           pipeline: pipeline2,
           name: 'dependency',
           stage_idx: 1,
-          stage: 'build',
+          ci_stage: build_stage,
           user: user
         )
       end
@@ -137,13 +141,15 @@ RSpec.describe Ci::BuildDependencies do
         ]
       end
 
+      let(:deploy_stage) { create(:ci_stage, pipeline: another_pipeline, name: 'deploy') }
+
       let!(:dependency) do
         create(:ci_build, :success,
           pipeline: another_pipeline,
           ref: another_pipeline.ref,
           name: 'dependency',
           stage_idx: 4,
-          stage: 'deploy',
+          ci_stage: deploy_stage,
           user: user
         )
       end
@@ -188,15 +194,19 @@ RSpec.describe Ci::BuildDependencies do
         ]
       end
 
+      let(:deploy_stage) { create(:ci_stage, pipeline: other_pipeline, name: 'deploy') }
+
       let!(:other_dependency) do
         create(:ci_build, :success,
           pipeline: other_pipeline,
           ref: other_pipeline.ref,
           name: 'other_dependency',
           stage_idx: 4,
-          stage: 'deploy',
+          ci_stage: deploy_stage,
           user: user)
       end
+
+      let(:feature_deploy_stage) { create(:ci_stage, pipeline: feature_pipeline, name: 'deploy') }
 
       let!(:dependency) do
         create(:ci_build, :success,
@@ -204,7 +214,7 @@ RSpec.describe Ci::BuildDependencies do
           ref: feature_pipeline.ref,
           name: 'dependency',
           stage_idx: 4,
-          stage: 'deploy',
+          ci_stage: feature_deploy_stage,
           user: user)
       end
 
@@ -236,11 +246,13 @@ RSpec.describe Ci::BuildDependencies do
         ::Gitlab::Ci::Config::Entry::Needs::NEEDS_CROSS_PROJECT_DEPENDENCIES_LIMIT
       end
 
+      let(:build_stage) { create(:ci_stage, pipeline: pipeline2, name: 'build') }
+
       before do
         cross_dependencies_limit.next.times do |index|
           create(:ci_build, :success,
             pipeline: pipeline2, name: "dependency-#{index}",
-            stage_idx: 1, stage: 'build', user: user
+            stage_idx: 1, ci_stage: build_stage, user: user
           )
         end
       end
@@ -269,6 +281,8 @@ RSpec.describe Ci::BuildDependencies do
 
     context 'with both cross project and cross pipeline dependencies' do
       let(:other_project) { create(:project, :repository) }
+      let(:build_stage) { create(:ci_stage, pipeline: upstream_pipeline, name: 'build') }
+      let(:deploy_stage) { create(:ci_stage, pipeline: other_project_pipeline, name: 'deploy') }
 
       let(:other_project_pipeline) do
         create(:ci_pipeline,
@@ -285,7 +299,7 @@ RSpec.describe Ci::BuildDependencies do
           ref: other_project_pipeline.ref,
           name: 'deploy',
           stage_idx: 4,
-          stage: 'deploy',
+          ci_stage: deploy_stage,
           user: user)
       end
 
@@ -304,7 +318,7 @@ RSpec.describe Ci::BuildDependencies do
           ref: upstream_pipeline.ref,
           name: 'build',
           stage_idx: 1,
-          stage: 'build',
+          ci_stage: build_stage,
           user: user)
       end
 
