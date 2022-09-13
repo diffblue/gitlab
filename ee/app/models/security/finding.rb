@@ -12,14 +12,17 @@ module Security
     include EachBatch
     include PartitionedTable
 
+    MAX_PARTITION_SIZE = 10.gigabyte
+
     self.table_name = 'security_findings'
     self.primary_key = :id # As ActiveRecord does not support compound PKs
-    self.ignored_columns = [:partition_number] # This is temporary as we will change the partition logic
+
+    attr_readonly :partition_number
 
     partitioned_by :partition_number,
                    strategy: :sliding_list,
-                   next_partition_if: -> (_) { false },
-                   detach_partition_if: -> (_) { false }
+                   next_partition_if: -> (partition) { partition_full?(partition) },
+                   detach_partition_if: -> (partition) { detach_partition?(partition.value) }
 
     belongs_to :scan, inverse_of: :findings, optional: false
     belongs_to :scanner, class_name: 'Vulnerabilities::Scanner', inverse_of: :security_findings, optional: false
@@ -61,12 +64,28 @@ module Security
     delegate :scan_type, :pipeline, to: :scan, allow_nil: true
     delegate :project, to: :pipeline
 
-    def self.count_by_scan_type
-      grouped_by_scan_type.count
-    end
+    class << self
+      def count_by_scan_type
+        grouped_by_scan_type.count
+      end
 
-    def self.latest_by_uuid(uuid)
-      by_uuid(uuid).order(scan_id: :desc).first
+      def latest_by_uuid(uuid)
+        by_uuid(uuid).order(scan_id: :desc).first
+      end
+
+      def partition_full?(partition)
+        partition.data_size >= MAX_PARTITION_SIZE
+      end
+
+      def detach_partition?(partition_number)
+        last_finding_in_partition(partition_number)&.scan&.findings_can_be_purged?
+      end
+
+      private
+
+      def last_finding_in_partition(partition_number)
+        where(partition_number: partition_number).last
+      end
     end
   end
 end

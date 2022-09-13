@@ -60,6 +60,13 @@ module Security
       scan_types.keys & Array(given_types).map(&:to_s)
     end
 
+    # If the record is created 3 months ago and purged,
+    # it means that all the previous records must be purged
+    # as well so the related findings can be dropped.
+    def findings_can_be_purged?
+      created_at < STALE_AFTER.ago && purged?
+    end
+
     def has_warnings?
       processing_warnings.present?
     end

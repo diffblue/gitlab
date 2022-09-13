@@ -171,4 +171,56 @@ RSpec.describe Security::Finding do
 
     it { is_expected.to eq(expected_findings) }
   end
+
+  describe '.partition_full?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:partition_size, :considered_full?) do
+      11.gigabytes     | true
+      10.gigabytes     | true
+      10.gigabytes - 1 | false
+    end
+
+    with_them do
+      let(:mock_partition) do
+        instance_double(Gitlab::Database::Partitioning::SingleNumericListPartition, data_size: partition_size)
+      end
+
+      subject { described_class.partition_full?(mock_partition) }
+
+      it { is_expected.to eq(considered_full?) }
+    end
+  end
+
+  describe '.detach_partition?' do
+    subject { described_class.detach_partition?(partition_number) }
+
+    context 'when there is no finding for the given partition number' do
+      let(:partition_number) { 0 }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when the partition is not empty' do
+      let(:partition_number) { finding_2.partition_number }
+
+      before do
+        allow_next_found_instance_of(Security::Scan) do |scan|
+          allow(scan).to receive(:findings_can_be_purged?).and_return(findings_can_be_purged?)
+        end
+      end
+
+      context 'when the scan of last finding in partition returns false to findings_can_be_purged? message' do
+        let(:findings_can_be_purged?) { false }
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when the scan of last finding in partition returns true to findings_can_be_purged? message' do
+        let(:findings_can_be_purged?) { true }
+
+        it { is_expected.to be_truthy }
+      end
+    end
+  end
 end
