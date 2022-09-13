@@ -149,8 +149,6 @@ describe('PipelineUsageApp', () => {
 
       await waitForPromises();
 
-      // The `replace` will be incorporated in `sprintf` here:
-      // https://gitlab.com/gitlab-org/gitlab/-/issues/362541
       expect(findMonthlyUsageOverview().props()).toMatchObject({
         helpLinkHref: CI_MINUTES_HELP_LINK,
         helpLinkLabel: CI_MINUTES_HELP_LINK_LABEL,
@@ -163,7 +161,7 @@ describe('PipelineUsageApp', () => {
         }),
         minutesUsedPercentage: sprintf(PERCENTAGE_USED, {
           percentageUsed: defaultProvide.ciMinutesMonthlyMinutesUsedPercentage,
-        }).replace(/%+/g, '%'),
+        }),
       });
     });
 
@@ -172,8 +170,6 @@ describe('PipelineUsageApp', () => {
 
       await waitForPromises();
 
-      // The `replace` will be incorporated in `sprintf` here:
-      // https://gitlab.com/gitlab-org/gitlab/-/issues/362541
       expect(findPurchasedUsageOverview().props()).toMatchObject({
         helpLinkHref: ADDITIONAL_MINUTES_HELP_LINK,
         helpLinkLabel: ADDITIONAL_MINUTES,
@@ -184,7 +180,7 @@ describe('PipelineUsageApp', () => {
         }),
         minutesUsedPercentage: sprintf(PERCENTAGE_USED, {
           percentageUsed: defaultProvide.ciMinutesPurchasedMinutesUsedPercentage,
-        }).replace(/%+/g, '%'),
+        }),
       });
     });
 

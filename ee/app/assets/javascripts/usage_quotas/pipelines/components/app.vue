@@ -151,13 +151,9 @@ export default {
       }
 
       if (percentageUsed) {
-        // We need to delete the duplicated `%` we added in
-        // the string definition in order to escape the string
-        // This will be incorporated in `sprintf` here:
-        // https://gitlab.com/gitlab-org/gitlab/-/issues/362541
         return sprintf(PERCENTAGE_USED, {
           percentageUsed,
-        }).replace(/%+/g, '%');
+        });
       }
 
       return TOTAL_USED_UNLIMITED;
