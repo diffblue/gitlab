@@ -285,28 +285,37 @@ RSpec.describe ProjectsHelper do
     context 'when the banner should be shown' do
       using RSpec::Parameterized::TableSyntax
 
-      where(:is_com, :is_guest, :feature_flag_enabled, :is_public, :legacy_open_source_license_available, :user_dismissed_banner, :should_show_banner) do
-        true | true | true | true | false | false | true
-        true | false | true  | true | false | false | false
-        false | true | true  | true | false | false | false
-        true | true | false | true | false | false | false
-        true | true | true  | false | false | false | false
-        true | true | true  | true | true  | false | false
-        true | true | true  | true | false | true  | false
+      where(:feature_flag_enabled, :is_com, :is_public, :is_free, :is_member, :user_dismissed_banner,
+      :legacy_open_source_license_available, :should_show_banner) do
+        false | false | false | false | false | true | true | false
+        true  | false | false | false | false | true  | true  | false
+        true  | true  | false | false | false | true  | true  | false
+        true  | true  | true  | false | false | true  | true  | false
+        true  | true  | true  | true  | false | true  | true  | false
+        true  | true  | true  | true  | true  | true  | true  | false
+        true  | true  | true  | true  | true  | false | true  | false
+        true  | true  | true  | true  | true  | false | false | true
       end
 
       with_them do
-        before do
-          allow(Gitlab).to receive(:com?).and_return(is_com)
-          stub_feature_flags(ultimate_feature_removal_banner: feature_flag_enabled)
-          allow(helper).to receive(:current_user).and_return(user)
-          project.add_guest(user) if is_guest
-          allow(project).to receive(:public?).and_return(is_public)
-          project.project_setting.update!(legacy_open_source_license_available: legacy_open_source_license_available)
+        def dismiss_banner
+          ::Users::DismissProjectCalloutService.new(
+            container: nil,
+            current_user: user,
+            params: { project_id: project.id, feature_name: 'ultimate_feature_removal_banner' }
+          ).execute
+        end
 
-          if user_dismissed_banner
-            ::Users::DismissProjectCalloutService.new(container: nil, current_user: user, params: { project_id: project.id, feature_name: 'ultimate_feature_removal_banner' }).execute
-          end
+        before do
+          allow(helper).to receive(:current_user).and_return(user)
+
+          stub_feature_flags(ultimate_feature_removal_banner: feature_flag_enabled)
+          allow(Gitlab).to receive(:com?).and_return(is_com)
+          allow(project).to receive(:public?).and_return(is_public)
+          allow(project.root_namespace).to receive(:free_plan?).and_return(is_free)
+          project.add_guest(user) if is_member
+          dismiss_banner if user_dismissed_banner
+          project.project_setting.update!(legacy_open_source_license_available: legacy_open_source_license_available)
         end
 
         it 'shows the banner' do
