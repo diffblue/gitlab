@@ -10,11 +10,12 @@
       - unless total_weight == 0
         = total_weight
       - else
-        None
+        = _('None')
   .title.hide-collapsed
-    Total issue weight
+    = _('Total issue weight')
   .value.hide-collapsed{ data: { qa_selector: 'total_issue_weight_value' } }
     - unless total_weight == 0
       %strong.bold= total_weight
     - else
-      .no-value None
+      .no-value
+        = _('None')
