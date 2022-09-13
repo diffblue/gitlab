@@ -6342,7 +6342,7 @@ msgstr ""
 msgid "Billing|Enter at least three characters to search."
 msgstr ""
 
-msgid "Billing|Explore all plans"
+msgid "Billing|Explore paid plans"
 msgstr ""
 
 msgid "Billing|Export list"
@@ -6378,6 +6378,9 @@ msgid "Billing|Toggle seat details"
 msgstr ""
 
 msgid "Billing|Type %{username} to confirm"
+msgstr ""
+
+msgid "Billing|Unlimited members during your trial"
 msgstr ""
 
 msgid "Billing|User was successfully removed"

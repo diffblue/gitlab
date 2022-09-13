@@ -41,6 +41,7 @@ const providedFields = {
   hasLimitedFreePlan: false,
   hasReachedFreePlanLimit: false,
   previewFreeUserCap: false,
+  activeTrial: false,
 };
 
 const fakeStore = ({ initialState, initialGetters }) =>
@@ -449,6 +450,7 @@ describe('Subscription Seats', () => {
         expect(upgradeInfoCard.props()).toMatchObject({
           maxNamespaceSeats: providedFields.maxFreeNamespaceSeats,
           explorePlansPath: providedFields.explorePlansPath,
+          activeTrial: false,
         });
       });
     });
@@ -472,6 +474,7 @@ describe('Subscription Seats', () => {
         expect(upgradeInfoCard.props()).toMatchObject({
           maxNamespaceSeats: providedFields.maxFreeNamespaceSeats,
           explorePlansPath: providedFields.explorePlansPath,
+          activeTrial: false,
         });
       });
     });

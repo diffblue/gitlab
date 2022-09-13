@@ -292,6 +292,7 @@ export default {
           v-if="showUpgradeInfoCard"
           :max-namespace-seats="maxFreeNamespaceSeats"
           :explore-plans-path="explorePlansPath"
+          :active-trial="activeTrial"
         />
         <statistics-seats-card
           v-else
