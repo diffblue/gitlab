@@ -17,6 +17,7 @@ module EE
               add_item(ldap_sync_menu_item)
               add_item(saml_sso_menu_item)
               add_item(saml_group_links_menu_item)
+              add_item(domain_verification_menu_item)
               add_item(usage_quotas_menu_item)
               add_item(billing_menu_item)
               add_item(reporting_menu_item)
@@ -78,6 +79,21 @@ module EE
               active_routes: { path: 'saml_group_links#index' },
               item_id: :saml_group_links
             )
+          end
+
+          def domain_verification_menu_item
+            return ::Sidebars::NilMenuItem.new(item_id: :domain_verification) unless domain_verification_available?
+
+            ::Sidebars::MenuItem.new(
+              title: _('Domain Verification'),
+              link: group_settings_domain_verification_path(context.group),
+              active_routes: { path: 'domain_verification#show' },
+              item_id: :domain_verification
+            )
+          end
+
+          def domain_verification_available?
+            can?(context.current_user, :admin_group, context.group) && context.group.domain_verification_available?
           end
 
           def webhooks_menu_item

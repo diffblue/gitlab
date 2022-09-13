@@ -71,6 +71,7 @@ module Gitlab
             hash[:extern_uid] = auth_hash.uid
             hash[:saml_provider_id] = @saml_provider.id
             hash[:provider] = ::Users::BuildService::GROUP_SAML_PROVIDER
+            hash[:group_id] = saml_provider.group_id
           end
         end
 

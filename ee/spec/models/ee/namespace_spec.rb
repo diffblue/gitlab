@@ -1733,6 +1733,80 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#all_projects_pages_domains' do
+    let_it_be(:namespace) { create(:group) }
+    let_it_be(:subgroup) { create(:group, parent: namespace) }
+    let_it_be(:project1) { create(:project, group: namespace) }
+    let_it_be(:project2) { create(:project, group: subgroup) }
+
+    let!(:verified_domain) { create(:pages_domain, project: project1) }
+    let!(:unverified_domain) { create(:pages_domain, :unverified, project: project2) }
+
+    it 'finds all pages domains by default' do
+      expect(namespace.all_projects_pages_domains).to match_array([verified_domain, unverified_domain])
+    end
+
+    it 'finds only verified domains when param is true' do
+      expect(namespace.all_projects_pages_domains(only_verified: true)).to match_array(verified_domain)
+    end
+
+    context 'when projects are outside the top-level group hierarchy' do
+      before do
+        outside_namespace = create(:group)
+        outside_project = create(:project, group: outside_namespace)
+        create(:pages_domain, project: outside_project)
+      end
+
+      it 'does not include the outside domain' do
+        expect(namespace.all_projects_pages_domains).to match_array([verified_domain, unverified_domain])
+      end
+    end
+  end
+
+  describe '#domain_verification_available?' do
+    let(:namespace) { create(:group) }
+
+    context 'when the feature is not licensed' do
+      before do
+        stub_licensed_features(domain_verification: false)
+      end
+
+      it 'is not available' do
+        expect(namespace.domain_verification_available?).to eq(false)
+      end
+
+      context 'on GitLab.com', :saas do
+        it 'is not available' do
+          expect(namespace.domain_verification_available?).to eq(false)
+        end
+      end
+    end
+
+    context 'when the feature is licensed' do
+      before do
+        stub_licensed_features(domain_verification: true)
+      end
+
+      it 'is not available' do
+        expect(namespace.domain_verification_available?).to eq(false)
+      end
+
+      context 'on GitLab.com', :saas do
+        it 'is available' do
+          expect(namespace.domain_verification_available?).to eq(true)
+        end
+
+        context 'with a subgroup' do
+          let(:subgroup) { create(:group, :nested) }
+
+          it 'is not available' do
+            expect(subgroup.domain_verification_available?).to eq(false)
+          end
+        end
+      end
+    end
+  end
+
   describe '#allow_stale_runner_pruning?' do
     subject { namespace.allow_stale_runner_pruning? }
 

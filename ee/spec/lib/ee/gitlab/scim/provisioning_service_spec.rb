@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::Gitlab::Scim::ProvisioningService do
+RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
   describe '#execute' do
     let(:group) { create(:group) }
     let(:service) { described_class.new(group, service_params) }
@@ -101,6 +101,20 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService do
 
         it 'creates the user' do
           expect { service.execute }.to change { User.count }.by(1)
+        end
+      end
+
+      context 'when a verified pages domain matches the user email domain' do
+        before do
+          stub_licensed_features(domain_verification: true)
+          create(:pages_domain, project: create(:project, group: group), domain: 'example.com')
+        end
+
+        it 'creates a confirmed user' do
+          service.execute
+
+          expect(user).to be_present
+          expect(user).to be_confirmed
         end
       end
     end

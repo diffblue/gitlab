@@ -475,6 +475,17 @@ module EE
       security_orchestration_policies_for_namespaces(ancestor_ids)
     end
 
+    def all_projects_pages_domains(only_verified: false)
+      domains = ::PagesDomain.where(project_id: all_projects)
+      domains = domains.verified if only_verified
+
+      domains
+    end
+
+    def domain_verification_available?
+      ::Gitlab.com? && root? && licensed_feature_available?(:domain_verification)
+    end
+
     private
 
     def security_orchestration_policies_for_namespaces(namespace_ids)
