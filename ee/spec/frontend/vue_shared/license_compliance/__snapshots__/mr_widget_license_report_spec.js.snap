@@ -12,6 +12,7 @@ exports[`License Report MR Widget report section report body should render corre
 >
   <li
     class="mx-1 mb-1"
+    data-testid="report-heading"
   >
     <h2
       class="h5 m-0"

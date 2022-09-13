@@ -1,9 +1,9 @@
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
 import api from '~/api';
 import LicenseManagement from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
 import { stubComponent } from 'helpers/stub_component';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TEST_HOST } from 'spec/test_constants';
 import ReportItem from '~/reports/components/report_item.vue';
 import ReportSection from '~/reports/components/report_section.vue';
@@ -82,14 +82,14 @@ describe('License Report MR Widget', () => {
         },
       },
     });
-    wrapper = shallowMount(LicenseManagement, {
+    wrapper = shallowMountExtended(LicenseManagement, {
       propsData: props,
       store,
       stubs,
     });
   };
 
-  const findAllReportItems = () => wrapper.findAll(ReportItem);
+  const findAllReportItems = () => wrapper.findAllComponents(ReportItem);
 
   afterEach(() => {
     wrapper.destroy();
@@ -263,7 +263,7 @@ describe('License Report MR Widget', () => {
             },
           });
 
-          expect(wrapper.findAll({ ref: 'reportHeading' })).toHaveLength(
+          expect(wrapper.findAllByTestId('report-heading')).toHaveLength(
             expectedNumberOfReportHeadings,
           );
         },
