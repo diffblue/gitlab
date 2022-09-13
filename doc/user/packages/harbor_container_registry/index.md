@@ -34,8 +34,6 @@ To download and run a Harbor image hosted in the GitLab Harbor Registry:
       and find the image you want.
     - Next to the image name, click the **Copy** icon.
 
-   ![Harbor Registry image URL.](img/harbor_registry_image_url.png)
-
 1. Use the command to run the container image you want.
 
 ## View the tags of a specific artifact
