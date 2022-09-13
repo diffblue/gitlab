@@ -1180,6 +1180,12 @@ msgstr ""
 msgid "%{verb} %{time_spent_value} spent time."
 msgstr ""
 
+msgid "%{verb} this %{noun} as a draft."
+msgstr ""
+
+msgid "%{verb} this %{noun} as ready."
+msgstr ""
+
 msgid "%{webhooks_link_start}%{webhook_type}%{link_end} enable you to send notifications to web applications in response to events in a group or project."
 msgstr ""
 
@@ -24260,6 +24266,9 @@ msgstr ""
 msgid "MarkdownToolbar|Supports %{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd}"
 msgstr ""
 
+msgid "Marked"
+msgstr ""
+
 msgid "Marked For Deletion At - %{deletion_time}"
 msgstr ""
 
@@ -24267,9 +24276,6 @@ msgid "Marked as draft. Can only be merged when marked as ready."
 msgstr ""
 
 msgid "Marked as ready. Merging is now allowed."
-msgstr ""
-
-msgid "Marked this %{noun} as a draft."
 msgstr ""
 
 msgid "Marked this %{noun} as ready."
@@ -24284,7 +24290,7 @@ msgstr ""
 msgid "Marked to do as done."
 msgstr ""
 
-msgid "Marks this %{noun} as a draft."
+msgid "Marks"
 msgstr ""
 
 msgid "Marks this %{noun} as ready."
@@ -36298,6 +36304,9 @@ msgstr ""
 msgid "Set target branch to %{branch_name}."
 msgstr ""
 
+msgid "Set the Draft status"
+msgstr ""
+
 msgid "Set the Ready status"
 msgstr ""
 
@@ -41379,9 +41388,6 @@ msgid "Toggle shortcuts"
 msgstr ""
 
 msgid "Toggle sidebar"
-msgstr ""
-
-msgid "Toggle the Draft status"
 msgstr ""
 
 msgid "Toggle the Performance Bar"
