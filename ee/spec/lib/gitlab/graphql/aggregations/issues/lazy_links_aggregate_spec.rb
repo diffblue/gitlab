@@ -10,15 +10,15 @@ RSpec.describe Gitlab::Graphql::Aggregations::Issues::LazyLinksAggregate do
 
     let(:fake_blocked_data) do
       [
-          { blocked_issue_id: 1745, count: 1.0 },
-          nil # nil for unblocked issuables
+        { blocked_issue_id: 1745, count: 1.0 },
+        nil # nil for unblocked issuables
       ]
     end
 
     let(:fake_blocking_data) do
       [
-          { blocking_issue_id: 1745, count: 1.0 },
-          nil # nil for unblocked issuables
+        { blocking_issue_id: 1745, count: 1.0 },
+        nil # nil for unblocked issuables
       ]
     end
   end

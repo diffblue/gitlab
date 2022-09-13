@@ -11,8 +11,8 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
   describe '#initialize' do
     let(:fake_data) do
       [
-          { iid: epic_iid, epic_state_id: epic_state_id, issues_count: 1, issues_weight_sum: 2, parent_id: parent_id, issues_state_id: OPENED_ISSUE_STATE },
-          { iid: epic_iid, epic_state_id: epic_state_id, issues_count: 2, issues_weight_sum: 2, parent_id: parent_id, issues_state_id: CLOSED_ISSUE_STATE }
+        { iid: epic_iid, epic_state_id: epic_state_id, issues_count: 1, issues_weight_sum: 2, parent_id: parent_id, issues_state_id: OPENED_ISSUE_STATE },
+        { iid: epic_iid, epic_state_id: epic_state_id, issues_count: 2, issues_weight_sum: 2, parent_id: parent_id, issues_state_id: CLOSED_ISSUE_STATE }
       ]
     end
 
@@ -65,7 +65,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
       context 'with an issue with 0 weight', :aggregate_results do
         let(:flat_info) do
           [
-              record_for(epic_id: epic_id, parent_id: nil, epic_state_id: CLOSED_EPIC_STATE, issues_state_id: OPENED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 0)
+            record_for(epic_id: epic_id, parent_id: nil, epic_state_id: CLOSED_EPIC_STATE, issues_state_id: OPENED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 0)
           ]
         end
 
@@ -85,7 +85,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
       context 'with an open issue with nonzero weight' do
         let(:flat_info) do
           [
-              record_for(epic_id: epic_id, parent_id: nil, epic_state_id: CLOSED_EPIC_STATE, issues_state_id: OPENED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 2)
+            record_for(epic_id: epic_id, parent_id: nil, epic_state_id: CLOSED_EPIC_STATE, issues_state_id: OPENED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 2)
           ]
         end
 
@@ -105,7 +105,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
       context 'with a closed issue with nonzero weight' do
         let(:flat_info) do
           [
-              record_for(epic_id: epic_id, parent_id: nil, epic_state_id: CLOSED_EPIC_STATE, issues_state_id: CLOSED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 2)
+            record_for(epic_id: epic_id, parent_id: nil, epic_state_id: CLOSED_EPIC_STATE, issues_state_id: CLOSED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 2)
           ]
         end
 
@@ -118,7 +118,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::EpicNode do
       let(:child_epic_node) { described_class.new(child_epic_id, child_flat_info) }
       let(:flat_info) do
         [
-            record_for(epic_id: epic_id, parent_id: nil, epic_state_id: OPENED_EPIC_STATE, issues_state_id: OPENED_ISSUE_STATE, issues_count: 0, issues_weight_sum: 0)
+          record_for(epic_id: epic_id, parent_id: nil, epic_state_id: OPENED_EPIC_STATE, issues_state_id: OPENED_ISSUE_STATE, issues_count: 0, issues_weight_sum: 0)
         ]
       end
 

@@ -63,16 +63,17 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency' } }
 
         it 'returns metrics from production for the last 3 months from the production environment, grouped by day' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-03-01', 'value' => 18 },
-            { 'date' => '2021-04-01', 'value' => 17 },
-            { 'date' => '2021-04-02', 'value' => 16 },
-            { 'date' => '2021-04-03', 'value' => 15 },
-            { 'date' => '2021-04-04', 'value' => 14 },
-            { 'date' => '2021-04-05', 'value' => 13 },
-            { 'date' => '2021-04-06', 'value' => 12 },
-            { 'date' => '2021-04-07', 'value' => nil }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-03-01', 'value' => 18 },
+              { 'date' => '2021-04-01', 'value' => 17 },
+              { 'date' => '2021-04-02', 'value' => 16 },
+              { 'date' => '2021-04-03', 'value' => 15 },
+              { 'date' => '2021-04-04', 'value' => 14 },
+              { 'date' => '2021-04-05', 'value' => 13 },
+              { 'date' => '2021-04-06', 'value' => 12 },
+              { 'date' => '2021-04-07', 'value' => nil }
+            ])
         end
       end
 
@@ -80,16 +81,17 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', interval: 'daily' } }
 
         it 'returns the metrics grouped by day (the default)' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-03-01', 'value' => 18 },
-            { 'date' => '2021-04-01', 'value' => 17 },
-            { 'date' => '2021-04-02', 'value' => 16 },
-            { 'date' => '2021-04-03', 'value' => 15 },
-            { 'date' => '2021-04-04', 'value' => 14 },
-            { 'date' => '2021-04-05', 'value' => 13 },
-            { 'date' => '2021-04-06', 'value' => 12 },
-            { 'date' => '2021-04-07', 'value' => nil }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-03-01', 'value' => 18 },
+              { 'date' => '2021-04-01', 'value' => 17 },
+              { 'date' => '2021-04-02', 'value' => 16 },
+              { 'date' => '2021-04-03', 'value' => 15 },
+              { 'date' => '2021-04-04', 'value' => 14 },
+              { 'date' => '2021-04-05', 'value' => 13 },
+              { 'date' => '2021-04-06', 'value' => 12 },
+              { 'date' => '2021-04-07', 'value' => nil }
+            ])
         end
       end
 
@@ -97,10 +99,11 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', interval: 'monthly' } }
 
         it 'returns the metrics grouped by month' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-03-01', 'value' => 18 },
-            { 'date' => '2021-04-01', 'value' => 87 }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-03-01', 'value' => 18 },
+              { 'date' => '2021-04-01', 'value' => 87 }
+            ])
         end
       end
 
@@ -108,9 +111,10 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', interval: 'all' } }
 
         it 'returns the metrics grouped into a single bucket with a nil date' do
-          expect(resolve_metrics).to eq([
-            { 'date' => nil, 'value' => 105 }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => nil, 'value' => 105 }
+            ])
         end
       end
 
@@ -118,13 +122,14 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', start_date: '2021-04-03'.to_datetime } }
 
         it 'returns metrics for data on or after the provided date' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-04-03', 'value' => 15 },
-            { 'date' => '2021-04-04', 'value' => 14 },
-            { 'date' => '2021-04-05', 'value' => 13 },
-            { 'date' => '2021-04-06', 'value' => 12 },
-            { 'date' => '2021-04-07', 'value' => nil }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-04-03', 'value' => 15 },
+              { 'date' => '2021-04-04', 'value' => 14 },
+              { 'date' => '2021-04-05', 'value' => 13 },
+              { 'date' => '2021-04-06', 'value' => 12 },
+              { 'date' => '2021-04-07', 'value' => nil }
+            ])
         end
       end
 
@@ -132,12 +137,13 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', end_date: '2021-04-03'.to_datetime } }
 
         it 'returns metrics for data on or before the provided date' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-03-01', 'value' => 18 },
-            { 'date' => '2021-04-01', 'value' => 17 },
-            { 'date' => '2021-04-02', 'value' => 16 },
-            { 'date' => '2021-04-03', 'value' => 15 }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-03-01', 'value' => 18 },
+              { 'date' => '2021-04-01', 'value' => 17 },
+              { 'date' => '2021-04-02', 'value' => 16 },
+              { 'date' => '2021-04-03', 'value' => 15 }
+            ])
         end
       end
 
@@ -145,11 +151,12 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', start_date: '2021-04-01'.to_datetime, end_date: '2021-04-03'.to_datetime } }
 
         it 'returns metrics between the provided dates (inclusive)' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-04-01', 'value' => 17 },
-            { 'date' => '2021-04-02', 'value' => 16 },
-            { 'date' => '2021-04-03', 'value' => 15 }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-04-01', 'value' => 17 },
+              { 'date' => '2021-04-02', 'value' => 16 },
+              { 'date' => '2021-04-03', 'value' => 15 }
+            ])
         end
       end
 
@@ -185,16 +192,17 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'lead_time_for_changes' } }
 
         it 'returns lead time metrics' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-03-01', 'value' => nil },
-            { 'date' => '2021-04-01', 'value' => 99.0 },
-            { 'date' => '2021-04-02', 'value' => 98.0 },
-            { 'date' => '2021-04-03', 'value' => 97.0 },
-            { 'date' => '2021-04-04', 'value' => nil },
-            { 'date' => '2021-04-05', 'value' => nil },
-            { 'date' => '2021-04-06', 'value' => nil },
-            { 'date' => '2021-04-07', 'value' => nil }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-03-01', 'value' => nil },
+              { 'date' => '2021-04-01', 'value' => 99.0 },
+              { 'date' => '2021-04-02', 'value' => 98.0 },
+              { 'date' => '2021-04-03', 'value' => 97.0 },
+              { 'date' => '2021-04-04', 'value' => nil },
+              { 'date' => '2021-04-05', 'value' => nil },
+              { 'date' => '2021-04-06', 'value' => nil },
+              { 'date' => '2021-04-07', 'value' => nil }
+            ])
         end
 
         # Testing this combination of arguments explicitly since it previously
@@ -203,9 +211,10 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
           let(:args) { { metric: 'lead_time_for_changes', interval: 'all' } }
 
           it 'returns the metrics grouped into a single bucket with a nil date' do
-            expect(resolve_metrics).to eq([
-              { 'date' => nil, 'value' => 98.0 }
-            ])
+            expect(resolve_metrics).to eq(
+              [
+                { 'date' => nil, 'value' => 98.0 }
+              ])
           end
         end
       end
@@ -214,16 +223,17 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', environment_tiers: %w[production staging] } }
 
         it 'returns metrics for all environments combined' do
-          expect(resolve_metrics).to eq([
-            { 'date' => '2021-03-01', 'value' => 18 },
-            { 'date' => '2021-04-01', 'value' => 27 },
-            { 'date' => '2021-04-02', 'value' => 16 },
-            { 'date' => '2021-04-03', 'value' => 15 },
-            { 'date' => '2021-04-04', 'value' => 14 },
-            { 'date' => '2021-04-05', 'value' => 13 },
-            { 'date' => '2021-04-06', 'value' => 12 },
-            { 'date' => '2021-04-07', 'value' => nil }
-          ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-03-01', 'value' => 18 },
+              { 'date' => '2021-04-01', 'value' => 27 },
+              { 'date' => '2021-04-02', 'value' => 16 },
+              { 'date' => '2021-04-03', 'value' => 15 },
+              { 'date' => '2021-04-04', 'value' => 14 },
+              { 'date' => '2021-04-05', 'value' => 13 },
+              { 'date' => '2021-04-06', 'value' => 12 },
+              { 'date' => '2021-04-07', 'value' => nil }
+            ])
         end
       end
 
@@ -231,10 +241,11 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', environment_tier: 'staging' } }
 
         it 'returns metrics for the staging environment' do
-          expect(resolve_metrics).to eq([
-                                          { 'date' => '2021-04-01', 'value' => 10 },
-                                          { 'date' => '2021-04-02', 'value' => nil }
-                                        ])
+          expect(resolve_metrics).to eq(
+            [
+              { 'date' => '2021-04-01', 'value' => 10 },
+              { 'date' => '2021-04-02', 'value' => nil }
+            ])
         end
       end
     end

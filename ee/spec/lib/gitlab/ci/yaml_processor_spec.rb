@@ -248,10 +248,11 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
         expect(subject).to be_valid
 
         rspec = subject.builds.last
-        expect(rspec.dig(:options, :cross_dependencies)).to eq([
-          { pipeline: '$UPSTREAM_PIPELINE_ID', job: 'test', artifacts: true },
-          { project: 'org/the-project', ref: 'master', job: 'build', artifacts: true }
-        ])
+        expect(rspec.dig(:options, :cross_dependencies)).to eq(
+          [
+            { pipeline: '$UPSTREAM_PIPELINE_ID', job: 'test', artifacts: true },
+            { project: 'org/the-project', ref: 'master', job: 'build', artifacts: true }
+          ])
       end
     end
 

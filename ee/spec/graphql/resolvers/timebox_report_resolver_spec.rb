@@ -48,21 +48,21 @@ RSpec.describe Resolvers::TimeboxReportResolver do
             total: { count: 2, weight: 0 }
           },
           burnup_time_series: [
-          {
-            date: start_date + 4.days,
-            scope_count: 1,
-            scope_weight: 0,
-            completed_count: 0,
-            completed_weight: 0
-          },
-          {
-            date: start_date + 9.days,
-            scope_count: 2,
-            scope_weight: 0,
-            completed_count: 0,
-            completed_weight: 0
-          }
-        ])
+            {
+              date: start_date + 4.days,
+              scope_count: 1,
+              scope_weight: 0,
+              completed_count: 0,
+              completed_weight: 0
+            },
+            {
+              date: start_date + 9.days,
+              scope_count: 2,
+              scope_weight: 0,
+              completed_count: 0,
+              completed_weight: 0
+            }
+          ])
       end
 
       context 'when the service returns an error' do

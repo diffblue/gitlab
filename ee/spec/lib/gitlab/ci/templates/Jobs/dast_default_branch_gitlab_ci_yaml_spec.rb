@@ -84,8 +84,8 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
 
       let_it_be_with_refind(:project_with_ci_kubernetes_active) do
         create(:project, :repository, variables: [
-          build(:ci_variable, key: 'CI_KUBERNETES_ACTIVE', value: 'true')
-        ])
+                 build(:ci_variable, key: 'CI_KUBERNETES_ACTIVE', value: 'true')
+               ])
       end
 
       include_examples 'no pipeline errors'
@@ -112,8 +112,8 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
           context 'when KUBECONFIG and not CI_KUBERNETES_ACTIVE' do
             let(:project) do
               create(:project, :repository, variables: [
-                build(:ci_variable, key: 'KUBECONFIG', value: 'true')
-              ])
+                       build(:ci_variable, key: 'KUBECONFIG', value: 'true')
+                     ])
             end
 
             it 'includes the DAST environment jobs', :aggregate_failures do
@@ -136,8 +136,8 @@ RSpec.describe 'Jobs/DAST-Default-Branch-Deploy.gitlab-ci.yml' do
 
       let_it_be_with_refind(:project_with_ci_ecs_active) do
         create(:project, :repository, variables: [
-          build(:ci_variable, key: 'AUTO_DEVOPS_PLATFORM_TARGET', value: 'ECS')
-        ])
+                 build(:ci_variable, key: 'AUTO_DEVOPS_PLATFORM_TARGET', value: 'ECS')
+               ])
       end
 
       include_examples 'no pipeline errors'

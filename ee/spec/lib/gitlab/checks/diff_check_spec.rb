@@ -202,7 +202,7 @@ RSpec.describe Gitlab::Checks::DiffCheck do
             [
               'readme.txt', 'any/ida_rsa.pub', 'any/id_dsa.pub', 'any_2/id_ed25519.pub',
               'random_file.pdf', 'folder/id_ecdsa.pub', 'docs/aws/credentials.md', 'ending_withhistory'
-          ]
+            ]
 
           white_listed.each do |file_path|
             old_rev = 'be93687618e4b132087f430a4d8fc3a609c9b77c'
@@ -225,7 +225,7 @@ RSpec.describe Gitlab::Checks::DiffCheck do
               'aws/credentials', '.ssh/personal_rsa', 'config/server_rsa', '.ssh/id_rsa', '.ssh/id_dsa',
               '.ssh/personal_dsa', 'config/server_ed25519', 'any/id_ed25519', '.ssh/personal_ecdsa', 'config/server_ecdsa',
               'any_place/id_ecdsa', 'some_pLace/file.key', 'other_PlAcE/other_file.pem', 'bye_bug.history', 'pg_sql_history'
-          ]
+            ]
 
           black_listed.each do |file_path|
             old_rev = 'be93687618e4b132087f430a4d8fc3a609c9b77c'

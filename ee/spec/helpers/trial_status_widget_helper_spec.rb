@@ -32,9 +32,10 @@ RSpec.describe TrialStatusWidgetHelper, :saas do
       )
       stub_experiments(group_contact_sales: :control)
       allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService, plan: :free) do |instance|
-        allow(instance).to receive(:execute).and_return([
-          { 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }
-        ])
+        allow(instance).to receive(:execute).and_return(
+          [
+            { 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }
+          ])
       end
     end
 

@@ -16,9 +16,9 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
   let_it_be(:namespace_security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace, namespace: namespace, security_policy_management_project: namespace_policies_repository) }
   let_it_be(:namespace_policy) do
     build(:scan_execution_policy, actions: [
-      { scan: 'sast' },
-      { scan: 'secret_detection' }
-  ])
+            { scan: 'sast' },
+            { scan: 'secret_detection' }
+          ])
   end
 
   let_it_be_with_refind(:project) { create(:project, :repository, group: namespace) }
@@ -27,9 +27,9 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
   let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, project: project, security_policy_management_project: policies_repository) }
   let_it_be(:policy) do
     build(:scan_execution_policy, actions: [
-      { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
-      { scan: 'secret_detection' }
-    ])
+            { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+            { scan: 'secret_detection' }
+          ])
   end
 
   let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }

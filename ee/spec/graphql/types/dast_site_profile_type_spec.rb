@@ -156,16 +156,16 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
 
       let(:policy1) do
         build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: %w[master] }], actions: [
-          { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
-          { scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }
-        ])
+                { scan: 'dast', site_profile: 'Site Profile', scanner_profile: 'Scanner Profile' },
+                { scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }
+              ])
       end
 
       let(:policy2) do
         build(:scan_execution_policy, name: 'Run DAST in every pipeline 2', rules: [{ type: 'pipeline', branches: %w[master] }], actions: [
-          { scan: 'dast', site_profile: 'Site Profile 3', scanner_profile: 'Scanner Profile 3' },
-          { scan: 'dast', site_profile: 'Site Profile 4', scanner_profile: 'Scanner Profile 4' }
-        ])
+                { scan: 'dast', site_profile: 'Site Profile 3', scanner_profile: 'Scanner Profile 3' },
+                { scan: 'dast', site_profile: 'Site Profile 4', scanner_profile: 'Scanner Profile 4' }
+              ])
       end
 
       let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2]) }

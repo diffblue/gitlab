@@ -470,9 +470,9 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
         # to test that both sides can handle the differing case.
         let(:ldap_group1) do
           ldap_group_entry(%W(
-            #{user_dn(user1.username).upcase}
-            #{user_dn(user2.username)}
-          ))
+                             #{user_dn(user1.username).upcase}
+                             #{user_dn(user2.username)}
+                           ))
         end
 
         it 'does not revert the overrides' do
