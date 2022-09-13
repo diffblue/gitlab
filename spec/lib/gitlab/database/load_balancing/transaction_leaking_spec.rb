@@ -84,7 +84,6 @@ RSpec.describe 'Load balancer behavior with errors inside a transaction', :redis
       values = conn.execute("SELECT value FROM #{test_table_name}").to_a.map { |row| row['value'] }
       expect(values).to contain_exactly(1, 2) # Includes both rows because there was no transaction to roll back
     end
-
   end
 
   context 'with the PREVENT_LOAD_BALANCER_RETRIES_IN_TRANSACTION environment variable set' do

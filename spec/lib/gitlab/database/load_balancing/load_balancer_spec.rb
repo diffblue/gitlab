@@ -337,7 +337,9 @@ RSpec.describe Gitlab::Database::LoadBalancing::LoadBalancer, :request_store do
       iterations = []
 
       # time: 0 so that we don't sleep and slow down the test
+      # rubocop: disable Style/Semicolon
       expect { lb.retry_with_backoff(attempts: 3, time: 0) { |i| iterations << i; raise } }.to raise_error(RuntimeError)
+      # rubocop: enable Style/Semicolon
 
       expect(iterations).to eq([1, 2, 3])
     end

@@ -194,7 +194,7 @@ module Gitlab
           attempt = 1
           last_error = nil
 
-          while attempt < attempts
+          while attempt <= attempts
             begin
               return yield attempt # Yield the current attempt count
             rescue StandardError => error
@@ -342,7 +342,7 @@ module Gitlab
         end
 
         def prevent_load_balancer_retries_in_transaction?
-          Gitlab::Utils::to_boolean(ENV['PREVENT_LOAD_BALANCER_RETRIES_IN_TRANSACTION'], default: false)
+          Gitlab::Utils.to_boolean(ENV['PREVENT_LOAD_BALANCER_RETRIES_IN_TRANSACTION'], default: false)
         end
       end
     end
