@@ -361,7 +361,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             end
 
             expect_next_instance_of(GitlabSubscriptions::ApplyTrialService) do |service|
-              expect(service).to receive(:execute).with(uid: user.id, trial_user: trial_user_information) # rubocop:disable RSpec/ExpectInHook
+              expect(service).to receive(:execute).with({ uid: user.id, trial_user: trial_user_information }) # rubocop:disable RSpec/ExpectInHook
                                                   .and_return(result)
             end
           end
