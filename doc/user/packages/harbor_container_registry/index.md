@@ -53,7 +53,6 @@ You can also copy the tag URL and use it to pull the corresponding artifact.
 To build and push to the Harbor Registry:
 
 1. Authenticate with the Harbor Registry.
-
 1. Run the command to build or push.
 
 To view these commands, go to your project's **Packages and registries > Harbor Registry > CLI Commands**.
