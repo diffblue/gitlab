@@ -604,7 +604,7 @@
   :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
-  :idempotent: false
+  :idempotent: true
   :tags: []
 - :name: geo:geo_file_removal
   :worker_name: Geo::FileRemovalWorker
