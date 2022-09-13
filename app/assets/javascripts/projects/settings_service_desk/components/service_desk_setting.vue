@@ -190,7 +190,11 @@ export default {
           </template>
         </gl-form-group>
 
-        <gl-form-group :label="__('Email address suffix')" :state="!projectKeyError">
+        <gl-form-group
+          :label="__('Email address suffix')"
+          :state="!projectKeyError"
+          data-testid="suffix-form-group"
+        >
           <gl-form-input
             v-if="hasProjectKeySupport"
             id="service-desk-project-suffix"
