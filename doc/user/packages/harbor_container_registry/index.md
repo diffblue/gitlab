@@ -6,9 +6,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Harbor Registry **(FREE)**
 
-With the successful integration of the Harbor Registry into GitLab, you can use Harbor as the container registry for your GitLab project to store images.
-
-Please read [Harbor container registry integration](../../../user/project/integrations/harbor.md#harbor-container-registry-integration) for more information about the Harbor integration.
+You can integrate the [Harbor container registry](../../../user/project/integrations/harbor.md#harbor-container-registry-integration) into GitLab and use Harbor as the container registry for your GitLab project to store images.
 
 ## View the Harbor Registry
 
@@ -20,7 +18,9 @@ You can view the Harbor Registry for a project or group.
 
 You can search, sort, and filter images on this page. You can share a filtered view by copying the URL from your browser.
 
-At the project level, you can see **CLI Commands** in the upper right corner, where you can copy corresponding commands to log in, build images, and push images. However, **CLI Commands** does not show at the group level.
+At the project level, you can see **CLI Commands** in the upper right corner, where you can copy
+corresponding commands to log in, build images, and push images. **CLI Commands** is not shown at
+the group level.
 
 NOTE:
 Default settings for the Harbor integration at the project level are inherited from the group level.

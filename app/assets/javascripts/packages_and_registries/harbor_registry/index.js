@@ -5,7 +5,6 @@ import PerformancePlugin from '~/performance/vue_performance_plugin';
 import Translate from '~/vue_shared/translate';
 import RegistryBreadcrumb from '~/packages_and_registries/harbor_registry/components/harbor_registry_breadcrumb.vue';
 import { renderBreadcrumb } from '~/packages_and_registries/shared/utils';
-import { helpPagePath } from '~/helpers/help_page_helper';
 import createRouter from './router';
 import HarborRegistryExplorer from './pages/index.vue';
 
@@ -71,7 +70,6 @@ export default (id) => {
           projectName,
           containersErrorImage,
           noContainersImage,
-          helpPagePath: helpPagePath('user/packages/harbor_container_registry/index'),
         };
       },
       render(createElement) {

@@ -23,6 +23,7 @@ import {
   FETCH_IMAGES_LIST_ERROR_MESSAGE,
   EMPTY_IMAGES_TITLE,
   EMPTY_IMAGES_MESSAGE,
+  HARBOR_REGISTRY_HELP_PAGE_PATH,
 } from '~/packages_and_registries/harbor_registry/constants';
 import Tracking from '~/tracking';
 import { getHarborRepositoriesList } from '~/rest_api';
@@ -52,7 +53,6 @@ export default {
     'connectionError',
     'invalidPathError',
     'containersErrorImage',
-    'helpPagePath',
     'noContainersImage',
   ],
   loader: {
@@ -63,6 +63,9 @@ export default {
   i18n: {
     connectionErrorTitle: CONNECTION_ERROR_TITLE,
     connectionErrorMessage: CONNECTION_ERROR_MESSAGE,
+  },
+  links: {
+    HARBOR_REGISTRY_HELP_PAGE_PATH,
   },
   searchConfig: SORT_FIELDS,
   data() {
@@ -168,7 +171,7 @@ export default {
         <p>
           <gl-sprintf :message="$options.i18n.connectionErrorMessage">
             <template #docLink="{ content }">
-              <gl-link :href="`${helpPagePath}`" target="_blank">
+              <gl-link :href="$options.links.HARBOR_REGISTRY_HELP_PAGE_PATH" target="_blank">
                 {{ content }}
               </gl-link>
             </template>
@@ -180,7 +183,7 @@ export default {
       <harbor-list-header
         :metadata-loading="isLoading"
         :images-count="totalCount"
-        :help-page-path="helpPagePath"
+        :help-page-path="$options.links.HARBOR_REGISTRY_HELP_PAGE_PATH"
       >
         <template #commands>
           <cli-commands
