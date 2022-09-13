@@ -1060,10 +1060,6 @@ RSpec.describe API::Groups do
                       stub_feature_flags(immediate_delete_subgroup_api: false, thing: group)
                     end
 
-                    after do
-                      stub_feature_flags(immediate_delete_subgroup_api: true, thing: group)
-                    end
-
                     it_behaves_like 'returns error and responds with group already marked for deletion message'
                   end
                 end
