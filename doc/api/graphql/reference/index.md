@@ -13857,6 +13857,8 @@ Represents the merge access level of a branch protection.
 | ---- | ---- | ----------- |
 | <a id="mergeaccesslevelaccesslevel"></a>`accessLevel` | [`Int!`](#int) | GitLab::Access level. |
 | <a id="mergeaccesslevelaccessleveldescription"></a>`accessLevelDescription` | [`String!`](#string) | Human readable representation for this access level. |
+| <a id="mergeaccesslevelgroup"></a>`group` | [`Group`](#group) | Group associated with this access level. |
+| <a id="mergeaccessleveluser"></a>`user` | [`UserCore`](#usercore) | User associated with this access level. |
 
 ### `MergeRequest`
 
@@ -17173,6 +17175,8 @@ Represents the push access level of a branch protection.
 | ---- | ---- | ----------- |
 | <a id="pushaccesslevelaccesslevel"></a>`accessLevel` | [`Int!`](#int) | GitLab::Access level. |
 | <a id="pushaccesslevelaccessleveldescription"></a>`accessLevelDescription` | [`String!`](#string) | Human readable representation for this access level. |
+| <a id="pushaccesslevelgroup"></a>`group` | [`Group`](#group) | Group associated with this access level. |
+| <a id="pushaccessleveluser"></a>`user` | [`UserCore`](#usercore) | User associated with this access level. |
 
 ### `PushRules`
 

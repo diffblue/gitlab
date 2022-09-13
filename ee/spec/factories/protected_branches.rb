@@ -3,6 +3,8 @@
 FactoryBot.modify do
   factory :protected_branch do
     transient do
+      ee { true }
+      group { nil }
       authorize_user_to_push { nil }
       authorize_user_to_merge { nil }
       authorize_user_to_unprotect { nil }
@@ -11,44 +13,84 @@ FactoryBot.modify do
       authorize_group_to_unprotect { nil }
     end
 
+    trait :maintainers_can_unprotect do
+      after(:build) do |protected_branch, evaluator|
+        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::MAINTAINER)
+      end
+    end
+
+    trait :developers_can_unprotect do
+      after(:build) do |protected_branch, evaluator|
+        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::DEVELOPER)
+      end
+    end
+
+    trait :no_one_can_unprotect do
+      after(:build) do |protected_branch, evaluator|
+        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::NO_ACCESS)
+      end
+    end
+
+    trait :user_can_push do
+      authorize_user_to_push do
+        association(:user, maintainer_projects: [project])
+      end
+    end
+
+    trait :user_can_merge do
+      authorize_user_to_merge do
+        association(:user, maintainer_projects: [project])
+      end
+    end
+
+    trait :user_can_unprotect do
+      authorize_user_to_unprotect do
+        association(:user, maintainer_projects: [project])
+      end
+    end
+
+    trait :group_can_push do
+      authorize_group_to_push do
+        group || project.group || association(:project_group_link, project: project).group
+      end
+    end
+
+    trait :group_can_merge do
+      authorize_group_to_merge do
+        group || project.group || association(:project_group_link, project: project).group
+      end
+    end
+
+    trait :group_can_unprotect do
+      authorize_group_to_unprotect do
+        group || project.group || association(:project_group_link, project: project).group
+      end
+    end
+
     after(:build) do |protected_branch, evaluator|
-      # Clear access levels set in CE
-      protected_branch.push_access_levels.clear
-      protected_branch.merge_access_levels.clear
+      push_user = evaluator.authorize_user_to_push
+      push_group = evaluator.authorize_group_to_push
+      merge_user = evaluator.authorize_user_to_merge
+      merge_group = evaluator.authorize_group_to_merge
+      unprotect_user = evaluator.authorize_user_to_unprotect
+      unprotect_group = evaluator.authorize_group_to_unprotect
 
-      if user = evaluator.authorize_user_to_push
-        protected_branch.push_access_levels.new(user: user)
+      protected_branch.push_access_levels.new(user: push_user) if push_user
+      protected_branch.merge_access_levels.new(user: merge_user) if merge_user
+      protected_branch.unprotect_access_levels.new(user: unprotect_user) if unprotect_user
+      protected_branch.push_access_levels.new(group: push_group) if push_group
+      protected_branch.merge_access_levels.new(group: merge_group) if merge_group
+      protected_branch.unprotect_access_levels.new(group: unprotect_group) if unprotect_group
+
+      next if !evaluator.default_access_level || [:merge, :push, :unprotect].any? do |action|
+        protected_branch.public_send("#{action}_access_levels").present?
       end
 
-      if user = evaluator.authorize_user_to_merge
-        protected_branch.merge_access_levels.new(user: user)
-      end
-
-      if user = evaluator.authorize_user_to_unprotect
-        protected_branch.unprotect_access_levels.new(user: user)
-      end
-
-      if group = evaluator.authorize_group_to_push
-        protected_branch.push_access_levels.new(group: group)
-      end
-
-      if group = evaluator.authorize_group_to_merge
-        protected_branch.merge_access_levels.new(group: group)
-      end
-
-      if group = evaluator.authorize_group_to_unprotect
-        protected_branch.unprotect_access_levels.new(group: group)
-      end
-
-      next unless protected_branch.merge_access_levels.empty?
-
-      if evaluator.default_access_level && evaluator.default_push_level
-        protected_branch.push_access_levels.new(access_level: Gitlab::Access::MAINTAINER)
-      end
-
-      if evaluator.default_access_level && evaluator.default_merge_level
+      if evaluator.default_merge_level
         protected_branch.merge_access_levels.new(access_level: Gitlab::Access::MAINTAINER)
       end
+
+      protected_branch.push_access_levels.new(access_level: Gitlab::Access::MAINTAINER) if evaluator.default_push_level
     end
   end
 end
