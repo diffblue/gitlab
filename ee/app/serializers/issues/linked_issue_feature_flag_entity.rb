@@ -9,7 +9,7 @@ module Issues
     expose :active
 
     expose :path do |link|
-      project_feature_flag_path(link.project, link.iid)
+      edit_project_feature_flag_path(link.project, link.iid)
     end
 
     expose :reference do |link|
