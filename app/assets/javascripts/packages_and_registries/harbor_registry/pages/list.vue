@@ -64,10 +64,8 @@ export default {
     connectionErrorTitle: CONNECTION_ERROR_TITLE,
     connectionErrorMessage: CONNECTION_ERROR_MESSAGE,
   },
-  links: {
-    HARBOR_REGISTRY_HELP_PAGE_PATH,
-  },
   searchConfig: SORT_FIELDS,
+  helpPagePath: HARBOR_REGISTRY_HELP_PAGE_PATH,
   data() {
     return {
       images: [],
@@ -171,7 +169,7 @@ export default {
         <p>
           <gl-sprintf :message="$options.i18n.connectionErrorMessage">
             <template #docLink="{ content }">
-              <gl-link :href="$options.links.HARBOR_REGISTRY_HELP_PAGE_PATH" target="_blank">
+              <gl-link :href="$options.helpPagePath" target="_blank">
                 {{ content }}
               </gl-link>
             </template>
@@ -180,11 +178,7 @@ export default {
       </template>
     </gl-empty-state>
     <template v-else>
-      <harbor-list-header
-        :metadata-loading="isLoading"
-        :images-count="totalCount"
-        :help-page-path="$options.links.HARBOR_REGISTRY_HELP_PAGE_PATH"
-      >
+      <harbor-list-header :metadata-loading="isLoading" :images-count="totalCount">
         <template #commands>
           <cli-commands
             v-if="showCommands"

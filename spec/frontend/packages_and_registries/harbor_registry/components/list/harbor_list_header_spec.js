@@ -78,7 +78,7 @@ describe('harbor_list_header', () => {
   describe('info messages', () => {
     describe('default message', () => {
       it('is correctly bound to title_area props', () => {
-        mountComponent({ helpPagePath: HARBOR_REGISTRY_HELP_PAGE_PATH });
+        mountComponent();
 
         expect(findTitleArea().props('infoMessages')).toEqual([
           { text: LIST_INTRO_TEXT, link: HARBOR_REGISTRY_HELP_PAGE_PATH },
