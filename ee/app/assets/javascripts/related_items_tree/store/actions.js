@@ -128,6 +128,8 @@ export const fetchItems = ({ dispatch }, { parentItem, isSubItem = false }) => {
         isSubItem,
       });
 
+      dispatch('setDefaultProjectForIssueCreation', data.group.epic.defaultProjectForIssueCreation);
+
       dispatch('setEpicPageInfo', {
         parentItem,
         pageInfo: data.group.epic.children.pageInfo,
@@ -644,4 +646,8 @@ export const fetchDescendantGroups = ({ commit }, { groupId, search = '' }) => {
 
 export const setShowLabels = ({ commit }, val) => {
   commit(types.SET_SHOW_LABELS, val);
+};
+
+export const setDefaultProjectForIssueCreation = ({ commit }, val) => {
+  commit(types.SET_DEFAULT_PROJECT_FOR_ISSUE_CREATION, val);
 };

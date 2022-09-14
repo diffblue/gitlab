@@ -202,6 +202,11 @@ export const mockEpicMeta3 = {
   },
 };
 
+export const mockDefaultProjectForIssueCreation = {
+  id: 'gid://gitlab/Project/1',
+  nameWithNamespace: 'gitlab-org',
+};
+
 export const mockIssue1 = {
   iid: '8',
   epicIssueId: 'gid://gitlab/EpicIssue/3',
@@ -352,6 +357,7 @@ export const mockQueryResponse = {
           needsAttention: 1,
           onTrack: 1,
         },
+        defaultProjectForIssueCreation: mockDefaultProjectForIssueCreation,
       },
     },
   },

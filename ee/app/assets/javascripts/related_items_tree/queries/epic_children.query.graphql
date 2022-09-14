@@ -11,6 +11,10 @@ fragment RelatedTreeBaseEpic on Epic {
   title
   webPath
   relativePosition
+  defaultProjectForIssueCreation {
+    id
+    nameWithNamespace
+  }
   userPermissions {
     adminEpic
     createEpic

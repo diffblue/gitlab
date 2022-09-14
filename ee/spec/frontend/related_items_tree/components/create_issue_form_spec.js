@@ -13,6 +13,7 @@ import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import { ENTER_KEY } from '~/lib/utils/keys';
 
+import Api from 'ee/api';
 import mockProjects from 'test_fixtures_static/projects.json';
 import CreateIssueForm from 'ee/related_items_tree/components/create_issue_form.vue';
 import createDefaultStore from 'ee/related_items_tree/store';
@@ -20,6 +21,7 @@ import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
 import {
   mockInitialConfig,
+  mockDefaultProjectForIssueCreation,
   mockParentItem,
   mockFrequentlyUsedProjects,
   mockMixedFrequentlyUsedProjects,
@@ -28,14 +30,15 @@ import {
 Vue.use(Vuex);
 
 describe('CreateIssueForm', () => {
-  const defaultProject = mockProjects[1];
+  const mockProject = mockProjects[1];
   let wrapper;
 
-  const createComponent = () => {
+  const createComponent = ({ defaultProjectForIssueCreation = null } = {}) => {
     const store = createDefaultStore();
 
     store.dispatch('setInitialConfig', mockInitialConfig);
     store.dispatch('setInitialParentItem', mockParentItem);
+    store.dispatch('setDefaultProjectForIssueCreation', defaultProjectForIssueCreation);
 
     wrapper = shallowMount(CreateIssueForm, {
       store,
@@ -54,7 +57,7 @@ describe('CreateIssueForm', () => {
     localStorage.removeItem(getLocalstorageKey());
   };
 
-  const selectProject = async (project = defaultProject) => {
+  const selectProject = async (project = mockProject) => {
     wrapper.vm.$store.dispatch('receiveProjectsSuccess', mockProjects);
     await nextTick();
 
@@ -88,11 +91,11 @@ describe('CreateIssueForm', () => {
       it('returns project name with name_with_namespace when `selectedProject` is not empty', async () => {
         await selectProject();
 
-        expect(wrapper.vm.dropdownToggleText).toBe(defaultProject.name_with_namespace);
+        expect(wrapper.vm.dropdownToggleText).toBe(mockProject.name_with_namespace);
       });
       it('returns project name with namespace when `selectedProject` is not empty and dont have name_with_namespace', async () => {
         const project = {
-          ...defaultProject,
+          ...mockProject,
           name_with_namespace: undefined,
           namespace: 'H5bp / Html5 Boilerplate',
         };
@@ -100,6 +103,13 @@ describe('CreateIssueForm', () => {
         await selectProject(project);
 
         expect(wrapper.vm.dropdownToggleText).toBe(project.namespace);
+      });
+      it('returns project name of default project', async () => {
+        createComponent({ defaultProjectForIssueCreation: mockDefaultProjectForIssueCreation });
+
+        expect(wrapper.vm.dropdownToggleText).toBe(
+          mockDefaultProjectForIssueCreation.nameWithNamespace,
+        );
       });
     });
   });
@@ -117,32 +127,44 @@ describe('CreateIssueForm', () => {
     describe('createIssue', () => {
       it('emits event `submit` on component when `selectedProject` is not empty', async () => {
         const input = findTitleInput();
+        const endpoint = Api.buildUrl(Api.projectCreateIssuePath).replace(':id', mockProject.id);
 
         await selectProject();
         await input.vm.$emit('input', 'Some issue');
         await findSubmitButton().vm.$emit('click');
 
         expect(wrapper.emitted('submit')[0]).toEqual(
-          expect.arrayContaining([
-            { issuesEndpoint: defaultProject._links.issues, title: 'Some issue' },
-          ]),
+          expect.arrayContaining([{ issuesEndpoint: endpoint, title: 'Some issue' }]),
         );
         expect(input.attributes('value')).toBe('');
       });
 
       it('emits event `submit` on enter', async () => {
         const input = findTitleInput();
+        const endpoint = Api.buildUrl(Api.projectCreateIssuePath).replace(':id', mockProject.id);
 
         await selectProject();
         await input.vm.$emit('input', 'Some issue');
         await input.vm.$emit('keyup', new KeyboardEvent({ key: ENTER_KEY }));
 
         expect(wrapper.emitted('submit')[0]).toEqual(
-          expect.arrayContaining([
-            { issuesEndpoint: defaultProject._links.issues, title: 'Some issue' },
-          ]),
+          expect.arrayContaining([{ issuesEndpoint: endpoint, title: 'Some issue' }]),
         );
         expect(input.attributes('value')).toBe('');
+      });
+
+      it('emits correct event when using the defaultProjectForIssueCreation', async () => {
+        const endpoint = Api.buildUrl(Api.projectCreateIssuePath).replace(':id', '1');
+
+        createComponent({ defaultProjectForIssueCreation: mockDefaultProjectForIssueCreation });
+        const input = findTitleInput();
+
+        await input.vm.$emit('input', 'Some issue');
+        await findSubmitButton().vm.$emit('click');
+
+        expect(wrapper.emitted('submit')[0]).toEqual(
+          expect.arrayContaining([{ issuesEndpoint: endpoint, title: 'Some issue' }]),
+        );
       });
 
       it('does not emit event `submit` when `selectedProject` is empty', async () => {
