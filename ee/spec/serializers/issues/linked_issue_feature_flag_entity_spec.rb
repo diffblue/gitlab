@@ -23,7 +23,7 @@ RSpec.describe Issues::LinkedIssueFeatureFlagEntity do
 
       expect(entity.as_json.slice(:link_type, :path, :reference)).to eq({
         link_type: 'relates_to',
-        path: "/#{project.full_path}/-/feature_flags/#{feature_flag.iid}",
+        path: "/#{project.full_path}/-/feature_flags/#{feature_flag.iid}/edit",
         reference: "[feature_flag:#{feature_flag.iid}]"
       })
     end
