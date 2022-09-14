@@ -73,7 +73,7 @@ describe('DetectedLicenesTable component', () => {
 
     beforeEach(async () => {
       moduleState = Object.assign(store.state[namespace], {
-        isLoading: false,
+        isLoading: true,
         errorLoading: false,
         initialized: false,
       });
@@ -84,35 +84,7 @@ describe('DetectedLicenesTable component', () => {
     it('passes the correct props to the licenses table', () => {
       expectComponentWithProps(LicensesTable, {
         licenses: moduleState.licenses,
-        isLoading: false,
-      });
-    });
-
-    it('does not render pagination', () => {
-      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
-    });
-  });
-
-  describe('when the list is empty (initialized)', () => {
-    let moduleState;
-
-    beforeEach(async () => {
-      moduleState = Object.assign(store.state[namespace], {
-        isLoading: false,
-        errorLoading: false,
-        initialized: true,
-      });
-
-      moduleState.licenses = [];
-      moduleState.pageInfo.total = 0;
-
-      await nextTick();
-    });
-
-    it('passes the correct props to the licenses table', () => {
-      expectComponentWithProps(LicensesTable, {
-        licenses: moduleState.licenses,
-        isLoading: false,
+        isLoading: true,
       });
     });
 
@@ -122,30 +94,60 @@ describe('DetectedLicenesTable component', () => {
   });
 
   describe('when the list is empty', () => {
-    let moduleState;
+    describe('and initialized', () => {
+      let moduleState;
 
-    beforeEach(async () => {
-      moduleState = Object.assign(store.state[namespace], {
-        isLoading: false,
-        errorLoading: false,
-        initialized: false,
+      beforeEach(async () => {
+        moduleState = Object.assign(store.state[namespace], {
+          isLoading: false,
+          errorLoading: false,
+          initialized: true,
+        });
+
+        moduleState.licenses = [];
+        moduleState.pageInfo.total = 0;
+
+        await nextTick();
       });
 
-      moduleState.licenses = [];
-      moduleState.pageInfo.total = 0;
+      it('passes the correct props to the licenses table', () => {
+        expectComponentWithProps(LicensesTable, {
+          licenses: moduleState.licenses,
+          isLoading: false,
+        });
+      });
 
-      await nextTick();
-    });
-
-    it('passes the correct props to the licenses table', () => {
-      expectComponentWithProps(LicensesTable, {
-        licenses: moduleState.licenses,
-        isLoading: false,
+      it('does not render pagination', () => {
+        expect(wrapper.findComponent(Pagination).exists()).toBe(false);
       });
     });
 
-    it('does not render pagination', () => {
-      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+    describe('and not initialized', () => {
+      let moduleState;
+
+      beforeEach(async () => {
+        moduleState = Object.assign(store.state[namespace], {
+          isLoading: false,
+          errorLoading: false,
+          initialized: false,
+        });
+
+        moduleState.licenses = [];
+        moduleState.pageInfo.total = 0;
+
+        await nextTick();
+      });
+
+      it('passes the correct props to the licenses table', () => {
+        expectComponentWithProps(LicensesTable, {
+          licenses: moduleState.licenses,
+          isLoading: false,
+        });
+      });
+
+      it('does not render pagination', () => {
+        expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+      });
     });
   });
 
