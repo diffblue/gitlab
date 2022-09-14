@@ -28,10 +28,10 @@ RSpec.describe Analytics::CycleAnalytics::GroupValueStream, type: :model do
     let(:group) { create(:group) }
     let(:value_stream) do
       create(:cycle_analytics_group_value_stream, group: group, stages: [
-        create(:cycle_analytics_group_stage, group: group, name: "stage 1", relative_position: 5),
-        create(:cycle_analytics_group_stage, group: group, name: "stage 2", relative_position: nil),
-        create(:cycle_analytics_group_stage, group: group, name: "stage 3", relative_position: 1)
-      ])
+               create(:cycle_analytics_group_stage, group: group, name: "stage 1", relative_position: 5),
+               create(:cycle_analytics_group_stage, group: group, name: "stage 2", relative_position: nil),
+               create(:cycle_analytics_group_stage, group: group, name: "stage 3", relative_position: 1)
+             ])
     end
 
     before do

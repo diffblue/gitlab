@@ -92,15 +92,15 @@ RSpec.describe RequirementsManagement::TestReport do
 
           reports = RequirementsManagement::TestReport.where(build: build)
 
-          expect(reports).to match_array([
-            have_attributes(requirement_issue: requirement1.requirement_issue,
-                            author: build.user,
-                            state: 'passed'),
-            have_attributes(requirement_issue: requirement2.requirement_issue,
-                            author: build.user,
-                            state: 'failed')
-
-          ])
+          expect(reports).to match_array(
+            [
+              have_attributes(requirement_issue: requirement1.requirement_issue,
+                              author: build.user,
+                              state: 'passed'),
+              have_attributes(requirement_issue: requirement2.requirement_issue,
+                              author: build.user,
+                              state: 'failed')
+            ])
         end
       end
 

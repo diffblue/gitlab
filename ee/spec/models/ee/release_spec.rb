@@ -19,9 +19,10 @@ RSpec.describe Release do
       let(:ns_id) { group.id }
 
       it 'returns releases associated to projects of the provided group' do
-        expect(described_class.by_namespace_id(ns_id)).to match_array([
-          release_in_group_project
-        ])
+        expect(described_class.by_namespace_id(ns_id)).to match_array(
+          [
+            release_in_group_project
+          ])
       end
     end
 
@@ -29,11 +30,12 @@ RSpec.describe Release do
       let(:ns_id) { group.self_and_descendants.select(:id) }
 
       it 'returns releases associated to projects of all provided groups' do
-        expect(described_class.by_namespace_id(ns_id)).to match_array([
-          release_in_group_project,
-          release_in_subgroup_project_1,
-          release_in_subgroup_project_2
-        ])
+        expect(described_class.by_namespace_id(ns_id)).to match_array(
+          [
+            release_in_group_project,
+            release_in_subgroup_project_1,
+            release_in_subgroup_project_2
+          ])
       end
     end
   end

@@ -124,9 +124,7 @@ RSpec.describe Security::Scan do
       let(:validator_warnings) { [{ type: 'Foo', message: 'Bar' }] }
 
       it 'returns all warnings' do
-        expect(warnings).to match_array([
-          { "message" => "Bar", "type" => "Foo" }
-        ])
+        expect(warnings).to match_array([{ "message" => "Bar", "type" => "Foo" }])
       end
     end
 

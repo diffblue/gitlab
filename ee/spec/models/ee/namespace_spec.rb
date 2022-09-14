@@ -942,13 +942,14 @@ RSpec.describe Namespace do
     let(:user) { create(:user) }
 
     it 'returns 1' do
-      expect(user.namespace.billed_user_ids.keys).to eq([
-        :user_ids,
-        :group_member_user_ids,
-        :project_member_user_ids,
-        :shared_group_user_ids,
-        :shared_project_user_ids
-      ])
+      expect(user.namespace.billed_user_ids.keys).to eq(
+        [
+          :user_ids,
+          :group_member_user_ids,
+          :project_member_user_ids,
+          :shared_group_user_ids,
+          :shared_project_user_ids
+        ])
       expect(user.namespace.billed_user_ids[:user_ids]).to eq([user.id])
     end
   end
