@@ -2,6 +2,8 @@
 
 module Users
   class IdentityVerificationController < ApplicationController
+    include ZuoraCSP
+
     layout 'minimal'
 
     before_action :check_identity_verification_feature_flag

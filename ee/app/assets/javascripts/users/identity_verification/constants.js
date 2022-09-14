@@ -29,3 +29,8 @@ export const PHONE_NUMBER_LENGTH_ERROR = sprintf(
     maxLength: MAX_PHONE_NUMBER_LENGTH,
   },
 );
+
+export const I18N_CC_FORM_SUBMIT = s__('IdentityVerification|Verify payment method');
+export const I18N_CC_FORM_INFO = s__(
+  'IdentityVerification|GitLab will not charge or store your payment information, it will only be used for verification.',
+);

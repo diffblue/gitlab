@@ -19824,6 +19824,9 @@ msgstr ""
 msgid "IdentityVerification|For added security, you'll need to verify your identity. We've sent a verification code to %{email}"
 msgstr ""
 
+msgid "IdentityVerification|GitLab will not charge or store your payment information, it will only be used for verification."
+msgstr ""
+
 msgid "IdentityVerification|Help us keep GitLab secure"
 msgstr ""
 
@@ -19882,6 +19885,9 @@ msgid "IdentityVerification|Verification successful"
 msgstr ""
 
 msgid "IdentityVerification|Verify code"
+msgstr ""
+
+msgid "IdentityVerification|Verify payment method"
 msgstr ""
 
 msgid "IdentityVerification|Verify your identity"

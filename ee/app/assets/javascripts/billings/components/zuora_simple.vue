@@ -29,6 +29,7 @@ export const Action = Object.freeze({
 export const Event = Object.freeze({
   LOADED: 'loaded',
   LOAD_ERROR: 'load-error',
+  LOADING: 'loading',
   PAYMENT_SUBMISSION_PROCESSING: 'payment-submission-processing',
   CLIENT_VALIDATION_ERROR: 'client-validation-error',
   SERVER_VALIDATION_ERROR: 'server-validation-error',
@@ -60,13 +61,14 @@ error states in either the iframe (client side validation) or as an alert.
 [Events emitted]:
 | Event Name                        | Payload                            | Event Trigger                                |
 |-----------------------------------|------------------------------------|----------------------------------------------|
-| loaded                            | N/A                                | iframe loads successfully                     |
+| loaded                            | N/A                                | iframe loads successfully                    |
 | load-error                        | { errorCode, errorMessage }        | iframe load fails                            |
+| loading                           | true/false                         | isLoading is updated                         |
 | payment-submission-processing     | N/A                                | User clicks on make payment button           |
 | client-validation-error           | { key, code, message }             | Client side validation from Zuora            |
 | server-validation-error           | { key, code, message }             | Server side validation from Zuora            |
 | payment-submit-error              | { errorCode, errorMessage }        | Error while making payment (post validation) |
-| payment-submit-success            | { refId }                          | Success in creating payment method in Zuora |
+| payment-submit-success            | { refId }                          | Success in creating payment method in Zuora  |
 | success                           | N/A                                | Payment method validation success            |
 
 */
@@ -106,18 +108,29 @@ export default {
     };
   },
   computed: {
+    style() {
+      const height = Math.max(0, this.iframeHeight);
+      return { height: `${height}px`, minHeight: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
+    },
     iFrameStyle() {
+      if (this.isLoading) {
+        return { height: 0 };
+      }
       if (!this.zuoraLoaded) {
         return { height: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
       }
-      const height = Math.max(0, this.iframeHeight);
-      return { height: `${height}px`, minHeight: DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT };
+      return this.style;
     },
     renderParams() {
       return this.paymentFormParams;
     },
     shouldShowZuoraFrame() {
       return this.zuoraLoaded && !this.isLoading;
+    },
+  },
+  watch: {
+    isLoading(value) {
+      this.$emit(Event.LOADING, value);
     },
   },
   mounted() {
@@ -256,6 +269,7 @@ export default {
           if (!parseBoolean(data.success)) {
             throw new Error();
           }
+          this.isLoading = false;
           this.$emit(Event.SUCCESS);
           this.track(TrackingEvent.SUCCESS, {
             label: TrackingLabel.PAYMENT_VALIDATE,
@@ -280,7 +294,9 @@ export default {
     <gl-alert v-if="error" variant="danger" @dismiss="error = null">
       {{ error }}
     </gl-alert>
-    <gl-loading-icon v-if="isLoading" size="lg" class="gl-absolute gl-top-half gl-w-full" />
+    <div v-if="isLoading" :style="style" data-testid="loading-container">
+      <gl-loading-icon size="lg" class="gl-relative gl-top-half gl-w-full" />
+    </div>
     <div
       id="zuora_payment"
       :style="iFrameStyle"
