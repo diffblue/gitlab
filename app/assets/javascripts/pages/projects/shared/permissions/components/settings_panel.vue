@@ -41,6 +41,7 @@ export default {
     featureFlagsHelpText: s__(
       'ProjectSettings|Roll out new features without redeploying with feature flags.',
     ),
+    monitorLabel: s__('ProjectSettings|Monitor'),
     packagesHelpText: s__(
       'ProjectSettings|Every project can have its own space to store its packages. Note: The Package Registry is always visible when a project is public.',
     ),
@@ -245,6 +246,7 @@ export default {
       environmentsAccessLevel: featureAccessLevel.EVERYONE,
       featureFlagsAccessLevel: featureAccessLevel.PROJECT_MEMBERS,
       releasesAccessLevel: featureAccessLevel.EVERYONE,
+      monitorAccessLevel: featureAccessLevel.EVERYONE,
       containerRegistryAccessLevel: featureAccessLevel.EVERYONE,
       warnAboutPotentiallyUnwantedCharacters: true,
       lfsEnabled: true,
@@ -274,12 +276,6 @@ export default {
     repoFeatureAccessLevelOptions() {
       return this.featureAccessLevelOptions.filter(
         ([value]) => value <= this.repositoryAccessLevel,
-      );
-    },
-
-    operationsFeatureAccessLevelOptions() {
-      return this.featureAccessLevelOptions.filter(
-        ([value]) => value <= this.operationsAccessLevel,
       );
     },
 
@@ -322,6 +318,10 @@ export default {
       return this.environmentsAccessLevel > featureAccessLevel.NOT_ENABLED;
     },
 
+    monitorEnabled() {
+      return this.monitorAccessLevel > featureAccessLevel.NOT_ENABLED;
+    },
+
     repositoryEnabled() {
       return this.repositoryAccessLevel > featureAccessLevel.NOT_ENABLED;
     },
@@ -360,6 +360,14 @@ export default {
     },
     splitOperationsEnabled() {
       return this.glFeatures.splitOperationsVisibilityPermissions;
+    },
+    monitorOperationsFeatureAccessLevelOptions() {
+      if (this.splitOperationsEnabled) {
+        return this.featureAccessLevelOptions.filter(([value]) => value <= this.monitorAccessLevel);
+      }
+      return this.featureAccessLevelOptions.filter(
+        ([value]) => value <= this.operationsAccessLevel,
+      );
     },
   },
 
@@ -429,6 +437,10 @@ export default {
           featureAccessLevel.PROJECT_MEMBERS,
           this.releasesAccessLevel,
         );
+        this.monitorAccessLevel = Math.min(
+          featureAccessLevel.PROJECT_MEMBERS,
+          this.monitorAccessLevel,
+        );
         this.containerRegistryAccessLevel = Math.min(
           featureAccessLevel.PROJECT_MEMBERS,
           this.containerRegistryAccessLevel,
@@ -472,6 +484,8 @@ export default {
           this.operationsAccessLevel = featureAccessLevel.EVERYONE;
         if (this.environmentsAccessLevel === featureAccessLevel.PROJECT_MEMBERS)
           this.environmentsAccessLevel = featureAccessLevel.EVERYONE;
+        if (this.monitorAccessLevel === featureAccessLevel.PROJECT_MEMBERS)
+          this.monitorAccessLevel = featureAccessLevel.EVERYONE;
         if (this.containerRegistryAccessLevel === featureAccessLevel.PROJECT_MEMBERS)
           this.containerRegistryAccessLevel = featureAccessLevel.EVERYONE;
 
@@ -507,6 +521,16 @@ export default {
     },
 
     operationsAccessLevel(value, oldValue) {
+      this.updateSubFeatureAccessLevel(value, oldValue);
+    },
+
+    monitorAccessLevel(value, oldValue) {
+      this.updateSubFeatureAccessLevel(value, oldValue);
+    },
+  },
+
+  methods: {
+    updateSubFeatureAccessLevel(value, oldValue) {
       if (value < oldValue) {
         // sub-features cannot have more permissive access level
         this.metricsDashboardAccessLevel = Math.min(this.metricsDashboardAccessLevel, value);
@@ -514,9 +538,7 @@ export default {
         this.metricsDashboardAccessLevel = value;
       }
     },
-  },
 
-  methods: {
     highlightChanges() {
       this.highlightChangesClass = true;
       this.$nextTick(() => {
@@ -887,6 +909,22 @@ export default {
         />
       </project-setting-row>
       <project-setting-row
+        v-if="splitOperationsEnabled"
+        ref="monitor-settings"
+        :label="$options.i18n.monitorLabel"
+        :help-text="
+          s__('ProjectSettings|Configure your project resources and monitor their health.')
+        "
+      >
+        <project-feature-setting
+          v-model="monitorAccessLevel"
+          :label="$options.i18n.monitorLabel"
+          :options="featureAccessLevelOptions"
+          name="project[project_feature_attributes][monitor_access_level]"
+        />
+      </project-setting-row>
+      <project-setting-row
+        v-else
         ref="operations-settings"
         :label="$options.i18n.operationsLabel"
         :help-text="
@@ -909,7 +947,7 @@ export default {
           <project-feature-setting
             v-model="metricsDashboardAccessLevel"
             :show-toggle="false"
-            :options="operationsFeatureAccessLevelOptions"
+            :options="monitorOperationsFeatureAccessLevelOptions"
             name="project[project_feature_attributes][metrics_dashboard_access_level]"
           />
         </project-setting-row>

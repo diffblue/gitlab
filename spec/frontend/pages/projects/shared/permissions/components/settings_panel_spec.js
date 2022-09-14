@@ -138,6 +138,7 @@ describe('Settings Panel', () => {
   const findEnvironmentsSettings = () => wrapper.findComponent({ ref: 'environments-settings' });
   const findFeatureFlagsSettings = () => wrapper.findComponent({ ref: 'feature-flags-settings' });
   const findReleasesSettings = () => wrapper.findComponent({ ref: 'environments-settings' });
+  const findMonitorSettings = () => wrapper.findComponent({ ref: 'monitor-settings' });
 
   afterEach(() => {
     wrapper.destroy();
@@ -840,7 +841,6 @@ describe('Settings Panel', () => {
       });
     });
   });
-
   describe('Releases', () => {
     describe('with feature flag', () => {
       it('should show the releases toggle', () => {
@@ -856,6 +856,44 @@ describe('Settings Panel', () => {
         wrapper = mountComponent({});
 
         expect(findReleasesSettings().exists()).toBe(false);
+      });
+    });
+  });
+  describe('Monitor', () => {
+    const expectedAccessLevel = [
+      [10, 'Only Project Members'],
+      [20, 'Everyone With Access'],
+    ];
+    describe('with feature flag', () => {
+      it('shows Monitor toggle instead of Operations toggle', () => {
+        wrapper = mountComponent({
+          glFeatures: { splitOperationsVisibilityPermissions: true },
+        });
+
+        expect(findMonitorSettings().exists()).toBe(true);
+        expect(findOperationsSettings().exists()).toBe(false);
+        expect(findMonitorSettings().findComponent(ProjectFeatureSetting).props('options')).toEqual(
+          expectedAccessLevel,
+        );
+      });
+      it('when monitorAccessLevel is for project members, it is also for everyone', () => {
+        wrapper = mountComponent({
+          glFeatures: { splitOperationsVisibilityPermissions: true },
+          currentSettings: { monitorAccessLevel: featureAccessLevel.PROJECT_MEMBERS },
+        });
+
+        expect(findMetricsVisibilityInput().props('value')).toBe(featureAccessLevel.EVERYONE);
+      });
+    });
+    describe('without feature flag', () => {
+      it('shows Operations toggle instead of Monitor toggle', () => {
+        wrapper = mountComponent({});
+
+        expect(findMonitorSettings().exists()).toBe(false);
+        expect(findOperationsSettings().exists()).toBe(true);
+        expect(
+          findOperationsSettings().findComponent(ProjectFeatureSetting).props('options'),
+        ).toEqual(expectedAccessLevel);
       });
     });
   });
