@@ -61,8 +61,6 @@ module Projects
     # bot_access_token. Any SlackIntegration records for the Slack Workspace will already have the same
     # bot_access_token.
     def update_legacy_installations!(installation)
-      return if Feature.disabled?(:update_legacy_slack_installations, project)
-
       updatable_attributes = installation.attributes.slice(
         'user_id',
         'bot_user_id',
