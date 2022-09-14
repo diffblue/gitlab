@@ -145,7 +145,6 @@ export default {
       class="gl-display-flex gl-sm-display-inline-flex gl-sm-ml-auto lh-100 gl-vertical-align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
     >
       <div
-        v-if="parentItem.userPermissions.adminEpic"
         class="gl-flex-grow-1 gl-flex-direction-column gl-sm-flex-direction-row js-button-container"
       >
         <epic-actions-split-button

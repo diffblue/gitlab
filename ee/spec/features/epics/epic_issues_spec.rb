@@ -59,10 +59,6 @@ RSpec.describe 'Epic Issues', :js do
     it 'user cannot add new issues to the epic' do
       expect(page).not_to have_selector('.related-items-tree-container .js-issue-actions-split-button > button:first-child')
     end
-
-    it 'user cannot add new epics to the epic' do
-      expect(page).not_to have_selector('.related-items-tree-container .js-add-epics-issues-button')
-    end
   end
 
   context 'when user is a group member' do
