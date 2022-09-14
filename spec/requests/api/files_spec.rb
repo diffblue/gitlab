@@ -175,20 +175,22 @@ RSpec.describe API::Files do
       end
     end
 
-    context 'when unauthenticated', 'and project is public' do
-      it_behaves_like 'repository files' do
-        let(:project) { create(:project, :public, :repository) }
-        let(:current_user) { nil }
+    context 'when unauthenticated' do
+      context 'and project is public' do
+        it_behaves_like 'repository files' do
+          let(:project) { create(:project, :public, :repository) }
+          let(:current_user) { nil }
+        end
       end
-    end
 
-    context 'when unauthenticated', 'and project is private' do
-      it 'responds with a 404 status' do
-        current_user = nil
+      context 'and project is private' do
+        it 'responds with a 404 status' do
+          current_user = nil
 
-        head api(route(file_path), current_user), params: params
+          head api(route(file_path), current_user), params: params
 
-        expect(response).to have_gitlab_http_status(:not_found)
+          expect(response).to have_gitlab_http_status(:not_found)
+        end
       end
     end
 
@@ -200,15 +202,17 @@ RSpec.describe API::Files do
       end
     end
 
-    context 'when authenticated', 'as a developer' do
-      it_behaves_like 'repository files' do
-        let(:current_user) { user }
+    context 'when authenticated' do
+      context 'and user is a developer' do
+        it_behaves_like 'repository files' do
+          let(:current_user) { user }
+        end
       end
-    end
 
-    context 'when authenticated', 'as a guest' do
-      it_behaves_like '403 response' do
-        let(:request) { head api(route(file_path), guest), params: params }
+      context 'and user is a guest' do
+        it_behaves_like '403 response' do
+          let(:request) { head api(route(file_path), guest), params: params }
+        end
       end
     end
   end
@@ -365,73 +369,77 @@ RSpec.describe API::Files do
       end
     end
 
-    context 'when authenticated', 'as a direct project member' do
-      context 'and project is private' do
-        context 'and user is a developer' do
-          it_behaves_like 'repository files' do
-            let(:current_user) { user }
-            let(:api_user) { user }
-          end
-
-          context 'and PATs are used' do
+    context 'when authenticated' do
+      context 'and user is a direct project member' do
+        context 'and project is private' do
+          context 'and user is a developer' do
             it_behaves_like 'repository files' do
-              let(:token) { create(:personal_access_token, scopes: ['read_repository'], user: user) }
               let(:current_user) { user }
-              let(:api_user) { nil }
-              let(:options) { { personal_access_token: token } }
+              let(:api_user) { user }
+            end
+
+            context 'and PATs are used' do
+              it_behaves_like 'repository files' do
+                let(:token) { create(:personal_access_token, scopes: ['read_repository'], user: user) }
+                let(:current_user) { user }
+                let(:api_user) { nil }
+                let(:options) { { personal_access_token: token } }
+              end
             end
           end
-        end
 
-        context 'and user is a guest' do
-          it_behaves_like '403 response' do
-            let(:request) { get api(route(file_path), guest), params: params }
+          context 'and user is a guest' do
+            it_behaves_like '403 response' do
+              let(:request) { get api(route(file_path), guest), params: params }
+            end
           end
         end
       end
     end
 
-    context 'when authenticated', 'as an inherited member from the group' do
-      context 'when project is public with private repository' do
-        let_it_be(:project) { create(:project, :public, :repository, :repository_private, group: group) }
+    context 'when authenticated' do
+      context 'and user is an inherited member from the group' do
+        context 'when project is public with private repository' do
+          let_it_be(:project) { create(:project, :public, :repository, :repository_private, group: group) }
 
-        context 'and user is a guest' do
-          it_behaves_like 'returns non-executable file attributes as json' do
-            let(:api_user) { inherited_guest }
+          context 'and user is a guest' do
+            it_behaves_like 'returns non-executable file attributes as json' do
+              let(:api_user) { inherited_guest }
+            end
+          end
+
+          context 'and user is a reporter' do
+            it_behaves_like 'returns non-executable file attributes as json' do
+              let(:api_user) { inherited_reporter }
+            end
+          end
+
+          context 'and user is a developer' do
+            it_behaves_like 'returns non-executable file attributes as json' do
+              let(:api_user) { inherited_developer }
+            end
           end
         end
 
-        context 'and user is a reporter' do
-          it_behaves_like 'returns non-executable file attributes as json' do
-            let(:api_user) { inherited_reporter }
+        context 'when project is private' do
+          let_it_be(:project) { create(:project, :private, :repository, group: group) }
+
+          context 'and user is a guest' do
+            it_behaves_like '403 response' do
+              let(:request) { get api(route(file_path), inherited_guest), params: params }
+            end
           end
-        end
 
-        context 'and user is a developer' do
-          it_behaves_like 'returns non-executable file attributes as json' do
-            let(:api_user) { inherited_developer }
+          context 'and user is a reporter' do
+            it_behaves_like 'returns non-executable file attributes as json' do
+              let(:api_user) { inherited_reporter }
+            end
           end
-        end
-      end
 
-      context 'when project is private' do
-        let_it_be(:project) { create(:project, :private, :repository, group: group) }
-
-        context 'and user is a guest' do
-          it_behaves_like '403 response' do
-            let(:request) { get api(route(file_path), inherited_guest), params: params }
-          end
-        end
-
-        context 'and user is a reporter' do
-          it_behaves_like 'returns non-executable file attributes as json' do
-            let(:api_user) { inherited_reporter }
-          end
-        end
-
-        context 'and user is a developer' do
-          it_behaves_like 'returns non-executable file attributes as json' do
-            let(:api_user) { inherited_developer }
+          context 'and user is a developer' do
+            it_behaves_like 'returns non-executable file attributes as json' do
+              let(:api_user) { inherited_developer }
+            end
           end
         end
       end
@@ -638,29 +646,33 @@ RSpec.describe API::Files do
       end
     end
 
-    context 'when unauthenticated', 'and project is public' do
-      it_behaves_like 'repository blame files' do
-        let(:project) { create(:project, :public, :repository) }
-        let(:current_user) { nil }
+    context 'when unauthenticated' do
+      context 'and project is public' do
+        it_behaves_like 'repository blame files' do
+          let(:project) { create(:project, :public, :repository) }
+          let(:current_user) { nil }
+        end
+      end
+
+      context 'and project is private' do
+        it_behaves_like '404 response' do
+          let(:request) { get api(route(file_path)), params: params }
+          let(:message) { '404 Project Not Found' }
+        end
       end
     end
 
-    context 'when unauthenticated', 'and project is private' do
-      it_behaves_like '404 response' do
-        let(:request) { get api(route(file_path)), params: params }
-        let(:message) { '404 Project Not Found' }
+    context 'when authenticated' do
+      context 'and user is a developer' do
+        it_behaves_like 'repository blame files' do
+          let(:current_user) { user }
+        end
       end
-    end
 
-    context 'when authenticated', 'as a developer' do
-      it_behaves_like 'repository blame files' do
-        let(:current_user) { user }
-      end
-    end
-
-    context 'when authenticated', 'as a guest' do
-      it_behaves_like '403 response' do
-        let(:request) { get api(route(file_path) + '/blame', guest), params: params }
+      context 'and user is a guest' do
+        it_behaves_like '403 response' do
+          let(:request) { get api(route(file_path) + '/blame', guest), params: params }
+        end
       end
     end
 
@@ -758,29 +770,33 @@ RSpec.describe API::Files do
       end
     end
 
-    context 'when unauthenticated', 'and project is public' do
-      it_behaves_like 'repository raw files' do
-        let(:project) { create(:project, :public, :repository) }
-        let(:current_user) { nil }
+    context 'when unauthenticated' do
+      context 'and project is public' do
+        it_behaves_like 'repository raw files' do
+          let(:project) { create(:project, :public, :repository) }
+          let(:current_user) { nil }
+        end
+      end
+
+      context 'and project is private' do
+        it_behaves_like '404 response' do
+          let(:request) { get api(route(file_path)), params: params }
+          let(:message) { '404 Project Not Found' }
+        end
       end
     end
 
-    context 'when unauthenticated', 'and project is private' do
-      it_behaves_like '404 response' do
-        let(:request) { get api(route(file_path)), params: params }
-        let(:message) { '404 Project Not Found' }
+    context 'when authenticated' do
+      context 'and user is a developer' do
+        it_behaves_like 'repository raw files' do
+          let(:current_user) { user }
+        end
       end
-    end
 
-    context 'when authenticated', 'as a developer' do
-      it_behaves_like 'repository raw files' do
-        let(:current_user) { user }
-      end
-    end
-
-    context 'when authenticated', 'as a guest' do
-      it_behaves_like '403 response' do
-        let(:request) { get api(route(file_path), guest), params: params }
+      context 'and user is a guest' do
+        it_behaves_like '403 response' do
+          let(:request) { get api(route(file_path), guest), params: params }
+        end
       end
     end
 
@@ -938,47 +954,49 @@ RSpec.describe API::Files do
       end
     end
 
-    context 'when authenticated', 'as an inherited member from the group' do
-      context 'and project is public with private repository' do
-        let_it_be(:project) { create(:project, :public, :repository, :repository_private, group: group) }
+    context 'when authenticated' do
+      context 'and user is an inherited member from the group' do
+        context 'when project is public with private repository' do
+          let_it_be(:project) { create(:project, :public, :repository, :repository_private, group: group) }
 
-        context 'and user is a guest' do
-          it_behaves_like '403 response' do
-            let(:request) { post api(route(file_path), inherited_guest), params: params }
+          context 'and user is a guest' do
+            it_behaves_like '403 response' do
+              let(:request) { post api(route(file_path), inherited_guest), params: params }
+            end
+          end
+
+          context 'and user is a reporter' do
+            it_behaves_like '403 response' do
+              let(:request) { post api(route(file_path), inherited_reporter), params: params }
+            end
+          end
+
+          context 'and user is a developer' do
+            it_behaves_like 'creates a new file in the project repo' do
+              let(:current_user) { inherited_developer }
+            end
           end
         end
 
-        context 'and user is a reporter' do
-          it_behaves_like '403 response' do
-            let(:request) { post api(route(file_path), inherited_reporter), params: params }
+        context 'when project is private' do
+          let_it_be(:project) { create(:project, :private, :repository, group: group) }
+
+          context 'and user is a guest' do
+            it_behaves_like '403 response' do
+              let(:request) { post api(route(file_path), inherited_guest), params: params }
+            end
           end
-        end
 
-        context 'and user is a developer' do
-          it_behaves_like 'creates a new file in the project repo' do
-            let(:current_user) { inherited_developer }
+          context 'and user is a reporter' do
+            it_behaves_like '403 response' do
+              let(:request) { post api(route(file_path), inherited_reporter), params: params }
+            end
           end
-        end
-      end
 
-      context 'and project is private' do
-        let_it_be(:project) { create(:project, :private, :repository, group: group) }
-
-        context 'and user is a guest' do
-          it_behaves_like '403 response' do
-            let(:request) { post api(route(file_path), inherited_guest), params: params }
-          end
-        end
-
-        context 'and user is a reporter' do
-          it_behaves_like '403 response' do
-            let(:request) { post api(route(file_path), inherited_reporter), params: params }
-          end
-        end
-
-        context 'and user is a developer' do
-          it_behaves_like 'creates a new file in the project repo' do
-            let(:current_user) { inherited_developer }
+          context 'and user is a developer' do
+            it_behaves_like 'creates a new file in the project repo' do
+              let(:current_user) { inherited_developer }
+            end
           end
         end
       end

@@ -89,7 +89,7 @@ RSpec.describe 'User creates branch', :js do
             click_button('Create branch')
 
             expect(page).to have_content('Branch name is invalid')
-            expect(page).to have_content('can\'t contain spaces')
+            expect(page).to have_content("can't contain spaces")
           end
         end
 
