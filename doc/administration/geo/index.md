@@ -158,7 +158,7 @@ public URL of the primary site is used.
 
 To update the internal URL of the primary Geo site:
 
-1. On the top bar, go to **Menu > Admin > Geo > Sites**.
+1. On the top bar, select **Main menu > Admin > Geo > Sites**.
 1. Select **Edit** on the primary site.
 1. Change the **Internal URL**, then select **Save changes**.
 
