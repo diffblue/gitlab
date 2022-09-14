@@ -970,14 +970,17 @@ RSpec.describe API::Groups do
       end
     end
 
-    shared_examples_for 'returns error and responds with group already marked for deletion message' do
+    shared_examples_for 'marks group for delayed deletion' do
       specify do
         Sidekiq::Testing.fake! do
           expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
         end
 
-        expect(response).to have_gitlab_http_status(:bad_request)
-        expect(json_response['message']).to eq("Group has been already marked for deletion")
+        group.reload
+
+        expect(response).to have_gitlab_http_status(:accepted)
+        expect(group.marked_for_deletion_on).to eq(Date.current)
+        expect(group.deleting_user).to eq(user)
       end
     end
 
@@ -992,18 +995,7 @@ RSpec.describe API::Groups do
         end
 
         context 'success' do
-          it 'marks the group for delayed deletion' do
-            subject
-            group.reload
-
-            expect(response).to have_gitlab_http_status(:accepted)
-            expect(group.marked_for_deletion_on).to eq(Date.current)
-            expect(group.deleting_user).to eq(user)
-          end
-
-          it 'does not immediately enqueue the job to delete the group' do
-            expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
-          end
+          it_behaves_like 'marks group for delayed deletion'
         end
 
         context 'when deletion adjourned period is 0' do
@@ -1027,10 +1019,6 @@ RSpec.describe API::Groups do
 
               subject { delete api("/groups/#{subgroup.id}", user), params: params }
 
-              before do
-                stub_feature_flags(immediate_delete_subgroup_api: group)
-              end
-
               context 'when group is already marked for deletion' do
                 before do
                   create(:group_deletion_schedule, group: subgroup, marked_for_deletion_on: Date.current)
@@ -1038,14 +1026,14 @@ RSpec.describe API::Groups do
 
                 context 'when full_path param is not passed' do
                   it_behaves_like 'does not immediately enqueues the job to delete the group',
-                                  'full_path value is incorrect. You must enter the complete path for the subgroup.'
+                                  '`full_path` is incorrect. You must enter the complete path for the subgroup.'
                 end
 
                 context 'when full_path param is not equal to full_path' do
                   let(:params) { { permanently_remove: true, full_path: subgroup.path } }
 
                   it_behaves_like 'does not immediately enqueues the job to delete the group',
-                                  'full_path value is incorrect. You must enter the complete path for the subgroup.'
+                                  '`full_path` is incorrect. You must enter the complete path for the subgroup.'
                 end
 
                 context 'when the full_path param is passed and it matches the full path of subgroup' do
@@ -1060,7 +1048,7 @@ RSpec.describe API::Groups do
                       stub_feature_flags(immediate_delete_subgroup_api: false, thing: group)
                     end
 
-                    it_behaves_like 'returns error and responds with group already marked for deletion message'
+                    it_behaves_like 'does not immediately enqueues the job to delete the group', 'Group has been already marked for deletion'
                   end
                 end
               end
@@ -1079,35 +1067,15 @@ RSpec.describe API::Groups do
 
           context 'if permanently_remove is not true' do
             context 'when it is false' do
-              it 'marks the group for delayed deletion' do
-                subject
-                group.reload
+              let(:params) { { permanently_remove: false } }
 
-                expect(response).to have_gitlab_http_status(:accepted)
-                expect(group.marked_for_deletion_on).to eq(Date.current)
-                expect(group.deleting_user).to eq(user)
-              end
-
-              it 'does not immediately enqueue the job to delete the group' do
-                expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
-              end
+              it_behaves_like 'marks group for delayed deletion'
             end
 
             context 'when it is non boolean' do
               let(:params) { { permanently_remove: 'something_random' } }
 
-              it 'marks the group for delayed deletion' do
-                subject
-                group.reload
-
-                expect(response).to have_gitlab_http_status(:accepted)
-                expect(group.marked_for_deletion_on).to eq(Date.current)
-                expect(group.deleting_user).to eq(user)
-              end
-
-              it 'does not immediately enqueue the job to delete the group' do
-                expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
-              end
+              it_behaves_like 'marks group for delayed deletion'
             end
           end
         end
