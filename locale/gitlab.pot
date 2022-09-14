@@ -6707,6 +6707,9 @@ msgstr ""
 msgid "Bold text"
 msgstr ""
 
+msgid "Bot"
+msgstr ""
+
 msgid "Both SSH and HTTP(S)"
 msgstr ""
 
