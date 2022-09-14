@@ -123,7 +123,8 @@ rubocop:
       if [ -z "${CI_MERGE_REQUEST_IID}" ] || [ "${RUN_ALL_RUBOCOP}" == "true" ]; then
         run_timed_command "bundle exec rubocop --parallel"
       else
-        run_timed_command "bundle exec rubocop --parallel --force-exclusion $(cat ${RSPEC_CHANGED_FILES_PATH})"
+        cat ${RSPEC_CHANGED_FILES_PATH} | ruby -e 'puts $stdin.read.split(" ").select { |f| File.exist?(f) }.join(" ")' > tmp/rubocop_target_files.txt
+        run_timed_command "bundle exec rubocop --parallel --force-exclusion $(cat tmp/rubocop_target_files.txt)"
       fi
 
 qa:metadata-lint:
