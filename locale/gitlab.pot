@@ -44104,6 +44104,9 @@ msgstr ""
 msgid "Vulnerability|Project"
 msgstr ""
 
+msgid "Vulnerability|Project:"
+msgstr ""
+
 msgid "Vulnerability|Remove identifier row"
 msgstr ""
 
@@ -44129,6 +44132,9 @@ msgid "Vulnerability|Set the status of the vulnerability finding based on the in
 msgstr ""
 
 msgid "Vulnerability|Severity"
+msgstr ""
+
+msgid "Vulnerability|Severity:"
 msgstr ""
 
 msgid "Vulnerability|Status"
