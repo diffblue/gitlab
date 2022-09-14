@@ -118,7 +118,7 @@ https://gitlab.example.com/<project_path>/-/raw/<default_branch>/my-image.svg
 
 To add a new badge to a group or project with a custom image:
 
-1. On the top bar, select **Menu** and find your group or project.
+1. On the top bar, select **Main menu** and find your group or project.
 1. On the left sidebar, select **Settings > General**.
 1. Expand **Badges**.
 1. Under **Name**, enter the name for the badge.
