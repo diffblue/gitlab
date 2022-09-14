@@ -215,6 +215,7 @@ module GitlabSubscriptions
       ssh_key_expiration_policy
       stale_runner_cleanup_for_namespace
       status_page
+      suggested_reviewers
       subepics
       unique_project_download_limit
       vulnerability_auto_fix
