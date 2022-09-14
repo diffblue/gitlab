@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe FinalizeMemberNamespaceIdNullCleanup, :migration do
+RSpec.describe FinalizeInvalidProjectMemberCleanup, :migration do
   let(:batched_migrations) { table(:batched_background_migrations) }
 
   let_it_be(:migration) { described_class::MIGRATION }
@@ -12,7 +12,7 @@ RSpec.describe FinalizeMemberNamespaceIdNullCleanup, :migration do
     shared_examples 'finalizes the migration' do
       it 'finalizes the migration' do
         allow_next_instance_of(Gitlab::Database::BackgroundMigration::BatchedMigrationRunner) do |runner|
-          expect(runner).to receive(:finalize).with('DestroyInvalidGroupMembers', :members, :member_namespace_id, [])
+          expect(runner).to receive(:finalize).with('DestroyInvalidProjectMembers', :members, :member_namespace_id, [])
         end
       end
     end
@@ -29,7 +29,7 @@ RSpec.describe FinalizeMemberNamespaceIdNullCleanup, :migration do
     context 'with migration present' do
       let!(:member_namespace_id_backfill) do
         batched_migrations.create!(
-          job_class_name: 'DestroyInvalidGroupMembers',
+          job_class_name: 'DestroyInvalidProjectMembers',
           table_name: :members,
           column_name: :member_namespace_id,
           job_arguments: [],

@@ -3,12 +3,12 @@
 # See https://docs.gitlab.com/ee/development/migration_style_guide.html
 # for more information on how to write migrations for GitLab.
 
-class FinalizeMemberNamespaceIdNullCleanup < Gitlab::Database::Migration[2.0]
+class FinalizeInvalidProjectMemberCleanup < Gitlab::Database::Migration[2.0]
   disable_ddl_transaction!
 
   restrict_gitlab_migration gitlab_schema: :gitlab_main
 
-  MIGRATION = 'DestroyInvalidGroupMembers'
+  MIGRATION = 'DestroyInvalidProjectMembers'
 
   def up
     ensure_batched_background_migration_is_finished(
