@@ -679,7 +679,7 @@ RSpec.describe GroupsController do
     end
 
     context 'when updating ip_restriction_ranges is specified' do
-      subject do
+      subject(:update_ip_ranges) do
         put :update, params: { id: group.to_param, group: { ip_restriction_ranges: ip_address } }
       end
 
@@ -697,7 +697,7 @@ RSpec.describe GroupsController do
         end
 
         it 'updates the attribute' do
-          subject
+          update_ip_ranges
 
           expect(response).to have_gitlab_http_status(:found)
           expect(group.reload.ip_restriction_ranges).to eq(ip_address)
@@ -710,7 +710,7 @@ RSpec.describe GroupsController do
         end
 
         it 'does not update the attribute' do
-          subject
+          update_ip_ranges
 
           expect(response).to have_gitlab_http_status(:found)
           expect(group.reload.ip_restriction_ranges).not_to eq(ip_address)
