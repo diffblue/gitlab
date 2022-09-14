@@ -6,6 +6,18 @@ RSpec.describe MergeRequestsFinder do
   describe '#execute' do
     include_context 'MergeRequestsFinder multiple projects with merge requests context'
 
+    let_it_be(:merged_merge_request) do
+      create(:merge_request, :simple, author: user, source_project: project4, target_project: project4,
+                                      state: :merged, merge_commit_sha: 'rurebf')
+    end
+
+    let_it_be(:approver) { create(:approver, target: merged_merge_request, user: user) }
+    let_it_be(:approver_rule) { create(:approval_merge_request_rule, merge_request: merged_merge_request) }
+
+    before do
+      approver_rule.users << user
+    end
+
     it 'ignores filtering by weight' do
       params = { project_id: project1.id, scope: 'authored', state: 'opened', weight: Issue::WEIGHT_ANY }
 
@@ -15,11 +27,6 @@ RSpec.describe MergeRequestsFinder do
     end
 
     context 'merge commit sha' do
-      let_it_be(:merged_merge_request) do
-        create(:merge_request, :simple, author: user, source_project: project4, target_project: project4,
-                                        state: :merged, merge_commit_sha: 'rurebf')
-      end
-
       it 'filters by merge commit sha' do
         merge_requests = described_class.new(
           user,
@@ -27,6 +34,46 @@ RSpec.describe MergeRequestsFinder do
         ).execute
 
         expect(merge_requests).to contain_exactly(merged_merge_request)
+      end
+    end
+
+    context 'filtering by approver usernames' do
+      let(:params) { { approver_usernames: user.username, sort: 'milestone' } }
+
+      it 'returns merge requests that have user as an approver' do
+        merge_requests = described_class.new(user, params).execute
+
+        expect(merge_requests).to contain_exactly(merged_merge_request)
+      end
+
+      context 'with nil values' do
+        let(:params) { { approver_usernames: nil } }
+
+        it 'returns same set of merge requests without approvers' do
+          merge_requests = described_class.new(user, {}).execute
+
+          expect(described_class.new(user, params).execute).to eq(merge_requests)
+        end
+      end
+    end
+
+    context 'filtering by approver user IDs' do
+      let(:params) { { approver_ids: user.id, sort: 'milestone' } }
+
+      it 'returns merge requests that have user as an approver' do
+        merge_requests = described_class.new(user, params).execute
+
+        expect(merge_requests).to contain_exactly(merged_merge_request)
+      end
+
+      context 'with nil values' do
+        let(:params) { { approver_ids: nil } }
+
+        it 'returns same set of merge requests without approvers' do
+          merge_requests = described_class.new(user, {}).execute
+
+          expect(described_class.new(user, params).execute).to eq(merge_requests)
+        end
       end
     end
 

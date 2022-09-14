@@ -25,6 +25,13 @@ module EE
       items.by_merge_commit_sha(params[:merge_commit_sha])
     end
 
+    override :use_grouping_columns?
+    def use_grouping_columns?
+      return false unless params[:sort].present?
+
+      super || params[:approver_usernames].present? || params[:approver_ids].present?
+    end
+
     class_methods do
       extend ::Gitlab::Utils::Override
 
