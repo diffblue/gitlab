@@ -4,7 +4,7 @@ import { CRON_DEFAULT_TIME } from './cron';
 export function buildDefaultPipeLineRule() {
   return {
     type: SCAN_EXECUTION_PIPELINE_RULE,
-    branches: [],
+    branches: ['*'],
   };
 }
 
