@@ -36,12 +36,38 @@ module EE
         field :approval_state, ::Types::MergeRequests::ApprovalStateType,
           null: false,
           description: 'Information relating to rules that must be satisfied to merge this merge request.'
+
+        field :suggested_reviewers, ::Types::AppliedMl::SuggestedReviewersType,
+          null: true,
+          alpha: { milestone: '15.4' },
+          description: 'Suggested reviewers for merge request.' \
+                       ' Returns `null` if `suggested_reviewers` feature flag is disabled.' \
+                       ' This flag is disabled by default and only available on GitLab.com' \
+                       ' because the feature is experimental and is subject to change without notice.'
       end
 
       def merge_trains_count
         return unless object.target_project.merge_trains_enabled?
 
         MergeTrain.total_count_in_train(object)
+      end
+
+      def suggested_reviewers
+        return unless ::Gitlab.com?
+        return unless ::Feature.enabled?(:suggested_reviewers, object.project)
+        return unless suggested_reviewers_licensed_feature_available?
+
+        {
+          version: '0.0.0',
+          top_n: 1,
+          reviewers: ['root']
+        }
+      end
+
+      private
+
+      def suggested_reviewers_licensed_feature_available?
+        object.project.licensed_feature_available?(:suggested_reviewers)
       end
     end
   end
