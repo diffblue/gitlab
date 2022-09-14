@@ -3,6 +3,6 @@ description: Event triggered on successful merge request deletion
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/370487
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96773
 group: "group::project management"
-milestone: 15.4
+milestone: "15.4"
 saved_to_database: false
 streamed: true
