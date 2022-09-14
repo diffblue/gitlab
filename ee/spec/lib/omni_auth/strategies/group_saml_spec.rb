@@ -64,11 +64,12 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
         expect(options['idp_cert_fingerprint']).to eq fingerprint
       end
 
-      it 'redirects to failure endpoint when SAML is disabled for the group' do
+      it 'returns 404 when SAML is disabled for the group' do
         saml_provider.update!(enabled: false)
-        post "/groups/my-group/-/saml/callback", SAMLResponse: saml_response
-        expect(last_response.status).to eq(302)
-        expect(last_response.location).to eq("/users/auth/failure?message=my-group&strategy=group_saml")
+
+        expect do
+          post "/groups/my-group/-/saml/callback", SAMLResponse: saml_response
+        end.to raise_error(ActionController::RoutingError)
       end
 
       context 'user is testing SAML response' do
@@ -106,10 +107,10 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
       end
     end
 
-    it 'redirects to failure endpoint when the group is not found' do
-      post "/groups/not-a-group/-/saml/callback", SAMLResponse: saml_response
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=not-a-group&strategy=group_saml")
+    it 'returns 404 when the group is not found' do
+      expect do
+        post "/groups/not-a-group/-/saml/callback", SAMLResponse: saml_response
+      end.to raise_error(ActionController::RoutingError)
     end
 
     context 'Group SAML not licensed for group' do
@@ -117,10 +118,10 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
         stub_licensed_features(group_saml: false)
       end
 
-      it 'redirects to failure endpoint' do
-        post "/groups/my-group/-/saml/callback", SAMLResponse: saml_response
-        expect(last_response.status).to eq(302)
-        expect(last_response.location).to eq("/users/auth/failure?message=my-group&strategy=group_saml")
+      it 'returns 404' do
+        expect do
+          post "/groups/my-group/-/saml/callback", SAMLResponse: saml_response
+        end.to raise_error(ActionController::RoutingError)
       end
     end
   end
@@ -133,22 +134,22 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
       expect(last_response.location).to match(/\A#{Regexp.quote(idp_sso_url)}/)
     end
 
-    it 'redirects to failure endpoint for groups without SAML configured' do
-      post '/users/auth/group_saml', group_path: 'unconfigured-group'
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=unconfigured-group&strategy=group_saml")
+    it 'returns 404 for groups without SAML configured' do
+      expect do
+        post '/users/auth/group_saml', group_path: 'unconfigured-group'
+      end.to raise_error(ActionController::RoutingError)
     end
 
-    it 'redirects to the failure endpoint when the group is not found' do
-      post '/users/auth/group_saml', group_path: 'not-a-group'
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=not-a-group&strategy=group_saml")
+    it 'returns 404 when the group is not found' do
+      expect do
+        post '/users/auth/group_saml', group_path: 'not-a-group'
+      end.to raise_error(ActionController::RoutingError)
     end
 
-    it 'redirects to failure endpoint when missing group_path param' do
-      post '/users/auth/group_saml'
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=ActionController%3A%3ARoutingError&strategy=group_saml")
+    it 'returns 404 when missing group_path param' do
+      expect do
+        post '/users/auth/group_saml'
+      end.to raise_error(ActionController::RoutingError)
     end
 
     it "stores request ID during request phase" do
@@ -164,16 +165,16 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
   end
 
   describe 'POST /users/auth/group_saml/metadata' do
-    it 'redirects to the failure endpoint when the group is not found' do
-      post '/users/auth/group_saml/metadata', group_path: 'not-a-group'
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=not-a-group&strategy=group_saml")
+    it 'returns 404 when the group is not found' do
+      expect do
+        post '/users/auth/group_saml/metadata', group_path: 'not-a-group'
+      end.to raise_error(ActionController::RoutingError)
     end
 
-    it 'redirects to the failure endpoint with generic error to avoid disclosing group existence' do
-      post '/users/auth/group_saml/metadata', group_path: 'my-group'
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=my-group&strategy=group_saml")
+    it 'returns 404 to avoid disclosing group existence' do
+      expect do
+        post '/users/auth/group_saml/metadata', group_path: 'my-group'
+      end.to raise_error(ActionController::RoutingError)
     end
 
     it 'returns metadata when a valid token is provided' do
@@ -184,16 +185,16 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
       expect(last_response.header["Content-Type"]).to eq "application/xml"
     end
 
-    it 'redirects to failure endpoint when an invalid token is provided' do
-      post '/users/auth/group_saml/metadata', group_path: 'my-group', token: 'invalidtoken'
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=my-group&strategy=group_saml")
+    it 'returns 404 when an invalid token is provided' do
+      expect do
+        post '/users/auth/group_saml/metadata', group_path: 'my-group', token: 'invalidtoken'
+      end.to raise_error(ActionController::RoutingError)
     end
 
-    it 'redirects to failure endpoint when group is not found but a token is provided' do
-      post '/users/auth/group_saml/metadata', group_path: 'not-a-group', token: 'dummytoken'
-      expect(last_response.status).to eq(302)
-      expect(last_response.location).to eq("/users/auth/failure?message=not-a-group&strategy=group_saml")
+    it 'returns 404 when if group is not found but a token is provided' do
+      expect do
+        post '/users/auth/group_saml/metadata', group_path: 'not-a-group', token: 'dummytoken'
+      end.to raise_error(ActionController::RoutingError)
     end
 
     it 'sets omniauth setings from default settings' do
