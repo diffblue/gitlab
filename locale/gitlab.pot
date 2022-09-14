@@ -19337,6 +19337,9 @@ msgstr[1] ""
 msgid "HarborRegistry|-- artifacts"
 msgstr ""
 
+msgid "HarborRegistry|-- tags"
+msgstr ""
+
 msgid "HarborRegistry|Digest: %{imageId}"
 msgstr ""
 
