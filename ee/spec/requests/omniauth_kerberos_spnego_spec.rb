@@ -10,11 +10,8 @@ RSpec.describe 'OmniAuth Kerberos SPNEGO' do
     # In production user_kerberos_spnego_omniauth_callback_path is defined
     # dynamically early when the app boots. Because this is hard to set up
     # during testing we stub out this path helper on the controller.
-    omniauth_kerberos = OmniAuth::Strategies::KerberosSpnego.new(:app)
-    allow(omniauth_kerberos).to receive(:script_name).and_return('')
-    allow_any_instance_of(OmniAuth::Strategies::KerberosSpnego).to receive(:new).and_return(omniauth_kerberos)
     allow_any_instance_of(controller_class).to receive(:user_kerberos_spnego_omniauth_callback_path)
-      .and_return(omniauth_kerberos.callback_path)
+      .and_return(OmniAuth::Strategies::KerberosSpnego.new(:app).callback_path)
   end
 
   it 'asks for an SPNEGO token' do
