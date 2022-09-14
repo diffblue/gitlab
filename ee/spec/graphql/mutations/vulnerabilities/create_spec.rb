@@ -3,9 +3,9 @@ require 'spec_helper'
 
 RSpec.describe Mutations::Vulnerabilities::Create do
   include GraphqlHelpers
-  let_it_be(:user) { create(:user) }
+  let_it_be_with_reload(:project) { create(:project) }
+  let_it_be(:user) { create(:user).tap { |user| project.add_developer(user) } }
 
-  let(:project) { create(:project) }
   let(:mutated_vulnerability) { subject[:vulnerability] }
 
   before do
@@ -13,7 +13,7 @@ RSpec.describe Mutations::Vulnerabilities::Create do
   end
 
   describe '#resolve' do
-    using RSpec::Parameterized::TableSyntax
+    subject { resolve(described_class, args: attributes, ctx: { current_user: user }) }
 
     let(:identifier_attributes) do
       {
@@ -53,30 +53,7 @@ RSpec.describe Mutations::Vulnerabilities::Create do
       }
     end
 
-    context 'when a vulnerability with the same identifier already exists' do
-      subject { resolve(described_class, args: attributes, ctx: { current_user: user }) }
-
-      let(:project_gid) { GitlabSchema.id_from_object(project) }
-
-      before do
-        project.add_developer(user)
-        resolve(described_class, args: attributes, ctx: { current_user: user })
-      end
-
-      it 'returns the created vulnerability' do
-        expect(subject[:errors]).to contain_exactly("Vulnerability with those details already exists")
-      end
-    end
-
-    context 'with valid parameters' do
-      before do
-        project.add_developer(user)
-      end
-
-      subject { resolve(described_class, args: attributes, ctx: { current_user: user }) }
-
-      let(:project_gid) { GitlabSchema.id_from_object(project) }
-
+    shared_examples 'successfully created vulnerability' do
       it 'returns the created vulnerability' do
         expect(mutated_vulnerability).to be_detected
         expect(mutated_vulnerability.description).to eq(attributes.dig(:description))
@@ -85,6 +62,24 @@ RSpec.describe Mutations::Vulnerabilities::Create do
         expect(mutated_vulnerability.solution).to eq(attributes.dig(:solution))
         expect(subject[:errors]).to be_empty
       end
+    end
+
+    context 'when a vulnerability with the same identifier already exists' do
+      let(:project_gid) { GitlabSchema.id_from_object(project) }
+
+      before do
+        resolve(described_class, args: attributes, ctx: { current_user: user })
+      end
+
+      it_behaves_like 'successfully created vulnerability'
+    end
+
+    context 'with valid parameters' do
+      subject { resolve(described_class, args: attributes, ctx: { current_user: user }) }
+
+      let(:project_gid) { GitlabSchema.id_from_object(project) }
+
+      it_behaves_like 'successfully created vulnerability'
 
       context 'with custom state' do
         let(:custom_timestamp) { Time.new(2020, 6, 21, 14, 22, 20) }
@@ -132,6 +127,16 @@ RSpec.describe Mutations::Vulnerabilities::Create do
             expect(mutated_vulnerability.dismissed_by).to eq(dismissed_by)
 
             expect(subject[:errors]).to be_empty
+          end
+        end
+
+        context 'when user is not authorized to create vulnerabilities' do
+          let_it_be(:user) { create(:user).tap { |user| project.add_reporter(user) } }
+
+          it 'raises an error' do
+            expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
+              subject
+            end
           end
         end
       end
