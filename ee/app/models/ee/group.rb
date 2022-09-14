@@ -215,9 +215,7 @@ module EE
       def can_use_epics_filtering_optimization?(groups)
         return false unless groups.any?
 
-        group = groups.first
-
-        group.use_traversal_ids?
+        groups.first.use_traversal_ids?
       end
 
       private
