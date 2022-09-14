@@ -18060,7 +18060,8 @@ CREATE TABLE notes (
     resolved_by_push boolean,
     review_id bigint,
     confidential boolean,
-    last_edited_at timestamp with time zone
+    last_edited_at timestamp with time zone,
+    internal boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE notes_id_seq
