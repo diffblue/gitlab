@@ -40,10 +40,14 @@ RSpec.describe ExternalStatusChecks::DispatchService do
   private
 
   def stub_success
-    stub_request(:post, 'https://test.example.com/callback').to_return(status: 200, body: "", headers: {})
+    stub_request(:post, 'https://test.example.com/callback')
+      .with(headers: { 'Content-Type' => 'application/json' })
+      .to_return(status: 200, body: "", headers: {})
   end
 
   def stub_failure
-    stub_request(:post, 'https://test.example.com/callback').to_return(status: 500, body: "", headers: {})
+    stub_request(:post, 'https://test.example.com/callback')
+      .with(headers: { 'Content-Type' => 'application/json' })
+      .to_return(status: 500, body: "", headers: {})
   end
 end
