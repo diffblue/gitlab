@@ -1297,4 +1297,47 @@ RSpec.describe Issue do
       it { is_expected.to eq true }
     end
   end
+
+  describe '#exportable_association?' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be_with_reload(:issue) { create(:issue, project: project) }
+    let_it_be(:epic) { create(:epic, group: group) }
+    let_it_be(:epic_issue) { create(:epic_issue, issue: issue, epic: epic) }
+
+    let(:key) { :epic_issue }
+
+    subject { issue.exportable_association?(key, current_user: user) }
+
+    it { is_expected.to be_falsey }
+
+    context 'when epics are available' do
+      before do
+        stub_licensed_features(epics: true)
+      end
+
+      it { is_expected.to be_falsey }
+
+      context 'when user can read epic' do
+        before do
+          group.add_developer(user)
+        end
+
+        it { is_expected.to be_truthy }
+
+        context 'for an unknown key' do
+          let(:key) { :labels }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'for an unauthenticated user' do
+          let(:user) { nil }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+  end
 end
