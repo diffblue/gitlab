@@ -133,7 +133,7 @@ RSpec.describe 'Admin views Subscription', :js do
         within_modal do
           fill_activation_form
 
-          expect(page).to have_content('An error occurred while adding your subscription.')
+          expect(page).to have_content('An error occurred while adding your subscription')
         end
       end
 
@@ -144,7 +144,7 @@ RSpec.describe 'Admin views Subscription', :js do
         within_modal do
           fill_activation_form
 
-          expect(page).to have_content('Cannot activate instance due to a connectivity issue.')
+          expect(page).to have_content('Cannot activate instance due to a connectivity issue')
         end
       end
     end
@@ -184,7 +184,7 @@ RSpec.describe 'Admin views Subscription', :js do
       end
 
       it 'shows the general error message' do
-        expect(page).to have_content('An error occurred while adding your subscription.')
+        expect(page).to have_content('An error occurred while adding your subscription')
       end
     end
 
@@ -207,7 +207,7 @@ RSpec.describe 'Admin views Subscription', :js do
       end
 
       it 'shows the license expired error message' do
-        expect(page).to have_content('Your subscription is expired.')
+        expect(page).to have_content('Your subscription is expired')
       end
     end
 

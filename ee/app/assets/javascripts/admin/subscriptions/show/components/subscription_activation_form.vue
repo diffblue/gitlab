@@ -13,7 +13,7 @@ import { PROMO_URL } from 'jh_else_ce/lib/utils/url_utility';
 import {
   activateLabel,
   INVALID_CODE_ERROR,
-  INVALID_CODE_ERROR_MESSAGE,
+  INVALID_ACTIVATION_CODE_SERVER_ERROR,
   SUBSCRIPTION_ACTIVATION_FAILURE_EVENT,
   SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT,
   SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT,
@@ -113,7 +113,7 @@ export default {
             const errors = getErrorsAsData(res);
             if (errors.length) {
               const [error] = errors;
-              if (error.includes(INVALID_CODE_ERROR_MESSAGE)) {
+              if (error.includes(INVALID_ACTIVATION_CODE_SERVER_ERROR)) {
                 this.handleError(new Error(INVALID_CODE_ERROR));
                 return;
               }
