@@ -1,103 +1,87 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlBanner } from '@gitlab/ui';
-import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
-import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import SecurityTrainingPromoBanner from 'ee/security_dashboard/components/project/security_training_promo_banner.vue';
-import {
-  TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION,
-  TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
-} from '~/security_configuration/constants';
+import { stubComponent } from 'helpers/stub_component';
+import SecurityTrainingPromo from 'ee/vue_shared/security_reports/components/security_training_promo.vue';
+
+const dismissSpy = jest.fn();
+const trackCTAClickSpy = jest.fn();
 
 const SECURITY_CONFIGURATION_PATH = 'foo/bar';
-const VULNERABILITY_MANAGEMENT_TAB_NAME = 'vulnerability-management';
 const PROJECT_FULL_PATH = 'namespace/project';
+const MOCK_SLOT_PROPS = {
+  buttonText: 'Enable security training',
+  buttonLink: 'some/link',
+  trackCTAClick: trackCTAClickSpy,
+  dismiss: dismissSpy,
+};
 
 describe('Security training promo banner component', () => {
   let wrapper;
-  const userCalloutDismissSpy = jest.fn();
 
-  const createWrapper = ({ shouldShowCallout = true } = {}) =>
-    shallowMount(SecurityTrainingPromoBanner, {
+  const createWrapper = () => {
+    wrapper = shallowMount(SecurityTrainingPromoBanner, {
       provide: {
         projectFullPath: PROJECT_FULL_PATH,
         securityConfigurationPath: SECURITY_CONFIGURATION_PATH,
       },
       stubs: {
-        UserCalloutDismisser: makeMockUserCalloutDismisser({
-          dismiss: userCalloutDismissSpy,
-          shouldShowCallout,
+        SecurityTrainingPromo: stubComponent(SecurityTrainingPromo, {
+          render() {
+            return this.$scopedSlots.default(MOCK_SLOT_PROPS);
+          },
         }),
       },
     });
+  };
 
   afterEach(() => {
     wrapper.destroy();
   });
 
+  const findSecurityTrainingPromo = () => wrapper.findComponent(SecurityTrainingPromo);
   const findBanner = () => wrapper.findComponent(GlBanner);
 
-  describe('banner', () => {
-    beforeEach(() => {
-      wrapper = createWrapper();
-    });
+  beforeEach(() => {
+    createWrapper();
+  });
 
-    it('should be an introduction that announces the security training feature', () => {
-      const { title, buttonText, content } = SecurityTrainingPromoBanner.i18n;
+  describe('SecurityTrainingPromo', () => {
+    it('renders the component with the correct props', () => {
+      expect(findSecurityTrainingPromo().props()).toMatchObject({
+        securityConfigurationPath: SECURITY_CONFIGURATION_PATH,
+        projectFullPath: PROJECT_FULL_PATH,
+      });
+    });
+  });
+
+  describe('GlBanner', () => {
+    it('renders the component with the correct props', () => {
+      const { buttonText, buttonLink } = MOCK_SLOT_PROPS;
+      const { title } = SecurityTrainingPromoBanner.i18n;
 
       expect(findBanner().props()).toMatchObject({
         variant: 'introduction',
-        title,
         buttonText,
+        buttonLink,
+        title,
       });
-      expect(findBanner().text()).toBe(content);
     });
 
-    it(`should link to the security configuration's vulnerability management tab`, () => {
-      expect(findBanner().props('buttonLink')).toBe(
-        `${SECURITY_CONFIGURATION_PATH}?tab=${VULNERABILITY_MANAGEMENT_TAB_NAME}`,
-      );
-    });
-  });
-
-  describe('dismissal', () => {
-    it('should dismiss the callout when the banner is closed', () => {
-      wrapper = createWrapper();
-
-      expect(userCalloutDismissSpy).not.toHaveBeenCalled();
+    it('should trigger the dismiss method when the banner is closed', () => {
+      expect(dismissSpy).not.toHaveBeenCalled();
 
       findBanner().vm.$emit('close');
 
-      expect(userCalloutDismissSpy).toHaveBeenCalled();
+      expect(dismissSpy).toHaveBeenCalled();
     });
 
-    it('should not show the banner once it has been dismissed', () => {
-      wrapper = createWrapper({ shouldShowCallout: false });
-
-      expect(findBanner().exists()).toBe(false);
-    });
-  });
-
-  describe('metrics', () => {
-    let trackingSpy;
-
-    beforeEach(async () => {
-      trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
-      wrapper = createWrapper();
-    });
-
-    afterEach(() => {
-      unmockTracking();
-    });
-
-    it('tracks clicks on the CTA button', () => {
-      expect(trackingSpy).not.toHaveBeenCalled();
+    it('should trigger the trackCTAClick method when the banner is clicked', () => {
+      expect(trackCTAClickSpy).not.toHaveBeenCalled();
 
       findBanner().vm.$emit('primary');
 
-      expect(trackingSpy).toHaveBeenCalledWith(undefined, TRACK_PROMOTION_BANNER_CTA_CLICK_ACTION, {
-        label: TRACK_PROMOTION_BANNER_CTA_CLICK_LABEL,
-        property: PROJECT_FULL_PATH,
-      });
+      expect(trackCTAClickSpy).toHaveBeenCalled();
     });
   });
 });
