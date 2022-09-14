@@ -7,7 +7,6 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:issue) { create(:issue, project: project) }
-  let_it_be(:shared) { project.import_export_shared }
   let_it_be(:note2) { create(:note, noteable: issue, project: project, author: user) }
 
   let_it_be(:epic) { create(:epic, group: group) }
@@ -17,16 +16,10 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
 
   let_it_be(:push_rule) { create(:push_rule, project: project, max_file_size: 10) }
 
-  after :all do
-    FileUtils.rm_rf(export_path)
-  end
-
   shared_examples 'EE saves project tree successfully' do |ndjson_enabled|
     include ::ImportExport::CommonUtil
 
-    let_it_be(:project_tree_saver) { described_class.new(project: project, current_user: user, shared: shared) }
-
-    let_it_be(:full_path) do
+    let(:full_path) do
       if ndjson_enabled
         File.join(shared.export_path, 'tree')
       else
@@ -34,36 +27,41 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
       end
     end
 
-    let_it_be(:exportable_path) { 'project' }
+    let(:shared) { project.import_export_shared }
+    let(:project_tree_saver) { described_class.new(project: project, current_user: user, shared: shared) }
+    let(:issue_json) { get_json(full_path, exportable_path, :issues, ndjson_enabled).first }
+    let(:exportable_path) { 'project' }
+    let(:epics_available) { true }
 
-    before_all do
-      RSpec::Mocks.with_temporary_scope do
-        stub_all_feature_flags
-        stub_feature_flags(project_export_as_ndjson: ndjson_enabled)
-        project.add_maintainer(user)
-
-        expect(project_tree_saver.save).to be true
-      end
+    before do
+      stub_all_feature_flags
+      stub_feature_flags(project_export_as_ndjson: ndjson_enabled)
+      stub_licensed_features(epics: epics_available)
+      project.add_maintainer(user)
     end
 
-    let_it_be(:issue_json) { get_json(full_path, exportable_path, :issues, ndjson_enabled).first }
+    after do
+      FileUtils.rm_rf(export_path)
+      FileUtils.rm_rf(full_path)
+    end
 
     context 'epics' do
-      it 'has epic_issue' do
+      it 'contains issue epic object', :aggregate_failures do
+        expect(project_tree_saver.save).to be true
         expect(issue_json['epic_issue']).not_to be_empty
         expect(issue_json['epic_issue']['id']).to eql(epic_issue.id)
-      end
-
-      it 'has epic' do
         expect(issue_json['epic_issue']['epic']['title']).to eql(epic.title)
-      end
-
-      it 'does not have epic_id' do
         expect(issue_json['epic_issue']['epic_id']).to be_nil
+        expect(issue_json['epic_issue']['issue_id']).to be_nil
       end
 
-      it 'does not have issue_id' do
-        expect(issue_json['epic_issue']['issue_id']).to be_nil
+      context 'when epic is not readable' do
+        let(:epics_available) { false }
+
+        it 'filters out inaccessible epic object' do
+          expect(project_tree_saver.save).to be true
+          expect(issue_json['epic_issue']).to be_nil
+        end
       end
     end
 
@@ -74,6 +72,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
       end
 
       it 'has security settings' do
+        expect(project_tree_saver.save).to be true
         expect(security_json['auto_fix_dependency_scanning']).to be_truthy
       end
     end
@@ -85,6 +84,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeSaver do
       end
 
       it 'has push rules' do
+        expect(project_tree_saver.save).to be true
         expect(push_rule_json['max_file_size']).to eq(10)
         expect(push_rule_json['force_push_regex']).to eq('feature\/.*')
       end
