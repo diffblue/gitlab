@@ -453,8 +453,8 @@ RSpec.describe 'Epics through GroupQuery' do
       :group,
       { full_path: group.full_path },
       query_graphql_field(:epics, search_params, [
-        query_graphql_field(:nodes, nil, requested_fields)
-      ])
+                            query_graphql_field(:nodes, nil, requested_fields)
+                          ])
     )
     post_graphql(query, current_user: user)
   end

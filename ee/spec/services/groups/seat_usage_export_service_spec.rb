@@ -31,11 +31,11 @@ RSpec.describe Groups::SeatUsageExportService do
 
           it 'returns csv data' do
             expect(payload).to eq([
-              "Id,Name,Username,Email,State\n",
-              "#{owner.id},Owner,owner,,active\n",
-              "#{developer.id},Dev,dev,public@email.org,active\n",
-              "#{reporter.id},Reporter,reporter,,active\n"
-            ])
+                                    "Id,Name,Username,Email,State\n",
+                                    "#{owner.id},Owner,owner,,active\n",
+                                    "#{developer.id},Dev,dev,public@email.org,active\n",
+                                    "#{reporter.id},Reporter,reporter,,active\n"
+                                  ])
           end
         end
 

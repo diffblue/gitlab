@@ -50,11 +50,11 @@ RSpec.describe API::LdapGroupLinks, api: true do
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response).to(
           match([
-            a_hash_including('cn' => 'ldap-group1', 'provider' => 'ldap1'),
-            a_hash_including('cn' => 'ldap-group2', 'provider' => 'ldap2'),
-            a_hash_including('cn' => 'ldap-group3', 'provider' => 'ldap2'),
-            a_hash_including('cn' => nil, 'provider' => 'ldap2')
-            ]))
+                  a_hash_including('cn' => 'ldap-group1', 'provider' => 'ldap1'),
+                  a_hash_including('cn' => 'ldap-group2', 'provider' => 'ldap2'),
+                  a_hash_including('cn' => 'ldap-group3', 'provider' => 'ldap2'),
+                  a_hash_including('cn' => nil, 'provider' => 'ldap2')
+                ]))
       end
 
       it "returns error if no ldap group links found" do

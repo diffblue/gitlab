@@ -130,10 +130,11 @@ RSpec.describe API::Analytics::ProjectDeploymentFrequency do
     end
 
     it 'returns the expected deployment frequencies' do
-      expect(response.parsed_body).to eq([
-        { "from" => "2020-02-01", "to" => "2020-03-01", "value" => 4 },
-        { "from" => "2020-03-01", "to" => "2020-04-01", "value" => 4 }
-      ])
+      expect(response.parsed_body).to eq(
+        [
+          { "from" => "2020-02-01", "to" => "2020-03-01", "value" => 4 },
+          { "from" => "2020-03-01", "to" => "2020-04-01", "value" => 4 }
+        ])
     end
   end
 
@@ -148,16 +149,17 @@ RSpec.describe API::Analytics::ProjectDeploymentFrequency do
     end
 
     it 'returns the expected deployment frequencies' do
-      expect(response.parsed_body).to eq([
-        { "from" => "2020-02-01", "to" => "2020-02-02", "value" => 1 },
-        { "from" => "2020-02-02", "to" => "2020-02-03", "value" => 1 },
-        { "from" => "2020-02-04", "to" => "2020-02-05", "value" => 1 },
-        { "from" => "2020-02-05", "to" => "2020-02-06", "value" => 1 },
-        { "from" => "2020-03-01", "to" => "2020-03-02", "value" => 1 },
-        { "from" => "2020-03-02", "to" => "2020-03-03", "value" => 1 },
-        { "from" => "2020-03-04", "to" => "2020-03-05", "value" => 1 },
-        { "from" => "2020-03-05", "to" => "2020-03-06", "value" => 1 }
-      ])
+      expect(response.parsed_body).to eq(
+        [
+          { "from" => "2020-02-01", "to" => "2020-02-02", "value" => 1 },
+          { "from" => "2020-02-02", "to" => "2020-02-03", "value" => 1 },
+          { "from" => "2020-02-04", "to" => "2020-02-05", "value" => 1 },
+          { "from" => "2020-02-05", "to" => "2020-02-06", "value" => 1 },
+          { "from" => "2020-03-01", "to" => "2020-03-02", "value" => 1 },
+          { "from" => "2020-03-02", "to" => "2020-03-03", "value" => 1 },
+          { "from" => "2020-03-04", "to" => "2020-03-05", "value" => 1 },
+          { "from" => "2020-03-05", "to" => "2020-03-06", "value" => 1 }
+        ])
     end
   end
 

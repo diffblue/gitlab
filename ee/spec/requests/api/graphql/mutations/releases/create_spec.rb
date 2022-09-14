@@ -66,11 +66,12 @@ RSpec.describe 'Creation of a new release' do
         returned_milestone_titles = mutation_response.dig(:release, :milestones, :nodes)
                                                      .map { |m| m[:title] }
 
-        expect(returned_milestone_titles).to eq([
-          milestone_12_3.title,
-          milestone_12_4.title,
-          group_milestone.title
-        ])
+        expect(returned_milestone_titles).to eq(
+          [
+            milestone_12_3.title,
+            milestone_12_4.title,
+            group_milestone.title
+          ])
       end
     end
 

@@ -50,32 +50,33 @@ RSpec.describe Admin::UserPermissionExportsController do
         it 'has the appropriate data' do
           subject
 
-          expect(csv_response).to eq([
+          expect(csv_response).to eq(
             [
-              'Username',
-              'Email',
-              'Type',
-              'Path',
-              'Access',
-              'Last Activity'
-            ],
-            %w(
-              alvina
-              alvina@test.com
-              Group
-              gitlab-org
-              Developer
-              2020-12-18
-             ),
-            %w(
-              jasper
-              jasper@test.com
-              Project
-              gitlab-org/www
-              Maintainer
-              2020-12-16
-            )
-          ])
+              [
+                'Username',
+                'Email',
+                'Type',
+                'Path',
+                'Access',
+                'Last Activity'
+              ],
+              %w(
+                alvina
+                alvina@test.com
+                Group
+                gitlab-org
+                Developer
+                2020-12-18
+              ),
+              %w(
+                jasper
+                jasper@test.com
+                Project
+                gitlab-org/www
+                Maintainer
+                2020-12-16
+              )
+            ])
         end
       end
 

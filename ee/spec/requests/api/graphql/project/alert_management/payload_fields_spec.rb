@@ -55,14 +55,15 @@ RSpec.describe 'parse alert payload fields' do
   it_behaves_like 'a working graphql query'
 
   specify do
-    expect(parsed_fields).to eq([
-      { 'path' => %w[title], 'label' => 'title', 'type' => 'STRING' },
-      { 'path' => %w[started_at], 'label' => 'started_at', 'type' => 'DATETIME' },
-      { 'path' => %w[nested key], 'label' => 'nested/key', 'type' => 'STRING' },
-      { 'path' => %w[arr], 'label' => 'arr', 'type' => 'ARRAY' },
-      { 'path' => ['arr', 1], 'label' => 'arr[1]', 'type' => 'STRING' },
-      { 'path' => ['arr', 0], 'label' => 'arr[0]', 'type' => 'STRING' }
-    ])
+    expect(parsed_fields).to eq(
+      [
+        { 'path' => %w[title], 'label' => 'title', 'type' => 'STRING' },
+        { 'path' => %w[started_at], 'label' => 'started_at', 'type' => 'DATETIME' },
+        { 'path' => %w[nested key], 'label' => 'nested/key', 'type' => 'STRING' },
+        { 'path' => %w[arr], 'label' => 'arr', 'type' => 'ARRAY' },
+        { 'path' => ['arr', 1], 'label' => 'arr[1]', 'type' => 'STRING' },
+        { 'path' => ['arr', 0], 'label' => 'arr[0]', 'type' => 'STRING' }
+      ])
   end
 
   shared_examples 'query with error' do |error_message|

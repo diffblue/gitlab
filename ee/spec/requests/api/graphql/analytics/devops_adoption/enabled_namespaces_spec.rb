@@ -63,14 +63,15 @@ RSpec.describe 'devopsAdoptionEnabledNamespaces' do
   it 'returns measurement objects' do
     expected_snapshot = expected_metrics.transform_keys { |key| key.to_s.camelize(:lower) }
 
-    expect(graphql_data['devopsAdoptionEnabledNamespaces']['nodes']).to eq([
-      {
-        'id' => enabled_namespace.to_gid.to_s,
-        'namespace' => { 'name' => group.name },
-        'displayNamespace' => { 'name' => group.name },
-        'snapshots' => { 'nodes' => [expected_snapshot] },
-        'latestSnapshot' => expected_snapshot
-      }
-    ])
+    expect(graphql_data['devopsAdoptionEnabledNamespaces']['nodes']).to eq(
+      [
+        {
+          'id' => enabled_namespace.to_gid.to_s,
+          'namespace' => { 'name' => group.name },
+          'displayNamespace' => { 'name' => group.name },
+          'snapshots' => { 'nodes' => [expected_snapshot] },
+          'latestSnapshot' => expected_snapshot
+        }
+      ])
   end
 end
