@@ -1061,7 +1061,7 @@ RSpec.describe API::Groups do
             context 'if group is not a subgroup' do
               subject { delete api("/groups/#{group.id}", user), params: params }
 
-              it_behaves_like 'does not immediately enqueues the job to delete the group', 'permanently_remove option is only available for subgroups.'
+              it_behaves_like 'does not immediately enqueues the job to delete the group', '`permanently_remove` option is only available for subgroups.'
             end
           end
 
