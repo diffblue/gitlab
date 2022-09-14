@@ -1065,6 +1065,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: github_importer:github_import_import_protected_branch
+  :worker_name: Gitlab::GithubImport::ImportProtectedBranchWorker
+  :feature_category: :importers
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: github_importer:github_import_import_pull_request
   :worker_name: Gitlab::GithubImport::ImportPullRequestWorker
   :feature_category: :importers
@@ -1166,6 +1175,15 @@
   :tags: []
 - :name: github_importer:github_import_stage_import_notes
   :worker_name: Gitlab::GithubImport::Stage::ImportNotesWorker
+  :feature_category: :importers
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
+- :name: github_importer:github_import_stage_import_protected_branches
+  :worker_name: Gitlab::GithubImport::Stage::ImportProtectedBranchesWorker
   :feature_category: :importers
   :has_external_dependencies: false
   :urgency: :low
