@@ -315,6 +315,7 @@ RSpec.describe 'Every Sidekiq worker' do
         'Integrations::IrkerWorker' => 3,
         'InvalidGpgSignatureUpdateWorker' => 3,
         'IssuableExportCsvWorker' => 3,
+        'Issues::CloseWorker' => 3,
         'Issues::PlacementWorker' => 3,
         'Issues::RebalancingWorker' => 3,
         'IterationsUpdateStatusWorker' => 3,

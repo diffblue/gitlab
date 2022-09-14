@@ -2559,6 +2559,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: issues_close
+  :worker_name: Issues::CloseWorker
+  :feature_category: :source_code_management
+  :has_external_dependencies: false
+  :urgency: :high
+  :resource_boundary: :unknown
+  :weight: 2
+  :idempotent: true
+  :tags: []
 - :name: issues_placement
   :worker_name: Issues::PlacementWorker
   :feature_category: :team_planning
