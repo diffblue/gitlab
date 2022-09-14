@@ -40,7 +40,7 @@ module EE
 
             def jobs_in_alive_pipelines_count
               strong_memoize(:jobs_in_alive_pipelines_count) do
-                @project.all_pipelines.jobs_count_in_alive_pipelines
+                @project.all_pipelines.builds_count_in_alive_pipelines
               end
             end
 
