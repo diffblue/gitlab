@@ -103,19 +103,15 @@ export const SUBSCRIPTION_ACTIVATION_FAILURE_EVENT = 'subscription-activation-fa
 export const SUBSCRIPTION_ACTIVATION_SUCCESS_EVENT = 'subscription-activation-success';
 export const SUBSCRIPTION_ACTIVATION_FINALIZED_EVENT = 'subscription-activation-finalized';
 
-export const INVALID_CODE_ERROR_MESSAGE = 'invalid activation code';
+// Server-sent error messages (or regexes to match those messages) to detect error type
+export const INVALID_ACTIVATION_CODE_SERVER_ERROR = 'invalid activation code';
 export const EXPIRED_LICENSE_SERVER_ERROR = 'This license has already expired.';
+export const SUBSCRIPTION_NOT_FOUND_SERVER_ERROR = 'without cloud compatible subscription';
+export const SUBSCRIPTION_OVERAGES_SERVER_ERROR_REGEX = /(This GitLab installation currently has|During the year before this license started, this GitLab installation had) (\d+) active users?, exceeding this license's limit of (\d+) by (\d+) users?\. Please add a license for at least (\d+) users? or contact sales at https:\/\/about\.gitlab\.com\/sales\//;
+export const SUBSCRIPTION_INSUFFICIENT_TRUE_UP_SERVER_ERROR_REGEX = /You have applied a True-up for (\d+) users? but you need one for (\d+) users?\. Please contact sales at https:\/\/about\.gitlab\.com\/sales\//;
+
 export const CONNECTIVITY_ERROR = 'CONNECTIVITY_ERROR';
 export const INVALID_CODE_ERROR = 'INVALID_CODE_ERROR';
-export const invalidActivationCode = s__(
-  'SuperSonics|The activation code is not valid. Please make sure to copy it exactly from the Customers Portal or confirmation email. Learn more about %{linkStart}activating your subscription%{linkEnd}.',
-);
-export const CONNECTIVITY_ERROR_TITLE = s__(
-  'SuperSonics|Cannot activate instance due to a connectivity issue.',
-);
-export const CONNECTIVITY_ERROR_MESSAGE = s__(
-  'SuperSonics|To activate your subscription, your instance needs to connect to GitLab. %{learnMoreLinkStart}Learn more%{learnMoreLinkEnd}.',
-);
 
 export const supportLink = `${PROMO_URL}/support/#contact-support`;
 export const subscriptionBannerTitle = s__('SuperSonics|Cloud licensing');
