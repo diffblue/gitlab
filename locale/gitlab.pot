@@ -12567,6 +12567,9 @@ msgstr ""
 msgid "Delete artifacts"
 msgstr ""
 
+msgid "Delete asset"
+msgstr ""
+
 msgid "Delete audio"
 msgstr ""
 
@@ -28221,13 +28224,13 @@ msgid_plural "PackageRegistry|Delete %d assets"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "PackageRegistry|Delete Package File"
-msgstr ""
-
 msgid "PackageRegistry|Delete Package Version"
 msgstr ""
 
 msgid "PackageRegistry|Delete package"
+msgstr ""
+
+msgid "PackageRegistry|Delete package asset"
 msgstr ""
 
 msgid "PackageRegistry|Delete selected"
@@ -28329,13 +28332,13 @@ msgstr ""
 msgid "PackageRegistry|Package Registry"
 msgstr ""
 
+msgid "PackageRegistry|Package asset deleted successfully"
+msgstr ""
+
 msgid "PackageRegistry|Package assets deleted successfully"
 msgstr ""
 
 msgid "PackageRegistry|Package deleted successfully"
-msgstr ""
-
-msgid "PackageRegistry|Package file deleted successfully"
 msgstr ""
 
 msgid "PackageRegistry|Package formats"
@@ -28400,10 +28403,10 @@ msgstr ""
 msgid "PackageRegistry|Show Yarn commands"
 msgstr ""
 
-msgid "PackageRegistry|Something went wrong while deleting the package assets."
+msgid "PackageRegistry|Something went wrong while deleting the package asset."
 msgstr ""
 
-msgid "PackageRegistry|Something went wrong while deleting the package file."
+msgid "PackageRegistry|Something went wrong while deleting the package assets."
 msgstr ""
 
 msgid "PackageRegistry|Something went wrong while deleting the package."
