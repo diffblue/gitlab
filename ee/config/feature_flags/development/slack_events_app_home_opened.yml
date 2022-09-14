@@ -1,0 +1,8 @@
+---
+name: slack_events_app_home_opened
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96092
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/371678
+milestone: '15.4'
+type: development
+group: group::integrations
+default_enabled: false
