@@ -1,10 +1,12 @@
 <script>
 import { PAGE_TITLE, PAGE_SUBTITLE } from '../constants';
 import PhoneVerification from './phone_verification.vue';
+import CreditCardVerification from './credit_card_verification.vue';
 
 export default {
   name: 'IdentityVerificationWizard',
   components: {
+    CreditCardVerification,
     PhoneVerification,
   },
   i18n: {
@@ -21,6 +23,7 @@ export default {
         <p>{{ $options.i18n.PAGE_SUBTITLE }}</p>
       </header>
       <phone-verification />
+      <credit-card-verification />
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 import { GlAlert, GlLoadingIcon } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import Zuora, {
   Action,
   DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT,
@@ -29,7 +29,7 @@ describe('Zuora', () => {
   const refId = '123412341234';
 
   const createComponent = (props = {}, data = {}) => {
-    wrapper = shallowMount(Zuora, {
+    wrapper = shallowMountExtended(Zuora, {
       propsData: {
         currentUserId,
         initialHeight,
@@ -46,7 +46,21 @@ describe('Zuora', () => {
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findLoading = () => wrapper.findComponent(GlLoadingIcon);
+  const findLoadingContainer = () => wrapper.findByTestId('loading-container');
   const findZuoraPayment = () => wrapper.find('#zuora_payment');
+
+  const expectLoadingDoesNotExist = () => {
+    expect(wrapper.emitted(Event.LOADING)).toEqual([[false]]);
+    expect(findLoadingContainer().exists()).toBe(false);
+    expect(findLoading().exists()).toBe(false);
+  };
+
+  const expectLoadingExists = () => {
+    expect(findLoadingContainer().attributes('style')).toBe(
+      `height: ${initialHeight}px; min-height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
+    );
+    expect(findLoading().exists()).toBe(true);
+  };
 
   beforeEach(() => {
     window.Z = {
@@ -71,7 +85,7 @@ describe('Zuora', () => {
     });
 
     it('shows the loading icon', () => {
-      expect(findLoading().exists()).toBe(true);
+      expectLoadingExists();
     });
 
     it('does not show an error alert', () => {
@@ -83,9 +97,7 @@ describe('Zuora', () => {
     });
 
     it('applies the default height', () => {
-      expect(findZuoraPayment().attributes('style')).toBe(
-        `height: ${DEFAULT_IFRAME_CONTAINER_MIN_HEIGHT};`,
-      );
+      expect(findZuoraPayment().attributes('style')).toBe(`height: 0px;`);
     });
   });
 
@@ -121,7 +133,7 @@ describe('Zuora', () => {
         });
 
         it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
+          expectLoadingDoesNotExist();
         });
 
         it('shows zuora_payment', () => {
@@ -248,23 +260,23 @@ describe('Zuora', () => {
         it('shows the loading icon', () => {
           window.dispatchEvent(new MessageEvent('message'));
 
-          expect(findLoading().exists()).toBe(true);
+          expectLoadingExists();
         });
       });
 
       describe('when dispatching an empty event', () => {
-        it('it shows the loading icon', () => {
+        it('shows the loading icon', () => {
           window.dispatchEvent(new MessageEvent('message', { data: '' }));
 
-          expect(findLoading().exists()).toBe(true);
+          expectLoadingExists();
         });
       });
 
       describe('when dispatching an event with the wrong format', () => {
-        it('it shows the loading icon', () => {
+        it('shows the loading icon', () => {
           window.dispatchEvent(new MessageEvent('message', { data: [] }));
 
-          expect(findLoading().exists()).toBe(true);
+          expectLoadingExists();
         });
       });
 
@@ -277,7 +289,7 @@ describe('Zuora', () => {
         });
 
         it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
+          expectLoadingDoesNotExist();
         });
 
         it('applies the style with the calculated height', async () => {
@@ -325,7 +337,7 @@ describe('Zuora', () => {
         });
 
         it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
+          expectLoadingDoesNotExist();
         });
 
         it('shows alert with error message', () => {
@@ -366,7 +378,7 @@ describe('Zuora', () => {
         });
 
         it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
+          expectLoadingDoesNotExist();
         });
 
         it('does not show alert with error message', () => {
@@ -426,7 +438,7 @@ describe('Zuora', () => {
         it('shows the loading icon', () => {
           wrapper.vm.zuoraScriptEl.onload();
 
-          expect(findLoading().exists()).toBe(true);
+          expectLoadingExists();
         });
 
         it('shows zuora_payment', () => {
@@ -443,7 +455,7 @@ describe('Zuora', () => {
         });
 
         it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
+          expectLoadingDoesNotExist();
         });
 
         it('shows zuora_payment', () => {
@@ -540,7 +552,7 @@ describe('Zuora', () => {
         });
 
         it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
+          expectLoadingDoesNotExist();
         });
 
         it('shows an error alert', () => {
@@ -585,7 +597,7 @@ describe('Zuora', () => {
         });
 
         it('shows the loading icon', () => {
-          expect(findLoading().exists()).toBe(true);
+          expectLoadingExists();
         });
 
         it('shows zuora_payment', () => {
@@ -683,7 +695,7 @@ describe('Zuora', () => {
         });
 
         it('does not show the loading icon', () => {
-          expect(findLoading().exists()).toBe(false);
+          expectLoadingDoesNotExist();
         });
 
         it('shows an error alert', () => {
