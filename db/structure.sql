@@ -32220,9 +32220,7 @@ CREATE TRIGGER trigger_insert_or_update_vulnerability_reads_from_occurrences AFT
 
 CREATE TRIGGER trigger_insert_vulnerability_reads_from_vulnerability AFTER UPDATE ON vulnerabilities FOR EACH ROW WHEN (((old.present_on_default_branch IS NOT TRUE) AND (new.present_on_default_branch IS TRUE))) EXECUTE FUNCTION insert_vulnerability_reads_from_vulnerability();
 
-CREATE TRIGGER trigger_namespaces_parent_id_on_insert AFTER INSERT ON namespaces FOR EACH ROW EXECUTE FUNCTION insert_namespaces_sync_event();
-
-CREATE TRIGGER trigger_namespaces_parent_id_on_update AFTER UPDATE ON namespaces FOR EACH ROW WHEN ((old.parent_id IS DISTINCT FROM new.parent_id)) EXECUTE FUNCTION insert_namespaces_sync_event();
+CREATE TRIGGER trigger_namespaces_traversal_ids_on_update AFTER UPDATE ON namespaces FOR EACH ROW WHEN ((old.traversal_ids IS DISTINCT FROM new.traversal_ids)) EXECUTE FUNCTION insert_namespaces_sync_event();
 
 CREATE TRIGGER trigger_projects_parent_id_on_insert AFTER INSERT ON projects FOR EACH ROW EXECUTE FUNCTION insert_projects_sync_event();
 
