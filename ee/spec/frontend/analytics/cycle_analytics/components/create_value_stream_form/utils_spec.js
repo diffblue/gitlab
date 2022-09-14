@@ -221,7 +221,7 @@ describe('formatStageDataForSubmission', () => {
     });
   });
 
-  describe('isEditing = true ', () => {
+  describe('isEditing = true', () => {
     it('will include the `id` if it has a value', () => {
       [res] = formatStageDataForSubmission([{ ...fakeStage, id: 10, custom: true }], true);
       expect(Object.keys(res).includes('id')).toBe(true);

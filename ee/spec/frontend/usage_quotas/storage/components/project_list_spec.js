@@ -54,7 +54,7 @@ describe('ProjectList', () => {
     });
   });
 
-  describe('with additional repo storage feature flag ', () => {
+  describe('with additional repo storage feature flag', () => {
     beforeEach(() => {
       createComponent({ additionalRepoStorageByNamespace: true });
     });

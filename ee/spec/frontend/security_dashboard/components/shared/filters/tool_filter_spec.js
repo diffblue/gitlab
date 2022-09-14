@@ -170,7 +170,7 @@ describe('Tool Filter component', () => {
         expect(findFilterItemByReportType(queryValue).props('isChecked')).toBe(true);
       });
 
-      it('selects the correct amount of option items ', async () => {
+      it('selects the correct amount of option items', async () => {
         const queryValues = defaultFormattedScanners.map((x) => x[queryField]);
 
         updateQuerystring(queryValues);

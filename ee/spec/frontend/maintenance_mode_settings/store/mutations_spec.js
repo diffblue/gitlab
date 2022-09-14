@@ -26,7 +26,7 @@ describe('MaintenanceModeSettings Store Mutations', () => {
     ${types.REQUEST_UPDATE_MAINTENANCE_MODE_SETTINGS}       | ${null} | ${false}      | ${true}
     ${types.REQUEST_UPDATE_MAINTENANCE_MODE_SETTINGS}       | ${null} | ${false}      | ${true}
     ${types.RECEIVE_UPDATE_MAINTENANCE_MODE_SETTINGS_ERROR} | ${null} | ${true}       | ${false}
-  `(`Loading Mutations: `, ({ mutation, data, loadingBefore, loadingAfter }) => {
+  `(`Loading Mutations:`, ({ mutation, data, loadingBefore, loadingAfter }) => {
     describe(`${mutation}`, () => {
       it(`sets loading to ${loadingAfter}`, () => {
         state.loading = loadingBefore;

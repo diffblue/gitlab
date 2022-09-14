@@ -55,7 +55,7 @@ describe('NoActiveSubscription', () => {
       expect(findSubscriptionActivationTitle().text()).toBe(noActiveSubscription);
     });
 
-    it('it shows the past items', () => {
+    it('shows the past items', () => {
       expect(findSubscriptionDetailsHistory().exists()).toBe(true);
       expect(findSubscriptionDetailsHistory().props()).toMatchObject({
         subscriptionList: subscriptionPastHistory,

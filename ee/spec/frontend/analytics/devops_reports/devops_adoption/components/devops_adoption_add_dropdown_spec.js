@@ -234,7 +234,7 @@ describe('DevopsAdoptionAddDropdown', () => {
     });
 
     describe('searching', () => {
-      it('emits the fetchGroups event ', () => {
+      it('emits the fetchGroups event', () => {
         createComponent({ props: { hasSubgroups: true } });
 
         wrapper.findComponent(GlSearchBoxByType).vm.$emit('input', 'blah');

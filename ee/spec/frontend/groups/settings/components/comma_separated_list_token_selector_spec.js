@@ -117,7 +117,7 @@ describe('CommaSeparatedListTokenSelector', () => {
       });
     };
 
-    it('sets input value ', async () => {
+    it('sets input value', async () => {
       await setup();
 
       expect(input.value).toBe('gitlab.com,gitlab.org,gitlab.ninja');

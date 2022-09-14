@@ -180,11 +180,11 @@ describe('Project Licenses', () => {
       expect(wrapper.findAllComponents(GlTab)).toHaveLength(2);
     });
 
-    it('it renders the "Detected in project" table', () => {
+    it('renders the "Detected in project" table', () => {
       expect(wrapper.findComponent(DetectedLicensesTable).exists()).toBe(true);
     });
 
-    it('it renders the "Policies" table', () => {
+    it('renders the "Policies" table', () => {
       expect(wrapper.findComponent(LicenseManagement).exists()).toBe(true);
     });
 
@@ -283,15 +283,15 @@ describe('Project Licenses', () => {
           },
         );
 
-        it('it renders the correct count in "Detected in project" tab', () => {
+        it('renders the correct count in "Detected in project" tab', () => {
           expect(findAllGlBadges().at(0).text()).toBe(pageInfo.total.toString());
         });
 
-        it('it renders the correct count in "Policies" tab', () => {
+        it('renders the correct count in "Policies" tab', () => {
           expect(findAllGlBadges().at(1).text()).toBe(managedLicenses.length.toString());
         });
 
-        it('it renders the correct type of badge styling', () => {
+        it('renders the correct type of badge styling', () => {
           const badges = [findAllGlBadges().at(0), findAllGlBadges().at(1)];
           badges.forEach((badge) => expect(badge.classes()).toContain('gl-tab-counter-badge'));
         });

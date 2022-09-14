@@ -52,7 +52,7 @@ describe('Batch comments submit dropdown', () => {
     ${true}                  | ${true}  | ${'shows'}
     ${false}                 | ${false} | ${'hides'}
   `(
-    'it $existsText approve password if require_password_to_approve is $requirePasswordToApprove',
+    '$existsText approve password if require_password_to_approve is $requirePasswordToApprove',
     async ({ requirePasswordToApprove, exists }) => {
       factory({ requirePasswordToApprove });
 

@@ -31,7 +31,7 @@ describe('Project compliance framework empty state', () => {
     addFrameworkPath | description
     ${undefined}     | ${'undefined'}
     ${'/edit-group'} | ${'a string path'}
-  `('it matches the snapshot when "addFrameworkPath" is $description', ({ addFrameworkPath }) => {
+  `('matches the snapshot when "addFrameworkPath" is $description', ({ addFrameworkPath }) => {
     createComponent({ addFrameworkPath });
 
     expect(wrapper.element).toMatchSnapshot();

@@ -69,7 +69,7 @@ describe('Security Dashboard component', () => {
       createComponent();
     });
 
-    it('renders the security dashboard table ', () => {
+    it('renders the security dashboard table', () => {
       expect(wrapper.findComponent(SecurityDashboardTable).exists()).toBe(true);
     });
 

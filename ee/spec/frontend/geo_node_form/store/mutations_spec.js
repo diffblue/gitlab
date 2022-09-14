@@ -17,7 +17,7 @@ describe('GeoNodeForm Store Mutations', () => {
     ${types.REQUEST_SAVE_GEO_NODE}           | ${false}      | ${true}
     ${types.RECEIVE_SAVE_GEO_NODE_COMPLETE}  | ${true}       | ${false}
     ${types.RECEIVE_SAVE_GEO_NODE_COMPLETE}  | ${true}       | ${false}
-  `(`Loading Mutations: `, ({ mutation, loadingBefore, loadingAfter }) => {
+  `(`Loading Mutations:`, ({ mutation, loadingBefore, loadingAfter }) => {
     describe(`${mutation}`, () => {
       it(`sets isLoading to ${loadingAfter}`, () => {
         state.isLoading = loadingBefore;

@@ -39,7 +39,7 @@ describe('UnconfiguredSecurityRules component', () => {
     wrapper = null;
   });
 
-  describe('when created ', () => {
+  describe('when created', () => {
     beforeEach(() => {
       createWrapper();
     });
@@ -51,7 +51,7 @@ describe('UnconfiguredSecurityRules component', () => {
       );
     });
 
-    it('should render a unconfigured-security-rule component for every security rule ', () => {
+    it('should render a unconfigured-security-rule component for every security rule', () => {
       expect(wrapper.findAllComponents(UnconfiguredSecurityRule).length).toBe(2);
     });
   });

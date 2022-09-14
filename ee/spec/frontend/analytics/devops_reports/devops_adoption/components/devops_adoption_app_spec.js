@@ -286,7 +286,7 @@ describe('DevopsAdoptionApp', () => {
               expect(wrapper.findComponent(DevopsAdoptionSection).exists()).toBe(false);
             });
 
-            it('displays the error message ', () => {
+            it('displays the error message', () => {
               const alert = wrapper.findComponent(GlAlert);
               expect(alert.exists()).toBe(true);
               expect(alert.text()).toBe(I18N_ENABLE_NAMESPACE_MUTATION_ERROR);
@@ -317,7 +317,7 @@ describe('DevopsAdoptionApp', () => {
         expect(wrapper.findComponent(DevopsAdoptionSection).exists()).toBe(false);
       });
 
-      it('displays the error message ', () => {
+      it('displays the error message', () => {
         const alert = wrapper.findComponent(GlAlert);
         expect(alert.exists()).toBe(true);
         expect(alert.text()).toBe(I18N_ENABLED_NAMESPACE_QUERY_ERROR);
@@ -352,7 +352,7 @@ describe('DevopsAdoptionApp', () => {
         expect(wrapper.vm.pollingTableData).toBe(mockIntervalId);
       });
 
-      it('clears pollTableData interval when destroying ', () => {
+      it('clears pollTableData interval when destroying', () => {
         wrapper.vm.$destroy();
 
         expect(window.clearInterval).toHaveBeenCalledWith(mockIntervalId);

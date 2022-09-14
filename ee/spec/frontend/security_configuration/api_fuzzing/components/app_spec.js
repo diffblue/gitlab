@@ -78,7 +78,7 @@ describe('EE - ApiFuzzingConfigurationApp', () => {
       );
     });
 
-    it('includes a link to API fuzzing documentation ', () => {
+    it('includes a link to API fuzzing documentation', () => {
       const link = wrapper.findComponent(GlLink);
       expect(link.exists()).toBe(true);
       expect(link.attributes('href')).toBe('/api_fuzzing/documentation/path');

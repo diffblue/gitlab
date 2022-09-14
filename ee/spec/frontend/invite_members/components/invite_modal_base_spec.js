@@ -170,7 +170,7 @@ describe('EEInviteModalBase', () => {
     });
   });
 
-  describe('with overageMembersModal feature flag, and invite is clicked ', () => {
+  describe('with overageMembersModal feature flag, and invite is clicked', () => {
     beforeEach(async () => {
       createComponent({ glFeatures: { overageMembersModal: true } });
       clickInviteButton();

@@ -68,37 +68,106 @@ describe('DetectedLicenesTable component', () => {
     expect(store.dispatch).toHaveBeenCalledWith(`${namespace}/fetchLicenses`, { page });
   });
 
-  describe.each`
-    context                             | isLoading | errorLoading | isListEmpty | initialized
-    ${'the list is loading'}            | ${true}   | ${false}     | ${false}    | ${false}
-    ${'the list is empty (initalized)'} | ${false}  | ${false}     | ${true}     | ${true}
-    ${'the list is empty'}              | ${false}  | ${false}     | ${true}     | ${false}
-    ${'there was an error loading'}     | ${false}  | ${true}      | ${false}    | ${false}
-  `('given $context', ({ isLoading, errorLoading, isListEmpty, initialized }) => {
+  describe('when the list is loading', () => {
     let moduleState;
 
     beforeEach(async () => {
       moduleState = Object.assign(store.state[namespace], {
-        isLoading,
-        errorLoading,
-        initialized,
+        isLoading: true,
+        errorLoading: false,
+        initialized: false,
       });
-
-      if (isListEmpty) {
-        moduleState.licenses = [];
-        moduleState.pageInfo.total = 0;
-      }
 
       await nextTick();
     });
 
-    // See https://github.com/jest-community/eslint-plugin-jest/issues/229 for
-    // a similar reason for disabling the rule on the next line
-    // eslint-disable-next-line jest/no-identical-title
     it('passes the correct props to the licenses table', () => {
       expectComponentWithProps(LicensesTable, {
         licenses: moduleState.licenses,
-        isLoading,
+        isLoading: true,
+      });
+    });
+
+    it('does not render pagination', () => {
+      expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+    });
+  });
+
+  describe('when the list is empty', () => {
+    describe('and initialized', () => {
+      let moduleState;
+
+      beforeEach(async () => {
+        moduleState = Object.assign(store.state[namespace], {
+          isLoading: false,
+          errorLoading: false,
+          initialized: true,
+        });
+
+        moduleState.licenses = [];
+        moduleState.pageInfo.total = 0;
+
+        await nextTick();
+      });
+
+      it('passes the correct props to the licenses table', () => {
+        expectComponentWithProps(LicensesTable, {
+          licenses: moduleState.licenses,
+          isLoading: false,
+        });
+      });
+
+      it('does not render pagination', () => {
+        expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+      });
+    });
+
+    describe('and not initialized', () => {
+      let moduleState;
+
+      beforeEach(async () => {
+        moduleState = Object.assign(store.state[namespace], {
+          isLoading: false,
+          errorLoading: false,
+          initialized: false,
+        });
+
+        moduleState.licenses = [];
+        moduleState.pageInfo.total = 0;
+
+        await nextTick();
+      });
+
+      it('passes the correct props to the licenses table', () => {
+        expectComponentWithProps(LicensesTable, {
+          licenses: moduleState.licenses,
+          isLoading: false,
+        });
+      });
+
+      it('does not render pagination', () => {
+        expect(wrapper.findComponent(Pagination).exists()).toBe(false);
+      });
+    });
+  });
+
+  describe('there was an error loading', () => {
+    let moduleState;
+
+    beforeEach(async () => {
+      moduleState = Object.assign(store.state[namespace], {
+        isLoading: false,
+        errorLoading: true,
+        initialized: false,
+      });
+
+      await nextTick();
+    });
+
+    it('passes the correct props to the licenses table', () => {
+      expectComponentWithProps(LicensesTable, {
+        licenses: moduleState.licenses,
+        isLoading: false,
       });
     });
 

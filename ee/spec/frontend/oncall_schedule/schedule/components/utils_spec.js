@@ -21,7 +21,7 @@ describe('getTimeframeForWeeksView', () => {
     expect(timeframeItem.getDate()).toBe(expectedMonth.date);
   });
 
-  it('second timeframe item refers to first date of the next week week ', () => {
+  it('second timeframe item refers to first date of the next week week', () => {
     const timeframeItem = timeframe[timeframe.length - 1];
     const expectedMonth = {
       year: 2018,

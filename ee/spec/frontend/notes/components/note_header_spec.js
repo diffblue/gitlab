@@ -46,7 +46,7 @@ describe('NoteHeader component', () => {
     wrapper = null;
   });
 
-  test.each`
+  it.each`
     props                                                   | expected | message1            | message2
     ${{ author: { ...author, is_gitlab_employee: true } }}  | ${true}  | ${'renders'}        | ${'true'}
     ${{ author: { ...author, is_gitlab_employee: false } }} | ${false} | ${"doesn't render"} | ${'false'}

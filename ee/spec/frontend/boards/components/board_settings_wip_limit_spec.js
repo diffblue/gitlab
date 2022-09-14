@@ -75,7 +75,7 @@ describe('BoardSettingsWipLimit', () => {
         num   | expected
         ${1}  | ${'1 issue'}
         ${11} | ${'11 issues'}
-      `('it renders $num', ({ num, expected }) => {
+      `('renders $num', ({ num, expected }) => {
         createComponent({
           vuexState: {
             activeId: listId,

@@ -51,7 +51,7 @@ describe('BlockingMergeRequestsReport', () => {
     expect(wrapper.html()).toBe('');
   });
 
-  it('passes merged MRs as resolved issues and anything else as unresolved ', () => {
+  it('passes merged MRs as resolved issues and anything else as unresolved', () => {
     createComponent();
     const reportSectionProps = wrapper.findComponent(ReportSection).props();
 

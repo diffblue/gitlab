@@ -44,14 +44,14 @@ describe('Rule Input', () => {
     expect(Number(wrapper.element.value)).toBe(wrapper.props().rule.approvalsRequired);
   });
 
-  it('is disabled when settings cannot edit ', () => {
+  it('is disabled when settings cannot edit', () => {
     store.state.settings.canEdit = false;
     createComponent();
 
     expect(wrapper.attributes().disabled).toBe('disabled');
   });
 
-  it('is disabled when settings can edit ', () => {
+  it('is disabled when settings can edit', () => {
     createComponent();
 
     expect(wrapper.attributes().disabled).not.toBe('disabled');

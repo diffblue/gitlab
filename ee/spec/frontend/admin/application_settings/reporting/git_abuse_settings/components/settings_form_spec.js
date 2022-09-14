@@ -187,7 +187,7 @@ describe('Git abuse rate limit settings form component', () => {
       expect(findUsersAllowlist().props('excludedUsernames')).toEqual(['user1', 'user2']);
     });
 
-    it('should add user to data when user-added event is emitted ', () => {
+    it('should add user to data when user-added event is emitted', () => {
       createComponent();
 
       findUsersAllowlist().vm.$emit('user-added', 'user1');
@@ -195,7 +195,7 @@ describe('Git abuse rate limit settings form component', () => {
       expect(wrapper.vm.excludedUsers).toEqual(['user1']);
     });
 
-    it('should remove user from data when user-removed event is emitted ', () => {
+    it('should remove user from data when user-removed event is emitted', () => {
       createComponent({ props: { allowlist: ['user1', 'user2'] } });
 
       findUsersAllowlist().vm.$emit('user-removed', 'user1');

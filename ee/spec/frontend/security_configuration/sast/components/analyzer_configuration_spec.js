@@ -46,7 +46,7 @@ describe('AnalyzerConfiguration component', () => {
     initiallyChecked
     ${false}
     ${true}
-  `('with checkbox initially checked $initiallyChecked ', ({ initiallyChecked }) => {
+  `('with checkbox initially checked $initiallyChecked', ({ initiallyChecked }) => {
     beforeEach(() => {
       createComponent({
         props: { entity: { ...entity, enabled: initiallyChecked } },
@@ -92,11 +92,11 @@ describe('AnalyzerConfiguration component', () => {
         });
       });
 
-      it('it renders the nested DynamicFields component', () => {
+      it('renders the nested DynamicFields component', () => {
         expect(findDynamicFields().exists()).toBe(true);
       });
 
-      it('it emits an input event when DynamicFields emits an input event', () => {
+      it('emits an input event when DynamicFields emits an input event', () => {
         newEntities = makeEntities(1, { field: 'new field' });
         findDynamicFields().vm.$emit('input', newEntities);
 

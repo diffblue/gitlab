@@ -175,7 +175,7 @@ describe('MilestonesListSectionComponent', () => {
       expect(wrapper.find('.scroll-bottom-shadow').exists()).toBe(true);
     });
 
-    it('show the correct count of milestones ', () => {
+    it('show the correct count of milestones', () => {
       expect(findMilestoneCount().text()).toBe('2');
     });
 
