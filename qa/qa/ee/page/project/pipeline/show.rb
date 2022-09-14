@@ -20,6 +20,10 @@ module QA
                   element :licenses_tab
                   element :licenses_counter
                 end
+
+                view 'app/assets/javascripts/reports/components/report_item.vue' do
+                  element :report_item_row
+                end
               end
             end
 
@@ -34,12 +38,24 @@ module QA
               click_element(:licenses_tab)
             end
 
+            def has_approved_license?(name)
+              within_element(:report_item_row, text: name) do
+                has_element?(:status_success_icon, wait: 1)
+              end
+            end
+
+            def has_denied_license?(name)
+              within_element(:report_item_row, text: name) do
+                has_element?(:status_failed_icon, wait: 1)
+              end
+            end
+
             def has_license_count_of?(count)
               find_element(:licenses_counter).has_content?(count)
             end
 
             def wait_for_pipeline_job_replication(name)
-              QA::Runtime::Logger.debug(%Q[#{self.class.name} - wait_for_pipeline_job_replication])
+              QA::Runtime::Logger.debug(%Q(#{self.class.name} - wait_for_pipeline_job_replication))
               wait_until(max_duration: Runtime::Geo.max_file_replication_time) do
                 has_job?(name)
               end
