@@ -4242,9 +4242,6 @@ msgstr ""
 msgid "An error occurred while loading all the files."
 msgstr ""
 
-msgid "An error occurred while loading branch rules. Please try again."
-msgstr ""
-
 msgid "An error occurred while loading chart data"
 msgstr ""
 
@@ -32029,6 +32026,9 @@ msgstr ""
 msgid "ProtectedBranch|Allowed to push:"
 msgstr ""
 
+msgid "ProtectedBranch|An error occurred while loading branch rules. Please try again."
+msgstr ""
+
 msgid "ProtectedBranch|Branch"
 msgstr ""
 
@@ -32063,6 +32063,9 @@ msgid "ProtectedBranch|Protected branch (%{protected_branches_count})"
 msgstr ""
 
 msgid "ProtectedBranch|Protected branches"
+msgstr ""
+
+msgid "ProtectedBranch|Protected branches, merge request approvals, and status checks will appear here once configured."
 msgstr ""
 
 msgid "ProtectedBranch|Reject code pushes that change files listed in the CODEOWNERS file."
