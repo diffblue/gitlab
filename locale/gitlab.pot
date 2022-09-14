@@ -44263,6 +44263,9 @@ msgstr ""
 msgid "Vulnerability|File"
 msgstr ""
 
+msgid "Vulnerability|File:"
+msgstr ""
+
 msgid "Vulnerability|GitLab Security Report"
 msgstr ""
 
@@ -44285,6 +44288,9 @@ msgid "Vulnerability|Information related to how the vulnerability was discovered
 msgstr ""
 
 msgid "Vulnerability|Links"
+msgstr ""
+
+msgid "Vulnerability|Location"
 msgstr ""
 
 msgid "Vulnerability|Method"
