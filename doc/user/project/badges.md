@@ -21,7 +21,7 @@ If you find that you have to add the same badges to several projects, you may wa
 
 To add a new badge to a project:
 
-1. On the top bar, select **Menu > Projects** and find your project.
+1. On the top bar, select **Main menu > Projects** and find your project.
 1. On the left sidebar, select **Settings > General**.
 1. Expand **Badges**.
 1. Under "Link", enter the URL that the badges should point to and under
@@ -41,7 +41,7 @@ A common project badge presents the GitLab CI pipeline status.
 
 To add this badge to a project:
 
-1. On the top bar, select **Menu > Projects** and find your project.
+1. On the top bar, select **Main menu > Projects** and find your project.
 1. On the left sidebar, select **Settings > General**.
 1. Expand **Badges**.
 1. Under **Name**, enter _Pipeline Status_.
@@ -68,7 +68,7 @@ If you need individual badges for each project, either:
 
 To add a new badge to a group:
 
-1. On the top bar, select **Menu > Groups** and find your group.
+1. On the top bar, select **Main menu > Groups** and find your group.
 1. On the left sidebar, select **Settings > General**.
 1. Expand **Badges**.
 1. Under "Link", enter the URL that the badges should point to and under
