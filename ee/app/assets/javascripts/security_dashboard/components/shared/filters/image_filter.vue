@@ -1,6 +1,8 @@
 <script>
-import createFlash from '~/flash';
-import getVulnerabilityImagesQuery from 'ee/security_dashboard/graphql/queries/vulnerability_images.query.graphql';
+import { createAlert } from '~/flash';
+import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
+import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
+import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { IMAGE_FILTER_ERROR } from './constants';
 import SimpleFilter from './simple_filter.vue';
 import FilterBody from './filter_body.vue';
@@ -12,25 +14,40 @@ export default {
   apollo: {
     images: {
       loadingKey: 'isLoading',
-      query: getVulnerabilityImagesQuery,
+      query() {
+        return this.isAgentDashboard ? agentImagesQuery : projectImagesQuery;
+      },
       variables() {
         return {
-          projectPath: this.projectFullPath,
+          agentName: this.agentName,
+          projectPath: this.projectFullPath || this.fullPath,
         };
       },
-      update: (data) =>
-        data.project?.vulnerabilityImages?.nodes.map((c) => ({
-          id: c.name,
-          name: c.name,
-        })) || [],
+      update(data) {
+        const vulnerabilityImages = this.isAgentDashboard
+          ? data.project?.clusterAgent?.vulnerabilityImages
+          : data.project?.vulnerabilityImages;
+
+        return (
+          vulnerabilityImages?.nodes.map((c) => ({
+            id: c.name,
+            name: c.name,
+          })) || []
+        );
+      },
       error() {
-        createFlash({
+        createAlert({
           message: IMAGE_FILTER_ERROR,
         });
       },
     },
   },
-  inject: ['projectFullPath'],
+  inject: {
+    agentName: { default: '' },
+    dashboardType: { default: DASHBOARD_TYPES.PROJECT },
+    fullPath: { default: '' },
+    projectFullPath: { default: '' },
+  },
   data() {
     return {
       isLoading: 0,
@@ -38,6 +55,9 @@ export default {
     };
   },
   computed: {
+    isAgentDashboard() {
+      return this.dashboardType === DASHBOARD_TYPES.PROJECT && Boolean(this.agentName);
+    },
     filterObject() {
       // This is passed to the vulnerability list's GraphQL query as a variable.
       return { image: this.selectedOptions.map((x) => x.id) };

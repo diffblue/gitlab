@@ -1,4 +1,4 @@
-query vulnerabilityImages($projectPath: ID!) {
+query projectImages($projectPath: ID!) {
   project(fullPath: $projectPath) {
     id
     vulnerabilityImages {
