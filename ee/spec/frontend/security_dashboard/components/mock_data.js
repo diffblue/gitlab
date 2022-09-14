@@ -1,3 +1,26 @@
+export const agentVulnerabilityImages = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/5000207',
+      clusterAgent: {
+        id: 'gid://gitlab/Clusters::Agent/1',
+        vulnerabilityImages: {
+          nodes: [
+            {
+              name: 'long-image-name',
+              __typename: 'VulnerabilityContainerImage',
+            },
+          ],
+          __typename: 'VulnerabilityContainerImageConnection',
+        },
+
+        __typename: 'ClusterAgent',
+      },
+      __typename: 'Project',
+    },
+  },
+};
+
 export const projectVulnerabilityImages = {
   data: {
     project: {

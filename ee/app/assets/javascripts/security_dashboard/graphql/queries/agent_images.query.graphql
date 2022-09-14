@@ -1,0 +1,13 @@
+query agentImages($agentName: String!, $projectPath: ID!) {
+  project(fullPath: $projectPath) {
+    id
+    clusterAgent(name: $agentName) {
+      id
+      vulnerabilityImages {
+        nodes {
+          name
+        }
+      }
+    }
+  }
+}
