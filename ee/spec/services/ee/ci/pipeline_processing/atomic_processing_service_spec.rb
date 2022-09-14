@@ -56,11 +56,7 @@ RSpec.describe Ci::PipelineProcessing::AtomicProcessingService do
     end
 
     def create_build(name, **opts)
-      create(:ci_build, :created, pipeline: pipeline, name: name, **with_stage_opts(opts))
-    end
-
-    def with_stage_opts(opts)
-      { stage: "stage-#{opts[:stage_idx].to_i}" }.merge(opts)
+      create(:ci_build, :created, pipeline: pipeline, name: name, **opts)
     end
   end
 
