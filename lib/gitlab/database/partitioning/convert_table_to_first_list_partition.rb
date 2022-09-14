@@ -188,6 +188,7 @@ module Gitlab
           SQL
         end
 
+        # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/373887
         def sequences_owned_by(table_name)
           sequence_data = connection.exec_query(<<~SQL, nil, [table_name])
             SELECT seq_pg_class.relname AS seq_name,

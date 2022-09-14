@@ -34,7 +34,6 @@ RSpec.describe Gitlab::Database::Partitioning::ConvertTableToFirstListPartition 
   before do
     # Suppress printing migration progress
     allow(migration_context).to receive(:puts)
-
     allow(migration_context.connection).to receive(:transaction_open?).and_return(false)
 
     connection.execute(<<~SQL)
@@ -196,13 +195,11 @@ RSpec.describe Gitlab::Database::Partitioning::ConvertTableToFirstListPartition 
       end
 
       with_them do
-        it 'recovers from a fault' do
+        it 'recovers from a fault', :aggregate_failures do
           expect { converter.partition }.to raise_error(/fault/)
-
           expect(Gitlab::Database::PostgresPartition.for_parent_table(parent_table_name).count).to eq(0)
 
           expect { converter.partition }.not_to raise_error
-
           expect(Gitlab::Database::PostgresPartition.for_parent_table(parent_table_name).count).to eq(1)
         end
       end
