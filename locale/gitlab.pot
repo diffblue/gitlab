@@ -3111,6 +3111,9 @@ msgstr ""
 msgid "AdminUsers|Blocking user has the following effects:"
 msgstr ""
 
+msgid "AdminUsers|Bot"
+msgstr ""
+
 msgid "AdminUsers|Can create group"
 msgstr ""
 
