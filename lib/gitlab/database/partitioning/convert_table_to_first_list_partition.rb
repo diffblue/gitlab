@@ -128,7 +128,7 @@ module Gitlab
         end
 
         def add_partitioning_check_constraint
-          raise 'Check constraint already exists' if partitioning_constraint.present?
+          return if partitioning_constraint.present?
 
           check_body = "#{partitioning_column} = #{connection.quote(zero_partition_value)}"
           # Any constraint name would work. The constraint is found based on its definition before partitioning
