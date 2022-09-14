@@ -3,7 +3,6 @@
 FactoryBot.define do
   factory :sbom_source, class: 'Sbom::Source' do
     source_type { :dependency_file }
-    fingerprint { 'fingerprint' }
 
     source do
       {
