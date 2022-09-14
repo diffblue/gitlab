@@ -41714,6 +41714,9 @@ msgstr ""
 msgid "Total cores (CPUs)"
 msgstr ""
 
+msgid "Total issue weight"
+msgstr ""
+
 msgid "Total memory (GB)"
 msgstr ""
 
