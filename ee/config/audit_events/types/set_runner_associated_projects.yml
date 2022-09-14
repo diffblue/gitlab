@@ -1,8 +1,8 @@
 name: set_runner_associated_projects
 description: Event triggered on successful assignment of associated projects to a CI runner
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/359958
-introduced_by_mr:
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/97666
 group: "group::runner"
-milestone: 15.4
+milestone: "15.4"
 saved_to_database: false
 streamed: true
