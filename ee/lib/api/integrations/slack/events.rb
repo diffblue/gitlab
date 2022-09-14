@@ -20,12 +20,12 @@ module API
 
         namespace 'integrations/slack' do
           post :events do
-            type = params['type']
-            raise ArgumentError, "Unable to handle event type: '#{type}'" unless type == 'url_verification'
+            response = ::Integrations::SlackEventService.new(params).execute
 
             status :ok
-            UrlVerification.call(params)
-          rescue ArgumentError => e
+
+            response.payload
+          rescue StandardError => e
             # Track the error, but respond with a `2xx` because we don't want to risk
             # Slack rate-limiting, or disabling our app, due to error responses.
             # See https://api.slack.com/apis/connections/events-api.
