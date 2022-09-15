@@ -17,6 +17,11 @@ export default {
   },
   mixins: [glFeatureFlagsMixin()],
   props: {
+    codeQualityExpanded: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     filePath: {
       type: String,
       required: true,
@@ -28,7 +33,7 @@ export default {
     },
   },
   computed: {
-    tooltipText() {
+    tooltipTextCollapsed() {
       return n__('1 Code quality finding', '%d Code quality findings', this.codequality.length);
     },
     severity() {
@@ -62,15 +67,27 @@ export default {
   >
     <span ref="codeQualityIcon">
       <gl-icon
+        v-if="!$props.codeQualityExpanded"
         :id="`codequality-${filePath}:${line}`"
         :size="12"
         :name="severityIcon"
         :class="severityClass"
         class="gl-hover-cursor-pointer codequality-severity-icon"
       />
+      <button v-else class="diff-codequality-collapse gl-mx-n2">
+        <gl-icon :size="12" name="collapse" />
+      </button>
     </span>
-    <gl-tooltip data-testid="codeQualityTooltip" :target="() => $refs.codeQualityIcon">
-      {{ tooltipText }}
+    <!-- Only show tooltip when indicator is not expanded
+      a) to stay consistent with other collapsed icon on the same page
+      b) because the tooltip would be misaligned hence the negative margin
+     -->
+    <gl-tooltip
+      v-if="!$props.codeQualityExpanded"
+      data-testid="codeQualityTooltip"
+      :target="() => $refs.codeQualityIcon"
+    >
+      {{ tooltipTextCollapsed }}
     </gl-tooltip>
   </div>
   <div v-else>
