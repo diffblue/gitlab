@@ -82,6 +82,8 @@ module Bundler
 
       def checksums_from_file
         @checksums_from_file ||= JSON.parse(File.open(checksum_file).read, symbolize_names: true)
+      rescue JSON::ParserError => e
+        raise "Invalid checksum file: #{e.message}"
       end
 
       def checksum_for(gem_name, gem_version, gem_platform)

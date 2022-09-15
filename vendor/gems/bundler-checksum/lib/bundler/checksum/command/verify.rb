@@ -7,7 +7,6 @@ module Bundler::Checksum::Command
     def execute
       $stderr.puts 'Verifying bundle checksums'
 
-      local_checksums = JSON.parse(File.open(checksum_file).read, symbolize_names: true)
       verified = true
 
       local_checksums.each do |gem|
@@ -27,8 +26,8 @@ module Bundler::Checksum::Command
 
     private
 
-    def checksum_file
-      ::Bundler::Checksum.checksum_file
+    def local_checksums
+      ::Bundler::Checksum.checksums_from_file
     end
 
     def validate_gem_checksum(gem_name, gem_version, gem_platform, local_checksum)
