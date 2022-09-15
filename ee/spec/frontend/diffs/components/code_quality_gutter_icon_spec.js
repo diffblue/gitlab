@@ -1,7 +1,7 @@
 import { GlPopover, GlIcon, GlTooltip } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { shallowMount } from '@vue/test-utils';
 import CodeQualityGutterIcon from 'ee/diffs/components/code_quality_gutter_icon.vue';
 import createDiffsStore from 'jest/diffs/create_diffs_store';
 import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
@@ -15,6 +15,7 @@ Vue.use(Vuex);
 
 let wrapper;
 const findIcon = () => wrapper.findComponent(GlIcon);
+
 let store;
 let codequalityDiff;
 
@@ -136,6 +137,29 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
         expect(wrapper.findComponent(GlTooltip).text()).toContain('1 Code quality finding');
       });
     });
+
+    describe('indicator icon', () => {
+      describe('with codeQualityExpanded prop false', () => {
+        beforeEach(() => {
+          createComponent(singularFinding, true);
+        });
+
+        it('shows severity icon with correct tooltip', async () => {
+          expect(wrapper.findComponent(GlTooltip).text()).toContain('1 Code quality finding');
+          expect(wrapper.findComponent(GlIcon).props().name).toBe('severity-low');
+        });
+      });
+      describe('with codeQualityExpanded prop true', () => {
+        beforeEach(() => {
+          createComponent({ ...singularFinding, codeQualityExpanded: true }, true);
+        });
+
+        it('shows collapse icon', async () => {
+          expect(wrapper.findComponent(GlIcon).props().name).toBe('collapse');
+        });
+      });
+    });
+
     afterEach(() => {
       wrapper.destroy();
     });
