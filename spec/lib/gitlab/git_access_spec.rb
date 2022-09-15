@@ -151,6 +151,20 @@ RSpec.describe Gitlab::GitAccess, :aggregate_failures do
           it 'does not block pushes with "not found"' do
             expect { push_access_check }.to raise_forbidden(described_class::ERROR_MESSAGES[:auth_upload])
           end
+
+          context 'when ci_remove_userless_ci is disabled' do
+            before do
+              stub_feature_flags(ci_remove_userless_ci: false)
+            end
+
+            it 'allows pull access' do
+              expect { pull_access_check }.not_to raise_error
+            end
+
+            it 'does not block pushes with "not found"' do
+              expect { push_access_check }.to raise_forbidden(described_class::ERROR_MESSAGES[:auth_upload])
+            end
+          end
         end
 
         context 'when actor is DeployToken' do
@@ -733,6 +747,14 @@ RSpec.describe Gitlab::GitAccess, :aggregate_failures do
         let(:actor) { :ci }
 
         specify { expect { pull_access_check }.to raise_error Gitlab::GitAccess::ForbiddenError }
+
+        context 'when ci_remove_userless_ci disabled' do
+          before do
+            stub_feature_flags(ci_remove_userless_ci: false)
+          end
+
+          specify { expect { pull_access_check }.not_to raise_error }
+        end
       end
     end
   end

@@ -394,7 +394,9 @@ module Gitlab
       elsif user
         user.can?(:read_project, project)
       elsif ci?
-        raise ForbiddenError
+        raise ForbiddenError if Feature.enabled?(:ci_remove_userless_ci, project)
+
+        true # allow CI (build without a user) for backwards compatibility
       end || Guest.can?(:read_project, project)
     end
 
