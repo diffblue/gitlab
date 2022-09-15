@@ -159,7 +159,7 @@ export default {
     <gl-card
       v-if="!isLoadingSubscription && !hasErrorSubscription"
       class="gl-mt-3 subscription-table js-subscription-table"
-      body-class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row flex-lg-column flex-grid gl-p-0"
+      body-class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-lg-flex-direction-column! flex-grid gl-p-0"
       header-class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
     >
       <template #header>
