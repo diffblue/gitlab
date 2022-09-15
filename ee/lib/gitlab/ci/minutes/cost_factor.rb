@@ -58,13 +58,8 @@ module Gitlab
 
         def open_source_project?(project)
           fork_source = project&.fork_source
-          public_fork = fork_source&.public?
 
-          if Feature.enabled?(:ci_cost_factors_narrow_os_contribution_by_plan, project)
-            return public_fork && open_source_plan?(fork_source)
-          end
-
-          public_fork
+          fork_source&.public? && open_source_plan?(fork_source)
         end
 
         def open_source_plan?(project)
