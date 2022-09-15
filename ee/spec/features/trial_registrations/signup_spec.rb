@@ -7,6 +7,7 @@ RSpec.describe 'Trial Sign Up' do
 
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
+    stub_feature_flags(arkose_labs_signup_challenge: false)
   end
 
   describe 'on GitLab.com', :saas do

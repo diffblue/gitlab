@@ -107,4 +107,23 @@ RSpec.describe EE::RegistrationsHelper do
       )
     end
   end
+
+  describe '#arkose_labs_data' do
+    before do
+      allow(::Arkose::Settings).to receive(:arkose_public_api_key).and_return('api-key')
+      allow(::Arkose::Settings).to receive(:arkose_labs_domain).and_return('domain')
+    end
+
+    subject(:data) { helper.arkose_labs_data }
+
+    it { is_expected.to eq({ api_key: 'api-key', domain: 'domain' }) }
+
+    context 'when :arkose_labs_signup_challenge is disabled' do
+      before do
+        stub_feature_flags(arkose_labs_signup_challenge: false)
+      end
+
+      it { is_expected.to eq({}) }
+    end
+  end
 end

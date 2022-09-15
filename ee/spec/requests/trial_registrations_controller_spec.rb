@@ -7,6 +7,7 @@ RSpec.describe TrialRegistrationsController do
 
   before do
     allow(Gitlab).to receive(:com?).and_return(com)
+    stub_feature_flags(arkose_labs_signup_challenge: false)
   end
 
   describe 'POST new' do

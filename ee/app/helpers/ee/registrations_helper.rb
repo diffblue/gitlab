@@ -46,6 +46,15 @@ module EE
       }
     end
 
+    def arkose_labs_data
+      return {} unless ::Feature.enabled?(:arkose_labs_signup_challenge)
+
+      {
+        api_key: Arkose::Settings.arkose_public_api_key,
+        domain: Arkose::Settings.arkose_labs_domain
+      }
+    end
+
     private
 
     def redirect_path

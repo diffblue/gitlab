@@ -21,7 +21,9 @@ RSpec.describe "User registration", :js, :saas do
 
       # This is a feature flag to update the single-sign on registration flow
       # to match the standard registration flow
-      update_oauth_registration_flow: true
+      update_oauth_registration_flow: true,
+
+      arkose_labs_signup_challenge: false
     )
 
     stub_application_setting(
