@@ -44,8 +44,30 @@ RSpec.describe Arkose::TokenVerificationService do
       end
 
       context 'when feature arkose_labs_prevent_login is enabled' do
+        shared_examples 'returns success response with the correct payload' do
+          let(:mock_response) { Arkose::VerifyResponse.new(arkose_ec_response) }
+
+          before do
+            allow(Arkose::VerifyResponse).to receive(:new).with(arkose_ec_response).and_return(mock_response)
+          end
+
+          it 'returns a success response' do
+            expect(subject).to be_success
+          end
+
+          it "returns payload with correct :low_risk value" do
+            expect(subject.payload[:low_risk]).to eq is_low_risk
+          end
+
+          it 'includes the json response in the payload' do
+            expect(subject.payload[:response]).to eq mock_response
+          end
+        end
+
         context 'when the user solved the challenge' do
           context 'when the risk score is low' do
+            let(:is_low_risk) { true }
+
             let(:arkose_ec_response) do
               Gitlab::Json.parse(
                 File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json'))
@@ -58,13 +80,7 @@ RSpec.describe Arkose::TokenVerificationService do
               expect(WebMock).to have_requested(:post, verify_api_url)
             end
 
-            it 'returns a success response' do
-              expect(subject).to be_success
-            end
-
-            it 'returns { low_risk: true } payload' do
-              expect(subject.payload[:low_risk]).to eq true
-            end
+            it_behaves_like 'returns success response with the correct payload'
 
             it 'logs Arkose verify response' do
               allow(Gitlab::AppLogger).to receive(:info)
@@ -101,6 +117,8 @@ RSpec.describe Arkose::TokenVerificationService do
             end
 
             context 'when the session is allowlisted' do
+              let(:is_low_risk) { true }
+
               let(:arkose_ec_response) do
                 json = Gitlab::Json.parse(
                   File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response_high_risk.json'))
@@ -109,35 +127,27 @@ RSpec.describe Arkose::TokenVerificationService do
                 json
               end
 
-              it 'returns a success response' do
-                expect(subject).to be_success
-              end
-
-              it 'returns { low_risk: true } payload' do
-                expect(subject.payload[:low_risk]).to eq true
-              end
+              it_behaves_like 'returns success response with the correct payload'
             end
 
             context 'when the risk score is high' do
+              let(:is_low_risk) { false }
+
               let(:arkose_ec_response) do
                 Gitlab::Json.parse(
                   File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response_high_risk.json'))
                 )
               end
 
-              it 'returns a success response' do
-                expect(subject).to be_success
-              end
-
-              it 'returns { low_risk: false } payload' do
-                expect(subject.payload[:low_risk]).to eq false
-              end
+              it_behaves_like 'returns success response with the correct payload'
             end
           end
         end
 
         context 'when the response does not include the risk session' do
           context 'when the user solved the challenge' do
+            let(:is_low_risk) { true }
+
             let(:arkose_ec_response) do
               Gitlab::Json.parse(
                 File.read(
@@ -146,13 +156,7 @@ RSpec.describe Arkose::TokenVerificationService do
               )
             end
 
-            it 'returns a success response' do
-              expect(subject).to be_success
-            end
-
-            it 'returns { low_risk: true } payload' do
-              expect(subject.payload[:low_risk]).to eq true
-            end
+            it_behaves_like 'returns success response with the correct payload'
           end
 
           context 'when the user did not solve the challenge' do
@@ -173,17 +177,17 @@ RSpec.describe Arkose::TokenVerificationService do
         end
       end
 
-      context 'when response from Arkose is not what we expect' do
-        # For example: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/54
-
-        let(:arkose_ec_response) { 'unexpected_from_arkose' }
-
+      shared_examples 'returns success response with correct payload and logs the error' do
         it 'returns a success response' do
           expect(subject).to be_success
         end
 
         it 'returns { low_risk: true } payload' do
           expect(subject.payload[:low_risk]).to eq true
+        end
+
+        it 'does not include the json response in the payload' do
+          expect(subject.payload[:response]).to be_nil
         end
 
         it 'logs the error' do
@@ -193,6 +197,14 @@ RSpec.describe Arkose::TokenVerificationService do
         end
       end
 
+      context 'when response from Arkose is not what we expect' do
+        # For example: https://gitlab.com/gitlab-org/modelops/anti-abuse/team-tasks/-/issues/54
+
+        let(:arkose_ec_response) { 'unexpected_from_arkose' }
+
+        it_behaves_like 'returns success response with correct payload and logs the error'
+      end
+
       context 'when an error occurs during the Arkose request' do
         let(:arkose_ec_response) { {} }
 
@@ -200,19 +212,7 @@ RSpec.describe Arkose::TokenVerificationService do
           allow(Gitlab::HTTP).to receive(:perform_request).and_raise(Errno::ECONNREFUSED.new('bad connection'))
         end
 
-        it 'returns a success response' do
-          expect(subject).to be_success
-        end
-
-        it 'returns { low_risk: true } payload' do
-          expect(subject.payload[:low_risk]).to eq true
-        end
-
-        it 'logs the error' do
-          expect(Gitlab::AppLogger).to receive(:error).with(a_string_matching(/Error verifying user on Arkose: /))
-
-          subject
-        end
+        it_behaves_like 'returns success response with correct payload and logs the error'
       end
 
       context 'when user is nil' do
@@ -245,21 +245,13 @@ RSpec.describe Arkose::TokenVerificationService do
       end
     end
 
-    context 'when Arkose is configured using application settings' do
+    context 'when arkose_labs_prevent_login feature flag is enabled' do
       before do
         stub_application_setting(arkose_labs_private_api_key: arkose_labs_private_api_key)
         stub_application_setting(arkose_labs_namespace: "gitlab")
       end
 
       it_behaves_like 'interacting with Arkose verify API', "https://gitlab-verify.arkoselabs.com/api/v4/verify/"
-    end
-
-    context 'when Arkose application settings are not present, fallback to environment variables' do
-      before do
-        stub_env('ARKOSE_LABS_PRIVATE_KEY': arkose_labs_private_api_key)
-      end
-
-      it_behaves_like 'interacting with Arkose verify API', "https://verify-api.arkoselabs.com/api/v4/verify/"
     end
 
     context 'when feature arkose_labs_prevent_login is disabled' do

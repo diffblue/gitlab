@@ -4,6 +4,7 @@ module EE
   module RegistrationsController
     extend ActiveSupport::Concern
     extend ::Gitlab::Utils::Override
+    include ::Gitlab::Utils::StrongMemoize
 
     prepended do
       include ArkoseLabsCSP
@@ -35,6 +36,7 @@ module EE
       super
 
       log_audit_event(user)
+      record_arkose_data(user)
     end
 
     override :set_blocked_pending_approval?
@@ -63,10 +65,25 @@ module EE
 
     def verify_arkose_labs_token
       return true unless ::Feature.enabled?(:arkose_labs_signup_challenge)
+      return false unless params[:arkose_labs_token].present?
 
-      # TODO: verify the token with Arkose Labs Verify API
-      # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96243
-      params[:arkose_labs_token].present?
+      arkose_labs_verify_response.present?
+    end
+
+    def arkose_labs_verify_response
+      result = Arkose::TokenVerificationService.new(session_token: params[:arkose_labs_token]).execute
+      result.success? ? result.payload[:response] : nil
+    end
+    strong_memoize_attr :arkose_labs_verify_response
+
+    def record_arkose_data(user)
+      return unless ::Feature.enabled?(:arkose_labs_signup_challenge)
+      return unless arkose_labs_verify_response
+
+      Arkose::RecordUserDataService.new(
+        response: arkose_labs_verify_response,
+        user: user
+      ).execute
     end
   end
 end

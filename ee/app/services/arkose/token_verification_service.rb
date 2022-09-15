@@ -23,7 +23,11 @@ module Arkose
       RecordUserDataService.new(response: response, user: user).execute
 
       if response.allowlisted? || response.challenge_solved?
-        ServiceResponse.success(payload: { low_risk: response.allowlisted? || response.low_risk? })
+        payload = {
+          low_risk: response.allowlisted? || response.low_risk?,
+          response: response
+        }
+        ServiceResponse.success(payload: payload)
       else
         ServiceResponse.error(message: 'Captcha was not solved')
       end
