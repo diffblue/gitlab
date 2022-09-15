@@ -16,6 +16,11 @@ fragment WorkItemWidgets on WorkItemWidget {
       }
     }
   }
+  ... on WorkItemWidgetStartAndDueDate {
+    type
+    dueDate
+    startDate
+  }
   ... on WorkItemWidgetWeight {
     type
     weight

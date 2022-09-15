@@ -7,12 +7,14 @@ import workItemWeightSubscription from 'ee/work_items/graphql/work_item_weight.s
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
+  workItemDatesSubscriptionResponse,
   workItemTitleSubscriptionResponse,
   workItemResponseFactory,
   workItemWeightSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
+import workItemDatesSubscription from '~/work_items/graphql/work_item_dates.subscription.graphql';
 import workItemTitleSubscription from '~/work_items/graphql/work_item_title.subscription.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
@@ -23,6 +25,7 @@ describe('WorkItemDetail component', () => {
 
   const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
   const successHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
+  const datesSubscriptionHandler = jest.fn().mockResolvedValue(workItemDatesSubscriptionResponse);
   const titleSubscriptionHandler = jest.fn().mockResolvedValue(workItemTitleSubscriptionResponse);
   const weightSubscriptionHandler = jest.fn().mockResolvedValue(workItemWeightSubscriptionResponse);
 
@@ -36,6 +39,7 @@ describe('WorkItemDetail component', () => {
     wrapper = shallowMount(WorkItemDetail, {
       apolloProvider: createMockApollo([
         [workItemQuery, handler],
+        [workItemDatesSubscription, datesSubscriptionHandler],
         [workItemTitleSubscription, titleSubscriptionHandler],
         [workItemWeightSubscription, weightSubscriptionHandler],
         confidentialityMock,
