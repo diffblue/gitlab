@@ -247,11 +247,17 @@ module EE
 
       return false unless ::Gitlab.com?
 
+      return false unless project.public?
+
+      return false unless project.root_namespace.free_plan?
+
       return false unless project.team.member?(current_user)
 
       return false if ultimate_feature_removal_banner_dismissed?(project)
 
-      project.public? && !project.project_setting.legacy_open_source_license_available
+      return false if project.project_setting.legacy_open_source_license_available
+
+      true
     end
 
     def scheduled_for_deletion?(project)
