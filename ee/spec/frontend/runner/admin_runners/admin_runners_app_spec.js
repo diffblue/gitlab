@@ -93,7 +93,7 @@ describe('AdminRunnersApp', () => {
     `('with $version $description', ({ version, index, upgradeText }) => {
       rows = findRunnerRows().wrappers.map(extendedWrapper);
 
-      expect(rows[index].findByText(version).exists()).toBe(true);
+      expect(rows[index].text()).toContain(version);
       expect(rows[index].findComponent(RunnerUpgradeStatusBadge).text()).toBe(upgradeText);
     });
   });
