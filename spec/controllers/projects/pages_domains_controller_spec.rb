@@ -63,9 +63,15 @@ RSpec.describe Projects::PagesDomainsController do
 
   describe 'POST create' do
     it "creates a new pages domain" do
-      expect do
-        post(:create, params: request_params.merge(pages_domain: pages_domain_params))
-      end.to change { PagesDomain.count }.by(1)
+      expect { post(:create, params: request_params.merge(pages_domain: pages_domain_params)) }
+        .to change { PagesDomain.count }.by(1)
+        .and publish_event(PagesDomains::PagesDomainCreatedEvent)
+          .with(
+            project_id: project.id,
+            namespace_id: project.namespace.id,
+            root_namespace_id: project.root_namespace.id,
+            domain: pages_domain_params[:domain]
+          )
 
       created_domain = PagesDomain.reorder(:id).last
 
