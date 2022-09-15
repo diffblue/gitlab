@@ -16,6 +16,8 @@ module Gitlab
         class RedisMetric < BaseMetric
           include Gitlab::UsageDataCounters::RedisCounter
 
+          USAGE_PREFIX = "USAGE_"
+
           def initialize(time_frame:, options: {})
             super
 
@@ -31,6 +33,10 @@ module Gitlab
             options[:prefix]
           end
 
+          def include_usage_prefix?
+            options.fetch(:include_usage_prefix, true)
+          end
+
           def value
             redis_usage_data do
               total_count(redis_key)
@@ -43,8 +49,12 @@ module Gitlab
 
           private
 
+          def usage_prefix
+            include_usage_prefix? ? USAGE_PREFIX : ""
+          end
+
           def redis_key
-            "USAGE_#{prefix}_#{metric_event}".upcase
+            "#{usage_prefix}#{prefix}_#{metric_event}".upcase
           end
         end
       end
