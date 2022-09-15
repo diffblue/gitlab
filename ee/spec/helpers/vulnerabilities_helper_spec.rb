@@ -333,6 +333,7 @@ RSpec.describe VulnerabilitiesHelper do
         project_fingerprint: finding.project_fingerprint,
         remediations: finding.remediations,
         solution: kind_of(String),
+        solution_html: match(%r<p data-sourcepos.*?\<\/p>),
         evidence: kind_of(String),
         scanner: kind_of(Grape::Entity::Exposure::NestingExposure::OutputBuilder),
         request: kind_of(Grape::Entity::Exposure::NestingExposure::OutputBuilder),

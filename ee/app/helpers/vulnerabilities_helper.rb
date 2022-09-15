@@ -78,6 +78,7 @@ module VulnerabilitiesHelper
     data = Vulnerabilities::FindingSerializer.new(current_user: current_user).represent(vulnerability.finding, only: FINDING_FIELDS)
     data[:location].merge!('blob_path' => vulnerability.blob_path).compact!
     data[:description_html] = markdown(vulnerability.present.description)
+    data[:solution_html] = markdown(vulnerability.present.solution)
     data
   end
 

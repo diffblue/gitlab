@@ -85,7 +85,7 @@ export default {
       };
     },
     solutionInfo() {
-      const { solution, hasMr, remediations, state } = this.vulnerability;
+      const { solution, solutionHtml, hasMr, remediations, state } = this.vulnerability;
 
       const remediation = remediations?.[0];
       const hasDownload = Boolean(
@@ -94,13 +94,18 @@ export default {
 
       return {
         solution,
+        solutionHtml,
         remediation,
         hasDownload,
         hasMr,
       };
     },
     hasSolution() {
-      return Boolean(this.solutionInfo.solution || this.solutionInfo.remediation);
+      return Boolean(
+        this.solutionInfo.solution ||
+          this.solutionInfo.solutionHtml ||
+          this.solutionInfo.remediation,
+      );
     },
     issueLinksEndpoint() {
       return Api.buildUrl(Api.vulnerabilityIssueLinksPath).replace(':id', this.vulnerability.id);
