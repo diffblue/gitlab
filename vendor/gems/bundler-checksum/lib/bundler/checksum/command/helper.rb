@@ -12,14 +12,17 @@ module Bundler::Checksum::Command
         "https://rubygems.org/api/v1/versions/#{gem_name}.json"
       ))
 
-      if response.code == '200'
-        gem_candidates = JSON.parse(response.body, symbolize_names: true)
-        gem_candidates.select! { |g| g[:number] == gem_version.to_s }
+      return [] unless response.code == '200'
 
-        gem_candidates.map {
-          |g| {:name => gem_name, :version => gem_version, :platform => g[:platform], :checksum => g[:sha]}
-        }
-      end
+      gem_candidates = JSON.parse(response.body, symbolize_names: true)
+      gem_candidates.select! { |g| g[:number] == gem_version.to_s }
+
+      gem_candidates.map {
+        |g| {:name => gem_name, :version => gem_version, :platform => g[:platform], :checksum => g[:sha]}
+      }
+
+    rescue JSON::ParserError
+      []
     end
   end
 end

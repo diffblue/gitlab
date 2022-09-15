@@ -41,7 +41,7 @@ module Bundler::Checksum::Command
         else
           remote_checksum = Helper.remote_checksums_for_gem(spec.name, spec.version)
 
-          if remote_checksum.nil?
+          if remote_checksum.empty?
             raise "#{spec.name} #{spec.version} not found on Rubygems!"
           end
 
