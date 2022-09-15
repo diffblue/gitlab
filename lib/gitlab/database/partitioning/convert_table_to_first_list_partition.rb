@@ -37,13 +37,13 @@ module Gitlab
           create_parent_table
           attach_foreign_keys_to_parent
 
-          migration_context.with_lock_retries do
+          migration_context.with_lock_retries(raise_on_exhaustion: true) do
             migration_context.execute(sql_to_convert_table)
           end
         end
 
         def revert_partitioning
-          migration_context.with_lock_retries do
+          migration_context.with_lock_retries(raise_on_exhaustion: true) do
             migration_context.execute(<<~SQL)
               ALTER TABLE #{connection.quote_table_name(parent_table_name)}
               DETACH PARTITION #{connection.quote_table_name(table_name)};
@@ -158,7 +158,7 @@ module Gitlab
               next
             end
 
-            migration_context.with_lock_retries do
+            migration_context.with_lock_retries(raise_on_exhaustion: true) do
               migration_context.add_foreign_key(parent_table_name, fk.to_table, **fk.options)
             end
           end
