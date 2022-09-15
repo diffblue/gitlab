@@ -281,13 +281,22 @@ RSpec.shared_examples 'Value Stream Analytics Stages controller' do
       subject { get :average_duration_chart, params: params }
 
       it 'matches the response schema' do
-        fake_result = [double(MergeRequest, average_duration_in_seconds: 10, date: Time.current.to_date)]
+        fake_result = [double(MergeRequest, average_duration_in_seconds: 10, date: params[:created_after])]
 
         expect_any_instance_of(Gitlab::Analytics::CycleAnalytics::Aggregated::DataForDurationChart).to receive(:average_by_day).and_return(fake_result)
 
         subject
 
         expect(response).to match_response_schema('analytics/cycle_analytics/average_duration_chart', dir: 'ee')
+      end
+
+      it 'fills all dates between the given range' do
+        subject
+
+        expected_dates = (Date.parse(params[:created_after])..Date.parse(params[:created_before])).map(&:to_s)
+        actual_dates = json_response.map { |datapoint| datapoint['date'] }
+
+        expect(actual_dates).to eq(expected_dates)
       end
 
       include_examples 'Value Stream Analytics data endpoint examples'

@@ -53,7 +53,10 @@ export default {
     ...mapGetters(['isOverviewStageSelected']),
     ...mapGetters('durationChart', ['durationChartPlottableData']),
     hasData() {
-      return Boolean(!this.isLoading && this.durationChartPlottableData.length);
+      return Boolean(
+        !this.isLoading &&
+          this.durationChartPlottableData.some((dataPoint) => dataPoint[1] !== null),
+      );
     },
     error() {
       if (this.errorMessage) {
