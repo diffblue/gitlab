@@ -11,7 +11,8 @@ description: ''
 enabled: true
 rules:
   - type: pipeline
-    branches: []
+    branches:
+      - '*'
 actions:
   - scan: dast
     site_profile: ''
