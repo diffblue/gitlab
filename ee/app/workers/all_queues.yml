@@ -1281,6 +1281,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: merge_requests_fetch_suggested_reviewers
+  :worker_name: MergeRequests::FetchSuggestedReviewersWorker
+  :feature_category: :workflow_automation
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: merge_requests_stream_approval_audit_event
   :worker_name: MergeRequests::StreamApprovalAuditEventWorker
   :feature_category: :code_review
