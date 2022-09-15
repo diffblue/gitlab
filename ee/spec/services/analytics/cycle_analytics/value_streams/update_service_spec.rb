@@ -10,9 +10,9 @@ RSpec.describe Analytics::CycleAnalytics::ValueStreams::UpdateService do
 
   let(:value_stream) do
     create(:cycle_analytics_group_value_stream, name: 'VS 1', group: group, stages: [
-      build(:cycle_analytics_group_stage, group: group, name: 'stage 1', custom: true),
-      build(:cycle_analytics_group_stage, group: group, name: 'stage 2', custom: true)
-    ])
+             build(:cycle_analytics_group_stage, group: group, name: 'stage 1', custom: true),
+             build(:cycle_analytics_group_stage, group: group, name: 'stage 2', custom: true)
+           ])
   end
 
   let(:first_stage) { value_stream.stages.first }

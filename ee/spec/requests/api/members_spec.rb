@@ -1322,11 +1322,11 @@ RSpec.describe API::Members do
           get api(url, owner)
 
           expect_paginated_array_response(*[
-            pending_group_member.id,
-            pending_subgroup_member.id,
-            pending_project_member.id,
-            pending_invited_member.id
-          ])
+                                            pending_group_member.id,
+                                            pending_subgroup_member.id,
+                                            pending_project_member.id,
+                                            pending_invited_member.id
+                                          ])
         end
 
         context 'when the group ID is a subgroup' do

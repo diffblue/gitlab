@@ -66,10 +66,10 @@ RSpec.describe 'Updating an existing release' do
                                                      .map { |m| m[:title] }
 
         expect(returned_milestone_titles).to eq([
-          milestone_12_3.title,
-          milestone_12_4.title,
-          group_milestone.title
-        ])
+                                                  milestone_12_3.title,
+                                                  milestone_12_4.title,
+                                                  group_milestone.title
+                                                ])
       end
     end
 

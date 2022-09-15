@@ -591,11 +591,11 @@ RSpec.describe ProjectPolicy do
 
   describe 'vulnerability feedback permissions' do
     where(permission: %i[
-      read_vulnerability_feedback
-      create_vulnerability_feedback
-      update_vulnerability_feedback
-      destroy_vulnerability_feedback
-    ])
+            read_vulnerability_feedback
+            create_vulnerability_feedback
+            update_vulnerability_feedback
+            destroy_vulnerability_feedback
+          ])
 
     with_them do
       context 'with admin' do

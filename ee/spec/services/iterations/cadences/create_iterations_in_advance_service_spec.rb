@@ -343,13 +343,14 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               it 'does not modify the titles of the existing iterations (if they have any)' do
                 subject
 
-                expect(group.reload.iterations.due_date_order_asc.pluck(:title)).to eq([
-                  'Important iteration',
-                  nil,
-                  nil,
-                  nil,
-                  nil
-                ])
+                expect(group.reload.iterations.due_date_order_asc.pluck(:title)).to eq(
+                  [
+                    'Important iteration',
+                    nil,
+                    nil,
+                    nil,
+                    nil
+                  ])
               end
             end
           end

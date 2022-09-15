@@ -15,13 +15,14 @@ RSpec.describe API::Experiments do
         stub_experiments(null_hypothesis: :candidate)
 
         definition = YAML.load_file(definition_yaml).deep_symbolize_keys!
-        allow(Feature::Definition.definitions).to receive(:values).and_return([
-          Feature::Definition.new(definition_yaml.to_s, definition),
-          Feature::Definition.new(
-            'foo/non_experiment.yml',
-            definition.merge(type: 'development', name: 'non_experiment')
-          )
-        ])
+        allow(Feature::Definition.definitions).to receive(:values).and_return(
+          [
+            Feature::Definition.new(definition_yaml.to_s, definition),
+            Feature::Definition.new(
+              'foo/non_experiment.yml',
+              definition.merge(type: 'development', name: 'non_experiment')
+            )
+          ])
       end
 
       it 'returns a 401 for anonymous users' do

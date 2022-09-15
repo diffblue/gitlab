@@ -22,9 +22,7 @@ RSpec.describe 'getting merge request listings (EE) nested in a project' do
     graphql_query_for(
       :project,
       { full_path: project.full_path },
-      query_graphql_field(:merge_requests, search_params, [
-        query_graphql_field(:nodes, nil, fields)
-      ])
+      query_graphql_field(:merge_requests, search_params, [query_graphql_field(:nodes, nil, fields)])
     )
   end
 
@@ -48,12 +46,12 @@ RSpec.describe 'getting merge request listings (EE) nested in a project' do
       execute_query
 
       expect(results).to eq([
-        {
-          'approved' => false,
-          'approvalsLeft' => 3,
-          'approvalsRequired' => 5
-        }
-      ])
+                              {
+                                'approved' => false,
+                                'approvalsLeft' => 3,
+                                'approvalsRequired' => 5
+                              }
+                            ])
     end
   end
 end

@@ -73,10 +73,12 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
         allow(Gitlab::SubscriptionPortal::Client)
           .to receive(:filter_purchase_eligible_namespaces)
           .with(user, [namespace_1, namespace_2], plan_id: 'test', any_self_service_plan: nil)
-          .and_return(success: true, data: [
-            { 'id' => namespace_1.id, 'accountId' => nil, 'subscription' => { 'name' => subscription_name } },
-            { 'id' => namespace_2.id, 'accountId' => nil, 'subscription' => nil }
-          ])
+          .and_return(
+            success: true,
+            data: [
+              { 'id' => namespace_1.id, 'accountId' => nil, 'subscription' => { 'name' => subscription_name } },
+              { 'id' => namespace_2.id, 'accountId' => nil, 'subscription' => nil }
+            ])
       end
 
       it 'does not filter any namespaces', :aggregate_failures do
@@ -85,8 +87,8 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
 
         expect(result).to be_success
         expect(result.payload).to match_array [
-           namespace_result(namespace_1, nil, { 'name' => subscription_name }),
-           namespace_result(namespace_2, nil, nil)
+          namespace_result(namespace_1, nil, { 'name' => subscription_name }),
+          namespace_result(namespace_2, nil, nil)
         ]
       end
     end
@@ -107,8 +109,8 @@ RSpec.describe GitlabSubscriptions::FetchPurchaseEligibleNamespacesService do
 
         expect(result).to be_success
         expect(result.payload).to match_array [
-           namespace_result(namespace_1, account_id, nil)
-         ]
+          namespace_result(namespace_1, account_id, nil)
+        ]
       end
     end
 

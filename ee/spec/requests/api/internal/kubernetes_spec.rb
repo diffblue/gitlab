@@ -310,13 +310,14 @@ RSpec.describe API::Internal::Kubernetes do
           send_request(headers: { 'Authorization' => "Bearer #{agent_token.token}" })
 
           expect(response).to have_gitlab_http_status(:success)
-          expect(json_response['configurations']).to match_array([
-                                                 {
-                                                   "cadence" => '30 2 * * *',
-                                                   "namespaces" => %w[namespace-a namespace-b],
-                                                   "updated_at" => policy_configuration.policy_last_updated_at.to_datetime.to_s
-                                                 }
-                                               ])
+          expect(json_response['configurations']).to match_array(
+            [
+              {
+                "cadence" => '30 2 * * *',
+                "namespaces" => %w[namespace-a namespace-b],
+                "updated_at" => policy_configuration.policy_last_updated_at.to_datetime.to_s
+              }
+            ])
         end
       end
 
