@@ -24,14 +24,15 @@ describe('IssuesAnalyticsTable', () => {
     .fn()
     .mockResolvedValue(getQueryIssuesAnalyticsResponse);
 
-  const createComponent = (
+  const createComponent = ({
     apolloHandlers = [getIssuesAnalyticsData, getQueryIssuesAnalyticsSuccess],
-  ) => {
+    type = 'group',
+  } = {}) => {
     fakeApollo = createMockApollo([apolloHandlers]);
 
     wrapper = mount(IssuesAnalyticsTable, {
       apolloProvider: fakeApollo,
-      provide: { fullPath: 'gitlab-org', type: 'group' },
+      provide: { fullPath: 'gitlab-org', type },
       propsData: {
         endpoints,
       },
@@ -58,7 +59,7 @@ describe('IssuesAnalyticsTable', () => {
 
   describe('while fetching data', () => {
     beforeEach(async () => {
-      createComponent([getIssuesAnalyticsData, () => new Promise(() => {})]);
+      createComponent({ apolloHandlers: [getIssuesAnalyticsData, () => new Promise(() => {})] });
       await nextTick();
     });
 
@@ -112,9 +113,24 @@ describe('IssuesAnalyticsTable', () => {
     });
   });
 
+  describe('query', () => {
+    it.each(['group', 'project'])(
+      'calls the query with the correct variables when the the type is "%s"',
+      (type) => {
+        createComponent({ type });
+
+        expect(getQueryIssuesAnalyticsSuccess).toHaveBeenCalledWith({
+          fullPath: 'gitlab-org',
+          isGroup: type === 'group',
+          isProject: type === 'project',
+        });
+      },
+    );
+  });
+
   describe('error fetching data', () => {
     beforeEach(async () => {
-      createComponent([getIssuesAnalyticsData, jest.fn().mockRejectedValue()]);
+      createComponent({ apolloHandlers: [getIssuesAnalyticsData, jest.fn().mockRejectedValue()] });
       await nextTick();
     });
 
