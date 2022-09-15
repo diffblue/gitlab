@@ -34,7 +34,7 @@ module Bundler::Checksum::Command
     def validate_gem_checksum(gem_name, gem_version, gem_platform, local_checksum)
       remote_checksums = Helper.remote_checksums_for_gem(gem_name, gem_version)
       if remote_checksums.nil? || remote_checksums.empty?
-        $stderr.puts "#{gem_name} #{gem_version} not found on rubygems, skipping"
+        $stderr.puts "#{gem_name} #{gem_version} not found on Rubygems, skipping"
         return false
       end
 
