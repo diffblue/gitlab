@@ -77,6 +77,8 @@ RSpec.describe TimeboxesHelper do
   end
 
   describe '#legacy_milestone?' do
+    let_it_be(:issue) { create(:issue) }
+
     subject { legacy_milestone?(milestone) }
 
     describe 'without any ResourceStateEvents' do
@@ -89,7 +91,7 @@ RSpec.describe TimeboxesHelper do
       let(:milestone) { double('Milestone', created_at: Date.current) }
 
       before do
-        create_resource_state_event(Date.yesterday)
+        create_resource_state_event(issue, Date.yesterday)
       end
 
       it { is_expected.to eq(false) }
@@ -99,7 +101,7 @@ RSpec.describe TimeboxesHelper do
       let(:milestone) { double('Milestone', created_at: Date.current) }
 
       before do
-        create_resource_state_event
+        create_resource_state_event(issue)
       end
 
       it { is_expected.to eq(false) }
@@ -109,7 +111,7 @@ RSpec.describe TimeboxesHelper do
       let(:milestone) { double('Milestone', created_at: Date.yesterday) }
 
       before do
-        create_resource_state_event
+        create_resource_state_event(issue)
       end
 
       it { is_expected.to eq(true) }
@@ -156,8 +158,8 @@ RSpec.describe TimeboxesHelper do
     end
   end
 
-  def create_resource_state_event(created_at = Date.current)
-    create(:resource_state_event, created_at: created_at)
+  def create_resource_state_event(issue, created_at = Date.current)
+    create(:resource_state_event, issue: issue, created_at: created_at)
   end
 
   def stub_can_admin_milestone(ability)
