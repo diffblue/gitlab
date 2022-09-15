@@ -6,6 +6,7 @@ module EE
     extend ::Gitlab::Utils::Override
     include PreventForkingHelper
     include GroupInviteMembers
+    include ::Admin::IpRestrictionHelper
 
     prepended do
       include GeoInstrumentation
@@ -89,7 +90,7 @@ module EE
         params_ee << { insight_attributes: [:id, :project_id, :_destroy] } if current_group&.insights_available?
         params_ee << :file_template_project_id if current_group&.feature_available?(:custom_file_templates_for_namespace)
         params_ee << :custom_project_templates_group_id if current_group&.group_project_template_available?
-        params_ee << :ip_restriction_ranges if current_group&.feature_available?(:group_ip_restriction)
+        params_ee << :ip_restriction_ranges if current_group && ip_restriction_feature_available?(current_group)
         params_ee << :allowed_email_domains_list if current_group&.feature_available?(:group_allowed_email_domains)
         params_ee << :max_pages_size if can?(current_user, :update_max_pages_size)
         params_ee << :max_personal_access_token_lifetime if current_group&.personal_access_token_expiration_policy_available?

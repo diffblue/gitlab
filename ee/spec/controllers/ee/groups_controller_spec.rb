@@ -677,5 +677,45 @@ RSpec.describe GroupsController do
         put :update, params: { id: group.to_param, group: { group_feature_attributes: { wiki_access_level: visibility_level } } }
       end
     end
+
+    context 'when updating ip_restriction_ranges is specified' do
+      subject(:update_ip_ranges) do
+        put :update, params: { id: group.to_param, group: { ip_restriction_ranges: ip_address } }
+      end
+
+      let(:ip_address) { '192.168.24.78' }
+
+      before do
+        group.add_owner(user)
+        sign_in(user)
+      end
+
+      context 'for users who have the usage_ping_features activated' do
+        before do
+          stub_application_setting(usage_ping_enabled: true)
+          stub_application_setting(usage_ping_features_enabled: true)
+        end
+
+        it 'updates the attribute' do
+          update_ip_ranges
+
+          expect(response).to have_gitlab_http_status(:found)
+          expect(group.reload.ip_restriction_ranges).to eq(ip_address)
+        end
+      end
+
+      context "for users who don't have the usage_ping_features activated" do
+        before do
+          stub_application_setting(usage_ping_enabled: false)
+        end
+
+        it 'does not update the attribute' do
+          update_ip_ranges
+
+          expect(response).to have_gitlab_http_status(:found)
+          expect(group.reload.ip_restriction_ranges).not_to eq(ip_address)
+        end
+      end
+    end
   end
 end
