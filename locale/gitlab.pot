@@ -23423,7 +23423,7 @@ msgstr ""
 msgid "Learn more"
 msgstr ""
 
-msgid "Learn more about %{username}"
+msgid "Learn more about %{name}"
 msgstr ""
 
 msgid "Learn more about Auto DevOps"
@@ -43049,6 +43049,9 @@ msgid "User identity was successfully removed."
 msgstr ""
 
 msgid "User identity was successfully updated."
+msgstr ""
+
+msgid "User is blocked"
 msgstr ""
 
 msgid "User is not allowed to resolve thread"
