@@ -82,20 +82,27 @@ module EE
             can?(current_user, :admin_group, user_group) ? params : params.merge(author_id: current_user.id)
           end
 
-          def immediately_delete_subgroup?(group)
-            return false unless ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent)
-
-            group.subgroup? &&
-              group.marked_for_deletion? &&
-              group.full_path == params[:full_path] &&
-              ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+          def immediately_delete_subgroup_error(group)
+            if !group.subgroup?
+              '`permanently_remove` option is only available for subgroups.'
+            elsif !group.marked_for_deletion?
+              'Group must be marked for deletion first.'
+            elsif group.full_path != params[:full_path]
+              '`full_path` is incorrect. You must enter the complete path for the subgroup.'
+            end
           end
 
           override :delete_group
           def delete_group(group)
             return super unless group.adjourned_deletion?
 
-            return super if immediately_delete_subgroup?(group)
+            if ::Feature.enabled?(:immediate_delete_subgroup_api, group.parent) &&
+                ::Gitlab::Utils.to_boolean(params[:permanently_remove])
+              error = immediately_delete_subgroup_error(group)
+              return super if error.nil?
+
+              render_api_error!(error, 400)
+            end
 
             result = destroy_conditionally!(group) do |group|
               ::Groups::MarkForDeletionService.new(group, current_user).execute
