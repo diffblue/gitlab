@@ -25,7 +25,7 @@ query getIssuesEE(
   $iterationId: [ID]
   $iterationWildcardId: IterationWildcardId
   $weight: String
-  $healthStatus: HealthStatusFilter
+  $healthStatus: HealthStatus
   $crmContactId: String
   $crmOrganizationId: String
   $not: NegatedIssueFilterInput
