@@ -132,3 +132,29 @@ export const assignSecurityPolicyProject = async (fullPath) => {
  */
 export const convertScannersToTitleCase = (scanners = []) =>
   scanners.map((scanner) => convertToTitleCase(humanize(scanner)));
+
+/**
+ * Checks for parameters unsupported by the policy "Rule Mode"
+ * @param {Object} policy policy converted from YAML
+ * @returns {Boolean} whether the YAML is valid to be parsed into "Rule Mode"
+ */
+export const isValidPolicy = ({
+  policy = {},
+  primaryKeys = [],
+  rulesKeys = [],
+  actionsKeys = [],
+}) => {
+  const hasInvalidKey = (object, allowedValues) => {
+    return !Object.keys(object).every((item) => allowedValues.includes(item));
+  };
+
+  if (
+    hasInvalidKey(policy, primaryKeys) ||
+    (policy?.rules && policy.rules.some((rule) => hasInvalidKey(rule, rulesKeys))) ||
+    (policy?.actions && policy.actions.some((action) => hasInvalidKey(action, actionsKeys)))
+  ) {
+    return false;
+  }
+
+  return true;
+};

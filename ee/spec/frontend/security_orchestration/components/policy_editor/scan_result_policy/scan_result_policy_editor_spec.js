@@ -50,6 +50,8 @@ jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
     fullPath: 'path/to/new-project',
   }),
   modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
+  isValidPolicy: jest.requireActual('ee/security_orchestration/components/policy_editor/utils')
+    .isValidPolicy,
 }));
 
 Vue.use(Vuex);
