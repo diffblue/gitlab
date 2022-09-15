@@ -1,9 +1,9 @@
 import { GlLink, GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import JobRetryForwardDeploymentModal from '~/jobs/components/job_retry_forward_deployment_modal.vue';
+import JobRetryForwardDeploymentModal from '~/jobs/components/job/sidebar/job_retry_forward_deployment_modal.vue';
 import { JOB_RETRY_FORWARD_DEPLOYMENT_MODAL } from '~/jobs/constants';
 import createStore from '~/jobs/store';
-import job from '../mock_data';
+import job from '../../mock_data';
 
 describe('Job Retry Forward Deployment Modal', () => {
   let store;

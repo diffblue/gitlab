@@ -1,9 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import DetailRow from '~/jobs/components/sidebar_detail_row.vue';
-import SidebarJobDetailsContainer from '~/jobs/components/sidebar_job_details_container.vue';
+import DetailRow from '~/jobs/components/job/sidebar/sidebar_detail_row.vue';
+import SidebarJobDetailsContainer from '~/jobs/components/job/sidebar/sidebar_job_details_container.vue';
 import createStore from '~/jobs/store';
-import job from '../mock_data';
+import job from '../../mock_data';
 
 describe('Job Sidebar Details Container', () => {
   let store;

@@ -1,6 +1,6 @@
 import { GlBadge, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import StuckBlock from '~/jobs/components/stuck_block.vue';
+import StuckBlock from '~/jobs/components/job/stuck_block.vue';
 
 describe('Stuck Block Job component', () => {
   let wrapper;

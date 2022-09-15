@@ -1,6 +1,6 @@
 import { GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import SidebarDetailRow from '~/jobs/components/sidebar_detail_row.vue';
+import SidebarDetailRow from '~/jobs/components/job/sidebar/sidebar_detail_row.vue';
 
 describe('Sidebar detail row', () => {
   let wrapper;

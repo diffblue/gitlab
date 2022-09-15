@@ -1,12 +1,16 @@
 <script>
 import { GlLink } from '@gitlab/ui';
-import ManualVariablesForm from './manual_variables_form.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import LegacyManualVariablesForm from '~/jobs/components/job/legacy_manual_variables_form.vue';
+import ManualVariablesForm from '~/jobs/components/job/manual_variables_form.vue';
 
 export default {
   components: {
     GlLink,
+    LegacyManualVariablesForm,
     ManualVariablesForm,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     illustrationPath: {
       type: String,
@@ -50,6 +54,9 @@ export default {
     },
   },
   computed: {
+    isGraphQL() {
+      return this.glFeatures?.graphqlJobApp;
+    },
     shouldRenderManualVariables() {
       return this.playable && !this.scheduled;
     },
@@ -70,7 +77,12 @@ export default {
 
         <p v-if="content" data-testid="job-empty-state-content">{{ content }}</p>
       </div>
-      <manual-variables-form v-if="shouldRenderManualVariables" :action="action" />
+      <template v-if="isGraphQL">
+        <manual-variables-form v-if="shouldRenderManualVariables" :action="action" />
+      </template>
+      <template v-else>
+        <legacy-manual-variables-form v-if="shouldRenderManualVariables" :action="action" />
+      </template>
       <div class="text-content">
         <div v-if="action && !shouldRenderManualVariables" class="text-center">
           <gl-link

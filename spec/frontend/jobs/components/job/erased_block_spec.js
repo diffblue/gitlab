@@ -1,6 +1,6 @@
 import { GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import ErasedBlock from '~/jobs/components/erased_block.vue';
+import ErasedBlock from '~/jobs/components/job/erased_block.vue';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 
 describe('Erased block', () => {

@@ -1,6 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import CommitBlock from '~/jobs/components/commit_block.vue';
+import CommitBlock from '~/jobs/components/job/sidebar/commit_block.vue';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 
 describe('Commit block', () => {

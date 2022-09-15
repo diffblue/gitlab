@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import EmptyState from '~/jobs/components/empty_state.vue';
+import EmptyState from '~/jobs/components/job/empty_state.vue';
 
 describe('Empty State', () => {
   let wrapper;

@@ -1,7 +1,7 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import JobsSidebarRetryButton from '~/jobs/components/job_sidebar_retry_button.vue';
+import JobsSidebarRetryButton from '~/jobs/components/job/sidebar/job_sidebar_retry_button.vue';
 import createStore from '~/jobs/store';
-import job from '../mock_data';
+import job from '../../mock_data';
 
 describe('Job Sidebar Retry Button', () => {
   let store;

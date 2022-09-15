@@ -1,10 +1,10 @@
 import { GlSearchBoxByClick } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import JobLogControllers from '~/jobs/components/job_log_controllers.vue';
+import JobLogControllers from '~/jobs/components/job/job_log_controllers.vue';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import { backoffMockImplementation } from 'helpers/backoff_helper';
 import * as commonUtils from '~/lib/utils/common_utils';
-import { mockJobLog } from '../mock_data';
+import { mockJobLog } from '../../mock_data';
 
 const mockToastShow = jest.fn();
 

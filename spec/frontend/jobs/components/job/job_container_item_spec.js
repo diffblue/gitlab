@@ -2,9 +2,9 @@ import { GlIcon, GlLink } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import delayedJobFixture from 'test_fixtures/jobs/delayed.json';
-import JobContainerItem from '~/jobs/components/job_container_item.vue';
+import JobContainerItem from '~/jobs/components/job/sidebar/job_container_item.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
-import job from '../mock_data';
+import job from '../../mock_data';
 
 describe('JobContainerItem', () => {
   let wrapper;

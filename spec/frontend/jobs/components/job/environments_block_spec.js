@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import EnvironmentsBlock from '~/jobs/components/environments_block.vue';
+import EnvironmentsBlock from '~/jobs/components/job/environments_block.vue';
 
 const TEST_CLUSTER_NAME = 'test_cluster';
 const TEST_CLUSTER_PATH = 'path/to/test_cluster';

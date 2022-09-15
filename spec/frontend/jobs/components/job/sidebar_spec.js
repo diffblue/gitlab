@@ -1,14 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import ArtifactsBlock from '~/jobs/components/artifacts_block.vue';
-import JobRetryForwardDeploymentModal from '~/jobs/components/job_retry_forward_deployment_modal.vue';
-import JobRetryButton from '~/jobs/components/job_sidebar_retry_button.vue';
-import JobsContainer from '~/jobs/components/jobs_container.vue';
-import Sidebar, { forwardDeploymentFailureModalId } from '~/jobs/components/sidebar.vue';
-import StagesDropdown from '~/jobs/components/stages_dropdown.vue';
+import ArtifactsBlock from '~/jobs/components/job/sidebar/artifacts_block.vue';
+import JobRetryForwardDeploymentModal from '~/jobs/components/job/sidebar/job_retry_forward_deployment_modal.vue';
+import JobsContainer from '~/jobs/components/job/sidebar/jobs_container.vue';
+import Sidebar from '~/jobs/components/job/sidebar/sidebar.vue';
+import StagesDropdown from '~/jobs/components/job/sidebar/stages_dropdown.vue';
 import createStore from '~/jobs/store';
-import job, { jobsInStage } from '../mock_data';
+import job, { jobsInStage } from '../../mock_data';
 
 describe('Sidebar details block', () => {
   let store;
@@ -17,11 +16,8 @@ describe('Sidebar details block', () => {
   const forwardDeploymentFailure = 'forward_deployment_failure';
   const findModal = () => wrapper.findComponent(JobRetryForwardDeploymentModal);
   const findArtifactsBlock = () => wrapper.findComponent(ArtifactsBlock);
-  const findCancelButton = () => wrapper.findByTestId('cancel-button');
   const findNewIssueButton = () => wrapper.findByTestId('job-new-issue');
-  const findRetryButton = () => wrapper.findComponent(JobRetryButton);
   const findTerminalLink = () => wrapper.findByTestId('terminal-link');
-  const findEraseLink = () => wrapper.findByTestId('job-log-erase-link');
 
   const createWrapper = (props) => {
     store = createStore();
@@ -41,44 +37,6 @@ describe('Sidebar details block', () => {
 
   afterEach(() => {
     wrapper.destroy();
-  });
-
-  describe('when job log is erasable', () => {
-    const path = '/root/ci-project/-/jobs/1447/erase';
-
-    beforeEach(() => {
-      createWrapper({
-        erasePath: path,
-      });
-    });
-
-    it('renders erase job link', () => {
-      expect(findEraseLink().exists()).toBe(true);
-    });
-
-    it('erase job link has correct path', () => {
-      expect(findEraseLink().attributes('href')).toBe(path);
-    });
-  });
-
-  describe('when job log is not erasable', () => {
-    beforeEach(() => {
-      createWrapper();
-    });
-
-    it('does not render erase button', () => {
-      expect(findEraseLink().exists()).toBe(false);
-    });
-  });
-
-  describe('when there is no retry path retry', () => {
-    it('should not render a retry button', async () => {
-      createWrapper();
-      const copy = { ...job, retry_path: null };
-      await store.dispatch('receiveJobSuccess', copy);
-
-      expect(findRetryButton().exists()).toBe(false);
-    });
   });
 
   describe('without terminal path', () => {
@@ -108,15 +66,6 @@ describe('Sidebar details block', () => {
     it('should render link to new issue', () => {
       expect(findNewIssueButton().attributes('href')).toBe(job.new_issue_path);
       expect(findNewIssueButton().text()).toBe('New issue');
-    });
-
-    it('should render the retry button', () => {
-      expect(findRetryButton().props('href')).toBe(job.retry_path);
-    });
-
-    it('should render link to cancel job', () => {
-      expect(findCancelButton().props('icon')).toBe('cancel');
-      expect(findCancelButton().attributes('href')).toBe(job.cancel_path);
     });
   });
 
@@ -154,16 +103,6 @@ describe('Sidebar details block', () => {
 
       it('should render the modal', () => {
         expect(findModal().exists()).toBe(true);
-      });
-
-      it('should provide the modal id to the button and modal', () => {
-        expect(findRetryButton().props('modalId')).toBe(forwardDeploymentFailureModalId);
-        expect(findModal().props('modalId')).toBe(forwardDeploymentFailureModalId);
-      });
-
-      it('should provide the retry path to the button and modal', () => {
-        expect(findRetryButton().props('href')).toBe(job.retry_path);
-        expect(findModal().props('href')).toBe(job.retry_path);
       });
     });
   });

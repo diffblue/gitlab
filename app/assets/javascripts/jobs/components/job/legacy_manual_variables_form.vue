@@ -77,9 +77,6 @@ export default {
   },
   methods: {
     ...mapActions(['triggerManualJob']),
-    canRemove(index) {
-      return index < this.variables.length - 1;
-    },
     addEmptyVariable() {
       const lastVar = this.variables[this.variables.length - 1];
 
@@ -93,11 +90,17 @@ export default {
         id: uniqueId(),
       });
     },
+    canRemove(index) {
+      return index < this.variables.length - 1;
+    },
     deleteVariable(id) {
       this.variables.splice(
         this.variables.findIndex((el) => el.id === id),
         1,
       );
+    },
+    inputRef(type, id) {
+      return `${this.$options.inputTypes[type]}-${id}`;
     },
     trigger() {
       this.triggerBtnDisabled = true;
@@ -125,7 +128,7 @@ export default {
             </gl-input-group-text>
           </template>
           <gl-form-input
-            :ref="`${$options.inputTypes.key}-${variable.id}`"
+            :ref="inputRef('key', variable.id)"
             v-model="variable.key"
             :placeholder="$options.i18n.keyPlaceholder"
             data-testid="ci-variable-key"
@@ -140,19 +143,12 @@ export default {
             </gl-input-group-text>
           </template>
           <gl-form-input
-            :ref="`${$options.inputTypes.value}-${variable.id}`"
+            :ref="inputRef('value', variable.id)"
             v-model="variable.secretValue"
             :placeholder="$options.i18n.valuePlaceholder"
             data-testid="ci-variable-value"
           />
         </gl-form-input-group>
-
-        <!-- delete variable button placeholder to not break flex layout  -->
-        <div
-          v-if="!canRemove(index)"
-          class="gl-w-7 gl-mr-3"
-          data-testid="delete-variable-btn-placeholder"
-        ></div>
 
         <gl-button
           v-if="canRemove(index)"
@@ -164,6 +160,9 @@ export default {
           data-testid="delete-variable-btn"
           @click="deleteVariable(variable.id)"
         />
+
+        <!-- delete variable button placeholder to not break flex layout  -->
+        <div v-else class="gl-w-7 gl-mr-3" data-testid="delete-variable-btn-placeholder"></div>
       </div>
 
       <div class="gl-text-center gl-mt-5">
