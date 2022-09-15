@@ -11,6 +11,10 @@ milestone: '14.7'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76917
 time_frame: all
 data_source: redis
+instrumentation_class: RedisMetric
+options:
+  prefix: users
+  event: visiting_testing_license_compliance_full_report
 distribution:
   - ee
 tier:

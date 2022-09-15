@@ -6,11 +6,15 @@ product_stage: secure
 product_group: static_analysis
 product_category: dependency_scanning
 value_type: number
-status: active 
+status: active
 milestone: '14.7'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/76917
 time_frame: all
 data_source: redis
+instrumentation_class: RedisMetric
+options:
+  prefix: users
+  event: clicking_license_testing_visiting_external_website
 distribution:
   - ee
 tier:

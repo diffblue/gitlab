@@ -114,7 +114,6 @@ RSpec.describe Gitlab::UsageData do
           ldap_keys
           ldap_users
           license_management_jobs
-          licenses_list_views
           operations_dashboard_default_dashboard
           operations_dashboard_users_with_projects_added
           projects_jira_issuelist_active
@@ -122,15 +121,11 @@ RSpec.describe Gitlab::UsageData do
           projects_reporting_ci_cd_back_to_github
           sast_jobs
           secret_detection_jobs
-          status_page_incident_publishes
-          status_page_incident_unpublishes
           status_page_issues
           status_page_projects
           user_preferences_group_overview_details
           user_preferences_group_overview_security_dashboard
           template_repositories
-          users_visiting_testing_license_compliance_full_report
-          users_clicking_license_testing_visiting_external_website
         ))
 
       expect(count_data[:status_page_projects]).to eq(1)

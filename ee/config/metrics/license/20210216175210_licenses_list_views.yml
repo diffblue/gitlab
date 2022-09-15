@@ -10,6 +10,10 @@ value_type: string
 status: active
 time_frame: all
 data_source: redis
+instrumentation_class: RedisMetric
+options:
+  prefix: licenses_list
+  event: views
 distribution:
 - ee
 tier:
