@@ -1,6 +1,6 @@
 import { GlButton, GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import TriggerBlock from '~/jobs/components/trigger_block.vue';
+import TriggerBlock from '~/jobs/components/job/sidebar/trigger_block.vue';
 
 describe('Trigger block', () => {
   let wrapper;

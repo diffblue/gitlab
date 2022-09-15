@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
 import { trimText } from 'helpers/text_helper';
-import ArtifactsBlock from '~/jobs/components/artifacts_block.vue';
+import ArtifactsBlock from '~/jobs/components/job/sidebar/artifacts_block.vue';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 
 describe('Artifacts block', () => {

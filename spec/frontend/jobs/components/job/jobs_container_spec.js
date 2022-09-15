@@ -1,7 +1,7 @@
 import { GlLink } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import JobsContainer from '~/jobs/components/jobs_container.vue';
+import JobsContainer from '~/jobs/components/job/sidebar/jobs_container.vue';
 
 describe('Jobs List block', () => {
   let wrapper;

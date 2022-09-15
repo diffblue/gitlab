@@ -6,15 +6,15 @@ import { mapGetters, mapState, mapActions } from 'vuex';
 import { isScrolledToBottom } from '~/lib/utils/scroll_utils';
 import { __, sprintf } from '~/locale';
 import CiHeader from '~/vue_shared/components/header_ci_component.vue';
-import delayedJobMixin from '../mixins/delayed_job_mixin';
+import delayedJobMixin from '~/jobs/mixins/delayed_job_mixin';
+import Log from '~/jobs/components/log/log.vue';
 import EmptyState from './empty_state.vue';
 import EnvironmentsBlock from './environments_block.vue';
 import ErasedBlock from './erased_block.vue';
 import LogTopBar from './job_log_controllers.vue';
-import Log from './log/log.vue';
-import Sidebar from './sidebar.vue';
 import StuckBlock from './stuck_block.vue';
 import UnmetPrerequisitesBlock from './unmet_prerequisites_block.vue';
+import Sidebar from './sidebar/sidebar.vue';
 
 export default {
   name: 'JobPageApp',

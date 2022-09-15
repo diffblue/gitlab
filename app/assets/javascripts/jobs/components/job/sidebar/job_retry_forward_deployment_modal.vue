@@ -1,6 +1,6 @@
 <script>
 import { GlLink, GlModal } from '@gitlab/ui';
-import { JOB_RETRY_FORWARD_DEPLOYMENT_MODAL } from '../constants';
+import { JOB_RETRY_FORWARD_DEPLOYMENT_MODAL } from '~/jobs/constants';
 
 export default {
   name: 'JobRetryForwardDeploymentModal',

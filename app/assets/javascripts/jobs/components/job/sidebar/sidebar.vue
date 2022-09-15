@@ -1,48 +1,40 @@
 <script>
-import { GlButton, GlIcon, GlTooltipDirective } from '@gitlab/ui';
+import { GlButton, GlIcon } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { s__ } from '~/locale';
-import TooltipOnTruncate from '~/vue_shared/components/tooltip_on_truncate/tooltip_on_truncate.vue';
-import { JOB_SIDEBAR } from '../constants';
-import ArtifactsBlock from './artifacts_block.vue';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { JOB_SIDEBAR_COPY, forwardDeploymentFailureModalId } from '~/jobs/constants';
 import CommitBlock from './commit_block.vue';
-import JobRetryForwardDeploymentModal from './job_retry_forward_deployment_modal.vue';
-import JobSidebarRetryButton from './job_sidebar_retry_button.vue';
 import JobsContainer from './jobs_container.vue';
+import JobRetryForwardDeploymentModal from './job_retry_forward_deployment_modal.vue';
 import JobSidebarDetailsContainer from './sidebar_job_details_container.vue';
+import ArtifactsBlock from './artifacts_block.vue';
+import LegacySidebarHeader from './legacy_sidebar_header.vue';
+import SidebarHeader from './sidebar_header.vue';
 import StagesDropdown from './stages_dropdown.vue';
 import TriggerBlock from './trigger_block.vue';
-
-export const forwardDeploymentFailureModalId = 'forward-deployment-failure';
 
 export default {
   name: 'JobSidebar',
   i18n: {
-    eraseLogButtonLabel: s__('Job|Erase job log and artifacts'),
-    eraseLogConfirmText: s__('Job|Are you sure you want to erase this job log and artifacts?'),
-    cancelJobButtonLabel: s__('Job|Cancel'),
-    retryJobButtonLabel: s__('Job|Retry'),
-    ...JOB_SIDEBAR,
+    ...JOB_SIDEBAR_COPY,
   },
   borderTopClass: ['gl-border-t-solid', 'gl-border-t-1', 'gl-border-t-gray-100'],
   forwardDeploymentFailureModalId,
-  directives: {
-    GlTooltip: GlTooltipDirective,
-  },
   components: {
     ArtifactsBlock,
     CommitBlock,
     GlButton,
     GlIcon,
     JobsContainer,
-    JobSidebarRetryButton,
     JobRetryForwardDeploymentModal,
     JobSidebarDetailsContainer,
+    LegacySidebarHeader,
+    SidebarHeader,
     StagesDropdown,
-    TooltipOnTruncate,
     TriggerBlock,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     artifactHelpUrl: {
       type: String,
@@ -58,9 +50,6 @@ export default {
   computed: {
     ...mapGetters(['hasForwardDeploymentFailure']),
     ...mapState(['job', 'stages', 'jobs', 'selectedStage']),
-    retryButtonCategory() {
-      return this.job.status && this.job.recoverable ? 'primary' : 'secondary';
-    },
     hasArtifact() {
       // the artifact object will always have a locked property
       return Object.keys(this.job.artifact).length > 1;
@@ -68,8 +57,8 @@ export default {
     hasTriggers() {
       return !isEmpty(this.job.trigger);
     },
-    hasStages() {
-      return this.job?.pipeline?.stages?.length > 0;
+    isGraphQL() {
+      return this.glFeatures?.graphqlJobApp;
     },
     commit() {
       return this.job?.pipeline?.commit || {};
@@ -79,7 +68,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['fetchJobsForStage', 'toggleSidebar']),
+    ...mapActions(['fetchJobsForStage']),
   },
 };
 </script>
@@ -87,61 +76,8 @@ export default {
   <aside class="right-sidebar build-sidebar" data-offset-top="101" data-spy="affix">
     <div class="sidebar-container">
       <div class="blocks-container">
-        <div class="gl-py-5 gl-display-flex gl-align-items-center">
-          <tooltip-on-truncate :title="job.name" truncate-target="child"
-            ><h4 class="gl-my-0 gl-mr-3 gl-text-truncate">
-              {{ job.name }}
-            </h4>
-          </tooltip-on-truncate>
-          <div class="gl-flex-grow-1 gl-flex-shrink-0 gl-text-right">
-            <gl-button
-              v-if="erasePath"
-              v-gl-tooltip.left
-              :title="$options.i18n.eraseLogButtonLabel"
-              :aria-label="$options.i18n.eraseLogButtonLabel"
-              :href="erasePath"
-              :data-confirm="$options.i18n.eraseLogConfirmText"
-              class="gl-mr-2"
-              data-testid="job-log-erase-link"
-              data-confirm-btn-variant="danger"
-              data-method="post"
-              icon="remove"
-            />
-            <job-sidebar-retry-button
-              v-if="job.retry_path"
-              v-gl-tooltip.left
-              :title="$options.i18n.retryJobButtonLabel"
-              :aria-label="$options.i18n.retryJobButtonLabel"
-              :category="retryButtonCategory"
-              :href="job.retry_path"
-              :modal-id="$options.forwardDeploymentFailureModalId"
-              variant="confirm"
-              data-qa-selector="retry_button"
-              data-testid="retry-button"
-            />
-            <gl-button
-              v-if="job.cancel_path"
-              v-gl-tooltip.left
-              :title="$options.i18n.cancelJobButtonLabel"
-              :aria-label="$options.i18n.cancelJobButtonLabel"
-              :href="job.cancel_path"
-              variant="danger"
-              icon="cancel"
-              data-method="post"
-              data-testid="cancel-button"
-              rel="nofollow"
-            />
-          </div>
-
-          <gl-button
-            :aria-label="$options.i18n.toggleSidebar"
-            category="tertiary"
-            class="gl-md-display-none gl-ml-2"
-            icon="chevron-double-lg-right"
-            @click="toggleSidebar"
-          />
-        </div>
-
+        <sidebar-header v-if="isGraphQL" :erase-path="erasePath" :job="job" />
+        <legacy-sidebar-header v-else :erase-path="erasePath" :job="job" />
         <div
           v-if="job.terminal_path || job.new_issue_path"
           class="gl-py-5"

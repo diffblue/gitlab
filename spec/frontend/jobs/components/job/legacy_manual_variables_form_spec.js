@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import ManualVariablesForm from '~/jobs/components/manual_variables_form.vue';
+import LegacyManualVariablesForm from '~/jobs/components/job/legacy_manual_variables_form.vue';
 
 Vue.use(Vuex);
 
@@ -27,7 +27,7 @@ describe('Manual Variables Form', () => {
     });
 
     wrapper = extendedWrapper(
-      mount(ManualVariablesForm, {
+      mount(LegacyManualVariablesForm, {
         propsData: { ...requiredProps, ...props },
         store,
         stubs: {

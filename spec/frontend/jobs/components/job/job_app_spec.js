@@ -5,16 +5,16 @@ import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import delayedJobFixture from 'test_fixtures/jobs/delayed.json';
 import { TEST_HOST } from 'helpers/test_constants';
-import EmptyState from '~/jobs/components/empty_state.vue';
-import EnvironmentsBlock from '~/jobs/components/environments_block.vue';
-import ErasedBlock from '~/jobs/components/erased_block.vue';
-import JobApp from '~/jobs/components/job_app.vue';
-import Sidebar from '~/jobs/components/sidebar.vue';
-import StuckBlock from '~/jobs/components/stuck_block.vue';
-import UnmetPrerequisitesBlock from '~/jobs/components/unmet_prerequisites_block.vue';
+import EmptyState from '~/jobs/components/job/empty_state.vue';
+import EnvironmentsBlock from '~/jobs/components/job/environments_block.vue';
+import ErasedBlock from '~/jobs/components/job/erased_block.vue';
+import JobApp from '~/jobs/components/job/job_app.vue';
+import Sidebar from '~/jobs/components/job/sidebar/sidebar.vue';
+import StuckBlock from '~/jobs/components/job/stuck_block.vue';
+import UnmetPrerequisitesBlock from '~/jobs/components/job/unmet_prerequisites_block.vue';
 import createStore from '~/jobs/store';
 import axios from '~/lib/utils/axios_utils';
-import job from '../mock_data';
+import job from '../../mock_data';
 
 describe('Job App', () => {
   Vue.use(Vuex);

@@ -2,7 +2,7 @@ import { GlDropdown, GlDropdownItem, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Mousetrap from 'mousetrap';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import StagesDropdown from '~/jobs/components/stages_dropdown.vue';
+import StagesDropdown from '~/jobs/components/job/sidebar/stages_dropdown.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import * as copyToClipboard from '~/behaviors/copy_to_clipboard';
 import {
@@ -10,7 +10,7 @@ import {
   mockPipelineWithoutMR,
   mockPipelineWithAttachedMR,
   mockPipelineDetached,
-} from '../mock_data';
+} from '../../mock_data';
 
 describe('Stages Dropdown', () => {
   let wrapper;
