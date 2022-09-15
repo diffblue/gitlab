@@ -69,7 +69,9 @@ module EE
     end
 
     def trial_errors(namespace, service_result)
-      namespace&.errors&.full_messages&.to_sentence&.presence || service_result&.dig(:errors)&.presence
+      # when select action is hit directly(not via render),
+      # service_result/namespace will be nil due to @result being nil
+      namespace&.errors&.full_messages&.to_sentence&.presence || service_result&.errors&.presence
     end
 
     def show_extend_reactivate_trial_button?(namespace)

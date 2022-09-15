@@ -164,11 +164,11 @@ module Registrations
       else
         apply_trial_params = {
           uid: current_user.id,
-          trial_user: trial_user_information
+          trial_user_information: trial_user_information
         }
 
-        result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
-        trial_errors = result&.dig(:errors)
+        result = GitlabSubscriptions::ApplyTrialService.execute(apply_trial_params)
+        trial_errors = result.errors
 
         Gitlab::AppLogger.error "Failed to apply a trial with #{trial_errors}" if trial_errors.present?
       end

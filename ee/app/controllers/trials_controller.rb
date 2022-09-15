@@ -153,7 +153,7 @@ class TrialsController < ApplicationController
     gl_com_params = { gitlab_com_trial: true, sync_to_gl: true }
 
     {
-      trial_user: params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).merge(gl_com_params),
+      trial_user_information: params.permit(:namespace_id, :trial_entity, :glm_source, :glm_content).merge(gl_com_params),
       uid: current_user.id
     }
   end
@@ -221,9 +221,9 @@ class TrialsController < ApplicationController
   def apply_trial_and_redirect
     return render(:select) if @namespace.invalid?
 
-    @result = GitlabSubscriptions::ApplyTrialService.new.execute(apply_trial_params)
+    @result = GitlabSubscriptions::ApplyTrialService.new(apply_trial_params).execute
 
-    if @result&.dig(:success)
+    if @result.success?
       Gitlab::Tracking.event(self.class.name, 'create_trial', namespace: @namespace, user: current_user)
 
       if discover_group_security_flow?
