@@ -62,7 +62,7 @@ To create a project in GitLab:
 
 1. On the top bar, select **Main menu > Projects > View all projects**.
 1. On the right of the page, select **New project**.
-1. On the **Create new project** page, select an option:
+1. Select an option:
    - Create a [blank project](#create-a-blank-project).
    - Create a project from a:
       - [built-in template](#create-a-project-from-a-built-in-template).
