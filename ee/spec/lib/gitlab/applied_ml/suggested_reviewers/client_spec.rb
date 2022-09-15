@@ -4,9 +4,11 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
   let(:rpc_url) { 'example.org:1234' }
-  let(:client) { described_class.new(rpc_url: rpc_url) }
+  let(:certs) { 'arandomstring' }
   let(:stub_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderServicesPb::Stub }
   let(:response_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderPb::MergeRequestRecommendationsResV2 }
+
+  let(:client) { described_class.new(rpc_url: rpc_url, certs: certs) }
 
   describe '#suggested_reviewers' do
     let(:suggested_reviewers_request) do
@@ -16,16 +18,6 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
         top_n: 5,
         changes: ['db', 'ee/db'],
         author_username: 'joe'
-      }
-    end
-
-    let(:suggested_reviewers_grpc_request) do
-      {
-        projectId: 42,
-        mergeRequestIid: 7,
-        topN: 5,
-        changes: ['db', 'ee/db'],
-        authorUsername: 'joe'
       }
     end
 
@@ -59,6 +51,19 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       end
 
       it { is_expected.to eq(suggested_reviewers_result) }
+
+      it 'uses a ChannelCredentials object' do
+        allow(GRPC::Core::ChannelCredentials).to receive(:new).and_call_original
+
+        subject
+
+        expect(stub_class).to have_received(:new)
+          .with(
+            rpc_url,
+            instance_of(GRPC::Core::ChannelCredentials),
+            timeout: described_class::DEFAULT_TIMEOUT
+          )
+      end
     end
 
     context 'when a grpc bad status is received' do

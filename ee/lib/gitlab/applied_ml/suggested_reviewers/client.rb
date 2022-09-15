@@ -8,11 +8,11 @@ module Gitlab
         include Gitlab::AppliedMl::SuggestedReviewers::RecommenderServicesPb
 
         DEFAULT_TIMEOUT = 15
+        DEFAULT_CERTS = ::Gitlab::X509::Certificate.ca_certs_bundle
 
-        attr_reader :rpc_url
-
-        def initialize(rpc_url: '')
+        def initialize(rpc_url: '', certs: DEFAULT_CERTS)
           @rpc_url = rpc_url
+          @certs = certs
         end
 
         def suggested_reviewers(merge_request_iid:, project_id:, changes:, author_username:, top_n: 5)
@@ -39,11 +39,14 @@ module Gitlab
 
         private
 
+        attr_reader :rpc_url, :certs
+
         def get_reviewers(model_input)
           request = MergeRequestRecommendationsReqV2.new(model_input)
           # TODO: Authentication between GitLab and the suggested reviewers service is coming in
           # https://gitlab.com/gitlab-org/modelops/applied-ml/review-recommender/recommender-bot-service/-/issues/19
-          client = Stub.new(rpc_url, :this_channel_is_insecure, timeout: DEFAULT_TIMEOUT)
+          creds = GRPC::Core::ChannelCredentials.new(certs)
+          client = Stub.new(rpc_url, creds, timeout: DEFAULT_TIMEOUT)
           client.merge_request_recommendations_v2(request)
         end
       end
