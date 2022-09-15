@@ -507,7 +507,7 @@ module EE
                            .where(::Project.arel_table[:namespace_id].eq(cte.table[:id]))
                        end
 
-      projects_query.with_shared_runners.any?
+      projects_query.with_shared_runners_enabled.any?
     end
 
     def validate_shared_runner_minutes_support
