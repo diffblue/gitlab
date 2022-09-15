@@ -261,6 +261,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/boards.css"
     config.assets.precompile << "page_bundles/build.css"
     config.assets.precompile << "page_bundles/ci_status.css"
+    config.assets.precompile << "page_bundles/contributors.css"
     config.assets.precompile << "page_bundles/cycle_analytics.css"
     config.assets.precompile << "page_bundles/dashboard_projects.css"
     config.assets.precompile << "page_bundles/dev_ops_reports.css"
