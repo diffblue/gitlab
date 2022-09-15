@@ -6,8 +6,8 @@ RSpec.describe 'Creation of a new branch' do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group, :public) }
+  let_it_be(:current_user) { create(:user) }
 
-  let(:current_user) { create(:user) }
   let(:input) { { project_path: project.full_path, name: new_branch, ref: ref } }
   let(:new_branch) { "new_branch_#{SecureRandom.hex(4)}" }
   let(:ref) { 'master' }

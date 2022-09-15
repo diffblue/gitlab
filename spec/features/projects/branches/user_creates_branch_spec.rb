@@ -6,8 +6,7 @@ RSpec.describe 'User creates branch', :js do
   include Spec::Support::Helpers::Features::BranchesHelpers
 
   let_it_be(:group) { create(:group, :public) }
-
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
 
   shared_examples 'creates new branch' do
     specify do

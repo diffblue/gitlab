@@ -6,11 +6,11 @@ RSpec.describe API::Files do
   include RepoHelpers
 
   let_it_be(:group) { create(:group, :public) }
+  let_it_be_with_refind(:user) { create(:user) }
+  let_it_be(:inherited_guest) { create(:user) }
+  let_it_be(:inherited_reporter) { create(:user) }
+  let_it_be(:inherited_developer) { create(:user) }
 
-  let(:user) { create(:user) }
-  let(:inherited_guest) { create(:user) { |u| group.add_guest(u) } }
-  let(:inherited_reporter) { create(:user) { |u| group.add_reporter(u) } }
-  let(:inherited_developer) { create(:user) { |u| group.add_developer(u) } }
   let!(:project) { create(:project, :repository, namespace: user.namespace ) }
   let(:guest) { create(:user) { |u| project.add_guest(u) } }
   let(:file_path) { 'files%2Fruby%2Fpopen%2Erb' }
@@ -52,6 +52,12 @@ RSpec.describe API::Files do
     end
 
     fake_class.new
+  end
+
+  before_all do
+    group.add_guest(inherited_guest)
+    group.add_reporter(inherited_reporter)
+    group.add_developer(inherited_developer)
   end
 
   before do
@@ -325,7 +331,7 @@ RSpec.describe API::Files do
 
         get api(url, api_user, **options), params: params
 
-        expect(headers['Content-Disposition']).to eq(%Q(inline; filename="#{file_name}"; filename*=UTF-8''#{file_name}))
+        expect(headers['Content-Disposition']).to eq(%(inline; filename="#{file_name}"; filename*=UTF-8''#{file_name}))
       end
 
       context 'when mandatory params are not given' do
