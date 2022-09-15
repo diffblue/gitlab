@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlFormInput, GlSprintf, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { slugify } from '~/lib/utils/text_utility';
+import { slugify } from '../utils';
 import { SCAN_EXECUTION_RULES_LABELS } from './constants';
 
 export default {
