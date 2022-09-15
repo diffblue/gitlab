@@ -3,6 +3,7 @@ import {
   modifyPolicy,
   convertScannersToTitleCase,
   isValidPolicy,
+  slugify,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -130,5 +131,20 @@ describe('isValidPolicy', () => {
     ${{ policy: { foo: 'bar', actions: [{ zoo: 'dar' }, { goo: 'rar' }] }, primaryKeys: ['foo', 'actions'], rulesKeys: [], actionsKeys: ['zoo'] }} | ${false}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(isValidPolicy(input)).toBe(output);
+  });
+});
+
+describe('slugify', () => {
+  it.each`
+    title                                                                                      | input                   | output
+    ${'should replaces whitespaces with hyphens'}                                              | ${'My Input String'}    | ${'My-Input-String'}
+    ${'should remove trailing whitespace and replace whitespaces within string with a hyphen'} | ${' a new project '}    | ${'a-new-project'}
+    ${'should only remove non-allowed special characters'}                                     | ${'test!_bra-nch/*~'}   | ${'test-_bra-nch/*'}
+    ${'should squash to multiple non-allowed special characters'}                              | ${'test!!!!_pro-ject~'} | ${'test-_pro-ject'}
+    ${'should return empty string if only non-allowed characters'}                             | ${'дружба'}             | ${''}
+    ${'should squash multiple separators'}                                                     | ${'Test:-)'}            | ${'Test'}
+    ${'should trim any separators from the beginning and end of the slug'}                     | ${'-Test:-)-'}          | ${'Test'}
+  `('$title', ({ input, output }) => {
+    expect(slugify(input)).toBe(output);
   });
 });
