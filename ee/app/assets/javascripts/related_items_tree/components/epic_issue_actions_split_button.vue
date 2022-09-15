@@ -1,5 +1,6 @@
 <script>
 import { GlDropdown, GlDropdownDivider, GlDropdownSectionHeader, GlDropdownItem } from '@gitlab/ui';
+import { mapState } from 'vuex';
 
 import { s__, __ } from '~/locale';
 
@@ -41,6 +42,12 @@ export default {
       default: false,
     },
   },
+  computed: {
+    ...mapState(['parentItem']),
+    showEpicSection() {
+      return this.allowSubEpics && this.parentItem.userPermissions.adminEpic;
+    },
+  },
   methods: {
     change({ eventName }) {
       this.$emit(eventName);
@@ -59,7 +66,8 @@ export default {
     >
       {{ item.title }}
     </gl-dropdown-item>
-    <template v-if="allowSubEpics">
+
+    <template v-if="showEpicSection">
       <gl-dropdown-divider />
       <gl-dropdown-section-header>{{ __('Epic') }}</gl-dropdown-section-header>
       <gl-dropdown-item
