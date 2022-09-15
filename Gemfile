@@ -2,6 +2,8 @@
 
 source 'https://rubygems.org'
 
+gem 'bundler-checksum', '~> 0.1.0', path: 'vendor/gems/bundler-checksum', require: false
+
 gem 'rails', '~> 6.1.6.1'
 
 gem 'bootsnap', '~> 1.13.0', require: false
