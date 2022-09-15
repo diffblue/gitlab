@@ -726,8 +726,6 @@
 
 .frontend:rules:minimal-default-rules:
   rules:
-    - <<: *if-merge-request-approved
-      when: never
     - <<: *if-automated-merge-request
       when: never
     - <<: *if-security-merge-request
@@ -789,17 +787,13 @@
     - <<: *if-fork-merge-request
       when: never
     - <<: *if-merge-request-labels-run-all-jest
-    - <<: *if-default-refs
-      changes: *core-frontend-patterns
     - <<: *if-merge-request
-      changes: *ci-patterns
+      changes: [".gitlab/ci/rules.gitlab-ci.yml", ".gitlab/ci/frontend.gitlab-ci.yml"]
     - <<: *if-automated-merge-request
       changes: *code-backstage-patterns
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
-    - <<: *if-merge-request-not-approved
-      when: never
-    - <<: *if-default-refs
+    - <<: *if-default-branch-refs
       changes: *code-backstage-patterns
 
 .frontend:rules:jest:minimal:
@@ -824,10 +818,6 @@
     - <<: *if-merge-request-labels-run-all-jest
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
-    - <<: *if-merge-request-not-approved
-      when: never
-    - <<: *if-merge-request
-      changes: *frontend-patterns-for-as-if-foss
 
 .frontend:rules:jest:minimal:as-if-foss:
   rules:
