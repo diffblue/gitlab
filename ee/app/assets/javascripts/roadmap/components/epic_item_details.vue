@@ -3,6 +3,7 @@ import { GlButton, GlIcon, GlLoadingIcon, GlTooltip } from '@gitlab/ui';
 import { mapState } from 'vuex';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __, n__ } from '~/locale';
+import IssuableBlockedIcon from '~/vue_shared/components/issuable_blocked_icon/issuable_blocked_icon.vue';
 import { EPIC_LEVEL_MARGIN } from '../constants';
 import eventHub from '../event_hub';
 
@@ -12,6 +13,7 @@ export default {
     GlIcon,
     GlLoadingIcon,
     GlTooltip,
+    IssuableBlockedIcon,
   },
   props: {
     epic: {
@@ -117,6 +119,7 @@ export default {
     <div
       class="gl-display-flex align-items-start gl-px-3 gl-mb-1"
       :class="[epic.isChildEpic ? childMarginClassname : '']"
+      data-testid="epic-container"
     >
       <span ref="expandCollapseInfo">
         <gl-button
@@ -137,22 +140,34 @@ export default {
         boundary="viewport"
         offset="15"
         placement="topright"
+        data-testid="expand-icon-tooltip"
       >
         {{ expandIconLabel }}
       </gl-tooltip>
       <div class="overflow-hidden flex-grow-1 mx-2">
-        <a
-          :href="epic.webUrl"
-          :title="epic.title"
-          class="epic-title gl-mt-1 d-block text-body bold"
-        >
-          {{ epic.title }}
-        </a>
-        <div class="epic-group-timeframe d-flex text-secondary">
+        <div class="gl-display-flex gl-mt-1">
+          <issuable-blocked-icon
+            v-if="epic.blocked"
+            :item="epic"
+            :unique-id="epic.id"
+            issuable-type="epic"
+            data-testid="blocked-icon"
+          />
+          <a
+            :href="epic.webUrl"
+            :title="epic.title"
+            class="epic-title text-body gl-font-weight-bold"
+            data-testid="epic-title"
+          >
+            {{ epic.title }}
+          </a>
+        </div>
+        <div class="epic-group-timeframe gl-display-flex text-secondary">
           <span
             v-if="isEpicGroupDifferent && !epic.hasParent"
             :title="epic.group.fullName"
             class="epic-group"
+            data-testid="epic-group"
           >
             {{ epic.group.name }}
           </span>
@@ -163,11 +178,19 @@ export default {
         </div>
       </div>
       <template v-if="allowSubEpics">
-        <div ref="childEpicsCount" class="gl-mt-1 d-flex text-secondary text-nowrap">
+        <div
+          ref="childEpicsCount"
+          class="gl-mt-1 gl-display-flex text-secondary text-nowrap"
+          data-testid="child-epics-count"
+        >
           <gl-icon name="epic" class="align-text-bottom mr-1" />
           <p class="m-0" :aria-label="childEpicsCountText">{{ childEpicsCount }}</p>
         </div>
-        <gl-tooltip ref="childEpicsCountTooltip" :target="() => $refs.childEpicsCount">
+        <gl-tooltip
+          ref="childEpicsCountTooltip"
+          :target="() => $refs.childEpicsCount"
+          data-testid="child-epics-count-tooltip"
+        >
           <span :class="{ bold: hasFiltersApplied }">{{ childEpicsCountText }}</span>
           <span v-if="hasFiltersApplied" class="d-block">{{ childEpicsSearchText }}</span>
         </gl-tooltip>

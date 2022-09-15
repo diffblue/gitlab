@@ -10,6 +10,8 @@ fragment BaseEpic on Epic {
   hasChildren
   hasParent
   confidential
+  blocked
+  blockedByCount
   descendantWeightSum {
     closedIssues
     openedIssues
