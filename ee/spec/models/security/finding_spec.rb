@@ -223,4 +223,30 @@ RSpec.describe Security::Finding do
       end
     end
   end
+
+  describe '.active_partition_number' do
+    subject { described_class.active_partition_number }
+
+    context 'when the `security_findings` is partitioned' do
+      let(:expected_partition_number) { 9999 }
+
+      before do
+        allow_next_instance_of(Gitlab::Database::Partitioning::SingleNumericListPartition) do |partition|
+          allow(partition).to receive(:value).and_return(expected_partition_number)
+        end
+      end
+
+      it { is_expected.to match(expected_partition_number) }
+    end
+
+    context 'when the `security_findings` is not partitioned' do
+      before do
+        described_class.partitioning_strategy.current_partitions.each do |partition|
+          ApplicationRecord.connection.execute(partition.to_detach_sql)
+        end
+      end
+
+      it { is_expected.to match(1) }
+    end
+  end
 end

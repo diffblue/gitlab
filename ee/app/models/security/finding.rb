@@ -81,7 +81,15 @@ module Security
         last_finding_in_partition(partition_number)&.scan&.findings_can_be_purged?
       end
 
+      # It is possible that this logic gets called before the `security_findings` table
+      # becomes partitioned, therefore, we return the default column value if there is no partition yet.
+      def active_partition_number
+        active_partition&.value || column_defaults['partition_number']
+      end
+
       private
+
+      delegate :active_partition, to: :partitioning_strategy, private: true
 
       def last_finding_in_partition(partition_number)
         where(partition_number: partition_number).last

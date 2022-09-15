@@ -768,6 +768,30 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
+  describe '#security_findings_partition_number' do
+    let(:active_partition_number) { 555 }
+
+    subject { pipeline.security_findings_partition_number }
+
+    before do
+      allow(Security::Finding).to receive(:active_partition_number).and_return(active_partition_number)
+    end
+
+    context 'when the pipeline already has associated `security_scans`' do
+      let(:scans_partition_number) { 20 }
+
+      before do
+        create(:security_scan, findings_partition_number: scans_partition_number, pipeline: pipeline)
+      end
+
+      it { is_expected.to eq(scans_partition_number) }
+    end
+
+    context 'when the pipeline does not have associated `security_scans`' do
+      it { is_expected.to eq(active_partition_number) }
+    end
+  end
+
   describe '#has_security_findings?' do
     subject { pipeline.has_security_findings? }
 
