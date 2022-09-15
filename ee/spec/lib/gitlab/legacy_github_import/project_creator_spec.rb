@@ -7,19 +7,19 @@ RSpec.describe Gitlab::LegacyGithubImport::ProjectCreator do
   let(:namespace) { create(:group) }
 
   let(:repo) do
-    double(:repo, # rubocop:disable RSpec/VerifiedDoubles
+    {
       login: 'vim',
       name: 'vim',
       description: 'Vim',
       full_name: 'asd/vim',
       clone_url: 'https://gitlab.com/asd/vim.git',
       private: false,
-      has_wiki?: false
-    )
+      has_wiki: false
+    }
   end
 
   subject(:service) do
-    described_class.new(repo, repo.name, namespace, user, github_access_token: 'asdffg')
+    described_class.new(repo, repo[:name], namespace, user, github_access_token: 'asdffg')
   end
 
   before do
