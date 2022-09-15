@@ -38,23 +38,23 @@ describe('RelatedItemsTree', () => {
         expect(wrapper.findComponent(GlDropdownSectionHeader).text()).toContain('Issue');
       });
 
-      it('epic section is hidden when not sufficient permission', async () => {
-        wrapper = createComponent({ state: { adminEpic: false } });
+      it.each`
+        adminEpic | visible  | headerLength | atIndex | headerText
+        ${false}  | ${false} | ${1}         | ${0}    | ${'Issue'}
+        ${true}   | ${true}  | ${2}         | ${1}    | ${'Epic'}
+      `(
+        'epic section is visible=$visible when adminEpic=$adminEpic',
+        async ({ adminEpic, headerLength, atIndex, headerText }) => {
+          wrapper = createComponent({ state: { adminEpic } });
 
-        await nextTick();
-        const els = wrapper.findAllComponents(GlDropdownSectionHeader);
-        expect(els).toHaveLength(1);
-        expect(els.at(0).text()).toContain('Issue');
-      });
+          await nextTick();
 
-      it('epic section is visible when sufficient permission', async () => {
-        wrapper = createComponent({ state: { adminEpic: true } });
+          const els = wrapper.findAllComponents(GlDropdownSectionHeader);
 
-        await nextTick();
-        const els = wrapper.findAllComponents(GlDropdownSectionHeader);
-        expect(els).toHaveLength(2);
-        expect(els.at(1).text()).toContain('Epic');
-      });
+          expect(els).toHaveLength(headerLength);
+          expect(els.at(atIndex).text()).toContain(headerText);
+        },
+      );
     });
   });
 });
