@@ -178,7 +178,7 @@ RSpec.describe API::PersonalAccessTokens do
 
         where(:date_before, :date_after, :status, :result_count, :result) do
           '2022-01-03' | '2022-01-01' | :ok | 1 | lazy { [token1.id] }
-          '2022-01-01' | '2022-01-03' | 500 | 1 | lazy { [current_users_token.id] }
+          '2022-01-01' | '2022-01-03' | :ok | 0 | lazy { [] }
           '2022-01-03' | nil          | :ok | 1 | lazy { [token1.id] }
           nil          | '2022-01-01' | :ok | 2 | lazy { [token1.id, current_users_token.id] }
         end
@@ -197,7 +197,7 @@ RSpec.describe API::PersonalAccessTokens do
         where(:created_before, :created_after, :status, :result) do
           '2022-01-02' | '2022-01-02' | :ok | lazy { [token1.id] }
           '2022-01-03' | '2022-01-01' | :ok | lazy { [token1.id] }
-          '2022-01-01' | '2022-01-03' | 500 | ''
+          '2022-01-01' | '2022-01-03' | :ok | lazy { [] }
           '2022-01-03' | nil          | :ok | lazy { [token1.id] }
           nil          | '2022-01-01' | :ok | lazy { [token1.id] }
         end
@@ -220,7 +220,7 @@ RSpec.describe API::PersonalAccessTokens do
         where(:last_used_before, :last_used_after, :status, :result) do
           '2022-01-02' | '2022-01-02' | :ok | lazy { [token1.id] }
           '2022-01-03' | '2022-01-01' | :ok | lazy { [token1.id] }
-          '2022-01-01' | '2022-01-03' | 500 | ''
+          '2022-01-01' | '2022-01-03' | :ok | lazy { [] }
           '2022-01-03' | nil          | :ok | lazy { [token1.id] }
           nil          | '2022-01-01' | :ok | lazy { [token1.id] }
         end

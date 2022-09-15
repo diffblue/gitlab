@@ -33,8 +33,6 @@ module API
 
     resources :personal_access_tokens do
       get do
-        params_validator!
-
         tokens = PersonalAccessTokensFinder.new(finder_params(current_user), current_user).execute
 
         present paginate(tokens), with: Entities::PersonalAccessToken

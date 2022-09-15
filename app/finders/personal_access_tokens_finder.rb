@@ -5,8 +5,6 @@ class PersonalAccessTokensFinder
 
   delegate :build, :find, :find_by_id, :find_by_token, to: :execute
 
-  InvalidParamsError = Class.new(StandardError)
-
   def initialize(params = {}, current_user = nil)
     @params = params
     @current_user = current_user
