@@ -1,3 +1,7 @@
+export const unsupportedYaml = `---
+unsupported: attributed
+`;
+
 export const mockSecretDetectionScanExecutionManifest = `---
 name: Enforce DAST in every pipeline
 enabled: false,

@@ -2,6 +2,7 @@ import {
   assignSecurityPolicyProject,
   modifyPolicy,
   convertScannersToTitleCase,
+  isValidPolicy,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -112,5 +113,22 @@ describe('convertScannersToTitleCase', () => {
     ${'returns converted array'}                     | ${['dast', 'container_scanning', 'secret_detection']} | ${['Dast', 'Container Scanning', 'Secret Detection']}
   `('$title', ({ input, output }) => {
     expect(convertScannersToTitleCase(input)).toStrictEqual(output);
+  });
+});
+
+describe('isValidPolicy', () => {
+  it.each`
+    input                                                                                                                                          | output
+    ${{}}                                                                                                                                          | ${true}
+    ${{ policy: {}, primaryKeys: [], rulesKeys: [], actionsKeys: [] }}                                                                             | ${true}
+    ${{ policy: { foo: 'bar' }, primaryKeys: ['foo'], rulesKeys: [], actionsKeys: [] }}                                                            | ${true}
+    ${{ policy: { foo: 'bar' }, primaryKeys: [], rulesKeys: [], actionsKeys: [] }}                                                                 | ${false}
+    ${{ policy: { foo: 'bar', rules: [{ zoo: 'dar' }] }, primaryKeys: ['foo', 'rules'], rulesKeys: ['zoo'], actionsKeys: [] }}                     | ${true}
+    ${{ policy: { foo: 'bar', rules: [{ zoo: 'dar' }] }, primaryKeys: ['foo', 'rules'], rulesKeys: [], actionsKeys: [] }}                          | ${false}
+    ${{ policy: { foo: 'bar', actions: [{ zoo: 'dar' }] }, primaryKeys: ['foo', 'actions'], rulesKeys: [], actionsKeys: ['zoo'] }}                 | ${true}
+    ${{ policy: { foo: 'bar', actions: [{ zoo: 'dar' }] }, primaryKeys: ['foo', 'actions'], rulesKeys: [], actionsKeys: [] }}                      | ${false}
+    ${{ policy: { foo: 'bar', actions: [{ zoo: 'dar' }, { goo: 'rar' }] }, primaryKeys: ['foo', 'actions'], rulesKeys: [], actionsKeys: ['zoo'] }} | ${false}
+  `('returns `$output` when passed `$input`', ({ input, output }) => {
+    expect(isValidPolicy(input)).toBe(output);
   });
 });
