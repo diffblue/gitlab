@@ -31,11 +31,10 @@ describe('RelatedItemsTree', () => {
   describe('EpicActionsSplitButton', () => {
     describe('template', () => {
       let wrapper;
-      beforeEach(() => {
-        wrapper = createComponent();
-      });
 
       it('renders issue section', () => {
+        wrapper = createComponent();
+
         expect(wrapper.findComponent(GlDropdownSectionHeader).text()).toContain('Issue');
       });
 
