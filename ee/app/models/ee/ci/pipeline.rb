@@ -194,6 +194,17 @@ module EE
         project.can_store_security_reports? && has_security_reports?
       end
 
+      # We want all the `security_findings` records for a particular pipeline to be stored in
+      # the same partition, therefore, we check if the pipeline already has a `security_scan`.
+      #
+      # - If it has, then we use the partition number of the existing security_scan to make sure
+      # that the new `security_findings` will be stored in the same partition with the existing ones.
+      # - If it does not have a security_scan yet, then we can basically use the latest partition
+      # of the `security_findings` table.
+      def security_findings_partition_number
+        @security_findings_partition_number ||= security_scans.first&.findings_partition_number || Security::Finding.active_partition_number
+      end
+
       def has_security_findings?
         security_findings.exists?
       end

@@ -58,6 +58,7 @@ module Security
     def finding_data(report_finding)
       {
         scan_id: security_scan.id,
+        partition_number: security_scan.findings_partition_number,
         severity: report_finding.severity,
         confidence: report_finding.confidence,
         uuid: report_finding.uuid,

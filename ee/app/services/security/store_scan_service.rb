@@ -36,6 +36,8 @@ module Security
     attr_reader :artifact, :known_keys, :deduplicate
 
     delegate :project, :job, :security_report, to: :artifact, private: true
+    delegate :pipeline, to: :job, private: true
+    delegate :security_findings_partition_number, to: :pipeline, private: true
 
     def override_finding_uuids!
       OverrideUuidsService.execute(security_report)
@@ -50,6 +52,7 @@ module Security
         scan.processing_errors = security_report.errors.map(&:stringify_keys) if security_report.errored?
         scan.processing_warnings = security_report.warnings.map(&:stringify_keys) if security_report.warnings?
         scan.status = initial_scan_status
+        scan.findings_partition_number = security_findings_partition_number
       end
     end
 

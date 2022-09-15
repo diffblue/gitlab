@@ -65,6 +65,20 @@ RSpec.describe Security::StoreScanService do
       expect { store_scan }.to change { Security::Scan.succeeded.count }.by(1)
     end
 
+    describe 'setting the findings_partition_number' do
+      let(:partition_number) { 222 }
+      let(:pipeline) { artifact.job.pipeline }
+      let(:scans_in_partition) { Security::Scan.where(findings_partition_number: partition_number) }
+
+      before do
+        allow(pipeline).to receive(:security_findings_partition_number).and_return(partition_number)
+      end
+
+      it 'sets the correct value' do
+        expect { store_scan }.to change { scans_in_partition.count }.by(1)
+      end
+    end
+
     context 'when the `vulnerability_finding_signatures` licensed feature is available' do
       before do
         stub_licensed_features(vulnerability_finding_signatures: true)

@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Security::StoreFindingsMetadataService do
-  let_it_be(:security_scan) { create(:security_scan) }
+  let_it_be(:findings_partition_number) { Security::Finding.active_partition_number }
+  let_it_be(:security_scan) { create(:security_scan, findings_partition_number: findings_partition_number) }
   let_it_be(:project) { security_scan.project }
   let_it_be(:security_finding_1) { build(:ci_reports_security_finding) }
   let_it_be(:security_finding_2) { build(:ci_reports_security_finding) }
@@ -46,11 +47,23 @@ RSpec.describe Security::StoreFindingsMetadataService do
       it 'creates the security finding entries in database' do
         store_findings
 
-        expect(security_scan.findings.reload.as_json(only: [:uuid, :deduplicated]))
+        expect(security_scan.findings.reload.as_json(only: [:partition_number, :uuid, :deduplicated]))
           .to match_array([
-            { "uuid" => security_finding_1.uuid, "deduplicated" => true },
-            { "uuid" => security_finding_2.uuid, "deduplicated" => false },
-            { "uuid" => security_finding_3.uuid, "deduplicated" => true }
+            {
+              "partition_number" => findings_partition_number,
+              "uuid" => security_finding_1.uuid,
+              "deduplicated" => true
+            },
+            {
+              "partition_number" => findings_partition_number,
+              "uuid" => security_finding_2.uuid,
+              "deduplicated" => false
+            },
+            {
+              "partition_number" => findings_partition_number,
+              "uuid" => security_finding_3.uuid,
+              "deduplicated" => true
+            }
           ])
       end
 
