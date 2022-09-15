@@ -226,9 +226,8 @@ describe('Vulnerability Footer', () => {
     it('does show solution card when there is one', () => {
       const properties = { remediations: [{ diff: [{}] }], solution: 'some solution' };
       createWrapper({ properties, discussionsHandler: discussionsHandler({ discussions: [] }) });
-
       expect(wrapper.findComponent(SolutionCard).exists()).toBe(true);
-      expect(wrapper.findComponent(SolutionCard).props()).toEqual({
+      expect(wrapper.findComponent(SolutionCard).props()).toMatchObject({
         solution: properties.solution,
         remediation: properties.remediations[0],
         hasDownload: true,
@@ -239,6 +238,13 @@ describe('Vulnerability Footer', () => {
     it('does not show solution card when there is not one', () => {
       createWrapper();
       expect(wrapper.findComponent(SolutionCard).exists()).toBe(false);
+    });
+
+    it('shows the solution if it exists', () => {
+      createWrapper({ properties: { solutionHtml: 'vulnerability solution <code>sample</code>' } });
+      expect(wrapper.findComponent(SolutionCard).html()).toContain(
+        'vulnerability solution <code>sample</code>',
+      );
     });
   });
 

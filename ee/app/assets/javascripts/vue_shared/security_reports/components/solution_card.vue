@@ -1,11 +1,20 @@
 <script>
+import { GlSafeHtmlDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 export default {
+  directives: {
+    SafeHtml: GlSafeHtmlDirective,
+  },
   props: {
     solution: {
       type: String,
-      default: '',
+      default: null,
+      required: false,
+    },
+    solutionHtml: {
+      type: String,
+      default: null,
       required: false,
     },
     remediation: {
@@ -26,7 +35,7 @@ export default {
   },
   computed: {
     solutionText() {
-      return this.solution || (this.remediation && this.remediation.summary);
+      return this.solutionHtml || this.solution || (this.remediation && this.remediation.summary);
     },
     showCreateMergeRequestMsg() {
       return !this.hasMr && Boolean(this.remediation) && this.hasDownload;
@@ -43,9 +52,7 @@ export default {
   <div v-if="solutionText" class="md my-4">
     <h3>{{ s__('ciReport|Solution') }}</h3>
     <div ref="solution-text">
-      <p>
-        {{ solutionText }}
-      </p>
+      <p v-safe-html="solutionText"></p>
       <p v-if="showCreateMergeRequestMsg" class="gl-font-style-italic">
         {{ $options.i18n.createMergeRequestMsg }}
       </p>
