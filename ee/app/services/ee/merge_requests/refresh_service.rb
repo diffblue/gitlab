@@ -19,7 +19,9 @@ module EE
       end
 
       def reset_approvals_for_merge_requests(ref, newrev)
-        MergeRequestResetApprovalsWorker.perform_async(project.id, current_user.id, ref, newrev)
+        # We need to make sure the code owner approval rules have all been synced first, so we delay for 10s
+        # We are trying to pin down and fix the race condition: https://gitlab.com/gitlab-org/gitlab/-/issues/373846
+        MergeRequestResetApprovalsWorker.perform_in(10.seconds, project.id, current_user.id, ref, newrev)
       end
 
       # @return [Hash<Integer, MergeRequestDiff>] Diffs prior to code push, mapped from merge request id
