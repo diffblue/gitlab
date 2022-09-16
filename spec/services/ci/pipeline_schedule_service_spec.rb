@@ -3,14 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe Ci::PipelineScheduleService do
-  let(:project) { create(:project) }
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project) }
+
   let(:service) { described_class.new(project, user) }
 
   describe '#execute' do
     subject { service.execute(schedule) }
 
-    let(:schedule) { create(:ci_pipeline_schedule, project: project, owner: user) }
+    let_it_be(:schedule) { create(:ci_pipeline_schedule, project: project, owner: user) }
 
     it 'schedules next run' do
       expect(schedule).to receive(:schedule_next_run!)
@@ -34,6 +35,8 @@ RSpec.describe Ci::PipelineScheduleService do
     end
 
     context 'when the project is missing' do
+      let(:project) { create(:project) }
+
       before do
         project.delete
       end
