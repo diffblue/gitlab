@@ -96,9 +96,29 @@ describe('IssuesAnalyticsTable', () => {
       });
 
       it('displays the correct issue details', () => {
-        const { title, iid, epic } = mockIssuesApiResponse[0];
+        const {
+          title,
+          iid,
+          epic,
+          labels: { count, nodes },
+        } = mockIssuesApiResponse[0];
 
-        expect(findIssueDetailsCol(0).text()).toBe(`${title} #${iid} &${epic.iid}`);
+        expect(findIssueDetailsCol(0).text().replace(/\s+/g, '')).toBe(
+          `${title}#${iid}&${epic.iid}${count}${nodes[0].title}`,
+        );
+      });
+
+      it('displays the correct issue details labels', () => {
+        const { iid } = mockIssuesApiResponse[0];
+
+        const firstDetails = findIssueDetailsCol(0);
+        const labelsId = firstDetails.findComponent('[data-testid="labels"]').attributes('id');
+        const labelsPopoverTarget = firstDetails
+          .findComponent('[data-testid="labelsPopover"]')
+          .props('target');
+
+        expect(labelsId).toBe(`${iid}-labels`);
+        expect(labelsId).toBe(labelsPopoverTarget);
       });
 
       it('displays the correct issue age', () => {

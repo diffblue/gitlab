@@ -8,8 +8,16 @@ const createIssue = (values) => {
       __typename: 'Epic',
     },
     labels: {
-      count: 0,
-      nodes: [],
+      count: 1,
+      nodes: [
+        {
+          id: 'gid://gitlab/GroupLabel/25',
+          color: '#5fa752',
+          title: 'label',
+          description: null,
+          __typename: 'Label',
+        },
+      ],
       __typename: 'LabelConnection',
     },
     milestone: {
@@ -29,17 +37,17 @@ const createIssue = (values) => {
       avatarUrl: 'link-to-avatar',
       __typename: 'UserCore',
     },
-    webUrl: `issues/${values.id}`,
-    iid: values.id,
+    webUrl: `issues/${values.iid}`,
+    iid: values.iid,
     ...values,
     __typename: 'Issue',
   };
 };
 
 export const mockIssuesApiResponse = [
-  createIssue({ iid: 12345, title: 'Issue 1', createdAt: '2020-01-08' }),
-  createIssue({ iid: 23456, title: 'Issue 2', createdAt: '2020-01-07' }),
-  createIssue({ iid: 34567, title: 'Issue 3', createdAt: '2020-01-6' }),
+  createIssue({ iid: 12345, title: 'Issue-1', createdAt: '2020-01-08' }),
+  createIssue({ iid: 23456, title: 'Issue-2', createdAt: '2020-01-07' }),
+  createIssue({ iid: 34567, title: 'Issue-3', createdAt: '2020-01-6' }),
 ];
 
 export const tableHeaders = [

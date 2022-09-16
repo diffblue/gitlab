@@ -184,14 +184,19 @@ export default {
           <li>{{ formatIssueId(item.iid) }}</li>
           <li v-if="item.epic">{{ formatEpicId(item.epic.iid) }}</li>
           <li v-if="item.labels.count">
-            <span :id="`${item.id}-labels`" class="gl-display-flex gl-align-items-center">
+            <span
+              :id="`${item.iid}-labels`"
+              class="gl-display-flex gl-align-items-center"
+              data-testid="labels"
+            >
               <gl-icon name="label" class="gl-mr-1" />
               {{ item.labels.count }}
             </span>
             <gl-popover
-              :target="`${item.id}-labels`"
+              :target="`${item.iid}-labels`"
               placement="top"
               :css-classes="['issue-labels-popover']"
+              data-testid="labelsPopover"
             >
               <div class="gl-display-flex gl-justify-content-start gl-flex-wrap gl-mr-1">
                 <gl-label
