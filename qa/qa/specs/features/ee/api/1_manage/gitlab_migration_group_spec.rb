@@ -2,7 +2,10 @@
 
 module QA
   RSpec.describe 'Manage', :reliable, requires_admin: 'creates a user via API' do
-    describe 'Gitlab migration' do
+    describe 'Gitlab migration', quarantine: {
+      type: :investigating,
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/367568'
+    } do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:api_client) { Runtime::API::Client.new(user: user) }
       # validate different epic author is migrated correctly
