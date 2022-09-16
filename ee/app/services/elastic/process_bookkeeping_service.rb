@@ -196,14 +196,19 @@ module Elastic
       refs.each_with_index do |ref, index|
         next if @failures.include?(ref)
 
+        klass = ref.klass.to_s
+
         logger.info(
           message: 'indexing_done',
-          model_class: ref.klass.to_s,
+          model_class: klass,
           model_id: ref.db_id,
           es_id: ref.es_id,
           es_parent: ref.es_parent,
-          search_indexing_duration_s: indexing_durations[index]
+          search_indexing_duration_s: indexing_durations[index],
+          search_indexing_flushing_duration_s: flushing_duration_s
         )
+
+        Gitlab::Metrics::GlobalSearchIndexingSlis.record_apdex(elapsed: flushing_duration_s, type: klass)
       end
 
       specs_buffer.count

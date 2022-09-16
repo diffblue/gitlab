@@ -233,7 +233,8 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
           model_id: an_instance_of(String),
           es_id: an_instance_of(String),
           es_parent: "project_1",
-          search_indexing_duration_s: an_instance_of(Float)
+          search_indexing_duration_s: an_instance_of(Float),
+          search_indexing_flushing_duration_s: an_instance_of(Float)
         ).exactly(fake_refs.size).times
 
         described_class.new.execute
@@ -251,7 +252,8 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
           model_id: failed.db_id,
           es_id: failed.es_id,
           es_parent: "project_1",
-          search_indexing_duration_s: an_instance_of(Float)
+          search_indexing_duration_s: an_instance_of(Float),
+          search_indexing_flushing_duration_s: an_instance_of(Float)
         )
 
         expect(logger_double).to receive(:info).with(
@@ -260,7 +262,34 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
           model_id: an_instance_of(String),
           es_id: an_instance_of(String),
           es_parent: "project_1",
-          search_indexing_duration_s: an_instance_of(Float)
+          search_indexing_duration_s: an_instance_of(Float),
+          search_indexing_flushing_duration_s: an_instance_of(Float)
+        ).exactly(fake_refs.size - 1).times
+
+        described_class.new.execute
+      end
+
+      it 'increments the custom indexing sli apdex' do
+        described_class.track!(*fake_refs)
+        expect_processing(*fake_refs)
+
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex).with(
+          elapsed: a_kind_of(Numeric),
+          type: 'Issue'
+        ).exactly(fake_refs.size).times
+
+        described_class.new.execute
+      end
+
+      it 'does not increment the custom indexing sli apdex for failed indexing' do
+        described_class.track!(*fake_refs)
+
+        failed = fake_refs[0]
+        expect_processing(*fake_refs, failures: [failed])
+
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex).with(
+          elapsed: a_kind_of(Numeric),
+          type: 'Issue'
         ).exactly(fake_refs.size - 1).times
 
         described_class.new.execute
