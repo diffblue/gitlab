@@ -35,11 +35,7 @@ RSpec.describe Ci::PipelineScheduleService do
     end
 
     context 'when the project is missing' do
-      let(:project) { create(:project) }
-
-      before do
-        project.delete
-      end
+      let(:project) { create(:project).tap(&:delete) }
 
       it 'does not raise an exception' do
         expect { subject }.not_to raise_error
