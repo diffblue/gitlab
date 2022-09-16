@@ -7,22 +7,27 @@ import IdentityVerificationWizard from './components/wizard.vue';
 export const initIdentityVerification = () => {
   const el = document.getElementById('js-identity-verification');
 
-  if (!el) {
-    return false;
-  }
+  if (!el) return false;
 
-  const { creditCardFormId, creditCardCompleted } = el.dataset;
+  const {
+    emailObfuscated,
+    emailVerifyPath,
+    emailResendPath,
+    creditCardFormId,
+    creditCardCompleted,
+  } = el.dataset;
 
   return new Vue({
     el,
     apolloProvider,
     name: 'IdentityVerificationRoot',
     provide: {
+      emailObfuscated,
+      emailVerifyPath,
+      emailResendPath,
       creditCardFormId,
       creditCardCompleted: parseBoolean(creditCardCompleted),
     },
-    render(createElement) {
-      return createElement(IdentityVerificationWizard);
-    },
+    render: (createElement) => createElement(IdentityVerificationWizard),
   });
 };

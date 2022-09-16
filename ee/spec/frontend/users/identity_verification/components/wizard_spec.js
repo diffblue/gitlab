@@ -1,30 +1,32 @@
 import { shallowMount } from '@vue/test-utils';
-
 import IdentityVerificationWizard from 'ee/users/identity_verification/components/wizard.vue';
-import PhoneVerification from 'ee/users/identity_verification/components/phone_verification.vue';
+import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
 
-describe('Identity verification wizard component', () => {
+describe('IdentityVerificationWizard', () => {
   let wrapper;
 
-  const findPhoneVerification = () => wrapper.findComponent(PhoneVerification);
-
-  const createComponent = ({ props } = { props: {} }) => {
-    wrapper = shallowMount(IdentityVerificationWizard, {
-      propsData: {
-        ...props,
-      },
-    });
+  const createComponent = () => {
+    wrapper = shallowMount(IdentityVerificationWizard);
   };
+
+  const findHeader = () => wrapper.find('h2');
+  const findEmailVerification = () => wrapper.findComponent(EmailVerification);
+
+  beforeEach(() => {
+    createComponent();
+  });
 
   afterEach(() => {
     wrapper.destroy();
   });
 
-  describe('PhoneVerification', () => {
-    it('should render PhoneVerification component', () => {
-      createComponent();
+  describe('rendering the component', () => {
+    it('contains a header', () => {
+      expect(findHeader().text()).toBe('Help us keep GitLab secure');
+    });
 
-      expect(findPhoneVerification().exists()).toBe(true);
+    it('renders the EmailVerification component', () => {
+      expect(findEmailVerification().exists()).toBe(true);
     });
   });
 });
