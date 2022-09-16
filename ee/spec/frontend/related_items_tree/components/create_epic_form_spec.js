@@ -114,7 +114,7 @@ describe('RelatedItemsTree', () => {
           wrapper.findComponent(GlFormInput).vm.$emit('input', value);
           wrapper.vm.onFormSubmit();
 
-          expect(wrapper.emitted().createEpicFormSubmit).toBeTruthy();
+          expect(wrapper.emitted().createEpicFormSubmit).toHaveLength(1);
           expect(wrapper.emitted().createEpicFormSubmit[0]).toEqual([
             {
               value,
@@ -128,7 +128,7 @@ describe('RelatedItemsTree', () => {
         it('emits `createEpicFormCancel` event on component', () => {
           wrapper.vm.onFormCancel();
 
-          expect(wrapper.emitted().createEpicFormCancel).toBeTruthy();
+          expect(wrapper.emitted().createEpicFormCancel).toHaveLength(1);
         });
       });
 

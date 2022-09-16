@@ -255,7 +255,7 @@ describe('RequirementForm', () => {
           issuableDescription,
         });
 
-        expect(wrapper.emitted('save')).toBeTruthy();
+        expect(wrapper.emitted('save')).toHaveLength(1);
         expect(wrapper.emitted('save')[0]).toEqual([
           {
             title: issuableTitle,
@@ -271,7 +271,7 @@ describe('RequirementForm', () => {
           issuableDescription: description,
         });
 
-        expect(wrapperWithRequirement.emitted('save')).toBeTruthy();
+        expect(wrapperWithRequirement.emitted('save')).toHaveLength(1);
         expect(wrapperWithRequirement.emitted('save')[0]).toEqual([
           {
             iid,
@@ -287,13 +287,13 @@ describe('RequirementForm', () => {
       it('emits `drawer-close` event when form create mode', () => {
         wrapper.vm.handleCancel();
 
-        expect(wrapper.emitted('drawer-close')).toBeTruthy();
+        expect(wrapper.emitted('drawer-close')).toHaveLength(1);
       });
 
       it('emits `disable-edit` event when form edit mode', () => {
         wrapperWithRequirement.vm.handleCancel();
 
-        expect(wrapperWithRequirement.emitted('disable-edit')).toBeTruthy();
+        expect(wrapperWithRequirement.emitted('disable-edit')).toHaveLength(1);
       });
     });
   });

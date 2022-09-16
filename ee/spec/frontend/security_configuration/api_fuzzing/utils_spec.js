@@ -49,7 +49,7 @@ variables:
       const options = omit({ ...basicOptions, ...authOptions }, option);
       const output = buildConfigurationSnippet(options);
 
-      expect(output).toBeTruthy();
+      expect(output).not.toBe('');
       expect(output).not.toContain('FUZZAPI_HTTP_PASSWORD');
       expect(output).not.toContain('FUZZAPI_HTTP_USERNAME');
     },

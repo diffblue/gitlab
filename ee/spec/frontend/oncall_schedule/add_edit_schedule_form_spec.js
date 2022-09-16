@@ -69,7 +69,7 @@ describe('AddEditScheduleForm', () => {
           validationState: { name: false },
         },
       });
-      expect(findScheduleName().attributes('state')).toBeFalsy();
+      expect(findScheduleName().attributes('state')).toBeUndefined();
     });
   });
 

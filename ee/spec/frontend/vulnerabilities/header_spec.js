@@ -159,7 +159,7 @@ describe('Vulnerability Header', () => {
         changeStatus(action);
 
         await waitForPromises();
-        expect(wrapper.emitted()['vulnerability-state-change']).toBeTruthy();
+        expect(wrapper.emitted()['vulnerability-state-change']).toHaveLength(1);
       });
 
       it('hides the loading spinner and shows the status badge', async () => {

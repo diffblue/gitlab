@@ -78,7 +78,7 @@ describe('vulnerabilities module mutations', () => {
     });
 
     it('should set `isLoadingVulnerabilities` to `false`', () => {
-      expect(state.isLoadingVulnerabilities).toBeFalsy();
+      expect(state.isLoadingVulnerabilities).toBe(false);
     });
 
     it('should set `pageInfo`', () => {
@@ -98,7 +98,7 @@ describe('vulnerabilities module mutations', () => {
     });
 
     it('should set `isLoadingVulnerabilities` to `false`', () => {
-      expect(state.isLoadingVulnerabilities).toBeFalsy();
+      expect(state.isLoadingVulnerabilities).toBe(false);
     });
 
     it('should set `loadingVulnerabilitiesErrorCode`', () => {
@@ -341,7 +341,7 @@ describe('vulnerabilities module mutations', () => {
     });
 
     it('should add the vulnerability to selected vulnerabilities', () => {
-      expect(state.selectedVulnerabilities[id]).toBeTruthy();
+      expect(state.selectedVulnerabilities[id]).toBe(true);
     });
 
     it('should not add a duplicate id to the selected vulnerabilities', () => {
@@ -360,10 +360,10 @@ describe('vulnerabilities module mutations', () => {
     it('should remove the vulnerability from selected vulnerabilities', () => {
       const vulnerabilityId = 12;
 
-      expect(state.selectedVulnerabilities[vulnerabilityId]).toBeTruthy();
+      expect(state.selectedVulnerabilities[vulnerabilityId]).toBe(true);
       mutations[types.DESELECT_VULNERABILITY](state, vulnerabilityId);
 
-      expect(state.selectedVulnerabilities[vulnerabilityId]).toBeFalsy();
+      expect(state.selectedVulnerabilities[vulnerabilityId]).toBeUndefined();
     });
   });
 

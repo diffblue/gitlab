@@ -85,13 +85,13 @@ describe('GeoNodeForm', () => {
         });
 
         it('disables button', () => {
-          expect(findGeoNodeSaveButton().attributes('disabled')).toBeTruthy();
+          expect(findGeoNodeSaveButton().attributes('disabled')).toBe('true');
         });
       });
 
       describe('with mo errors on form', () => {
         it('does not disable button', () => {
-          expect(findGeoNodeSaveButton().attributes('disabled')).toBeFalsy();
+          expect(findGeoNodeSaveButton().attributes('disabled')).toBeUndefined();
         });
       });
     });

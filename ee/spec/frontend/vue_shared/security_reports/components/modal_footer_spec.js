@@ -45,7 +45,7 @@ describe('Security Reports modal footer', () => {
       findActionButton().trigger('click');
 
       await nextTick();
-      expect(wrapper.emitted().createNewIssue).toBeTruthy();
+      expect(wrapper.emitted().createNewIssue).toHaveLength(1);
     });
   });
 
@@ -99,7 +99,7 @@ describe('Security Reports modal footer', () => {
       findActionButton().trigger('click');
 
       await nextTick();
-      expect(wrapper.emitted().createMergeRequest).toBeTruthy();
+      expect(wrapper.emitted().createMergeRequest).toHaveLength(1);
     });
   });
 
@@ -121,7 +121,7 @@ describe('Security Reports modal footer', () => {
       findActionButton().trigger('click');
 
       await nextTick();
-      expect(wrapper.emitted().downloadPatch).toBeTruthy();
+      expect(wrapper.emitted().downloadPatch).toHaveLength(1);
     });
   });
 

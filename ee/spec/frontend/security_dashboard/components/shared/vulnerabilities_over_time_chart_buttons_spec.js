@@ -38,7 +38,7 @@ describe('Vulnerability Chart Buttons', () => {
   it('should emit a "days-selected" event with the correct payload when the selection changes', () => {
     createWrapper();
 
-    expect(wrapper.emitted('days-selected')).toBeFalsy();
+    expect(wrapper.emitted('days-selected')).toBeUndefined();
 
     findAllButtons().at(0).vm.$emit('click');
 

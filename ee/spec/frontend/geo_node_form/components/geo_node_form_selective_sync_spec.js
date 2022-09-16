@@ -143,7 +143,7 @@ describe('GeoNodeFormSelectiveSync', () => {
 
       it('emits `addSyncOption`', () => {
         wrapper.vm.addSyncOption({ key: 'selectiveSyncShards', value: MOCK_SYNC_SHARDS[0].value });
-        expect(wrapper.emitted('addSyncOption')).toBeTruthy();
+        expect(wrapper.emitted('addSyncOption')).toHaveLength(1);
       });
     });
 
@@ -156,7 +156,7 @@ describe('GeoNodeFormSelectiveSync', () => {
 
       it('should remove value from nodeData', () => {
         wrapper.vm.removeSyncOption({ key: 'selectiveSyncShards', index: 0 });
-        expect(wrapper.emitted('removeSyncOption')).toBeTruthy();
+        expect(wrapper.emitted('removeSyncOption')).toHaveLength(1);
       });
     });
   });
@@ -173,7 +173,7 @@ describe('GeoNodeFormSelectiveSync', () => {
         });
 
         it('returns `false`', () => {
-          expect(wrapper.vm.selectiveSyncNamespaces).toBeFalsy();
+          expect(wrapper.vm.selectiveSyncNamespaces).toBe(false);
         });
       });
 
@@ -183,7 +183,7 @@ describe('GeoNodeFormSelectiveSync', () => {
         });
 
         it('returns `true`', () => {
-          expect(wrapper.vm.selectiveSyncNamespaces).toBeTruthy();
+          expect(wrapper.vm.selectiveSyncNamespaces).toBe(true);
         });
       });
     });
@@ -195,7 +195,7 @@ describe('GeoNodeFormSelectiveSync', () => {
         });
 
         it('returns `false`', () => {
-          expect(wrapper.vm.selectiveSyncShards).toBeFalsy();
+          expect(wrapper.vm.selectiveSyncShards).toBe(false);
         });
       });
 
@@ -205,7 +205,7 @@ describe('GeoNodeFormSelectiveSync', () => {
         });
 
         it('returns `true`', () => {
-          expect(wrapper.vm.selectiveSyncShards).toBeTruthy();
+          expect(wrapper.vm.selectiveSyncShards).toBe(true);
         });
       });
     });

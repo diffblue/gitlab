@@ -61,13 +61,13 @@ describe('GeoSettingsForm', () => {
         });
 
         it('disables button', () => {
-          expect(findGeoSettingsSaveButton().attributes('disabled')).toBeTruthy();
+          expect(findGeoSettingsSaveButton().attributes('disabled')).toBe('disabled');
         });
       });
 
       describe('with no errors on form', () => {
         it('does not disable button', () => {
-          expect(findGeoSettingsSaveButton().attributes('disabled')).toBeFalsy();
+          expect(findGeoSettingsSaveButton().attributes('disabled')).toBeUndefined();
         });
       });
     });
