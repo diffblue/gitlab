@@ -12,7 +12,13 @@ module QA
       :skip_live_env
     ) do
       let(:project_file_content) { "elasticsearch: #{SecureRandom.hex(8)}" }
-      let(:non_member_user) { Resource::User.fabricate_or_use('non_member_user', 'non_member_user_password') }
+      let(:non_member_user) do
+        Resource::User.fabricate_or_use(
+          Runtime::Env.gitlab_qa_username_2,
+          Runtime::Env.gitlab_qa_password_2
+        )
+      end
+
       let(:api_client) { Runtime::API::Client.new(:gitlab) }
       let(:non_member_api_client) { Runtime::API::Client.new(user: non_member_user) }
 
