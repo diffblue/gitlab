@@ -226,6 +226,7 @@ module EE
       end
 
       rule { owner | admin }.policy do
+        enable :read_billable_member
         enable :owner_access
       end
 
