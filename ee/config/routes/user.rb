@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 devise_scope :user do
-  get '/users/auth/kerberos_spnego/negotiate' => 'omniauth_kerberos_spnego#negotiate'
+  get '/users/auth/kerberos/negotiate' => 'omniauth_kerberos#negotiate'
 end
 
 scope(constraints: { username: Gitlab::PathRegex.root_namespace_route_regex }) do

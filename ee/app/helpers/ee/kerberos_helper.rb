@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module EE
-  module KerberosSpnegoHelper
+  module KerberosHelper
     extend ::Gitlab::Utils::Override
     include ActionController::HttpAuthentication::Basic
 
@@ -16,8 +16,8 @@ module EE
       end
     end
 
-    override :allow_kerberos_spnego_auth?
-    def allow_kerberos_spnego_auth?
+    override :allow_kerberos_auth?
+    def allow_kerberos_auth?
       return false unless ::Gitlab.config.kerberos.enabled
 
       if ::Gitlab.config.kerberos.use_dedicated_port

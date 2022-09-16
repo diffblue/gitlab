@@ -4,6 +4,9 @@ module EE
   module AuthHelper
     extend ::Gitlab::Utils::Override
 
+    PROVIDERS_WITH_ICONS = %w(
+      kerberos
+    ).freeze
     GROUP_LEVEL_PROVIDERS = %i(group_saml).freeze
 
     delegate :slack_app_id, to: :'Gitlab::CurrentSettings.current_application_settings'
@@ -23,14 +26,14 @@ module EE
       super - GROUP_LEVEL_PROVIDERS
     end
 
+    override :provider_has_builtin_icon?
+    def provider_has_builtin_icon?(name)
+      super || PROVIDERS_WITH_ICONS.include?(name.to_s)
+    end
+
     override :form_based_provider_priority
     def form_based_provider_priority
       super << 'smartcard'
-    end
-
-    override :form_based_provider?
-    def form_based_provider?(name)
-      super || name.to_s == 'kerberos'
     end
 
     override :form_based_providers

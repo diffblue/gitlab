@@ -3,17 +3,17 @@
 require 'spec_helper'
 
 RSpec.describe 'OmniAuth Kerberos SPNEGO' do
-  let(:path) { '/users/auth/kerberos_spnego/negotiate' }
-  let(:controller_class) { OmniauthKerberosSpnegoController }
+  let(:path) { '/users/auth/kerberos/negotiate' }
+  let(:controller_class) { OmniauthKerberosController }
 
   before do
-    # In production user_kerberos_spnego_omniauth_callback_path is defined
+    # In production user_kerberos_omniauth_callback_path is defined
     # dynamically early when the app boots. Because this is hard to set up
     # during testing we stub out this path helper on the controller.
-    omniauth_kerberos = OmniAuth::Strategies::KerberosSpnego.new(:app)
+    omniauth_kerberos = OmniAuth::Strategies::Kerberos.new(:app)
     allow(omniauth_kerberos).to receive(:script_name).and_return('')
-    allow_any_instance_of(OmniAuth::Strategies::KerberosSpnego).to receive(:new).and_return(omniauth_kerberos)
-    allow_any_instance_of(controller_class).to receive(:user_kerberos_spnego_omniauth_callback_path)
+    allow_any_instance_of(OmniAuth::Strategies::Kerberos).to receive(:new).and_return(omniauth_kerberos)
+    allow_any_instance_of(controller_class).to receive(:user_kerberos_omniauth_callback_path)
       .and_return(omniauth_kerberos.callback_path)
   end
 
@@ -42,13 +42,13 @@ RSpec.describe 'OmniAuth Kerberos SPNEGO' do
     it 'redirects to the omniauth callback' do
       get path, params: {}, headers: spnego_header
 
-      expect(response).to redirect_to('/users/auth/kerberos_spnego/callback')
+      expect(response).to redirect_to('/users/auth/kerberos/callback')
     end
 
     it 'stores the users principal name in the session' do
       get path, params: {}, headers: spnego_header
 
-      expect(session[:kerberos_spnego_principal_name]).to eq('janedoe@EXAMPLE.COM')
+      expect(session[:kerberos_principal_name]).to eq('janedoe@EXAMPLE.COM')
     end
 
     it 'send the final SPNEGO response' do
