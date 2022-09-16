@@ -1,7 +1,9 @@
 <script>
 import { GlBadge, GlPagination, GlSearchBoxByType, GlTab, GlTabs } from '@gitlab/ui';
+import { debounce } from 'lodash';
 import { s__, __, sprintf } from '~/locale';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
+import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import environmentAppQuery from '../graphql/queries/environment_app.query.graphql';
 import pollIntervalQuery from '../graphql/queries/poll_interval.query.graphql';
 import pageInfoQuery from '../graphql/queries/page_info.query.graphql';
@@ -190,10 +192,10 @@ export default {
         title: document.title,
       });
     },
-    setSearch(input) {
+    setSearch: debounce(function setSearch(input) {
       this.search = input;
       this.moveToPage(1);
-    },
+    }, DEFAULT_DEBOUNCE_AND_THROTTLE_MS),
     syncPageFromQueryParams() {
       const { page = '1' } = queryToObject(window.location.search);
       this.page = parseInt(page, 10);

@@ -356,6 +356,11 @@ describe('~/environments/components/environments_app.vue', () => {
   describe('search', () => {
     let searchBox;
 
+    const waitForDebounce = async () => {
+      await nextTick();
+      jest.runOnlyPendingTimers();
+    };
+
     beforeEach(async () => {
       await createWrapperWithMocked({
         environmentsApp: resolvedEnvironmentsApp,
@@ -366,10 +371,10 @@ describe('~/environments/components/environments_app.vue', () => {
       });
     });
 
-    it('should sync the query params to the new page', async () => {
+    it('should sync the query params to the new search', async () => {
       searchBox.setValue('hello');
 
-      await nextTick();
+      await waitForDebounce();
 
       expect(window.location.search).toBe('?scope=available&page=1&search=hello');
     });
@@ -379,7 +384,7 @@ describe('~/environments/components/environments_app.vue', () => {
 
       searchBox.setValue(search);
 
-      await nextTick();
+      await waitForDebounce();
       await waitForPromises();
 
       expect(environmentAppMock).toHaveBeenCalledWith(
