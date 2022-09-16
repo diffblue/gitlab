@@ -5,25 +5,49 @@ const createIssue = (values) => {
     state: 'closed',
     epic: {
       iid: 12345,
+      __typename: 'Epic',
     },
-    labels: [],
+    labels: {
+      count: 1,
+      nodes: [
+        {
+          id: 'gid://gitlab/GroupLabel/25',
+          color: '#5fa752',
+          title: 'label',
+          description: null,
+          __typename: 'Label',
+        },
+      ],
+      __typename: 'LabelConnection',
+    },
     milestone: {
       title: '11.1',
+      __typename: 'Milestone',
     },
     weight: '3',
-    due_date: '2020-10-08',
-    assignees: [],
-    author: {},
-    web_url: `issues/${values.id}`,
-    iid: values.id,
+    dueDate: '2020-10-08',
+    assignees: {
+      count: 0,
+      nodes: [],
+      __typename: 'UserCoreConnection',
+    },
+    author: {
+      name: 'Administrator',
+      webUrl: 'link-to-author',
+      avatarUrl: 'link-to-avatar',
+      __typename: 'UserCore',
+    },
+    webUrl: `issues/${values.iid}`,
+    iid: values.iid,
     ...values,
+    __typename: 'Issue',
   };
 };
 
 export const mockIssuesApiResponse = [
-  createIssue({ id: 12345, title: 'Issue 1', created_at: '2020-01-08' }),
-  createIssue({ id: 23456, title: 'Issue 2', created_at: '2020-01-07' }),
-  createIssue({ id: 34567, title: 'Issue 3', created_at: '2020-01-6' }),
+  createIssue({ iid: 12345, title: 'Issue-1', createdAt: '2020-01-08' }),
+  createIssue({ iid: 23456, title: 'Issue-2', createdAt: '2020-01-07' }),
+  createIssue({ iid: 34567, title: 'Issue-3', createdAt: '2020-01-6' }),
 ];
 
 export const tableHeaders = [
@@ -40,4 +64,18 @@ export const tableHeaders = [
 export const endpoints = {
   api: `${TEST_HOST}/api`,
   issuesPage: `${TEST_HOST}/issues/page`,
+};
+
+export const getQueryIssuesAnalyticsResponse = {
+  data: {
+    group: {
+      id: 'gid://gitlab/Group/22',
+      issues: {
+        count: 3,
+        nodes: mockIssuesApiResponse,
+        __typename: 'IssueConnection',
+      },
+      __typename: 'Group',
+    },
+  },
 };

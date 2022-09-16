@@ -13,13 +13,12 @@ import {
 } from '@gitlab/ui';
 
 import createFlash from '~/flash';
-import axios from '~/lib/utils/axios_utils';
 import { getDayDifference } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { s__, n__, __ } from '~/locale';
+import issueAnalyticsQuery from '../graphql/queries/issues_analytics.query.graphql';
 
-const DEFAULT_API_URL_PARAMS = { with_labels_details: true, per_page: 100 };
 const SYMBOL = {
   ISSUE: '#',
   EPIC: '&',
@@ -49,6 +48,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  inject: ['fullPath', 'type'],
   props: {
     endpoints: {
       type: Object,
@@ -57,13 +57,13 @@ export default {
   },
   tableHeaderFields: [
     {
-      key: 'issue_details',
+      key: 'issueDetails',
       label: s__('IssueAnalytics|Issue'),
       tdClass: 'issues-analytics-td',
       thAttr: TH_TEST_ID,
     },
     {
-      key: 'created_at',
+      key: 'createdAt',
       label: s__('IssueAnalytics|Age'),
       class: 'gl-text-left',
       thAttr: TH_TEST_ID,
@@ -85,7 +85,7 @@ export default {
       thAttr: TH_TEST_ID,
     },
     {
-      key: 'due_date',
+      key: 'dueDate',
       label: s__('IssueAnalytics|Due date'),
       class: 'gl-text-left',
       thAttr: TH_TEST_ID,
@@ -106,32 +106,37 @@ export default {
   data() {
     return {
       issues: [],
-      isLoading: true,
     };
   },
+  apollo: {
+    issues: {
+      query: issueAnalyticsQuery,
+      variables() {
+        return {
+          fullPath: this.fullPath,
+          isGroup: this.type === 'group',
+          isProject: this.type === 'project',
+        };
+      },
+      update(data) {
+        return data.project?.issues.nodes || data.group?.issues.nodes || [];
+      },
+      error() {
+        createFlash({
+          message: s__('IssueAnalytics|Failed to load issues. Please try again.'),
+        });
+      },
+    },
+  },
   computed: {
+    isLoading() {
+      return Boolean(this.$apollo.queries.issues?.loading);
+    },
     shouldDisplayTable() {
       return this.issues.length;
     },
   },
-  created() {
-    this.fetchIssues();
-  },
   methods: {
-    fetchIssues() {
-      return axios
-        .get(mergeUrlParams(DEFAULT_API_URL_PARAMS, this.endpoints.api))
-        .then(({ data }) => {
-          this.issues = data;
-          this.isLoading = false;
-        })
-        .catch(() => {
-          createFlash({
-            message: s__('IssueAnalytics|Failed to load issues. Please try again.'),
-          });
-          this.isLoading = false;
-        });
-    },
     formatAge(date) {
       return n__('%d day', '%d days', getDayDifference(new Date(date), new Date(Date.now())));
     },
@@ -168,36 +173,41 @@ export default {
     stacked="sm"
     striped
   >
-    <template #cell(issue_details)="{ item }">
+    <template #cell(issueDetails)="{ item }">
       <div class="gl-display-flex gl-flex-direction-column gl-flex-grow-1" data-testid="detailsCol">
         <div class="issue-title str-truncated">
-          <gl-link :href="item.web_url" target="_blank" class="gl-font-weight-bold text-plain">{{
+          <gl-link :href="item.webUrl" target="_blank" class="gl-font-weight-bold text-plain">{{
             item.title
           }}</gl-link>
         </div>
         <ul class="horizontal-list list-items-separated gl-mb-0">
           <li>{{ formatIssueId(item.iid) }}</li>
           <li v-if="item.epic">{{ formatEpicId(item.epic.iid) }}</li>
-          <li v-if="item.labels.length">
-            <span :id="`${item.id}-labels`" class="gl-display-flex gl-align-items-center">
+          <li v-if="item.labels.count">
+            <span
+              :id="`${item.iid}-labels`"
+              class="gl-display-flex gl-align-items-center"
+              data-testid="labels"
+            >
               <gl-icon name="label" class="gl-mr-1" />
-              {{ item.labels.length }}
+              {{ item.labels.count }}
             </span>
             <gl-popover
-              :target="`${item.id}-labels`"
+              :target="`${item.iid}-labels`"
               placement="top"
               :css-classes="['issue-labels-popover']"
+              data-testid="labelsPopover"
             >
               <div class="gl-display-flex gl-justify-content-start gl-flex-wrap gl-mr-1">
                 <gl-label
-                  v-for="label in item.labels"
+                  v-for="label in item.labels.nodes"
                   :key="label.id"
-                  :title="label.name"
+                  :title="label.title"
                   :background-color="label.color"
                   :description="label.description"
-                  :scoped="label.name.includes('::')"
+                  :scoped="label.title.includes('::')"
                   class="gl-ml-1 gl-mt-1"
-                  :target="labelTarget(label.name)"
+                  :target="labelTarget(label.title)"
                 />
               </div>
             </gl-popover>
@@ -206,7 +216,7 @@ export default {
       </div>
     </template>
 
-    <template #cell(created_at)="{ value }">
+    <template #cell(createdAt)="{ value }">
       <div data-testid="ageCol">{{ formatAge(value) }}</div>
     </template>
 
@@ -224,23 +234,23 @@ export default {
 
     <template #cell(assignees)="{ value }">
       <gl-avatars-inline
-        :avatars="value"
+        :avatars="value.nodes"
         :avatar-size="$options.avatarSize"
         :max-visible="$options.MAX_VISIBLE_ASSIGNEES"
-        :badge-sr-only-text="assigneesBadgeSrOnlyText(value)"
+        :badge-sr-only-text="assigneesBadgeSrOnlyText(value.nodes)"
         collapsed
       >
         <template #avatar="{ avatar }">
-          <gl-avatar-link v-gl-tooltip target="_blank" :href="avatar.web_url" :title="avatar.name">
-            <gl-avatar :src="avatar.avatar_url" :size="$options.avatarSize" />
+          <gl-avatar-link v-gl-tooltip target="_blank" :href="avatar.webUrl" :title="avatar.name">
+            <gl-avatar :src="avatar.avatarUrl" :size="$options.avatarSize" />
           </gl-avatar-link>
         </template>
       </gl-avatars-inline>
     </template>
 
     <template #cell(author)="{ value }">
-      <gl-avatar-link v-gl-tooltip target="_blank" :href="value.web_url" :title="value.name">
-        <gl-avatar :size="$options.avatarSize" :src="value.avatar_url" :entity-name="value.name" />
+      <gl-avatar-link v-gl-tooltip target="_blank" :href="value.webUrl" :title="value.name">
+        <gl-avatar :size="$options.avatarSize" :src="value.avatarUrl" :entity-name="value.name" />
       </gl-avatar-link>
     </template>
   </gl-table-lite>

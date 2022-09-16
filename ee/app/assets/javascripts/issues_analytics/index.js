@@ -1,7 +1,15 @@
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
+import createDefaultClient from '~/lib/graphql';
 import { queryToObject } from '~/lib/utils/url_utility';
 import IssuesAnalytics from './components/issues_analytics.vue';
 import store from './stores';
+
+Vue.use(VueApollo);
+
+const apolloProvider = new VueApollo({
+  defaultClient: createDefaultClient(),
+});
 
 export default () => {
   const el = document.querySelector('#js-issues-analytics');
@@ -10,6 +18,8 @@ export default () => {
   if (!el) return null;
 
   const {
+    fullPath,
+    type,
     endpoint,
     noDataEmptyStateSvgPath,
     filtersEmptyStateSvgPath,
@@ -23,12 +33,15 @@ export default () => {
 
   return new Vue({
     el,
+    name: 'IssuesAnalytics',
+    apolloProvider,
     store,
-    components: {
-      IssuesAnalytics,
+    provide: {
+      fullPath,
+      type,
     },
-    render(createElement) {
-      return createElement('issues-analytics', {
+    render: (createElement) =>
+      createElement(IssuesAnalytics, {
         props: {
           endpoint,
           filterBlockEl,
@@ -37,7 +50,6 @@ export default () => {
           issuesApiEndpoint,
           issuesPageEndpoint,
         },
-      });
-    },
+      }),
   });
 };

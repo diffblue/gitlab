@@ -1,0 +1,61 @@
+fragment Issue on Issue {
+  iid
+  title
+  webUrl
+  labels {
+    count
+    nodes {
+      id
+      color
+      title
+      description
+    }
+  }
+  createdAt
+  state
+  epic {
+    iid
+  }
+  milestone {
+    title
+  }
+  weight
+  dueDate
+  assignees {
+    nodes {
+      name
+      webUrl
+      avatarUrl
+    }
+  }
+  author {
+    name
+    webUrl
+    avatarUrl
+  }
+}
+
+query getProjectIssuesAnalyticsData(
+  $fullPath: ID!
+  $isGroup: Boolean = false
+  $isProject: Boolean = false
+) {
+  group(fullPath: $fullPath) @include(if: $isGroup) {
+    id
+    issues {
+      count
+      nodes {
+        ...Issue
+      }
+    }
+  }
+  project(fullPath: $fullPath) @include(if: $isProject) {
+    id
+    issues {
+      count
+      nodes {
+        ...Issue
+      }
+    }
+  }
+}

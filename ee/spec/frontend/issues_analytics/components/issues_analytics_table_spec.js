@@ -1,21 +1,38 @@
 import { GlLoadingIcon, GlTableLite } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
-import waitForPromises from 'helpers/wait_for_promises';
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import createFlash from '~/flash';
-import httpStatusCodes from '~/lib/utils/http_status';
-import { mockIssuesApiResponse, tableHeaders, endpoints } from '../mock_data';
+import createMockApollo from 'helpers/mock_apollo_helper';
+import IssuesAnalyticsTable from 'ee/issues_analytics/components/issues_analytics_table.vue';
+import getIssuesAnalyticsData from 'ee/issues_analytics/graphql/queries/issues_analytics.query.graphql';
+import {
+  mockIssuesApiResponse,
+  tableHeaders,
+  endpoints,
+  getQueryIssuesAnalyticsResponse,
+} from '../mock_data';
 
+Vue.use(VueApollo);
 jest.mock('~/flash');
 
 describe('IssuesAnalyticsTable', () => {
   let wrapper;
-  let mock;
+  let fakeApollo;
 
-  const createComponent = () => {
-    return mount(IssuesAnalyticsTable, {
+  const getQueryIssuesAnalyticsSuccess = jest
+    .fn()
+    .mockResolvedValue(getQueryIssuesAnalyticsResponse);
+
+  const createComponent = ({
+    apolloHandlers = [getIssuesAnalyticsData, getQueryIssuesAnalyticsSuccess],
+    type = 'group',
+  } = {}) => {
+    fakeApollo = createMockApollo([apolloHandlers]);
+
+    wrapper = mount(IssuesAnalyticsTable, {
+      apolloProvider: fakeApollo,
+      provide: { fullPath: 'gitlab-org', type },
       propsData: {
         endpoints,
       },
@@ -33,35 +50,34 @@ describe('IssuesAnalyticsTable', () => {
 
   beforeEach(() => {
     jest.spyOn(Date, 'now').mockImplementation(() => new Date('2020-01-08'));
-
-    mock = new MockAdapter(axios);
-    mock.onGet().reply(httpStatusCodes.OK, mockIssuesApiResponse);
-
-    wrapper = createComponent();
-
-    return waitForPromises();
   });
 
   afterEach(() => {
-    mock.restore();
+    fakeApollo = null;
     wrapper.destroy();
   });
 
   describe('while fetching data', () => {
-    it('displays a loading icon', () => {
-      wrapper = createComponent();
+    beforeEach(async () => {
+      createComponent({ apolloHandlers: [getIssuesAnalyticsData, () => new Promise(() => {})] });
+      await nextTick();
+    });
 
+    it('displays a loading icon', () => {
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(true);
     });
 
     it('does not display the table', () => {
-      wrapper = createComponent();
-
       expect(findTable().exists()).toBe(false);
     });
   });
 
   describe('fetching data completed', () => {
+    beforeEach(async () => {
+      createComponent();
+      await nextTick();
+    });
+
     it('hides the loading state', () => {
       expect(wrapper.findComponent(GlLoadingIcon).exists()).toBe(false);
     });
@@ -80,9 +96,29 @@ describe('IssuesAnalyticsTable', () => {
       });
 
       it('displays the correct issue details', () => {
-        const { title, iid, epic } = mockIssuesApiResponse[0];
+        const {
+          title,
+          iid,
+          epic,
+          labels: { count, nodes },
+        } = mockIssuesApiResponse[0];
 
-        expect(findIssueDetailsCol(0).text()).toBe(`${title} #${iid} &${epic.iid}`);
+        expect(findIssueDetailsCol(0).text().replace(/\s+/g, '')).toBe(
+          `${title}#${iid}&${epic.iid}${count}${nodes[0].title}`,
+        );
+      });
+
+      it('displays the correct issue details labels', () => {
+        const { iid } = mockIssuesApiResponse[0];
+
+        const firstDetails = findIssueDetailsCol(0);
+        const labelsId = firstDetails.findComponent('[data-testid="labels"]').attributes('id');
+        const labelsPopoverTarget = firstDetails
+          .findComponent('[data-testid="labelsPopover"]')
+          .props('target');
+
+        expect(labelsId).toBe(`${iid}-labels`);
+        expect(labelsId).toBe(labelsPopoverTarget);
       });
 
       it('displays the correct issue age', () => {
@@ -97,12 +133,25 @@ describe('IssuesAnalyticsTable', () => {
     });
   });
 
-  describe('error fetching data', () => {
-    beforeEach(() => {
-      mock.onGet().reply(httpStatusCodes.NOT_FOUND, mockIssuesApiResponse);
-      wrapper = createComponent();
+  describe('query', () => {
+    it.each(['group', 'project'])(
+      'calls the query with the correct variables when the the type is "%s"',
+      (type) => {
+        createComponent({ type });
 
-      return waitForPromises();
+        expect(getQueryIssuesAnalyticsSuccess).toHaveBeenCalledWith({
+          fullPath: 'gitlab-org',
+          isGroup: type === 'group',
+          isProject: type === 'project',
+        });
+      },
+    );
+  });
+
+  describe('error fetching data', () => {
+    beforeEach(async () => {
+      createComponent({ apolloHandlers: [getIssuesAnalyticsData, jest.fn().mockRejectedValue()] });
+      await nextTick();
     });
 
     it('displays an error', () => {
