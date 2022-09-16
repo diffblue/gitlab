@@ -1,0 +1,9 @@
+%div{ style: 'text-align:center;color:#1F1F1F;line-height:1.25em;max-width:400px;margin:0 auto;' }
+  %h3
+    = s_('IdentityVerification|Help us protect your account')
+  %p{ style: 'font-size:0.9em' }
+    = s_('IdentityVerification|Before you finish creating your account, we need to verify your identity. On the verification page, enter the following code.')
+  %div{ style: 'margin:26px 0;width:207px;height:53px;background-color:#F0F0F0;line-height:53px;font-weight:700;font-size:1.5em;color:#303030;' }
+    = @token
+  %p{ style: 'font-size:0.75em' }
+    = s_('IdentityVerification|Your verification code expires after %{expires_in_minutes} minutes.') % { expires_in_minutes: @expires_in_minutes }

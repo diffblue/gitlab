@@ -1,17 +1,14 @@
 <script>
-import { PAGE_TITLE, PAGE_SUBTITLE } from '../constants';
-import PhoneVerification from './phone_verification.vue';
-import CreditCardVerification from './credit_card_verification.vue';
+import { PAGE_TITLE } from '../constants';
+import EmailVerification from './email_verification.vue';
 
 export default {
   name: 'IdentityVerificationWizard',
   components: {
-    CreditCardVerification,
-    PhoneVerification,
+    EmailVerification,
   },
   i18n: {
     PAGE_TITLE,
-    PAGE_SUBTITLE,
   },
 };
 </script>
@@ -20,10 +17,8 @@ export default {
     <div class="gl-max-w-62">
       <header class="gl-text-center">
         <h2>{{ $options.i18n.PAGE_TITLE }}</h2>
-        <p>{{ $options.i18n.PAGE_SUBTITLE }}</p>
       </header>
-      <phone-verification />
-      <credit-card-verification />
+      <email-verification />
     </div>
   </div>
 </template>

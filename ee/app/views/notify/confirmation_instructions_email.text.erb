@@ -1,0 +1,7 @@
+<%= s_('IdentityVerification|Help us protect your account') %>
+
+<%= s_('IdentityVerification|Before you finish creating your account, we need to verify your identity. On the verification page, enter the following code.') %>
+
+<%= @token %>
+
+<%= s_('IdentityVerification|Your verification code expires after %{expires_in_minutes} minutes.') % { expires_in_minutes: @expires_in_minutes } %>

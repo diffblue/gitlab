@@ -34,3 +34,19 @@ export const I18N_CC_FORM_SUBMIT = s__('IdentityVerification|Verify payment meth
 export const I18N_CC_FORM_INFO = s__(
   'IdentityVerification|GitLab will not charge or store your payment information, it will only be used for verification.',
 );
+
+export const SUCCESS_RESPONSE = 'success';
+export const FAILURE_RESPONSE = 'failure';
+export const I18N_EMAIL_VERIFICATION = {
+  header: s__(
+    "IdentityVerification|For added security, you'll need to verify your identity. We've sent a verification code to %{email}",
+  ),
+  verificationCode: s__('IdentityVerification|Verification code'),
+  emptyCode: s__('IdentityVerification|Enter a code.'),
+  invalidCode: s__('IdentityVerification|Enter a valid code.'),
+  noCode: s__("IdentityVerification|Didn't receive a code?"),
+  resend: s__('IdentityVerification|Send a new code'),
+  verify: s__('IdentityVerification|Verify email address'),
+  resendSuccess: s__('IdentityVerification|A new code has been sent.'),
+  requestError: s__('IdentityVerification|Something went wrong. Please try again.'),
+};

@@ -8,7 +8,7 @@ RSpec.describe 'users/identity_verification/show' do
   let(:form_id) { 'form_id' }
 
   before do
-    allow(view).to receive(:current_user).and_return(user)
+    assign :user, user
 
     stub_const("::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID", form_id)
   end

@@ -44,6 +44,41 @@ module EE
       super || ::Gitlab::CurrentSettings.should_apply_user_signup_cap?
     end
 
+    override :identity_verification_redirect_path
+    def identity_verification_redirect_path
+      identity_verification_path
+    end
+
+    override :custom_confirmation_enabled?
+    def custom_confirmation_enabled?(resource)
+      # Since we don't have a persisted user yet, we cannot scope the feature flag on the user, but
+      # we do have an email, so use this wrapper that implements `flipper_id` for email addresses.
+      email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(resource.email)
+
+      ::Feature.enabled?(:identity_verification, email_wrapper)
+    end
+
+    override :set_custom_confirmation_token
+    def set_custom_confirmation_token
+      return unless custom_confirmation_enabled?(resource)
+
+      resource.skip_confirmation_notification! # Don't send Devise notification, we send our own custom notification
+
+      service = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token)
+      token, digest = service.execute
+      resource.confirmation_token = digest
+      resource.confirmation_sent_at = Time.current
+      token
+    end
+
+    override :send_custom_confirmation_instructions
+    def send_custom_confirmation_instructions(user, token)
+      return unless user.persisted? && token
+
+      session[:verification_user_id] = user.id # This is needed to find the user on the identity verification page
+      ::Notify.confirmation_instructions_email(user.email, token: token).deliver_later
+    end
+
     def ensure_can_remove_self
       unless current_user&.can_remove_self?
         redirect_to profile_account_path,
