@@ -216,15 +216,15 @@ We should, however, avoid the possible negative-feedback-loop, that will put
 additional strain on the Rails application when there is a sudden increase in
 usage happening. This might be a big customer starting a new automation that
 traverses our API or a Denial of Service attack. In such cases, the additional
-traffic will reach GitLab Rails and subsequently also other sattelite service.
-Then the sattelite services may need to consult Rails again to obtain new
+traffic will reach GitLab Rails and subsequently also other satellite services.
+Then the satellite services may need to consult Rails again to obtain new
 instructions / policies around rate limiting the increased traffic. This can
 put additional strain on Rails application and eventually degrade performance
 even more. In order to avoid this problem, we should extract the API endpoints
 to separate service (see the section below) if the request rate to those
 endpoints depends on the volume of incoming traffic. Alternatively we can keep
 those endpoints in Rails if the increased traffic will not translate into
-increase of requests rate or increas in resources consumption on these API
+increase of requests rate or increase in resources consumption on these API
 endpoints on the Rails side.
 
 #### Decoupled Limits Service
@@ -235,7 +235,7 @@ required, and exposing API, out of Rails.
 
 It is impossible to make a decision about extracting such a decoupled limits
 service yet, because we will need to ship more proof-of-concept work, and
-concrete iterations to nform us better about when and how we should do that. We
+concrete iterations to inform us better about when and how we should do that. We
 will depend on the Evolution Architecture practice to guide us towards either
 extracting Decoupled Limits Service or not doing that at all.
 
