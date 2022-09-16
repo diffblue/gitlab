@@ -12,13 +12,13 @@ docs/CODEOWNERS @clefelhocz1 @timzallmann @cdu1 @wayne @dsatcher @sgoldstein @je
 GITALY_SERVER_VERSION @project_278964_bot6 @gitlab-org/maintainers/rails-backend @gitlab-org/delivery
 
 ## Files that are excluded from required approval
-/.gitlab/issue_templates/
-/.gitlab/merge_request_templates/
+/.gitlab/issue_templates/*.md
+/.gitlab/merge_request_templates/*.md
 /doc/*.md
 /doc/**/*.md
 /doc/**/*.png
-/data/deprecations/
-/data/removals/
+/data/deprecations/*.yml
+/data/removals/*.yml
 
 ^[Backend]
 *.rb @gitlab-org/maintainers/rails-backend
