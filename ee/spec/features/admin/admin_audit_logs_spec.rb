@@ -198,10 +198,7 @@ RSpec.describe 'Admin::AuditLogs', :js do
           click_button('Create project')
         end
 
-        wait_for('Creation to complete') do
-          page.has_content?('was successfully created', wait: 0)
-        end
-
+        visit(new_project_path)
         click_link 'Stop impersonation'
 
         visit admin_audit_logs_path
