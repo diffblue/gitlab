@@ -85,7 +85,7 @@ describe('ee/epic/components/epic_form.vue', () => {
     });
 
     it('disables submit button if no title is provided', () => {
-      expect(findSaveButton().attributes('disabled')).toBeTruthy();
+      expect(findSaveButton().attributes('disabled')).toBe('true');
     });
 
     it.each`
@@ -95,12 +95,12 @@ describe('ee/epic/components/epic_form.vue', () => {
     `('can clear $field with side control', ({ field, findInput, findResetter }) => {
       findInput().vm.$emit('input', new Date());
 
-      expect(wrapper.vm[field]).toBeTruthy();
+      expect(wrapper.vm[field]).not.toBeNull();
 
       findResetter().vm.$emit('click');
 
       return nextTick().then(() => {
-        expect(wrapper.vm[field]).toBe(null);
+        expect(wrapper.vm[field]).toBeNull();
       });
     });
   });

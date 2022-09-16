@@ -63,11 +63,11 @@ describe('Security Dashboard Table', () => {
     });
 
     it('should not show the multi select box', () => {
-      expect(findSelectionSummaryCollapse().attributes('visible')).toBeFalsy();
+      expect(findSelectionSummaryCollapse().attributes('visible')).toBeUndefined();
     });
 
     it('should show the select all as unchecked', () => {
-      expect(findCheckbox().attributes('checked')).toBeFalsy();
+      expect(findCheckbox().attributes('checked')).toBeUndefined();
     });
 
     describe('with vulnerabilities selected', () => {

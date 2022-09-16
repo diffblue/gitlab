@@ -260,8 +260,7 @@ describe('NamespaceStorageApp', () => {
           'gl-modal-directive',
         );
 
-        // Check for truthiness so we're assured we're not comparing two undefineds
-        expect(value).toBeTruthy();
+        expect(value).toBe('temporary-increase-storage-modal');
         expect(value).toEqual(NamespaceStorageApp.modalId);
       });
 

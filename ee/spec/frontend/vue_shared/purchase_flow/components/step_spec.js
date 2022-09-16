@@ -232,7 +232,7 @@ describe('Step', () => {
       wrapper.findComponent(GlButton).vm.$emit('click');
       await waitForPromises();
 
-      expect(wrapper.emitted().nextStep).toBeTruthy();
+      expect(wrapper.emitted().nextStep).toHaveLength(1);
     });
   });
 });

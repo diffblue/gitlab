@@ -108,7 +108,7 @@ describe('DastProfilesSidebar', () => {
       findCancelButton().vm.$emit('click');
       await waitForPromises();
 
-      expect(wrapper.emitted()['close-drawer']).toBeTruthy();
+      expect(wrapper.emitted()['close-drawer']).toHaveLength(1);
     });
   });
 
@@ -213,7 +213,7 @@ describe('DastProfilesSidebar', () => {
       await waitForPromises();
 
       expect(resetHistoryMock).toHaveBeenCalledTimes(1);
-      expect(wrapper.emitted()['close-drawer']).toBeTruthy();
+      expect(wrapper.emitted()['close-drawer']).toHaveLength(1);
     });
 
     it('should discard changes from warning modal', async () => {
@@ -236,7 +236,7 @@ describe('DastProfilesSidebar', () => {
       expect(findModal().exists()).toBe(false);
       expect(goBackMock).toHaveBeenCalledTimes(1);
       expect(setCachedPayloadMock).toHaveBeenCalledTimes(1);
-      expect(wrapper.emitted()['close-drawer']).toBeTruthy();
+      expect(wrapper.emitted()['close-drawer']).toHaveLength(2);
     });
   });
 });

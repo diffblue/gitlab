@@ -16,7 +16,7 @@ describe('DismissalCommentBox', () => {
   });
 
   it('should clear the errors on mount', () => {
-    expect(wrapper.emitted().clearError).toBeTruthy();
+    expect(wrapper.emitted().clearError).toHaveLength(1);
   });
 
   it('should submit the comment when cmd+enter is pressed', async () => {
@@ -25,7 +25,7 @@ describe('DismissalCommentBox', () => {
     });
 
     await nextTick();
-    expect(wrapper.emitted().submit).toBeTruthy();
+    expect(wrapper.emitted().submit).toHaveLength(1);
   });
 
   it('should render the error message', async () => {
