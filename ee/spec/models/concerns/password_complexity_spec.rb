@@ -9,13 +9,13 @@ RSpec.describe PasswordComplexity do
 
     shared_examples_for 'validating different types of password combination' do
       it 'shows that any combinations is valid' do
-        user.password = '12345678'
+        user.password = '81668366'
         expect(user).to be_valid
 
-        user.password = 'qwerasdf'
+        user.password = 'ysspqyst'
         expect(user).to be_valid
 
-        user.password = 'QWERASDF'
+        user.password = 'YSSPQYST'
         expect(user).to be_valid
 
         user.password = '!@#$%^&*()'
@@ -45,7 +45,7 @@ RSpec.describe PasswordComplexity do
         end
 
         context 'without any number in password' do
-          let(:password) { 'qwertasdf' }
+          let(:password) { 'ysspqyst' }
 
           it 'is not valid' do
             expect(user).not_to be_valid
@@ -53,7 +53,7 @@ RSpec.describe PasswordComplexity do
         end
 
         context 'with a number in password' do
-          let(:password) { 'qwertasd1' }
+          let(:password) { 'ysspqyst1' }
 
           it 'is valid' do
             expect(user).to be_valid
@@ -61,7 +61,7 @@ RSpec.describe PasswordComplexity do
         end
 
         context 'with an unicode Nd number in password' do
-          let(:password) { 'qwertasd๑' }
+          let(:password) { 'ysspqyst๑' }
 
           it 'is valid' do
             expect(user).to be_valid
@@ -75,7 +75,7 @@ RSpec.describe PasswordComplexity do
         end
 
         context 'without any uppercase letter' do
-          let(:password) { '1234567a' }
+          let(:password) { '8166836a' }
 
           it 'is not valid' do
             expect(user).not_to be_valid
@@ -83,7 +83,7 @@ RSpec.describe PasswordComplexity do
         end
 
         context 'with a uppercase letter' do
-          let(:password) { '1234567A' }
+          let(:password) { '8166836A' }
 
           it 'is valid' do
             expect(user).to be_valid
@@ -91,7 +91,7 @@ RSpec.describe PasswordComplexity do
         end
 
         context 'with a uppercase accented letter' do
-          let(:password) { '1234567Á' }
+          let(:password) { '8166836Á' }
 
           it 'is valid' do
             expect(user).to be_valid
@@ -147,7 +147,7 @@ RSpec.describe PasswordComplexity do
 
           context 'when password is updated' do
             it 'checks password complexity' do
-              user.password = '12345678'
+              user.password = '81668366'
 
               expect(user).not_to be_valid
             end
