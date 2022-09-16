@@ -8,7 +8,6 @@ RSpec.describe Gitlab::GitAccess, :aggregate_failures do
   include AdminModeHelper
 
   let(:user) { create(:user) }
-
   let(:actor) { user }
   let(:project) { create(:project, :repository) }
   let(:repository_path) { "#{project.full_path}.git" }
@@ -145,7 +144,7 @@ RSpec.describe Gitlab::GitAccess, :aggregate_failures do
           let(:authentication_abilities) { build_authentication_abilities }
 
           it 'disallows pull access' do
-            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::NotFoundError)
           end
 
           it 'does not block pushes with "not found"' do
@@ -746,7 +745,7 @@ RSpec.describe Gitlab::GitAccess, :aggregate_failures do
       describe 'generic CI (build without a user)' do
         let(:actor) { :ci }
 
-        specify { expect { pull_access_check }.to raise_error Gitlab::GitAccess::ForbiddenError }
+        specify { expect { pull_access_check }.to raise_error Gitlab::GitAccess::NotFoundError }
 
         context 'when ci_remove_userless_ci disabled' do
           before do

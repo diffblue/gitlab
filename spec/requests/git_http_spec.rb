@@ -882,7 +882,7 @@ RSpec.describe 'Git HTTP requests' do
 
             it 'rejects pulls' do
               download(path, **env) do |response|
-                expect(response).to have_gitlab_http_status(:forbidden)
+                expect(response).to have_gitlab_http_status(:not_found)
               end
             end
 
@@ -1522,7 +1522,7 @@ RSpec.describe 'Git HTTP requests' do
 
             it 'rejects pulls' do
               download(path, **env) do |response|
-                expect(response).to have_gitlab_http_status(:forbidden)
+                expect(response).to have_gitlab_http_status(:not_found)
               end
             end
 
