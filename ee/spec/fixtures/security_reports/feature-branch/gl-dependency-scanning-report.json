@@ -100,7 +100,7 @@
       "message": "Directory traversal vulnerability in rubyzip",
       "cve": "Gemfile.lock:rubyzip:cve:CVE-2017-5946",
       "severity": "High",
-      "solution": "upgrade to \u003e= 1.2.1",
+      "solution": "upgrade to \\u003e= 1.2.1",
       "scanner": {
         "id": "gemnasium",
         "name": "gemnasium"
@@ -134,7 +134,7 @@
       "message": "ruby-ffi DDL loading issue on Windows OS",
       "cve": "ffi:1.9.18:CVE-2018-1000201",
       "severity": "High",
-      "solution": "upgrade to \u003e= 1.9.24",
+      "solution": "upgrade to \\u003e= 1.9.24",
       "scanner": {
         "id": "gemnasium",
         "name": "gemnasium"

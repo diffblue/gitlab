@@ -23,28 +23,37 @@
       "version": "1.0.0",
       "package_manager": "bundler",
       "path": "Gemfile.lock",
-      "licenses": ["MIT"]
+      "licenses": [
+        "MIT"
+      ]
     },
     {
       "name": "b",
       "version": "0.1.0",
       "package_manager": "yarn",
       "path": "yarn.lock",
-      "licenses": ["BSD-3-Clause"]
+      "licenses": [
+        "BSD-3-Clause"
+      ]
     },
     {
       "name": "c",
       "version": "1.1.0",
       "package_manager": "bundler",
       "path": "Gemfile.lock",
-      "licenses": ["MIT", "BSD-3-Clause"]
+      "licenses": [
+        "MIT",
+        "BSD-3-Clause"
+      ]
     },
     {
       "name": "d",
       "version": "1.1.1",
       "package_manager": "bundler",
       "path": "Gemfile.lock",
-      "licenses": ["unknown"]
+      "licenses": [
+        "unknown"
+      ]
     }
   ]
 }
