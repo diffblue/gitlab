@@ -79,6 +79,11 @@ export default {
       thAttr: TH_TEST_ID,
     },
     {
+      key: 'iteration',
+      label: s__('IssueAnalytics|Iteration'),
+      thAttr: TH_TEST_ID,
+    },
+    {
       key: 'weight',
       label: s__('IssueAnalytics|Weight'),
       class: 'gl-text-right',
@@ -230,6 +235,12 @@ export default {
           {{ value.title }}
         </div>
       </template>
+    </template>
+
+    <template #cell(iteration)="{ value }">
+      <div data-testid="iterationCol" class="iteration-title str-truncated">
+        {{ value.title }}
+      </div>
     </template>
 
     <template #cell(assignees)="{ value }">

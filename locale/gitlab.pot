@@ -22120,6 +22120,9 @@ msgstr ""
 msgid "IssueAnalytics|Issue"
 msgstr ""
 
+msgid "IssueAnalytics|Iteration"
+msgstr ""
+
 msgid "IssueAnalytics|Milestone"
 msgstr ""
 
