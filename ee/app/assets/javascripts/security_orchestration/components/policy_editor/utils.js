@@ -150,8 +150,8 @@ export const isValidPolicy = ({
 
   if (
     hasInvalidKey(policy, primaryKeys) ||
-    (policy?.rules && policy.rules.some((rule) => hasInvalidKey(rule, rulesKeys))) ||
-    (policy?.actions && policy.actions.some((action) => hasInvalidKey(action, actionsKeys)))
+    policy.rules?.some((rule) => hasInvalidKey(rule, rulesKeys)) ||
+    policy.actions?.some((action) => hasInvalidKey(action, actionsKeys))
   ) {
     return false;
   }

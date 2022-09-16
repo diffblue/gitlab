@@ -36,71 +36,69 @@ describe('BaseRuleComponent', () => {
   const findRuleLabel = () => wrapper.findByTestId('rule-component-label');
   const findBranchesInputField = () => wrapper.findByTestId('rule-branches');
 
-  beforeEach(() => {
-    createComponent();
-  });
-
   const selectBranches = async (branches) => {
-    createComponent();
     findBranchesInputField().vm.$emit('input', branches);
     await nextTick();
   };
 
-  it('should render pipeline rule by default', () => {
-    expect(findRuleLabel().text()).toEqual(ruleLabel);
-    expect(findRuleTypeDropDown().props('text')).toEqual(
-      capitalizeFirstCharacter(SCAN_EXECUTION_RULES_LABELS.pipeline),
-    );
-  });
-
-  it('should render pipeline rule component by default', () => {
-    createComponent();
-
-    expect(findRuleLabel().text()).toEqual(ruleLabel);
-    expect(findRuleTypeDropDown().props('text')).toEqual(SCAN_EXECUTION_RULES_LABELS.pipeline);
-    expect(findBranchesInputField().element.value).toEqual('');
-  });
-
-  it('should select pipeline rule', async () => {
-    findRuleTypeDropdownItems().at(1).vm.$emit('click');
-    await nextTick();
-    const [eventPayload] = wrapper.emitted()['select-rule'];
-
-    expect(eventPayload[0]).toEqual(SCAN_EXECUTION_RULES_LABELS.schedule.toLowerCase());
-  });
-
-  it('should select list of branches', async () => {
-    const branches = 'main,branch1,branch2';
-
-    findRuleBranchesInput().vm.$emit('input', branches);
-    await nextTick();
-    const [eventPayload] = wrapper.emitted().changed;
-
-    expect(eventPayload[0]).toEqual({
-      type: SCAN_EXECUTION_SCHEDULE_RULE,
-      branches: branches.split(','),
-    });
-  });
-
-  it('should emit array of branches and correct type', async () => {
-    await selectBranches('main, branch');
-
-    expect(wrapper.emitted()).toEqual({
-      changed: [[{ branches: ['main', 'branch'], type: SCAN_EXECUTION_SCHEDULE_RULE }]],
-    });
-  });
-
-  it('should trim branch names from white spaces', async () => {
-    await selectBranches('main , branch  ,    branch2    ');
-
-    expect(wrapper.emitted()).toEqual({
-      changed: [[{ branches: ['main', 'branch', 'branch2'], type: SCAN_EXECUTION_SCHEDULE_RULE }]],
-    });
-  });
-
-  describe('select rule type', () => {
-    it('should select correct rule', async () => {
+  describe('default', () => {
+    beforeEach(() => {
       createComponent();
+    });
+
+    it('should render pipeline rule by default', () => {
+      expect(findRuleLabel().text()).toEqual(ruleLabel);
+      expect(findRuleTypeDropDown().props('text')).toEqual(
+        capitalizeFirstCharacter(SCAN_EXECUTION_RULES_LABELS.pipeline),
+      );
+    });
+
+    it('should render pipeline rule component by default', () => {
+      expect(findRuleLabel().text()).toEqual(ruleLabel);
+      expect(findRuleTypeDropDown().props('text')).toEqual(SCAN_EXECUTION_RULES_LABELS.pipeline);
+      expect(findBranchesInputField().element.value).toEqual('');
+    });
+
+    it('should select pipeline rule', async () => {
+      findRuleTypeDropdownItems().at(1).vm.$emit('click');
+      await nextTick();
+      const [eventPayload] = wrapper.emitted()['select-rule'];
+
+      expect(eventPayload[0]).toEqual(SCAN_EXECUTION_RULES_LABELS.schedule.toLowerCase());
+    });
+
+    it('should select list of branches', async () => {
+      const branches = 'main,branch1,branch2';
+
+      findRuleBranchesInput().vm.$emit('input', branches);
+      await nextTick();
+      const [eventPayload] = wrapper.emitted().changed;
+
+      expect(eventPayload[0]).toEqual({
+        type: SCAN_EXECUTION_SCHEDULE_RULE,
+        branches: branches.split(','),
+      });
+    });
+
+    it('should emit array of branches and correct type', async () => {
+      await selectBranches('main, branch');
+
+      expect(wrapper.emitted()).toEqual({
+        changed: [[{ branches: ['main', 'branch'], type: SCAN_EXECUTION_SCHEDULE_RULE }]],
+      });
+    });
+
+    it('should trim branch names from white spaces', async () => {
+      await selectBranches('main , branch  ,    branch2    ');
+
+      expect(wrapper.emitted()).toEqual({
+        changed: [
+          [{ branches: ['main', 'branch', 'branch2'], type: SCAN_EXECUTION_SCHEDULE_RULE }],
+        ],
+      });
+    });
+
+    it('should select correct rule', async () => {
       findTypeDropDownItem().vm.$emit('click');
 
       await nextTick();
@@ -109,11 +107,8 @@ describe('BaseRuleComponent', () => {
         'select-rule': [[SCAN_EXECUTION_PIPELINE_RULE]],
       });
     });
-  });
 
-  describe('remove rule', () => {
     it('should remove rule', async () => {
-      createComponent();
       findDeleteButton().vm.$emit('click');
 
       await nextTick();
