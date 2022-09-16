@@ -14,11 +14,15 @@ module MergeRequests
 
       delete_outdated_code_owner_rules
 
-      existing_rules = merge_request.approval_rules.matching_pattern(patterns).to_a
+      rules_by_pattern_and_section =
+        merge_request.approval_rules.matching_pattern(patterns).index_by do |rule|
+          [rule.name, rule.section]
+        end
 
       code_owner_entries.each do |entry|
-        rule = existing_rules.detect { |rule| rule.name == entry.pattern }
-        rule ||= create_rule(entry)
+        rule = rules_by_pattern_and_section.fetch([entry.pattern, entry.section]) do
+          create_rule(entry)
+        end
 
         rule.users = entry.users
         rule.groups = entry.groups
