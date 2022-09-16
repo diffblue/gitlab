@@ -1,7 +1,0 @@
-@import 'page_bundles/mixins_and_variables_and_functions';
-
-.contributors {
-  &-loader {
-    padding-top: calc(#{$header-height} * 2);
-  }
-}
