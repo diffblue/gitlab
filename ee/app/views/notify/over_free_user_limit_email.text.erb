@@ -1,0 +1,16 @@
+<%= s_("FreeUserCap|You've reached your member limit!") %>
+
+<%= s_("FreeUserCap|It looks like you've reached your limit of %{free_user_limit} members for \"%{namespace_name}\", according to the check we ran on %{date_time}. You can't add any more, but you can manage your existing members, for example, by removing inactive members and replacing them with new members.") % { namespace_name: @namespace_name, free_user_limit: Namespaces::FreeUserCap.dashboard_limit, date_time: l(@checked_at, format: :long) } %>
+
+<%= s_("FreeUserCap|To get more members start a trial:") %>
+<%= @start_trial_url %>
+
+<%= s_("FreeUserCap|Alternatively you can upgrade to GitLab Premium or GitLab Ultimate:") %>
+<%= @upgrade_url %>
+
+<%= s_("FreeUserCap|Manage members:") %>
+<%= @manage_users_url %>
+
+<%= s_("FreeUserCap|Explore paid plans:") %>
+<%= @upgrade_url %>
+

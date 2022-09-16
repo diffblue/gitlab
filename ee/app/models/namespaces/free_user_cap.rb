@@ -14,6 +14,10 @@ module Namespaces
         ::Namespaces::FreeUserCap::Enforcement.new(namespace).enforce_cap?
     end
 
+    def self.over_user_limit_mails_enabled?
+      ::Feature.enabled?(:free_user_cap_over_user_limit_mails)
+    end
+
     def self.dashboard_limit
       ::Gitlab::CurrentSettings.dashboard_limit
     end

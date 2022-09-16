@@ -426,6 +426,15 @@
   :weight: 1
   :idempotent: false
   :tags: []
+- :name: cronjob:namespaces_free_user_cap_backfill_notification_jobs
+  :worker_name: Namespaces::FreeUserCap::BackfillNotificationJobsWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: cronjob:projects_disable_legacy_open_source_license_for_inactive_projects
   :worker_name: Projects::DisableLegacyOpenSourceLicenseForInactiveProjectsWorker
   :feature_category: :projects
@@ -1376,6 +1385,15 @@
   :feature_category: :source_code_management
   :has_external_dependencies: false
   :urgency: :high
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: namespaces_free_user_cap_over_limit_notification
+  :worker_name: Namespaces::FreeUserCap::OverLimitNotificationWorker
+  :feature_category: :user_management
+  :has_external_dependencies: false
+  :urgency: :low
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: true
