@@ -16,12 +16,7 @@ export default function deviseState() {
     return stateKey.rebase;
   } else if (this.hasMergeChecksFailed && !this.autoMergeEnabled) {
     return stateKey.mergeChecksFailed;
-  } else if (this.isPipelineBlocked) {
-    return stateKey.pipelineBlocked;
-  } else if (
-    this.detailedMergeStatus === DETAILED_MERGE_STATUS.CI_MUST_PASS &&
-    this.ciStatus !== 'running'
-  ) {
+  } else if (this.detailedMergeStatus === DETAILED_MERGE_STATUS.CI_MUST_PASS) {
     return stateKey.pipelineFailed;
   } else if (this.detailedMergeStatus === DETAILED_MERGE_STATUS.DRAFT_STATUS) {
     return stateKey.draft;
@@ -31,7 +26,10 @@ export default function deviseState() {
     return stateKey.shaMismatch;
   } else if (this.autoMergeEnabled && !this.mergeError) {
     return stateKey.autoMergeEnabled;
-  } else if (this.detailedMergeStatus === DETAILED_MERGE_STATUS.MERGEABLE) {
+  } else if (
+    this.detailedMergeStatus === DETAILED_MERGE_STATUS.MERGEABLE ||
+    this.detailedMergeStatus === DETAILED_MERGE_STATUS.CI_STILL_RUNNING
+  ) {
     return stateKey.readyToMerge;
   }
   return null;

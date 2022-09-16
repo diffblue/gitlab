@@ -37,11 +37,6 @@ describe('getStateKey', () => {
     expect(bound()).toEqual('shaMismatch');
 
     context.canMerge = false;
-    context.isPipelineBlocked = true;
-
-    expect(bound()).toEqual('pipelineBlocked');
-
-    context.isPipelineBlocked = false;
     context.detailedMergeStatus = 'DISCUSSIONS_NOT_RESOLVED';
 
     expect(bound()).toEqual('unresolvedDiscussions');
