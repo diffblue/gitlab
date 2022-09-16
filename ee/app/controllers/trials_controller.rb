@@ -32,7 +32,7 @@ class TrialsController < ApplicationController
     url_params = { glm_source: params[:glm_source], glm_content: params[:glm_content] }
     @result = GitlabSubscriptions::CreateLeadService.new.execute({ trial_user: company_params })
 
-    render(:new) && return unless @result[:success]
+    render(:new) && return unless @result.success?
 
     if params[:onboarding] == 'true'
       redirect_to(new_users_sign_up_groups_project_path(url_params.merge(trial_onboarding_flow: true)))

@@ -57,11 +57,11 @@ RSpec.describe TrialsController, :saas do
 
   describe '#create_lead' do
     let(:post_params) { {} }
-    let(:create_lead_result) { nil }
+    let(:create_lead_result) { ServiceResponse.success }
 
     before do
       allow_next_instance_of(GitlabSubscriptions::CreateLeadService) do |lead_service|
-        expect(lead_service).to receive(:execute).and_return({ success: create_lead_result })
+        expect(lead_service).to receive(:execute).and_return(create_lead_result) # rubocop:disable RSpec/ExpectInHook
       end
     end
 
@@ -70,19 +70,29 @@ RSpec.describe TrialsController, :saas do
       response
     end
 
-    it_behaves_like 'an authenticated endpoint'
-    it_behaves_like 'a dot-com only feature'
+    context 'when not authenticated' do
+      let(:logged_in) { false }
 
-    context 'on success' do
-      let(:create_lead_result) { true }
+      it { is_expected.to redirect_to(new_trial_registration_url) }
+    end
 
+    context 'when not on gitlab.com' do
+      before do
+        allow(::Gitlab).to receive(:com?).and_return(false)
+      end
+
+      it { is_expected.to have_gitlab_http_status(:not_found) }
+    end
+
+    context 'with success' do
       it { is_expected.to redirect_to(select_trials_url) }
 
       context 'when the onboarding=true parameter is set' do
         let(:post_params) { { glm_source: 'about.gitlab.com', onboarding: true } }
 
         it 'redirects to the combined registration path' do
-          is_expected.to redirect_to(new_users_sign_up_groups_project_path(glm_source: 'about.gitlab.com', trial_onboarding_flow: true))
+          is_expected.to redirect_to(new_users_sign_up_groups_project_path(glm_source: 'about.gitlab.com',
+                                                                           trial_onboarding_flow: true))
         end
       end
 
@@ -130,7 +140,9 @@ RSpec.describe TrialsController, :saas do
             let(:user) { create(:user, setup_for_company: true) }
 
             context 'when there is a stored_location_for(:user) set' do
-              let(:stored_location_for) { continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: 311) }
+              let(:stored_location_for) do
+                continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: 311)
+              end
 
               before do
                 controller.store_location_for(:user, stored_location_for)
@@ -155,13 +167,15 @@ RSpec.describe TrialsController, :saas do
       end
     end
 
-    context 'on failure' do
-      let(:create_lead_result) { false }
+    context 'with failure' do
+      render_views
+
+      let(:create_lead_result) { ServiceResponse.error(message: '_fail_') }
 
       it { is_expected.to render_template(:new) }
     end
 
-    context 'request params to Lead Service' do
+    context 'with request params to Lead Service' do
       let(:post_params) do
         {
           company_name: 'Gitlab',
@@ -211,7 +225,9 @@ RSpec.describe TrialsController, :saas do
 
       it 'sends appropriate request params' do
         expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |lead_service|
-          expect(lead_service).to receive(:execute).with({ trial_user: ActionController::Parameters.new(expected_params).permit! }).and_return({ success: true })
+          expect(lead_service).to receive(:execute)
+                                    .with({ trial_user: ActionController::Parameters.new(expected_params).permit! })
+                                    .and_return(ServiceResponse.success)
         end
 
         post_create_lead
@@ -223,7 +239,7 @@ RSpec.describe TrialsController, :saas do
     let_it_be(:namespace) { create(:group) }
     let_it_be(:namespace_id) { namespace.id.to_s }
 
-    let(:create_hand_raise_lead_result) { true }
+    let(:create_hand_raise_lead_result) { ServiceResponse.success }
     let(:hand_raise_lead_extra_params) do
       {
         work_email: user.email,
@@ -260,7 +276,7 @@ RSpec.describe TrialsController, :saas do
 
     before do
       allow_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
-        allow(service).to receive(:execute).and_return(create_hand_raise_lead_result ? ServiceResponse.success : ServiceResponse.error(message: 'failed'))
+        allow(service).to receive(:execute).and_return(create_hand_raise_lead_result)
       end
     end
 
@@ -281,7 +297,7 @@ RSpec.describe TrialsController, :saas do
     end
 
     context 'when CreateHandRaiseLeadService fails' do
-      let(:create_hand_raise_lead_result) { false }
+      let(:create_hand_raise_lead_result) { ServiceResponse.error(message: '_fail_') }
 
       it 'returns 403' do
         is_expected.to have_gitlab_http_status(:forbidden)
@@ -333,7 +349,7 @@ RSpec.describe TrialsController, :saas do
     it_behaves_like 'an authenticated endpoint'
     it_behaves_like 'a dot-com only feature'
 
-    context 'on success' do
+    context 'with success' do
       let(:apply_trial_result) do
         instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.success)
       end
@@ -349,7 +365,7 @@ RSpec.describe TrialsController, :saas do
                               user: user)
       end
 
-      context 'redirect trial user to feature' do
+      context 'with redirect trial user to feature' do
         using RSpec::Parameterized::TableSyntax
 
         where(:glm_content, :redirect) do
@@ -374,7 +390,7 @@ RSpec.describe TrialsController, :saas do
       end
     end
 
-    context 'on failure' do
+    context 'with failure' do
       let(:apply_trial_result) do
         instance_double(GitlabSubscriptions::ApplyTrialService, execute: ServiceResponse.error(message: '_failed_'))
       end
@@ -407,7 +423,8 @@ RSpec.describe TrialsController, :saas do
       apply_trial_params = {
         uid: user.id,
         trial_user_information: ActionController::Parameters.new(post_params)
-                                                            .permit(:namespace_id,
+                                                            .permit(
+                                                              :namespace_id,
                                                               :trial_entity,
                                                               :glm_source,
                                                               :glm_content
@@ -430,7 +447,7 @@ RSpec.describe TrialsController, :saas do
     let(:namespace_id) { namespace.id }
     let(:trial_extension_type) { GitlabSubscription.trial_extension_types[:extended].to_s }
     let(:put_params) { { namespace_id: namespace_id, trial_extension_type: trial_extension_type } }
-    let(:extend_reactivate_trial_result) { true }
+    let(:extend_reactivate_trial_result) { ServiceResponse.success }
     let(:is_owner?) { true }
 
     before do
@@ -441,7 +458,7 @@ RSpec.describe TrialsController, :saas do
       end
 
       allow_next_instance_of(GitlabSubscriptions::ExtendReactivateTrialService) do |service|
-        allow(service).to receive(:execute).and_return(extend_reactivate_trial_result ? ServiceResponse.success : ServiceResponse.error(message: 'failed'))
+        allow(service).to receive(:execute).and_return(extend_reactivate_trial_result)
       end
     end
 
@@ -453,11 +470,11 @@ RSpec.describe TrialsController, :saas do
     it_behaves_like 'an authenticated endpoint'
     it_behaves_like 'a dot-com only feature'
 
-    context 'on success' do
+    context 'with success' do
       it { is_expected.to have_gitlab_http_status(:ok) }
     end
 
-    context 'on failure' do
+    context 'with failure' do
       context 'when user is not namespace owner' do
         let(:is_owner?) { false }
 
@@ -486,7 +503,8 @@ RSpec.describe TrialsController, :saas do
         let(:trial_extension_type) { GitlabSubscription.trial_extension_types[:extended].to_s }
 
         it 'returns 403 if the namespace cannot extend' do
-          namespace.gitlab_subscription.update_column(:trial_extension_type, GitlabSubscription.trial_extension_types[:extended])
+          namespace.gitlab_subscription
+                   .update!(trial_extension_type: GitlabSubscription.trial_extension_types[:extended])
 
           is_expected.to have_gitlab_http_status(:forbidden)
         end
@@ -496,14 +514,15 @@ RSpec.describe TrialsController, :saas do
         let(:trial_extension_type) { GitlabSubscription.trial_extension_types[:reactivated].to_s }
 
         it 'returns 403 if the namespace cannot reactivate' do
-          namespace.gitlab_subscription.update_column(:trial_extension_type, GitlabSubscription.trial_extension_types[:extended])
+          namespace.gitlab_subscription
+                   .update!(trial_extension_type: GitlabSubscription.trial_extension_types[:extended])
 
           is_expected.to have_gitlab_http_status(:forbidden)
         end
       end
 
       context 'when ExtendReactivateTrialService fails' do
-        let(:extend_reactivate_trial_result) { false }
+        let(:extend_reactivate_trial_result) { ServiceResponse.error(message: '_fail_') }
 
         it 'returns 403' do
           is_expected.to have_gitlab_http_status(:forbidden)
@@ -522,7 +541,14 @@ RSpec.describe TrialsController, :saas do
       }
       extend_reactivate_trial_params = {
         uid: user.id,
-        trial_user: ActionController::Parameters.new(put_params).permit(:namespace_id, :trial_extension_type, :trial_entity, :glm_source, :glm_content).merge(gl_com_params)
+        trial_user: ActionController::Parameters.new(put_params)
+                      .permit(
+                        :namespace_id,
+                        :trial_extension_type,
+                        :trial_entity,
+                        :glm_source,
+                        :glm_content
+                      ).merge(gl_com_params)
       }
 
       expect_next_instance_of(GitlabSubscriptions::ExtendReactivateTrialService) do |service|
@@ -539,8 +565,9 @@ RSpec.describe TrialsController, :saas do
     end
 
     RSpec::Matchers.define :set_confirm_warning_for do |email|
-      match do |response|
-        expect(controller).to set_flash.now[:warning].to include("Please check your email (#{email}) to verify that you own this address and unlock the power of CI/CD.")
+      match do |_response|
+        msg = "Please check your email (#{email}) to verify that you own this address and unlock the power of CI/CD."
+        expect(controller).to set_flash.now[:warning].to include(msg)
       end
     end
 
@@ -577,7 +604,7 @@ RSpec.describe TrialsController, :saas do
 
       it { is_expected.to redirect_to(dashboard_projects_path) }
 
-      context 'and has a stored_location_for set' do
+      context 'with has a stored_location_for set' do
         before do
           controller.store_location_for(:user, new_trial_path)
         end

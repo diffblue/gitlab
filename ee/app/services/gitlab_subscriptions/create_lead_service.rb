@@ -6,9 +6,9 @@ module GitlabSubscriptions
       response = client.generate_trial(company_params)
 
       if response[:success]
-        { success: true }
+        ServiceResponse.success
       else
-        { success: false, errors: response.dig(:data, :errors) }
+        ServiceResponse.error(message: response.dig(:data, :errors))
       end
     end
 
