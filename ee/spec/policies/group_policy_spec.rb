@@ -1560,6 +1560,7 @@ RSpec.describe GroupPolicy do
       let(:over_storage_limit) { true }
 
       it { is_expected.to(be_disallowed(*policies)) }
+      it { is_expected.to(be_allowed(:read_billable_member)) }
     end
 
     context 'when the group has not exceeded its storage limit' do
