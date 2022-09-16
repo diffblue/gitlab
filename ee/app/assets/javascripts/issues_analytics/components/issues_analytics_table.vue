@@ -17,7 +17,7 @@ import axios from '~/lib/utils/axios_utils';
 import { getDayDifference } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
-import { s__, n__ } from '~/locale';
+import { s__, n__, __ } from '~/locale';
 
 const DEFAULT_API_URL_PARAMS = { with_labels_details: true, per_page: 100 };
 const SYMBOL = {
@@ -27,6 +27,11 @@ const SYMBOL = {
 const MAX_VISIBLE_ASSIGNEES = 2;
 
 const TH_TEST_ID = { 'data-testid': 'header' };
+
+const ISSUE_STATE_I18N_MAP = {
+  opened: __('Opened'),
+  closed: __('Closed'),
+};
 
 export default {
   name: 'IssuesAnalyticsTable',
@@ -131,7 +136,7 @@ export default {
       return n__('%d day', '%d days', getDayDifference(new Date(date), new Date(Date.now())));
     },
     formatStatus(status) {
-      return capitalizeFirstCharacter(status);
+      return ISSUE_STATE_I18N_MAP[status] || capitalizeFirstCharacter(status);
     },
     formatIssueId(id) {
       return `${SYMBOL.ISSUE}${id}`;
