@@ -13186,8 +13186,10 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="groupvulnerabilityseveritiescountclusteragentid"></a>`clusterAgentId` | [`[ClustersAgentID!]`](#clustersagentid) | Filter vulnerabilities by `cluster_agent_id`. Vulnerabilities with a `reportType` of `cluster_image_scanning` are only included with this filter. |
 | <a id="groupvulnerabilityseveritiescounthasissues"></a>`hasIssues` | [`Boolean`](#boolean) | Filter vulnerabilities that do or do not have issues. |
 | <a id="groupvulnerabilityseveritiescounthasresolution"></a>`hasResolution` | [`Boolean`](#boolean) | Filter vulnerabilities that do or do not have a resolution. |
+| <a id="groupvulnerabilityseveritiescountimage"></a>`image` | [`[String!]`](#string) | Filter vulnerabilities by location image. When this filter is present, the response only matches entries for a `reportType` that includes `container_scanning`, `cluster_image_scanning`. |
 | <a id="groupvulnerabilityseveritiescountprojectid"></a>`projectId` | [`[ID!]`](#id) | Filter vulnerabilities by project. |
 | <a id="groupvulnerabilityseveritiescountreporttype"></a>`reportType` | [`[VulnerabilityReportType!]`](#vulnerabilityreporttype) | Filter vulnerabilities by report type. |
 | <a id="groupvulnerabilityseveritiescountscanner"></a>`scanner` | [`[String!]`](#string) | Filter vulnerabilities by scanner. |
@@ -13447,8 +13449,10 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="instancesecuritydashboardvulnerabilityseveritiescountclusteragentid"></a>`clusterAgentId` | [`[ClustersAgentID!]`](#clustersagentid) | Filter vulnerabilities by `cluster_agent_id`. Vulnerabilities with a `reportType` of `cluster_image_scanning` are only included with this filter. |
 | <a id="instancesecuritydashboardvulnerabilityseveritiescounthasissues"></a>`hasIssues` | [`Boolean`](#boolean) | Filter vulnerabilities that do or do not have issues. |
 | <a id="instancesecuritydashboardvulnerabilityseveritiescounthasresolution"></a>`hasResolution` | [`Boolean`](#boolean) | Filter vulnerabilities that do or do not have a resolution. |
+| <a id="instancesecuritydashboardvulnerabilityseveritiescountimage"></a>`image` | [`[String!]`](#string) | Filter vulnerabilities by location image. When this filter is present, the response only matches entries for a `reportType` that includes `container_scanning`, `cluster_image_scanning`. |
 | <a id="instancesecuritydashboardvulnerabilityseveritiescountprojectid"></a>`projectId` | [`[ID!]`](#id) | Filter vulnerabilities by project. |
 | <a id="instancesecuritydashboardvulnerabilityseveritiescountreporttype"></a>`reportType` | [`[VulnerabilityReportType!]`](#vulnerabilityreporttype) | Filter vulnerabilities by report type. |
 | <a id="instancesecuritydashboardvulnerabilityseveritiescountscanner"></a>`scanner` | [`[String!]`](#string) | Filter vulnerabilities by scanner. |
@@ -16965,8 +16969,10 @@ Returns [`VulnerabilitySeveritiesCount`](#vulnerabilityseveritiescount).
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="projectvulnerabilityseveritiescountclusteragentid"></a>`clusterAgentId` | [`[ClustersAgentID!]`](#clustersagentid) | Filter vulnerabilities by `cluster_agent_id`. Vulnerabilities with a `reportType` of `cluster_image_scanning` are only included with this filter. |
 | <a id="projectvulnerabilityseveritiescounthasissues"></a>`hasIssues` | [`Boolean`](#boolean) | Filter vulnerabilities that do or do not have issues. |
 | <a id="projectvulnerabilityseveritiescounthasresolution"></a>`hasResolution` | [`Boolean`](#boolean) | Filter vulnerabilities that do or do not have a resolution. |
+| <a id="projectvulnerabilityseveritiescountimage"></a>`image` | [`[String!]`](#string) | Filter vulnerabilities by location image. When this filter is present, the response only matches entries for a `reportType` that includes `container_scanning`, `cluster_image_scanning`. |
 | <a id="projectvulnerabilityseveritiescountprojectid"></a>`projectId` | [`[ID!]`](#id) | Filter vulnerabilities by project. |
 | <a id="projectvulnerabilityseveritiescountreporttype"></a>`reportType` | [`[VulnerabilityReportType!]`](#vulnerabilityreporttype) | Filter vulnerabilities by report type. |
 | <a id="projectvulnerabilityseveritiescountscanner"></a>`scanner` | [`[String!]`](#string) | Filter vulnerabilities by scanner. |
