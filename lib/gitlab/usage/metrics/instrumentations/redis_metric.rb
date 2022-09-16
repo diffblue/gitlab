@@ -49,12 +49,10 @@ module Gitlab
 
           private
 
-          def usage_prefix
-            include_usage_prefix? ? USAGE_PREFIX : ""
-          end
-
           def redis_key
-            "#{usage_prefix}#{prefix}_#{metric_event}".upcase
+            key = "#{prefix}_#{metric_event}".upcase
+            key.prepend(USAGE_PREFIX) if include_usage_prefix?
+            key
           end
         end
       end
