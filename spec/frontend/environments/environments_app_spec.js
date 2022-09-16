@@ -370,7 +370,8 @@ describe('~/environments/components/environments_app.vue', () => {
       searchBox.setValue('hello');
 
       await nextTick();
-      expect(window.location.search).toBe('?scope=available&page=2&search=hello');
+
+      expect(window.location.search).toBe('?scope=available&page=1&search=hello');
     });
 
     it('should query for the entered parameter', async () => {
@@ -390,11 +391,6 @@ describe('~/environments/components/environments_app.vue', () => {
     });
 
     it('should sync search term from query params on load', async () => {
-      await createWrapperWithMocked({
-        environmentsApp: resolvedEnvironmentsApp,
-        folder: resolvedFolder,
-      });
-
       expect(searchBox.element.value).toBe('prod');
     });
   });

@@ -45,9 +45,7 @@ export default {
           search: this.search,
         };
       },
-      pollInterval() {
-        return this.interval;
-      },
+      pollInterval: 3000,
     },
     interval: {
       query: pollIntervalQuery,
@@ -159,6 +157,12 @@ export default {
       return this.pageInfo?.perPage;
     },
   },
+  watch: {
+    interval(val) {
+      this.$apollo.queries.environmentApp.stopPolling();
+      this.$apollo.queries.environmentApp.startPolling(val);
+    },
+  },
   mounted() {
     window.addEventListener('popstate', this.syncPageFromQueryParams);
     window.addEventListener('popstate', this.syncSearchFromQueryParams);
@@ -182,18 +186,13 @@ export default {
     moveToPage(page) {
       this.page = page;
       updateHistory({
-        url: setUrlParams({ page: this.page }),
+        url: setUrlParams({ page: this.page, scope: this.scope, search: this.search }),
         title: document.title,
       });
-      this.resetPolling();
     },
     setSearch(input) {
       this.search = input;
-      updateHistory({
-        url: setUrlParams({ search: this.search }),
-        title: document.title,
-      });
-      this.resetPolling();
+      this.moveToPage(1);
     },
     syncPageFromQueryParams() {
       const { page = '1' } = queryToObject(window.location.search);
@@ -203,14 +202,8 @@ export default {
       const { search = '' } = queryToObject(window.location.search);
       this.search = search;
     },
-    resetPolling() {
-      this.$apollo.queries.environmentApp.stopPolling();
+    refetchEnvironments() {
       this.$apollo.queries.environmentApp.refetch();
-      this.$nextTick(() => {
-        if (this.interval) {
-          this.$apollo.queries.environmentApp.startPolling(this.interval);
-        }
-      });
     },
   },
   ENVIRONMENTS_SCOPE,
@@ -278,7 +271,7 @@ export default {
         :key="environment.name"
         class="gl-mb-3 gl-border-gray-100 gl-border-1 gl-border-b-solid"
         :environment="environment.latest"
-        @change="resetPolling"
+        @change="refetchEnvironments"
       />
     </template>
     <empty-state
