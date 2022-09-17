@@ -42,7 +42,11 @@ module EE
             end
 
             unless License.feature_available?(:package_forwarding)
-              attrs = attrs.except(:npm_package_requests_forwarding, :pypi_package_requests_forwarding)
+              attrs = attrs.except(
+                :npm_package_requests_forwarding,
+                :pypi_package_requests_forwarding,
+                :maven_package_requests_forwarding
+              )
             end
 
             unless License.feature_available?(:password_complexity)

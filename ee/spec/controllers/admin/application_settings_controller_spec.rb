@@ -114,6 +114,13 @@ RSpec.describe Admin::ApplicationSettingsController do
       it_behaves_like 'settings for licensed features'
     end
 
+    context 'updating maven packages request forwarding setting' do
+      let(:settings) { { maven_package_requests_forwarding: true } }
+      let(:feature) { :package_forwarding }
+
+      it_behaves_like 'settings for licensed features'
+    end
+
     context 'updating npm packages request forwarding setting' do
       let(:settings) { { npm_package_requests_forwarding: true } }
       let(:feature) { :package_forwarding }

@@ -269,6 +269,15 @@ RSpec.describe 'Admin updates EE-only settings' do
       visit ci_cd_admin_application_settings_path
     end
 
+    it 'allows you to change the maven_forwarding setting' do
+      page.within('#js-package-settings') do
+        check 'Forward Maven package requests to the Maven Registry if the packages are not found in the GitLab Package Registry'
+        click_button 'Save'
+      end
+
+      expect(current_settings.maven_package_requests_forwarding).to be true
+    end
+
     it 'allows you to change the npm_forwarding setting' do
       page.within('#js-package-settings') do
         check 'Forward npm package requests to the npm Registry if the packages are not found in the GitLab Package Registry'
