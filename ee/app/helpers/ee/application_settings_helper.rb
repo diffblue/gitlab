@@ -109,6 +109,7 @@ module EE
          delayed_group_deletion
          deletion_adjourned_period
          updating_name_disabled_for_users
+         maven_package_requests_forwarding
          npm_package_requests_forwarding
          pypi_package_requests_forwarding
          maintenance_mode

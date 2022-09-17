@@ -49,6 +49,7 @@ module EE
             optional :disable_overriding_approvers_per_merge_request, type: Grape::API::Boolean, desc: 'Disable Users ability to overwrite approvers in merge requests.'
             optional :prevent_merge_requests_author_approval, type: Grape::API::Boolean, desc: 'Disable Merge request author ability to approve request.'
             optional :prevent_merge_requests_committers_approval, type: Grape::API::Boolean, desc: 'Disable Merge request committer ability to approve request.'
+            optional :maven_package_requests_forwarding, type: Grape::API::Boolean, desc: 'Maven package requests are forwarded to repo.maven.apache.org if not found on GitLab.'
             optional :npm_package_requests_forwarding, type: Grape::API::Boolean, desc: 'NPM package requests are forwarded to npmjs.org if not found on GitLab.'
             optional :pypi_package_requests_forwarding, type: Grape::API::Boolean, desc: 'PyPI package requests are forwarded to pypi.org if not found on GitLab.'
             optional :group_owners_can_manage_default_branch_protection, type: Grape::API::Boolean, desc: 'Allow owners to manage default branch protection in groups'
