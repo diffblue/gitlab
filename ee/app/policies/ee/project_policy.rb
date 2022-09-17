@@ -322,6 +322,10 @@ module EE
         enable :read_incident_management_oncall_schedule
       end
 
+      rule { auditor & escalation_policies_available }.policy do
+        enable :read_incident_management_escalation_policy
+      end
+
       rule { auditor & ~developer }.policy do
         prevent :create_vulnerability
         prevent :admin_vulnerability
