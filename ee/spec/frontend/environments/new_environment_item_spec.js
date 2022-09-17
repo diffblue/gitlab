@@ -45,7 +45,7 @@ describe('~/environments/components/new_environment_item.vue', () => {
     wrapper = mountExtended(EnvironmentItem, {
       apolloProvider,
       propsData: { environment: resolvedEnvironment, ...propsData },
-      provide: { helpPagePath: '/help', projectId: '1' },
+      provide: { helpPagePath: '/help', projectId: '1', projectPath: '/1' },
       stubs: { transition: stubTransition() },
     });
 
