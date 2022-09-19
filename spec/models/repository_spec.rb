@@ -1377,38 +1377,46 @@ RSpec.describe Repository do
     end
   end
 
-  describe '#license', :clean_gitlab_redis_cache do
-    let(:project) { create(:project, :repository) }
+  [true, false].each do |ff|
+    context "with feature flag license_from_gitaly=#{ff}" do
+      before do
+        stub_feature_flags(license_from_gitaly: ff)
+      end
 
-    before do
-      repository.delete_file(user, 'LICENSE',
-        message: 'Remove LICENSE', branch_name: 'master')
-    end
+      describe '#license', :clean_gitlab_redis_cache do
+        let(:project) { create(:project, :repository) }
 
-    it 'returns nil when no license is detected' do
-      expect(repository.license).to be_nil
-    end
+        before do
+          repository.delete_file(user, 'LICENSE',
+                                 message: 'Remove LICENSE', branch_name: 'master')
+        end
 
-    it 'returns nil when the repository does not exist' do
-      expect(repository).to receive(:exists?).and_return(false)
+        it 'returns nil when no license is detected' do
+          expect(repository.license).to be_nil
+        end
 
-      expect(repository.license).to be_nil
-    end
+        it 'returns nil when the repository does not exist' do
+          expect(repository).to receive(:exists?).and_return(false)
 
-    it 'returns other when the content is not recognizable' do
-      repository.create_file(user, 'LICENSE', 'Gitlab B.V.',
-        message: 'Add LICENSE', branch_name: 'master')
+          expect(repository.license).to be_nil
+        end
 
-      expect(repository.license_key).to eq('other')
-    end
+        it 'returns other when the content is not recognizable' do
+          repository.create_file(user, 'LICENSE', 'Gitlab B.V.',
+                                 message: 'Add LICENSE', branch_name: 'master')
 
-    it 'returns the license' do
-      license = Licensee::License.new('mit')
-      repository.create_file(user, 'LICENSE',
-        license.content,
-        message: 'Add LICENSE', branch_name: 'master')
+          expect(repository.license_key).to eq('other')
+        end
 
-      expect(repository.license_key).to eq(license.key)
+        it 'returns the license' do
+          license = Licensee::License.new('mit')
+          repository.create_file(user, 'LICENSE',
+                                 license.content,
+                                 message: 'Add LICENSE', branch_name: 'master')
+
+          expect(repository.license_key).to eq(license.key)
+        end
+      end
     end
   end
 
@@ -2197,7 +2205,8 @@ RSpec.describe Repository do
         :contribution_guide,
         :changelog,
         :license_blob,
-        :license,
+        :license_licensee,
+        :license_gitaly,
         :gitignore,
         :gitlab_ci_yml,
         :branch_names,
@@ -2850,11 +2859,12 @@ RSpec.describe Repository do
   describe '#refresh_method_caches' do
     it 'refreshes the caches of the given types' do
       expect(repository).to receive(:expire_method_caches)
-        .with(%i(readme_path license_blob license))
+        .with(%i(readme_path license_blob license_licensee license_gitaly))
 
       expect(repository).to receive(:readme_path)
       expect(repository).to receive(:license_blob)
-      expect(repository).to receive(:license)
+      expect(repository).to receive(:license_licensee)
+      expect(repository).to receive(:license_gitaly)
 
       repository.refresh_method_caches(%i(readme license))
     end

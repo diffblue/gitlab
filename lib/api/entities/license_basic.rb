@@ -2,6 +2,7 @@
 
 module API
   module Entities
+    # Serializes a Gitlab::Git::DeclaredLicense
     class LicenseBasic < Grape::Entity
       expose :key, :name, :nickname
       expose :url, as: :html_url
