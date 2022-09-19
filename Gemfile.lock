@@ -1685,7 +1685,7 @@ DEPENDENCIES
   net-ldap (~> 0.16.3)
   net-ntp
   nokogiri (~> 1.13.8)
-  oauth2 (~> 2.0.6)
+  oauth2 (~> 2.0)
   octokit (~> 4.15)
   ohai (~> 16.10)
   oj (~> 3.13.21)

@@ -467,7 +467,7 @@ gem 'memory_profiler', '~> 0.9', require: false
 gem 'activerecord-explain-analyze', '~> 0.1', require: false
 
 # OAuth
-gem 'oauth2', '~> 2.0.6'
+gem 'oauth2', '~> 2.0'
 
 # Health check
 gem 'health_check', '~> 3.0'
