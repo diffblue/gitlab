@@ -133,7 +133,6 @@ module QA
           reload! unless api_response
 
           api_response.slice(
-            :title,
             :description,
             :state,
             :due_date,
