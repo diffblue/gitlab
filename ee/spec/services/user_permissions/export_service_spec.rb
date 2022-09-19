@@ -66,9 +66,10 @@ RSpec.describe UserPermissions::ExportService do
     end
 
     it 'includes the appropriate headers' do
-      expect(csv.headers).to eq([
-        'Username', 'Email', 'Type', 'Path', 'Access Level', 'Last Activity'
-      ])
+      expect(csv.headers).to eq(
+        [
+          'Username', 'Email', 'Type', 'Path', 'Access Level', 'Last Activity'
+        ])
     end
 
     specify 'Username' do

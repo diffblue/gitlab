@@ -70,10 +70,11 @@ RSpec.describe Mutations::IncidentManagement::EscalationPolicy::Create do
           rules = resolve[:escalation_policy].rules
 
           expect(rules.size).to eq(2)
-          expect(rules).to match_array([
-            have_attributes(oncall_schedule_id: oncall_schedule.id, user: nil, elapsed_time_seconds: 300, status: 'acknowledged'),
-            have_attributes(oncall_schedule_id: nil, user: current_user, elapsed_time_seconds: 600, status: 'resolved')
-          ])
+          expect(rules).to match_array(
+            [
+              have_attributes(oncall_schedule_id: oncall_schedule.id, user: nil, elapsed_time_seconds: 300, status: 'acknowledged'),
+              have_attributes(oncall_schedule_id: nil, user: current_user, elapsed_time_seconds: 600, status: 'resolved')
+            ])
         end
 
         context 'rules are missing' do

@@ -48,23 +48,24 @@ RSpec.describe Security::StoreFindingsMetadataService do
         store_findings
 
         expect(security_scan.findings.reload.as_json(only: [:partition_number, :uuid, :deduplicated]))
-          .to match_array([
-            {
-              "partition_number" => findings_partition_number,
-              "uuid" => security_finding_1.uuid,
-              "deduplicated" => true
-            },
-            {
-              "partition_number" => findings_partition_number,
-              "uuid" => security_finding_2.uuid,
-              "deduplicated" => false
-            },
-            {
-              "partition_number" => findings_partition_number,
-              "uuid" => security_finding_3.uuid,
-              "deduplicated" => true
-            }
-          ])
+          .to match_array(
+            [
+              {
+                "partition_number" => findings_partition_number,
+                "uuid" => security_finding_1.uuid,
+                "deduplicated" => true
+              },
+              {
+                "partition_number" => findings_partition_number,
+                "uuid" => security_finding_2.uuid,
+                "deduplicated" => false
+              },
+              {
+                "partition_number" => findings_partition_number,
+                "uuid" => security_finding_3.uuid,
+                "deduplicated" => true
+              }
+            ])
       end
 
       context 'when the scanners already exist in the database' do

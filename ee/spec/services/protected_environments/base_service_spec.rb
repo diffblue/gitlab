@@ -68,13 +68,13 @@ RSpec.describe ProtectedEnvironments::BaseService, '#execute' do
           it 'includes invited groups' do
             is_expected.to eq(
               deploy_access_levels_attributes: [
-               { group_id: group.id },
-               { group_id: linked_group.id }
+                { group_id: group.id },
+                { group_id: linked_group.id }
               ],
               approval_rules_attributes: [
                 { group_id: group.id },
                 { group_id: linked_group.id }
-               ]
+              ]
             )
           end
         end

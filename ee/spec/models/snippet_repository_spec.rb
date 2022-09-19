@@ -78,25 +78,27 @@ RSpec.describe SnippetRepository, :request_store, :geo, type: :model do
 
     describe '#replicables_for_current_secondary' do
       it 'returns all snippet_repositories without selective sync' do
-        expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array([
-          snippet_repository_1,
-          snippet_repository_2,
-          snippet_repository_3,
-          snippet_repository_4,
-          snippet_repository_5
-        ])
+        expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array(
+          [
+            snippet_repository_1,
+            snippet_repository_2,
+            snippet_repository_3,
+            snippet_repository_4,
+            snippet_repository_5
+          ])
       end
 
       context 'with selective sync by namespace' do
         it 'returns snippet_repositories that belong to the namespaces + personal snippets' do
           node.update!(selective_sync_type: 'namespaces', namespaces: [group_1])
 
-          expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array([
-            snippet_repository_1,
-            snippet_repository_2,
-            snippet_repository_3,
-            snippet_repository_4
-          ])
+          expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array(
+            [
+              snippet_repository_1,
+              snippet_repository_2,
+              snippet_repository_3,
+              snippet_repository_4
+            ])
         end
       end
 
@@ -104,12 +106,13 @@ RSpec.describe SnippetRepository, :request_store, :geo, type: :model do
         it 'returns snippet_repositories that belong to the shards' do
           node.update!(selective_sync_type: 'shards', selective_sync_shards: ['default'])
 
-          expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array([
-            snippet_repository_1,
-            snippet_repository_2,
-            snippet_repository_4,
-            snippet_repository_5
-          ])
+          expect(described_class.replicables_for_current_secondary(1..described_class.last.id)).to match_array(
+            [
+              snippet_repository_1,
+              snippet_repository_2,
+              snippet_repository_4,
+              snippet_repository_5
+            ])
         end
       end
 

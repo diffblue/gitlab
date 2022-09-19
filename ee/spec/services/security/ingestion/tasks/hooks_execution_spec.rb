@@ -21,10 +21,11 @@ RSpec.describe Security::Ingestion::Tasks::HooksExecution do
         allow(vulnerability).to receive(:execute_hooks)
       end
 
-      allow(Vulnerability).to receive(:where).with(id: vulnerabilities[0..1].map(&:id)).and_return([
-        vulnerabilities[0],
-        vulnerabilities[1]
-      ])
+      allow(Vulnerability).to receive(:where).with(id: vulnerabilities[0..1].map(&:id)).and_return(
+        [
+          vulnerabilities[0],
+          vulnerabilities[1]
+        ])
 
       ingest_finding_remediations
     end
