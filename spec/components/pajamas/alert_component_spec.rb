@@ -45,11 +45,36 @@ RSpec.describe Pajamas::AlertComponent, :aggregate_failures, type: :component do
     end
   end
 
+  describe 'title' do
+    before do
+      render_inline described_class.new(title: title)
+    end
+
+    context 'with non-empty string' do
+      let(:title) { '_title_' }
+
+      it 'sets the title' do
+        expect(page).to have_selector('.gl-alert-title')
+        expect(page).to have_content(title)
+        expect(page).not_to have_selector('.gl-alert-icon-no-title')
+      end
+    end
+
+    context 'with blank string' do
+      let(:title) { '   ' }
+
+      it 'does not set a title' do
+        expect(page).not_to have_selector('.gl-alert-title')
+        expect(page).not_to have_content(title)
+        expect(page).to have_selector('.gl-alert-icon-no-title')
+      end
+    end
+  end
+
   context 'with custom options' do
     context 'with simple options' do
       before do
         render_inline described_class.new(
-          title: '_title_',
           alert_options: {
             class: '_alert_class_',
             data: {
@@ -58,12 +83,6 @@ RSpec.describe Pajamas::AlertComponent, :aggregate_failures, type: :component do
             }
           }
         )
-      end
-
-      it 'sets the title' do
-        expect(page).to have_selector('.gl-alert-title')
-        expect(page).to have_content('_title_')
-        expect(page).not_to have_selector('.gl-alert-icon-no-title')
       end
 
       it 'sets the alert_class' do
