@@ -19,6 +19,9 @@ fragment Issue on Issue {
   milestone {
     title
   }
+  iteration {
+    title
+  }
   weight
   dueDate
   assignees {

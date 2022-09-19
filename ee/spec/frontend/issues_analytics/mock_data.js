@@ -1,5 +1,24 @@
 import { TEST_HOST } from 'helpers/test_constants';
 
+const mockIteration = {
+  title: 'Iteration 1',
+  __typename: 'Iteration',
+};
+
+const mockLabels = {
+  count: 1,
+  nodes: [
+    {
+      id: 'gid://gitlab/GroupLabel/25',
+      color: '#5fa752',
+      title: 'label',
+      description: null,
+      __typename: 'Label',
+    },
+  ],
+  __typename: 'LabelConnection',
+};
+
 const createIssue = (values) => {
   return {
     state: 'closed',
@@ -8,22 +27,15 @@ const createIssue = (values) => {
       __typename: 'Epic',
     },
     labels: {
-      count: 1,
-      nodes: [
-        {
-          id: 'gid://gitlab/GroupLabel/25',
-          color: '#5fa752',
-          title: 'label',
-          description: null,
-          __typename: 'Label',
-        },
-      ],
+      count: 0,
+      nodes: [],
       __typename: 'LabelConnection',
     },
     milestone: {
       title: '11.1',
       __typename: 'Milestone',
     },
+    iteration: null,
     weight: '3',
     dueDate: '2020-10-08',
     assignees: {
@@ -46,8 +58,8 @@ const createIssue = (values) => {
 
 export const mockIssuesApiResponse = [
   createIssue({ iid: 12345, title: 'Issue-1', createdAt: '2020-01-08' }),
-  createIssue({ iid: 23456, title: 'Issue-2', createdAt: '2020-01-07' }),
-  createIssue({ iid: 34567, title: 'Issue-3', createdAt: '2020-01-6' }),
+  createIssue({ iid: 23456, title: 'Issue-2', createdAt: '2020-01-07', labels: mockLabels }),
+  createIssue({ iid: 34567, title: 'Issue-3', createdAt: '2020-01-6', iteration: mockIteration }),
 ];
 
 export const tableHeaders = [
@@ -55,6 +67,7 @@ export const tableHeaders = [
   'Age',
   'Status',
   'Milestone',
+  'Iteration',
   'Weight',
   'Due date',
   'Assignees',

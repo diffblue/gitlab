@@ -44,6 +44,9 @@ describe('IssuesAnalyticsTable', () => {
   const findIssueDetailsCol = (rowIndex) =>
     findTable().findAll('[data-testid="detailsCol"]').at(rowIndex);
 
+  const findIterationCol = (rowIndex) =>
+    findTable().findAll('[data-testid="iterationCol"]').at(rowIndex);
+
   const findAgeCol = (rowIndex) => findTable().findAll('[data-testid="ageCol"]').at(rowIndex);
 
   const findStatusCol = (rowIndex) => findTable().findAll('[data-testid="statusCol"]').at(rowIndex);
@@ -96,22 +99,14 @@ describe('IssuesAnalyticsTable', () => {
       });
 
       it('displays the correct issue details', () => {
-        const {
-          title,
-          iid,
-          epic,
-          labels: { count, nodes },
-        } = mockIssuesApiResponse[0];
+        const { title, iid, epic } = mockIssuesApiResponse[0];
 
-        expect(findIssueDetailsCol(0).text().replace(/\s+/g, '')).toBe(
-          `${title}#${iid}&${epic.iid}${count}${nodes[0].title}`,
-        );
+        expect(findIssueDetailsCol(0).text()).toBe(`${title} #${iid} &${epic.iid}`);
       });
 
       it('displays the correct issue details labels', () => {
-        const { iid } = mockIssuesApiResponse[0];
-
-        const firstDetails = findIssueDetailsCol(0);
+        const { iid } = mockIssuesApiResponse[1];
+        const firstDetails = findIssueDetailsCol(1);
         const labelsId = firstDetails.findComponent('[data-testid="labels"]').attributes('id');
         const labelsPopoverTarget = firstDetails
           .findComponent('[data-testid="labelsPopover"]')
@@ -119,6 +114,11 @@ describe('IssuesAnalyticsTable', () => {
 
         expect(labelsId).toBe(`${iid}-labels`);
         expect(labelsId).toBe(labelsPopoverTarget);
+      });
+
+      it('displays the correct issue iteration', () => {
+        expect(findIterationCol(0).text()).toBe('');
+        expect(findIterationCol(2).text()).toBe('Iteration 1');
       });
 
       it('displays the correct issue age', () => {
