@@ -17735,6 +17735,7 @@ CREATE TABLE ml_candidate_metrics (
     step integer,
     is_nan bytea,
     name text NOT NULL,
+    tracked_at bigint,
     CONSTRAINT check_3bb4a3fbd9 CHECK ((char_length(name) <= 250))
 );
 
