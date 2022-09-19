@@ -20095,6 +20095,7 @@ Detailed representation of whether a GitLab merge request can be merged.
 | <a id="detailedmergestatusbroken_status"></a>`BROKEN_STATUS` | Can not merge the source into the target branch, potential conflict. |
 | <a id="detailedmergestatuschecking"></a>`CHECKING` | Currently checking for mergeability. |
 | <a id="detailedmergestatusci_must_pass"></a>`CI_MUST_PASS` | Pipeline must succeed before merging. |
+| <a id="detailedmergestatusci_still_running"></a>`CI_STILL_RUNNING` | Pipeline is still running. |
 | <a id="detailedmergestatusdiscussions_not_resolved"></a>`DISCUSSIONS_NOT_RESOLVED` | Discussions must be resolved before merging. |
 | <a id="detailedmergestatusdraft_status"></a>`DRAFT_STATUS` | Merge request must not be draft before merging. |
 | <a id="detailedmergestatusmergeable"></a>`MERGEABLE` | Branch can be merged. |
