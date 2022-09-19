@@ -7,15 +7,15 @@ module Gitlab
         Google::Protobuf::DescriptorPool.generated_pool.build do
           add_file("bot/recommender.proto", syntax: :proto3) do
             add_message "bot.MergeRequestRecommendationsReqV2" do
-              optional :mergeRequestIid, :int64, 1
-              optional :topN, :int32, 2
-              optional :projectId, :int64, 3
+              optional :merge_request_iid, :int64, 1
+              optional :top_n, :int32, 2
+              optional :project_id, :int64, 3
               repeated :changes, :string, 4
-              optional :authorUsername, :string, 5
+              optional :author_username, :string, 5
             end
             add_message "bot.MergeRequestRecommendationsResV2" do
               optional :version, :string, 1
-              optional :topN, :int32, 2
+              optional :top_n, :int32, 2
               repeated :reviewers, :string, 3
             end
           end
