@@ -38,36 +38,44 @@ module Gitlab
           end
 
           def calculate_count_for_aggregation(aggregation:, time_frame:)
-            error = validate_configuration(aggregation, time_frame)
-            source = SOURCES[aggregation[:source]]
+            with_validate_configuration(aggregation, time_frame) do
+              source = SOURCES[aggregation[:source]]
 
-            return failure(error) if error
-
-            if aggregation[:operator] == UNION_OF_AGGREGATED_METRICS
-              source.calculate_metrics_union(**time_constraints(time_frame).merge(metric_names: aggregation[:events], recorded_at: recorded_at))
-            else
-              source.calculate_metrics_intersections(**time_constraints(time_frame).merge(metric_names: aggregation[:events], recorded_at: recorded_at))
+              if aggregation[:operator] == UNION_OF_AGGREGATED_METRICS
+                source.calculate_metrics_union(**time_constraints(time_frame).merge(metric_names: aggregation[:events], recorded_at: recorded_at))
+              else
+                source.calculate_metrics_intersections(**time_constraints(time_frame).merge(metric_names: aggregation[:events], recorded_at: recorded_at))
+              end
             end
           rescue Gitlab::UsageDataCounters::HLLRedisCounter::EventError, AggregatedMetricError => error
             failure(error)
           end
 
-          def validate_configuration(aggregation, time_frame)
+          def with_validate_configuration(aggregation, time_frame)
             source = aggregation[:source]
 
             unless ALLOWED_METRICS_AGGREGATIONS.include?(aggregation[:operator])
-              return UnknownAggregationOperator
-                       .new("Events should be aggregated with one of operators #{ALLOWED_METRICS_AGGREGATIONS}")
+              return failure(
+                UnknownAggregationOperator
+                  .new("Events should be aggregated with one of operators #{ALLOWED_METRICS_AGGREGATIONS}")
+              )
             end
 
             unless SOURCES[source]
-              return UnknownAggregationSource
-                       .new("Aggregation source: '#{source}' must be included in #{SOURCES.keys}")
+              return failure(
+                UnknownAggregationSource
+                  .new("Aggregation source: '#{source}' must be included in #{SOURCES.keys}")
+              )
             end
 
-            return unless time_frame == Gitlab::Usage::TimeFrame::ALL_TIME_TIME_FRAME_NAME && source == REDIS_SOURCE
+            if time_frame == Gitlab::Usage::TimeFrame::ALL_TIME_TIME_FRAME_NAME && source == REDIS_SOURCE
+              return failure(
+                DisallowedAggregationTimeFrame
+                  .new("Aggregation time frame: 'all' is not allowed for aggregation with source: '#{REDIS_SOURCE}'")
+              )
+            end
 
-            DisallowedAggregationTimeFrame.new("Aggregation time frame: 'all' is not allowed for aggregation with source: '#{REDIS_SOURCE}'")
+            yield
           end
 
           def failure(error)
