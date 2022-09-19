@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Audit
-  class GroupPushRulesChangesAuditor < EE::Audit::BaseChangesAuditor
+  class GroupPushRulesChangesAuditor < BaseChangesAuditor
     STRING_KEYS = [
       :branch_name_regex, :commit_message_regex, :commit_message_negative_regex, :author_email_regex,
       :file_name_regex, :max_file_size

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Audit
-  class ExternalStatusCheckChangesAuditor < ::EE::Audit::BaseChangesAuditor
+  class ExternalStatusCheckChangesAuditor < BaseChangesAuditor
     def initialize(current_user, external_status_check)
       @project = external_status_check.project
 

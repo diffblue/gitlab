@@ -11,7 +11,7 @@ module EE
       def execute_system_hooks
         super
 
-        EE::Audit::ProjectChangesAuditor.new(current_user, project).execute
+        Audit::ProjectChangesAuditor.new(current_user, project).execute
 
         ::Geo::RepositoryRenamedEventStore.new(
           project,
