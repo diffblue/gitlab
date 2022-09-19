@@ -5087,9 +5087,6 @@ msgstr ""
 msgid "Are you sure you want to delete %{name}?"
 msgstr ""
 
-msgid "Are you sure you want to delete these artifacts?"
-msgstr ""
-
 msgid "Are you sure you want to delete this %{commentType}?"
 msgstr ""
 
@@ -5240,6 +5237,39 @@ msgid "Artifact was successfully deleted."
 msgstr ""
 
 msgid "Artifacts"
+msgstr ""
+
+msgid "Artifacts|An error occurred while deleting the artifact"
+msgstr ""
+
+msgid "Artifacts|An error occurred while retrieving job artifacts"
+msgstr ""
+
+msgid "Artifacts|Artifacts"
+msgstr ""
+
+msgid "Artifacts|Browse"
+msgstr ""
+
+msgid "Artifacts|Created"
+msgstr ""
+
+msgid "Artifacts|Delete"
+msgstr ""
+
+msgid "Artifacts|Download"
+msgstr ""
+
+msgid "Artifacts|Expired"
+msgstr ""
+
+msgid "Artifacts|Job"
+msgstr ""
+
+msgid "Artifacts|Size"
+msgstr ""
+
+msgid "Artifacts|Total artifacts size"
 msgstr ""
 
 msgid "As we continue to build more features for SAST, we'd love your feedback on the SAST configuration feature in %{linkStart}this issue%{linkEnd}."
@@ -7060,9 +7090,6 @@ msgid "Browse File"
 msgstr ""
 
 msgid "Browse Files"
-msgstr ""
-
-msgid "Browse artifacts"
 msgstr ""
 
 msgid "Browse files"
@@ -11481,9 +11508,6 @@ msgstr ""
 msgid "Creating graphs uses the data from the Prometheus server. If this takes a long time, ensure that data is available."
 msgstr ""
 
-msgid "Creation date"
-msgstr ""
-
 msgid "Creator"
 msgstr ""
 
@@ -12722,9 +12746,6 @@ msgid "Delete Value Stream"
 msgstr ""
 
 msgid "Delete account"
-msgstr ""
-
-msgid "Delete artifacts"
 msgstr ""
 
 msgid "Delete asset"
@@ -27004,9 +27025,6 @@ msgid "No iterations to show"
 msgstr ""
 
 msgid "No job log"
-msgstr ""
-
-msgid "No jobs to show"
 msgstr ""
 
 msgid "No label"
@@ -42454,9 +42472,6 @@ msgid "Total Contributions"
 msgstr ""
 
 msgid "Total Score"
-msgstr ""
-
-msgid "Total artifacts size: %{total_size}"
 msgstr ""
 
 msgid "Total cores (CPUs)"
