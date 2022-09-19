@@ -62,9 +62,9 @@ RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
     it 'sums all the weights, even confidential, or in private groups' do
       expected_result = {
         parent_epic.id => [
-            result_for(parent_epic, issues_state: OPENED_ISSUE_STATE, issues_count: 5, issues_weight_sum: 4),
-            result_for(parent_epic, issues_state: CLOSED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 1)
-          ],
+          result_for(parent_epic, issues_state: OPENED_ISSUE_STATE, issues_count: 5, issues_weight_sum: 4),
+          result_for(parent_epic, issues_state: CLOSED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 1)
+        ],
         epic_with_issues.id => [
           result_for(epic_with_issues, issues_state: OPENED_ISSUE_STATE, issues_count: 5, issues_weight_sum: 4),
           result_for(epic_with_issues, issues_state: CLOSED_ISSUE_STATE, issues_count: 1, issues_weight_sum: 1)

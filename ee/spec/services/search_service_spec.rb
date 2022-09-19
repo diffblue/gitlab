@@ -125,9 +125,10 @@ RSpec.describe SearchService do
                   message: "redacted_search_results",
                   current_user_id: user.id,
                   query: 'some-search-string',
-                  filtered: array_including([
-                    { class_name: "Project", id: unauthorized_project.id, ability: :read_project }
-                  ])))
+                  filtered: array_including(
+                    [
+                      { class_name: "Project", id: unauthorized_project.id, ability: :read_project }
+                    ])))
 
         expect(subject).to be_kind_of(Kaminari::PaginatableArray)
         expect(subject).to contain_exactly(project)
@@ -154,10 +155,11 @@ RSpec.describe SearchService do
                   message: "redacted_search_results",
                   current_user_id: user.id,
                   query: 'some-search-string',
-                  filtered: array_including([
-                    { class_name: "Issue", id: issue1_in_unauthorized_project.id, ability: :read_issue },
-                    { class_name: "Issue", id: issue2_in_unauthorized_project.id, ability: :read_issue }
-                  ])))
+                  filtered: array_including(
+                    [
+                      { class_name: "Issue", id: issue1_in_unauthorized_project.id, ability: :read_issue },
+                      { class_name: "Issue", id: issue2_in_unauthorized_project.id, ability: :read_issue }
+                    ])))
 
         expect(subject).to be_kind_of(Kaminari::PaginatableArray)
         expect(subject).to contain_exactly(issue_in_project)

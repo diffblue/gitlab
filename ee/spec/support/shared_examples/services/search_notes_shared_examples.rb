@@ -73,8 +73,8 @@ RSpec.shared_examples 'search confidential notes shared examples' do
             ensure_elasticsearch_index!
 
             expected_objects = [
-                not_confidential_note, nil_confidential_note, confidential_note,
-                not_confidential_note_on_confidential_issue, confidential_note_on_confidential_issue
+              not_confidential_note, nil_confidential_note, confidential_note,
+              not_confidential_note_on_confidential_issue, confidential_note_on_confidential_issue
             ]
             expect_search_results(user, 'notes', expected_objects: expected_objects) do |user|
               described_class.new(user, search: 'note').execute

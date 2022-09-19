@@ -126,9 +126,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
 
       where(:rules_count, :expected_rules_count) do
         [
-         [Security::ScanResultPolicy::LIMIT - 1, Security::ScanResultPolicy::LIMIT - 1],
-         [Security::ScanResultPolicy::LIMIT, Security::ScanResultPolicy::LIMIT],
-         [Security::ScanResultPolicy::LIMIT + 1, Security::ScanResultPolicy::LIMIT]
+          [Security::ScanResultPolicy::LIMIT - 1, Security::ScanResultPolicy::LIMIT - 1],
+          [Security::ScanResultPolicy::LIMIT, Security::ScanResultPolicy::LIMIT],
+          [Security::ScanResultPolicy::LIMIT + 1, Security::ScanResultPolicy::LIMIT]
         ]
       end
 
