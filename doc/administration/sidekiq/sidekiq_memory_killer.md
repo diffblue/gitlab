@@ -37,7 +37,7 @@ The MemoryKiller is controlled using environment variables.
 
   `SIDEKIQ_MEMORY_KILLER_MAX_RSS` defines the Sidekiq process allowed RSS.
 
-  if the Sidekiq process exceeds the allowed RSS for longer than
+  If the Sidekiq process exceeds the allowed RSS for longer than
   `SIDEKIQ_MEMORY_KILLER_GRACE_TIME` the graceful restart is triggered. If the
   Sidekiq process go below the allowed RSS within `SIDEKIQ_MEMORY_KILLER_GRACE_TIME`,
   the restart is aborted.
