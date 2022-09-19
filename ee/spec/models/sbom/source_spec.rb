@@ -12,7 +12,6 @@ RSpec.describe Sbom::Source, type: :model do
   describe 'validations' do
     it { is_expected.to validate_presence_of(:source_type) }
     it { is_expected.to validate_presence_of(:source) }
-    it { is_expected.to validate_presence_of(:fingerprint) }
   end
 
   describe 'source validation' do
