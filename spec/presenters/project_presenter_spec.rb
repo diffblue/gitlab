@@ -24,7 +24,7 @@ RSpec.describe ProjectPresenter do
 
     context 'when project.repository has no license_key but a license_blob' do
       it 'returns LICENSE' do
-        allow(project.repository).to receive(:license_key).and_return(nil)
+        allow(project.repository).to receive(:license).and_return(nil)
 
         expect(presenter.license_short_name).to eq('LICENSE')
       end

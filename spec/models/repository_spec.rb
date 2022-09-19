@@ -1331,7 +1331,7 @@ RSpec.describe Repository do
     end
   end
 
-  describe '#license_key', :use_clean_rails_memory_store_caching do
+  describe '#license_key', :clean_gitlab_redis_cache do
     let(:project) { create(:project, :repository) }
 
     before do
@@ -1377,7 +1377,7 @@ RSpec.describe Repository do
     end
   end
 
-  describe '#license' do
+  describe '#license', :clean_gitlab_redis_cache do
     let(:project) { create(:project, :repository) }
 
     before do
@@ -1395,21 +1395,11 @@ RSpec.describe Repository do
       expect(repository.license).to be_nil
     end
 
-    it 'returns nil when license_key is not recognized' do
-      expect(repository).to receive(:license_key).twice.and_return('not-recognized')
-      expect(Gitlab::ErrorTracking).to receive(:track_exception) do |ex|
-        expect(ex).to be_a(Licensee::InvalidLicense)
-      end
-
-      expect(repository.license).to be_nil
-    end
-
     it 'returns other when the content is not recognizable' do
-      license = Licensee::License.new('other')
       repository.create_file(user, 'LICENSE', 'Gitlab B.V.',
         message: 'Add LICENSE', branch_name: 'master')
 
-      expect(repository.license).to eq(license)
+      expect(repository.license_key).to eq('other')
     end
 
     it 'returns the license' do
@@ -1418,7 +1408,7 @@ RSpec.describe Repository do
         license.content,
         message: 'Add LICENSE', branch_name: 'master')
 
-      expect(repository.license).to eq(license)
+      expect(repository.license_key).to eq(license.key)
     end
   end
 
@@ -2207,7 +2197,7 @@ RSpec.describe Repository do
         :contribution_guide,
         :changelog,
         :license_blob,
-        :license_key,
+        :license,
         :gitignore,
         :gitlab_ci_yml,
         :branch_names,
@@ -2695,7 +2685,7 @@ RSpec.describe Repository do
         match[1].to_sym if match
       end.compact
 
-      expect(Repository::CACHED_METHODS + Repository::MEMOIZED_CACHED_METHODS).to include(*methods)
+      expect(Repository::CACHED_METHODS).to include(*methods)
     end
   end
 
@@ -2860,11 +2850,10 @@ RSpec.describe Repository do
   describe '#refresh_method_caches' do
     it 'refreshes the caches of the given types' do
       expect(repository).to receive(:expire_method_caches)
-        .with(%i(readme_path license_blob license_key license))
+        .with(%i(readme_path license_blob license))
 
       expect(repository).to receive(:readme_path)
       expect(repository).to receive(:license_blob)
-      expect(repository).to receive(:license_key)
       expect(repository).to receive(:license)
 
       repository.refresh_method_caches(%i(readme license))
