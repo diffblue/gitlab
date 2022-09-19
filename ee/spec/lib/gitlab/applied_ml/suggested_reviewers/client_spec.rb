@@ -38,7 +38,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
         response_class.new(
           {
             version: "0.7.1",
-            topN: 4,
+            top_n: 4,
             reviewers: %w[john jane]
           }
         )

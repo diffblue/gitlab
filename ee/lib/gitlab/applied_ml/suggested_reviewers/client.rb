@@ -20,17 +20,17 @@ module Gitlab
           raise Gitlab::AppliedMl::Errors::ConfigurationError, "gRPC host unknown" if rpc_url.blank?
 
           model_input = {
-            mergeRequestIid: merge_request_iid,
-            topN: top_n,
-            projectId: project_id,
+            merge_request_iid: merge_request_iid,
+            top_n: top_n,
+            project_id: project_id,
             changes: changes,
-            authorUsername: author_username
+            author_username: author_username
           }
           response = get_reviewers(model_input)
 
           {
             version: response.version,
-            top_n: response.topN,
+            top_n: response.top_n,
             reviewers: response.reviewers
           }
         rescue GRPC::BadStatus => e
