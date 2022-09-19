@@ -119,6 +119,12 @@ module EE
       strong_memoize(:associated_protected_environments) { protected_environments }
     end
 
+    def associated_protected_environments
+      strong_memoize(:associated_protected_environments) do
+        ::ProtectedEnvironment.for_environment(self)
+      end
+    end
+
     private
 
     def protected_environment_accesses(user)
@@ -128,12 +134,6 @@ module EE
         associated_protected_environments.group_by do |pe|
           pe.accessible_to?(user)
         end
-      end
-    end
-
-    def associated_protected_environments
-      strong_memoize(:associated_protected_environments) do
-        ::ProtectedEnvironment.for_environment(self)
       end
     end
   end

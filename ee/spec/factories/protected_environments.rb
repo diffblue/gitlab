@@ -17,7 +17,9 @@ FactoryBot.define do
       if group = evaluator.authorize_group_to_deploy
         protected_environment.deploy_access_levels.new(group: group)
       end
+    end
 
+    before(:create) do |protected_environment, evaluator|
       if protected_environment.deploy_access_levels.empty?
         protected_environment.deploy_access_levels.new(user: create(:user))
       end
