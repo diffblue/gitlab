@@ -3,10 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
-  let(:rpc_url) { 'example.org:1234' }
-  let(:certs) { 'arandomstring' }
   let(:stub_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderServicesPb::Stub }
   let(:response_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderPb::MergeRequestRecommendationsResV2 }
+
+  let(:rpc_url) { 'example.org:1234' }
+  let(:certs) { 'arandomstring' }
+  let(:secret) { 'wTeJZR61n5lGZ7G2nPozocerM8GBk0EFti0EYpwVh5GJqlLM2ROmyQG0oQcTsGu9' }
 
   let(:client) { described_class.new(rpc_url: rpc_url, certs: certs) }
 
@@ -21,8 +23,22 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       }
     end
 
+    let(:suggested_reviewers_response) do
+      response_class.new(
+        {
+          version: "0.7.1",
+          top_n: 4,
+          reviewers: %w[john jane]
+        }
+      )
+    end
+
     subject do
       client.suggested_reviewers(**suggested_reviewers_request)
+    end
+
+    before do
+      stub_env('SUGGESTED_REVIEWERS_SECRET', secret)
     end
 
     context 'when configuration and input is healthy' do
@@ -32,16 +48,6 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
           top_n: 4,
           reviewers: %w[john jane]
         }
-      end
-
-      let(:suggested_reviewers_response) do
-        response_class.new(
-          {
-            version: "0.7.1",
-            top_n: 4,
-            reviewers: %w[john jane]
-          }
-        )
       end
 
       before do
@@ -64,6 +70,24 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
             timeout: described_class::DEFAULT_TIMEOUT
           )
       end
+
+      it 'uses a CallCredentials object' do
+        allow(GRPC::Core::CallCredentials).to receive(:new).and_call_original
+
+        subject
+
+        expect(GRPC::Core::CallCredentials).to have_received(:new).with(instance_of(Proc))
+      end
+
+      it 'creates a JWT HMAC token', :aggregate_failures do
+        token = instance_spy(JSONWebToken::HMACToken, encoded: 'test-token')
+        allow(JSONWebToken::HMACToken).to receive(:new).with(secret).and_return(token)
+
+        subject
+
+        expect(token).to have_received(:issuer=).with(described_class::JWT_ISSUER)
+        expect(token).to have_received(:audience=).with(described_class::JWT_AUDIENCE)
+      end
     end
 
     context 'when a grpc bad status is received' do
@@ -73,7 +97,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
         end
       end
 
-      it 'raises a new error', :aggregate_failures do
+      it 'raises a new error' do
         expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ResourceNotAvailable)
       end
     end
@@ -97,7 +121,23 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
     context 'with no gRPC URL configured' do
       let(:rpc_url) { '' }
 
-      it 'logs and raises a new error' do
+      it 'logs and raises a configuration error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+      end
+    end
+
+    context 'with no secret configured' do
+      let(:secret) { nil }
+
+      it 'raises a configuration error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+      end
+    end
+
+    context 'with an invalid secret configured' do
+      let(:secret) { '@s3cr3tunt0ld' }
+
+      it 'raises a configuration error' do
         expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
       end
     end
