@@ -38,11 +38,8 @@ module Iterations
     scope :is_active, -> (active) { where(active: active) }
     scope :ordered_by_title, -> { order(:title) }
     scope :next_to_auto_schedule, -> do
-      # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/365743
-      # The column name 'last_run_date' is inappropriate.
-      # The column actually stores the date on which ScheduleCreateIterationsWorker should run for the cadence.
       is_automatic(true)
-        .where("DATE (COALESCE(iterations_cadences.last_run_date, DATE('01-01-1970'))) <= CURRENT_DATE")
+        .where("DATE (COALESCE(iterations_cadences.next_run_date, DATE('01-01-1970'))) <= CURRENT_DATE")
     end
 
     class << self

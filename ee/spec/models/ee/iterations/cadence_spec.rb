@@ -177,13 +177,13 @@ RSpec.describe ::Iterations::Cadence, :freeze_time do
     describe 'next_to_auto_schedule' do
       let_it_be(:current_date) { Time.zone.now.to_date }
       let_it_be(:group) { create(:group) }
-      let_it_be(:cadence1) { create(:iterations_cadence, group: group, last_run_date: current_date) }
-      let_it_be(:cadence2) { create(:iterations_cadence, group: group, last_run_date: current_date - 1.day) }
-      let_it_be(:cadence3) { create(:iterations_cadence, group: group, last_run_date: nil) } # a newly created cadence would have nil as last_run_date.
-      let_it_be(:cadence4) { create(:iterations_cadence, group: group, last_run_date: current_date + 1.day) }
+      let_it_be(:cadence1) { create(:iterations_cadence, group: group, next_run_date: current_date) }
+      let_it_be(:cadence2) { create(:iterations_cadence, group: group, next_run_date: current_date - 1.day) }
+      let_it_be(:cadence3) { create(:iterations_cadence, group: group, next_run_date: nil) } # a newly created cadence would have nil as next_run_date.
+      let_it_be(:cadence4) { create(:iterations_cadence, group: group, next_run_date: current_date + 1.day) }
       let_it_be(:manual_cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
 
-      it "returns automatic cadences with 'last_run_date' set in the past or to the current date" do
+      it "returns automatic cadences with 'next_run_date' set in the past or to the current date" do
         expect(described_class.next_to_auto_schedule).to match_array([cadence1, cadence2, cadence3])
       end
     end

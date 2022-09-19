@@ -16823,7 +16823,6 @@ CREATE TABLE iterations_cadences (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     start_date date,
-    last_run_date date,
     duration_in_weeks integer,
     iterations_in_advance integer,
     active boolean DEFAULT true NOT NULL,
@@ -16831,6 +16830,7 @@ CREATE TABLE iterations_cadences (
     title text NOT NULL,
     roll_over boolean DEFAULT false NOT NULL,
     description text,
+    next_run_date date,
     CONSTRAINT check_5c5d2b44bd CHECK ((char_length(description) <= 5000)),
     CONSTRAINT check_fedff82d3b CHECK ((char_length(title) <= 255))
 );
@@ -27515,8 +27515,6 @@ CREATE INDEX ca_aggregations_last_consistency_check_updated_at ON analytics_cycl
 CREATE INDEX ca_aggregations_last_full_run_at ON analytics_cycle_analytics_aggregations USING btree (last_full_run_at NULLS FIRST) WHERE (enabled IS TRUE);
 
 CREATE INDEX ca_aggregations_last_incremental_run_at ON analytics_cycle_analytics_aggregations USING btree (last_incremental_run_at NULLS FIRST) WHERE (enabled IS TRUE);
-
-CREATE INDEX cadence_create_iterations_automation ON iterations_cadences USING btree (automatic, duration_in_weeks, date((COALESCE(last_run_date, '1970-01-01'::date) + ((duration_in_weeks)::double precision * '7 days'::interval)))) WHERE (duration_in_weeks IS NOT NULL);
 
 CREATE INDEX ci_builds_gitlab_monitor_metrics ON ci_builds USING btree (status, created_at, project_id) WHERE ((type)::text = 'Ci::Build'::text);
 
