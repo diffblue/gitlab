@@ -5,7 +5,7 @@ import { convertScannersToTitleCase } from '../../utils';
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
- * @param {Array} branches strings representing branches
+ * @param {Array} originalBranches strings representing branches
  * @returns {String}
  */
 const humanizeBranches = (originalBranches) => {
@@ -42,7 +42,7 @@ const humanizePipelineRule = (rule) => {
 };
 
 const humanizeScheduleRule = (rule) => {
-  if (rule.clusters) {
+  if (rule.agents) {
     return sprintf(s__('SecurityOrchestration|Scan to be performed %{cadence}'), {
       cadence: humanizeCadence(rule.cadence),
     });
@@ -76,7 +76,7 @@ export const humanizeActions = (actions) => {
  */
 export const humanizeRules = (rules) => {
   const humanizedRules = rules.reduce((acc, curr) => {
-    return curr.branches || curr.clusters ? [...acc, HUMANIZE_RULES_METHODS[curr.type](curr)] : acc;
+    return curr.branches || curr.agents ? [...acc, HUMANIZE_RULES_METHODS[curr.type](curr)] : acc;
   }, []);
 
   return humanizedRules.length ? humanizedRules : [NO_RULE_MESSAGE];
