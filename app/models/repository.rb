@@ -48,7 +48,7 @@ class Repository
   # For example, for entry `:commit_count` there's a method called `commit_count` which
   # stores its data in the `commit_count` cache key.
   CACHED_METHODS = %i(size commit_count readme_path contribution_guide
-                      changelog license_blob license gitignore
+                      changelog license_blob license_licensee license_gitaly gitignore
                       gitlab_ci_yml branch_names tag_names branch_count
                       tag_count avatar exists? root_ref merged_branch_names
                       has_visible_content? issue_template_names_hash merge_request_template_names_hash
@@ -60,7 +60,7 @@ class Repository
   METHOD_CACHES_FOR_FILE_TYPES = {
     readme: %i(readme_path),
     changelog: :changelog,
-    license: %i(license_blob license),
+    license: %i(license_blob license_licensee license_gitaly),
     contributing: :contribution_guide,
     gitignore: :gitignore,
     gitlab_ci: :gitlab_ci_yml,
@@ -651,11 +651,26 @@ class Repository
   end
 
   def license
+    if Feature.enabled?(:license_from_gitaly)
+      license_gitaly
+    else
+      license_licensee
+    end
+  end
+
+  def license_licensee
     return unless exists?
 
-    raw_repository.license
+    raw_repository.license(false)
   end
-  cache_method :license
+  cache_method :license_licensee
+
+  def license_gitaly
+    return unless exists?
+
+    raw_repository.license(true)
+  end
+  cache_method :license_gitaly
 
   def gitignore
     file_on_head(:gitignore)
