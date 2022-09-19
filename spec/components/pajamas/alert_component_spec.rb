@@ -129,7 +129,7 @@ RSpec.describe Pajamas::AlertComponent, :aggregate_failures, type: :component do
     end
 
     context 'with setting variant type' do
-      where(:variant) { [:warning, :success, :danger, :tip] }
+      where(:variant) { [:warning, "success", :danger, "tip"] }
 
       before do
         render_inline described_class.new(variant: variant)
@@ -138,7 +138,7 @@ RSpec.describe Pajamas::AlertComponent, :aggregate_failures, type: :component do
       with_them do
         it 'renders the variant' do
           expect(page).to have_selector(".gl-alert-#{variant}")
-          expect(page).to have_selector("[data-testid='#{described_class::ICONS[variant]}-icon']")
+          expect(page).to have_selector("[data-testid='#{described_class::ICONS[variant.to_sym]}-icon']")
         end
       end
     end

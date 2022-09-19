@@ -13,7 +13,7 @@ module Pajamas
       title: nil, variant: :info, dismissible: true, show_icon: true,
       alert_options: {}, close_button_options: {})
       @title = title
-      @variant = variant
+      @variant = variant.to_sym
       @dismissible = dismissible
       @show_icon = show_icon
       @alert_options = alert_options
