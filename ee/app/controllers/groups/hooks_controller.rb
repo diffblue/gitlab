@@ -43,7 +43,7 @@ class Groups::HooksController < Groups::ApplicationController
   end
 
   def hook_logs
-    @hook_logs ||= hook.web_hook_logs.recent.page(params[:page])
+    @hook_logs ||= hook.web_hook_logs.recent.page(params[:page]).without_count
   end
 
   def trigger_values
