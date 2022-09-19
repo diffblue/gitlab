@@ -783,10 +783,21 @@ module Gitlab
         end
       end
 
-      def license_short_name
+      def license
         wrapped_gitaly_errors do
-          gitaly_repository_client.license_short_name
+          response = gitaly_repository_client.find_license
+
+          break nil if response.license_short_name.empty?
+
+          licensee_object = Licensee::License.new(response.license_short_name)
+
+          break nil if licensee_object.name.blank?
+
+          licensee_object
         end
+      rescue Licensee::InvalidLicense => e
+        Gitlab::ErrorTracking.track_exception(e)
+        nil
       end
 
       def fetch_source_branch!(source_repository, source_branch, local_ref)

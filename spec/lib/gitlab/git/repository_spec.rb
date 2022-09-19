@@ -1784,8 +1784,8 @@ RSpec.describe Gitlab::Git::Repository do
     end
   end
 
-  describe '#license_short_name' do
-    subject { repository.license_short_name }
+  describe '#license' do
+    subject(:license) { repository.license }
 
     context 'when no license file can be found' do
       let(:project) { create(:project, :repository) }
@@ -1799,7 +1799,7 @@ RSpec.describe Gitlab::Git::Repository do
     end
 
     context 'when an mit license is found' do
-      it { is_expected.to eq('mit') }
+      it { is_expected.to have_attributes(key: 'mit') }
     end
   end
 

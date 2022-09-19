@@ -48,14 +48,11 @@ class Repository
   # For example, for entry `:commit_count` there's a method called `commit_count` which
   # stores its data in the `commit_count` cache key.
   CACHED_METHODS = %i(size commit_count readme_path contribution_guide
-                      changelog license_blob license_key gitignore
+                      changelog license_blob license gitignore
                       gitlab_ci_yml branch_names tag_names branch_count
                       tag_count avatar exists? root_ref merged_branch_names
                       has_visible_content? issue_template_names_hash merge_request_template_names_hash
                       user_defined_metrics_dashboard_paths xcode_project? has_ambiguous_refs?).freeze
-
-  # Methods that use cache_method but only memoize the value
-  MEMOIZED_CACHED_METHODS = %i(license).freeze
 
   # Certain method caches should be refreshed when certain types of files are
   # changed. This Hash maps file types (as returned by Gitlab::FileDetector) to
@@ -63,7 +60,7 @@ class Repository
   METHOD_CACHES_FOR_FILE_TYPES = {
     readme: %i(readme_path),
     changelog: :changelog,
-    license: %i(license_blob license_key license),
+    license: %i(license_blob license),
     contributing: :contribution_guide,
     gitignore: :gitignore,
     gitlab_ci: :gitlab_ci_yml,
@@ -650,25 +647,15 @@ class Repository
   cache_method :license_blob
 
   def license_key
-    return unless exists?
-
-    raw_repository.license_short_name
+    license&.key
   end
-  cache_method :license_key
 
   def license
-    return unless license_key
+    return unless exists?
 
-    licensee_object = Licensee::License.new(license_key)
-
-    return if licensee_object.name.blank?
-
-    licensee_object
-  rescue Licensee::InvalidLicense => e
-    Gitlab::ErrorTracking.track_exception(e)
-    nil
+    raw_repository.license
   end
-  memoize_method :license
+  cache_method :license
 
   def gitignore
     file_on_head(:gitignore)
