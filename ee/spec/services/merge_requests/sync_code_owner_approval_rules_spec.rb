@@ -13,14 +13,26 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
   let(:doc_entry) { build_entry('doc/*', doc_owners, doc_group_owners) }
   let(:entries) { [rb_entry, doc_entry] }
 
-  def build_entry(pattern, users, groups)
+  def build_entry(pattern, users, groups, section = Gitlab::CodeOwners::Entry::DEFAULT_SECTION)
     text = (users + groups).map(&:to_reference).join(' ')
-    entry = Gitlab::CodeOwners::Entry.new(pattern, text)
+    entry = Gitlab::CodeOwners::Entry.new(pattern, text, section)
 
     entry.add_matching_users_from(users)
     entry.add_matching_groups_from(groups)
 
     entry
+  end
+
+  def verify_correct_code_owners
+    [
+      [rb_entry, rb_owners, rb_group_owners],
+      [doc_entry, doc_owners, doc_group_owners]
+    ].each do |entry, users, groups|
+      rule = merge_request.approval_rules.code_owner.find_by(name: entry.pattern, section: entry.section)
+
+      expect(rule.users).to match_array(users)
+      expect(rule.groups).to match_array(groups)
+    end
   end
 
   subject(:service) { described_class.new(merge_request) }
@@ -32,17 +44,10 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
               .and_return(entries)
     end
 
-    it "creates rules for code owner entries that don't have a rule" do
+    it 'creates rules for code owner entries that do not have a rule' do
       expect { service.execute }.to change { merge_request.approval_rules.count }.by(2)
 
-      rb_rule = merge_request.approval_rules.code_owner.find_by(name: rb_entry.pattern)
-      doc_rule = merge_request.approval_rules.code_owner.find_by(name: doc_entry.pattern)
-
-      expect(rb_rule.users).to match_array(rb_owners)
-      expect(doc_rule.users).to match_array(doc_owners)
-
-      expect(rb_rule.groups).to match_array(rb_group_owners)
-      expect(doc_rule.groups).to match_array(doc_group_owners)
+      verify_correct_code_owners
     end
 
     it 'deletes rules that are not relevant anymore' do
@@ -64,6 +69,21 @@ RSpec.describe MergeRequests::SyncCodeOwnerApprovalRules do
 
       expect(other_rule.reload.users).to match_array(rb_owners)
       expect(other_rule.reload.groups).to match_array(rb_group_owners)
+    end
+
+    context 'when multiple rules for the same pattern with different sections are specified' do
+      let(:rb_entry) { build_entry('doc/', rb_owners, rb_group_owners, 'Rb owners') }
+      let(:doc_entry) { build_entry('doc/', doc_owners, doc_group_owners, 'Doc owners') }
+
+      it 'creates and updates the rules that are mapped to the entries' do
+        expect { service.execute }.to change { merge_request.approval_rules.count }.by(2)
+
+        verify_correct_code_owners
+
+        service.execute
+
+        verify_correct_code_owners
+      end
     end
 
     context 'when merge request is already merged' do
