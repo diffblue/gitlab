@@ -12890,7 +12890,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupissuescrmcontactid"></a>`crmContactId` | [`String`](#string) | ID of a contact assigned to the issues. |
 | <a id="groupissuescrmorganizationid"></a>`crmOrganizationId` | [`String`](#string) | ID of an organization assigned to the issues. |
 | <a id="groupissuesepicid"></a>`epicId` | [`String`](#string) | ID of an epic associated with the issues, "none" and "any" values are supported. |
-| <a id="groupissueshealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Health status of the issue. |
+| <a id="groupissueshealthstatus"></a>`healthStatus` **{warning-solid}** | [`HealthStatus`](#healthstatus) | **Deprecated** in 15.4. Use `healthStatusFilter`. |
+| <a id="groupissueshealthstatusfilter"></a>`healthStatusFilter` | [`HealthStatusFilter`](#healthstatusfilter) | Health status of the issue, "none" and "any" values are supported. |
 | <a id="groupissuesiid"></a>`iid` | [`String`](#string) | IID of the issue. For example, "1". |
 | <a id="groupissuesiids"></a>`iids` | [`[String!]`](#string) | List of IIDs of issues. For example, `["1", "2"]`. |
 | <a id="groupissuesin"></a>`in` | [`[IssuableSearchableField!]`](#issuablesearchablefield) | Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'. |
@@ -16422,7 +16423,8 @@ Returns [`Issue`](#issue).
 | <a id="projectissuecrmcontactid"></a>`crmContactId` | [`String`](#string) | ID of a contact assigned to the issues. |
 | <a id="projectissuecrmorganizationid"></a>`crmOrganizationId` | [`String`](#string) | ID of an organization assigned to the issues. |
 | <a id="projectissueepicid"></a>`epicId` | [`String`](#string) | ID of an epic associated with the issues, "none" and "any" values are supported. |
-| <a id="projectissuehealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Health status of the issue. |
+| <a id="projectissuehealthstatus"></a>`healthStatus` **{warning-solid}** | [`HealthStatus`](#healthstatus) | **Deprecated** in 15.4. Use `healthStatusFilter`. |
+| <a id="projectissuehealthstatusfilter"></a>`healthStatusFilter` | [`HealthStatusFilter`](#healthstatusfilter) | Health status of the issue, "none" and "any" values are supported. |
 | <a id="projectissueiid"></a>`iid` | [`String`](#string) | IID of the issue. For example, "1". |
 | <a id="projectissueiids"></a>`iids` | [`[String!]`](#string) | List of IIDs of issues. For example, `["1", "2"]`. |
 | <a id="projectissuein"></a>`in` | [`[IssuableSearchableField!]`](#issuablesearchablefield) | Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'. |
@@ -16506,7 +16508,8 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectissuescrmcontactid"></a>`crmContactId` | [`String`](#string) | ID of a contact assigned to the issues. |
 | <a id="projectissuescrmorganizationid"></a>`crmOrganizationId` | [`String`](#string) | ID of an organization assigned to the issues. |
 | <a id="projectissuesepicid"></a>`epicId` | [`String`](#string) | ID of an epic associated with the issues, "none" and "any" values are supported. |
-| <a id="projectissueshealthstatus"></a>`healthStatus` | [`HealthStatus`](#healthstatus) | Health status of the issue. |
+| <a id="projectissueshealthstatus"></a>`healthStatus` **{warning-solid}** | [`HealthStatus`](#healthstatus) | **Deprecated** in 15.4. Use `healthStatusFilter`. |
+| <a id="projectissueshealthstatusfilter"></a>`healthStatusFilter` | [`HealthStatusFilter`](#healthstatusfilter) | Health status of the issue, "none" and "any" values are supported. |
 | <a id="projectissuesiid"></a>`iid` | [`String`](#string) | IID of the issue. For example, "1". |
 | <a id="projectissuesiids"></a>`iids` | [`[String!]`](#string) | List of IIDs of issues. For example, `["1", "2"]`. |
 | <a id="projectissuesin"></a>`in` | [`[IssuableSearchableField!]`](#issuablesearchablefield) | Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'. |
@@ -20365,6 +20368,18 @@ Health status of an issue or epic.
 | <a id="healthstatusatrisk"></a>`atRisk` | At risk. |
 | <a id="healthstatusneedsattention"></a>`needsAttention` | Needs attention. |
 | <a id="healthstatusontrack"></a>`onTrack` | On track. |
+
+### `HealthStatusFilter`
+
+Health status of an issue or epic for filtering.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="healthstatusfilterany"></a>`ANY` | Any health status is assigned. |
+| <a id="healthstatusfilternone"></a>`NONE` | No health status is assigned. |
+| <a id="healthstatusfilteratrisk"></a>`atRisk` | At risk. |
+| <a id="healthstatusfilterneedsattention"></a>`needsAttention` | Needs attention. |
+| <a id="healthstatusfilterontrack"></a>`onTrack` | On track. |
 
 ### `IssuableResourceLinkType`
 

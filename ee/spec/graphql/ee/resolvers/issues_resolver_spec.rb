@@ -161,9 +161,25 @@ RSpec.describe Resolvers::IssuesResolver do
       end
 
       describe 'filter by health status' do
+        let(:at_risk) { Issue.health_statuses[:at_risk] }
+
         context 'when filtering by specific health status' do
           it 'only returns issues that have the specified health status assigned' do
-            expect(resolve_issues(health_status: Issue.health_statuses[:at_risk])).to contain_exactly(issue1)
+            expect(resolve_issues(health_status_filter: at_risk)).to contain_exactly(issue1)
+          end
+        end
+
+        context 'when filtering by any health status' do
+          specify { expect(resolve_issues(health_status_filter: 'any')).to contain_exactly(issue1, issue3, issue4) }
+        end
+
+        context 'when filtering by no health status' do
+          specify { expect(resolve_issues(health_status_filter: 'none')).to contain_exactly(issue2) }
+        end
+
+        context 'when health_status and health_status_filter arguments are both given' do
+          it 'overwrites health_status with value of health_status_filter' do
+            expect(resolve_issues(health_status_filter: 'none', health_status: at_risk)).to contain_exactly(issue2)
           end
         end
       end

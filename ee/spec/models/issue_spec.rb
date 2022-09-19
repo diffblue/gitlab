@@ -28,34 +28,39 @@ RSpec.describe Issue do
   end
 
   context 'scopes' do
-    describe '.with_health_status' do
+    describe 'health status filter scopes' do
       let_it_be(:issue1) { create(:issue, health_status: :on_track) }
       let_it_be(:issue2) { create(:issue, health_status: :on_track) }
       let_it_be(:issue3) { create(:issue, health_status: :at_risk) }
+      let_it_be(:issue4) { create(:issue, health_status: nil) }
 
-      before_all do
-        create(:issue, health_status: :needs_attention)
-        create(:issue, health_status: nil)
-      end
+      describe '.with_health_status' do
+        before_all do
+          create(:issue, health_status: :needs_attention)
+          create(:issue, health_status: nil)
+        end
 
-      it 'returns the filtered by health issues' do
-        expect(described_class.with_health_status(:on_track)).to match_array([issue1, issue2])
-      end
-
-      context 'when using multiple health filter qualifications' do
         it 'returns the filtered by health issues' do
-          expect(described_class.with_health_status([:at_risk, :on_track])).to match_array([issue1, issue2, issue3])
+          expect(described_class.with_health_status(:on_track)).to match_array([issue1, issue2])
+        end
+
+        context 'when using multiple health filter qualifications' do
+          it 'returns the filtered by health issues' do
+            expect(described_class.with_health_status([:at_risk, :on_track])).to match_array([issue1, issue2, issue3])
+          end
         end
       end
-    end
 
-    describe '.with_any_health_status' do
-      it 'only returns the issues with a health_status' do
-        create(:issue, health_status: nil)
-        issue1 = create(:issue, health_status: :on_track)
-        issue2 = create(:issue, health_status: :at_risk)
+      describe '.with_any_health_status' do
+        it 'only returns the issues with a health_status' do
+          expect(described_class.with_any_health_status).to match_array([issue1, issue2, issue3])
+        end
+      end
 
-        expect(described_class.with_any_health_status).to match_array([issue1, issue2])
+      describe '.with_no_health_status' do
+        it 'only returns issues with no health status' do
+          expect(described_class.with_no_health_status).to eq([issue4])
+        end
       end
     end
 
