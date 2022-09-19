@@ -25,7 +25,7 @@ RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker, :freeze_tim
 
     context 'when cadences need to be scheduled' do
       let_it_be(:common_args) { { group: group, start_date: Date.current, duration_in_weeks: 1, iterations_in_advance: 2 } }
-      let_it_be(:scheduled_cadence) { create(:iterations_cadence, **common_args, last_run_date: Date.current + 5.days) }
+      let_it_be(:scheduled_cadence) { create(:iterations_cadence, **common_args, next_run_date: Date.current + 5.days) }
 
       shared_examples 'CreateIterationsWorker is scheduled on the correct cadence' do
         it 'schedules CreateIterationsWorker on the correct cadence' do
@@ -35,14 +35,14 @@ RSpec.describe Iterations::Cadences::ScheduleCreateIterationsWorker, :freeze_tim
         end
       end
 
-      context 'when cadence with NULL last_run_date exists' do
-        let_it_be(:next_cadence) { create(:iterations_cadence, **common_args, last_run_date: nil) }
+      context 'when cadence with NULL next_run_date exists' do
+        let_it_be(:next_cadence) { create(:iterations_cadence, **common_args, next_run_date: nil) }
 
         it_behaves_like 'CreateIterationsWorker is scheduled on the correct cadence'
       end
 
-      context 'when cadence with last_run_date < CURRENT_DATE exists' do
-        let_it_be(:next_cadence) { create(:iterations_cadence, group: group, **common_args, last_run_date: Date.current - 5.days) }
+      context 'when cadence with next_run_date < CURRENT_DATE exists' do
+        let_it_be(:next_cadence) { create(:iterations_cadence, group: group, **common_args, next_run_date: Date.current - 5.days) }
 
         it_behaves_like 'CreateIterationsWorker is scheduled on the correct cadence'
       end

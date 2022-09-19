@@ -61,7 +61,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
                 expect(ordered_sequences).to eq(sequences)
                 expect(ordered_states).to eq(expected_states)
                 expect(ordered_dates).to eq(expected_iterations.map { |i| [i[:start_date], i[:due_date]] })
-                expect(cadence.last_run_date).to eq(expected_next_run_date)
+                expect(cadence.next_run_date).to eq(expected_next_run_date)
               end
             end
 
@@ -188,7 +188,7 @@ RSpec.describe Iterations::Cadences::CreateIterationsInAdvanceService do
               expect(days_of_week.first).to be(cadence.start_date.wday)
 
               expect(ordered_dates).to eq(expected_dates)
-              expect(cadence.last_run_date).to eq(expected_next_run_date)
+              expect(cadence.next_run_date).to eq(expected_next_run_date)
             end
           end
 

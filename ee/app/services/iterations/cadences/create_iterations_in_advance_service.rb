@@ -21,7 +21,7 @@ module Iterations
           cadence.update_iteration_sequences
         end
 
-        cadence.update!(last_run_date: compute_next_run_date)
+        cadence.update!(next_run_date: compute_next_run_date)
 
         ::ServiceResponse.success
       end
