@@ -97,7 +97,7 @@ const displayResults = ({ sectionSelector, expandSection, searchTerm }, matching
   sections.forEach(expandSection);
   highlightText(matchingTextNodes, searchTerm);
 
-  return sections.length === 0;
+  return sections.length > 0;
 };
 
 const clearResults = (params) => {
@@ -155,13 +155,13 @@ export default {
   data() {
     return {
       searchTerm: '',
-      nothingMatches: false,
+      hasMatches: true,
     };
   },
   watch: {
-    nothingMatches(newNothingMatches) {
+    hasMatches(newHasMatches) {
       document.querySelectorAll(this.hideWhenEmptySelector).forEach((section) => {
-        section.classList.toggle(HIDE_CLASS, newNothingMatches);
+        section.classList.toggle(HIDE_CLASS, !newHasMatches);
       });
     },
   },
@@ -177,15 +177,12 @@ export default {
       };
 
       clearResults(displayOptions);
-      this.nothingMatches = false;
+      this.hasMatches = true;
 
       if (value.length) {
         saveExpansionState(document.querySelectorAll(this.sectionSelector), displayOptions);
 
-        this.nothingMatches = displayResults(
-          displayOptions,
-          search(this.searchRoot, this.searchTerm),
-        );
+        this.hasMatches = displayResults(displayOptions, search(this.searchRoot, this.searchTerm));
       } else {
         restoreExpansionState(displayOptions);
       }
@@ -210,7 +207,7 @@ export default {
     />
 
     <gl-empty-state
-      v-if="nothingMatches"
+      v-if="!hasMatches"
       :title="__('No results found')"
       :description="__('Edit your search and try again')"
     />
