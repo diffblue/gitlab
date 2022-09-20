@@ -5,17 +5,16 @@ require 'spec_helper'
 RSpec.describe GroupsController do
   include ExternalAuthorizationServiceHelpers
 
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
 
   before do
     sign_in(user)
   end
 
   describe 'external authorization' do
-    before do
+    before_all do
       group.add_owner(user)
-      sign_in(user)
     end
 
     context 'with external authorization service enabled' do
@@ -74,14 +73,17 @@ RSpec.describe GroupsController do
   end
 
   context 'with sso enforcement enabled' do
-    let(:group) { create(:group, :private) }
-    let!(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
-    let(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
-    let(:guest_user) { identity.user }
+    let_it_be(:group) { create(:group, :private) }
+    let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
+    let_it_be(:identity) { create(:group_saml_identity, saml_provider: saml_provider) }
+    let_it_be(:guest_user) { identity.user }
+
+    before_all do
+      group.add_guest(guest_user)
+    end
 
     before do
       stub_licensed_features(group_saml: true)
-      group.add_guest(guest_user)
       sign_in(guest_user)
     end
 
@@ -116,9 +118,13 @@ RSpec.describe GroupsController do
       let(:format) { :html }
 
       context 'with user having proper permissions and feature enabled' do
+        before_all do
+          group.add_developer(user)
+        end
+
         before do
           stub_licensed_features(security_dashboard: true)
-          group.add_developer(user)
+          sign_in(user)
         end
 
         context 'with group view set as default' do
@@ -146,13 +152,18 @@ RSpec.describe GroupsController do
         end
       end
     end
+
     describe 'GET #details' do
       subject { get :details, params: { id: group.to_param } }
 
       context 'with user having proper permissions and feature enabled' do
+        before_all do
+          group.add_developer(user)
+        end
+
         before do
           stub_licensed_features(security_dashboard: true)
-          group.add_developer(user)
+          sign_in(user)
         end
 
         context 'with group view set to security dashboard' do
