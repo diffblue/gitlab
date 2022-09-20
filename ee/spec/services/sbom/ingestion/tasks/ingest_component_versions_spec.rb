@@ -50,5 +50,19 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponentVersions do
           .from(Array.new(3)).to([an_instance_of(Integer), nil, an_instance_of(Integer)])
       end
     end
+
+    context 'when occurrence maps contains two of the same component_version' do
+      let_it_be(:component) { create(:sbom_component) }
+      let_it_be(:report_component) { create(:ci_reports_sbom_component, version: 'v0.0.1') }
+
+      let(:occurrence_maps) do
+        create_list(:sbom_occurrence_map, 2, component: component, report_component: report_component)
+      end
+
+      it 'fills in both ids' do
+        expect { ingest_component_versions }.to change { occurrence_maps.map(&:component_version_id) }
+          .from(Array.new(2)).to([an_instance_of(Integer), an_instance_of(Integer)])
+      end
+    end
   end
 end
