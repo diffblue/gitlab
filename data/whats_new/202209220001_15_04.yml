@@ -8,7 +8,7 @@
   stage: create # String value of the stage that the feature was created in. e.g., Growth
   self-managed: false # Boolean value (true or false)
   gitlab-com: true # Boolean value (true or false)
-  available_in: [ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
+  available_in: [Ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
   documentation_link: 'https://docs.gitlab.com/ee/user/project/merge_requests/reviews/#suggested-reviewers' # This is the documentation URL, but can be a URL to a video if there is one
   image_url: https://about.gitlab.com/images/15_4/create-code-review-suggested-reviewers.png # This should be a full URL, generally taken from the release post content. If a video, use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
   published_at: 2022-09-22 # YYYY-MM-DD
@@ -24,7 +24,7 @@
   stage: create # String value of the stage that the feature was created in. e.g., Growth
   self-managed: true # Boolean value (true or false)
   gitlab-com: false # Boolean value (true or false)
-  available_in: [core, premium, ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
+  available_in: [Free, Premium, Ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
   documentation_link: 'https://gitlab.com/gitlab-org/gitlab-vscode-extension#show-merged-gitlab-cicd-configuration' # This is the documentation URL, but can be a URL to a video if there is one
   image_url: https://about.gitlab.com/images/15_4/create-vs-code-cicd-improvements.png # This should be a full URL, generally taken from the release post content. If a video, use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
   published_at: 2022-09-22 # YYYY-MM-DD
@@ -37,7 +37,7 @@
   stage: manage # String value of the stage that the feature was created in. e.g., Growth
   self-managed: false # Boolean value (true or false)
   gitlab-com: true # Boolean value (true or false)
-  available_in: [premium, ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
+  available_in: [Premium, Ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
   documentation_link: 'https://docs.gitlab.com/ee/user/group/saml_sso/index.html#bypass-user-verification-with-verified-domains' # This is the documentation URL, but can be a URL to a video if there is one
   image_url: https://about.gitlab.com/images/15_4/domain-verification.png # This should be a full URL, generally taken from the release post content. If a video, use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
   published_at: 2022-09-22 # YYYY-MM-DD
@@ -61,7 +61,7 @@
   stage: create # String value of the stage that the feature was created in. e.g., Growth
   self-managed: true # Boolean value (true or false)
   gitlab-com: true # Boolean value (true or false)
-  available_in: [core, premium, ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
+  available_in: [Free, Premium, Ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
   documentation_link: 'https://docs.gitlab.com/ee/user/markdown.html#json' # This is the documentation URL, but can be a URL to a video if there is one
   image_url: https://img.youtube.com/vi/12yWKw1AdKY/hqdefault.jpg # This should be a full URL, generally taken from the release post content. If a video, use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
   published_at: 2022-09-22 # YYYY-MM-DD
@@ -74,7 +74,7 @@
   stage: create # String value of the stage that the feature was created in. e.g., Growth
   self-managed: true # Boolean value (true or false)
   gitlab-com: true # Boolean value (true or false)
-  available_in: [core, premium, ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
+  available_in: [Free, Premium, Ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
   documentation_link: 'https://docs.gitlab.com/ee/user/project/pages/getting_started/pages_ui.html' # This is the documentation URL, but can be a URL to a video if there is one
   image_url: https://about.gitlab.com/images/15_4/create-pages-onboarding.png # This should be a full URL, generally taken from the release post content. If a video, use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
   published_at: 2022-09-22 # YYYY-MM-DD
@@ -85,7 +85,7 @@
   stage: create # String value of the stage that the feature was created in. e.g., Growth
   self-managed: false # Boolean value (true or false)
   gitlab-com: true # Boolean value (true or false)
-  available_in: [premium, ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
+  available_in: [Premium, Ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
   documentation_link: 'https://docs.gitlab.com/ee/ci/runners/saas/linux_saas_runner.html' # This is the documentation URL, but can be a URL to a video if there is one
   image_url: https://about.gitlab.com/images/15_4/select-multiple-gitlab-saas-linux-runners.png # This should be a full URL, generally taken from the release post content. If a video, use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
   published_at: 2022-09-22 # YYYY-MM-DD
@@ -96,7 +96,7 @@
   stage: create # String value of the stage that the feature was created in. e.g., Growth
   self-managed: true # Boolean value (true or false)
   gitlab-com: false # Boolean value (true or false)
-  available_in: [core, premium, ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
+  available_in: [Free, Premium, Ultimate] # Array of strings. The Array brackets are required here. e.g., [Free, Premium, Ultimate]
   documentation_link: 'https://docs.gitlab.com/ee/administration/pages/#set-maximum-number-of-gitlab-pages-custom-domains-for-a-project' # This is the documentation URL, but can be a URL to a video if there is one
   image_url: https://about.gitlab.com/images/15_4/create-pages-domain-limits.png # This should be a full URL, generally taken from the release post content. If a video, use the youtube thumbnail URL with the structure of https://img.youtube.com/vi/UNIQUEID/hqdefault.jpg
   published_at: 2022-09-22 # YYYY-MM-DD
