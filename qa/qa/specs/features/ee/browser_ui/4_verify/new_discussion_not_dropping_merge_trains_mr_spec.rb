@@ -67,9 +67,9 @@ module QA
             commit.commit_message = 'Add .gitlab-ci.yml'
             commit.add_files(
               [
-                  {
-                      file_path: '.gitlab-ci.yml',
-                      content: <<~YAML
+                {
+                    file_path: '.gitlab-ci.yml',
+                    content: <<~YAML
                         test_merge_train:
                           tags:
                             - #{executor}
@@ -78,8 +78,8 @@ module QA
                           - echo 'OK!'
                           only:
                             - merge_requests
-                      YAML
-                  }
+                    YAML
+                }
               ]
             )
           end

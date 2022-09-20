@@ -13,9 +13,7 @@ module QA
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.branch = project.default_branch
-          commit.add_files([
-            { file_path: '.gitlab/CODEOWNERS', content: '* @root' }
-          ])
+          commit.add_files([{ file_path: '.gitlab/CODEOWNERS', content: '* @root' }])
         end
       end
 
@@ -24,17 +22,13 @@ module QA
           commit.project = project
           commit.branch = 'codeowners_test'
           commit.start_branch = project.default_branch
-          commit.add_files([
-            { file_path: 'test1.txt', content: '1' }
-          ])
+          commit.add_files([{ file_path: 'test1.txt', content: '1' }])
         end
 
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.branch = 'codeowners_test'
-          commit.add_files([
-            { file_path: 'test2.txt', content: '2' }
-          ])
+          commit.add_files([{ file_path: 'test2.txt', content: '2' }])
         end
       end
 
