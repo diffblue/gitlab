@@ -160,7 +160,7 @@ module Registrations
                                                                               })
 
       if Feature.enabled?(:registration_trial_in_background)
-        GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(current_user.id, trial_user_information) # rubocop:todo CodeReuse/Worker
+        GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(current_user.id, trial_user_information.to_h) # rubocop:todo CodeReuse/Worker
       else
         apply_trial_params = {
           uid: current_user.id,

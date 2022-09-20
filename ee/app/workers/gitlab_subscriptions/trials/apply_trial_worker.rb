@@ -17,8 +17,8 @@ module GitlabSubscriptions
       feature_category :purchase
 
       def perform(current_user_id, trial_user_information)
-        service = GitlabSubscriptions::ApplyTrialService.new(uid: current_user_id,
-                                                             trial_user_information: trial_user_information)
+        service = GitlabSubscriptions::ApplyTrialService
+                    .new(uid: current_user_id, trial_user_information: trial_user_information.deep_symbolize_keys)
         result = service.execute
 
         return if result.success?
