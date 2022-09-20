@@ -217,6 +217,25 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
         end
       end
 
+      context "filtering by health status" do
+        let!(:issue) { create(:issue, author: user2, project: project, health_status: nil) }
+        let!(:issue1) { create(:issue, author: user2, project: project, health_status: :at_risk) }
+        let!(:issue2) { create(:issue, author: user2, project: project, health_status: :at_risk) }
+        let!(:issue3) { create(:issue, author: user2, project: project, health_status: :needs_attention) }
+
+        it 'returns issues with specific health_status' do
+          get api('/issues', user), params: { health_status: 'at_risk', scope: 'all' }
+
+          expect_paginated_array_response([issue2.id, issue1.id])
+        end
+
+        it 'returns bad request when unsupported value is supplied' do
+          get api('/issues', user), params: { health_status: 'nonsense', scope: 'all' }
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
       context 'filtering by assignee_username' do
         let(:another_assignee) { create(:assignee) }
         let!(:issue1) { create(:issue, author: user2, project: project, weight: 1, created_at: 3.days.ago) }
