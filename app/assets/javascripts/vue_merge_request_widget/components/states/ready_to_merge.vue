@@ -325,21 +325,19 @@ export default {
       );
     },
     sourceBranchDeletedText() {
-      const premerge = {
-        true: __('Source branch will be deleted.'),
-        false: __('Source branch will not be deleted.'),
-      };
-      const postmerge = {
-        true: __('Deleted the source branch.'),
-        false: __('Did not delete the source branch.'),
-      };
       const isPreMerge = this.mr.state !== 'merged';
-      const strings = isPreMerge ? premerge : postmerge;
-      const doDelete = isPreMerge
-        ? this.mr.shouldRemoveSourceBranch || this.removeSourceBranch
-        : this.mr.sourceBranchRemoved;
+      const shouldDelete = this.mr.shouldRemoveSourceBranch || this.removeSourceBranch;
+      const isDeleted = this.mr.sourceBranchRemoved;
 
-      return strings[doDelete];
+      if (isPreMerge) {
+        return shouldDelete
+          ? __('Source branch will be deleted.')
+          : __('Source branch will not be deleted.');
+      } else {
+        return isDeleted
+          ? __('Deleted the source branch.')
+          : __('Did not delete the source branch.');
+      }
     },
     showMergeDetailsHeader() {
       return ['readyToMerge'].indexOf(this.mr.state) >= 0;
