@@ -101,7 +101,7 @@ GitLab.com each day. In comparison to around 5M we see created today. This is
 **Status**: As of October 2021 we reduced the growth rate of `ci_builds` table
 by writing build options and variables to `ci_builds_metadata` table. We are
 also working on partitioning the largest CI/CD database tables using
-[time decay pattern](../ci_data_decay/).
+[time decay pattern](../ci_data_decay/index.md).
 
 ### Queuing mechanisms were using the large table: DONE
 
