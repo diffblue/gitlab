@@ -58,6 +58,31 @@
   category: compliance
   redis_slot: compliance
   aggregation: weekly
+# Project Management group
+- name: g_project_management_issue_added_to_epic
+  category: issues_edit
+  redis_slot: project_management
+  aggregation: daily
+- name: g_project_management_issue_changed_epic
+  category: issues_edit
+  redis_slot: project_management
+  aggregation: daily
+- name: g_project_management_issue_health_status_changed
+  category: issues_edit
+  redis_slot: project_management
+  aggregation: daily
+- name: g_project_management_issue_iteration_changed
+  category: issues_edit
+  redis_slot: project_management
+  aggregation: daily
+- name: g_project_management_issue_removed_from_epic
+  category: issues_edit
+  redis_slot: project_management
+  aggregation: daily
+- name: g_project_management_issue_weight_changed
+  category: issues_edit
+  redis_slot: project_management
+  aggregation: daily
 # Container Security - Network Policies
 - name: clusters_using_network_policies_ui
   redis_slot: network_policies
