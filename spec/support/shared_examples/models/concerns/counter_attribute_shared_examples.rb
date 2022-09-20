@@ -4,7 +4,6 @@ require 'spec_helper'
 RSpec.shared_examples_for CounterAttribute do |counter_attributes|
   before do
     Gitlab::ApplicationContext.push(feature_category: 'test', caller_id: 'caller')
-    stub_const('CounterAttribute::DATABASE_LEASE_LOCK_RETRY_INTERVAL', 0.01)
   end
 
   it 'defines a Redis counter_key' do
