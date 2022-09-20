@@ -326,15 +326,13 @@ export default {
     },
     sourceBranchDeletedText() {
       const isPreMerge = this.mr.state !== 'merged';
-      const shouldDelete = this.mr.shouldRemoveSourceBranch || this.removeSourceBranch;
-      const isDeleted = this.mr.sourceBranchRemoved;
 
       if (isPreMerge) {
-        return shouldDelete
+        return this.mr.shouldRemoveSourceBranch
           ? __('Source branch will be deleted.')
           : __('Source branch will not be deleted.');
       } else {
-        return isDeleted
+        return this.mr.sourceBranchRemoved
           ? __('Deleted the source branch.')
           : __('Did not delete the source branch.');
       }
