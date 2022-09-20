@@ -12,7 +12,7 @@ RSpec.describe FinalizeInvalidProjectMemberCleanup, :migration do
     shared_examples 'finalizes the migration' do
       it 'finalizes the migration' do
         allow_next_instance_of(Gitlab::Database::BackgroundMigration::BatchedMigrationRunner) do |runner|
-          expect(runner).to receive(:finalize).with('DestroyInvalidProjectMembers', :members, :member_namespace_id, [])
+          expect(runner).to receive(:finalize).with('DestroyInvalidProjectMembers', :members, :id, [])
         end
       end
     end
@@ -27,11 +27,11 @@ RSpec.describe FinalizeInvalidProjectMemberCleanup, :migration do
     end
 
     context 'with migration present' do
-      let!(:member_namespace_id_backfill) do
+      let!(:destroy_invalid_project_member_migration) do
         batched_migrations.create!(
           job_class_name: 'DestroyInvalidProjectMembers',
           table_name: :members,
-          column_name: :member_namespace_id,
+          column_name: :id,
           job_arguments: [],
           interval: 2.minutes,
           min_value: 1,
@@ -61,7 +61,7 @@ RSpec.describe FinalizeInvalidProjectMemberCleanup, :migration do
 
         with_them do
           before do
-            member_namespace_id_backfill.update!(status: status)
+            destroy_invalid_project_member_migration.update!(status: status)
           end
 
           it_behaves_like 'finalizes the migration'
