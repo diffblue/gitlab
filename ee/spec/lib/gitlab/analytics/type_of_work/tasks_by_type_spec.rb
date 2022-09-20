@@ -19,8 +19,12 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
   let(:params) do
     {
       group: group,
-      params: { label_ids: [label.id, label_for_subgroup.id], created_after: 10.days.ago, created_before: Date.today },
-      current_user: user
+      current_user: user,
+      params: {
+        label_names: [label.name, label_for_subgroup.name],
+        created_after: 10.days.ago,
+        created_before: Date.today
+      }
     }
   end
 
@@ -86,9 +90,9 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
     end
 
     it 'does not include count from outside of the group' do
-      label_ids = subject.map { |r| r.label.id }
+      label_names = subject.map { |r| r.label.name }
 
-      expect(label_ids).to contain_exactly(label.id, label_for_subgroup.id)
+      expect(label_names).to contain_exactly(label.name, label_for_subgroup.name)
     end
 
     context 'when group without any record is given' do
@@ -101,7 +105,7 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
 
     context 'when no labels are given' do
       before do
-        params[:params][:label_ids] = []
+        params[:params][:label_names] = []
       end
 
       it { expect(subject).to be_empty }
@@ -146,21 +150,6 @@ RSpec.describe Gitlab::Analytics::TypeOfWork::TasksByType do
       end
 
       it { expect(label_count_for(label, subject)).to eq(1) }
-    end
-
-    context 'when filtering by `label_names`' do
-      before do
-        params[:params].delete(:label_ids)
-        params[:params][:label_names] = [label.name, label_for_subgroup.name]
-      end
-
-      it 'counts the records by label and date' do
-        expect(label_count_for(label, subject)).to eq(3)
-      end
-
-      it 'counts should include subgroups' do
-        expect(label_count_for(label_for_subgroup, subject)).to eq(1)
-      end
     end
   end
 
