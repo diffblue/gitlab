@@ -2,10 +2,7 @@
 
 module QA
   RSpec.describe 'Manage', :reliable, requires_admin: 'creates a user via API' do
-    describe 'Gitlab migration', quarantine: {
-      type: :investigating,
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/367568'
-    } do
+    describe 'Gitlab migration' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:api_client) { Runtime::API::Client.new(user: user) }
       # validate different epic author is migrated correctly
@@ -63,6 +60,7 @@ module QA
         EE::Resource::GroupIteration.fabricate_via_api! do |iteration|
           iteration.api_client = api_client
           iteration.group = source_group
+          iteration.description = "Import test iteration for group #{source_group.name}"
         end
       end
 
@@ -126,7 +124,9 @@ module QA
         source_parent_epic = find_epic(source_epics, 'Parent epic')
         imported_parent_epic = find_epic(imported_epics, 'Parent epic')
         imported_child_epic = find_epic(imported_epics, 'Child epic')
-        imported_iteration = imported_group.reload!.iterations.find { |ml| ml.title == source_iteration.title }
+        imported_iteration = imported_group.reload!
+          .iterations
+          .find { |it| it.description == source_iteration.description }
 
         aggregate_failures do
           expect(imported_epics).to eq(source_epics)
@@ -134,9 +134,9 @@ module QA
           expect(imported_parent_epic.author).to eq(source_parent_epic.author)
 
           expect(imported_iteration).to eq(source_iteration)
-          expect(imported_iteration.iid).to eq(source_iteration.iid)
-          expect(imported_iteration.created_at).to eq(source_iteration.created_at)
-          expect(imported_iteration.updated_at).to eq(source_iteration.updated_at)
+          expect(imported_iteration&.iid).to eq(source_iteration.iid)
+          expect(imported_iteration&.created_at).to eq(source_iteration.created_at)
+          expect(imported_iteration&.updated_at).to eq(source_iteration.updated_at)
         end
       end
     end
