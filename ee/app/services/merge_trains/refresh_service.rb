@@ -17,29 +17,12 @@ module MergeTrains
     TRAIN_PROCESSING_LOCK_TIMEOUT = 15.minutes.freeze
     SIGNAL_FOR_REFRESH_REQUEST = 1
 
+    # NOTE: To prevent concurrent refreshes, `MergeTrains::RefreshWorker` implements a locking mechanism through the
+    # `deduplicate :until_executed, if_deduplicated: :reschedule_once` option
     def execute(target_project_id, target_branch)
       @target_project_id = target_project_id
       @target_branch = target_branch
 
-      # To prevent concurrent refreshes, `MergeTrains::RefreshWorker` implements a locking mechanism through the
-      # `deduplicate :until_executed, if_deduplicated: :reschedule_once` option
-      return unsafe_refresh if Feature.enabled?(:bypass_batch_pop_queueing_for_merge_trains)
-
-      queue = Gitlab::BatchPopQueueing.new('merge_trains', queue_id)
-      result = queue.safe_execute([SIGNAL_FOR_REFRESH_REQUEST], lock_timeout: TRAIN_PROCESSING_LOCK_TIMEOUT) do |items|
-        unsafe_refresh
-      end
-
-      if result[:status] == :finished && result[:new_items].present?
-        MergeTrains::RefreshWorker.perform_async(target_project_id, target_branch)
-      end
-    end
-
-    private
-
-    attr_reader :target_project_id, :target_branch
-
-    def unsafe_refresh
       require_next_recreate = false
 
       MergeTrain.all_cars(target_project_id, target_branch, limit: DEFAULT_CONCURRENCY).each do |car|
@@ -50,6 +33,10 @@ module MergeTrains
         require_next_recreate = (result[:status] == :error || result[:pipeline_created])
       end
     end
+
+    private
+
+    attr_reader :target_project_id, :target_branch
 
     def queue_id
       "#{target_project_id}:#{target_branch}"

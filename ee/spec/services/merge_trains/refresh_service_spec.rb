@@ -16,7 +16,38 @@ RSpec.describe MergeTrains::RefreshService do
     project.add_maintainer(maintainer_2)
   end
 
-  shared_examples_for 'refreshing the merge train' do
+  describe '#execute', :clean_gitlab_redis_queues do
+    subject { service.execute(merge_request.target_project_id, merge_request.target_branch) }
+
+    let!(:merge_request_1) do
+      create(:merge_request, :on_train,
+        train_creator: maintainer_1,
+        source_branch: 'feature', source_project: project,
+        target_branch: 'master', target_project: project)
+    end
+
+    let!(:merge_request_2) do
+      create(:merge_request, :on_train,
+        train_creator: maintainer_2,
+        source_branch: 'signed-commits', source_project: project,
+        target_branch: 'master', target_project: project)
+    end
+
+    let(:refresh_service_1) { double }
+    let(:refresh_service_2) { double }
+    let(:refresh_service_1_result) { { status: :success } }
+    let(:refresh_service_2_result) { { status: :success } }
+
+    before do
+      allow(MergeTrains::RefreshMergeRequestService)
+        .to receive(:new).with(project, maintainer_1, anything) { refresh_service_1 }
+      allow(MergeTrains::RefreshMergeRequestService)
+        .to receive(:new).with(project, maintainer_2, anything) { refresh_service_2 }
+
+      allow(refresh_service_1).to receive(:execute) { refresh_service_1_result }
+      allow(refresh_service_2).to receive(:execute) { refresh_service_2_result }
+    end
+
     context 'when merge request 1 is passed' do
       let(:merge_request) { merge_request_1 }
 
@@ -93,72 +124,6 @@ RSpec.describe MergeTrains::RefreshService do
         expect(refresh_service_2).to receive(:execute).with(merge_request_2)
 
         subject
-      end
-    end
-  end
-
-  describe '#execute', :clean_gitlab_redis_queues do
-    subject { service.execute(merge_request.target_project_id, merge_request.target_branch) }
-
-    let!(:merge_request_1) do
-      create(:merge_request, :on_train,
-        train_creator: maintainer_1,
-        source_branch: 'feature', source_project: project,
-        target_branch: 'master', target_project: project)
-    end
-
-    let!(:merge_request_2) do
-      create(:merge_request, :on_train,
-        train_creator: maintainer_2,
-        source_branch: 'signed-commits', source_project: project,
-        target_branch: 'master', target_project: project)
-    end
-
-    let(:refresh_service_1) { double }
-    let(:refresh_service_2) { double }
-    let(:refresh_service_1_result) { { status: :success } }
-    let(:refresh_service_2_result) { { status: :success } }
-
-    before do
-      allow(MergeTrains::RefreshMergeRequestService)
-        .to receive(:new).with(project, maintainer_1, anything) { refresh_service_1 }
-      allow(MergeTrains::RefreshMergeRequestService)
-        .to receive(:new).with(project, maintainer_2, anything) { refresh_service_2 }
-
-      allow(refresh_service_1).to receive(:execute) { refresh_service_1_result }
-      allow(refresh_service_2).to receive(:execute) { refresh_service_2_result }
-    end
-
-    it_behaves_like 'refreshing the merge train'
-
-    context 'when bypass_batch_pop_queueing_for_merge_trains is disabled' do
-      before do
-        stub_feature_flags(bypass_batch_pop_queueing_for_merge_trains: false)
-      end
-
-      it_behaves_like 'refreshing the merge train'
-
-      context 'when the other thread has already been processing the merge train' do
-        let(:merge_request) { merge_request_1 }
-        let(:lock_key) { "batch_pop_queueing:lock:merge_trains:#{merge_request.target_project_id}:#{merge_request.target_branch}" }
-
-        before do
-          stub_exclusive_lease_taken(lock_key)
-        end
-
-        it 'does not refresh' do
-          expect(refresh_service_1).not_to receive(:execute).with(merge_request_1)
-
-          subject
-        end
-
-        it 'enqueues the merge request id to BatchPopQueueing' do
-          expect_next_instance_of(Gitlab::BatchPopQueueing) do |queuing|
-            expect(queuing).to receive(:enqueue).with([described_class::SIGNAL_FOR_REFRESH_REQUEST], anything).and_call_original
-          end
-
-          subject
-        end
       end
     end
   end
