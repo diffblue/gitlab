@@ -418,7 +418,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
           it 'does not execute Users::Abuse::ExcessiveProjectsDownloadBanService' do
             expect(Users::Abuse::ExcessiveProjectsDownloadBanService).not_to receive(:execute)
-            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::NotFoundError)
           end
         end
       end
@@ -475,7 +475,7 @@ RSpec.describe Gitlab::GitAccessProject do
 
           it 'does not execute Users::Abuse::GitAbuse::NamespaceThrottleService', :aggregate_failures do
             expect(Users::Abuse::GitAbuse::NamespaceThrottleService).not_to receive(:execute)
-            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::ForbiddenError)
+            expect { pull_access_check }.to raise_error(Gitlab::GitAccess::NotFoundError)
           end
         end
       end
