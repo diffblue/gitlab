@@ -17,7 +17,7 @@ module Gitlab
           include Gitlab::UsageDataCounters::RedisCounter
 
           USAGE_PREFIX = "USAGE_"
-          OPTIONS_PREFIX_KEY =  :prefix
+          OPTIONS_PREFIX_KEY = :prefix
 
           def initialize(time_frame:, options: {})
             super

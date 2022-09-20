@@ -4,7 +4,6 @@ module Gitlab
   module UsageDataCounters
     COUNTERS = [
       NoteCounter,
-      KubernetesAgentCounter,
       MergeRequestWidgetExtensionCounter
     ].freeze
 
@@ -13,6 +12,7 @@ module Gitlab
       MergeRequestCounter,
       DesignsCounter,
       DiffsCounter,
+      KubernetesAgentCounter,
       SearchCounter,
       ServiceUsageDataCounter,
       WebIdeCounter,
