@@ -106,6 +106,7 @@ module Resolvers
     def preloads
       {
         parent: [:parent],
+        labels: { labels: [:label_links] },
         events: { events: [:target] },
         award_emoji: [:award_emoji],
         start_date_from_milestones: [:start_date_sourcing_milestone],
