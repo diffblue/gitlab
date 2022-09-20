@@ -1,4 +1,4 @@
-import { GlTooltip, GlIcon } from '@gitlab/ui';
+import { GlPopover, GlIcon, GlAlert } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
@@ -51,19 +51,25 @@ describe('RelatedItemsTree', () => {
       wrapper.destroy();
     });
 
-    describe('badgeTooltip', () => {
+    describe('Count popover', () => {
       beforeEach(() => {
         wrapper = createComponent();
       });
 
       it('returns string containing epic count based on available direct children within state', () => {
-        expect(wrapper.findComponent(GlTooltip).text()).toContain(`Epics •
+        expect(wrapper.findComponent(GlPopover).text()).toContain(`Epics •
             1 open, 1 closed`);
       });
 
       it('returns string containing issue count based on available direct children within state', () => {
-        expect(wrapper.findComponent(GlTooltip).text()).toContain(`Issues •
+        expect(wrapper.findComponent(GlPopover).text()).toContain(`Issues •
             2 open, 1 closed`);
+      });
+
+      it('displays warning', () => {
+        expect(wrapper.findComponent(GlAlert).text()).toBe(
+          'Counts reflect children you may not have access to.',
+        );
       });
     });
 

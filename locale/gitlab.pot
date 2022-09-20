@@ -10907,6 +10907,9 @@ msgstr ""
 msgid "Country"
 msgstr ""
 
+msgid "Counts reflect children you may not have access to."
+msgstr ""
+
 msgid "Coverage"
 msgstr ""
 
