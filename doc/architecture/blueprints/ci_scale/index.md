@@ -49,7 +49,7 @@ since the release of Rails 5. The framework is now using `bigint` type that is 8
 bytes long, however we have not migrated primary keys for `ci_builds` table to
 `bigint` yet.
 
-In early 2021 we had estimated that will run out of the capacity of the integer
+In early 2021 we had estimated that would run out of the capacity of the integer
 type to store primary keys in `ci_builds` table before December 2021. If it had
 happened without a viable workaround or an emergency plan, GitLab.com would go
 down. `ci_builds` was just one of many tables that were running out of the
@@ -117,7 +117,7 @@ of the CI/CD Apdex score, and sometimes even caused a significant performance
 degradation in the production environment.
 
 There were multiple other strategies that we considered to improve performance and
-reliability. We could use [Redis queuing](https://gitlab.com/gitlab-org/gitlab/-/issues/322972), or
+reliability. We evaluated using [Redis queuing](https://gitlab.com/gitlab-org/gitlab/-/issues/322972), or
 [a separate table that would accelerate SQL queries used to build queues](https://gitlab.com/gitlab-org/gitlab/-/issues/322766).
 We decided to proceed with the latter.
 
