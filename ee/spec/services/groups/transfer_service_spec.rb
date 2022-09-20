@@ -148,6 +148,31 @@ RSpec.describe Groups::TransferService, '#execute' do
           expect(level_2_epic_2.reload.parent).to be_nil
         end
       end
+
+      describe 'update cached metadata' do
+        subject { described_class.new(subgroup_group_level_1, user).execute(new_group) }
+
+        it 'schedules update of issue counts for removed parent epic references' do
+          expect(::Epics::UpdateCachedMetadataWorker).to receive(:bulk_perform_in) do |delay, ids|
+            expect(delay).to eq(1.minute)
+            expect(ids.flatten).to match_array([level_1_epic_1.parent_id, level_2_epic_1.parent_id].uniq)
+          end.once
+
+          subject
+        end
+
+        context 'when cache_issue_sums flag is disabled' do
+          before do
+            stub_feature_flags(cache_issue_sums: false)
+          end
+
+          it 'does not schedule update of issue counts for removed parent epic references' do
+            expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:bulk_perform_in)
+
+            subject
+          end
+        end
+      end
     end
   end
 
