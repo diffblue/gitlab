@@ -177,9 +177,7 @@ VERSION=<migration ID> bundle exec rails db:migrate:main
 
 ### Adding new tables to GitLab Schema
 
-New tables should be defined in [`lib/gitlab/database/gitlab_schemas.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/database/gitlab_schemas.yml) with the databases they need to be added to.
-
-GitLab connects to two different Postgres databases: `main` and `ci`. This split can affect migrations as they may run on either or both of these databases. Read [Migrations for Multiple databases](database/migrations_for_multiple_databases.md) to understand if or how a migration you add should account for this. Eg:
+GitLab connects to two different Postgres databases: `main` and `ci`. New tables should be defined in [`lib/gitlab/database/gitlab_schemas.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/database/gitlab_schemas.yml) with the databases they need to be added to.
 
    ```yaml
    <TABLE_NAME>: :gitlab_main
