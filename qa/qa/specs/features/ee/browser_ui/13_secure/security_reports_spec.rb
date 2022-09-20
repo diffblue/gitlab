@@ -131,13 +131,13 @@ module QA
         end
       end
 
-      it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412',
-                                                             quarantine: {
-         type: :flaky,
-         issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/351183'
-      } do
+      it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
+        Support::Waiter.wait_until(sleep_interval: 3) do
+          pipelines = project.pipelines
+          !pipelines.empty? && pipelines.last[:status] == "success"
+        end
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
         EE::Page::Project::Secure::Show.perform do |security_dashboard|
@@ -147,7 +147,7 @@ module QA
         end
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
-          Support::Retrier.retry_on_exception(max_attempts: 2, reload_page: page, message: 'False positive vuln retry') do
+          Support::Retrier.retry_on_exception(max_attempts: 2, sleep_interval: 3, reload_page: page, message: 'False positive vuln retry') do
             security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
           end
         end
