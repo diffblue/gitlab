@@ -32,18 +32,6 @@ RSpec.describe Integrations::SlackEventService do
       is_expected.to be_success
     end
 
-    context 'when the `slack_events_app_home_opened` flag is disabled' do
-      before do
-        stub_feature_flags(slack_events_app_home_opened: false)
-      end
-
-      it 'does not queue a worker and returns success response' do
-        expect(Integrations::SlackEventWorker).not_to receive(:perform_async)
-        expect(execute.payload).to eq({})
-        is_expected.to be_success
-      end
-    end
-
     context 'when event a url verification request' do
       let(:params) { { type: 'url_verification', foo: 'bar' } }
 

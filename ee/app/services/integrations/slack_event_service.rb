@@ -47,11 +47,7 @@ module Integrations
     def route_event
       return SlackEvents::UrlVerificationService.new(params).execute if route_in_request?
 
-      # Do not queue the worker for 'app_home_opened' events
-      # if the feature is disabled.
-      unless slack_event == 'app_home_opened' && Feature.disabled?(:slack_events_app_home_opened)
-        SlackEventWorker.perform_async(slack_event: slack_event, params: params)
-      end
+      SlackEventWorker.perform_async(slack_event: slack_event, params: params)
 
       {}
     end
