@@ -43525,6 +43525,33 @@ msgstr ""
 msgid "UsersSelect|Unassigned"
 msgstr ""
 
+msgid "User|Data Analyst"
+msgstr ""
+
+msgid "User|Development Team Lead"
+msgstr ""
+
+msgid "User|Devops Engineer"
+msgstr ""
+
+msgid "User|Other"
+msgstr ""
+
+msgid "User|Product Designer"
+msgstr ""
+
+msgid "User|Product Manager"
+msgstr ""
+
+msgid "User|Security Analyst"
+msgstr ""
+
+msgid "User|Software Developer"
+msgstr ""
+
+msgid "User|Systems Administrator"
+msgstr ""
+
 msgid "Uses GitLab as an alternative to Sentry."
 msgstr ""
 
