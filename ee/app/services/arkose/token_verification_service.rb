@@ -2,7 +2,7 @@
 
 module Arkose
   class TokenVerificationService
-    attr_reader :session_token, :user
+    attr_reader :session_token, :user, :response
 
     ARKOSE_LABS_DEFAULT_NAMESPACE = 'client'
     ARKOSE_LABS_DEFAULT_SUBDOMAIN = 'verify-api'
@@ -13,10 +13,10 @@ module Arkose
     end
 
     def execute
-      response = Gitlab::HTTP.perform_request(Net::HTTP::Post, arkose_verify_url, body: body).parsed_response
-      response = ::Arkose::VerifyResponse.new(response)
+      parsed_response = Gitlab::HTTP.perform_request(Net::HTTP::Post, arkose_verify_url, body: body).parsed_response
+      @response = ::Arkose::VerifyResponse.new(parsed_response)
 
-      logger.info(build_message(response))
+      logger.log_successful_token_verification
 
       return ServiceResponse.error(message: response.error) if response.invalid_token?
 
@@ -41,7 +41,8 @@ module Arkose
       }.compact
       Gitlab::ExceptionLogFormatter.format!(error, payload)
       Gitlab::ErrorTracking.track_exception(error)
-      logger.error("Error verifying user on Arkose: #{payload}")
+
+      logger.log_failed_token_verification
 
       ServiceResponse.success(payload: payload)
     end
@@ -57,28 +58,11 @@ module Arkose
     end
 
     def logger
-      Gitlab::AppLogger
-    end
-
-    def build_message(response)
-      Gitlab::ApplicationContext.current.symbolize_keys.merge(
-        {
-          message: 'Arkose verify response',
-          response: response.response,
-          username: user&.username
-        }.compact).merge(arkose_payload(response))
-    end
-
-    def arkose_payload(response)
-      {
-        'arkose.session_id': response.session_id,
-        'arkose.global_score': response.global_score,
-        'arkose.global_telltale_list': response.global_telltale_list,
-        'arkose.custom_score': response.custom_score,
-        'arkose.custom_telltale_list': response.custom_telltale_list,
-        'arkose.risk_band': response.risk_band,
-        'arkose.risk_category': response.risk_category
-      }
+      @logger ||= ::Arkose::Logger.new(
+        session_token: session_token,
+        user: user,
+        verify_response: response
+      )
     end
 
     def arkose_verify_url
