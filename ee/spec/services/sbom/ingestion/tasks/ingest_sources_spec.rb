@@ -41,5 +41,20 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestSources do
           .from(Array.new(4)).to(expected_source_ids)
       end
     end
+
+    context 'when source is not present' do
+      let(:occurrence_maps) { [create(:sbom_occurrence_map, report_source: nil)] }
+
+      it 'performs no-op' do
+        expect { ingest_sources }.to not_change { Sbom::Source.count }
+          .and not_change { occurrence_maps.map(&:source_id) }
+      end
+    end
+
+    context 'when occurrence_maps is empty' do
+      let(:occurrence_maps) { [] }
+
+      specify { expect { ingest_sources }.not_to raise_error }
+    end
   end
 end

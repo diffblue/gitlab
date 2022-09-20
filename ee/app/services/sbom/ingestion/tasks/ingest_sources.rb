@@ -38,7 +38,7 @@ module Sbom
         end
 
         def report_source
-          @report_source ||= occurrence_maps.first.report_source
+          @report_source ||= occurrence_maps.first&.report_source
         end
       end
     end
