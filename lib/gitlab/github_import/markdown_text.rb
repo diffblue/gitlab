@@ -8,6 +8,8 @@ module Gitlab
     class MarkdownText
       include Gitlab::EncodingHelper
 
+      GITHUB_MEDIA_CDN = 'https://user-images.githubusercontent.com'
+
       ISSUE_REF_MATCHER = '%{github_url}/%{import_source}/issues'
       PULL_REF_MATCHER = '%{github_url}/%{import_source}/pull'
 
@@ -42,18 +44,33 @@ module Gitlab
               .gsub(pull_ref_matcher, url_helpers.project_merge_requests_url(project))
         end
 
-        def fetch_attachment_urls(text)
-          cdn_url_matcher = CDN_URL_MATCHER % { github_media_cdn: Regexp.escape(github_media_cdn) }
+        def fetch_attachments(text)
+          attachment = ::Gitlab::GithubImport::Markdown::Attachment
+
+          markdown_matches(text).map { |item| attachment.from_markdown(item) } +
+            cdn_img_matches(text).map { |item| attachment.from_img_tag(item) }
+        end
+
+        private
+
+        def markdown_matches(text)
+          cdn_url_matcher = CDN_URL_MATCHER % { github_media_cdn: Regexp.escape(GITHUB_MEDIA_CDN) }
           doc_url_matcher = BASE_URL_MATCHER % { github_url: Regexp.escape(github_url) }
 
           text.scan(Regexp.new(cdn_url_matcher)).map(&:first) +
             text.scan(Regexp.new(doc_url_matcher)).map(&:first)
         end
 
-        private
+        def cdn_img_matches(text)
+          return [] if text.exclude?("src=\"#{GITHUB_MEDIA_CDN}") # to skip unnecessary parse
 
-        def github_media_cdn
-          'https://user-images.githubusercontent.com'
+          lines = text.split("\n")
+          img_tags = lines.map { |line| line.scan(%r{<img.*>}) }.flatten
+          img_tags.map do |tag_text|
+            img_tag = Nokogiri::HTML.parse(tag_text).xpath('//img')[0]
+            valid = img_tag[:src].start_with?(GITHUB_MEDIA_CDN)
+            valid ? img_tag : nil
+          end.compact
         end
 
         # Returns github domain without slash in the end
