@@ -62,12 +62,12 @@ See the [related Epic](https://gitlab.com/groups/gitlab-org/-/epics/5657) for mo
 
 ### Some CI/CD database tables are too large: IN PROGRESS
 
-There is more than two billion rows in `ci_builds` table. We store moany
+There is more than two billion rows in `ci_builds` table. We store many
 terabytes of data in that table, and the total size of indexes is measured in
 terabytes as well.
 
-This amount of data contributes to a significant performance problems we
-experience on our CI PostgreSQL database.
+This amount of data contributes to a significant number of performance 
+problems we experience on our CI PostgreSQL database.
 
 Most of the problems are related to how PostgreSQL database works internally,
 and how it is making use of resources on a node the database runs on. We are at
@@ -94,7 +94,7 @@ We also expect a significant, exponential growth in the upcoming years.
 One of the forecasts done using [Facebook's Prophet](https://facebook.github.io/prophet/)
 shows that in the first half of 2024 we expect seeing 20M builds created on
 GitLab.com each day. In comparison to around 5M we see created today. This is
-10x growth from numbers we asw in 2021.
+10x growth from numbers we saw in 2021.
 
 ![CI builds daily forecast](ci_builds_daily_forecast.png)
 
