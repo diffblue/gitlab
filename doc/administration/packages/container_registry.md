@@ -40,7 +40,7 @@ if you want to implement this.
 
 If you have installed GitLab from source:
 
-1. You must [install Registry](https://docs.docker.com/registry/deploying/) by yourself, using the image corresponding to the 
+1. You must [deploy a registry](https://docs.docker.com/registry/deploying/) using the image corresponding to the 
    version of GitLab you are installing 
    (for example: `registry.gitlab.com/gitlab-org/build/cng/gitlab-container-registry:v3.15.0-gitlab`)
 1. After the installation is complete, to enable it, you must configure the Registry's
