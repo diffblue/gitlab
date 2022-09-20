@@ -36205,9 +36205,6 @@ msgstr ""
 msgid "Select a template type"
 msgstr ""
 
-msgid "Select a time zone"
-msgstr ""
-
 msgid "Select a timezone"
 msgstr ""
 
