@@ -8308,16 +8308,6 @@ RSpec.describe Project, factory_default: :keep do
       expect(project.packages_policy_subject).to be_a(Packages::Policies::Project)
       expect(project.packages_policy_subject.project).to eq(project)
     end
-
-    context 'with feature flag disabled' do
-      before do
-        stub_feature_flags(read_package_policy_rule: false)
-      end
-
-      it 'returns project' do
-        expect(project.packages_policy_subject).to eq(project)
-      end
-    end
   end
 
   describe '#destroy_deployment_by_id' do

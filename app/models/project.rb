@@ -3023,11 +3023,7 @@ class Project < ApplicationRecord
   end
 
   def packages_policy_subject
-    if Feature.enabled?(:read_package_policy_rule, group)
-      ::Packages::Policies::Project.new(self)
-    else
-      self
-    end
+    ::Packages::Policies::Project.new(self)
   end
 
   def destroy_deployment_by_id(deployment_id)
