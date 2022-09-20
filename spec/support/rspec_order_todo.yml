@@ -9552,7 +9552,6 @@
 - './spec/serializers/entity_request_spec.rb'
 - './spec/serializers/environment_entity_spec.rb'
 - './spec/serializers/environment_serializer_spec.rb'
-- './spec/serializers/environment_status_entity_spec.rb'
 - './spec/serializers/evidences/evidence_entity_spec.rb'
 - './spec/serializers/evidences/evidence_serializer_spec.rb'
 - './spec/serializers/evidences/issue_entity_spec.rb'
