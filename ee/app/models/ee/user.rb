@@ -43,7 +43,7 @@ module EE
       has_many :assigned_epics,           foreign_key: :assignee_id, class_name: "Epic"
       has_many :path_locks,               dependent: :destroy # rubocop: disable Cop/ActiveRecordDependent
       has_many :vulnerability_feedback, foreign_key: :author_id, class_name: 'Vulnerabilities::Feedback'
-      has_many :vulnerability_state_transitions, foreign_key: :author_id, class_name: 'Vulnerabilities::StateTransition', inverse_of: :user
+      has_many :vulnerability_state_transitions, foreign_key: :author_id, class_name: 'Vulnerabilities::StateTransition', inverse_of: :author
       has_many :commented_vulnerability_feedback, foreign_key: :comment_author_id, class_name: 'Vulnerabilities::Feedback'
       has_many :boards_epic_user_preferences, class_name: 'Boards::EpicUserPreference', inverse_of: :user
       has_many :epic_board_recent_visits, class_name: 'Boards::EpicBoardRecentVisit', inverse_of: :user
