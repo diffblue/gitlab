@@ -16,7 +16,7 @@ module Security
       end
 
       def execute
-        vulnerabilities.each_batch { |batch| process_batch(batch) }
+        vulnerabilities.present_on_default_branch.each_batch { |batch| process_batch(batch) }
       end
 
       private
