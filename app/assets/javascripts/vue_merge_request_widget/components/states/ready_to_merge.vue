@@ -331,11 +331,11 @@ export default {
         return this.mr.shouldRemoveSourceBranch
           ? __('Source branch will be deleted.')
           : __('Source branch will not be deleted.');
-      } else {
-        return this.mr.sourceBranchRemoved
-          ? __('Deleted the source branch.')
-          : __('Did not delete the source branch.');
       }
+
+      return this.mr.sourceBranchRemoved
+        ? __('Deleted the source branch.')
+        : __('Did not delete the source branch.');
     },
     showMergeDetailsHeader() {
       return ['readyToMerge'].indexOf(this.mr.state) >= 0;
