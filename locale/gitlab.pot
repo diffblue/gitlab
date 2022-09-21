@@ -18661,6 +18661,9 @@ msgstr ""
 msgid "GroupRoadmap|Loading epics"
 msgstr ""
 
+msgid "GroupRoadmap|New epic"
+msgstr ""
+
 msgid "GroupRoadmap|No start and end date"
 msgstr ""
 
@@ -18695,6 +18698,9 @@ msgid "GroupRoadmap|To view the roadmap, add a start or due date to one of your 
 msgstr ""
 
 msgid "GroupRoadmap|To widen your search, change or remove filters; from %{startDate} to %{endDate}."
+msgstr ""
+
+msgid "GroupRoadmap|View epics list"
 msgstr ""
 
 msgid "GroupRoadmap|Within 3 years"
@@ -43783,9 +43789,6 @@ msgid "View eligible approvers"
 msgstr ""
 
 msgid "View entire blame"
-msgstr ""
-
-msgid "View epics list"
 msgstr ""
 
 msgid "View exposed artifact"

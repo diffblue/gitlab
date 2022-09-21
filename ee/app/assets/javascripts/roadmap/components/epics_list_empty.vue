@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlSafeHtmlDirective, GlEmptyState } from '@gitlab/ui';
 import { dateInWords } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 
@@ -12,7 +12,7 @@ import CommonMixin from '../mixins/common_mixin';
 
 export default {
   components: {
-    GlButton,
+    GlEmptyState,
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -124,41 +124,28 @@ export default {
         endDate: this.timeframeRange.endDate,
       });
     },
+    extraProps() {
+      const props = {};
+
+      if (this.canCreateEpic && !this.hasFiltersApplied) {
+        props.primaryButtonLink = this.newEpicPath;
+        props.primaryButtonText = s__('GroupRoadmap|New epic');
+      }
+
+      return {
+        secondaryButtonLink: this.listEpicsPath,
+        secondaryButtonText: s__('GroupRoadmap|View epics list'),
+        ...props,
+      };
+    },
   },
 };
 </script>
 
 <template>
-  <div class="row empty-state">
-    <div class="col-12">
-      <div class="svg-content">
-        <img :src="emptyStateIllustrationPath" data-testid="illustration" />
-      </div>
-    </div>
-    <div class="col-12">
-      <div class="text-content">
-        <h4 data-testid="title">{{ message }}</h4>
-        <p v-safe-html="subMessage" data-testid="sub-title"></p>
-
-        <div class="gl-text-center">
-          <gl-button
-            v-if="canCreateEpic && !hasFiltersApplied"
-            :href="newEpicPath"
-            variant="confirm"
-            class="gl-mt-3 gl-sm-mt-0! gl-w-full gl-sm-w-auto!"
-            data-testid="new-epic-button"
-          >
-            {{ __('New epic') }}
-          </gl-button>
-          <gl-button
-            :href="listEpicsPath"
-            class="gl-mt-3 gl-sm-mt-0! gl-sm-ml-3 gl-w-full gl-sm-w-auto!"
-            data-testid="list-epics-button"
-          >
-            {{ __('View epics list') }}
-          </gl-button>
-        </div>
-      </div>
-    </div>
-  </div>
+  <gl-empty-state :title="message" :svg-path="emptyStateIllustrationPath" v-bind="extraProps">
+    <template #description>
+      <p v-safe-html="subMessage" data-testid="sub-title"></p>
+    </template>
+  </gl-empty-state>
 </template>
