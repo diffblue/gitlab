@@ -327,7 +327,7 @@ RSpec.describe Epics::TreeReorderService do
                 end
 
                 it 'creates system notes' do
-                  expect { subject }.to change { Note.system.count }.by(2)
+                  expect { subject }.to change { Note.system.count }.by(3)
                 end
               end
             end

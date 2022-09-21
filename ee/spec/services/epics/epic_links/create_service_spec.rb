@@ -412,8 +412,11 @@ RSpec.describe Epics::EpicLinks::CreateService do
 
           subject { add_epic([valid_reference]) }
 
+          it 'creates system notes' do
+            expect { subject }.to change { Note.system.count }.from(0).to(3)
+          end
+
           include_examples 'returns success'
-          include_examples 'system notes created'
         end
       end
     end

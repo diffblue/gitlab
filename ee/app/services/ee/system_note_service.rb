@@ -72,6 +72,10 @@ module EE
       epics_service(epic, user).change_epics_relation(child_epic, type)
     end
 
+    def move_child_epic_to_new_parent(previous_parent_epic:, child_epic:, new_parent_epic:, user:)
+      epics_service(previous_parent_epic, user).move_child_epic_to_new_parent(child_epic, new_parent_epic)
+    end
+
     # Called when 'merge train' is executed
     def merge_train(noteable, project, author, merge_train)
       merge_trains_service(noteable, project, author).enqueue(merge_train)
