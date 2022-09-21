@@ -19,7 +19,3 @@ scope(constraints: { username: Gitlab::PathRegex.root_namespace_route_regex }) d
     get :available_group_templates
   end
 end
-
-namespace :users do
-  resource :identity_verification, controller: :identity_verification, only: :show
-end
