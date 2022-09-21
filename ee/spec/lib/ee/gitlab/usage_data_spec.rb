@@ -105,7 +105,6 @@ RSpec.describe Gitlab::UsageData do
           dast_jobs
           dependency_scanning_jobs
           epics
-          epics_deepest_relationship_level
           epic_issues
           geo_nodes
           geo_event_log_max_id

@@ -219,7 +219,6 @@ module EE
               requirements_counts,
               security_products_usage,
               on_demand_pipelines_usage,
-              epics_deepest_relationship_level,
               operations_dashboard_usage)
           end
         end
