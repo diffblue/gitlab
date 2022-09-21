@@ -16,7 +16,7 @@ module Sbom
 
         def after_ingest
           return_data.each do |component_type, name, id|
-            maps_with(component_type, name).each do |occurrence_map|
+            maps_with(component_type, name)&.each do |occurrence_map|
               occurrence_map.component_id = id
             end
           end
