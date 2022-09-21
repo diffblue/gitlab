@@ -20,12 +20,12 @@ module Sbom
         def attributes
           occurrence_maps.map do |occurrence_map|
             {
-              project_id: project.id,
+              project_id: pipeline.project.id,
               pipeline_id: pipeline.id,
               component_id: occurrence_map.component_id,
               component_version_id: occurrence_map.component_version_id,
               source_id: occurrence_map.source_id,
-              commit_sha: sha
+              commit_sha: pipeline.sha
             }
           end
         end
