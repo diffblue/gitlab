@@ -10,6 +10,7 @@ module EE
           compliance
           epic_boards_usage
           network_policies
+          geo
         ].freeze
 
         class_methods do
