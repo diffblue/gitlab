@@ -134,7 +134,6 @@ module GitlabSubscriptions
       multiple_alert_http_integrations
       multiple_approval_rules
       multiple_group_issue_boards
-      multiple_iteration_cadences
       object_storage
       operations_dashboard
       package_forwarding

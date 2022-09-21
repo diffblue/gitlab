@@ -29,12 +29,7 @@ module Iterations
 
       def can_create_iteration_cadence?
         group.iteration_cadences_feature_flag_enabled? &&
-          can?(current_user, :create_iteration_cadence, group) &&
-          can_create_single_or_multiple_iteration_cadences?
-      end
-
-      def can_create_single_or_multiple_iteration_cadences?
-        group.licensed_feature_available?(:iterations) && (group.iterations_cadences.empty? || group.multiple_iteration_cadences_available?)
+          can?(current_user, :create_iteration_cadence, group)
       end
     end
   end

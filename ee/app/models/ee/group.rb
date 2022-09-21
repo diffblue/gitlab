@@ -374,10 +374,6 @@ module EE
       feature_available?(:multiple_group_issue_boards)
     end
 
-    def multiple_iteration_cadences_available?
-      feature_available?(:multiple_iteration_cadences)
-    end
-
     def group_project_template_available?
       feature_available?(:group_project_templates)
     end

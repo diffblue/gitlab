@@ -118,11 +118,11 @@ RSpec.describe Iterations::Cadences::CreateService do
         end
       end
 
-      context 'when a single iteration cadence is allowed' do
+      context 'when user cannot create an iterations cadence' do
         let_it_be(:existing_iteration_cadence) { create(:iterations_cadence, group: group) }
 
         before do
-          stub_licensed_features(multiple_iteration_cadences: false)
+          stub_licensed_features(iterations: false)
         end
 
         it 'fails to create multiple iteration cadences in same group' do
@@ -130,11 +130,11 @@ RSpec.describe Iterations::Cadences::CreateService do
         end
       end
 
-      context 'when multiple iteration cadences are allowed' do
+      context 'when user can create an iterations cadence' do
         let_it_be(:existing_iteration_cadence) { create(:iterations_cadence, group: group) }
 
         before do
-          stub_licensed_features(multiple_iteration_cadences: true)
+          stub_licensed_features(iterations: true)
         end
 
         it 'creates new iteration cadence' do
