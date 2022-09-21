@@ -1,7 +1,7 @@
 ---
 name: sidekiq_memory_killer_read_only_mode
-introduced_by_url:
-rollout_issue_url:
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/98519
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/374756
 milestone: '15.4'
 type: ops
 group: group::application_performance
