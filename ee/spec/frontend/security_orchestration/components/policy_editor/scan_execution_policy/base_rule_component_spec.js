@@ -32,9 +32,9 @@ describe('BaseRuleComponent', () => {
   const findDeleteButton = () => wrapper.findByTestId('remove-rule');
   const findRuleTypeDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
   const findRuleTypeDropDown = () => wrapper.findByTestId('rule-component-type');
-  const findRuleBranchesInput = () => wrapper.findByTestId('rule-branches');
   const findRuleLabel = () => wrapper.findByTestId('rule-component-label');
   const findBranchesInputField = () => wrapper.findByTestId('rule-branches');
+  const findBranchesLabel = () => wrapper.findByTestId('rule-branches-label');
 
   const selectBranches = async (branches) => {
     findBranchesInputField().vm.$emit('input', branches);
@@ -70,8 +70,7 @@ describe('BaseRuleComponent', () => {
     it('should select list of branches', async () => {
       const branches = 'main,branch1,branch2';
 
-      findRuleBranchesInput().vm.$emit('input', branches);
-      await nextTick();
+      await selectBranches(branches);
       const [eventPayload] = wrapper.emitted().changed;
 
       expect(eventPayload[0]).toEqual({
@@ -116,6 +115,30 @@ describe('BaseRuleComponent', () => {
       expect(wrapper.emitted()).toEqual({
         remove: [[]],
       });
+    });
+  });
+
+  describe('branches label', () => {
+    it('displays "branches" if a branch has the wildcard operator', async () => {
+      createComponent({
+        initRule: {
+          type: SCAN_EXECUTION_SCHEDULE_RULE,
+          branches: ['releases/*'],
+        },
+      });
+      await nextTick();
+      expect(findBranchesLabel().text()).toBe('branches');
+    });
+
+    it('displays "branch" if a branch does not have the wildcard operator', async () => {
+      createComponent({
+        initRule: {
+          type: SCAN_EXECUTION_SCHEDULE_RULE,
+          branches: ['main'],
+        },
+      });
+      await nextTick();
+      expect(findBranchesLabel().text()).toBe('branch');
     });
   });
 });

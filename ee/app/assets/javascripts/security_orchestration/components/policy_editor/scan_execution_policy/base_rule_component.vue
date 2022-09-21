@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlFormInput, GlSprintf, GlDropdown, GlDropdownItem } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { n__, s__ } from '~/locale';
 import { slugify } from '../utils';
 import { SCAN_EXECUTION_RULES_LABELS } from './constants';
 
@@ -41,7 +41,12 @@ export default {
     };
   },
   computed: {
-    branchedToAdd: {
+    branchesLabel() {
+      return this.initRule.branches.some((branch) => branch.includes('*'))
+        ? s__('SecurityOrchestration|branches')
+        : n__('branch', 'branches', this.initRule.branches.length);
+    },
+    branchesToAdd: {
       get() {
         return (this.initRule.branches?.length || 0) === 0
           ? ''
@@ -98,12 +103,13 @@ export default {
 
         <template #branches>
           <gl-form-input
-            v-model="branchedToAdd"
+            v-model="branchesToAdd"
             class="gl-mr-3 gl-max-w-34"
             size="lg"
             :placeholder="$options.i18n.selectedBranchesPlaceholder"
             data-testid="rule-branches"
           />
+          <span data-testid="rule-branches-label"> {{ branchesLabel }} </span>
         </template>
       </gl-sprintf>
     </div>
