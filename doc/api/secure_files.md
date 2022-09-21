@@ -127,7 +127,7 @@ Example response:
 Download the contents of a project's secure file.
 
 ```plaintext
-GET /projects/:project_id/download/:id
+GET /projects/:project_id/secure_files/:id/download
 ```
 
 Supported attributes:
