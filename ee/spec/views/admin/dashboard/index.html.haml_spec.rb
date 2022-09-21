@@ -59,4 +59,80 @@ RSpec.describe 'admin/dashboard/index.html.haml' do
       expect(rendered).not_to have_content "USERS IN LICENSE"
     end
   end
+
+  describe 'license expirations' do
+    shared_examples_for 'expiration message' do |start_date:, expire_date:, is_trial:, message:|
+      before do
+        assign(:license, create(:license,
+                                restrictions: { trial: is_trial },
+                                data: create(:gitlab_license,
+                                             licensee: { 'Company' => 'GitLab', 'Email' => 'test@gitlab.com' },
+                                             starts_at: start_date, expires_at: expire_date).export))
+      end
+
+      it "shows '#{message}'" do
+        render
+        expect(rendered).to have_content message.to_s
+      end
+    end
+
+    context 'when paid license is loaded' do
+      context 'when is active' do
+        today = Date.current
+        it_behaves_like 'expiration message',
+                        start_date: today - 30.days,
+                        expire_date: today + 30.days,
+                        is_trial: false,
+                        message: "Expires: #{(today + 30.days).strftime('%b %-d, %Y')}"
+      end
+
+      context 'when is expired' do
+        today = Date.current
+        it_behaves_like 'expiration message',
+                        start_date: today - 60.days,
+                        expire_date: today - 30.days,
+                        is_trial: false,
+                        message: "Expired: #{(today - 30.days).strftime('%b %-d, %Y')}"
+      end
+
+      context 'when never expires' do
+        today = Date.current
+        it_behaves_like 'expiration message',
+                        start_date: today - 30.days,
+                        expire_date: nil,
+                        is_trial: false,
+                        message: "Expires: Never"
+      end
+    end
+
+    context 'when trial license is loaded' do
+      context 'when is active' do
+        today = Date.current
+        days_left = 23
+        it_behaves_like 'expiration message',
+                        start_date: today - 30.days,
+                        expire_date: today + days_left.days,
+                        is_trial: true,
+                        message: "Expires: Free trial will expire in #{days_left} days"
+      end
+
+      context 'when is expired' do
+        today = Date.current
+        it_behaves_like 'expiration message',
+                        start_date: today - 60.days,
+                        expire_date: today - 30.days,
+                        is_trial: true,
+                        message: "Expired: #{(today - 30.days).strftime('%b %-d, %Y')}"
+      end
+
+      context 'when never expires' do
+        today = Date.current
+        it_behaves_like 'expiration message',
+                        start_date: today - 30.days,
+                        expire_date: nil,
+                        is_trial: true,
+                        message: "Expires: Never"
+      end
+    end
+  end
 end

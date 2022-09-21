@@ -1,12 +1,15 @@
-- if @license.expired?
-  = _('Expired:')
-- else
+- if !@license.will_expire?
   = _('Expires:')
-- if @license.will_expire? && !@license.expired?
-  - if @license.trial?
-    %strong.has-tooltip{ title: @license.expires_at.to_formatted_s(:long), data: { placement: 'top' } }
-      = _('Free trial will expire in %{days}' % { days: pluralize(@license.remaining_days, 'day') })
-  - else
-    %strong= l(@license.expires_at.to_time.in_time_zone, format: :timeago_tooltip)
-- else
   %strong= _('Never')
+- else
+  - expires_at = l(@license.expires_at.to_time, format: :timeago_tooltip)
+  - if @license.expired?
+    = _('Expired:')
+    %strong= expires_at
+  - else
+    = _('Expires:')
+    - if @license.trial?
+      %strong.has-tooltip{ title: @license.expires_at.to_formatted_s(:long), data: { placement: 'top' } }
+        = _('Free trial will expire in %{days}' % { days: pluralize(@license.remaining_days, 'day') })
+    - else
+      %strong= expires_at
