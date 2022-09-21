@@ -226,6 +226,22 @@ Returns [`Iteration`](#iteration).
 | ---- | ---- | ----------- |
 | <a id="queryiterationid"></a>`id` | [`IterationID!`](#iterationid) | Find an iteration by its ID. |
 
+### `Query.jobs`
+
+All jobs on this GitLab instance.
+
+Returns [`CiJobConnection`](#cijobconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queryjobsstatuses"></a>`statuses` | [`[CiJobStatus!]`](#cijobstatus) | Filter jobs by status. |
+
 ### `Query.licenseHistoryEntries`
 
 Fields related to entries in the license history.
