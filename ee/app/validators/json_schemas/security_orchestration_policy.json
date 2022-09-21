@@ -1,5 +1,5 @@
 {
-  "$id": "https://gitlab.com/.gitlab/security-policies/policy.yml",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "GitLab Security Policies Configuration",
   "description": "Policies in GitLab provide security teams a way to require scans of their choice to be run whenever a project pipeline runs according to the configuration specified. It is configured by supplying a file in `.gitlab/security-policies/policy.yml`, which will list applicable security policies. A full list of all options can be found at https://docs.gitlab.com/ee/user/application_security/policies/.",
   "type": "object",

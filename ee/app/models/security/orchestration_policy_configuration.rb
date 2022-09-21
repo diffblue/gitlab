@@ -12,6 +12,9 @@ module Security
     POLICY_PATH = '.gitlab/security-policies/policy.yml'
     POLICY_SCHEMA_PATH = 'ee/app/validators/json_schemas/security_orchestration_policy.json'
     POLICY_SCHEMA = JSONSchemer.schema(Rails.root.join(POLICY_SCHEMA_PATH))
+    # json_schemer computes an $id fallback property for schemas lacking one.
+    # But this schema is kept anonymous on purpose, so the $id is stripped.
+    POLICY_SCHEMA_JSON = POLICY_SCHEMA.as_json['root'].except('$id')
     AVAILABLE_POLICY_TYPES = %i{scan_execution_policy scan_result_policy}.freeze
     JSON_SCHEMA_VALIDATION_TIMEOUT = 5.seconds
 
