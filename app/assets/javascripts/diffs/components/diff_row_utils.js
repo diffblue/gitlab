@@ -108,7 +108,7 @@ export const mapParallel = (content) => (line) => {
       ...left,
       renderDiscussion: hasExpandedDiscussionOnLeft,
       hasDraft: content.hasParallelDraftLeft(content.diffFile.file_hash, line),
-      lineDraft: content.draftForLine(content.diffFile.file_hash, line, 'left'),
+      lineDrafts: content.draftsForLine(content.diffFile.file_hash, line, 'left'),
       hasCommentForm: left.hasForm,
       isConflictMarker:
         line.left.type === CONFLICT_MARKER_OUR || line.left.type === CONFLICT_MARKER_THEIR,
@@ -123,7 +123,7 @@ export const mapParallel = (content) => (line) => {
         hasExpandedDiscussionOnRight && right.type && right.type !== EXPANDED_LINE_TYPE,
       ),
       hasDraft: content.hasParallelDraftRight(content.diffFile.file_hash, line),
-      lineDraft: content.draftForLine(content.diffFile.file_hash, line, 'right'),
+      lineDrafts: content.draftsForLine(content.diffFile.file_hash, line, 'right'),
       hasCommentForm: Boolean(right.hasForm && right.type && right.type !== EXPANDED_LINE_TYPE),
       emptyCellClassMap: { conflict_their: line.left?.type === CONFLICT_OUR },
       addCommentTooltip: addCommentTooltip(line.right),
