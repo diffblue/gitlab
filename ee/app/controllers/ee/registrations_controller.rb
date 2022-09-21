@@ -13,6 +13,7 @@ module EE
       before_action only: [:new, :create] do
         push_frontend_feature_flag(:arkose_labs_signup_challenge)
       end
+      before_action :store_welcome_path_query_params, only: [:create]
       before_action :ensure_can_remove_self, only: [:destroy]
     end
 
@@ -119,6 +120,17 @@ module EE
         response: arkose_labs_verify_response,
         user: user
       ).execute
+    end
+
+    def store_welcome_path_query_params
+      return if ::Feature.enabled?(:soft_email_confirmation)
+
+      # when email confirmation is enabled and user leaves the almost there page
+      # we store path to redirect after he confirms and comes back
+      store_location_for(
+        :redirect,
+        users_sign_up_welcome_path(request.query_parameters.slice(:glm_source, :glm_content))
+      )
     end
   end
 end
