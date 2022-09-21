@@ -841,6 +841,28 @@ To open group settings:
 1. Expand **General pipelines**.
 ```
 
+To open either project or group settings:
+
+```markdown
+1. On the top bar, select **Main menu**, and:
+   - For a project, select ***Projects** and find your project.
+   - For a group, select **Groups** and find your group.
+1. On the left sidebar, select **Settings > CI/CD**.
+1. Expand **General pipelines**.
+```
+
+To create a project:
+
+```markdown
+1. On the top bar, select **Create new... > New project**.
+```
+
+To create a group:
+
+```markdown
+1. On the top bar, select **Create new... > New group**.
+```
+
 To open the Admin Area:
 
 ```markdown
