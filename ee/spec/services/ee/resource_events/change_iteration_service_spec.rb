@@ -14,4 +14,32 @@ RSpec.describe ResourceEvents::ChangeIterationService do
       let_it_be(:resource) { create(issuable) } # rubocop:disable Rails/SaveBang
     end
   end
+
+  describe 'events tracking' do
+    let_it_be(:user) { create(:user) }
+
+    subject { described_class.new(resource, user, old_iteration_id: nil).execute }
+
+    context 'when the resource is a work item' do
+      let(:resource) { create(:work_item, iteration: timebox) }
+
+      it 'tracks work item usage data counters' do
+        expect(Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter)
+          .to receive(:track_work_item_iteration_changed_action)
+          .with(author: user)
+
+        subject
+      end
+    end
+
+    context 'when the resource is not a work item' do
+      let(:resource) { create(:issue, iteration: timebox) }
+
+      it 'does not track work item usage data counters' do
+        expect(Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter)
+          .not_to receive(:track_work_item_iteration_changed_action)
+        subject
+      end
+    end
+  end
 end
