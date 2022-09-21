@@ -75,6 +75,25 @@ RSpec.describe SystemNoteService do
     end
   end
 
+  describe '.move_child_epic_to_new_parent' do
+    let(:child_epic) { double }
+    let(:new_parent_epic) { double }
+    let(:previous_parent_epic) { double }
+
+    it 'calls EpicService' do
+      expect_next_instance_of(SystemNotes::EpicsService) do |service|
+        expect(service).to receive(:move_child_epic_to_new_parent).with(child_epic, new_parent_epic)
+      end
+
+      described_class.move_child_epic_to_new_parent(
+        previous_parent_epic: previous_parent_epic,
+        child_epic: child_epic,
+        new_parent_epic: new_parent_epic,
+        user: author
+      )
+    end
+  end
+
   describe '.merge_train' do
     let(:merge_train) { double }
 

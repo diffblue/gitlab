@@ -25,9 +25,10 @@ module Epics
 
       def create_single_link
         child_epic = referenced_issuables.first
+        previous_parent_epic = child_epic.parent
 
         if linkable_epic?(child_epic) && set_child_epic(child_epic)
-          create_notes(child_epic)
+          create_notes(child_epic, previous_parent_epic)
           success(created_references: [child_epic])
         else
           error(child_epic.errors.values.flatten.to_sentence, 409)
@@ -40,17 +41,29 @@ module Epics
 
       def relate_issuables(referenced_epic)
         affected_epics = [issuable]
-        affected_epics << referenced_epic if referenced_epic.parent
+        previous_parent_epic = referenced_epic.parent
+
+        affected_epics << referenced_epic if previous_parent_epic
 
         if set_child_epic(referenced_epic)
-          create_notes(referenced_epic)
+          create_notes(referenced_epic, previous_parent_epic)
         end
 
         referenced_epic
       end
 
-      def create_notes(referenced_epic)
+      def create_notes(referenced_epic, previous_parent_epic)
         SystemNoteService.change_epics_relation(issuable, referenced_epic, current_user, 'relate_epic')
+
+        return unless previous_parent_epic
+        return if previous_parent_epic == issuable
+
+        SystemNoteService.move_child_epic_to_new_parent(
+          previous_parent_epic: previous_parent_epic,
+          child_epic: referenced_epic,
+          new_parent_epic: issuable,
+          user: current_user
+        )
       end
 
       def set_child_epic(child_epic)

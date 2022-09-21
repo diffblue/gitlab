@@ -87,6 +87,16 @@ module SystemNotes
       create_note(NoteSummary.new(child_epic, nil, author, note_body % note_body_params, action: type))
     end
 
+    def move_child_epic_to_new_parent(child_epic, new_parent_epic)
+      note_body = "moved child epic %{target_epic_ref} to epic %{new_parent_epic_ref}"
+      note_body_params = {
+        target_epic_ref: child_epic.to_reference(noteable.group),
+        new_parent_epic_ref: new_parent_epic.to_reference(child_epic.group)
+      }
+
+      create_note(NoteSummary.new(noteable, nil, author, note_body % note_body_params, action: 'moved'))
+    end
+
     private
 
     def epic_issue_moved_act(subject_epic, issue, object_epic, user, verb:, direction:)
