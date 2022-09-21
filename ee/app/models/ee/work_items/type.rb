@@ -9,7 +9,7 @@ module EE
       EE_WIDGETS_FOR_TYPE = {
         issue: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight],
         requirement: [::WorkItems::Widgets::VerificationStatus],
-        task: [::WorkItems::Widgets::Weight]
+        task: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight]
       }.freeze
 
       class_methods do

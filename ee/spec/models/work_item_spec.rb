@@ -51,5 +51,43 @@ RSpec.describe WorkItem do
         end
       end
     end
+
+    context 'for iteration widget' do
+      context 'when iterations is licensed' do
+        subject { build(:work_item, *work_item_type).widgets }
+
+        before do
+          stub_licensed_features(iterations: true)
+        end
+
+        context 'when work item supports iteration' do
+          where(:work_item_type) { [:task, :issue] }
+
+          with_them do
+            it 'returns an instance of the iteration widget' do
+              is_expected.to include(instance_of(WorkItems::Widgets::Iteration))
+            end
+          end
+        end
+
+        context 'when work item does not support iteration' do
+          let(:work_item_type) { :requirement }
+
+          it 'omits an instance of the iteration widget' do
+            is_expected.not_to include(instance_of(WorkItems::Widgets::Iteration))
+          end
+        end
+      end
+
+      context 'when iterations is unlicensed' do
+        before do
+          stub_licensed_features(iterations: false)
+        end
+
+        it 'omits an instance of the iteration widget' do
+          is_expected.not_to include(instance_of(WorkItems::Widgets::Iteration))
+        end
+      end
+    end
   end
 end
