@@ -45,7 +45,7 @@ describe('search_settings/components/search_settings.vue', () => {
   };
 
   const findMatchSiblingElement = () => document.querySelector(`[data-testid="sibling"]`);
-  const findSearchBox = () => wrapper.find(GlSearchBoxByType);
+  const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
   const search = (term) => {
     findSearchBox().vm.$emit('input', term);
   };
