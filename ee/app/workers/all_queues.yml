@@ -851,7 +851,7 @@
   :tags: []
 - :name: sbom_reports:sbom_ingest_reports
   :worker_name: Sbom::IngestReportsWorker
-  :feature_category: :dependency_scanning
+  :feature_category: :dependency_management
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
