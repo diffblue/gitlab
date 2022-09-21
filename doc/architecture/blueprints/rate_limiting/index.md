@@ -361,6 +361,16 @@ hierarchy. Choosing a proper solution will require a thoughtful research.
 1. Maintain consistent features and behavior across SaaS and self-managed codebase.
 1. Be mindful about a cognitive load added by the hierarchical limits, aim to reduce it.
 
+## Phases and iterations
+
+TODO Grzegorz: describe all 5 (or 6 phases):
+
+1. Triangulate Rate Limiting abstraction in Rails, extract limits to YAML, build Rails SDK, sample of using limits  – Owning team
+2. Team Fanout of Rails SDK – Stage groups
+3. Extract rate limiting service (or implement Go library) – Owning team
+4. SDK for satellite service + sample implementations – Owning team
+5. Team fanout for satellite services – Stage groups
+
 ## Status
 
 Request For Comments.
@@ -373,6 +383,7 @@ Request For Comments.
 - 2022-07-06: A fourth, [consolidated proposal](https://gitlab.com/gitlab-org/gitlab/-/issues/364524#note_1017640650), has been submitted.
 - 2022-07-12: Started working on the design document following [Architecture Evolution Workflow](https://about.gitlab.com/handbook/engineering/architecture/workflow/).
 - 2022-09-08: The initial version of the blueprint has been merged.
+- 2022-09-21: Plan for phases and iterations has been established.
 
 ## Who
 
