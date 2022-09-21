@@ -68,8 +68,7 @@ RSpec.describe Issues::ExportCsvService do
 
       before do
         stub_licensed_features(epics: true)
-        # TODO - Remove the (validate: false) with https://gitlab.com/gitlab-org/gitlab/-/issues/371081
-        build(:epic_issue, issue: issue, epic: unauthorized_epic).save!(validate: false)
+        create(:epic_issue, issue: issue, epic: unauthorized_epic)
         create(:epic_issue, issue: issue2, epic: epic)
       end
 

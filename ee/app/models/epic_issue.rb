@@ -35,12 +35,37 @@ class EpicIssue < ApplicationRecord
   def validate_group_structure
     return unless issue && epic
     return if issue.project.group&.id == epic.group_id
-    return if issue.project.ancestors.include?(epic.group)
 
-    errors.add :issue, _('Cannot assign an issue that does not belong under the same group (or descendant) as the epic.')
+    if Feature.enabled?(:epic_issues_from_different_hierarchies, epic.group)
+      if epic_group_is_descendant_of_issue_group?
+        errors.add(:issue,
+          _(
+            'Cannot assign an issue from same hierarchy that does ' \
+            'not belong under the same group (or descendant) as the epic.'
+          )
+        )
+      end
+    else
+      unless epic_group_is_ancestor_of_issue_project?
+        errors.add(:issue,
+          _(
+            'Cannot assign an issue that does not belong under ' \
+            'the same group (or descendant) as the epic.'
+          )
+        )
+      end
+    end
   end
 
   private
+
+  def epic_group_is_ancestor_of_issue_project?
+    issue.project.group&.self_and_ancestors&.include?(epic.group)
+  end
+
+  def epic_group_is_descendant_of_issue_group?
+    epic.group.ancestors.include?(issue.project.group)
+  end
 
   def validate_confidential_epic
     return unless epic && issue
