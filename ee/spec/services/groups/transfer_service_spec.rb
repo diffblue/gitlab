@@ -160,18 +160,6 @@ RSpec.describe Groups::TransferService, '#execute' do
 
           subject
         end
-
-        context 'when cache_issue_sums flag is disabled' do
-          before do
-            stub_feature_flags(cache_issue_sums: false)
-          end
-
-          it 'does not schedule update of issue counts for removed parent epic references' do
-            expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:bulk_perform_in)
-
-            subject
-          end
-        end
       end
     end
   end

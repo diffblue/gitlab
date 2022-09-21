@@ -55,18 +55,6 @@ RSpec.describe Epics::UpdateCachedMetadataWorker do
       it_behaves_like 'successful metadata update'
     end
 
-    context 'when cache_issue_sums flag is disabled' do
-      before do
-        stub_feature_flags(cache_issue_sums: false)
-      end
-
-      it 'does nothing' do
-        expect(worker).not_to receive(:update_epic)
-
-        perform
-      end
-    end
-
     context 'when epic id not found' do
       let(:epic_ids) { [non_existing_record_id] }
 

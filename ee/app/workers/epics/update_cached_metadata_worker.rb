@@ -12,8 +12,6 @@ module Epics
     feature_category :portfolio_management
 
     def perform(ids)
-      return unless Feature.enabled?(:cache_issue_sums)
-
       ::Epic.id_in(ids).find_each do |epic|
         update_epic(epic)
       end

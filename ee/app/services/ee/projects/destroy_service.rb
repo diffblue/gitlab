@@ -44,8 +44,6 @@ module EE
 
       # rubocop:disable Scalability/BulkPerformWithContext
       def with_scheduling_epic_cache_update
-        return yield unless ::Feature.enabled?(:cache_issue_sums)
-
         ids = project.epic_ids_referenced_by_issues
 
         yield

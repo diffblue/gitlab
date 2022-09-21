@@ -152,17 +152,5 @@ RSpec.describe Projects::DestroyService do
 
       subject.execute
     end
-
-    context 'when cache_issue_sums flag is disabled' do
-      before do
-        stub_feature_flags(cache_issue_sums: false)
-      end
-
-      it 'does nothing' do
-        expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:bulk_perform_in)
-
-        subject.execute
-      end
-    end
   end
 end

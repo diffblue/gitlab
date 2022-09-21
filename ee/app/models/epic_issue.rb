@@ -76,8 +76,6 @@ class EpicIssue < ApplicationRecord
   end
 
   def update_cached_metadata
-    return unless ::Feature.enabled?(:cache_issue_sums)
-
     ::Epics::UpdateCachedMetadataWorker.perform_async([epic_id])
 
     if epic_id_previously_changed? && epic_id_previously_was

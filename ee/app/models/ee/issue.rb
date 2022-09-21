@@ -354,7 +354,6 @@ module EE
     end
 
     def update_cached_metadata
-      return unless ::Feature.enabled?(:cache_issue_sums)
       return unless epic_issue
       return unless weight_previously_changed? || state_id_previously_changed?
 
