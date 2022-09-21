@@ -23,6 +23,9 @@ module EE
 
               override :perform!
               def perform!
+                # We've already run Chain::Limit::ActiveJobs if FF is enabled.
+                return if command.limit_active_jobs_early?
+
                 return unless limit.exceeded?
 
                 retry_optimistic_lock(pipeline, name: 'ci_pipeline_chain_limit_job_activity') do
@@ -33,6 +36,8 @@ module EE
 
               override :break?
               def break?
+                return false if command.limit_active_jobs_early?
+
                 limit.exceeded?
               end
             end
