@@ -8,7 +8,11 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::JobActivity, :saas do
   let_it_be(:user) { create(:user) }
 
   let(:command) do
-    double('command', project: project, current_user: user)
+    instance_double(
+      ::Gitlab::Ci::Pipeline::Chain::Command,
+      project: project,
+      current_user: user,
+      limit_active_jobs_early?: feature_flag_enabled)
   end
 
   let(:pipeline) do
@@ -16,6 +20,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::JobActivity, :saas do
   end
 
   let(:step) { described_class.new(pipeline, command) }
+  let(:feature_flag_enabled) { false }
 
   subject { step.perform! }
 
@@ -25,7 +30,7 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::JobActivity, :saas do
       create(:plan_limits, plan: ultimate_plan, ci_active_jobs: 2)
       create(:gitlab_subscription, namespace: namespace, hosted_plan: ultimate_plan)
 
-      pipeline = create(:ci_pipeline, project: project, status: 'running', created_at: Time.now)
+      pipeline = create(:ci_pipeline, project: project, status: 'running', created_at: Time.current)
       create(:ci_build, pipeline: pipeline)
       create(:ci_build, pipeline: pipeline)
       create(:ci_build, pipeline: pipeline)
@@ -63,6 +68,18 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::JobActivity, :saas do
 
       subject
     end
+
+    context 'when feature flag ci_limit_active_jobs_early is enabled' do
+      let(:feature_flag_enabled) { true }
+
+      it 'skips this step' do
+        subject
+
+        expect(pipeline).not_to be_failed
+        expect(pipeline.job_activity_limit_exceeded?).to be false
+        expect(step.break?).to be false
+      end
+    end
   end
 
   context 'when job activity limit is not exceeded' do
@@ -88,6 +105,18 @@ RSpec.describe ::Gitlab::Ci::Pipeline::Chain::Limit::JobActivity, :saas do
       expect(Gitlab::ErrorTracking).not_to receive(:track_exception)
 
       subject
+    end
+
+    context 'when feature flag ci_limit_active_jobs_early is enabled' do
+      let(:feature_flag_enabled) { true }
+
+      it 'skips this step' do
+        expect_next_instance_of(EE::Gitlab::Ci::Pipeline::Quota::JobActivity) do |limit|
+          expect(limit).not_to receive(:exceeded?)
+        end
+
+        subject
+      end
     end
   end
 end

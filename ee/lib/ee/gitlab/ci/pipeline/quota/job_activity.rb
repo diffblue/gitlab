@@ -6,6 +6,9 @@ module EE
       module Pipeline
         module Quota
           class JobActivity < ::Gitlab::Ci::Limit
+            # TODO: remove this class together with ci_limit_active_jobs_early
+            # https://gitlab.com/gitlab-org/gitlab/-/issues/373284
+
             include ::Gitlab::Utils::StrongMemoize
             include ActionView::Helpers::TextHelper
 
