@@ -77,9 +77,15 @@ RSpec.describe 'Merge request > Batch comments', :js do
   context 'multiple times on the same diff line' do
     it 'shows both drafts at once' do
       write_diff_comment
-      # You cannot get the same element to hover twice in a row without moving first!
-      page.execute_script "window.scrollTo(0,0)"
-      write_diff_comment(text: 'A second draft!', button_text: 'Add to review')
+
+      # All of the Diff helpers like click_diff_line (or write_diff_comment)
+      #     fail very badly when run a second time.
+      # This recreates the relevant logic.
+      line = find_by_scrolling("[id='#{sample_compare.changes[0][:line_code]}']")
+      line.hover
+      line.find('.js-add-diff-note-button').click
+
+      write_comment(text: 'A second draft!', button_text: 'Add to review')
 
       expect(page).to have_text('Line is wrong')
       expect(page).to have_text('A second draft!')
