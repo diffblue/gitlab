@@ -122,7 +122,8 @@ module Gitlab
             yield connection
           rescue StandardError => e
             # No leaking will happen on the final attempt. Leaks are caused by subsequent retries
-            if transaction_open && connection_error?(e) && attempt < attempts
+            not_final_attempt = attempt && attempt < attempts
+            if transaction_open && connection_error?(e) && not_final_attempt
               ::Gitlab::Database::LoadBalancing::Logger.warn(
                 event: :transaction_leak,
                 message: 'A write transaction has leaked during database fail-over'

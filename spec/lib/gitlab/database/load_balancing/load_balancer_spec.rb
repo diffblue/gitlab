@@ -214,6 +214,21 @@ RSpec.describe Gitlab::Database::LoadBalancing::LoadBalancer, :request_store do
 
       lb.read_write { 10 }
     end
+
+    it 'does not raise NoMethodError error when primary_only?' do
+      connection = ActiveRecord::Base.connection_pool.connection
+      expected_error = Gitlab::Database::LoadBalancing::CONNECTION_ERRORS.first
+
+      allow(lb).to receive(:primary_only?).and_return(true)
+
+      expect do
+        lb.read_write do
+          connection.transaction do
+            raise expected_error
+          end
+        end
+      end.to raise_error(expected_error)
+    end
   end
 
   describe '#host' do
