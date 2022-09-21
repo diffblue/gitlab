@@ -13,11 +13,11 @@ module Users
     validates :phone_number, presence: true, length: { maximum: 32 }
     validates :telesign_reference_xid, length: { maximum: 255 }
 
-    scope :is_related_to_banned_user?, -> (international_dial_code, phone_number) do
+    def self.related_to_banned_user?(international_dial_code, phone_number)
       joins(:banned_user).where(
         international_dial_code: international_dial_code,
         phone_number: phone_number
-      )
+      ).exists?
     end
   end
 end

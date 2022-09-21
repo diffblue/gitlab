@@ -22106,28 +22106,19 @@ ALTER SEQUENCE user_permission_export_uploads_id_seq OWNED BY user_permission_ex
 
 CREATE TABLE user_phone_number_validations (
     user_id bigint NOT NULL,
-    country text NOT NULL,
-    international_dial_code smallint NOT NULL,
-    phone_number text NOT NULL,
-    verification_attempts smallint DEFAULT 0 NOT NULL,
-    risk_score smallint DEFAULT 0 NOT NULL,
-    telesign_reference_xid text,
     validated_at timestamp with time zone,
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
+    international_dial_code smallint NOT NULL,
+    verification_attempts smallint DEFAULT 0 NOT NULL,
+    risk_score smallint DEFAULT 0 NOT NULL,
+    country text NOT NULL,
+    phone_number text NOT NULL,
+    telesign_reference_xid text,
     CONSTRAINT check_193736da9f CHECK ((char_length(country) <= 3)),
     CONSTRAINT check_d2f31fc815 CHECK ((char_length(phone_number) <= 32)),
     CONSTRAINT check_d7af4d3eb5 CHECK ((char_length(telesign_reference_xid) <= 255))
 );
-
-CREATE SEQUENCE user_phone_number_validations_user_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE user_phone_number_validations_user_id_seq OWNED BY user_phone_number_validations.user_id;
 
 CREATE TABLE user_preferences (
     id integer NOT NULL,
@@ -24124,8 +24115,6 @@ ALTER TABLE ONLY user_group_callouts ALTER COLUMN id SET DEFAULT nextval('user_g
 ALTER TABLE ONLY user_namespace_callouts ALTER COLUMN id SET DEFAULT nextval('user_namespace_callouts_id_seq'::regclass);
 
 ALTER TABLE ONLY user_permission_export_uploads ALTER COLUMN id SET DEFAULT nextval('user_permission_export_uploads_id_seq'::regclass);
-
-ALTER TABLE ONLY user_phone_number_validations ALTER COLUMN user_id SET DEFAULT nextval('user_phone_number_validations_user_id_seq'::regclass);
 
 ALTER TABLE ONLY user_preferences ALTER COLUMN id SET DEFAULT nextval('user_preferences_id_seq'::regclass);
 

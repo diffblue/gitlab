@@ -17,57 +17,55 @@ RSpec.describe Users::PhoneNumberValidation do
 
   it { is_expected.to validate_length_of(:telesign_reference_xid).is_at_most(255) }
 
-  describe '.scopes' do
-    describe '.is_related_to_banned_user?' do
-      let_it_be(:international_dial_code) { 1 }
-      let_it_be(:phone_number) { '555' }
+  describe '.related_to_banned_user?' do
+    let_it_be(:international_dial_code) { 1 }
+    let_it_be(:phone_number) { '555' }
 
-      let_it_be(:user) { create(:user) }
-      let_it_be(:banned_user) { create(:user, :banned) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:banned_user) { create(:user, :banned) }
 
-      subject(:is_related_to_banned_user?) do
-        ::Users::PhoneNumberValidation.is_related_to_banned_user?(international_dial_code, phone_number)
+    subject(:related_to_banned_user?) do
+      described_class.related_to_banned_user?(international_dial_code, phone_number)
+    end
+
+    context 'when banned user has the same international dial code and phone number' do
+      before do
+        create(:phone_number_validation, user: banned_user)
       end
 
-      context 'when banned user has the same international dial code and phone number' do
-        let(:match) { create(:phone_number_validation, user: banned_user) }
+      it { is_expected.to eq(true) }
+    end
 
-        it 'returns matches' do
-          expect(subject).to match_array([match])
-        end
+    context 'when banned user has the same international dial code and phone number, but different country code' do
+      before do
+        create(:phone_number_validation, user: banned_user, country: 'CA')
       end
 
-      context 'when banned user has the same international dial code and phone number, but different country code' do
-        let(:match) { create(:phone_number_validation, user: banned_user, country: 'CA') }
+      it { is_expected.to eq(true) }
+    end
 
-        it 'returns matches' do
-          expect(subject).to match_array([match])
-        end
+    context 'when banned user does not have the same international dial code' do
+      before do
+        create(:phone_number_validation, user: banned_user, international_dial_code: 61)
       end
 
-      context 'when banned user does not have the same international dial code' do
-        let(:match) { create(:phone_number_validation, user: banned_user, international_dial_code: 61) }
+      it { is_expected.to eq(false) }
+    end
 
-        it 'returns empty array' do
-          expect(subject).to be_empty
-        end
+    context 'when banned user does not have the same phone number' do
+      before do
+        create(:phone_number_validation, user: banned_user, phone_number: '666')
       end
 
-      context 'when banned user does not have the same phone number' do
-        let(:match) { create(:phone_number_validation, user: banned_user, phone_number: '666') }
+      it { is_expected.to eq(false) }
+    end
 
-        it 'returns empty array' do
-          expect(subject).to be_empty
-        end
+    context 'when not-banned user has the same international dial code and phone number' do
+      before do
+        create(:phone_number_validation, user: user)
       end
 
-      context 'when not-banned user has the same international dial code and phone number' do
-        let(:match) { create(:phone_number_validation, user: user) }
-
-        it 'returns empty array' do
-          expect(subject).to be_empty
-        end
-      end
+      it { is_expected.to eq(false) }
     end
   end
 end
