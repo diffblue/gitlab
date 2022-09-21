@@ -1,6 +1,6 @@
 - page_title _("Blame"), @blob.path, @ref
 
-#blob-content-holder.tree-holder{ data: { testid: 'blob-content-holder' } }
+#blob-content-holder.tree-holder.js-per-page{ data: { testid: 'blob-content-holder', per_page: @blame_per_page } }
   = render "projects/blob/breadcrumb", blob: @blob, blame: true
 
   .file-holder.gl-overflow-hidden
