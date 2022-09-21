@@ -47056,6 +47056,9 @@ msgstr ""
 msgid "created %{timeAgo} by %{author}"
 msgstr ""
 
+msgid "created %{timeAgo} by %{author} in %{project_link}"
+msgstr ""
+
 msgid "created by"
 msgstr ""
 
