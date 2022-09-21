@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-# See https://docs.gitlab.com/ee/development/migration_style_guide.html
-# for more information on how to write migrations for GitLab.
-
 class RemoveTempIndexNullProjectNamespaceId < Gitlab::Database::Migration[2.0]
   INDEX_NAME = 'tmp_index_for_null_project_namespace_id'
 
