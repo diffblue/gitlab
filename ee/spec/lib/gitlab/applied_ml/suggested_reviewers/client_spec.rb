@@ -9,8 +9,9 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
   let(:rpc_url) { 'example.org:1234' }
   let(:certs) { 'arandomstring' }
   let(:secret) { 'wTeJZR61n5lGZ7G2nPozocerM8GBk0EFti0EYpwVh5GJqlLM2ROmyQG0oQcTsGu9' }
+  let(:client_arguments) { {} }
 
-  let(:client) { described_class.new(rpc_url: rpc_url, certs: certs) }
+  let(:client) { described_class.new(**client_arguments) }
 
   describe '#suggested_reviewers' do
     let(:suggested_reviewers_request) do
@@ -42,6 +43,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
     end
 
     context 'when configuration and input is healthy' do
+      let(:client_arguments) { { rpc_url: rpc_url, certs: certs } }
       let(:suggested_reviewers_result) do
         {
           version: "0.7.1",
@@ -119,9 +121,43 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
     end
 
     context 'with no gRPC URL configured' do
-      let(:rpc_url) { '' }
+      let(:client_arguments) { {} }
 
-      it 'logs and raises a configuration error' do
+      before do
+        allow_next_instance_of(stub_class) do |stub|
+          allow(stub).to receive(:merge_request_recommendations_v2).and_return(suggested_reviewers_response)
+        end
+      end
+
+      context 'when on dev or test environment' do
+        before do
+          allow(Gitlab).to receive(:dev_or_test_env?).and_return(true)
+        end
+
+        it 'uses a development URL' do
+          subject
+
+          expect(stub_class).to have_received(:new).with('suggested-reviewer.dev:443', any_args)
+        end
+      end
+
+      context 'when not on dev or test environment' do
+        before do
+          allow(Gitlab).to receive(:dev_or_test_env?).and_return(false)
+        end
+
+        it 'uses a production URL' do
+          subject
+
+          expect(stub_class).to have_received(:new).with('api.unreview.io:443', any_args)
+        end
+      end
+    end
+
+    context 'with an invalid gRPC URL configured' do
+      let(:client_arguments) { { rpc_url: '' } }
+
+      it 'raises a configuration error' do
         expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
       end
     end

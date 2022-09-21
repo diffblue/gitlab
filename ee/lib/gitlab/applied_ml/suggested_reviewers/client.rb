@@ -15,7 +15,15 @@ module Gitlab
         SECRET_NAME = "SUGGESTED_REVIEWERS_SECRET"
         SECRET_LENGTH = 64
 
-        def initialize(rpc_url: '', certs: DEFAULT_CERTS)
+        def self.default_rpc_url
+          if Gitlab.dev_or_test_env?
+            'suggested-reviewer.dev:443'
+          else
+            'api.unreview.io:443'
+          end
+        end
+
+        def initialize(rpc_url: self.class.default_rpc_url, certs: DEFAULT_CERTS)
           @rpc_url = rpc_url
           @certs = certs
           @secret = read_secret!
@@ -40,7 +48,7 @@ module Gitlab
             reviewers: response.reviewers
           }
         rescue GRPC::BadStatus => e
-          raise Gitlab::AppliedMl::Errors::ResourceNotAvailable, e
+          raise Errors::ResourceNotAvailable, e
         end
 
         private
