@@ -24680,6 +24680,9 @@ msgstr ""
 msgid "Maximum number of unique IP addresses per user."
 msgstr ""
 
+msgid "Maximum number of variables loaded (2000)"
+msgstr ""
+
 msgid "Maximum of 255 characters"
 msgstr ""
 
