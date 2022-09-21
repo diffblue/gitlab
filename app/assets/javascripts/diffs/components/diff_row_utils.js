@@ -145,7 +145,7 @@ export const mapParallel = (content) => (line) => {
     lineCode: lineCode(line),
     isMetaLineLeft: isMetaLine(left?.type),
     isMetaLineRight: isMetaLine(right?.type),
-    draftRowClasses: left?.lineDraft > 0 || right?.lineDraft > 0 ? '' : 'js-temp-notes-holder',
+    draftRowClasses: left?.hasDraft || right?.hasDraft ? '' : 'js-temp-notes-holder',
     renderCommentRow,
     commentRowClasses: hasDiscussions(left) || hasDiscussions(right) ? '' : 'js-temp-notes-holder',
   };

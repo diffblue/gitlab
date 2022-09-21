@@ -70,7 +70,7 @@ export const draftsForLine = (state, getters) => (diffFileSha, line, side = null
   const key = side !== null ? parallelLineKey(line, side) : line.line_code;
   const showDraftsForThisSide = showDraftOnSide(line, side);
 
-  if (draftsForFile && showDraftsForThisSide) {
+  if (showDraftsForThisSide && draftsForFile?.[key]) {
     return draftsForFile[key];
   }
   return [];
