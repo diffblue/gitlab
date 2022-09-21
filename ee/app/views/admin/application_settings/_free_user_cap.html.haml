@@ -1,0 +1,35 @@
+- return unless Gitlab.com?
+
+- expanded = integration_expanded?('dashboard_')
+%section.settings.no-animate#js-free-user-cap-settings{ class: ('expanded' if expanded), data: { testid: 'as-free-user-cap'} }
+  .settings-header
+    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only
+      = _('Free User Cap')
+    = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
+      = expanded ? _('Collapse') : _('Expand')
+    %p
+      - link_start = '<a href="%{url}">'.html_safe % { url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374023' }
+      = _('Rollout of free user limits within GitLab.com. Do not edit these values unless approval has been given via %{link_start}this issue%{link_end}.').html_safe % { link_start: link_start, link_end: '</a>'.html_safe }
+  .settings-content
+    = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-free-user-cap-settings'), html: { class: 'fieldset-form' } do |f|
+      = form_errors(@application_setting) if expanded
+
+      %fieldset
+        .gl-form-group
+          = f.gitlab_ui_checkbox_component :dashboard_limit_enabled,
+            _('Enable dashboard limits on namespaces'),
+            help_text: s_('ApplicationSettings|This feature is only available on GitLab.com')
+        .gl-form-group
+          = f.label :dashboard_limit
+          = f.number_field :dashboard_limit, min: 0, class: 'form-control gl-form-input'
+        .gl-form-group
+          = f.label :dashboard_notification_limit
+          = f.number_field :dashboard_notification_limit, min: 0, class: 'form-control gl-form-input'
+        .gl-form-group
+          = f.label :dashboard_enforcement_limit
+          = f.number_field :dashboard_enforcement_limit, min: 0, class: 'form-control gl-form-input'
+        .gl-form-group
+          = f.label :dashboard_limit_new_namespace_creation_enforcement_date, _('Date to enact enforcement on newly created namespaces')
+          = f.text_field :dashboard_limit_new_namespace_creation_enforcement_date, class: 'datepicker form-control gl-form-input', placeholder: 'YYYY-MM-DD'
+
+      = f.submit _('Save changes'), pajamas_button: true

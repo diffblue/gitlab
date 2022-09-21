@@ -13,6 +13,25 @@ RSpec.describe EE::ApplicationSettingsHelper do
 
       expect(helper.visible_attributes).to include(*params)
     end
+
+    context 'with dashboard limits' do
+      let(:params) do
+        %i[dashboard_limit_enabled dashboard_limit dashboard_notification_limit dashboard_notification_limit
+           dashboard_limit_new_namespace_creation_enforcement_date]
+      end
+
+      context 'when on GitLab.com', :saas do
+        it 'contains the dashboard limit parameters' do
+          expect(helper.visible_attributes).to include(*params)
+        end
+      end
+
+      context 'when not on GitLab.com' do
+        it 'does not contain the dashboard limit parameters' do
+          expect(helper.visible_attributes).not_to include(*params)
+        end
+      end
+    end
   end
 
   describe '.registration_features_can_be_prompted?' do

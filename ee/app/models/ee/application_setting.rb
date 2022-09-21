@@ -138,6 +138,15 @@ module EE
                 exclusion: { in: [true], message: -> (object, data) { _("can't be enabled when delayed group deletion is disabled") } },
                 if: ->(setting) { !setting.delayed_group_deletion? }
 
+      with_options(presence: true, numericality: { only_integer: true, greater_than_or_equal_to: 0 }) do
+        validates :dashboard_limit
+        validates :dashboard_notification_limit
+        validates :dashboard_enforcement_limit
+      end
+
+      validates :dashboard_limit_enabled,
+                inclusion: { in: [true, false], message: 'must be a boolean value' }
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
@@ -156,6 +165,11 @@ module EE
           allow_group_owners_to_manage_ldap: true,
           automatic_purchased_storage_allocation: false,
           custom_project_templates_group_id: nil,
+          dashboard_limit_enabled: false,
+          dashboard_limit: 0,
+          dashboard_notification_limit: 0,
+          dashboard_enforcement_limit: 0,
+          dashboard_limit_new_namespace_creation_enforcement_date: nil,
           default_project_deletion_protection: false,
           deletion_adjourned_period: DEFAULT_NUMBER_OF_DAYS_BEFORE_REMOVAL,
           elasticsearch_aws_region: ENV['ELASTIC_REGION'] || 'us-east-1',

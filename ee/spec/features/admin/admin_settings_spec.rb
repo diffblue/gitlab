@@ -297,6 +297,32 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
+  context 'with free user cap settings', :saas do
+    before do
+      visit general_admin_application_settings_path
+    end
+
+    it 'changes the settings and saves successfully' do
+      date = Date.parse('2020-01-04')
+
+      page.within('[data-testid="as-free-user-cap"]') do
+        check _('Enable dashboard limits on namespaces')
+        fill_in 'application_setting[dashboard_limit]', with: 5
+        fill_in 'application_setting[dashboard_notification_limit]', with: 6
+        fill_in 'application_setting[dashboard_enforcement_limit]', with: 7
+        fill_in 'application_setting[dashboard_limit_new_namespace_creation_enforcement_date]', with: date
+        click_button 'Save changes'
+      end
+
+      expect(page).to have_content 'Application settings saved successfully'
+      expect(current_settings.dashboard_limit_enabled).to be true
+      expect(current_settings.dashboard_limit).to eq 5
+      expect(current_settings.dashboard_notification_limit).to eq 6
+      expect(current_settings.dashboard_enforcement_limit).to eq 7
+      expect(current_settings.dashboard_limit_new_namespace_creation_enforcement_date).to eq date
+    end
+  end
+
   context 'sign up settings', :js do
     before do
       visit general_admin_application_settings_path

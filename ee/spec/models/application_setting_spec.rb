@@ -103,6 +103,13 @@ RSpec.describe ApplicationSetting do
     it { is_expected.to validate_numericality_of(:max_ssh_key_lifetime).is_greater_than(0).is_less_than_or_equal_to(365).allow_nil }
     it { is_expected.to validate_numericality_of(:deletion_adjourned_period).is_greater_than(0).is_less_than_or_equal_to(90) }
 
+    it { is_expected.to validate_numericality_of(:dashboard_limit).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_numericality_of(:dashboard_notification_limit).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.to validate_numericality_of(:dashboard_enforcement_limit).only_integer.is_greater_than_or_equal_to(0) }
+    it { is_expected.to allow_value(true).for(:dashboard_limit_enabled) }
+    it { is_expected.to allow_value(false).for(:dashboard_limit_enabled) }
+    it { is_expected.not_to allow_value(nil).for(:dashboard_limit_enabled) }
+
     describe 'when additional email text is enabled' do
       before do
         stub_licensed_features(email_additional_text: true)
