@@ -5,8 +5,9 @@ require 'spec_helper'
 RSpec.describe MergeRequestPresenter do
   using RSpec::Parameterized::TableSyntax
 
+  let_it_be(:project) { create(:project, :repository) }
+
   let(:merge_request) { create(:merge_request, source_project: project) }
-  let(:project) { create(:project, :repository) }
   let(:user) { project.creator }
   let(:approval_feature_available) { true }
 
