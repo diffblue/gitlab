@@ -1,0 +1,8 @@
+---
+name: sidekiq_memory_killer_read_only_mode
+introduced_by_url:
+rollout_issue_url:
+milestone: '15.4'
+type: ops
+group: group::application_performance
+default_enabled: false
