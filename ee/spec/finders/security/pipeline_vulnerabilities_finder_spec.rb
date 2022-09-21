@@ -21,7 +21,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
     let_it_be(:build_sast) { create(:ci_build, :success, name: 'sast_job', pipeline: pipeline, project: project) }
 
     let_it_be(:artifact_cs) { create(:ee_ci_job_artifact, :container_scanning, job: build_cs, project: project) }
-    let_it_be(:artifact_dast) { create(:ee_ci_job_artifact, :dast, job: build_dast, project: project) }
+    let_it_be(:artifact_dast) { create(:ee_ci_job_artifact, :dast_multiple_sites, job: build_dast, project: project) }
     let_it_be(:artifact_ds) { create(:ee_ci_job_artifact, :dependency_scanning, job: build_ds, project: project) }
 
     let!(:artifact_sast) { create(:ee_ci_job_artifact, :sast, job: build_sast, project: project) }
@@ -373,7 +373,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
       context 'when the state parameter is not given' do
         it 'returns all findings' do
-          expect(finding_uuids.length).to be(40)
+          expect(finding_uuids.length).to eq(41)
         end
       end
 
@@ -402,7 +402,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
           let(:state) { 'detected' }
 
           it 'returns all detected findings' do
-            expect(finding_uuids.length).to be(40)
+            expect(finding_uuids.length).to eq(41)
           end
         end
 

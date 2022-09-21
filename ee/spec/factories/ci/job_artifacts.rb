@@ -64,6 +64,16 @@ FactoryBot.define do
       end
     end
 
+    trait :dast_missing_version do
+      file_format { :raw }
+      file_type { :dast }
+
+      after(:build) do |artifact, _|
+        artifact.file = fixture_file_upload(
+          Rails.root.join('ee/spec/fixtures/security_reports/master/gl-dast-report-missing-version.json'), 'application/json')
+      end
+    end
+
     trait :dast_14_0_2 do
       file_format { :raw }
       file_type { :dast }
@@ -97,28 +107,6 @@ FactoryBot.define do
     trait :dast_with_missing_file do
       file_format { :raw }
       file_type { :dast }
-    end
-
-    trait :dast_deprecated_no_spider do
-      file_format { :raw }
-      file_type { :dast }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/deprecated/gl-dast-report-no-spider.json'), 'application/json')
-      end
-    end
-
-    trait :dast_deprecated_no_common_fields do
-      file_format { :raw }
-      file_type { :dast }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/deprecated/gl-dast-report-no-common-fields.json'),
-          'application/json'
-        )
-      end
     end
 
     trait :dast_multiple_sites do
@@ -248,16 +236,6 @@ FactoryBot.define do
       after(:build) do |artifact, _|
         artifact.file = fixture_file_upload(
           Rails.root.join('ee/spec/fixtures/security_reports/remediations/gl-dependency-scanning-report.json'), 'application/json')
-      end
-    end
-
-    trait :dependency_scanning_deprecated do
-      file_format { :raw }
-      file_type { :dependency_scanning }
-
-      after(:build) do |artifact, _|
-        artifact.file = fixture_file_upload(
-          Rails.root.join('ee/spec/fixtures/security_reports/deprecated/gl-dependency-scanning-report.json'), 'application/json')
       end
     end
 

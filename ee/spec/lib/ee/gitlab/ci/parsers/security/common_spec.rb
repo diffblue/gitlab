@@ -70,7 +70,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
       end
 
       describe 'parsing remediations' do
-        let(:expected_remediation) { create(:ci_reports_security_remediation, diff: '') }
+        let(:expected_remediation) { create(:ci_reports_security_remediation, diff: 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5') }
 
         context 'when one remediation closes two CVEs' do
           it 'assigns it to both findings' do
@@ -90,7 +90,15 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
 
         it 'finds remediation with same cve' do
           finding = report.findings.find { |x| x.compare_key == "CVE-1020" }
-          remediation = { 'fixes' => [{ 'cve' => 'CVE-1020' }], 'summary' => '', 'diff' => '' }
+          remediation = {
+            'fixes' => [
+              {
+                'cve' => 'CVE-1020'
+              }
+            ],
+            'summary' => 'this fixes CVE-1020',
+            'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5'
+          }
 
           expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to include remediation
           expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
@@ -98,7 +106,16 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
 
         it 'finds remediation with same id' do
           finding = report.findings.find { |x| x.compare_key == "CVE-1030" }
-          remediation = { 'fixes' => [{ 'cve' => 'CVE', 'id' => 'bb2fbeb1b71ea360ce3f86f001d4e84823c3ffe1a1f7d41ba7466b14cfa953d3' }], 'summary' => '', 'diff' => '' }
+          remediation = {
+            'fixes' => [
+              {
+                'cve' => 'CVE',
+                'id' => 'bb2fbeb1b71ea360ce3f86f001d4e84823c3ffe1a1f7d41ba7466b14cfa953d3'
+              }
+            ],
+            'summary' => 'this fixed CVE',
+            'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5'
+          }
 
           expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to include remediation
           expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
@@ -135,8 +152,8 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
 
           expect(scans.map(&:status).all?('success')).to be(true)
           expect(scans.map(&:type).all?('dependency_scanning')).to be(true)
-          expect(scans.map(&:start_time).all?('placeholder-value')).to be(true)
-          expect(scans.map(&:end_time).all?('placeholder-value')).to be(true)
+          expect(scans.map(&:start_time).all?('2022-08-10T21:37:00')).to be(true)
+          expect(scans.map(&:end_time).all?('2022-08-10T21:38:00')).to be(true)
           expect(scans.size).to eq(7)
           expect(scans.first).to be_a(::Gitlab::Ci::Reports::Security::Scan)
         end

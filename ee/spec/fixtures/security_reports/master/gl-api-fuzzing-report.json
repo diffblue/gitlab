@@ -1,6 +1,6 @@
 {
   "scan": {
-    "end_time": "2020-10-07T23:02:19",
+    "end_time": "2022-08-10T22:37:00",
     "messages": [],
     "scanner": {
       "id": "gitlab-api-fuzzing",
@@ -11,7 +11,7 @@
         "name": "GitLab"
       }
     },
-    "start_time": "2020-10-07T23:00:28",
+    "start_time": "2022-08-10T22:37:00",
     "status": "success",
     "type": "dast",
     "scanned_resources": []

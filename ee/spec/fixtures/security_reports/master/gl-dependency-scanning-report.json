@@ -145,7 +145,7 @@
       "message": "ruby-ffi DDL loading issue on Windows OS",
       "cve": "ffi:1.9.18:CVE-2018-1000201",
       "severity": "High",
-      "solution": "upgrade to \\u003e= 1.9.24",
+      "solution": "upgrade to >= 1.9.24",
       "scanner": {
         "id": "gemnasium",
         "name": "gemnasium"
@@ -178,6 +178,7 @@
       "tool": "gemnasium"
     }
   ],
+  "dependency_files": [],
   "scan": {
     "scanner": {
       "id": "gemnasium-maven",
@@ -189,8 +190,8 @@
       "version": "2.18.0"
     },
     "type": "dependency_scanning",
-    "start_time": "placeholder-value",
-    "end_time": "placeholder-value",
+    "start_time": "2022-08-10T22:37:00",
+    "end_time": "2022-08-10T22:37:00",
     "status": "success"
   }
 }

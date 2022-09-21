@@ -13,7 +13,6 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyScanning do
 
     where(:report_format, :occurrence_count, :identifier_count, :scanner_count, :file_path, :package_name, :package_version, :version) do
       :dependency_scanning             | 4 | 7 | 1 | 'app/pom.xml' | 'io.netty/netty' | '3.9.1.Final' | '14.1.2'
-      :dependency_scanning_deprecated  | 4 | 7 | 1 | 'app/pom.xml' | 'io.netty/netty' | '3.9.1.Final' | '1.3'
       :dependency_scanning_remediation | 2 | 3 | 1 | 'yarn.lock'   | 'debug'          | '1.0.5'       | '14.1.2'
     end
 

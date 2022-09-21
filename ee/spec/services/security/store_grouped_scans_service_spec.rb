@@ -7,11 +7,13 @@ RSpec.describe Security::StoreGroupedScansService do
   let_it_be(:build_1) { create(:ee_ci_build) }
   let_it_be(:build_2) { create(:ee_ci_build) }
   let_it_be(:build_3) { create(:ee_ci_build) }
+  let_it_be(:build_4) { create(:ee_ci_build) }
   let_it_be(:artifact_1) { create(:ee_ci_job_artifact, report_type, job: build_1) }
   let_it_be(:artifact_2) { create(:ee_ci_job_artifact, report_type, job: build_2) }
   let_it_be(:artifact_3) { create(:ee_ci_job_artifact, report_type, job: build_3) }
+  let_it_be(:artifact_with_missing_version) { create(:ee_ci_job_artifact, :dast_missing_version, job: build_4) }
 
-  let(:artifacts) { [artifact_1, artifact_2, artifact_3] }
+  let(:artifacts) { [artifact_1, artifact_2, artifact_3, artifact_with_missing_version] }
 
   describe '.execute' do
     let(:mock_service_object) { instance_double(described_class, execute: true) }
@@ -67,6 +69,7 @@ RSpec.describe Security::StoreGroupedScansService do
           allow(artifact_1).to receive(:security_report).and_return(mock_report)
           allow(artifact_2).to receive(:security_report).and_return(mock_report)
           allow(artifact_3).to receive(:security_report).and_return(mock_report)
+          allow(artifact_with_missing_version).to receive(:security_report).and_return(mock_report)
         end
 
         context 'when there is only one report' do
@@ -86,49 +89,46 @@ RSpec.describe Security::StoreGroupedScansService do
             expect(artifact_1).to have_received(:security_report).with(validate: true).once
             expect(artifact_2).to have_received(:security_report).with(validate: true).once
             expect(artifact_3).to have_received(:security_report).with(validate: true).once
+            expect(artifact_with_missing_version).to have_received(:security_report).with(validate: true).once
           end
         end
       end
 
       context 'when the artifacts are not dependency_scanning' do
         context "and reports doesn't pass schema validation" do
+          let_it_be(:invalid_artifact_1) { create(:ee_ci_job_artifact, :dast_missing_version, job: create(:ee_ci_build)) }
+          let_it_be(:invalid_artifact_2) { create(:ee_ci_job_artifact, :dast_missing_version, job: create(:ee_ci_build)) }
+          let_it_be(:invalid_artifact_3) { create(:ee_ci_job_artifact, :dast_missing_version, job: create(:ee_ci_build)) }
+
+          let(:artifacts) { [invalid_artifact_1, invalid_artifact_2, invalid_artifact_3] }
+
           it 'calls the Security::StoreScanService with ordered artifacts' do
             store_scan_group
 
-            expect(Security::StoreScanService).to have_received(:execute).with(artifact_3, empty_set, false).ordered
-            expect(Security::StoreScanService).to have_received(:execute).with(artifact_2, empty_set, true).ordered
-            expect(Security::StoreScanService).to have_received(:execute).with(artifact_1, empty_set, true).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(invalid_artifact_3, empty_set, false).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(invalid_artifact_2, empty_set, true).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(invalid_artifact_1, empty_set, true).ordered
           end
         end
 
         context "some of the reports don't pass schema validation" do
-          let_it_be(:valid_artifact_1) { create(:ee_ci_job_artifact, :dast_14_0_2, job: create(:ee_ci_build)) }
-          let_it_be(:valid_artifact_2) { create(:ee_ci_job_artifact, :dast_14_0_2, job: create(:ee_ci_build)) }
-
-          let(:artifacts) { [valid_artifact_1, valid_artifact_2, artifact_1] }
-
           it 'calls the Security::StoreScanService with correctly ordered artifacts' do
             store_scan_group
 
-            expect(Security::StoreScanService).to have_received(:execute).with(valid_artifact_1, empty_set, false).ordered
-            expect(Security::StoreScanService).to have_received(:execute).with(valid_artifact_2, empty_set, true).ordered
-            expect(Security::StoreScanService).to have_received(:execute).with(artifact_1, empty_set, true).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(artifact_1, empty_set, false).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(artifact_2, empty_set, true).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(artifact_3, empty_set, true).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(artifact_with_missing_version, empty_set, true).ordered
           end
         end
 
         context 'and report does pass schema validation' do
-          let_it_be(:valid_artifact_1) { create(:ee_ci_job_artifact, :dast_14_0_2, job: create(:ee_ci_build)) }
-          let_it_be(:valid_artifact_2) { create(:ee_ci_job_artifact, :dast_14_0_2, job: create(:ee_ci_build)) }
-          let_it_be(:valid_artifact_3) { create(:ee_ci_job_artifact, :dast_14_0_2, job: create(:ee_ci_build)) }
-
-          let(:artifacts) { [valid_artifact_1, valid_artifact_2, valid_artifact_3] }
-
           it 'calls the Security::StoreScanService with ordered artifacts' do
             store_scan_group
 
-            expect(Security::StoreScanService).to have_received(:execute).with(valid_artifact_1, empty_set, false).ordered
-            expect(Security::StoreScanService).to have_received(:execute).with(valid_artifact_2, empty_set, true).ordered
-            expect(Security::StoreScanService).to have_received(:execute).with(valid_artifact_3, empty_set, true).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(artifact_1, empty_set, false).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(artifact_2, empty_set, true).ordered
+            expect(Security::StoreScanService).to have_received(:execute).with(artifact_3, empty_set, true).ordered
           end
         end
       end
