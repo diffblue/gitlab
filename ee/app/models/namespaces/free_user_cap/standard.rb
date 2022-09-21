@@ -25,10 +25,6 @@ module Namespaces
         feature_enabled?
       end
 
-      def remaining_seats
-        [FREE_USER_LIMIT - users_count, 0].max
-      end
-
       def feature_enabled?
         ::Feature.enabled?(:free_user_cap, root_namespace)
       end
