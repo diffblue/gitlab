@@ -52,6 +52,7 @@ RSpec.describe ProjectPolicy do
         read_terraform_state
         read_project_merge_request_analytics
         read_on_demand_dast_scan
+        read_alert_management_alert
       ]
     end
 
@@ -100,41 +101,58 @@ RSpec.describe ProjectPolicy do
       end
 
       context 'with project feature related policies' do
-        using RSpec::Parameterized::TableSyntax
+        # Required parameters:
+        # - project_feature: Hash defining project feature mapping abilities.
+        shared_examples 'project feature visibility' do |project_features|
+          # For each project feature, check that an auditor is always allowed read
+          # permissions unless the feature is disabled.
+          project_features.each do |feature, permissions|
+            context "with project feature #{feature}" do
+              using RSpec::Parameterized::TableSyntax
 
-        project_features = {
-          container_registry_access_level: [:read_container_image],
-          merge_requests_access_level: [:read_merge_request]
-        }
+              where(:project_visibility, :access_level, :allowed) do
+                :public   | ProjectFeature::ENABLED  | true
+                :public   | ProjectFeature::PRIVATE  | true
+                :public   | ProjectFeature::DISABLED | false
+                :internal | ProjectFeature::ENABLED  | true
+                :internal | ProjectFeature::PRIVATE  | true
+                :internal | ProjectFeature::DISABLED | false
+                :private  | ProjectFeature::ENABLED  | true
+                :private  | ProjectFeature::PRIVATE  | true
+                :private  | ProjectFeature::DISABLED | false
+              end
 
-        where(:project_visibility, :access_level, :allowed) do
-          :public   | ProjectFeature::ENABLED  | true
-          :public   | ProjectFeature::PRIVATE  | true
-          :public   | ProjectFeature::DISABLED | false
-          :internal | ProjectFeature::ENABLED  | true
-          :internal | ProjectFeature::PRIVATE  | true
-          :internal | ProjectFeature::DISABLED | false
-          :private  | ProjectFeature::ENABLED  | true
-          :private  | ProjectFeature::PRIVATE  | true
-          :private  | ProjectFeature::DISABLED | false
-        end
+              with_them do
+                let(:project) { send("#{project_visibility}_project") }
 
-        # For each project feature, check that an auditor is always allowed read
-        # permissions unless the feature is disabled.
-        project_features.each do |feature, permissions|
-          with_them do
-            let(:project) { send("#{project_visibility}_project") }
+                it 'always allows permissions except when feature disabled' do
+                  project.project_feature.update!("#{feature}": access_level)
 
-            it 'always allows permissions except when feature disabled' do
-              project.project_feature.update!("#{feature}": access_level)
-
-              if allowed
-                expect_allowed(*permissions)
-              else
-                expect_disallowed(*permissions)
+                  if allowed
+                    expect_allowed(*permissions)
+                  else
+                    expect_disallowed(*permissions)
+                  end
+                end
               end
             end
           end
+        end
+
+        include_examples 'project feature visibility', {
+          container_registry_access_level: [:read_container_image],
+          merge_requests_access_level: [:read_merge_request],
+          monitor_access_level: [:read_alert_management_alert]
+        }
+
+        context 'with disabled feature flag split_operations_visibility_permissions' do
+          before do
+            stub_feature_flags(split_operations_visibility_permissions: false)
+          end
+
+          include_examples 'project feature visibility', {
+            operations_access_level: [:read_alert_management_alert]
+          }
         end
       end
     end
