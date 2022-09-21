@@ -317,8 +317,6 @@ module EE
 
       # rubocop:disable Scalability/BulkPerformWithContext
       def schedule_parent_cache_update(epics)
-        return unless ::Feature.enabled?(:cache_issue_sums)
-
         parent_ids = epics.distinct.pluck(:parent_id)
         ::Epics::UpdateCachedMetadataWorker.bulk_perform_in(
           1.minute,
@@ -691,8 +689,6 @@ module EE
     end
 
     def update_cached_metadata
-      return unless ::Feature.enabled?(:cache_issue_sums)
-
       ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id]) if propagate_issue_metadata_change?
 
       if parent_id_previously_changed? && parent_id_previously_was

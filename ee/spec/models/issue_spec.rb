@@ -1242,18 +1242,6 @@ RSpec.describe Issue do
 
         issue.save!
       end
-
-      context 'when cache_issue_sums flag is disabled' do
-        before do
-          stub_feature_flags(cache_issue_sums: false)
-        end
-
-        it 'does nothing' do
-          expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
-
-          issue.save!
-        end
-      end
     end
 
     context 'when updating an existing issue' do

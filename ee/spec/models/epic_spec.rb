@@ -1212,18 +1212,6 @@ RSpec.describe Epic do
 
         subepic.destroy!
       end
-
-      context 'when cache_issue_sums flag is disabled' do
-        before do
-          stub_feature_flags(cache_issue_sums: false)
-        end
-
-        it 'does nothing' do
-          expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:perform_async)
-
-          subepic.destroy!
-        end
-      end
     end
   end
 end
