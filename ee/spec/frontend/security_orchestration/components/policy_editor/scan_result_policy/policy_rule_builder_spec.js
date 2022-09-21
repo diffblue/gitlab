@@ -1,6 +1,6 @@
-import { mount } from '@vue/test-utils';
 import { GlButton } from '@gitlab/ui';
 import { nextTick } from 'vue';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import Api from 'ee/api';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder.vue';
 import ProtectedBranchesSelector from 'ee/vue_shared/components/branches_selector/protected_branches_selector.vue';
@@ -14,7 +14,7 @@ describe('PolicyRuleBuilder', () => {
 
   const DEFAULT_RULE = {
     type: 'scan_finding',
-    branches: [PROTECTED_BRANCHES_MOCK[0].name],
+    branches: [],
     scanners: [],
     vulnerabilities_allowed: 0,
     severity_levels: [],
@@ -31,7 +31,7 @@ describe('PolicyRuleBuilder', () => {
   };
 
   const factory = (propsData = {}, provide = {}) => {
-    wrapper = mount(PolicyRuleBuilder, {
+    wrapper = mountExtended(PolicyRuleBuilder, {
       propsData: {
         initRule: DEFAULT_RULE,
         ...propsData,
@@ -45,11 +45,12 @@ describe('PolicyRuleBuilder', () => {
   };
 
   const findBranches = () => wrapper.findComponent(ProtectedBranchesSelector);
-  const findGroupLevelBranches = () => wrapper.find('[data-testid="group-level-branch"]');
-  const findScanners = () => wrapper.find('[data-testid="scanners-select"]');
-  const findSeverities = () => wrapper.find('[data-testid="severities-select"]');
-  const findVulnStates = () => wrapper.find('[data-testid="vulnerability-states-select"]');
-  const findVulnAllowed = () => wrapper.find('[data-testid="vulnerabilities-allowed-input"]');
+  const findBranchesLabel = () => wrapper.findByTestId('branches-label');
+  const findGroupLevelBranches = () => wrapper.findByTestId('group-level-branch');
+  const findScanners = () => wrapper.findByTestId('scanners-select');
+  const findSeverities = () => wrapper.findByTestId('severities-select');
+  const findVulnStates = () => wrapper.findByTestId('vulnerability-states-select');
+  const findVulnAllowed = () => wrapper.findByTestId('vulnerabilities-allowed-input');
   const findDeleteBtn = () => wrapper.findComponent(GlButton);
   const findAllPolicyRuleMultiSelect = () => wrapper.findAllComponents(PolicyRuleMultiSelect);
 
@@ -64,10 +65,11 @@ describe('PolicyRuleBuilder', () => {
   });
 
   describe('initial rendering', () => {
-    it('renders one field for each attribute of the rule', async () => {
+    beforeEach(() => {
       factory();
-      await nextTick();
+    });
 
+    it('renders one field for each attribute of the rule', () => {
       expect(findBranches().exists()).toBe(true);
       expect(findGroupLevelBranches().exists()).toBe(false);
       expect(findScanners().exists()).toBe(true);
@@ -76,31 +78,26 @@ describe('PolicyRuleBuilder', () => {
       expect(findVulnAllowed().exists()).toBe(true);
     });
 
-    it('renders the delete buttom', async () => {
-      factory();
-      await nextTick();
-
+    it('renders the delete button', () => {
       expect(findDeleteBtn().exists()).toBe(true);
     });
 
-    it('includes select all option to all PolicyRuleMultiSelect', async () => {
-      factory();
-      await nextTick();
+    it('includes select all option to all PolicyRuleMultiSelect', () => {
       const props = findAllPolicyRuleMultiSelect().wrappers.map((w) => w.props());
 
       expect(props).toEqual(
         expect.arrayContaining([expect.objectContaining({ includeSelectAll: true })]),
       );
     });
-  });
 
-  describe('when removing the rule', () => {
-    it('emits remove event', async () => {
-      factory();
-      await nextTick();
+    it('emits the remove event when removing the rule', async () => {
       await findDeleteBtn().vm.$emit('click');
 
       expect(wrapper.emitted().remove).toHaveLength(1);
+    });
+
+    it('does not render branches label when targeting all branches', () => {
+      expect(findBranchesLabel().exists()).toBe(false);
     });
   });
 
@@ -122,6 +119,12 @@ describe('PolicyRuleBuilder', () => {
         expect(wrapper.emitted().changed).toEqual([[expect.objectContaining(expected)]]);
       },
     );
+  });
+
+  it('does render branches label when a branch is selected', async () => {
+    factory({ initRule: UPDATED_RULE });
+    await nextTick();
+    expect(findBranchesLabel().exists()).toBe(true);
   });
 
   describe('when namespaceType is other than project', () => {
