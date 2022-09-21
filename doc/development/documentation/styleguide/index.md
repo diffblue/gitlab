@@ -17,7 +17,7 @@ In addition to this page, the following resources can help you craft and contrib
 - [Doc contribution guidelines](../index.md)
 - [Recommended word list](word_list.md)
 - [Doc style and consistency testing](../testing.md)
-- [UI text guidelines](https://design.gitlab.com/content/error-messages/)
+- [Guidelines for UI error messages](https://design.gitlab.com/content/error-messages/)
 - [GitLab Handbook style guidelines](https://about.gitlab.com/handbook/communication/#writing-style-guidelines)
 - [Microsoft Style Guide](https://docs.microsoft.com/en-us/style-guide/welcome/)
 - [Google Developer Documentation Style Guide](https://developers.google.com/style)
