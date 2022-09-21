@@ -14,8 +14,8 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponents do
     it_behaves_like 'bulk insertable task'
 
     it 'is idempotent' do
-      expect { ingest_components }.to change { Sbom::Component.count }.by(3)
-      expect { ingest_components }.not_to change { Sbom::Component.count }
+      expect { ingest_components }.to change(Sbom::Component, :count).by(3)
+      expect { ingest_components }.not_to change(Sbom::Component, :count)
     end
 
     it 'sets the component_id' do

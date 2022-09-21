@@ -13,8 +13,8 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponentVersions do
     it_behaves_like 'bulk insertable task'
 
     it 'is idempotent' do
-      expect { ingest_component_versions }.to change { Sbom::ComponentVersion.count }.by(4)
-      expect { ingest_component_versions }.not_to change { Sbom::ComponentVersion.count }
+      expect { ingest_component_versions }.to change(Sbom::ComponentVersion, :count).by(4)
+      expect { ingest_component_versions }.not_to change(Sbom::ComponentVersion, :count)
     end
 
     context 'when there is an existing version' do
@@ -23,7 +23,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponentVersions do
       end
 
       it 'does not create a new record for the existing version' do
-        expect { ingest_component_versions }.to change { Sbom::ComponentVersion.count }.by(3)
+        expect { ingest_component_versions }.to change(Sbom::ComponentVersion, :count).by(3)
       end
 
       it 'sets the component_id' do
@@ -42,7 +42,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponentVersions do
       let(:occurrence_maps) { [good_occurrence_map_1, nil_occurence_map, good_occurrence_map_2] }
 
       it 'skips creation for missing version' do
-        expect { ingest_component_versions }.to change { Sbom::ComponentVersion.count }.by(2)
+        expect { ingest_component_versions }.to change(Sbom::ComponentVersion, :count).by(2)
       end
 
       it 'does not set component_version_id when skipped' do

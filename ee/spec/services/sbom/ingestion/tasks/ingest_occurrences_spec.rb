@@ -13,8 +13,8 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences do
     it_behaves_like 'bulk insertable task'
 
     it 'is idempotent' do
-      expect { ingest_occurrences }.to change { Sbom::Occurrence.count }.by(4)
-      expect { ingest_occurrences }.not_to change { Sbom::Occurrence.count }
+      expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(4)
+      expect { ingest_occurrences }.not_to change(Sbom::Occurrence, :count)
     end
 
     context 'when there is an existing occurrence' do
@@ -29,7 +29,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences do
       end
 
       it 'does not create a new record for the existing version' do
-        expect { ingest_occurrences }.to change { Sbom::Occurrence.count }.by(3)
+        expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(3)
       end
     end
 
@@ -37,7 +37,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestOccurrences do
       let(:occurrence_maps) { create_list(:sbom_occurrence_map, 4, :for_occurrence_ingestion, component_version: nil) }
 
       it 'inserts records without the version' do
-        expect { ingest_occurrences }.to change { Sbom::Occurrence.count }.by(4)
+        expect { ingest_occurrences }.to change(Sbom::Occurrence, :count).by(4)
       end
     end
   end

@@ -12,8 +12,8 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestSources do
     subject(:ingest_sources) { described_class.execute(pipeline, occurrence_maps) }
 
     it 'is idempotent' do
-      expect { ingest_sources }.to change { Sbom::Source.count }.by(1)
-      expect { ingest_sources }.not_to change { Sbom::Source.count }
+      expect { ingest_sources }.to change(Sbom::Source, :count).by(1)
+      expect { ingest_sources }.not_to change(Sbom::Source, :count)
     end
 
     it 'sets source_id for all maps' do
@@ -31,7 +31,7 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestSources do
       end
 
       it 'does not create a new record for the existing source' do
-        expect { ingest_sources }.to change { Sbom::Source.count }.by(0)
+        expect { ingest_sources }.to change(Sbom::Source, :count).by(0)
       end
 
       it 'sets the source_id for all maps' do
