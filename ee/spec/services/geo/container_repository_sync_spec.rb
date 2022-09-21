@@ -52,7 +52,7 @@ RSpec.describe Geo::ContainerRepositorySync, :geo do
   end
 
   def stub_repository_tags_requests(repository_url, tags)
-    stub_request(:get, "#{repository_url}/tags/list")
+    stub_request(:get, "#{repository_url}/tags/list?n=#{::ContainerRegistry::Client::DEFAULT_TAGS_PAGE_SIZE}")
       .to_return(
         status: 200,
         body: Gitlab::Json.dump(tags: tags.keys),

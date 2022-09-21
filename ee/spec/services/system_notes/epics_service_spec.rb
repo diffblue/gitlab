@@ -198,4 +198,41 @@ RSpec.describe SystemNotes::EpicsService do
       end
     end
   end
+
+  describe '#move_child_epic_to_new_parent' do
+    let(:noteable) { previous_parent_epic }
+
+    let_it_be(:new_parent_epic) { create(:epic, group: group) }
+    let_it_be(:previous_parent_epic) { create(:epic, group: group) }
+    let_it_be(:child_epic) { create(:epic, parent: new_parent_epic, group: group) }
+
+    subject(:move_child_epic_to_new_parent) do
+      described_class.new(noteable: previous_parent_epic, author: author)
+        .move_child_epic_to_new_parent(child_epic, new_parent_epic)
+    end
+
+    it_behaves_like 'a system note', exclude_project: true do
+      let(:action) { 'moved' }
+    end
+
+    it 'sets the note text' do
+      expect { move_child_epic_to_new_parent }.to change { Note.system.count }.by(1)
+
+      expect(Note.last.note).to eq("moved child epic &#{child_epic.iid} to epic &#{new_parent_epic.iid}")
+    end
+
+    context "when child epic's new parent is in a subgroup" do
+      let_it_be(:subgroup) { create(:group, parent: group) }
+      let_it_be(:child_epic) { create(:epic, parent: new_parent_epic, group: subgroup) }
+
+      it 'sets the note text' do
+        expect { move_child_epic_to_new_parent }.to change { Note.system.count }.by(1)
+
+        child_epic_path = "#{group.path}/#{subgroup.path}&#{child_epic.iid}"
+        parent_epic_path = "#{group.path}&#{new_parent_epic.iid}"
+
+        expect(Note.last.note).to eq("moved child epic #{child_epic_path} to epic #{parent_epic_path}")
+      end
+    end
+  end
 end

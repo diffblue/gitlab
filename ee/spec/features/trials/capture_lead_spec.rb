@@ -48,7 +48,7 @@ RSpec.describe 'Trial Capture Lead', :js do
       }
 
       expect_next_instance_of(GitlabSubscriptions::CreateLeadService) do |service|
-        expect(service).to receive(:execute).with(lead_params).and_return({ success: true })
+        expect(service).to receive(:execute).with(lead_params).and_return(ServiceResponse.success) # rubocop:disable RSpec/ExpectInHook
       end
     end
 

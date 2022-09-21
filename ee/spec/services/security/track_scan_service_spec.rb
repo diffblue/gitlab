@@ -19,7 +19,7 @@ RSpec.describe Security::TrackScanService do
         allow(Digest::SHA256).to receive(:hexdigest).and_return('82fc6391e4be61e03e51fa8c5c6bfc32b3d3f0065ad2fe0a01211606952b8d82')
       end
 
-      it 'tracks the scan event', :snowplow do
+      it 'tracks the scan event', :snowplow, :unlimited_max_formatted_output_length do
         subject
 
         expect_snowplow_event(
@@ -31,13 +31,13 @@ RSpec.describe Security::TrackScanService do
                         analyzer: 'gitlab-dast',
                         analyzer_vendor: 'GitLab',
                         analyzer_version: '2.0.1',
-                        end_time: '2021-06-11T07:27:50',
+                        end_time: '2022-08-10T22:37:00',
                         findings_count: 1,
                         scan_type: 'dast',
                         scanner: 'zaproxy-browserker',
                         scanner_vendor: 'GitLab',
                         scanner_version: 'D-2020-08-26',
-                        start_time: '2021-06-11T07:26:17',
+                        start_time: '2022-08-10T22:37:00',
                         status: 'success',
                         report_schema_version: '14.0.2'
                       }
@@ -77,7 +77,7 @@ RSpec.describe Security::TrackScanService do
                         scanner_version: nil,
                         start_time: nil,
                         status: 'success',
-                        report_schema_version: '2.5'
+                        report_schema_version: '14.1.2'
                       }
                     }],
           idempotency_key: '62bc6c62686b327dbf420f8891e1418406b60f49e574b6ff22f4d6a272dbc595',

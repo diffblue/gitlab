@@ -533,5 +533,18 @@
         }
       ]
     }
-  ]
+  ],
+  "scan": {
+    "scanner": {
+      "id": "gemnasium",
+      "name": "Gemnasium",
+      "url": "https://gitlab.com/gitlab-org/security-products/analyzers/gemnasium",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "3.8.0"
+    },
+    "start_time": "2022-08-10T22:37:00",
+    "end_time": "2022-08-10T22:37:00"
+  }
 }

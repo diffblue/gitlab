@@ -27,7 +27,7 @@ module Groups
       end
 
       def schema
-        render json: ::Security::OrchestrationPolicyConfiguration::POLICY_SCHEMA.as_json['root']
+        render json: ::Security::OrchestrationPolicyConfiguration::POLICY_SCHEMA_JSON
       end
 
       private

@@ -3,14 +3,14 @@
 
 - case @project.import_state.last_update_status
 - when :success
-  Pull mirroring updated #{time_ago_with_tooltip(last_successful_update_at)}.
+  = format(_('Pull mirroring updated %{time}.'), time: time_ago_with_tooltip(last_successful_update_at)).html_safe
 - when :failed
   = render_mirror_failed_message(raw_message: raw_message)
 
   - if @project.mirror_hard_failed?
     %br
-    Repository mirroring has been paused due to too many failed attempts. It can be resumed by a project maintainer.
+    = _('Repository mirroring has been paused due to too many failed attempts. It can be resumed by a project maintainer.')
 
   - if @project.mirror_ever_updated_successfully?
     %br
-    Last successful update #{time_ago_with_tooltip(last_successful_update_at)}.
+    = format(_('Last successful update %{time}.'), time: time_ago_with_tooltip(last_successful_update_at)).html_safe

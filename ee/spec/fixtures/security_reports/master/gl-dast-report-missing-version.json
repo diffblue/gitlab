@@ -1,0 +1,1785 @@
+{
+  "@generated": "Fri, 13 Apr 2018 09:22:01",
+  "@version": "2.7.0",
+  "scan": {
+    "type": "dast",
+    "scanned_resources": [
+      {
+        "method": "GET",
+        "type": "url",
+        "url": "http://api-server/"
+      },
+      {
+        "method": "GET",
+        "type": "url",
+        "url": "http://api-server/v1"
+      },
+      {
+        "method": "DELETE",
+        "type": "url",
+        "url": "http://api-server/v1/tree/10"
+      },
+      {
+        "method": "GET",
+        "type": "url",
+        "url": "http://api-server/v1/tree/10"
+      },
+      {
+        "method": "GET",
+        "type": "url",
+        "url": "http://api-server/v1/trees"
+      },
+      {
+        "method": "POST",
+        "type": "url",
+        "url": "http://api-server/v1/trees"
+      }
+    ],
+    "start_time": "2022-08-10T22:37:00",
+    "end_time": "2022-08-10T22:37:00",
+    "status": "success",
+    "scanner": {
+      "id": "a-dast-scanner",
+      "name": "A DAST scanner",
+      "version": "1.0.0",
+      "vendor": {
+        "name": "GitLab"
+      }
+    }
+  },
+  "site": [
+    {
+      "@host": "goat",
+      "@name": "http://goat:8080",
+      "@port": "8080",
+      "@ssl": "false",
+      "alerts": [
+        {
+          "alert": "Anti CSRF Tokens Scanner",
+          "confidence": "2",
+          "count": "4",
+          "cweid": "352",
+          "desc": "<p>A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf.</p><p></p><p>CSRF attacks are effective in a number of situations, including:</p><p>    * The victim has an active session on the target site.</p><p>    * The victim is authenticated via HTTP auth on the target site.</p><p>    * The victim is on the same local network as the target site.</p><p></p><p>CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "<form method=\"POST\" style=\"width: 200px;\" action=\"/WebGoat/login\">",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/login"
+            },
+            {
+              "attack": "",
+              "evidence": "<form method=\"POST\" style=\"width: 200px;\" action=\"/WebGoat/login\">",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/login?error"
+            },
+            {
+              "attack": "",
+              "evidence": "<form class=\"form-horizontal\" action=\"/WebGoat/register.mvc\" method=\"POST\">",
+              "method": "POST",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/register.mvc"
+            },
+            {
+              "attack": "",
+              "evidence": "<form class=\"form-horizontal\" action=\"/WebGoat/register.mvc\" method=\"POST\">",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/registration"
+            }
+          ],
+          "name": "Anti CSRF Tokens Scanner",
+          "otherInfo": "",
+          "pluginid": "20012",
+          "reference": "<p>http://projects.webappsec.org/Cross-Site-Request-Forgery</p><p>http://cwe.mitre.org/data/definitions/352.html</p>",
+          "riskcode": "3",
+          "riskdesc": "High (Medium)",
+          "solution": "<p>Phase: Architecture and Design</p><p>Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid.</p><p>For example, use anti-CSRF packages such as the OWASP CSRFGuard.</p><p></p><p>Phase: Implementation</p><p>Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.</p><p></p><p>Phase: Architecture and Design</p><p>Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).</p><p>Note that this can be bypassed using XSS.</p><p></p><p>Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.</p><p>Note that this can be bypassed using XSS.</p><p></p><p>Use the ESAPI Session Management control.</p><p>This control includes a component for CSRF.</p><p></p><p>Do not use the GET method for any request that triggers a state change.</p><p></p><p>Phase: Implementation</p><p>Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons.</p>",
+          "sourceid": "1",
+          "wascid": "9"
+        },
+        {
+          "alert": "Absence of Anti-CSRF Tokens",
+          "confidence": "2",
+          "count": "4",
+          "cweid": "352",
+          "desc": "<p>No Anti-CSRF tokens were found in a HTML submission form.</p><p>A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf.</p><p></p><p>CSRF attacks are effective in a number of situations, including:</p><p>    * The victim has an active session on the target site.</p><p>    * The victim is authenticated via HTTP auth on the target site.</p><p>    * The victim is on the same local network as the target site.</p><p></p><p>CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "<form method=\"POST\" style=\"width: 200px;\" action=\"/WebGoat/login\">",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/login"
+            },
+            {
+              "attack": "",
+              "evidence": "<form method=\"POST\" style=\"width: 200px;\" action=\"/WebGoat/login\">",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/login?error"
+            },
+            {
+              "attack": "",
+              "evidence": "<form class=\"form-horizontal\" action=\"/WebGoat/register.mvc\" method=\"POST\">",
+              "method": "POST",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/register.mvc"
+            },
+            {
+              "attack": "",
+              "evidence": "<form class=\"form-horizontal\" action=\"/WebGoat/register.mvc\" method=\"POST\">",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/registration"
+            }
+          ],
+          "name": "Absence of Anti-CSRF Tokens",
+          "otherInfo": "<p>No known Anti-CSRF token [anticsrf, CSRFToken, __RequestVerificationToken, csrfmiddlewaretoken, authenticity_token, OWASP_CSRFTOKEN, anoncsrf, csrf_token, _csrf, _csrfSecret] was found in the folLowing HTML form: [Form 1: \"exampleInputEmail1\" \"exampleInputPassword1\" ].</p>",
+          "pluginid": "10202",
+          "reference": "<p>http://projects.webappsec.org/Cross-Site-Request-Forgery</p><p>http://cwe.mitre.org/data/definitions/352.html</p>",
+          "riskcode": "1",
+          "riskdesc": "Low (Medium)",
+          "solution": "<p>Phase: Architecture and Design</p><p>Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid.</p><p>For example, use anti-CSRF packages such as the OWASP CSRFGuard.</p><p></p><p>Phase: Implementation</p><p>Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script.</p><p></p><p>Phase: Architecture and Design</p><p>Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330).</p><p>Note that this can be bypassed using XSS.</p><p></p><p>Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation.</p><p>Note that this can be bypassed using XSS.</p><p></p><p>Use the ESAPI Session Management control.</p><p>This control includes a component for CSRF.</p><p></p><p>Do not use the GET method for any request that triggers a state change.</p><p></p><p>Phase: Implementation</p><p>Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons.</p>",
+          "sourceid": "3",
+          "wascid": "9"
+        },
+        {
+          "alert": "Cookie No HttpOnly Flag",
+          "confidence": "2",
+          "count": "2",
+          "cweid": "16",
+          "desc": "<p>A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "Set-Cookie: JSESSIONID",
+              "method": "GET",
+              "param": "JSESSIONID",
+              "uri": "http://goat:8080/WebGoat/login?logout"
+            },
+            {
+              "attack": "",
+              "evidence": "Set-Cookie: JSESSIONID",
+              "method": "GET",
+              "param": "JSESSIONID",
+              "uri": "http://goat:8080/WebGoat/logout"
+            }
+          ],
+          "name": "Cookie No HttpOnly Flag",
+          "otherInfo": "",
+          "pluginid": "10010",
+          "reference": "<p>http://www.owasp.org/index.php/HttpOnly</p>",
+          "riskcode": "1",
+          "riskdesc": "Low (Medium)",
+          "solution": "<p>Ensure that the HttpOnly flag is set for all cookies.</p>",
+          "sourceid": "3",
+          "wascid": "13"
+        },
+        {
+          "alert": "Cookie Without SameSite Attribute",
+          "confidence": "2",
+          "count": "2",
+          "cweid": "16",
+          "desc": "<p>A cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "Set-Cookie: JSESSIONID",
+              "method": "GET",
+              "param": "JSESSIONID",
+              "uri": "http://goat:8080/WebGoat/login?logout"
+            },
+            {
+              "attack": "",
+              "evidence": "Set-Cookie: JSESSIONID",
+              "method": "GET",
+              "param": "JSESSIONID",
+              "uri": "http://goat:8080/WebGoat/logout"
+            }
+          ],
+          "name": "Cookie Without SameSite Attribute",
+          "otherInfo": "",
+          "pluginid": "10054",
+          "reference": "<p>https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site</p>",
+          "riskcode": "1",
+          "riskdesc": "Low (Medium)",
+          "solution": "<p>Ensure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies.</p>",
+          "sourceid": "3",
+          "wascid": "13"
+        },
+        {
+          "alert": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+          "confidence": "1",
+          "count": "1",
+          "cweid": "16",
+          "desc": "<p>This check identifies responses where the HTTP Content-Type header declares a charset different from the charset defined by the body of the HTML or XML. When there's a charset mismatch between the HTTP header and content body Web browsers can be forced into an undesirable content-sniffing mode to determine the content's correct character set.</p><p></p><p>An attacker could manipulate content on the page to be interpreted in an encoding of their choice. For example, if an attacker can control content at the beginning of the page, they could inject script using UTF-7 encoded text and manipulate some browsers into interpreting that text.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/start.mvc"
+            }
+          ],
+          "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+          "otherInfo": "<p>There was a charset mismatch between the HTTP Header and the META content-type encoding declarations: [UTF-8] and [ISO-8859-1] do not match.</p>",
+          "pluginid": "90011",
+          "reference": "<p>http://code.google.com/p/browsersec/wiki/Part2#Character_set_handling_and_detection</p>",
+          "riskcode": "0",
+          "riskdesc": "Informational (Low)",
+          "solution": "<p>Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML.</p>",
+          "sourceid": "3",
+          "wascid": "15"
+        },
+        {
+          "alert": "Information Disclosure - Suspicious Comments",
+          "confidence": "2",
+          "count": "4",
+          "cweid": "200",
+          "desc": "<p>The response appears to contain suspicious comments which may help an attacker.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/js/html5shiv.js"
+            },
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/js/modernizr-2.6.2.min.js"
+            },
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/js/respond.min.js"
+            },
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/start.mvc"
+            }
+          ],
+          "name": "Information Disclosure - Suspicious Comments",
+          "otherInfo": "<p><!--<button type=\"button\" id=\"admin-button\" class=\"btn btn-default right_nav_button\" title=\"Administrator\">--></p><p><!--<button type=\"button\" id=\"user-management\" class=\"btn btn-default right_nav_button\"--></p><p><!--title=\"User management\">--></p><p></p>",
+          "pluginid": "10027",
+          "reference": "<p></p>",
+          "riskcode": "0",
+          "riskdesc": "Informational (Medium)",
+          "solution": "<p>Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to.</p>",
+          "sourceid": "3",
+          "wascid": "13"
+        },
+        {
+          "alert": "Loosely Scoped Cookie",
+          "confidence": "1",
+          "count": "2",
+          "cweid": "565",
+          "desc": "<p>Cookies can be scoped by domain or path. This check is only concerned with domain scope.The domain scope applied to a cookie determines which domains can access it. For example, a cookie can be scoped strictly to a subdomain e.g. www.nottrusted.com, or loosely scoped to a parent domain e.g. nottrusted.com. In the latter case, any subdomain of nottrusted.com can access the cookie. Loosely scoped cookies are common in mega-applications like google.com and live.com. Cookies set from a subdomain like app.foo.bar are transmitted only to that domain by the browser. However, cookies scoped to a parent-level domain may be transmitted to the parent, or any subdomain of the parent.</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/login?logout"
+            },
+            {
+              "attack": "",
+              "evidence": "",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/logout"
+            }
+          ],
+          "name": "Loosely Scoped Cookie",
+          "otherInfo": "<p>The origin domain used for comparison was: </p><p>goat</p><p>JSESSIONID=78EC2C9D7CE583610DCC7826EE416D7F</p><p></p>",
+          "pluginid": "90033",
+          "reference": "<p>https://tools.ietf.org/html/rfc6265#section-4.1</p><p>https://www.owasp.org/index.php/Testing_for_cookies_attributes_(OTG-SESS-002)</p><p>http://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_cookies</p>",
+          "riskcode": "0",
+          "riskdesc": "Informational (Low)",
+          "solution": "<p>Always scope cookies to a FQDN (Fully Qualified Domain Name).</p>",
+          "sourceid": "3",
+          "wascid": "15"
+        },
+        {
+          "alert": "Timestamp Disclosure - Unix",
+          "confidence": "1",
+          "count": "5",
+          "cweid": "200",
+          "desc": "<p>A timestamp was disclosed by the application/web server - Unix</p>",
+          "instances": [
+            {
+              "attack": "",
+              "evidence": "00000000",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+            },
+            {
+              "attack": "",
+              "evidence": "33333333",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+            },
+            {
+              "attack": "",
+              "evidence": "42857143",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+            },
+            {
+              "attack": "",
+              "evidence": "80000000",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+            },
+            {
+              "attack": "",
+              "evidence": "66666667",
+              "method": "GET",
+              "param": "",
+              "uri": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+            }
+          ],
+          "name": "Timestamp Disclosure - Unix",
+          "otherInfo": "<p>00000000, which evaluates to: 1970-01-01 00:00:00</p>",
+          "pluginid": "10096",
+          "reference": "<p>https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure</p><p>http://projects.webappsec.org/w/page/13246936/Information%20Leakage</p>",
+          "riskcode": "0",
+          "riskdesc": "Informational (Low)",
+          "solution": "<p>Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns.</p>",
+          "sourceid": "3",
+          "wascid": "13"
+        }
+      ]
+    }
+  ],
+  "spider": {
+    "progress": "100",
+    "result": {
+      "urlsInScope": [
+        {
+          "method": "GET",
+          "processed": "false",
+          "reasonNotProcessed": "Not Text",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/attack"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/animate.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/coderay.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/font-awesome.min.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/lessons.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/css/main.css"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/images/favicon.ico"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/html5shiv.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/libs/require.min.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/modernizr-2.6.2.min.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/js/respond.min.js"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login"
+        },
+        {
+          "method": "POST",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login"
+        },
+        {
+          "method": "GET",
+          "processed": "false",
+          "reasonNotProcessed": "Max Depth",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login?error"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/login?logout"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/logout"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+        },
+        {
+          "method": "POST",
+          "processed": "false",
+          "reasonNotProcessed": "Max Depth",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/register.mvc"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/registration"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "200",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/start.mvc"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat/welcome.mvc"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "302",
+          "statusReason": "",
+          "url": "http://goat:8080/WebGoat"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/robots.txt"
+        },
+        {
+          "method": "GET",
+          "processed": "true",
+          "reasonNotProcessed": "",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080/sitemap.xml"
+        },
+        {
+          "method": "GET",
+          "processed": "false",
+          "reasonNotProcessed": "Not Text",
+          "statusCode": "404",
+          "statusReason": "",
+          "url": "http://goat:8080"
+        }
+      ],
+      "urlsIoError": [],
+      "urlsOutOfScope": [
+        "http://daneden.me/animate",
+        "http://fontawesome.io/",
+        "http://fontawesome.io/license",
+        "http://getbootstrap.com/",
+        "https://github.com/nickpettit/glide",
+        "https://github.com/twbs/bootstrap/blob/master/LICENSE"
+      ]
+    },
+    "state": "FINISHED"
+  },
+  "vulnerabilities": [
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "20012",
+      "description": "A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Anti CSRF Tokens Scanner",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "20012"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/login"
+      },
+      "message": "Anti CSRF Tokens Scanner",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "High",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "20012",
+      "description": "A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Anti CSRF Tokens Scanner",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "20012"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/login?error"
+      },
+      "message": "Anti CSRF Tokens Scanner",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "High",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "20012",
+      "description": "A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Anti CSRF Tokens Scanner",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "20012"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/registration"
+      },
+      "message": "Anti CSRF Tokens Scanner",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "High",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "20012",
+      "description": "A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Anti CSRF Tokens Scanner",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "20012"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "POST",
+        "param": "",
+        "path": "/WebGoat/register.mvc"
+      },
+      "message": "Anti CSRF Tokens Scanner",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "High",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10202",
+      "description": "No Anti-CSRF tokens were found in a HTML submission form. A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Absence of Anti-CSRF Tokens",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10202"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/login"
+      },
+      "message": "Absence of Anti-CSRF Tokens",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10202",
+      "description": "No Anti-CSRF tokens were found in a HTML submission form. A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Absence of Anti-CSRF Tokens",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10202"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/login?error"
+      },
+      "message": "Absence of Anti-CSRF Tokens",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10202",
+      "description": "No Anti-CSRF tokens were found in a HTML submission form. A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Absence of Anti-CSRF Tokens",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10202"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/registration"
+      },
+      "message": "Absence of Anti-CSRF Tokens",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10202",
+      "description": "No Anti-CSRF tokens were found in a HTML submission form. A cross-site request forgery is an attack that involves forcing a victim to send an HTTP request to a target destination without their knowledge or intent in order to perform an action as the victim. The underlying cause is application functionality using predictable URL/form actions in a repeatable way. The nature of the attack is that CSRF exploits the trust that a web site has for a user. By contrast, cross-site scripting (XSS) exploits the trust that a user has for a web site. Like XSS, CSRF attacks are not necessarily cross-site, but they can be. Cross-site request forgery is also known as CSRF, XSRF, one-click attack, session riding, confused deputy, and sea surf. CSRF attacks are effective in a number of situations, including: * The victim has an active session on the target site. * The victim is authenticated via HTTP auth on the target site. * The victim is on the same local network as the target site. CSRF has primarily been used to perform an action against a target site using the victim's privileges, but recent techniques have been discovered to disclose Information by gaining access to the response. The risk of information disclosure is dramatically increased when the target site is vulnerable to XSS, because XSS can be used as a platform for CSRF, alLowing the attack to operate within the bounds of the same-origin policy.",
+      "identifiers": [
+        {
+          "name": "Absence of Anti-CSRF Tokens",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10202"
+        },
+        {
+          "name": "CWE-352",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/352.html",
+          "value": "352"
+        },
+        {
+          "name": "WASC-9",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Cross-Site-Request-Forgery",
+          "value": "9"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://projects.webappsec.org/Cross-Site-Request-Forgery"
+        },
+        {
+          "url": "http://cwe.mitre.org/data/definitions/352.html"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "POST",
+        "param": "",
+        "path": "/WebGoat/register.mvc"
+      },
+      "message": "Absence of Anti-CSRF Tokens",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Phase: Architecture and Design Use a vetted library or framework that does not alLow this weakness to occur or provides constructs that make this weakness easier to avoid. For example, use anti-CSRF packages such as the OWASP CSRFGuard. Phase: Implementation Ensure that your application is free of cross-site scripting issues, because most CSRF defenses can be bypassed using attacker-controlled script. Phase: Architecture and Design Generate a unique nonce for each form, place the nonce into the form, and verify the nonce upon receipt of the form. Be sure that the nonce is not predictable (CWE-330). Note that this can be bypassed using XSS. Identify especially dangerous operations. When the user performs a dangerous operation, send a separate confirmation request to ensure that the user intended to perform that operation. Note that this can be bypassed using XSS. Use the ESAPI Session Management control. This control includes a component for CSRF. Do not use the GET method for any request that triggers a state change. Phase: Implementation Check the HTTP Referer header to see if the request originated from an expected page. This could break legitimate functionality, because users or proxies may have disabled sending the Referer for privacy reasons."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10010",
+      "description": "A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.",
+      "identifiers": [
+        {
+          "name": "Cookie No HttpOnly Flag",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10010"
+        },
+        {
+          "name": "CWE-16",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/16.html",
+          "value": "16"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://www.owasp.org/index.php/HttpOnly"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "JSESSIONID",
+        "path": "/WebGoat/login?logout"
+      },
+      "message": "Cookie No HttpOnly Flag",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Ensure that the HttpOnly flag is set for all cookies."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10010",
+      "description": "A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.",
+      "evidence": {
+        "request": {
+          "headers": [
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Cookie",
+              "value": "JSESSIONID=BB38BE6D77E83FA7522D1429AA5F2EAF"
+            },
+            {
+              "name": "Host",
+              "value": "goat:8080"
+            },
+            {
+              "name": "Referer",
+              "value": "http://goat:8080/WebGoat/logout"
+            },
+            {
+              "name": "Upgrade-Insecure-Requests",
+              "value": "1"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (X11; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0"
+            }
+          ],
+          "method": "GET",
+          "url": "http://goat:8080/WebGoat/logout"
+        },
+        "response": {
+          "headers": [
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Content-Length",
+              "value": "0"
+            },
+            {
+              "name": "Date",
+              "value": "Thu, 07 May 2020 07:18:06 GMT"
+            },
+            {
+              "name": "Gitlab-DAST-Permission",
+              "value": "alLow"
+            },
+            {
+              "name": "Location",
+              "value": "http://goat:8080/WebGoat/login"
+            },
+            {
+              "name": "Server",
+              "value": "nginx/1.17.6"
+            },
+            {
+              "name": "Set-Cookie",
+              "value": "JSESSIONID=1624E8274D30BB5A029F5A18BB7E4400; Path=/WebGoat"
+            },
+            {
+              "name": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "name": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "name": "X-XSS-Protection",
+              "value": "1; mode=block"
+            }
+          ],
+          "reason_phrase": "Found",
+          "status_code": 302
+        },
+        "summary": "Set-Cookie: JSESSIONID"
+      },
+      "identifiers": [
+        {
+          "name": "Cookie No HttpOnly Flag",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10010"
+        },
+        {
+          "name": "CWE-16",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/16.html",
+          "value": "16"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://www.owasp.org/index.php/HttpOnly"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "JSESSIONID",
+        "path": "/WebGoat/logout"
+      },
+      "message": "Cookie No HttpOnly Flag",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Ensure that the HttpOnly flag is set for all cookies."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10054",
+      "description": "A cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.",
+      "identifiers": [
+        {
+          "name": "Cookie Without SameSite Attribute",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10054"
+        },
+        {
+          "name": "CWE-16",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/16.html",
+          "value": "16"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "JSESSIONID",
+        "path": "/WebGoat/login?logout"
+      },
+      "message": "Cookie Without SameSite Attribute",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Ensure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10054",
+      "description": "A cookie has been set without the SameSite attribute, which means that the cookie can be sent as a result of a 'cross-site' request. The SameSite attribute is an effective counter measure to cross-site request forgery, cross-site script inclusion, and timing attacks.",
+      "identifiers": [
+        {
+          "name": "Cookie Without SameSite Attribute",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10054"
+        },
+        {
+          "name": "CWE-16",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/16.html",
+          "value": "16"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://tools.ietf.org/html/draft-ietf-httpbis-cookie-same-site"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "JSESSIONID",
+        "path": "/WebGoat/logout"
+      },
+      "message": "Cookie Without SameSite Attribute",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Low",
+      "solution": "Ensure that the SameSite attribute is set to either 'lax' or ideally 'strict' for all cookies."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "90011",
+      "description": "This check identifies responses where the HTTP Content-Type header declares a charset different from the charset defined by the body of the HTML or XML. When there's a charset mismatch between the HTTP header and content body Web browsers can be forced into an undesirable content-sniffing mode to determine the content's correct character set. An attacker could manipulate content on the page to be interpreted in an encoding of their choice. For example, if an attacker can control content at the beginning of the page, they could inject script using UTF-7 encoded text and manipulate some browsers into interpreting that text.",
+      "identifiers": [
+        {
+          "name": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "90011"
+        },
+        {
+          "name": "CWE-16",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/16.html",
+          "value": "16"
+        },
+        {
+          "name": "WASC-15",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Application-Misconfiguration",
+          "value": "15"
+        }
+      ],
+      "links": [
+        {
+          "url": "http://code.google.com/p/browsersec/wiki/Part2#Character_set_handling_and_detection"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/start.mvc"
+      },
+      "message": "Charset Mismatch (Header Versus Meta Content-Type Charset)",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Force UTF-8 for all text content in both the HTTP header and meta tags in HTML or encoding declarations in XML."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10027",
+      "description": "The response appears to contain suspicious comments which may help an attacker.",
+      "identifiers": [
+        {
+          "name": "Information Disclosure - Suspicious Comments",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10027"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/js/html5shiv.js"
+      },
+      "message": "Information Disclosure - Suspicious Comments",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10027",
+      "description": "The response appears to contain suspicious comments which may help an attacker.",
+      "identifiers": [
+        {
+          "name": "Information Disclosure - Suspicious Comments",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10027"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/js/modernizr-2.6.2.min.js"
+      },
+      "message": "Information Disclosure - Suspicious Comments",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10027",
+      "description": "The response appears to contain suspicious comments which may help an attacker.",
+      "identifiers": [
+        {
+          "name": "Information Disclosure - Suspicious Comments",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10027"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/js/respond.min.js"
+      },
+      "message": "Information Disclosure - Suspicious Comments",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
+    },
+    {
+      "category": "dast",
+      "confidence": "Medium",
+      "cve": "10027",
+      "description": "The response appears to contain suspicious comments which may help an attacker.",
+      "identifiers": [
+        {
+          "name": "Information Disclosure - Suspicious Comments",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10027"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/start.mvc"
+      },
+      "message": "Information Disclosure - Suspicious Comments",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Remove all comments that return Information that may help an attacker and fix any underlying problems they refer to."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "90033",
+      "description": "Cookies can be scoped by domain or path. This check is only concerned with domain scope.The domain scope applied to a cookie determines which domains can access it. For example, a cookie can be scoped strictly to a subdomain e.g. www.nottrusted.com, or loosely scoped to a parent domain e.g. nottrusted.com. In the latter case, any subdomain of nottrusted.com can access the cookie. Loosely scoped cookies are common in mega-applications like google.com and live.com. Cookies set from a subdomain like app.foo.bar are transmitted only to that domain by the browser. However, cookies scoped to a parent-level domain may be transmitted to the parent, or any subdomain of the parent.",
+      "identifiers": [
+        {
+          "name": "Loosely Scoped Cookie",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "90033"
+        },
+        {
+          "name": "CWE-565",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/565.html",
+          "value": "565"
+        },
+        {
+          "name": "WASC-15",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Application-Misconfiguration",
+          "value": "15"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://tools.ietf.org/html/rfc6265#section-4.1"
+        },
+        {
+          "url": "https://www.owasp.org/index.php/Testing_for_cookies_attributes_(OTG-SESS-002)"
+        },
+        {
+          "url": "http://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_cookies"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/login?logout"
+      },
+      "message": "Loosely Scoped Cookie",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Always scope cookies to a FQDN (Fully Qualified Domain Name)."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "90033",
+      "description": "Cookies can be scoped by domain or path. This check is only concerned with domain scope.The domain scope applied to a cookie determines which domains can access it. For example, a cookie can be scoped strictly to a subdomain e.g. www.nottrusted.com, or loosely scoped to a parent domain e.g. nottrusted.com. In the latter case, any subdomain of nottrusted.com can access the cookie. Loosely scoped cookies are common in mega-applications like google.com and live.com. Cookies set from a subdomain like app.foo.bar are transmitted only to that domain by the browser. However, cookies scoped to a parent-level domain may be transmitted to the parent, or any subdomain of the parent.",
+      "identifiers": [
+        {
+          "name": "Loosely Scoped Cookie",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "90033"
+        },
+        {
+          "name": "CWE-565",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/565.html",
+          "value": "565"
+        },
+        {
+          "name": "WASC-15",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Application-Misconfiguration",
+          "value": "15"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://tools.ietf.org/html/rfc6265#section-4.1"
+        },
+        {
+          "url": "https://www.owasp.org/index.php/Testing_for_cookies_attributes_(OTG-SESS-002)"
+        },
+        {
+          "url": "http://code.google.com/p/browsersec/wiki/Part2#Same-origin_policy_for_cookies"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/logout"
+      },
+      "message": "Loosely Scoped Cookie",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Always scope cookies to a FQDN (Fully Qualified Domain Name)."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "10096",
+      "description": "A timestamp was disclosed by the application/web server - Unix",
+      "identifiers": [
+        {
+          "name": "Timestamp Disclosure - Unix",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10096"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure"
+        },
+        {
+          "url": "http://projects.webappsec.org/w/page/13246936/Information%20Leakage"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+      },
+      "message": "Timestamp Disclosure - Unix",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "10096",
+      "description": "A timestamp was disclosed by the application/web server - Unix",
+      "identifiers": [
+        {
+          "name": "Timestamp Disclosure - Unix",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10096"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure"
+        },
+        {
+          "url": "http://projects.webappsec.org/w/page/13246936/Information%20Leakage"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+      },
+      "message": "Timestamp Disclosure - Unix",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "10096",
+      "description": "A timestamp was disclosed by the application/web server - Unix",
+      "identifiers": [
+        {
+          "name": "Timestamp Disclosure - Unix",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10096"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure"
+        },
+        {
+          "url": "http://projects.webappsec.org/w/page/13246936/Information%20Leakage"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+      },
+      "message": "Timestamp Disclosure - Unix",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "10096",
+      "description": "A timestamp was disclosed by the application/web server - Unix",
+      "identifiers": [
+        {
+          "name": "Timestamp Disclosure - Unix",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10096"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure"
+        },
+        {
+          "url": "http://projects.webappsec.org/w/page/13246936/Information%20Leakage"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+      },
+      "message": "Timestamp Disclosure - Unix",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
+    },
+    {
+      "category": "dast",
+      "confidence": "Low",
+      "cve": "10096",
+      "description": "A timestamp was disclosed by the application/web server - Unix",
+      "identifiers": [
+        {
+          "name": "Timestamp Disclosure - Unix",
+          "type": "ZAProxy_PluginId",
+          "url": "https://github.com/zaproxy/zaproxy/blob/w2019-01-14/docs/scanners.md",
+          "value": "10096"
+        },
+        {
+          "name": "CWE-200",
+          "type": "CWE",
+          "url": "https://cwe.mitre.org/data/definitions/200.html",
+          "value": "200"
+        },
+        {
+          "name": "WASC-13",
+          "type": "WASC",
+          "url": "https://projects.webappsec.org/Information-Leakage",
+          "value": "13"
+        }
+      ],
+      "links": [
+        {
+          "url": "https://www.owasp.org/index.php/Top_10_2013-A6-Sensitive_Data_Exposure"
+        },
+        {
+          "url": "http://projects.webappsec.org/w/page/13246936/Information%20Leakage"
+        }
+      ],
+      "location": {
+        "hostname": "http://goat:8080",
+        "method": "GET",
+        "param": "",
+        "path": "/WebGoat/plugins/bootstrap/css/bootstrap.min.css"
+      },
+      "message": "Timestamp Disclosure - Unix",
+      "scanner": {
+        "id": "zaproxy",
+        "name": "ZAProxy"
+      },
+      "severity": "Info",
+      "solution": "Manually confirm that the timestamp data is not sensitive, and that the data cannot be aggregated to disclose exploitable patterns."
+    }
+  ]
+}

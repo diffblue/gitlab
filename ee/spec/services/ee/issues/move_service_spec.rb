@@ -147,6 +147,7 @@ RSpec.describe Issues::MoveService do
           new_project.group.add_reporter(user)
           epic_issue.epic.group.add_reporter(user)
           allow(Gitlab::AppLogger).to receive(:error).and_call_original
+          stub_feature_flags(epic_issues_from_different_hierarchies: false)
         end
 
         it 'does not rewrite epic' do

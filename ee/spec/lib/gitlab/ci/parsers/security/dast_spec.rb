@@ -23,10 +23,8 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Dast do
           :last_occurrence_severity,
           :last_occurrence_confidence,
           :last_occurrence_evidence_summary) do
-      :dast                             | 24 | 15 | 1 | 1 | 6 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
+      :dast                             | 24 | 15 | 2 | 1 | 6 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
       :dast_multiple_sites              | 25 | 15 | 1 | 1 | 0 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
-      :dast_deprecated_no_spider        | 2  | 3  | 1 | 1 | 0 | 'http://bikebilly-spring-auto-devops-review-feature-br-3y2gpb.35.192.176.43.xip.io' | 'GET' | '/' | 'low' | 'medium' | nil
-      :dast_deprecated_no_common_fields | 24 | 15 | 1 | 1 | 0 | 'http://goat:8080' | 'GET' | '/WebGoat/plugins/bootstrap/css/bootstrap.min.css' | 'info' | 'low' | nil
       :dast_14_0_2                      | 1  | 2  | 1 | 1 | 3 | 'http://pancakes' | 'GET' | '/WebGoat/plugins/bootstrap/css/pancakes.css' | 'medium' | 'high' | "Evidence summary"
     end
 

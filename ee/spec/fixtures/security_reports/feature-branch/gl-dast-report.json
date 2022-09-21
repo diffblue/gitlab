@@ -294,11 +294,11 @@
     },
     "state": "FINISHED"
   },
-  "version": "2.5",
+  "version": "14.1.3",
   "vulnerabilities": [
     {
       "category": "dast",
-      "confidence": "medium",
+      "confidence": "Medium",
       "cve": "10010",
       "description": "A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.",
       "identifiers": [
@@ -337,12 +337,12 @@
         "id": "zaproxy",
         "name": "ZAProxy"
       },
-      "severity": "low",
+      "severity": "Low",
       "solution": "Ensure that the HttpOnly flag is set for all cookies."
     },
     {
       "category": "dast",
-      "confidence": "medium",
+      "confidence": "Medium",
       "cve": "10027",
       "description": "The response appears to contain suspicious comments which may help an attacker.",
       "identifiers": [
@@ -377,7 +377,7 @@
         "id": "zaproxy",
         "name": "ZAProxy"
       },
-      "severity": "info",
+      "severity": "Info",
       "solution": "Remove all comments that return information that may help an attacker and fix any underlying problems they refer to."
     }
   ]

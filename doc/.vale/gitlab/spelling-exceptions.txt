@@ -143,6 +143,7 @@ crosslinks
 Crossplane
 Crowdin
 CSV
+customappsso
 cybersecurity
 Dangerfile
 Datadog
@@ -642,6 +643,8 @@ stunnel
 stylelint
 subchart
 subcharts
+subcommand
+subcommands
 subfolder
 subfolders
 subgraph

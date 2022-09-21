@@ -48,6 +48,9 @@ export default {
         this.triggerChanged({ branches });
       },
     },
+    hasBranches() {
+      return Boolean(this.initRule.branches.length);
+    },
     branchesToAdd: {
       get() {
         return this.initRule.branches;
@@ -151,6 +154,9 @@ export default {
               data-testid="group-level-branch"
             />
           </gl-form-group>
+          <span v-if="hasBranches" data-testid="branches-label">
+            {{ s__('SecurityOrchestration|branch') }}
+          </span>
         </template>
 
         <template #vulnerabilitiesAllowed>

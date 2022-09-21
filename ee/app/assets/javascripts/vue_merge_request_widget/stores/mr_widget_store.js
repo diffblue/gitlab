@@ -1,6 +1,7 @@
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { s__ } from '~/locale';
 import CEMergeRequestStore from '~/vue_merge_request_widget/stores/mr_widget_store';
+import { DETAILED_MERGE_STATUS } from '~/vue_merge_request_widget/constants';
 import { mapApprovalsResponse, mapApprovalRulesResponse } from '../mappers';
 
 export default class MergeRequestStore extends CEMergeRequestStore {
@@ -94,13 +95,11 @@ export default class MergeRequestStore extends CEMergeRequestStore {
   }
 
   get hasMergeChecksFailed() {
-    if (this.hasApprovalsAvailable && this.approvals && this.approvalsLeft) return !this.isApproved;
+    if (this.hasApprovalsAvailable && this.approvals && this.approvalsLeft) {
+      return this.detailedMergeStatus === DETAILED_MERGE_STATUS.NOT_APPROVED;
+    }
 
-    if (
-      (this.blockingMergeRequests?.visible_merge_requests?.merged?.length || 0) !==
-      (this.blockingMergeRequests?.total_count || 0)
-    )
-      return true;
+    if (this.detailedMergeStatus === DETAILED_MERGE_STATUS.BLOCKED_STATUS) return true;
 
     return super.hasMergeChecksFailed;
   }

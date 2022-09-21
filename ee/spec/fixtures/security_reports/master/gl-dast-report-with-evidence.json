@@ -2,6 +2,19 @@
   "@generated": "Fri, 13 Apr 2018 09:22:01",
   "@version": "2.7.0",
   "scan": {
+    "type": "dast",
+    "scanned_resources": [],
+    "start_time": "2022-08-10T22:37:00",
+    "end_time": "2022-08-10T22:37:00",
+    "status": "success",
+    "scanner": {
+      "id": "a-dast-scanner",
+      "name": "A DAST scanner",
+      "version": "1.0.0",
+      "vendor": {
+        "name": "GitLab"
+      }
+    },
     "scanned_resources": [
       {
         "method": "GET",
@@ -594,7 +607,7 @@
   "vulnerabilities": [
     {
       "category": "dast",
-      "confidence": "medium",
+      "confidence": "Medium",
       "cve": "10010",
       "description": "A cookie has been set without the HttpOnly flag, which means that the cookie can be accessed by JavaScript. If a malicious script can be run on this page then the cookie will be accessible and can be transmitted to another site. If this is a session cookie then session hijacking may be possible.",
       "evidence": {
@@ -720,7 +733,7 @@
         "id": "zaproxy",
         "name": "ZAProxy"
       },
-      "severity": "low",
+      "severity": "Low",
       "solution": "Ensure that the HttpOnly flag is set for all cookies."
     }
   ]
