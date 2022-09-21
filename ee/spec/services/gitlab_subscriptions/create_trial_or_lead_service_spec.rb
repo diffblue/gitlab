@@ -24,55 +24,6 @@ RSpec.describe GitlabSubscriptions::CreateTrialOrLeadService do
       }
     end
 
-    shared_examples 'correct client attributes' do
-      let(:params) do
-        base_params.merge(jtbd: nil, trial_onboarding_flow: trial_onboarding_flow)
-      end
-
-      let(:service_params) do
-        params.merge({ glm_source: 'some_source', glm_content: 'some_content' })
-      end
-
-      before do
-        stub_request(:post, "#{EE::SUBSCRIPTIONS_URL}/trials#{path}")
-      end
-
-      it do
-        expect(Gitlab::SubscriptionPortal::Client)
-          .to receive(client_method)
-          .with(params.merge(client_params))
-          .and_call_original
-
-        described_class.new(user: user, params: service_params).execute
-      end
-    end
-
-    context 'when creating a trial' do
-      let(:path) { '' }
-      let(:client_method) { :generate_trial }
-      let(:trial_onboarding_flow) { true }
-
-      it_behaves_like 'correct client attributes' do
-        let(:client_params) do
-          {
-            product_interaction: 'SaaS Trial',
-            glm_source: 'some_source',
-            glm_content: 'some_content'
-          }
-        end
-      end
-    end
-
-    context 'when creating a lead' do
-      let(:path) { '/create_hand_raise_lead' }
-      let(:client_method) { :generate_lead }
-      let(:trial_onboarding_flow) { false }
-
-      it_behaves_like 'correct client attributes' do
-        let(:client_params) { { product_interaction: 'SaaS Registration' } }
-      end
-    end
-
     where(:trial_onboarding_flow, :service, :interaction) do
       'true'  | :generate_trial | 'SaaS Trial'
       'false' | :generate_lead  | 'SaaS Registration'

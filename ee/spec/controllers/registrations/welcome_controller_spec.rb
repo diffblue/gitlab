@@ -133,9 +133,7 @@ RSpec.describe Registrations::WelcomeController do
           registration_objective: 'code_storage'
         },
         joining_project: joining_project,
-        jobs_to_be_done_other: '_jobs_to_be_done_other_',
-        glm_source: 'some_source',
-        glm_content: 'some_content'
+        jobs_to_be_done_other: '_jobs_to_be_done_other_'
       }
     end
 
@@ -277,9 +275,7 @@ RSpec.describe Registrations::WelcomeController do
               {
                 registration_objective: 'code_storage',
                 role: 'software_developer',
-                jobs_to_be_done_other: '_jobs_to_be_done_other_',
-                glm_source: 'some_source',
-                glm_content: 'some_content'
+                jobs_to_be_done_other: '_jobs_to_be_done_other_'
               }
             end
 

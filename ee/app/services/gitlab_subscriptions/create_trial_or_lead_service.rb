@@ -49,9 +49,7 @@ module GitlabSubscriptions
       if generate_trial
         client.generate_trial(params.merge(product_interaction: 'SaaS Trial'))
       else
-        client.generate_lead(
-          params.except(:glm_source, :glm_content).merge(product_interaction: 'SaaS Registration')
-        )
+        client.generate_lead(params.merge(product_interaction: 'SaaS Registration'))
       end
     end
 
