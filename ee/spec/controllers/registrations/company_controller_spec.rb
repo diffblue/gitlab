@@ -2,13 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::CompanyController, :saas do
+RSpec.describe Registrations::CompanyController do
   let_it_be(:user) { create(:user) }
 
   let(:logged_in) { true }
 
   before do
     sign_in(user) if logged_in
+    allow(::Gitlab).to receive(:com?).and_return(true)
   end
 
   shared_examples 'user authentication' do
@@ -59,9 +60,7 @@ RSpec.describe Registrations::CompanyController, :saas do
         phone_number: '+1 23 456-78-90',
         country: 'US',
         state: 'CA',
-        website_url: 'gitlab.com',
-        glm_source: 'some_source',
-        glm_content: 'some_content'
+        website_url: 'gitlab.com'
       }
     end
 

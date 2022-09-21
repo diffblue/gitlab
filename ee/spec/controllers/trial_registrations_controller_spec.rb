@@ -76,17 +76,6 @@ RSpec.describe TrialRegistrationsController do
           expect(controller.stored_location_for(:user))
             .to eq(new_users_sign_up_company_path(trial: true))
         end
-
-        context 'when there are additional query params' do
-          let(:get_params) { { glm_source: 'some_source', glm_content: 'some_content' } }
-
-          it 'renders template and stores correct location' do
-            is_expected.to render_template(:new)
-
-            expect(controller.stored_location_for(:user))
-              .to eq(new_users_sign_up_company_path(params: get_params.merge(trial: true)))
-          end
-        end
       end
     end
 

@@ -87,9 +87,7 @@ module EE
       end
 
       def passed_through_params
-        update_params.slice(:role, :registration_objective).merge(
-          params.permit(:jobs_to_be_done_other, :glm_source, :glm_content)
-        )
+        update_params.slice(:role, :registration_objective).merge(params.permit(:jobs_to_be_done_other))
       end
 
       override :update_success_path
@@ -112,7 +110,9 @@ module EE
         stored_url = stored_location_for(user)
         if ::Feature.enabled?(:about_your_company_registration_flow) &&
             stored_url&.include?(new_users_sign_up_company_path)
-          redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, passed_through_params)
+          company_params = update_params.slice(:role, :registration_objective)
+                            .merge(params.permit(:jobs_to_be_done_other))
+          redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, company_params)
           store_location_for(:user, redirect_uri)
         else
           stored_url || members_activity_path(user.members)
