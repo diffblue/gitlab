@@ -175,7 +175,7 @@ RSpec.describe 'Branches' do
         search_for_branch('fix')
 
         expect(page).not_to have_content('fix')
-        expect(all('.all-branches').last).to have_selector('li', count: 0)
+        expect(all('.all-branches', wait: false).last).to have_selector('li', count: 0)
       end
     end
 
