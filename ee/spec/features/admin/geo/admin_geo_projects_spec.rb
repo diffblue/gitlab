@@ -145,6 +145,8 @@ RSpec.describe 'admin Geo Projects', :js, :geo do
     let(:page_url) { admin_geo_projects_path }
 
     before do
+      stub_feature_flags(gl_listbox_for_sort_dropdowns: false)
+
       visit(page_url)
       wait_for_requests
 
