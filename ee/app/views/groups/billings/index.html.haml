@@ -1,5 +1,6 @@
 - page_title _("Billing")
 
+= render_if_exists 'shared/thanks_for_purchase_alert', plan_title: plan_title, quantity: params[:purchased_quantity].to_i
 = render 'shared/qrtly_reconciliation_alert', group: @group
 
 - if @top_level_group # we are in subgroup mode

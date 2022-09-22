@@ -29,6 +29,8 @@ module SubscriptionsHelper
   end
 
   def plan_title
+    return if params[:plan_id].blank?
+
     strong_memoize(:plan_title) do
       plan = subscription_available_plans.find { |plan| plan[:id] == params[:plan_id] }
       plan[:code].titleize if plan
