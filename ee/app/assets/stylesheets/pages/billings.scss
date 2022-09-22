@@ -209,39 +209,6 @@ $badge-height: $gl-spacing-scale-7;
   }
 }
 
-.seats-table {
-  /*
-  * TODO
-  * Remove these overrides when the ones inside of
-  * app/assets/stylesheets/framework/tables.scss
-  * will be removed.
-  *
-  * Read more about this in the comments of that file.
-  */
-  &.table.gl-table {
-    @include gl-mb-0;
-    @include gl-text-gray-500;
-
-    tr {
-      th,
-      td {
-        @include gl-border-b-solid;
-        @include gl-border-b-1;
-        @include gl-p-5;
-      }
-
-      th {
-        @include gl-border-gray-200;
-        @include gl-bg-transparent;
-      }
-
-      td {
-        @include gl-border-gray-100;
-      }
-    }
-  }
-}
-
 .billing-plan-card {
   height: 510px;
   width: 230px;

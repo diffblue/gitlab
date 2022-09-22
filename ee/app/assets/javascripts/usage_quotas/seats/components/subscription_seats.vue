@@ -325,7 +325,6 @@ export default {
     </div>
 
     <gl-table
-      class="seats-table"
       :items="tableItems"
       :fields="$options.fields"
       :busy="isLoaderShown"
