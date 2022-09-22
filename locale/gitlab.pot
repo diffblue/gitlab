@@ -36727,16 +36727,13 @@ msgstr ""
 msgid "Set weight to %{weight}."
 msgstr ""
 
-msgid "SetStatusModal|An indicator appears next to your name and avatar"
-msgstr ""
-
-msgid "SetStatusModal|Busy"
-msgstr ""
-
 msgid "SetStatusModal|Clear status"
 msgstr ""
 
 msgid "SetStatusModal|Clear status after"
+msgstr ""
+
+msgid "SetStatusModal|Displays that you are busy or not able to respond"
 msgstr ""
 
 msgid "SetStatusModal|Edit status"
@@ -36749,6 +36746,9 @@ msgid "SetStatusModal|Set a status"
 msgstr ""
 
 msgid "SetStatusModal|Set status"
+msgstr ""
+
+msgid "SetStatusModal|Set yourself as busy"
 msgstr ""
 
 msgid "SetStatusModal|Sorry, we weren't able to set your status. Please try again later."
