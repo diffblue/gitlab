@@ -178,8 +178,10 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
   it('renders buttons for create and list epics', () => {
     createWrapper({});
 
-    expect(findComponent().props('primaryButtonLink')).toBe(TEST_NEW_EPIC_PATH);
-    expect(findComponent().props('secondaryButtonLink')).toBe(TEST_EPICS_PATH);
+    expect(findComponent().props()).toMatchObject({
+      primaryButtonLink: TEST_NEW_EPIC_PATH,
+      secondaryButtonLink: TEST_EPICS_PATH,
+    });
   });
 
   it('does not render new epic button element when `hasFiltersApplied` prop is true', () => {
