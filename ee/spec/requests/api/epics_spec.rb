@@ -949,7 +949,7 @@ RSpec.describe API::Epics do
           include_context 'with labels'
 
           it 'updates the epic with labels param as array' do
-            stub_const("Gitlab::QueryLimiting::Transaction::THRESHOLD", 110)
+            allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
 
             params[:labels] = ['label1', 'label2', 'foo, bar', '&,?']
 

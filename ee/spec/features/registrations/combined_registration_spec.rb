@@ -9,7 +9,7 @@ RSpec.describe 'Registration group and project creation flow', :js do
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
-    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 136)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(136)
     stub_feature_flags(feature_flags)
     allow(Gitlab).to receive(:com?).and_return(true)
     sign_in(user)
