@@ -22,6 +22,8 @@ RSpec.describe 'Filter issues health status', :js do
     )
   end
 
+  let_it_be(:issue3) { create(:issue, project: project) }
+
   def expect_issues_list_count(open_count, closed_count = 0)
     all_count = open_count + closed_count
 
@@ -60,8 +62,8 @@ RSpec.describe 'Filter issues health status', :js do
     it 'loads all the health statuses when opened' do
       select_tokens 'Health'
 
-      # Expect onTrack, needsAttention and atRisk
-      expect_suggestion_count 3
+      # Expect Any, None, On track, Needs attention and At risk
+      expect_suggestion_count 5
     end
   end
 
@@ -72,6 +74,22 @@ RSpec.describe 'Filter issues health status', :js do
       expect_issues_list_count(1)
       expect_issues_list_to_contain([issue1])
       expect_issues_list_to_not_contain([issue2])
+    end
+
+    it 'filter issues by Any health status' do
+      select_tokens 'Health', 'Any', submit: true
+
+      expect_issues_list_count(2)
+      expect_issues_list_to_contain([issue1, issue2])
+      expect_issues_list_to_not_contain([issue3])
+    end
+
+    it 'filter issues by None health status' do
+      select_tokens 'Health', 'None', submit: true
+
+      expect_issues_list_count(1)
+      expect_issues_list_to_contain([issue3])
+      expect_issues_list_to_not_contain([issue1, issue2])
     end
   end
 

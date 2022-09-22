@@ -20,6 +20,11 @@ export const HEALTH_SUGGESTIONS = [
   { title: __('At risk'), value: 'atRisk' },
 ];
 
+export const HEALTH_DEFAULT_NONE_ANY = DEFAULT_NONE_ANY.map((opt) => ({
+  ...opt,
+  value: opt.value.toUpperCase(),
+}));
+
 export const TOKEN_TITLE_ITERATION = __('Iteration');
 export const TOKEN_TITLE_EPIC = __('Epic');
 export const TOKEN_TITLE_WEIGHT = __('Weight');

@@ -1,7 +1,8 @@
 <script>
 import { GlFilteredSearchSuggestion } from '@gitlab/ui';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import { HEALTH_SUGGESTIONS } from '../constants';
+import { HEALTH_SUGGESTIONS, HEALTH_DEFAULT_NONE_ANY } from '../constants';
 
 export default {
   components: {
@@ -24,8 +25,11 @@ export default {
   },
   computed: {
     defaultHealth() {
-      return this.config.defaultHealth || [];
+      return this.config.defaultHealth || HEALTH_DEFAULT_NONE_ANY;
     },
+  },
+  methods: {
+    capitalizeFirstCharacter,
   },
   HEALTH_SUGGESTIONS,
 };
@@ -41,6 +45,13 @@ export default {
     v-bind="$attrs"
     v-on="$listeners"
   >
+    <template #view="{ viewTokenProps: { inputValue, activeTokenValue } }">
+      {{
+        activeTokenValue
+          ? activeTokenValue.title
+          : capitalizeFirstCharacter(inputValue.toLowerCase())
+      }}
+    </template>
     <template #suggestions-list="{ suggestions }">
       <gl-filtered-search-suggestion
         v-for="health of suggestions"

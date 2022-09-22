@@ -1,17 +1,23 @@
-import { GlFilteredSearchTokenSegment } from '@gitlab/ui';
+import { GlFilteredSearchTokenSegment, GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import { DEFAULT_NONE_ANY } from '~/vue_shared/components/filtered_search_bar/constants';
 import { __ } from '~/locale';
 import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
+import { HEALTH_SUGGESTIONS } from 'ee/vue_shared/components/filtered_search_bar//constants';
 import { mockHealthToken } from '../mock_data';
 
 describe('HealthToken', () => {
   const healthStatus = { title: __('On track'), value: 'onTrack' };
   let wrapper;
 
-  const createComponent = ({ config = mockHealthToken, value = { data: '' } } = {}) =>
+  const createComponent = ({
+    active = false,
+    config = mockHealthToken,
+    value = { data: '' },
+  } = {}) =>
     mount(HealthToken, {
       propsData: {
-        active: false,
+        active,
         config,
         value,
         cursorPosition: 'start',
@@ -19,6 +25,10 @@ describe('HealthToken', () => {
       provide: {
         portalName: 'fake target',
         alignSuggestions: function fakeAlignSuggestions() {},
+        suggestionsListClass: () => 'custom-class',
+      },
+      stubs: {
+        Portal: true,
       },
     });
 
@@ -31,7 +41,18 @@ describe('HealthToken', () => {
 
     const tokenSegments = wrapper.findAllComponents(GlFilteredSearchTokenSegment);
 
-    expect(tokenSegments).toHaveLength(3); // `Health` `=` `onTrack`
-    expect(tokenSegments.at(2).text()).toBe(healthStatus.value);
+    expect(tokenSegments).toHaveLength(3); // `Health` `=` `On track`
+    expect(tokenSegments.at(2).text()).toBe(healthStatus.title);
+  });
+
+  it('renders provided defaultHealthStatus as suggestions', () => {
+    wrapper = createComponent({ active: true });
+
+    const suggestions = wrapper.findAllComponents(GlFilteredSearchSuggestion);
+
+    expect(suggestions).toHaveLength(DEFAULT_NONE_ANY.length + HEALTH_SUGGESTIONS.length);
+    DEFAULT_NONE_ANY.forEach((label, index) => {
+      expect(suggestions.at(index).text()).toBe(label.title);
+    });
   });
 });
