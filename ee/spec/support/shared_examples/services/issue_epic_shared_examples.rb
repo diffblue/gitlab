@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# `returned_issue` needs to be defined in the context calling this example
 RSpec.shared_examples 'issue with epic_id parameter' do
   before do
     stub_licensed_features(epics: true)
@@ -17,10 +18,8 @@ RSpec.shared_examples 'issue with epic_id parameter' do
     let(:params) { { title: 'issue1', epic_id: 0 } }
 
     it 'does not assign any epic' do
-      issue = execute
-
-      expect(issue.reload).to be_persisted
-      expect(issue.epic).to be_nil
+      expect(returned_issue.reload).to be_persisted
+      expect(returned_issue.epic).to be_nil
     end
   end
 
@@ -52,10 +51,8 @@ RSpec.shared_examples 'issue with epic_id parameter' do
 
     context 'when a project is a direct child of the epic group' do
       it 'creates epic issue link' do
-        issue = execute
-
-        expect(issue.reload).to be_persisted
-        expect(issue.epic).to eq(epic)
+        expect(returned_issue.reload).to be_persisted
+        expect(returned_issue.epic).to eq(epic)
       end
 
       it 'calls EpicIssues::CreateService' do
@@ -86,10 +83,8 @@ RSpec.shared_examples 'issue with epic_id parameter' do
         let(:params) { { title: 'issue1', epic: epic, epic_id: other_epic.id } }
 
         it 'creates epic issue link based on the epic param' do
-          issue = execute
-
-          expect(issue.reload).to be_persisted
-          expect(issue.epic).to eq(epic)
+          expect(returned_issue.reload).to be_persisted
+          expect(returned_issue.epic).to eq(epic)
         end
       end
 
@@ -97,10 +92,8 @@ RSpec.shared_examples 'issue with epic_id parameter' do
         let(:params) { { title: 'issue1', epic: epic, epic_id: '' } }
 
         it 'creates epic issue link based on the epic param' do
-          issue = execute
-
-          expect(issue.reload).to be_persisted
-          expect(issue.epic).to eq(epic)
+          expect(returned_issue.reload).to be_persisted
+          expect(returned_issue.epic).to eq(epic)
         end
       end
     end
@@ -113,10 +106,8 @@ RSpec.shared_examples 'issue with epic_id parameter' do
       end
 
       it 'creates epic issue link' do
-        issue = execute
-
-        expect(issue.reload).to be_persisted
-        expect(issue.epic).to eq(epic)
+        expect(returned_issue.reload).to be_persisted
+        expect(returned_issue.epic).to eq(epic)
       end
 
       describe 'events tracking', :snowplow do

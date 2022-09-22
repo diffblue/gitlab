@@ -16,20 +16,19 @@ module Mutations
         args[:issue_type] = :requirement
         spam_params = ::Spam::SpamParams.new_from_request(request: context[:request])
 
-        issue = ::Issues::CreateService.new(
+        result = ::Issues::CreateService.new(
           project: project,
           current_user: current_user,
           params: args,
           spam_params: spam_params
         ).execute
 
-        check_spam_action_response!(issue) if issue
+        check_spam_action_response!(result[:issue]) if result[:issue]
 
-        if issue.errors.empty?
-          { requirement: issue.requirement, errors: [] }
-        else
-          { requirement: nil, errors: errors_on_object(issue) }
-        end
+        {
+          requirement: result.success? ? result[:issue].requirement : nil,
+          errors: result.errors
+        }
       end
     end
   end

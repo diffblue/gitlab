@@ -635,6 +635,7 @@ RSpec.describe Issues::UpdateService do
 
     it_behaves_like 'issue with epic_id parameter' do
       let(:execute) { described_class.new(project: project, current_user: user, params: params).execute(issue) }
+      let(:returned_issue) { execute }
     end
 
     context 'when epic_id is nil' do

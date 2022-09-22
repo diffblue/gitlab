@@ -51,8 +51,10 @@ RSpec.describe QualityManagement::TestCases::CreateService do
       end
 
       it 'responds with errors' do
-        expect(service.execute).to be_error
-        expect(service.execute.message).to eq("Title can't be blank")
+        result = service.execute
+
+        expect(result).to be_error
+        expect(result.errors).to contain_exactly("Title can't be blank")
       end
 
       it 'result payload contains an Issue object' do
