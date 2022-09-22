@@ -51,6 +51,11 @@ export default {
       required: false,
       default: '',
     },
+    autofocus: {
+      type: [String, Boolean],
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -67,7 +72,7 @@ export default {
     },
   },
   created() {
-    const { renderMarkdown, uploadsPath, extensions, serializerConfig } = this;
+    const { renderMarkdown, uploadsPath, extensions, serializerConfig, autofocus } = this;
 
     // This is a non-reactive attribute intentionally since this is a complex object.
     this.contentEditor = createContentEditor({
@@ -75,6 +80,9 @@ export default {
       uploadsPath,
       extensions,
       serializerConfig,
+      tiptapOptions: {
+        autofocus,
+      },
     });
   },
   mounted() {

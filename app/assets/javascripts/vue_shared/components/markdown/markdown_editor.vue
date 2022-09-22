@@ -31,7 +31,8 @@ export default {
     },
     uploadsPath: {
       type: String,
-      required: true,
+      required: false,
+      default: () => window.uploads_path,
     },
     enableContentEditor: {
       type: Boolean,
@@ -59,7 +60,7 @@ export default {
     autofocus: {
       type: Boolean,
       required: false,
-      default: false,
+      default: true,
     },
     formFieldPlaceholder: {
       type: String,
@@ -82,6 +83,13 @@ export default {
     isContentEditorActive() {
       return this.enableContentEditor && this.editingMode === EDITING_MODE_CONTENT_EDITOR;
     },
+    contentEditorAutofocus() {
+      // Match textarea focus behavior
+      return this.autofocus ? 'end' : false;
+    },
+  },
+  mounted() {
+    this.autofocusTextarea(this.editingMode);
   },
   methods: {
     updateMarkdownFromContentEditor({ markdown }) {
@@ -99,8 +107,17 @@ export default {
     renderMarkdown(markdown) {
       return axios.post(this.renderMarkdownPath, { text: markdown }).then(({ data }) => data.body);
     },
+    onEditingModeChange(editingMode) {
+      this.notifyEditingModeChange(editingMode);
+      this.autofocusTextarea(editingMode);
+    },
     notifyEditingModeChange(editingMode) {
       this.$emit(editingMode);
+    },
+    autofocusTextarea(editingMode) {
+      if (this.autofocus && editingMode === EDITING_MODE_MARKDOWN_FIELD) {
+        this.$refs.textarea.focus();
+      }
     },
   },
   switchEditingControlOptions: [
@@ -119,13 +136,13 @@ export default {
         class="gl-display-flex"
         :options="$options.switchEditingControlOptions"
         :disabled="!enableContentEditor || !switchEditingControlEnabled"
-        @change="notifyEditingModeChange"
+        @change="onEditingModeChange"
       />
     </div>
     <local-storage-sync
       v-model="editingMode"
       storage-key="gl-wiki-content-editor-enabled"
-      @input="notifyEditingModeChange"
+      @input="onEditingModeChange"
     />
     <markdown-field
       v-if="!isContentEditorActive"
@@ -148,7 +165,6 @@ export default {
           dir="auto"
           data-supports-quick-actions="false"
           data-qa-selector="markdown_editor_form_field"
-          :autofocus="autofocus"
           :aria-label="formFieldAriaLabel"
           :placeholder="formFieldPlaceholder"
           @input="updateMarkdownFromMarkdownField"
@@ -161,6 +177,7 @@ export default {
         :render-markdown="renderMarkdown"
         :uploads-path="uploadsPath"
         :markdown="value"
+        :autofocus="contentEditorAutofocus"
         @change="updateMarkdownFromContentEditor"
         @loading="disableSwitchEditingControl"
         @loadingSuccess="enableSwitchEditingControl"
