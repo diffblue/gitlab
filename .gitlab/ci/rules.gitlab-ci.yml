@@ -625,8 +625,6 @@
 ######################
 .build-images:rules:build-qa-image:
   rules:
-    - <<: *if-not-ee
-      when: never
     - <<: *if-not-canonical-namespace
       when: never
     - <<: *if-merge-request-targeting-stable-branch
