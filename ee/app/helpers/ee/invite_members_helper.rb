@@ -17,7 +17,7 @@ module EE
           new_trial_registration_path: new_trial_path,
           members_path: group_usage_quotas_path(source.root_ancestor),
           purchase_path: group_billings_path(source.root_ancestor),
-          free_users_limit: ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
+          free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit,
           members_count: free_user_cap.users_count
         }.to_json
       )

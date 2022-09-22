@@ -6,8 +6,8 @@ RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
   let_it_be(:namespace) { create(:group_with_plan, :private, plan: :free_plan) }
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: true)
-    allow(namespace).to receive(:free_plan_members_count).and_return(Namespaces::FreeUserCap::FREE_USER_LIMIT + 1)
+    stub_ee_application_setting(dashboard_limit_enabled: true)
+    allow(namespace).to receive(:free_plan_members_count).and_return(Namespaces::FreeUserCap.dashboard_limit + 1)
   end
 
   describe '#over_limit?' do
