@@ -18,6 +18,10 @@ RSpec.describe ApprovalRulePresenter do
 
     subject { presenter.approvers }
 
+    before do
+      rule.clear_memoization(:approvers)
+    end
+
     context 'user cannot see one of the groups' do
       it { is_expected.to be_empty }
     end

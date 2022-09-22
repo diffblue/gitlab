@@ -14,6 +14,10 @@ RSpec.describe ApprovalWrappedRule do
 
   subject { described_class.new(merge_request, rule) }
 
+  before do
+    rule.clear_memoization(:approvers) if rule.respond_to?(:clear_memoization)
+  end
+
   describe '#project' do
     it 'returns merge request project' do
       expect(subject.project).to eq(merge_request.target_project)

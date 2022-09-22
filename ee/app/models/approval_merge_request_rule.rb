@@ -42,6 +42,7 @@ class ApprovalMergeRequestRule < ApplicationRecord
   before_update :compare_with_project_rule
 
   after_save :track_approvers_for_report_approver, if: :report_approver?
+  after_save :audit_log_for_invalid_report_approver, unless: :any_approver?
 
   validate :validate_approval_project_rule
 
@@ -167,5 +168,21 @@ class ApprovalMergeRequestRule < ApplicationRecord
     return if approvers.present?
 
     Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter.track_invalid_approvers(merge_request: merge_request)
+  end
+
+  def audit_log_for_invalid_report_approver
+    return unless Feature.enabled?(:audit_invalid_approver_rules, project)
+    return if approvers.present?
+
+    audit_context = {
+      name: 'merge_request_invalid_approver_rules',
+      author: merge_request.author,
+      scope: project,
+      target: merge_request,
+      message: 'Invalid merge request approver rules',
+      target_details: { title: merge_request.title, iid: merge_request.iid, id: merge_request.id }
+    }
+
+    ::Gitlab::Audit::Auditor.audit(audit_context)
   end
 end
