@@ -186,7 +186,7 @@ RSpec.describe 'Pipeline', :js do
         expect(find('[data-testid="license-tab"]')).to have_content('4')
       end
 
-      it 'shows security report section' do
+      it 'shows security report section', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375026' do
         expect(page).to have_content('Loading License Compliance report')
       end
     end
