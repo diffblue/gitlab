@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe 'SaaS registration from an invite', :js, :saas, :saas_registration do
-  let(:new_user) { build(:user, name: 'Invited User') }
-
   it 'registers the user and sends them to the group activity page' do
     group = create(:group, name: 'Test Group')
 
@@ -19,6 +17,8 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas, :saas_registratio
   end
 
   def registers_from_invite(group)
+    new_user = build(:user, name: 'Registering User')
+
     invitation = create(:group_member, :invited, :developer, invite_email: new_user.email, source: group)
 
     visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
@@ -41,8 +41,11 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas, :saas_registratio
   end
 
   def expect_to_see_welcome_form_without_join_project_question
-    expect(page).to have_content('Welcome to GitLab, Invited!')
-    expect(page).not_to have_content('What would you like to do?')
+    expect(page).to have_content('Welcome to GitLab, Registering!')
+
+    page.within('[data-testid="welcome-form"]') do
+      expect(page).not_to have_content('What would you like to do?')
+    end
   end
 
   def expect_to_be_on_activity_page_for(group)

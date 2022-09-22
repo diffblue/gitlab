@@ -20,7 +20,9 @@ RSpec.shared_context 'with saas settings for registration flows', shared_context
       # our focus isn't around arkose/signup challenges, so we'll omit those
       arkose_labs_signup_challenge: false,
       # Saas will always need emails confirmed
-      soft_email_confirmation: false
+      soft_email_confirmation: false,
+      # this has been settled so it should be enabled see https://gitlab.com/gitlab-org/gitlab/-/issues/371550
+      about_your_company_registration_flow: true
     )
 
     enforce_terms
