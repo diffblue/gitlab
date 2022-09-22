@@ -25,7 +25,7 @@ RSpec.describe Projects::MergeRequestsController do
         # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/343375
         # More: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/73034#note_720186839
         #       https://docs.gitlab.com/ee/development/query_count_limits.html#disable-query-limiting
-        stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 110)
+        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
         expect_next_instance_of(SecurityReportsMrWidgetPromptExperiment) do |instance|
           expect(instance).to receive(:publish)
         end
