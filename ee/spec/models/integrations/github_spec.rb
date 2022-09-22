@@ -28,6 +28,10 @@ RSpec.describe Integrations::Github do
     stub_licensed_features(github_integration: true)
   end
 
+  it_behaves_like Integrations::ResetSecretFields do
+    let(:integration) { subject }
+  end
+
   describe "Associations" do
     it { is_expected.to belong_to :project }
   end
