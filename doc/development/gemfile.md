@@ -20,8 +20,8 @@ If the downloaded gem's checksum does not match the checksum record in
 installing a gem because there is a potential security issue.
 
 You will see this error as well if you updated, or added a new gem without
-updating `Gemfile.checksum`. To fix this error, [update the
-Gemfile.checksum](#updating-the-checksum-file).
+updating `Gemfile.checksum`. To fix this error,
+[update the Gemfile.checksum](#updating-the-checksum-file).
 
 You can opt-in to this verification locally by setting the
 `BUNDLER_CHECKSUM_VERIFICATION_OPT_IN` environment variable:
