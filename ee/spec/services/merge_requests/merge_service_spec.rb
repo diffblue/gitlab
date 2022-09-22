@@ -8,7 +8,8 @@ RSpec.describe MergeRequests::MergeService do
   let(:user) { create(:user) }
   let(:merge_request) { create(:merge_request, :simple) }
   let(:project) { merge_request.project }
-  let(:service) { described_class.new(project: project, current_user: user, params: { sha: merge_request.diff_head_sha, commit_message: 'Awesome message' }) }
+  let(:service) { described_class.new(project: project, current_user: user, params: params) }
+  let(:params) { { sha: merge_request.diff_head_sha, commit_message: 'Awesome message' } }
 
   before do
     project.add_maintainer(user)
