@@ -8,7 +8,7 @@ module GitlabSubscriptions
       ApplyTrialError = Class.new(StandardError)
 
       deduplicate :until_executed
-      data_consistency :delayed
+      data_consistency :always
       idempotent!
       # this worker calls `GitlabSubscriptions::ApplyTrialService`, which in turn makes
       # a HTTP POST request to ::Gitlab::SubscriptionPortal::SUBSCRIPTIONS_URL
