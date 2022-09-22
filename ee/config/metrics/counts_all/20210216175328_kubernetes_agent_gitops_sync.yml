@@ -10,7 +10,11 @@ product_category: kubernetes_management
 value_type: number
 status: active
 time_frame: all
-data_source: database
+data_source: redis
+instrumentation_class: RedisMetric
+options:
+  prefix: kubernetes_agent
+  event: gitops_sync
 distribution:
 - ee
 tier:
