@@ -703,6 +703,18 @@ export default {
               :class="{ 'gl-mb-5': shouldShowMergeControls }"
               class="gl-w-full gl-order-n1 gl-text-gray-500"
             >
+              <p v-if="mr.divergedCommitsCount > 0" class="gl-display-inline gl-m-0">
+                <gl-sprintf
+                  :message="s__('mrWidget|The source branch is %{link} the target branch')"
+                >
+                  <template #link>
+                    <gl-link :href="mr.targetBranchPath">{{
+                      n__('%d commit behind', '%d commits behind', mr.divergedCommitsCount)
+                    }}</gl-link>
+                  </template>
+                </gl-sprintf>
+              </p>
+              <template v-if="mr.divergedCommitsCount > 0"> &middot; </template>
               <added-commit-message
                 :is-squash-enabled="squashBeforeMerge"
                 :is-fast-forward-enabled="!shouldShowMergeEdit"
@@ -715,8 +727,6 @@ export default {
                   :state="mr.state"
                   :related-links="mr.relatedLinks"
                   :show-assign-to-me="false"
-                  :diverged-commits-count="mr.divergedCommitsCount"
-                  :target-branch-path="mr.targetBranchPath"
                   class="mr-ready-merge-related-links gl-display-inline"
                 />
               </template>
