@@ -28,7 +28,7 @@ module Gitlab
           new_balance = nil
 
           ::Gitlab::Redis::SharedState.with do |redis|
-            if redis.exists(cache_key)
+            if redis.exists?(cache_key) # rubocop:disable CodeReuse/ActiveRecord
               redis.multi do |multi|
                 multi.expire(cache_key, TTL_REMAINING_MINUTES)
                 new_balance = multi.incrbyfloat(cache_key, -consumption)
