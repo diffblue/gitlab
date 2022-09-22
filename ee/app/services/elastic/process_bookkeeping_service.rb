@@ -208,7 +208,7 @@ module Elastic
           search_indexing_flushing_duration_s: flushing_duration_s
         )
 
-        Gitlab::Metrics::GlobalSearchIndexingSlis.record_apdex(elapsed: flushing_duration_s, type: klass)
+        Gitlab::Metrics::GlobalSearchIndexingSlis.record_apdex(elapsed: flushing_duration_s, document_type: klass)
       end
 
       specs_buffer.count

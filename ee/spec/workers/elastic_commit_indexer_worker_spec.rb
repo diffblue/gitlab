@@ -14,13 +14,17 @@ RSpec.describe ElasticCommitIndexerWorker do
     end
 
     it 'runs indexer' do
-      expect_any_instance_of(Gitlab::Elastic::Indexer).to receive(:run)
+      expect_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+        expect(indexer).to receive(:run)
+      end
 
       subject.perform(project.id, false)
     end
 
     it 'logs timing information' do
-      allow_any_instance_of(Gitlab::Elastic::Indexer).to receive(:run).and_return(true)
+      allow_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+        allow(indexer).to receive(:run).and_return(true)
+      end
 
       expect(Gitlab::Elasticsearch::Logger).to receive(:build).and_return(logger_double.as_null_object)
 
@@ -34,21 +38,40 @@ RSpec.describe ElasticCommitIndexerWorker do
       subject.perform(project.id, false)
     end
 
+    it 'records the apdex SLI' do
+      allow_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+        allow(indexer).to receive(:run).and_return(true)
+      end
+
+      expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex).with(
+        elapsed: a_kind_of(Numeric),
+        document_type: 'Code'
+      )
+
+      subject.perform(project.id)
+    end
+
     context 'when ES is disabled' do
       before do
         stub_ee_application_setting(elasticsearch_indexing: false)
       end
 
       it 'returns true' do
-        expect_any_instance_of(Gitlab::Elastic::Indexer).not_to receive(:run)
+        expect(Gitlab::Elastic::Indexer).not_to receive(:new)
 
-        expect(subject.perform(1)).to be_truthy
+        expect(subject.perform(project.id)).to be_truthy
       end
 
       it 'does not log anything' do
         expect(logger_double).not_to receive(:info)
 
-        subject.perform(1)
+        subject.perform(project.id)
+      end
+
+      it 'does not record the apdex SLI' do
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+
+        subject.perform(project.id)
       end
     end
 
@@ -79,13 +102,34 @@ RSpec.describe ElasticCommitIndexerWorker do
 
         subject.perform(project.id)
       end
+
+      it 'does not record the apdex SLI' do
+        expect(subject).to receive(:in_lock) # Mock and don't yield
+          .with("ElasticCommitIndexerWorker/#{project.id}/false", ttl: (Gitlab::Elastic::Indexer::TIMEOUT + 1.minute), retries: 0)
+
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
+
+        subject.perform(project.id)
+      end
     end
 
     context 'when the indexer fails' do
       it 'does not log anything' do
-        expect_any_instance_of(Gitlab::Elastic::Indexer).to receive(:run).and_return false
+        expect_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+          expect(indexer).to receive(:run).and_return false
+        end
 
         expect(logger_double).not_to receive(:info)
+
+        subject.perform(project.id)
+      end
+
+      it 'does not record the apdex SLI' do
+        expect_next_instance_of(Gitlab::Elastic::Indexer) do |indexer|
+          expect(indexer).to receive(:run).and_return false
+        end
+
+        expect(Gitlab::Metrics::GlobalSearchIndexingSlis).not_to receive(:record_apdex)
 
         subject.perform(project.id)
       end

@@ -52,7 +52,7 @@ RSpec.describe 'Setting the epic of an issue' do
     # todo: investigate too many qeuries issue as part of Project Management Database and Query Performance
     # epic: https://gitlab.com/groups/gitlab-org/-/epics/5804
     # specific issue: https://gitlab.com/gitlab-org/gitlab/-/issues/333845
-    stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 110)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
   end
 
   it 'returns an error if the user is not allowed to update the issue' do

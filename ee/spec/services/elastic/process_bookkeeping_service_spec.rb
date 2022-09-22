@@ -275,7 +275,7 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
 
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex).with(
           elapsed: a_kind_of(Numeric),
-          type: 'Issue'
+          document_type: 'Issue'
         ).exactly(fake_refs.size).times
 
         described_class.new.execute
@@ -289,7 +289,7 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
 
         expect(Gitlab::Metrics::GlobalSearchIndexingSlis).to receive(:record_apdex).with(
           elapsed: a_kind_of(Numeric),
-          type: 'Issue'
+          document_type: 'Issue'
         ).exactly(fake_refs.size - 1).times
 
         described_class.new.execute

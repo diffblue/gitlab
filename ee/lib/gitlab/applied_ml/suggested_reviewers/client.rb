@@ -10,14 +10,28 @@ module Gitlab
         DEFAULT_TIMEOUT = 15
         DEFAULT_CERTS = ::Gitlab::X509::Certificate.ca_certs_bundle
 
-        def initialize(rpc_url: '', certs: DEFAULT_CERTS)
+        JWT_ISSUER = "gitlab-issuer"
+        JWT_AUDIENCE = "gitlab-suggested-reviewers"
+        SECRET_NAME = "SUGGESTED_REVIEWERS_SECRET"
+        SECRET_LENGTH = 64
+
+        def self.default_rpc_url
+          if Gitlab.dev_or_test_env?
+            'suggested-reviewer.dev:443'
+          else
+            'api.unreview.io:443'
+          end
+        end
+
+        def initialize(rpc_url: self.class.default_rpc_url, certs: DEFAULT_CERTS)
           @rpc_url = rpc_url
           @certs = certs
+          @secret = read_secret!
         end
 
         def suggested_reviewers(merge_request_iid:, project_id:, changes:, author_username:, top_n: 5)
-          raise Gitlab::AppliedMl::Errors::ArgumentError, "Changes empty" if changes.blank?
-          raise Gitlab::AppliedMl::Errors::ConfigurationError, "gRPC host unknown" if rpc_url.blank?
+          raise Errors::ArgumentError, "Changes empty" if changes.blank?
+          raise Errors::ConfigurationError, "gRPC host unknown" if rpc_url.blank?
 
           model_input = {
             merge_request_iid: merge_request_iid,
@@ -34,20 +48,46 @@ module Gitlab
             reviewers: response.reviewers
           }
         rescue GRPC::BadStatus => e
-          raise Gitlab::AppliedMl::Errors::ResourceNotAvailable, e
+          raise Errors::ResourceNotAvailable, e
         end
 
         private
 
-        attr_reader :rpc_url, :certs
+        attr_reader :rpc_url, :certs, :secret
+
+        def read_secret!
+          secret = ENV[SECRET_NAME]
+
+          raise Errors::ConfigurationError, "Variable #{SECRET_NAME} is missing" if secret.blank?
+
+          if secret.length != SECRET_LENGTH
+            raise Errors::ConfigurationError, "Secret must contain #{SECRET_LENGTH} bytes"
+          end
+
+          secret
+        end
 
         def get_reviewers(model_input)
           request = MergeRequestRecommendationsReqV2.new(model_input)
-          # TODO: Authentication between GitLab and the suggested reviewers service is coming in
-          # https://gitlab.com/gitlab-org/modelops/applied-ml/review-recommender/recommender-bot-service/-/issues/19
-          creds = GRPC::Core::ChannelCredentials.new(certs)
-          client = Stub.new(rpc_url, creds, timeout: DEFAULT_TIMEOUT)
+          client = Stub.new(rpc_url, credentials, timeout: DEFAULT_TIMEOUT)
           client.merge_request_recommendations_v2(request)
+        end
+
+        def credentials
+          ssl_creds = GRPC::Core::ChannelCredentials.new(certs)
+
+          auth_header = { "authorization": "Bearer #{token}" }
+          auth_proc = proc { auth_header }
+          call_creds = GRPC::Core::CallCredentials.new(auth_proc)
+
+          ssl_creds.compose(call_creds)
+        end
+
+        def token
+          JSONWebToken::HMACToken.new(secret).tap do |token|
+            token.issuer = JWT_ISSUER
+            token.audience = JWT_AUDIENCE
+          end.encoded
         end
       end
     end
