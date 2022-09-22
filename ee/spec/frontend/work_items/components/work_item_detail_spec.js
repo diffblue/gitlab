@@ -11,11 +11,13 @@ import {
   workItemTitleSubscriptionResponse,
   workItemResponseFactory,
   workItemWeightSubscriptionResponse,
+  workItemAssigneesSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 import workItemDatesSubscription from '~/work_items/graphql/work_item_dates.subscription.graphql';
 import workItemTitleSubscription from '~/work_items/graphql/work_item_title.subscription.graphql';
+import workItemAssigneesSubscription from '~/work_items/graphql/work_item_assignees.subscription.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
 describe('WorkItemDetail component', () => {
@@ -28,6 +30,9 @@ describe('WorkItemDetail component', () => {
   const datesSubscriptionHandler = jest.fn().mockResolvedValue(workItemDatesSubscriptionResponse);
   const titleSubscriptionHandler = jest.fn().mockResolvedValue(workItemTitleSubscriptionResponse);
   const weightSubscriptionHandler = jest.fn().mockResolvedValue(workItemWeightSubscriptionResponse);
+  const assigneesSubscriptionHandler = jest
+    .fn()
+    .mockResolvedValue(workItemAssigneesSubscriptionResponse);
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
@@ -42,6 +47,7 @@ describe('WorkItemDetail component', () => {
         [workItemDatesSubscription, datesSubscriptionHandler],
         [workItemTitleSubscription, titleSubscriptionHandler],
         [workItemWeightSubscription, weightSubscriptionHandler],
+        [workItemAssigneesSubscription, assigneesSubscriptionHandler],
         confidentialityMock,
       ]),
       provide: {
