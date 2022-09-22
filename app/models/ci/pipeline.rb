@@ -1168,6 +1168,10 @@ module Ci
       complete? && builds.latest.with_exposed_artifacts.exists?
     end
 
+    def has_erasable_artifacts?
+      complete? && builds.latest.with_erasable_artifacts.exists?
+    end
+
     def branch_updated?
       strong_memoize(:branch_updated) do
         push_details.branch_updated?
