@@ -24,8 +24,15 @@ module EE
         def define_protected_env_variables
           @protected_environments = @group.protected_environments.sorted_by_name
           @protected_environment = ProtectedEnvironment.new(group: @group)
+          @tiers = ::Environment.tiers.except(*names_for(@protected_environments))
         end
         # rubocop:enable Gitlab/ModuleWithInstanceVariables
+
+        # rubocop:disable CodeReuse/ActiveRecord
+        def names_for(protected_environments)
+          protected_environments.pluck(:name).map(&:to_sym)
+        end
+        # rubocop:enable CodeReuse/ActiveRecord
 
         override :assign_variables_to_gon
         def assign_variables_to_gon
