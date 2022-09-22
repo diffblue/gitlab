@@ -282,23 +282,21 @@ describe('EpicItemDetails', () => {
         });
 
         describe('blocked icon', () => {
-          it('shows blocked icon if epic is blocked by other epics', () => {
-            epic = createMockEpic({
-              blocked: true,
-            });
-            createWrapper({ epic });
+          it.each`
+            blocked  | showsBlocked
+            ${true}  | ${true}
+            ${false} | ${false}
+          `(
+            'if epic.blocked is $blocked then blocked is shown $showsBlocked',
+            ({ blocked, showsBlocked }) => {
+              epic = createMockEpic({
+                blocked,
+              });
+              createWrapper({ epic });
 
-            expect(getBlockedIcon().exists()).toBe(true);
-          });
-
-          it('does not show blocked icon if epic is not blocked by other epics', () => {
-            epic = createMockEpic({
-              blocked: false,
-            });
-            createWrapper({ epic });
-
-            expect(getBlockedIcon().exists()).toBe(false);
-          });
+              expect(getBlockedIcon().exists()).toBe(showsBlocked);
+            },
+          );
         });
       });
     });
