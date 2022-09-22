@@ -80,6 +80,7 @@
 
 .assets-cache: &assets-cache
   key: "assets-debian-${DEBIAN_VERSION}-ruby-${RUBY_VERSION}-node-${NODE_ENV}-v3"
+  # This list should match GITLAB_ASSETS_PATHS_LIST from scripts/gitlab_component_helpers.sh
   paths:
     - assets-hash.txt
     - app/assets/javascripts/locale/**/app.js

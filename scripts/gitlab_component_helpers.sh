@@ -4,28 +4,51 @@ set -euo pipefail
 
 export CURL_TOKEN_HEADER="${CURL_TOKEN_HEADER:-"JOB-TOKEN"}"
 
-# We only want to store/retrieve packages from the canonical `gitlab.org/gitlab` project
-export CANONICAL_PACKAGES_PROJECT_ID="278964"
-export API_PACKAGES_PATH="https://gitlab.com/api/v4/projects/${CANONICAL_PACKAGES_PROJECT_ID}/packages/generic"
+export GITLAB_COM_CANONICAL_PROJECT_ID="278964" # https://gitlab.com/gitlab-org/gitlab
+export JIHULAB_COM_CANONICAL_PROJECT_ID="13953" # https://jihulab.com/gitlab-cn/gitlab
+export CANONICAL_PROJECT_ID="${GITLAB_COM_CANONICAL_PROJECT_ID}"
+
+# By default, we only want to store/retrieve packages from GitLab.com...
+export API_V4_URL="https://gitlab.com/api/v4"
+
+# Unless we're in the JiHu project, which needs to use its own package registry
+if [[ "${CI_SERVER_HOST}" = "jihulab.com" ]]; then
+  export API_V4_URL="${CI_API_V4_URL}"
+  export CANONICAL_PROJECT_ID="${JIHULAB_COM_CANONICAL_PROJECT_ID}"
+fi
+
+export API_PACKAGES_BASE_URL="${API_V4_URL}/projects/${CANONICAL_PROJECT_ID}/packages/generic"
+
+export UPLOAD_TO_CURRENT_SERVER="false"
+# We only want to upload artifacts to https://gitlab.com and https://jihulab.com instances
+if [[ "${CI_SERVER_HOST}" = "gitlab.com" ]] || [[ "${CI_SERVER_HOST}" = "jihulab.com" ]]; then
+  export UPLOAD_TO_CURRENT_SERVER="true"
+fi
+
+export UPLOAD_PACKAGE_FLAG="false"
+# And only if we're in a pipeline from the canonical project
+if [[ "${UPLOAD_TO_CURRENT_SERVER}" = "true" ]] && [[ "${CI_PROJECT_ID}" = "${CANONICAL_PROJECT_ID}" ]]; then
+  export UPLOAD_PACKAGE_FLAG="true"
+fi
 
 # Workhorse constants
 export GITLAB_WORKHORSE_BINARIES_LIST="gitlab-resize-image gitlab-zip-cat gitlab-zip-metadata gitlab-workhorse"
 export GITLAB_WORKHORSE_PACKAGE_FILES_LIST="${GITLAB_WORKHORSE_BINARIES_LIST} WORKHORSE_TREE"
 export GITLAB_WORKHORSE_TREE=${GITLAB_WORKHORSE_TREE:-$(git rev-parse HEAD:workhorse)}
 export GITLAB_WORKHORSE_PACKAGE="workhorse-${GITLAB_WORKHORSE_TREE}.tar.gz"
-export GITLAB_WORKHORSE_PACKAGE_URL="${API_PACKAGES_PATH}/${GITLAB_WORKHORSE_FOLDER}/${GITLAB_WORKHORSE_TREE}/${GITLAB_WORKHORSE_PACKAGE}"
+export GITLAB_WORKHORSE_PACKAGE_URL="${API_PACKAGES_BASE_URL}/${GITLAB_WORKHORSE_FOLDER}/${GITLAB_WORKHORSE_TREE}/${GITLAB_WORKHORSE_PACKAGE}"
 
 # Assets constants
-export GITLAB_ASSETS_PATHS_LIST="assets-hash.txt app/assets/javascripts/locale/ public/assets/ tmp/cache/assets/sprockets/ tmp/cache/babel-loader/ tmp/cache/vue-loader/"
+export GITLAB_ASSETS_PATHS_LIST="assets-hash.txt app/assets/javascripts/locale/**/app.js public/assets/ tmp/cache/assets/sprockets/ tmp/cache/babel-loader/ tmp/cache/vue-loader/"
 
-if [[ "${FOSS_ONLY:-no}" = "1" ]]; then
+export GITLAB_EDITION="ee"
+if [[ "${FOSS_ONLY:-no}" = "1" ]] || [[ "${CI_PROJECT_NAME}" = "gitlab-foss" ]]; then
   export GITLAB_EDITION="foss"
-else
-  export GITLAB_EDITION="ee"
 fi
+
 export GITLAB_ASSETS_HASH="${GITLAB_ASSETS_HASH:-"NO_HASH"}"
 export GITLAB_ASSETS_PACKAGE="assets-${NODE_ENV}-${GITLAB_EDITION}-${GITLAB_ASSETS_HASH}.tar.gz"
-export GITLAB_ASSETS_PACKAGE_URL="${API_PACKAGES_PATH}/assets/${NODE_ENV}-${GITLAB_EDITION}-${GITLAB_ASSETS_HASH}/${GITLAB_ASSETS_PACKAGE}"
+export GITLAB_ASSETS_PACKAGE_URL="${API_PACKAGES_BASE_URL}/assets/${NODE_ENV}-${GITLAB_EDITION}-${GITLAB_ASSETS_HASH}/${GITLAB_ASSETS_PACKAGE}"
 
 # Generic helper functions
 function archive_doesnt_exist() {
@@ -52,8 +75,7 @@ function upload_package() {
   local token_header="${CURL_TOKEN_HEADER}"
   local token="${CI_JOB_TOKEN}"
 
-  # We only want to upload artifacts to GitLab.com/gitlab-org/gitlab
-  if [[ "${CI_SERVER_HOST:-gitlab.com}" != "gitlab.com" ]] || [[ "${CI_PROJECT_ID}" != "${CANONICAL_PACKAGES_PROJECT_ID}" ]]; then
+  if [[ "${UPLOAD_PACKAGE_FLAG}" = "false" ]]; then
     echoerr "The archive ${archive_filename} isn't supposed to be uploaded for this instance (${CI_SERVER_HOST}) & project (${CI_PROJECT_PATH})!"
     exit 1
   fi

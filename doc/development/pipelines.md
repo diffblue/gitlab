@@ -795,7 +795,7 @@ and `cache-assets:production` jobs that:
 - is manual for GitLab.com's `gitlab-org`'s MRs that touches caching-related files
 
 This job tries to download a generic package that contains GitLab compiled assets
-needed in the GitLab test suite (under `app/assets/javascripts/locale`,
+needed in the GitLab test suite (under `app/assets/javascripts/locale/**/app.js`,
 `public/assets`, `tmp/cache/assets/sprockets/`, `tmp/cache/babel-loader/`,
 and `tmp/cache/vue-loader/`).
 

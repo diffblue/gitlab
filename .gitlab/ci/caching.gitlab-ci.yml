@@ -32,7 +32,7 @@ cache-workhorse:
     # app/assets/javascripts/locale/**/app.js are part of the legacy cache but we don't use them when calculating the assets hash sum in the new strategy.
     # This line can be removed once we stop downloading the legacy cache.
     - rm -rf app/assets/javascripts/locale/**/app.js
-    - export GITLAB_ASSETS_HASH=$(bundle exec rake gitlab:assets:hash_sum)
+    - export GITLAB_ASSETS_HASH=$(bundle exec rake gitlab:assets:hash_sum | tee assets-hash.txt)
     - source scripts/gitlab_component_helpers.sh
     - 'gitlab_assets_archive_doesnt_exist || { echoinfo "INFO: Exiting early as package exists."; exit 0; }'
     # If we still use the legacy cache, we don't want to create a package from it as we don't check the sha sum in gitlab:assets:compile_with_new_strategy.

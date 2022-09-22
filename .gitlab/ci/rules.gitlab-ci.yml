@@ -252,17 +252,18 @@
   - "{,ee/,jh/}app/assets/**/*"
   - "vendor/assets/**/*"
 
-# .frontend-build-patterns + fixtures/emojis/**/* + locale/gitlab.pot
+# This list should match the list in Tasks::Gitlab::Assets.assets_impacting_compilation
 .assets-compilation-patterns: &assets-compilation-patterns
   - "{package.json,yarn.lock}"
   - ".browserslistrc"
   - "babel.config.js"
   - "config/webpack.config.js"
+  - "*.js"
   - "config/**/*.js"
+  - "locale/**/gitlab.po"
   - "{,ee/,jh/}app/assets/**/*"
-  - "vendor/assets/**/*"
   - "fixtures/emojis/**/*"
-  - "locale/gitlab.pot"
+  - "vendor/assets/**/*"
 
 .frontend-patterns-for-as-if-foss: &frontend-patterns-for-as-if-foss
   - "{package.json,yarn.lock}"
