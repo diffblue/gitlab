@@ -68,7 +68,7 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
   it('renders default message', () => {
     createWrapper({});
 
-    expect(findTitle()).toBe(wrapper.vm.message);
+    expect(findTitle()).toBe('The roadmap shows the progress of your epics along a timeline');
   });
 
   it('renders empty state message when `hasFiltersApplied` prop is true', () => {
