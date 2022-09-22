@@ -52,4 +52,8 @@ class EpicPolicy < BasePolicy
   rule { can?(:admin_epic) & related_epics_available }.policy do
     enable :admin_related_epic_link
   end
+
+  rule { can?(:reporter_access) }.policy do
+    enable :mark_note_as_confidential
+  end
 end
