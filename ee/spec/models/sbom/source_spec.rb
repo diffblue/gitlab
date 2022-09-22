@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Sbom::Source, type: :model do
-  let(:source_types) { { dependency_file: 0, container_image: 1 } }
+  let(:source_types) { { dependency_scanning: 0, container_scanning: 1 } }
 
   describe 'enums' do
     it { is_expected.to define_enum_for(:source_type).with_values(source_types) }
@@ -20,9 +20,11 @@ RSpec.describe Sbom::Source, type: :model do
     context 'when source is valid' do
       let(:source_attributes) do
         {
-          dependency_file: 'package-lock.json',
-          package_manager_name: 'npm',
-          language: 'JavaScript'
+          'category' => 'development',
+          'input_file' => { 'path' => 'package-lock.json' },
+          'source_file' => { 'path' => 'package.json' },
+          'package_manager' => { 'name' => 'npm' },
+          'language' => { 'name' => 'JavaScript' }
         }
       end
 
@@ -32,18 +34,18 @@ RSpec.describe Sbom::Source, type: :model do
     context 'when optional attributes are missing' do
       let(:source_attributes) do
         {
-          dependency_file: 'package-lock.json'
+          'input_file' => { 'path' => 'package-lock.json' }
         }
       end
 
       it { is_expected.to be_valid }
     end
 
-    context 'when dependency_file is missing' do
+    context 'when input_file is missing' do
       let(:source_attributes) do
         {
-          package_manager_name: 'npm',
-          language: 'JavaScript'
+          'package_manager' => { 'name' => 'npm' },
+          'language' => { 'name' => 'JavaScript' }
         }
       end
 
@@ -53,9 +55,11 @@ RSpec.describe Sbom::Source, type: :model do
     context 'when attributes have wrong type' do
       let(:source_attributes) do
         {
-          dependency_file: 1,
-          package_manager_name: 2,
-          language: 3
+          'category' => 'development',
+          'input_file' => { 'path' => 1 },
+          'source_file' => { 'path' => 'package.json' },
+          'package_manager' => { 'name' => 2 },
+          'language' => { 'name' => 3 }
         }
       end
 

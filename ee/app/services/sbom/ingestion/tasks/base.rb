@@ -20,8 +20,6 @@ module Sbom
         private
 
         attr_reader :pipeline, :occurrence_maps
-
-        delegate :project, :sha, to: :pipeline, private: true
       end
     end
   end

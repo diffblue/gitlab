@@ -6,8 +6,6 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap do
   let_it_be(:report_component) { create(:ci_reports_sbom_component) }
   let_it_be(:report_source) { create(:ci_reports_sbom_source) }
 
-  subject(:occurrence_map) { described_class.new(report_component, report_source) }
-
   let(:base_data) do
     {
       component_id: nil,
@@ -20,6 +18,8 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap do
       source_type: report_source.source_type
     }
   end
+
+  subject(:occurrence_map) { described_class.new(report_component, report_source) }
 
   describe '#to_h' do
     it 'returns a hash with base data without ids assigned' do

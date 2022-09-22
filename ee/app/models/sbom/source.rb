@@ -6,8 +6,8 @@ module Sbom
     ignore_column :fingerprint, remove_with: '15.7', remove_after: '2022-12-22'
 
     enum source_type: {
-      dependency_file: 0,
-      container_image: 1
+      dependency_scanning: 0,
+      container_scanning: 1
     }
 
     validates :source_type, presence: true
