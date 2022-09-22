@@ -1383,7 +1383,7 @@ RSpec.describe Repository do
         stub_feature_flags(license_from_gitaly: ff)
       end
 
-      describe '#license', :clean_gitlab_redis_cache do
+      describe '#license', :use_clean_rails_memory_store_caching, :clean_gitlab_redis_cache do
         let(:project) { create(:project, :repository) }
 
         before do
