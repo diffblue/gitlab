@@ -53,8 +53,7 @@ RSpec.describe MergeRequests::FetchSuggestedReviewersService do
     end
 
     it 'sends the machine learning model input to the suggested reviewers client' do
-      secret = 'wTeJZR61n5lGZ7G2nPozocerM8GBk0EFti0EYpwVh5GJqlLM2ROmyQG0oQcTsGu9'
-      stub_env('SUGGESTED_REVIEWERS_SECRET', secret)
+      stub_env('SUGGESTED_REVIEWERS_SECRET', SecureRandom.hex(32))
 
       expect_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
         expect(client).to receive(:suggested_reviewers).with(model_input).and_return(example_model_result)

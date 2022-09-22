@@ -8,7 +8,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
 
   let(:rpc_url) { 'example.org:1234' }
   let(:certs) { 'arandomstring' }
-  let(:secret) { 'wTeJZR61n5lGZ7G2nPozocerM8GBk0EFti0EYpwVh5GJqlLM2ROmyQG0oQcTsGu9' }
+  let(:secret) { SecureRandom.hex(32) }
   let(:client_arguments) { {} }
 
   let(:client) { described_class.new(**client_arguments) }
