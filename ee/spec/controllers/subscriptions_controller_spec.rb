@@ -466,6 +466,8 @@ RSpec.describe SubscriptionsController do
                   instance_double(ServiceResponse, success?: true, payload: [{ namespace: selected_group, account_id: nil }])
                 )
             end
+
+            stub_request(:get, "#{EE::SUBSCRIPTIONS_GITLAB_PLANS_URL}?plan=free&namespace_id=")
           end
 
           it 'does not create a group' do
@@ -478,7 +480,7 @@ RSpec.describe SubscriptionsController do
             plan_id = params[:subscription][:plan_id]
             quantity = params[:subscription][:quantity]
 
-            expect(response.body).to eq({ location: "/#{selected_group.path}?plan_id=#{plan_id}&purchased_quantity=#{quantity}" }.to_json)
+            expect(response.body).to eq({ location: "#{group_billings_path(selected_group)}?plan_id=#{plan_id}&purchased_quantity=#{quantity}" }.to_json)
           end
 
           context 'when having an explicit redirect' do

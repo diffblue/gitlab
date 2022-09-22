@@ -94,5 +94,48 @@ RSpec.describe 'groups/billings/index', :saas, :aggregate_failures do
         end
       end
     end
+
+    context 'when purchasing a plan' do
+      before do
+        allow(view).to receive(:params).and_return(purchased_quantity: quantity)
+        allow(view).to receive(:plan_title).and_return('Bronze')
+      end
+
+      let(:quantity) { '1' }
+
+      it 'tracks purchase banner', :snowplow do
+        render
+
+        expect_snowplow_event(
+          category: 'groups:billings',
+          action: 'render',
+          label: 'purchase_confirmation_alert_displayed',
+          namespace: group,
+          user: user
+        )
+      end
+
+      context 'with a single user' do
+        it 'displays the correct notification for 1 user' do
+          render
+
+          expect(rendered).to have_text('You have successfully purchased a Bronze plan subscription for 1 user. ' \
+                                    'You’ll receive a receipt via email. Your purchase may take a minute to sync, ' \
+                                    'so refresh the page if you don\'t see it yet.')
+        end
+      end
+
+      context 'with multiple users' do
+        let(:quantity) { '2' }
+
+        it 'displays the correct notification for 2 users' do
+          render
+
+          expect(rendered).to have_text('You have successfully purchased a Bronze plan subscription for 2 users. ' \
+                                    'You’ll receive a receipt via email. Your purchase may take a minute to sync, ' \
+                                    'so refresh the page if you don\'t see it yet.')
+        end
+      end
+    end
   end
 end
