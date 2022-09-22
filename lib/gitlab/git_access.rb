@@ -445,9 +445,6 @@ module Gitlab
           nil
         when Key
           actor.user
-        when :ci
-          # deprecated code path
-          nil
         end
       end
     end
