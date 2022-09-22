@@ -164,39 +164,6 @@ RSpec.describe "User registration", :js, :saas do
     it_behaves_like 'imports my existing project'
   end
 
-  describe "when accepting an invite" do
-    let_it_be(:user) { build(:user, name: 'Invited User') }
-    let_it_be(:owner) { create(:user, name: 'John Doe') }
-    let_it_be(:group) { create(:group, name: 'Test Group') }
-
-    before do
-      group.add_owner(owner)
-
-      invitation = create(:group_member, :invited, :developer,
-        invite_email: user.email,
-        group: group,
-        created_by: owner
-      )
-      visit invite_path(invitation.raw_invite_token, invite_type: Emails::Members::INITIAL_INVITE)
-
-      fill_in_sign_up_form(user)
-      click_on 'Register'
-    end
-
-    it "doesn't ask me what I would like to do" do
-      expect(page).to have_content('Welcome to GitLab, Invited!')
-      expect(page).not_to have_content('What would you like to do?')
-    end
-
-    it "sends me to the group activity page" do
-      fill_in_welcome_form
-      click_on 'Get started!'
-
-      expect(page).to have_current_path(activity_group_path(group), ignore_query: true)
-      expect(page).to have_content('You have been granted Developer access to group Test Group')
-    end
-  end
-
   describe "using the standard flow" do
     let_it_be(:user) { create(:user, name: 'Onboarding User') }
 
