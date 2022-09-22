@@ -15,7 +15,7 @@ class CreateUserPhoneNumberValidations < Gitlab::Database::Migration[2.0]
       t.integer :risk_score, null: false, default: 0, limit: 1
 
       t.text :country, null: false, limit: 3
-      t.text :phone_number, null: false, limit: 32
+      t.text :phone_number, null: false, limit: 12
       t.text :telesign_reference_xid, limit: 255
 
       t.index [:international_dial_code, :phone_number], name: :index_user_phone_validations_on_dial_code_phone_number

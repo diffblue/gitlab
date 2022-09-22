@@ -22116,7 +22116,7 @@ CREATE TABLE user_phone_number_validations (
     phone_number text NOT NULL,
     telesign_reference_xid text,
     CONSTRAINT check_193736da9f CHECK ((char_length(country) <= 3)),
-    CONSTRAINT check_d2f31fc815 CHECK ((char_length(phone_number) <= 32)),
+    CONSTRAINT check_d2f31fc815 CHECK ((char_length(phone_number) <= 12)),
     CONSTRAINT check_d7af4d3eb5 CHECK ((char_length(telesign_reference_xid) <= 255))
 );
 
