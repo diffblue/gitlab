@@ -16,7 +16,7 @@ module Ci
     validates :file, presence: true, file_size: { maximum: FILE_SIZE_LIMIT }
     validates :checksum, :file_store, :name, :project_id, presence: true
     validates :name, uniqueness: { scope: :project }
-    validates :metadata, json_schema: { filename: "ci_secure_file_metadata" }
+    validates :metadata, json_schema: { filename: "ci_secure_file_metadata" }, allow_nil: true
 
     after_initialize :generate_key_data
     before_validation :assign_checksum
