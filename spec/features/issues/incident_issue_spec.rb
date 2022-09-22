@@ -83,12 +83,14 @@ RSpec.describe 'Incident Detail', :js do
       before do
         visit project_issue_path(project, incident)
         wait_for_requests
+
         click_link 'Timeline'
+        wait_for_requests
       end
 
       it 'does not show the linked issues and notes/comment components' do
         page.within('.issuable-details') do
-          hidden_items = find_all('.js-issue-widgets')
+          hidden_items = find_all('.js-issue-widgets', wait: false)
 
           # Linked Issues/MRs and comment box are hidden on page
           expect(hidden_items.count).to eq(0)
