@@ -4,10 +4,6 @@ module Namespaces
   module FreeUserCap
     FREE_USER_LIMIT = 5
 
-    def self.trimming_enabled?
-      ::Feature.enabled?(:free_user_cap_data_remediation_job)
-    end
-
     def self.enforce_preview_or_standard?(namespace)
       # should only be needed temporarily while preview is still in codebase
       # after preview is removed, we should merely call `Standard` in the
