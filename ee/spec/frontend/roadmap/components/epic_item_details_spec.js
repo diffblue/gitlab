@@ -1,5 +1,6 @@
 import { GlButton, GlIcon } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import EpicItemDetails from 'ee/roadmap/components/epic_item_details.vue';
 import eventHub from 'ee/roadmap/event_hub';
 import createStore from 'ee/roadmap/store';
@@ -24,34 +25,31 @@ describe('EpicItemDetails', () => {
   });
 
   const createWrapper = (props = {}) => {
-    wrapper = shallowMount(EpicItemDetails, {
-      store,
-      propsData: {
-        epic: mockFormattedEpic,
-        currentGroupId: mockGroupId,
-        timeframeString: 'Jul 10, 2017 – Jun 2, 2018',
-        childLevel: 0,
-        childrenFlags: { [mockFormattedEpic.id]: { itemExpanded: false } },
-        hasFiltersApplied: false,
-        isChildrenEmpty: false,
-        ...props,
-      },
-    });
+    wrapper = extendedWrapper(
+      shallowMount(EpicItemDetails, {
+        store,
+        propsData: {
+          epic: mockFormattedEpic,
+          currentGroupId: mockGroupId,
+          timeframeString: 'Jul 10, 2017 – Jun 2, 2018',
+          childLevel: 0,
+          childrenFlags: { [mockFormattedEpic.id]: { itemExpanded: false } },
+          hasFiltersApplied: false,
+          isChildrenEmpty: false,
+          ...props,
+        },
+      }),
+    );
   };
 
-  const getTitle = () => wrapper.find('.epic-title');
-
-  const getGroupName = () => wrapper.find('.epic-group');
-
-  const getChildMarginClassName = () => wrapper.vm.childMarginClassname;
-
+  const getTitle = () => wrapper.findByTestId('epic-title');
+  const getGroupName = () => wrapper.findByTestId('epic-group');
+  const getEpicContainer = () => wrapper.findByTestId('epic-container');
   const getExpandIconButton = () => wrapper.findComponent(GlButton);
-
-  const getExpandIconTooltip = () => wrapper.findComponent({ ref: 'expandIconTooltip' });
-
-  const getChildEpicsCount = () => wrapper.findComponent({ ref: 'childEpicsCount' });
-
-  const getChildEpicsCountTooltip = () => wrapper.findComponent({ ref: 'childEpicsCountTooltip' });
+  const getExpandIconTooltip = () => wrapper.findByTestId('expand-icon-tooltip');
+  const getChildEpicsCount = () => wrapper.findByTestId('child-epics-count');
+  const getChildEpicsCountTooltip = () => wrapper.findByTestId('child-epics-count-tooltip');
+  const getBlockedIcon = () => wrapper.findByTestId('blocked-icon');
 
   const getExpandButtonData = () => ({
     icon: wrapper.findComponent(GlIcon).attributes('name'),
@@ -115,15 +113,19 @@ describe('EpicItemDetails', () => {
     });
   });
 
-  describe('childMarginClassname', () => {
-    it('childMarginClassname returns class for level 1 child is childLevel is 1', () => {
-      createWrapper({ childLevel: 1 });
-      expect(getChildMarginClassName()).toEqual('ml-4');
+  describe('nested children styles', () => {
+    const epic = createMockEpic({
+      ...mockFormattedEpic,
+      isChildEpic: true,
+    });
+    it('applies class for level 1 child', () => {
+      createWrapper({ epic, childLevel: 1 });
+      expect(getEpicContainer().classes('ml-4')).toBe(true);
     });
 
-    it('childMarginClassname returns class for level 2 child is childLevel is 2', () => {
-      createWrapper({ childLevel: 2 });
-      expect(getChildMarginClassName()).toEqual('ml-6');
+    it('applies class for level 2 child', () => {
+      createWrapper({ epic, childLevel: 2 });
+      expect(getEpicContainer().classes('ml-6')).toBe(true);
     });
   });
 
@@ -277,6 +279,24 @@ describe('EpicItemDetails', () => {
             createWrapper({ epic });
             expect(getChildEpicsCount().text()).toBe('2');
           });
+        });
+
+        describe('blocked icon', () => {
+          it.each`
+            blocked  | showsBlocked
+            ${true}  | ${true}
+            ${false} | ${false}
+          `(
+            'if epic.blocked is $blocked then blocked is shown $showsBlocked',
+            ({ blocked, showsBlocked }) => {
+              epic = createMockEpic({
+                blocked,
+              });
+              createWrapper({ epic });
+
+              expect(getBlockedIcon().exists()).toBe(showsBlocked);
+            },
+          );
         });
       });
     });
