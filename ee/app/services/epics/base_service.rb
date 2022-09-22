@@ -55,6 +55,11 @@ module Epics
 
     private
 
+    override :available_callbacks
+    def available_callbacks
+      [].freeze
+    end
+
     override :handle_quick_actions
     def handle_quick_actions(epic)
       super
