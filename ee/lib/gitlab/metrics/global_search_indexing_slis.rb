@@ -18,10 +18,10 @@ module Gitlab
           Gitlab::Metrics::Sli::Apdex.initialize_sli(:global_search_indexing, possible_labels)
         end
 
-        def record_apdex(elapsed:, type:)
+        def record_apdex(elapsed:, document_type:)
           Gitlab::Metrics::Sli::Apdex[:global_search_indexing].increment(
-            labels: labels(type: type),
-            success: elapsed < duration_target(type)
+            labels: labels(document_type: document_type),
+            success: elapsed < duration_target(document_type)
           )
         end
 
@@ -31,7 +31,7 @@ module Gitlab
           indexing_type == 'Code' ? CODE_INDEXING_TARGET_S : CONTENT_INDEXING_TARGET_S
         end
 
-        def types
+        def document_types
           indexable_models + %w[Code Wiki]
         end
 
@@ -44,16 +44,16 @@ module Gitlab
         end
 
         def possible_labels
-          types.map do |type|
+          document_types.map do |document_type|
             {
-              type: type
+              document_type: document_type
             }
           end
         end
 
-        def labels(type:)
+        def labels(document_type:)
           {
-            type: type
+            document_type: document_type
           }
         end
       end

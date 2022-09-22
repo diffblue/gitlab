@@ -19,14 +19,14 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis do
       it 'increments the global_search_indexing SLI as a success' do
         expect(Gitlab::Metrics::Sli::Apdex[:global_search_indexing]).to receive(:increment).with(
           labels: {
-            type: 'Code'
+            document_type: 'Code'
           },
           success: true
         )
 
         described_class.record_apdex(
           elapsed: 0.1,
-          type: 'Code'
+          document_type: 'Code'
         )
       end
     end
@@ -35,14 +35,14 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis do
       it 'increments the global_search_indexing SLI as a failure' do
         expect(Gitlab::Metrics::Sli::Apdex[:global_search_indexing]).to receive(:increment).with(
           labels: {
-            type: 'Code'
+            document_type: 'Code'
           },
           success: false
         )
 
         described_class.record_apdex(
           elapsed: 15,
-          type: 'Code'
+          document_type: 'Code'
         )
       end
     end
