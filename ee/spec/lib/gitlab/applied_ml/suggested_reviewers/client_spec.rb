@@ -89,6 +89,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
 
         expect(token).to have_received(:issuer=).with(described_class::JWT_ISSUER)
         expect(token).to have_received(:audience=).with(described_class::JWT_AUDIENCE)
+        expect(token).to have_received(:encoded)
       end
     end
 
