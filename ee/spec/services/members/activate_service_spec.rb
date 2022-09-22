@@ -79,100 +79,6 @@ RSpec.describe Members::ActivateService do
     end
   end
 
-  shared_examples 'handles free user cap' do
-    context 'check if free user cap has been reached', :saas do
-      context 'when group is a group with paid plan' do
-        let_it_be(:root_group) { create(:group_with_plan, plan: :ultimate_plan) }
-        let_it_be(:members) { [create(:group_member, :awaiting, group: root_group, user: user)] }
-
-        it_behaves_like 'successful member activation'
-      end
-
-      context 'when group is on a free plan' do
-        before do
-          allow_next_instance_of(::Namespaces::FreeUserCap::Standard) do |free_user_cap|
-            allow(free_user_cap).to receive(:enforce_cap?).and_return(enforce_cap)
-            allow(free_user_cap).to receive(:remaining_seats).and_return(remaining_seats)
-          end
-        end
-
-        let_it_be(:root_group) { create(:group_with_plan, plan: :free_plan) }
-        let_it_be(:sub_group) { create(:group, parent: root_group) }
-        let_it_be(:project) { create(:project, namespace: root_group) }
-
-        let_it_be(:root_group_member) { create(:group_member, :awaiting, :invited, group: root_group, user: user) }
-        let_it_be(:sub_group_member) { create(:group_member, :awaiting, :invited, group: sub_group, user: user) }
-        let_it_be(:project_member) { create(:project_member, :awaiting, :invited, :owner, project: project, user: user) }
-
-        context 'when free_user_cap is not enforced' do
-          let(:remaining_seats) { 1 }
-          let(:enforce_cap) { false }
-
-          let_it_be(:members) { [root_group_member, sub_group_member, project_member] }
-
-          it_behaves_like 'successful member activation'
-        end
-
-        context 'when free_user_cap is enforced' do
-          let(:enforce_cap) { true }
-
-          let_it_be(:members) { [root_group_member, sub_group_member, project_member] }
-
-          context 'when the free user cap has not been reached' do
-            let(:remaining_seats) { 1 }
-
-            it_behaves_like 'successful member activation'
-          end
-
-          context 'when the free user cap has been reached' do
-            let(:remaining_seats) { 0 }
-
-            it 'keeps the members awaiting' do
-              result = execute
-
-              expect(result[:status]).to eq :error
-              expect(result[:message]).to eq 'There is no seat left to activate the member'
-
-              expect(root_group_member.reload).to be_awaiting
-              expect(sub_group_member.reload).to be_awaiting
-              expect(project_member.reload).to be_awaiting
-            end
-
-            context 'when there is already an active membership for the user' do
-              context 'when active group membership' do
-                before do
-                  create(:group_member, :active, group: create(:group, parent: root_group), user: user)
-                end
-
-                it 'sets the members to active' do
-                  execute
-
-                  expect(root_group_member.reload).to be_active
-                  expect(sub_group_member.reload).to be_active
-                  expect(project_member.reload).to be_active
-                end
-              end
-
-              context 'when active project membership' do
-                before do
-                  create(:project_member, :active, :owner, project: create(:project, group: root_group), user: user)
-                end
-
-                it 'sets the members to active' do
-                  execute
-
-                  expect(root_group_member.reload).to be_active
-                  expect(sub_group_member.reload).to be_active
-                  expect(project_member.reload).to be_active
-                end
-              end
-            end
-          end
-        end
-      end
-    end
-  end
-
   # There is a bug where member records are not valid when the membership to the sub-group
   # has a lower access level than the membership to the parent group.
   # https://gitlab.com/gitlab-org/gitlab/-/issues/362091
@@ -366,7 +272,6 @@ RSpec.describe Members::ActivateService do
         end
       end
 
-      it_behaves_like 'handles free user cap'
       it_behaves_like 'when a user has memberships with invalid access levels'
     end
   end

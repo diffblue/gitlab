@@ -44,7 +44,6 @@ module Members
       @skip_authorization = skip_authorization
 
       return error(_('You do not have permission to approve a member'), :forbidden) unless allowed?
-      return error(_('There is no seat left to activate the member')) unless has_capacity_left?
       return error(_('No memberships found'), :bad_request) if memberships.empty?
 
       activate_memberships
@@ -69,24 +68,6 @@ module Members
       return true if skip_authorization
 
       can?(current_user, :admin_group_member, group)
-    end
-
-    def has_capacity_left?
-      return true unless free_user_cap.enforce_cap?
-
-      # A user could have an active and awaiting memberships at the same time.
-      # If there is at least one active membership for a user, a seat is already in use.
-      # We therefore can only count users towards the seat limit if there is no active membership.
-      # rubocop: disable CodeReuse/ActiveRecord
-      active_user_ids = ::Member.in_hierarchy(group).active_state.select(:user_id).distinct
-      to_activate_count = memberships.excluding_users(active_user_ids).distinct.count(:user_id)
-      # rubocop: enable CodeReuse/ActiveRecord
-
-      to_activate_count <= free_user_cap.remaining_seats
-    end
-
-    def free_user_cap
-      @free_user_cap ||= Namespaces::FreeUserCap::Standard.new(group)
     end
 
     def update_user_project_access
