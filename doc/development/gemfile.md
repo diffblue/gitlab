@@ -11,7 +11,7 @@ attention to the following rules.
 
 ## Bundler checksum verification
 
-As for [GitLab 15.5](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/98508), gem
+In [GitLab 15.5 and later](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/98508), gem
 checksums are checked before installation. This verification is still
 experimental so it is only active for CI.
 
@@ -37,7 +37,7 @@ This needs to be done for any new, or updated gems.
    bundle exec bundler-checksum init
    ```
 
-1. Check, and commit the changes for `Gemfile.checksum`.
+1. Check and commit the changes for `Gemfile.checksum`.
 
 ## No gems fetched from Git repositories
 
