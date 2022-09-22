@@ -3,8 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe 'Branches' do
-  let(:user) { create(:user) }
-  let(:project) { create(:project, :public, :repository) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:project) { create(:project, :public, :repository) }
   let(:repository) { project.repository }
 
   context 'logged in as developer' do
@@ -233,7 +233,7 @@ RSpec.describe 'Branches' do
   end
 
   context 'with one or more pipeline', :js do
-    let(:project) { create(:project, :public, :empty_repo) }
+    let_it_be(:project) { create(:project, :public, :empty_repo) }
 
     before do
       sha = create_file(branch_name: "branch")
