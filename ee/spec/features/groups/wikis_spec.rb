@@ -12,6 +12,7 @@ RSpec.describe 'Group wikis', :js do
 
   before do
     stub_group_wikis(true)
+    stub_feature_flags(gl_listbox_for_sort_dropdowns: false)
     wiki.container.add_owner(user)
   end
 
