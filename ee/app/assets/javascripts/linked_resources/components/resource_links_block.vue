@@ -4,7 +4,7 @@ import { produce } from 'immer';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_ISSUE } from '~/graphql_shared/constants';
 import { createAlert } from '~/flash';
-import { sprintf } from '~/locale';
+import { __, sprintf } from '~/locale';
 import { resourceLinksI18n } from '../constants';
 import { displayAndLogError, identifyLinkType } from './utils';
 import getIssuableResourceLinks from './graphql/queries/get_issuable_resource_links.query.graphql';
@@ -45,6 +45,7 @@ export default {
   },
   data() {
     return {
+      isOpen: true,
       isFormVisible: false,
       isSubmitting: false,
       resourceLinks: [],
@@ -70,19 +71,29 @@ export default {
     badgeLabel() {
       return this.isFetching && this.resourceLinks.length === 0 ? '...' : this.resourceLinks.length;
     },
-    hasBody() {
-      return this.isFormVisible;
-    },
     hasResourceLinks() {
       return Boolean(this.resourceLinks.length);
     },
     isFetching() {
       return this.$apollo.queries.resourceLinks.loading;
     },
+    toggleIcon() {
+      return this.isOpen ? 'chevron-lg-up' : 'chevron-lg-down';
+    },
+    toggleLabel() {
+      return this.isOpen ? __('Collapse') : __('Expand');
+    },
   },
   methods: {
+    handleToggle() {
+      this.isOpen = !this.isOpen;
+      if (!this.isOpen) {
+        this.isFormVisible = false;
+      }
+    },
     async toggleResourceLinkForm() {
       this.isFormVisible = !this.isFormVisible;
+      this.isOpen = true;
     },
     hideResourceLinkForm() {
       this.isFormVisible = false;
@@ -205,12 +216,10 @@ export default {
   <div id="resource-links" class="gl-mt-5">
     <div class="card card-slim gl-overflow-hidden">
       <div
-        :class="{ 'panel-empty-heading border-bottom-0': !hasBody }"
-        class="card-header gl-display-flex gl-justify-content-space-between gl-bg-gray-10"
+        :class="{ 'panel-empty-heading border-bottom-0': !isFormVisible, 'gl-border-b-1': !isOpen }"
+        class="card-header gl-display-flex gl-justify-content-space-between gl-bg-gray-10 gl-align-items-center gl-line-height-24 gl-py-3"
       >
-        <h3
-          class="card-title h5 position-relative gl-my-0 gl-display-flex gl-align-items-center gl-h-7"
-        >
+        <h3 class="card-title h5 position-relative gl-my-0 gl-display-flex gl-align-items-center">
           <gl-link
             id="user-content-resource-links"
             class="anchor position-absolute gl-text-decoration-none"
@@ -235,17 +244,34 @@ export default {
                 {{ badgeLabel }}
               </span>
             </div>
-            <gl-button
-              v-if="canAddResourceLinks"
-              icon="plus"
-              :aria-label="$options.i18n.addButtonText"
-              @click="toggleResourceLinkForm"
-            />
           </div>
         </h3>
+        <slot name="header-actions"></slot>
+        <gl-button
+          v-if="canAddResourceLinks"
+          size="small"
+          :aria-label="$options.i18n.addButtonText"
+          class="gl-ml-auto"
+          data-testid="add-resource-links"
+          @click="toggleResourceLinkForm"
+        >
+          <slot name="add-button-text">{{ __('Add') }}</slot>
+        </gl-button>
+        <div class="gl-pl-3 gl-ml-3 gl-border-l-1 gl-border-l-solid gl-border-l-gray-100">
+          <gl-button
+            category="tertiary"
+            size="small"
+            :icon="toggleIcon"
+            :aria-label="toggleLabel"
+            :disabled="!hasResourceLinks"
+            data-testid="toggle-links"
+            @click="handleToggle"
+          />
+        </div>
       </div>
       <div
-        class="bg-gray-light"
+        v-if="isOpen"
+        class="gl-bg-gray-10"
         :class="{
           'linked-issues-card-body gl-p-5': isFormVisible,
         }"
