@@ -3885,6 +3885,9 @@ msgstr ""
 msgid "All paths are relative to the GitLab URL. Do not include %{relative_url_link_start}relative URLs%{relative_url_link_end}."
 msgstr ""
 
+msgid "All project members"
+msgstr ""
+
 msgid "All projects"
 msgstr ""
 
@@ -38802,6 +38805,9 @@ msgid "SuggestedColors|Titanium yellow"
 msgstr ""
 
 msgid "Suggestion is not applicable as the suggestion was not found."
+msgstr ""
+
+msgid "Suggestion(s)"
 msgstr ""
 
 msgid "Suggestions are not applicable as one or more suggestions were not found."
