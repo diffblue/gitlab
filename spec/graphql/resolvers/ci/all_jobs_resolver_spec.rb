@@ -40,7 +40,7 @@ RSpec.describe Resolvers::Ci::AllJobsResolver do
     context 'with unauthorized user' do
       let(:current_user) { nil }
 
-      it { is_expected.to contain_exactly }
+      it { is_expected.to be_empty }
     end
   end
 
