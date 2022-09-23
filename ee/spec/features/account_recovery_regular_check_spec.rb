@@ -86,7 +86,8 @@ RSpec.describe 'Account recovery regular check callout' do
         expect(page).to have_content(message)
       end
 
-      it 'hides callout on next session if user dismissed it', :js do
+      it 'hides callout on next session if user dismissed it', :js,
+          quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375101' do
         visit dashboard_todos_path
 
         expect(page).to have_content(message)
