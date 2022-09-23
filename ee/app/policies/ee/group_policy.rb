@@ -19,6 +19,11 @@ module EE
         @subject.feature_available?(:contribution_analytics)
       end
 
+      condition(:group_analytics_dashboards_available, scope: :subject) do
+        ::Feature.enabled?(:group_analytics_dashboards_page) &&
+          @subject.feature_available?(:group_level_analytics_dashboard)
+      end
+
       condition(:cycle_analytics_available, scope: :subject) do
         @subject.feature_available?(:cycle_analytics_for_groups)
       end
@@ -254,6 +259,10 @@ module EE
 
       rule { reporter & group_merge_request_analytics_available }
         .enable :read_group_merge_request_analytics
+
+      rule { reporter & group_analytics_dashboards_available }.policy do
+        enable :read_group_analytics_dashboards
+      end
 
       rule { reporter & cycle_analytics_available }.policy do
         enable :read_group_cycle_analytics, :create_group_stage, :read_group_stage, :update_group_stage, :delete_group_stage

@@ -4513,6 +4513,9 @@ msgstr ""
 msgid "Analytics"
 msgstr ""
 
+msgid "AnalyticsDashboards|Dashboards"
+msgstr ""
+
 msgid "Analyze your dependencies for known vulnerabilities."
 msgstr ""
 
