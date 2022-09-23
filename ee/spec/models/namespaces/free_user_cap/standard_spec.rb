@@ -5,19 +5,18 @@ require 'spec_helper'
 RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
   let_it_be(:namespace, reload: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
-  let(:should_check_namespace_plan) { true }
+  let(:dashboard_limit_enabled) { true }
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
+    stub_ee_application_setting(dashboard_limit_enabled: dashboard_limit_enabled)
   end
 
   describe '#over_limit?' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
 
     subject(:over_limit?) { described_class.new(namespace).over_limit? }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
       allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
     end
 
@@ -35,13 +34,13 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
         it { is_expected.to be false }
       end
 
       context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
         it { is_expected.to be false }
       end
@@ -88,7 +87,7 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
 
         context 'when should check namespace plan is false' do
-          let(:should_check_namespace_plan) { false }
+          let(:dashboard_limit_enabled) { false }
 
           it { is_expected.to be false }
         end
@@ -97,7 +96,7 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
   end
 
   describe '#reached_limit?' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
 
     subject(:reached_limit?) { described_class.new(namespace).reached_limit? }
 
@@ -119,13 +118,13 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
         it { is_expected.to be false }
       end
 
       context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
         it { is_expected.to be true }
       end
@@ -164,7 +163,7 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
 
         context 'when should check namespace plan is false' do
-          let(:should_check_namespace_plan) { false }
+          let(:dashboard_limit_enabled) { false }
 
           it { is_expected.to be false }
         end
@@ -223,7 +222,7 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       context 'when should check namespace plan is false' do
-        let(:should_check_namespace_plan) { false }
+        let(:dashboard_limit_enabled) { false }
 
         it { is_expected.to be false }
       end

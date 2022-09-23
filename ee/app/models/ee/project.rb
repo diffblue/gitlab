@@ -911,6 +911,16 @@ module EE
       epic_ids.to_a
     end
 
+    def suggested_reviewers_available?
+      strong_memoize(:suggested_reviewers_available) do
+        next false unless ::Gitlab.com? &&
+                          ::Feature.enabled?(:suggested_reviewers, self) &&
+                          licensed_feature_available?(:suggested_reviewers)
+
+        true
+      end
+    end
+
     private
 
     def update_legacy_open_source_license_available

@@ -2,6 +2,15 @@
 
 module EE
   module FormHelper
+    # Overwritten
+    def reviewers_dropdown_options_for_suggested_reviewers
+      {
+        show_suggested: true,
+        suggested_reviewers_header: _('Suggestion(s)'),
+        all_members_header: _('All project members')
+      }
+    end
+
     def issue_supports_multiple_assignees?
       current_board_parent.feature_available?(:multiple_issue_assignees)
     end

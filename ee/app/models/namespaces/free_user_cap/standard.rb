@@ -10,13 +10,13 @@ module Namespaces
       def over_limit?
         return false unless enforce_cap?
 
-        users_count > FREE_USER_LIMIT
+        users_count > Namespaces::FreeUserCap.dashboard_limit
       end
 
       def reached_limit?
         return false unless enforce_cap?
 
-        users_count >= FREE_USER_LIMIT
+        users_count >= Namespaces::FreeUserCap.dashboard_limit
       end
 
       def enforce_cap?
@@ -38,7 +38,7 @@ module Namespaces
       attr_reader :root_namespace
 
       def enforceable_subscription?
-        return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
+        return false unless ::Gitlab::CurrentSettings.dashboard_limit_enabled?
         return false unless root_namespace.group_namespace?
         return false if root_namespace.public?
 

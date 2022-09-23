@@ -31,4 +31,20 @@ RSpec.describe Namespaces::FreeUserCap do
       it { is_expected.to be result }
     end
   end
+
+  describe '.dashboard_limit' do
+    subject { described_class.dashboard_limit }
+
+    context 'when set to default' do
+      it { is_expected.to eq 0 }
+    end
+
+    context 'when not set to default' do
+      before do
+        stub_ee_application_setting(dashboard_limit: 5)
+      end
+
+      it { is_expected.to eq 5 }
+    end
+  end
 end
