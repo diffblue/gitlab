@@ -9,7 +9,7 @@ RSpec.describe EE::InviteMembersHelper do
 
     let(:notification_attributes) do
       {
-        'free_users_limit' => ::Namespaces::FreeUserCap::FREE_USER_LIMIT,
+        'free_users_limit' => ::Namespaces::FreeUserCap.dashboard_limit,
         'members_count' => 0,
         'new_trial_registration_path' => new_trial_path,
         'purchase_path' => group_billings_path(project.root_ancestor)
@@ -17,7 +17,7 @@ RSpec.describe EE::InviteMembersHelper do
     end
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: true)
+      stub_ee_application_setting(dashboard_limit_enabled: true)
     end
 
     context 'when applying the free user cap is not valid' do

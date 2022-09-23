@@ -22,7 +22,7 @@ module Namespaces
       end
 
       def self.free_user_limit
-        ::Namespaces::FreeUserCap::FREE_USER_LIMIT
+        ::Namespaces::FreeUserCap.dashboard_limit
       end
 
       def self.close_button_data
