@@ -18,7 +18,7 @@ module Gitlab
 
           USAGE_PREFIX = "USAGE_"
 
-          def initialize(time_frame:, options: {})
+          def initialize(metric_definition)
             super
 
             raise ArgumentError, "'event' option is required" unless metric_event.present?
