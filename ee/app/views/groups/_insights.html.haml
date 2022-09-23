@@ -13,7 +13,7 @@
       = s_('GroupSettings|Select the project containing your custom Insights file. %{help_link_start}What is Insights?%{help_link_end}').html_safe % { help_link_start: insights_help_link_start, help_link_end: insights_help_link_end }
 
   .settings-content
-    = form_for @group, html: { class: 'fieldset-form' } do |form|
+    = gitlab_ui_form_for @group, html: { class: 'fieldset-form' } do |form|
       = form_errors(@group)
 
       %fieldset
@@ -25,4 +25,4 @@
               = html_escape(s_('GroupSettings|Select the project containing the %{code_start}.gitlab/insights.yml%{code_end} file')) % { code_start: '<code>'.html_safe, code_end: '</code>'.html_safe }
             = project_select_tag('group[insight_attributes][project_id]', class: 'project-item-select hidden-filter-value', toggle_class: 'js-project-search js-project-filter js-filter-submit', dropdown_class: 'dropdown-menu-selectable dropdown-menu-project js-filter-submit',
               placeholder: _('Search projects'), idAttribute: 'id', data: { order_by: 'last_activity_at', idattribute: 'id', simple_filter: true, allow_clear: true, include_projects_in_subgroups: true }, value: insight.project_id)
-      = form.submit _('Save changes'), class: "btn gl-button btn-confirm"
+      = form.submit _('Save changes'), pajamas_button: true
