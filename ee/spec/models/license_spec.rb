@@ -467,41 +467,225 @@ RSpec.describe License do
 
   describe 'Callbacks' do
     describe '#reset_current', :request_store do
-      def current_license_cached_value
-        License.cache.read(License::CACHE_KEY, License)
+      def cached_offline_cloud_license?
+        License.cache.read(:offline_cloud_license?)
       end
 
-      before do
-        License.current # Set cache up front
+      def cached_restricted_user_count
+        License.cache.read(:restricted_user_count)
+      end
+
+      def cached_restricted_user_count?
+        License.cache.read(:restricted_user_count?)
+      end
+
+      def cached_ultimate?
+        License.cache.read(:ultimate?)
+      end
+
+      def cached_customer_service_enabled?
+        License.cache.read(:customer_service_enabled?)
+      end
+
+      def cached_trial?
+        License.cache.read(:trial?)
       end
 
       context 'when a license is created' do
-        it 'expires the current_license cached value' do
-          expect(current_license_cached_value).to be_present
+        it 'expires offline_cloud_license? value' do
+          License.current.offline_cloud_license? # Activates cache
+
+          expect(cached_offline_cloud_license?).to eq(false)
 
           create(:license)
 
-          expect(current_license_cached_value).to be_nil
+          expect(cached_offline_cloud_license?).to be_nil
+        end
+
+        it 'expires restricted_user_count value' do
+          allow(License.current).to receive(:restricted_attr).with(:active_user_count) { 10 }
+
+          License.current.restricted_user_count # Activates cache
+
+          expect(cached_restricted_user_count).to eq(10)
+
+          create(:license)
+
+          expect(cached_restricted_user_count).to be_nil
+        end
+
+        it 'expires cached_restricted_user_count? value' do
+          License.current.restricted_user_count? # Activates cache
+
+          expect(cached_restricted_user_count?).to eq(false)
+
+          create(:license)
+
+          expect(cached_restricted_user_count?).to be_nil
+        end
+
+        it 'expires cached_ultimate? value' do
+          License.current.ultimate? # Activates cache
+
+          expect(cached_ultimate?).to eq(false)
+
+          create(:license)
+
+          expect(cached_ultimate?).to be_nil
+        end
+
+        it 'expires cached_customer_service_enabled? value' do
+          License.current.customer_service_enabled? # Activates cache
+
+          expect(cached_customer_service_enabled?).to eq(false)
+
+          create(:license)
+
+          expect(cached_customer_service_enabled?).to be_nil
+        end
+
+        it 'expires cached_trial? value' do
+          allow(License.current).to receive(:restricted_attr).with(:trial) { true }
+
+          License.current.trial? # Activates cache
+
+          expect(cached_trial?).to eq(true)
+
+          create(:license)
+
+          expect(cached_trial?).to be_nil
         end
       end
 
       context 'when a license is updated' do
-        it 'expires the current_license cached value' do
-          expect(current_license_cached_value).to be_present
+        it 'expires offline_cloud_license? value' do
+          License.current.offline_cloud_license? # Activates cache
+
+          expect(cached_offline_cloud_license?).to eq(false)
 
           License.last.update!(updated_at: Time.current)
 
-          expect(current_license_cached_value).to be_nil
+          expect(cached_offline_cloud_license?).to be_nil
+        end
+
+        it 'expires restricted_user_count value' do
+          allow(License.current).to receive(:restricted_attr).with(:active_user_count) { 10 }
+
+          License.current.restricted_user_count # Activates cache
+
+          expect(cached_restricted_user_count).to eq(10)
+
+          License.last.update!(updated_at: Time.current)
+
+          expect(cached_restricted_user_count).to be_nil
+        end
+
+        it 'expires cached_restricted_user_count? value' do
+          License.current.restricted_user_count? # Activates cache
+
+          expect(cached_restricted_user_count?).to eq(false)
+
+          License.last.update!(updated_at: Time.current)
+
+          expect(cached_restricted_user_count?).to be_nil
+        end
+
+        it 'expires cached_ultimate? value' do
+          License.current.ultimate? # Activates cache
+
+          expect(cached_ultimate?).to eq(false)
+
+          License.last.update!(updated_at: Time.current)
+
+          expect(cached_ultimate?).to be_nil
+        end
+
+        it 'expires cached_customer_service_enabled? value' do
+          License.current.customer_service_enabled? # Activates cache
+
+          expect(cached_customer_service_enabled?).to eq(false)
+
+          License.last.update!(updated_at: Time.current)
+
+          expect(cached_customer_service_enabled?).to be_nil
+        end
+
+        it 'expires cached_trial? value' do
+          allow(License.current).to receive(:restricted_attr).with(:trial) { true }
+
+          License.current.trial? # Activates cache
+
+          expect(cached_trial?).to eq(true)
+
+          License.last.update!(updated_at: Time.current)
+
+          expect(cached_trial?).to be_nil
         end
       end
 
       context 'when a license is destroyed' do
-        it 'expires the current_license cached value' do
-          expect(current_license_cached_value).to be_present
+        it 'expires offline_cloud_license? value' do
+          License.current.offline_cloud_license? # Activates cache
+
+          expect(cached_offline_cloud_license?).to eq(false)
 
           License.last.destroy!
 
-          expect(current_license_cached_value).to be_nil
+          expect(cached_offline_cloud_license?).to be_nil
+        end
+
+        it 'expires restricted_user_count value' do
+          allow(License.current).to receive(:restricted_attr).with(:active_user_count) { 10 }
+
+          License.current.restricted_user_count # Activates cache
+
+          expect(cached_restricted_user_count).to eq(10)
+
+          License.last.destroy!
+
+          expect(cached_restricted_user_count).to be_nil
+        end
+
+        it 'expires cached_restricted_user_count? value' do
+          License.current.restricted_user_count? # Activates cache
+
+          expect(cached_restricted_user_count?).to eq(false)
+
+          License.last.destroy!
+
+          expect(cached_restricted_user_count?).to be_nil
+        end
+
+        it 'expires cached_ultimate? value' do
+          License.current.ultimate? # Activates cache
+
+          expect(cached_ultimate?).to eq(false)
+
+          License.last.destroy!
+
+          expect(cached_ultimate?).to be_nil
+        end
+
+        it 'expires cached_customer_service_enabled? value' do
+          License.current.customer_service_enabled? # Activates cache
+
+          expect(cached_customer_service_enabled?).to eq(false)
+
+          License.last.destroy!
+
+          expect(cached_customer_service_enabled?).to be_nil
+        end
+
+        it 'expires cached_trial? value' do
+          allow(License.current).to receive(:restricted_attr).with(:trial) { true }
+
+          License.current.trial? # Activates cache
+
+          expect(cached_trial?).to eq(true)
+
+          License.last.destroy!
+
+          expect(cached_trial?).to be_nil
         end
       end
     end
@@ -612,17 +796,12 @@ RSpec.describe License do
           expect(described_class.current).to eq(current_license)
         end
 
-        it 'caches the license' do
+        it 'memoizes the current license' do
           described_class.reset_current
 
           expect(described_class).to receive(:load_license).once.and_call_original
 
           2.times do
-            expect(described_class.current).to eq(current_license)
-          end
-
-          travel_to(61.seconds.from_now) do
-            expect(described_class).to receive(:load_license).once.and_call_original
             expect(described_class.current).to eq(current_license)
           end
         end

@@ -480,6 +480,10 @@ RSpec.describe GroupPolicy do
           create(:gitlab_subscription, :premium, namespace: group)
         end
 
+        after(:all) do
+          License.reset_cache_keys
+        end
+
         context 'without an enabled SAML provider' do
           context 'maintainer' do
             let(:current_user) { maintainer }

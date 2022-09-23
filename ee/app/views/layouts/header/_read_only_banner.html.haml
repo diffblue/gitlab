@@ -17,4 +17,4 @@
       = secondary_description
     = c.actions do
       - if ::Gitlab::Geo.primary_node.present?
-        = link_to s_('Geo|Go to the primary site'), ::Gitlab::Geo.primary_node.url, class: "btn gl-alert-action btn-default btn-md gl-button btn-default-secondary"
+        = link_to s_('Geo|Go to the primary site'), ::Gitlab::Geo.primary_node_url, class: "btn gl-alert-action btn-default btn-md gl-button btn-default-secondary"

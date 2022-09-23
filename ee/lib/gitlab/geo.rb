@@ -2,18 +2,21 @@
 
 module Gitlab
   module Geo
+    extend ::Gitlab::Utils::StrongMemoize
+
     OauthApplicationUndefinedError = Class.new(StandardError)
     GeoNodeNotFoundError = Class.new(StandardError)
     InvalidDecryptionKeyError = Class.new(StandardError)
     InvalidSignatureTimeError = Class.new(StandardError)
 
-    CACHE_KEYS = %i(
-      primary_node
-      secondary_nodes
+    CACHE_KEYS = %i[
+      primary_node_url
+      primary_internal_url
+      oauth_authentication_uid
+      oauth_authentication_secret
       node_enabled
-      oauth_application
       proxy_extra_data
-    ).freeze
+    ].freeze
 
     API_SCOPE = 'geo_api'
     GEO_PROXIED_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY'
@@ -44,20 +47,46 @@ module Gitlab
     PROXY_JWT_VALIDITY_PERIOD = 1.hour
     PROXY_JWT_CACHE_EXPIRY = 30.minutes
 
-    def self.current_node
-      self.cache_value(:current_node, as: GeoNode) { GeoNode.current_node }
+    def self.primary_node
+      GeoNode.primary_node
     end
 
-    def self.primary_node
-      self.cache_value(:primary_node, as: GeoNode) { GeoNode.primary_node }
+    def self.primary_node_url
+      self.cache_value(:primary_node_url) { primary_node&.url }
+    end
+
+    def self.primary_node_internal_url
+      self.cache_value(:primary_internal_url) { primary_node&.internal_url }
     end
 
     def self.secondary_nodes
-      self.cache_value(:secondary_nodes, as: GeoNode) { GeoNode.secondary_nodes }
+      strong_memoize(:secondary_nodes) { GeoNode.secondary_nodes }
+    end
+
+    def self.current_node
+      strong_memoize(:current_node) { GeoNode.current_node }
+    end
+
+    def self.oauth_authentication
+      return unless Gitlab::Geo.secondary?
+
+      Gitlab::Geo.current_node.oauth_application || raise(OauthApplicationUndefinedError)
+    end
+
+    def self.oauth_authentication_uid
+      self.cache_value(:oauth_authentication_uid) { oauth_authentication&.uid }
+    end
+
+    def self.oauth_authentication_secret
+      self.cache_value(:oauth_authentication_secret) { oauth_authentication&.secret }
     end
 
     def self.proxy_extra_data
       self.cache_value(:proxy_extra_data, l2_cache_expires_in: PROXY_JWT_CACHE_EXPIRY) { uncached_proxy_extra_data }
+    end
+
+    def self.enabled?
+      self.cache_value(:node_enabled) { GeoNode.exists? }
     end
 
     def self.uncached_proxy_extra_data
@@ -84,10 +113,6 @@ module Gitlab
       end
 
       active_db_connection && GeoNode.table_exists?
-    end
-
-    def self.enabled?
-      self.cache_value(:node_enabled) { GeoNode.exists? }
     end
 
     def self.primary?
@@ -145,7 +170,7 @@ module Gitlab
     end
 
     def self.secondary_with_unified_url?
-      self.secondary_with_primary? && self.primary_node.url == self.current_node.url
+      self.secondary_with_primary? && self.primary_node_url == self.current_node.url
     end
 
     def self.proxied_request?(env)
@@ -170,14 +195,6 @@ module Gitlab
       manager = CronManager.new
       manager.create_watcher!
       manager.execute
-    end
-
-    def self.oauth_authentication
-      return unless Gitlab::Geo.secondary?
-
-      self.cache_value(:oauth_application) do
-        Gitlab::Geo.current_node.oauth_application || raise(OauthApplicationUndefinedError)
-      end
     end
 
     def self.l1_cache
