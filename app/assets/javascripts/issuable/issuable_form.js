@@ -2,7 +2,6 @@ import $ from 'jquery';
 import Pikaday from 'pikaday';
 import GfmAutoComplete from 'ee_else_ce/gfm_auto_complete';
 import Autosave from '~/autosave';
-import AutoWidthDropdownSelect from '~/issuable/auto_width_dropdown_select';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { parsePikadayDate, pikadayToString } from '~/lib/utils/datetime_utility';
 import { select2AxiosTransport } from '~/lib/utils/select2_utils';
