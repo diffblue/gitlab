@@ -12601,7 +12601,6 @@ CREATE TABLE ci_build_trace_metadata (
 CREATE TABLE ci_builds (
     status character varying,
     finished_at timestamp without time zone,
-    trace text,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     started_at timestamp without time zone,
