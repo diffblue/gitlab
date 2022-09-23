@@ -18,6 +18,9 @@ module Tasks
         babel.config.js
         config/webpack.config.js
       ].freeze
+      EXCLUDE_PATTERNS = %w[
+        app/assets/javascripts/locale/**/app.js
+      ].freeze
       MASTER_SHA256_HASH_FILE = 'master-assets-hash.txt'
       HEAD_SHA256_HASH_FILE = 'assets-hash.txt'
       PUBLIC_ASSETS_DIR = 'public/assets'
@@ -44,7 +47,7 @@ module Tasks
           asset_files.concat(Dir.glob(["#{folder}/**/*.*"]))
         end
 
-        asset_files
+        asset_files - Dir.glob(EXCLUDE_PATTERNS)
       end
       private_class_method :assets_impacting_compilation
     end
