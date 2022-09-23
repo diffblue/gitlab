@@ -28,10 +28,6 @@ module EE
       message.join
     end
 
-    def options_for_mirror_user
-      options_from_collection_for_select([current_user], :id, :name, current_user.id)
-    end
-
     def mirrored_repositories_count(project = @project)
       count = project.mirror == true ? 1 : 0
       count + @project.remote_mirrors.to_a.count { |mirror| mirror.enabled }
