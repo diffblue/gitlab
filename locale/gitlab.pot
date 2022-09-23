@@ -21207,6 +21207,9 @@ msgstr ""
 msgid "Increase"
 msgstr ""
 
+msgid "Indent line"
+msgstr ""
+
 msgid "Index"
 msgstr ""
 
@@ -24444,6 +24447,18 @@ msgid "MarkdownEditor|Add strikethrough text (%{modifierKey}⇧X)"
 msgstr ""
 
 msgid "MarkdownEditor|Add strikethrough text (%{modifier_key}⇧X)"
+msgstr ""
+
+msgid "MarkdownEditor|Indent line (%{modifierKey}])"
+msgstr ""
+
+msgid "MarkdownEditor|Indent line (%{modifier_key}])"
+msgstr ""
+
+msgid "MarkdownEditor|Outdent line (%{modifierKey}[)"
+msgstr ""
+
+msgid "MarkdownEditor|Outdent line (%{modifier_key}[)"
 msgstr ""
 
 msgid "MarkdownToolbar|Supports %{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd}"
@@ -28163,6 +28178,9 @@ msgid "OutdatedBrowser|GitLab may not work properly, because you are using an ou
 msgstr ""
 
 msgid "OutdatedBrowser|Please install a %{browser_link_start}supported web browser%{browser_link_end} for a better experience."
+msgstr ""
+
+msgid "Outdent line"
 msgstr ""
 
 msgid "Overridden"
