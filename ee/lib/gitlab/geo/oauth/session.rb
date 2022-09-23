@@ -30,18 +30,12 @@ module Gitlab
 
         private
 
-        def oauth_application
-          strong_memoize(:oauth_application) do
-            Gitlab::Geo.oauth_authentication
-          end
-        end
-
         def oauth_client
           strong_memoize(:oauth_client) do
             ::OAuth2::Client.new(
-              oauth_application&.uid,
-              oauth_application&.secret,
-              site: Gitlab::Geo.primary_node.url,
+              ::Gitlab::Geo.oauth_authentication_uid,
+              ::Gitlab::Geo.oauth_authentication_secret,
+              site: Gitlab::Geo.primary_node_url,
               authorize_url: oauth_authorization_url,
               token_url: token_url
             )
@@ -49,15 +43,15 @@ module Gitlab
         end
 
         def primary_api_user_path
-          Gitlab::Utils.append_path(Gitlab::Geo.primary_node.internal_url, api_v4_user_path)
+          Gitlab::Utils.append_path(Gitlab::Geo.primary_node_internal_url, api_v4_user_path)
         end
 
         def token_url
-          Gitlab::Utils.append_path(Gitlab::Geo.primary_node.internal_url, TOKEN_PATH)
+          Gitlab::Utils.append_path(Gitlab::Geo.primary_node_internal_url, TOKEN_PATH)
         end
 
         def oauth_authorization_url
-          Gitlab::Utils.append_path(Gitlab::Geo.primary_node.url, AUTHORIZATION_PATH)
+          Gitlab::Utils.append_path(Gitlab::Geo.primary_node_url, AUTHORIZATION_PATH)
         end
       end
     end

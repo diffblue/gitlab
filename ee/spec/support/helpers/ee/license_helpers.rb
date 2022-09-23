@@ -43,7 +43,7 @@ module EE
       end
 
       def create_current_license(gitlab_license_options = {}, license_options = {})
-        License.current.destroy!
+        License.current&.destroy!
 
         gl_license = create(:gitlab_license, gitlab_license_options)
 

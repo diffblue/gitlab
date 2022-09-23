@@ -4,9 +4,9 @@ module EE
   module GitlabRoutingHelper
     def geo_primary_web_url(container, internal: false)
       primary_base_url = if internal
-                           ::Gitlab::Geo.primary_node.internal_url
+                           ::Gitlab::Geo.primary_node_internal_url
                          else
-                           ::Gitlab::Geo.primary_node.url
+                           ::Gitlab::Geo.primary_node_url
                          end
 
       File.join(primary_base_url, container.full_path)

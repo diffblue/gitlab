@@ -28,24 +28,32 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
 
       expect(described_class.current_node).to eq(primary_node)
     end
-
-    it_behaves_like 'a Geo cached value', :current_node, :current_node
   end
 
   describe '.primary_node' do
-    it 'returns a GeoNode primary instance' do
-      expect(described_class.primary_node).to eq(primary_node)
+    before do
+      allow(GeoNode).to receive(:primary_node).and_return(primary_node)
     end
 
-    it_behaves_like 'a Geo cached value', :primary_node, :primary_node
+    it 'returns a cached primary url' do
+      expect(GeoNode).to receive(:primary_node).once
+      expect(described_class.primary_node_url).to eq(primary_node.url)
+
+      2.times { described_class.primary_node_url }
+    end
+
+    it 'returns a cached internal_url' do
+      expect(GeoNode).to receive(:primary_node).once
+      expect(described_class.primary_node_internal_url).to eq(primary_node.internal_url)
+
+      2.times { described_class.primary_node_internal_url }
+    end
   end
 
   describe '.secondary_nodes' do
     it 'returns a list of Geo secondary nodes' do
       expect(described_class.secondary_nodes).to match_array(secondary_node)
     end
-
-    it_behaves_like 'a Geo cached value', :secondary_nodes, :secondary_nodes
   end
 
   describe '.proxy_extra_data' do
@@ -64,6 +72,10 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
   end
 
   describe '.uncached_proxy_extra_data' do
+    before do
+      described_class.clear_memoization(:current_node)
+    end
+
     subject(:extra_data) { described_class.uncached_proxy_extra_data }
 
     context 'without a geo node' do
@@ -138,6 +150,10 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
   end
 
   describe '.current_node_misconfigured?' do
+    before do
+      described_class.clear_memoization(:current_node)
+    end
+
     it 'returns true when current node is not set' do
       expect(described_class.current_node_misconfigured?).to be_truthy
     end
@@ -430,9 +446,24 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       before do
         stub_secondary_node
         stub_current_geo_node(secondary_node)
+        allow(described_class)
+          .to receive(:oauth_authentication)
+          .and_return(double('Doorkeeper::Application', uid: 'uid-test', secret: 'top-secret'))
       end
 
-      it_behaves_like 'a Geo cached value', :oauth_authentication, :oauth_application
+      it 'returns a cached uid' do
+        expect(described_class).to receive(:oauth_authentication).once
+        expect(described_class.oauth_authentication_uid).to eq('uid-test')
+
+        2.times { described_class.oauth_authentication_uid }
+      end
+
+      it 'returns a cached secret' do
+        expect(described_class).to receive(:oauth_authentication).once
+        expect(described_class.oauth_authentication_secret).to eq('top-secret')
+
+        2.times { described_class.oauth_authentication_secret }
+      end
     end
 
     context 'for Geo primary' do
