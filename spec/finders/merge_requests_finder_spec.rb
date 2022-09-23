@@ -516,6 +516,16 @@ RSpec.describe MergeRequestsFinder do
           end
         end
 
+        context 'with sorting by merged date' do
+          let(:params) { { approved_by_usernames: user2.username, sort: 'merged_at' } }
+
+          it 'returns merge requests approved by that user' do
+            merge_requests = described_class.new(user, params).execute
+
+            expect(merge_requests).to contain_exactly(merge_request3)
+          end
+        end
+
         context 'not filter' do
           let(:params) { { not: { approved_by_usernames: user2.username } } }
 
