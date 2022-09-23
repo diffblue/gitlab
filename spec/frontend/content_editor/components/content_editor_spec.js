@@ -79,13 +79,13 @@ describe('ContentEditor', () => {
     expect(findEditorContent().props().editor.options.autofocus).toBe('start');
   });
 
-  it('renders ContentEditorProvider component', async () => {
+  it('renders ContentEditorProvider component', () => {
     createWrapper();
 
     expect(wrapper.findComponent(ContentEditorProvider).exists()).toBe(true);
   });
 
-  it('renders top toolbar component', async () => {
+  it('renders top toolbar component', () => {
     createWrapper();
 
     expect(wrapper.findComponent(TopToolbar).exists()).toBe(true);

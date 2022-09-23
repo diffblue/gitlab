@@ -135,9 +135,9 @@ describe('vue_shared/component/markdown/markdown_editor', () => {
       expect(wrapper.emitted('input')).toEqual([[newValue]]);
     });
 
-    describe('when autofocus is true', () => {
+    describe('when initOnAutofocus is true', () => {
       beforeEach(async () => {
-        buildWrapper({ attachTo: document.body });
+        buildWrapper({ attachTo: document.body, propsData: { initOnAutofocus: true } });
 
         await nextTick();
       });
@@ -151,6 +151,7 @@ describe('vue_shared/component/markdown/markdown_editor', () => {
       beforeEach(() => {
         buildWrapper();
         findSegmentedControl().vm.$emit('input', EDITING_MODE_CONTENT_EDITOR);
+        findSegmentedControl().vm.$emit('change', EDITING_MODE_CONTENT_EDITOR);
       });
 
       it('displays the content editor', () => {
@@ -159,6 +160,7 @@ describe('vue_shared/component/markdown/markdown_editor', () => {
             renderMarkdown: expect.any(Function),
             uploadsPath: window.uploads_path,
             markdown: value,
+            autofocus: 'end',
           }),
         );
       });
@@ -191,7 +193,12 @@ describe('vue_shared/component/markdown/markdown_editor', () => {
       findSegmentedControl().vm.$emit('input', EDITING_MODE_CONTENT_EDITOR);
     });
 
-    describe('when autofocus is true', () => {
+    describe('when initOnAutofocus is true', () => {
+      beforeEach(() => {
+        buildWrapper({ propsData: { initOnAutofocus: true } });
+        findLocalStorageSync().vm.$emit('input', EDITING_MODE_CONTENT_EDITOR);
+      });
+
       it('sets the content editor autofocus property to end', () => {
         expect(findContentEditor().props().autofocus).toBe('end');
       });

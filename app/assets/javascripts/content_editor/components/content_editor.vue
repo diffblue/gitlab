@@ -3,7 +3,7 @@ import { EditorContent as TiptapEditorContent } from '@tiptap/vue-2';
 import { __ } from '~/locale';
 import { VARIANT_DANGER } from '~/flash';
 import { createContentEditor } from '../services/create_content_editor';
-import { ALERT_EVENT } from '../constants';
+import { ALERT_EVENT, TIPTAP_AUTOFOCUS_OPTIONS } from '../constants';
 import ContentEditorAlert from './content_editor_alert.vue';
 import ContentEditorProvider from './content_editor_provider.vue';
 import EditorStateObserver from './editor_state_observer.vue';
@@ -55,6 +55,7 @@ export default {
       type: [String, Boolean],
       required: false,
       default: false,
+      validator: (autofocus) => TIPTAP_AUTOFOCUS_OPTIONS.includes(autofocus),
     },
   },
   data() {

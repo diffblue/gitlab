@@ -57,11 +57,6 @@ export default {
       required: false,
       default: true,
     },
-    autofocus: {
-      type: Boolean,
-      required: false,
-      default: true,
-    },
     formFieldPlaceholder: {
       type: String,
       required: false,
@@ -72,11 +67,17 @@ export default {
       required: false,
       default: '',
     },
+    initOnAutofocus: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
       editingMode: EDITING_MODE_MARKDOWN_FIELD,
       switchEditingControlEnabled: true,
+      autofocus: this.initOnAutofocus,
     };
   },
   computed: {
@@ -109,10 +110,17 @@ export default {
     },
     onEditingModeChange(editingMode) {
       this.notifyEditingModeChange(editingMode);
-      this.autofocusTextarea(editingMode);
+      this.enableAutofocus(editingMode);
+    },
+    onEditingModeRestored(editingMode) {
+      this.notifyEditingModeChange(editingMode);
     },
     notifyEditingModeChange(editingMode) {
       this.$emit(editingMode);
+    },
+    enableAutofocus(editingMode) {
+      this.autofocus = true;
+      this.autofocusTextarea(editingMode);
     },
     autofocusTextarea(editingMode) {
       if (this.autofocus && editingMode === EDITING_MODE_MARKDOWN_FIELD) {
@@ -142,7 +150,7 @@ export default {
     <local-storage-sync
       v-model="editingMode"
       storage-key="gl-wiki-content-editor-enabled"
-      @input="onEditingModeChange"
+      @input="onEditingModeRestored"
     />
     <markdown-field
       v-if="!isContentEditorActive"
