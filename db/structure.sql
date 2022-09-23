@@ -30909,8 +30909,6 @@ CREATE INDEX tmp_index_project_statistics_cont_registry_size ON project_statisti
 
 CREATE INDEX tmp_index_system_note_metadata_on_attention_request_actions ON system_note_metadata USING btree (id) WHERE ((action)::text = ANY ((ARRAY['attention_requested'::character varying, 'attention_request_removed'::character varying])::text[]));
 
-CREATE INDEX tmp_index_system_note_metadata_on_id_where_task ON system_note_metadata USING btree (id, action) WHERE ((action)::text = 'task'::text);
-
 CREATE INDEX tmp_index_vulnerability_occurrences_on_id_and_scanner_id ON vulnerability_occurrences USING btree (id, scanner_id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
 CREATE UNIQUE INDEX uniq_pkgs_deb_grp_architectures_on_distribution_id_and_name ON packages_debian_group_architectures USING btree (distribution_id, name);
