@@ -19288,6 +19288,12 @@ msgstr ""
 msgid "Groups|Learn more"
 msgstr ""
 
+msgid "Groups|Learn more about subgroups"
+msgstr ""
+
+msgid "Groups|Members, projects, trials, and paid subscriptions are tied to a specific top-level group. If you are already a member of a top-level group, you can create a subgroup so your new work is part of your existing top-level group. Do you want to create a subgroup instead?"
+msgstr ""
+
 msgid "Groups|Must start with letter, digit, emoji, or underscore. Can also contain periods, dashes, spaces, and parentheses."
 msgstr ""
 
@@ -19304,6 +19310,9 @@ msgid "Groups|Subgroup name"
 msgstr ""
 
 msgid "Groups|Subgroup slug"
+msgstr ""
+
+msgid "Groups|You're creating a new top-level group"
 msgstr ""
 
 msgid "Guideline"
