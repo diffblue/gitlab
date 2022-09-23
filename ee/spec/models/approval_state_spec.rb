@@ -99,10 +99,10 @@ RSpec.describe ApprovalState do
   end
 
   shared_examples_for 'a MR that all members with write access can approve' do
-    it { expect(subject.can_be_approved_by?(developer)).to be_truthy }
-    it { expect(subject.can_be_approved_by?(reporter)).to be_falsey }
-    it { expect(subject.can_be_approved_by?(stranger)).to be_falsey }
-    it { expect(subject.can_be_approved_by?(nil)).to be_falsey }
+    it { expect(subject.eligible_for_approval_by?(developer)).to be_truthy }
+    it { expect(subject.eligible_for_approval_by?(reporter)).to be_falsey }
+    it { expect(subject.eligible_for_approval_by?(stranger)).to be_falsey }
+    it { expect(subject.eligible_for_approval_by?(nil)).to be_falsey }
   end
 
   shared_context 'project members' do
@@ -450,7 +450,7 @@ RSpec.describe ApprovalState do
       end
     end
 
-    describe '#can_be_approved_by?' do
+    describe '#eligible_for_approval_by?' do
       shared_examples_for 'authors self-approval authorization' do
         context 'when authors are authorized to approve their own MRs' do
           before do
@@ -458,13 +458,13 @@ RSpec.describe ApprovalState do
           end
 
           it 'allows the author to approve the MR if within the approvers list' do
-            expect(subject.can_be_approved_by?(author)).to be_truthy
+            expect(subject.eligible_for_approval_by?(author)).to be_truthy
           end
         end
 
         context 'when authors are not authorized to approve their own MRs' do
           it 'does not allow the author to approve the MR' do
-            expect(subject.can_be_approved_by?(author)).to be_falsey
+            expect(subject.eligible_for_approval_by?(author)).to be_falsey
           end
         end
       end
@@ -490,13 +490,13 @@ RSpec.describe ApprovalState do
           end
 
           it 'allows the author to approve the MR if within the approvers list' do
-            expect(subject.can_be_approved_by?(author)).to be_truthy
+            expect(subject.eligible_for_approval_by?(author)).to be_truthy
           end
 
           it 'allows the author to approve the MR if not within the approvers list' do
             allow(subject).to receive(:approvers).and_return([])
 
-            expect(subject.can_be_approved_by?(author)).to be_truthy
+            expect(subject.eligible_for_approval_by?(author)).to be_truthy
           end
 
           context 'when the author has approved the MR already' do
@@ -505,7 +505,7 @@ RSpec.describe ApprovalState do
             end
 
             it 'does not allow the author to approve the MR again' do
-              expect(subject.can_be_approved_by?(author)).to be_falsey
+              expect(subject.eligible_for_approval_by?(author)).to be_falsey
             end
           end
         end
@@ -518,13 +518,13 @@ RSpec.describe ApprovalState do
           it 'allows the author to approve the MR if within the approvers list' do
             allow(subject).to receive(:approvers).and_return([author])
 
-            expect(subject.can_be_approved_by?(author)).to be_truthy
+            expect(subject.eligible_for_approval_by?(author)).to be_truthy
           end
 
           it 'does not allow the author to approve the MR if not within the approvers list' do
             allow(subject).to receive(:approvers).and_return([])
 
-            expect(subject.can_be_approved_by?(author)).to be_falsey
+            expect(subject.eligible_for_approval_by?(author)).to be_falsey
           end
         end
 
@@ -536,13 +536,13 @@ RSpec.describe ApprovalState do
           it 'allows the committer to approve the MR if within the approvers list' do
             allow(subject).to receive(:approvers).and_return([committer])
 
-            expect(subject.can_be_approved_by?(committer)).to be_truthy
+            expect(subject.eligible_for_approval_by?(committer)).to be_truthy
           end
 
           it 'allows the committer to approve the MR if not within the approvers list' do
             allow(subject).to receive(:approvers).and_return([])
 
-            expect(subject.can_be_approved_by?(committer)).to be_truthy
+            expect(subject.eligible_for_approval_by?(committer)).to be_truthy
           end
 
           context 'when the committer has approved the MR already' do
@@ -551,7 +551,7 @@ RSpec.describe ApprovalState do
             end
 
             it 'does not allow the committer to approve the MR again' do
-              expect(subject.can_be_approved_by?(committer)).to be_falsey
+              expect(subject.eligible_for_approval_by?(committer)).to be_falsey
             end
           end
         end
@@ -564,13 +564,13 @@ RSpec.describe ApprovalState do
           it 'allows the committer to approve the MR if within the approvers list' do
             allow(subject).to receive(:approvers).and_return([committer])
 
-            expect(subject.can_be_approved_by?(committer)).to be_truthy
+            expect(subject.eligible_for_approval_by?(committer)).to be_truthy
           end
 
           it 'does not allow the committer to approve the MR if not within the approvers list' do
             allow(subject).to receive(:approvers).and_return([])
 
-            expect(subject.can_be_approved_by?(committer)).to be_falsey
+            expect(subject.eligible_for_approval_by?(committer)).to be_falsey
           end
         end
 
@@ -592,13 +592,13 @@ RSpec.describe ApprovalState do
             it 'allows the user to approve the MR if within the approvers list' do
               allow(subject).to receive(:approvers).and_return([user])
 
-              expect(subject.can_be_approved_by?(user)).to be_truthy
+              expect(subject.eligible_for_approval_by?(user)).to be_truthy
             end
 
             it 'does not allow the user to approve the MR if not within the approvers list' do
               allow(subject).to receive(:approvers).and_return([])
 
-              expect(subject.can_be_approved_by?(user)).to be_falsey
+              expect(subject.eligible_for_approval_by?(user)).to be_falsey
             end
           end
 
@@ -613,13 +613,13 @@ RSpec.describe ApprovalState do
             it 'allows the user to approve the MR if within the approvers list' do
               allow(subject).to receive(:approvers).and_return([user])
 
-              expect(subject.can_be_approved_by?(user)).to be_truthy
+              expect(subject.eligible_for_approval_by?(user)).to be_truthy
             end
 
             it 'does not allow the user to approve the MR if not within the approvers list' do
               allow(subject).to receive(:approvers).and_return([])
 
-              expect(subject.can_be_approved_by?(user)).to be_falsey
+              expect(subject.eligible_for_approval_by?(user)).to be_falsey
             end
           end
         end
@@ -635,7 +635,7 @@ RSpec.describe ApprovalState do
           it_behaves_like 'a MR that all members with write access can approve'
 
           it 'does not allow a logged-out user to approve the MR' do
-            expect(subject.can_be_approved_by?(nil)).to be_falsey
+            expect(subject.eligible_for_approval_by?(nil)).to be_falsey
           end
 
           it 'is not approved' do
@@ -660,11 +660,11 @@ RSpec.describe ApprovalState do
           end
 
           it 'allows any other other approver to approve the MR' do
-            expect(subject.can_be_approved_by?(approver)).to be_truthy
+            expect(subject.eligible_for_approval_by?(approver)).to be_truthy
           end
 
           it 'does not allow a logged-out user to approve the MR' do
-            expect(subject.can_be_approved_by?(nil)).to be_falsey
+            expect(subject.eligible_for_approval_by?(nil)).to be_falsey
           end
 
           context 'when self-approval is disabled and all of the valid approvers have approved the MR' do
@@ -680,12 +680,12 @@ RSpec.describe ApprovalState do
             end
 
             it 'does not allow the author to approve the MR' do
-              expect(subject.can_be_approved_by?(author)).to be_falsey
+              expect(subject.eligible_for_approval_by?(author)).to be_falsey
             end
 
             it 'does not allow the approvers to approve the MR again' do
-              expect(subject.can_be_approved_by?(approver)).to be_falsey
-              expect(subject.can_be_approved_by?(approver2)).to be_falsey
+              expect(subject.eligible_for_approval_by?(approver)).to be_falsey
+              expect(subject.eligible_for_approval_by?(approver2)).to be_falsey
             end
           end
 
@@ -701,14 +701,14 @@ RSpec.describe ApprovalState do
             end
 
             it 'does not allow the approvers to approve the MR again' do
-              expect(subject.can_be_approved_by?(author)).to be_falsey
-              expect(subject.can_be_approved_by?(approver2)).to be_falsey
+              expect(subject.eligible_for_approval_by?(author)).to be_falsey
+              expect(subject.eligible_for_approval_by?(approver2)).to be_falsey
             end
 
             it 'allows any other project member with write access to approve the MR' do
-              expect(subject.can_be_approved_by?(reporter)).to be_falsey
-              expect(subject.can_be_approved_by?(stranger)).to be_falsey
-              expect(subject.can_be_approved_by?(nil)).to be_falsey
+              expect(subject.eligible_for_approval_by?(reporter)).to be_falsey
+              expect(subject.eligible_for_approval_by?(stranger)).to be_falsey
+              expect(subject.eligible_for_approval_by?(nil)).to be_falsey
             end
           end
 
@@ -739,14 +739,14 @@ RSpec.describe ApprovalState do
           end
 
           it 'allows anyone with write access except for author to approve the MR' do
-            expect(subject.can_be_approved_by?(developer)).to be_truthy
-            expect(subject.can_be_approved_by?(approver)).to be_truthy
-            expect(subject.can_be_approved_by?(approver2)).to be_truthy
+            expect(subject.eligible_for_approval_by?(developer)).to be_truthy
+            expect(subject.eligible_for_approval_by?(approver)).to be_truthy
+            expect(subject.eligible_for_approval_by?(approver2)).to be_truthy
 
-            expect(subject.can_be_approved_by?(author)).to be_falsey
-            expect(subject.can_be_approved_by?(reporter)).to be_falsey
-            expect(subject.can_be_approved_by?(stranger)).to be_falsey
-            expect(subject.can_be_approved_by?(nil)).to be_falsey
+            expect(subject.eligible_for_approval_by?(author)).to be_falsey
+            expect(subject.eligible_for_approval_by?(reporter)).to be_falsey
+            expect(subject.eligible_for_approval_by?(stranger)).to be_falsey
+            expect(subject.eligible_for_approval_by?(nil)).to be_falsey
           end
         end
       end
@@ -1173,7 +1173,7 @@ RSpec.describe ApprovalState do
       end
     end
 
-    describe '#can_be_approved_by?' do
+    describe '#eligible_for_approval_by?' do
       shared_examples_for 'authors self-approval authorization' do
         context 'when authors are authorized to approve their own MRs' do
           before do
@@ -1181,13 +1181,13 @@ RSpec.describe ApprovalState do
           end
 
           it 'allows the author to approve the MR if within the approvers list' do
-            expect(subject.can_be_approved_by?(author)).to be_truthy
+            expect(subject.eligible_for_approval_by?(author)).to be_truthy
           end
         end
 
         context 'when authors are not authorized to approve their own MRs' do
           it 'does not allow the author to approve the MR' do
-            expect(subject.can_be_approved_by?(author)).to be_falsey
+            expect(subject.eligible_for_approval_by?(author)).to be_falsey
           end
         end
       end
@@ -1205,13 +1205,13 @@ RSpec.describe ApprovalState do
           it 'returns true when authors can approve' do
             project.update!(merge_requests_author_approval: true)
 
-            expect(subject.can_be_approved_by?(author)).to be true
+            expect(subject.eligible_for_approval_by?(author)).to be true
           end
 
           it 'returns false when authors cannot approve' do
             project.update!(merge_requests_author_approval: false)
 
-            expect(subject.can_be_approved_by?(author)).to be false
+            expect(subject.eligible_for_approval_by?(author)).to be false
           end
         end
 
@@ -1219,13 +1219,13 @@ RSpec.describe ApprovalState do
           it 'returns true when authors can approve' do
             project.update!(merge_requests_author_approval: true)
 
-            expect(subject.can_be_approved_by?(author)).to be true
+            expect(subject.eligible_for_approval_by?(author)).to be true
           end
 
           it 'returns false when authors cannot approve' do
             project.update!(merge_requests_author_approval: false)
 
-            expect(subject.can_be_approved_by?(author)).to be false
+            expect(subject.eligible_for_approval_by?(author)).to be false
           end
         end
       end
@@ -1245,13 +1245,13 @@ RSpec.describe ApprovalState do
           it 'return true when committers can approve' do
             project.update!(merge_requests_disable_committers_approval: false)
 
-            expect(subject.can_be_approved_by?(user)).to be true
+            expect(subject.eligible_for_approval_by?(user)).to be true
           end
 
           it 'return false when committers cannot approve' do
             project.update!(merge_requests_disable_committers_approval: true)
 
-            expect(subject.can_be_approved_by?(user)).to be false
+            expect(subject.eligible_for_approval_by?(user)).to be false
           end
         end
 
@@ -1259,13 +1259,13 @@ RSpec.describe ApprovalState do
           it 'return true when committers can approve' do
             project.update!(merge_requests_disable_committers_approval: false)
 
-            expect(subject.can_be_approved_by?(user)).to be true
+            expect(subject.eligible_for_approval_by?(user)).to be true
           end
 
           it 'return false when committers cannot approve' do
             project.update!(merge_requests_disable_committers_approval: true)
 
-            expect(subject.can_be_approved_by?(user)).to be false
+            expect(subject.eligible_for_approval_by?(user)).to be false
           end
         end
       end
@@ -1284,7 +1284,7 @@ RSpec.describe ApprovalState do
           end
 
           it 'does not allow a logged-out user to approve the MR' do
-            expect(subject.can_be_approved_by?(nil)).to be_falsey
+            expect(subject.eligible_for_approval_by?(nil)).to be_falsey
           end
 
           it 'is not approved' do
@@ -1308,11 +1308,11 @@ RSpec.describe ApprovalState do
           end
 
           it 'allows any other other approver to approve the MR' do
-            expect(subject.can_be_approved_by?(approver)).to be_truthy
+            expect(subject.eligible_for_approval_by?(approver)).to be_truthy
           end
 
           it 'does not allow a logged-out user to approve the MR' do
-            expect(subject.can_be_approved_by?(nil)).to be_falsey
+            expect(subject.eligible_for_approval_by?(nil)).to be_falsey
           end
 
           context 'when self-approval is disabled and all of the valid approvers have approved the MR' do
@@ -1328,12 +1328,12 @@ RSpec.describe ApprovalState do
             end
 
             it 'does not allow the author to approve the MR' do
-              expect(subject.can_be_approved_by?(author)).to be_falsey
+              expect(subject.eligible_for_approval_by?(author)).to be_falsey
             end
 
             it 'does not allow the approvers to approve the MR again' do
-              expect(subject.can_be_approved_by?(approver)).to be_falsey
-              expect(subject.can_be_approved_by?(approver2)).to be_falsey
+              expect(subject.eligible_for_approval_by?(approver)).to be_falsey
+              expect(subject.eligible_for_approval_by?(approver2)).to be_falsey
             end
           end
 
@@ -1349,14 +1349,14 @@ RSpec.describe ApprovalState do
             end
 
             it 'does not allow the approvers to approve the MR again' do
-              expect(subject.can_be_approved_by?(author)).to be_falsey
-              expect(subject.can_be_approved_by?(approver2)).to be_falsey
+              expect(subject.eligible_for_approval_by?(author)).to be_falsey
+              expect(subject.eligible_for_approval_by?(approver2)).to be_falsey
             end
 
             it 'allows any other project member with write access to approve the MR' do
-              expect(subject.can_be_approved_by?(reporter)).to be_falsey
-              expect(subject.can_be_approved_by?(stranger)).to be_falsey
-              expect(subject.can_be_approved_by?(nil)).to be_falsey
+              expect(subject.eligible_for_approval_by?(reporter)).to be_falsey
+              expect(subject.eligible_for_approval_by?(stranger)).to be_falsey
+              expect(subject.eligible_for_approval_by?(nil)).to be_falsey
             end
           end
 
@@ -1387,15 +1387,15 @@ RSpec.describe ApprovalState do
           end
 
           it 'allows anyone with write access except for author to approve the MR' do
-            expect(subject.can_be_approved_by?(developer)).to be_truthy
-            expect(subject.can_be_approved_by?(approver)).to be_truthy
-            expect(subject.can_be_approved_by?(approver2)).to be_truthy
+            expect(subject.eligible_for_approval_by?(developer)).to be_truthy
+            expect(subject.eligible_for_approval_by?(approver)).to be_truthy
+            expect(subject.eligible_for_approval_by?(approver2)).to be_truthy
 
-            expect(subject.can_be_approved_by?(author)).to be_falsey
-            expect(subject.can_be_approved_by?(reporter)).to be_falsey
-            expect(subject.can_be_approved_by?(guest)).to be_falsey
-            expect(subject.can_be_approved_by?(stranger)).to be_falsey
-            expect(subject.can_be_approved_by?(nil)).to be_falsey
+            expect(subject.eligible_for_approval_by?(author)).to be_falsey
+            expect(subject.eligible_for_approval_by?(reporter)).to be_falsey
+            expect(subject.eligible_for_approval_by?(guest)).to be_falsey
+            expect(subject.eligible_for_approval_by?(stranger)).to be_falsey
+            expect(subject.eligible_for_approval_by?(nil)).to be_falsey
           end
 
           context 'when an approver does not have access to the merge request', :sidekiq_inline do
@@ -1404,7 +1404,7 @@ RSpec.describe ApprovalState do
             end
 
             it 'the user cannot approver' do
-              expect(subject.can_be_approved_by?(developer)).to be_falsey
+              expect(subject.eligible_for_approval_by?(developer)).to be_falsey
             end
           end
         end
