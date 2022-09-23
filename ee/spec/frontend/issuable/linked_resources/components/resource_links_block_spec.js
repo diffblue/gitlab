@@ -1,9 +1,9 @@
-import { GlButton, GlLoadingIcon } from '@gitlab/ui';
+import { GlLoadingIcon } from '@gitlab/ui';
 import VueApollo from 'vue-apollo';
 import Vue, { nextTick } from 'vue';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import ResourceLinksBlock from 'ee/linked_resources/components/resource_links_block.vue';
 import ResourceLinksList from 'ee/linked_resources/components/resource_links_list.vue';
 import ResourceLinkItem from 'ee/linked_resources/components/resource_links_list_item.vue';
@@ -60,7 +60,7 @@ function createMockApolloCreateProvider() {
 describe('ResourceLinksBlock', () => {
   let wrapper;
 
-  const findResourceLinkAddButton = () => wrapper.findComponent(GlButton);
+  const findResourceLinkAddButton = () => wrapper.findByTestId('add-resource-links');
   const resourceLinkForm = () => wrapper.findComponent(AddIssuableResourceLinkForm);
   const helpPath = '/help/user/project/issues/linked_resources';
   const issuableId = 1;
@@ -141,7 +141,7 @@ describe('ResourceLinksBlock', () => {
 
   describe('with canAddResourceLinks=false', () => {
     it('does not show the add button', () => {
-      wrapper = shallowMount(ResourceLinksBlock, {
+      wrapper = shallowMountExtended(ResourceLinksBlock, {
         propsData: {
           issuableId,
           canAddResourceLinks: false,
