@@ -2033,13 +2033,7 @@ msgstr ""
 msgid "AccessTokens|Your static object token authenticates you when repository static objects (such as archives or blobs) are served from an external storage."
 msgstr ""
 
-msgid "AccessibilityReport|Learn more"
-msgstr ""
-
 msgid "AccessibilityReport|Message: %{message}"
-msgstr ""
-
-msgid "AccessibilityReport|New"
 msgstr ""
 
 msgid "AccessibilityReport|The accessibility scanning found an error of the following type: %{code}"
@@ -33603,11 +33597,6 @@ msgid_plural "Reports|%{recentlyFailed} out of %{failed} failed tests have faile
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "Reports|Accessibility scanning detected %d issue for the source branch only"
-msgid_plural "Reports|Accessibility scanning detected %d issues for the source branch only"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "Reports|Accessibility scanning detected %{strong_start}%{number}%{strong_end} issue for the source branch only"
 msgid_plural "Reports|Accessibility scanning detected %{strong_start}%{number}%{strong_end} issues for the source branch only"
 msgstr[0] ""
@@ -38293,9 +38282,6 @@ msgstr ""
 msgid "Status: %{title}"
 msgstr ""
 
-msgid "StatusCheck| %{failed} failed, and %{pending} pending"
-msgstr ""
-
 msgid "StatusCheck|%{failed} failed"
 msgstr ""
 
@@ -38306,9 +38292,6 @@ msgid "StatusCheck|API to check"
 msgstr ""
 
 msgid "StatusCheck|Add status check"
-msgstr ""
-
-msgid "StatusCheck|All passed"
 msgstr ""
 
 msgid "StatusCheck|An error occurred deleting the %{name} status check."
@@ -38330,9 +38313,6 @@ msgid "StatusCheck|External API is already in use by another status check."
 msgstr ""
 
 msgid "StatusCheck|Failed to load status checks"
-msgstr ""
-
-msgid "StatusCheck|Failed to load status checks."
 msgstr ""
 
 msgid "StatusCheck|Invoke an external API as part of the pipeline process."
@@ -39471,16 +39451,6 @@ msgstr ""
 msgid "Terraform|%{name} successfully removed"
 msgstr ""
 
-msgid "Terraform|%{number} Terraform report failed to generate"
-msgid_plural "Terraform|%{number} Terraform reports failed to generate"
-msgstr[0] ""
-msgstr[1] ""
-
-msgid "Terraform|%{number} Terraform report was generated in your pipelines"
-msgid_plural "Terraform|%{number} Terraform reports were generated in your pipelines"
-msgstr[0] ""
-msgstr[1] ""
-
 msgid "Terraform|%{strong_start}%{number}%{strong_end} Terraform report failed to generate"
 msgid_plural "Terraform|%{strong_start}%{number}%{strong_end} Terraform reports failed to generate"
 msgstr[0] ""
@@ -39498,12 +39468,6 @@ msgid "Terraform|A Terraform report failed to generate."
 msgstr ""
 
 msgid "Terraform|A Terraform report was generated in your pipelines."
-msgstr ""
-
-msgid "Terraform|A report failed to generate."
-msgstr ""
-
-msgid "Terraform|A report was generated in your pipelines."
 msgstr ""
 
 msgid "Terraform|Actions"
@@ -39591,12 +39555,6 @@ msgid "Terraform|Terraform init command"
 msgstr ""
 
 msgid "Terraform|Terraform reports"
-msgstr ""
-
-msgid "Terraform|The job %{name} failed to generate a report."
-msgstr ""
-
-msgid "Terraform|The job %{name} generated a report."
 msgstr ""
 
 msgid "Terraform|The job %{strong_start}%{name}%{strong_end} failed to generate a report."
@@ -44054,9 +44012,6 @@ msgid "View file @ %{commitSha}"
 msgstr ""
 
 msgid "View full dashboard"
-msgstr ""
-
-msgid "View full log"
 msgstr ""
 
 msgid "View group in admin area"

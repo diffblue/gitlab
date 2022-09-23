@@ -24,19 +24,12 @@ export default {
     MrWidgetPolicyViolation,
     MrWidgetEnableFeaturePrompt,
     MrWidgetJiraAssociationMissing,
-    StatusChecksReportsApp: () =>
-      import('ee/reports/status_checks_report/status_checks_reports_app.vue'),
     BlockingMergeRequestsReport: () =>
       import('./components/blocking_merge_requests/blocking_merge_requests_report.vue'),
     GroupedSecurityReportsApp: () =>
       import('ee/vue_shared/security_reports/grouped_security_reports_app.vue'),
     GroupedMetricsReportsApp: () =>
       import('ee/vue_shared/metrics_reports/grouped_metrics_reports_app.vue'),
-    GroupedBrowserPerformanceReportsApp: () =>
-      import('ee/reports/browser_performance_report/grouped_browser_performance_reports_app.vue'),
-    GroupedLoadPerformanceReportsApp: () =>
-      import('ee/reports/load_performance_report/grouped_load_performance_reports_app.vue'),
-    ReportSection: () => import('~/reports/components/report_section.vue'),
   },
   directives: {
     SafeHtml: GlSafeHtmlDirective,
@@ -83,13 +76,6 @@ export default {
       const totalScoreDelta = this.degradedBrowserPerformanceTotalScore?.delta || 0;
 
       return threshold + totalScoreDelta <= 0;
-    },
-    shouldRenderBrowserPerformance() {
-      return (
-        this.hasBrowserPerformancePaths &&
-        this.hasBrowserPerformanceDegradation &&
-        !this.shouldShowExtension
-      );
     },
     hasLoadPerformanceMetrics() {
       return (
@@ -222,24 +208,16 @@ export default {
       registerExtension(licenseComplianceExtension);
     },
     registerLoadPerformance() {
-      if (this.shouldShowExtension) {
-        registerExtension(loadPerformanceExtension);
-      }
+      registerExtension(loadPerformanceExtension);
     },
     registerBrowserPerformance() {
-      if (this.shouldShowExtension) {
-        registerExtension(browserPerformanceExtension);
-      }
+      registerExtension(browserPerformanceExtension);
     },
     registerStatusCheck() {
-      if (this.shouldShowExtension) {
-        registerExtension(statusChecksExtension);
-      }
+      registerExtension(statusChecksExtension);
     },
     registerMetrics() {
-      if (this.shouldShowExtension) {
-        registerExtension(metricsExtension);
-      }
+      registerExtension(metricsExtension);
     },
     getServiceEndpoints(store) {
       const base = CEWidgetOptions.methods.getServiceEndpoints(store);
@@ -374,33 +352,6 @@ export default {
         :codequality-reports-path="mr.codequalityReportsPath"
         :codequality-help-path="mr.codequalityHelpPath"
       />
-      <grouped-browser-performance-reports-app
-        v-if="shouldRenderBrowserPerformance && !shouldShowExtension"
-        :status="browserPerformanceStatus"
-        :loading-text="translateText('browser-performance').loading"
-        :error-text="translateText('browser-performance').error"
-        :success-text="browserPerformanceText"
-        :unresolved-issues="mr.browserPerformanceMetrics.degraded"
-        :resolved-issues="mr.browserPerformanceMetrics.improved"
-        :neutral-issues="mr.browserPerformanceMetrics.same"
-        :has-issues="hasBrowserPerformanceMetrics"
-      />
-      <grouped-load-performance-reports-app
-        v-if="hasLoadPerformancePaths && !shouldShowExtension"
-        :status="loadPerformanceStatus"
-        :loading-text="translateText('load-performance').loading"
-        :error-text="translateText('load-performance').error"
-        :success-text="loadPerformanceText"
-        :unresolved-issues="mr.loadPerformanceMetrics.degraded"
-        :resolved-issues="mr.loadPerformanceMetrics.improved"
-        :neutral-issues="mr.loadPerformanceMetrics.same"
-        :has-issues="hasLoadPerformanceMetrics"
-      />
-      <grouped-metrics-reports-app
-        v-if="mr.metricsReportsPath && !shouldShowExtension"
-        :endpoint="mr.metricsReportsPath"
-        class="js-metrics-reports-container"
-      />
 
       <security-reports-app
         v-if="shouldRenderBaseSecurityReport && !shouldShowSecurityExtension"
@@ -485,21 +436,6 @@ export default {
         :endpoint="mr.testResultsPath"
         :head-blob-path="mr.headBlobPath"
         :pipeline-path="mr.pipeline.path"
-      />
-
-      <terraform-plan
-        v-if="mr.terraformReportsPath && !shouldShowExtension"
-        :endpoint="mr.terraformReportsPath"
-      />
-
-      <grouped-accessibility-reports-app
-        v-if="shouldShowAccessibilityReport && !shouldShowExtension"
-        :endpoint="mr.accessibilityReportPath"
-      />
-
-      <status-checks-reports-app
-        v-if="shouldRenderStatusReport && !shouldShowExtension"
-        :endpoint="mr.apiStatusChecksPath"
       />
 
       <div class="mr-widget-section">

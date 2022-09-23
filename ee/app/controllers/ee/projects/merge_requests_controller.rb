@@ -16,9 +16,7 @@ module EE
 
           push_frontend_feature_flag(:anonymous_visual_review_feedback)
           push_frontend_feature_flag(:missing_mr_security_scan_types, @project)
-          push_frontend_feature_flag(:refactor_mr_widgets_extensions, @project)
           push_frontend_feature_flag(:refactor_mr_widget_test_summary, @project)
-          push_frontend_feature_flag(:refactor_mr_widgets_extensions_user, current_user)
           push_frontend_feature_flag(:suggested_reviewers_control, @project)
         end
 
