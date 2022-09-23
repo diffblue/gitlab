@@ -20,6 +20,7 @@ export default () => {
 
   return new Vue({
     el: containerEl,
+    name: 'PipelineSchedulesRoot',
     apolloProvider,
     provide: {
       fullPath,

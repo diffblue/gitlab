@@ -20,6 +20,7 @@ export default (selector) => {
 
   return new Vue({
     el: containerEl,
+    name: 'PipelineSchedulesFormRoot',
     apolloProvider,
     provide: {
       fullPath,

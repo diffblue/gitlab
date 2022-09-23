@@ -16,6 +16,7 @@ function initPipelineSchedulesCallout() {
   // eslint-disable-next-line no-new
   new Vue({
     el,
+    name: 'PipelineSchedulesCalloutRoot',
     provide: {
       docsUrl,
       illustrationUrl,
