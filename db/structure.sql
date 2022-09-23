@@ -25045,7 +25045,7 @@ ALTER TABLE ONLY ci_build_trace_metadata
     ADD CONSTRAINT ci_build_trace_metadata_pkey PRIMARY KEY (build_id);
 
 ALTER TABLE ONLY ci_builds_metadata
-    ADD CONSTRAINT ci_builds_metadata_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT ci_builds_metadata_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY ci_builds
     ADD CONSTRAINT ci_builds_pkey PRIMARY KEY (id);
