@@ -5,6 +5,11 @@ export default {
   components: {
     GlForm,
   },
+  inject: {
+    fullPath: {
+      default: '',
+    },
+  },
 };
 </script>
 

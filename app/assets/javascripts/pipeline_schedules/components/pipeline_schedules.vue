@@ -5,6 +5,11 @@ export default {
   components: {
     PipelineSchedulesTable,
   },
+  inject: {
+    fullPath: {
+      default: '',
+    },
+  },
 };
 </script>
 
