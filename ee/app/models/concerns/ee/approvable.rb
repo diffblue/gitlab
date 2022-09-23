@@ -66,11 +66,11 @@ module EE
       end
     end
 
-    override :can_be_approved_by?
-    def can_be_approved_by?(user)
+    override :eligible_for_approval_by?
+    def eligible_for_approval_by?(user)
       return super unless approval_feature_available?
 
-      approval_state.can_be_approved_by?(user)
+      approval_state.eligible_for_approval_by?(user)
     end
   end
 end

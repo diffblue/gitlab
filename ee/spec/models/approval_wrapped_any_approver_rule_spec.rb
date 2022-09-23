@@ -57,7 +57,7 @@ RSpec.describe ApprovalWrappedAnyApproverRule do
       create(:note, project: merge_request.project, noteable: merge_request, author: approver1)
       create(:system_note, project: merge_request.project, noteable: merge_request, author: approver2)
 
-      allow(merge_request).to receive(:can_be_approved_by?).and_return(true)
+      allow(merge_request).to receive(:eligible_for_approval_by?).and_return(true)
 
       expect(subject.commented_approvers).to include(approver1)
       expect(subject.commented_approvers).not_to include(approver2)

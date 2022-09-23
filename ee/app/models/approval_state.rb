@@ -143,7 +143,7 @@ class ApprovalState
     filter_approvers(rules.flat_map(&:approvers), unactioned: true)
   end
 
-  def can_be_approved_by?(user)
+  def eligible_for_approval_by?(user)
     return false unless user
     return false unless user.can?(:approve_merge_request, merge_request)
 
