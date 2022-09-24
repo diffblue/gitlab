@@ -173,11 +173,6 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
-      condition(:admin_group_protected_environment_accessible) do
-        ::Feature.disabled?(
-          :override_group_level_protected_environment_settings_permission, @subject)
-      end
-
       rule { ~public_group & ~can?(:owner_access) & user_banned_from_group }.policy do
         prevent :read_group
       end
@@ -208,9 +203,6 @@ module EE
         enable :admin_wiki
       end
 
-      rule { maintainer & ~admin_group_protected_environment_accessible }
-        .enable :admin_protected_environment
-
       rule { auditor }.policy do
         enable :view_productivity_analytics
         enable :view_group_devops_adoption
@@ -237,7 +229,7 @@ module EE
         enable :owner_access
       end
 
-      rule { owner & admin_group_protected_environment_accessible }
+      rule { owner }
         .enable :admin_protected_environment
 
       rule { can?(:owner_access) }.policy do

@@ -404,14 +404,6 @@ RSpec.describe API::ProtectedEnvironments do
 
     it_behaves_like 'group-level request is disallowed for maintainer'
 
-    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
-      before do
-        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
-      end
-
-      it_behaves_like 'group-level request is allowed for maintainer'
-    end
-
     context 'when authenticated as a owner' do
       before do
         group.add_owner(user)
@@ -436,14 +428,6 @@ RSpec.describe API::ProtectedEnvironments do
     let(:request) { get api(route, user) }
 
     it_behaves_like 'group-level request is disallowed for maintainer'
-
-    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
-      before do
-        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
-      end
-
-      it_behaves_like 'group-level request is allowed for maintainer'
-    end
 
     context 'when authenticated as a owner' do
       before do
@@ -493,17 +477,6 @@ RSpec.describe API::ProtectedEnvironments do
 
     it_behaves_like 'group-level request is disallowed for maintainer' do
       let(:request) { post api_url, params: { name: 'staging' } }
-    end
-
-    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
-      before do
-        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
-      end
-
-      it_behaves_like 'group-level request is allowed for maintainer' do
-        let(:deployer) { create(:user).tap { |u| group.add_maintainer(u) } }
-        let(:request) { post api_url, params: { name: 'staging', deploy_access_levels: [{ user_id: deployer.id }] } }
-      end
     end
 
     context 'when authenticated as a owner' do
@@ -615,17 +588,6 @@ RSpec.describe API::ProtectedEnvironments do
       let(:request) { put api_url, params: { name: 'production' } }
     end
 
-    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
-      before do
-        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
-      end
-
-      it_behaves_like 'group-level request is allowed for maintainer' do
-        let(:deployer) { create(:user).tap { |u| group.add_maintainer(u) } }
-        let(:request) { put api_url, params: { deploy_access_levels: [{ user_id: deployer.id }] } }
-      end
-    end
-
     context 'when authenticated as a owner' do
       let_it_be(:deployer) { create(:user) }
       let_it_be(:shared_group) { create(:group) }
@@ -705,14 +667,6 @@ RSpec.describe API::ProtectedEnvironments do
     let(:request) { delete api(route, user) }
 
     it_behaves_like 'group-level request is disallowed for maintainer'
-
-    context 'when override_group_level_protected_environment_settings_permission feature flag is enabled' do
-      before do
-        stub_feature_flags(override_group_level_protected_environment_settings_permission: true)
-      end
-
-      it_behaves_like 'group-level request is allowed for maintainer'
-    end
 
     context 'when authenticated as a owner' do
       before do
