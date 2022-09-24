@@ -273,8 +273,6 @@ class UsersController < ApplicationController
 
   def finder_params
     {
-      # don't display projects pending deletion
-      without_deleted: true,
       # don't display projects marked for deletion
       not_aimed_for_deletion: true
     }
