@@ -126,7 +126,7 @@ module Ci
 
       def already_completed?
         Gitlab::Redis::SharedState.with do |redis|
-          redis.exists(idempotency_cache_key)
+          redis.exists?(idempotency_cache_key) # rubocop:disable CodeReuse/ActiveRecord
         end
       end
     end
