@@ -18,7 +18,10 @@ module Users
 
     validates :phone_number,
               presence: true,
-              numericality: { only_integer: true },
+              format: {
+                with: /\A\d+\Z/,
+                message: -> (object, data) { _('can contain only digits') }
+              },
               length: { maximum: 12 }
 
     validates :telesign_reference_xid,

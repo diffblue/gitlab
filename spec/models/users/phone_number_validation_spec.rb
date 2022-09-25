@@ -10,11 +10,14 @@ RSpec.describe Users::PhoneNumberValidation do
   it { is_expected.to validate_length_of(:country).is_at_most(3) }
 
   it { is_expected.to validate_presence_of(:international_dial_code) }
-  it { is_expected.to validate_numericality_of(:international_dial_code).is_greater_than(0) }
+  it { is_expected.to validate_numericality_of(:international_dial_code).only_integer.is_greater_than(0) }
 
   it { is_expected.to validate_presence_of(:phone_number) }
   it { is_expected.to validate_length_of(:phone_number).is_at_most(12) }
-  it { is_expected.to validate_numericality_of(:phone_number) }
+  it { is_expected.to allow_value('555555').for(:phone_number) }
+  it { is_expected.not_to allow_value('555-555').for(:phone_number) }
+  it { is_expected.not_to allow_value('+555555').for(:phone_number) }
+  it { is_expected.not_to allow_value('555 555').for(:phone_number) }
 
   it { is_expected.to validate_length_of(:telesign_reference_xid).is_at_most(255) }
 
