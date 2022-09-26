@@ -60,7 +60,7 @@ RSpec.describe Gitlab::Ci::Minutes::CachedQuota do
       subject
 
       ::Gitlab::Redis::SharedState.with do |redis|
-        expect(redis.exists(cached_quota.cache_key)).to be_falsey
+        expect(redis.exists?(cached_quota.cache_key)).to eq(false)
       end
     end
   end

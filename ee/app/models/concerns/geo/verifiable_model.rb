@@ -16,7 +16,10 @@ module Geo
       def save_verification_details
         return unless self.class.separate_verification_state_table?
 
-        return unless self.class.verifiables.primary_key_in(self).exists?
+        cte = Gitlab::SQL::CTE.new(:verifiables, self.class.primary_key_in(self))
+        verifiables = self.class.with(cte.to_arel).from(cte.alias_to(self.class.arel_table)).verifiables
+
+        return unless verifiables.exists?
 
         # During a transaction, `verification_state_object` could be built before
         # a value for `verification_state_model_key` exists. So we check for that

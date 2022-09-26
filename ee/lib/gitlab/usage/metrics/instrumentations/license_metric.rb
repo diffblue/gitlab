@@ -24,7 +24,7 @@ module Gitlab
                                   trial_ends_on
                                   subscription_id).freeze
 
-          def initialize(time_frame:, options: {})
+          def initialize(metric_definition)
             super
 
             raise ArgumentError, "License options attribute are required" unless license_attribute.present?

@@ -351,6 +351,22 @@ scope block takes an argument). Preloading instance dependent scopes is not
 supported.
 ```
 
+### Primary key
+
+Primary key must include the partitioning key column to partition the table.
+
+We first create a unique index including the `(id, partition_id)`.
+Then, we drop the primary key constraint and use the new index created to set
+the new primary key constraint.
+
+We must set the primary key explicitly as `ActiveRecord` does not support composite primary keys.
+
+```ruby
+class Model
+  self.primary_key = 'id'
+end
+```
+
 ### Foreign keys
 
 Foreign keys must reference columns that either are a primary key or form a
@@ -618,7 +634,7 @@ not deadlines and can change at any time.
 gantt
   title CI Data Partitioning Timeline
   dateFormat  YYYY-MM-DD
-  axisFormat  %Y-%m
+  axisFormat  %m-%y
 
   section Phase 0
     Build data partitioning strategy :done, 0_1, 2022-06-01, 90d

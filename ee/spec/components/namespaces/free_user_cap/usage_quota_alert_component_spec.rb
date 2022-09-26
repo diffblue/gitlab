@@ -6,11 +6,11 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:content_class) { '_content_class_' }
 
-  let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+  let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
   let!(:gitlab_subscription) { create(:gitlab_subscription, :expired, :free, namespace: namespace) }
 
   let(:title) do
-    "Your free group is now limited to #{::Namespaces::FreeUserCap::FREE_USER_LIMIT} members"
+    "Your free group is now limited to #{::Namespaces::FreeUserCap.dashboard_limit} members"
   end
 
   let(:body) do
@@ -25,7 +25,8 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
   before do
     namespace.add_owner(user)
 
-    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_ee_application_setting(dashboard_limit_enabled: true)
+    stub_ee_application_setting(dashboard_limit: 5)
     allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
   end
 
@@ -70,7 +71,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
   end
 
   context 'when under the limit' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
     it_behaves_like 'does not render the alert'
   end

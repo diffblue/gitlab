@@ -15,12 +15,12 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
 
   let(:title) do
     "On 1, Jun, 2022, your trial will end and #{namespace.name} will be limited to " \
-    "#{::Namespaces::FreeUserCap::FREE_USER_LIMIT} members"
+    "#{::Namespaces::FreeUserCap.dashboard_limit} members"
   end
 
   let(:body) do
     "When your trial ends, you'll move to the Free tier, which has a limit of "\
-    "#{::Namespaces::FreeUserCap::FREE_USER_LIMIT} seats. #{::Namespaces::FreeUserCap::FREE_USER_LIMIT} " \
+    "#{::Namespaces::FreeUserCap.dashboard_limit} seats. #{::Namespaces::FreeUserCap.dashboard_limit} " \
     'seats will remain active, and members not occupying a seat will have the Over limit ' \
     'status and lose access to this group. To get more seats, upgrade to a paid tier.'
   end
@@ -30,7 +30,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaTrialAlertComponent, :saas, :a
   end
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_ee_application_setting(dashboard_limit_enabled: true)
     stub_feature_flags(free_user_cap: free_user_cap_enabled)
     namespace.add_owner(user)
     travel_to(trial_ends_on)

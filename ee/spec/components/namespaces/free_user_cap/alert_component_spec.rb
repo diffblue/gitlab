@@ -7,7 +7,7 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
   let_it_be(:content_class) { '_content_class_' }
 
   let(:free_user_cap_reached_limit?) { true }
-  let(:title) { "Looks like you've reached your #{::Namespaces::FreeUserCap::FREE_USER_LIMIT} member limit" }
+  let(:title) { "Looks like you've reached your #{::Namespaces::FreeUserCap.dashboard_limit} member limit" }
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }
 

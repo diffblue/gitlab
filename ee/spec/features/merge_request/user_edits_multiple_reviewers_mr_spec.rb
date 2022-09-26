@@ -62,4 +62,37 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
       end
     end
   end
+
+  context 'suggested reviewers', :js, :saas do
+    let_it_be(:suggested_user) { create(:user) }
+
+    before do
+      stub_licensed_features(suggested_reviewers: true)
+      stub_feature_flags(suggested_reviewers: merge_request.project)
+      merge_request.project.add_developer(suggested_user)
+      merge_request.build_predictions
+      merge_request.predictions.update!(suggested_reviewers: { reviewers: [suggested_user.username] })
+    end
+
+    it 'displays suggested reviewers in reviewer dropdown', :aggregate_failures do
+      find('.js-reviewer-search').click
+      wait_for_requests
+
+      page.within '.dropdown-menu-reviewer' do
+        expect(page).to have_content('Suggestion(s)')
+        expect(page).to have_content(suggested_user.name)
+        expect(page).to have_content(suggested_user.username)
+      end
+    end
+
+    it 'removes headers in reviewer dropdown', :aggregate_failures do
+      find('.js-reviewer-search').click
+      wait_for_requests
+
+      page.within '.dropdown-menu-reviewer' do
+        click_on suggested_user.name
+        expect(page).not_to have_content('Suggestion(s)')
+      end
+    end
+  end
 end
