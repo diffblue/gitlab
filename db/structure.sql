@@ -13357,6 +13357,8 @@ CREATE TABLE ci_secure_files (
     file text NOT NULL,
     checksum bytea NOT NULL,
     key_data text,
+    metadata jsonb,
+    expires_at timestamp with time zone,
     CONSTRAINT check_320790634d CHECK ((char_length(file) <= 255)),
     CONSTRAINT check_402c7b4a56 CHECK ((char_length(name) <= 255)),
     CONSTRAINT check_7279b4e293 CHECK ((char_length(key_data) <= 128))
