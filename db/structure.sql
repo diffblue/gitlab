@@ -11473,6 +11473,12 @@ CREATE TABLE application_settings (
     cube_api_base_url text,
     encrypted_cube_api_key bytea,
     encrypted_cube_api_key_iv bytea,
+    jitsu_host text,
+    jitsu_project_xid text,
+    clickhouse_connection_string text,
+    jitsu_administrator_email text,
+    encrypted_jitsu_administrator_password bytea,
+    encrypted_jitsu_administrator_password_iv bytea,
     dashboard_limit_enabled boolean DEFAULT false NOT NULL,
     dashboard_limit integer DEFAULT 0 NOT NULL,
     dashboard_notification_limit integer DEFAULT 0 NOT NULL,
@@ -11514,12 +11520,16 @@ CREATE TABLE application_settings (
     CONSTRAINT check_9c6c447a13 CHECK ((char_length(maintenance_mode_message) <= 255)),
     CONSTRAINT check_a5704163cc CHECK ((char_length(secret_detection_revocation_token_types_url) <= 255)),
     CONSTRAINT check_d03919528d CHECK ((char_length(container_registry_vendor) <= 255)),
+    CONSTRAINT check_d4865d70f3 CHECK ((char_length(clickhouse_connection_string) <= 1024)),
     CONSTRAINT check_d820146492 CHECK ((char_length(spam_check_endpoint_url) <= 255)),
+    CONSTRAINT check_dea8792229 CHECK ((char_length(jitsu_host) <= 255)),
     CONSTRAINT check_e2dd6e290a CHECK ((char_length(jira_connect_application_key) <= 255)),
     CONSTRAINT check_e5024c8801 CHECK ((char_length(elasticsearch_username) <= 255)),
     CONSTRAINT check_e5aba18f02 CHECK ((char_length(container_registry_version) <= 255)),
+    CONSTRAINT check_ec3ca9aa8d CHECK ((char_length(jitsu_administrator_email) <= 255)),
     CONSTRAINT check_ef6176834f CHECK ((char_length(encrypted_cloud_license_auth_token_iv) <= 255)),
-    CONSTRAINT check_f6563bc000 CHECK ((char_length(arkose_labs_verify_api_url) <= 255))
+    CONSTRAINT check_f6563bc000 CHECK ((char_length(arkose_labs_verify_api_url) <= 255)),
+    CONSTRAINT check_fc732c181e CHECK ((char_length(jitsu_project_xid) <= 255))
 );
 
 COMMENT ON COLUMN application_settings.content_validation_endpoint_url IS 'JiHu-specific column';

@@ -1335,6 +1335,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: product_analytics_initialize_analytics
+  :worker_name: ProductAnalytics::InitializeAnalyticsWorker
+  :feature_category: :product_analytics
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: project_import_schedule
   :worker_name: ProjectImportScheduleWorker
   :feature_category: :source_code_management
