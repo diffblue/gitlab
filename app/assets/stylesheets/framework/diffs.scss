@@ -621,7 +621,7 @@ table.code {
     grid-template-columns: 1fr 1fr;
 
     .content + .content {
-      @include gl-border-t();
+      @include gl-border-t;
     }
   }
 
