@@ -1,4 +1,4 @@
-= form_for [@group, @protected_environment], html: { class: 'new-protected-environment js-new-protected-environment' } do |f|
+= gitlab_ui_form_for [@group, @protected_environment], html: { class: 'new-protected-environment js-new-protected-environment' } do |f|
   .card
     .card-header
       %h3.card-title
@@ -17,4 +17,4 @@
         .js-allowed-to-deploy-dropdown
 
     .card-footer
-      = f.submit s_('ProtectedEnvironment|Protect'), class: 'gl-button btn btn-confirm', disabled: true
+      = f.submit s_('ProtectedEnvironment|Protect'), pajamas_button: true, disabled: true
