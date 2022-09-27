@@ -1,12 +1,33 @@
 # frozen_string_literal: true
 
 module RequirementsManagement
+  # Acts as a proxy object for work items of type `requirement`,
+  # this is now used to keep old requirements `iid` field values
+  # consistent and GraphQL endpoints backwards compatible after
+  # requirements were migrated.
+  #
+  # Every work item of type `requirement` must have an associated object of this class.
   class Requirement < ApplicationRecord
-    include CacheMarkdownField
-    include StripAttribute
     include AtomicInternalId
     include Sortable
     include Gitlab::SQL::Pattern
+    include IgnorableColumns
+
+    ignore_columns(
+      %i[
+        created_at
+        updated_at
+        author_id
+        cached_markdown_version
+        state
+        title
+        title_html
+        description
+        description_html
+      ],
+      remove_with: '15.7',
+      remove_after: '2022-11-22'
+    )
 
     # the expected name for this table is `requirements_management_requirements`,
     # but to avoid downtime and deployment issues `requirements` is still used
@@ -14,12 +35,6 @@ module RequirementsManagement
     self.table_name = 'requirements'
     STATE_MAP = { opened: 'opened', closed: 'archived' }.with_indifferent_access.freeze
 
-    cache_markdown_field :title, pipeline: :single_line
-    cache_markdown_field :description, issuable_reference_expansion_enabled: true
-
-    strip_attributes! :title
-
-    belongs_to :author, inverse_of: :requirements, class_name: 'User'
     belongs_to :project, inverse_of: :requirements
     # deleting an issue would result in deleting requirement record due to cascade delete via foreign key
     # but to sync the other way around, we require a temporary `dependent: :destroy`
@@ -41,18 +56,16 @@ module RequirementsManagement
     after_validation :invalidate_if_sync_error, on: [:update, :create]
 
     delegate :title,
+             :title_html,
              :author,
              :author_id,
              :description,
              :description_html,
-             :title_html,
              :cached_markdown_version,
              :created_at,
              :updated_at,
              to: :requirement_issue,
              allow_nil: true
-
-    enum state: { opened: 1, archived: 2 }
 
     scope :with_issue, -> { joins(:requirement_issue) }
     scope :for_iid, -> (iid) { where(iid: iid) }
@@ -63,6 +76,9 @@ module RequirementsManagement
     scope :order_created_asc, -> { with_issue.reorder('issues.created_at asc') }
     scope :order_updated_desc, -> { with_issue.reorder('issues.updated_at desc') }
     scope :order_updated_asc, -> { with_issue.reorder('issues.updated_at asc') }
+
+    scope :opened, -> { with_issue.where(issues: { state_id: Issue.available_states[:opened] }) }
+    scope :archived, -> { with_issue.where(issues: { state_id: Issue.available_states[:closed] }) }
 
     scope :for_state, -> (state) { with_issue.where('issues.state_id': to_issue_state_id(state)) }
 

@@ -3,9 +3,16 @@
 FactoryBot.define do
   factory :requirement, class: 'RequirementsManagement::Requirement' do
     project
-    author
-    title { generate(:title) }
-    title_html { "<h2>#{title}</h2>" }
+
+    transient do
+      author { create(:user) } # rubocop:disable FactoryBot/InlineAssociation
+      state { 'opened' }
+      title { generate(:title) }
+      description { FFaker::Lorem.sentence }
+      created_at { Time.current }
+      updated_at { Time.current }
+    end
+
     requirement_issue do
       issue_state = state.to_s == 'archived' ? 'closed' : 'opened'
       association(:issue, issue_type: :requirement, project: project, author:

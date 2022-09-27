@@ -7,7 +7,9 @@ RSpec.describe 'getting a requirement list for a project' do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:requirement) { create(:requirement, project: project) }
+  let_it_be(:requirement) do
+    create(:requirement, project: project, title: "Title: #{current_user.to_reference}", description: '## Description')
+  end
 
   let(:requirements_data) { graphql_data['project']['requirements']['edges'] }
   let(:fields) do
@@ -45,6 +47,46 @@ RSpec.describe 'getting a requirement list for a project' do
 
       expect(graphql_errors).to be_nil
       expect(requirements_data[0]['node']['id']).to eq requirement.to_global_id.to_s
+    end
+
+    it 'returns cached rendered html fields from requirement issue' do
+      post_graphql(query, current_user: current_user)
+
+      title_html = requirements_data[0]['node']['titleHtml']
+      description_html = requirements_data[0]['node']['descriptionHtml']
+      expect(title_html).to include('Title: <a href="/')
+      expect(description_html).to include('<h2 ')
+    end
+
+    context 'when querying delegated fields' do
+      let(:fields) do
+        <<~QUERY
+        edges {
+          node {
+            title
+            description
+            state
+            titleHtml
+            descriptionHtml
+            createdAt
+            updatedAt
+            author {
+              name
+            }
+          }
+        }
+        QUERY
+      end
+
+      it 'does not execute n+1 queries' do
+        post_graphql(query, current_user: current_user) # warm up
+        control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
+
+        create(:requirement, project: project, author: create(:user))
+
+        expect { post_graphql(query, current_user: current_user) }
+          .not_to exceed_query_limit(control)
+      end
     end
 
     context 'when limiting the number of results' do
