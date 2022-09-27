@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Container-Scanning.gitlab-ci.yml' do
+RSpec.describe 'Container-Scanning.latest.gitlab-ci.yml' do
   subject(:template) do
     <<~YAML
       include:

@@ -8,12 +8,6 @@ RSpec.shared_examples 'includes no jobs' do
   end
 end
 
-RSpec.shared_examples 'includes dast job' do
-  it 'includes dast job' do
-    expect(build_names).to match_array(%w[dast])
-  end
-end
-
 RSpec.describe 'DAST.latest.gitlab-ci.yml' do
   subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('DAST.latest') }
 
@@ -79,7 +73,7 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
           end
 
           context 'when no specification provided' do
-            include_examples 'includes dast job'
+            it_behaves_like 'acts as branch pipeline', %w[dast]
           end
         end
       end
@@ -128,6 +122,8 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
                 expect(build_names).to match_array(%w[dast])
               end
             end
+
+            it_behaves_like 'acts as MR pipeline', %w[dast], { 'CHANGELOG.md' => '' }
           end
 
           context 'when REVIEW_DISABLED=true' do
@@ -136,7 +132,7 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
             end
 
             context 'when on default branch' do
-              include_examples 'includes dast job'
+              it_behaves_like 'acts as branch pipeline', %w[dast]
             end
 
             context 'when on feature branch' do

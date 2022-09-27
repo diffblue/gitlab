@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
+RSpec.describe 'Coverage-Fuzzing.latest.gitlab-ci.yml' do
   subject(:template) do
     <<~YAML
       stages:
       - fuzz
 
       include:
-        - template: 'Security/Coverage-Fuzzing.gitlab-ci.yml'
+        - template: 'Security/Coverage-Fuzzing.latest.gitlab-ci.yml'
 
       my_fuzz_target:
         extends: .fuzz_base
@@ -43,7 +43,7 @@ RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
       end
 
       context 'without extending job default' do
-        subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Coverage-Fuzzing').content }
+        subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Coverage-Fuzzing.latest').content }
 
         it 'includes no job' do
           expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
@@ -51,6 +51,8 @@ RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
       end
 
       it_behaves_like 'acts as branch pipeline', %w[my_fuzz_target]
+
+      it_behaves_like 'acts as MR pipeline', %w[my_fuzz_target], { 'CHANGELOG.md' => '' }
 
       context 'when COVFUZZ_DISABLED=1' do
         before do
