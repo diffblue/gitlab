@@ -76,10 +76,12 @@ module Types
       description: 'Indicates if the due date has been manually set.'
 
     field :downvotes, GraphQL::Types::Int,
-      null: false, description: 'Number of downvotes the epic has received.'
+      null: false, description: 'Number of downvotes the epic has received.',
+      resolver: Resolvers::DownVotesCountResolver
 
     field :upvotes, GraphQL::Types::Int,
-      null: false, description: 'Number of upvotes the epic has received.'
+      null: false, description: 'Number of upvotes the epic has received.',
+      resolver: Resolvers::UpVotesCountResolver
 
     field :user_discussions_count, GraphQL::Types::Int,
       null: false, resolver: Resolvers::UserDiscussionsCountResolver,
