@@ -85,11 +85,9 @@ RSpec.describe 'API-Fuzzing.latest.gitlab-ci.yml' do
           allow(License).to receive(:current).and_return(license)
         end
 
-        context 'by default' do
-          it 'includes a job' do
-            expect(build_names).to match_array(%w[apifuzzer_fuzz])
-          end
-        end
+        it_behaves_like 'acts as branch pipeline', %w[apifuzzer_fuzz]
+
+        it_behaves_like 'acts as MR pipeline', %w[apifuzzer_fuzz], { 'CHANGELOG.md' => '' }
 
         context 'when configured with HAR' do
           before do

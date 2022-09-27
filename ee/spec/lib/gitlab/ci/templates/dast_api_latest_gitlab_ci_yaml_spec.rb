@@ -81,11 +81,9 @@ RSpec.describe 'DAST-API.latest.gitlab-ci.yml' do
           stub_licensed_features(dast: true)
         end
 
-        context 'by default' do
-          it 'includes a job' do
-            expect(build_names).to match_array(%w[dast_api])
-          end
-        end
+        it_behaves_like 'acts as branch pipeline', %w[dast_api]
+
+        it_behaves_like 'acts as MR pipeline', %w[dast_api], { 'CHANGELOG.md' => '' }
 
         context 'when DAST_API_DISABLED=1' do
           before do
