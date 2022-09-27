@@ -3,15 +3,13 @@
 require 'spec_helper'
 require_dependency 'gitlab/cluster/lifecycle_events'
 
-RSpec.describe Gitlab::Memory::Watchdog::Monitors::MemoryGrowthMonitor do
+RSpec.describe Gitlab::Memory::Watchdog::Monitor::MemoryGrowth do
   let(:primary_memory) { 2048 }
   let(:worker_memory) { 0 }
   let(:max_mem_growth) { 2 }
-  let(:max_strikes) { 2 }
 
   subject(:monitor) do
-    described_class.new(max_mem_growth: max_mem_growth,
-                        max_strikes: max_strikes)
+    described_class.new(max_mem_growth: max_mem_growth)
   end
 
   before do
@@ -26,28 +24,20 @@ RSpec.describe Gitlab::Memory::Watchdog::Monitors::MemoryGrowthMonitor do
       it 'initializes with defaults' do
         monitor = described_class.new
 
-        expect(monitor.max_mem_growth).to eq(described_class::DEFAULT_MAX_MEM_GROWTH)
-        expect(monitor.max_strikes).to eq(described_class::DEFAULT_MAX_STRIKES)
-      end
-    end
-
-    context 'when settings are passed through the environment' do
-      before do
-        stub_env('GITLAB_MEMWD_MAX_MEM_GROWTH', 4)
-        stub_env('GITLAB_MEMWD_MAX_STRIKES', 2)
-      end
-
-      it 'initializes with these settings' do
-        monitor = described_class.new
-
-        expect(monitor.max_mem_growth).to eq(4)
-        expect(monitor.max_strikes).to eq(2)
+        expect(monitor.max_mem_growth).to eq(Gitlab::Memory::Watchdog::Configuration::MAX_MEM_GROWTH)
       end
     end
   end
 
   describe '#call' do
-    it_behaves_like 'watchdog monitor when process exceeds threshold', 'memory_growth' do
+    it 'gets memory_usage_uss_pss' do
+      expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss)
+      expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss).with(pid: Gitlab::Cluster::PRIMARY_PID)
+
+      monitor.call
+    end
+
+    context 'when process exceeds threshold' do
       let(:worker_memory) { max_mem_growth * primary_memory + 1 }
       let(:payload) do
         {
@@ -57,10 +47,15 @@ RSpec.describe Gitlab::Memory::Watchdog::Monitors::MemoryGrowthMonitor do
           memwd_uss_bytes: worker_memory
         }
       end
+
+      include_examples 'returns Watchdog Monitor result', threshold_violated: true
     end
 
-    it_behaves_like 'watchdog monitor when process does not exceed threshold' do
+    context 'when process does not exceed threshold' do
       let(:worker_memory) { max_mem_growth * primary_memory - 1 }
+      let(:payload) { {} }
+
+      include_examples 'returns Watchdog Monitor result', threshold_violated: false
     end
   end
 end

@@ -50,10 +50,12 @@ module Gitlab
       def initialize
         @configuration = Configuration.new
         @alive = true
+
+        init_prometheus_metrics
       end
 
-      def configure(&block)
-        yield(@configuration)
+      def configure
+        yield @configuration
       end
 
       def call
@@ -72,23 +74,28 @@ module Gitlab
         @alive = false
       end
 
-      def memory_violation_callback
-        lambda do |payload|
-          return unless @alive
-
-          all_labels = log_labels.merge(payload)
-          logger.warn(all_labels)
-
-          @alive = !handler.call
-        end
-      end
-
       private
 
       def monitor
-        @configuration.monitors.each do |monitor|
-          monitor.call(memory_violation_callback: memory_violation_callback)
+        @configuration.monitors.call_each do |result|
+          break unless @alive
+
+          next unless result.threshold_violated?
+
+          @counter_violations.increment(reason: result.monitor_name)
+
+          next unless result.strikes_exceeded?
+
+          @alive = !memory_limit_exceeded_callback(result.monitor_name, result.payload)
         end
+      end
+
+      def memory_limit_exceeded_callback(monitor_name, monitor_payload)
+        all_labels = log_labels.merge(monitor_payload)
+        logger.warn(all_labels)
+        @counter_violations_handled.increment(reason: monitor_name)
+
+        handler.call
       end
 
       def handler
@@ -110,9 +117,33 @@ module Gitlab
       def log_labels
         {
           pid: $$,
+          worker_id: worker_id,
           memwd_handler_class: handler.class.name,
-          memwd_sleep_time_s: sleep_time_seconds
+          memwd_sleep_time_s: sleep_time_seconds,
+          memwd_rss_bytes: process_rss_bytes
         }
+      end
+
+      def process_rss_bytes
+        Gitlab::Metrics::System.memory_usage_rss
+      end
+
+      def worker_id
+        ::Prometheus::PidProvider.worker_id
+      end
+
+      def init_prometheus_metrics
+        default_labels = { pid: worker_id }
+        @counter_violations = Gitlab::Metrics.counter(
+          :gitlab_memwd_violations_total,
+          'Total number of times a Ruby process violated a memory threshold',
+          default_labels
+        )
+        @counter_violations_handled = Gitlab::Metrics.counter(
+          :gitlab_memwd_violations_handled_total,
+          'Total number of times Ruby process memory violations were handled',
+          default_labels
+        )
       end
     end
   end

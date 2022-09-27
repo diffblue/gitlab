@@ -9,9 +9,18 @@ RSpec.describe 'memory watchdog' do
 
   context 'when GITLAB_MEMORY_WATCHDOG_ENABLED is truthy' do
     let(:env_switch) { 'true' }
+    let(:watchdog_monitors) do
+      [
+        Gitlab::Memory::Watchdog::Monitor::HeapFragmentation,
+        Gitlab::Memory::Watchdog::Monitor::MemoryGrowth
+      ]
+    end
 
     before do
       stub_env('GITLAB_MEMORY_WATCHDOG_ENABLED', env_switch)
+      watchdog_monitors.each do |watchdog_monitor|
+        allow(watchdog_monitor).to receive(:new)
+      end
     end
 
     context 'when runtime is an application' do
@@ -29,21 +38,28 @@ RSpec.describe 'memory watchdog' do
       end
 
       shared_examples 'starts configured watchdog with handler' do |handler_class|
-        let(:configuration) { instance_double(Gitlab::Memory::Watchdog::Configuration) }
-        let(:monitor_stack) { instance_double(Gitlab::Memory::Watchdog::Configuration::MonitorStack) }
+        let(:configuration) { Gitlab::Memory::Watchdog::Configuration.new }
 
         before do
-          allow(configuration).to receive(:monitors).and_return(monitor_stack)
+          allow(Gitlab::Memory::Watchdog).to receive(:new).and_return(watchdog)
+          allow(watchdog).to receive(:configure).and_yield(configuration)
+          allow(Gitlab::BackgroundTask).to receive(:new).with(watchdog).and_return(background_task)
+          allow(background_task).to receive(:start)
+          allow(Gitlab::Cluster::LifecycleEvents).to receive(:on_worker_start).and_yield
         end
 
-        it "uses the #{handler_class} and starts the watchdog" do
+        it "correctly configures watchdog", :aggregate_failures do
           expect(watchdog).to receive(:configure).and_yield(configuration)
-          expect(configuration).to receive(:handler=).with(an_instance_of(handler_class))
-          expect(configuration).to receive(:logger=).with(Gitlab::AppLogger)
-          expect(configuration.monitors).to receive(:use)
-            .with(Gitlab::Memory::Watchdog::Monitors::HeapFragmentationMonitor)
-          expect(configuration.monitors).to receive(:use)
-            .with(Gitlab::Memory::Watchdog::Monitors::MemoryGrowthMonitor)
+
+          expect(watchdog_monitors).to all(receive(:new))
+
+          run_initializer
+
+          expect(configuration.handler).to be_an_instance_of(handler_class)
+          expect(configuration.logger).to eq(Gitlab::AppLogger)
+        end
+
+        it "starts the watchdog", :aggregate_failures do
           expect(Gitlab::Memory::Watchdog).to receive(:new).and_return(watchdog)
           expect(Gitlab::BackgroundTask).to receive(:new).with(watchdog).and_return(background_task)
           expect(background_task).to receive(:start)

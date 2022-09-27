@@ -2,15 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Memory::Watchdog::Monitors::HeapFragmentationMonitor do
+RSpec.describe Gitlab::Memory::Watchdog::Monitor::HeapFragmentation do
   let(:heap_frag_limit_gauge) { instance_double(::Prometheus::Client::Gauge) }
   let(:max_heap_fragmentation) { 0.2 }
   let(:fragmentation) { 0.3 }
-  let(:max_strikes) { 2 }
 
   subject(:monitor) do
-    described_class.new(max_heap_fragmentation: max_heap_fragmentation,
-                        max_strikes: max_strikes)
+    described_class.new(max_heap_fragmentation: max_heap_fragmentation)
   end
 
   before do
@@ -29,32 +27,23 @@ RSpec.describe Gitlab::Memory::Watchdog::Monitors::HeapFragmentationMonitor do
       monitor
     end
 
-    context 'when no settings are set in the environment' do
+    context 'when no max_heap_fragmentation is provided' do
       it 'initializes with defaults' do
         monitor = described_class.new
 
-        expect(monitor.max_heap_fragmentation).to eq(described_class::DEFAULT_MAX_HEAP_FRAG)
-        expect(monitor.max_strikes).to eq(described_class::DEFAULT_MAX_STRIKES)
-      end
-    end
-
-    context 'when settings are passed through the environment' do
-      before do
-        stub_env('GITLAB_MEMWD_MAX_HEAP_FRAG', 1)
-        stub_env('GITLAB_MEMWD_MAX_STRIKES', 2)
-      end
-
-      it 'initializes with these settings' do
-        monitor = described_class.new
-
-        expect(monitor.max_heap_fragmentation).to eq(1)
-        expect(monitor.max_strikes).to eq(2)
+        expect(monitor.max_heap_fragmentation).to eq(Gitlab::Memory::Watchdog::Configuration::MAX_HEAP_FRAG)
       end
     end
   end
 
   describe '#call' do
-    it_behaves_like 'watchdog monitor when process exceeds threshold', 'heap_fragmentation' do
+    it 'gets gc_heap_fragmentation' do
+      expect(Gitlab::Metrics::Memory).to receive(:gc_heap_fragmentation)
+
+      monitor.call
+    end
+
+    context 'when process exceeds threshold' do
       let(:fragmentation) { max_heap_fragmentation + 0.1 }
       let(:payload) do
         {
@@ -63,10 +52,15 @@ RSpec.describe Gitlab::Memory::Watchdog::Monitors::HeapFragmentationMonitor do
           memwd_max_heap_frag: max_heap_fragmentation
         }
       end
+
+      include_examples 'returns Watchdog Monitor result', threshold_violated: true
     end
 
-    it_behaves_like 'watchdog monitor when process does not exceed threshold' do
+    context 'when process does not exceed threshold' do
       let(:fragmentation) { max_heap_fragmentation - 0.1 }
+      let(:payload) { {} }
+
+      include_examples 'returns Watchdog Monitor result', threshold_violated: false
     end
   end
 end

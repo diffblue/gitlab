@@ -5,43 +5,79 @@ require 'spec_helper'
 RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
   context 'watchdog' do
     let(:configuration) { instance_double(described_class::Configuration) }
-    let(:monitor1) { instance_double(described_class::Monitors::BaseMonitor) }
-    let(:monitor2) { instance_double(described_class::Monitors::BaseMonitor) }
-    let(:monitors) { [monitor1, monitor2] }
     let(:handler) { instance_double(described_class::NullHandler) }
     let(:logger) { instance_double(::Logger) }
     let(:sleep_time_seconds) { 60 }
+    let(:threshold_violated) { false }
+    let(:strikes_exceeded) { false }
+    let(:violations_counter) { instance_double(::Prometheus::Client::Counter) }
+    let(:violations_handled_counter) { instance_double(::Prometheus::Client::Counter) }
+    let(:watchdog_iterations) { 1 }
+    let(:name) { :monitor_name }
+    let(:payload) { { message: 'dummy_text' } }
 
     subject(:watchdog) do
       described_class.new.tap do |instance|
         # We need to defuse `sleep` and stop the internal loop after 1 iteration
+        iterations = 0
         allow(instance).to receive(:sleep) do
-          # stop watchdog after one sleep
-          instance.stop
+          instance.stop if (iterations += 1) > watchdog_iterations
         end
       end
     end
 
+    def stub_prometheus_metrics
+      allow(Gitlab::Metrics).to receive(:counter)
+        .with(:gitlab_memwd_violations_total, anything, anything)
+        .and_return(violations_counter)
+      allow(Gitlab::Metrics).to receive(:counter)
+        .with(:gitlab_memwd_violations_handled_total, anything, anything)
+        .and_return(violations_handled_counter)
+
+      allow(violations_counter).to receive(:increment)
+      allow(violations_handled_counter).to receive(:increment)
+    end
+
     before do
+      stub_prometheus_metrics
+      allow(Gitlab::Metrics::System).to receive(:memory_usage_rss).at_least(:once).and_return(1024)
+      allow(::Prometheus::PidProvider).to receive(:worker_id).and_return('worker_1')
       allow(described_class::Configuration).to receive(:new).and_return(configuration)
       allow(configuration).to receive(:handler).and_return(handler)
       allow(configuration).to receive(:logger).and_return(logger)
       allow(configuration).to receive(:sleep_time_seconds).and_return(sleep_time_seconds)
-      allow(configuration).to receive(:monitors).and_return(monitors)
-      allow(handler).to receive(:call)
+      allow(handler).to receive(:call).and_return(true)
       allow(logger).to receive(:info)
       allow(logger).to receive(:warn)
-      allow(monitor1).to receive(:call)
-      allow(monitor2).to receive(:call)
+    end
+
+    describe '#initialize' do
+      it 'initialize new configuration' do
+        expect(described_class::Configuration).to receive(:new)
+
+        watchdog
+      end
     end
 
     describe '#call' do
+      let(:result) { instance_double(described_class::MonitorState::Result) }
+
+      before do
+        allow(configuration).to receive_message_chain(:monitors, :call_each).and_yield(result)
+        allow(result).to receive(:threshold_violated?).and_return(threshold_violated)
+        allow(result).to receive(:strikes_exceeded?).and_return(strikes_exceeded)
+        allow(result).to receive(:monitor_name).and_return(name)
+        allow(result).to receive(:payload).and_return(payload)
+      end
+
       it 'logs start message once' do
         expect(logger).to receive(:info).once
           .with(
             pid: Process.pid,
+            worker_id: 'worker_1',
             memwd_handler_class: handler.class.name,
             memwd_sleep_time_s: sleep_time_seconds,
+            memwd_rss_bytes: 1024,
             message: 'started')
 
         watchdog.call
@@ -53,20 +89,115 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
         watchdog.call
       end
 
-      it 'executes monitors with memory_violation callback' do
-        expect(monitors).to all(receive(:call).with(memory_violation_callback: anything))
-
-        watchdog.call
-      end
-
       context 'when gitlab_memory_watchdog ops toggle is off' do
         before do
           stub_feature_flags(gitlab_memory_watchdog: false)
         end
 
         it 'does not trigger any monitor' do
-          monitors.each do |monitor|
-            expect(monitor).not_to receive(:call)
+          expect(configuration).not_to receive(:monitors)
+        end
+      end
+
+      context 'when process does not exceed threshold' do
+        it 'does not increment violations counters' do
+          expect(violations_counter).not_to receive(:increment)
+          expect(violations_handled_counter).not_to receive(:increment)
+
+          watchdog.call
+        end
+
+        it 'does not log violation' do
+          expect(logger).not_to receive(:warn)
+
+          watchdog.call
+        end
+
+        it 'does not execute handler' do
+          expect(handler).not_to receive(:call)
+
+          watchdog.call
+        end
+      end
+
+      context 'when process exceeds threshold' do
+        let(:threshold_violated) { true }
+
+        it 'increments violations counter' do
+          expect(violations_counter).to receive(:increment).with(reason: name)
+
+          watchdog.call
+        end
+
+        context 'when process does not exceed the allowed number of strikes' do
+          it 'does not increment handled violations counter' do
+            expect(violations_handled_counter).not_to receive(:increment)
+
+            watchdog.call
+          end
+
+          it 'does not log violation' do
+            expect(logger).not_to receive(:warn)
+
+            watchdog.call
+          end
+
+          it 'does not execute handler' do
+            expect(handler).not_to receive(:call)
+
+            watchdog.call
+          end
+        end
+
+        context 'when process exceeds the allowed number of strikes' do
+          let(:strikes_exceeded) { true }
+
+          it 'increments handled violations counter' do
+            expect(violations_handled_counter).to receive(:increment).with(reason: name)
+
+            watchdog.call
+          end
+
+          it 'logs violation' do
+            expect(logger).to receive(:warn)
+              .with(
+                pid: Process.pid,
+                worker_id: 'worker_1',
+                memwd_handler_class: handler.class.name,
+                memwd_sleep_time_s: sleep_time_seconds,
+                memwd_rss_bytes: 1024,
+                message: 'dummy_text')
+
+            watchdog.call
+          end
+
+          it 'executes handler' do
+            expect(handler).to receive(:call)
+
+            watchdog.call
+          end
+
+          context 'when enforce_memory_watchdog ops toggle is off' do
+            before do
+              stub_feature_flags(enforce_memory_watchdog: false)
+            end
+
+            it 'always uses the NullHandler' do
+              expect(handler).not_to receive(:call)
+              expect(described_class::NullHandler.instance).to receive(:call).and_return(true)
+
+              watchdog.call
+            end
+          end
+
+          context 'when multiple monitors exceeds threshold' do
+            it 'only calls the handler once' do
+              expect(configuration).to receive_message_chain(:monitors, :call_each).and_yield(result).and_yield(result)
+
+              expect(handler).to receive(:call).once.and_return(true)
+
+              watchdog.call
+            end
           end
         end
       end
@@ -75,56 +206,13 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
         expect(logger).to receive(:info).once
           .with(
             pid: Process.pid,
+            worker_id: 'worker_1',
             memwd_handler_class: handler.class.name,
             memwd_sleep_time_s: sleep_time_seconds,
+            memwd_rss_bytes: 1024,
             message: 'stopped')
 
         watchdog.call
-      end
-    end
-
-    describe '#memory_violation_callback' do
-      let(:payload) { { message: 'dummy_text' } }
-
-      subject(:memory_violation_callback) { watchdog.memory_violation_callback.call(payload) }
-
-      it 'invoke sidekiq logger warn' do
-        expect(logger).to receive(:warn)
-          .with(
-            pid: Process.pid,
-            memwd_handler_class: handler.class.name,
-            memwd_sleep_time_s: sleep_time_seconds,
-            message: 'dummy_text')
-
-        memory_violation_callback
-      end
-
-      it 'executes handler' do
-        expect(handler).to receive(:call)
-
-        memory_violation_callback
-      end
-
-      context 'when enforce_memory_watchdog ops toggle is off' do
-        before do
-          stub_feature_flags(enforce_memory_watchdog: false)
-        end
-
-        it 'always uses the NullHandler' do
-          expect(handler).not_to receive(:call)
-          expect(described_class::NullHandler.instance).to receive(:call).and_return(true)
-
-          memory_violation_callback
-        end
-      end
-
-      context 'when memory_violation_callback is triggered multiple times' do
-        it 'only calls the handler once' do
-          expect(handler).to receive(:call).once.and_return(true)
-
-          memory_violation_callback
-          memory_violation_callback
-        end
       end
     end
 
