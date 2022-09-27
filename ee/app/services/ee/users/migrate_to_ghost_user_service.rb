@@ -14,7 +14,6 @@ module EE
         return super if hard_delete
 
         migrate_epics
-        migrate_requirements_management_requirements
         migrate_vulnerabilities_feedback
         migrate_vulnerabilities
         migrate_vulnerabilities_external_issue_links
@@ -28,10 +27,6 @@ module EE
         batched_migrate(::Epic, :last_edited_by_id)
       end
       # rubocop: enable CodeReuse/ActiveRecord
-
-      def migrate_requirements_management_requirements
-        user.requirements.update_all(author_id: ghost_user.id)
-      end
 
       def migrate_vulnerabilities_feedback
         batched_migrate(Vulnerabilities::Feedback, :author_id)
