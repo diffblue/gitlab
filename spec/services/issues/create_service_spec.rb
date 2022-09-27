@@ -6,7 +6,7 @@ RSpec.describe Issues::CreateService do
   include AfterNextHelpers
 
   let_it_be(:group) { create(:group, :crm_enabled) }
-  let_it_be_with_reload(:project) { create(:project, group: group) }
+  let_it_be_with_reload(:project) { create(:project, :public, group: group) }
   let_it_be(:user) { create(:user) }
 
   let(:spam_params) { double }
@@ -34,7 +34,6 @@ RSpec.describe Issues::CreateService do
       let(:opts) { { title: '' } }
 
       before_all do
-        project.add_guest(user)
         project.add_guest(assignee)
       end
 
@@ -73,6 +72,30 @@ RSpec.describe Issues::CreateService do
         it 'ignores the project_id param and creates issue in the given project' do
           expect(issue.project).to eq(project)
           expect(unauthorized_project.reload.issues.count).to eq(0)
+        end
+      end
+
+      describe 'authorization' do
+        let_it_be(:project) { create(:project, :private, group: group).tap { |project| project.add_guest(user) } }
+
+        let(:opts) { { title: 'private issue', description: 'please fix' } }
+
+        context 'when the user is authorized' do
+          it 'allows the user to create an issue' do
+            expect(result).to be_success
+            expect(issue).to be_persisted
+          end
+        end
+
+        context 'when the user is not authorized' do
+          let(:user) { create(:user) }
+
+          it 'does not allow the user to create an issue' do
+            expect(result).to be_error
+            expect(result.errors).to contain_exactly('Operation not allowed')
+            expect(result.http_status).to eq(403)
+            expect(issue).to be_nil
+          end
         end
       end
 
