@@ -11162,6 +11162,12 @@ msgstr ""
 msgid "Create, update, or delete a merge request."
 msgstr ""
 
+msgid "CreateGitTag|Add a message to the tag. Leaving this blank creates a %{linkStart}lightweight tag%{linkEnd}."
+msgstr ""
+
+msgid "CreateGitTag|Set tag message"
+msgstr ""
+
 msgid "CreateGroup|You don’t have permission to create a subgroup in this group."
 msgstr ""
 
