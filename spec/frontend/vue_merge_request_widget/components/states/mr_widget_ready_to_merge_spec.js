@@ -783,13 +783,13 @@ describe('ReadyToMerge', () => {
 
         const textBody = wrapper.text();
 
-        expect(textBody).toBe(
+        expect(textBody).toEqual(
           expect.not.stringContaining('The source branch is 0 commits behind the target branch'),
         );
-        expect(textBody).toBe(
+        expect(textBody).toEqual(
           expect.not.stringContaining('The source branch is 0 commit behind the target branch'),
         );
-        expect(textBody).toBe(
+        expect(textBody).toEqual(
           expect.not.stringContaining('The source branch is behind the target branch'),
         );
       });
@@ -797,7 +797,7 @@ describe('ReadyToMerge', () => {
       it('shows the diverged commits text when the source branch is behind the target', () => {
         createComponent({ mr: { divergedCommitsCount: 9001 } });
 
-        expect(wrapper.text()).toBe(
+        expect(wrapper.text()).toEqual(
           expect.stringContaining('The source branch is 9001 commits behind the target branch'),
         );
       });
