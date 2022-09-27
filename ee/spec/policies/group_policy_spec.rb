@@ -665,6 +665,7 @@ RSpec.describe GroupPolicy do
     before do
       allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
       stub_licensed_features(group_ip_restriction: true)
+      stub_config(dependency_proxy: { enabled: true })
     end
 
     context 'without restriction' do
@@ -674,6 +675,8 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_allowed(:create_package) }
       it { is_expected.to be_allowed(:destroy_package) }
       it { is_expected.to be_allowed(:admin_package) }
+      it { is_expected.to be_allowed(:read_dependency_proxy) }
+      it { is_expected.to be_allowed(:admin_dependency_proxy) }
     end
 
     context 'with restriction' do
@@ -690,6 +693,8 @@ RSpec.describe GroupPolicy do
         it { is_expected.to be_allowed(:create_package) }
         it { is_expected.to be_allowed(:destroy_package) }
         it { is_expected.to be_allowed(:admin_package) }
+        it { is_expected.to be_allowed(:read_dependency_proxy) }
+        it { is_expected.to be_allowed(:admin_dependency_proxy) }
       end
 
       context 'address is outside the range' do
@@ -702,6 +707,8 @@ RSpec.describe GroupPolicy do
           it { is_expected.to be_disallowed(:create_package) }
           it { is_expected.to be_disallowed(:destroy_package) }
           it { is_expected.to be_disallowed(:admin_package) }
+          it { is_expected.to be_disallowed(:read_dependency_proxy) }
+          it { is_expected.to be_disallowed(:admin_dependency_proxy) }
         end
 
         context 'as owner' do
@@ -713,6 +720,8 @@ RSpec.describe GroupPolicy do
           it { is_expected.to be_allowed(:create_package) }
           it { is_expected.to be_allowed(:destroy_package) }
           it { is_expected.to be_allowed(:admin_package) }
+          it { is_expected.to be_allowed(:read_dependency_proxy) }
+          it { is_expected.to be_allowed(:admin_dependency_proxy) }
         end
 
         context 'as auditor' do
@@ -721,6 +730,8 @@ RSpec.describe GroupPolicy do
           it { is_expected.to be_allowed(:read_group) }
           it { is_expected.to be_allowed(:read_milestone) }
           it { is_expected.to be_allowed(:read_group_audit_events) }
+          it { is_expected.to be_allowed(:read_dependency_proxy) }
+          it { is_expected.to be_disallowed(:admin_dependency_proxy) }
         end
       end
     end
