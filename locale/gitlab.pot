@@ -27647,6 +27647,9 @@ msgstr ""
 msgid "OnCallSchedules|Route alerts directly to specific members of your team"
 msgstr ""
 
+msgid "OnCallSchedules|Route alerts directly to specific members of your team. To access this feature, ask %{linkStart}a project Owner%{linkEnd} to grant you at least the Maintainer role."
+msgstr ""
+
 msgid "OnCallSchedules|Select participant"
 msgstr ""
 

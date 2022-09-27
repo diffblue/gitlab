@@ -76,7 +76,7 @@ export default {
     GlModal: GlModalDirective,
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['projectPath', 'timezones'],
+  inject: ['projectPath', 'timezones', 'userCanCreateSchedule'],
   props: {
     schedule: {
       type: Object,
@@ -257,7 +257,11 @@ export default {
             <gl-icon :size="12" :name="scheduleVisibleAngleIcon" />
           </gl-button>
           <h3 class="gl-font-weight-bold gl-font-lg gl-m-0">{{ schedule.name }}</h3>
-          <gl-button-group class="gl-ml-auto">
+          <gl-button-group
+            v-if="userCanCreateSchedule"
+            class="gl-ml-auto"
+            data-testid="schedule-edit-button-group"
+          >
             <gl-button
               v-gl-modal="editScheduleModalId"
               v-gl-tooltip
@@ -323,7 +327,7 @@ export default {
               data-testid="rotationsHeader"
             >
               <h6 class="gl-m-0">{{ $options.i18n.rotationTitle }}</h6>
-              <gl-button v-gl-modal="addRotationModalId" variant="link"
+              <gl-button v-if="userCanCreateSchedule" v-gl-modal="addRotationModalId" variant="link"
                 >{{ $options.i18n.addARotation }}
               </gl-button>
             </div>
