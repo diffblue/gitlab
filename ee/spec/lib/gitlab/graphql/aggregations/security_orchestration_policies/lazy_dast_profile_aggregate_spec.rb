@@ -3,11 +3,13 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::LazyDastProfileAggregate do
+  let_it_be(:current_user) { create(:user) }
   let(:query_ctx) do
-    {}
+    { current_user: current_user }
   end
 
-  let_it_be(:dast_site_profile) { create(:dast_site_profile) }
+  let_it_be(:project) { create(:project, namespace: current_user.namespace) }
+  let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:other_dast_site_profile) { create(:dast_site_profile, project: dast_site_profile.project) }
 
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: dast_site_profile.project) }
@@ -69,7 +71,9 @@ RSpec.describe Gitlab::Graphql::Aggregations::SecurityOrchestrationPolicies::Laz
       end
 
       before do
-        allow(::Security::OrchestrationPolicyConfiguration).to receive(:for_project).and_return([fake_policy_configuration])
+        allow_next_found_instance_of(Project) do |project|
+          allow(project).to receive(:all_security_orchestration_policy_configurations).and_return([fake_policy_configuration])
+        end
       end
 
       context 'when Dast Site profile is provided' do
