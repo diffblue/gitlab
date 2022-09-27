@@ -27273,6 +27273,9 @@ msgstr ""
 msgid "Notify|You have been mentioned in merge request %{mr_link}"
 msgstr ""
 
+msgid "Notify|You have been unsubscribed from receiving GitLab administrator notifications."
+msgstr ""
+
 msgid "Notify|Your CSV import for project %{project_link} has been completed."
 msgstr ""
 
