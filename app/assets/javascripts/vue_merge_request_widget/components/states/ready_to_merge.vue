@@ -337,6 +337,9 @@ export default {
         ? __('Deleted the source branch.')
         : __('Did not delete the source branch.');
     },
+    sourceHasDivergedFromTarget(){
+      return this.mr.divergedCommitsCount > 0;
+    },
     showMergeDetailsHeader() {
       return ['readyToMerge'].indexOf(this.mr.state) >= 0;
     },
@@ -663,7 +666,7 @@ export default {
                 {{ __('Merge details') }}
               </p>
               <ul class="gl-pl-4 gl-mb-0 gl-ml-3 gl-text-gray-600">
-                <li v-if="mr.divergedCommitsCount > 0" class="gl-line-height-normal">
+                <li v-if="sourceHasDivergedFromTarget" class="gl-line-height-normal">
                   <gl-sprintf
                     :message="s__('mrWidget|The source branch is %{link} the target branch')"
                   >
@@ -703,7 +706,7 @@ export default {
               :class="{ 'gl-mb-5': shouldShowMergeControls }"
               class="gl-w-full gl-order-n1 gl-text-gray-500"
             >
-              <p v-if="mr.divergedCommitsCount > 0" class="gl-display-inline gl-m-0">
+              <p v-if="sourceHasDivergedFromTarget" class="gl-display-inline gl-m-0">
                 <gl-sprintf
                   :message="s__('mrWidget|The source branch is %{link} the target branch')"
                 >
@@ -714,7 +717,7 @@ export default {
                   </template>
                 </gl-sprintf>
               </p>
-              <template v-if="mr.divergedCommitsCount > 0"> &middot; </template>
+              <template v-if="sourceHasDivergedFromTarget"> &middot; </template>
               <added-commit-message
                 :is-squash-enabled="squashBeforeMerge"
                 :is-fast-forward-enabled="!shouldShowMergeEdit"
