@@ -13,38 +13,20 @@ FactoryBot.modify do
       authorize_group_to_unprotect { nil }
     end
 
-    trait :maintainers_can_unprotect do
-      after(:build) do |protected_branch, evaluator|
-        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::MAINTAINER)
-      end
-    end
-
-    trait :developers_can_unprotect do
-      after(:build) do |protected_branch, evaluator|
-        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::DEVELOPER)
-      end
-    end
-
-    trait :no_one_can_unprotect do
-      after(:build) do |protected_branch, evaluator|
-        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::NO_ACCESS)
-      end
-    end
-
-    trait :user_can_push do
-      authorize_user_to_push do
-        association(:user, maintainer_projects: [project])
-      end
-    end
-
     trait :user_can_merge do
       authorize_user_to_merge do
         association(:user, maintainer_projects: [project])
       end
     end
 
-    trait :user_can_unprotect do
-      authorize_user_to_unprotect do
+    trait :group_can_merge do
+      authorize_group_to_merge do
+        group || project.group || association(:project_group_link, project: project).group
+      end
+    end
+
+    trait :user_can_push do
+      authorize_user_to_push do
         association(:user, maintainer_projects: [project])
       end
     end
@@ -55,9 +37,27 @@ FactoryBot.modify do
       end
     end
 
-    trait :group_can_merge do
-      authorize_group_to_merge do
-        group || project.group || association(:project_group_link, project: project).group
+    trait :no_one_can_unprotect do
+      after(:build) do |protected_branch, evaluator|
+        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::NO_ACCESS)
+      end
+    end
+
+    trait :developers_can_unprotect do
+      after(:build) do |protected_branch, evaluator|
+        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::DEVELOPER)
+      end
+    end
+
+    trait :maintainers_can_unprotect do
+      after(:build) do |protected_branch, evaluator|
+        protected_branch.unprotect_access_levels.new(access_level: Gitlab::Access::MAINTAINER)
+      end
+    end
+
+    trait :user_can_unprotect do
+      authorize_user_to_unprotect do
+        association(:user, maintainer_projects: [project])
       end
     end
 
