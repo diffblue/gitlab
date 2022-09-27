@@ -1,0 +1,5 @@
+= gitlab_ui_form_for @project, url: project_settings_merge_requests_path(@project), html: { multipart: true, class: "merge-request-settings-form" }, authenticity_token: true do |f|
+  .form-group
+    = f.fields_for :project_setting do |settings|
+      = settings.gitlab_ui_checkbox_component :suggested_reviewers_enabled, s_('ProjectSettings|Enable suggested reviewers'), help_text: s_('SuggestedReviewers|Suggestions appear in the Reviewer section of the right sidebar')
+  = f.submit _('Save changes'), class: "btn gl-button btn-confirm"

@@ -2254,25 +2254,9 @@ RSpec.describe GroupPolicy do
     context 'auditor' do
       let(:current_user) { auditor }
 
-      context 'with auditor_group_runner_access FF disabled' do
-        before do
-          stub_feature_flags(auditor_group_runner_access: false)
-        end
-
-        it { is_expected.to be_disallowed(:read_group_runners) }
-        it { is_expected.to be_disallowed(:admin_group_runners) }
-        it { is_expected.to be_disallowed(:register_group_runners) }
-      end
-
-      context 'with auditor_group_runner_access FF enabled' do
-        before do
-          stub_feature_flags(auditor_group_runner_access: true)
-        end
-
-        it { is_expected.to be_allowed(:read_group_runners) }
-        it { is_expected.to be_disallowed(:admin_group_runners) }
-        it { is_expected.to be_disallowed(:register_group_runners) }
-      end
+      it { is_expected.to be_allowed(:read_group_runners) }
+      it { is_expected.to be_disallowed(:admin_group_runners) }
+      it { is_expected.to be_disallowed(:register_group_runners) }
     end
   end
 end

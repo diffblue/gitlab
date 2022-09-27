@@ -1,0 +1,8 @@
+---
+name: jitsu_connection_proof_of_concept
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/95999
+rollout_issue_url:
+milestone: '15.5'
+type: development
+group: group::product analytics
+default_enabled: false
