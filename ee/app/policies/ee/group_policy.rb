@@ -405,6 +405,8 @@ module EE
         prevent :read_group
         prevent :read_milestone
         prevent(*create_read_update_admin_destroy(:package))
+        prevent :read_dependency_proxy
+        prevent :admin_dependency_proxy
       end
 
       rule { owner & group_saml_enabled }.policy do
