@@ -49,6 +49,7 @@ describe('On-call schedule', () => {
       .mockResolvedValue(getOncallSchedulesQueryResponseWithRotations),
     props = {},
     provide = {},
+    userCanCreateSchedule = true,
   } = {}) => {
     fakeApollo = createMockApollo([
       [getShiftsForRotationsQuery, getShiftsForRotationsQueryHandler],
@@ -69,6 +70,7 @@ describe('On-call schedule', () => {
       provide: {
         timezones: mockTimezones,
         projectPath,
+        userCanCreateSchedule,
         ...provide,
       },
       stubs: {
@@ -102,6 +104,7 @@ describe('On-call schedule', () => {
   const findCollapsible = () => wrapper.findComponent(GlCollapse);
   const findGlCard = () => wrapper.findComponent(GlCard);
   const findCollapsibleIcon = () => wrapper.findComponent(GlIcon);
+  const findEditAndDeleteButtons = () => wrapper.findByTestId('schedule-edit-button-group');
 
   it('shows schedule title', () => {
     expect(findScheduleHeader().text()).toBe(mockSchedule.name);
@@ -155,6 +158,10 @@ describe('On-call schedule', () => {
       scheduleIid: mockSchedule.iid,
       loading: wrapper.vm.$apollo.queries.rotations.loading,
     });
+  });
+
+  it('renders edit and delete buttons', () => {
+    expect(findEditAndDeleteButtons().exists()).toBe(true);
   });
 
   it('renders a open card for the first in the list by default', () => {
@@ -293,6 +300,16 @@ describe('On-call schedule', () => {
 
       expect(findRotationsList().props('rotations')).toHaveLength(0);
       expect(findRotationsList().props('rotations')).toEqual([]);
+    });
+  });
+
+  describe('when user cannot create schedule', () => {
+    beforeEach(() => {
+      createComponent({ userCanCreateSchedule: false });
+    });
+
+    it('does not render edit and delete buttons', () => {
+      expect(findEditAndDeleteButtons().exists()).toBe(false);
     });
   });
 });

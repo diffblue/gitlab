@@ -208,6 +208,7 @@ RSpec.describe DastSiteProfile, type: :model do
 
         before do
           allow(subject.project).to receive(:security_orchestration_policy_configuration).and_return(security_orchestration_policy_configuration)
+          allow(subject.project).to receive(:all_security_orchestration_policy_configurations).and_return([security_orchestration_policy_configuration])
         end
 
         it 'calls security_orchestration_policy_configuration.active_policy_names_with_dast_site_profile with profile name' do
