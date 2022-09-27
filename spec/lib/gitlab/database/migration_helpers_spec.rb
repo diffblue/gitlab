@@ -2097,6 +2097,16 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
     end
   end
 
+  describe '#convert_to_type_column' do
+    it 'returns the name of the temporary column used to convert to bigint' do
+      expect(model.convert_to_type_column(:id, :int, :bigint)).to eq('id_convert_int_to_bigint')
+    end
+
+    it 'returns the name of the temporary column used to convert to uuid' do
+      expect(model.convert_to_type_column(:uuid, :string, :uuid)).to eq('uuid_convert_string_to_uuid')
+    end
+  end
+
   describe '#initialize_conversion_of_integer_to_bigint' do
     let(:table) { :test_table }
     let(:column) { :id }
@@ -2253,7 +2263,7 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
       let(:columns) { :id }
 
       it 'removes column, trigger, and function' do
-        temporary_column = model.convert_to_bigint_column(:id)
+        temporary_column = model.convert_to_bigint_column(columns)
         trigger_name = model.rename_trigger_name(table, :id, temporary_column)
 
         model.revert_initialize_conversion_of_integer_to_bigint(table, columns)
