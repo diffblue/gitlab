@@ -1,9 +1,8 @@
 = form_for [@project, @protected_environment], html: { class: 'new-protected-environment js-new-protected-environment' } do |f|
-  .card
-    .card-header
-      %h3.card-title
-        = s_('ProtectedEnvironment|Protect an environment')
-    .card-body
+  = render Pajamas::CardComponent.new do |c|
+    - c.header do
+      = s_('ProtectedEnvironment|Protect an environment')
+    - c.body do
       = form_errors(@protected_environment)
       .form-group
         = f.label :name, class: 'label-bold' do
@@ -20,5 +19,5 @@
         .gl-min-w-20
           = f.select :required_approval_count, (0..5).map { |num| [num.to_s, num] }, {}, class: 'gl-form-select custom-select gl-form-input-xs'
 
-    .card-footer
+    - c.footer do
       = f.submit s_('ProtectedEnvironment|Protect'), class: 'gl-button btn btn-confirm', disabled: true

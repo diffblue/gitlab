@@ -14,11 +14,7 @@ module EE
           @subject.project_type?
         end
 
-        condition(:enable_auditor_group_runner_access) do
-          ::Feature.enabled?(:auditor_group_runner_access)
-        end
-
-        rule { enable_auditor_group_runner_access & auditor & (is_group_runner | is_project_runner) }.policy do
+        rule { auditor & (is_group_runner | is_project_runner) }.policy do
           enable :read_runner
         end
       end

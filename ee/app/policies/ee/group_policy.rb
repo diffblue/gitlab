@@ -164,10 +164,6 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
-      condition(:enable_auditor_group_runner_access, scope: :global) do
-        ::Feature.enabled?(:auditor_group_runner_access)
-      end
-
       condition(:admin_group_protected_environment_accessible) do
         ::Feature.disabled?(
           :override_group_level_protected_environment_settings_permission, @subject)
@@ -217,7 +213,7 @@ module EE
         enable :read_wiki
       end
 
-      rule { enable_auditor_group_runner_access & auditor }.policy do
+      rule { auditor }.policy do
         enable :read_group_runners
       end
 

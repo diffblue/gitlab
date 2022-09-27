@@ -3432,4 +3432,62 @@ RSpec.describe Project do
       expect(project.epic_ids_referenced_by_issues).to match_array([epic1.id, epic2.id])
     end
   end
+
+  describe '#suggested_reviewers_available?' do
+    subject { project.suggested_reviewers_available? }
+
+    context 'on Gitlab.com', :saas do
+      context 'when licensed features are available', :saas do
+        before do
+          stub_licensed_features(suggested_reviewers: true)
+        end
+
+        context 'when feature flag is enabled', :saas do
+          before do
+            stub_feature_flags(suggested_reviewers: true)
+          end
+
+          it { is_expected.to eq true }
+        end
+
+        context 'when feature flag is disabled', :saas do
+          before do
+            stub_feature_flags(suggested_reviewers: false)
+          end
+
+          it { is_expected.to eq false }
+        end
+      end
+
+      context 'when licensed features are unavailable', :saas do
+        before do
+          stub_licensed_features(suggested_reviewers: false)
+        end
+
+        context 'when feature flag is enabled', :saas do
+          before do
+            stub_feature_flags(suggested_reviewers: true)
+          end
+
+          it { is_expected.to eq false }
+        end
+      end
+    end
+
+    context 'on self managed' do
+      context 'when licensed features are available' do
+        before do
+          stub_licensed_features(suggested_reviewers: true)
+        end
+
+        context 'when feature flag is enabled' do
+          before do
+            stub_feature_flags(suggested_reviewers: true)
+          end
+
+          it { is_expected.to eq false }
+        end
+      end
+    end
+  end
 end

@@ -16,7 +16,7 @@ module EE
 
         override :project_setting_attributes
         def project_setting_attributes
-          super + [:prevent_merge_without_jira_issue]
+          super + %i[prevent_merge_without_jira_issue suggested_reviewers_enabled]
         end
 
         def project_params_ee
