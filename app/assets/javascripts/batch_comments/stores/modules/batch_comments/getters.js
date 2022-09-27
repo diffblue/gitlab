@@ -22,7 +22,11 @@ export const draftsPerFileHashAndLine = (state) =>
         acc[draft.file_hash] = {};
       }
 
-      (acc[draft.file_hash][draft.line_code] ||= []).push(draft);
+      if (!acc[draft.file_hash][draft.line_code]) {
+        acc[draft.file_hash][draft.line_code] = [];
+      }
+
+      acc[draft.file_hash][draft.line_code].push(draft);
     }
 
     return acc;
