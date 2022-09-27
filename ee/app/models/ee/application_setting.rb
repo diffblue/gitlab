@@ -213,7 +213,12 @@ module EE
           max_number_of_repository_downloads: 0,
           max_number_of_repository_downloads_within_time_period: 0,
           git_rate_limit_users_allowlist: [],
-          auto_ban_user_on_excessive_projects_download: false
+          auto_ban_user_on_excessive_projects_download: false,
+          jitsu_host: nil,
+          jitsu_project_xid: nil,
+          clickhouse_connection_string: nil,
+          jitsu_administrator_email: nil,
+          jitsu_administrator_password: nil
         )
       end
     end
