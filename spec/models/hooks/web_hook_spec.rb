@@ -315,7 +315,7 @@ RSpec.describe WebHook do
       end
 
       it 'is twice the initial value' do
-        expect(hook.next_backoff).to eq(20.minutes)
+        expect(hook.next_backoff).to eq(2 * described_class::INITIAL_BACKOFF)
       end
     end
 
@@ -325,7 +325,7 @@ RSpec.describe WebHook do
       end
 
       it 'grows exponentially' do
-        expect(hook.next_backoff).to eq(80.minutes)
+        expect(hook.next_backoff).to eq(2 * 2 * 2 * described_class::INITIAL_BACKOFF)
       end
     end
 
