@@ -17,7 +17,7 @@ import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/state
 import createFlash from '~/flash';
 import { secondsToMilliseconds } from '~/lib/utils/datetime_utility';
 import simplePoll from '~/lib/utils/simple_poll';
-import { __, s__ } from '~/locale';
+import { __, s__, n__ } from '~/locale';
 import SmartInterval from '~/smart_interval';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -337,7 +337,7 @@ export default {
         ? __('Deleted the source branch.')
         : __('Did not delete the source branch.');
     },
-    sourceHasDivergedFromTarget(){
+    sourceHasDivergedFromTarget() {
       return this.mr.divergedCommitsCount > 0;
     },
     showMergeDetailsHeader() {
@@ -512,6 +512,8 @@ export default {
     mergeAndSquashCommitTemplatesHintText: s__(
       'mrWidget|To change these default messages, edit the templates for both the merge and squash commit messages. %{linkStart}Learn more.%{linkEnd}',
     ),
+    sourceDivergedFromTargetText: s__('mrWidget|The source branch is %{link} the target branch'),
+    divergedCommits: (count) => n__('%d commit behind', '%d commits behind', count),
   },
 };
 </script>
@@ -707,12 +709,10 @@ export default {
               class="gl-w-full gl-order-n1 gl-text-gray-500"
             >
               <p v-if="sourceHasDivergedFromTarget" class="gl-display-inline gl-m-0">
-                <gl-sprintf
-                  :message="s__('mrWidget|The source branch is %{link} the target branch')"
-                >
+                <gl-sprintf :message="$options.i18n.sourceDivergedFromTargetText">
                   <template #link>
                     <gl-link :href="mr.targetBranchPath">{{
-                      n__('%d commit behind', '%d commits behind', mr.divergedCommitsCount)
+                      $options.i18n.divergedCommits(mr.divergedCommitsCount)
                     }}</gl-link>
                   </template>
                 </gl-sprintf>
