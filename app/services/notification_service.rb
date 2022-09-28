@@ -87,6 +87,7 @@ class NotificationService
     mailer.access_token_expired_email(user).deliver_later
   end
 
+  # Notify the user when one of their personal access tokens is revoked
   def access_token_revoked(user, token_name)
     return unless user.can?(:receive_notifications)
 
