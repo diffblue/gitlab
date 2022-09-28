@@ -520,31 +520,69 @@ module EE
     def update_project_counter_caches
     end
 
-    def valid_parent?(parent_epic: nil, parent_group_descendants: nil)
+    def valid_parent?(parent_epic: nil, group_descendants: nil, group_ancestors: nil)
       self.parent = parent_epic if parent_epic
 
-      validate_parent(parent_group_descendants)
+      validate_parent(descendants: group_descendants, ancestors: group_ancestors)
 
       errors.empty?
     end
 
-    def validate_parent(preloaded_parent_group_and_descendants = nil)
+    def validate_parent(descendants: nil, ancestors: nil)
       return unless parent
 
-      preloaded_parent_group_and_descendants ||= parent.group.self_and_descendants
+      validate_parent_epic
+      return if errors.any?
 
+      descendants ||= parent.group.self_and_descendants
+      ancestors ||= parent.group.ancestors
+
+      validate_parent_epic_group(descendants, ancestors)
+    end
+
+    def validate_parent_epic
       if self == parent
-        errors.add :parent, "This epic cannot be added. An epic cannot be added to itself."
+        errors.add :parent, _("This epic cannot be added. An epic cannot be added to itself.")
       elsif parent.children.to_a.include?(self)
-        errors.add :parent, "This epic cannot be added. It is already assigned to the parent epic."
+        errors.add :parent, _("This epic cannot be added. It is already assigned to the parent epic.")
       elsif parent.has_ancestor?(self)
-        errors.add :parent, "This epic cannot be added. It is already an ancestor of the parent epic."
-      elsif !preloaded_parent_group_and_descendants.include?(group)
-        errors.add :parent, "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
+        errors.add :parent, _("This epic cannot be added. It is already an ancestor of the parent epic.")
       elsif level_depth_exceeded?(parent)
-        errors.add :parent, "This epic cannot be added. One or more epics would exceed the maximum depth (#{MAX_HIERARCHY_DEPTH}) from its most distant ancestor."
+        errors.add(:parent,
+          format(
+            _('This epic cannot be added. One or more epics would exceed the maximum '\
+              "depth (%{max_depth}) from its most distant ancestor."),
+            max_depth: MAX_HIERARCHY_DEPTH
+          )
+        )
       end
     end
+    private :validate_parent_epic
+
+    def validate_parent_epic_group(parent_descendants, parent_ancestors)
+      return if self.group_id == parent.group_id
+
+      if ::Feature.enabled?(:child_epics_from_different_hierarchies, group)
+        if parent_ancestors.include?(group)
+          errors.add(:parent,
+            _(
+              'This epic cannot be added. An epic cannot belong to ' \
+              'an ancestor group of its parent epic.'
+            )
+          )
+        end
+      else
+        unless parent_descendants.include?(group)
+          errors.add(:parent,
+            _(
+              'This epic cannot be added. An epic must belong to the ' \
+              'same group or subgroup as its parent epic.'
+            )
+          )
+        end
+      end
+    end
+    private :validate_parent_epic_group
 
     def issues_readable_by(current_user, preload: nil)
       related_issues = self.class.related_issues(ids: id, preload: preload)

@@ -31,7 +31,7 @@ module Epics
           create_notes(child_epic, previous_parent_epic)
           success(created_references: [child_epic])
         else
-          error(child_epic.errors.values.flatten.to_sentence, 409)
+          error(child_epic.errors.map(&:message).to_sentence, 409)
         end
       end
 
@@ -81,10 +81,12 @@ module Epics
       end
 
       def linkable_epic?(epic)
-        epic.valid_parent?(
-          parent_epic: issuable,
-          parent_group_descendants: issuable_group_descendants
-        )
+        can_link_epic?(epic) &&
+          epic.valid_parent?(
+            parent_epic: issuable,
+            group_descendants: issuable_group_descendants,
+            group_ancestors: issuable_group_ancestors
+          )
       end
 
       def references(extractor)
@@ -103,8 +105,21 @@ module Epics
         @descendants ||= issuable.group.self_and_descendants
       end
 
+      def issuable_group_ancestors
+        @ancestors ||= issuable.group.ancestors
+      end
+
       def target_issuable_type
         :epic
+      end
+
+      def can_link_epic?(epic)
+        return true unless ::Feature.enabled?(:child_epics_from_different_hierarchies, issuable.group)
+        return true if can?(current_user, :admin_epic_link, epic.group)
+
+        epic.errors.add(:parent, _("This epic cannot be added. You don't have access to perform this action."))
+
+        false
       end
     end
   end

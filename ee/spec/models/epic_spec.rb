@@ -7,6 +7,7 @@ RSpec.describe Epic do
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
+  let_it_be(:descendant_group) { create(:group, parent: group) }
   let_it_be(:project) { create(:project, group: group) }
 
   describe 'associations' do
@@ -154,12 +155,6 @@ RSpec.describe Epic do
       epic = build(:epic, group: group, parent: create(:epic, group: group))
 
       expect(epic).to be_valid
-    end
-
-    it 'is not valid with invalid parent' do
-      epic = build(:epic, group: group, parent: create(:epic))
-
-      expect(epic).not_to be_valid
     end
 
     it 'is valid if epic is confidential and has only confidential issues' do
@@ -325,8 +320,8 @@ RSpec.describe Epic do
         expect(epic.valid_parent?).to be_truthy
       end
 
-      it 'returns false with a parent from different group' do
-        epic.parent = create(:epic)
+      it 'returns false with a parent in a descendant group' do
+        epic.parent = create(:epic, group: descendant_group)
 
         expect(epic.valid_parent?).to be_falsey
       end
@@ -338,6 +333,29 @@ RSpec.describe Epic do
         epic.parent = epic1
 
         expect(epic.valid_parent?).to be_falsey
+      end
+
+      context 'with parent from a different group hierarchy' do
+        let_it_be(:other_group) { create(:group) }
+        let_it_be(:other_epic) { create(:epic, group: other_group) }
+
+        it 'returns true' do
+          epic.parent = other_epic
+
+          expect(epic.valid_parent?).to be_truthy
+        end
+
+        context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+          before do
+            stub_feature_flags(child_epics_from_different_hierarchies: false)
+          end
+
+          it 'returns false' do
+            epic.parent = other_epic
+
+            expect(epic.valid_parent?).to be_falsey
+          end
+        end
       end
     end
 
