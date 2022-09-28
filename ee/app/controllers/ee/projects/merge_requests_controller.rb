@@ -19,7 +19,7 @@ module EE
           push_frontend_feature_flag(:refactor_mr_widgets_extensions, @project)
           push_frontend_feature_flag(:refactor_mr_widget_test_summary, @project)
           push_frontend_feature_flag(:refactor_mr_widgets_extensions_user, current_user)
-          push_frontend_feature_flag(:suggested_reviewers, @project)
+          push_frontend_feature_flag(:suggested_reviewers_control, @project)
         end
 
         before_action :authorize_read_pipeline!, only: [:container_scanning_reports, :dependency_scanning_reports,

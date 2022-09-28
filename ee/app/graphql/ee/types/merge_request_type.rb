@@ -54,7 +54,7 @@ module EE
 
       def suggested_reviewers
         return unless ::Gitlab.com?
-        return unless ::Feature.enabled?(:suggested_reviewers, object.project)
+        return unless ::Feature.enabled?(:suggested_reviewers_control, object.project)
         return unless suggested_reviewers_licensed_feature_available?
 
         {
