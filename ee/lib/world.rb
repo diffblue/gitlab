@@ -5,6 +5,11 @@ module World
   extend self
 
   DENYLIST = ['Iran (Islamic Republic of)', 'Sudan', 'Syrian Arab Republic', 'Korea (Democratic People\'s Republic of)', 'Cuba', 'Belarus', 'Russian Federation'].freeze
+  STATE_DENYLIST_FOR_COUNTRY = {
+    # For reason, see: https://gitlab.com/gitlab-com/legal-and-compliance/-/issues/1024
+    'UA' => ["Donets'ka Oblast'", "Luhans'ka Oblast'", "Respublika Krym"].freeze
+  }.freeze
+
   JH_MARKET = ['China', 'Hong Kong', 'Macao'].freeze
 
   def countries_for_select
@@ -17,7 +22,7 @@ module World
       next unless country
 
       country.states
-        &.reject { |_, state| state.name.nil? }
+        &.reject { |_, state| state.name.nil? || STATE_DENYLIST_FOR_COUNTRY[country_code]&.include?(state.name) }
         &.sort_by { |_, state| state.name }
         &.map { |code, state| [state.name, code] }.to_h
     end
