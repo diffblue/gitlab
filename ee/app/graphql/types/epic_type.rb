@@ -105,7 +105,8 @@ module Types
       description: 'Children (sub-epics) of the epic.'
 
     field :labels, Types::LabelType.connection_type,
-        null: true, description: 'Labels assigned to the epic.'
+      null: true, description: 'Labels assigned to the epic.',
+      resolver: Resolvers::BulkLabelsResolver
 
     field :has_children, GraphQL::Types::Boolean,
         null: false, description: 'Indicates if the epic has children.'
