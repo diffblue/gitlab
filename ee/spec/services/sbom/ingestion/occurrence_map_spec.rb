@@ -45,6 +45,25 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap do
         expect(occurrence_map.to_h).to eq(base_data.merge(ids))
       end
     end
+
+    context 'when there is no source' do
+      let(:report_source) { nil }
+
+      it 'returns a hash without source information' do
+        expect(occurrence_map.to_h).to eq(
+          {
+            component_id: nil,
+            component_type: report_component.component_type,
+            component_version_id: nil,
+            name: report_component.name,
+            version: report_component.version,
+            source: nil,
+            source_id: nil,
+            source_type: nil
+          }
+        )
+      end
+    end
   end
 
   describe '#version_present?' do

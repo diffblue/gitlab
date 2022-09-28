@@ -19,8 +19,8 @@ module Sbom
           component_type: report_component.component_type,
           name: report_component.name,
           version: version,
-          source_type: report_source.source_type,
-          source: report_source.data
+          source_type: report_source&.source_type,
+          source: report_source&.data
         }
       end
 
