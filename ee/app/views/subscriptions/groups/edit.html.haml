@@ -47,5 +47,5 @@
             = render 'shared/visibility_level', f: f, visibility_level: default_group_visibility, can_change_visibility_level: true, form_model: @group, with_label: false
         .row
           .form-group.col-sm-12.mb-0
-            = button_tag class: %w[btn gl-button btn-success gl-w-full!] do
+            = render Pajamas::ButtonComponent.new(type: :submit, variant: :confirm, block: true, button_options: { class: 'gl-mb-0' }) do
               = _('Get started')

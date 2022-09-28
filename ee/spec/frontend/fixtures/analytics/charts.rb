@@ -32,7 +32,12 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
     end
 
     it 'analytics/charts/type_of_work/tasks_by_type.json' do
-      params = { group_id: group.full_path, label_ids: labels.map(&:id), created_after: 10.days.ago, subject: 'Issue' }
+      params = {
+        group_id: group.full_path,
+        label_names: labels.map(&:name),
+        created_after: 10.days.ago,
+        subject: 'Issue'
+      }
 
       get(:show, params: params, format: :json)
 
