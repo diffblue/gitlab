@@ -9,7 +9,7 @@
         = s_('AdminSettings|Select a group to use as the source for instance-level project templates.')
     .settings-content
 
-      = form_for @application_setting, url: templates_admin_application_settings_path(anchor: 'js-custom-project-templates-settings') do |f|
+      = gitlab_ui_form_for @application_setting, url: templates_admin_application_settings_path(anchor: 'js-custom-project-templates-settings') do |f|
         = form_errors(@application_setting)
 
         %fieldset
@@ -22,4 +22,4 @@
             - link_start = '<a href="%{url}">'.html_safe % { url: help_page_path('user/admin_area/custom_project_templates.md') }
             = s_("AdminSettings|The projects in this group can be selected as templates for new projects created on the instance. %{link_start}Learn more.%{link_end} ").html_safe % { link_start: link_start, link_end: "</a>".html_safe }
 
-        = f.submit _('Save changes'), class: "gl-button btn btn-confirm qa-save-changes-button"
+        = f.submit _('Save changes'), pajamas_button: true, class: "qa-save-changes-button"
