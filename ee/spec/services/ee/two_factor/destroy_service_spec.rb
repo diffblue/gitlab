@@ -4,36 +4,105 @@ require 'spec_helper'
 
 RSpec.describe TwoFactor::DestroyService do
   let_it_be(:current_user) { create(:user, :two_factor) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:user) { create(:user, :two_factor, provisioned_by_group_id: group.id) }
 
-  subject(:disable_2fa) { described_class.new(current_user, user: current_user).execute }
+  subject(:disable_2fa_with_group) { described_class.new(current_user, user: user, group: group).execute }
 
-  context 'when disabling two-factor authentication succeeds' do
-    context 'when licensed' do
+  shared_examples_for 'throws unauthorized error' do
+    it 'returns error' do
+      expect(disable_2fa_with_group).to eq(
+        {
+          status: :error,
+          message: 'You are not authorized to perform this action'
+        }
+      )
+    end
+  end
+
+  context "when feature flag is disabled" do
+    before do
+      stub_feature_flags(group_owners_to_disable_two_factor: false)
+    end
+
+    it_behaves_like 'throws unauthorized error'
+  end
+
+  context "when feature flag is enabled" do
+    context "when current user is a group owner" do
       before do
-        stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+        group.add_owner(current_user)
       end
-      it 'creates an audit event', :aggregate_failures do
-        expect { disable_2fa }.to change(AuditEvent, :count).by(1)
 
-        expect(AuditEvent.last).to have_attributes(
-          author: current_user,
-          entity_id: current_user.id,
-          target_id: current_user.id,
-          target_type: current_user.class.name,
-          target_details: current_user.name,
-          details: include(custom_message: 'Disabled two-factor authentication')
-        )
+      context 'when unlicensed' do
+        before do
+          stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)
+        end
+
+        it 'does not track audit event' do
+          expect { disable_2fa_with_group }.not_to change { AuditEvent.count }
+        end
+      end
+
+      context "when licensed" do
+        before do
+          stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+        end
+
+        it 'creates an audit event', :aggregate_failures do
+          expect { disable_2fa_with_group }.to change(AuditEvent, :count).by(1)
+                                              .and change { user.reload.two_factor_enabled? }.from(true).to(false)
+
+          expect(AuditEvent.last).to have_attributes(
+            author: current_user,
+            entity_id: user.id,
+            target_id: user.id,
+            target_type: current_user.class.name,
+            target_details: user.name,
+            details: include(custom_message: 'Disabled two-factor authentication')
+          )
+        end
+
+        context "when user is not provisioned by current group" do
+          let(:new_group) { create(:group) }
+          let(:user) { create(:user, :two_factor, provisioned_by_group_id: new_group.id) }
+
+          it_behaves_like 'throws unauthorized error'
+        end
+
+        context "when group is non root" do
+          let(:parent) { build(:group) }
+
+          before do
+            group.parent = parent
+            parent.add_owner(create(:user))
+          end
+
+          it_behaves_like 'throws unauthorized error'
+        end
+
+        context "when user is not provisioned by group" do
+          let(:user) { create(:user, :two_factor) }
+
+          it_behaves_like 'throws unauthorized error'
+        end
       end
     end
 
-    context 'when unlicensed' do
-      before do
-        stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)
-      end
+    context "when user is not a group owner" do
+      it_behaves_like 'throws unauthorized error'
 
-      it 'does not track audit event' do
-        expect { disable_2fa }.not_to change { AuditEvent.count }
+      context "when group is nil" do
+        let(:group) { nil }
+
+        it_behaves_like 'throws unauthorized error'
       end
+    end
+
+    context "when user passed is nil" do
+      let(:user) { nil }
+
+      it_behaves_like 'throws unauthorized error'
     end
   end
 
