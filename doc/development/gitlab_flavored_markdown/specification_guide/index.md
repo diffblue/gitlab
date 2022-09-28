@@ -1231,7 +1231,7 @@ This section describes how the scripts can be used to manage the GLFM specificat
 
 1. Run [`update-specification.rb`](#update-specificationrb-script) to update the GLFM specification [output specification files](#output-specification-files).
 1. Visually inspect and confirm any resulting changes to the [output specification files](#output-specification-files).
-1. Run [`run-spec-tests.sh`](http://gdk.test:3005/ee/development/gitlab_flavored_markdown/specification_guide/index.html#run-spec-testssh-script) to run the conformance tests against the canonicalized GLFM specification.
+1. Run [`run-spec-tests.sh`](#run-spec-testssh-script) to run the conformance tests against the canonicalized GLFM specification.
 1. Commit any changes to the [output specification files](#output-specification-files).
 
 ### Update the example snapshots and run snapshot tests
