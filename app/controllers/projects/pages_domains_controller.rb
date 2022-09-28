@@ -63,7 +63,9 @@ class Projects::PagesDomainsController < Projects::ApplicationController
   end
 
   def destroy
-    @domain.destroy
+    PagesDomains::DeleteService
+      .new(@project, current_user)
+      .execute(@domain)
 
     respond_to do |format|
       format.html do

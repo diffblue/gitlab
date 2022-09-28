@@ -4,10 +4,6 @@ module EE
   module BoardsActions
     extend ActiveSupport::Concern
 
-    prepended do
-      include ::MultipleBoardsActions
-    end
-
     private
 
     def push_licensed_features

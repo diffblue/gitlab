@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.describe WorkItems::UpdateService do
   let_it_be(:developer) { create(:user) }
-  let_it_be(:project) { create(:project).tap { |proj| proj.add_developer(developer) } }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project) { create(:project, group: group).tap { |proj| proj.add_developer(developer) } }
   let_it_be(:work_item) { create(:work_item, project: project) }
 
   let(:spam_params) { double }
@@ -81,6 +82,49 @@ RSpec.describe WorkItems::UpdateService do
 
           it "does not trigger 'issuableWeightUpdated' for issuable weight update subscription" do
             expect(GraphqlTriggers).not_to receive(:issuable_weight_updated)
+
+            subject
+          end
+        end
+      end
+
+      context 'for the iteration widget' do
+        let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
+
+        let(:widget_params) { { iteration_widget: { iteration: new_iteration } } }
+
+        before do
+          stub_licensed_features(iterations: true)
+
+          work_item.update!(iteration: nil)
+        end
+
+        context 'when iteration is changed' do
+          let(:new_iteration) { iteration }
+
+          it "triggers 'issuableIterationUpdated' for issuable iteration update subscription" do
+            expect(GraphqlTriggers).to receive(:issuable_iteration_updated).with(work_item).and_call_original
+
+            subject
+          end
+        end
+
+        context 'when iteration remains unchanged' do
+          let(:new_iteration) { nil }
+
+          it "does not trigger 'issuableIterationUpdated' for issuable iteration update subscription" do
+            expect(GraphqlTriggers).not_to receive(:issuable_iteration_updated)
+
+            subject
+          end
+        end
+
+        context 'when iteration widget param is not provided' do
+          let(:widget_params) {}
+
+          it "does not trigger 'issuableIterationUpdated' for issuable iteration update subscription" do
+            expect(GraphqlTriggers).not_to receive(:issuable_iteration_updated)
 
             subject
           end

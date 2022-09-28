@@ -45,6 +45,7 @@ module EE
         return unless issue.previous_changes.include?('sprint_id')
 
         send_iteration_change_notification(issue)
+        ::GraphqlTriggers.issuable_iteration_updated(issue)
       end
 
       def handle_weight_change(issue)
