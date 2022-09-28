@@ -9,4 +9,6 @@ RSpec.configure do |config|
   config.before(:each, type: :component) do
     @request = controller.request
   end
+
+  config.include_context 'when page has no HTML escapes', type: :component
 end
