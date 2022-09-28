@@ -107,13 +107,6 @@ module EE
       validates :new_user_signups_cap,
                 allow_blank: true,
                 numericality: { only_integer: true, greater_than: 0 }
-      validates :new_user_signups_cap,
-                allow_blank: true,
-                numericality: {
-                  only_integer: true,
-                  greater_than: 0
-                },
-                if: proc { License.current&.restricted_user_count? }
 
       validates :git_two_factor_session_expiry,
                 presence: true,
