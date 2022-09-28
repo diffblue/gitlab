@@ -653,21 +653,31 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     let(:merge_request) { create(:merge_request, target_project: project, source_project: project) }
 
     before do
-      create(:approval_project_rule, :scan_finding, project: project)
-      create(:report_approver_rule, :scan_finding, merge_request: merge_request)
+      create(:approval_project_rule,
+        :scan_finding,
+        project: project,
+        security_orchestration_policy_configuration: security_orchestration_policy_configuration)
+      create(:report_approver_rule,
+        :scan_finding,
+        merge_request: merge_request,
+        security_orchestration_policy_configuration: security_orchestration_policy_configuration)
     end
 
-    it 'deletes project approval rules' do
-      expect { delete_scan_finding_rules }.to change(ApprovalProjectRule, :count).from(1).to(0)
+    context 'when associated to a project' do
+      it 'deletes project approval rules' do
+        expect { delete_scan_finding_rules }.to change(ApprovalProjectRule, :count).from(1).to(0)
+      end
+
+      it 'deletes merge request approval rules' do
+        expect { delete_scan_finding_rules }.to change(ApprovalMergeRequestRule, :count).from(1).to(0)
+      end
     end
 
-    it 'deletes project approval rules' do
-      expect { delete_scan_finding_rules }.to change(ApprovalMergeRequestRule, :count).from(1).to(0)
-    end
-
-    context 'without having a project association' do
+    context 'when associated to namespace' do
       let(:project) { create(:project) }
-      let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :namespace) }
+      let(:security_orchestration_policy_configuration) do
+        create(:security_orchestration_policy_configuration, :namespace)
+      end
 
       it 'does not delete project approval rules' do
         expect { delete_scan_finding_rules }.not_to change(ApprovalProjectRule, :count)

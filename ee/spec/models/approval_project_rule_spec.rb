@@ -189,6 +189,7 @@ RSpec.describe ApprovalProjectRule do
     let(:merge_request) { create(:merge_request) }
     let(:user) { create(:user) }
     let(:group) { create(:group) }
+    let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration, :project) }
 
     before do
       subject.users << user
@@ -203,7 +204,7 @@ RSpec.describe ApprovalProjectRule do
 
     context "when there is a project rule for each report type" do
       with_them do
-        subject { create(:approval_project_rule, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2) }
+        subject { create(:approval_project_rule, report_type, :requires_approval, project: project, orchestration_policy_idx: 1, scanners: [:sast], severity_levels: [:high], vulnerability_states: [:confirmed], vulnerabilities_allowed: 2, security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
 
         let!(:result) { subject.apply_report_approver_rules_to(merge_request) }
 
@@ -218,6 +219,7 @@ RSpec.describe ApprovalProjectRule do
         specify { expect(result.severity_levels).to be match_array([:high]) }
         specify { expect(result.vulnerability_states).to match_array([:confirmed]) }
         specify { expect(result.vulnerabilities_allowed).to be 2 }
+        specify { expect(result.security_orchestration_policy_configuration.id).to be security_orchestration_policy_configuration.id }
       end
     end
   end
