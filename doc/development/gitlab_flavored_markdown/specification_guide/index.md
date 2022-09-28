@@ -206,6 +206,9 @@ of specification-driven testing referred to in this documentation and elsewhere.
 
 #### Markdown conformance testing
 
+NOTE:
+Markdown conformance testing for GLFM is not yet implemented.
+
 _Markdown conformance testing_ refers to the standard testing method used by
 all CommonMark Markdown dialects to verify that a specific implementation conforms
 to the CommonMark Markdown specification. It is enforced by running the standard
