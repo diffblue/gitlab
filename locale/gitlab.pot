@@ -31810,6 +31810,9 @@ msgstr ""
 msgid "ProjectTemplates|iOS (Swift)"
 msgstr ""
 
+msgid "ProjectTransfer|An error occurred fetching the transfer locations, please refresh the page and try again."
+msgstr ""
+
 msgid "ProjectView|Activity"
 msgstr ""
 
