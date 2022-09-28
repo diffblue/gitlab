@@ -43,6 +43,30 @@ export const MOCK_REPLICABLE_TYPES = [
     name: 'package_file',
     namePlural: 'package_files',
   },
+  {
+    dataType: 'container_repository',
+    dataTypeTitle: 'Container repository',
+    title: 'Container repository',
+    titlePlural: 'Container repositories',
+    name: 'container_repository',
+    namePlural: 'container_repositories',
+    noReplicationView: true,
+  },
+];
+
+export const MOCK_DATA_TYPES = [
+  {
+    dataType: 'repository',
+    dataTypeTitle: 'Git',
+  },
+  {
+    dataType: 'blob',
+    dataTypeTitle: 'File',
+  },
+  {
+    dataType: 'container_repository',
+    dataTypeTitle: 'Container repository',
+  },
 ];
 
 // This const is very specific, it is a hard coded filtered information from MOCK_NODES
@@ -118,6 +142,16 @@ export const MOCK_SECONDARY_SYNC_INFO = [
       failed: 0,
     },
   },
+  {
+    dataType: 'container_repository',
+    dataTypeTitle: 'Container repository',
+    title: 'Container repositories',
+    values: {
+      total: 15,
+      success: 10,
+      failed: 5,
+    },
+  },
 ];
 
 // This const is very specific, it is a hard coded camelCase version of MOCK_PRIMARY_NODE_RES and MOCK_PRIMARY_NODE_STATUSES_RES
@@ -169,6 +203,9 @@ export const MOCK_SECONDARY_NODE = {
   packageFilesCount: 25,
   packageFilesSyncedCount: 25,
   packageFilesFailedCount: 0,
+  containerRepositoriesCount: 15,
+  containerRepositoriesSyncedCount: 10,
+  containerRepositoriesFailedCount: 5,
   dbReplicationLagSeconds: 0,
   lastEventId: 3,
   lastEventTimestamp: 1511255200,
@@ -236,6 +273,9 @@ export const MOCK_SECONDARY_NODE_STATUSES_RES = {
   package_files_count: 25,
   package_files_synced_count: 25,
   package_files_failed_count: 0,
+  container_repositories_count: 15,
+  container_repositories_synced_count: 10,
+  container_repositories_failed_count: 5,
   db_replication_lag_seconds: 0,
   last_event_id: 3,
   last_event_timestamp: 1511255200,
@@ -299,3 +339,16 @@ export const MOCK_NO_RESULTS_EMPTY_STATE = {
   description: 'Edit your search and try again.',
   showLearnMoreButton: false,
 };
+
+export const MOCK_REPLICATION_COUNTS = [
+  {
+    title: 'Type 1',
+    sync: [{ total: 100, success: 100 }],
+    verification: [{ total: 100, success: 100 }],
+  },
+  {
+    title: 'Type 2',
+    sync: [{ total: 100, success: 0 }],
+    verification: [{ total: 100, success: 0 }],
+  },
+];

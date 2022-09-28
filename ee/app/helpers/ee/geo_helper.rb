@@ -195,8 +195,8 @@ module EE
           no_replication_view: true
         },
         {
-          data_type: 'blob',
-          data_type_title: _('File'),
+          data_type: 'container_repository',
+          data_type_title: _('Container repository'),
           title: _('Container repository'),
           title_plural: _('Container repositories'),
           name: 'container_repository',
