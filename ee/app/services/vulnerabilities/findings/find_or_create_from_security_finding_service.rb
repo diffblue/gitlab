@@ -2,7 +2,7 @@
 
 module Vulnerabilities
   module Findings
-    class CreateFromSecurityFindingService < ::BaseProjectService
+    class FindOrCreateFromSecurityFindingService < ::BaseProjectService
       include ::VulnerabilityFindingHelpers
 
       def execute
@@ -20,9 +20,8 @@ module Vulnerabilities
       private
 
       def vulnerability_finding_creation_error_msg
-        _("Error creating vulnerability finding: %{errors}") % {
-          errors: vulnerability_finding.errors.full_messages.join(', ')
-        }
+        format(_("Error creating vulnerability finding: %{errors}"),
+errors: vulnerability_finding.errors.full_messages.join(', '))
       end
 
       def vulnerability_finding

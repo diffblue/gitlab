@@ -27,10 +27,11 @@ module Vulnerabilities
       private
 
       def create_vulnerability
-        vulnerability_response = Vulnerabilities::CreateFromSecurityFindingService.new(project: @project,
-                                                                                       current_user: @current_user,
-                                                                                       params: params,
-                                                                                       state: 'confirmed').execute
+        vulnerability_response = Vulnerabilities::FindOrCreateFromSecurityFindingService.new(
+          project: @project,
+          current_user: @current_user,
+          params: params,
+          state: 'confirmed').execute
 
         if vulnerability_response.error?
           @error_message = vulnerability_response[:message]

@@ -2,11 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#execute' do
+RSpec.describe Vulnerabilities::Findings::FindOrCreateFromSecurityFindingService, '#execute' do
   before do
     stub_licensed_features(security_dashboard: true)
     project.add_developer(user)
   end
+
+  let(:security_finding) { sast_security_findings.first }
+  let(:security_finding_uuid) { security_finding.uuid }
+  let(:params) { { security_finding_uuid: security_finding_uuid } }
 
   let_it_be(:project) { create(:project) }
   let_it_be(:pipeline) { create(:ci_pipeline, :success) }
@@ -43,10 +47,6 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
     sast_security_findings.push(*insert_security_findings(report_sast, scan_sast))
   end
 
-  let(:security_finding) { sast_security_findings.first }
-  let(:security_finding_uuid) { security_finding.uuid }
-  let(:params) { { security_finding_uuid: security_finding_uuid } }
-
   subject { described_class.new(project: project, current_user: user, params: params).execute }
 
   RSpec.shared_examples 'create vulnerability finding' do
@@ -77,14 +77,14 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
     end
 
     it 'returns the existing Vulnerability::Finding with the existing vulnerability id' do
-      expect(subject.success?).to be_truthy
+      expect(subject).to be_success
       expect(subject.payload[:vulnerability_finding].vulnerability_id).to eq(vulnerability.id)
     end
   end
 
   context 'when there is no vulnerability for the security finding' do
     it 'creates a new Vulnerability::Finding without Vulnerability' do
-      expect(subject.success?).to be_truthy
+      expect(subject).to be_success
       expect(subject.payload[:vulnerability_finding].vulnerability_id).to be_nil
     end
   end
@@ -106,14 +106,14 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
     end
 
     it 'returns an error' do
-      expect(subject.success?).to be_falsey
+      expect(subject).not_to be_success
       expect(subject[:message]).to eq('Error creating vulnerability finding: Primary identifier can\'t be blank')
     end
   end
 
   context 'when the report finding has signatures' do
     it 'associates the signatures' do
-      expect(subject.success?).to be_truthy
+      expect(subject).to be_success
       expect(subject.payload[:vulnerability_finding].signatures.size).to eq(2)
     end
 
@@ -124,7 +124,7 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
     let(:security_finding) { dast_security_findings.first }
 
     it 'associates the signatures' do
-      expect(subject.success?).to be_truthy
+      expect(subject).to be_success
       evidence_summary = subject.payload[:vulnerability_finding].finding_evidence.data.dig('summary')
       expect(evidence_summary).to eq('Set-Cookie: JSESSIONID')
     end
@@ -138,7 +138,7 @@ RSpec.describe Vulnerabilities::Findings::CreateFromSecurityFindingService, '#ex
     let(:security_finding_uuid) { security_finding.uuid }
 
     it 'returns an error' do
-      expect(subject.success?).to be_falsey
+      expect(subject).not_to be_success
       expect(subject[:message]).to eq('Report Finding not found')
     end
   end
