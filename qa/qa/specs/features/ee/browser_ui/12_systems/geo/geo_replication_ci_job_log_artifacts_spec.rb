@@ -1,7 +1,12 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :runner, :requires_admin, :geo do
+  RSpec.describe 'Systems', :orchestrated, :runner, :requires_admin, :geo,
+    quarantine: {
+      only: { subdomain: 'staging-ref' },
+      type: :test_environment,
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+    } do
     describe 'CI job' do
       let(:file_name) { 'geo_artifact.txt' }
       let(:directory_name) { 'geo_artifacts' }
@@ -55,7 +60,12 @@ module QA
 
       # Test code is based on qa/specs/features/browser_ui/4_verify/locked_artifacts_spec.rb
       it 'replicates the job log to the secondary Geo site',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348010' do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348010',
+         quarantine: {
+           only: { subdomain: 'staging-ref' },
+           type: :test_environment,
+           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+         } do
         Runtime::Logger.debug('Visiting the secondary Geo site')
 
         Flow::Login.while_signed_in(address: :geo_secondary) do
@@ -81,7 +91,12 @@ module QA
       end
 
       it 'replicates the job artifact to the secondary Geo site',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348006' do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348006',
+         quarantine: {
+           only: { subdomain: 'staging-ref' },
+           type: :test_environment,
+           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+         } do
         artifact_page_retry_attempts = 12
 
         Runtime::Logger.debug('Visiting the secondary Geo site')
