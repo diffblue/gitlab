@@ -1,4 +1,4 @@
-import { RUNNER_PAGE_SIZE } from '~/runner/constants';
+import { DEFAULT_MEMBERSHIP, RUNNER_PAGE_SIZE } from '~/runner/constants';
 import { mockSearchExamples } from 'jest/runner/mock_data';
 import {
   fromUrlQueryToSearch,
@@ -14,12 +14,14 @@ describe('ee search_params.js', () => {
       urlQuery: '?upgrade_status[]=AVAILABLE',
       search: {
         runnerType: null,
+        membership: DEFAULT_MEMBERSHIP,
         filters: [{ type: 'upgrade_status', value: { data: 'AVAILABLE', operator: '=' } }],
         pagination: {},
         sort: 'CREATED_DESC',
       },
       graphqlVariables: {
         upgradeStatus: 'AVAILABLE',
+        membership: DEFAULT_MEMBERSHIP,
         sort: 'CREATED_DESC',
         first: RUNNER_PAGE_SIZE,
       },
@@ -29,6 +31,7 @@ describe('ee search_params.js', () => {
       urlQuery: '?runner_type[]=INSTANCE_TYPE&upgrade_status[]=AVAILABLE&sort=CREATED_ASC',
       search: {
         runnerType: 'INSTANCE_TYPE',
+        membership: DEFAULT_MEMBERSHIP,
         filters: [{ type: 'upgrade_status', value: { data: 'AVAILABLE', operator: '=' } }],
         pagination: {},
         sort: 'CREATED_ASC',
@@ -36,6 +39,7 @@ describe('ee search_params.js', () => {
       graphqlVariables: {
         upgradeStatus: 'AVAILABLE',
         type: 'INSTANCE_TYPE',
+        membership: DEFAULT_MEMBERSHIP,
         sort: 'CREATED_ASC',
         first: RUNNER_PAGE_SIZE,
       },
