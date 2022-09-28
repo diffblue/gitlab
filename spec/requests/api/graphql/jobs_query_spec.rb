@@ -25,7 +25,7 @@ RSpec.describe 'getting job information' do
       let_it_be(:pending_job) { create(:ci_build, :pending) }
       let_it_be(:failed_job) { create(:ci_build, :failed) }
 
-      it 'get pending jobs', :aggregate_failure do
+      it 'gets pending jobs', :aggregate_failure do
         post_graphql(graphql_query_for(:jobs, { statuses: :PENDING }), current_user: current_user)
 
         expect(graphql_data_at(:jobs, :count)).to eq(1)
