@@ -154,7 +154,9 @@ module API
       delete ":id/pages/domains/:domain", requirements: PAGES_DOMAINS_ENDPOINT_REQUIREMENTS do
         authorize! :update_pages, user_project
 
-        pages_domain.destroy
+        ::PagesDomains::DeleteService
+          .new(user_project, current_user)
+          .execute(pages_domain)
 
         no_content!
       end
