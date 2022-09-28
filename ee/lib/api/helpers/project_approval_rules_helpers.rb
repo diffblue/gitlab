@@ -47,6 +47,7 @@ module API
 
       def create_project_approval_rule(present_with:)
         authorize! :admin_project, user_project
+        authorize! :modify_approvers_rules, user_project
 
         result = ::ApprovalRules::CreateService.new(user_project, current_user, declared_params(include_missing: false)).execute
 
@@ -59,6 +60,7 @@ module API
 
       def update_project_approval_rule(present_with:)
         authorize! :admin_project, user_project
+        authorize! :modify_approvers_rules, user_project
 
         params = declared_params(include_missing: false)
         approval_rule = user_project.approval_rules.find(params.delete(:approval_rule_id))
@@ -73,6 +75,7 @@ module API
 
       def destroy_project_approval_rule
         authorize! :admin_project, user_project
+        authorize! :modify_approvers_rules, user_project
 
         approval_rule = user_project.approval_rules.find(params[:approval_rule_id])
 
