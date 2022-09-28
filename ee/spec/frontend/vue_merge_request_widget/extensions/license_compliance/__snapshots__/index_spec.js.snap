@@ -53,7 +53,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
             </div>
              
             <div
-              class="gl-ml-auto gl-pl-3"
+              class="gl-display-flex gl-ml-auto gl-pl-3"
             >
               <!---->
                
@@ -147,7 +147,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                   </div>
                    
                   <div
-                    class="gl-ml-auto gl-pl-3"
+                    class="gl-display-flex gl-ml-auto gl-pl-3"
                   >
                     <div
                       class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
@@ -290,7 +290,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
             </div>
              
             <div
-              class="gl-ml-auto gl-pl-3"
+              class="gl-display-flex gl-ml-auto gl-pl-3"
             >
               <!---->
                
@@ -391,7 +391,7 @@ exports[`License Compliance extension expanded data with new licenses displays d
                   </div>
                    
                   <div
-                    class="gl-ml-auto gl-pl-3"
+                    class="gl-display-flex gl-ml-auto gl-pl-3"
                   >
                     <!---->
                      
@@ -465,7 +465,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
             </div>
              
             <div
-              class="gl-ml-auto gl-pl-3"
+              class="gl-display-flex gl-ml-auto gl-pl-3"
             >
               <!---->
                
@@ -559,7 +559,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                   </div>
                    
                   <div
-                    class="gl-ml-auto gl-pl-3"
+                    class="gl-display-flex gl-ml-auto gl-pl-3"
                   >
                     <div
                       class="dropdown b-dropdown gl-new-dropdown gl-display-block gl-md-display-none! btn-group"
