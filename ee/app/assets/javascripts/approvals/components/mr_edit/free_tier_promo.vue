@@ -8,8 +8,7 @@ import {
   MR_APPROVALS_PROMO_TRACKING_EVENTS,
 } from '../../constants';
 
-const EXPERIMENT_KEY = 'promote_mr_approvals_in_free';
-const trackingMixin = Tracking.mixin({ experiment: EXPERIMENT_KEY });
+const trackingMixin = Tracking.mixin({});
 
 export default {
   components: {
@@ -65,7 +64,6 @@ export default {
   trackingEvents: MR_APPROVALS_PROMO_TRACKING_EVENTS,
   i18n: MR_APPROVALS_PROMO_I18N,
   MR_APPROVALS_PROMO_DISMISSED,
-  EXPERIMENT_KEY,
 };
 </script>
 
@@ -101,7 +99,6 @@ export default {
                 target="_blank"
                 :data-track-action="$options.trackingEvents.learnMoreClick.action"
                 :data-track-label="$options.trackingEvents.learnMoreClick.label"
-                :data-track-experiment="$options.EXPERIMENT_KEY"
               >
                 {{ $options.i18n.learnMore }}
               </gl-link>
@@ -113,7 +110,6 @@ export default {
               target="_blank"
               :data-track-action="$options.trackingEvents.tryNowClick.action"
               :data-track-label="$options.trackingEvents.tryNowClick.label"
-              :data-track-experiment="$options.EXPERIMENT_KEY"
               >{{ $options.i18n.tryNow }}</gl-button
             >
           </div>
