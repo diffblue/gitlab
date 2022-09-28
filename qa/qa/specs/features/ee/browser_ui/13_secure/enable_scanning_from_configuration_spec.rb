@@ -6,8 +6,8 @@ module QA
       let(:test_data_sast_string_fields_array) do
         [
           %w[SECURE_ANALYZERS_PREFIX registry.example.com],
-          %w[SAST_EXCLUDED_PATHS foo,\ bar],
-          %w[SAST_BANDIT_EXCLUDED_PATHS exclude_path_a,\ exclude_path_b]
+          ['SAST_EXCLUDED_PATHS', 'foo, bar'],
+          ['SAST_BANDIT_EXCLUDED_PATHS', 'exclude_path_a, exclude_path_b']
         ]
       end
 
