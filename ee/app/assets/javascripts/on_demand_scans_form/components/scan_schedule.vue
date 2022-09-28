@@ -7,7 +7,7 @@ import {
   stripTimezoneFromISODate,
   dateToTimeInputValue,
 } from '~/lib/utils/datetime/date_format_utility';
-import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown.vue';
+import TimezoneDropdown from '~/vue_shared/components/timezone_dropdown/timezone_dropdown.vue';
 import { SCAN_CADENCE_OPTIONS } from '../settings';
 import { toGraphQLCadence, fromGraphQLCadence } from '../utils';
 
