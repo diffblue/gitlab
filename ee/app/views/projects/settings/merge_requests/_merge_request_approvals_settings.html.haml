@@ -3,7 +3,7 @@
 
 %section.settings.merge-requests-feature.no-animate#js-merge-request-approval-settings.expanded{ data: { qa_selector: 'merge_request_approvals_settings_content' } }
   .settings-header
-    %h4.settings-title.js-settings-toggle.js-settings-toggle-trigger-only= _('Merge request approvals')
+    %h4= _('Merge request approvals')
     %p
       - duties_link_url = help_page_path('user/compliance/compliance_report/index', anchor: 'separation-of-duties')
       - link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: duties_link_url }
