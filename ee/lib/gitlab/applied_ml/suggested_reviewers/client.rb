@@ -51,6 +51,25 @@ module Gitlab
           raise Errors::ResourceNotAvailable, e
         end
 
+        def register_project(project_id:, project_name:, project_namespace:, access_token:)
+          raise Errors::ConfigurationError, "gRPC host unknown" if rpc_url.blank?
+
+          registration_input = {
+            project_id: project_id,
+            project_name: project_name,
+            project_namespace: project_namespace,
+            access_token: access_token
+          }
+          response = send_register_project(registration_input)
+
+          {
+            project_id: response.project_id,
+            registered_at: response.registered_at
+          }
+        rescue GRPC::BadStatus => e
+          raise Errors::ResourceNotAvailable, e
+        end
+
         private
 
         attr_reader :rpc_url, :certs, :secret
@@ -71,6 +90,12 @@ module Gitlab
           request = MergeRequestRecommendationsReqV2.new(model_input)
           client = Stub.new(rpc_url, credentials, timeout: DEFAULT_TIMEOUT)
           client.merge_request_recommendations_v2(request)
+        end
+
+        def send_register_project(registration_input)
+          request = RegisterProjectReq.new(registration_input)
+          client = Stub.new(rpc_url, credentials, timeout: DEFAULT_TIMEOUT)
+          client.register_project(request)
         end
 
         def credentials

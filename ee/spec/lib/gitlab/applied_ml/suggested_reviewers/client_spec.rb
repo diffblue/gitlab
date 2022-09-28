@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
   let(:stub_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderServicesPb::Stub }
-  let(:response_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderPb::MergeRequestRecommendationsResV2 }
 
   let(:rpc_url) { 'example.org:1234' }
   let(:certs) { 'arandomstring' }
@@ -13,7 +12,85 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
 
   let(:client) { described_class.new(**client_arguments) }
 
+  shared_examples 'respecting channel credentials' do
+    it 'uses a ChannelCredentials object' do
+      allow(GRPC::Core::ChannelCredentials).to receive(:new).and_call_original
+
+      subject
+
+      expect(stub_class).to have_received(:new)
+                              .with(
+                                rpc_url,
+                                instance_of(GRPC::Core::ChannelCredentials),
+                                timeout: described_class::DEFAULT_TIMEOUT
+                              )
+    end
+
+    it 'uses a CallCredentials object' do
+      allow(GRPC::Core::CallCredentials).to receive(:new).and_call_original
+
+      subject
+
+      expect(GRPC::Core::CallCredentials).to have_received(:new).with(instance_of(Proc))
+    end
+
+    it 'creates a JWT HMAC token', :aggregate_failures do
+      token = instance_spy(JSONWebToken::HMACToken, encoded: 'test-token')
+      allow(JSONWebToken::HMACToken).to receive(:new).with(secret).and_return(token)
+
+      subject
+
+      expect(token).to have_received(:issuer=).with(described_class::JWT_ISSUER)
+      expect(token).to have_received(:audience=).with(described_class::JWT_AUDIENCE)
+      expect(token).to have_received(:encoded)
+    end
+  end
+
+  shared_examples 'respecting environment configuration' do
+    it 'uses a development URL' do
+      allow(Gitlab).to receive(:dev_or_test_env?).and_return(true)
+
+      subject
+
+      expect(stub_class).to have_received(:new).with('suggested-reviewer.dev:443', any_args)
+    end
+
+    it 'uses a production URL' do
+      allow(Gitlab).to receive(:dev_or_test_env?).and_return(false)
+
+      subject
+
+      expect(stub_class).to have_received(:new).with('api.unreview.io:443', any_args)
+    end
+
+    context 'with an invalid gRPC URL configured' do
+      let(:client_arguments) { { rpc_url: '' } }
+
+      it 'raises a configuration error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+      end
+    end
+
+    context 'with no secret configured' do
+      let(:secret) { nil }
+
+      it 'raises a configuration error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+      end
+    end
+
+    context 'with an invalid secret configured' do
+      let(:secret) { '@s3cr3tunt0ld' }
+
+      it 'raises a configuration error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+      end
+    end
+  end
+
   describe '#suggested_reviewers' do
+    let(:response_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderPb::MergeRequestRecommendationsResV2 }
+
     let(:suggested_reviewers_request) do
       {
         project_id: 42,
@@ -60,37 +137,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
 
       it { is_expected.to eq(suggested_reviewers_result) }
 
-      it 'uses a ChannelCredentials object' do
-        allow(GRPC::Core::ChannelCredentials).to receive(:new).and_call_original
-
-        subject
-
-        expect(stub_class).to have_received(:new)
-          .with(
-            rpc_url,
-            instance_of(GRPC::Core::ChannelCredentials),
-            timeout: described_class::DEFAULT_TIMEOUT
-          )
-      end
-
-      it 'uses a CallCredentials object' do
-        allow(GRPC::Core::CallCredentials).to receive(:new).and_call_original
-
-        subject
-
-        expect(GRPC::Core::CallCredentials).to have_received(:new).with(instance_of(Proc))
-      end
-
-      it 'creates a JWT HMAC token', :aggregate_failures do
-        token = instance_spy(JSONWebToken::HMACToken, encoded: 'test-token')
-        allow(JSONWebToken::HMACToken).to receive(:new).with(secret).and_return(token)
-
-        subject
-
-        expect(token).to have_received(:issuer=).with(described_class::JWT_ISSUER)
-        expect(token).to have_received(:audience=).with(described_class::JWT_AUDIENCE)
-        expect(token).to have_received(:encoded)
-      end
+      it_behaves_like 'respecting channel credentials'
     end
 
     context 'when a grpc bad status is received' do
@@ -121,7 +168,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       end
     end
 
-    context 'with no gRPC URL configured' do
+    describe 'gRPC configuration' do
       let(:client_arguments) { {} }
 
       before do
@@ -130,53 +177,80 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
         end
       end
 
-      context 'when on dev or test environment' do
-        before do
-          allow(Gitlab).to receive(:dev_or_test_env?).and_return(true)
-        end
+      it_behaves_like 'respecting environment configuration'
+    end
+  end
 
-        it 'uses a development URL' do
-          subject
+  describe '#register_project' do
+    let(:response_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderPb::RegisterProjectRes }
+    let(:register_project_request) do
+      {
+        project_id: 42,
+        project_name: 'foo',
+        project_namespace: 'bar/zoo',
+        access_token: 'secret'
+      }
+    end
 
-          expect(stub_class).to have_received(:new).with('suggested-reviewer.dev:443', any_args)
+    let(:register_project_response) do
+      response_class.new(
+        {
+          project_id: 42,
+          registered_at: '2022-01-01 20:22'
+        }
+      )
+    end
+
+    subject do
+      client.register_project(**register_project_request)
+    end
+
+    before do
+      stub_env('SUGGESTED_REVIEWERS_SECRET', secret)
+    end
+
+    context 'when configuration and input is healthy' do
+      let(:client_arguments) { { rpc_url: rpc_url, certs: certs } }
+      let(:register_project_result) do
+        {
+          project_id: 42,
+          registered_at: '2022-01-01 20:22'
+        }
+      end
+
+      before do
+        allow_next_instance_of(stub_class) do |stub|
+          allow(stub).to receive(:register_project).and_return(register_project_response)
         end
       end
 
-      context 'when not on dev or test environment' do
-        before do
-          allow(Gitlab).to receive(:dev_or_test_env?).and_return(false)
-        end
+      it { is_expected.to eq(register_project_result) }
 
-        it 'uses a production URL' do
-          subject
+      it_behaves_like 'respecting channel credentials'
+    end
 
-          expect(stub_class).to have_received(:new).with('api.unreview.io:443', any_args)
+    context 'when a grpc bad status is received' do
+      before do
+        allow_next_instance_of(stub_class) do |stub|
+          allow(stub).to receive(:register_project).and_raise(GRPC::Unavailable)
         end
+      end
+
+      it 'raises a new error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ResourceNotAvailable)
       end
     end
 
-    context 'with an invalid gRPC URL configured' do
-      let(:client_arguments) { { rpc_url: '' } }
+    describe 'with gRPC configuration' do
+      let(:client_arguments) { {} }
 
-      it 'raises a configuration error' do
-        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+      before do
+        allow_next_instance_of(stub_class) do |stub|
+          allow(stub).to receive(:register_project).and_return(register_project_response)
+        end
       end
-    end
 
-    context 'with no secret configured' do
-      let(:secret) { nil }
-
-      it 'raises a configuration error' do
-        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
-      end
-    end
-
-    context 'with an invalid secret configured' do
-      let(:secret) { '@s3cr3tunt0ld' }
-
-      it 'raises a configuration error' do
-        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
-      end
+      it_behaves_like 'respecting environment configuration'
     end
   end
 end
