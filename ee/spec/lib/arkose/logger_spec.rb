@@ -6,16 +6,19 @@ RSpec.describe Arkose::Logger do
   let(:user) { build_stubbed(:user) }
   let(:session_token) { '22612c147bb418c8.2570749403' }
 
-  describe '#log_successful_token_verification' do
+  shared_examples 'logs the event with the correct payload' do |log_message|
+    let(:mock_correlation_id) { 'be025cf83013ac4f52ffd2bf712b11a2' }
     let(:json_verify_response) do
       Gitlab::Json.parse(File.read(Rails.root.join('ee/spec/fixtures/arkose/successfully_solved_ec_response.json')))
     end
 
     let(:verify_response) { Arkose::VerifyResponse.new(json_verify_response) }
+    let(:logger) { described_class.new(session_token: session_token, user: user, verify_response: verify_response) }
+
     let(:expected_payload) do
       {
-        correlation_id: 'be025cf83013ac4f52ffd2bf712b11a2',
-        message: 'Arkose verify response',
+        correlation_id: mock_correlation_id,
+        message: log_message,
         response: json_verify_response,
         username: user&.username,
         'arkose.session_id': '22612c147bb418c8.2570749403',
@@ -28,12 +31,10 @@ RSpec.describe Arkose::Logger do
       }.compact
     end
 
-    subject(:logger) { described_class.new(session_token: session_token, user: user, verify_response: verify_response) }
-
     before do
       allow(Gitlab::AppLogger).to receive(:info)
       allow(Gitlab::ApplicationContext).to receive(:current).and_return(
-        { 'correlation_id': 'be025cf83013ac4f52ffd2bf712b11a2' }
+        { 'correlation_id': mock_correlation_id }
       )
     end
 
@@ -41,7 +42,7 @@ RSpec.describe Arkose::Logger do
       expect(expected_payload).to include(:username)
       expect(Gitlab::AppLogger).to receive(:info).with(expected_payload)
 
-      logger.log_successful_token_verification
+      subject
     end
 
     context 'when user is nil' do
@@ -51,9 +52,21 @@ RSpec.describe Arkose::Logger do
         expect(expected_payload).not_to include(:username)
         expect(Gitlab::AppLogger).to receive(:info).with(expected_payload)
 
-        logger.log_successful_token_verification
+        subject
       end
     end
+  end
+
+  describe '#log_successful_token_verification' do
+    subject { logger.log_successful_token_verification }
+
+    it_behaves_like 'logs the event with the correct payload', 'Arkose verify response'
+  end
+
+  describe '#log_unsolved_challenge' do
+    subject { logger.log_unsolved_challenge }
+
+    it_behaves_like 'logs the event with the correct payload', 'Challenge was not solved'
   end
 
   describe '#log_failed_token_verification' do
