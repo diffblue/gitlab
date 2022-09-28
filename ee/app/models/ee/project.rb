@@ -917,7 +917,7 @@ module EE
     def suggested_reviewers_available?
       strong_memoize(:suggested_reviewers_available) do
         next false unless ::Gitlab.com? &&
-                          ::Feature.enabled?(:suggested_reviewers, self) &&
+                          ::Feature.enabled?(:suggested_reviewers_control, self) &&
                           licensed_feature_available?(:suggested_reviewers)
 
         true

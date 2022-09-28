@@ -3444,7 +3444,7 @@ RSpec.describe Project do
 
         context 'when feature flag is enabled', :saas do
           before do
-            stub_feature_flags(suggested_reviewers: true)
+            stub_feature_flags(suggested_reviewers_control: true)
           end
 
           it { is_expected.to eq true }
@@ -3452,7 +3452,7 @@ RSpec.describe Project do
 
         context 'when feature flag is disabled', :saas do
           before do
-            stub_feature_flags(suggested_reviewers: false)
+            stub_feature_flags(suggested_reviewers_control: false)
           end
 
           it { is_expected.to eq false }
@@ -3466,7 +3466,7 @@ RSpec.describe Project do
 
         context 'when feature flag is enabled', :saas do
           before do
-            stub_feature_flags(suggested_reviewers: true)
+            stub_feature_flags(suggested_reviewers_control: true)
           end
 
           it { is_expected.to eq false }
@@ -3482,7 +3482,7 @@ RSpec.describe Project do
 
         context 'when feature flag is enabled' do
           before do
-            stub_feature_flags(suggested_reviewers: true)
+            stub_feature_flags(suggested_reviewers_control: true)
           end
 
           it { is_expected.to eq false }
