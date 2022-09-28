@@ -15021,6 +15021,9 @@ msgstr ""
 msgid "Environments|Commit"
 msgstr ""
 
+msgid "Environments|Copy live environment URL"
+msgstr ""
+
 msgid "Environments|Delete"
 msgstr ""
 
