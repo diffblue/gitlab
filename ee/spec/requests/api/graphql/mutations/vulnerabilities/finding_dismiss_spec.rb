@@ -58,6 +58,7 @@ RSpec.describe 'Dismissing a Vulnerabilities::Finding object' do
     context 'when security_dashboard is enabled' do
       before do
         stub_licensed_features(security_dashboard: true)
+        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
       end
 
       it 'dismisses the Finding' do
