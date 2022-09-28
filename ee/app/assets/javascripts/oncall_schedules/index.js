@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import { parseBoolean } from '~/lib/utils/common_utils';
 import OnCallSchedulesWrapper from './components/oncall_schedules_wrapper.vue';
 import apolloProvider from './graphql';
 import getTimelineWidthQuery from './graphql/queries/get_timeline_width.query.graphql';
@@ -16,6 +17,7 @@ export default () => {
     emptyOncallSchedulesSvgPath,
     timezones,
     escalationPoliciesPath,
+    userCanCreateSchedule,
   } = el.dataset;
 
   apolloProvider.clients.defaultClient.cache.writeQuery({
@@ -33,6 +35,7 @@ export default () => {
       emptyOncallSchedulesSvgPath,
       timezones: JSON.parse(timezones),
       escalationPoliciesPath,
+      userCanCreateSchedule: parseBoolean(userCanCreateSchedule),
     },
     render(createElement) {
       return createElement(OnCallSchedulesWrapper);

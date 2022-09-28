@@ -8,20 +8,6 @@ RSpec.describe BoardsHelper do
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:project_board) { create(:board, project: project) }
 
-  describe '#current_board_json' do
-    let(:board_json) { helper.current_board_json }
-    let(:label1) { create(:label, name: "feijoa") }
-    let(:label2) { create(:label, name: "pineapple") }
-    let(:milestone) { create(:milestone) }
-
-    it 'serializes with child object attributes' do
-      board = create(:board, project: project, milestone: milestone, assignee: user, labels: [label1, label2])
-      assign(:board, board)
-
-      expect(board_json).to match_schema('current-board', dir: 'ee')
-    end
-  end
-
   describe '#build_issue_link_base' do
     context 'when epic board' do
       let_it_be(:epic_board) { create(:epic_board, group: group) }

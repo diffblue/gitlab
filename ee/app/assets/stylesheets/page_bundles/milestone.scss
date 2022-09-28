@@ -1,0 +1,59 @@
+@import '../../../../../app/assets/stylesheets/page_bundles/milestone';
+
+.burndown-hint.container-fluid {
+  border: 1px solid var(--border-color, $border-color);
+  border-radius: $border-radius-default;
+  position: relative;
+  margin: $gl-padding 0;
+  overflow: hidden;
+  padding-top: 15px;
+  padding-bottom: 15px;
+
+  .dismiss-icon {
+    position: absolute;
+    right: $gl-padding;
+    cursor: pointer;
+    color: var(--gl-text-color, $gl-text-color);
+    z-index: 1;
+  }
+
+  .svg-container {
+    text-align: center;
+
+    svg {
+      max-width: 200px;
+      max-height: 200px;
+    }
+  }
+
+  .inner-content {
+    @include media-breakpoint-down(xs) {
+      padding: 0 28px;
+      text-align: center;
+    }
+
+    h4 {
+      color: var(--gl-text-color, $gl-text-color);
+      font-size: 17px;
+    }
+
+    p {
+      color: var(--gl-text-color, $gl-text-color);
+      margin-bottom: $gl-padding;
+    }
+  }
+}
+
+.burndown-header {
+  margin: 24px 0 12px;
+
+  h3 {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .btn-group {
+    margin-left: 20px;
+    margin-bottom: 2px;
+  }
+}

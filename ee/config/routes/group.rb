@@ -166,11 +166,6 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     end
 
     resources :todos, only: [:create]
-    resources :boards, only: [:create, :update, :destroy] do
-      collection do
-        get :recent
-      end
-    end
 
     resources :epic_boards, only: [:index, :show]
     resources :protected_environments, only: [:create, :update, :destroy]

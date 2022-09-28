@@ -21,6 +21,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
          
         <div
           class="gl-px-2 btn-group"
+          data-testid="rotation-edit-button-group"
           role="group"
         >
           <button

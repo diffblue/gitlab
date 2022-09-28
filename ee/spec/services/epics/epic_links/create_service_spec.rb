@@ -181,6 +181,22 @@ RSpec.describe Epics::EpicLinks::CreateService do
 
               include_examples 'returns an error'
             end
+
+            context 'when total children count after adding would exceed limit' do
+              let(:expected_error) do
+                "You cannot add any more epics. This epic already has maximum "\
+                "number of child epics."
+              end
+
+              let(:expected_code) { 409 }
+
+              before do
+                create(:epic, group: group, parent: epic)
+                stub_const("EE::Epic::MAX_CHILDREN_COUNT", 1)
+              end
+
+              include_examples 'returns an error'
+            end
           end
         end
 

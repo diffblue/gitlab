@@ -83,6 +83,21 @@ RSpec.describe Resolvers::EpicsResolver do
             expect(epics).to match_array([epic1, epic2])
           end
         end
+
+        context 'with milestone' do
+          let_it_be(:milestone) { create(:milestone, group: group) }
+
+          before do
+            create(:issue, project: project, milestone: milestone, epic: epic1)
+            create(:issue, project: project, epic: epic2)
+          end
+
+          it 'filters epics by timeframe and issues milestone' do
+            epics = resolve_epics(milestone_title: milestone.title, timeframe: { start: '2019-08-13', end: '2019-08-21' })
+
+            expect(epics).to match_array([epic1])
+          end
+        end
       end
 
       context 'with state' do

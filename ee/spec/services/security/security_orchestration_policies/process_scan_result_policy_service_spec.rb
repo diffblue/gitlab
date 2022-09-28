@@ -141,7 +141,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
-    it 'sets project approval rules names based on policy name', :aggregate_failures do
+    it 'sets project approval rule based on policy', :aggregate_failures do
       subject
 
       scan_finding_rule = project.approval_rules.first
@@ -156,6 +156,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       expect(scan_finding_rule.vulnerabilities_allowed).to eq(first_rule[:vulnerabilities_allowed])
       expect(scan_finding_rule.vulnerability_states).to eq(first_rule[:vulnerability_states])
       expect(scan_finding_rule.approvals_required).to eq(first_action[:approvals_required])
+      expect(scan_finding_rule.security_orchestration_policy_configuration).to eq(policy_configuration)
     end
   end
 end

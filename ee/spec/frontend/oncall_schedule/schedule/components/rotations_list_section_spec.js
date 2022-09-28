@@ -17,11 +17,11 @@ describe('RotationsListSectionComponent', () => {
   let wrapper;
   const mockTimeframeInitialDate = new Date(mockRotations[0].shifts.nodes[0].startsAt);
   const mockTimeframeWeeks = getTimeframeForWeeksView(mockTimeframeInitialDate);
-  const projectPath = 'group/project';
 
   function createComponent({
     presetType = PRESET_TYPES.WEEKS,
     timeframe = mockTimeframeWeeks,
+    userCanCreateSchedule = true,
   } = {}) {
     wrapper = extendedWrapper(
       mount(RotationsListSection, {
@@ -32,7 +32,7 @@ describe('RotationsListSectionComponent', () => {
           rotations: [mockRotations[0]],
         },
         provide: {
-          projectPath,
+          userCanCreateSchedule,
         },
         stubs: {
           GlCard,
@@ -49,6 +49,7 @@ describe('RotationsListSectionComponent', () => {
   const findCurrentDayIndicatorContent = () => wrapper.findByTestId('current-day-indicator');
   const findRotationName = (id) => wrapper.findByTestId(`rotation-name-${id}`);
   const findRotationNameTooltip = (id) => getBinding(findRotationName(id).element, 'gl-tooltip');
+  const findEditAndDeleteButtons = () => wrapper.findByTestId('rotation-edit-button-group');
 
   afterEach(() => {
     if (wrapper) {
@@ -92,6 +93,10 @@ describe('RotationsListSectionComponent', () => {
       expect(rotationNameTT.value).toBeDefined();
       expect(rotationNameTT.value.title).toBe(mockRotations[0].name);
     });
+
+    it('renders edit and delete buttons', () => {
+      expect(findEditAndDeleteButtons().exists()).toBe(true);
+    });
   });
 
   describe('when the timeframe does not include today', () => {
@@ -103,6 +108,16 @@ describe('RotationsListSectionComponent', () => {
 
     it('does not render the current day indicator', () => {
       expect(findCurrentDayIndicatorContent().exists()).toBe(false);
+    });
+  });
+
+  describe('when user cannot create schedule', () => {
+    beforeEach(() => {
+      createComponent({ userCanCreateSchedule: false });
+    });
+
+    it('does not render edit and delete buttons', () => {
+      expect(findEditAndDeleteButtons().exists()).toBe(false);
     });
   });
 });

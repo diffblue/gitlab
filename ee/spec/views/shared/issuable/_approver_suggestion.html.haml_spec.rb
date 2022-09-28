@@ -56,28 +56,10 @@ RSpec.describe 'shared/issuable/_approver_suggestion.html.haml' do
       context 'when the user is an owner of the root group' do
         let(:user_can_admin_group) { true }
 
-        before do
-          stub_experiments(promote_mr_approvals_in_free: experiment_variant)
-        end
+        it 'renders the MR approvals promo' do
+          do_render
 
-        context 'when the user is in the promote_mr_approvals_in_free experiment' do
-          let(:experiment_variant) { :candidate }
-
-          it 'renders the MR approvals promo' do
-            do_render
-
-            expect(rendered).to have_css('#js-mr-approvals-promo')
-          end
-        end
-
-        context 'when the user is not in the promote_mr_approvals_in_free experiment' do
-          let(:experiment_variant) { :control }
-
-          it 'renders nothing' do
-            do_render
-
-            expect(rendered).to be_blank
-          end
+          expect(rendered).to have_css('#js-mr-approvals-promo')
         end
       end
 

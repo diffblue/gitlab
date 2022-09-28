@@ -11473,6 +11473,12 @@ CREATE TABLE application_settings (
     cube_api_base_url text,
     encrypted_cube_api_key bytea,
     encrypted_cube_api_key_iv bytea,
+    jitsu_host text,
+    jitsu_project_xid text,
+    clickhouse_connection_string text,
+    jitsu_administrator_email text,
+    encrypted_jitsu_administrator_password bytea,
+    encrypted_jitsu_administrator_password_iv bytea,
     dashboard_limit_enabled boolean DEFAULT false NOT NULL,
     dashboard_limit integer DEFAULT 0 NOT NULL,
     dashboard_notification_limit integer DEFAULT 0 NOT NULL,
@@ -11514,12 +11520,16 @@ CREATE TABLE application_settings (
     CONSTRAINT check_9c6c447a13 CHECK ((char_length(maintenance_mode_message) <= 255)),
     CONSTRAINT check_a5704163cc CHECK ((char_length(secret_detection_revocation_token_types_url) <= 255)),
     CONSTRAINT check_d03919528d CHECK ((char_length(container_registry_vendor) <= 255)),
+    CONSTRAINT check_d4865d70f3 CHECK ((char_length(clickhouse_connection_string) <= 1024)),
     CONSTRAINT check_d820146492 CHECK ((char_length(spam_check_endpoint_url) <= 255)),
+    CONSTRAINT check_dea8792229 CHECK ((char_length(jitsu_host) <= 255)),
     CONSTRAINT check_e2dd6e290a CHECK ((char_length(jira_connect_application_key) <= 255)),
     CONSTRAINT check_e5024c8801 CHECK ((char_length(elasticsearch_username) <= 255)),
     CONSTRAINT check_e5aba18f02 CHECK ((char_length(container_registry_version) <= 255)),
+    CONSTRAINT check_ec3ca9aa8d CHECK ((char_length(jitsu_administrator_email) <= 255)),
     CONSTRAINT check_ef6176834f CHECK ((char_length(encrypted_cloud_license_auth_token_iv) <= 255)),
-    CONSTRAINT check_f6563bc000 CHECK ((char_length(arkose_labs_verify_api_url) <= 255))
+    CONSTRAINT check_f6563bc000 CHECK ((char_length(arkose_labs_verify_api_url) <= 255)),
+    CONSTRAINT check_fc732c181e CHECK ((char_length(jitsu_project_xid) <= 255))
 );
 
 COMMENT ON COLUMN application_settings.content_validation_endpoint_url IS 'JiHu-specific column';
@@ -11596,6 +11606,7 @@ CREATE TABLE approval_merge_request_rules (
     scanners text[] DEFAULT '{}'::text[] NOT NULL,
     severity_levels text[] DEFAULT '{}'::text[] NOT NULL,
     vulnerability_states text[] DEFAULT '{newly_detected}'::text[] NOT NULL,
+    security_orchestration_policy_configuration_id bigint,
     CONSTRAINT check_6fca5928b2 CHECK ((char_length(section) <= 255))
 );
 
@@ -11667,7 +11678,8 @@ CREATE TABLE approval_project_rules (
     report_type smallint,
     vulnerability_states text[] DEFAULT '{newly_detected}'::text[] NOT NULL,
     orchestration_policy_idx smallint,
-    applies_to_all_protected_branches boolean DEFAULT false NOT NULL
+    applies_to_all_protected_branches boolean DEFAULT false NOT NULL,
+    security_orchestration_policy_configuration_id bigint
 );
 
 CREATE TABLE approval_project_rules_groups (
@@ -13357,6 +13369,8 @@ CREATE TABLE ci_secure_files (
     file text NOT NULL,
     checksum bytea NOT NULL,
     key_data text,
+    metadata jsonb,
+    expires_at timestamp with time zone,
     CONSTRAINT check_320790634d CHECK ((char_length(file) <= 255)),
     CONSTRAINT check_402c7b4a56 CHECK ((char_length(name) <= 255)),
     CONSTRAINT check_7279b4e293 CHECK ((char_length(key_data) <= 128))
@@ -20040,6 +20054,7 @@ CREATE TABLE project_settings (
     enforce_auth_checks_on_uploads boolean DEFAULT true NOT NULL,
     selective_code_owner_removals boolean DEFAULT false NOT NULL,
     show_diff_preview_in_email boolean DEFAULT true NOT NULL,
+    suggested_reviewers_enabled boolean DEFAULT false NOT NULL,
     CONSTRAINT check_3a03e7557a CHECK ((char_length(previous_default_branch) <= 4096)),
     CONSTRAINT check_b09644994b CHECK ((char_length(squash_commit_template) <= 500)),
     CONSTRAINT check_bde223416c CHECK ((show_default_award_emojis IS NOT NULL)),
@@ -27524,6 +27539,10 @@ CREATE INDEX idx_analytics_devops_adoption_segments_on_namespace_id ON analytics
 
 CREATE INDEX idx_analytics_devops_adoption_snapshots_finalized ON analytics_devops_adoption_snapshots USING btree (namespace_id, end_time) WHERE (recorded_at >= end_time);
 
+CREATE INDEX idx_approval_merge_request_rules_on_sec_orchestration_config_id ON approval_merge_request_rules USING btree (security_orchestration_policy_configuration_id);
+
+CREATE INDEX idx_approval_project_rules_on_sec_orchestration_config_id ON approval_project_rules USING btree (security_orchestration_policy_configuration_id);
+
 CREATE INDEX idx_audit_events_part_on_entity_id_desc_author_id_created_at ON ONLY audit_events USING btree (entity_id, entity_type, id DESC, author_id, created_at);
 
 CREATE INDEX idx_award_emoji_on_user_emoji_name_awardable_type_awardable_id ON award_emoji USING btree (user_id, name, awardable_type, awardable_id);
@@ -29654,6 +29673,8 @@ CREATE INDEX index_packages_packages_on_name_trigram ON packages_packages USING 
 
 CREATE INDEX index_packages_packages_on_project_id_and_created_at ON packages_packages USING btree (project_id, created_at);
 
+CREATE INDEX index_packages_packages_on_project_id_and_lower_version ON packages_packages USING btree (project_id, lower((version)::text)) WHERE (package_type = 4);
+
 CREATE INDEX index_packages_packages_on_project_id_and_package_type ON packages_packages USING btree (project_id, package_type);
 
 CREATE INDEX index_packages_packages_on_project_id_and_status_and_id ON packages_packages USING btree (project_id, status, id);
@@ -30544,7 +30565,7 @@ CREATE INDEX index_users_on_unconfirmed_email ON users USING btree (unconfirmed_
 
 CREATE UNIQUE INDEX index_users_on_unlock_token ON users USING btree (unlock_token);
 
-CREATE INDEX index_users_on_user_type ON users USING btree (user_type);
+CREATE INDEX index_users_on_user_type_and_id ON users USING btree (user_type, id);
 
 CREATE INDEX index_users_on_username ON users USING btree (username);
 
@@ -30860,8 +30881,6 @@ CREATE INDEX tmp_index_issues_on_issue_type_and_id ON issues USING btree (issue_
 
 CREATE INDEX tmp_index_members_on_state ON members USING btree (state) WHERE (state = 2);
 
-CREATE INDEX tmp_index_merge_request_reviewers_on_attention_requested_state ON merge_request_reviewers USING btree (id) WHERE (state = 2);
-
 CREATE INDEX tmp_index_migrated_container_registries ON container_repositories USING btree (project_id) WHERE ((migration_state = 'import_done'::text) OR (created_at >= '2022-01-23 00:00:00'::timestamp without time zone));
 
 CREATE UNIQUE INDEX tmp_index_on_tmp_project_id_on_namespaces ON namespaces USING btree (tmp_project_id);
@@ -30870,7 +30889,7 @@ CREATE INDEX tmp_index_on_vulnerabilities_non_dismissed ON vulnerabilities USING
 
 CREATE INDEX tmp_index_project_statistics_cont_registry_size ON project_statistics USING btree (project_id) WHERE (container_registry_size = 0);
 
-CREATE INDEX tmp_index_system_note_metadata_on_attention_request_actions ON system_note_metadata USING btree (id) WHERE ((action)::text = ANY ((ARRAY['attention_requested'::character varying, 'attention_request_removed'::character varying])::text[]));
+CREATE INDEX tmp_index_system_note_metadata_on_id_where_task ON system_note_metadata USING btree (id, action) WHERE ((action)::text = 'task'::text);
 
 CREATE INDEX tmp_index_vulnerability_occurrences_on_id_and_scanner_id ON vulnerability_occurrences USING btree (id, scanner_id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
@@ -32542,6 +32561,9 @@ ALTER TABLE ONLY vulnerability_feedback
 ALTER TABLE ONLY ml_candidates
     ADD CONSTRAINT fk_56d6ed4d3d FOREIGN KEY (experiment_id) REFERENCES ml_experiments(id) ON DELETE CASCADE;
 
+ALTER TABLE ONLY approval_merge_request_rules
+    ADD CONSTRAINT fk_5822f009ea FOREIGN KEY (security_orchestration_policy_configuration_id) REFERENCES security_orchestration_policy_configurations(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY deploy_keys_projects
     ADD CONSTRAINT fk_58a901ca7e FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
 
@@ -33114,6 +33136,9 @@ ALTER TABLE ONLY events
 
 ALTER TABLE ONLY coverage_fuzzing_corpuses
     ADD CONSTRAINT fk_ef5ebf339f FOREIGN KEY (package_id) REFERENCES packages_packages(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY approval_project_rules
+    ADD CONSTRAINT fk_efa5a1e3fb FOREIGN KEY (security_orchestration_policy_configuration_id) REFERENCES security_orchestration_policy_configurations(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY vulnerabilities
     ADD CONSTRAINT fk_efb96ab1e2 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;

@@ -81,6 +81,12 @@ RSpec.describe Issues::UpdateService do
 
             update_issue(iteration: iteration)
           end
+
+          it "triggers 'issuableIterationUpdated' for issuable iteration update subscription" do
+            expect(GraphqlTriggers).to receive(:issuable_iteration_updated).with(issue).and_call_original
+
+            update_issue(iteration: iteration)
+          end
         end
 
         context 'when issue already has an iteration' do
@@ -88,6 +94,14 @@ RSpec.describe Issues::UpdateService do
 
           before do
             update_issue(iteration: old_iteration)
+          end
+
+          context 'when iteration remains unchanged' do
+            it "does not trigger 'issuableIterationUpdated' for issuable iteration update subscription" do
+              expect(GraphqlTriggers).not_to receive(:issuable_iteration_updated)
+
+              update_issue(iteration: old_iteration)
+            end
           end
 
           context 'setting to nil' do

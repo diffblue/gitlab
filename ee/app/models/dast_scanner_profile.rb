@@ -44,8 +44,10 @@ class DastScannerProfile < ApplicationRecord
   end
 
   def referenced_in_security_policies
-    return [] unless project.security_orchestration_policy_configuration.present?
+    return [] unless project.all_security_orchestration_policy_configurations.present?
 
-    project.security_orchestration_policy_configuration.active_policy_names_with_dast_scanner_profile(name)
+    project.all_security_orchestration_policy_configurations.flat_map do |configuration|
+      configuration.active_policy_names_with_dast_scanner_profile(name)
+    end
   end
 end

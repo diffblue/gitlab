@@ -7,7 +7,7 @@ module EE
     LICENSED_WIDGETS = {
       iterations: ::WorkItems::Widgets::Iteration,
       issue_weights: ::WorkItems::Widgets::Weight,
-      requirements: ::WorkItems::Widgets::VerificationStatus
+      requirements: ::WorkItems::Widgets::Status
     }.freeze
 
     def widgets

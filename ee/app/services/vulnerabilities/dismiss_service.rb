@@ -20,7 +20,9 @@ module Vulnerabilities
         Vulnerabilities::StateTransition.create(
           vulnerability: @vulnerability,
           from_state: @vulnerability.state,
-          to_state: Vulnerability.states[:dismissed]
+          to_state: Vulnerability.states[:dismissed],
+          comment: @comment,
+          dismissal_reason: @dismissal_reason
         )
 
         if dismiss_findings && Feature.disabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)

@@ -53,12 +53,6 @@ RSpec.describe Users::MigrateToGhostUserService do
     end
   end
 
-  context 'requirements' do
-    include_examples "migrating a deleted user's associated records to the ghost user", RequirementsManagement::Requirement, [:author] do
-      let(:created_record) { create(:requirement, author: user) }
-    end
-  end
-
   context 'resource_iteration_events' do
     let(:always_ghost) { true }
 

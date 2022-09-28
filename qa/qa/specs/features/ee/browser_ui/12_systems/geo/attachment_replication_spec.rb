@@ -19,7 +19,12 @@ module QA
       end
 
       it 'user uploads attachment to the primary node',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348052' do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348052',
+         quarantine: {
+           only: { subdomain: 'staging-ref' },
+           type: :test_environment,
+           issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+         } do
         QA::Flow::Login.while_signed_in(address: :geo_primary) do
           issue.visit!
 

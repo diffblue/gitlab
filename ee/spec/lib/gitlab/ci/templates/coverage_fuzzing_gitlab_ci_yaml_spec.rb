@@ -3,7 +3,20 @@
 require 'spec_helper'
 
 RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
-  subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Coverage-Fuzzing') }
+  subject(:template) do
+    <<~YAML
+      stages:
+      - fuzz
+
+      include:
+        - template: 'Security/Coverage-Fuzzing.gitlab-ci.yml'
+
+      my_fuzz_target:
+        extends: .fuzz_base
+        script:
+          - ./gitlab-cov-fuzz run --regression=$REGRESSION -- my_target
+    YAML
+  end
 
   describe 'the created pipeline' do
     let_it_be(:project) { create(:project, :custom_repo, files: { 'README.txt' => '' }) }
@@ -11,11 +24,11 @@ RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
     let(:default_branch) { 'master' }
     let(:user) { project.first_owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master' ) }
-    let(:pipeline) { service.execute!(:push) }
+    let(:pipeline) { service.execute!(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
 
     before do
-      stub_ci_pipeline_yaml_file(template.content)
+      stub_ci_pipeline_yaml_file(template)
       allow_next_instance_of(Ci::BuildScheduleWorker) do |worker|
         allow(worker).to receive(:perform).and_return(true)
       end
@@ -29,11 +42,15 @@ RSpec.describe 'Coverage-Fuzzing.gitlab-ci.yml' do
         allow(License).to receive(:current).and_return(license)
       end
 
-      context 'by default' do
+      context 'without extending job default' do
+        subject(:template) { Gitlab::Template::GitlabCiYmlTemplate.find('Coverage-Fuzzing').content }
+
         it 'includes no job' do
           expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
         end
       end
+
+      it_behaves_like 'acts as branch pipeline', %w[my_fuzz_target]
 
       context 'when COVFUZZ_DISABLED=1' do
         before do

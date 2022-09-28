@@ -7,7 +7,7 @@ module Gitlab
         class LazyDastProfileAggregate
           include ::Gitlab::Graphql::Deferred
 
-          attr_reader :dast_profile, :lazy_state
+          attr_reader :dast_profile, :lazy_state, :current_user
 
           def initialize(query_ctx, dast_profile)
             raise ArgumentError, 'only DastSiteProfile or DastScannerProfile are allowed' if !dast_profile.is_a?(DastSiteProfile) && !dast_profile.is_a?(DastScannerProfile)
@@ -21,6 +21,8 @@ module Gitlab
             }
             # Register this ID to be loaded later:
             @lazy_state[:dast_pending_profiles] << dast_profile
+
+            @current_user = query_ctx[:current_user]
           end
 
           # Return the loaded record, hitting the database if needed
@@ -39,7 +41,10 @@ module Gitlab
             # The record hasn't been loaded yet, so
             # hit the database with all pending IDs to prevent N+1
             profiles_by_project_id = @lazy_state[:dast_pending_profiles].group_by(&:project_id)
-            policy_configurations = ::Security::OrchestrationPolicyConfiguration.for_project(profiles_by_project_id.keys).index_by(&:project_id)
+            projects = ::ProjectsFinder.new(current_user: @current_user, project_ids_relation: profiles_by_project_id.keys).execute
+            policy_configurations = projects.each_with_object({}) do |project, configurations|
+              configurations[project.id] = project.all_security_orchestration_policy_configurations
+            end
 
             profiles_by_project_id.each do |project_id, dast_pending_profiles|
               dast_pending_profiles.each do |profile|
@@ -50,14 +55,16 @@ module Gitlab
             @lazy_state[:dast_pending_profiles].clear
           end
 
-          def active_policy_names_for_profile(policy_configuration, profile)
-            return [] if policy_configuration.blank?
+          def active_policy_names_for_profile(policy_configurations, profile)
+            return [] if policy_configurations.blank?
 
-            case profile
-            when DastSiteProfile
-              policy_configuration.active_policy_names_with_dast_site_profile(profile.name)
-            when DastScannerProfile
-              policy_configuration.active_policy_names_with_dast_scanner_profile(profile.name)
+            policy_configurations.flat_map do |policy_configuration|
+              case profile
+              when DastSiteProfile
+                policy_configuration.active_policy_names_with_dast_site_profile(profile.name)
+              when DastScannerProfile
+                policy_configuration.active_policy_names_with_dast_scanner_profile(profile.name)
+              end.to_a
             end
           end
         end

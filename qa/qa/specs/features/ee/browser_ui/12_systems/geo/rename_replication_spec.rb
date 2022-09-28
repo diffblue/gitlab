@@ -5,7 +5,13 @@ module QA
     describe 'GitLab Geo project rename replication' do
       let(:geo_project_renamed) { "geo-after-rename-#{SecureRandom.hex(8)}" }
 
-      it 'user renames project', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348055' do
+      it 'user renames project',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348055',
+        quarantine: {
+          only: { subdomain: 'staging-ref' },
+          type: :test_environment,
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+        } do
         original_project_name = 'geo-before-rename'
         original_readme_content = "The original project name was #{original_project_name}"
         readme_file_name = 'README.md'

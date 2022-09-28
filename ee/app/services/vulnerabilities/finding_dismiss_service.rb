@@ -24,11 +24,15 @@ module Vulnerabilities
     end
 
     def dismiss_finding
-      result = ::VulnerabilityFeedback::CreateService.new(
-        @project,
-        @current_user,
-        feedback_params_for(@finding, @comment, @dismissal_reason)
-      ).execute
+      result = if Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
+                 create_or_dismiss_vulnerability
+               else
+                 ::VulnerabilityFeedback::CreateService.new(
+                   @project,
+                   @current_user,
+                   feedback_params_for(@finding, @comment, @dismissal_reason)
+                 ).execute
+               end
 
       case result[:status]
       when :success
@@ -37,6 +41,21 @@ module Vulnerabilities
         all_errors = result[:message].full_messages.join(",")
         error_string = _("failed to dismiss finding: %{message}") % { message: all_errors }
         ServiceResponse.error(message: error_string, http_status: :unprocessable_entity)
+      end
+    end
+
+    def create_or_dismiss_vulnerability
+      if @finding.vulnerability_id.nil?
+        ::Vulnerabilities::CreateService.new(
+          @project,
+          @current_user,
+          finding_id: @finding.id,
+          state: @state,
+          present_on_default_branch: false
+        ).execute
+      else
+        vulnerability = Vulnerability.find(@finding.vulnerability_id)
+        ::Vulnerabilities::DismissService.new(current_user, vulnerability, @comment, @dismissal_reason).execute
       end
     end
 

@@ -10,6 +10,7 @@ import {
   MOCK_FILTER_NODES,
   MOCK_PRIMARY_NODE,
   MOCK_SECONDARY_NODE,
+  MOCK_DATA_TYPES,
 } from '../mock_data';
 
 describe('GeoNodes Store Getters', () => {
@@ -121,5 +122,39 @@ describe('GeoNodes Store Getters', () => {
         expect(getters.countNodesForStatus(state)(status)).toBe(expectedCount);
       });
     });
+  });
+
+  describe('dataTypes', () => {
+    it('returns the expected array of dataTypes based on the replicableTypes', () => {
+      expect(getters.dataTypes(state)).toStrictEqual(MOCK_DATA_TYPES);
+    });
+  });
+
+  describe('replicationCountsByDataTypeForNode', () => {
+    const mockDataType1 = { dataType: 'type_1', dataTypeTitle: 'Type 1' };
+    const mockDataType2 = { data_type: 'type_2', dataTypeTitle: 'Type 2' };
+    const mockValues = { total: 100, success: 100 };
+
+    it.each`
+      description                                   | syncInfo                                                                                      | verificationInfo                                                                              | expectedResponse
+      ${'with no data'}                             | ${() => []}                                                                                   | ${() => []}                                                                                   | ${[{ title: mockDataType1.dataTypeTitle, sync: [], verification: [] }, { title: mockDataType2.dataTypeTitle, sync: [], verification: [] }]}
+      ${'with only one dataType sync data'}         | ${() => [{ ...mockDataType1, values: mockValues }]}                                           | ${() => []}                                                                                   | ${[{ title: mockDataType1.dataTypeTitle, sync: [mockValues], verification: [] }, { title: mockDataType2.dataTypeTitle, sync: [], verification: [] }]}
+      ${'with only one dataType verification data'} | ${() => []}                                                                                   | ${() => [{ ...mockDataType1, values: mockValues }]}                                           | ${[{ title: mockDataType1.dataTypeTitle, sync: [], verification: [mockValues] }, { title: mockDataType2.dataTypeTitle, sync: [], verification: [] }]}
+      ${'with only one dataType all data'}          | ${() => [{ ...mockDataType1, values: mockValues }]}                                           | ${() => [{ ...mockDataType1, values: mockValues }]}                                           | ${[{ title: mockDataType1.dataTypeTitle, sync: [mockValues], verification: [mockValues] }, { title: mockDataType2.dataTypeTitle, sync: [], verification: [] }]}
+      ${'with both dataTypes and all data'}         | ${() => [{ ...mockDataType1, values: mockValues }, { ...mockDataType2, values: mockValues }]} | ${() => [{ ...mockDataType1, values: mockValues }, { ...mockDataType2, values: mockValues }]} | ${[{ title: mockDataType1.dataTypeTitle, sync: [mockValues], verification: [mockValues] }, { title: mockDataType2.dataTypeTitle, sync: [mockValues], verification: [mockValues] }]}
+    `(
+      '$description returns the correct response',
+      ({ syncInfo, verificationInfo, expectedResponse }) => {
+        const mockGetters = {
+          dataTypes: [mockDataType1, mockDataType2],
+          syncInfo,
+          verificationInfo,
+        };
+
+        expect(
+          getters.replicationCountsByDataTypeForNode(state, mockGetters)(MOCK_PRIMARY_NODE.id),
+        ).toStrictEqual(expectedResponse);
+      },
+    );
   });
 });

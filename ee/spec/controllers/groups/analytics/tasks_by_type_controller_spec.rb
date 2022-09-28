@@ -76,7 +76,7 @@ RSpec.describe Groups::Analytics::TasksByTypeController do
   end
 
   describe 'GET #show' do
-    let(:params) { { group_id: group, label_ids: [label.id], created_after: 10.days.ago, subject: 'Issue' } }
+    let(:params) { { group_id: group, label_names: [label.name], created_after: 10.days.ago, subject: 'Issue' } }
 
     subject { get :show, params: params }
 
@@ -97,26 +97,8 @@ RSpec.describe Groups::Analytics::TasksByTypeController do
       end
     end
 
-    context 'when `label_names` is present' do
+    context 'when `label_names` are missing' do
       before do
-        params.delete(:label_ids)
-        params[:label_names] = [label.name]
-      end
-
-      it 'succeeds' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-
-        date, count = json_response.first['series'].first
-        expect(Date.parse(date)).to eq(issue.created_at.to_date)
-        expect(count).to eq(1)
-      end
-    end
-
-    context 'when `label_id` and `label_names` are missing' do
-      before do
-        params.delete(:label_ids)
         params.delete(:label_names)
       end
 

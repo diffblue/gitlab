@@ -195,6 +195,49 @@ RSpec.describe Epic do
 
       expect(epic).not_to be_valid
     end
+
+    describe 'children count' do
+      let_it_be(:parent_epic) { create(:epic, group: group) }
+      let_it_be(:child_epic1) { create(:epic, group: group, parent: parent_epic) }
+      let_it_be(:child_epic2) { create(:epic, group: group, parent: parent_epic) }
+
+      let(:error) { "You cannot add any more epics. This epic already has maximum number of child epics." }
+
+      subject(:epic) { build(:epic, group: group, parent: parent_epic) }
+
+      it { is_expected.to be_valid }
+
+      context 'when child count limit was reached' do
+        before do
+          stub_const("EE::#{described_class}::MAX_CHILDREN_COUNT", 1)
+        end
+
+        it 'is not valid' do
+          expect(epic).not_to be_valid
+          expect(epic.errors[:parent]).to match_array([error])
+        end
+
+        it 'already assigned epics are still valid' do
+          expect(child_epic1).to be_valid
+        end
+
+        it 'is valid when removing parent' do
+          child_epic1.parent = nil
+
+          expect(child_epic1).to be_valid
+        end
+
+        it 'is not valid when changing parents' do
+          epic_with_other_parent = create(:epic, group: group, parent: create(:epic, group: group))
+          expect(epic_with_other_parent).to be_valid
+
+          epic_with_other_parent.parent = parent_epic
+
+          expect(epic_with_other_parent).not_to be_valid
+          expect(epic_with_other_parent.errors[:parent]).to match_array([error])
+        end
+      end
+    end
   end
 
   describe 'modules' do

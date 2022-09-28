@@ -31,3 +31,51 @@ export const SCAN_METHODS = {
     placeholder: s__('DastProfiles|https://example.com/postman_collection.json'),
   },
 };
+
+export const generateFormDastSiteFields = (isPasswordRequired, showBasicAuthOption = false) => [
+  {
+    label: s__('DastProfiles|Authentication URL'),
+    fieldName: 'url',
+    newLine: true,
+    type: 'text',
+    isRequired: true,
+    showBasicAuthOption,
+  },
+  {
+    autocomplete: 'off',
+    label: s__('DastProfiles|Username'),
+    fieldName: 'username',
+    type: 'text',
+    isRequired: true,
+    showBasicAuthOption: false,
+  },
+  {
+    autocomplete: 'off',
+    label: s__('DastProfiles|Password'),
+    fieldName: 'password',
+    type: 'password',
+    isRequired: isPasswordRequired,
+    showBasicAuthOption: false,
+  },
+  {
+    label: s__('DastProfiles|Username form field'),
+    fieldName: 'usernameField',
+    type: 'text',
+    isRequired: true,
+    showBasicAuthOption,
+  },
+  {
+    label: s__('DastProfiles|Password form field'),
+    fieldName: 'passwordField',
+    type: 'text',
+    isRequired: true,
+    showBasicAuthOption,
+  },
+  {
+    label: s__('DastProfiles|Submit button (optional)'),
+    fieldName: 'submitField',
+    type: 'text',
+    isRequired: false,
+    showBasicAuthOption,
+  },
+];

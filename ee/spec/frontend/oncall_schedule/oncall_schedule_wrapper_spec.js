@@ -1,8 +1,9 @@
 import { GlEmptyState, GlLoadingIcon, GlSprintf, GlLink } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
+import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 
 import VueApollo from 'vue-apollo';
+import mockTimezones from 'test_fixtures/timezones/full.json';
 import AddScheduleModal from 'ee/oncall_schedules/components/add_edit_schedule_modal.vue';
 import OnCallSchedule from 'ee/oncall_schedules/components/oncall_schedule.vue';
 import OnCallScheduleWrapper, {
@@ -21,7 +22,12 @@ describe('On-call schedule wrapper', () => {
   const projectPath = 'group/project';
   const escalationPoliciesPath = 'group/project/-/escalation_policies';
 
-  function mountComponent({ loading, schedules } = {}) {
+  function mountComponent({
+    loading = false,
+    schedules = [],
+    userCanCreateSchedule = true,
+    isShallowMount = true,
+  } = {}) {
     const $apollo = {
       queries: {
         schedules: {
@@ -30,26 +36,32 @@ describe('On-call schedule wrapper', () => {
       },
     };
 
+    const mountProps = {
+      data() {
+        return {
+          schedules,
+        };
+      },
+      provide: {
+        emptyOncallSchedulesSvgPath,
+        projectPath,
+        escalationPoliciesPath,
+        userCanCreateSchedule,
+        timezones: mockTimezones,
+      },
+      directives: {
+        GlTooltip: createMockDirective(),
+      },
+      mocks: { $apollo },
+      stubs: {
+        GlSprintf,
+      },
+    };
+
     wrapper = extendedWrapper(
-      shallowMount(OnCallScheduleWrapper, {
-        data() {
-          return {
-            schedules,
-          };
-        },
-        provide: {
-          emptyOncallSchedulesSvgPath,
-          projectPath,
-          escalationPoliciesPath,
-        },
-        directives: {
-          GlTooltip: createMockDirective(),
-        },
-        mocks: { $apollo },
-        stubs: {
-          GlSprintf,
-        },
-      }),
+      isShallowMount
+        ? shallowMount(OnCallScheduleWrapper, mountProps)
+        : mount(OnCallScheduleWrapper, mountProps),
     );
   }
 
@@ -72,6 +84,7 @@ describe('On-call schedule wrapper', () => {
         emptyOncallSchedulesSvgPath,
         projectPath,
         escalationPoliciesPath,
+        userCanCreateSchedule: true,
       },
     });
   }
@@ -96,15 +109,20 @@ describe('On-call schedule wrapper', () => {
     expect(findLoader().exists()).toBe(true);
   });
 
-  it('shows empty state and passed correct attributes to it when not loading and no schedule', () => {
-    mountComponent({ loading: false, schedules: [] });
-    const emptyState = findEmptyState();
+  describe('No schedules', () => {
+    it('when user can create schedules it shows instructions how to', () => {
+      mountComponent({ isShallowMount: false });
 
-    expect(emptyState.exists()).toBe(true);
-    expect(emptyState.attributes()).toMatchObject({
-      title: i18n.emptyState.title,
-      svgpath: emptyOncallSchedulesSvgPath,
-      description: i18n.emptyState.description,
+      expect(wrapper.findByRole('button', { name: i18n.add.button }).exists()).toBe(true);
+      expect(wrapper.findByText(i18n.emptyState.title).exists()).toBe(true);
+      expect(wrapper.findByText(i18n.emptyState.description).exists()).toBe(true);
+    });
+
+    it('when user cannot create schedules it directs them to a project admin', () => {
+      mountComponent({ userCanCreateSchedule: false, isShallowMount: false });
+
+      expect(wrapper.findByText(i18n.add.button).exists()).toBe(false);
+      expect(wrapper.findByText(i18n.emptyState.title).exists()).toBe(true);
     });
   });
 

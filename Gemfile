@@ -277,7 +277,7 @@ gem 'sanitize', '~> 6.0'
 gem 'babosa', '~> 1.0.4'
 
 # Sanitizes SVG input
-gem 'loofah', '~> 2.18.0'
+gem 'loofah', '~> 2.19.0'
 
 # Working with license
 # Detects the open source license the repository includes
@@ -561,3 +561,6 @@ gem 'ed25519', '~> 1.3.0'
 # Error Tracking OpenAPI client
 # See https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/development/rake_tasks.md#update-openapi-client-for-error-tracking-feature
 gem 'error_tracking_open_api', path: 'vendor/gems/error_tracking_open_api'
+
+# Vulnerability advisories
+gem 'cvss-suite', '~> 3.0.1', require: 'cvss_suite'

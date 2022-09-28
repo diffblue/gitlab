@@ -189,7 +189,7 @@
               .form-text.gl-text-gray-600.gl-mt-0
                 = _('Required only if you are not using role instance credentials.')
 
-      = f.submit _('Save changes'), class: "gl-button btn btn-confirm", data: { qa_selector: 'submit_button' }
+      = f.submit _('Save changes'), data: { qa_selector: 'submit_button' }, pajamas_button: true
 
 %section.settings.as-elasticsearch-reindexing.no-animate#js-elasticsearch-reindexing{ class: ('expanded' if expanded_by_default?) }
   .settings-header
@@ -219,7 +219,7 @@
             - max_slices_running_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: max_slices_running_link_url }
             = html_escape(_('Set the maximum number of slices allowed to run concurrently during Elasticsearch reindexing. Learn more about %{max_slices_running_link_start}maximum running slices configuration%{max_slices_link_end}.')) % { max_slices_running_link_start: max_slices_running_link_start, max_slices_link_end: '</a>'.html_safe }
 
-        = f.submit _('Trigger cluster reindexing'), class: "gl-button btn btn-confirm", disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to reindex?') }
+        = f.submit _('Trigger cluster reindexing'), pajamas_button: true, disabled: @last_elasticsearch_reindexing_task&.in_progress?, data: { confirm: _('Are you sure you want to reindex?') }
         .form-text.gl-text-gray-600
         - Elastic::ReindexingTask.old_indices_scheduled_for_deletion.each do |task|
           .form-text.gl-text-red-500.gl-mt-0

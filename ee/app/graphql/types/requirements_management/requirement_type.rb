@@ -16,8 +16,20 @@ module Types
 
       field :title, GraphQL::Types::String, null: true, description: 'Title of the requirement.'
 
+      field :title_html, GraphQL::Types::String,
+        description: 'GitLab Flavored Markdown rendering of `title`.',
+        complexity: 5,
+        resolver_method: :title_html_resolver,
+        null: true
+
       field :description, GraphQL::Types::String,
         null: true, description: 'Description of the requirement.'
+
+      field :description_html, GraphQL::Types::String,
+        description: 'GitLab Flavored Markdown rendering of `description`.',
+        complexity: 5,
+        resolver_method: :description_html_resolver,
+        null: true
 
       field :state, RequirementsManagement::RequirementStateEnum,
         null: false, description: 'State of the requirement.'
@@ -46,8 +58,23 @@ module Types
       field :updated_at, Types::TimeType,
         null: false, description: 'Timestamp of when the requirement was last updated.'
 
-      markdown_field :title_html, null: true
-      markdown_field :description_html, null: true
+      def title_html_resolver
+        html_for(:title)
+      end
+
+      def description_html_resolver
+        html_for(:description)
+      end
+
+      # We need to delegate cached html fields to requirement_issue object
+      # until this endpoint gets deprecated. This method is a copy of
+      # the dynamically defined at Gitlab::GraphqL::MarkdownField#markdown_field.
+      def html_for(field)
+        markdown_object = block_given? ? yield(object) : object
+
+        # We need to `dup` the context so the MarkdownHelper doesn't modify it
+        ::MarkupHelper.markdown_field(markdown_object.requirement_issue, field, context.to_h.dup)
+      end
 
       def project
         Gitlab::Graphql::Loaders::BatchModelLoader.new(Project, object.project_id).find

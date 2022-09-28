@@ -23,6 +23,8 @@ module EE
       include EachBatch
 
       DEFAULT_COLOR = ::Gitlab::Color.of('#1068bf')
+      MAX_HIERARCHY_DEPTH = 7
+      MAX_CHILDREN_COUNT = 100
 
       attribute :color, ::Gitlab::Database::Type::Color.new
       default_value_for :color, allows_nil: false, value: DEFAULT_COLOR
@@ -72,6 +74,7 @@ module EE
       validate :validate_parent, on: :create
       validate :validate_confidential_issues_and_subepics
       validate :validate_confidential_parent
+      validate :validate_children_count
 
       validates :total_opened_issue_weight,
                 :total_closed_issue_weight,
@@ -96,9 +99,10 @@ module EE
       scope :with_api_entity_associations, -> { preload(:author, :labels) }
 
       scope :within_timeframe, -> (start_date, end_date) do
-        where('start_date is not NULL or end_date is not NULL')
-          .where('start_date is NULL or start_date <= ?', end_date)
-          .where('end_date is NULL or end_date >= ?', start_date)
+        epics = ::Epic.arel_table
+        where(epics[:start_date].not_eq(nil).or(epics[:end_date].not_eq(nil)))
+          .where(epics[:start_date].eq(nil).or(epics[:start_date].lteq(end_date)))
+          .where(epics[:end_date].eq(nil).or(epics[:end_date].gteq(start_date)))
       end
 
       scope :order_start_or_end_date_asc, -> do
@@ -167,8 +171,6 @@ module EE
       end
 
       scope :with_group_route, -> { preload([group: :route]) }
-
-      MAX_HIERARCHY_DEPTH = 7
 
       def etag_caching_enabled?
         true
@@ -694,6 +696,13 @@ module EE
       if parent_id_previously_changed? && parent_id_previously_was
         ::Epics::UpdateCachedMetadataWorker.perform_async([parent_id_previously_was])
       end
+    end
+
+    def validate_children_count
+      return unless parent_id.present? && parent_id_changed?
+      return unless ::Epic.in_parents(parent_id).count >= MAX_CHILDREN_COUNT
+
+      errors.add(:parent, _('You cannot add any more epics. This epic already has maximum number of child epics.'))
     end
   end
 end

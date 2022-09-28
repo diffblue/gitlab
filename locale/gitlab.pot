@@ -138,6 +138,11 @@ msgid_plural "%d additional committers"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "%d additional user"
+msgid_plural "%d additional users"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%d approver"
 msgid_plural "%d approvers"
 msgstr[0] ""
@@ -6048,6 +6053,9 @@ msgstr ""
 msgid "Below you will find all the groups that are public."
 msgstr ""
 
+msgid "Beta"
+msgstr ""
+
 msgid "Bi-weekly code coverage"
 msgstr ""
 
@@ -6791,6 +6799,9 @@ msgstr ""
 msgid "BranchRules|Create wildcard: %{searchTerm}"
 msgstr ""
 
+msgid "BranchRules|Groups"
+msgstr ""
+
 msgid "BranchRules|Keep stable branches secure and force developers to use merge requests. %{linkStart}What are protected branches?%{linkEnd}"
 msgstr ""
 
@@ -6806,7 +6817,13 @@ msgstr ""
 msgid "BranchRules|Require approval from code owners."
 msgstr ""
 
+msgid "BranchRules|Roles"
+msgstr ""
+
 msgid "BranchRules|Target Branch"
+msgstr ""
+
+msgid "BranchRules|Users"
 msgstr ""
 
 msgid "BranchRules|default"
@@ -7107,6 +7124,9 @@ msgid "BulkImport|expected an associated Group but has an associated Project"
 msgstr ""
 
 msgid "BulkImport|expected an associated Project but has an associated Group"
+msgstr ""
+
+msgid "BulkImport|invalid entity source type"
 msgstr ""
 
 msgid "BulkImport|must be a group"
@@ -11169,6 +11189,12 @@ msgid "Create your group"
 msgstr ""
 
 msgid "Create, update, or delete a merge request."
+msgstr ""
+
+msgid "CreateGitTag|Add a message to the tag. Leaving this blank creates a %{linkStart}lightweight tag%{linkEnd}."
+msgstr ""
+
+msgid "CreateGitTag|Set tag message"
 msgstr ""
 
 msgid "CreateGroup|You don’t have permission to create a subgroup in this group."
@@ -27399,6 +27425,9 @@ msgstr ""
 msgid "Notify|You have been mentioned in merge request %{mr_link}"
 msgstr ""
 
+msgid "Notify|You have been unsubscribed from receiving GitLab administrator notifications."
+msgstr ""
+
 msgid "Notify|Your CSV import for project %{project_link} has been completed."
 msgstr ""
 
@@ -27645,6 +27674,9 @@ msgid "OnCallSchedules|Rotations"
 msgstr ""
 
 msgid "OnCallSchedules|Route alerts directly to specific members of your team"
+msgstr ""
+
+msgid "OnCallSchedules|Route alerts directly to specific members of your team. To access this feature, ask %{linkStart}a project Owner%{linkEnd} to grant you at least the Maintainer role."
 msgstr ""
 
 msgid "OnCallSchedules|Select participant"
@@ -31384,6 +31416,9 @@ msgstr ""
 msgid "ProjectSettings|Enable merged results pipelines"
 msgstr ""
 
+msgid "ProjectSettings|Enable suggested reviewers"
+msgstr ""
+
 msgid "ProjectSettings|Encourage"
 msgstr ""
 
@@ -31796,6 +31831,9 @@ msgid "ProjectTemplates|Tencent Serverless Framework/NextjsSSR"
 msgstr ""
 
 msgid "ProjectTemplates|iOS (Swift)"
+msgstr ""
+
+msgid "ProjectTransfer|An error occurred fetching the transfer locations, please refresh the page and try again."
 msgstr ""
 
 msgid "ProjectView|Activity"
@@ -34523,9 +34561,6 @@ msgstr ""
 msgid "Runners|Members of the %{type} can register runners"
 msgstr ""
 
-msgid "Runners|Multi-project runners cannot be deleted"
-msgstr ""
-
 msgid "Runners|Name"
 msgstr ""
 
@@ -34637,9 +34672,6 @@ msgid "Runners|Runner authentication token expiration"
 msgstr ""
 
 msgid "Runners|Runner authentication tokens will expire based on a set interval. They will automatically rotate once expired."
-msgstr ""
-
-msgid "Runners|Runner cannot be deleted, please contact your administrator"
 msgstr ""
 
 msgid "Runners|Runner has contacted GitLab within the last %{elapsedTime}"
@@ -36811,16 +36843,13 @@ msgstr ""
 msgid "Set weight to %{weight}."
 msgstr ""
 
-msgid "SetStatusModal|An indicator appears next to your name and avatar"
-msgstr ""
-
-msgid "SetStatusModal|Busy"
-msgstr ""
-
 msgid "SetStatusModal|Clear status"
 msgstr ""
 
 msgid "SetStatusModal|Clear status after"
+msgstr ""
+
+msgid "SetStatusModal|Displays that you are busy or not able to respond"
 msgstr ""
 
 msgid "SetStatusModal|Edit status"
@@ -36833,6 +36862,9 @@ msgid "SetStatusModal|Set a status"
 msgstr ""
 
 msgid "SetStatusModal|Set status"
+msgstr ""
+
+msgid "SetStatusModal|Set yourself as busy"
 msgstr ""
 
 msgid "SetStatusModal|Sorry, we weren't able to set your status. Please try again later."
@@ -38808,6 +38840,15 @@ msgid "SuggestedColors|Rose red"
 msgstr ""
 
 msgid "SuggestedColors|Titanium yellow"
+msgstr ""
+
+msgid "SuggestedReviewers|Get suggestions for reviewers based on GitLab's machine learning tool."
+msgstr ""
+
+msgid "SuggestedReviewers|Suggested reviewers"
+msgstr ""
+
+msgid "SuggestedReviewers|Suggestions appear in the Reviewer section of the right sidebar"
 msgstr ""
 
 msgid "Suggestion is not applicable as the suggestion was not found."
@@ -42836,6 +42877,9 @@ msgstr ""
 msgid "UsageQuota|%{percentageLeft} of purchased storage is available"
 msgstr ""
 
+msgid "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} will soon be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
+msgstr ""
+
 msgid "UsageQuota|Artifacts"
 msgstr ""
 
@@ -42878,10 +42922,10 @@ msgstr ""
 msgid "UsageQuota|Dependency proxy"
 msgstr ""
 
-msgid "UsageQuota|Effective %{storage_enforcement_date}, namespace storage limits will apply to the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}View the %{rollout_link_start}rollout schedule for this change%{link_end}."
+msgid "UsageQuota|File attachments and smaller design graphics."
 msgstr ""
 
-msgid "UsageQuota|File attachments and smaller design graphics."
+msgid "UsageQuota|For more information about storage limits, see our %{faq_link_start}FAQ%{link_end}."
 msgstr ""
 
 msgid "UsageQuota|Git repository."
@@ -42956,9 +43000,6 @@ msgstr ""
 msgid "UsageQuota|Seats"
 msgstr ""
 
-msgid "UsageQuota|See our %{faq_link_start}FAQ%{link_end} for more information."
-msgstr ""
-
 msgid "UsageQuota|Shared bits of code and text."
 msgstr ""
 
@@ -42992,7 +43033,7 @@ msgstr ""
 msgid "UsageQuota|The %{strong_start}%{context_name}%{strong_end} project will be affected by this. "
 msgstr ""
 
-msgid "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} of namespace storage. Group owners can view namespace storage usage and purchase more from %{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. %{docs_link_start}Learn more%{link_end}."
+msgid "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} of namespace storage. Group owners can view namespace storage usage and purchase more from %{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. %{docs_link_start}How can I manage my storage?%{link_end}."
 msgstr ""
 
 msgid "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} of namespace storage. View and manage your usage from %{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. %{docs_link_start}Learn more%{link_end} about how to reduce your storage."
@@ -45777,6 +45818,9 @@ msgid "You cannot %{action} %{state} users."
 msgstr ""
 
 msgid "You cannot access the raw file. Please wait a minute."
+msgstr ""
+
+msgid "You cannot add any more epics. This epic already has maximum number of child epics."
 msgstr ""
 
 msgid "You cannot approve your own deployment."

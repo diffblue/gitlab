@@ -17622,7 +17622,7 @@ Represents a requirement.
 | <a id="requirementauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the requirement. |
 | <a id="requirementcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the requirement was created. |
 | <a id="requirementdescription"></a>`description` | [`String`](#string) | Description of the requirement. |
-| <a id="requirementdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
+| <a id="requirementdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `description`. |
 | <a id="requirementid"></a>`id` | [`ID!`](#id) | ID of the requirement. |
 | <a id="requirementiid"></a>`iid` | [`ID!`](#id) | Internal ID of the requirement. |
 | <a id="requirementlasttestreportmanuallycreated"></a>`lastTestReportManuallyCreated` | [`Boolean`](#boolean) | Indicates if latest test report was created by user. |
@@ -17630,7 +17630,7 @@ Represents a requirement.
 | <a id="requirementproject"></a>`project` | [`Project!`](#project) | Project to which the requirement belongs. |
 | <a id="requirementstate"></a>`state` | [`RequirementState!`](#requirementstate) | State of the requirement. |
 | <a id="requirementtitle"></a>`title` | [`String`](#string) | Title of the requirement. |
-| <a id="requirementtitlehtml"></a>`titleHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `title`. |
+| <a id="requirementtitlehtml"></a>`titleHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `title`. |
 | <a id="requirementupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the requirement was last updated. |
 | <a id="requirementuserpermissions"></a>`userPermissions` | [`RequirementPermissions!`](#requirementpermissions) | Permissions for the current user on the resource. |
 
@@ -19596,16 +19596,16 @@ Represents a start and due date widget.
 | <a id="workitemwidgetstartandduedatestartdate"></a>`startDate` | [`Date`](#date) | Start date of the work item. |
 | <a id="workitemwidgetstartandduedatetype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
-### `WorkItemWidgetVerificationStatus`
+### `WorkItemWidgetStatus`
 
-Represents a verification status widget.
+Represents a status widget.
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="workitemwidgetverificationstatustype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
-| <a id="workitemwidgetverificationstatusverificationstatus"></a>`verificationStatus` | [`String`](#string) | Verification status of the work item. |
+| <a id="workitemwidgetstatusstatus"></a>`status` | [`String`](#string) | Status of the work item. |
+| <a id="workitemwidgetstatustype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
 ### `WorkItemWidgetWeight`
 
@@ -21627,7 +21627,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypeiteration"></a>`ITERATION` | Iteration widget. |
 | <a id="workitemwidgettypelabels"></a>`LABELS` | Labels widget. |
 | <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
-| <a id="workitemwidgettypeverification_status"></a>`VERIFICATION_STATUS` | Verification Status widget. |
+| <a id="workitemwidgettypestatus"></a>`STATUS` | Status widget. |
 | <a id="workitemwidgettypeweight"></a>`WEIGHT` | Weight widget. |
 
 ## Scalar types
@@ -22890,7 +22890,7 @@ Implementations:
 - [`WorkItemWidgetIteration`](#workitemwidgetiteration)
 - [`WorkItemWidgetLabels`](#workitemwidgetlabels)
 - [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
-- [`WorkItemWidgetVerificationStatus`](#workitemwidgetverificationstatus)
+- [`WorkItemWidgetStatus`](#workitemwidgetstatus)
 - [`WorkItemWidgetWeight`](#workitemwidgetweight)
 
 ##### Fields

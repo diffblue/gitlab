@@ -15,7 +15,7 @@ RSpec.describe WorkItems::Type do
         ::WorkItems::Widgets::Assignees,
         ::WorkItems::Widgets::Weight,
         ::WorkItems::Widgets::StartAndDueDate,
-        ::WorkItems::Widgets::VerificationStatus
+        ::WorkItems::Widgets::Status
       )
     end
   end

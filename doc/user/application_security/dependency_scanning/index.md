@@ -1108,6 +1108,13 @@ version number).
 
 ## Troubleshooting
 
+### Increase log verbosity
+
+When a [job log](../../../ci/jobs/index.md#expand-and-collapse-job-log-sections)
+doesn't contain enough information about a dependency-scanning failure,
+[set `SECURE_LOG_LEVEL` to `debug`](#configuring-dependency-scanning)
+and check the resulting, more verbose log.
+
 ### Working around missing support for certain languages or package managers
 
 As noted in the ["Supported languages" section](#supported-languages-and-package-managers)
@@ -1269,6 +1276,6 @@ gemnasium-python-dependency_scanning:
     - apt-get update && apt-get install -y libpq-dev
 ```
 
-### Error: Project has <number> unresolved dependencies
+### Error: Project has `<number>` unresolved dependencies
 
 The error message `Project has <number> unresolved dependencies` indicates a dependency resolution problem caused by your `gradle.build` or `gradle.build.kts` file. In the current release, `gemnasium-maven` cannot continue processing when an unresolved dependency is encountered. However, There is an [open issue](https://gitlab.com/gitlab-org/gitlab/-/issues/337083) to allow `gemnasium-maven` to recover from unresolved dependency errors and produce a dependency graph. Until this issue has been resolved, you'll need to consult the [Gradle dependency resolution docs](https://docs.gradle.org/current/userguide/dependency_resolution.html) for details on how to fix your `gradle.build` file.
