@@ -2,6 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { s__ } from '~/locale';
+import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import { formatUsageSize, formatSizeAndSplit } from '../utils';
 import UsageStatisticsCard from './usage_statistics_card.vue';
 
@@ -70,6 +71,9 @@ export default {
   },
   methods: {
     formatSizeAndSplit,
+    qaSelectorValue(link) {
+      return convertToSnakeCase(link.text);
+    },
   },
 };
 </script>
@@ -102,6 +106,7 @@ export default {
         <gl-button
           :target="link.target"
           :href="link.url"
+          :data-qa-selector="qaSelectorValue(link)"
           class="mb-0"
           variant="confirm"
           category="primary"
