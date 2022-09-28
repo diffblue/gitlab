@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { initFormField } from 'ee/security_configuration/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
 import validation from '~/vue_shared/directives/validation';
+import { generateFormDastSiteFields } from '../constants';
 
 export default {
   components: {
@@ -84,6 +85,9 @@ export default {
     };
   },
   computed: {
+    formFields() {
+      return generateFormDastSiteFields(this.isSensitiveFieldRequired, this.showBasicAuthOption);
+    },
     showBasicAuthOption() {
       return this.isTargetApi;
     },
@@ -121,104 +125,29 @@ export default {
         }}</gl-form-checkbox>
       </gl-form-group>
       <div v-if="form.fields.enabled.value" data-testid="auth-form">
-        <div v-if="!showBasicAuthOption" class="row">
-          <gl-form-group
-            :label="s__('DastProfiles|Authentication URL')"
-            :invalid-feedback="form.fields.url.feedback"
-            class="col-md-6"
-            :class="{ 'col-md-12': stacked }"
-          >
-            <gl-form-input
-              v-model="form.fields.url.value"
-              v-validation:[showValidation]
-              name="url"
-              type="url"
-              required
-              :state="form.fields.url.state"
-            />
-          </gl-form-group>
-        </div>
         <div class="row">
-          <gl-form-group
-            :label="s__('DastProfiles|Username')"
-            :invalid-feedback="form.fields.username.feedback"
+          <div
+            v-for="option in formFields"
+            :key="option.fieldName"
             class="col-md-6"
-            :class="{ 'col-md-12': stacked }"
+            :class="{ 'col-md-12': stacked, 'gl-lg-mr-10': option.newLine && !stacked }"
           >
-            <gl-form-input
-              v-model="form.fields.username.value"
-              v-validation:[showValidation]
-              autocomplete="off"
-              name="username"
-              type="text"
-              required
-              :state="form.fields.username.state"
-            />
-          </gl-form-group>
-          <gl-form-group
-            :label="s__('DastProfiles|Password')"
-            :invalid-feedback="form.fields.password.feedback"
-            class="col-md-6"
-            :class="{ 'col-md-12': stacked }"
-          >
-            <gl-form-input
-              v-model="form.fields.password.value"
-              v-validation:[showValidation]
-              autocomplete="off"
-              name="password"
-              type="password"
-              :required="isSensitiveFieldRequired"
-              :state="form.fields.password.state"
-            />
-          </gl-form-group>
-        </div>
-        <div v-if="!showBasicAuthOption" class="row">
-          <gl-form-group
-            :label="s__('DastProfiles|Username form field')"
-            :invalid-feedback="form.fields.usernameField.feedback"
-            class="col-md-6"
-            :class="{ 'col-md-12': stacked }"
-          >
-            <gl-form-input
-              v-model="form.fields.usernameField.value"
-              v-validation:[showValidation]
-              name="usernameField"
-              type="text"
-              required
-              :state="form.fields.usernameField.state"
-            />
-          </gl-form-group>
-          <gl-form-group
-            :label="s__('DastProfiles|Password form field')"
-            :invalid-feedback="form.fields.passwordField.feedback"
-            class="col-md-6"
-            :class="{ 'col-md-12': stacked }"
-          >
-            <gl-form-input
-              v-model="form.fields.passwordField.value"
-              v-validation:[showValidation]
-              name="passwordField"
-              type="text"
-              required
-              :state="form.fields.passwordField.state"
-            />
-          </gl-form-group>
-        </div>
-        <div v-if="!showBasicAuthOption" class="row">
-          <gl-form-group
-            :label="s__('DastProfiles|Submit button (optional)')"
-            :invalid-feedback="form.fields.submitField.feedback"
-            class="col-md-6"
-            :class="{ 'col-md-12': stacked }"
-          >
-            <gl-form-input
-              v-model="form.fields.submitField.value"
-              v-validation:[showValidation]
-              name="submitField"
-              type="text"
-              :state="form.fields.submitField.state"
-            />
-          </gl-form-group>
+            <gl-form-group
+              v-if="!option.showBasicAuthOption"
+              :label="option.label"
+              :invalid-feedback="form.fields[option.fieldName].feedback"
+            >
+              <gl-form-input
+                v-model="form.fields[option.fieldName].value"
+                v-validation:[showValidation]
+                :autocomplete="option.autocomplete"
+                :name="option.fieldName"
+                :type="option.type"
+                :required="option.isRequired"
+                :state="form.fields[option.fieldName].state"
+              />
+            </gl-form-group>
+          </div>
         </div>
       </div>
     </gl-form-group>
