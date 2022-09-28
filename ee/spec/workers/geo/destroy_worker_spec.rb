@@ -16,7 +16,9 @@ RSpec.describe Geo::DestroyWorker, :geo do
   end
 
   include_examples 'an idempotent worker' do
-    let(:job_args) { ['snippet_repository', 1] }
+    let!(:upload) { create(:upload) }
+    let!(:registry) { create(:geo_upload_registry, file_id: upload.id) }
+    let(:job_args) { ['upload', upload.id] }
 
     it 'calls replicator#replicate_destroy' do
       allow(Gitlab::Geo::Replicator).to receive(:for_replicable_params).and_return(replicator)
@@ -24,6 +26,12 @@ RSpec.describe Geo::DestroyWorker, :geo do
       expect(replicator).to receive(:replicate_destroy).exactly(IdempotentWorkerHelper::WORKER_EXEC_TIMES).times
 
       subject
+    end
+
+    # The service does other things, but don't test the service here.
+    # This is only meant to show that the worker is idempotent.
+    it 'deletes exactly one registry' do
+      expect { subject }.to change(Geo::UploadRegistry, :count).by(-1)
     end
   end
 end
