@@ -27,8 +27,8 @@ module Namespaces
         "container-limited limit-container-width" unless user.layout == "fluid"
       end
 
-      def rollout_docs_link
-        help_page_path('user/usage_quotas', anchor: 'namespace-storage-limit-enforcement-schedule')
+      def storage_limit_docs_link
+        help_page_path('user/usage_quotas', anchor: 'namespace-storage-limit')
       end
 
       def learn_more_link
@@ -52,18 +52,16 @@ module Namespaces
 
       def text_paragraph_1
         text_args = {
-          storage_enforcement_date: root_namespace.storage_enforcement_date,
           namespace_name: root_namespace.name,
           extra_message: paragraph_1_extra_message,
-          rollout_link_start: Kernel.format('<a href="%{url}" >', { url: rollout_docs_link }),
+          storage_limit_link_start: Kernel.format('<a href="%{url}" >', { url: storage_limit_docs_link }),
           link_end: "</a>"
         }.merge(strong_tags)
 
         Kernel.format(
           s_(
-            "UsageQuota|Effective %{storage_enforcement_date}, namespace storage limits will apply " \
-            "to the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}" \
-            "View the %{rollout_link_start}rollout schedule for this change%{link_end}."
+            "UsageQuota|%{storage_limit_link_start}A namespace storage limit%{link_end} will soon " \
+            "be enforced for the %{strong_start}%{namespace_name}%{strong_end} namespace. %{extra_message}"
           ),
           text_args
         ).html_safe
@@ -90,7 +88,7 @@ module Namespaces
             "UsageQuota|The namespace is currently using %{strong_start}%{used_storage}%{strong_end} "\
             "of namespace storage. Group owners can view namespace storage usage and purchase more from " \
             "%{strong_start}%{usage_quotas_nav_instruction}%{strong_end}. " \
-            "%{docs_link_start}Learn more%{link_end}." \
+            "%{docs_link_start}How can I manage my storage?%{link_end}." \
           ),
           text_args
         ).html_safe
@@ -103,7 +101,7 @@ module Namespaces
         }
 
         Kernel.format(
-          s_("UsageQuota|See our %{faq_link_start}FAQ%{link_end} for more information."),
+          s_("UsageQuota|For more information about storage limits, see our %{faq_link_start}FAQ%{link_end}."),
           text_args
         ).html_safe
       end

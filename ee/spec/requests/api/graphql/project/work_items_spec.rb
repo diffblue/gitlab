@@ -34,7 +34,7 @@ RSpec.describe 'getting a work item list for a project' do
   describe 'work items with widgets' do
     let(:widgets_data) { graphql_dig_at(items_data, :node, :widgets) }
 
-    context 'with verification status widget' do
+    context 'with status widget' do
       let_it_be(:work_item1) { create(:work_item, :satisfied_status, project: project) }
       let_it_be(:work_item2) { create(:work_item, :failed_status, project: project) }
       let_it_be(:work_item3) { create(:work_item, :requirement, project: project) }
@@ -46,8 +46,8 @@ RSpec.describe 'getting a work item list for a project' do
             id
             widgets {
               type
-              ... on WorkItemWidgetVerificationStatus {
-                verificationStatus
+              ... on WorkItemWidgetStatus {
+                status
               }
             }
           }
@@ -59,7 +59,7 @@ RSpec.describe 'getting a work item list for a project' do
         stub_licensed_features(requirements: true)
       end
 
-      it 'returns work items including verification status', :aggregate_failures do
+      it 'returns work items including status', :aggregate_failures do
         post_graphql(query, current_user: current_user)
 
         expect(item_ids).to contain_exactly(
@@ -68,9 +68,9 @@ RSpec.describe 'getting a work item list for a project' do
           work_item3.to_global_id.to_s
         )
         expect(widgets_data).to include(
-          a_hash_including('verificationStatus' => 'satisfied'),
-          a_hash_including('verificationStatus' => 'failed'),
-          a_hash_including('verificationStatus' => 'unverified')
+          a_hash_including('status' => 'satisfied'),
+          a_hash_including('status' => 'failed'),
+          a_hash_including('status' => 'unverified')
         )
       end
 
