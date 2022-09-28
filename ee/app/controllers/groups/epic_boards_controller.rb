@@ -6,7 +6,6 @@ class Groups::EpicBoardsController < Groups::ApplicationController
   include Gitlab::Utils::StrongMemoize
   extend ::Gitlab::Utils::Override
 
-  before_action :redirect_to_recent_board, only: [:index]
   before_action :assign_endpoint_vars
   before_action do
     push_frontend_feature_flag(:fe_epic_board_total_weight, group)
@@ -25,12 +24,14 @@ class Groups::EpicBoardsController < Groups::ApplicationController
 
   private
 
+  override :redirect_to_recent_board
   def redirect_to_recent_board
-    return if request.format.json? || !latest_visited_board
+    return unless latest_visited_board
 
     redirect_to group_epic_board_path(group, latest_visited_board.epic_board)
   end
 
+  override :latest_visited_board
   def latest_visited_board
     @latest_visited_board ||= Boards::EpicBoardsVisitsFinder.new(parent, current_user).latest
   end
@@ -38,16 +39,6 @@ class Groups::EpicBoardsController < Groups::ApplicationController
   override :board_visit_service
   def board_visit_service
     Boards::EpicBoards::Visits::CreateService
-  end
-
-  def board_klass
-    ::Boards::EpicBoard
-  end
-
-  def boards_finder
-    strong_memoize :boards_finder do
-      ::Boards::EpicBoardsFinder.new(parent)
-    end
   end
 
   def board_finder
@@ -59,14 +50,6 @@ class Groups::EpicBoardsController < Groups::ApplicationController
   def board_create_service
     strong_memoize :board_create_service do
       ::Boards::EpicBoards::CreateService.new(parent, current_user)
-    end
-  end
-
-  override :respond_with
-  def respond_with(resource)
-    # no JSON for epic boards
-    respond_to do |format|
-      format.html
     end
   end
 
