@@ -9,7 +9,7 @@ RSpec.describe ::Types::WorkItems::WidgetInterface do
     using RSpec::Parameterized::TableSyntax
 
     where(:widget_class, :widget_type_name) do
-      WorkItems::Widgets::VerificationStatus | Types::WorkItems::Widgets::VerificationStatusType
+      WorkItems::Widgets::Status             | Types::WorkItems::Widgets::StatusType
       WorkItems::Widgets::Weight             | Types::WorkItems::Widgets::WeightType
     end
 

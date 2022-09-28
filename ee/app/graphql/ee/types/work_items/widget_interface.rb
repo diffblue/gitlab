@@ -14,8 +14,8 @@ module EE
             case object
             when ::WorkItems::Widgets::Weight
               ::Types::WorkItems::Widgets::WeightType
-            when ::WorkItems::Widgets::VerificationStatus
-              ::Types::WorkItems::Widgets::VerificationStatusType
+            when ::WorkItems::Widgets::Status
+              ::Types::WorkItems::Widgets::StatusType
             when ::WorkItems::Widgets::Iteration
               ::Types::WorkItems::Widgets::IterationType
             else
@@ -27,7 +27,7 @@ module EE
         prepended do
           EE_ORPHAN_TYPES = [
             ::Types::WorkItems::Widgets::WeightType,
-            ::Types::WorkItems::Widgets::VerificationStatusType,
+            ::Types::WorkItems::Widgets::StatusType,
             ::Types::WorkItems::Widgets::IterationType
           ].freeze
 
