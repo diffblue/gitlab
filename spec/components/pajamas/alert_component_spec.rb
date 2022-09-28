@@ -161,12 +161,14 @@ RSpec.describe Pajamas::AlertComponent, :aggregate_failures, type: :component do
         end
       end
 
-      context "with unknown variant" do
-        let(:variant) { :foo }
+      context "with unknown or nil variant" do
+        where(:variant) { [:foo, nil] }
 
-        it "adds the default variant class" do
-          expect(page).to have_selector(".gl-alert-info")
-          expect(page).to have_selector("[data-testid='information-o-icon']")
+        with_them do
+          it "adds the default variant class" do
+            expect(page).to have_selector(".gl-alert-info")
+            expect(page).to have_selector("[data-testid='information-o-icon']")
+          end
         end
       end
     end
