@@ -665,21 +665,24 @@ RSpec.describe 'gitlab:db namespace rake task', :silence_stdout do
   end
 
   describe '#migrate_with_instrumentation' do
+    let(:runner) { instance_double(::Gitlab::Database::Migrations::Runner)}
     describe '#up' do
-      subject { run_rake_task('gitlab:db:migration_testing:up') }
+      subject { run_rake_task('gitlab:db:migration_testing:up', '[ci]') }
 
       it 'delegates to the migration runner' do
-        expect(::Gitlab::Database::Migrations::Runner).to receive_message_chain(:up, :run)
+        expect(::Gitlab::Database::Migrations::Runner).to receive(:up).with(database: 'ci').and_return(runner)
+        expect(runner).to receive(:run)
 
         subject
       end
     end
 
     describe '#down' do
-      subject { run_rake_task('gitlab:db:migration_testing:down') }
+      subject { run_rake_task('gitlab:db:migration_testing:down', '[main]') }
 
       it 'delegates to the migration runner' do
-        expect(::Gitlab::Database::Migrations::Runner).to receive_message_chain(:down, :run)
+        expect(::Gitlab::Database::Migrations::Runner).to receive(:down).with(database: 'main').and_return(runner)
+        expect(runner).to receive(:run)
 
         subject
       end

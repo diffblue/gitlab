@@ -305,13 +305,15 @@ namespace :gitlab do
 
     namespace :migration_testing do
       desc 'Run migrations with instrumentation'
-      task up: :environment do
-        Gitlab::Database::Migrations::Runner.up.run
+      task :up, [:database] => :environment do |_t, args|
+        database = args[:database] || :main
+        Gitlab::Database::Migrations::Runner.up(database: database).run
       end
 
       desc 'Run down migrations in current branch with instrumentation'
-      task down: :environment do
-        Gitlab::Database::Migrations::Runner.down.run
+      task :down, [:database] => :environment do |_t, args|
+        database = args[:database] || :main
+        Gitlab::Database::Migrations::Runner.down(database: database).run
       end
 
       desc 'Sample traditional background migrations with instrumentation'
