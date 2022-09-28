@@ -96,9 +96,10 @@ module EE
       scope :with_api_entity_associations, -> { preload(:author, :labels) }
 
       scope :within_timeframe, -> (start_date, end_date) do
-        where('start_date is not NULL or end_date is not NULL')
-          .where('start_date is NULL or start_date <= ?', end_date)
-          .where('end_date is NULL or end_date >= ?', start_date)
+        epics = ::Epic.arel_table
+        where(epics[:start_date].not_eq(nil).or(epics[:end_date].not_eq(nil)))
+          .where(epics[:start_date].eq(nil).or(epics[:start_date].lteq(end_date)))
+          .where(epics[:end_date].eq(nil).or(epics[:end_date].gteq(start_date)))
       end
 
       scope :order_start_or_end_date_asc, -> do
