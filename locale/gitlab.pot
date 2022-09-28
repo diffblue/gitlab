@@ -1698,6 +1698,9 @@ msgstr ""
 msgid "A personal access token has been revoked"
 msgstr ""
 
+msgid "A personal access token, named %{code_start}%{token_name}%{code_end}, has been revoked."
+msgstr ""
+
 msgid "A personal access token, named %{token_name}, has been revoked."
 msgstr ""
 
@@ -45645,6 +45648,12 @@ msgid "You can check it in your %{pat_link_start}personal access tokens%{pat_lin
 msgstr ""
 
 msgid "You can check it in your in your personal access tokens settings %{pat_link}."
+msgstr ""
+
+msgid "You can check your tokens or create a new one in your %{pat_link_start}personal access tokens settings%{pat_link_end}."
+msgstr ""
+
+msgid "You can check your tokens or create a new one in your personal access tokens settings %{pat_link}."
 msgstr ""
 
 msgid "You can create a new %{link}."
