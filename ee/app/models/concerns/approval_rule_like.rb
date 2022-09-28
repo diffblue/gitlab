@@ -18,6 +18,8 @@ module ApprovalRuleLike
       after_add: :audit_add, after_remove: :audit_remove
     has_many :group_users, -> { distinct }, through: :groups, source: :users
 
+    belongs_to :security_orchestration_policy_configuration, class_name: 'Security::OrchestrationPolicyConfiguration', optional: true
+
     enum report_type: {
       vulnerability: 1, # To be removed after all MRs (related to https://gitlab.com/gitlab-org/gitlab/-/issues/356996) get merged
       license_scanning: 2,

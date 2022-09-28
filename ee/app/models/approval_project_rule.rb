@@ -97,7 +97,7 @@ class ApprovalProjectRule < ApplicationRecord
 
   def report_approver_attributes
     attributes
-      .slice('approvals_required', 'name', 'orchestration_policy_idx', 'scanners', 'severity_levels', 'vulnerability_states', 'vulnerabilities_allowed')
+      .slice('approvals_required', 'name', 'orchestration_policy_idx', 'scanners', 'severity_levels', 'vulnerability_states', 'vulnerabilities_allowed', 'security_orchestration_policy_configuration_id')
       .merge(
         users: users,
         groups: groups,
