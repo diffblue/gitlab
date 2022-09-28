@@ -154,7 +154,7 @@
             .form-group
               = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_smartcn_enabled, s_('AdminSettings|Enable smartcn custom analyzer: Indexing')
             .form-group
-              = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_smartcn_search, s_('AdminSettings|Enable smartcn custom analyzer: Search'), checkbox_options: { disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_smartcn_enabled? }, help_text: _('AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index.')
+              = f.gitlab_ui_checkbox_component :elasticsearch_analyzers_smartcn_search, s_('AdminSettings|Enable smartcn custom analyzer: Search'), checkbox_options: { disabled: !Gitlab::CurrentSettings.elasticsearch_analyzers_smartcn_enabled? }, help_text: s_('AdminSettings|Only enable search after installing the plugin, enabling indexing, and recreating the index.')
 
             %h5
               = _('Japanese language support using')
