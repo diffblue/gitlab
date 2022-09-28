@@ -64,7 +64,7 @@ RSpec.describe 'getting merge request information nested in a project' do
 
           context 'with feature flag enabled' do
             before do
-              stub_feature_flags(suggested_reviewers: project)
+              stub_feature_flags(suggested_reviewers_control: project)
             end
 
             include_examples 'feature available'
@@ -72,7 +72,7 @@ RSpec.describe 'getting merge request information nested in a project' do
 
           context 'with feature flag disabled' do
             before do
-              stub_feature_flags(suggested_reviewers: false, thing: project)
+              stub_feature_flags(suggested_reviewers_control: false, thing: project)
             end
 
             include_examples 'feature unavailable'
@@ -86,7 +86,7 @@ RSpec.describe 'getting merge request information nested in a project' do
 
           context 'with feature flag enabled' do
             before do
-              stub_feature_flags(suggested_reviewers: project)
+              stub_feature_flags(suggested_reviewers_control: project)
             end
 
             include_examples 'feature unavailable'
@@ -94,7 +94,7 @@ RSpec.describe 'getting merge request information nested in a project' do
 
           context 'with feature flag disabled' do
             before do
-              stub_feature_flags(suggested_reviewers: false, thing: project)
+              stub_feature_flags(suggested_reviewers_control: false, thing: project)
             end
 
             include_examples 'feature unavailable'
@@ -112,7 +112,7 @@ RSpec.describe 'getting merge request information nested in a project' do
 
           context 'with feature flag enabled' do
             before do
-              stub_feature_flags(suggested_reviewers: project)
+              stub_feature_flags(suggested_reviewers_control: project)
             end
 
             include_examples 'feature unavailable'
@@ -120,7 +120,7 @@ RSpec.describe 'getting merge request information nested in a project' do
 
           context 'with feature flag disabled' do
             before do
-              stub_feature_flags(suggested_reviewers: false, thing: project)
+              stub_feature_flags(suggested_reviewers_control: false, thing: project)
             end
 
             include_examples 'feature unavailable'

@@ -45,6 +45,6 @@
         = s_('GroupSAML|This will be set as the access level of users added to the group.')
 
     .mt-3
-      = f.submit _("Save changes"), class: 'gl-button btn btn-confirm', data: { qa_selector: 'save_changes_button' }
+      = f.submit _("Save changes"), data: { qa_selector: 'save_changes_button' }, pajamas_button: true
       #js-saml-test-button.has-tooltip.float-right
         = render 'test_button', saml_provider: @saml_provider

@@ -16,5 +16,5 @@
           = f.gitlab_ui_checkbox_component :maven_package_requests_forwarding,
             _('Forward %{package_type} package requests to the %{registry_type} Registry if the packages are not found in the GitLab Package Registry') % { package_type: 'Maven', registry_type: 'Maven' }
 
-    = f.submit _('Save changes'), class: 'btn gl-button btn-confirm'
+    = f.submit _('Save changes'), pajamas_button: true
 
