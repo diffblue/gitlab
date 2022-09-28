@@ -93,7 +93,15 @@ describe('Status checks extension', () => {
 
   describe('expanded data', () => {
     beforeEach(async () => {
-      await setupWithResponse(httpStatus.OK, approvedAndPendingChecks);
+      await setupWithResponse(httpStatus.OK, [
+        ...approvedAndPendingChecks,
+        {
+          id: 4,
+          name: '<a class="test" data-test">Foo',
+          external_url: 'http://foo',
+          status: 'passed',
+        },
+      ]);
 
       wrapper
         .find('[data-testid="widget-extension"] [data-testid="toggle-button"]')
@@ -103,9 +111,10 @@ describe('Status checks extension', () => {
     it('shows the expanded list of text items', () => {
       const listItems = wrapper.findAll('[data-testid="extension-list-item"]');
 
-      expect(listItems).toHaveLength(2);
+      expect(listItems).toHaveLength(3);
       expect(listItems.at(0).text()).toBe('Foo: http://foo');
-      expect(listItems.at(1).text()).toBe('Foo Bar: http://foobar');
+      expect(listItems.at(1).text()).toBe('<a class="test" data-test">Foo: http://foo');
+      expect(listItems.at(2).text()).toBe('Foo Bar: http://foobar');
     });
   });
 });
