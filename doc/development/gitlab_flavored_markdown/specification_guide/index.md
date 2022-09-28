@@ -804,36 +804,35 @@ consists of the manually updated Markdown+HTML examples for the
 
 `glfm_specification/input/gitlab_flavored_markdown/glfm_official_specification_examples.md` sample entries:
 
-NOTE:
-All lines in this example are prefixed with a `|` character. This prefix helps avoid false
-errors when this file is checked by `markdownlint`, and possible errors in other Markdown editors.
-The actual file should not have these prefixed `|` characters.
+<!-- markdownlint-disable MD048 -->
 
-```plaintext
-|# Section with GLFM official specification examples
-|
-|## Strong
-|
-|### Strong with two asterisks
-|
-|```````````````````````````````` example
-|**bold**
-|.
-|<p><strong>bold</strong></p>
-|````````````````````````````````
-|
-|### Strong with HTML
-|
-|```````````````````````````````` example
-|<strong>
-|bold
-|</strong>
-|.
-|<p><strong>
-|bold
-|</strong></p>
-|````````````````````````````````
-```
+~~~plaintext
+# Section with GLFM official specification examples
+
+## Strong
+
+### Strong with two asterisks
+
+```````````````````````````````` example
+**bold**
+.
+<p><strong>bold</strong></p>
+````````````````````````````````
+
+### Strong with HTML
+
+```````````````````````````````` example
+<strong>
+bold
+</strong>
+.
+<p><strong>
+bold
+</strong></p>
+````````````````````````````````
+~~~
+
+<!-- markdownlint-enable MD048 -->
 
 ##### `glfm_internal_extension_examples.md`
 
