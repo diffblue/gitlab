@@ -28,7 +28,7 @@ RSpec.describe WorkItem do
       end
     end
 
-    context 'for verification status widget' do
+    context 'for status widget' do
       subject { build(:work_item, :requirement).widgets }
 
       context 'when requirements is licensed' do
@@ -36,18 +36,18 @@ RSpec.describe WorkItem do
           stub_licensed_features(requirements: true)
         end
 
-        it 'returns an instance of the verification status widget' do
-          is_expected.to include(instance_of(WorkItems::Widgets::VerificationStatus))
+        it 'returns an instance of the status widget' do
+          is_expected.to include(instance_of(WorkItems::Widgets::Status))
         end
       end
 
-      context 'when verification status is unlicensed' do
+      context 'when status is unlicensed' do
         before do
           stub_licensed_features(requirements: false)
         end
 
-        it 'omits an instance of the verification status widget' do
-          is_expected.not_to include(instance_of(WorkItems::Widgets::VerificationStatus))
+        it 'omits an instance of the status widget' do
+          is_expected.not_to include(instance_of(WorkItems::Widgets::Status))
         end
       end
     end
