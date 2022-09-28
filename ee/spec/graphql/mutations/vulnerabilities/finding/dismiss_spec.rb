@@ -20,6 +20,7 @@ RSpec.describe Mutations::Vulnerabilities::Finding::Dismiss do
     context 'when the user can dismiss the finding' do
       before do
         stub_licensed_features(security_dashboard: true)
+        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
       end
 
       shared_examples_for 'vulnerability finding dismissal' do
