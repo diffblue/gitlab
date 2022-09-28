@@ -29,6 +29,7 @@ module Arkose
         }
         ServiceResponse.success(payload: payload)
       else
+        logger.log_unsolved_challenge
         ServiceResponse.error(message: 'Captcha was not solved')
       end
     rescue StandardError => error
