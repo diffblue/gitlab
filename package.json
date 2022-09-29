@@ -233,6 +233,7 @@
     "jest-raw-loader": "^1.0.1",
     "jest-transform-graphql": "^2.1.0",
     "jest-util": "^27.5.1",
+    "jsonlint": "^1.6.3",
     "markdownlint-cli": "0.32.2",
     "miragejs": "^0.1.40",
     "mock-apollo-client": "1.2.0",
