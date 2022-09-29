@@ -83,6 +83,11 @@
   category: issues_edit
   redis_slot: project_management
   aggregation: daily
+- name: i_ci_secrets_management_vault_build_created
+  category: ci_secrets_management
+  redis_slot: ci_secrets_management
+  aggregation: weekly
+  feature_flag: usage_data_i_ci_secrets_management_vault_build_created
 # Container Security - Network Policies
 - name: clusters_using_network_policies_ui
   redis_slot: network_policies
