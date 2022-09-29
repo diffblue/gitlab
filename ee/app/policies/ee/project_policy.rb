@@ -326,6 +326,14 @@ module EE
         enable :read_incident_management_escalation_policy
       end
 
+      rule { auditor & ~split_operations_visibility_permissions & ~operations_disabled }.policy do
+        enable :read_alert_management_alert
+      end
+
+      rule { auditor & split_operations_visibility_permissions & ~monitor_disabled }.policy do
+        enable :read_alert_management_alert
+      end
+
       rule { auditor & ~developer }.policy do
         prevent :create_vulnerability
         prevent :admin_vulnerability
