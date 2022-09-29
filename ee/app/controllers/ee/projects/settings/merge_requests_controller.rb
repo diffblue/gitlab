@@ -7,6 +7,14 @@ module EE
         extend ::Gitlab::Utils::Override
         extend ::ActiveSupport::Concern
 
+        prepended do
+          before_action do
+            if @project.present? && @project.licensed_feature_available?(:security_orchestration_policies)
+              push_licensed_feature(:security_orchestration_policies)
+            end
+          end
+        end
+
         private
 
         override :project_params_attributes
