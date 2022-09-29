@@ -740,13 +740,26 @@ RSpec.describe Ci::Build, :saas do
       end
 
       context 'when there are secrets defined' do
+        let(:ci_build) { build(:ci_build, secrets: valid_secrets) }
+
         context 'on create' do
           it 'tracks unique users' do
-            ci_build = build(:ci_build, secrets: valid_secrets)
-
             expect(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).with('i_ci_secrets_management_vault_build_created', values: ci_build.user_id)
 
             ci_build.save!
+          end
+
+          context 'with usage_data_i_ci_secrets_management_vault_build_created FF disabled' do
+            before do
+              stub_feature_flags(usage_data_i_ci_secrets_management_vault_build_created: false)
+            end
+
+            it 'does not track unique users' do
+              # Events FF are checked inside track_event, so need to verify it on the next level
+              expect(Gitlab::Redis::HLL).not_to receive(:add)
+
+              ci_build.save!
+            end
           end
         end
 
