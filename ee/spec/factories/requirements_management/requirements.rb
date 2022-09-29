@@ -5,7 +5,7 @@ FactoryBot.define do
     project
 
     transient do
-      author { create(:user) } # rubocop:disable RSpec/FactoryBot/InlineAssociation
+      author { association(:user) }
       state { 'opened' }
       title { generate(:title) }
       description { FFaker::Lorem.sentence }
