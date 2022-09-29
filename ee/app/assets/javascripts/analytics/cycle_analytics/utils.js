@@ -14,9 +14,9 @@ import httpStatus from '~/lib/utils/http_status';
 const EVENT_TYPE_LABEL = 'label';
 
 export const toggleSelectedLabel = ({ selectedLabels = [], value = null }) => {
-  if (!value) return selectedLabels;
-  return selectedLabels.includes(value)
-    ? selectedLabels.filter((v) => v !== value)
+  if (!value?.title) return selectedLabels;
+  return selectedLabels.find((v) => v.title === value.title)
+    ? selectedLabels.filter((v) => v.title !== value.title)
     : [...selectedLabels, value];
 };
 

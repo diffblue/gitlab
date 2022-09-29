@@ -1,7 +1,15 @@
 import { getTasksByTypeData } from '../../../utils';
 
+export const selectedLabelNames = ({ selectedLabels = [] }) => {
+  return selectedLabels.map(({ title }) => title);
+};
+
+export const selectedLabelIds = ({ selectedLabels = [] }) => {
+  return selectedLabels.map(({ id }) => id);
+};
+
 export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}, rootGetters = {}) => {
-  const { selectedLabelNames = [], selectedLabelIds = [], subject } = state;
+  const { selectedLabels = [], subject } = state;
   const { currentGroup, createdAfter = null, createdBefore = null } = rootState;
   const { selectedProjectIds = [] } = rootGetters;
   return {
@@ -9,8 +17,7 @@ export const selectedTasksByTypeFilters = (state = {}, _, rootState = {}, rootGe
     selectedProjectIds,
     createdAfter,
     createdBefore,
-    selectedLabelIds,
-    selectedLabelNames,
+    selectedLabelNames: selectedLabelNames({ selectedLabels }),
     subject,
   };
 };

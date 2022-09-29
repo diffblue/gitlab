@@ -29,7 +29,11 @@ export default {
       'errorMessage',
       'topRankedLabels',
     ]),
-    ...mapGetters('typeOfWork', ['selectedTasksByTypeFilters', 'tasksByTypeChartData']),
+    ...mapGetters('typeOfWork', [
+      'selectedTasksByTypeFilters',
+      'tasksByTypeChartData',
+      'selectedLabelIds',
+    ]),
     hasData() {
       return Boolean(this.tasksByTypeChartData?.data.length);
     },
@@ -43,13 +47,13 @@ export default {
           createdBefore,
           currentGroup: { name: groupName },
           selectedProjectIds,
-          selectedLabelIds,
+          selectedLabelNames,
         },
       } = this;
 
       return generateFilterTextDescription({
         groupName,
-        selectedLabelsCount: selectedLabelIds.length,
+        selectedLabelsCount: selectedLabelNames.length,
         selectedProjectsCount: selectedProjectIds.length,
         selectedSubjectFilterText: this.selectedSubjectFilterText.toLowerCase(),
         createdAfter: formattedDate(createdAfter),
@@ -61,9 +65,6 @@ export default {
         selectedTasksByTypeFilters: { subject },
       } = this;
       return subject || TASKS_BY_TYPE_SUBJECT_ISSUE;
-    },
-    selectedLabelIdsFilter() {
-      return this.selectedTasksByTypeFilters?.selectedLabelIds || [];
     },
     selectedSubjectFilterText() {
       const { selectedSubjectFilter } = this;
@@ -105,7 +106,7 @@ export default {
         </h4>
         <tasks-by-type-filters
           :default-group-labels="initialGroupLabels"
-          :selected-label-ids="selectedLabelIdsFilter"
+          :selected-label-ids="selectedLabelIds"
           :subject-filter="selectedSubjectFilter"
           @update-filter="onUpdateFilter"
         />
