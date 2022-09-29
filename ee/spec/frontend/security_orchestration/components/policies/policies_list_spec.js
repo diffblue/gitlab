@@ -267,6 +267,25 @@ describe('PoliciesList component', () => {
     });
   });
 
+  describe('policy drawer ', () => {
+    it('should close drawer when new security project is selected', async () => {
+      const scanExecutionPolicy = mockScanExecutionPoliciesResponse[0];
+
+      mountShallowWrapper();
+      findPoliciesTable().vm.$emit('row-selected', [scanExecutionPolicy]);
+      await nextTick();
+
+      expect(findPolicyDrawer().props('open')).toEqual(true);
+      expect(findPolicyDrawer().props('policy')).toEqual(scanExecutionPolicy);
+
+      wrapper.setProps({ shouldUpdatePolicyList: true });
+      await nextTick();
+
+      expect(findPolicyDrawer().props('open')).toEqual(false);
+      expect(findPolicyDrawer().props('policy')).toEqual(null);
+    });
+  });
+
   describe('inherited filter', () => {
     beforeEach(async () => {
       mountWrapper({
