@@ -34,7 +34,7 @@ RSpec.describe ApprovalState do
   end
 
   let_it_be_with_refind(:project) { create(:project, :repository) }
-  let_it_be_with_refind(:merge_request) { create(:merge_request, source_project: project) }
+  let_it_be_with_refind(:merge_request) { create(:merge_request, source_project: project, target_project: project) }
   let_it_be(:approver1) { create(:user) }
   let_it_be(:approver2) { create(:user) }
   let_it_be(:approver3) { create(:user) }
@@ -454,7 +454,8 @@ RSpec.describe ApprovalState do
       shared_examples_for 'authors self-approval authorization' do
         context 'when authors are authorized to approve their own MRs' do
           before do
-            project.update!(merge_requests_author_approval: true)
+            merge_request.project.update!(merge_requests_author_approval: true)
+            merge_request.project.clear_memoization(:merge_requests_author_approval)
           end
 
           it 'allows the author to approve the MR if within the approvers list' do
@@ -691,9 +692,10 @@ RSpec.describe ApprovalState do
 
           context 'when self-approval is enabled and all of the valid approvers have approved the MR' do
             before do
-              project.update!(merge_requests_author_approval: true)
+              merge_request.project.update!(merge_requests_author_approval: true)
               create(:approval, user: author, merge_request: merge_request)
               create(:approval, user: approver2, merge_request: merge_request)
+              merge_request.project.clear_memoization(:merge_requests_author_approval)
             end
 
             it 'requires the original number of approvals' do
@@ -1177,7 +1179,8 @@ RSpec.describe ApprovalState do
       shared_examples_for 'authors self-approval authorization' do
         context 'when authors are authorized to approve their own MRs' do
           before do
-            project.update!(merge_requests_author_approval: true)
+            merge_request.project.update!(merge_requests_author_approval: true)
+            merge_request.project.clear_memoization(:merge_requests_author_approval)
           end
 
           it 'allows the author to approve the MR if within the approvers list' do
@@ -1339,9 +1342,10 @@ RSpec.describe ApprovalState do
 
           context 'when self-approval is enabled and all of the valid approvers have approved the MR' do
             before do
-              project.update!(merge_requests_author_approval: true)
+              merge_request.project.update!(merge_requests_author_approval: true)
               create(:approval, user: author, merge_request: merge_request)
               create(:approval, user: approver2, merge_request: merge_request)
+              merge_request.project.clear_memoization(:merge_requests_author_approval)
             end
 
             it 'requires the original number of approvals' do
