@@ -193,8 +193,26 @@ module Projects
       repository.tags.select(&:dereferenced_target)
     end
 
-    def skip_branch?(name)
+    def skip_mismatched_branch?(name)
+      mirror_branch_regex_enabled? &&
+        project.mirror_branch_regex.present? &&
+        !branch_regex.match?(name)
+    end
+
+    def mirror_branch_regex_enabled?
+      ::Feature.enabled?(:mirror_only_branches_match_regex, project)
+    end
+
+    def branch_regex
+      @branch_regex ||= Gitlab::UntrustedRegexp.new(project.mirror_branch_regex)
+    end
+
+    def skip_unprotected_branch?(name)
       project.only_mirror_protected_branches && !ProtectedBranch.protected?(project, name)
+    end
+
+    def skip_branch?(name)
+      skip_unprotected_branch?(name) || skip_mismatched_branch?(name)
     end
 
     def service_logger

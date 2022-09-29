@@ -8,6 +8,9 @@ module EE
       belongs_to :push_rule
 
       scope :has_vulnerabilities, -> { where('has_vulnerabilities IS TRUE') }
+
+      validates :mirror_branch_regex, absence: true, if: -> { project&.only_mirror_protected_branches? }
+      validates :mirror_branch_regex, untrusted_regexp: true, length: { maximum: 255 }
     end
 
     def selective_code_owner_removals

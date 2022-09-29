@@ -24,6 +24,42 @@ RSpec.describe Projects::MirrorsController, feature_category: :source_code_manag
           do_put(project, remote_mirrors_attributes: { '0' => { 'enabled' => 1, 'url' => url } })
         end.to change { RemoteMirror.count }.to(1)
       end
+
+      it 'allows to create a remote mirror with mirror_branch_regex' do
+        expect do
+          do_put(project, remote_mirrors_attributes: { '0' => { enabled: 1, url: url, mirror_branch_regex: 'test' } })
+        end.to change { RemoteMirror.where(mirror_branch_regex: 'test').count }.to(1)
+      end
+
+      it 'allows only mirror protected branches' do
+        expect do
+          do_put(project, remote_mirrors_attributes: { '0' => { enabled: 1, url: url, only_protected_branches: true } })
+        end.to change { RemoteMirror.where(only_protected_branches: true, mirror_branch_regex: nil).count }.to(1)
+      end
+
+      it 'allows mirror all branches' do
+        expect do
+          do_put(project, remote_mirrors_attributes: { '0' => { enabled: 1, url: url } })
+        end.to change { RemoteMirror.where(only_protected_branches: false, mirror_branch_regex: nil).count }.to(1)
+      end
+
+      it 'do not allow invalid regex' do
+        do_put(project, remote_mirrors_attributes: { '0' => { enabled: 1, url: url, mirror_branch_regex: '\\' } } )
+        expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
+        expect(flash[:alert]).to match(/Remote mirrors mirror branch regex not valid RE2 syntax: trailing/)
+      end
+
+      context 'when `mirror_only_branches_match_regex` FF is disabled' do
+        before do
+          stub_feature_flags(mirror_only_branches_match_regex: false)
+        end
+
+        it 'ignores mirror_branch_regex parameter' do
+          expect do
+            do_put(project, remote_mirrors_attributes: { '0' => { enabled: 1, url: url, mirror_branch_regex: 'test' } })
+          end.not_to change { RemoteMirror.where(mirror_branch_regex: 'test').count }
+        end
+      end
     end
 
     context 'when the current project has a remote mirror' do
@@ -223,6 +259,49 @@ RSpec.describe Projects::MirrorsController, feature_category: :source_code_manag
 
         expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
         expect(flash[:alert]).to match(/is blocked/)
+      end
+    end
+
+    context 'setting up project mirror branches setting' do
+      it 'mirror all branches' do
+        do_put(project, only_mirror_protected_branches: false, mirror_branch_regex: nil)
+        project.reload
+        expect(project.only_mirror_protected_branches).to be_falsey
+        expect(project.mirror_branch_regex).to be_nil
+      end
+
+      it 'enable mirror_branch_regex would ignore only_mirror_protected_branches' do
+        do_put(project, only_mirror_protected_branches: true, mirror_branch_regex: 'text')
+        project.reload
+        expect(project.only_mirror_protected_branches).to be_falsey
+        expect(project.mirror_branch_regex).to eq('text')
+      end
+
+      it 'enable mirror_branch_regex would disable only_protected_branches' do
+        project.update!(only_mirror_protected_branches: true)
+        do_put(project, mirror_branch_regex: 'text')
+        project.reload
+        expect(project.only_mirror_protected_branches).to be_falsey
+        expect(project.mirror_branch_regex).to eq 'text'
+      end
+
+      it 'do not allow invalid regex' do
+        do_put(project, mirror_branch_regex: '\\')
+        expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
+        expect(flash[:alert]).to match(/Project setting mirror branch regex not valid RE2 syntax: trailing/)
+      end
+
+      context 'when `mirror_only_branches_match_regex` FF is disabled' do
+        before do
+          stub_feature_flags(mirror_only_branches_match_regex: false)
+        end
+
+        it 'ignores mirror_branch_regex parameter' do
+          do_put(project, { mirror_branch_regex: 'test' } )
+          project.reload
+          expect(project.only_mirror_protected_branches).to be_falsey
+          expect(project.mirror_branch_regex).to be_nil
+        end
       end
     end
   end

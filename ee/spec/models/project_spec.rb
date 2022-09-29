@@ -3670,4 +3670,24 @@ RSpec.describe Project do
       expect(result).to be_empty
     end
   end
+
+  describe '#mirror_branches_setting' do
+    it 'mirror all branches' do
+      project = build(:project, only_mirror_protected_branches: false, mirror_branch_regex: nil)
+
+      expect(project.mirror_branches_setting).to eq('all')
+    end
+
+    it 'mirror protected branches' do
+      project = build(:project, only_mirror_protected_branches: true, mirror_branch_regex: nil)
+
+      expect(project.mirror_branches_setting).to eq('protected')
+    end
+
+    it 'mirror branches match regex' do
+      project = build(:project, only_mirror_protected_branches: false, mirror_branch_regex: 'text')
+
+      expect(project.mirror_branches_setting).to eq('regex')
+    end
+  end
 end

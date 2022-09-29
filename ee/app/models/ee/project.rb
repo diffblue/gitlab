@@ -34,6 +34,7 @@ module EE
       include UsageStatistics
       include ProjectSecurityScannersInformation
       include VulnerabilityFlagHelpers
+      include MirrorConfiguration
 
       before_update :update_legacy_open_source_license_available, if: -> { visibility_level_changed? }
 
@@ -232,6 +233,7 @@ module EE
                :only_allow_merge_if_all_status_checks_passed,
                :only_allow_merge_if_all_status_checks_passed=,
                to: :project_setting
+      delegate :mirror_branch_regex, :mirror_branch_regex=, to: :project_setting
 
       validates :repository_size_limit,
         numericality: { only_integer: true, greater_than_or_equal_to: 0, allow_nil: true }
@@ -970,6 +972,10 @@ module EE
       return false if status_checks.empty?
 
       status_checks.any? { |check| check.status(merge_request, merge_request.diff_head_sha) != 'passed' }
+    end
+
+    def only_mirror_protected_branches_column
+      only_mirror_protected_branches
     end
 
     private
