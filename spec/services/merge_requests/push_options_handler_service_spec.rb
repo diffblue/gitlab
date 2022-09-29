@@ -730,6 +730,12 @@ RSpec.describe MergeRequests::PushOptionsHandlerService do
 
     it_behaves_like 'with a deleted branch'
     it_behaves_like 'with the project default branch'
+
+    context 'when passing in usernames' do
+      let(:assigned) { { user2.username => 1, user3.username => 1 } }
+
+      it_behaves_like 'with an existing branch that has a merge request open in foss'
+    end
   end
 
   describe '`unassign` push option' do
@@ -743,6 +749,13 @@ RSpec.describe MergeRequests::PushOptionsHandlerService do
 
     it_behaves_like 'with a deleted branch'
     it_behaves_like 'with the project default branch'
+
+    context 'when passing in usernames' do
+      let(:assigned) { { user2.username => 1, user3.username => 1 } }
+      let(:unassigned) { { user1.username => 1, user3.username => 1 } }
+
+      it_behaves_like 'with an existing branch that has a merge request open in foss'
+    end
   end
 
   describe 'multiple pushed branches' do

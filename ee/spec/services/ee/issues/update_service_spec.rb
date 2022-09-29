@@ -409,7 +409,7 @@ RSpec.describe Issues::UpdateService do
           let_it_be(:milestone) { create(:milestone, project: project) }
           let_it_be(:assignee_user1) { create(:user) }
 
-          let(:params) { { epic: epic, milestone: milestone, assignees: [assignee_user1] } }
+          let(:params) { { epic: epic, milestone: milestone, assignee_ids: [assignee_user1.id] } }
 
           before do
             project.add_guest(assignee_user1)
@@ -420,6 +420,7 @@ RSpec.describe Issues::UpdateService do
               subject
               issue.reload
             end.to change { issue.epic }.from(nil).to(epic)
+                   .and(change { issue.assignees }.from([]).to([assignee_user1]))
                    .and(change { issue.milestone }.from(nil).to(milestone))
                    .and(change(ResourceMilestoneEvent, :count).by(1))
                    .and(change(Note, :count).by(3))
