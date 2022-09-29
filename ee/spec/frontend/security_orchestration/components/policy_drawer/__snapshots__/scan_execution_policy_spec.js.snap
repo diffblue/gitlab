@@ -110,3 +110,40 @@ exports[`ScanExecutionPolicy component no action policy renders the correct poli
   </div>
 </div>
 `;
+
+exports[`ScanExecutionPolicy component policy with unsupported attributes renders the correct policy action message 1`] = `
+<div
+  data-testid="policy-summary"
+>
+  <div
+    data-testid="policy-summary"
+  >
+    <h5
+      class="gl-mt-6"
+      data-testid="label"
+    >
+      Summary
+    </h5>
+     
+    <p
+      data-testid="content"
+    >
+      <p>
+        Runs a 
+        <strong>
+          Sast
+        </strong>
+         scan
+      </p>
+       
+      <ul>
+        <li>
+          
+          Scan to be performed on every pipeline on the main branch
+        
+        </li>
+      </ul>
+    </p>
+  </div>
+</div>
+`;

@@ -23,6 +23,7 @@ import PolicyActionBuilder from './policy_action_builder.vue';
 import {
   buildScannerAction,
   buildDefaultPipeLineRule,
+  createPolicyObject,
   DEFAULT_SCAN_EXECUTION_POLICY,
   fromYaml,
   toYaml,
@@ -83,13 +84,14 @@ export default {
       ? toYaml(this.existingPolicy)
       : DEFAULT_SCAN_EXECUTION_POLICY;
 
+    const { policy, hasParsingError } = createPolicyObject(yamlEditorValue);
+
     return {
-      error: '',
       isCreatingMR: false,
       isRemovingPolicy: false,
       newlyCreatedPolicyProject: null,
-      policy: fromYaml(yamlEditorValue),
-      yamlEditorError: null,
+      policy,
+      hasParsingError,
       yamlEditorValue,
       mode: EDITOR_MODE_RULE,
       documentationPath: setUrlFragment(
@@ -114,31 +116,26 @@ export default {
       }
       return [EDITOR_MODES[1]];
     },
-    hasParsingError() {
-      return Boolean(this.yamlEditorError);
-    },
-    policyYaml() {
-      return this.hasParsingError ? '' : toYaml(this.policy);
-    },
   },
   methods: {
     addAction() {
       this.policy.actions.push(buildScannerAction({ scanner: DEFAULT_SCANNER }));
+      this.updateYamlEditorValue(this.policy);
     },
     addRule() {
       this.policy.rules.push(buildDefaultPipeLineRule());
+      this.updateYamlEditorValue(this.policy);
     },
     removeActionOrRule(type, index) {
       this.policy[type].splice(index, 1);
+      this.updateYamlEditorValue(this.policy);
     },
     updateActionOrRule(type, index, values) {
       this.policy[type].splice(index, 1, values);
+      this.updateYamlEditorValue(this.policy);
     },
     changeEditorMode(mode) {
       this.mode = mode;
-      if (mode === EDITOR_MODE_YAML && !this.hasParsingError) {
-        this.yamlEditorValue = toYaml(this.policy);
-      }
     },
     handleError(error) {
       if (error.message.toLowerCase().includes('graphql')) {
@@ -149,6 +146,7 @@ export default {
     },
     handleSetPolicyProperty(property, value) {
       this.policy[property] = value;
+      this.updateYamlEditorValue(this.policy);
     },
     async getSecurityPolicyProject() {
       if (!this.newlyCreatedPolicyProject && !this.assignedPolicyProject.fullPath) {
@@ -169,14 +167,12 @@ export default {
 
       try {
         const assignedPolicyProject = await this.getSecurityPolicyProject();
-        const yamlValue =
-          this.mode === EDITOR_MODE_YAML ? this.yamlEditorValue : toYaml(this.policy);
         const mergeRequest = await modifyPolicy({
           action,
           assignedPolicyProject,
-          name: this.originalName || fromYaml(this.yamlEditorValue)?.name || this.policy.name,
+          name: this.originalName || fromYaml({ manifest: this.yamlEditorValue })?.name,
           namespacePath: this.namespacePath,
-          yamlEditorValue: yamlValue,
+          yamlEditorValue: this.yamlEditorValue,
         });
 
         this.redirectToMergeRequest({ mergeRequest, assignedPolicyProject });
@@ -203,18 +199,14 @@ export default {
       );
     },
     updateYaml(manifest) {
-      this.yamlEditorValue = manifest;
-      this.yamlEditorError = null;
+      const { policy, hasParsingError } = createPolicyObject(manifest);
 
-      try {
-        const newPolicy = fromYaml(manifest);
-        if (newPolicy.error) {
-          throw new Error(newPolicy.error);
-        }
-        this.policy = { ...this.policy, ...newPolicy };
-      } catch (error) {
-        this.yamlEditorError = error;
-      }
+      this.yamlEditorValue = manifest;
+      this.hasParsingError = hasParsingError;
+      this.policy = policy;
+    },
+    updateYamlEditorValue(policy) {
+      this.yamlEditorValue = toYaml(policy);
     },
   },
 };
@@ -232,7 +224,6 @@ export default {
     :is-updating-policy="isCreatingMR"
     :parsing-error="$options.i18n.PARSING_ERROR_MESSAGE"
     :policy="policy"
-    :policy-yaml="policyYaml"
     :yaml-editor-value="yamlEditorValue"
     @remove-policy="handleModifyPolicy($options.SECURITY_POLICY_ACTIONS.REMOVE)"
     @save-policy="handleModifyPolicy()"

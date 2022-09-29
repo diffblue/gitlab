@@ -5,6 +5,7 @@ import {
   mockProjectScanExecutionPolicy,
   mockScanExecutionManifestNoActions,
   mockScanExecutionManifestMultipleActions,
+  mockUnsupportedAttributeScanExecutionPolicy,
 } from '../../mocks/mock_data';
 
 describe('ScanExecutionPolicy component', () => {
@@ -24,10 +25,11 @@ describe('ScanExecutionPolicy component', () => {
   });
 
   describe.each`
-    title                       | propsData
-    ${'default policy'}         | ${{ policy: mockProjectScanExecutionPolicy }}
-    ${'no action policy'}       | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestNoActions } }}
-    ${'multiple action policy'} | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestMultipleActions } }}
+    title                                   | propsData
+    ${'default policy'}                     | ${{ policy: mockProjectScanExecutionPolicy }}
+    ${'no action policy'}                   | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestNoActions } }}
+    ${'multiple action policy'}             | ${{ policy: { ...mockProjectScanExecutionPolicy, yaml: mockScanExecutionManifestMultipleActions } }}
+    ${'policy with unsupported attributes'} | ${{ policy: mockUnsupportedAttributeScanExecutionPolicy }}
   `('$title', ({ propsData }) => {
     beforeEach(() => {
       factory({ propsData });

@@ -105,31 +105,28 @@ describe('ScanExecutionPolicyEditor', () => {
   });
 
   describe('default', () => {
-    it('displays the correct modes', async () => {
+    beforeEach(() => {
       factory();
-      await nextTick();
+    });
 
+    it('displays the correct modes', async () => {
       expect(findPolicyEditorLayout().attributes('editormodes')).toBe(EDITOR_MODES[1].toString());
     });
 
     it('defaults to yaml mode', async () => {
-      factory();
-      await nextTick();
-
       expect(findPolicyEditorLayout().attributes('defaulteditormode')).toBe(EDITOR_MODE_YAML);
     });
 
-    it('updates the policy yaml when "update-yaml" is emitted', async () => {
-      factory();
+    it('updates the yaml when "update-yaml" is emitted', async () => {
+      const newManifest = 'enabled: true';
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(DEFAULT_SCAN_EXECUTION_POLICY);
+      findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
       await nextTick();
-      const newManifest = 'new yaml!';
-      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(
-        DEFAULT_SCAN_EXECUTION_POLICY,
-      );
-      await findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
-      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(newManifest);
     });
+  });
 
+  describe('modifying a policy', () => {
     it.each`
       status                            | action                             | event              | factoryFn                    | yamlEditorValue                  | currentlyAssignedPolicyProject
       ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_EXECUTION_POLICY} | ${newlyCreatedPolicyProject}
@@ -148,7 +145,7 @@ describe('ScanExecutionPolicyEditor', () => {
           assignedPolicyProject: currentlyAssignedPolicyProject,
           name:
             action === SECURITY_POLICY_ACTIONS.APPEND
-              ? fromYaml(yamlEditorValue).name
+              ? fromYaml({ manifest: yamlEditorValue }).name
               : mockDastScanExecutionObject.name,
           namespacePath: defaultProjectPath,
           yamlEditorValue,
@@ -187,19 +184,16 @@ describe('ScanExecutionPolicyEditor', () => {
       expect(findPolicyEditorLayout().attributes('defaulteditormode')).toBe(EDITOR_MODE_RULE);
     });
 
-    it('updates the policy yaml when "update-yaml" is emitted', async () => {
-      const newManifest = 'new yaml!';
-      factory();
-      await nextTick();
-
-      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(
-        DEFAULT_SCAN_EXECUTION_POLICY,
+    it('updates the yaml and policy object when "update-yaml" is emitted', async () => {
+      const newManifest = 'enabled: true';
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(DEFAULT_SCAN_EXECUTION_POLICY);
+      expect(findPolicyEditorLayout().props('policy')).toMatchObject(
+        fromYaml({ manifest: DEFAULT_SCAN_EXECUTION_POLICY }),
       );
-
       findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
       await nextTick();
-
-      expect(findPolicyEditorLayout().attributes('yamleditorvalue')).toBe(newManifest);
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(newManifest);
+      expect(findPolicyEditorLayout().props('policy')).toMatchObject({ enabled: true });
     });
 
     it.each`
@@ -208,15 +202,18 @@ describe('ScanExecutionPolicyEditor', () => {
       ${'description'} | ${''}    | ${'new description'}
       ${'enabled'}     | ${true}  | ${false}
     `('triggers a change on $component', async ({ component, newValue, oldValue }) => {
-      factory();
-      await nextTick();
-
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(oldValue);
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toMatch(
+        `${component}: ${oldValue}`,
+      );
 
       findPolicyEditorLayout().vm.$emit('set-policy-property', component, newValue);
       await nextTick();
 
       expect(findPolicyEditorLayout().props('policy')[component]).toBe(newValue);
+      expect(findPolicyEditorLayout().props('yamlEditorValue')).toMatch(
+        `${component}: ${newValue}`,
+      );
     });
   });
 
@@ -226,18 +223,40 @@ describe('ScanExecutionPolicyEditor', () => {
     });
 
     it('should add new rule', async () => {
-      expect(findPolicyEditorLayout().props('policy').rules).toEqual([
-        RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
-      ]);
+      const initialValue = [RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE]()];
+      expect(findPolicyEditorLayout().props('policy').rules).toStrictEqual(initialValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
+      ).toStrictEqual(initialValue);
 
       findAddRuleButton().vm.$emit('click');
-
       await nextTick();
 
-      expect(findPolicyEditorLayout().props('policy').rules).toEqual([
+      const finalValue = [
         RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
         RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](),
-      ]);
+      ];
+      expect(findPolicyEditorLayout().props('policy').rules).toStrictEqual(finalValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
+      ).toStrictEqual(finalValue);
+    });
+
+    it('should update rule', async () => {
+      const initialValue = [RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE]()];
+      expect(findPolicyEditorLayout().props('policy').rules).toStrictEqual(initialValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
+      ).toStrictEqual(initialValue);
+
+      const finalValue = [{ ...RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE](), branches: ['main'] }];
+      findPolicyRuleBuilder().vm.$emit('changed', finalValue[0]);
+      await nextTick();
+
+      expect(findPolicyEditorLayout().props('policy').rules).toStrictEqual(finalValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
+      ).toStrictEqual(finalValue);
     });
 
     it('should remove rule', async () => {
@@ -246,12 +265,18 @@ describe('ScanExecutionPolicyEditor', () => {
 
       expect(findAllPolicyRuleBuilders()).toHaveLength(2);
       expect(findPolicyEditorLayout().props('policy').rules).toHaveLength(2);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
+      ).toHaveLength(2);
 
       findPolicyRuleBuilder().vm.$emit('remove', 1);
       await nextTick();
 
       expect(findAllPolicyRuleBuilders()).toHaveLength(1);
       expect(findPolicyEditorLayout().props('policy').rules).toHaveLength(1);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).rules,
+      ).toHaveLength(1);
     });
   });
 
@@ -261,26 +286,40 @@ describe('ScanExecutionPolicyEditor', () => {
     });
 
     it('should add new action', async () => {
-      expect(findPolicyEditorLayout().props('policy').actions).toEqual([
-        buildScannerAction({ scanner: DEFAULT_SCANNER }),
-      ]);
-      findAddActionButton().vm.$emit('click');
+      const initialValue = [buildScannerAction({ scanner: DEFAULT_SCANNER })];
+      expect(findPolicyEditorLayout().props('policy').actions).toStrictEqual(initialValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
+      ).toStrictEqual(initialValue);
 
+      findAddActionButton().vm.$emit('click');
       await nextTick();
 
-      expect(findPolicyEditorLayout().props('policy').actions).toEqual([
+      const finalValue = [
         buildScannerAction({ scanner: DEFAULT_SCANNER }),
         buildScannerAction({ scanner: DEFAULT_SCANNER }),
-      ]);
+      ];
+      expect(findPolicyEditorLayout().props('policy').actions).toStrictEqual(finalValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
+      ).toStrictEqual(finalValue);
     });
 
     it('should update action', async () => {
-      const updatedAction = buildScannerAction({ scanner: 'sast' });
-      findPolicyActionBuilder().vm.$emit('changed', updatedAction);
+      const initialValue = [buildScannerAction({ scanner: DEFAULT_SCANNER })];
+      expect(findPolicyEditorLayout().props('policy').actions).toStrictEqual(initialValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
+      ).toStrictEqual(initialValue);
+
+      const finalValue = [buildScannerAction({ scanner: 'sast' })];
+      findPolicyActionBuilder().vm.$emit('changed', finalValue[0]);
       await nextTick();
 
-      expect(findAllPolicyActionBuilders()).toHaveLength(1);
-      expect(findPolicyEditorLayout().props('policy').actions[0]).toStrictEqual(updatedAction);
+      expect(findPolicyEditorLayout().props('policy').actions).toStrictEqual(finalValue);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
+      ).toStrictEqual(finalValue);
     });
 
     it('should remove action', async () => {
@@ -289,12 +328,18 @@ describe('ScanExecutionPolicyEditor', () => {
 
       expect(findAllPolicyActionBuilders()).toHaveLength(2);
       expect(findPolicyEditorLayout().props('policy').actions).toHaveLength(2);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
+      ).toHaveLength(2);
 
       findPolicyActionBuilder().vm.$emit('remove', 1);
       await nextTick();
 
       expect(findAllPolicyActionBuilders()).toHaveLength(1);
       expect(findPolicyEditorLayout().props('policy').actions).toHaveLength(1);
+      expect(
+        fromYaml({ manifest: findPolicyEditorLayout().props('yamlEditorValue') }).actions,
+      ).toHaveLength(1);
     });
   });
 });
