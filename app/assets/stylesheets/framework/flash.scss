@@ -42,16 +42,18 @@ $notification-box-shadow-color: rgba(0, 0, 0, 0.25);
     }
   }
 
-  .flash-alert:not(.gl-alert),
-  .flash-notice:not(.gl-alert),
-  .flash-success:not(.gl-alert),
-  .flash-warning:not(.gl-alert) {
-    padding: $gl-padding $gl-padding-32 $gl-padding ($gl-padding + $gl-padding-4);
-    margin-top: 10px;
+  .flash-alert,
+  .flash-notice,
+  .flash-success,
+  .flash-warning {
+    &:not(.gl-alert) {
+      padding: $gl-padding $gl-padding-32 $gl-padding ($gl-padding + $gl-padding-4);
+      margin-top: 10px;
 
-    .container-fluid,
-    .container-fluid.container-limited {
-      background: transparent;
+      .container-fluid,
+      .container-fluid.container-limited {
+        background: transparent;
+      }
     }
   }
 
