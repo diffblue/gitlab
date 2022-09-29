@@ -81,6 +81,10 @@ module EE
       def merge_requests_disable_committers_approval?
         !!target_project&.merge_requests_disable_committers_approval?
       end
+
+      def can_suggest_reviewers?
+        open? && modified_paths.any?
+      end
     end
 
     class_methods do
