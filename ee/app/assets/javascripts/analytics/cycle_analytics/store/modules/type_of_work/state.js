@@ -5,7 +5,7 @@ export default () => ({
   isLoadingTasksByTypeChartTopLabels: false,
 
   subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
-  selectedLabelNames: [],
+  selectedLabels: [],
   topRankedLabels: [],
   data: [],
 

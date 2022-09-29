@@ -6,6 +6,7 @@ RSpec.describe Namespace do
   using RSpec::Parameterized::TableSyntax
 
   include EE::GeoHelpers
+  include NamespaceStorageHelpers
 
   let(:namespace) { create(:namespace) }
   let!(:ultimate_plan) { create(:ultimate_plan) }
@@ -1141,32 +1142,34 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#over_storage_limit?' do
-    using RSpec::Parameterized::TableSyntax
+  describe '#over_storage_limit?', :saas do
+    let_it_be(:namespace) { create(:namespace_with_plan, plan: :ultimate_plan) }
 
-    where(:enforcement_setting_enabled, :feature_enabled, :above_size_limit, :result) do
-      false | false | false | false
-      false | false | true  | false
-      false | true  | false | false
-      false | true  | true  | false
-      true  | false | false | false
-      true  | false | true  | false
-      true  | true  | false | false
-      true  | true  | true  | true
+    before_all do
+      create(:namespace_root_storage_statistics, namespace: namespace)
     end
 
-    with_them do
-      before do
-        stub_application_setting(enforce_namespace_storage_limit: enforcement_setting_enabled)
-        stub_feature_flags(namespace_storage_limit: feature_enabled)
-        allow_next_instance_of(Namespaces::Storage::RootSize, namespace.root_ancestor) do |project|
-          allow(project).to receive(:above_size_limit?).and_return(above_size_limit)
-        end
-      end
+    before do
+      enforce_namespace_storage_limit(namespace)
+      set_storage_size_limit(namespace, megabytes: 10)
+    end
 
-      it 'returns a boolean indicating whether the root namespace is over the storage limit' do
-        expect(namespace.over_storage_limit?).to be result
-      end
+    it 'returns true if the namespace is over the storage limit', :saas do
+      set_used_storage(namespace, megabytes: 11)
+
+      expect(namespace.over_storage_limit?).to eq(true)
+    end
+
+    it 'returns false if the namespace storage equals the limit', :saas do
+      set_used_storage(namespace, megabytes: 10)
+
+      expect(namespace.over_storage_limit?).to eq(false)
+    end
+
+    it 'returns false if the namespace is under the storage limit', :saas do
+      set_used_storage(namespace, megabytes: 9)
+
+      expect(namespace.over_storage_limit?).to eq(false)
     end
   end
 

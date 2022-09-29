@@ -330,25 +330,23 @@ describe('Value Stream Analytics utils', () => {
   });
 
   describe('toggleSelectedLabel', () => {
-    const selectedLabels = [1, 2, 3];
-    const selectedLabelNames = ['a', 'b', 'c'];
+    const selectedLabels = [{ title: 'a' }, { title: 'b' }, { title: 'c' }];
 
     it('will return the array if theres no value given', () => {
-      expect(toggleSelectedLabel({ selectedLabels })).toEqual([1, 2, 3]);
+      expect(toggleSelectedLabel({ selectedLabels })).toEqual(selectedLabels);
     });
 
-    it('will remove an id that exists', () => {
-      expect(toggleSelectedLabel({ selectedLabels, value: 2 })).toEqual([1, 3]);
+    it('will add a label that does not exist', () => {
+      expect(toggleSelectedLabel({ selectedLabels, value: { title: 'd' } })).toEqual([
+        ...selectedLabels,
+        { title: 'd' },
+      ]);
     });
 
-    it('will add an id that does not exist', () => {
-      expect(toggleSelectedLabel({ selectedLabels, value: 4 })).toEqual([1, 2, 3, 4]);
-    });
-
-    it('can filter by name', () => {
-      expect(toggleSelectedLabel({ selectedLabels: selectedLabelNames, value: 'b' })).toEqual([
-        'a',
-        'c',
+    it('filters by label title', () => {
+      expect(toggleSelectedLabel({ selectedLabels, value: { title: 'b' } })).toEqual([
+        { title: 'a' },
+        { title: 'c' },
       ]);
     });
   });

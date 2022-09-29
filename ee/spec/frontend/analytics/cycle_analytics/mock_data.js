@@ -63,7 +63,9 @@ export const valueStreams = [
   { id: 2, name: 'Value stream 2' },
 ];
 
-export const groupLabels = apiGroupLabels.map(convertObjectPropsToCamelCase);
+export const groupLabels = apiGroupLabels.map((l) =>
+  convertObjectPropsToCamelCase({ ...l, title: l.name }),
+);
 export const groupLabelNames = groupLabels.map(({ title }) => title);
 export const groupLabelIds = groupLabels.map(({ id }) => id);
 
@@ -253,7 +255,7 @@ export const taskByTypeFilters = {
   createdAfter: new Date('2019-12-11'),
   createdBefore: new Date('2020-01-10'),
   subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
-  selectedLabelIds: [1, 2, 3],
+  selectedLabelNames: ['label 1', 'label 2', 'label 3'],
 };
 
 export const transformedDurationData = [
