@@ -7,7 +7,7 @@ RSpec.describe RequirementsManagement::Requirement do
   let_it_be(:project) { create(:project) }
 
   describe 'associations' do
-    subject { build(:requirement) }
+    subject { build(:work_item, :requirement, project: project).requirement }
 
     it { is_expected.to belong_to(:project) }
     it { is_expected.to have_many(:test_reports).through(:requirement_issue) }
@@ -17,7 +17,7 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe 'delegate' do
-    subject { build(:requirement) }
+    subject { build(:work_item, :requirement, project: project).requirement }
 
     delegated_attributes = %i[
       author author_id title title_html description description_html
@@ -29,7 +29,7 @@ RSpec.describe RequirementsManagement::Requirement do
     end
 
     context 'with nil attributes' do
-      let_it_be(:requirement) { create(:requirement, project: project, author: user, description: 'Test', state: 'archived') }
+      let_it_be(:requirement) { create(:work_item, :requirement, project: project, author: user, description: 'Test', state: :closed).requirement }
 
       delegated_attributes.each do |attr_name|
         it "returns delegated #{attr_name} value" do
@@ -41,18 +41,16 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe 'validations' do
-    subject { build(:requirement) }
+    subject { create(:work_item, :requirement).requirement }
 
     it { is_expected.to validate_uniqueness_of(:issue_id) }
     it { is_expected.to validate_presence_of(:project) }
     it { is_expected.to validate_presence_of(:requirement_issue) }
 
     it 'is limited to a unique requirement_issue' do
-      requirement_issue = create(:requirement_issue)
-      requirement = create(:requirement, requirement_issue: requirement_issue)
-      requirement.save!
+      requirement = create(:work_item, :requirement)
 
-      subject.requirement_issue = requirement_issue
+      subject.requirement_issue = requirement
 
       expect(subject).not_to be_valid
     end
@@ -60,8 +58,8 @@ RSpec.describe RequirementsManagement::Requirement do
 
   describe 'scopes' do
     describe '.counts_by_state' do
-      let_it_be(:opened) { create(:requirement, project: project, state: :opened) }
-      let_it_be(:archived) { create(:requirement, project: project, state: :archived) }
+      let_it_be(:opened) { create(:work_item, :requirement, project: project, state: :opened).requirement }
+      let_it_be(:archived) { create(:work_item, :requirement, project: project, state: :closed).requirement }
 
       subject { described_class.counts_by_state }
 
@@ -70,8 +68,8 @@ RSpec.describe RequirementsManagement::Requirement do
 
     describe '.with_author' do
       let_it_be(:other_user) { create(:user) }
-      let_it_be(:my_requirement) { create(:requirement, project: project, author: user) }
-      let_it_be(:other_requirement) { create(:requirement, project: project, author: other_user) }
+      let_it_be(:my_requirement) { create(:work_item, :requirement, project: project, author: user).requirement }
+      let_it_be(:other_requirement) { create(:work_item, :requirement, project: project, author: other_user).requirement }
 
       context 'with one author' do
         subject { described_class.with_author(user) }
@@ -87,8 +85,8 @@ RSpec.describe RequirementsManagement::Requirement do
     end
 
     describe '.search' do
-      let_it_be(:requirement_one) { create(:requirement, project: project, title: "it needs to do the thing") }
-      let_it_be(:requirement_two) { create(:requirement, project: project, title: "it needs to not break") }
+      let_it_be(:requirement_one) { create(:work_item, :requirement, project: project, title: 'it needs to do the thing').requirement }
+      let_it_be(:requirement_two) { create(:work_item, :requirement, project: project, title: 'it needs not to break').requirement }
 
       subject { described_class.search(query) }
 
@@ -112,9 +110,9 @@ RSpec.describe RequirementsManagement::Requirement do
     end
 
     describe '.with_last_test_report_state' do
-      let_it_be(:requirement1) { create(:requirement) }
-      let_it_be(:requirement2) { create(:requirement) }
-      let_it_be(:requirement3) { create(:requirement) }
+      let_it_be(:requirement1) { create(:work_item, :requirement).requirement }
+      let_it_be(:requirement2) { create(:work_item, :requirement).requirement }
+      let_it_be(:requirement3) { create(:work_item, :requirement).requirement }
 
       before do
         create(:test_report, requirement_issue: requirement1.requirement_issue, state: :passed)
@@ -140,8 +138,8 @@ RSpec.describe RequirementsManagement::Requirement do
     end
 
     describe '.for_state' do
-      let_it_be(:requirement1) { create(:requirement, state: :opened) }
-      let_it_be(:requirement2) { create(:requirement, state: :archived) }
+      let_it_be(:requirement1) { create(:work_item, :requirement, state: :opened).requirement }
+      let_it_be(:requirement2) { create(:work_item, :requirement, state: :closed).requirement }
 
       context 'for opened state' do
         subject { described_class.for_state(:opened) }
@@ -157,9 +155,9 @@ RSpec.describe RequirementsManagement::Requirement do
     end
 
     describe 'ordering' do
-      let_it_be(:requirement1) { create(:requirement, created_at: 6.days.ago, updated_at: 4.days.ago) }
-      let_it_be(:requirement2) { create(:requirement, created_at: 5.days.ago, updated_at: 3.days.ago) }
-      let_it_be(:requirement3) { create(:requirement, created_at: 4.days.ago, updated_at: 2.days.ago) }
+      let_it_be(:requirement1) { create(:work_item, :requirement, created_at: 6.days.ago, updated_at: 4.days.ago).requirement }
+      let_it_be(:requirement2) { create(:work_item, :requirement, created_at: 5.days.ago, updated_at: 3.days.ago).requirement }
+      let_it_be(:requirement3) { create(:work_item, :requirement, created_at: 4.days.ago, updated_at: 2.days.ago).requirement }
 
       describe '.order_created_desc' do
         subject { described_class.order_created_desc }
@@ -188,8 +186,8 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe '.without_test_reports' do
-    let_it_be(:requirement1) { create(:requirement) }
-    let_it_be(:requirement2) { create(:requirement) }
+    let_it_be(:requirement1) { create(:work_item, :requirement).requirement }
+    let_it_be(:requirement2) { create(:work_item, :requirement).requirement }
 
     before do
       create(:test_report, requirement_issue: requirement2.requirement_issue, state: :passed)
@@ -201,7 +199,7 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe '#last_test_report_state' do
-    let_it_be(:requirement) { create(:requirement) }
+    let_it_be(:requirement) { create(:work_item, :requirement).requirement }
 
     context 'when latest test report is passing' do
       it 'returns passing' do
@@ -227,7 +225,7 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe '#status_manually_updated' do
-    let_it_be(:requirement) { create(:requirement) }
+    let_it_be(:requirement) { create(:work_item, :requirement).requirement }
 
     context 'when latest test report has a build' do
       it 'returns false' do
@@ -247,8 +245,8 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe 'sync with requirement issues' do
-    let_it_be_with_reload(:requirement) { create(:requirement) }
-    let_it_be_with_reload(:requirement_issue) { create(:requirement_issue, requirement: requirement) }
+    let_it_be_with_reload(:requirement) { create(:work_item, :requirement).requirement }
+    let_it_be_with_reload(:requirement_issue) { requirement.requirement_issue }
 
     context 'when destroying a requirement' do
       it 'also destroys the associated requirement issue' do
@@ -264,7 +262,7 @@ RSpec.describe RequirementsManagement::Requirement do
   end
 
   describe '#state' do
-    let_it_be_with_reload(:requirement) { create(:requirement, state: :archived) }
+    let_it_be_with_reload(:requirement) { create(:work_item, :requirement, state: :closed).requirement }
 
     context 'when linked requirement issue is not present' do
       before do

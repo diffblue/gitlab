@@ -94,7 +94,7 @@ RSpec.describe Ci::BuildFinishedWorker do
     end
 
     context 'with requirements' do
-      let_it_be(:requirement) { create(:requirement, project: project) }
+      let_it_be(:requirement) { create(:work_item, :requirement, project: project) }
       let_it_be(:user) { create(:user) }
 
       before do

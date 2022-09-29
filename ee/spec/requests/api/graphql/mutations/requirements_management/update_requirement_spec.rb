@@ -7,7 +7,7 @@ RSpec.describe 'Updating a Requirement' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:requirement) { create(:requirement, project: project) }
+  let_it_be(:requirement) { create(:work_item, :requirement, project: project).requirement }
 
   let(:attributes) { { title: 'title', state: 'ARCHIVED' } }
   let(:mutation) do

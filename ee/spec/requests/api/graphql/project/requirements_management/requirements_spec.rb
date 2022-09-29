@@ -8,7 +8,13 @@ RSpec.describe 'getting a requirement list for a project' do
   let_it_be(:project) { create(:project) }
   let_it_be(:current_user) { create(:user) }
   let_it_be(:requirement) do
-    create(:requirement, project: project, title: "Title: #{current_user.to_reference}", description: '## Description')
+    create(
+      :work_item,
+      :requirement,
+      project: project,
+      title: "Title: #{current_user.to_reference}",
+      description: '## Description'
+    ).requirement
   end
 
   let(:requirements_data) { graphql_data['project']['requirements']['edges'] }
@@ -82,7 +88,7 @@ RSpec.describe 'getting a requirement list for a project' do
         post_graphql(query, current_user: current_user) # warm up
         control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
 
-        create(:requirement, project: project, author: create(:user))
+        create(:work_item, :requirement, project: project, author: create(:user))
 
         expect { post_graphql(query, current_user: current_user) }
           .not_to exceed_query_limit(control)
@@ -122,8 +128,8 @@ RSpec.describe 'getting a requirement list for a project' do
       it 'avoids N+1 queries' do
         control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
 
-        create_list(:requirement, 3, project: project) do |requirement|
-          create(:test_report, requirement_issue: requirement.requirement_issue, state: "passed")
+        create_list(:work_item, 3, :requirement, project: project) do |requirement|
+          create(:test_report, requirement_issue: requirement, state: "passed")
         end
 
         expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
@@ -134,13 +140,13 @@ RSpec.describe 'getting a requirement list for a project' do
       let_it_be(:filter_project) { create(:project, :public) }
       let_it_be(:other_project) { create(:project, :public) }
       let_it_be(:other_user) { create(:user, username: 'number8wire') }
-      let_it_be(:requirement1) { create(:requirement, project: filter_project, author: current_user, title: 'solve the halting problem') }
-      let_it_be(:requirement2) { create(:requirement, project: filter_project, author: other_user, title: 'something about kubernetes') }
+      let_it_be(:requirement1) { create(:work_item, :requirement, project: filter_project, author: current_user, title: 'solve the halting problem') }
+      let_it_be(:requirement2) { create(:work_item, :requirement, project: filter_project, author: other_user, title: 'something about kubernetes') }
 
       before do
-        create(:test_report, requirement_issue: requirement1.requirement_issue, state: :failed)
-        create(:test_report, requirement_issue: requirement1.requirement_issue, state: :passed)
-        create(:test_report, requirement_issue: requirement2.requirement_issue, state: :failed)
+        create(:test_report, requirement_issue: requirement1, state: :failed)
+        create(:test_report, requirement_issue: requirement1, state: :passed)
+        create(:test_report, requirement_issue: requirement2, state: :failed)
 
         post_graphql(query, current_user: current_user)
       end
@@ -173,7 +179,7 @@ RSpec.describe 'getting a requirement list for a project' do
 
         it 'returns filtered requirements' do
           expect(graphql_errors).to be_nil
-          match_single_result(requirement2)
+          match_single_result(requirement2.requirement)
         end
       end
 
@@ -182,7 +188,7 @@ RSpec.describe 'getting a requirement list for a project' do
 
         it 'returns filtered requirements' do
           expect(graphql_errors).to be_nil
-          match_single_result(requirement2)
+          match_single_result(requirement2.requirement)
         end
       end
 
@@ -191,7 +197,7 @@ RSpec.describe 'getting a requirement list for a project' do
 
         it 'returns filtered requirements' do
           expect(graphql_errors).to be_nil
-          match_single_result(requirement1)
+          match_single_result(requirement1.requirement)
         end
       end
 
@@ -200,7 +206,7 @@ RSpec.describe 'getting a requirement list for a project' do
 
         it 'returns filtered requirements' do
           expect(graphql_errors).to be_nil
-          match_single_result(requirement2)
+          match_single_result(requirement2.requirement)
         end
       end
 
@@ -210,18 +216,18 @@ RSpec.describe 'getting a requirement list for a project' do
         it 'returns filtered requirements' do
           expect(graphql_errors).to be_nil
 
-          match_single_result(requirement1)
+          match_single_result(requirement1.requirement)
         end
 
         context 'for MISSING status' do
-          let_it_be(:requirement3) { create(:requirement, project: filter_project, author: other_user, title: 'need test report') }
+          let_it_be(:requirement3) { create(:work_item, :requirement, project: filter_project, author: other_user, title: 'need test report') }
 
           let(:params) { '(lastTestReportState: MISSING)' }
 
           it 'returns filtered requirements' do
             expect(graphql_errors).to be_nil
 
-            match_single_result(requirement3)
+            match_single_result(requirement3.requirement)
           end
         end
       end
@@ -240,11 +246,11 @@ RSpec.describe 'getting a requirement list for a project' do
 
       context 'when sorting by created_at' do
         let_it_be(:sort_project) { create(:project, :public) }
-        let_it_be(:requirement1) { create(:requirement, project: sort_project, created_at: 3.days.from_now) }
-        let_it_be(:requirement2) { create(:requirement, project: sort_project, created_at: 4.days.from_now) }
-        let_it_be(:requirement3) { create(:requirement, project: sort_project, created_at: 2.days.ago) }
-        let_it_be(:requirement4) { create(:requirement, project: sort_project, created_at: 5.days.ago) }
-        let_it_be(:requirement5) { create(:requirement, project: sort_project, created_at: 1.day.ago) }
+        let_it_be(:requirement1) { create(:work_item, :requirement, project: sort_project, created_at: 3.days.from_now).requirement }
+        let_it_be(:requirement2) { create(:work_item, :requirement, project: sort_project, created_at: 4.days.from_now).requirement }
+        let_it_be(:requirement3) { create(:work_item, :requirement, project: sort_project, created_at: 2.days.ago).requirement }
+        let_it_be(:requirement4) { create(:work_item, :requirement, project: sort_project, created_at: 5.days.ago).requirement }
+        let_it_be(:requirement5) { create(:work_item, :requirement, project: sort_project, created_at: 1.day.ago).requirement }
 
         context 'when ascending' do
           it_behaves_like 'sorted paginated query' do

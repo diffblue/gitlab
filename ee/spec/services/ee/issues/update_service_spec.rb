@@ -727,8 +727,8 @@ RSpec.describe Issues::UpdateService do
     end
 
     context 'when issue is of requirement type' do
-      let(:issue) { create(:requirement_issue, project: project) }
-      let!(:requirement) { create(:requirement, requirement_issue: issue, project: project) }
+      let(:requirement) { create(:work_item, :requirement, project: project).requirement }
+      let(:issue) { requirement.requirement_issue }
 
       before do
         stub_licensed_features(requirements: true)

@@ -6,10 +6,10 @@ RSpec.describe RequirementsManagement::RequirementsFinder do
   let_it_be(:project) { create(:project) }
   let_it_be(:project_user) { create(:user, username: 'projectusername').tap { |u| project.add_developer(u) } }
   let_it_be(:other_user) { create(:user, username: 'otheruser123') }
-  let_it_be(:requirement1) { create(:requirement, project: project, state: 'opened', author: project_user, updated_at: 3.days.ago, title: 'make it better with serverless') }
-  let_it_be(:requirement2) { create(:requirement, project: project, state: 'opened', author: project_user, updated_at: 1.day.ago, title: 'make it not crash') }
-  let_it_be(:requirement3) { create(:requirement, project: project, state: 'archived', author: other_user, updated_at: 2.days.ago, title: 'good with memory') }
-  let_it_be(:requirement4) { create(:requirement, state: 'opened', title: 'mystery requirement') }
+  let_it_be(:requirement1) { create(:work_item, :requirement, project: project, state: 'opened', author: project_user, updated_at: 3.days.ago, title: 'make it better with serverless').requirement }
+  let_it_be(:requirement2) { create(:work_item, :requirement, project: project, state: 'opened', author: project_user, updated_at: 1.day.ago, title: 'make it not crash').requirement }
+  let_it_be(:requirement3) { create(:work_item, :requirement, project: project, state: 'closed', author: other_user, updated_at: 2.days.ago, title: 'good with memory').requirement }
+  let_it_be(:requirement4) { create(:work_item, :requirement, state: 'opened', title: 'mystery requirement').requirement }
 
   subject { described_class.new(project_user, params).execute }
 

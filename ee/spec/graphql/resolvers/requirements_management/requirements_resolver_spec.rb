@@ -15,9 +15,9 @@ RSpec.describe Resolvers::RequirementsManagement::RequirementsResolver do
   end
 
   context 'with a project' do
-    let_it_be(:requirement1) { create(:requirement, project: project, state: :opened, created_at: 5.hours.ago, title: 'it needs to do the thing', author: current_user) }
-    let_it_be(:requirement2) { create(:requirement, project: project, state: :archived, created_at: 3.hours.ago, title: 'it needs to not break', author: other_user) }
-    let_it_be(:requirement3) { create(:requirement, project: project, state: :archived, created_at: 4.hours.ago, title: 'do the kubernetes!', author: third_user) }
+    let_it_be(:requirement1) { create(:work_item, :requirement, project: project, state: :opened, created_at: 5.hours.ago, title: 'it needs to do the thing', author: current_user).requirement }
+    let_it_be(:requirement2) { create(:work_item, :requirement, project: project, state: :closed, created_at: 3.hours.ago, title: 'it needs to not break', author: other_user).requirement }
+    let_it_be(:requirement3) { create(:work_item, :requirement, project: project, state: :closed, created_at: 4.hours.ago, title: 'do the kubernetes!', author: third_user).requirement }
 
     before do
       project.add_developer(current_user)
@@ -89,7 +89,7 @@ RSpec.describe Resolvers::RequirementsManagement::RequirementsResolver do
 
       it 'finds only the requirements within the project we are looking at' do
         another_project = create(:project, :public)
-        create(:requirement, project: another_project, iid: requirement1.iid)
+        create(:work_item, :requirement, project: another_project, iid: requirement1.iid)
 
         expect(resolve_requirements).to contain_exactly(requirement1, requirement2, requirement3)
       end

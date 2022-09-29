@@ -236,14 +236,14 @@ RSpec.describe Ci::Build, :saas do
 
     describe 'variable CI_HAS_OPEN_REQUIREMENTS' do
       it "is included with value 'true' if there are open requirements" do
-        create(:requirement, project: project)
+        create(:work_item, :requirement, project: project)
 
         expect(subject).to include({ key: 'CI_HAS_OPEN_REQUIREMENTS',
                                      value: 'true', public: true, masked: false })
       end
 
       it 'is not included if there are no open requirements' do
-        create(:requirement, project: project, state: :archived)
+        create(:work_item, :requirement, project: project, state: :closed)
 
         requirement_variable = subject.find { |var| var[:key] == 'CI_HAS_OPEN_REQUIREMENTS' }
 

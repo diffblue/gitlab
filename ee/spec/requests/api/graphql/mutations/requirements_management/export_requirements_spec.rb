@@ -7,7 +7,7 @@ RSpec.describe 'Exporting Requirements' do
 
   let_it_be(:current_user) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:requirement) { create(:requirement, project: project) }
+  let_it_be(:requirement) { create(:work_item, :requirement, project: project).requirement }
 
   let(:attributes) { { state: 'OPENED', author_username: [current_user.username], sort: :CREATED_ASC, search: requirement.title } }
   let(:mutation) do
