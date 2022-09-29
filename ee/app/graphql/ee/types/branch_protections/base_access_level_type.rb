@@ -13,7 +13,7 @@ module EE
                 description: 'User associated with this access level.'
 
           field :group,
-                ::Types::GroupType,
+                '::Types::GroupType',
                 null: true,
                 description: 'Group associated with this access level.'
         end

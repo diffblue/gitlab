@@ -8,7 +8,7 @@ module Types
       field :user, ::Types::UserType,
             description: "User details. Present if it's user specific access control."
 
-      field :group, ::Types::GroupType,
+      field :group, '::Types::GroupType',
             description: "Group details. Present if it's group specific access control."
 
       field :access_level, ::Types::AccessLevelType,
