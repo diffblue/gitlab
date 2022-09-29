@@ -131,14 +131,14 @@ module CounterAttribute
   end
 
   def update_counters_with_lease(increments)
-    detect_race_on_record(log_fields: increments.merge({ caller: __method__ })) do
+    detect_race_on_record(log_fields: { caller: __method__, attributes: increments.keys }) do
       self.class.update_counters(id, increments)
     end
   end
 
   def reset_counter!(attribute)
     if counter_attribute_enabled?(attribute)
-      detect_race_on_record(log_fields: { caller: __method__ }) do
+      detect_race_on_record(log_fields: { caller: __method__, attributes: attribute }) do
         update!(attribute => 0)
         clear_counter!(attribute)
       end
