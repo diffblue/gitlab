@@ -35,7 +35,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
     before do
       stub_feature_flags(free_user_cap: false)
       stub_feature_flags(preview_free_user_cap: true)
-      stub_ee_application_setting(dashboard_limit: 1)
+      stub_ee_application_setting(dashboard_notification_limit: 1)
     end
 
     let(:alert_title_content) do
@@ -48,7 +48,10 @@ RSpec.shared_examples_for 'over the free user limit alert' do
   context 'when reached/over limit' do
     before do
       stub_feature_flags(free_user_cap: true)
-      stub_ee_application_setting(dashboard_limit: 2)
+      stub_ee_application_setting(dashboard_enforcement_limit: 2)
+      # this shouldn't be needed in future once we add the logic for if-over-enforcement-turn-off-preview
+      # as it will ensure only one banner appears in https://gitlab.com/gitlab-org/gitlab/-/work_items/115539221
+      stub_feature_flags(preview_free_user_cap: false)
     end
 
     let(:alert_title_content) { "Looks like you've reached your" }
