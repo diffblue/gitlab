@@ -84,6 +84,7 @@ module EE
                 numericality: { only_integer: true }
 
       alias_attribute :parent_ids, :parent_id
+      alias_attribute :issuing_parent_id, :group_id
       alias_method :issuing_parent, :group
 
       scope :in_parents, -> (parent_ids) { where(parent_id: parent_ids) }

@@ -392,6 +392,17 @@ RSpec.describe 'Epics through GroupQuery' do
         include_examples 'N+1 query check'
       end
     end
+
+    context 'when award emoji votes' do
+      let(:requested_fields) { [:upvotes, :downvotes] }
+
+      before do
+        create_list(:award_emoji, 2, name: 'thumbsup', awardable: epic_a)
+        create_list(:award_emoji, 2, name: 'thumbsdown', awardable: epic_b)
+      end
+
+      include_examples 'N+1 query check'
+    end
   end
 
   describe 'Get related epic links fields' do
