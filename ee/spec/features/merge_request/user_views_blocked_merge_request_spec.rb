@@ -11,6 +11,10 @@ RSpec.describe 'Merge Request > User views blocked MR', :js do
 
   let(:merge_button) { find('[data-testid="merge-button"]') }
 
+  def click_expand_button
+    find('[data-testid="report-section-expand-button"]').click
+  end
+
   before do
     project.add_developer(user)
 
@@ -41,7 +45,7 @@ RSpec.describe 'Merge Request > User views blocked MR', :js do
         expect(page).to have_content('Depends on 1 merge request')
         expect(page).not_to have_button('Merge')
 
-        click_button 'Expand'
+        click_expand_button
 
         expect(page).not_to have_content(blocking_mr.title)
         expect(page).to have_content("1 merge request that you don't have access to")
@@ -59,7 +63,7 @@ RSpec.describe 'Merge Request > User views blocked MR', :js do
         expect(page).to have_content('Depends on 1 merge request')
         expect(page).not_to have_button('Merge')
 
-        click_button 'Expand'
+        click_expand_button
 
         expect(page).to have_content(blocking_mr.title)
       end
