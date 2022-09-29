@@ -57,7 +57,7 @@ RSpec.describe MergeRequests::ResetApprovalsService do
       expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver, owner)
     end
 
-    context 'skip_reset_checks: true' do
+    context 'when skip_reset_checks: true' do
       it 'deletes all approvals directly without additional checks or side-effects' do
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
