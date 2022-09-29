@@ -213,6 +213,32 @@ RSpec.describe Projects::Settings::MergeRequestsController do
           let(:setting_default_value) { nil }
         end
       end
+
+      context 'with security_orchestration_policies licensed feature enabled' do
+        before do
+          stub_licensed_features(security_orchestration_policies: true)
+        end
+
+        it 'pushes security_orchestration_policies licensed feature' do
+          expect(controller).to receive(:push_licensed_feature).with(:security_orchestration_policies)
+
+          put :update, params: {
+            namespace_id: project.namespace,
+            project_id: project,
+            project: { disable_overriding_approvers_per_merge_request: true }
+          }
+        end
+      end
+
+      it 'does not push security_orchestration_policies licensed feature' do
+        expect(controller).not_to receive(:push_licensed_feature).with(:security_orchestration_policies)
+
+        put :update, params: {
+          namespace_id: project.namespace,
+          project_id: project,
+          project: { disable_overriding_approvers_per_merge_request: true }
+        }
+      end
     end
   end
 end
