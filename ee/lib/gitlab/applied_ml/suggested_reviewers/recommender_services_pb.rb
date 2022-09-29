@@ -13,6 +13,7 @@ module Gitlab
           self.service_name = 'bot.RecommenderService'
 
           rpc :MergeRequestRecommendationsV2, MergeRequestRecommendationsReqV2, MergeRequestRecommendationsResV2
+          rpc :RegisterProject, RegisterProjectReq, RegisterProjectRes
         end
 
         Stub = Service.rpc_stub_class
