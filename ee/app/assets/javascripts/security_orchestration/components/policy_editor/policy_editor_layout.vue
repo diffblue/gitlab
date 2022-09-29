@@ -106,7 +106,8 @@ export default {
     },
     policyYaml: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
     },
     yamlEditorValue: {
       type: String,
