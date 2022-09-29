@@ -17,17 +17,17 @@ RSpec.describe IssuePolicy do
     allow(project).to receive(:design_management_enabled?).and_return true
   end
 
-  context 'when namespace is locked because storage usage limit exceeded' do
+  context 'when namespace is locked because it is in a read only state' do
     before do
-      allow(namespace).to receive(:over_storage_limit?).and_return true
+      allow(namespace).to receive(:read_only?).and_return true
     end
 
     it { is_expected.to be_disallowed(:create_issue, :update_issue, :read_issue_iid, :reopen_issue, :create_design, :create_note) }
   end
 
-  context 'when namespace is not locked because storage usage limit not exceeded' do
+  context 'when namespace is not in read only state' do
     before do
-      allow(namespace).to receive(:over_storage_limit?).and_return false
+      allow(namespace).to receive(:read_only?).and_return false
     end
 
     it { is_expected.to be_allowed(:create_issue, :update_issue, :read_issue_iid, :reopen_issue, :create_design, :create_note) }

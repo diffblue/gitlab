@@ -121,8 +121,8 @@ module EE
         @subject.feature_available?(:status_page, @user)
       end
 
-      condition(:over_storage_limit, scope: :subject) do
-        @subject.root_namespace.over_storage_limit?
+      condition(:read_only, scope: :subject) do
+        @subject.root_namespace.read_only?
       end
 
       with_scope :subject
@@ -439,7 +439,7 @@ module EE
         prevent :build_download_code
       end
 
-      rule { over_storage_limit }.policy do
+      rule { read_only }.policy do
         # We are allowing `push_code` so the `GitAccessProject` can render
         # an appropriate error message before failing
         prevent(*(readonly_abilities - [:push_code]))

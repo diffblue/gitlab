@@ -1173,6 +1173,14 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#read_only?' do
+    it 'is an alias for over storage limit' do
+      namespace = build(:namespace)
+
+      expect(namespace.method(:read_only?).original_name).to eq(:over_storage_limit?)
+    end
+  end
+
   describe '#total_repository_size_excess' do
     let_it_be(:namespace) { create(:namespace) }
 

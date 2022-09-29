@@ -227,10 +227,10 @@ RSpec.describe MergeRequestPolicy do
     end
   end
 
-  context 'when checking for namespace whether exceeding storage limit' do
-    context 'when namespace does exceeds storage limit' do
+  context 'when checking for namespace in read only state' do
+    context 'when namespace is in a read only state' do
       before do
-        allow(merge_request.target_project.namespace).to receive(:over_storage_limit?).and_return(true)
+        allow(merge_request.target_project.namespace).to receive(:read_only?).and_return(true)
       end
 
       it 'does not allow few policies for all users including maintainer' do
@@ -242,9 +242,9 @@ RSpec.describe MergeRequestPolicy do
       end
     end
 
-    context 'when namespace does not exceeds storage limit' do
+    context 'when namespace is not in a read only state' do
       before do
-        allow(merge_request.target_project.namespace).to receive(:over_storage_limit?).and_return(false)
+        allow(merge_request.target_project.namespace).to receive(:read_only?).and_return(false)
       end
 
       it 'does not lock basic policies for any user' do

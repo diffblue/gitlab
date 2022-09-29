@@ -44,10 +44,10 @@ RSpec.describe 'Jobs', :clean_gitlab_redis_shared_state do
       let(:job) { create(:ci_build, :success, :trace_artifact, pipeline: pipeline) }
       let(:project) { create(:project, :repository) }
 
-      context 'when namespace is over_storage_limit?' do
+      context 'when namespace is in read-only mode' do
         it 'does not show retry button' do
           allow_next_found_instance_of(Namespace) do |instance|
-            allow(instance).to receive(:over_storage_limit?).and_return(true)
+            allow(instance).to receive(:read_only?).and_return(true)
           end
           visit project_job_path(project, job)
           wait_for_requests

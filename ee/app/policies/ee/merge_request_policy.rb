@@ -15,7 +15,7 @@ module EE
           can?(:developer_access, @subject.target_project)
       end
 
-      condition(:over_storage_limit, scope: :subject) { @subject.target_project&.namespace&.over_storage_limit? }
+      condition(:read_only, scope: :subject) { @subject.target_project&.namespace&.read_only? }
 
       condition(:merge_request_group_approver, score: 140) do
         project = @subject.target_project
@@ -46,7 +46,7 @@ module EE
 
       rule { external_status_checks_enabled }.enable :provide_status_check_response
 
-      rule { over_storage_limit }.policy do
+      rule { read_only }.policy do
         prevent :approve_merge_request
         prevent :update_merge_request
         prevent :reopen_merge_request
