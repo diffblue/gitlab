@@ -219,7 +219,7 @@ module CounterAttribute
   def detect_race_on_record(log_fields: {})
     return yield unless Feature.enabled?(:counter_attribute_db_lease_for_update, project)
 
-    in_lock(database_lock_key, retries: 2) do
+    in_lock(database_lock_key, retries: 0) do
       yield
     end
   rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
