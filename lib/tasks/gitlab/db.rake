@@ -306,8 +306,11 @@ namespace :gitlab do
     namespace :migration_testing do
       desc 'Run migrations with instrumentation'
       task :up, [:database] => :environment do |_t, args|
-        database = args[:database] || :main
-        Gitlab::Database::Migrations::Runner.up(database: database).run
+        if args[:database].nil?
+          Gitlab::Database::Migrations::Runner.up(database: 'main', legacy_mode: true).run
+        else
+          Gitlab::Database::Migrations::Runner.up(database: args[:database]).run
+        end
       end
 
       desc 'Run down migrations in current branch with instrumentation'

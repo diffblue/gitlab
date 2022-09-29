@@ -9,12 +9,12 @@ module Gitlab
         SCHEMA_VERSION = 4 # Version of the output format produced by the runner
 
         class << self
-          def up(database:)
-            Runner.new(direction: :up, database: database, migrations: migrations_for_up(database))
+          def up(database:, legacy_mode: false)
+            Runner.new(direction: :up, database: database, migrations: migrations_for_up(database), legacy_mode: legacy_mode)
           end
 
-          def down(database:)
-            Runner.new(direction: :down, database: database, migrations: migrations_for_down(database))
+          def down(database:, legacy_mode: false)
+            Runner.new(direction: :down, database: database, migrations: migrations_for_down(database), legacy_mode: legacy_mode)
           end
 
           def background_migrations
@@ -89,13 +89,19 @@ module Gitlab
 
         delegate :migration_context, :within_context_for_database, to: :class
 
-        def initialize(direction:, database:, migrations:)
+        def initialize(direction:, database:, migrations:, legacy_mode: false)
           raise "Direction must be up or down" unless %i[up down].include?(direction)
 
           @direction = direction
           @migrations = migrations
-          @result_dir = BASE_RESULT_DIR.join(database.to_s, direction.to_s)
+          @result_dir = if legacy_mode
+                          BASE_RESULT_DIR.join(direction.to_s)
+                        else
+                          BASE_RESULT_DIR.join(database.to_s, direction.to_s)
+                        end
+
           @database = database
+          @legacy_mode = legacy_mode
         end
 
         def run
@@ -118,7 +124,13 @@ module Gitlab
           end
         ensure
           metadata_filename = File.join(result_dir, METADATA_FILENAME)
-          File.write(metadata_filename, { database: @database.to_s, version: SCHEMA_VERSION }.to_json)
+          version = if @legacy_mode
+                      3
+                    else
+                      SCHEMA_VERSION
+                    end
+
+          File.write(metadata_filename, { database: @database.to_s, version: version }.to_json)
 
           # We clear the cache here to mirror the cache clearing that happens at the end of `db:migrate` tasks
           # This clearing makes subsequent rake tasks in the same execution pick up database schema changes caused by

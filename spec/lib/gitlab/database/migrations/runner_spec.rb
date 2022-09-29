@@ -52,10 +52,11 @@ RSpec.describe Gitlab::Database::Migrations::Runner, :reestablished_active_recor
     FileUtils.rm_rf(base_result_dir)
   end
 
-  where(:case_name, :database, :result_dir) do
+  where(:case_name, :database, :result_dir, :legacy_mode, :expected_schema_version) do
     [
-      ['main database', :main, lazy { base_result_dir.join('main') }],
-      ['ci database', :ci, lazy { base_result_dir.join('ci') }]
+      ['main database', :main, lazy { base_result_dir.join('main') }, false, described_class::SCHEMA_VERSION],
+      ['main database (legacy mode)', :main, lazy { base_result_dir }, true, 3],
+      ['ci database', :ci, lazy { base_result_dir.join('ci') }, false, described_class::SCHEMA_VERSION]
     ]
   end
 
@@ -71,12 +72,12 @@ RSpec.describe Gitlab::Database::Migrations::Runner, :reestablished_active_recor
     describe '.up' do
       context 'result directory' do
         it 'uses the /up subdirectory' do
-          expect(described_class.up(database: database).result_dir).to eq(result_dir.join('up'))
+          expect(described_class.up(database: database, legacy_mode: legacy_mode).result_dir).to eq(result_dir.join('up'))
         end
       end
 
       context 'migrations to run' do
-        subject(:up) { described_class.up(database: database) }
+        subject(:up) { described_class.up(database: database, legacy_mode: legacy_mode) }
 
         it 'is the list of pending migrations' do
           expect(up.migrations).to eq(pending_migrations)
@@ -84,7 +85,7 @@ RSpec.describe Gitlab::Database::Migrations::Runner, :reestablished_active_recor
       end
 
       context 'running migrations' do
-        subject(:up) { described_class.up(database: database) }
+        subject(:up) { described_class.up(database: database, legacy_mode: legacy_mode) }
 
         it 'runs the unapplied migrations in version order', :aggregate_failures do
           up.run
@@ -99,7 +100,7 @@ RSpec.describe Gitlab::Database::Migrations::Runner, :reestablished_active_recor
           metadata_file = result_dir.join('up', described_class::METADATA_FILENAME)
           expect(metadata_file.exist?).to be_truthy
           metadata = Gitlab::Json.parse(File.read(metadata_file))
-          expect(metadata).to match('version' => described_class::SCHEMA_VERSION, 'database' => database.to_s)
+          expect(metadata).to match('version' => expected_schema_version, 'database' => database.to_s)
         end
 
         it 'runs the unapplied migrations on the correct database' do
@@ -111,7 +112,7 @@ RSpec.describe Gitlab::Database::Migrations::Runner, :reestablished_active_recor
     end
 
     describe '.down' do
-      subject(:down) { described_class.down(database: database) }
+      subject(:down) { described_class.down(database: database, legacy_mode: legacy_mode) }
 
       context 'result directory' do
         it 'is the /down subdirectory' do
@@ -140,7 +141,7 @@ RSpec.describe Gitlab::Database::Migrations::Runner, :reestablished_active_recor
         metadata_file = result_dir.join('down', described_class::METADATA_FILENAME)
         expect(metadata_file.exist?).to be_truthy
         metadata = Gitlab::Json.parse(File.read(metadata_file))
-        expect(metadata).to match('version' => described_class::SCHEMA_VERSION, 'database' => database.to_s)
+        expect(metadata).to match('version' => expected_schema_version, 'database' => database.to_s)
       end
     end
 
