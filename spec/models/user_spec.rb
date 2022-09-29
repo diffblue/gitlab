@@ -1882,9 +1882,9 @@ RSpec.describe User do
       end
 
       it 'ensures correct rights and limits for user' do
-        stub_config_setting(default_can_create_group: true)
+        stub_application_setting(can_create_group: true)
 
-        expect { user.update!(external: false) }.to change { user.can_create_group }.to(true)
+        expect { user.update!(external: false) }.to change { user.can_create_group }.from(false).to(true)
           .and change { user.projects_limit }.to(Gitlab::CurrentSettings.default_projects_limit)
       end
     end
@@ -2604,7 +2604,7 @@ RSpec.describe User do
 
       it 'applies defaults to user' do
         expect(user.projects_limit).to eq(Gitlab.config.gitlab.default_projects_limit)
-        expect(user.can_create_group).to eq(Gitlab.config.gitlab.default_can_create_group)
+        expect(user.can_create_group).to eq(Gitlab::CurrentSettings.can_create_group)
         expect(user.theme_id).to eq(Gitlab.config.gitlab.default_theme)
         expect(user.external).to be_falsey
         expect(user.private_profile).to eq(false)

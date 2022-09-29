@@ -2,11 +2,11 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Gitlab::Auth::AuthFinders do
+RSpec.describe Gitlab::Auth::AuthFinders do
   include described_class
   include ::EE::GeoHelpers
 
-  let(:current_request) { ActionDispatch::Request.new(env) }
+  let(:request) { ActionDispatch::Request.new(env) }
   let(:env) do
     {
       'rack.input' => ''
@@ -31,7 +31,7 @@ RSpec.describe EE::Gitlab::Auth::AuthFinders do
       stub_current_geo_node(primary)
 
       env['SCRIPT_NAME'] = path
-      current_request.headers['Authorization'] = authorization_header
+      request.headers['Authorization'] = authorization_header
     end
 
     it { is_expected.to eq(user) }
@@ -103,6 +103,83 @@ RSpec.describe EE::Gitlab::Auth::AuthFinders do
         user.delete
 
         expect { subject }.to raise_error(::Gitlab::Auth::UnauthorizedError)
+      end
+    end
+  end
+
+  describe '#find_user_from_bearer_token' do
+    context 'with a personal access token' do
+      before do
+        env[described_class::PRIVATE_TOKEN_HEADER] = create(:personal_access_token, user: user).token
+      end
+
+      it 'returns user' do
+        expect(find_user_from_bearer_token).to eq user
+      end
+
+      context 'when FIPS mode is enabled', :fips_mode do
+        before do
+          stub_licensed_features(fips_disable_personal_access_tokens: true)
+        end
+
+        it 'raises unauthorized error' do
+          expect { find_user_from_bearer_token }.to raise_error(Gitlab::Auth::UnauthorizedError)
+        end
+      end
+    end
+  end
+
+  describe '#find_user_from_access_token' do
+    before do
+      env[described_class::PRIVATE_TOKEN_HEADER] = create(:personal_access_token, user: user).token
+    end
+
+    context 'when validate_access_token! returns valid' do
+      it 'returns user' do
+        expect(find_user_from_access_token).to eq user
+      end
+
+      context 'when FIPS mode is enabled', :fips_mode do
+        before do
+          stub_licensed_features(fips_disable_personal_access_tokens: true)
+        end
+
+        it 'raised unauthorized error' do
+          expect { find_user_from_access_token }.to raise_error(Gitlab::Auth::UnauthorizedError)
+        end
+      end
+    end
+  end
+
+  describe '#find_user_from_feed_token' do
+    context 'when the request format is atom' do
+      before do
+        env['SCRIPT_NAME'] = 'url.atom'
+        env['HTTP_ACCEPT'] = 'application/atom+xml'
+      end
+
+      context 'when feed_token param is provided' do
+        context 'when the feed token is valid' do
+          before do
+            request.update_param(:feed_token, user.feed_token)
+          end
+
+          context 'when FIPS mode is enabled', :fips_mode do
+            it 'returns user' do
+              expect(find_user_from_feed_token(:rss)).to eq user
+            end
+
+            context 'when fips_disable_personal_access_tokens feature is licensed' do
+              before do
+                stub_licensed_features(fips_disable_personal_access_tokens: true)
+              end
+
+              it 'returns nil' do
+                expect(find_user_from_feed_token(:rss)).to be_nil
+              end
+            end
+          end
+        end
       end
     end
   end
