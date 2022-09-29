@@ -57,6 +57,27 @@ RSpec.describe MergeRequests::ResetApprovalsService do
       expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver, owner)
     end
 
+    context 'skip_reset_checks: true' do
+      it 'deletes all approvals directly without additional checks or side-effects' do
+        perform_enqueued_jobs do
+          merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
+        end
+
+        create(:approval, merge_request: merge_request, user: approver)
+        create(:approval, merge_request: merge_request, user: owner)
+
+        expect(service).to receive(:delete_approvals).and_call_original
+        expect(service).not_to receive(:reset_approvals)
+
+        service.execute("refs/heads/master", newrev, skip_reset_checks: true)
+
+        merge_request.reload
+
+        expect(merge_request.approvals).to be_empty
+        expect(approval_todos(merge_request)).to be_empty
+      end
+    end
+
     context 'with selective code owner removals' do
       let_it_be(:project) do
         create(:project,
