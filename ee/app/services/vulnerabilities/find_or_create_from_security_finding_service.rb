@@ -28,7 +28,26 @@ module Vulnerabilities
           present_on_default_branch: @present_on_default_branch
         ).execute
       else
-        Vulnerability.find(vulnerability_finding.vulnerability_id)
+        vulnerability = Vulnerability.find(vulnerability_finding.vulnerability_id)
+        update_state_for(vulnerability) if Vulnerability.states[vulnerability.state] != @state
+        vulnerability
+      end
+    end
+
+    def update_state_for(vulnerability)
+      vulnerability.transaction do
+        state_transition_params = {
+          vulnerability: vulnerability,
+          from_state: vulnerability.state,
+          to_state: @state
+        }
+
+        state_transition_params[:comment] = params[:comment] if params[:comment]
+        state_transition_params[:dismissal_reason] = params[:dismissal_reason] if params[:dismissal_reason]
+
+        Vulnerabilities::StateTransition.create!(state_transition_params)
+
+        vulnerability.update!(state: @state)
       end
     end
 
