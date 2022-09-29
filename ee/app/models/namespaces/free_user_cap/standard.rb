@@ -2,47 +2,32 @@
 
 module Namespaces
   module FreeUserCap
-    class Standard
-      def initialize(root_namespace)
-        @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
-      end
-
-      def over_limit?
-        return false unless enforce_cap?
-
-        users_count > Namespaces::FreeUserCap.dashboard_limit
-      end
-
+    class Standard < Base
       def reached_limit?
         return false unless enforce_cap?
 
-        users_count >= Namespaces::FreeUserCap.dashboard_limit
-      end
-
-      def enforce_cap?
-        return false unless enforceable_subscription?
-
-        feature_enabled?
-      end
-
-      def feature_enabled?
-        ::Feature.enabled?(:free_user_cap, root_namespace)
-      end
-
-      def users_count
-        root_namespace.free_plan_members_count || 0
+        users_count >= limit
       end
 
       private
 
-      attr_reader :root_namespace
+      def limit
+        if new_namespace_enforcement?
+          Namespaces::FreeUserCap.dashboard_limit
+        else
+          ::Gitlab::CurrentSettings.dashboard_enforcement_limit
+        end
+      end
 
-      def enforceable_subscription?
-        return false unless ::Gitlab::CurrentSettings.dashboard_limit_enabled?
-        return false unless root_namespace.group_namespace?
-        return false if root_namespace.public?
+      def new_namespace_enforcement?
+        return false unless ::Feature.enabled?(:free_user_cap_new_namespaces, root_namespace)
+        return false unless ::Gitlab::CurrentSettings.dashboard_limit_new_namespace_creation_enforcement_date.present?
 
-        root_namespace.has_free_or_no_subscription?
+        root_namespace.created_at >= ::Gitlab::CurrentSettings.dashboard_limit_new_namespace_creation_enforcement_date
+      end
+
+      def feature_enabled?
+        ::Feature.enabled?(:free_user_cap, root_namespace) || new_namespace_enforcement?
       end
     end
   end
