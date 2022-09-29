@@ -77,6 +77,10 @@ module EE
       def filter_by_any_health_status?
         params[:health_status].to_s.downcase == ::IssuableFinder::Params::FILTER_ANY
       end
+
+      VALID_HEALTH_STATUS_PARAMS = [::Issue.health_statuses.keys,
+                                    ::IssuableFinder::Params::FILTER_NONE,
+                                    ::IssuableFinder::Params::FILTER_ANY].flatten.freeze
     end
   end
 end
