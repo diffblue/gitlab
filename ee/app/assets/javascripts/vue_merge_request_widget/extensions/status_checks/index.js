@@ -1,10 +1,6 @@
 import { s__, sprintf, __ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
-import {
-  EXTENSION_ICONS,
-  EXTENSION_SUMMARY_FAILED_CLASS,
-  EXTENSION_SUMMARY_NEUTRAL_CLASS,
-} from '~/vue_merge_request_widget/constants';
+import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { PASSED, PENDING } from 'ee/reports/status_checks_report/constants';
 
 export default {
@@ -26,22 +22,16 @@ export default {
 
       if (failed.length > 0) {
         reports.push(
-          `<strong class="${EXTENSION_SUMMARY_FAILED_CLASS}">${sprintf(
-            s__('StatusCheck|%{failed} failed'),
-            {
-              failed: failed.length,
-            },
-          )}</strong>`,
+          `%{danger_start}${sprintf(s__('StatusCheck|%{failed} failed'), {
+            failed: failed.length,
+          })}%{danger_end}`,
         );
       }
       if (pending.length > 0) {
         reports.push(
-          `<strong class="${EXTENSION_SUMMARY_NEUTRAL_CLASS}">${sprintf(
-            s__('StatusCheck|%{pending} pending'),
-            {
-              pending: pending.length,
-            },
-          )}</strong>`,
+          `%{same_start}${sprintf(s__('StatusCheck|%{pending} pending'), {
+            pending: pending.length,
+          })}%{same_start}`,
         );
       }
 

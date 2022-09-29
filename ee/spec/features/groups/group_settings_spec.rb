@@ -70,7 +70,7 @@ RSpec.describe 'Edit group settings' do
   describe 'Member Lock setting' do
     context 'without a license key' do
       before do
-        License.delete_all
+        License.destroy_all # rubocop: disable Cop/DestroyAll
       end
 
       it 'is not visible' do

@@ -69,7 +69,7 @@ RSpec.describe Groups::DependencyProxyForContainersController do
     end
   end
 
-  shared_examples 'logging ip restriction offenses' do
+  shared_examples 'with ip restriction' do |successful_example|
     before do
       allow(Gitlab::IpAddressState).to receive(:current).and_return('192.168.0.2')
       stub_licensed_features(group_ip_restriction: true)
@@ -93,30 +93,44 @@ RSpec.describe Groups::DependencyProxyForContainersController do
       end
     end
 
-    it 'does not log anything' do
-      expect(::Gitlab::AuthLogger).not_to receive(:warn)
+    context 'in group without restriction' do
+      it_behaves_like successful_example
 
-      subject
+      it 'does not log anything' do
+        expect(::Gitlab::AuthLogger).not_to receive(:warn)
+
+        subject
+      end
     end
 
     context 'in group with restriction' do
-      let(:range) { '10.0.0.0/8' }
+      let(:range) { '192.168.0.0/24' }
       let(:authenticated_subject) { user }
 
       before do
         create(:ip_restriction, group: group, range: range)
       end
 
-      it_behaves_like 'logging the violation'
+      context 'with address within the range' do
+        it_behaves_like successful_example
+      end
 
-      context 'when user is a deploy token' do
-        let_it_be(:deploy_token) { create(:deploy_token, read_package_registry: true, write_package_registry: true) }
-        let_it_be(:group_deploy_token) { create(:group_deploy_token, deploy_token: deploy_token, group: group) }
-
-        let(:authenticated_subject) { deploy_token }
-        let(:jwt) { build_jwt(deploy_token) }
+      context 'with address outside the range' do
+        let(:range) { '10.0.0.0/8' }
 
         it_behaves_like 'logging the violation'
+        it_behaves_like 'returning response status', :not_found
+
+        context 'when user is a deploy token' do
+          let_it_be(:deploy_token) { create(:deploy_token, read_package_registry: true, write_package_registry: true) }
+          let_it_be(:group_deploy_token) { create(:group_deploy_token, deploy_token: deploy_token, group: group) }
+
+          let(:authenticated_subject) { deploy_token }
+          let(:jwt) { build_jwt(deploy_token) }
+
+          it_behaves_like 'logging the violation'
+          it_behaves_like 'returning response status', :not_found
+        end
       end
     end
   end
@@ -153,7 +167,7 @@ RSpec.describe Groups::DependencyProxyForContainersController do
     end
 
     it_behaves_like 'when sso is enabled for the group', 'a successful manifest pull'
-    it_behaves_like 'logging ip restriction offenses'
+    it_behaves_like 'with ip restriction', 'a successful manifest pull'
   end
 
   describe 'GET #blob' do
@@ -166,6 +180,6 @@ RSpec.describe Groups::DependencyProxyForContainersController do
     end
 
     it_behaves_like 'when sso is enabled for the group', 'a successful blob pull'
-    it_behaves_like 'logging ip restriction offenses'
+    it_behaves_like 'with ip restriction', 'a successful blob pull'
   end
 end

@@ -34,7 +34,7 @@ RSpec.shared_examples 'a geo RequestService' do
     end
 
     it 'returns meaningful error message when primary uses incorrect db key' do
-      allow_any_instance_of(GeoNode).to receive(:secret_access_key).and_raise(OpenSSL::Cipher::CipherError)
+      allow(Gitlab::Geo).to receive(:primary_node).and_raise(OpenSSL::Cipher::CipherError)
 
       expect(subject).to receive(:log_error).with(
         "Error decrypting the Geo secret from the database. Check that the primary uses the correct db_key_base.",

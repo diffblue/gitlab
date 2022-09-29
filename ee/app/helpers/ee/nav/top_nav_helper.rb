@@ -52,7 +52,7 @@ module EE
             title: title,
             icon: 'location-dot',
             data: { qa_selector: 'menu_item_link', qa_title: title, **menu_data_tracking_attrs(title) },
-            href: ::Gitlab::Geo.primary_node.url
+            href: ::Gitlab::Geo.primary_node_url
           )
         end
       end

@@ -44,7 +44,11 @@ module StatusPage
     end
 
     def publish_markdown_uploads(markdown_field:)
-      markdown_field.scan(FileUploader::MARKDOWN_PATTERN).map do |secret, file_name|
+      scanner = FileUploader::MARKDOWN_PATTERN.scan(markdown_field)
+      scanner.each do |match|
+        secret = match[0]
+        file_name = match[1]
+
         break if @total_uploads >= Gitlab::StatusPage::Storage::MAX_UPLOADS
 
         key = upload_path(secret, file_name)
