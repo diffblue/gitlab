@@ -5,14 +5,22 @@ module EE
     def configure_group_saml_mock_auth(uid:)
       name = 'My name'
       email = 'name@example.com'
-      response_object = { document: saml_xml(File.read('spec/fixtures/authentication/saml_response.xml')) }
+      response_object = {
+        document: OneLogin::RubySaml::Response.new(
+          File.read('spec/fixtures/authentication/saml_response.xml')
+        )
+      }
 
       OmniAuth.config.mock_auth[:group_saml] = OmniAuth::AuthHash.new({
         provider: :group_saml,
         uid: uid,
         info: { name: name, email: email },
         extra: {
-          raw_info: { info: { name: name, email: email } },
+          raw_info: OneLogin::RubySaml::Attributes.new({
+            'email' => [email],
+            'name' => [name],
+            'groups' => %w(Developers Owners)
+          }),
           response_object: response_object
         }
       })
