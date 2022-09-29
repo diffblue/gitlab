@@ -58,9 +58,10 @@ export const receiveTasksByTypeDataError = ({ commit }, error) => {
   commit(types.RECEIVE_TASKS_BY_TYPE_DATA_ERROR, error);
 };
 
-export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters }) => {
+export const fetchTasksByTypeData = ({ dispatch, commit, state, rootGetters, getters }) => {
   const { currentGroupPath, cycleAnalyticsRequestParams } = rootGetters;
-  const { subject, selectedLabelNames } = state;
+  const { subject } = state;
+  const { selectedLabelNames } = getters;
 
   const {
     project_ids,
