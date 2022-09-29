@@ -60,13 +60,14 @@ RSpec.describe Pajamas::AlertComponent, :aggregate_failures, type: :component do
       end
     end
 
-    context 'with blank string' do
-      let(:title) { '   ' }
+    context 'with nil, empty or blank string' do
+      where(:title) { [nil, '', '   '] }
 
-      it 'does not set a title' do
-        expect(page).not_to have_selector('.gl-alert-title')
-        expect(page).not_to have_content(title)
-        expect(page).to have_selector('.gl-alert-icon-no-title')
+      with_them do
+        it 'does not set a title' do
+          expect(page).not_to have_selector('.gl-alert-title')
+          expect(page).to have_selector('.gl-alert-icon-no-title')
+        end
       end
     end
   end

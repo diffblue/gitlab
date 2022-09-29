@@ -12,7 +12,7 @@ module Pajamas
     def initialize(
       title: nil, variant: :info, dismissible: true, show_icon: true,
       alert_options: {}, close_button_options: {})
-      @title = title.to_s.presence
+      @title = title.presence
       @variant = filter_attribute(variant&.to_sym, VARIANT_ICONS.keys, default: :info)
       @dismissible = dismissible
       @show_icon = show_icon
