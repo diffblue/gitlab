@@ -13023,6 +13023,13 @@ CREATE SEQUENCE ci_pipeline_messages_id_seq
 
 ALTER SEQUENCE ci_pipeline_messages_id_seq OWNED BY ci_pipeline_messages.id;
 
+CREATE TABLE ci_pipeline_metadata (
+    project_id bigint NOT NULL,
+    pipeline_id bigint NOT NULL,
+    title text NOT NULL,
+    CONSTRAINT check_e6a636a3f3 CHECK ((char_length(title) <= 255))
+);
+
 CREATE TABLE ci_pipeline_schedule_variables (
     id integer NOT NULL,
     key character varying NOT NULL,
@@ -25083,6 +25090,9 @@ ALTER TABLE ONLY ci_pipeline_chat_data
 ALTER TABLE ONLY ci_pipeline_messages
     ADD CONSTRAINT ci_pipeline_messages_pkey PRIMARY KEY (id);
 
+ALTER TABLE ONLY ci_pipeline_metadata
+    ADD CONSTRAINT ci_pipeline_metadata_pkey PRIMARY KEY (pipeline_id);
+
 ALTER TABLE ONLY ci_pipeline_schedule_variables
     ADD CONSTRAINT ci_pipeline_schedule_variables_pkey PRIMARY KEY (id);
 
@@ -28154,6 +28164,10 @@ CREATE INDEX index_ci_pipeline_chat_data_on_chat_name_id ON ci_pipeline_chat_dat
 CREATE UNIQUE INDEX index_ci_pipeline_chat_data_on_pipeline_id ON ci_pipeline_chat_data USING btree (pipeline_id);
 
 CREATE INDEX index_ci_pipeline_messages_on_pipeline_id ON ci_pipeline_messages USING btree (pipeline_id);
+
+CREATE INDEX index_ci_pipeline_metadata_on_pipeline_id_title ON ci_pipeline_metadata USING btree (pipeline_id, title);
+
+CREATE INDEX index_ci_pipeline_metadata_on_project_id ON ci_pipeline_metadata USING btree (project_id);
 
 CREATE UNIQUE INDEX index_ci_pipeline_schedule_variables_on_schedule_id_and_key ON ci_pipeline_schedule_variables USING btree (pipeline_schedule_id, key);
 
@@ -33728,6 +33742,9 @@ ALTER TABLE ONLY resource_iteration_events
 
 ALTER TABLE ONLY status_page_settings
     ADD CONSTRAINT fk_rails_506e5ba391 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY ci_pipeline_metadata
+    ADD CONSTRAINT fk_rails_50c1e9ea10 FOREIGN KEY (pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY project_repository_storage_moves
     ADD CONSTRAINT fk_rails_5106dbd44a FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
