@@ -1,10 +1,9 @@
-import Vue from 'vue';
+import { mount } from '@vue/test-utils';
 
 import WeeksHeaderSubItemComponent from 'ee/roadmap/components/preset_weeks/weeks_header_sub_item.vue';
 import { PRESET_TYPES, DATE_RANGES } from 'ee/roadmap/constants';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
-import mountComponent from 'helpers/vue_mount_component_helper';
 import { mockTimeframeInitialDate } from '../../mock_data';
 
 const mockTimeframeWeeks = getTimeframeForRangeType({
@@ -13,86 +12,78 @@ const mockTimeframeWeeks = getTimeframeForRangeType({
   initialDate: mockTimeframeInitialDate,
 });
 
-const createComponent = ({
-  currentDate = mockTimeframeWeeks[0],
-  timeframeItem = mockTimeframeWeeks[0],
-}) => {
-  const Component = Vue.extend(WeeksHeaderSubItemComponent);
-
-  return mountComponent(Component, {
-    currentDate,
-    timeframeItem,
-  });
-};
-
 describe('MonthsHeaderSubItemComponent', () => {
-  let vm;
+  let wrapper;
+
+  const createComponent = ({
+    currentDate = mockTimeframeWeeks[0],
+    timeframeItem = mockTimeframeWeeks[0],
+  } = {}) => {
+    wrapper = mount(WeeksHeaderSubItemComponent, {
+      propsData: {
+        currentDate,
+        timeframeItem,
+      },
+    });
+  };
 
   afterEach(() => {
-    vm.$destroy();
+    wrapper.destroy();
   });
 
-  describe('data', () => {
-    it('initializes `presetType` and `indicatorStyles` data props', () => {
-      vm = createComponent({});
+  describe('header subitems ', () => {
+    it('is array of dates containing days of week from timeframeItem', () => {
+      createComponent();
 
-      expect(vm.presetType).toBe(PRESET_TYPES.WEEKS);
-      expect(vm.indicatorStyle).toBeDefined();
+      expect(wrapper.findAll('.sublabel-value').wrappers.map((w) => w.text())).toStrictEqual([
+        '31',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+      ]);
     });
   });
 
-  describe('computed', () => {
-    describe('headerSubItems', () => {
-      it('returns `headerSubItems` array of dates containing days of week from timeframeItem', () => {
-        vm = createComponent({});
-
-        expect(Array.isArray(vm.headerSubItems)).toBe(true);
-        expect(vm.headerSubItems).toHaveLength(7);
-        vm.headerSubItems.forEach((subItem) => {
-          expect(subItem instanceof Date).toBe(true);
-        });
-      });
-    });
-  });
-
-  describe('methods', () => {
-    describe('getSubItemValueClass', () => {
-      it('returns string containing `label-dark` when provided subItem is greater than current week day', () => {
-        vm = createComponent({
-          currentDate: new Date(2018, 0, 1), // Jan 1, 2018
-        });
-        const subItem = new Date(2018, 0, 25); // Jan 25, 2018
-
-        expect(vm.getSubItemValueClass(subItem)).toBe('label-dark');
+  describe('subitem value class', () => {
+    it('adds  `label-dark` class for dates which are greater than current week day', () => {
+      createComponent({
+        currentDate: new Date(2018, 0, 1), // Jan 1, 2018
       });
 
-      it('returns string containing `label-dark label-bold` when provided subItem is same as current week day', () => {
-        const currentDate = new Date(2018, 0, 25);
-        vm = createComponent({
-          currentDate,
-        });
-        const subItem = currentDate;
+      expect(
+        wrapper.findAll('.sublabel-value.label-dark').wrappers.map((w) => w.text()),
+      ).toStrictEqual(['1', '2', '3', '4', '5', '6']);
+    });
 
-        expect(vm.getSubItemValueClass(subItem)).toBe('label-dark label-bold');
+    it('adds `label-dark label-bold` classes for date which is same as current week day', () => {
+      createComponent({
+        currentDate: new Date(2018, 0, 1), // Jan 1, 2018
       });
+
+      expect(
+        wrapper.findAll('.sublabel-value.label-dark.label-bold').wrappers.map((w) => w.text()),
+      ).toStrictEqual(['1']);
     });
   });
 
-  describe('template', () => {
-    beforeEach(() => {
-      vm = createComponent({});
-    });
+  it('renders component container element with class `item-sublabel`', () => {
+    createComponent();
 
-    it('renders component container element with class `item-sublabel`', () => {
-      expect(vm.$el.classList.contains('item-sublabel')).toBe(true);
-    });
+    expect(wrapper.classes()).toContain('item-sublabel');
+  });
 
-    it('renders sub item element with class `sublabel-value`', () => {
-      expect(vm.$el.querySelector('.sublabel-value')).not.toBeNull();
-    });
+  it('renders sub item element with class `sublabel-value`', () => {
+    createComponent();
 
-    it('renders element with class `current-day-indicator-header` when hasToday is true', () => {
-      expect(vm.$el.querySelector('.current-day-indicator-header.preset-weeks')).not.toBeNull();
-    });
+    expect(wrapper.find('.sublabel-value').exists()).toBe(true);
+  });
+
+  it('renders element with class `current-day-indicator-header` when hasToday is true', () => {
+    createComponent();
+
+    expect(wrapper.find('.current-day-indicator-header.preset-weeks').exists()).toBe(true);
   });
 });
