@@ -60,17 +60,7 @@ if [[ "${node_count}" -gt "${MAX_NODES_COUNT}" ]]; then
   node_count=${MAX_NODES_COUNT}
 fi
 
-cp ".gitlab/ci/rails/rspec-foss-impact.gitlab-ci.yml" "${pipeline_yml}"
-
-# We must use -i.bak to make sed work on Linux and MacOS.
-# See https://riptutorial.com/sed/topic/9436/bsd-macos-sed-vs--gnu-sed-vs--the-posix-sed-specification
-if [[ "${node_count}" -lt 2 ]]; then
-  sed -i.bak "/parallel: PARALLEL_VALUE_DYNAMICALLY_SET/d" "${pipeline_yml}"
-else
-  sed -i.bak "s/parallel: PARALLEL_VALUE_DYNAMICALLY_SET/parallel: ${node_count}/" "${pipeline_yml}"
-fi
-
-rm "${pipeline_yml}.bak"
+ruby -rerb -e "puts ERB.new(File.read('.gitlab/ci/rails/rspec-foss-impact.gitlab-ci.yml.erb')).result_with_hash(parallel_value: ${node_count})" > "${pipeline_yml}"
 
 echosuccess "Generated ${pipeline_yml} pipeline with following content:"
 cat "${pipeline_yml}"

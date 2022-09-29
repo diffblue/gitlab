@@ -37,10 +37,9 @@ rspec foss-impact:
   variables:
     RSPEC_TESTS_FILTER_FILE: "${RSPEC_MATCHING_TESTS_FOSS_PATH}"
     RSPEC_TESTS_MAPPING_ENABLED: "true"
-  # PARALLEL_VALUE_DYNAMICALLY_SET is replaced by an actual number by
-  # `scripts/generate-rspec-foss-impact-pipeline` in the
-  # `rspec-foss-impact:pipeline-generate` job
-  parallel: PARALLEL_VALUE_DYNAMICALLY_SET
+<% if Integer(parallel_value) > 1 %>
+  parallel: <%= parallel_value %>
+<% end %>
   script:
     - !reference [.base-script, script]
     - rspec_paralellized_job "--tag ~quarantine"
