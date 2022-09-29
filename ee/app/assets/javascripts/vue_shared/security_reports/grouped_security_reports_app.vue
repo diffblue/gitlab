@@ -266,7 +266,7 @@ export default {
     coverageFuzzingPopover,
     apiFuzzingPopover,
     scannedResources: s__('SecurityReports|scanned resources'),
-    viewReport: s__('ciReport|View full report'),
+    fullReport: s__('ciReport|Full Report'),
     divergedFromTargetBranch: __(
       'Security report is out of date. Please update your branch with the latest changes from the target branch (%{targetBranchName})',
     ),
@@ -548,10 +548,12 @@ export default {
       <gl-button
         :href="securityTab"
         target="_blank"
-        icon="external-link"
-        class="gl-mr-3 report-btn"
+        class="report-btn"
+        category="tertiary"
+        variant="info"
+        size="small"
       >
-        {{ $options.i18n.viewReport }}
+        {{ $options.i18n.fullReport }}
       </gl-button>
     </template>
 

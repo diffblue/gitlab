@@ -47,7 +47,7 @@ describe('Grouped security reports app', () => {
   const findCollapseButton = () => wrapper.findComponent(GlButton);
   const findSpinner = () => wrapper.find('.gl-spinner');
   const findSecretDetectionReport = () => wrapper.find('[data-testid="secret-detection-report"]');
-  const findViewFullReportButton = () => wrapper.find('.report-btn');
+  const findFullReportButton = () => wrapper.find('.report-btn');
   const findDastJobLink = () => wrapper.find('[data-testid="dast-ci-job-link"]');
 
   const props = {
@@ -174,7 +174,7 @@ describe('Grouped security reports app', () => {
         expect(findSpinner().exists()).toBe(false);
         expect(findReportSummary().text()).toEqual('Security scanning failed loading any results');
 
-        expect(findCollapseButton().text()).toEqual('Expand');
+        expect(findCollapseButton().exists()).toBe(true);
 
         const wrapperText = wrapper.text();
         expect(wrapperText).toContain('SAST: Loading resulted in an error');
@@ -205,7 +205,7 @@ describe('Grouped security reports app', () => {
         expect(findSpinner().exists()).toBe(true);
         expect(findReportSummary().text()).toEqual('Security scanning is loading');
 
-        expect(findCollapseButton().text()).toEqual('Expand');
+        expect(findCollapseButton().exists()).toBe(true);
 
         const wrapperText = wrapper.text();
         expect(wrapperText).toContain('SAST is loading');
@@ -340,7 +340,7 @@ describe('Grouped security reports app', () => {
         );
 
         // Renders the expand button
-        expect(findCollapseButton().text()).toEqual('Expand');
+        expect(findCollapseButton().exists()).toBe(true);
 
         const normalizedWrapperText = trimText(wrapper.text());
 
@@ -429,14 +429,20 @@ describe('Grouped security reports app', () => {
     });
 
     it('should calculate the security tab path', () => {
-      expect(findViewFullReportButton().attributes()).toMatchObject({
+      expect(findFullReportButton().attributes()).toMatchObject({
         target: '_blank',
         href: `${pipelinePath}/security`,
       });
     });
 
     it('should render view full report button', () => {
-      expect(findViewFullReportButton().exists()).toBe(true);
+      const button = findFullReportButton();
+      expect(button.text()).toBe(GroupedSecurityReportsApp.i18n.fullReport);
+      expect(button.props()).toMatchObject({
+        category: 'tertiary',
+        variant: 'info',
+        size: 'small',
+      });
     });
   });
 

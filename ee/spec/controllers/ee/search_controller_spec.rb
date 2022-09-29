@@ -310,6 +310,38 @@ RSpec.describe SearchController, :elastic do
       end
     end
 
+    context 'issue scope' do
+      context 'when elasticsearch is disabled' do
+        it 'returns an empty array' do
+          get :aggregations, params: { search: 'test', scope: 'issues' }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response).to be_empty
+        end
+      end
+
+      context 'when elasticsearch is enabled', :sidekiq_inline do
+        let(:project) { create(:project) }
+
+        before do
+          stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+
+          create(:labeled_issue, title: 'test', project: project, labels: [create(:label)])
+          project.add_developer(user)
+
+          ensure_elasticsearch_index!
+        end
+
+        it 'returns aggregations' do
+          get :aggregations, params: { search: 'test', scope: 'issues' }
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.first['name']).to eq('labels')
+          expect(json_response.first['buckets'].length).to eq(1)
+        end
+      end
+    end
+
     it 'raises an error if search term is missing' do
       expect do
         get :aggregations, params: { scope: 'projects' }

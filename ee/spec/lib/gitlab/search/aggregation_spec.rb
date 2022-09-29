@@ -16,6 +16,21 @@ RSpec.describe Gitlab::Search::Aggregation do
       end
     end
 
+    context 'when extra is provided' do
+      let(:aggregation_buckets) do
+        [
+          { 'key': 'ruby', 'doc_count': 10, extra: { 'foo': 'bar' }.with_indifferent_access },
+          { 'key': 'java', 'doc_count': 20, extra: { 'foo': 'baz' }.with_indifferent_access }
+        ].map(&:with_indifferent_access)
+      end
+
+      it 'merges the extra field' do
+        expected = [{ key: 'ruby', count: 10, foo: 'bar' }, { key: 'java', count: 20, foo: 'baz' }]
+
+        expect(subject.buckets).to match_array(expected)
+      end
+    end
+
     context 'when elasticsearch buckets are not provided' do
       let(:aggregation_buckets) { nil }
 
