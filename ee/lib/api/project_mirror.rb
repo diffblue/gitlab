@@ -97,6 +97,16 @@ module API
 
         status 200
       end
+
+      desc 'Get a pull mirror'
+      get ':id/mirror/pull' do
+        try_authenticate_with_webhook_token!
+
+        break render_api_error!('The project is not mirrored', 400) unless project.mirror?
+
+        status 200
+        ProjectMirrorSerializer.new.represent(project)
+      end
     end
   end
 end

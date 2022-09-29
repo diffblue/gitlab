@@ -353,4 +353,41 @@ RSpec.describe API::ProjectMirror do
       end
     end
   end
+
+  describe 'GET /projects/:id/mirror/pull' do
+    let_it_be(:visibility) { Gitlab::VisibilityLevel::PUBLIC }
+    let_it_be(:project_mirrored) { create(:project, :repository, :mirror, visibility: visibility) }
+    let_it_be(:user) { create(:user) }
+
+    let(:route) { "/projects/#{project_mirrored.id}/mirror/pull" }
+
+    it 'returns pull mirror details' do
+      project_mirrored.add_maintainer(user)
+
+      get api(route, user)
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(response).to match_response_schema('project_mirror')
+    end
+
+    context 'with private project' do
+      let(:visibility) { Gitlab::VisibilityLevel::PRIVATE }
+
+      it 'returns a 403 status' do
+        get api(route, user)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'with internal project' do
+      let(:visibility) { Gitlab::VisibilityLevel::INTERNAL }
+
+      it 'returns a 403 status' do
+        get api(route, user)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+  end
 end

@@ -2814,6 +2814,68 @@ Read more in the [Project members](members.md) documentation.
 
 Read more in the [Project vulnerabilities](project_vulnerabilities.md) documentation.
 
+## Get a project's pull mirror details **(PREMIUM)**
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/354506) in GitLab 15.5.
+
+Returns the details of the project's pull mirror.
+
+```plaintext
+GET /projects/:id/mirror/pull
+```
+
+Supported attributes:
+
+| Attribute | Type  | Required    | Description |
+|:----------|:------|:------------|:------------|
+| `id`      | integer or string | **{check-circle}** Yes | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding). |
+
+If successful, returns [`200`](index.md#status-code) and the following
+response attributes:
+
+| Attribute | Type     | Description          |
+|:----------|:---------|:---------------------|
+|`id`| integer or string | The ID or URL-encoded path of the project. |
+|`import_data_attributes`| object | Import authentication data. |
+|`import_url`| string | URL to import repository from. |
+|`mirror`| boolean | Enables pull mirroring in a project. |
+|`mirror_trigger_builds`| boolean | Pull mirroring triggers builds. |
+|`mirror_overwrites_diverged_branches`| boolean | Pull mirror overwrites diverged branches. |
+|`mirror_user_id`| integer | User responsible for all the activity surrounding a pull mirror event. |
+|`only_mirror_protected_branches`| boolean | Only mirror protected branches. |
+|`username_only_import_url`| string | URL to import repository from with only a username. |
+
+Example request:
+
+```shell
+curl --request GET --header "PRIVATE-TOKEN: <your_access_token>" "https://gitlab.example.com/api/v4/projects/:id/mirror/pull"
+```
+
+Example response:
+
+```json
+{
+  "id" : 505,
+  "remote_mirrors_attributes" : [],
+  "mirror" : true,
+  "import_url" : "http://example24.test",
+  "username_only_import_url" : "http://example24.test",
+  "mirror_user_id" : 616,
+  "mirror_trigger_builds" : false,
+  "only_mirror_protected_branches" : nil,
+  "mirror_overwrites_diverged_branches"  : nil,
+  "import_data_attributes" : {
+    "id" : 420,
+    "auth_method" : "password",
+    "ssh_known_hosts" : nil,
+    "ssh_known_hosts_verified_at" : nil,
+    "ssh_known_hosts_verified_by_id" : nil,
+    "ssh_public_key" : nil,
+    "ssh_known_hosts_fingerprints" : []
+  }
+}
+```
+
 ## Configure pull mirroring for a project **(PREMIUM)**
 
 > Moved to GitLab Premium in 13.9.

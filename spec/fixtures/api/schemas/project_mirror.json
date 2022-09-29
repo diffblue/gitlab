@@ -1,0 +1,91 @@
+{
+  "type": "object",
+  "required": [
+    "id",
+    "remote_mirrors_attributes",
+    "mirror",
+    "import_url",
+    "username_only_import_url",
+    "mirror_user_id",
+    "mirror_trigger_builds",
+    "only_mirror_protected_branches",
+    "mirror_overwrites_diverged_branches",
+    "import_data_attributes"
+  ],
+  "properties": {
+    "id": {
+      "type": "integer"
+    },
+    "remote_mirrors_attributes": {
+      "type": "array",
+      "items": {
+        "$ref": "remote_mirror.json"
+      }
+    },
+    "mirror": {
+      "type": "boolean"
+    },
+    "import_url": {
+      "type": "string"
+    },
+    "username_only_import_url": {
+      "type": "string"
+    },
+    "mirror_user_id": {
+      "type": "integer"
+    },
+    "mirror_trigger_builds": {
+      "type": "boolean"
+    },
+    "only_mirror_protected_branches": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "mirror_overwrites_diverged_branches": {
+      "type": [
+        "boolean",
+        "null"
+      ]
+    },
+    "import_data_attributes": {
+      "type": "object",
+      "required": [
+        "id",
+        "auth_method",
+        "ssh_known_hosts",
+        "ssh_known_hosts_verified_at",
+        "ssh_public_key",
+        "ssh_known_hosts_fingerprints"
+      ],
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "auth_method": {
+          "type": "string"
+        },
+        "ssh_known_hosts": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ssh_public_key": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ssh_known_hosts_fingerprints": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
