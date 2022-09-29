@@ -10,7 +10,13 @@ RSpec.describe Users::PhoneNumberValidation do
   it { is_expected.to validate_length_of(:country).is_at_most(3) }
 
   it { is_expected.to validate_presence_of(:international_dial_code) }
-  it { is_expected.to validate_numericality_of(:international_dial_code).only_integer.is_greater_than(0) }
+
+  it {
+    is_expected.to validate_numericality_of(:international_dial_code)
+      .only_integer
+      .is_greater_than_or_equal_to(1)
+      .is_less_than_or_equal_to(999)
+  }
 
   it { is_expected.to validate_presence_of(:phone_number) }
   it { is_expected.to validate_length_of(:phone_number).is_at_most(12) }

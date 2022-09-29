@@ -14,7 +14,11 @@ module Users
 
     validates :international_dial_code,
               presence: true,
-              numericality: { only_integer: true, greater_than: 0 }
+              numericality: {
+                only_integer: true,
+                greater_than_or_equal_to: 1,
+                less_than_or_equal_to: 999
+              }
 
     validates :phone_number,
               presence: true,
