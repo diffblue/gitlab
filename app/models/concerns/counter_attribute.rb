@@ -219,13 +219,22 @@ module CounterAttribute
   def detect_race_on_record(log_fields: {})
     return yield unless Feature.enabled?(:counter_attribute_db_lease_for_update, project)
 
+    Gitlab::AppLogger.info(
+      message: 'Acquiring lease for project statistics update',
+      project_statistics_id: id,
+      project_id: project.id,
+      **log_fields,
+      **Gitlab::ApplicationContext.current
+    )
+
     in_lock(database_lock_key, retries: 0) do
       yield
     end
   rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
     Gitlab::AppLogger.warn(
-      message: 'Concurrent update to project statistics detected',
+      message: 'Concurrent project statistics update detected',
       project_statistics_id: id,
+      project_id: project.id,
       **log_fields,
       **Gitlab::ApplicationContext.current
     )
