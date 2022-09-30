@@ -127,7 +127,7 @@ module EE
       def log_audit_events
         @ip_restriction_update_service&.log_audit_event # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
-        EE::Audit::GroupChangesAuditor.new(current_user, group).execute
+        Audit::GroupChangesAuditor.new(current_user, group).execute
       end
     end
   end

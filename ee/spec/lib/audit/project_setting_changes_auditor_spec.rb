@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
+RSpec.describe Audit::ProjectSettingChangesAuditor do
   using RSpec::Parameterized::TableSyntax
   describe '#execute' do
     let_it_be(:user) { create(:user) }
@@ -28,7 +28,7 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
               it 'creates an audit event' do
                 project.project_setting.update!(squash_option: new_value)
 
-                expect { project_setting_changes_auditor.execute }.to change { AuditEvent.count }.by(1)
+                expect { project_setting_changes_auditor.execute }.to change(AuditEvent, :count).by(1)
                 expect(AuditEvent.last.details).to include(
                   {
                     custom_message: "Changed squash option to #{project.project_setting.human_squash_option}"
@@ -67,7 +67,7 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
           it 'creates an audit event' do
             project.project_setting.update!(allow_merge_on_skipped_pipeline: new_value)
 
-            expect { project_setting_changes_auditor.execute }.to change { AuditEvent.count }.by(1)
+            expect { project_setting_changes_auditor.execute }.to change(AuditEvent, :count).by(1)
             expect(AuditEvent.last.details).to include({
                                                          change: 'allow_merge_on_skipped_pipeline',
                                                          from: prev_value,
@@ -94,7 +94,7 @@ RSpec.describe EE::Audit::ProjectSettingChangesAuditor do
         it 'creates an audit event' do
           project.project_setting.update!(squash_commit_template: 'new squash commit template')
 
-          expect { project_setting_changes_auditor.execute }.to change { AuditEvent.count }.by(1)
+          expect { project_setting_changes_auditor.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include({
                                                        change: 'squash_commit_template',
                                                        from: 'old squash commit template',

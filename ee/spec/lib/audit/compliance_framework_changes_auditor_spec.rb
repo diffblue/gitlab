@@ -2,20 +2,19 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
+RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
   describe 'auditing compliance framework changes' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
     let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
 
     let(:project) { create(:project, group: group) }
+    let(:subject) { described_class.new(user, project.compliance_framework_setting, project) }
 
     before do
       project.reload
       stub_licensed_features(extended_audit_events: true, external_audit_events: true)
     end
-
-    let(:subject) { described_class.new(user, project.compliance_framework_setting, project) }
 
     context 'when a project has no compliance framework' do
       context 'when the framework is added' do
@@ -26,7 +25,7 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
         end
 
         it 'adds an audit event' do
-          expect { subject.execute }.to change { AuditEvent.count }.by(1)
+          expect { subject.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include({
                                                        change: 'compliance framework',
                                                        from: 'None',
@@ -42,12 +41,14 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
       before do
         project.update!(compliance_management_framework: framework)
       end
+
       context 'when the framework is removed' do
         before do
           project.update!(compliance_management_framework: nil)
         end
+
         it 'adds an audit event' do
-          expect { subject.execute }.to change { AuditEvent.count }.by(1)
+          expect { subject.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include({
                                                        custom_message: "Unassigned project compliance framework"
                                                      })
@@ -63,11 +64,12 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
 
       context 'when the framework is changed' do
         before do
-          project.update!(compliance_management_framework: create(:compliance_framework, namespace: project.group, name: 'SOX'))
+          project.update!(compliance_management_framework:
+            create(:compliance_framework, namespace: project.group, name: 'SOX'))
         end
 
         it 'adds an audit event' do
-          expect { subject.execute }.to change { AuditEvent.count }.by(1)
+          expect { subject.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include({
                                                        change: 'compliance framework',
                                                        from: 'GDPR',
@@ -83,7 +85,7 @@ RSpec.describe EE::Audit::ComplianceFrameworkChangesAuditor do
       end
 
       it 'does not add an audit event' do
-        expect { subject.execute }.not_to change { AuditEvent.count }
+        expect { subject.execute }.not_to change(AuditEvent, :count)
       end
     end
   end

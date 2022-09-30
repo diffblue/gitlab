@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Audit::ProjectCiCdSettingChangesAuditor do
+RSpec.describe Audit::ProjectCiCdSettingChangesAuditor do
   using RSpec::Parameterized::TableSyntax
   describe '#execute' do
     let_it_be(:user) { create(:user) }
@@ -31,7 +31,7 @@ RSpec.describe EE::Audit::ProjectCiCdSettingChangesAuditor do
             it 'creates an audit event' do
               project.ci_cd_settings.update_attribute(column, new_value)
 
-              expect { project_ci_cd_setting_changes_auditor.execute }.to change { AuditEvent.count }.by(1)
+              expect { project_ci_cd_setting_changes_auditor.execute }.to change(AuditEvent, :count).by(1)
               expect(AuditEvent.last.details).to include({
                                                            change: column,
                                                            from: prev_value,
@@ -49,7 +49,7 @@ RSpec.describe EE::Audit::ProjectCiCdSettingChangesAuditor do
           it 'does not create an audit event' do
             project.ci_cd_settings.update_attribute(column, false)
 
-            expect { project_ci_cd_setting_changes_auditor.execute }.not_to change { AuditEvent.count }
+            expect { project_ci_cd_setting_changes_auditor.execute }.not_to change(AuditEvent, :count)
           end
         end
       end

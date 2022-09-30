@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Audit::ProjectFeatureChangesAuditor do
+RSpec.describe Audit::ProjectFeatureChangesAuditor do
   describe '#execute' do
     let!(:user) { create(:user) }
     let!(:project) { create(:project, :pages_enabled, visibility_level: 0) }
@@ -25,7 +25,7 @@ RSpec.describe EE::Audit::ProjectFeatureChangesAuditor do
                     end
 
         features.update_attribute(column, new_value)
-        expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
 
         event = AuditEvent.last
         expect(event.details[:from]).to eq ::Gitlab::VisibilityLevel.level_name(previous_value)

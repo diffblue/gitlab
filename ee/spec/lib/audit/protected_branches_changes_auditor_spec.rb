@@ -2,14 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
+RSpec.describe Audit::ProtectedBranchesChangesAuditor, :request_store do
   let_it_be(:author) { create(:user, :with_sign_ins) }
   let_it_be(:user) { create(:user, :with_sign_ins) }
   let_it_be(:group) { create(:group) }
   let_it_be(:destination) { create(:external_audit_event_destination, group: group) }
   let_it_be(:entity) { create(:project, creator: author, group: group) }
 
-  let(:protected_branch) { create(:protected_branch, :no_one_can_push, :no_one_can_merge, allow_force_push: false, code_owner_approval_required: false, project: entity) }
+  let(:protected_branch) do
+    create(:protected_branch, :no_one_can_push, :no_one_can_merge,
+      allow_force_push: false,
+      code_owner_approval_required: false,
+      project: entity)
+  end
+
   let(:ip_address) { '192.168.15.18' }
 
   before do
@@ -31,7 +37,7 @@ RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
       context "when #{setting} changed" do
         it 'creates an event' do
           protected_branch.update_attribute(setting, true)
-          expect { service.execute }.to change { AuditEvent.count }.by(1)
+          expect { service.execute }.to change(AuditEvent, :count).by(1)
 
           event = AuditEvent.last
           change_text = setting.to_s.humanize(capitalize: false)
@@ -77,7 +83,7 @@ RSpec.describe EE::Audit::ProtectedBranchesChangesAuditor, :request_store do
       context "when access levels changed" do
         it 'creates an event' do
           new_access_levels.new(user: user)
-          expect { service.execute }.to change { AuditEvent.count }.by(1)
+          expect { service.execute }.to change(AuditEvent, :count).by(1)
 
           event = AuditEvent.last
           from = old_access_levels.map(&:humanize)

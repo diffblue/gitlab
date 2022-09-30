@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::Audit::GroupChangesAuditor do
+RSpec.describe Audit::GroupChangesAuditor do
   describe '.audit_changes' do
     let!(:user) { create(:user) }
     let!(:group) { create(:group, visibility_level: 0) }
@@ -16,7 +16,7 @@ RSpec.describe EE::Audit::GroupChangesAuditor do
       it 'does not call the audit event service' do
         group.update!(runners_token: 'new token')
 
-        expect { foo_instance.execute }.not_to change { AuditEvent.count }
+        expect { foo_instance.execute }.not_to change(AuditEvent, :count)
       end
     end
 
@@ -24,14 +24,14 @@ RSpec.describe EE::Audit::GroupChangesAuditor do
       it 'creates and event when the visibility change' do
         group.update!(visibility_level: 20)
 
-        expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
         expect(AuditEvent.last.details[:change]).to eq 'visibility'
       end
 
       it 'creates an event for project creation level change' do
         group.update!(project_creation_level: 0)
 
-        expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
 
         event = AuditEvent.last
         expect(event.details[:from]).to eq 'Maintainers'
@@ -58,7 +58,7 @@ RSpec.describe EE::Audit::GroupChangesAuditor do
 
           group.update_attribute(column, value)
 
-          expect { foo_instance.execute }.to change { AuditEvent.count }.by(1)
+          expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
 
           event = AuditEvent.last
           expect(event.details[:from]).to eq data
