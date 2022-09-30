@@ -10,11 +10,15 @@ module Gitlab
 
         class << self
           def up(database:, legacy_mode: false)
-            Runner.new(direction: :up, database: database, migrations: migrations_for_up(database), legacy_mode: legacy_mode)
+            within_context_for_database(database) do
+              Runner.new(direction: :up, database: database, migrations: migrations_for_up(database), legacy_mode: legacy_mode)
+            end
           end
 
           def down(database:, legacy_mode: false)
-            Runner.new(direction: :down, database: database, migrations: migrations_for_down(database), legacy_mode: legacy_mode)
+            within_context_for_database(database) do
+              Runner.new(direction: :down, database: database, migrations: migrations_for_down(database), legacy_mode: legacy_mode)
+            end
           end
 
           def background_migrations
@@ -58,12 +62,10 @@ module Gitlab
           private
 
           def migrations_for_up(database)
-            within_context_for_database(database) do
-              existing_versions = migration_context.get_all_versions.to_set
+            existing_versions = migration_context.get_all_versions.to_set
 
-              migration_context.migrations.reject do |migration|
-                existing_versions.include?(migration.version)
-              end
+            migration_context.migrations.reject do |migration|
+              existing_versions.include?(migration.version)
             end
           end
 
@@ -72,15 +74,13 @@ module Gitlab
           end
 
           def migrations_for_down(database)
-            within_context_for_database(database) do
-              versions_this_branch = migration_file_names_this_branch.map do |m_name|
-                m_name.match(%r{^db/(post_)?migrate/(\d+)}) { |m| m.captures[1]&.to_i }
-              end.to_set
+            versions_this_branch = migration_file_names_this_branch.map do |m_name|
+              m_name.match(%r{^db/(post_)?migrate/(\d+)}) { |m| m.captures[1]&.to_i }
+            end.to_set
 
-              existing_versions = migration_context.get_all_versions.to_set
-              migration_context.migrations.select do |migration|
-                existing_versions.include?(migration.version) && versions_this_branch.include?(migration.version)
-              end
+            existing_versions = migration_context.get_all_versions.to_set
+            migration_context.migrations.select do |migration|
+              existing_versions.include?(migration.version) && versions_this_branch.include?(migration.version)
             end
           end
         end
