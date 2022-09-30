@@ -120,6 +120,7 @@ export default {
       isCreating: 'isCreatingValueStream',
       isFetchingGroupLabels: 'isFetchingGroupLabels',
       formEvents: 'formEvents',
+      defaultGroupLabels: 'defaultGroupLabels',
     }),
     isValueStreamNameValid() {
       return !this.nameError?.length;
@@ -398,6 +399,7 @@ export default {
               :index="activeStageIndex"
               :total-stages="stages.length"
               :errors="fieldErrors(activeStageIndex)"
+              :default-group-labels="defaultGroupLabels"
               @move="handleMove"
               @remove="onRemove"
               @input="onFieldInput(activeStageIndex, $event)"

@@ -7,8 +7,11 @@ import CustomStageEventLabelField from './custom_stage_event_label_field.vue';
 import StageFieldActions from './stage_field_actions.vue';
 import { startEventOptions, endEventOptions } from './utils';
 
+const findLabelNames = (labels = [], selectedLabelId) =>
+  labels.filter(({ id }) => id === selectedLabelId).map(({ title }) => title);
+
 export default {
-  name: 'CustomStageFormFields',
+  name: 'CustomStageFields',
   components: {
     GlFormGroup,
     GlFormInput,
@@ -78,6 +81,12 @@ export default {
     selectedEndEventName() {
       return this.eventName(this.stage.endEventIdentifier, 'SELECT_END_EVENT');
     },
+    startEventLabelNames() {
+      return findLabelNames(this.defaultGroupLabels, this.stage.startEventLabelId);
+    },
+    endEventLabelNames() {
+      return findLabelNames(this.defaultGroupLabels, this.stage.endEventLabelId);
+    },
   },
   methods: {
     onSelectLabel(field, event) {
@@ -139,9 +148,7 @@ export default {
             :requires-label="startEventRequiresLabel"
             :label-error="fieldErrorMessage('startEventLabelId')"
             :has-label-error="hasFieldErrors('startEventLabelId')"
-            :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
-              stage.startEventLabelId,
-            ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+            :selected-label-names="startEventLabelNames"
             @update-label="onSelectLabel('startEventLabelId', $event)"
           />
         </div>
@@ -164,9 +171,7 @@ export default {
             :requires-label="endEventRequiresLabel"
             :label-error="fieldErrorMessage('endEventLabelId')"
             :has-label-error="hasFieldErrors('endEventLabelId')"
-            :selected-label-ids="/* eslint-disable @gitlab/vue-no-new-non-primitive-in-template */ [
-              stage.endEventLabelId,
-            ] /* eslint-enable @gitlab/vue-no-new-non-primitive-in-template */"
+            :selected-label-names="endEventLabelNames"
             @update-label="onSelectLabel('endEventLabelId', $event)"
           />
         </div>

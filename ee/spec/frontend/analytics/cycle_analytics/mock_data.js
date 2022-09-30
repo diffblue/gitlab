@@ -255,7 +255,6 @@ export const taskByTypeFilters = {
   createdAfter: new Date('2019-12-11'),
   createdBefore: new Date('2020-01-10'),
   subject: TASKS_BY_TYPE_SUBJECT_ISSUE,
-  selectedLabelNames: ['label 1', 'label 2', 'label 3'],
 };
 
 export const transformedDurationData = [

@@ -20,7 +20,7 @@ export default {
     GlSprintf,
   },
   props: {
-    selectedLabelIds: {
+    selectedLabelNames: {
       type: Array,
       required: true,
     },
@@ -47,16 +47,16 @@ export default {
       }));
     },
     selectedLabelsCount() {
-      return this.selectedLabelIds.length;
+      return this.selectedLabelNames.length;
     },
     maxLabelsSelected() {
-      return this.selectedLabelIds.length >= this.maxLabels;
+      return this.selectedLabelNames.length >= this.maxLabels;
     },
   },
   methods: {
     canUpdateLabelFilters(value) {
       // we can always remove a filter
-      return this.selectedLabelIds.includes(value) || !this.maxLabelsSelected;
+      return this.selectedLabelNames.includes(value) || !this.maxLabelsSelected;
     },
     handleLabelSelected(value) {
       removeFlash('notice');
@@ -85,7 +85,7 @@ export default {
       :initial-data="defaultGroupLabels"
       :max-labels="maxLabels"
       :aria-label="__('CycleAnalytics|Display chart filters')"
-      :selected-label-ids="selectedLabelIds"
+      :selected-label-names="selectedLabelNames"
       aria-expanded="false"
       multiselect
       right

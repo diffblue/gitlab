@@ -32,7 +32,7 @@ export default {
     ...mapGetters('typeOfWork', [
       'selectedTasksByTypeFilters',
       'tasksByTypeChartData',
-      'selectedLabelIds',
+      'selectedLabelNames',
     ]),
     hasData() {
       return Boolean(this.tasksByTypeChartData?.data.length);
@@ -47,13 +47,12 @@ export default {
           createdBefore,
           currentGroup: { name: groupName },
           selectedProjectIds,
-          selectedLabelNames,
         },
       } = this;
 
       return generateFilterTextDescription({
         groupName,
-        selectedLabelsCount: selectedLabelNames.length,
+        selectedLabelsCount: this.selectedLabelNames.length,
         selectedProjectsCount: selectedProjectIds.length,
         selectedSubjectFilterText: this.selectedSubjectFilterText.toLowerCase(),
         createdAfter: formattedDate(createdAfter),
@@ -106,7 +105,7 @@ export default {
         </h4>
         <tasks-by-type-filters
           :default-group-labels="initialGroupLabels"
-          :selected-label-ids="selectedLabelIds"
+          :selected-label-names="selectedLabelNames"
           :subject-filter="selectedSubjectFilter"
           @update-filter="onUpdateFilter"
         />

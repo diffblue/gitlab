@@ -51,23 +51,17 @@ describe('Type of work getters', () => {
     it('returns all the task by type filter key', () => {
       const keys = Object.keys(selectedTasksByTypeFilters(state));
 
-      [
-        'currentGroup',
-        'selectedProjectIds',
-        'createdAfter',
-        'createdBefore',
-        'selectedLabelNames',
-        'subject',
-      ].forEach((key) => {
-        expect(keys).toContain(key);
-      });
+      ['currentGroup', 'selectedProjectIds', 'createdAfter', 'createdBefore', 'subject'].forEach(
+        (key) => {
+          expect(keys).toContain(key);
+        },
+      );
     });
 
     it('sets the correct value for each key', () => {
       const result = selectedTasksByTypeFilters(state, null, rootState, rootGetters);
 
       expect(result.currentGroup).toEqual(currentGroup);
-      expect(result.selectedLabelNames).toEqual(groupLabelNames);
       expect(result.selectedProjectIds).toEqual(selectedProjectIds);
       expect(result.subject).toEqual(TASKS_BY_TYPE_SUBJECT_ISSUE);
       expect(result.createdBefore).toEqual(createdBefore);
