@@ -80,6 +80,7 @@ RSpec.describe 'Project', :js do
     let_it_be_with_refind(:group) { create(:group, :with_root_storage_statistics) }
     let_it_be_with_refind(:user) { create(:user) }
     let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:storage_banner_text) { "A namespace storage limit will soon be enforced" }
 
     before do
       stub_ee_application_setting(should_check_namespace_plan: true)
@@ -103,7 +104,7 @@ RSpec.describe 'Project', :js do
 
       it 'displays the banner in the project page' do
         visit project_path(project)
-        expect_page_to_have_storage_enforcement_banner(storage_enforcement_date)
+        have_text storage_banner_text
       end
 
       context 'when in a subgroup project page' do
@@ -112,7 +113,7 @@ RSpec.describe 'Project', :js do
 
         it 'displays the banner' do
           visit project_path(project)
-          expect_page_to_have_storage_enforcement_banner(storage_enforcement_date)
+          have_text storage_banner_text
         end
       end
 
@@ -133,7 +134,7 @@ RSpec.describe 'Project', :js do
 
         it 'displays the banner' do
           visit project_path(project)
-          expect_page_to_have_storage_enforcement_banner(storage_enforcement_date)
+          have_text storage_banner_text
         end
       end
 
@@ -142,23 +143,23 @@ RSpec.describe 'Project', :js do
           allow(group).to receive(:paid?).and_return(true)
         end
         visit project_path(project)
-        expect_page_not_to_have_storage_enforcement_banner
+        expect(page).not_to have_text storage_banner_text
       end
 
       it 'does not display the banner if user has previously closed unless threshold has changed' do
         visit project_path(project)
-        expect_page_to_have_storage_enforcement_banner(storage_enforcement_date)
+        have_text storage_banner_text
         find('.js-storage-enforcement-banner [data-testid="close-icon"]').click
         wait_for_requests
         page.refresh
-        expect_page_not_to_have_storage_enforcement_banner
+        expect(page).not_to have_text storage_banner_text
 
         storage_enforcement_date = Date.today + 13
         allow_next_found_instance_of(Group) do |group|
           allow(group).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
         end
         page.refresh
-        expect_page_to_have_storage_enforcement_banner(storage_enforcement_date)
+        have_text storage_banner_text
       end
     end
 
@@ -172,16 +173,8 @@ RSpec.describe 'Project', :js do
       it 'does not display the banner in the group page' do
         stub_feature_flags(namespace_storage_limit_bypass_date_check: false)
         visit project_path(project)
-        expect_page_not_to_have_storage_enforcement_banner
+        expect(page).not_to have_text storage_banner_text
       end
     end
-  end
-
-  def expect_page_to_have_storage_enforcement_banner(storage_enforcement_date)
-    expect(page).to have_text "Effective #{storage_enforcement_date}, namespace storage limits will apply"
-  end
-
-  def expect_page_not_to_have_storage_enforcement_banner
-    expect(page).not_to have_text "namespace storage limits will apply"
   end
 end

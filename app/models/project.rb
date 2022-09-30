@@ -263,7 +263,6 @@ class Project < ApplicationRecord
   has_many :integrations
   has_many :events
   has_many :milestones
-  has_many :iterations
 
   # Projects with a very large number of notes may time out destroying them
   # through the foreign key. Additionally, the deprecated attachment uploader
@@ -350,6 +349,7 @@ class Project < ApplicationRecord
   has_many :stages, class_name: 'Ci::Stage', inverse_of: :project
   has_many :ci_refs, class_name: 'Ci::Ref', inverse_of: :project
 
+  has_many :pipeline_metadata, class_name: 'Ci::PipelineMetadata', inverse_of: :project
   has_many :pending_builds, class_name: 'Ci::PendingBuild'
   has_many :builds, class_name: 'Ci::Build', inverse_of: :project
   has_many :processables, class_name: 'Ci::Processable', inverse_of: :project
@@ -3025,6 +3025,11 @@ class Project < ApplicationRecord
     return true if Gitlab::CurrentSettings.max_pages_custom_domains_per_project == 0
 
     pages_domains.count < Gitlab::CurrentSettings.max_pages_custom_domains_per_project
+  end
+
+  # overridden in EE
+  def suggested_reviewers_available?
+    false
   end
 
   private

@@ -14,7 +14,7 @@ module Types
     field :project, ::Types::ProjectType,
           description: "Project details. Present if it's project-level protected environment."
 
-    field :group, ::Types::GroupType,
+    field :group, '::Types::GroupType',
           description: "Group details. Present if it's group-level protected environment."
 
     field :deploy_access_levels, ::Types::ProtectedEnvironments::DeployAccessLevelType.connection_type,

@@ -28,11 +28,11 @@ module EE
       include Timebox
       include EachBatch
       include AfterCommitQueue
+      include IidRoutes
+      include FromUnion
 
       attr_accessor :skip_future_date_validation
-      attr_accessor :skip_project_validation
 
-      belongs_to :project
       belongs_to :group
       belongs_to :iterations_cadence, class_name: '::Iterations::Cadence', foreign_key: :iterations_cadence_id, inverse_of: :iterations
 
@@ -40,16 +40,14 @@ module EE
       has_many :labels, -> { distinct.reorder('labels.title') }, through: :issues
       has_many :merge_requests, foreign_key: 'sprint_id'
 
-      has_internal_id :iid, scope: :project
       has_internal_id :iid, scope: :group
 
       validates :start_date, presence: true
       validates :due_date, presence: true
-      validates :iterations_cadence, presence: true, unless: -> { project_id.present? }
+      validates :iterations_cadence, presence: true
 
       validate :dates_do_not_overlap, if: :start_or_due_dates_changed?
       validate :future_date, if: :start_or_due_dates_changed?, unless: :skip_future_date_validation
-      validate :no_project, unless: :skip_project_validation
       validate :validate_group
       validate :uniqueness_of_title, if: :title_changed?
 
@@ -59,6 +57,8 @@ module EE
       after_save :update_iteration_sequences, if: -> { iterations_cadence && saved_change_to_start_or_due_date? }
       after_destroy :update_iteration_sequences, if: :iterations_cadence
       after_commit :reset, on: [:update, :create], if: :saved_change_to_start_or_due_date?
+
+      scope :of_groups, ->(ids) { where(group_id: ids) }
 
       scope :due_date_order_asc, -> { order(:due_date) }
       scope :sort_by_cadence_id_and_due_date_asc, -> { reorder(iterations_cadence_id: :asc).due_date_order_asc.order(id: :asc) }
@@ -200,7 +200,7 @@ module EE
     end
 
     def resource_parent
-      group || project
+      group
     end
 
     # Show display_text when we manage to find an iteration, without the reference pattern,
@@ -241,6 +241,28 @@ module EE
       self.state = self.class.compute_state(start_date, due_date)
     end
 
+    ##
+    # Returns the String necessary to reference a Timebox in Markdown. Group
+    # timeboxes only support name references, and do not support cross-project
+    # references.
+    #
+    # format - Symbol format to use (default: :iid, optional: :name)
+    #
+    # Examples:
+    #
+    #   Iteration.first.to_reference(format: :name)            # => "*iteration:\"goal\""
+    #   Iteration.first.to_reference(same_namespace_project)   # => "gitlab-foss*iteration:1"
+    #
+    def to_reference(from = nil, format: :name, full: false)
+      format_reference = timebox_format_reference(format)
+
+      "#{self.class.reference_prefix}#{format_reference}"
+    end
+
+    def merge_requests_enabled?
+      false
+    end
+
     private
 
     def last_iteration_in_cadence?
@@ -264,10 +286,6 @@ module EE
       else
         id
       end
-    end
-
-    def parent_group
-      group || project.group
     end
 
     def start_or_due_dates_changed?
@@ -295,12 +313,6 @@ module EE
         errors.add(:start_date, s_("Iteration|cannot be more than 500 years in the future")) if start_date > 500.years.from_now
         errors.add(:due_date, s_("Iteration|cannot be more than 500 years in the future")) if due_date > 500.years.from_now
       end
-    end
-
-    def no_project
-      return unless project_id.present?
-
-      errors.add(:project_id, s_("is not allowed. We do not currently support project-level iterations"))
     end
 
     def update_iteration_sequences

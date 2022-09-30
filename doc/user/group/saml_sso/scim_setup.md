@@ -15,7 +15,7 @@ GitLab SAML SSO SCIM doesn't support updating users.
 
 When SCIM is enabled for a GitLab group, membership of that group is synchronized between GitLab and an identity provider.
 
-The GitLab [SCIM API](../../../api/scim.md) implements part of [the RFC7644 protocol](https://tools.ietf.org/html/rfc7644).
+The GitLab [SCIM API](../../../api/scim.md) implements part of [the RFC7644 protocol](https://www.rfc-editor.org/rfc/rfc7644).
 
 ## Configure GitLab
 
@@ -50,7 +50,7 @@ Prerequisites:
 - [GitLab is configured](#configure-gitlab).
 
 The SAML application created during [single sign-on](index.md) set up for
-[Azure Active Directory](https://docs.microsoft.com/en-us/azure/active-directory/manage-apps/view-applications-portal)
+[Azure Active Directory](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/view-applications-portal)
 must be set up for SCIM. For an example, see [example configuration](example_saml_config.md#scim-mapping).
 
 To configure Azure Active Directory for SCIM:

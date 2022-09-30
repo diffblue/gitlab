@@ -11,7 +11,7 @@ import projectIssueEpicQuery from 'ee/sidebar/queries/project_issue_epic.query.g
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { IssuableType } from '~/issues/constants';
 import { clickEdit, search } from '../helpers';
 
@@ -139,14 +139,14 @@ describe('SidebarDropdownWidget', () => {
         describe('epics', () => {
           let groupEpicsSpy;
 
-          it('should call createFlash if epics query fails', async () => {
+          it('should call createAlert if epics query fails', async () => {
             await createComponentWithApollo({
               groupEpicsSpy: jest.fn().mockRejectedValue(error),
             });
 
             await clickEdit(wrapper);
 
-            expect(createFlash).toHaveBeenCalledWith({
+            expect(createAlert).toHaveBeenCalledWith({
               message: 'Failed to fetch the epic for this issue. Please try again.',
               captureError: true,
               error: expect.any(Error),
@@ -227,12 +227,12 @@ describe('SidebarDropdownWidget', () => {
       });
 
       describe('currentAttributes', () => {
-        it('should call createFlash if currentAttributes query fails', async () => {
+        it('should call createAlert if currentAttributes query fails', async () => {
           await createComponentWithApollo({
             currentEpicSpy: jest.fn().mockRejectedValue(error),
           });
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message: 'An error occurred while fetching the assigned epic of the selected issue.',
             captureError: true,
             error: expect.any(Error),

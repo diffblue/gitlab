@@ -48,7 +48,7 @@ module Elastic
     end
 
     def has_jobs_in_waiting_queue?
-      with_redis { |redis| redis.exists(redis_set_key) }
+      with_redis { |redis| redis.exists?(redis_set_key) } # rubocop:disable CodeReuse/ActiveRecord
     end
 
     def resume_processing!

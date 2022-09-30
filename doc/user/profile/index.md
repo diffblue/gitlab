@@ -229,12 +229,12 @@ To set the busy status indicator, either:
 - Set it directly:
   1. On the top bar, in the top-right corner, select your avatar.
   1. Select **Set status** or, if you have already set a status, **Edit status**.
-  1. Select the **Busy** checkbox.
+  1. Select the **Set yourself as busy** checkbox.
 
 - Set it on your profile:
   1. On the top bar, in the top-right corner, select your avatar.
   1. Select **Edit profile**.
-  1. In the **Current status** section, select the **Busy** checkbox.
+  1. In the **Current status** section, select the **Set yourself as busy** checkbox.
 
   The busy status is displayed in the user interface.
 
@@ -479,6 +479,7 @@ Without the `config.extend_remember_period` flag, you would be forced to sign in
 - [Create users](account/create_accounts.md)
 - [Sign in to your GitLab account](../../topics/authentication/index.md)
 - [Receive emails for sign-ins from unknown IP addresses or devices](unknown_sign_in_notification.md)
+- [Receive emails for attempted sign-ins using a wrong two-factor authentication code](wrong_two_factor_authentication_code_notification.md)
 - Manage applications that can [use GitLab as an OAuth provider](../../integration/oauth_provider.md#introduction-to-oauth)
 - Manage [personal access tokens](personal_access_tokens.md) to access your account via API and authorized applications
 - Manage [SSH keys](../ssh.md) to access your account via SSH

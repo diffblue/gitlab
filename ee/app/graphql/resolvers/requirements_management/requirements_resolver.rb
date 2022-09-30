@@ -39,7 +39,15 @@ module Resolvers
       def preloads
         {
           last_test_report_manually_created: [:recent_test_reports],
-          last_test_report_state: [:recent_test_reports, { recent_test_reports: [:build] }]
+          last_test_report_state: [:recent_test_reports, { recent_test_reports: [:build] }],
+          title: :requirement_issue,
+          description: :requirement_issue,
+          title_html: { requirement_issue: :author },
+          description_html: { requirement_issue: :author },
+          author: { requirement_issue: :author },
+          state: :requirement_issue,
+          created_at: :requirement_issue,
+          updated_at: :requirement_issue
         }
       end
 

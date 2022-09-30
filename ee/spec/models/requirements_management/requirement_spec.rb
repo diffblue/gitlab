@@ -9,7 +9,6 @@ RSpec.describe RequirementsManagement::Requirement do
   describe 'associations' do
     subject { build(:requirement) }
 
-    it { is_expected.to belong_to(:author).class_name('User') }
     it { is_expected.to belong_to(:project) }
     it { is_expected.to have_many(:test_reports).through(:requirement_issue) }
     it { is_expected.to have_many(:recent_test_reports).through(:requirement_issue).order('requirements_management_test_reports.created_at DESC') }
@@ -21,8 +20,8 @@ RSpec.describe RequirementsManagement::Requirement do
     subject { build(:requirement) }
 
     delegated_attributes = %i[
-      author author_id title title_html description
-      description_html cached_markdown_version
+      author author_id title title_html description description_html
+      cached_markdown_version created_at updated_at
     ]
 
     delegated_attributes.each do |attr_name|
@@ -32,11 +31,9 @@ RSpec.describe RequirementsManagement::Requirement do
     context 'with nil attributes' do
       let_it_be(:requirement) { create(:requirement, project: project, author: user, description: 'Test', state: 'archived') }
 
-      (delegated_attributes - [:title]).each do |attr_name|
+      delegated_attributes.each do |attr_name|
         it "returns delegated #{attr_name} value" do
-          requirement.update_attribute(attr_name, nil)
-
-          expect(requirement.send(attr_name)).not_to be_nil
+          expect(requirement[attr_name]).to be_nil
           expect(requirement.send(attr_name)).to eq(requirement.requirement_issue.send(attr_name))
         end
       end

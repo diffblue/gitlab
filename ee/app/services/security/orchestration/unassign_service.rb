@@ -6,7 +6,7 @@ module Security
       def execute
         return error(_('Policy project doesn\'t exist')) unless security_orchestration_policy_configuration
 
-        security_orchestration_policy_configuration.delete_scan_finding_rules
+        security_orchestration_policy_configuration.delete_scan_finding_rules # To be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/369473#feature-update
 
         result = security_orchestration_policy_configuration.delete
         return success if result

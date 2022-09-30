@@ -5,10 +5,33 @@ module Elastic
     class IssueClassProxy < ApplicationClassProxy
       include StateFilter
 
-      def elastic_search(query, options: {})
-        options[:features] = 'issues'
-        options[:no_join_project] = true
+      AGGREGATION_LIMIT = 500
 
+      def elastic_search(query, options: {})
+        query_hash = issue_query(query, options: options.merge(features: 'issues', no_join_project: true))
+
+        search(query_hash, options)
+      end
+
+      # rubocop: disable CodeReuse/ActiveRecord
+      def preload_indexing_data(relation)
+        relation.includes(:issue_assignees, :labels, project: [:project_feature, :namespace])
+      end
+      # rubocop: enable CodeReuse/ActiveRecord
+
+      def issue_aggregations(query, options)
+        return [] if ::Feature.disabled?(:search_issue_label_aggregation, options[:current_user])
+
+        query_hash = issue_query(query, options: options.merge(features: 'issues', no_join_project: true, aggregation: true))
+
+        results = search(query_hash, options)
+
+        ::Gitlab::Search::AggregationParser.call(results.response.aggregations)
+      end
+
+      private
+
+      def issue_query(query, options:)
         query_hash =
           if query =~ /#(\d+)\z/
             iid_query_hash(Regexp.last_match(1))
@@ -24,18 +47,23 @@ module Elastic
           query_hash = context.name(:confidentiality) { confidentiality_filter(query_hash, options) }
           query_hash = context.name(:match) { state_filter(query_hash, options) }
         end
-        query_hash = apply_sort(query_hash, options)
 
-        search(query_hash, options)
+        if options[:aggregation]
+          query_hash[:size] = 0
+          query_hash[:aggs] = {
+            labels: {
+              terms: {
+                field: 'label_ids',
+                size: AGGREGATION_LIMIT
+              }
+            }
+          }
+        else
+          query_hash = apply_sort(query_hash, options)
+        end
+
+        query_hash
       end
-
-      # rubocop: disable CodeReuse/ActiveRecord
-      def preload_indexing_data(relation)
-        relation.includes(:issue_assignees, :labels, project: [:project_feature, :namespace])
-      end
-      # rubocop: enable CodeReuse/ActiveRecord
-
-      private
 
       # override
       def apply_sort(query_hash, options)

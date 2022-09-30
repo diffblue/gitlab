@@ -106,7 +106,8 @@ export default {
     },
     policyYaml: {
       type: String,
-      required: true,
+      required: false,
+      default: '',
     },
     yamlEditorValue: {
       type: String,
@@ -252,11 +253,10 @@ export default {
     <div class="gl-display-flex gl-flex-direction-column gl-align-items-center gl-lg-display-block">
       <span
         v-gl-tooltip.hover.focus="{ disabled: disableTooltip }"
-        class="gl-pt-2"
+        class="gl-pt-2 gl-mr-3"
         :title="saveTooltipText"
         data-testid="save-policy-tooltip"
-      >
-        <gl-button
+        ><gl-button
           type="submit"
           variant="confirm"
           data-testid="save-policy"
@@ -265,19 +265,17 @@ export default {
           @click="savePolicy"
         >
           {{ saveButtonText }}
-        </gl-button>
-      </span>
-      <gl-button
+        </gl-button></span
+      ><gl-button
         v-if="isEditing"
         v-gl-modal="'delete-modal'"
-        class="gl-mt-5 gl-lg-mt-0"
+        class="gl-mt-5 gl-lg-mt-0 gl-mr-3"
         category="secondary"
         variant="danger"
         data-testid="delete-policy"
         :loading="isRemovingPolicy"
         >{{ s__('SecurityOrchestration|Delete policy') }}</gl-button
-      >
-      <gl-button class="gl-mt-5 gl-lg-mt-0" category="secondary" :href="policiesPath">
+      ><gl-button class="gl-mt-5 gl-lg-mt-0" category="secondary" :href="policiesPath">
         {{ __('Cancel') }}
       </gl-button>
     </div>

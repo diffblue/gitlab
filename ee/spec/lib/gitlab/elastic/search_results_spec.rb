@@ -72,24 +72,24 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query do
 
     subject(:aggregations) { results.aggregations(scope) }
 
-    where(:scope, :should_return_aggregations) do
-      'projects'       | false
-      'milestones'     | false
-      'notes'          | false
-      'issues'         | false
-      'merge_requests' | false
-      'wiki_blobs'     | false
-      'commits'        | false
-      'users'          | false
-      'epics'          | false
-      'unknown'        | false
-      'blobs'          | true
+    where(:scope, :expected_aggregation_name, :feature_flag) do
+      'projects'       | nil        | false
+      'milestones'     | nil        | false
+      'notes'          | nil        | false
+      'issues'         | 'labels'   | :search_issue_label_aggregation
+      'merge_requests' | nil        | false
+      'wiki_blobs'     | nil        | false
+      'commits'        | nil        | false
+      'users'          | nil        | false
+      'epics'          | nil        | false
+      'unknown'        | nil        | false
+      'blobs'          | 'language' | :search_blobs_language_aggregation
     end
 
     with_them do
       context 'when feature flag is enabled for user' do
         before do
-          stub_feature_flags(search_blobs_language_aggregation: user)
+          stub_feature_flags(feature_flag => user) if feature_flag
           results.objects(scope) # run search to populate aggregations
         end
 
@@ -98,7 +98,7 @@ RSpec.describe Gitlab::Elastic::SearchResults, :elastic_delete_by_query do
 
       context 'when feature flag is disabled for user' do
         before do
-          stub_feature_flags(search_blobs_language_aggregation: false)
+          stub_feature_flags(feature_flag => false) if feature_flag
           results.objects(scope) # run search to populate aggregations
         end
 

@@ -46,7 +46,7 @@ module EE
                                              ::Feature.enabled?(:geo_secondary_proxy_separate_urls)
 
             non_proxy_response.merge({
-              geo_proxy_url: ::Gitlab::Geo.primary_node.internal_url,
+              geo_proxy_url: ::Gitlab::Geo.primary_node_internal_url,
               geo_proxy_extra_data: ::Gitlab::Geo.proxy_extra_data
             })
           end

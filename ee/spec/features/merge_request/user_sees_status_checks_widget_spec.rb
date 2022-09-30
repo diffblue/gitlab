@@ -49,7 +49,7 @@ RSpec.describe 'Merge request > User sees status checks widget', :js do
     with_them do
       it 'is rendered correctly', :aggregate_failures do
         within '[data-test-id="mr-status-checks"]' do
-          click_button 'Expand'
+          find('[data-testid="report-section-expand-button"]').click
         end
 
         within "[data-testid='mr-status-check-issue-#{check.id}']" do

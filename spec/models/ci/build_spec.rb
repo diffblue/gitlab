@@ -160,6 +160,42 @@ RSpec.describe Ci::Build do
     end
   end
 
+  describe '.with_erasable_artifacts' do
+    subject { described_class.with_erasable_artifacts }
+
+    context 'when job does not have any artifacts' do
+      let!(:job) { create(:ci_build) }
+
+      it 'does not return the job' do
+        is_expected.not_to include(job)
+      end
+    end
+
+    ::Ci::JobArtifact.erasable_file_types.each do |type|
+      context "when job has a #{type} artifact" do
+        it 'returns the job' do
+          job = create(:ci_build)
+          create(
+            :ci_job_artifact,
+            file_format: ::Ci::JobArtifact::TYPE_AND_FORMAT_PAIRS[type.to_sym],
+            file_type: type,
+            job: job
+          )
+
+          is_expected.to include(job)
+        end
+      end
+    end
+
+    context 'when job has a non-erasable artifact' do
+      let!(:job) { create(:ci_build, :trace_artifact) }
+
+      it 'does not return the job' do
+        is_expected.not_to include(job)
+      end
+    end
+  end
+
   describe '.with_live_trace' do
     subject { described_class.with_live_trace }
 
@@ -2668,6 +2704,7 @@ RSpec.describe Ci::Build do
           { key: 'CI_JOB_JWT_V1', value: 'ci.job.jwt', public: false, masked: true },
           { key: 'CI_JOB_JWT_V2', value: 'ci.job.jwtv2', public: false, masked: true },
           { key: 'CI_JOB_NAME', value: 'test', public: true, masked: false },
+          { key: 'CI_JOB_NAME_SLUG', value: 'test', public: true, masked: false },
           { key: 'CI_JOB_STAGE', value: 'test', public: true, masked: false },
           { key: 'CI_NODE_TOTAL', value: '1', public: true, masked: false },
           { key: 'CI_BUILD_NAME', value: 'test', public: true, masked: false },
@@ -3069,8 +3106,24 @@ RSpec.describe Ci::Build do
     end
 
     context 'when build is for tag' do
+      let(:tag_name) { project.repository.tags.first.name }
+      let(:tag_message) { project.repository.tags.first.message }
+
+      let!(:pipeline) do
+        create(:ci_pipeline, project: project,
+                             sha: project.commit.id,
+                             ref: tag_name,
+                             status: 'success')
+      end
+
+      let!(:build) { create(:ci_build, pipeline: pipeline, ref: tag_name) }
+
       let(:tag_variable) do
-        { key: 'CI_COMMIT_TAG', value: 'master', public: true, masked: false }
+        { key: 'CI_COMMIT_TAG', value: tag_name, public: true, masked: false }
+      end
+
+      let(:tag_message_variable) do
+        { key: 'CI_COMMIT_TAG_MESSAGE', value: tag_message, public: true, masked: false }
       end
 
       before do
@@ -3081,7 +3134,7 @@ RSpec.describe Ci::Build do
       it do
         build.reload
 
-        expect(subject).to include(tag_variable)
+        expect(subject).to include(tag_variable, tag_message_variable)
       end
     end
 

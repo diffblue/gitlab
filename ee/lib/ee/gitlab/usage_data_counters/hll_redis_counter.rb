@@ -10,7 +10,9 @@ module EE
           compliance
           epic_boards_usage
           network_policies
+          ci_secrets_management
           geo
+          growth
         ].freeze
 
         class_methods do

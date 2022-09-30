@@ -43,21 +43,17 @@ RSpec.describe 'User manages subscription', :js do
     it 'toggles subscription' do
       wait_for_requests
 
-      click_button 'Toggle dropdown'
+      click_button 'Merge request actions'
 
       expect(page).to have_selector('.gl-toggle:not(.is-checked)')
       find('[data-testid="notifications-toggle"] .gl-toggle').click
 
       wait_for_requests
 
-      click_button 'Toggle dropdown'
-
       expect(page).to have_selector('.gl-toggle.is-checked')
       find('[data-testid="notifications-toggle"] .gl-toggle').click
 
       wait_for_requests
-
-      click_button 'Toggle dropdown'
 
       expect(page).to have_selector('.gl-toggle:not(.is-checked)')
     end

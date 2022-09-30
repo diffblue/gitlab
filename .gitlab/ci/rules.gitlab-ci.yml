@@ -31,11 +31,14 @@
 .if-merge-request: &if-merge-request
   if: '$CI_MERGE_REQUEST_IID'
 
+# Once https://gitlab.com/gitlab-org/gitlab/-/issues/373904 is implemented, we should be able to change this back to
+# if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_APPROVALS_COUNT > 0'
+# or any similar condition to check that the MR has *any* approval (not just required approval).
 .if-merge-request-approved: &if-merge-request-approved
-  if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_APPROVED'
+  if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_LABELS =~ /pipeline:run-full-rspec/'
 
 .if-merge-request-not-approved: &if-merge-request-not-approved
-  if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_APPROVED != "true"'
+  if: '$CI_MERGE_REQUEST_IID && $CI_MERGE_REQUEST_LABELS !~ /pipeline:run-full-rspec/'
 
 .if-automated-merge-request: &if-automated-merge-request
   if: '$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == "release-tools/update-gitaly" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME =~ /stable-ee$/'
@@ -246,8 +249,21 @@
   - "babel.config.js"
   - "config/webpack.config.js"
   - "config/**/*.js"
-  - "vendor/assets/**/*"
   - "{,ee/,jh/}app/assets/**/*"
+  - "vendor/assets/**/*"
+
+# This list should match the list in Tasks::Gitlab::Assets.assets_impacting_compilation
+.assets-compilation-patterns: &assets-compilation-patterns
+  - "{package.json,yarn.lock}"
+  - ".browserslistrc"
+  - "babel.config.js"
+  - "config/webpack.config.js"
+  - "*.js"
+  - "config/**/*.js"
+  - "locale/**/gitlab.po"
+  - "{,ee/,jh/}app/assets/**/*"
+  - "fixtures/emojis/**/*"
+  - "vendor/assets/**/*"
 
 .frontend-patterns-for-as-if-foss: &frontend-patterns-for-as-if-foss
   - "{package.json,yarn.lock}"
@@ -516,7 +532,7 @@
   - "vendor/assets/javascripts/**/*"
 
 .feature-flag-development-config-patterns: &feature-flag-development-config-patterns
-  - "{,ee/}config/feature_flags/{development,ops}/*.yml"
+  - "{,ee/,jh/}config/feature_flags/{development,ops}/*.yml"
 
 ##################
 # Conditions set #
@@ -531,9 +547,6 @@
 .rails:rules:minimal-default-rules:
   rules:
     - <<: *if-merge-request-approved
-      when: never
-    # Temporarily disabled minimal rspec jobs before and after approval because of https://gitlab.com/gitlab-org/gitlab/-/issues/373064.
-    - <<: *if-merge-request-not-approved
       when: never
     - <<: *if-automated-merge-request
       when: never
@@ -554,6 +567,8 @@
       changes: *backend-patterns
     - <<: *if-security-merge-request
       changes: *backend-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
 
 .rails:rules:as-if-foss-migration-unit-integration:minimal-default-rules:
   rules:
@@ -581,6 +596,8 @@
       changes: *code-backstage-patterns
     - <<: *if-security-merge-request
       changes: *code-backstage-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
 
 .rails:rules:system:minimal-default-rules:
   rules:
@@ -647,6 +664,37 @@
     - <<: *if-auto-deploy-branches
     - changes: *ci-build-images-patterns
     - changes: *code-qa-patterns
+
+#################
+# Caching rules #
+#################
+.caching:rules:cache-workhorse:
+  rules:
+    - <<: *if-dot-com-ee-schedule
+    - <<: *if-dot-com-gitlab-org-default-branch
+      changes: ["workhorse/**/*"]
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes:
+        - ".gitlab/ci/caching.gitlab-ci.yml"
+        - "scripts/gitlab_component_helpers.sh"
+      when: manual
+      allow_failure: true
+
+.caching:rules:cache-assets:
+  rules:
+    # The new strategy to cache assets as generic packages is experimental and can be disabled by removing the `CACHE_ASSETS_AS_PACKAGE` variable
+    - if: '$CACHE_ASSETS_AS_PACKAGE != "true"'
+      when: never
+    - <<: *if-dot-com-ee-schedule
+    - <<: *if-dot-com-gitlab-org-default-branch
+      changes: *assets-compilation-patterns
+    - <<: *if-dot-com-gitlab-org-merge-request
+      changes:
+        - ".gitlab/ci/caching.gitlab-ci.yml"
+        - "scripts/gitlab_component_helpers.sh"
+        - "lib/tasks/gitlab/assets.rake"
+      when: manual
+      allow_failure: true
 
 ######################
 # CI Templates Rules #
@@ -965,16 +1013,6 @@
 ###############
 # Rails rules #
 ###############
-.rails:rules:build-components:
-  rules:
-    - <<: *if-dot-com-ee-schedule
-    - <<: *if-dot-com-gitlab-org-default-branch
-      changes:
-        - "workhorse/**/*"
-    - <<: *if-dot-com-gitlab-org-merge-request
-      when: manual
-      allow_failure: true
-
 .rails:rules:setup-test-env:
   rules:
     - changes: *setup-test-env-patterns
@@ -1007,6 +1045,8 @@
       changes: *db-patterns
     - <<: *if-security-merge-request
       changes: *db-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
     - changes: *db-patterns
 
 .rails:rules:ee-and-foss-migration:minimal:
@@ -1108,6 +1148,8 @@
       changes: *db-patterns
     - <<: *if-security-merge-request
       changes: *db-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
     - changes: *db-patterns
 
 .rails:rules:ee-only-migration:minimal:
@@ -1195,6 +1237,8 @@
       changes: *db-patterns
     - <<: *if-security-merge-request
       changes: *db-patterns
+    - <<: *if-merge-request-not-approved
+      when: never
 
 .rails:rules:as-if-foss-migration:minimal:
   rules:

@@ -46,14 +46,16 @@ RSpec.describe VisibleApprovable do
 
       it 'excludes author if author cannot approve' do
         project.update!(merge_requests_author_approval: false)
+        mr = resource.class.find(resource.id)
 
-        is_expected.not_to include(approver)
+        expect(mr.overall_approvers).not_to include(approver)
       end
 
       it 'includes author if author is able to approve' do
         project.update!(merge_requests_author_approval: true)
+        mr = resource.class.find(resource.id)
 
-        is_expected.to include(approver)
+        expect(mr.overall_approvers).to include(approver)
       end
     end
 

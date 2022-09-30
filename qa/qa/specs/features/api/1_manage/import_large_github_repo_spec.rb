@@ -1,21 +1,82 @@
 # frozen_string_literal: true
 
+require "etc"
+
 # Lifesize project import test executed from https://gitlab.com/gitlab-org/manage/import/import-metrics
 
 # rubocop:disable Rails/Pluck
 module QA
   RSpec.describe 'Manage', :github, requires_admin: 'creates users', only: { job: 'large-github-import' } do
-    describe 'Project import' do
+    describe 'Project import' do # rubocop:disable RSpec/MultipleMemoizedHelpers
+      let(:github_repo) { ENV['QA_LARGE_IMPORT_REPO'] || 'rspec/rspec-core' }
+      let(:import_max_duration) { ENV['QA_LARGE_IMPORT_DURATION']&.to_i || 7200 }
       let(:logger) { Runtime::Logger.logger }
       let(:differ) { RSpec::Support::Differ.new(color: true) }
-      let(:gitlab_address) { QA::Runtime::Scenario.gitlab_address }
+      let(:gitlab_address) { QA::Runtime::Scenario.gitlab_address.chomp("/") }
       let(:dummy_url) { "https://example.com" }
+      let(:api_request_params) { { auto_paginate: true, attempts: 2 } }
 
       let(:created_by_pattern) { /\*Created by: \S+\*\n\n/ }
       let(:suggestion_pattern) { /suggestion:-\d+\+\d+/ }
       let(:gh_link_pattern) { %r{https://github.com/#{github_repo}/(issues|pull)} }
       let(:gl_link_pattern) { %r{#{gitlab_address}/#{imported_project.path_with_namespace}/-/(issues|merge_requests)} }
-      let(:event_pattern) { %r{(un)?assigned( to)? @\S+|mentioned in (issue|merge request) [!#]\d+|changed title from \*\*.*\*\* to \*\*.*\*\*} } # rubocop:disable Layout/LineLength
+      # rubocop:disable Lint/MixedRegexpCaptureTypes
+      let(:event_pattern) do
+        Regexp.union(
+          [
+            /(?<event>(un)?assigned)( to)? @\S+/,
+            /(?<event>mentioned) in (issue|merge request) [!#]\d+/,
+            /(?<event>changed title) from \*\*.*\*\* to \*\*.*\*\*/,
+            /(?<event>requested review) from @\w+/,
+            /\*(?<event>Merged) by:/,
+            /\*\*(Review):\*\*/
+          ]
+        )
+      end
+      # rubocop:enable Lint/MixedRegexpCaptureTypes
+
+      # mapping from gitlab to github names
+      let(:event_mapping) do
+        {
+          "label_add" => "labeled",
+          "label_remove" => "unlabeled",
+          "milestone_add" => "milestoned",
+          "milestone_remove" => "demilestoned",
+          "assigned" => "assigned",
+          "unassigned" => "unassigned",
+          "changed title" => "renamed",
+          "requested review" => "review_requested",
+          "Merged" => "merged"
+        }
+      end
+
+      # github events that are not migrated or are not correctly mapable in gitlab
+      let(:unsupported_events) do
+        [
+          "head_ref_deleted",
+          "head_ref_force_pushed",
+          "head_ref_restored",
+          "base_ref_force_pushed",
+          "base_ref_changed",
+          "review_request_removed",
+          "review_dismissed",
+          "auto_squash_enabled",
+          "auto_merge_disabled",
+          "comment_deleted",
+          "convert_to_draft",
+          "ready_for_review",
+          "subscribed",
+          "unsubscribed",
+          "transferred",
+          "locked",
+          "unlocked",
+          # mentions are supported but they can be reported differently on gitlab's side
+          # for example mention of issue creation in pr will be reported in the issue on gitlab side
+          # or referenced in github will still create a 'mentioned in' comment in gitlab
+          "referenced",
+          "mentioned"
+        ]
+      end
 
       let(:api_client) { Runtime::API::Client.as_admin }
 
@@ -25,79 +86,105 @@ module QA
         end
       end
 
-      let(:github_repo) { ENV['QA_LARGE_IMPORT_REPO'] || 'rspec/rspec-core' }
-      let(:import_max_duration) { ENV['QA_LARGE_IMPORT_DURATION'] ? ENV['QA_LARGE_IMPORT_DURATION'].to_i : 7200 }
       let(:github_client) do
         Octokit::Client.new(
           access_token: ENV['QA_LARGE_IMPORT_GH_TOKEN'] || Runtime::Env.github_access_token,
-          auto_paginate: true
+          auto_paginate: true,
+          middleware: Faraday::RackBuilder.new do |builder|
+            builder.use(Faraday::Retry::Middleware, exceptions: [Octokit::InternalServerError, Octokit::ServerError])
+          end
         )
       end
 
       let(:gh_repo) { github_client.repository(github_repo) }
 
       let(:gh_branches) do
-        logger.debug("= Fetching branches =")
+        logger.info("= Fetching branches =")
         github_client.branches(github_repo).map(&:name)
       end
 
       let(:gh_commits) do
-        logger.debug("= Fetching commits =")
+        logger.info("= Fetching commits =")
         github_client.commits(github_repo).map(&:sha)
       end
 
       let(:gh_labels) do
-        logger.debug("= Fetching labels =")
+        logger.info("= Fetching labels =")
         github_client.labels(github_repo).map { |label| { name: label.name, color: "##{label.color}" } }
       end
 
       let(:gh_milestones) do
-        logger.debug("= Fetching milestones =")
+        logger.info("= Fetching milestones =")
         github_client
           .list_milestones(github_repo, state: 'all')
           .map { |ms| { title: ms.title, description: ms.description } }
       end
 
-      let(:gh_all_issues) do
-        logger.debug("= Fetching issues and prs =")
-        github_client.list_issues(github_repo, state: 'all')
-      end
-
       let(:gh_prs) do
         gh_all_issues.select(&:pull_request).each_with_object({}) do |pr, hash|
-          hash[pr.number] = {
+          id = pr.number
+          hash[id] = {
             url: pr.html_url,
             title: pr.title,
             body: pr.body || '',
-            comments: [*gh_pr_comments[pr.html_url], *gh_issue_comments[pr.html_url]].compact
+            comments: [*gh_pr_comments[id], *gh_issue_comments[id]].compact,
+            events: gh_pr_events[id].reject { |event| unsupported_events.include?(event) }
           }
         end
       end
 
       let(:gh_issues) do
         gh_all_issues.reject(&:pull_request).each_with_object({}) do |issue, hash|
-          hash[issue.number] = {
+          id = issue.number
+          hash[id] = {
             url: issue.html_url,
             title: issue.title,
             body: issue.body || '',
-            comments: gh_issue_comments[issue.html_url]
+            comments: gh_issue_comments[id],
+            events: gh_issue_events[id].reject { |event| unsupported_events.include?(event) }
           }
         end
       end
 
+      let(:gh_all_issues) do
+        logger.info("= Fetching issues and prs =")
+        github_client.list_issues(github_repo, state: 'all')
+      end
+
+      let(:gh_all_events) do
+        logger.info("- Fetching issue and pr events -")
+        github_client.repository_issue_events(github_repo).map do |event|
+          { name: event[:event], **(event[:issue] || {}) } # some events don't have issue object at all
+        end
+      end
+
+      let(:gh_issue_events) do
+        gh_all_events.each_with_object(Hash.new { |h, k| h[k] = [] }) do |event, hash|
+          next if event[:pull_request] || !event[:number]
+
+          hash[event[:number]] << event[:name]
+        end
+      end
+
+      let(:gh_pr_events) do
+        gh_all_events.each_with_object(Hash.new { |h, k| h[k] = [] }) do |event, hash|
+          next unless event[:pull_request]
+
+          hash[event[:number]] << event[:name]
+        end
+      end
+
       let(:gh_issue_comments) do
-        logger.debug("= Fetching issue comments =")
+        logger.info("- Fetching issue comments -")
         github_client.issues_comments(github_repo).each_with_object(Hash.new { |h, k| h[k] = [] }) do |c, hash|
-          # use base html url as key
-          hash[c.html_url.gsub(/\#\S+/, "")] << c.body&.gsub(gh_link_pattern, dummy_url)
+          hash[id_from_url(c.html_url)] << c.body&.gsub(gh_link_pattern, dummy_url)
         end
       end
 
       let(:gh_pr_comments) do
-        logger.debug("= Fetching pr comments =")
+        logger.info("- Fetching pr comments -")
         github_client.pull_requests_comments(github_repo).each_with_object(Hash.new { |h, k| h[k] = [] }) do |c, hash|
-          # use base html url as key
-          hash[c.html_url.gsub(/\#\S+/, "")] << c.body
+          hash[id_from_url(c.html_url)] << c.body
             # some suggestions can contain extra whitespaces which gitlab will remove
             &.gsub(/suggestion\s+\r/, "suggestion\r")
             &.gsub(gh_link_pattern, dummy_url)
@@ -115,7 +202,10 @@ module QA
         end
       end
 
-      # rubocop:disable RSpec/InstanceVariable
+      before do
+        Runtime::Feature.enable(:github_importer_single_endpoint_issue_events_import)
+      end
+
       after do |example|
         next unless defined?(@import_time)
 
@@ -138,8 +228,10 @@ module QA
                 milestones: gh_milestones.length,
                 mrs: gh_prs.length,
                 mr_comments: gh_prs.sum { |_k, v| v[:comments].length },
+                mr_events: gh_prs.sum { |_k, v| v[:events].length },
                 issues: gh_issues.length,
-                issue_comments: gh_issues.sum { |_k, v| v[:comments].length }
+                issue_comments: gh_issues.sum { |_k, v| v[:comments].length },
+                issue_events: gh_issues.sum { |_k, v| v[:events].length }
               }
             },
             target: {
@@ -153,8 +245,10 @@ module QA
                 milestones: gl_milestones.length,
                 mrs: mrs.length,
                 mr_comments: mrs.sum { |_k, v| v[:comments].length },
+                mr_events: mrs.sum { |_k, v| v[:events].length },
                 issues: gl_issues.length,
-                issue_comments: gl_issues.sum { |_k, v| v[:comments].length }
+                issue_comments: gl_issues.sum { |_k, v| v[:comments].length },
+                issue_events: gl_issues.sum { |_k, v| v[:events].length }
               }
             },
             not_imported: {
@@ -164,7 +258,6 @@ module QA
           }
         )
       end
-      # rubocop:enable RSpec/InstanceVariable
 
       it(
         'imports large Github repo via api',
@@ -172,8 +265,9 @@ module QA
       ) do
         start = Time.now
 
-        # import the project and log gitlab path
-        logger.info("== Importing project '#{github_repo}' in to '#{imported_project.reload!.full_path}' ==")
+        # trigger import and log project paths
+        logger.info("== Triggering import of project '#{github_repo}' in to '#{imported_project.reload!.full_path}' ==")
+
         # fetch all objects right after import has started
         fetch_github_objects
 
@@ -182,7 +276,7 @@ module QA
             @stats = status.dig(:stats, :imported)
 
             # fail fast if import explicitly failed
-            raise "Import of '#{imported_project.name}' failed!" if status[:import_status] == 'failed'
+            raise "Import of '#{imported_project.full_path}' failed!" if status[:import_status] == 'failed'
 
             status[:import_status]
           end
@@ -276,25 +370,26 @@ module QA
         count_msg = "Expected to contain same amount of #{type}s. Gitlab: #{expected.length}, Github: #{actual.length}"
         expect(expected.length).to eq(actual.length), count_msg
 
-        missing_comments = verify_comments(type, actual, expected)
+        missing_objects = (actual.keys - expected.keys).map { |it| actual[it].slice(:title, :url) }
+        missing_content = verify_comments_and_events(type, actual, expected)
 
         {
-          "#{type}s": (actual.keys - expected.keys).map { |it| actual[it].slice(:title, :url) },
-          "#{type}_comments": missing_comments
-        }
+          "#{type}s": missing_objects.empty? ? nil : missing_objects,
+          "#{type}_content": missing_content.empty? ? nil : missing_content
+        }.compact
       end
 
-      # Verify imported comments
+      # Verify imported comments and events
       #
       # @param [String] type verification object, 'mrs' or 'issues'
       # @param [Hash] actual
       # @param [Hash] expected
       # @return [Hash]
-      def verify_comments(type, actual, expected)
-        actual.each_with_object([]) do |(key, actual_item), missing_comments|
+      def verify_comments_and_events(type, actual, expected)
+        actual.each_with_object([]) do |(key, actual_item), missing_content|
           expected_item = expected[key]
           title = actual_item[:title]
-          msg = "expected #{type} with title '#{title}' to have"
+          msg = "expected #{type} with iid '#{key}' to have"
 
           # Print title in the error message to see which object is missing
           #
@@ -320,17 +415,27 @@ module QA
           expect(expected_comments.length).to eq(actual_comments.length), comment_count_msg
           expect(expected_comments).to match_array(actual_comments)
 
-          # Save missing comments
+          expected_events = expected_item[:events]
+          actual_events = actual_item[:events]
+          event_count_msg = <<~MSG
+            #{msg} same amount of events. Gitlab: #{expected_events.length}, Github: #{actual_events.length}
+          MSG
+          expect(expected_events.length).to eq(actual_events.length), event_count_msg
+          expect(expected_events).to match_array(actual_events)
+
+          # Save missing comments and events
           #
           comment_diff = actual_comments - expected_comments
-          next if comment_diff.empty?
+          event_diff = actual_events - expected_events
+          next if comment_diff.empty? && event_diff.empty?
 
-          missing_comments << {
+          missing_content << {
             title: title,
             github_url: actual_item[:url],
             gitlab_url: expected_item[:url],
-            missing_comments: comment_diff
-          }
+            missing_comments: comment_diff.empty? ? nil : comment_diff,
+            missing_events: event_diff.empty? ? nil : event_diff
+          }.compact
         end
       end
 
@@ -380,26 +485,27 @@ module QA
       def mrs
         @mrs ||= begin
           logger.debug("= Fetching merge requests =")
-          imported_mrs = imported_project.merge_requests(auto_paginate: true, attempts: 2)
+          imported_mrs = imported_project.merge_requests(**api_request_params)
 
           logger.debug("= Fetching merge request comments =")
-          Parallel.map(imported_mrs, in_threads: 4) do |mr|
+          Parallel.map(imported_mrs, in_threads: Etc.nprocessors) do |mr|
             resource = Resource::MergeRequest.init do |resource|
               resource.project = imported_project
               resource.iid = mr[:iid]
               resource.api_client = api_client
             end
 
-            logger.debug("Fetching comments for mr '#{mr[:title]}'")
-            comments = resource
-              .comments(auto_paginate: true, attempts: 2)
-              .reject { |c| c[:system] || c[:body].match?(/^(\*\*Review:\*\*)|(\*Merged by:).*/) }
+            logger.debug("Fetching events and comments for mr '!#{mr[:iid]}'")
+            comments = resource.comments(**api_request_params)
+            label_events = resource.label_events(**api_request_params)
+            state_events = resource.state_events(**api_request_params)
+            milestone_events = resource.milestone_events(**api_request_params)
 
             [mr[:iid], {
               url: mr[:web_url],
               title: mr[:title],
               body: sanitize_description(mr[:description]) || '',
-              events: events(comments),
+              events: events(comments, label_events, state_events, milestone_events),
               comments: non_event_comments(comments)
             }]
           end.to_h
@@ -412,48 +518,59 @@ module QA
       def gl_issues
         @gl_issues ||= begin
           logger.debug("= Fetching issues =")
-          imported_issues = imported_project.issues(auto_paginate: true, attempts: 2)
+          imported_issues = imported_project.issues(**api_request_params)
 
           logger.debug("= Fetching issue comments =")
-          Parallel.map(imported_issues, in_threads: 4) do |issue|
+          Parallel.map(imported_issues, in_threads: Etc.nprocessors) do |issue|
             resource = Resource::Issue.init do |issue_resource|
               issue_resource.project = imported_project
               issue_resource.iid = issue[:iid]
               issue_resource.api_client = api_client
             end
 
-            logger.debug("Fetching comments for issue '#{issue[:title]}'")
-            comments = resource.comments(auto_paginate: true, attempts: 2)
+            logger.debug("Fetching events and comments for issue '!#{issue[:iid]}'")
+            comments = resource.comments(**api_request_params)
+            label_events = resource.label_events(**api_request_params)
+            state_events = resource.state_events(**api_request_params)
+            milestone_events = resource.milestone_events(**api_request_params)
 
             [issue[:iid], {
               url: issue[:web_url],
               title: issue[:title],
               body: sanitize_description(issue[:description]) || '',
-              events: events(comments),
+              events: events(comments, label_events, state_events, milestone_events),
               comments: non_event_comments(comments)
             }]
           end.to_h
         end
       end
 
-      # Fetch comments without events
+      # Filter out event comments
       #
       # @param [Array] comments
       # @return [Array]
       def non_event_comments(comments)
         comments
-          .reject { |c| c[:body].match?(event_pattern) }
+          .reject { |c| c[:system] || c[:body].match?(event_pattern) }
           .map { |c| sanitize_comment(c[:body]) }
       end
 
       # Events
       #
       # @param [Array] comments
+      # @param [Array] label_events
+      # @param [Array] state_events
+      # @param [Array] milestone_events
       # @return [Array]
-      def events(comments)
-        comments
-          .select { |c| c[:body].match?(event_pattern) }
-          .map { |c| c[:body] }
+      def events(comments, label_events, state_events, milestone_events)
+        mapped_label_events = label_events.map { |event| event_mapping["label_#{event[:action]}"] }
+        mapped_milestone_events = milestone_events.map { |event| event_mapping["milestone_#{event[:action]}"] }
+        mapped_state_event = state_events.map { |event| event[:state] }
+        mapped_comment_events = comments.map do |c|
+          event_mapping[c[:body].match(event_pattern)&.named_captures&.fetch("event", nil)]
+        end
+
+        [*mapped_label_events, *mapped_milestone_events, *mapped_state_event, *mapped_comment_events].compact
       end
 
       # Normalize comments and make them directly comparable
@@ -488,6 +605,16 @@ module QA
       # @return [void]
       def save_json(name, json)
         File.open("tmp/#{name}.json", "w") { |file| file.write(JSON.pretty_generate(json)) }
+      end
+
+      # Extract id number from web url of issue or pull request
+      #
+      # Some endpoints don't return object id as separate parameter so web url can be used as a workaround
+      #
+      # @param [String] url
+      # @return [Integer]
+      def id_from_url(url)
+        url.match(%r{(?<type>issues|pull)/(?<id>\d+)})&.named_captures&.fetch("id", nil).to_i
       end
     end
   end

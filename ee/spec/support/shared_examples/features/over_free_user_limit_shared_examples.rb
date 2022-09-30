@@ -2,7 +2,7 @@
 
 RSpec.shared_examples_for 'over the free user limit alert' do
   before do
-    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_ee_application_setting(dashboard_limit_enabled: true)
   end
 
   shared_examples 'performs entire show dismiss cycle' do
@@ -23,6 +23,7 @@ RSpec.shared_examples_for 'over the free user limit alert' do
       end
 
       find('[data-testid="user-over-limit-free-plan-dismiss"]').click
+      wait_for_requests
 
       page.refresh
 
@@ -32,9 +33,12 @@ RSpec.shared_examples_for 'over the free user limit alert' do
 
   context 'when over limit for preview' do
     before do
-      stub_feature_flags(free_user_cap: false)
+      stub_feature_flags(free_user_cap: true)
       stub_feature_flags(preview_free_user_cap: true)
-      stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 1)
+      # setup here so we are over the preview limit, but not the enforcement
+      # this will validate we only see one banner
+      stub_ee_application_setting(dashboard_notification_limit: 1)
+      stub_ee_application_setting(dashboard_enforcement_limit: 3)
     end
 
     let(:alert_title_content) do
@@ -47,7 +51,8 @@ RSpec.shared_examples_for 'over the free user limit alert' do
   context 'when reached/over limit' do
     before do
       stub_feature_flags(free_user_cap: true)
-      stub_const('::Namespaces::FreeUserCap::FREE_USER_LIMIT', 2)
+      stub_feature_flags(preview_free_user_cap: true)
+      stub_ee_application_setting(dashboard_enforcement_limit: 2)
     end
 
     let(:alert_title_content) { "Looks like you've reached your" }

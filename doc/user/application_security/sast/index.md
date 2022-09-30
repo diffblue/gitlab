@@ -138,7 +138,7 @@ The following analyzers have multi-project support:
 #### Enable multi-project support for Security Code Scan
 
 Multi-project support in the Security Code Scan requires a Solution (`.sln`) file in the root of
-the repository. For details on the Solution format, see the Microsoft reference [Solution (`.sln`) file](https://docs.microsoft.com/en-us/visualstudio/extensibility/internals/solution-dot-sln-file?view=vs-2019).
+the repository. For details on the Solution format, see the Microsoft reference [Solution (`.sln`) file](https://learn.microsoft.com/en-us/visualstudio/extensibility/internals/solution-dot-sln-file?view=vs-2019).
 
 ### Supported distributions
 
@@ -503,7 +503,7 @@ From highest to lowest severity, the logging levels are:
 #### Custom Certificate Authority
 
 To trust a custom Certificate Authority, set the `ADDITIONAL_CA_CERT_BUNDLE` variable to the bundle
-of CA certs that you want to trust in the SAST environment. The `ADDITIONAL_CA_CERT_BUNDLE` value should contain the [text representation of the X.509 PEM public-key certificate](https://tools.ietf.org/html/rfc7468#section-5.1). For example, to configure this value in the `.gitlab-ci.yml` file, use the following:
+of CA certs that you want to trust in the SAST environment. The `ADDITIONAL_CA_CERT_BUNDLE` value should contain the [text representation of the X.509 PEM public-key certificate](https://www.rfc-editor.org/rfc/rfc7468#section-5.1). For example, to configure this value in the `.gitlab-ci.yml` file, use the following:
 
 ```yaml
 variables:

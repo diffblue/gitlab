@@ -16,7 +16,7 @@ module Gitlab
         return [] unless buckets
 
         buckets.map do |b|
-          { key: b['key'], count: b['doc_count'] }
+          { key: b['key'], count: b['doc_count'] }.merge(b['extra']&.symbolize_keys || {})
         end
       end
     end

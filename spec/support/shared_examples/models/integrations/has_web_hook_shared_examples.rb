@@ -4,7 +4,7 @@ RSpec.shared_examples Integrations::HasWebHook do
   include AfterNextHelpers
 
   describe 'associations' do
-    it { is_expected.to have_one(:service_hook).inverse_of(:integration).with_foreign_key(:service_id) }
+    it { is_expected.to have_one(:service_hook).inverse_of(:integration).with_foreign_key(:integration_id) }
   end
 
   describe 'callbacks' do
@@ -34,6 +34,12 @@ RSpec.shared_examples Integrations::HasWebHook do
   describe '#hook_url' do
     it 'returns a string' do
       expect(integration.hook_url).to be_a(String)
+    end
+  end
+
+  describe '#url_variables' do
+    it 'returns a string' do
+      expect(integration.url_variables).to be_a(Hash)
     end
   end
 

@@ -101,12 +101,6 @@ RSpec.describe Iterations::CreateService do
     end
   end
 
-  context 'for projects' do
-    let_it_be(:parent, refind: true) { create(:project, namespace: create(:group)) }
-
-    it_behaves_like 'iterations create service'
-  end
-
   context 'for groups' do
     let_it_be(:group) { create(:group) }
 

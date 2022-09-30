@@ -112,6 +112,8 @@ module Ci
 
     has_one :pipeline_config, class_name: 'Ci::PipelineConfig', inverse_of: :pipeline
 
+    has_one :pipeline_metadata, class_name: 'Ci::PipelineMetadata', inverse_of: :pipeline
+
     has_many :daily_build_group_report_results, class_name: 'Ci::DailyBuildGroupReportResult', foreign_key: :last_pipeline_id
     has_many :latest_builds_report_results, through: :latest_builds, source: :report_results
     has_many :pipeline_artifacts, class_name: 'Ci::PipelineArtifact', inverse_of: :pipeline, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
@@ -119,6 +121,7 @@ module Ci
     accepts_nested_attributes_for :variables, reject_if: :persisted?
 
     delegate :full_path, to: :project, prefix: true
+    delegate :title, to: :pipeline_metadata, allow_nil: true
 
     validates :sha, presence: { unless: :importing? }
     validates :ref, presence: { unless: :importing? }
@@ -760,8 +763,14 @@ module Ci
     # There is no ActiveRecord relation between Ci::Pipeline and notes
     # as they are related to a commit sha. This method helps importing
     # them using the +Gitlab::ImportExport::Project::RelationFactory+ class.
-    def notes=(notes)
-      notes.each do |note|
+    def notes=(notes_to_save)
+      notes_to_save.reject! do |note_to_save|
+        notes.any? do |note|
+          [note_to_save.note, note_to_save.created_at.to_i] == [note.note, note.created_at.to_i]
+        end
+      end
+
+      notes_to_save.each do |note|
         note[:id] = nil
         note[:commit_id] = sha
         note[:noteable_id] = self['id']
@@ -850,7 +859,6 @@ module Ci
           variables.append(key: 'CI_COMMIT_REF_NAME', value: source_ref)
           variables.append(key: 'CI_COMMIT_REF_SLUG', value: source_ref_slug)
           variables.append(key: 'CI_COMMIT_BRANCH', value: ref) if branch?
-          variables.append(key: 'CI_COMMIT_TAG', value: ref) if tag?
           variables.append(key: 'CI_COMMIT_MESSAGE', value: git_commit_message.to_s)
           variables.append(key: 'CI_COMMIT_TITLE', value: git_commit_full_title.to_s)
           variables.append(key: 'CI_COMMIT_DESCRIPTION', value: git_commit_description.to_s)
@@ -863,7 +871,8 @@ module Ci
           variables.append(key: 'CI_BUILD_BEFORE_SHA', value: before_sha)
           variables.append(key: 'CI_BUILD_REF_NAME', value: source_ref)
           variables.append(key: 'CI_BUILD_REF_SLUG', value: source_ref_slug)
-          variables.append(key: 'CI_BUILD_TAG', value: ref) if tag?
+
+          variables.concat(predefined_commit_tag_variables)
         end
       end
     end
@@ -884,6 +893,20 @@ module Ci
           end
 
           variables.concat(merge_request.predefined_variables)
+        end
+      end
+    end
+
+    def predefined_commit_tag_variables
+      strong_memoize(:predefined_commit_ref_variables) do
+        Gitlab::Ci::Variables::Collection.new.tap do |variables|
+          next variables unless tag?
+
+          variables.append(key: 'CI_COMMIT_TAG', value: ref)
+          variables.append(key: 'CI_COMMIT_TAG_MESSAGE', value: project.repository.find_tag(ref).message)
+
+          # legacy variable
+          variables.append(key: 'CI_BUILD_TAG', value: ref)
         end
       end
     end
@@ -1160,6 +1183,10 @@ module Ci
 
     def has_exposed_artifacts?
       complete? && builds.latest.with_exposed_artifacts.exists?
+    end
+
+    def has_erasable_artifacts?
+      complete? && builds.latest.with_erasable_artifacts.exists?
     end
 
     def branch_updated?

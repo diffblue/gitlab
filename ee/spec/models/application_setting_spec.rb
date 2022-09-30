@@ -961,4 +961,50 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to allow_value(true).for(:delayed_project_removal) }
     end
   end
+
+  describe '#personal_access_tokens_disabled?' do
+    subject { setting.personal_access_tokens_disabled? }
+
+    context 'when the licensed feature is not available' do
+      before do
+        stub_licensed_features(fips_disable_personal_access_tokens: false)
+      end
+
+      it { is_expected.to eq(false) }
+    end
+
+    context 'when the licensed feature is available' do
+      before do
+        stub_licensed_features(fips_disable_personal_access_tokens: true)
+      end
+
+      context 'when FIPS mode is disabled', fips_mode: false do
+        it { is_expected.to eq(false) }
+      end
+
+      context 'when FIPS mode is enabled', :fips_mode do
+        it { is_expected.to eq(true) }
+      end
+    end
+  end
+
+  describe '#disable_feed_token' do
+    subject { setting.disable_feed_token }
+
+    before do
+      setting.update!(disable_feed_token: false)
+    end
+
+    context 'when personal access tokens are disabled', :fips_mode do
+      before do
+        stub_licensed_features(fips_disable_personal_access_tokens: true)
+      end
+
+      it { is_expected.to eq(true) }
+    end
+
+    context 'when personal access tokens are enabled' do
+      it { is_expected.to eq(false) }
+    end
+  end
 end

@@ -427,6 +427,22 @@ RSpec.describe Boards::IssuesController do
   end
 
   describe 'POST create' do
+    context 'when trying to create issue on an unauthorized project' do
+      let(:unauthorized_project) { create(:project, :private) }
+      let(:issue_params) { { project_id: unauthorized_project.id } }
+
+      it 'creates the issue on the board\'s project' do
+        expect do
+          create_issue user: user, board: board, list: list1, title: 'New issue', additional_issue_params: issue_params
+        end.to change(Issue, :count).by(1)
+
+        created_issue = Issue.last
+
+        expect(created_issue.project).to eq(project)
+        expect(unauthorized_project.reload.issues.count).to eq(0)
+      end
+    end
+
     context 'with valid params' do
       before do
         create_issue user: user, board: board, list: list1, title: 'New issue'
@@ -481,6 +497,23 @@ RSpec.describe Boards::IssuesController do
       end
     end
 
+    context 'when create service returns an unrecoverable error' do
+      before do
+        allow_next_instance_of(Issues::CreateService) do |create_service|
+          allow(create_service).to receive(:execute).and_return(
+            ServiceResponse.error(message: 'unrecoverable error', http_status: 404)
+          )
+        end
+      end
+
+      it 'returns an array with errors an service http_status' do
+        create_issue user: user, board: board, list: list1, title: 'New issue'
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(json_response).to contain_exactly('unrecoverable error')
+      end
+    end
+
     context 'with guest user' do
       context 'in open list' do
         it 'returns a successful 200 response' do
@@ -500,13 +533,13 @@ RSpec.describe Boards::IssuesController do
       end
     end
 
-    def create_issue(user:, board:, list:, title:)
+    def create_issue(user:, board:, list:, title:, additional_issue_params: {})
       sign_in(user)
 
       post :create, params: {
                       board_id: board.to_param,
                       list_id: list.to_param,
-                      issue: { title: title, project_id: project.id }
+                      issue: { title: title, project_id: project.id }.merge(additional_issue_params)
                     },
                     format: :json
     end

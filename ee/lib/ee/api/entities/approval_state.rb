@@ -55,7 +55,7 @@ module EE
         end
 
         expose :user_can_approve do |approval_state, options|
-          approval_state.can_be_approved_by?(options[:current_user])
+          approval_state.eligible_for_approval_by?(options[:current_user])
         end
 
         expose :approval_rules_left, using: ApprovalRuleShort

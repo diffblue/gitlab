@@ -106,10 +106,14 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiBuildsMetric do
   end
 
   it 'raises an exception if secure_type option is not present' do
-    expect { described_class.new }.to raise_error(ArgumentError)
+    expect do
+      described_class.new(time_frame: 'all')
+    end.to raise_error(ArgumentError, /secure_type options attribute is required/)
   end
 
   it 'raises an exception if secure_type option is invalid' do
-    expect { described_class.new(option: { secure_type: 'invalid_type' }) }.to raise_error(ArgumentError)
+    expect do
+      described_class.new(options: { secure_type: 'invalid_type' }, time_frame: 'all')
+    end.to raise_error(ArgumentError, /Attribute: invalid_type is not allowed/)
   end
 end

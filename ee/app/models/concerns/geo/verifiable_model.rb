@@ -16,7 +16,7 @@ module Geo
       def save_verification_details
         return unless self.class.separate_verification_state_table?
 
-        return unless self.class.verifiables.primary_key_in(self).exists?
+        return unless in_verifiables?
 
         # During a transaction, `verification_state_object` could be built before
         # a value for `verification_state_model_key` exists. So we check for that
@@ -26,6 +26,14 @@ module Geo
         end
 
         verification_state_object.save!
+      end
+
+      def in_verifiables?
+        # This query could be simpler, but this way it always uses the best index: the primary key index.
+        cte = Gitlab::SQL::CTE.new(:verifiables, self.class.primary_key_in(self))
+        verifiables = self.class.with(cte.to_arel).from(cte.alias_to(self.class.arel_table)).verifiables
+
+        verifiables.exists?
       end
 
       # Implement this method in the class that includes this concern to specify

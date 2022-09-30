@@ -2,7 +2,8 @@
 require "spec_helper"
 
 RSpec.describe Namespaces::Storage::UserNamespacePreEnforcementAlertComponent, :saas, type: :component do
-  let(:storage_enforcement_date) { Date.today + 31 }
+  include ActionView::Helpers::NumberHelper
+  include StorageHelper
 
   let_it_be_with_refind(:user) { create(:user) }
 
@@ -16,7 +17,6 @@ RSpec.describe Namespaces::Storage::UserNamespacePreEnforcementAlertComponent, :
   context 'when user namespace' do
     before do
       allow(user.namespace).to receive(:user_namespace?).and_return(true)
-      allow(user.namespace).to receive(:storage_enforcement_date).and_return(storage_enforcement_date)
 
       create(
         :namespace_root_storage_statistics,
@@ -25,10 +25,12 @@ RSpec.describe Namespaces::Storage::UserNamespacePreEnforcementAlertComponent, :
       )
     end
 
-    it 'includes the storage_enforcement_date in the banner text' do
+    it 'includes used storage in the banner text' do
       render_inline(component)
 
-      expect(page).to have_text "Effective #{storage_enforcement_date}, namespace storage limits will apply"
+      expect(page).to have_text storage_counter(
+        ::EE::Gitlab::Namespaces::Storage::Enforcement::FREE_NAMESPACE_STORAGE_CAP
+      )
     end
 
     it 'includes the correct navigation instruction in the banner text' do

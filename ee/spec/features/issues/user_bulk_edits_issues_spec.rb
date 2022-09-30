@@ -169,7 +169,7 @@ RSpec.describe 'Issues > Bulk edit issues' do
     context 'at group level' do
       before do
         # avoid raising QueryLimiting exception for bulk inserts
-        stub_const("::Gitlab::QueryLimiting::Transaction::THRESHOLD", 110)
+        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(110)
       end
 
       it_behaves_like 'bulk edit option in sidebar', :group

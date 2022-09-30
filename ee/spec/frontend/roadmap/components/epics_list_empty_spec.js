@@ -1,4 +1,5 @@
 import { shallowMount } from '@vue/test-utils';
+import { GlEmptyState } from '@gitlab/ui';
 import EpicsListEmpty from 'ee/roadmap/components/epics_list_empty.vue';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
@@ -60,22 +61,20 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
     wrapper.destroy();
   });
 
-  const findTitle = () => wrapper.findByTestId('title');
+  const findComponent = () => wrapper.findComponent(GlEmptyState);
+  const findTitle = () => findComponent().props('title');
   const findSubTitle = () => wrapper.findByTestId('sub-title');
-  const findNewEpicButton = () => wrapper.findByTestId('new-epic-button');
-  const findListEpicsButton = () => wrapper.findByTestId('list-epics-button');
-  const findIllustration = () => wrapper.findByTestId('illustration');
 
   it('renders default message', () => {
     createWrapper({});
 
-    expect(findTitle().text()).toBe(wrapper.vm.message);
+    expect(findTitle()).toBe('The roadmap shows the progress of your epics along a timeline');
   });
 
   it('renders empty state message when `hasFiltersApplied` prop is true', () => {
     createWrapper({ hasFiltersApplied: true });
 
-    expect(findTitle().text()).toBe('Sorry, no epics matched your search');
+    expect(findTitle()).toBe('Sorry, no epics matched your search');
   });
 
   describe('with presetType `QUARTERS`', () => {
@@ -173,25 +172,27 @@ describe('ee/roadmap/components/epics_list_empty.vue', () => {
   it('renders empty state illustration in image element with provided `emptyStateIllustrationPath`', () => {
     createWrapper({});
 
-    expect(findIllustration().attributes('src')).toBe(mockSvgPath);
+    expect(findComponent().props('svgPath')).toBe(mockSvgPath);
   });
 
   it('renders buttons for create and list epics', () => {
     createWrapper({});
 
-    expect(findNewEpicButton().attributes('href')).toBe(TEST_NEW_EPIC_PATH);
-    expect(findListEpicsButton().attributes('href')).toBe(TEST_EPICS_PATH);
+    expect(findComponent().props()).toMatchObject({
+      primaryButtonLink: TEST_NEW_EPIC_PATH,
+      secondaryButtonLink: TEST_EPICS_PATH,
+    });
   });
 
   it('does not render new epic button element when `hasFiltersApplied` prop is true', () => {
     createWrapper({ hasFiltersApplied: true });
 
-    expect(findNewEpicButton().exists()).toBe(false);
+    expect(findComponent().props('primaryButtonLink')).toBe(null);
   });
 
   it('does not render new epic button element when `canCreateEpic` is false', () => {
     createWrapper({ canCreateEpic: false });
 
-    expect(findNewEpicButton().exists()).toBe(false);
+    expect(findComponent().props('primaryButtonLink')).toBe(null);
   });
 });

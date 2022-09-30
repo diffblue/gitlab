@@ -1,4 +1,4 @@
-export { fromYaml } from './from_yaml';
+export { createPolicyObject, fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
 export * from './humanize';
 export * from './rules';

@@ -43,7 +43,8 @@ module Security
           report_type: :scan_finding,
           orchestration_policy_idx: policy_index,
           vulnerability_states: rule[:vulnerability_states],
-          group_ids: groups_ids(action_info[:group_approvers_ids], action_info[:group_approvers])
+          group_ids: groups_ids(action_info[:group_approvers_ids], action_info[:group_approvers]),
+          security_orchestration_policy_configuration_id: policy_configuration.id
         }
       end
 

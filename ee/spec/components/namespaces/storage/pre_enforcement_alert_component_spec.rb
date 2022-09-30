@@ -26,10 +26,10 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
         group.add_maintainer(user)
       end
 
-      it 'includes the storage_enforcement_date in the banner text' do
+      it 'indicates the storage limit will be enforced soon in the banner text' do
         render_inline(component)
 
-        expect(page).to have_text "Effective #{storage_enforcement_date}, namespace storage limits will apply"
+        expect(page).to have_text "A namespace storage limit will soon be enforced"
       end
 
       it 'includes the namespace name in the banner text' do
@@ -43,10 +43,10 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
           render_inline(component)
 
           expect(page).to have_link(
-            'rollout schedule for this change',
+            'A namespace storage limit',
             href: help_page_path(
               'user/usage_quotas',
-              anchor: 'namespace-storage-limit-enforcement-schedule'
+              anchor: 'namespace-storage-limit'
             )
           )
         end
@@ -55,7 +55,7 @@ RSpec.describe Namespaces::Storage::PreEnforcementAlertComponent, :saas, type: :
           render_inline(component)
 
           expect(page).to have_link(
-            'Learn more',
+            'How can I manage my storage?',
             href: help_page_path(
               'user/usage_quotas',
               anchor: 'manage-your-storage-usage'

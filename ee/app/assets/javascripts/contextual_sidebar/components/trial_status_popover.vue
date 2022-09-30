@@ -6,7 +6,7 @@ import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { shouldHandRaiseLeadButtonMount } from 'ee/hand_raise_leads/hand_raise_lead';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { sprintf } from '~/locale';
+import { n__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import { POPOVER, RESIZE_EVENT, EXPERIMENT_KEY } from './constants';
 
@@ -64,6 +64,18 @@ export default {
         planName: removeTrialSuffix(this.planName),
       });
     },
+    popoverTitle() {
+      const i18nPopoverTitle = n__(
+        "Trials|You've got %{daysRemaining} day remaining on GitLab %{planName}!",
+        "Trials|You've got %{daysRemaining} days remaining on GitLab %{planName}!",
+        this.daysRemaining,
+      );
+
+      return sprintf(i18nPopoverTitle, {
+        daysRemaining: this.daysRemaining,
+        planName: this.planName,
+      });
+    },
   },
   created() {
     this.debouncedResize = debounce(() => this.updateDisabledState(), resizeEventDebounceMS);
@@ -103,8 +115,7 @@ export default {
     @shown="onShown"
   >
     <template #title>
-      {{ $options.i18n.popoverTitle }}
-      <gl-emoji class="gl-vertical-align-baseline gl-font-size-inherit gl-ml-1" data-name="wave" />
+      {{ popoverTitle }}
     </template>
 
     <gl-sprintf :message="$options.i18n.popoverContent">

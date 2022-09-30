@@ -14,6 +14,7 @@ RSpec.shared_context 'exclusive labels creation' do
   end
 end
 
+# `issuable` needs to be defined on the context calling this example
 RSpec.shared_examples 'new issuable with scoped labels' do
   include_context 'exclusive labels creation' do
     context 'when scoped labels are available' do
@@ -27,20 +28,32 @@ RSpec.shared_examples 'new issuable with scoped labels' do
       let!(:label4) { create_label('key::label3') }
 
       context 'when using label_ids parameter' do
+        let(:args) do
+          {
+            **described_class.constructor_container_arg(parent),
+            current_user: user,
+            params: { title: 'test', label_ids: [label1.id, label3.id, label4.id, label2.id] }
+          }
+        end
+
         it 'adds only last selected exclusive scoped label' do
-          args = { **described_class.constructor_container_arg(parent), current_user: user, params: { title: 'test', label_ids: [label1.id, label3.id, label4.id, label2.id] } }
           args[:spam_params] = nil if described_class.private_instance_methods.include?(:spam_params)
-          issuable = described_class.new(**args).execute
 
           expect(issuable.labels).to match_array([label1, label2])
         end
       end
 
       context 'when using labels parameter' do
+        let(:args) do
+          {
+            **described_class.constructor_container_arg(parent),
+            current_user: user,
+            params: { title: 'test', labels: [label1.title, label3.title, label4.title, label2.title] }
+          }
+        end
+
         it 'adds only last selected exclusive scoped label' do
-          args = { **described_class.constructor_container_arg(parent), current_user: user, params: { title: 'test', labels: [label1.title, label3.title, label4.title, label2.title] } }
           args[:spam_params] = nil if described_class.private_instance_methods.include?(:spam_params)
-          issuable = described_class.new(**args).execute
 
           expect(issuable.labels).to match_array([label1, label2])
         end
@@ -48,19 +61,25 @@ RSpec.shared_examples 'new issuable with scoped labels' do
     end
 
     context 'when scoped labels are not available' do
+      let(:args) do
+        {
+          **described_class.constructor_container_arg(parent),
+          current_user: user,
+          params: { title: 'test', label_ids: [label1.id, label3.id, label4.id, label2.id] }
+        }
+      end
+
+      let!(:label1) { create_label('label1') }
+      let!(:label2) { create_label('key::label1') }
+      let!(:label3) { create_label('key::label2') }
+      let!(:label4) { create_label('key::label3') }
+
       before do
         stub_licensed_features(scoped_labels: false)
       end
 
       it 'adds all scoped labels' do
-        label1 = create_label('label1')
-        label2 = create_label('key::label1')
-        label3 = create_label('key::label2')
-        label4 = create_label('key::label3')
-
-        args = { **described_class.constructor_container_arg(parent), current_user: user, params: { title: 'test', label_ids: [label1.id, label3.id, label4.id, label2.id] } }
         args[:spam_params] = nil if described_class.private_instance_methods.include?(:spam_params)
-        issuable = described_class.new(**args).execute
 
         expect(issuable.labels).to match_array([label1, label2, label3, label4])
       end

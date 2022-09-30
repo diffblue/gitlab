@@ -199,12 +199,15 @@
     .sidebar-contained-width,
     .issuable-sidebar-header {
       width: 100%;
-      border-bottom: 0;
     }
 
     .block {
       @include media-breakpoint-up(lg) {
-        padding: $gl-spacing-scale-5 0;
+        padding: $gl-spacing-scale-4 0 $gl-spacing-scale-5;
+      }
+
+      &.participants {
+        border-bottom: 0;
       }
     }
   }
@@ -213,7 +216,8 @@
   .sidebar-contained-width,
   .issuable-sidebar-header {
     @include clearfix;
-    padding: $gl-padding 0;
+    padding: $gl-spacing-scale-4 0 $gl-spacing-scale-5;
+    border-bottom: 1px solid $border-gray-normal;
     // This prevents the mess when resizing the sidebar
     // of elements repositioning themselves..
     width: $gutter-inner-width;
@@ -234,6 +238,13 @@
           }
         }
       }
+    }
+
+    &.time-tracking,
+    &.participants,
+    &.subscriptions,
+    &.with-sub-blocks {
+      padding-top: $gl-spacing-scale-5;
     }
   }
 
@@ -724,13 +735,7 @@
     }
 
     .issue-check {
-      padding-right: $gl-padding;
-      margin-bottom: 10px;
       min-width: 15px;
-
-      .selected-issuable {
-        vertical-align: text-top;
-      }
     }
 
     .issuable-milestone,
@@ -946,6 +951,7 @@
   .timeline-event-note {
     p {
       margin-bottom: 0;
+      font-size: 0.875rem;
     }
   }
 }
@@ -961,7 +967,7 @@
     content: '';
     border-left: 2px solid $gray-50;
     position: absolute;
-    left: 39px;
+    left: 20px;
     height: calc(100% + #{$gl-spacing-scale-5});
     top: -#{$gl-spacing-scale-5};
   }
@@ -988,10 +994,6 @@
       content: none;
     }
   }
-}
-
-.timeline-event-note-form {
-  padding-left: 20px;
 }
 
 .timeline-entry:not(:last-child) {

@@ -11,7 +11,12 @@ module QA
 
       context 'when wiki commit' do
         it 'is replicated to the secondary',
-           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348048' do
+           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348048',
+           quarantine: {
+             only: { subdomain: 'staging-ref' },
+             type: :test_environment,
+             issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+           } do
           wiki_content = 'This tests replication of wikis via SSH'
           push_content = 'This is from the Geo wiki push via SSH!'
           project = nil

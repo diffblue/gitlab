@@ -4,15 +4,32 @@ module Integrations
   class Github < Integration
     include Gitlab::Routing
 
-    prop_accessor :token, :repository_url
-    boolean_accessor :static_context
-
     delegate :api_url, :owner, :repository_name, to: :remote_project
 
     validates :token, presence: true, if: :activated?
     validates :repository_url, public_url: true, allow_blank: true
 
     default_value_for :pipeline_events, true
+
+    field :token,
+      type: 'password',
+      required: true,
+      placeholder: "8d3f016698e...",
+      non_empty_password_title: -> { s_('ProjectService|Enter new token') },
+      non_empty_password_help: -> { s_('ProjectService|Leave blank to use your current token.') },
+      help: -> { token_field_help }
+
+    field :repository_url,
+      title: -> { s_('GithubIntegration|Repository URL') },
+      required: true,
+      exposes_secrets: true,
+      placeholder: 'https://github.com/owner/repository'
+
+    field :static_context,
+      type: 'checkbox',
+      title: -> { s_('GithubIntegration|Static status check names (optional)') },
+      checkbox_label: -> { s_('GithubIntegration|Enable static status check names') },
+      help: -> { static_context_field_help }
 
     def initialize_properties
       return if properties.present?
@@ -39,33 +56,16 @@ module Integrations
       'github'
     end
 
-    def fields
-      learn_more_link_url = help_page_path('user/project/integrations/github', anchor: 'static-or-dynamic-status-check-names')
+    def self.static_context_field_help
+      learn_more_link_url = ::Gitlab::Routing.url_helpers.help_page_path('user/project/integrations/github', anchor: 'static-or-dynamic-status-check-names')
       learn_more_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: learn_more_link_url }
-      static_context_field_help = s_('GithubIntegration|Select this if you want GitHub to mark status checks as "Required". %{learn_more_link_start}Learn more%{learn_more_link_end}.').html_safe % { learn_more_link_start: learn_more_link_start, learn_more_link_end: '</a>'.html_safe }
+      s_('GithubIntegration|Select this if you want GitHub to mark status checks as "Required". %{learn_more_link_start}Learn more%{learn_more_link_end}.').html_safe % { learn_more_link_start: learn_more_link_start, learn_more_link_end: '</a>'.html_safe }
+    end
 
+    def self.token_field_help
       token_url = 'https://github.com/settings/tokens'
       token_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: token_url }
-      token_field_help = s_('GithubIntegration|Create a %{token_link_start}personal access token%{token_link_end} with %{status_html} access granted and paste it here.').html_safe % { token_link_start: token_link_start, token_link_end: '</a>'.html_safe, status_html: '<code>repo:status</code>'.html_safe }
-      [
-        { type: 'password',
-          name: "token",
-          required: true,
-          placeholder: "8d3f016698e...",
-          non_empty_password_title: s_('ProjectService|Enter new token'),
-          non_empty_password_help: s_('ProjectService|Leave blank to use your current token.'),
-          help: token_field_help },
-        { type: 'text',
-          name: "repository_url",
-          title: s_('GithubIntegration|Repository URL'),
-          required: true,
-          placeholder: 'https://github.com/owner/repository' },
-        { type: 'checkbox',
-          name: "static_context",
-          title: s_('GithubIntegration|Static status check names (optional)'),
-          checkbox_label: s_('GithubIntegration|Enable static status check names'),
-          help: static_context_field_help }
-      ]
+      s_('GithubIntegration|Create a %{token_link_start}personal access token%{token_link_end} with %{status_html} access granted and paste it here.').html_safe % { token_link_start: token_link_start, token_link_end: '</a>'.html_safe, status_html: '<code>repo:status</code>'.html_safe }
     end
 
     def self.supported_events

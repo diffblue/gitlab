@@ -1,5 +1,51 @@
 # frozen_string_literal: true
 
+RSpec.shared_examples 'a restricted project approval rule API endpoint' do
+  context 'when admin_merge_request_approvers_rules license feature is disabled' do
+    before do
+      stub_licensed_features(admin_merge_request_approvers_rules: false)
+    end
+
+    context 'when disable_overriding_approvers_per_merge_request app setting is false' do
+      before do
+        stub_application_setting(disable_overriding_approvers_per_merge_request: false)
+      end
+
+      it_behaves_like 'a user with access'
+    end
+
+    context 'when disable_overriding_approvers_per_merge_request app setting is true' do
+      before do
+        stub_application_setting(disable_overriding_approvers_per_merge_request: true)
+      end
+
+      it_behaves_like 'a user with access'
+    end
+  end
+
+  context 'when admin_merge_request_approvers_rules license feature is enabled' do
+    before do
+      stub_licensed_features(admin_merge_request_approvers_rules: true)
+    end
+
+    context 'when disable_overriding_approvers_per_merge_request app setting is false' do
+      before do
+        stub_application_setting(disable_overriding_approvers_per_merge_request: false)
+      end
+
+      it_behaves_like 'a user with access'
+    end
+
+    context 'when disable_overriding_approvers_per_merge_request app setting is true' do
+      before do
+        stub_application_setting(disable_overriding_approvers_per_merge_request: true)
+      end
+
+      it_behaves_like 'a user without access'
+    end
+  end
+end
+
 RSpec.shared_examples 'an API endpoint for creating project approval rule' do
   let(:current_user) { user }
   let(:params) do
@@ -8,6 +54,25 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
       approvals_required: 10
     }
   end
+
+  shared_examples_for 'a user with access' do
+    it 'returns 201 status' do
+      post api(url, current_user), params: params
+
+      expect(response).to have_gitlab_http_status(:created)
+      expect(response).to match_response_schema(schema, dir: 'ee')
+    end
+  end
+
+  shared_examples_for 'a user without access' do
+    it 'returns 403' do
+      post api(url, current_user), params: params
+
+      expect(response).to have_gitlab_http_status(:forbidden)
+    end
+  end
+
+  it_behaves_like 'a restricted project approval rule API endpoint'
 
   context 'when missing parameters' do
     it 'returns 400 status' do
@@ -18,20 +83,13 @@ RSpec.shared_examples 'an API endpoint for creating project approval rule' do
   end
 
   context 'when user is without access' do
-    it 'returns 403' do
-      post api(url, user2), params: params
-
-      expect(response).to have_gitlab_http_status(:forbidden)
+    it_behaves_like 'a user without access' do
+      let(:current_user) { user2 }
     end
   end
 
   context 'when the request is correct' do
-    it 'returns 201 status' do
-      post api(url, current_user), params: params
-
-      expect(response).to have_gitlab_http_status(:created)
-      expect(response).to match_response_schema(schema, dir: 'ee')
-    end
+    it_behaves_like 'a user with access'
 
     it 'changes settings properly' do
       create(:approval_project_rule, project: project, approvals_required: 2)
@@ -250,6 +308,23 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
     end
   end
 
+  shared_examples_for 'a user without access' do
+    it 'returns 403' do
+      project.approvers.create!(user: approver)
+
+      expect do
+        put api(url, current_user), params: { users: [], groups: [] }.to_json, headers: { CONTENT_TYPE: 'application/json' }
+      end.not_to change { approval_rule.approvers.size }
+
+      expect(response).to have_gitlab_http_status(:forbidden)
+    end
+  end
+
+  it_behaves_like 'a restricted project approval rule API endpoint' do
+    let(:current_user) { user }
+    let(:visible_approver_groups_count) { 0 }
+  end
+
   context 'as a project admin' do
     it_behaves_like 'a user with access' do
       let(:current_user) { user }
@@ -265,25 +340,34 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
   end
 
   context 'as a random user' do
-    it 'returns 403' do
-      project.approvers.create!(user: approver)
-
-      expect do
-        put api(url, user2), params: { users: [], groups: [] }.to_json, headers: { CONTENT_TYPE: 'application/json' }
-      end.not_to change { approval_rule.approvers.size }
-
-      expect(response).to have_gitlab_http_status(:forbidden)
+    it_behaves_like 'a user without access' do
+      let(:current_user) { user2 }
     end
   end
 end
 
 RSpec.shared_examples 'an API endpoint for deleting project approval rule' do
-  it 'destroys' do
-    delete api(url, user)
+  let(:current_user) { user }
 
-    expect(ApprovalProjectRule.exists?(id: approval_rule.id)).to eq(false)
-    expect(response).to have_gitlab_http_status(:no_content)
+  shared_examples_for 'a user with access' do
+    it 'destroys' do
+      delete api(url, current_user)
+
+      expect(ApprovalProjectRule.exists?(id: approval_rule.id)).to eq(false)
+      expect(response).to have_gitlab_http_status(:no_content)
+    end
   end
+
+  shared_examples_for 'a user without access' do
+    it 'returns 403' do
+      delete api(url, current_user)
+
+      expect(response).to have_gitlab_http_status(:forbidden)
+    end
+  end
+
+  it_behaves_like 'a user with access'
+  it_behaves_like 'a restricted project approval rule API endpoint'
 
   context 'when approval rule not found' do
     let!(:approval_rule_2) { create(:approval_project_rule) }
@@ -297,10 +381,8 @@ RSpec.shared_examples 'an API endpoint for deleting project approval rule' do
   end
 
   context 'when user is not eligible to delete' do
-    it 'returns forbidden' do
-      delete api(url, user2)
-
-      expect(response).to have_gitlab_http_status(:forbidden)
+    it_behaves_like 'a user without access' do
+      let(:current_user) { user2 }
     end
   end
 end

@@ -10,6 +10,7 @@ RSpec.describe Gitlab::Ci::Variables::Builder, :clean_gitlab_redis_cache do
   let_it_be(:user) { create(:user) }
   let_it_be_with_reload(:job) do
     create(:ci_build,
+      name: 'rspec:test 1',
       pipeline: pipeline,
       user: user,
       yaml_variables: [{ key: 'YAML_VARIABLE', value: 'value' }]
@@ -24,13 +25,15 @@ RSpec.describe Gitlab::Ci::Variables::Builder, :clean_gitlab_redis_cache do
     let(:predefined_variables) do
       [
         { key: 'CI_JOB_NAME',
-          value: job.name },
+          value: 'rspec:test 1' },
+        { key: 'CI_JOB_NAME_SLUG',
+          value: 'rspec-test-1' },
         { key: 'CI_JOB_STAGE',
           value: job.stage_name },
         { key: 'CI_NODE_TOTAL',
           value: '1' },
         { key: 'CI_BUILD_NAME',
-          value: job.name },
+          value: 'rspec:test 1' },
         { key: 'CI_BUILD_STAGE',
           value: job.stage_name },
         { key: 'CI',
@@ -261,10 +264,11 @@ RSpec.describe Gitlab::Ci::Variables::Builder, :clean_gitlab_redis_cache do
     end
 
     it 'includes #deployment_variables and merges the KUBECONFIG values', :aggregate_failures do
-      expect(builder).to receive(:deployment_variables).and_return([
-        { key: 'KUBECONFIG', value: 'deployment-kubeconfig' },
-        { key: 'OTHER', value: 'some value' }
-      ])
+      expect(builder).to receive(:deployment_variables).and_return(
+        [
+          { key: 'KUBECONFIG', value: 'deployment-kubeconfig' },
+          { key: 'OTHER', value: 'some value' }
+        ])
       expect(template).to receive(:merge_yaml).with('deployment-kubeconfig')
       expect(subject['KUBECONFIG'].value).to eq('example-kubeconfig')
       expect(subject['OTHER'].value).to eq('some value')

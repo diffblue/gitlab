@@ -226,6 +226,22 @@ Returns [`Iteration`](#iteration).
 | ---- | ---- | ----------- |
 | <a id="queryiterationid"></a>`id` | [`IterationID!`](#iterationid) | Find an iteration by its ID. |
 
+### `Query.jobs`
+
+All jobs on this GitLab instance.
+
+Returns [`CiJobConnection`](#cijobconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="queryjobsstatuses"></a>`statuses` | [`[CiJobStatus!]`](#cijobstatus) | Filter jobs by status. |
+
 ### `Query.licenseHistoryEntries`
 
 Fields related to entries in the license history.
@@ -5630,6 +5646,10 @@ Input type: `VulnerabilityExternalIssueLinkDestroyInput`
 | <a id="mutationvulnerabilityexternalissuelinkdestroyerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
 ### `Mutation.vulnerabilityFindingDismiss`
+
+WARNING:
+**Deprecated** in 15.5.
+Use VulnerabilityDismiss for vulnerabilities or SecurityFindingDismiss for pipeline findings.
 
 Input type: `VulnerabilityFindingDismissInput`
 
@@ -17622,7 +17642,7 @@ Represents a requirement.
 | <a id="requirementauthor"></a>`author` | [`UserCore!`](#usercore) | Author of the requirement. |
 | <a id="requirementcreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the requirement was created. |
 | <a id="requirementdescription"></a>`description` | [`String`](#string) | Description of the requirement. |
-| <a id="requirementdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
+| <a id="requirementdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `description`. |
 | <a id="requirementid"></a>`id` | [`ID!`](#id) | ID of the requirement. |
 | <a id="requirementiid"></a>`iid` | [`ID!`](#id) | Internal ID of the requirement. |
 | <a id="requirementlasttestreportmanuallycreated"></a>`lastTestReportManuallyCreated` | [`Boolean`](#boolean) | Indicates if latest test report was created by user. |
@@ -17630,7 +17650,7 @@ Represents a requirement.
 | <a id="requirementproject"></a>`project` | [`Project!`](#project) | Project to which the requirement belongs. |
 | <a id="requirementstate"></a>`state` | [`RequirementState!`](#requirementstate) | State of the requirement. |
 | <a id="requirementtitle"></a>`title` | [`String`](#string) | Title of the requirement. |
-| <a id="requirementtitlehtml"></a>`titleHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `title`. |
+| <a id="requirementtitlehtml"></a>`titleHtml` | [`String`](#string) | GitLab Flavored Markdown rendering of `title`. |
 | <a id="requirementupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the requirement was last updated. |
 | <a id="requirementuserpermissions"></a>`userPermissions` | [`RequirementPermissions!`](#requirementpermissions) | Permissions for the current user on the resource. |
 
@@ -19496,6 +19516,7 @@ Represents vulnerability letter grades with associated projects.
 | <a id="workitemtitlehtml"></a>`titleHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `title`. |
 | <a id="workitemupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the work item was last updated. |
 | <a id="workitemuserpermissions"></a>`userPermissions` | [`WorkItemPermissions!`](#workitempermissions) | Permissions for the current user on the resource. |
+| <a id="workitemweburl"></a>`webUrl` | [`String`](#string) | URL of this object. |
 | <a id="workitemwidgets"></a>`widgets` | [`[WorkItemWidget!]`](#workitemwidget) | Collection of widgets that belong to the work item. |
 | <a id="workitemworkitemtype"></a>`workItemType` | [`WorkItemType!`](#workitemtype) | Type assigned to the work item. |
 
@@ -19596,16 +19617,16 @@ Represents a start and due date widget.
 | <a id="workitemwidgetstartandduedatestartdate"></a>`startDate` | [`Date`](#date) | Start date of the work item. |
 | <a id="workitemwidgetstartandduedatetype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
-### `WorkItemWidgetVerificationStatus`
+### `WorkItemWidgetStatus`
 
-Represents a verification status widget.
+Represents a status widget.
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="workitemwidgetverificationstatustype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
-| <a id="workitemwidgetverificationstatusverificationstatus"></a>`verificationStatus` | [`String`](#string) | Verification status of the work item. |
+| <a id="workitemwidgetstatusstatus"></a>`status` | [`String`](#string) | Status of the work item. |
+| <a id="workitemwidgetstatustype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
 ### `WorkItemWidgetWeight`
 
@@ -19853,6 +19874,7 @@ Values for filtering runners in namespaces. The previous type name `RunnerMember
 
 | Value | Description |
 | ----- | ----------- |
+| <a id="cirunnermembershipfilterall_available"></a>`ALL_AVAILABLE` **{warning-solid}** | **Introduced** in 15.5. This feature is in Alpha. It can be changed or removed at any time. Include all runners. This list includes runners for all projects in the group and subgroups, as well as for the parent groups and instance. Will not return runners if `runners_finder_all_available` feature flag is disabled. |
 | <a id="cirunnermembershipfilterdescendants"></a>`DESCENDANTS` | Include runners that have either a direct or inherited relationship. These runners can be specific to a project or a group. |
 | <a id="cirunnermembershipfilterdirect"></a>`DIRECT` | Include runners that have a direct relationship. |
 
@@ -21344,6 +21366,7 @@ Category of error.
 | <a id="todotargetenumepic"></a>`EPIC` | An Epic. |
 | <a id="todotargetenumissue"></a>`ISSUE` | Issue. |
 | <a id="todotargetenummergerequest"></a>`MERGEREQUEST` | Merge request. |
+| <a id="todotargetenumworkitem"></a>`WORKITEM` | Work item. |
 
 ### `TrainingUrlRequestStatus`
 
@@ -21386,6 +21409,7 @@ Name of the feature that the callout is for.
 | <a id="usercalloutfeaturenameenumnamespace_storage_limit_banner_error_threshold"></a>`NAMESPACE_STORAGE_LIMIT_BANNER_ERROR_THRESHOLD` | Callout feature name for namespace_storage_limit_banner_error_threshold. |
 | <a id="usercalloutfeaturenameenumnamespace_storage_limit_banner_info_threshold"></a>`NAMESPACE_STORAGE_LIMIT_BANNER_INFO_THRESHOLD` | Callout feature name for namespace_storage_limit_banner_info_threshold. |
 | <a id="usercalloutfeaturenameenumnamespace_storage_limit_banner_warning_threshold"></a>`NAMESPACE_STORAGE_LIMIT_BANNER_WARNING_THRESHOLD` | Callout feature name for namespace_storage_limit_banner_warning_threshold. |
+| <a id="usercalloutfeaturenameenumnew_top_level_group_alert"></a>`NEW_TOP_LEVEL_GROUP_ALERT` | Callout feature name for new_top_level_group_alert. |
 | <a id="usercalloutfeaturenameenumnew_user_signups_cap_reached"></a>`NEW_USER_SIGNUPS_CAP_REACHED` | Callout feature name for new_user_signups_cap_reached. |
 | <a id="usercalloutfeaturenameenumpersonal_access_token_expiry"></a>`PERSONAL_ACCESS_TOKEN_EXPIRY` | Callout feature name for personal_access_token_expiry. |
 | <a id="usercalloutfeaturenameenumpersonal_project_limitations_banner"></a>`PERSONAL_PROJECT_LIMITATIONS_BANNER` | Callout feature name for personal_project_limitations_banner. |
@@ -21625,7 +21649,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypeiteration"></a>`ITERATION` | Iteration widget. |
 | <a id="workitemwidgettypelabels"></a>`LABELS` | Labels widget. |
 | <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
-| <a id="workitemwidgettypeverification_status"></a>`VERIFICATION_STATUS` | Verification Status widget. |
+| <a id="workitemwidgettypestatus"></a>`STATUS` | Status widget. |
 | <a id="workitemwidgettypeweight"></a>`WEIGHT` | Weight widget. |
 
 ## Scalar types
@@ -22634,6 +22658,7 @@ Implementations:
 - [`EpicIssue`](#epicissue)
 - [`Issue`](#issue)
 - [`MergeRequest`](#mergerequest)
+- [`WorkItem`](#workitem)
 
 ##### Fields
 
@@ -22888,7 +22913,7 @@ Implementations:
 - [`WorkItemWidgetIteration`](#workitemwidgetiteration)
 - [`WorkItemWidgetLabels`](#workitemwidgetlabels)
 - [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
-- [`WorkItemWidgetVerificationStatus`](#workitemwidgetverificationstatus)
+- [`WorkItemWidgetStatus`](#workitemwidgetstatus)
 - [`WorkItemWidgetWeight`](#workitemwidgetweight)
 
 ##### Fields

@@ -16,6 +16,12 @@ module Arkose
       logger.info(build_message('Arkose verify response'))
     end
 
+    def log_unsolved_challenge
+      return unless response
+
+      logger.info(build_message('Challenge was not solved'))
+    end
+
     def log_failed_token_verification
       payload = {
         session_token: session_token,

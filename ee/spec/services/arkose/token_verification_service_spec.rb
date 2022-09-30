@@ -156,12 +156,27 @@ RSpec.describe Arkose::TokenVerificationService do
               )
             end
 
+            let(:mock_verify_response) { Arkose::VerifyResponse.new(arkose_ec_response) }
+
+            before do
+              allow(Arkose::VerifyResponse).to receive(:new).with(arkose_ec_response).and_return(mock_verify_response)
+            end
+
             it 'returns an error response' do
               expect(subject).to be_error
             end
 
             it 'returns an error message' do
               expect(subject.message).to eq 'Captcha was not solved'
+            end
+
+            it 'logs the event' do
+              init_args = { session_token: session_token, user: user, verify_response: mock_verify_response }
+              expect_next_instance_of(::Arkose::Logger, init_args) do |logger|
+                expect(logger).to receive(:log_unsolved_challenge)
+              end
+
+              subject
             end
           end
         end

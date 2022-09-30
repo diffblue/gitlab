@@ -107,13 +107,6 @@ module EE
       validates :new_user_signups_cap,
                 allow_blank: true,
                 numericality: { only_integer: true, greater_than: 0 }
-      validates :new_user_signups_cap,
-                allow_blank: true,
-                numericality: {
-                  only_integer: true,
-                  greater_than: 0
-                },
-                if: proc { License.current&.restricted_user_count? }
 
       validates :git_two_factor_session_expiry,
                 presence: true,
@@ -213,7 +206,12 @@ module EE
           max_number_of_repository_downloads: 0,
           max_number_of_repository_downloads_within_time_period: 0,
           git_rate_limit_users_allowlist: [],
-          auto_ban_user_on_excessive_projects_download: false
+          auto_ban_user_on_excessive_projects_download: false,
+          jitsu_host: nil,
+          jitsu_project_xid: nil,
+          clickhouse_connection_string: nil,
+          jitsu_administrator_email: nil,
+          jitsu_administrator_password: nil
         )
       end
     end
@@ -414,6 +412,16 @@ module EE
     def should_apply_user_signup_cap?
       ::Gitlab::CurrentSettings.new_user_signups_cap.present?
     end
+
+    override :personal_access_tokens_disabled?
+    def personal_access_tokens_disabled?
+      License.feature_available?(:fips_disable_personal_access_tokens) && ::Gitlab::FIPS.enabled?
+    end
+
+    def disable_feed_token
+      personal_access_tokens_disabled? || read_attribute(:disable_feed_token)
+    end
+    alias_method :disable_feed_token?, :disable_feed_token
 
     private
 

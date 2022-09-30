@@ -28,7 +28,9 @@ RSpec.describe ApprovalRuleLike do
 
       shared_examples 'approvers contains the right users' do
         it 'contains users as direct members and group members' do
-          expect(subject.approvers).to contain_exactly(user1, user2, group1_user, group2_user)
+          rule = subject.class.find(subject.id)
+
+          expect(rule.approvers).to contain_exactly(user1, user2, group1_user, group2_user)
         end
       end
 
@@ -55,7 +57,9 @@ RSpec.describe ApprovalRuleLike do
         end
 
         it 'contains only unique users' do
-          expect(subject.approvers).to contain_exactly(user1, user2, group1_user, group2_user)
+          rule = subject.class.find(subject.id)
+
+          expect(rule.approvers).to contain_exactly(user1, user2, group1_user, group2_user)
         end
       end
     end

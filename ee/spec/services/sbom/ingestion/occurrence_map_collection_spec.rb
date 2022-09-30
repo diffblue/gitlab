@@ -9,7 +9,7 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection do
 
   subject(:occurrence_map_collection) { described_class.new(sbom_report) }
 
-  describe '#each' do
+  shared_examples '#each' do
     it 'yields for every component when given a block' do
       expect { |b| occurrence_map_collection.each(&b) }.to yield_successive_args(*expected_output)
     end
@@ -20,6 +20,16 @@ RSpec.describe Sbom::Ingestion::OccurrenceMapCollection do
       it 'creates an occurrence map for each occurrence' do
         expect(enumerator.to_a).to match_array(expected_output)
       end
+    end
+  end
+
+  describe '#each' do
+    it_behaves_like '#each'
+
+    context 'when report source is nil' do
+      let_it_be(:sbom_report) { create(:ci_reports_sbom_report, source: nil, num_components: num_components) }
+
+      it_behaves_like '#each'
     end
   end
 end

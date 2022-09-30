@@ -218,6 +218,7 @@ export default {
     shouldUpdatePolicyList(newShouldUpdatePolicyList) {
       // This check prevents an infinite loop of `update-policy-list` being called
       if (newShouldUpdatePolicyList) {
+        this.selectedPolicy = null;
         this.$apollo.queries.scanExecutionPolicies.refetch();
         this.$apollo.queries.scanResultPolicies.refetch();
         this.$emit('update-policy-list', {});
@@ -235,7 +236,16 @@ export default {
       if (rows.length === 0) return;
 
       const [selectedPolicy] = rows;
-      this.selectedPolicy = selectedPolicy;
+      this.selectedPolicy = null;
+
+      /**
+       * According to design spec drawer should be closed
+       * and opened when drawer content changes
+       * it forces drawer to close and open with new content
+       */
+      this.$nextTick(() => {
+        this.selectedPolicy = selectedPolicy;
+      });
     },
     deselectPolicy() {
       this.selectedPolicy = null;

@@ -123,7 +123,7 @@ RSpec.describe Vulnerabilities::SecurityFinding::CreateIssueService, '#execute' 
     let(:error_response) { ServiceResponse.error(message: error_message) }
 
     before do
-      allow_next_instance_of(Vulnerabilities::CreateFromSecurityFindingService) do |instance|
+      allow_next_instance_of(Vulnerabilities::FindOrCreateFromSecurityFindingService) do |instance|
         allow(instance).to receive(:execute).and_return(error_response)
       end
     end

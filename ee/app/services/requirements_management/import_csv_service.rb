@@ -10,6 +10,10 @@ module RequirementsManagement
 
     private
 
+    def create_issuable(attributes)
+      super[:issue]
+    end
+
     def create_issuable_class
       ::Issues::CreateService
     end

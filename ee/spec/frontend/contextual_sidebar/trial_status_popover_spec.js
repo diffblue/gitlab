@@ -9,6 +9,7 @@ import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { stubExperiments } from 'helpers/experimentation_helper';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
+import { __ } from '~/locale';
 
 Vue.config.ignoredElements = ['gl-emoji'];
 
@@ -67,6 +68,20 @@ describe('TrialStatusPopover component', () => {
       wrapper = createComponent({ providers: undefined, mountFn: mount });
 
       expect(wrapper.text()).not.toMatch(/%{\w+}/);
+    });
+  });
+
+  describe('title', () => {
+    it('correctly displays when days remaining is 1', () => {
+      wrapper = createComponent({ providers: { daysRemaining: 1 }, mountFn: mount });
+
+      expect(wrapper.text()).toContain(__("You've got 1 day remaining on GitLab Ultimate!"));
+    });
+
+    it('correct displays when days remaining is 30', () => {
+      wrapper = createComponent({ providers: { daysRemaining: 30 }, mountFn: mount });
+
+      expect(wrapper.text()).toContain(__("You've got 30 days remaining on GitLab Ultimate!"));
     });
   });
 

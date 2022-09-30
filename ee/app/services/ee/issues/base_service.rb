@@ -83,7 +83,7 @@ module EE
         groups = project.group&.self_and_ancestors&.select(:id)
 
         iteration =
-          ::Iteration.for_projects_and_groups([project.id], groups).find_by_id(params[:sprint_id])
+          ::Iteration.of_groups(groups).find_by_id(params[:sprint_id])
 
         params[:sprint_id] = '' unless iteration
       end

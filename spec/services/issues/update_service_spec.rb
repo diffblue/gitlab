@@ -69,6 +69,23 @@ RSpec.describe Issues::UpdateService, :mailer do
         }
       end
 
+      context 'when an unauthorized project_id is provided' do
+        let(:unauthorized_project) { create(:project) }
+
+        before do
+          opts[:project_id] = unauthorized_project.id
+        end
+
+        it 'ignores the project_id param and does not update the issue\'s project' do
+          expect do
+            update_issue(opts)
+            unauthorized_project.reload
+          end.to not_change { unauthorized_project.issues.count }
+
+          expect(issue.project).to eq(project)
+        end
+      end
+
       it 'updates the issue with the given params' do
         expect(TodosDestroyer::ConfidentialIssueWorker).not_to receive(:perform_in)
 
@@ -494,6 +511,32 @@ RSpec.describe Issues::UpdateService, :mailer do
         note = find_note('changed the description')
 
         expect(note.note).to eq('changed the description')
+      end
+
+      it 'triggers GraphQL description updated subscription' do
+        expect(GraphqlTriggers).to receive(:issuable_description_updated).with(issue).and_call_original
+
+        update_issue(description: 'Changed description')
+      end
+
+      context 'when broadcast_issuable_description_updated is disabled' do
+        before do
+          stub_feature_flags(broadcast_issuable_description_updated: false)
+        end
+
+        it 'does not trigger GraphQL description updated subscription' do
+          expect(GraphqlTriggers).not_to receive(:issuable_description_updated)
+
+          update_issue(title: 'Changed title')
+        end
+      end
+    end
+
+    context 'when decription is not changed' do
+      it 'does not trigger GraphQL description updated subscription' do
+        expect(GraphqlTriggers).not_to receive(:issuable_description_updated)
+
+        update_issue(title: 'Changed title')
       end
     end
 

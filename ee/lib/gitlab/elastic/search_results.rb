@@ -218,6 +218,8 @@ module Gitlab
         case scope
         when 'blobs'
           blob_aggregations
+        when 'issues'
+          issue_aggregations
         else
           []
         end
@@ -362,10 +364,14 @@ module Gitlab
       end
 
       def blob_aggregations
-        return [] if query.blank?
-
         strong_memoize(:blob_aggregations) do
           Repository.__elasticsearch__.blob_aggregations(query, base_options)
+        end
+      end
+
+      def issue_aggregations
+        strong_memoize(:issue_aggregations) do
+          Issue.__elasticsearch__.issue_aggregations(query, base_options)
         end
       end
     end

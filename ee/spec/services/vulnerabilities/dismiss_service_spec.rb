@@ -6,12 +6,6 @@ RSpec.describe Vulnerabilities::DismissService do
   include AccessMatchersGeneric
 
   before do
-    allow(Vulnerabilities::StateTransition).to receive(:create).with(
-      vulnerability: instance_of(Vulnerability),
-      from_state: vulnerability.state,
-      to_state: Vulnerability.states[:dismissed]
-    )
-
     stub_licensed_features(security_dashboard: true)
   end
 
@@ -26,6 +20,23 @@ RSpec.describe Vulnerabilities::DismissService do
 
   subject(:dismiss_vulnerability) { service.execute }
 
+  shared_examples 'creates a vulnerability state transition record' do
+    let(:comment) { "Dismissal comment" }
+    let(:dismissal_reason) { Vulnerabilities::DismissalReasonEnum.values[:false_positive] }
+    let(:service) { described_class.new(user, vulnerability, comment, dismissal_reason, dismiss_findings: dismiss_findings) }
+
+    it 'creates a vulnerability state transition record' do
+      expect { dismiss_vulnerability }.to change(Vulnerabilities::StateTransition, :count).from(0).to(1)
+
+      state_transition = Vulnerabilities::StateTransition.last
+
+      expect(state_transition.from_state).to eq("detected")
+      expect(state_transition.to_state).to eq("dismissed")
+      expect(state_transition.comment).to eq(comment)
+      expect(state_transition.dismissal_reason).to eq(dismissal_reason)
+    end
+  end
+
   context 'when deprecate_vulnerabilities_feedback is enabled' do
     before do
       stub_feature_flags(deprecate_vulnerabilities_feedback: true)
@@ -38,15 +49,7 @@ RSpec.describe Vulnerabilities::DismissService do
 
       it_behaves_like 'calls vulnerability statistics utility services in order'
 
-      it 'creates a vulnerability state transition record' do
-        dismiss_vulnerability
-
-        expect(Vulnerabilities::StateTransition).to have_received(:create).with(
-          vulnerability: instance_of(Vulnerability),
-          from_state: "detected",
-          to_state: Vulnerability.states[:dismissed]
-        )
-      end
+      it_behaves_like 'creates a vulnerability state transition record'
 
       context 'when the `dismiss_findings` argument is false' do
         let(:dismiss_findings) { false }
@@ -146,15 +149,7 @@ RSpec.describe Vulnerabilities::DismissService do
 
       it_behaves_like 'calls vulnerability statistics utility services in order'
 
-      it 'creates a vulnerability state transition record' do
-        dismiss_vulnerability
-
-        expect(Vulnerabilities::StateTransition).to have_received(:create).with(
-          vulnerability: instance_of(Vulnerability),
-          from_state: "detected",
-          to_state: Vulnerability.states[:dismissed]
-        )
-      end
+      it_behaves_like 'creates a vulnerability state transition record'
 
       context 'when the `dismiss_findings` argument is false' do
         let(:dismiss_findings) { false }

@@ -1,17 +1,23 @@
-import { shallowMount } from '@vue/test-utils';
-import ActivityFilter from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
-import { activityFilter, activityOptions } from 'ee/security_dashboard/helpers';
-
-const { NO_ACTIVITY, WITH_ISSUES, NO_LONGER_DETECTED } = activityOptions;
+import { GlBadge } from '@gitlab/ui';
+import { nextTick } from 'vue';
+import ActivityFilter, {
+  ITEMS,
+  GROUPS,
+} from 'ee/security_dashboard/components/shared/filters/activity_filter.vue';
+import { activityFilter } from 'ee/security_dashboard/helpers';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 
 describe('Activity Filter component', () => {
   let wrapper;
 
-  const findItemWithName = (name) => wrapper.find(`[data-testid="option:${name}"]`);
+  const findItem = (item) => wrapper.findByTestId(`option-${item.id}`);
+  const findHeader = (id) => wrapper.findByTestId(`header-${id}`);
+  const clickItem = (item) => findItem(item).vm.$emit('click');
 
   const expectSelectedItems = (items) => {
     const checkedItems = wrapper
-      .findAll('[data-testid^="option:"]')
+      .findAllComponents(FilterItem)
       .wrappers.filter((x) => x.props('isChecked'))
       .map((x) => x.props('text'));
 
@@ -21,13 +27,9 @@ describe('Activity Filter component', () => {
   };
 
   const createWrapper = () => {
-    wrapper = shallowMount(ActivityFilter, {
+    wrapper = shallowMountExtended(ActivityFilter, {
       propsData: { filter: activityFilter },
     });
-  };
-
-  const clickItem = (item) => {
-    findItemWithName(item.name).vm.$emit('click');
   };
 
   beforeEach(() => {
@@ -38,31 +40,69 @@ describe('Activity Filter component', () => {
     wrapper.destroy();
   });
 
-  it('renders the options', () => {
-    activityFilter.options.forEach((option) => {
-      expect(findItemWithName(option.name).exists()).toBe(true);
+  it('renders the header text for each group', () => {
+    GROUPS.forEach((group) => {
+      const header = findHeader(group.header.name);
+
+      expect(header.text()).toContain(group.header.name);
     });
   });
 
-  it.each`
-    selectedOptions                      | expectedOption
-    ${[NO_ACTIVITY]}                     | ${WITH_ISSUES}
-    ${[WITH_ISSUES, NO_LONGER_DETECTED]} | ${NO_ACTIVITY}
-  `(
-    'deselects mutually exclusive options when $expectedOption.id is selected',
-    async ({ selectedOptions, expectedOption }) => {
-      await selectedOptions.map(clickItem);
+  it('renders the badge for each group', () => {
+    GROUPS.forEach((group) => {
+      const header = findHeader(group.header.name);
 
-      expectSelectedItems(selectedOptions);
+      expect(header.findComponent(GlBadge).attributes()).toMatchObject({
+        icon: group.header.icon,
+        variant: group.header.variant ?? 'muted',
+      });
+    });
+  });
 
-      await clickItem(expectedOption);
+  it('renders the dropdown items for each group', () => {
+    GROUPS.forEach((group) => {
+      group.items.forEach((item) => {
+        expect(findItem(item).props('text')).toBe(item.name);
+      });
+    });
+  });
 
-      expectSelectedItems([expectedOption]);
+  it('selects and unselects a dropdown item when clicked on', async () => {
+    const item = ITEMS.HAS_ISSUE;
+    clickItem(item);
+    await nextTick();
+
+    expectSelectedItems([item]);
+
+    clickItem(item);
+    await nextTick();
+
+    expectSelectedItems([activityFilter.allOption]);
+  });
+
+  it.each(GROUPS.map((group) => [group.header.name, group]))(
+    'allows only one item to be selected for the %s group',
+    async (groupName, group) => {
+      for await (const item of group.items) {
+        clickItem(item);
+        await nextTick();
+
+        expectSelectedItems([item]);
+      }
     },
   );
 
+  it('allows multiple selection of items across groups', async () => {
+    // Get the first item in each group and click on them.
+    const items = GROUPS.map((group) => group.items[0]);
+    items.forEach(clickItem);
+    await nextTick();
+
+    expectSelectedItems(items);
+  });
+
   describe('filter-changed event', () => {
-    it('contains the correct filterObject for the all option', async () => {
+    it('emits the expected data for the all option', async () => {
       await clickItem(activityFilter.allOption);
 
       expect(wrapper.emitted('filter-changed')).toHaveLength(2);
@@ -73,17 +113,16 @@ describe('Activity Filter component', () => {
     });
 
     it.each`
-      selectedOptions                      | hasIssues | hasResolution
-      ${[NO_ACTIVITY]}                     | ${false}  | ${false}
-      ${[WITH_ISSUES]}                     | ${true}   | ${false}
-      ${[NO_LONGER_DETECTED]}              | ${false}  | ${true}
-      ${[WITH_ISSUES, NO_LONGER_DETECTED]} | ${true}   | ${true}
+      selectedItems                                            | hasIssues | hasResolution
+      ${[ITEMS.HAS_ISSUE, ITEMS.STILL_DETECTED]}               | ${true}   | ${false}
+      ${[ITEMS.DOES_NOT_HAVE_ISSUE, ITEMS.NO_LONGER_DETECTED]} | ${false}  | ${true}
     `(
-      'contains the correct filterObject for $selectedOptions',
-      async ({ selectedOptions, hasIssues, hasResolution }) => {
-        await selectedOptions.map(clickItem);
+      'emits the expected data for $selectedItems',
+      async ({ selectedItems, hasIssues, hasResolution }) => {
+        selectedItems.forEach(clickItem);
+        await nextTick();
 
-        expectSelectedItems(selectedOptions);
+        expectSelectedItems(selectedItems);
         expect(wrapper.emitted('filter-changed')[1][0]).toEqual({ hasIssues, hasResolution });
       },
     );

@@ -5,26 +5,6 @@ require 'spec_helper'
 RSpec.describe Namespaces::FreeUserCap do
   using RSpec::Parameterized::TableSyntax
 
-  describe '.trimming_enabled?' do
-    subject { described_class.trimming_enabled? }
-
-    context 'when free_user_cap_data_remediation_job is disabled' do
-      before do
-        stub_feature_flags(free_user_cap_data_remediation_job: false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when :free_user_cap_data_remediation_job is enabled' do
-      before do
-        stub_feature_flags(free_user_cap_data_remediation_job: true)
-      end
-
-      it { is_expected.to be true }
-    end
-  end
-
   describe '.enforce_preview_or_standard?' do
     let(:namespace) { build(:namespace) }
 
@@ -49,6 +29,22 @@ RSpec.describe Namespaces::FreeUserCap do
 
     with_them do
       it { is_expected.to be result }
+    end
+  end
+
+  describe '.dashboard_limit' do
+    subject { described_class.dashboard_limit }
+
+    context 'when set to default' do
+      it { is_expected.to eq 0 }
+    end
+
+    context 'when not set to default' do
+      before do
+        stub_ee_application_setting(dashboard_limit: 5)
+      end
+
+      it { is_expected.to eq 5 }
     end
   end
 end

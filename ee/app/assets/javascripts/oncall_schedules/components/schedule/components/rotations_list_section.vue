@@ -36,6 +36,7 @@ export default {
     GlModal: GlModalDirective,
     GlTooltip: GlTooltipDirective,
   },
+  inject: ['userCanCreateSchedule'],
   props: {
     loading: {
       type: Boolean,
@@ -119,7 +120,11 @@ export default {
             :data-testid="`rotation-name-${rotation.id}`"
             >{{ rotation.name }}</span
           >
-          <gl-button-group class="gl-px-2">
+          <gl-button-group
+            v-if="userCanCreateSchedule"
+            class="gl-px-2"
+            data-testid="rotation-edit-button-group"
+          >
             <gl-button
               v-gl-modal="editRotationModalId"
               v-gl-tooltip

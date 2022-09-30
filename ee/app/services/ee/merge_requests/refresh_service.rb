@@ -16,6 +16,17 @@ module EE
         update_approvers_for_source_branch_merge_requests
         update_approvers_for_target_branch_merge_requests
         reset_approvals_for_merge_requests(push.ref, push.newrev)
+        trigger_suggested_reviewers_fetch
+      end
+
+      def trigger_suggested_reviewers_fetch
+        return unless project.suggested_reviewers_available?
+
+        merge_requests_for_source_branch.each do |mr|
+          next unless mr.can_suggest_reviewers?
+
+          ::MergeRequests::FetchSuggestedReviewersWorker.perform_async(mr.id)
+        end
       end
 
       def reset_approvals_for_merge_requests(ref, newrev)

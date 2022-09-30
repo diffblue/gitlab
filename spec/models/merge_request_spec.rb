@@ -1837,9 +1837,8 @@ RSpec.describe MergeRequest, factory_default: :keep do
     context 'persisted merge request' do
       context 'with a limit' do
         it 'returns a limited number of commit shas' do
-          expect(subject.commit_shas(limit: 2)).to eq(%w[
-            b83d6e391c22777fca1ed3012fce84f633d7fed0 498214de67004b1da3d820901307bed2a68a8ef6
-          ])
+          expect(subject.commit_shas(limit: 2)).to eq(
+            %w[b83d6e391c22777fca1ed3012fce84f633d7fed0 498214de67004b1da3d820901307bed2a68a8ef6])
         end
       end
 
@@ -4739,15 +4738,17 @@ RSpec.describe MergeRequest, factory_default: :keep do
     context 'persisted merge request' do
       context 'with a limit' do
         it 'returns a limited number of commits' do
-          expect(subject.commits(limit: 2).map(&:sha)).to eq(%w[
-            b83d6e391c22777fca1ed3012fce84f633d7fed0
-            498214de67004b1da3d820901307bed2a68a8ef6
-          ])
-          expect(subject.commits(limit: 3).map(&:sha)).to eq(%w[
-            b83d6e391c22777fca1ed3012fce84f633d7fed0
-            498214de67004b1da3d820901307bed2a68a8ef6
-            1b12f15a11fc6e62177bef08f47bc7b5ce50b141
-          ])
+          expect(subject.commits(limit: 2).map(&:sha)).to eq(
+            %w[
+              b83d6e391c22777fca1ed3012fce84f633d7fed0
+              498214de67004b1da3d820901307bed2a68a8ef6
+            ])
+          expect(subject.commits(limit: 3).map(&:sha)).to eq(
+            %w[
+              b83d6e391c22777fca1ed3012fce84f633d7fed0
+              498214de67004b1da3d820901307bed2a68a8ef6
+              1b12f15a11fc6e62177bef08f47bc7b5ce50b141
+            ])
         end
       end
 
@@ -4792,9 +4793,10 @@ RSpec.describe MergeRequest, factory_default: :keep do
     end
 
     it 'returns the safe number of commits' do
-      expect(subject.recent_commits.map(&:sha)).to eq(%w[
-        b83d6e391c22777fca1ed3012fce84f633d7fed0 498214de67004b1da3d820901307bed2a68a8ef6
-      ])
+      expect(subject.recent_commits.map(&:sha)).to eq(
+        %w[
+          b83d6e391c22777fca1ed3012fce84f633d7fed0 498214de67004b1da3d820901307bed2a68a8ef6
+        ])
     end
   end
 
@@ -5168,6 +5170,88 @@ RSpec.describe MergeRequest, factory_default: :keep do
 
       it 'returns false' do
         expect(merge_request.target_default_branch?).to be true
+      end
+    end
+  end
+
+  describe '#can_suggest_reviewers?' do
+    let_it_be(:merge_request) { build(:merge_request, :opened, project: project) }
+
+    subject(:can_suggest_reviewers) { merge_request.can_suggest_reviewers? }
+
+    it 'returns false' do
+      expect(can_suggest_reviewers).to be(false)
+    end
+  end
+
+  describe '#suggested_reviewer_users' do
+    let_it_be(:merge_request) { build(:merge_request, project: project) }
+
+    subject(:suggested_reviewer_users) { merge_request.suggested_reviewer_users }
+
+    shared_examples 'blank suggestions' do
+      it 'returns blank' do
+        expect(suggested_reviewer_users).to eq([])
+      end
+    end
+
+    context 'predictions is nil' do
+      it_behaves_like 'blank suggestions'
+    end
+
+    context 'predictions is not nil' do
+      before do
+        merge_request.build_predictions
+      end
+
+      context 'a non hash' do
+        before do
+          merge_request.build_predictions
+          merge_request.predictions.suggested_reviewers = 1
+        end
+
+        it_behaves_like 'blank suggestions'
+      end
+
+      context 'an empty hash' do
+        before do
+          merge_request.predictions.suggested_reviewers = {}
+        end
+
+        it_behaves_like 'blank suggestions'
+      end
+
+      context 'suggests a user which is not a member' do
+        let_it_be(:non_member) { create(:user) }
+
+        before do
+          merge_request.predictions.suggested_reviewers = { 'reviewers' => [non_member.username] }
+        end
+
+        it_behaves_like 'blank suggestions'
+      end
+
+      context 'suggests a user which is a non member' do
+        let_it_be(:member) { create(:user) }
+
+        before do
+          project.add_developer(member)
+          merge_request.predictions.suggested_reviewers = { 'reviewers' => [member.username] }
+        end
+
+        context 'user is nonactive' do
+          before do
+            member.deactivate
+          end
+
+          it_behaves_like 'blank suggestions'
+        end
+
+        context 'user is active' do
+          it 'returns the user' do
+            expect(suggested_reviewer_users).to eq([member])
+          end
+        end
       end
     end
   end

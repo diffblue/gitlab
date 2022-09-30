@@ -54,6 +54,88 @@ RSpec.describe AutocompleteController do
           expect(json_response.map { |u| u["username"] }).to match_array([user.username])
         end
       end
+
+      describe 'GET #users with suggested users' do
+        let_it_be(:suggested_user) { create(:user) }
+        let_it_be(:merge_request) { create(:merge_request, source_project: project) }
+
+        let(:request_common_params) do
+          {
+            active: 'true',
+            project_id: project.id,
+            merge_request_iid: merge_request.iid,
+            current_user: true
+          }
+        end
+
+        let(:request_params) { request_common_params }
+
+        before do
+          project.add_developer(suggested_user)
+          merge_request.build_predictions
+          merge_request.predictions.update!(suggested_reviewers: { reviewers: [suggested_user.username] })
+
+          allow(controller).to receive(:suggested_reviewers_available?).and_return(true)
+        end
+
+        shared_examples 'feature available' do
+          it 'returns the suggested reviewers' do
+            get(:users, params: request_params)
+
+            expect(json_response).to be_kind_of(Array)
+            expect(json_response.size).to eq(3)
+            expect(json_response.map { |user| user['suggested'] }).to match_array([nil, nil, true])
+          end
+        end
+
+        shared_examples 'feature unavailable' do
+          it 'returns no suggested reviewers' do
+            get(:users, params: request_params)
+
+            expect(json_response).to be_kind_of(Array)
+            expect(json_response.size).to eq(3)
+            expect(json_response.map { |user| user['suggested'] }).to match_array([nil, nil, nil])
+          end
+        end
+
+        include_examples 'feature available'
+
+        context 'when suggested reviewers is unavailable for project' do
+          before do
+            allow(controller).to receive(:suggested_reviewers_available?).and_return(false)
+          end
+
+          include_examples 'feature unavailable'
+        end
+
+        context 'when search param is not blank' do
+          let(:request_params) { request_common_params.merge(search: suggested_user.username) }
+
+          it 'returns no suggested reviewers' do
+            get(:users, params: request_params)
+
+            expect(json_response.map { |user| user['suggested'] }).to match_array([nil])
+          end
+        end
+
+        context 'when merge_request_iid is blank' do
+          let(:request_params) { request_common_params.except(:merge_request_iid) }
+
+          include_examples 'feature unavailable'
+        end
+
+        context 'when merge_request is closed' do
+          let_it_be(:merge_request) { create(:merge_request, :closed, source_project: project) }
+
+          include_examples 'feature unavailable'
+        end
+
+        context 'when merge_request has been merged' do
+          let_it_be(:merge_request) { create(:merge_request, :merged, source_project: project) }
+
+          include_examples 'feature unavailable'
+        end
+      end
     end
   end
 

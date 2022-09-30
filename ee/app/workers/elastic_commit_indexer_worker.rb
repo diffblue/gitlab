@@ -42,10 +42,11 @@ class ElasticCommitIndexerWorker
         search_indexing_duration_s: search_indexing_duration_s,
         jid: jid
       )
+
+      document_type = wiki ? 'Wiki' : 'Code'
+      Gitlab::Metrics::GlobalSearchIndexingSlis.record_apdex(elapsed: search_indexing_duration_s, document_type: document_type)
     end
 
-    type = wiki ? 'Wiki' : 'Code'
-    Gitlab::Metrics::GlobalSearchIndexingSlis.record_apdex(elapsed: search_indexing_duration_s, type: type)
     @ret
   end
 end

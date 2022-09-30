@@ -26,6 +26,9 @@ export const i18n = {
   emptyState: {
     title: s__('OnCallSchedules|Create on-call schedules in GitLab'),
     description: s__('OnCallSchedules|Route alerts directly to specific members of your team'),
+    unauthorizedDescription: s__(
+      'OnCallSchedules|Route alerts directly to specific members of your team. To access this feature, ask %{linkStart}a project Owner%{linkEnd} to grant you at least the Maintainer role.',
+    ),
   },
   successNotification: {
     title: s__('OnCallSchedules|Try adding a rotation'),
@@ -52,7 +55,12 @@ export default {
     GlModal: GlModalDirective,
     GlTooltip: GlTooltipDirective,
   },
-  inject: ['emptyOncallSchedulesSvgPath', 'projectPath', 'escalationPoliciesPath'],
+  inject: [
+    'emptyOncallSchedulesSvgPath',
+    'projectPath',
+    'escalationPoliciesPath',
+    'userCanCreateSchedule',
+  ],
   data() {
     return {
       schedules: [],
@@ -103,6 +111,7 @@ export default {
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
         <h2>{{ $options.i18n.title }}</h2>
         <gl-button
+          v-if="userCanCreateSchedule"
           v-gl-modal="$options.addScheduleModalId"
           v-gl-tooltip.left.viewport.hover
           :title="$options.i18n.add.tooltip"
@@ -153,10 +162,19 @@ export default {
     <gl-empty-state
       v-else
       :title="$options.i18n.emptyState.title"
-      :description="$options.i18n.emptyState.description"
       :svg-path="emptyOncallSchedulesSvgPath"
     >
-      <template #actions>
+      <template #description>
+        <p v-if="userCanCreateSchedule">
+          {{ $options.i18n.emptyState.description }}
+        </p>
+        <gl-sprintf v-else :message="$options.i18n.emptyState.unauthorizedDescription">
+          <template #link="{ content }">
+            <gl-link href="project_members?sort=access_level_desc">{{ content }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </template>
+      <template v-if="userCanCreateSchedule" #actions>
         <gl-button v-gl-modal="$options.addScheduleModalId" variant="confirm">
           {{ $options.i18n.add.button }}
         </gl-button>

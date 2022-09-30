@@ -237,7 +237,7 @@ table.supported-languages ul {
       <td>.NET</td>
       <td rowspan="2">All versions</td>
       <td rowspan="2"><a href="https://www.nuget.org/">NuGet</a></td>
-      <td rowspan="2"><a href="https://docs.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#enabling-lock-file"><code>packages.lock.json</code></a></td>
+      <td rowspan="2"><a href="https://learn.microsoft.com/en-us/nuget/consume-packages/package-references-in-project-files#enabling-lock-file"><code>packages.lock.json</code></a></td>
       <td rowspan="2">Y</td>
     </tr>
     <tr>
@@ -650,7 +650,7 @@ or [contributing to the code](../../../development/index.md) to enable it to be 
 
 ### Using a custom SSL CA certificate authority
 
-You can use the `ADDITIONAL_CA_CERT_BUNDLE` CI/CD variable to configure a custom SSL CA certificate authority. The `ADDITIONAL_CA_CERT_BUNDLE` value should contain the [text representation of the X.509 PEM public-key certificate](https://tools.ietf.org/html/rfc7468#section-5.1). For example, to configure this value in the `.gitlab-ci.yml` file, use the following:
+You can use the `ADDITIONAL_CA_CERT_BUNDLE` CI/CD variable to configure a custom SSL CA certificate authority. The `ADDITIONAL_CA_CERT_BUNDLE` value should contain the [text representation of the X.509 PEM public-key certificate](https://www.rfc-editor.org/rfc/rfc7468#section-5.1). For example, to configure this value in the `.gitlab-ci.yml` file, use the following:
 
 ```yaml
 variables:
@@ -1108,6 +1108,13 @@ version number).
 
 ## Troubleshooting
 
+### Increase log verbosity
+
+When a [job log](../../../ci/jobs/index.md#expand-and-collapse-job-log-sections)
+doesn't contain enough information about a dependency-scanning failure,
+[set `SECURE_LOG_LEVEL` to `debug`](#configuring-dependency-scanning)
+and check the resulting, more verbose log.
+
 ### Working around missing support for certain languages or package managers
 
 As noted in the ["Supported languages" section](#supported-languages-and-package-managers)
@@ -1268,3 +1275,7 @@ gemnasium-python-dependency_scanning:
   before_script:
     - apt-get update && apt-get install -y libpq-dev
 ```
+
+### Error: Project has `<number>` unresolved dependencies
+
+The error message `Project has <number> unresolved dependencies` indicates a dependency resolution problem caused by your `gradle.build` or `gradle.build.kts` file. In the current release, `gemnasium-maven` cannot continue processing when an unresolved dependency is encountered. However, There is an [open issue](https://gitlab.com/gitlab-org/gitlab/-/issues/337083) to allow `gemnasium-maven` to recover from unresolved dependency errors and produce a dependency graph. Until this issue has been resolved, you'll need to consult the [Gradle dependency resolution docs](https://docs.gradle.org/current/userguide/dependency_resolution.html) for details on how to fix your `gradle.build` file.

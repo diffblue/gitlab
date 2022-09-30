@@ -1,45 +1,40 @@
-import Vue from 'vue';
+import { mount } from '@vue/test-utils';
 
 import TableBodyComponent from 'ee/group_member_contributions/components/table_body.vue';
 import GroupMemberStore from 'ee/group_member_contributions/store/group_member_store';
-import mountComponent from 'helpers/vue_mount_component_helper';
 
 import { rawMembers } from '../mock_data';
 
 const createComponent = () => {
-  const Component = Vue.extend(TableBodyComponent);
-
   const store = new GroupMemberStore();
   store.setMembers(rawMembers);
   const rows = store.members;
 
-  return mountComponent(Component, { rows });
+  return mount(TableBodyComponent, { propsData: { rows } });
 };
 
 describe('TableBodyComponent', () => {
-  let vm;
+  let wrapper;
 
   beforeEach(() => {
-    vm = createComponent();
+    wrapper = createComponent();
   });
 
   afterEach(() => {
-    vm.$destroy();
+    wrapper.destroy();
   });
 
-  describe('template', () => {
-    it('renders row item element', () => {
-      const rowEl = vm.$el.querySelector('tr');
+  it('renders row item element', () => {
+    const rowEl = wrapper.find('tr');
 
-      expect(rowEl).not.toBeNull();
-      expect(rowEl.querySelectorAll('td')).toHaveLength(9);
-    });
+    expect(rowEl.exists()).toBe(true);
+    expect(rowEl.findAll('td')).toHaveLength(9);
+  });
 
-    it('renders username row cell element', () => {
-      const cellEl = vm.$el.querySelector('td strong');
+  it('renders username row cell element', () => {
+    const cellEl = wrapper.find('td strong');
 
-      expect(cellEl).not.toBeNull();
-      expect(cellEl.querySelector('a').getAttribute('href')).toBe(rawMembers[0].user_web_url);
-    });
+    expect(cellEl.exists()).toBe(true);
+    expect(cellEl.find('a').attributes('href')).toBe(rawMembers[0].user_web_url);
   });
 });

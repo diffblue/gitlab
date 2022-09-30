@@ -41,5 +41,26 @@ module EE
 
       render json: RouteSerializer.new.represent(routes)
     end
+
+    private
+
+    def suggested_reviewers_available?
+      project.suggested_reviewers_available?
+    end
+
+    def presented_suggested_users
+      return [] unless params[:search].blank? && params[:merge_request_iid].present?
+      return [] unless suggested_reviewers_available?
+
+      merge_request = project.merge_requests.find_by_iid!(params[:merge_request_iid])
+      return [] unless merge_request&.open?
+
+      suggested_users = merge_request.suggested_reviewer_users
+      return [] if suggested_users.empty?
+
+      ::UserSerializer
+        .new(params.merge({ current_user: current_user, suggested: true }))
+        .represent(suggested_users, project: project)
+    end
   end
 end

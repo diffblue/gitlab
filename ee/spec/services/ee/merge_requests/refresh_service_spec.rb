@@ -150,6 +150,64 @@ RSpec.describe MergeRequests::RefreshService do
       end
     end
 
+    describe '#trigger_suggested_reviewers_fetch' do
+      before do
+        merge_request
+      end
+
+      shared_examples 'calling suggested reviewer worker' do
+        it 'calls perform_async for the worker' do
+          expect(::MergeRequests::FetchSuggestedReviewersWorker).to receive(:perform_async).with(merge_request.id)
+
+          subject
+        end
+      end
+
+      shared_examples 'not calling suggested reviewer worker' do
+        it 'does not call perform_async for the worker' do
+          expect(::MergeRequests::FetchSuggestedReviewersWorker).not_to receive(:perform_async).with(merge_request.id)
+
+          subject
+        end
+      end
+
+      context 'when suggested reviewers is available for the project' do
+        before do
+          allow(project).to receive(:suggested_reviewers_available?).and_return(true)
+        end
+
+        context 'when merge request can suggest reviewers' do
+          before do
+            allow_any_instance_of(::MergeRequest).to receive(:can_suggest_reviewers?).and_return(true)
+          end
+
+          it_behaves_like 'calling suggested reviewer worker'
+        end
+
+        context 'when merge request cannot suggest reviewers' do
+          before do
+            allow_any_instance_of(::MergeRequest).to receive(:can_suggest_reviewers?).and_return(false)
+          end
+
+          it_behaves_like 'not calling suggested reviewer worker'
+        end
+      end
+
+      context 'when suggested reviewers is not available for the project' do
+        before do
+          allow(project).to receive(:suggested_reviewers_available?).and_return(false)
+        end
+
+        context 'when merge request can suggest reviewers' do
+          before do
+            allow_any_instance_of(::MergeRequest).to receive(:can_suggest_reviewers?).and_return(true)
+          end
+
+          it_behaves_like 'not calling suggested reviewer worker'
+        end
+      end
+    end
+
     describe '#update_approvers_for_source_branch_merge_requests' do
       let(:owner) { create(:user, username: 'default-codeowner') }
       let(:current_user) { merge_request.author }

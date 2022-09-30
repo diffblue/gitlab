@@ -54,6 +54,39 @@ export const syncInfo = (state) => (id) => {
   });
 };
 
+export const dataTypes = (state) => {
+  return state.replicableTypes.reduce((acc, replicable) => {
+    if (acc.some((type) => type.dataType === replicable.dataType)) {
+      return acc;
+    }
+
+    return [
+      ...acc,
+      {
+        dataType: replicable.dataType,
+        dataTypeTitle: replicable.dataTypeTitle,
+      },
+    ];
+  }, []);
+};
+
+export const replicationCountsByDataTypeForNode = (_, getters) => (id) => {
+  const syncInfoData = getters.syncInfo(id);
+  const verificationInfoData = getters.verificationInfo(id);
+
+  return getters.dataTypes.map(({ dataType, dataTypeTitle }) => {
+    return {
+      title: dataTypeTitle,
+      sync: syncInfoData
+        .filter((replicable) => replicable.dataType === dataType)
+        .map((d) => d.values),
+      verification: verificationInfoData
+        .filter((replicable) => replicable.dataType === dataType)
+        .map((d) => d.values),
+    };
+  });
+};
+
 export const canRemoveNode = (state) => (id) => {
   const node = state.nodes.find((n) => n.id === id);
 

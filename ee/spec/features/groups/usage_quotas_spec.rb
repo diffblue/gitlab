@@ -346,7 +346,8 @@ RSpec.describe 'Groups > Usage Quotas' do
 
     before do
       stub_feature_flags(preview_free_user_cap: preview_free_user_cap, free_user_cap: free_user_cap)
-      stub_application_setting(check_namespace_plan: true)
+      stub_ee_application_setting(dashboard_limit_enabled: true)
+      stub_ee_application_setting(dashboard_limit: 5)
       allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
         allow(instance).to receive(:execute).and_return([{ 'code' => 'ultimate', 'id' => 'ultimate-plan-id' }])
       end
@@ -389,7 +390,7 @@ RSpec.describe 'Groups > Usage Quotas' do
         let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :expired, :free, namespace: group) }
 
         let_it_be(:active_members) do
-          create_list(:group_member, ::Namespaces::FreeUserCap::FREE_USER_LIMIT + 1, source: group)
+          create_list(:group_member, 2, source: group)
         end
 
         it 'shows usage quota alert' do

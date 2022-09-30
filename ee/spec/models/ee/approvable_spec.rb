@@ -48,16 +48,16 @@ RSpec.describe Approvable do
     it { is_expected.to delegate_method(method).to(:approval_state) }
   end
 
-  describe '#can_be_approved_by?' do
+  describe '#eligible_for_approval_by?' do
     context 'when merge_request_approvers feature is enabled' do
       before do
         stub_licensed_features(merge_request_approvers: true)
       end
 
       it 'delegates the call to merge request' do
-        expect(subject.approval_state).to receive(:can_be_approved_by?).with(author)
+        expect(subject.approval_state).to receive(:eligible_for_approval_by?).with(author)
 
-        subject.can_be_approved_by?(author)
+        subject.eligible_for_approval_by?(author)
       end
     end
 
@@ -67,9 +67,9 @@ RSpec.describe Approvable do
       end
 
       it 'delegates the call to merge request' do
-        expect(subject.approval_state).not_to receive(:can_be_approved_by?).with(author)
+        expect(subject.approval_state).not_to receive(:eligible_for_approval_by?).with(author)
 
-        subject.can_be_approved_by?(author)
+        subject.eligible_for_approval_by?(author)
       end
     end
   end

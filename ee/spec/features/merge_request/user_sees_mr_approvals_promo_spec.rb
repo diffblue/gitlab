@@ -13,7 +13,6 @@ RSpec.describe 'user sees MR approvals promo', :js do
 
     stub_application_setting(check_namespace_plan: true)
     stub_licensed_features(merge_request_approvers: false)
-    stub_experiments(promote_mr_approvals_in_free: :candidate)
 
     sign_in(user)
   end

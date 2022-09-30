@@ -6,18 +6,19 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:content_class) { '_content_class_' }
 
-  let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+  let(:free_plan_members_count) { 6 }
   let!(:gitlab_subscription) { create(:gitlab_subscription, :expired, :free, namespace: namespace) }
 
   let(:title) do
-    "Your free group is now limited to #{::Namespaces::FreeUserCap::FREE_USER_LIMIT} members"
+    "Your free group is now limited to #{::Namespaces::FreeUserCap.dashboard_limit} members"
   end
 
   let(:body) do
-    'Your group recently changed to use the Free plan. Free groups are limited to 5 members and ' \
-    'the remaining members will get a status of over-limit and lose access to the group. You can ' \
-    'free up space for new members by removing those who no longer need access or toggling them ' \
-    'to over-limit. To get an unlimited number of members, you can upgrade to a paid tier.'
+    "Your group recently changed to use the Free plan. Free groups are limited to " \
+    "#{::Namespaces::FreeUserCap.dashboard_limit} members and " \
+    "the remaining members will get a status of over-limit and lose access to the group. You can " \
+    "free up space for new members by removing those who no longer need access or toggling them " \
+    "to over-limit. To get an unlimited number of members, you can upgrade to a paid tier."
   end
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }
@@ -25,7 +26,8 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
   before do
     namespace.add_owner(user)
 
-    stub_ee_application_setting(should_check_namespace_plan: true)
+    stub_ee_application_setting(dashboard_limit_enabled: true)
+    stub_ee_application_setting(dashboard_enforcement_limit: 5)
     allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
   end
 
@@ -70,7 +72,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
   end
 
   context 'when under the limit' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+    let(:free_plan_members_count) { 5 }
 
     it_behaves_like 'does not render the alert'
   end

@@ -13,11 +13,11 @@ module Gitlab
           start { ::User.minimum(:id) }
           finish { ::User.maximum(:id) }
 
-          def initialize(time_frame:, options: {})
+          def initialize(metric_definition)
             super
 
             raise ArgumentError, "secure_type options attribute is required" unless secure_type.present?
-            raise ArgumentError, "Attribute: #{secure_type} it not allowed" unless ::EE::Gitlab::UsageData::SECURE_PRODUCT_TYPES.key?(secure_type.to_sym)
+            raise ArgumentError, "Attribute: #{secure_type} is not allowed" unless ::EE::Gitlab::UsageData::SECURE_PRODUCT_TYPES.key?(secure_type.to_sym)
           end
 
           private

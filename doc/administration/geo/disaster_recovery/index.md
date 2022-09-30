@@ -340,7 +340,7 @@ with the **secondary** site:
 1. Promote the replica database associated with the **secondary** site. This
    sets the database to read-write. The instructions vary depending on where your database is hosted:
    - [Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html#USER_ReadRepl.Promote)
-   - [Azure PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/single-server/how-to-read-replicas-portal#stop-replication)
+   - [Azure PostgreSQL](https://learn.microsoft.com/en-us/azure/postgresql/single-server/how-to-read-replicas-portal#stop-replication)
    - [Google Cloud SQL](https://cloud.google.com/sql/docs/mysql/replication/manage-replicas#promote-replica)
    - For other external PostgreSQL databases, save the following script in your
      secondary site, for example `/tmp/geo_promote.sh`, and modify the connection
@@ -411,7 +411,7 @@ required:
 1. Promote the replica database associated with the **secondary** site. This
    sets the database to read-write. The instructions vary depending on where your database is hosted:
    - [Amazon RDS](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/USER_ReadRepl.html#USER_ReadRepl.Promote)
-   - [Azure PostgreSQL](https://docs.microsoft.com/en-us/azure/postgresql/single-server/how-to-read-replicas-portal#stop-replication)
+   - [Azure PostgreSQL](https://learn.microsoft.com/en-us/azure/postgresql/single-server/how-to-read-replicas-portal#stop-replication)
    - [Google Cloud SQL](https://cloud.google.com/sql/docs/mysql/replication/manage-replicas#promote-replica)
    - For other external PostgreSQL databases, save the following script in your
      secondary site, for example `/tmp/geo_promote.sh`, and modify the connection
@@ -615,9 +615,9 @@ Now we need to make each **secondary** site listen to changes on the new **prima
 to [initiate the replication process](../setup/database.md#step-3-initiate-the-replication-process) again but this time
 for another **primary** site. All the old replication settings are overwritten.
 
-## Promoting a secondary Geo cluster in GitLab Cloud Native Helm Charts
+## Promoting a secondary Geo cluster in the GitLab Helm chart
 
-When updating a Cloud Native Geo deployment, the process for updating any node that is external to the secondary Kubernetes cluster does not differ from the non Cloud Native approach. As such, you can always defer to [Promoting a secondary Geo site in single-secondary configurations](#promoting-a-secondary-geo-site-in-single-secondary-configurations) for more information.
+When updating a cloud-native Geo deployment, the process for updating any node that is external to the secondary Kubernetes cluster does not differ from the non cloud-native approach. As such, you can always defer to [Promoting a secondary Geo site in single-secondary configurations](#promoting-a-secondary-geo-site-in-single-secondary-configurations) for more information.
 
 The following sections assume you are using the `gitlab` namespace. If you used a different namespace when setting up your cluster, you should also replace `--namespace gitlab` with your namespace.
 

@@ -11,7 +11,7 @@ RSpec.describe Issues::CreateService do
   let(:additional_params) { {} }
   let(:params) { base_params.merge(additional_params) }
   let(:service) { described_class.new(project: project, current_user: user, params: params, spam_params: nil) }
-  let(:created_issue) { service.execute }
+  let(:created_issue) { service.execute[:issue] }
 
   describe '#execute' do
     context 'when current user cannot admin issues in the project' do
@@ -52,6 +52,7 @@ RSpec.describe Issues::CreateService do
 
         it_behaves_like 'issue with epic_id parameter' do
           let(:execute) { service.execute }
+          let(:returned_issue) { execute[:issue] }
         end
 
         context 'when using quick actions' do
@@ -232,9 +233,11 @@ RSpec.describe Issues::CreateService do
         end
 
         it 'creates a requirement object with same parameters' do
-          issue = service.execute
-
+          result = service.execute
+          issue = result[:issue]
           requirement = issue.reload.requirement
+
+          expect(result).to be_success
           expect(requirement.title).to eq(issue.title)
           expect(requirement.description).to eq(issue.description)
           expect(requirement.state).to eq(issue.state)
@@ -280,6 +283,8 @@ RSpec.describe Issues::CreateService do
 
     it_behaves_like 'new issuable with scoped labels' do
       let(:parent) { project }
+      let(:service_result) { described_class.new(**args).execute }
+      let(:issuable) { service_result[:issue] }
     end
   end
 end

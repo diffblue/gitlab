@@ -28,7 +28,6 @@ RSpec.describe Project, factory_default: :keep do
     it { is_expected.to have_many(:issues) }
     it { is_expected.to have_many(:incident_management_issuable_escalation_statuses).through(:issues).inverse_of(:project).class_name('IncidentManagement::IssuableEscalationStatus') }
     it { is_expected.to have_many(:milestones) }
-    it { is_expected.to have_many(:iterations) }
     it { is_expected.to have_many(:project_members).dependent(:delete_all) }
     it { is_expected.to have_many(:users).through(:project_members) }
     it { is_expected.to have_many(:requesters).dependent(:delete_all) }
@@ -149,6 +148,7 @@ RSpec.describe Project, factory_default: :keep do
     it { is_expected.to have_many(:secure_files).class_name('Ci::SecureFile').dependent(:restrict_with_error) }
     it { is_expected.to have_one(:build_artifacts_size_refresh).class_name('Projects::BuildArtifactsSizeRefresh') }
     it { is_expected.to have_many(:project_callouts).class_name('Users::ProjectCallout').with_foreign_key(:project_id) }
+    it { is_expected.to have_many(:pipeline_metadata).class_name('Ci::PipelineMetadata') }
 
     # GitLab Pages
     it { is_expected.to have_many(:pages_domains) }

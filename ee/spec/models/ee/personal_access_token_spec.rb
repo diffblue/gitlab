@@ -209,6 +209,24 @@ RSpec.describe PersonalAccessToken do
     end
   end
 
+  describe '.find_by_token' do
+    let!(:token) { create(:personal_access_token) }
+
+    it 'finds the token' do
+      expect(described_class.find_by_token(token.token)).to eq(token)
+    end
+
+    context 'when FIPS mode is enabled', :fips_mode do
+      before do
+        stub_licensed_features(fips_disable_personal_access_tokens: true)
+      end
+
+      it 'does not find the token' do
+        expect(described_class.find_by_token(token.token)).to be_nil
+      end
+    end
+  end
+
   shared_context 'write to cache' do
     let_it_be(:pat) { create(:personal_access_token) }
     let_it_be(:cache_keys) { %w(token_expired_rotation token_expiring_rotation) }

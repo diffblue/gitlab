@@ -1,5 +1,5 @@
 import { fromYaml } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib';
-import { unsupportedYaml } from 'ee_jest/security_orchestration/mocks/mock_data';
+import { unsupportedYamlManifest } from 'ee_jest/security_orchestration/mocks/mock_data';
 
 const validManifest = `type: scan_result_policy
 name: critical vulnerability CS approvals
@@ -128,6 +128,6 @@ describe('fromYaml', () => {
   );
 
   it('returns the error object if there is an error', () => {
-    expect(fromYaml(unsupportedYaml)).toStrictEqual({ error: true });
+    expect(fromYaml(unsupportedYamlManifest)).toStrictEqual({ error: true });
   });
 });

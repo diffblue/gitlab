@@ -38,7 +38,7 @@ RSpec.describe 'Creates and assigns scan execution policy project to a project/n
         # TODO: investigate too many qeuries issue as part of Project Management Database and Query Performance
         # Epic: https://gitlab.com/groups/gitlab-org/-/epics/5804
         # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/348344
-        stub_const('Gitlab::QueryLimiting::Transaction::THRESHOLD', 140)
+        allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(140)
         stub_licensed_features(security_orchestration_policies: true)
       end
 

@@ -1769,12 +1769,13 @@ RSpec.describe Gitlab::Git::Repository do
     it 'returns exactly the expected results' do
       languages = repository.languages(TestEnv::BRANCH_SHA['master'])
 
-      expect(languages).to match_array([
-        { value: a_value_within(0.1).of(66.7), label: "Ruby", color: "#701516", highlight: "#701516" },
-        { value: a_value_within(0.1).of(22.96), label: "JavaScript", color: "#f1e05a", highlight: "#f1e05a" },
-        { value: a_value_within(0.1).of(7.9), label: "HTML", color: "#e34c26", highlight: "#e34c26" },
-        { value: a_value_within(0.1).of(2.51), label: "CoffeeScript", color: "#244776", highlight: "#244776" }
-      ])
+      expect(languages).to match_array(
+        [
+          { value: a_value_within(0.1).of(66.7), label: "Ruby", color: "#701516", highlight: "#701516" },
+          { value: a_value_within(0.1).of(22.96), label: "JavaScript", color: "#f1e05a", highlight: "#f1e05a" },
+          { value: a_value_within(0.1).of(7.9), label: "HTML", color: "#e34c26", highlight: "#e34c26" },
+          { value: a_value_within(0.1).of(2.51), label: "CoffeeScript", color: "#244776", highlight: "#244776" }
+        ])
     end
 
     it "uses the repository's HEAD when no ref is passed" do
@@ -1784,22 +1785,32 @@ RSpec.describe Gitlab::Git::Repository do
     end
   end
 
-  describe '#license_short_name' do
-    subject { repository.license_short_name }
+  describe '#license' do
+    where(from_gitaly: [true, false])
+    with_them do
+      subject(:license) { repository.license(from_gitaly) }
 
-    context 'when no license file can be found' do
-      let(:project) { create(:project, :repository) }
-      let(:repository) { project.repository.raw_repository }
+      context 'when no license file can be found' do
+        let(:project) { create(:project, :repository) }
+        let(:repository) { project.repository.raw_repository }
 
-      before do
-        project.repository.delete_file(project.owner, 'LICENSE', message: 'remove license', branch_name: 'master')
+        before do
+          project.repository.delete_file(project.owner, 'LICENSE', message: 'remove license', branch_name: 'master')
+        end
+
+        it { is_expected.to be_nil }
       end
 
-      it { is_expected.to be_nil }
+      context 'when an mit license is found' do
+        it { is_expected.to have_attributes(key: 'mit') }
+      end
     end
 
-    context 'when an mit license is found' do
-      it { is_expected.to eq('mit') }
+    it 'does not crash when license is not recognized' do
+      expect(Licensee::License).to receive(:new)
+        .and_raise(Licensee::InvalidLicense)
+
+      expect(repository.license(false)).to be_nil
     end
   end
 

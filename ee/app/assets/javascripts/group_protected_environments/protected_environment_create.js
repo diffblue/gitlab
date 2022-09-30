@@ -43,7 +43,7 @@ export default class ProtectedEnvironmentCreate {
   onSelect() {
     const toggle = !(this.$form.find(PROTECTED_ENVIRONMENT_INPUT).val() && this.selected.length);
 
-    this.$form.find('input[type="submit"]').attr('disabled', toggle);
+    this.$form.find('button[type="submit"]').attr('disabled', toggle);
   }
 
   getFormData() {

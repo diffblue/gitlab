@@ -2,6 +2,12 @@
 
 source 'https://rubygems.org'
 
+if ENV['BUNDLER_CHECKSUM_VERIFICATION_OPT_IN'] # this verification is still experimental
+  $:.unshift(File.expand_path("vendor/gems/bundler-checksum/lib", __dir__))
+  require 'bundler-checksum'
+  Bundler::Checksum.patch!
+end
+
 gem 'bundler-checksum', '~> 0.1.0', path: 'vendor/gems/bundler-checksum', require: false
 
 gem 'rails', '~> 6.1.6.1'
@@ -159,7 +165,7 @@ gem 'html-pipeline', '~> 2.13.2'
 gem 'deckar01-task_list', '2.3.1'
 gem 'gitlab-markup', '~> 1.8.0'
 gem 'github-markup', '~> 1.7.0', require: 'github/markup'
-gem 'commonmarker', '~> 0.23.4'
+gem 'commonmarker', '~> 0.23.6'
 gem 'kramdown', '~> 2.3.1'
 gem 'RedCloth', '~> 4.3.2'
 gem 'rdoc', '~> 6.3.2'
@@ -271,7 +277,7 @@ gem 'sanitize', '~> 6.0'
 gem 'babosa', '~> 1.0.4'
 
 # Sanitizes SVG input
-gem 'loofah', '~> 2.18.0'
+gem 'loofah', '~> 2.19.0'
 
 # Working with license
 # Detects the open source license the repository includes
@@ -351,7 +357,7 @@ group :development do
   gem 'solargraph', '~> 0.46.0', require: false
 
   gem 'letter_opener_web', '~> 2.0.0'
-  gem 'lookbook', '~> 1.0'
+  gem 'lookbook', '~> 1.0', '>= 1.0.8'
 
   # Better errors handler
   gem 'better_errors', '~> 2.9.1'
@@ -518,8 +524,6 @@ gem 'retriable', '~> 3.1.2'
 # LRU cache
 gem 'lru_redux'
 
-gem 'erubi', '~> 1.9.0'
-
 # Locked as long as quoted-printable encoding issues are not resolved
 # Monkey-patched in `config/initializers/mail_encoding_patch.rb`
 # See https://gitlab.com/gitlab-org/gitlab/issues/197386
@@ -555,3 +559,6 @@ gem 'ed25519', '~> 1.3.0'
 # Error Tracking OpenAPI client
 # See https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/development/rake_tasks.md#update-openapi-client-for-error-tracking-feature
 gem 'error_tracking_open_api', path: 'vendor/gems/error_tracking_open_api'
+
+# Vulnerability advisories
+gem 'cvss-suite', '~> 3.0.1', require: 'cvss_suite'

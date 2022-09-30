@@ -106,6 +106,7 @@ module GitlabSubscriptions
       feature_flags_related_issues
       feature_flags_code_references
       file_locks
+      fips_disable_personal_access_tokens
       geo
       generic_alert_fingerprinting
       git_two_factor_enforcement

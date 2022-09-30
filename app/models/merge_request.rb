@@ -73,6 +73,13 @@ class MergeRequest < ApplicationRecord
   belongs_to :latest_merge_request_diff, class_name: 'MergeRequestDiff'
   manual_inverse_association :latest_merge_request_diff, :merge_request
 
+  def suggested_reviewer_users
+    return [] unless predictions && predictions.suggested_reviewers.is_a?(Hash)
+
+    usernames = Array.wrap(suggested_reviewers["reviewers"])
+    project.authorized_users.active.by_username(usernames)
+  end
+
   # This is the same as latest_merge_request_diff unless:
   # 1. There are arguments - in which case we might be trying to force-reload.
   # 2. This association is already loaded.
@@ -438,6 +445,7 @@ class MergeRequest < ApplicationRecord
   # we'd eventually rename the column for avoiding confusions, but in the mean time
   # please use `auto_merge_enabled` alias instead of `merge_when_pipeline_succeeds`.
   alias_attribute :auto_merge_enabled, :merge_when_pipeline_succeeds
+  alias_attribute :issuing_parent_id, :target_project_id
   alias_method :issuing_parent, :target_project
 
   delegate :builds_with_coverage, to: :head_pipeline, prefix: true, allow_nil: true
@@ -1987,6 +1995,10 @@ class MergeRequest < ApplicationRecord
     # rubocop: disable CodeReuse/ServiceClass
     MergeRequests::Mergeability::RunChecksService.new(merge_request: self, params: params).execute
     # rubocop: enable CodeReuse/ServiceClass
+  end
+
+  def can_suggest_reviewers?
+    false # overridden in EE
   end
 
   private

@@ -211,9 +211,7 @@ module EE
     end
 
     def over_storage_limit?
-      ::Gitlab::CurrentSettings.enforce_namespace_storage_limit? &&
-      ::Feature.enabled?(:namespace_storage_limit, root_ancestor) &&
-        root_ancestor.root_storage_size.above_size_limit?
+      ::Namespaces::Storage::RootSize.new(root_ancestor).above_size_limit?
     end
 
     def total_repository_size_excess

@@ -52,7 +52,7 @@ class Gitlab::Seeder::ProductivityAnalytics
       }
 
       Timecop.travel rand(10).days.from_now do
-        Issues::CreateService.new(project: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute
+        Issues::CreateService.new(project: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute[:issue]
       end
     end
   end

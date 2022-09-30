@@ -2,13 +2,7 @@ import { TASKS_BY_TYPE_FILTERS } from 'ee/analytics/cycle_analytics/constants';
 import * as types from 'ee/analytics/cycle_analytics/store/modules/type_of_work/mutation_types';
 import mutations from 'ee/analytics/cycle_analytics/store/modules/type_of_work/mutations';
 
-import {
-  apiTasksByTypeData,
-  rawTasksByTypeData,
-  groupLabels,
-  groupLabelNames,
-  groupLabelIds,
-} from '../../../mock_data';
+import { apiTasksByTypeData, rawTasksByTypeData, groupLabels } from '../../../mock_data';
 
 let state = null;
 
@@ -25,8 +19,8 @@ describe('Value Stream Analytics mutations', () => {
     mutation                                         | stateKey                       | value
     ${types.REQUEST_TOP_RANKED_GROUP_LABELS}         | ${'topRankedLabels'}           | ${[]}
     ${types.RECEIVE_TOP_RANKED_GROUP_LABELS_ERROR}   | ${'topRankedLabels'}           | ${[]}
-    ${types.REQUEST_TOP_RANKED_GROUP_LABELS}         | ${'selectedLabelNames'}        | ${[]}
-    ${types.RECEIVE_TOP_RANKED_GROUP_LABELS_ERROR}   | ${'selectedLabelNames'}        | ${[]}
+    ${types.REQUEST_TOP_RANKED_GROUP_LABELS}         | ${'selectedLabels'}            | ${[]}
+    ${types.RECEIVE_TOP_RANKED_GROUP_LABELS_ERROR}   | ${'selectedLabels'}            | ${[]}
     ${types.REQUEST_TOP_RANKED_GROUP_LABELS}         | ${'errorCode'}                 | ${null}
     ${types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS} | ${'errorCode'}                 | ${null}
     ${types.REQUEST_TOP_RANKED_GROUP_LABELS}         | ${'errorMessage'}              | ${''}
@@ -53,16 +47,10 @@ describe('Value Stream Analytics mutations', () => {
   );
 
   describe(`${types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS}`, () => {
-    it('sets selectedLabelIds to an array of label ids', () => {
+    it('sets selectedLabels to an array of label ids', () => {
       mutations[types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS](state, groupLabels);
 
-      expect(state.selectedLabelIds).toEqual(groupLabelIds);
-    });
-
-    it('sets selectedLabelNames to an array of label ids', () => {
-      mutations[types.RECEIVE_TOP_RANKED_GROUP_LABELS_SUCCESS](state, groupLabels);
-
-      expect(state.selectedLabelNames).toEqual(groupLabelNames);
+      expect(state.selectedLabels).toEqual(groupLabels);
     });
   });
 
@@ -90,30 +78,18 @@ describe('Value Stream Analytics mutations', () => {
       expect(state.subject).toEqual('cool-subject');
     });
 
-    it('will toggle the specified label id in the selectedLabelIds state key', () => {
+    it('will toggle the specified label title in the selectedLabels state key', () => {
       state = {
-        selectedLabelIds: [10, 20, 30],
+        selectedLabels: groupLabels,
       };
-      const labelFilter = { filter: TASKS_BY_TYPE_FILTERS.LABEL, value: { id: 20 } };
+      const [first, second, third] = groupLabels;
+      const labelFilter = { filter: TASKS_BY_TYPE_FILTERS.LABEL, value: second };
       mutations[types.SET_TASKS_BY_TYPE_FILTERS](state, labelFilter);
 
-      expect(state.selectedLabelIds).toEqual([10, 30]);
+      expect(state.selectedLabels).toEqual([first, third]);
 
       mutations[types.SET_TASKS_BY_TYPE_FILTERS](state, labelFilter);
-      expect(state.selectedLabelIds).toEqual([10, 30, 20]);
-    });
-
-    it('will toggle the specified label title in the selectedLabelNames state key', () => {
-      state = {
-        selectedLabelNames: ['label 1', 'label 2', 'label 3'],
-      };
-      const labelFilter = { filter: TASKS_BY_TYPE_FILTERS.LABEL, value: { title: 'label 2' } };
-      mutations[types.SET_TASKS_BY_TYPE_FILTERS](state, labelFilter);
-
-      expect(state.selectedLabelNames).toEqual(['label 1', 'label 3']);
-
-      mutations[types.SET_TASKS_BY_TYPE_FILTERS](state, labelFilter);
-      expect(state.selectedLabelNames).toEqual(['label 1', 'label 3', 'label 2']);
+      expect(state.selectedLabels).toEqual([first, third, second]);
     });
   });
 });

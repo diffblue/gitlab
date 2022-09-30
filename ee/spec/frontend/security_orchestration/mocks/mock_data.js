@@ -1,10 +1,44 @@
-export const unsupportedYaml = `---
-unsupported: attributed
+export const unsupportedYamlManifest = `---
+name: This policy has an unsupported attribute
+UNSUPPORTED: ATTRIBUTE
+rules:
+- type: pipeline
+  branches:
+  - main
+actions:
+- scan: sast
 `;
+
+export const unsupportedYamlObject = {
+  name: 'This policy has an unsupported attribute',
+  UNSUPPORTED: 'ATTRIBUTE',
+  rules: [
+    {
+      type: 'pipeline',
+      branches: ['main'],
+    },
+  ],
+  actions: [
+    {
+      scan: 'sast',
+    },
+  ],
+};
+
+export const mockUnsupportedAttributeScanExecutionPolicy = {
+  __typename: 'ScanExecutionPolicy',
+  name: unsupportedYamlObject.name,
+  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
+  yaml: unsupportedYamlManifest,
+  enabled: false,
+  source: {
+    __typename: 'ProjectSecurityPolicySource',
+  },
+};
 
 export const mockSecretDetectionScanExecutionManifest = `---
 name: Enforce DAST in every pipeline
-enabled: false,
+enabled: false
 rules:
 - type: pipeline
   branches:

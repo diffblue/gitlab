@@ -77,12 +77,14 @@ To create a release in the Releases page:
 
 1. On the top bar, select **Main menu > Projects** and find your project.
 1. On the left sidebar, select **Deployments > Releases** and select **New release**.
-1. From the [**Tag name**](release_fields.md#tag-name) dropdown, either:
+1. From the [**Tag name**](release_fields.md#tag-name) dropdown list, either:
    - Select an existing Git tag. Selecting an existing tag that is already associated with a release
      results in a validation error.
    - Enter a new Git tag name.
-      1. From the **Create from** dropdown, select a branch or commit SHA to use when creating the
-         new tag.
+     1. From the **Create from** dropdown list, select a branch or commit SHA to use when
+        creating the new tag.
+     1. Optional. In the **Set tag message** text box, enter a message to create an
+        [annotated tag](https://git-scm.com/book/en/v2/Git-Basics-Tagging#_annotated_tags).
 1. Optional. Enter additional information about the release, including:
    - [Title](release_fields.md#title).
    - [Milestones](#associate-milestones-with-a-release).
@@ -133,7 +135,7 @@ Methods for creating a release using a CI/CD job include:
 You can use the `ADDITIONAL_CA_CERT_BUNDLE` CI/CD variable to configure a custom SSL CA certificate authority,
 which is used to verify the peer when the `release-cli` creates a release through the API using HTTPS with custom certificates.
 The `ADDITIONAL_CA_CERT_BUNDLE` value should contain the
-[text representation of the X.509 PEM public-key certificate](https://tools.ietf.org/html/rfc7468#section-5.1)
+[text representation of the X.509 PEM public-key certificate](https://www.rfc-editor.org/rfc/rfc7468#section-5.1)
 or the `path/to/file` containing the certificate authority.
 For example, to configure this value in the `.gitlab-ci.yml` file, use the following:
 

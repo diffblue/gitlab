@@ -180,7 +180,7 @@ Here are some examples to get you started:
 
 As documented in the [Docker Official Images](https://github.com/docker-library/official-images#tags-and-aliases) project,
 it is strongly encouraged that version number tags be given aliases which allows the user to easily refer to the "most recent" release of a particular series.
-See also [Docker Tagging: Best practices for tagging and versioning Docker images](https://docs.microsoft.com/en-us/archive/blogs/stevelasker/docker-tagging-best-practices-for-tagging-and-versioning-docker-images).
+See also [Docker Tagging: Best practices for tagging and versioning Docker images](https://learn.microsoft.com/en-us/archive/blogs/stevelasker/docker-tagging-best-practices-for-tagging-and-versioning-docker-images).
 
 ## Command line
 
@@ -357,6 +357,10 @@ analyzer to use the latest available schemas.
 
 After the deprecation period for a schema version, the file is removed from GitLab. Reports that
 declare removed versions are rejected, and an error message displays on the corresponding pipeline.
+
+If a report uses a `PATCH` version that doesn't match any vendored schema version, it is validated against
+the latest vendored `PATCH` version. For example, if a report version is 14.0.23 and the latest vendored
+version is 14.0.6, the report is validated against version 14.0.6.
 
 GitLab uses the
 [`json_schemer`](https://www.rubydoc.info/gems/json_schemer) gem to perform validation.

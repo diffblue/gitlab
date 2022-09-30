@@ -5,19 +5,27 @@ require 'spec_helper'
 RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
   let_it_be(:namespace, reload: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
-  let(:should_check_namespace_plan) { true }
+  let(:dashboard_limit_enabled) { true }
 
   before do
-    stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
+    stub_ee_application_setting(dashboard_limit_enabled: dashboard_limit_enabled)
+  end
+
+  shared_context 'with net new namespace' do
+    let(:enforcement_date) { Date.today }
+    let_it_be(:namespace) do
+      travel_to(Date.today + 2.days) do
+        create(:group_with_plan, :private, plan: :free_plan)
+      end
+    end
   end
 
   describe '#over_limit?' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
 
     subject(:over_limit?) { described_class.new(namespace).over_limit? }
 
     before do
-      stub_ee_application_setting(should_check_namespace_plan: should_check_namespace_plan)
       allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
     end
 
@@ -27,6 +35,53 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       it { is_expected.to be false }
+
+      context 'with a net new namespace' do
+        include_context 'with net new namespace'
+
+        context 'when enforcement date is populated' do
+          before do
+            stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: enforcement_date)
+          end
+
+          context 'when :free_user_cap_new_namespaces is enabled' do
+            before do
+              stub_ee_application_setting(dashboard_limit: 3)
+              stub_feature_flags(free_user_cap_new_namespaces: true)
+            end
+
+            context 'when under the dashboard_limit' do
+              let(:free_plan_members_count) { 2 }
+
+              it { is_expected.to be false }
+            end
+
+            context 'when at dashboard_limit' do
+              let(:free_plan_members_count) { 3 }
+
+              it { is_expected.to be false }
+            end
+
+            context 'when over the dashboard_limit' do
+              let(:free_plan_members_count) { 4 }
+
+              it { is_expected.to be true }
+            end
+          end
+
+          context 'when :free_user_cap_new_namespaces is disabled' do
+            before do
+              stub_feature_flags(free_user_cap_new_namespaces: false)
+            end
+
+            it { is_expected.to be false }
+          end
+        end
+
+        context 'when enforcement date is not populated' do
+          it { is_expected.to be false }
+        end
+      end
     end
 
     context 'when :free_user_cap is enabled' do
@@ -35,13 +90,13 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
         it { is_expected.to be false }
       end
 
       context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
         it { is_expected.to be false }
       end
@@ -88,16 +143,63 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
 
         context 'when should check namespace plan is false' do
-          let(:should_check_namespace_plan) { false }
+          let(:dashboard_limit_enabled) { false }
 
           it { is_expected.to be false }
+        end
+      end
+
+      context 'with a net new namespace' do
+        include_context 'with net new namespace'
+
+        context 'when enforcement date is populated' do
+          before do
+            stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: enforcement_date)
+          end
+
+          context 'when :free_user_cap_new_namespaces is enabled' do
+            before do
+              stub_ee_application_setting(dashboard_limit: 3)
+              stub_feature_flags(free_user_cap_new_namespaces: true)
+            end
+
+            context 'when under the dashboard_limit' do
+              let(:free_plan_members_count) { 2 }
+
+              it { is_expected.to be false }
+            end
+
+            context 'when at dashboard_limit' do
+              let(:free_plan_members_count) { 3 }
+
+              it { is_expected.to be false }
+            end
+
+            context 'when over the dashboard_limit' do
+              let(:free_plan_members_count) { 4 }
+
+              it { is_expected.to be true }
+            end
+          end
+
+          context 'when :free_user_cap_new_namespaces is disabled it honors existing namespace logic' do
+            before do
+              stub_feature_flags(free_user_cap_new_namespaces: false)
+            end
+
+            it { is_expected.to be true }
+          end
+        end
+
+        context 'when enforcement date is not populated it honors existing namespace logic' do
+          it { is_expected.to be true }
         end
       end
     end
   end
 
   describe '#reached_limit?' do
-    let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
+    let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit + 1 }
 
     subject(:reached_limit?) { described_class.new(namespace).reached_limit? }
 
@@ -111,6 +213,53 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       it { is_expected.to be false }
+
+      context 'with a net new namespace' do
+        include_context 'with net new namespace'
+
+        context 'when enforcement date is populated' do
+          before do
+            stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: enforcement_date)
+          end
+
+          context 'when :free_user_cap_new_namespaces is enabled' do
+            before do
+              stub_ee_application_setting(dashboard_limit: 3)
+              stub_feature_flags(free_user_cap_new_namespaces: true)
+            end
+
+            context 'when under the dashboard_limit' do
+              let(:free_plan_members_count) { 2 }
+
+              it { is_expected.to be false }
+            end
+
+            context 'when at dashboard_limit' do
+              let(:free_plan_members_count) { 3 }
+
+              it { is_expected.to be true }
+            end
+
+            context 'when over the dashboard_limit' do
+              let(:free_plan_members_count) { 4 }
+
+              it { is_expected.to be true }
+            end
+          end
+
+          context 'when :free_user_cap_new_namespaces is disabled' do
+            before do
+              stub_feature_flags(free_user_cap_new_namespaces: false)
+            end
+
+            it { is_expected.to be false }
+          end
+        end
+
+        context 'when enforcement date is not populated' do
+          it { is_expected.to be false }
+        end
+      end
     end
 
     context 'when :free_user_cap is enabled' do
@@ -119,13 +268,13 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       context 'when under the number of free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
         it { is_expected.to be false }
       end
 
       context 'when at the same number as the free users limit' do
-        let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
+        let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit }
 
         it { is_expected.to be true }
       end
@@ -164,9 +313,56 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
 
         context 'when should check namespace plan is false' do
-          let(:should_check_namespace_plan) { false }
+          let(:dashboard_limit_enabled) { false }
 
           it { is_expected.to be false }
+        end
+      end
+
+      context 'with a net new namespace' do
+        include_context 'with net new namespace'
+
+        context 'when enforcement date is populated' do
+          before do
+            stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: enforcement_date)
+          end
+
+          context 'when :free_user_cap_new_namespaces is enabled' do
+            before do
+              stub_ee_application_setting(dashboard_limit: 3)
+              stub_feature_flags(free_user_cap_new_namespaces: true)
+            end
+
+            context 'when under the dashboard_limit' do
+              let(:free_plan_members_count) { 2 }
+
+              it { is_expected.to be false }
+            end
+
+            context 'when at dashboard_limit' do
+              let(:free_plan_members_count) { 3 }
+
+              it { is_expected.to be true }
+            end
+
+            context 'when over the dashboard_limit' do
+              let(:free_plan_members_count) { 4 }
+
+              it { is_expected.to be true }
+            end
+          end
+
+          context 'when :free_user_cap_new_namespaces is disabled it honors existing namespace logic' do
+            before do
+              stub_feature_flags(free_user_cap_new_namespaces: false)
+            end
+
+            it { is_expected.to be true }
+          end
+        end
+
+        context 'when enforcement date is not populated it honors existing namespace logic' do
+          it { is_expected.to be true }
         end
       end
     end
@@ -178,32 +374,6 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
     it { is_expected.to eq(0) }
   end
 
-  describe '#remaining_seats' do
-    subject(:remaining_seats) { described_class.new(namespace).remaining_seats }
-
-    before do
-      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
-    end
-
-    context 'when under the number of free users limit' do
-      let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT - 1 }
-
-      it { is_expected.to eq(1) }
-    end
-
-    context 'when at the number of free users limit' do
-      let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT }
-
-      it { is_expected.to eq(0) }
-    end
-
-    context 'when over the number of free users limit' do
-      let(:free_plan_members_count) { Namespaces::FreeUserCap::FREE_USER_LIMIT + 1 }
-
-      it { is_expected.to eq(0) }
-    end
-  end
-
   describe '#enforce_cap?' do
     subject(:enforce_cap?) { described_class.new(namespace).enforce_cap? }
 
@@ -213,6 +383,36 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
 
       it { is_expected.to be false }
+
+      context 'with a net new namespace' do
+        include_context 'with net new namespace'
+
+        context 'when enforcement date is populated' do
+          before do
+            stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: enforcement_date)
+          end
+
+          context 'when :free_user_cap_new_namespaces is enabled' do
+            before do
+              stub_feature_flags(free_user_cap_new_namespaces: true)
+            end
+
+            it { is_expected.to be true }
+          end
+
+          context 'when :free_user_cap_new_namespaces is disabled' do
+            before do
+              stub_feature_flags(free_user_cap_new_namespaces: false)
+            end
+
+            it { is_expected.to be false }
+          end
+        end
+
+        context 'when enforcement date is not populated' do
+          it { is_expected.to be false }
+        end
+      end
     end
 
     context 'when :free_user_cap is enabled' do
@@ -248,27 +448,11 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         end
       end
 
-      context 'when should check namespace plan is false' do
-        let(:should_check_namespace_plan) { false }
+      context 'when dashboard_limit_enabled is false' do
+        let(:dashboard_limit_enabled) { false }
 
         it { is_expected.to be false }
       end
-    end
-  end
-
-  describe '#feature_enabled?' do
-    subject(:feature_enabled?) { described_class.new(namespace).feature_enabled? }
-
-    context 'when :free_user_cap is disabled' do
-      before do
-        stub_feature_flags(free_user_cap: false)
-      end
-
-      it { is_expected.to be false }
-    end
-
-    context 'when :free_user_cap is enabled' do
-      it { is_expected.to be true }
     end
   end
 end
