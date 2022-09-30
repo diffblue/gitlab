@@ -141,9 +141,9 @@ For a live example of the incident list in action, visit this
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/230847) in GitLab 13.4.
 
-Navigate to **Monitor > Incidents** in your project's
-sidebar, and select an incident from the list.
-
+1. On the top bar, select **Main menu > Projects** and find your project.
+1. On the left sidebar, select **Monitor > Incidents**.
+1. Select an incident from the list.
 When you take any of these actions on an incident, GitLab logs a system note and
 displays it in the Incident Details view:
 
