@@ -10,9 +10,10 @@ RSpec.describe Members::CreateService do
   let_it_be(:subgroup_project) { create(:project, group: subgroup) }
   let_it_be(:project_users) { create_list(:user, 2) }
 
+  let(:invites) { project_users.map(&:id).join(',') }
   let(:params) do
     {
-      user_id: project_users.map(&:id).join(','),
+      user_id: invites,
       access_level: Gitlab::Access::GUEST,
       invite_source: '_invite_source_'
     }
@@ -135,5 +136,71 @@ RSpec.describe Members::CreateService do
     end
 
     include_examples 'sends streaming audit event'
+  end
+
+  context 'with seat availability concerns', :saas do
+    let_it_be(:root_ancestor) { create(:group_with_plan, :private, plan: :free_plan) }
+    let_it_be(:project) { create(:project, group: root_ancestor) }
+
+    before do
+      project.add_maintainer(user)
+      stub_ee_application_setting(dashboard_limit_enabled: true)
+    end
+
+    context 'when creating' do
+      context 'when seat is available' do
+        before do
+          stub_ee_application_setting(dashboard_enforcement_limit: 3)
+        end
+
+        context 'with existing user that is a member in our hierarchy' do
+          let(:existing_user) do
+            new_project = create(:project, group: root_ancestor)
+            create(:project_member, project: new_project).user
+          end
+
+          let(:invites) { "#{create(:user).id},#{existing_user.id}" }
+
+          it 'adds the member' do
+            expect(execute_service[:status]).to eq(:success)
+            expect(project.users).to include existing_user
+          end
+        end
+
+        context 'when under the dashboard limit' do
+          it 'adds the members' do
+            expect(execute_service[:status]).to eq(:success)
+            expect(project.users).to include(*project_users)
+          end
+        end
+      end
+
+      context 'when seat is not available' do
+        it 'does not add members' do
+          expect(execute_service[:status]).to eq(:error)
+          expect(execute_service[:message]).to match /: cannot be added since you've reached your /
+          expect(project.users).not_to include(*project_users)
+        end
+      end
+    end
+
+    context 'when updating with no seats left' do
+      let(:invites) { invited_member.invite_email }
+      let(:invited_member) do
+        build(:project_member, :maintainer, :invited, source: project).tap do |record|
+          record.member_namespace_id = record.project.project_namespace_id
+          record.save!(validate: false)
+        end
+      end
+
+      before do
+        stub_ee_application_setting(dashboard_enforcement_limit: 1)
+      end
+
+      it 'allows updating existing invited member' do
+        expect(execute_service[:status]).to eq(:success)
+        expect(invited_member.reset.access_level).to eq Gitlab::Access::GUEST
+      end
+    end
   end
 end

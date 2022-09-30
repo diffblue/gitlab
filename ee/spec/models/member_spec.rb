@@ -11,6 +11,69 @@ RSpec.describe Member, type: :model do
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:project_member) { build(:project_member, source: project, user: user) }
 
+  describe 'Validation' do
+    context 'with seat availability concerns', :saas do
+      let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+
+      before do
+        stub_ee_application_setting(dashboard_limit_enabled: true)
+      end
+
+      context 'when creating' do
+        context 'when seat is available' do
+          before do
+            stub_ee_application_setting(dashboard_enforcement_limit: 2)
+          end
+
+          context 'with existing user that is a member in our hierarchy' do
+            let(:existing_user) do
+              new_project = create(:project, group: group)
+              create(:project_member, project: new_project).user
+            end
+
+            it 'is valid' do
+              expect(build(:group_member, source: group, user: existing_user)).to be_valid
+            end
+          end
+
+          context 'when under the dashboard limit' do
+            it 'is valid' do
+              expect(build(:group_member, source: group, user: create(:user))).to be_valid
+            end
+          end
+        end
+
+        context 'when seat is not available' do
+          it 'is invalid' do
+            expect(build(:group_member, source: group, user: create(:user))).to be_invalid
+          end
+        end
+      end
+
+      context 'when updating with no seats left' do
+        it 'allows updating existing non-invited member' do
+          member = build(:group_member, :owner, source: group, user: user).tap do |record|
+            record.save!(validate: false)
+          end
+
+          expect do
+            member.update!(access_level: Member::DEVELOPER)
+          end.to change(member, :access_level).from(Member::OWNER).to(Member::DEVELOPER)
+        end
+
+        it 'allows updating existing invited member' do
+          invited_member = build(:group_member, :owner, :invited, source: group).tap do |record|
+            record.save!(validate: false)
+          end
+
+          expect do
+            invited_member.update!(access_level: Member::DEVELOPER)
+          end.to change(invited_member, :access_level).from(Member::OWNER).to(Member::DEVELOPER)
+        end
+      end
+    end
+  end
+
   describe '#notification_service' do
     it 'returns a NullNotificationService instance for LDAP users' do
       member = described_class.new

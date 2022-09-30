@@ -36,46 +36,85 @@ RSpec.describe API::Members do
     end
 
     describe 'POST /groups/:id/members' do
-      let(:stranger) { create(:user) }
+      let_it_be(:stranger) { create(:user) }
+      let(:access_level) { Gitlab::Access::GUEST }
 
-      subject do
+      subject(:post_members) do
         post api("/groups/#{group.id}/members", owner),
-             params: { user_id: stranger.id, access_level: Member::MINIMAL_ACCESS }
+             params: { user_id: stranger.id, access_level: access_level }
       end
 
-      context 'when minimal access license is not available' do
-        it 'does not create a member' do
-          expect do
-            subject
-          end.not_to change { group.all_group_members.count }
+      context 'with free user cap considerations', :saas do
+        let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
 
-          expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response['message']).to eq({ 'access_level' => ['is not included in the list', 'not supported by license'] })
-        end
-      end
-
-      context 'when minimal access license is available' do
         before do
-          stub_licensed_features(minimal_access_role: true)
+          stub_ee_application_setting(dashboard_limit_enabled: true)
         end
 
-        it 'creates a member' do
-          expect do
-            subject
-          end.to change { group.all_group_members.count }.by(1)
+        context 'when there are no seats left' do
+          it 'does not add the member' do
+            expect do
+              post_members
+            end.not_to change { group.members.count }
 
-          expect(response).to have_gitlab_http_status(:created)
-          expect(json_response['id']).to eq(stranger.id)
+            msg = "cannot be added since you've reached your #{::Namespaces::FreeUserCap.dashboard_limit} " \
+                  "member limit for #{group.name}"
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']).to eq({ 'base' => [msg] })
+          end
         end
 
-        it 'cannot be assigned to subgroup' do
-          expect do
-            post api("/groups/#{subgroup.id}/members", owner),
-                 params: { user_id: stranger.id, access_level: Member::MINIMAL_ACCESS }
-          end.not_to change { subgroup.all_group_members.count }
+        context 'when there is a seat left' do
+          before do
+            stub_ee_application_setting(dashboard_enforcement_limit: 3)
+          end
 
-          expect(response).to have_gitlab_http_status(:bad_request)
-          expect(json_response['message']).to eq({ 'access_level' => ['is not included in the list', 'supported on top level groups only'] })
+          it 'creates a member' do
+            expect { post_members }.to change { group.members.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['id']).to eq(stranger.id)
+          end
+        end
+      end
+
+      context 'with minimal access concerns' do
+        let(:access_level) { Member::MINIMAL_ACCESS }
+
+        context 'when minimal access license is not available' do
+          it 'does not create a member' do
+            expect do
+              post_members
+            end.not_to change { group.all_group_members.count }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']).to eq({ 'access_level' => ['is not included in the list', 'not supported by license'] })
+          end
+        end
+
+        context 'when minimal access license is available' do
+          before do
+            stub_licensed_features(minimal_access_role: true)
+          end
+
+          it 'creates a member' do
+            expect do
+              post_members
+            end.to change { group.all_group_members.count }.by(1)
+
+            expect(response).to have_gitlab_http_status(:created)
+            expect(json_response['id']).to eq(stranger.id)
+          end
+
+          it 'cannot be assigned to subgroup' do
+            expect do
+              post api("/groups/#{subgroup.id}/members", owner),
+                   params: { user_id: stranger.id, access_level: access_level }
+            end.not_to change { subgroup.all_group_members.count }
+
+            expect(response).to have_gitlab_http_status(:bad_request)
+            expect(json_response['message']).to eq({ 'access_level' => ['is not included in the list', 'supported on top level groups only'] })
+          end
         end
       end
     end

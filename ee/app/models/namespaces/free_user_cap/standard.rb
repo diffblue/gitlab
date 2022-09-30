@@ -9,6 +9,13 @@ module Namespaces
         users_count >= limit
       end
 
+      def seat_available?(user)
+        return true unless enforce_cap?
+        return true if member_with_user_already_exists?(user)
+
+        !reached_limit?
+      end
+
       private
 
       def limit
@@ -17,6 +24,11 @@ module Namespaces
         else
           ::Gitlab::CurrentSettings.dashboard_enforcement_limit
         end
+      end
+
+      def member_with_user_already_exists?(user)
+        # it is possible for members to not have a user filled out in cases like being an invite
+        user && ::Member.in_hierarchy(root_namespace).with_user(user).exists?
       end
 
       def new_namespace_enforcement?
