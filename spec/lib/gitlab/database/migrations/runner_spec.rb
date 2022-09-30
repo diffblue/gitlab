@@ -175,6 +175,20 @@ RSpec.describe Gitlab::Database::Migrations::Runner, :reestablished_active_recor
           expect { described_class.batched_background_migrations(for_database: 'not_a_database') }
             .to raise_error(/not a valid database name/)
         end
+
+        it 'includes the database name in the result dir' do
+          runner = described_class.batched_background_migrations(for_database: database)
+
+          expect(runner.result_dir).to eq(base_result_dir.join(database.to_s, 'background_migrations'))
+        end
+      end
+
+      context 'legacy mode' do
+        it 'does not include the database name in the path' do
+          runner = described_class.batched_background_migrations(for_database: database, legacy_mode: true)
+
+          expect(runner.result_dir).to eq(base_result_dir.join('background_migrations'))
+        end
       end
     end
   end

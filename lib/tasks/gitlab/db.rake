@@ -348,6 +348,15 @@ namespace :gitlab do
           end
         end
       end
+
+      desc "Sample batched background migrations with instrumentation (legacy)"
+      task :sample_batched_background_migrations, [:database, :duration_s] => [:environment] do |_t, args|
+        duration = args[:duration_s]&.to_i&.seconds || 30.minutes # Default of 30 minutes
+
+        database = args[:database] || 'main'
+        Gitlab::Database::Migrations::Runner.batched_background_migrations(for_database: database, legacy_mode: true)
+                                            .run_jobs(for_duration: duration)
+      end
     end
 
     desc 'Run all pending batched migrations'

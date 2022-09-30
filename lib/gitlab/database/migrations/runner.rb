@@ -25,13 +25,19 @@ module Gitlab
             TestBackgroundRunner.new(result_dir: BASE_RESULT_DIR.join('background_migrations'))
           end
 
-          def batched_background_migrations(for_database:)
+          def batched_background_migrations(for_database:, legacy_mode: false)
             runner = nil
+
+            result_dir = if legacy_mode
+                           BASE_RESULT_DIR.join('background_migrations')
+                         else
+                           BASE_RESULT_DIR.join(for_database.to_s, 'background_migrations')
+                         end
 
             # Only one loop iteration since we pass `only:` here
             Gitlab::Database::EachDatabase.each_database_connection(only: for_database) do |connection|
               runner = Gitlab::Database::Migrations::TestBatchedBackgroundRunner
-                         .new(result_dir: BASE_RESULT_DIR.join(for_database.to_s, 'background_migrations'), connection: connection)
+                         .new(result_dir: result_dir, connection: connection)
             end
 
             runner
