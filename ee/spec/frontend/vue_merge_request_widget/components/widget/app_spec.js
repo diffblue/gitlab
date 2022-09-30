@@ -9,7 +9,10 @@ describe('MR Widget App', () => {
   const createComponent = () => {
     wrapper = shallowMountExtended(App, {
       propsData: {
-        mr: {},
+        mr: {
+          securityConfigurationPath: '/help/user/application_security/index.md',
+          sourceProjectFullPath: 'namespace/project',
+        },
       },
     });
   };

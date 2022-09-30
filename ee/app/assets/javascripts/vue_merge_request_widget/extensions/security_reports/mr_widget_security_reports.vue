@@ -4,6 +4,7 @@ import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
 import SummaryText from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
+import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
 import i18n from './i18n';
 
 export default {
@@ -12,6 +13,7 @@ export default {
     MrWidget,
     SummaryText,
     SummaryHighlights,
+    SecurityTrainingPromoWidget,
   },
   i18n,
   props: {
@@ -134,6 +136,12 @@ export default {
       <summary-highlights
         v-if="!isLoading && totalNewVulnerabilities > 0"
         :highlights="highlights"
+      />
+    </template>
+    <template #content>
+      <security-training-promo-widget
+        :security-configuration-path="mr.securityConfigurationPath"
+        :project-full-path="mr.sourceProjectFullPath"
       />
     </template>
   </mr-widget>
