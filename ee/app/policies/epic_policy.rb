@@ -53,7 +53,10 @@ class EpicPolicy < BasePolicy
     enable :admin_related_epic_link
   end
 
-  rule { can?(:reporter_access) }.policy do
+  # Also check if user can :read_epic to prevent marking
+  # notes as confidential when epic feature is disabled or
+  # external authorization is enabled.
+  rule { can?(:reporter_access) & can?(:read_epic) }.policy do
     enable :mark_note_as_confidential
   end
 end
