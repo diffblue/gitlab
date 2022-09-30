@@ -42169,9 +42169,6 @@ msgstr ""
 msgid "Trials|Go back to GitLab"
 msgstr ""
 
-msgid "Trials|Hey there"
-msgstr ""
-
 msgid "Trials|Skip Trial"
 msgstr ""
 
@@ -42186,6 +42183,11 @@ msgstr ""
 
 msgid "Trials|You won't get a free trial right now but you can always resume this process by selecting your avatar and choosing 'Start an Ultimate trial'"
 msgstr ""
+
+msgid "Trials|You've got %{daysRemaining} day remaining on GitLab %{planName}!"
+msgid_plural "Trials|You've got %{daysRemaining} days remaining on GitLab %{planName}!"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "Trials|Your trial ends on %{boldStart}%{trialEndDate}%{boldEnd}. We hope you’re enjoying the features of GitLab %{planName}. To keep those features after your trial ends, you’ll need to buy a subscription. (You can also choose GitLab Premium if it meets your needs.)"
 msgstr ""
