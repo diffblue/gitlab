@@ -13133,6 +13133,9 @@ msgstr ""
 msgid "DeployTokens|Active Deploy Tokens (%{active_tokens})"
 msgstr ""
 
+msgid "DeployTokens|Allows read and write access to registry images."
+msgstr ""
+
 msgid "DeployTokens|Allows read and write access to the package registry."
 msgstr ""
 
@@ -13178,6 +13181,9 @@ msgstr ""
 msgid "DeployTokens|Enter an expiration date for your token. Defaults to never expire."
 msgstr ""
 
+msgid "DeployTokens|Expiration date (optional)"
+msgstr ""
+
 msgid "DeployTokens|Expires"
 msgstr ""
 
@@ -13199,6 +13205,9 @@ msgstr ""
 msgid "DeployTokens|Scopes"
 msgstr ""
 
+msgid "DeployTokens|Scopes (select at least one)"
+msgstr ""
+
 msgid "DeployTokens|This %{entity_type} has no active Deploy Tokens."
 msgstr ""
 
@@ -13212,6 +13221,12 @@ msgid "DeployTokens|Use this token as a password. Save it. This password can %{i
 msgstr ""
 
 msgid "DeployTokens|Username"
+msgstr ""
+
+msgid "DeployTokens|Username (optional)"
+msgstr ""
+
+msgid "DeployTokens|Your New Deploy Token"
 msgstr ""
 
 msgid "DeployTokens|Your new Deploy Token username"
