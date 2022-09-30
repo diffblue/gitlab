@@ -106,7 +106,10 @@ RSpec.shared_examples_for CounterAttribute do |counter_attributes|
 
       it 'updates the record and logs it', :aggregate_failures do
         expect(Gitlab::AppLogger).to receive(:info).with(
-          hash_including(message: 'Acquiring lease for project statistics update')
+          hash_including(
+            message: 'Acquiring lease for project statistics update',
+            attributes: [incremented_attribute]
+          )
         )
 
         expect(Gitlab::AppLogger).to receive(:info).with(

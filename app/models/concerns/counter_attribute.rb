@@ -219,6 +219,9 @@ module CounterAttribute
   def detect_race_on_record(log_fields: {})
     return yield unless Feature.enabled?(:counter_attribute_db_lease_for_update, project)
 
+    # Ensure attributes is always an array before we log
+    log_fields[:attributes] = Array(log_fields[:attributes])
+
     Gitlab::AppLogger.info(
       message: 'Acquiring lease for project statistics update',
       project_statistics_id: id,
