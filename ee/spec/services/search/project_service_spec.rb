@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Search::ProjectService do
   include SearchResultHelpers
   include ProjectHelpers
+  include UserHelpers
   using RSpec::Parameterized::TableSyntax
 
   before do

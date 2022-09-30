@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Search::GlobalService do
   include SearchResultHelpers
   include ProjectHelpers
+  include UserHelpers
 
   let_it_be(:user) { create(:user) }
 

@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Search::GroupService do
   include SearchResultHelpers
   include ProjectHelpers
+  include UserHelpers
 
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
