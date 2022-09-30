@@ -3,25 +3,26 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::GithubImport::Importer::Attachments::BaseImporter do
+  subject(:importer) { importer_class.new(project, client) }
+
+  let(:project) { instance_double(Project, id: 1) }
+  let(:client) { instance_double(Gitlab::GithubImport::Client) }
   let(:importer_class) do
     Class.new(described_class) do
-      def self.name
-        'MyImporter'
-      end
+      private
 
-      def private_collection
-        collection
+      def collection_method
+        'test'
       end
     end
   end
 
-  let(:project) { instance_double(Project) }
-  let(:client) { instance_double(Gitlab::GithubImport::Client) }
-  let(:importer) { importer_class.new(project, client) }
-
-  describe 'private interfaces' do
-    describe '#collection' do
-      it { expect { importer.private_collection }.to raise_error(NotImplementedError) }
+  describe '#each_object_to_import' do
+    context 'with not implemented #collection interface' do
+      it 'raises NotImplementedError' do
+        expect { importer.each_object_to_import }
+          .to raise_error(Gitlab::GithubImport::Exceptions::NotImplementedError, '#collection')
+      end
     end
   end
 end

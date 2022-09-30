@@ -38,7 +38,7 @@ module Gitlab
           private
 
           def collection
-            raise NotImplementedError
+            raise Gitlab::GithubImport::Exceptions::NotImplementedError, '#collection'
           end
 
           def object_representation(object)
