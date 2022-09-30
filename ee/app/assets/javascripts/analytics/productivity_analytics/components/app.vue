@@ -15,9 +15,9 @@ import { dateFormats } from '~/analytics/shared/constants';
 import { getDataZoomOption } from '~/analytics/shared/utils';
 import dateFormat from '~/lib/dateformat';
 import { beginOfDayTime, endOfDayTime } from '~/lib/utils/datetime_utility';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
 import featureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import Scatterplot from '../../shared/components/scatterplot.vue';
-import urlSyncMixin from '../../shared/mixins/url_sync_mixin';
 import {
   chartKeys,
   defaultMaxColumnChartItemsPerPage,
@@ -39,11 +39,12 @@ export default {
     MetricChart,
     Scatterplot,
     MergeRequestTable,
+    UrlSync,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [featureFlagsMixin(), urlSyncMixin],
+  mixins: [featureFlagsMixin()],
   props: {
     emptyStateSvgPath: {
       type: String,
@@ -367,5 +368,6 @@ export default {
         </div>
       </template>
     </template>
+    <url-sync :query="query" />
   </div>
 </template>
