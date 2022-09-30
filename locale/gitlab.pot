@@ -27084,7 +27084,7 @@ msgstr ""
 msgid "Notes|Expand replies"
 msgstr ""
 
-msgid "Notes|Internal notes are only visible to the author, assignees, and members with the role of Reporter or higher"
+msgid "Notes|Internal notes are only visible to members with the role of Reporter or higher"
 msgstr ""
 
 msgid "Notes|Last reply by %{name}"

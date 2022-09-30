@@ -54,7 +54,7 @@ RSpec.describe EpicPolicy do
                                    :create_note, :award_emoji, :read_note,
                                    :create_todo, :read_related_epic_link,
                                    :admin_related_epic_link, :set_epic_metadata,
-                                   :set_confidentiality, :mark_note_as_confidential)
+                                   :set_confidentiality)
     end
   end
 
