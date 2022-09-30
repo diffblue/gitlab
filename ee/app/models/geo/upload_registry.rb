@@ -30,24 +30,6 @@ class Geo::UploadRegistry < Geo::BaseRegistry
     [untracked, unused_tracked]
   end
 
-  def self.insert_for_model_ids(attrs)
-    records = attrs.map do |file_id|
-      new(file_id: file_id, created_at: Time.zone.now)
-    end
-
-    bulk_insert!(records, returns: :ids)
-  end
-
-  def self.delete_for_model_ids(attrs)
-    attrs.map do |file_id|
-      delete_worker_class.perform_async(:upload, file_id)
-    end
-  end
-
-  def self.delete_worker_class
-    ::Geo::FileRegistryRemovalWorker
-  end
-
   def self.with_search(query)
     return all if query.nil?
 
