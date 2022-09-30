@@ -211,12 +211,6 @@ RSpec.describe Issues::UpdateService do
 
         it_behaves_like 'creates iteration resource event'
       end
-
-      context 'project iterations' do
-        let_it_be(:iteration) { create(:iteration, :skip_project_validation, project: project) }
-
-        it_behaves_like 'creates iteration resource event'
-      end
     end
 
     context 'changing issue_type' do

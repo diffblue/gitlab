@@ -151,7 +151,6 @@ RSpec.describe 'Querying an Iteration' do
 
   describe 'scoped path' do
     let_it_be(:project) { create(:project, :private, group: group) }
-    let_it_be(:project_iteration) { create(:iteration, :skip_project_validation, project: project) }
 
     shared_examples 'scoped path' do
       let(:queried_iteration_id) { queried_iteration.to_global_id.to_s }
@@ -205,7 +204,7 @@ RSpec.describe 'Querying an Iteration' do
       describe 'group-owned iteration' do
         it_behaves_like 'scoped path' do
           let(:queried_iteration) { iteration }
-          let(:expected_scope_path) { project_iteration_path(project, iteration.id) }
+          let(:expected_scope_path) { group_iteration_path(project, iteration.id) }
           let(:expected_scope_url) { /#{expected_scope_path}$/ }
           let(:expected_web_path) { group_iteration_path(group, iteration.id) }
           let(:expected_web_url) { /#{expected_web_path}$/ }
