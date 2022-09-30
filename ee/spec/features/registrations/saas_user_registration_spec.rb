@@ -108,8 +108,8 @@ RSpec.describe "User registration", :js, :saas do
       fill_in 'group_name', with: 'Test Group'
       fill_in 'blank_project_name', with: 'Test Project'
 
-      service_instance = instance_double(GitlabSubscriptions::ApplyTrialService)
-      allow(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(service_instance)
+      service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
+      allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service_instance)
 
       expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
 
