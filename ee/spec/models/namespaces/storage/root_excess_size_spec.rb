@@ -92,23 +92,16 @@ RSpec.describe Namespaces::Storage::RootExcessSize do
   end
 
   describe '#enforce_limit?' do
-    subject { model.enforce_limit? }
+    it 'returns true if automatic_purchased_storage_allocation is enabled' do
+      stub_application_setting(automatic_purchased_storage_allocation: true)
 
-    before do
-      allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
-        .and_return(additional_repo_storage_by_namespace_enabled)
+      expect(model.enforce_limit?).to eq(true)
     end
 
-    context 'when additional_repo_storage_by_namespace_enabled is false' do
-      let(:additional_repo_storage_by_namespace_enabled) { false }
+    it 'returns false if automatic_purchased_storage_allocation is disabled' do
+      stub_application_setting(automatic_purchased_storage_allocation: false)
 
-      it { is_expected.to eq(false) }
-    end
-
-    context 'with feature flag :namespace_storage_limit disabled' do
-      let(:additional_repo_storage_by_namespace_enabled) { true }
-
-      it { is_expected.to eq(true) }
+      expect(model.enforce_limit?).to eq(false)
     end
   end
 end
