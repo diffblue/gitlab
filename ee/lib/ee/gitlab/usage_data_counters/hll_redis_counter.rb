@@ -12,6 +12,7 @@ module EE
           network_policies
           ci_secrets_management
           geo
+          growth
         ].freeze
 
         class_methods do
