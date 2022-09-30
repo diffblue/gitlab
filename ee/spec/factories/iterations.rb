@@ -40,12 +40,6 @@ FactoryBot.define do
       end
     end
 
-    trait(:skip_project_validation) do
-      after(:stub, :build) do |iteration|
-        iteration.skip_project_validation = true
-      end
-    end
-
     trait(:with_due_date) do
       after(:stub, :build) do |iteration, evaluator|
         iteration.due_date = evaluator.start_date + 4.days if evaluator.start_date.present?

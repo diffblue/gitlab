@@ -10,34 +10,12 @@ RSpec.describe Iteration do
   let(:expected_sequence) { (1..iteration_cadence.reload.iterations.size).to_a }
   let(:ordered_iterations) { iteration_cadence.iterations.order(:start_date) }
 
-  describe "#iid" do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
-    let_it_be(:project) { create(:project, group: group) }
-
-    it "is properly scoped on project and group" do
-      iteration1 = create(:iteration, :skip_project_validation, project: project)
-      iteration2 = create(:iteration, :skip_project_validation, project: project)
-      iteration3 = create(:iteration, group: group)
-      iteration4 = create(:iteration, group: group)
-      iteration5 = create(:iteration, :skip_project_validation, project: project)
-
-      want = {
-        iteration1: 1,
-        iteration2: 2,
-        iteration3: 1,
-        iteration4: 2,
-        iteration5: 3
-      }
-      got = {
-        iteration1: iteration1.iid,
-        iteration2: iteration2.iid,
-        iteration3: iteration3.iid,
-        iteration4: iteration4.iid,
-        iteration5: iteration5.iid
-      }
-      expect(got).to eq(want)
-    end
+  it_behaves_like 'AtomicInternalId' do
+    let(:internal_id_attribute) { :iid }
+    let(:instance) { build(:iteration, group: create(:group)) }
+    let(:scope) { :group }
+    let(:scope_attrs) { { namespace: instance.group } }
+    let(:usage) { :sprints }
   end
 
   describe '#display_text' do
@@ -79,6 +57,12 @@ RSpec.describe Iteration do
       iteration.update!(title: "")
 
       expect(iteration.title).to be_nil
+    end
+  end
+
+  describe '#merge_requests_enabled?' do
+    it 'returns false' do
+      expect(build(:iteration).merge_requests_enabled?).to eq false
     end
   end
 
@@ -189,16 +173,26 @@ RSpec.describe Iteration do
   context 'Validations' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
-    let_it_be(:project) { create(:project, group: group) }
 
     subject { build(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: start_date, due_date: due_date) }
 
-    describe 'when iteration belongs to project' do
-      subject { build(:iteration, project: project, start_date: Time.current, due_date: 1.day.from_now) }
+    describe "#uniqueness_of_title" do
+      context "per group" do
+        let(:iteration) { create(:iteration, iterations_cadence: iteration_cadence) }
 
-      it 'is invalid' do
-        expect(subject).not_to be_valid
-        expect(subject.errors[:project_id]).to include('is not allowed. We do not currently support project-level iterations')
+        it "accepts the same title in the same group with different cadence" do
+          new_cadence = create(:iterations_cadence, group: group)
+          new_iteration = create(:iteration, iterations_cadence: new_cadence, title: iteration.title)
+
+          expect(new_iteration.iterations_cadence).not_to eq(iteration.iterations_cadence)
+          expect(new_iteration).to be_valid
+        end
+
+        it "does not accept the same title when in the same cadence" do
+          new_iteration = described_class.new(iterations_cadence: iteration_cadence, title: iteration.title)
+
+          expect(new_iteration).not_to be_valid
+        end
       end
     end
 
@@ -285,50 +279,6 @@ RSpec.describe Iteration do
             subject { build(:iteration, group: subgroup, iterations_cadence: subgroup_ic, start_date: start_date, due_date: due_date) }
 
             it { is_expected.to be_valid }
-          end
-        end
-
-        # Skipped. Pending https://gitlab.com/gitlab-org/gitlab/-/issues/299864
-        xcontext 'project' do
-          let_it_be(:existing_iteration) { create(:iteration, :skip_project_validation, project: project, start_date: 4.days.from_now, due_date: 1.week.from_now) }
-
-          subject { build(:iteration, :skip_project_validation, project: project, start_date: start_date, due_date: due_date) }
-
-          it_behaves_like 'overlapping dates' do
-            let(:constraint_name) { 'iteration_start_and_due_daterange_project_id_constraint' }
-          end
-
-          context 'different project' do
-            let(:project) { create(:project) }
-
-            it { is_expected.to be_valid }
-
-            it 'does not trigger exclusion constraints' do
-              expect { subject.save! }.not_to raise_exception
-            end
-          end
-
-          context 'in a group' do
-            let(:group) { create(:group) }
-
-            subject { build(:iteration, group: group, start_date: start_date, due_date: due_date) }
-
-            it { is_expected.to be_valid }
-
-            it 'does not trigger exclusion constraints' do
-              expect { subject.save! }.not_to raise_exception
-            end
-          end
-
-          context 'project in a group' do
-            let_it_be(:project) { create(:project, group: create(:group)) }
-            let_it_be(:existing_iteration) { create(:iteration, :skip_project_validation, project: project, start_date: 4.days.from_now, due_date: 1.week.from_now) }
-
-            subject { build(:iteration, :skip_project_validation, project: project, start_date: start_date, due_date: due_date) }
-
-            it_behaves_like 'overlapping dates' do
-              let(:constraint_name) { 'iteration_start_and_due_daterange_project_id_constraint' }
-            end
           end
         end
       end
@@ -691,13 +641,10 @@ RSpec.describe Iteration do
   end
 
   context 'time scopes' do
-    let_it_be(:group) { create(:group) }
-    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
-    let_it_be(:project) { create(:project, group: group) }
-    let_it_be(:project) { create(:project, :empty_repo) }
-    let_it_be(:iteration_1) { create(:iteration, :skip_future_date_validation, :skip_project_validation, project: project, start_date: 3.days.ago, due_date: 1.day.from_now) }
-    let_it_be(:iteration_2) { create(:iteration, :skip_future_date_validation, :skip_project_validation, project: project, start_date: 10.days.ago, due_date: 4.days.ago) }
-    let_it_be(:iteration_3) { create(:iteration, :skip_project_validation, project: project, start_date: 4.days.from_now, due_date: 1.week.from_now) }
+    let_it_be(:cadence) { create(:iterations_cadence, group: create(:group)) }
+    let_it_be(:iteration_1) { create(:iteration, :skip_future_date_validation, iterations_cadence: cadence, start_date: 3.days.ago, due_date: 1.day.from_now) }
+    let_it_be(:iteration_2) { create(:iteration, :skip_future_date_validation, iterations_cadence: cadence, start_date: 10.days.ago, due_date: 4.days.ago) }
+    let_it_be(:iteration_3) { create(:iteration, iterations_cadence: cadence, start_date: 4.days.from_now, due_date: 1.week.from_now) }
 
     describe 'start_date_passed' do
       it 'returns iterations where start_date is in the past but due_date is in the future' do
@@ -715,7 +662,6 @@ RSpec.describe Iteration do
   describe '#validate_group' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iterations_cadence) { create(:iterations_cadence, group: group) }
-    let_it_be(:project) { create(:project, group: group) }
 
     context 'when the iteration and iteration cadence groups are same' do
       it 'is valid' do
@@ -733,32 +679,15 @@ RSpec.describe Iteration do
         expect(iteration).not_to be_valid
       end
     end
-
-    context 'when the iteration belongs to a project and the iteration cadence is set' do
-      it 'is invalid' do
-        iteration = build(:iteration, project: project, iterations_cadence: iterations_cadence, skip_project_validation: true)
-
-        expect(iteration).to be_invalid
-      end
-    end
-
-    context 'when the iteration belongs to a project and the iteration cadence is not set' do
-      it 'is valid' do
-        iteration = build(:iteration, project: project, skip_project_validation: true)
-
-        expect(iteration).to be_valid
-      end
-    end
   end
 
   describe '.within_timeframe' do
     let_it_be(:group) { create(:group) }
-    let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:now) { Time.current }
-    let_it_be(:project) { create(:project, :empty_repo) }
-    let_it_be(:iteration_1) { create(:iteration, :skip_project_validation, project: project, start_date: now, due_date: 1.day.from_now) }
-    let_it_be(:iteration_2) { create(:iteration, :skip_project_validation, project: project, start_date: 2.days.from_now, due_date: 3.days.from_now) }
-    let_it_be(:iteration_3) { create(:iteration, :skip_project_validation, project: project, start_date: 4.days.from_now, due_date: 1.week.from_now) }
+    let_it_be(:iteration_1) { create(:iteration, iterations_cadence: cadence, start_date: now, due_date: 1.day.from_now) }
+    let_it_be(:iteration_2) { create(:iteration, iterations_cadence: cadence, start_date: 2.days.from_now, due_date: 3.days.from_now) }
+    let_it_be(:iteration_3) { create(:iteration, iterations_cadence: cadence, start_date: 4.days.from_now, due_date: 1.week.from_now) }
 
     it 'returns iterations with start_date and/or end_date between timeframe' do
       iterations = described_class.within_timeframe(2.days.from_now, 3.days.from_now)
@@ -897,38 +826,15 @@ RSpec.describe Iteration do
   it_behaves_like 'a timebox', :iteration do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
+
     let(:cadence) { create(:iterations_cadence, group: group) }
-    let(:timebox_args) { [:skip_project_validation] }
+    let(:timebox) { create(:iteration, iterations_cadence: cadence) }
     let(:timebox_table_name) { described_class.table_name.to_sym }
 
     # Overrides used during .within_timeframe
     let(:mid_point) { 1.year.from_now.to_date }
     let(:open_on_left) { min_date - 100.days }
     let(:open_on_right) { max_date + 100.days }
-
-    describe "#uniqueness_of_title" do
-      context "per group" do
-        let(:timebox) { create(:iteration, *timebox_args, iterations_cadence: cadence, group: group) }
-
-        before do
-          project.update!(group: group)
-        end
-
-        it "accepts the same title in the same group with different cadence" do
-          new_cadence = create(:iterations_cadence, group: group)
-          new_timebox = create(:iteration, iterations_cadence: new_cadence, group: group, title: timebox.title)
-
-          expect(new_timebox.iterations_cadence).not_to eq(timebox.iterations_cadence)
-          expect(new_timebox).to be_valid
-        end
-
-        it "does not accept the same title when in the same cadence" do
-          new_timebox = described_class.new(group: group, iterations_cadence: cadence, title: timebox.title)
-
-          expect(new_timebox).not_to be_valid
-        end
-      end
-    end
   end
 
   context 'when closing iteration' do
