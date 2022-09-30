@@ -23,7 +23,7 @@ RSpec.describe 'Project settings > [EE] repository' do
         expect(page).to have_selector('#url')
         expect(page).to have_selector('#mirror_direction')
         expect(page).to have_no_selector('#project_mirror', visible: false)
-        expect(page).to have_no_selector('#project_mirror_user_id')
+        expect(page).to have_no_selector('#project_mirror_user_name')
         expect(page).to have_no_selector('#project_mirror_overwrites_diverged_branches')
         expect(page).to have_no_selector('#project_mirror_trigger_builds')
       end
@@ -42,7 +42,7 @@ RSpec.describe 'Project settings > [EE] repository' do
         expect(page).to have_selector('#url')
         expect(page).to have_selector('#mirror_direction')
         expect(page).to have_selector('#project_mirror', visible: false)
-        expect(page).to have_selector('#project_mirror_user_id')
+        expect(page).to have_selector('#project_mirror_user_name')
         expect(page).to have_selector('#project_mirror_overwrites_diverged_branches')
         expect(page).to have_selector('#project_mirror_trigger_builds')
       end
