@@ -11,6 +11,7 @@ module EE
           epic_boards_usage
           network_policies
           geo
+          growth
         ].freeze
 
         class_methods do

@@ -110,7 +110,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
         'secure',
         'importer',
         'geo',
-        'growth',
         'work_items',
         'ci_users',
         'error_tracking',
