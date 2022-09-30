@@ -15,9 +15,7 @@ import createStore from 'ee/analytics/cycle_analytics/store';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
-import { groupLabels } from '../../mock_data';
-
-const selectedLabelIds = [groupLabels[0].id];
+import { groupLabels, groupLabelNames as selectedLabelNames } from '../../mock_data';
 
 const findSubjectFilters = (ctx) => ctx.findComponent(GlSegmentedControl);
 const findSelectedSubjectFilters = (ctx) => findSubjectFilters(ctx).attributes('checked');
@@ -51,7 +49,7 @@ function createComponent({ props = {}, mountFn = shallowMount } = {}) {
       },
     },
     propsData: {
-      selectedLabelIds,
+      selectedLabelNames,
       labels: groupLabels,
       subjectFilter: TASKS_BY_TYPE_SUBJECT_ISSUE,
       hasData: true,
@@ -105,7 +103,7 @@ describe('TasksByTypeFilters', () => {
         wrapper = createComponent({
           props: {
             maxLabels: 5,
-            selectedLabelIds: [groupLabels[0].id, groupLabels[1].id],
+            selectedLabelNames: [groupLabels[0].title, groupLabels[1].title],
             warningMessageThreshold: 2,
           },
         });
@@ -125,7 +123,7 @@ describe('TasksByTypeFilters', () => {
         wrapper = createComponent({
           props: {
             maxLabels: 2,
-            selectedLabelIds: [groupLabels[0].id, groupLabels[1].id],
+            selectedLabelNames: [groupLabels[0].title, groupLabels[1].title],
             warningMessageThreshold: 1,
           },
         });

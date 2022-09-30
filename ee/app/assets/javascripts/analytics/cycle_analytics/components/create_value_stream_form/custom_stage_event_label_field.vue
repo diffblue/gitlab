@@ -35,7 +35,7 @@ export default {
       required: false,
       default: '',
     },
-    selectedLabelIds: {
+    selectedLabelNames: {
       type: Array,
       required: false,
       default: () => [],
@@ -60,7 +60,7 @@ export default {
         :invalid-feedback="labelError"
       >
         <labels-selector
-          :selected-label-ids="selectedLabelIds"
+          :selected-label-names="selectedLabelNames"
           :name="fieldName"
           @select-label="$emit('update-label', $event)"
         />
