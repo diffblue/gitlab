@@ -22579,7 +22579,8 @@ CREATE TABLE vulnerability_feedback (
     comment text,
     comment_timestamp timestamp with time zone,
     finding_uuid uuid,
-    dismissal_reason smallint
+    dismissal_reason smallint,
+    migrated_to_state_transition boolean DEFAULT false
 );
 
 CREATE SEQUENCE vulnerability_feedback_id_seq
