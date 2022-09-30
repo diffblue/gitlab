@@ -2,15 +2,16 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::CreateFromSecurityFindingService, '#execute' do
+RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execute' do
   before do
     stub_licensed_features(security_dashboard: true)
     project.add_developer(user)
   end
 
+  let(:security_finding_uuid) { security_findings.first.uuid }
+
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
-
   let_it_be(:pipeline) { create(:ci_pipeline) }
   let_it_be(:build) { create(:ci_build, :success, name: 'dast', pipeline: pipeline) }
   let_it_be(:artifact) { create(:ee_ci_job_artifact, :dast, job: build) }
@@ -20,7 +21,7 @@ RSpec.describe Vulnerabilities::CreateFromSecurityFindingService, '#execute' do
   let(:state) { 'confirmed' }
   let(:params) { { security_finding_uuid: security_finding_uuid } }
   let(:service) do
-    Vulnerabilities::CreateFromSecurityFindingService.new(
+    described_class.new(
       project: project,
       current_user: user,
       params: params,
@@ -39,8 +40,6 @@ RSpec.describe Vulnerabilities::CreateFromSecurityFindingService, '#execute' do
     security_findings.push(*insert_security_findings)
   end
 
-  let_it_be(:security_finding_uuid) { security_findings.first.uuid }
-
   subject { service.execute }
 
   context 'when there is an existing vulnerability for the security finding' do
@@ -56,7 +55,7 @@ RSpec.describe Vulnerabilities::CreateFromSecurityFindingService, '#execute' do
     end
 
     it 'returns the existing Vulnerability' do
-      expect(subject.success?).to be_truthy
+      expect(subject).to be_success
       expect(subject.payload[:vulnerability].id).to eq(vulnerability.id)
     end
   end
@@ -69,7 +68,7 @@ RSpec.describe Vulnerabilities::CreateFromSecurityFindingService, '#execute' do
     end
 
     it 'returns a vulnerability with the given state and present_on_default_branch' do
-      expect(subject.success?).to be_truthy
+      expect(subject).to be_success
       expect(subject.payload[:vulnerability].state).to eq(state)
       expect(subject.payload[:vulnerability].present_on_default_branch).to eq(present_on_default_branch)
     end
@@ -79,7 +78,7 @@ RSpec.describe Vulnerabilities::CreateFromSecurityFindingService, '#execute' do
     let_it_be(:security_finding_uuid) { 'invalid-security-finding-uuid' }
 
     it 'returns an error' do
-      expect(subject.error?).to be_truthy
+      expect(subject).to be_error
       expect(subject[:message]).to eq('Security Finding not found')
     end
   end
