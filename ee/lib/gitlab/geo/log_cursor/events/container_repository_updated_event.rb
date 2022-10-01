@@ -9,8 +9,7 @@ module Gitlab
 
           def process
             if replicable_container_repository?
-              registry.repository_updated!
-              registry.save
+              registry.save if registry.new_record?
 
               job_id = ::Geo::ContainerRepositorySyncWorker.perform_async(event.container_repository_id)
             end

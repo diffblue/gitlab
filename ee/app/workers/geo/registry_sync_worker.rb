@@ -22,7 +22,15 @@ module Geo
       # Note that Group wiki Git repos and Snippet repos are also handled by
       # this worker at the moment.
       # See https://gitlab.com/gitlab-org/gitlab/-/issues/372488
-      current_node.files_max_capacity
+      capacity = current_node.files_max_capacity
+
+      # Transition-period-solution, see
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/372444#note_1087132645c
+      if Feature.enabled?(:geo_container_repository_replication)
+        capacity += current_node.container_repositories_max_capacity
+      end
+
+      capacity
     end
 
     def schedule_job(replicable_name, model_record_id)

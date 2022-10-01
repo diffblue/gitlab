@@ -15,6 +15,10 @@ module Geo
     end
 
     def execute
+      # We need this call to avoid possible race condition when new event has come but
+      # the other one still is in process.
+      registry.pending!
+
       try_obtain_lease do
         sync_repository
       end
@@ -22,7 +26,7 @@ module Geo
 
     def sync_repository
       log_info('Marking sync as started')
-      registry.start_sync!
+      registry.start!
 
       Geo::ContainerRepositorySync.new(container_repository).execute
 
@@ -50,7 +54,7 @@ module Geo
     def fail_registry_sync!(message, error)
       log_error(message, error)
 
-      registry.fail_sync!(message, error)
+      registry.failed!(message: message, error: error)
     end
 
     def lease_key

@@ -305,7 +305,7 @@ module Gitlab
 
         publish(:updated, **updated_params)
 
-        after_verifiable_update
+        after_verifiable_update if respond_to?(:after_verifiable_update)
       end
 
       def created_params

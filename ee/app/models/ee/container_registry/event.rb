@@ -17,8 +17,13 @@ module EE
         return unless media_type_manifest? || target_tag?
         return unless container_repository_exists?
 
-        ::Geo::ContainerRepositoryUpdatedEventStore.new(find_container_repository!)
-                                                   .create!
+        container_repository = find_container_repository!
+
+        if ::Feature.enabled?(:geo_container_repository_replication)
+          container_repository.replicator.handle_after_update
+        else
+          ::Geo::ContainerRepositoryUpdatedEventStore.new(container_repository).create!
+        end
       end
 
       def media_type_manifest?

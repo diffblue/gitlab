@@ -13,6 +13,11 @@ module Geo
         return
       end
 
+      if Feature.enabled?(:geo_container_repository_replication)
+        log_info('Container Registry replication is handled by Geo SSF framework')
+        return
+      end
+
       super
     end
 
@@ -59,7 +64,7 @@ module Geo
     end
 
     def registry_finder
-      @registry_finder ||= Geo::ContainerRepositoryRegistryFinder.new
+      @registry_finder ||= Geo::ContainerRepositoryLegacyRegistryFinder.new
     end
   end
 end

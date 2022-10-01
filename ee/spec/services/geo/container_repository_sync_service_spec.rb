@@ -8,7 +8,7 @@ RSpec.describe Geo::ContainerRepositorySyncService, :geo do
 
   let_it_be(:secondary) { create(:geo_node) }
 
-  let(:registry) { create(:container_repository_registry, :sync_started) }
+  let(:registry) { create(:geo_container_repository_registry) }
   let(:container_repository) { registry.container_repository }
   let(:lease_key) { "#{Geo::ContainerRepositorySyncService::LEASE_KEY}:#{container_repository.id}" }
   let(:lease_uuid) { 'uuid' }
