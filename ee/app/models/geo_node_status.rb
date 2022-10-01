@@ -84,10 +84,6 @@ class GeoNodeStatus < ApplicationRecord
     wikis_retrying_verification_count
     projects_count
     container_repositories_replication_enabled
-    container_repositories_count
-    container_repositories_synced_count
-    container_repositories_failed_count
-    container_repositories_registry_count
     design_repositories_replication_enabled
     design_repositories_count
     design_repositories_synced_count
@@ -144,10 +140,6 @@ class GeoNodeStatus < ApplicationRecord
     repositories_retrying_verification_count: 'Number of repositories verification failures that Geo is actively trying to correct on secondary',
     wikis_retrying_verification_count: 'Number of wikis verification failures that Geo is actively trying to correct on secondary',
     container_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Container Repositories',
-    container_repositories_count: 'Total number of syncable container repositories available on primary',
-    container_repositories_synced_count: 'Number of syncable container repositories synced on secondary',
-    container_repositories_failed_count: 'Number of syncable container repositories failed to sync on secondary',
-    container_repositories_registry_count: 'Number of container repositories in the registry',
     design_repositories_replication_enabled: 'Boolean denoting if replication is enabled for Design Repositories',
     design_repositories_count: 'Total number of syncable design repositories available on primary',
     design_repositories_synced_count: 'Number of syncable design repositories synced on secondary',
@@ -365,7 +357,6 @@ class GeoNodeStatus < ApplicationRecord
   attr_in_percentage :wikis_checksummed,             :wikis_checksummed_count,             :wikis_count
   attr_in_percentage :wikis_verified,                :wikis_verified_count,                :wikis_count
   attr_in_percentage :replication_slots_used,        :replication_slots_used_count,        :replication_slots_count
-  attr_in_percentage :container_repositories_synced, :container_repositories_synced_count, :container_repositories_count
   attr_in_percentage :design_repositories_synced,    :design_repositories_synced_count,    :design_repositories_count
 
   add_attr_in_percentage_for_replicable_classes
@@ -451,6 +442,8 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def load_container_registry_data
+    return if ::Geo::ContainerRepositoryReplicator.enabled?
+
     if container_repositories_replication_enabled
       self.container_repositories_count = container_registry_finder.registry_count
       self.container_repositories_synced_count = container_registry_finder.synced_count
@@ -474,7 +467,7 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def load_ssf_replicable_data
-    Gitlab::Geo::REPLICATOR_CLASSES.each do |replicator|
+    Gitlab::Geo.enabled_replicator_classes.each do |replicator|
       public_send("#{replicator.replicable_name_plural}_count=", replicator.registry_count) # rubocop:disable GitlabSecurity/PublicSend
       public_send("#{replicator.replicable_name_plural}_registry_count=", replicator.registry_count) # rubocop:disable GitlabSecurity/PublicSend
       public_send("#{replicator.replicable_name_plural}_synced_count=", replicator.synced_count) # rubocop:disable GitlabSecurity/PublicSend
@@ -520,6 +513,8 @@ class GeoNodeStatus < ApplicationRecord
     self.wikis_checksum_total_count = self.projects_count
 
     Gitlab::Geo::REPLICATOR_CLASSES.each do |replicator|
+      next unless replicator.verification_feature_flag_enabled?
+
       public_send("#{replicator.replicable_name_plural}_checksummed_count=", replicator.checksummed_count) # rubocop:disable GitlabSecurity/PublicSend
       public_send("#{replicator.replicable_name_plural}_checksum_failed_count=", replicator.checksum_failed_count) # rubocop:disable GitlabSecurity/PublicSend
       public_send("#{replicator.replicable_name_plural}_checksum_total_count=", replicator.checksum_total_count) # rubocop:disable GitlabSecurity/PublicSend
@@ -550,7 +545,7 @@ class GeoNodeStatus < ApplicationRecord
   end
 
   def container_registry_finder
-    @container_registry_finder ||= Geo::ContainerRepositoryRegistryFinder.new
+    @container_registry_finder ||= Geo::ContainerRepositoryLegacyRegistryFinder.new
   end
 
   def design_registry_finder

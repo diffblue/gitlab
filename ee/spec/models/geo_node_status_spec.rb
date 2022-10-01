@@ -431,150 +431,156 @@ RSpec.describe GeoNodeStatus, :geo do
     end
   end
 
-  describe '#container_repositories_count' do
-    let!(:container_1) { create(:container_repository_registry, :synced) }
-    let!(:container_2) { create(:container_repository_registry, :sync_failed) }
-    let!(:container_3) { create(:container_repository_registry, :sync_failed) }
-    let!(:container_4) { create(:container_repository) }
+  context 'when geo_container_repository_replication feature flag is disabled' do
+    before do
+      stub_feature_flags(geo_container_repository_replication: false)
+    end
 
-    context 'when container repositories replication is active' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: true })
+    describe '#container_repositories_count' do
+      let!(:container_1) { create(:container_repository_registry, :synced) }
+      let!(:container_2) { create(:container_repository_registry, :sync_failed) }
+      let!(:container_3) { create(:container_repository_registry, :sync_failed) }
+      let!(:container_4) { create(:container_repository) }
+
+      context 'when container repositories replication is active' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: true })
+        end
+
+        it 'counts number of registries for repositories' do
+          expect(subject.container_repositories_count).to eq(3)
+        end
       end
 
-      it 'counts number of registries for repositories' do
-        expect(subject.container_repositories_count).to eq(3)
+      context 'when container repositories replication is inactive' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: false })
+        end
+
+        it 'returns nil' do
+          expect(subject.container_repositories_count).to be_nil
+        end
+      end
+
+      context 'when old container repositories counts exist' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: false })
+        end
+
+        it 'returns nil' do
+          described_class.current_node_status.update!(container_repositories_count: 3)
+
+          expect(subject.container_repositories_count).to be_nil
+        end
       end
     end
 
-    context 'when container repositories replication is inactive' do
-      before do
+    describe '#container_repositories_synced_count' do
+      let!(:container_1) { create(:container_repository_registry, :synced) }
+      let!(:container_2) { create(:container_repository_registry, :synced) }
+      let!(:container_3) { create(:container_repository_registry, :sync_failed) }
+
+      context 'when container repositories replication is active' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: true })
+        end
+
+        it 'counts synced repositories' do
+          expect(subject.container_repositories_synced_count).to eq(2)
+        end
+      end
+
+      context 'when container repositories replication is inactive' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: false })
+        end
+
+        it 'returns nil' do
+          expect(subject.container_repositories_synced_count).to be_nil
+        end
+      end
+    end
+
+    describe '#container_repositories_failed_count' do
+      let!(:container_1) { create(:container_repository_registry, :synced) }
+      let!(:container_2) { create(:container_repository_registry, :sync_failed) }
+      let!(:container_3) { create(:container_repository_registry, :sync_failed) }
+
+      context 'when container repositories replication is active' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: true })
+        end
+
+        it 'counts failed to sync repositories' do
+          expect(subject.container_repositories_failed_count).to eq(2)
+        end
+      end
+
+      context 'when container repositories replication is inactive' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: false })
+        end
+
+        it 'returns nil' do
+          expect(subject.container_repositories_failed_count).to be_nil
+        end
+      end
+    end
+
+    describe '#container_repositories_registry_count' do
+      let!(:container_1) { create(:container_repository_registry, :synced) }
+      let!(:container_2) { create(:container_repository_registry, :sync_failed) }
+      let!(:container_3) { create(:container_repository_registry, :sync_failed) }
+      let!(:container_4) { create(:container_repository) }
+
+      context 'when container repositories replication is active' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: true })
+        end
+
+        it 'counts number of registries for repositories' do
+          expect(subject.container_repositories_registry_count).to eq(3)
+        end
+      end
+
+      context 'when container repositories replication is inactive' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: false })
+        end
+
+        it 'returns nil' do
+          expect(subject.container_repositories_registry_count).to be_nil
+        end
+      end
+    end
+
+    describe '#container_repositories_synced_in_percentage' do
+      context 'when container repositories replication is active' do
+        before do
+          stub_geo_setting(registry_replication: { enabled: true })
+        end
+
+        it 'returns 0 when no objects are available' do
+          expect(subject.container_repositories_synced_in_percentage).to eq(0)
+        end
+
+        it 'returns the right percentage' do
+          create(:container_repository_registry, :synced)
+          create(:container_repository_registry)
+          create(:container_repository_registry)
+          create(:container_repository_registry)
+
+          expect(subject.container_repositories_synced_in_percentage).to be_within(0.0001).of(25)
+        end
+      end
+
+      it 'when container repositories replication is inactive returns 0' do
         stub_geo_setting(registry_replication: { enabled: false })
-      end
 
-      it 'returns nil' do
-        expect(subject.container_repositories_count).to be_nil
-      end
-    end
+        create(:container_repository_registry, :synced)
 
-    context 'when old container repositories counts exist' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: false })
-      end
-
-      it 'returns nil' do
-        described_class.current_node_status.update!(container_repositories_count: 3)
-
-        expect(subject.container_repositories_count).to be_nil
-      end
-    end
-  end
-
-  describe '#container_repositories_synced_count' do
-    let!(:container_1) { create(:container_repository_registry, :synced) }
-    let!(:container_2) { create(:container_repository_registry, :synced) }
-    let!(:container_3) { create(:container_repository_registry, :sync_failed) }
-
-    context 'when container repositories replication is active' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: true })
-      end
-
-      it 'counts synced repositories' do
-        expect(subject.container_repositories_synced_count).to eq(2)
-      end
-    end
-
-    context 'when container repositories replication is inactive' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: false })
-      end
-
-      it 'returns nil' do
-        expect(subject.container_repositories_synced_count).to be_nil
-      end
-    end
-  end
-
-  describe '#container_repositories_failed_count' do
-    let!(:container_1) { create(:container_repository_registry, :synced) }
-    let!(:container_2) { create(:container_repository_registry, :sync_failed) }
-    let!(:container_3) { create(:container_repository_registry, :sync_failed) }
-
-    context 'when container repositories replication is active' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: true })
-      end
-
-      it 'counts failed to sync repositories' do
-        expect(subject.container_repositories_failed_count).to eq(2)
-      end
-    end
-
-    context 'when container repositories replication is inactive' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: false })
-      end
-
-      it 'returns nil' do
-        expect(subject.container_repositories_failed_count).to be_nil
-      end
-    end
-  end
-
-  describe '#container_repositories_registry_count' do
-    let!(:container_1) { create(:container_repository_registry, :synced) }
-    let!(:container_2) { create(:container_repository_registry, :sync_failed) }
-    let!(:container_3) { create(:container_repository_registry, :sync_failed) }
-    let!(:container_4) { create(:container_repository) }
-
-    context 'when container repositories replication is active' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: true })
-      end
-
-      it 'counts number of registries for repositories' do
-        expect(subject.container_repositories_registry_count).to eq(3)
-      end
-    end
-
-    context 'when container repositories replication is inactive' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: false })
-      end
-
-      it 'returns nil' do
-        expect(subject.container_repositories_registry_count).to be_nil
-      end
-    end
-  end
-
-  describe '#container_repositories_synced_in_percentage' do
-    context 'when container repositories replication is active' do
-      before do
-        stub_geo_setting(registry_replication: { enabled: true })
-      end
-
-      it 'returns 0 when no objects are available' do
         expect(subject.container_repositories_synced_in_percentage).to eq(0)
       end
-
-      it 'returns the right percentage' do
-        create(:container_repository_registry, :synced)
-        create(:container_repository_registry)
-        create(:container_repository_registry)
-        create(:container_repository_registry)
-
-        expect(subject.container_repositories_synced_in_percentage).to be_within(0.0001).of(25)
-      end
-    end
-
-    it 'when container repositories replication is inactive returns 0' do
-      stub_geo_setting(registry_replication: { enabled: false })
-
-      create(:container_repository_registry, :synced)
-
-      expect(subject.container_repositories_synced_in_percentage).to eq(0)
     end
   end
 
@@ -689,6 +695,7 @@ RSpec.describe GeoNodeStatus, :geo do
 
     it 'returns existing value when feature flag if off' do
       allow(Gitlab::Geo).to receive(:repository_verification_enabled?).and_return(false)
+
       create(:geo_node_status, :healthy, geo_node: secondary)
 
       expect(subject.repositories_verification_failed_count).to eq(100)
@@ -1025,6 +1032,10 @@ RSpec.describe GeoNodeStatus, :geo do
   end
 
   context 'Replicator stats' do
+    before do
+      stub_geo_setting(registry_replication: { enabled: true })
+    end
+
     where(
       replicator: Gitlab::Geo::REPLICATOR_CLASSES
     )

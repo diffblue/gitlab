@@ -68,7 +68,7 @@ RSpec.describe EE::API::Entities::GeoNodeStatus do
   describe '#container_repositories_synced_in_percentage' do
     it 'formats as percentage' do
       geo_node_status.assign_attributes(
-        container_repositories_count: 256,
+        container_repositories_registry_count: 256,
         container_repositories_failed_count: 12,
         container_repositories_synced_count: 123
       )

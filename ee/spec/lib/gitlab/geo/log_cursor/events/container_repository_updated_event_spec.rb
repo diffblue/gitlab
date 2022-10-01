@@ -32,7 +32,18 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::ContainerRepositoryUpdatedEvent, 
       end
 
       context "when the container repository is not excluded by selective sync" do
-        it_behaves_like 'event should trigger a sync'
+        context 'when a registry does not yet exist' do
+          it_behaves_like 'event creates a registry'
+          it_behaves_like 'event schedules a sync worker'
+          it_behaves_like 'logs event source info'
+        end
+
+        context 'when a registry exists' do
+          let!(:registry) { create(registry_factory, *registry_factory_args) }
+
+          it_behaves_like 'event schedules a sync worker'
+          it_behaves_like 'logs event source info'
+        end
       end
 
       context "when the container repository is excluded by selective sync" do
@@ -55,7 +66,6 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::ContainerRepositoryUpdatedEvent, 
           # usually be accurate. The responsibility falls to proper handling of
           # delete events as well as the `RegistryConsistencyWorker` to remove
           # registries.
-          it_behaves_like 'event transitions a registry to pending'
           it_behaves_like 'event schedules a sync worker'
           it_behaves_like 'logs event source info'
         end
@@ -76,7 +86,6 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::ContainerRepositoryUpdatedEvent, 
       context 'when a registry exists' do
         let!(:registry) { create(registry_factory, *registry_factory_args) }
 
-        it_behaves_like 'event does not transition a registry to pending'
         it_behaves_like 'event does not schedule a sync worker'
         it_behaves_like 'logs event source info'
       end

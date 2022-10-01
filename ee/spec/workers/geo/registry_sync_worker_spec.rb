@@ -18,6 +18,8 @@ RSpec.describe Geo::RegistrySyncWorker, :geo, :use_sql_query_cache_for_tracking_
     end
 
     allow(::Geo::EventWorker).to receive(:with_status).and_return(::Geo::EventWorker)
+
+    stub_feature_flags(geo_container_repository_replication: false)
   end
 
   it 'does not schedule anything when tracking database is not configured' do
@@ -118,6 +120,28 @@ RSpec.describe Geo::RegistrySyncWorker, :geo, :use_sql_query_cache_for_tracking_
 
     Sidekiq::Testing.inline! do
       subject.perform
+    end
+  end
+
+  describe '.max_capacity' do
+    before do
+      secondary.update!(files_max_capacity: 6, container_repositories_max_capacity: 3)
+    end
+
+    context 'when geo_container_repository_replication is enabled' do
+      before do
+        stub_feature_flags(geo_container_repository_replication: true)
+      end
+
+      it 'returns the capacity based on files_max_capacity and container_repositories_max_capacity' do
+        expect(described_class.new.send(:max_capacity)).to eq(9)
+      end
+    end
+
+    context 'when geo_container_repository_replication is disabled' do
+      it 'returns only files_max_capacity based capacity' do
+        expect(described_class.new.send(:max_capacity)).to eq(6)
+      end
     end
   end
 end

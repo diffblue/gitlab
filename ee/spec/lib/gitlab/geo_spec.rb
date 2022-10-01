@@ -687,7 +687,7 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
 
   describe '.verification_max_capacity_per_replicator_class' do
     let(:verification_max_capacity) { 12 }
-    let(:node) { double('node', verification_max_capacity: verification_max_capacity) }
+    let(:node) { double('node', verification_max_capacity: verification_max_capacity, secondary?: true) }
 
     before do
       stub_current_geo_node(node)

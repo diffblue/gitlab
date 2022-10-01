@@ -12,6 +12,12 @@ module Types
             resolver: ::Resolvers::Geo::CiSecureFileRegistriesResolver,
             description: 'Find Ci Secure File registries on this Geo node'
       field :container_repositories_max_capacity, GraphQL::Types::Int, null: true, description: 'Maximum concurrency of container repository sync for this secondary node.'
+      field :container_repository_registries, ::Types::Geo::ContainerRepositoryRegistryType.connection_type,
+            null: true,
+            alpha: { milestone: '15.5' },
+            resolver: ::Resolvers::Geo::ContainerRepositoryRegistriesResolver,
+            description: 'Find Container Repository registries on this Geo node. '\
+                         'Ignored if `geo_container_repository_replication` feature flag is disabled.'
       field :enabled, GraphQL::Types::Boolean, null: true, description: 'Indicates whether this Geo node is enabled.'
       field :files_max_capacity, GraphQL::Types::Int, null: true, description: 'Maximum concurrency of LFS/attachment backfill for this secondary node.'
       field :group_wiki_repository_registries, ::Types::Geo::GroupWikiRepositoryRegistryType.connection_type,
