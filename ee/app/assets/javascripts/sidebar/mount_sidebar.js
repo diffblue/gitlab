@@ -69,11 +69,15 @@ const mountHealthStatusComponent = (store) => {
     store,
     provide: {
       canUpdate: parseBoolean(canEdit),
-      fullPath,
-      iid,
-      issuableType,
     },
-    render: (createElement) => createElement(SidebarHealthStatusWidget),
+    render: (createElement) =>
+      createElement(SidebarHealthStatusWidget, {
+        props: {
+          fullPath,
+          iid,
+          issuableType,
+        },
+      }),
   });
 };
 

@@ -35,7 +35,21 @@ export default {
     GlTooltip,
   },
   mixins: [Tracking.mixin()],
-  inject: ['canUpdate', 'fullPath', 'iid', 'issuableType'],
+  inject: ['canUpdate'],
+  props: {
+    iid: {
+      type: String,
+      required: true,
+    },
+    fullPath: {
+      type: String,
+      required: true,
+    },
+    issuableType: {
+      required: true,
+      type: String,
+    },
+  },
   data() {
     return {
       isUpdating: false,
@@ -112,6 +126,8 @@ export default {
         .then(({ data }) => {
           if (data.updateIssue.errors.length) {
             throw new Error(data.updateIssue.errors.join('\n'));
+          } else {
+            this.$emit('statusUpdated', healthStatus);
           }
         })
         .catch((error) => {
