@@ -7,6 +7,8 @@ module EE
         module Result
           extend ::Gitlab::Utils::Override
 
+          private
+
           override :build_attributes
           def build_attributes(name)
             job = jobs.fetch(name.to_sym, {})

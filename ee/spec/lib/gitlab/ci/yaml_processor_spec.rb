@@ -281,7 +281,7 @@ RSpec.describe Gitlab::Ci::YamlProcessor do
     subject(:result) { described_class.new(YAML.dump(config)).execute }
 
     it "returns secrets info" do
-      secrets = result.stage_builds_attributes('deploy').first.fetch(:secrets)
+      secrets = result.builds.first.fetch(:secrets)
 
       expect(secrets).to eq({
         DATABASE_PASSWORD: {
