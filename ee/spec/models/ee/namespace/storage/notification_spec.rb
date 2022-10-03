@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe EE::Namespace::Storage::Notification do
+  include NamespaceStorageHelpers
+
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:user) { create(:user) }
   let_it_be(:alert_level) { :info }
@@ -118,7 +120,11 @@ RSpec.describe EE::Namespace::Storage::Notification do
       end
     end
 
-    context 'with namespace usage' do
+    context 'with namespace usage', :saas do
+      before do
+        enforce_namespace_storage_limit(group)
+      end
+
       context 'when above the limit' do
         before do
           expect_next_instance_of(Namespaces::Storage::RootSize) do |root_storage_size|

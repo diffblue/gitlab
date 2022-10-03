@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Mutations::Namespaces::IncreaseStorageTemporarily do
+RSpec.describe Mutations::Namespaces::IncreaseStorageTemporarily, :saas do
+  include NamespaceStorageHelpers
+
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { user.namespace }
 
@@ -12,6 +14,8 @@ RSpec.describe Mutations::Namespaces::IncreaseStorageTemporarily do
     subject { mutation.resolve(id: namespace.to_global_id) }
 
     before do
+      enforce_namespace_storage_limit(namespace)
+
       allow_next_instance_of(Namespaces::Storage::RootSize, namespace) do |root_storage|
         allow(root_storage).to receive(:usage_ratio).and_return(0.5)
       end
