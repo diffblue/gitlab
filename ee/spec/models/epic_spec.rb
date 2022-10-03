@@ -136,6 +136,17 @@ RSpec.describe Epic do
         expect(described_class.from_id(epic2.id)).to match_array([epic2, epic3])
       end
     end
+
+    describe '.not_in_groups' do
+      let_it_be(:other_group) { create(:group) }
+
+      it 'does not return epics in provided groups' do
+        create(:epic, group: other_group)
+
+        expect(described_class.not_in_groups(other_group))
+          .to match_array([confidential_epic, public_epic])
+      end
+    end
   end
 
   describe 'validations' do
