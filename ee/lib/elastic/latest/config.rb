@@ -7,15 +7,6 @@ module Elastic
       extend Elasticsearch::Model::Indexing::ClassMethods
       extend Elasticsearch::Model::Naming::ClassMethods
 
-      # Regex patterns, Elasticsearch regex requires backslash characters to be escaped
-      # Single quotes are used to store the patterns and ruby will escape the \ appropriately
-      ANY_CASE_WORD_PATTERN = '(\p{Ll}+|\p{Lu}\p{Ll}+|\p{Lu}+)' # match words with any upper/lowercase combination
-      CAMEL_CASE_WORD_PATTERN = '(?=([\p{Lu}]+[\p{L}]+))' # match camel cased words, used to split into smaller tokens
-      CODE_TOKEN_PATTERN = '([\p{L}\d_]+)' # letters, numbers & underscores are the most common tokens in programming. Always capture them greedily regardless of context.
-      DIGIT_PATTERN = '(\d+)' # match digits of any length
-      FILE_NAME_PATTERN = '([\p{L}\p{N}_.-]+)' # some common chars in file names to keep the whole filename intact (eg. my_file-name-01.txt)
-      PERIOD_PATTERN = '\.([^.]+)(?=\.|\s|\Z)' # separate terms on periods
-
       self.index_name = [Rails.application.class.module_parent_name.downcase, Rails.env].join('-')
 
       settings \
@@ -50,12 +41,7 @@ module Elastic
               code_analyzer: {
                 type: 'custom',
                 tokenizer: 'whitespace',
-                filter: %w(code lowercase asciifolding remove_duplicates)
-              },
-              code_search_analyzer: {
-                type: 'custom',
-                tokenizer: 'whitespace',
-                filter: %w(lowercase asciifolding)
+                filter: %w(word_delimiter_graph_filter flatten_graph lowercase asciifolding remove_duplicates)
               },
               whitespace_reverse: {
                 tokenizer: 'whitespace',
@@ -63,17 +49,9 @@ module Elastic
               }
             },
             filter: {
-              code: {
-                type: "pattern_capture",
-                preserve_original: true,
-                patterns: [
-                  ANY_CASE_WORD_PATTERN,
-                  CAMEL_CASE_WORD_PATTERN,
-                  CODE_TOKEN_PATTERN,
-                  DIGIT_PATTERN,
-                  FILE_NAME_PATTERN,
-                  PERIOD_PATTERN
-                ]
+              word_delimiter_graph_filter: {
+                type: 'word_delimiter_graph',
+                preserve_original: true
               }
             },
             tokenizer: {
@@ -193,10 +171,10 @@ module Elastic
           indexes :commit_sha, type: :keyword, index_options: 'docs', normalizer: :sha_normalizer
           indexes :path, type: :text, analyzer: :path_analyzer
           indexes :file_name,
-            type: :text, analyzer: :code_analyzer, search_analyzer: :code_search_analyzer,
+            type: :text, analyzer: :code_analyzer,
             fields: { reverse: { type: :text, analyzer: :whitespace_reverse } }
           indexes :content,
-            type: :text, index_options: 'positions', analyzer: :code_analyzer, search_analyzer: :code_search_analyzer
+            type: :text, index_options: 'positions', analyzer: :code_analyzer
           indexes :language, type: :keyword
         end
 
