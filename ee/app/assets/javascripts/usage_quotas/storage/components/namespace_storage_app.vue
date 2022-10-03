@@ -241,7 +241,7 @@ export default {
     </div>
     <div v-else class="gl-py-4 gl-px-2 gl-m-0">
       <div class="gl-display-flex gl-align-items-center">
-        <div class="gl-w-half">
+        <div class="gl-w-half" data-qa-selector="used_storage_message">
           <gl-sprintf :message="s__('UsageQuota|You used: %{usage} %{limit}')">
             <template #usage>
               <span class="gl-font-weight-bold" data-testid="total-usage">
