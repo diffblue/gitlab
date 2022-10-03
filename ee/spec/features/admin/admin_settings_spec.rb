@@ -22,7 +22,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'hides JS alert' do
-        expect(page).not_to have_content("Geo is only available for users who have at least a Premium license.")
+        expect(page).not_to have_content("Geo is only available for users who have at least a Premium subscription.")
       end
 
       it 'renders JS form' do
@@ -37,7 +37,7 @@ RSpec.describe 'Admin updates EE-only settings' do
       end
 
       it 'shows JS alert' do
-        expect(page).to have_content("Geo is only available for users who have at least a Premium license.")
+        expect(page).to have_content("Geo is only available for users who have at least a Premium subscription.")
       end
     end
   end

@@ -46,7 +46,9 @@ RSpec.describe Admin::Geo::NodesController do
 
       it 'does not show license alert' do
         expect(response).to render_template(partial: '_license_alert')
-        expect(response.body).not_to include('Geo is only available for users who have at least a Premium license.')
+        expect(response.body).not_to include(
+          'Geo is only available for users who have at least a Premium subscription.'
+        )
       end
     end
 
@@ -58,7 +60,7 @@ RSpec.describe Admin::Geo::NodesController do
 
       it 'does show license alert' do
         expect(response).to render_template(partial: '_license_alert')
-        expect(response.body).to include('Geo is only available for users who have at least a Premium license.')
+        expect(response.body).to include('Geo is only available for users who have at least a Premium subscription.')
       end
 
       it 'does not redirects to the 403 page' do

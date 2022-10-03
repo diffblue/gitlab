@@ -40,7 +40,7 @@ RSpec.describe Admin::Geo::SettingsController, :geo do
 
       it 'does show license alert' do
         expect(subject).to render_template(partial: '_license_alert')
-        expect(subject.body).to include('Geo is only available for users who have at least a Premium license.')
+        expect(subject.body).to include('Geo is only available for users who have at least a Premium subscription.')
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe Admin::Geo::SettingsController, :geo do
 
       it 'does not show license alert' do
         expect(subject).to render_template(partial: '_license_alert')
-        expect(subject.body).not_to include('Geo is only available for users who have at least a Premium license.')
+        expect(subject.body).not_to include('Geo is only available for users who have at least a Premium subscription.')
       end
     end
   end
