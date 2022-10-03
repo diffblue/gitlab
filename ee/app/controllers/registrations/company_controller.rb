@@ -4,6 +4,7 @@ module Registrations
   class CompanyController < ApplicationController
     include OneTrustCSP
     include GoogleAnalyticsCSP
+    include RegistrationsTracking
 
     layout 'minimal'
 
@@ -43,7 +44,7 @@ module Registrations
         :registration_objective,
         :jobs_to_be_done_other,
         :trial_onboarding_flow
-      )
+      ).merge(glm_tracking_params)
     end
 
     def redirect_param

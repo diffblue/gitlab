@@ -27,7 +27,7 @@ class TrialRegistrationsController < RegistrationsController
   def set_redirect_url
     target_url =
       if ::Feature.enabled?(:about_your_company_registration_flow) && !user_signed_in?
-        new_users_sign_up_company_path(trial: true)
+        new_users_sign_up_company_path(glm_tracking_params.merge(trial: true))
       else
         new_trial_url(params: request.query_parameters)
       end

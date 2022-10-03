@@ -41,5 +41,6 @@ RSpec.describe 'devise/registrations/new' do
     allow(view).to receive(:devise_mapping).and_return(Devise.mappings[:user])
     allow(view).to receive(:resource).and_return(build(:user))
     allow(view).to receive(:resource_name).and_return(:user)
+    allow(view).to receive(:glm_tracking_params).and_return({})
   end
 end
