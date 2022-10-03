@@ -277,7 +277,7 @@ module EE
 
         def add_resource_link(link, link_text)
           resource_link = ::IncidentManagement::IssuableResourceLinks::CreateService.new(quick_action_target,
-            current_user, { link: link, link_text: link_text, link_type: :slack }).execute
+            current_user, { link: link, link_text: link_text }).execute
 
           if resource_link.success?
             ServiceResponse.success(message: _('Resource link added'))
