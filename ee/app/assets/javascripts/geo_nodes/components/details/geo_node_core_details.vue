@@ -6,7 +6,7 @@ import { __, s__ } from '~/locale';
 export default {
   name: 'GeoNodeCoreDetails',
   i18n: {
-    url: __('URL'),
+    url: s__('Geo|External URL'),
     internalUrl: s__('Geo|Internal URL'),
     gitlabVersion: __('GitLab version'),
     unknown: __('Unknown'),

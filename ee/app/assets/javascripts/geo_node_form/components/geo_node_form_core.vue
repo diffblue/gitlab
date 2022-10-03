@@ -12,7 +12,7 @@ export default {
     nameFieldDescription: s__(
       'Geo|Must match with the %{codeStart}geo_node_name%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}.',
     ),
-    urlFieldLabel: __('URL'),
+    urlFieldLabel: s__('Geo|External URL'),
     urlFieldDescription: s__(
       'Geo|Must match with the %{codeStart}external_url%{codeEnd} in %{codeStart}/etc/gitlab/gitlab.rb%{codeEnd}.',
     ),
