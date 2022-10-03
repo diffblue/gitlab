@@ -433,13 +433,11 @@ module EE
     end
 
     def root_storage_size
-      klass = if additional_repo_storage_by_namespace_enabled?
-                ::Namespaces::Storage::RootExcessSize
-              else
-                ::Namespaces::Storage::RootSize
-              end
-
-      klass.new(self)
+      if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_ancestor)
+        ::Namespaces::Storage::RootSize.new(root_ancestor)
+      else
+        ::Namespaces::Storage::RootExcessSize.new(root_ancestor)
+      end
     end
 
     def user_cap_available?
