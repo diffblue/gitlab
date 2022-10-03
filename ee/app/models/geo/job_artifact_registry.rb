@@ -19,14 +19,4 @@ class Geo::JobArtifactRegistry < Geo::BaseRegistry
 
     bulk_insert!(records, returns: :ids)
   end
-
-  def self.delete_for_model_ids(artifact_ids)
-    artifact_ids.map do |artifact_id|
-      delete_worker_class.perform_async(:job_artifact, artifact_id)
-    end
-  end
-
-  def self.delete_worker_class
-    ::Geo::FileRegistryRemovalWorker
-  end
 end

@@ -97,6 +97,10 @@ module Geo::ReplicableRegistry
         registry.after_synced
       end
 
+      event :pending do
+        transition [:pending, :synced, :failed] => :pending
+      end
+
       event :start do
         transition [:pending, :synced, :failed] => :started
       end

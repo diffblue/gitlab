@@ -12,7 +12,7 @@ const eventType = 'start-event';
 const fieldLabel = i18n.FORM_FIELD_START_EVENT_LABEL;
 const labelError = ERRORS.INVALID_EVENT_PAIRS;
 const [selectedLabel, secondLabel] = initialGroupLabels;
-const selectedLabelIds = [selectedLabel.id, secondLabel.id];
+const selectedLabelNames = [selectedLabel.title, secondLabel.title];
 
 const defaultProps = {
   index,
@@ -21,7 +21,7 @@ const defaultProps = {
   requiresLabel: true,
   initialGroupLabels,
   labelError,
-  selectedLabelIds: [],
+  selectedLabelNames: [],
 };
 
 describe('CustomStageEventLabelField', () => {
@@ -56,7 +56,7 @@ describe('CustomStageEventLabelField', () => {
     });
 
     it('has no selected labels', () => {
-      const selected = findEventLabelDropdownProp('selectedLabelIds');
+      const selected = findEventLabelDropdownProp('selectedLabelNames');
 
       expect(selected).toEqual([]);
     });
@@ -72,13 +72,13 @@ describe('CustomStageEventLabelField', () => {
 
   describe('with selected labels', () => {
     beforeEach(() => {
-      wrapper = createComponent({ selectedLabelIds });
+      wrapper = createComponent({ selectedLabelNames });
     });
 
     it('sets the selected labels', () => {
-      const selected = findEventLabelDropdownProp('selectedLabelIds');
+      const selected = findEventLabelDropdownProp('selectedLabelNames');
 
-      expect(selected).toEqual(selectedLabelIds);
+      expect(selected).toEqual(selectedLabelNames);
     });
   });
 

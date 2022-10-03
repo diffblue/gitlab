@@ -62,9 +62,5 @@ module Geo
     def in_replicables_for_current_secondary?
       self.class.replicables_for_current_secondary(self).exists?
     end
-
-    def in_available_verifiables?
-      self.class.available_verifiables.primary_key_in(self).exists?
-    end
   end
 end

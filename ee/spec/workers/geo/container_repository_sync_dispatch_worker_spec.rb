@@ -10,6 +10,8 @@ RSpec.describe Geo::ContainerRepositorySyncDispatchWorker, :geo, :use_sql_query_
   let_it_be(:secondary) { create(:geo_node) }
 
   before do
+    stub_feature_flags(geo_container_repository_replication: false)
+
     stub_current_geo_node(secondary)
     stub_exclusive_lease(renew: true)
     stub_registry_replication_config(enabled: true)
@@ -44,11 +46,29 @@ RSpec.describe Geo::ContainerRepositorySyncDispatchWorker, :geo, :use_sql_query_
     subject.perform
   end
 
+  it 'does not schedule anything when ff is enabled' do
+    stub_feature_flags(geo_container_repository_replication: true)
+
+    create(:container_repository_registry)
+
+    expect(Geo::ContainerRepositorySyncWorker).not_to receive(:perform_async)
+
+    allow_next_instance_of(described_class) do |instance|
+      allow(instance).to receive(:log_info).with('Container Registry replication is handled by Geo SSF framework')
+    end
+
+    subject.perform
+  end
+
   it 'does not schedule anything when registry replication is disabled' do
     stub_registry_replication_config(enabled: false)
     create(:container_repository)
 
     expect(Geo::ContainerRepositorySyncWorker).not_to receive(:perform_async)
+
+    allow_next_instance_of(described_class) do |instance|
+      allow(instance).to receive(:log_info).with('Container Registry replication is not enabled')
+    end
   end
 
   it 'performs Geo::ContainerRepositorySyncWorker' do

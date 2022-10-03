@@ -8,10 +8,6 @@ FactoryBot.define do
     trait :healthy do
       status_message { nil }
       job_artifacts_synced_missing_on_primary_count { 91 }
-      container_repositories_count { 400 }
-      container_repositories_registry_count { 203 }
-      container_repositories_failed_count { 3 }
-      container_repositories_synced_count { 200 }
       design_repositories_count { 400 }
       design_repositories_failed_count { 3 }
       design_repositories_synced_count { 200 }
@@ -61,7 +57,6 @@ FactoryBot.define do
     end
 
     trait :replicated_and_verified do
-      container_repositories_failed_count { 0 }
       design_repositories_failed_count { 0 }
       repositories_failed_count { 0 }
       wikis_failed_count { 0 }
@@ -81,13 +76,11 @@ FactoryBot.define do
       wikis_verified_count { 10 }
       wikis_verification_total_count { 10 }
       replication_slots_used_count { 10 }
-      container_repositories_synced_count { 10 }
       design_repositories_synced_count { 10 }
 
       repositories_count { 10 }
       wikis_count { 10 }
       replication_slots_count { 10 }
-      container_repositories_count { 10 }
       design_repositories_count { 10 }
 
       GeoNodeStatus.replicator_class_status_fields.each do |field|

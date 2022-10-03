@@ -1758,7 +1758,7 @@ RSpec.describe ProjectPolicy do
     end
   end
 
-  context 'when project is readonly because the storage usage limit has been exceeded on the root namespace' do
+  context 'when project is read only on the namespace' do
     let(:project) { public_project_in_group }
     let(:current_user) { maintainer }
     let(:abilities) do
@@ -1767,19 +1767,19 @@ RSpec.describe ProjectPolicy do
     end
 
     before do
-      allow(project.root_namespace).to receive(:over_storage_limit?).and_return(over_storage_limit)
+      allow(project.root_namespace).to receive(:read_only?).and_return(read_only)
       allow(project).to receive(:design_management_enabled?).and_return(true)
       stub_licensed_features(security_dashboard: true, license_scanning: true, quality_management: true)
     end
 
-    context 'when the group has exceeded its storage limit' do
-      let(:over_storage_limit) { true }
+    context 'when the group is read only' do
+      let(:read_only) { true }
 
       it { is_expected.to(be_disallowed(*abilities)) }
     end
 
-    context 'when the group has not exceeded its storage limit' do
-      let(:over_storage_limit) { false }
+    context 'when the group is not read only' do
+      let(:read_only) { false }
 
       # These are abilities that are not explicitly allowed by policies because most of them are not
       # real abilities.  They are prevented due to the use of create_update_admin helper method.

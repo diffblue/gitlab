@@ -2,45 +2,56 @@
 
 class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
   include ::Delay
+  include ::Geo::ReplicableRegistry
+  extend ::Gitlab::Utils::Override
 
   MODEL_CLASS = ::ContainerRepository
   MODEL_FOREIGN_KEY = :container_repository_id
 
   belongs_to :container_repository
 
-  scope :failed, -> { with_state(:failed) }
-  scope :needs_sync_again, -> { failed.retry_due }
-  scope :never_attempted_sync, -> { with_state(:pending).where(last_synced_at: nil) }
-  scope :retry_due, -> { where(arel_table[:retry_at].eq(nil).or(arel_table[:retry_at].lt(Time.current))) }
-  scope :synced, -> { with_state(:synced) }
-  scope :sync_timed_out, -> { with_state(:started).where("last_synced_at < ?", Geo::ContainerRepositorySyncService::LEASE_TIMEOUT.ago) }
-
-  state_machine :state, initial: :pending do
-    state :started
-    state :synced
-    state :failed
-    state :pending
-
-    before_transition any => :started do |registry, _|
-      registry.last_synced_at = Time.current
-    end
-
-    before_transition any => :pending do |registry, _|
-      registry.retry_at    = 0
-      registry.retry_count = 0
-    end
-
-    event :start_sync! do
-      transition [:synced, :failed, :pending] => :started
-    end
-
-    event :repository_updated! do
-      transition [:synced, :failed, :started] => :pending
+  ### Remove it after data migration
+  # See https://gitlab.com/gitlab-org/gitlab/-/issues/371667
+  # rubocop:disable Gitlab/NoCodeCoverageComment
+  # :nocov: undercoverage spec keeps failing here but this method is covered with tests
+  def state
+    case value = read_attribute('state')
+    when '0', 'pending', nil
+      0
+    when '1', 'started'
+      1
+    when '2', 'synced'
+      2
+    when '3', 'failed'
+      3
+    else
+      value
     end
   end
+  # :nocov:
+  # rubocop:enable Gitlab/NoCodeCoverageComment
+  ### Remove it after data migration
 
   class << self
     include Delay
+    extend ::Gitlab::Utils::Override
+
+    ### Remove it after data migration
+    def with_state(state)
+      value = case state.to_sym
+              when :pending
+                %w[0 pending]
+              when :started
+                %w[1 started]
+              when :synced
+                %w[2 synced]
+              when :failed
+                %w[3 failed]
+              end
+
+      where(state: value)
+    end
+    ### Remove it after data migration
 
     def find_registries_needs_sync_again(batch_size:, except_ids: [])
       super.order(arel_table[:last_synced_at].asc.nulls_first)
@@ -60,30 +71,10 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
       Gitlab.config.geo.registry_replication.enabled
     end
 
-    # Fail syncs for records which started syncing a long time ago
-    def fail_sync_timeouts
-      attrs = {
-        state: :failed,
-        last_sync_failure: "Sync timed out after #{Geo::ContainerRepositorySyncService::LEASE_TIMEOUT} hours",
-        retry_count: 1,
-        retry_at: next_retry_time(1)
-      }
-
-      sync_timed_out.all.each_batch do |relation|
-        relation.update_all(attrs)
-      end
+    override :registry_consistency_worker_enabled?
+    def registry_consistency_worker_enabled?
+      true
     end
-  end
-
-  def fail_sync!(message, error)
-    new_retry_count = retry_count + 1
-
-    update!(
-      state: :failed,
-      last_sync_failure: "#{message}: #{error.message}",
-      retry_count: new_retry_count,
-      retry_at: next_retry_time(new_retry_count)
-    )
   end
 
   def finish_sync!
@@ -98,11 +89,11 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
 
   def mark_synced_atomically
     # We can only update registry if state is started.
-    # If state is set to pending that means that repository_updated! was called
+    # If state is set to pending that means that pending! was called
     # during the sync so we need to reschedule new sync
     num_rows = self.class
                    .where(container_repository_id: container_repository_id)
-                   .where(state: 'started')
+                   .with_state(:started)
                    .update_all(state: 'synced')
 
     num_rows > 0

@@ -9,14 +9,28 @@ RSpec.describe ContainerRegistry::Event do
   let_it_be(:group) { create(:group, name: 'group') }
   let_it_be(:project) { create(:project, name: 'test', namespace: group) }
 
-  RSpec.shared_examples 'creating a geo event' do
+  shared_examples 'creating a geo SSF event' do
+    it 'creates geo event' do
+      expect { subject }
+        .to change { ::Geo::Event.count }.by(1)
+    end
+  end
+
+  shared_examples 'not creating a geo SSF event' do
+    it 'does not create geo event' do
+      expect { subject }
+        .not_to change { ::Geo::Event.count }
+    end
+  end
+
+  shared_examples 'creating a geo event' do
     it 'creates geo event' do
       expect { subject }
         .to change { ::Geo::ContainerRepositoryUpdatedEvent.count }.by(1)
     end
   end
 
-  RSpec.shared_examples 'not creating a geo event' do
+  shared_examples 'not creating a geo event' do
     it 'does not create geo event' do
       expect { subject }
         .not_to change { ::Geo::ContainerRepositoryUpdatedEvent.count }
@@ -37,44 +51,93 @@ RSpec.describe ContainerRegistry::Event do
         stub_current_geo_node(primary_node)
       end
 
-      context 'with a respository target' do
-        let(:target) do
-          {
-            'mediaType' => ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
-            'repository' => repository_path
-          }
+      context 'with geo_container_repository_replication enabled' do
+        context 'with a repository target' do
+          let(:target) do
+            {
+              'mediaType' => ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
+              'repository' => repository_path
+            }
+          end
+
+          where(:repository_path, :action, :example_name) do
+            'group/test/container' | 'push'   | 'creating a geo SSF event'
+            'group/test/container' | 'delete' | 'creating a geo SSF event'
+            'foo/bar'              | 'push'   | 'not creating a geo SSF event'
+            'foo/bar'              | 'delete' | 'not creating a geo SSF event'
+          end
+
+          with_them do
+            it_behaves_like params[:example_name]
+          end
         end
 
-        where(:repository_path, :action, :example_name) do
-          'group/test/container' | 'push'   | 'creating a geo event'
-          'group/test/container' | 'delete' | 'creating a geo event'
-          'foo/bar'              | 'push'   | 'not creating a geo event'
-          'foo/bar'              | 'delete' | 'not creating a geo event'
-        end
+        context 'with a tag target' do
+          let(:target) do
+            {
+              'mediaType' => ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
+              'repository' => repository_path,
+              'tag' => 'latest'
+            }
+          end
 
-        with_them do
-          it_behaves_like params[:example_name]
+          where(:repository_path, :action, :example_name) do
+            'group/test/container' | 'push'   | 'creating a geo SSF event'
+            'group/test/container' | 'delete' | 'creating a geo SSF event'
+            'foo/bar'              | 'push'   | 'not creating a geo SSF event'
+            'foo/bar'              | 'delete' | 'not creating a geo SSF event'
+          end
+
+          with_them do
+            it_behaves_like params[:example_name]
+          end
         end
       end
 
-      context 'with a tag target' do
-        let(:target) do
-          {
-            'mediaType' => ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
-            'repository' => repository_path,
-            'tag' => 'latest'
-          }
+      context 'with geo_container_repository_replication disabled' do
+        before do
+          stub_feature_flags(geo_container_repository_replication: false)
         end
 
-        where(:repository_path, :action, :example_name) do
-          'group/test/container' | 'push'   | 'creating a geo event'
-          'group/test/container' | 'delete' | 'creating a geo event'
-          'foo/bar'              | 'push'   | 'not creating a geo event'
-          'foo/bar'              | 'delete' | 'not creating a geo event'
+        context 'with a repository target' do
+          let(:target) do
+            {
+              'mediaType' => ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
+              'repository' => repository_path
+            }
+          end
+
+          where(:repository_path, :action, :example_name) do
+            'group/test/container' | 'push'   | 'creating a geo event'
+            'group/test/container' | 'delete' | 'creating a geo event'
+            'foo/bar'              | 'push'   | 'not creating a geo event'
+            'foo/bar'              | 'delete' | 'not creating a geo event'
+          end
+
+          with_them do
+            it_behaves_like params[:example_name]
+          end
         end
 
-        with_them do
-          it_behaves_like params[:example_name]
+        context 'with a tag target' do
+          let(:target) do
+            {
+              'mediaType' => ContainerRegistry::Client::DOCKER_DISTRIBUTION_MANIFEST_V2_TYPE,
+              'repository' => repository_path,
+              'tag' => 'latest'
+            }
+          end
+
+          where(:repository_path, :action, :example_name) do
+            'group/test/container' | 'push'   | 'creating a geo event'
+            'group/test/container' | 'delete' | 'creating a geo event'
+            'foo/bar'              | 'push'   | 'not creating a geo event'
+            'foo/bar'              | 'delete' | 'not creating a geo event'
+          end
+
+          with_them do
+            it_behaves_like params[:example_name]
+          end
         end
       end
     end

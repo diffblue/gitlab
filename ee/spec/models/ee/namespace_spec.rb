@@ -1173,6 +1173,14 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#read_only?' do
+    it 'is an alias for over storage limit' do
+      namespace = build(:namespace)
+
+      expect(namespace.method(:read_only?).original_name).to eq(:over_storage_limit?)
+    end
+  end
+
   describe '#total_repository_size_excess' do
     let_it_be(:namespace) { create(:namespace) }
 
@@ -1561,33 +1569,77 @@ RSpec.describe Namespace do
     end
   end
 
-  describe '#root_storage_size' do
-    let_it_be(:namespace) { build(:namespace) }
+  describe '#root_storage_size', :saas do
+    let_it_be(:namespace) { create(:namespace) }
 
-    subject { namespace.root_storage_size }
+    subject(:root_storage_size) { namespace.root_storage_size }
 
-    before do
-      allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
-        .and_return(additional_repo_storage_by_namespace_enabled)
-    end
+    context 'when namespace storage limits are enabled' do
+      before do
+        enforce_namespace_storage_limit(namespace)
+      end
 
-    context 'when additional_repo_storage_by_namespace_enabled is false' do
-      let(:additional_repo_storage_by_namespace_enabled) { false }
-
-      it 'initializes a new instance of Namespaces::Storage::RootSize' do
-        expect(Namespaces::Storage::RootSize).to receive(:new).with(namespace)
-
-        subject
+      it 'returns an instance of RootSize' do
+        expect(root_storage_size).to be_an_instance_of(::Namespaces::Storage::RootSize)
       end
     end
 
-    context 'when additional_repo_storage_by_namespace_enabled is true' do
-      let(:additional_repo_storage_by_namespace_enabled) { true }
+    context 'when namespace storage limits are disabled' do
+      before do
+        stub_application_setting(enforce_namespace_storage_limit: false)
+        stub_application_setting(automatic_purchased_storage_allocation: false)
+        stub_feature_flags(
+          namespace_storage_limit: false,
+          enforce_storage_limit_for_paid: false,
+          enforce_storage_limit_for_free: false,
+          namespace_storage_limit_bypass_date_check: false
+        )
+      end
 
-      it 'initializes a new instance of Namespaces::Storage::RootExcessSize' do
-        expect(Namespaces::Storage::RootExcessSize).to receive(:new).with(namespace)
+      it 'returns an instance of RootExcessSize' do
+        expect(root_storage_size).to be_an_instance_of(::Namespaces::Storage::RootExcessSize)
+      end
+    end
 
-        subject
+    context 'when namespace storage limits are disabled and automatic_purchased_storage_allocation is enabled' do
+      before do
+        stub_application_setting(enforce_namespace_storage_limit: false)
+        stub_application_setting(automatic_purchased_storage_allocation: true)
+        stub_feature_flags(
+          namespace_storage_limit: false,
+          enforce_storage_limit_for_paid: false,
+          enforce_storage_limit_for_free: false,
+          namespace_storage_limit_bypass_date_check: false
+        )
+      end
+
+      it 'returns an instance of RootExcessSize' do
+        expect(root_storage_size).to be_an_instance_of(::Namespaces::Storage::RootExcessSize)
+      end
+    end
+
+    context 'when namespace storage limits are enabled for free namespaces and disabled for paid' do
+      before do
+        stub_application_setting(enforce_namespace_storage_limit: true)
+        stub_application_setting(automatic_purchased_storage_allocation: true)
+        stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', 2.years.ago.to_date)
+        stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', 1.year.ago.to_date)
+        stub_feature_flags(
+          namespace_storage_limit: true,
+          enforce_storage_limit_for_paid: false,
+          enforce_storage_limit_for_free: true,
+          namespace_storage_limit_bypass_date_check: false
+        )
+      end
+
+      it 'returns an instance of RootSize for a free namespace' do
+        expect(root_storage_size).to be_an_instance_of(::Namespaces::Storage::RootSize)
+      end
+
+      it 'returns an instance of RootExcessSize for a paid namespace' do
+        paid_namespace = create(:namespace_with_plan, plan: :ultimate_plan)
+
+        expect(paid_namespace.root_storage_size).to be_an_instance_of(::Namespaces::Storage::RootExcessSize)
       end
     end
   end

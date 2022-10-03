@@ -1,66 +1,53 @@
-import Vue, { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
 
 import LicensePackages from 'ee/vue_shared/license_compliance/components/license_packages.vue';
-import mountComponent from 'helpers/vue_mount_component_helper';
 import { licenseReport } from '../mock_data';
 
 const examplePackages = licenseReport[0].packages;
 
-const createComponent = (packages = examplePackages) => {
-  const Component = Vue.extend(LicensePackages);
-
-  return mountComponent(Component, { packages });
-};
-
 describe('LicensePackages', () => {
-  let vm;
+  let wrapper;
 
-  beforeEach(() => {
-    vm = createComponent();
-  });
+  const createComponent = (packages = examplePackages) => {
+    wrapper = mount(LicensePackages, { propsData: { packages } });
+  };
 
   afterEach(() => {
-    vm.$destroy();
+    wrapper.destroy();
   });
 
-  describe('computed', () => {
-    describe('remainingPackages', () => {
-      it('returns string with count of packages when it exceeds `displayPackageCount` prop', () => {
-        expect(vm.remainingPackages).toBe('2 more');
-      });
+  const findShowAllPackagesButton = () => wrapper.find('.btn-show-all-packages');
+  const findLicenseDependecies = () => wrapper.find('.js-license-dependencies');
 
-      it('returns empty string when count of packages does not exceed `displayPackageCount` prop', async () => {
-        vm.displayPackageCount = examplePackages.length + 1;
-        await nextTick();
-        expect(vm.remainingPackages).toBe('');
-      });
-    });
+  it('renders packages list for a particular license', () => {
+    createComponent();
+
+    const packages = findLicenseDependecies();
+
+    expect(packages.exists()).toBe(true);
+    expect(packages.text()).toBe('Used by pg, puma, foo, and');
   });
 
-  describe('methods', () => {
-    describe('handleShowPackages', () => {
-      it('sets value of `showAllPackages` prop to true', () => {
-        vm.showAllPackages = false;
-        vm.handleShowPackages();
+  it('renders more packages button element', () => {
+    createComponent();
 
-        expect(vm.showAllPackages).toBe(true);
-      });
-    });
+    const button = findShowAllPackagesButton();
+
+    expect(button.exists()).toBe(true);
+    expect(button.text()).toBe('2 more');
   });
 
-  describe('template', () => {
-    it('renders packages list for a particular license', () => {
-      const packagesEl = vm.$el.querySelector('.js-license-dependencies');
+  it('does not render more packages button when count of packages does not exceed `displayPackageCount`', () => {
+    createComponent(examplePackages.slice(0, 1));
 
-      expect(packagesEl).not.toBeNull();
-      expect(packagesEl.innerText.trim()).toBe('Used by pg, puma, foo, and');
-    });
+    expect(findShowAllPackagesButton().exists()).toBe(false);
+  });
 
-    it('renders more packages button element', () => {
-      const buttonEl = vm.$el.querySelector('.btn-show-all-packages');
+  it('renders all packages when show all packages button is clicked', async () => {
+    createComponent();
 
-      expect(buttonEl).not.toBeNull();
-      expect(buttonEl.innerText.trim()).toBe('2 more');
-    });
+    await findShowAllPackagesButton().trigger('click');
+
+    expect(findLicenseDependecies().text()).toBe('Used by pg, puma, foo, bar, and baz');
   });
 });

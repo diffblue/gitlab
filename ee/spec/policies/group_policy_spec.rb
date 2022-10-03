@@ -1558,7 +1558,7 @@ RSpec.describe GroupPolicy do
     end
   end
 
-  context 'when group is locked because storage usage limit exceeded' do
+  context 'when group is read only' do
     let(:current_user) { owner }
     let(:policies) do
       %i[create_projects create_epic update_epic admin_milestone upload_file admin_label
@@ -1567,19 +1567,19 @@ RSpec.describe GroupPolicy do
     end
 
     before do
-      allow(group).to receive(:over_storage_limit?).and_return(over_storage_limit)
+      allow(group).to receive(:read_only?).and_return(read_only)
       stub_licensed_features(epics: true)
     end
 
-    context 'when the group has exceeded its storage limit' do
-      let(:over_storage_limit) { true }
+    context 'when the group is read only' do
+      let(:read_only) { true }
 
       it { is_expected.to(be_disallowed(*policies)) }
       it { is_expected.to(be_allowed(:read_billable_member)) }
     end
 
-    context 'when the group has not exceeded its storage limit' do
-      let(:over_storage_limit) { false }
+    context 'when the group is not read only' do
+      let(:read_only) { false }
 
       it { is_expected.to(be_allowed(*policies)) }
     end

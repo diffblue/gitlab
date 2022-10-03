@@ -108,6 +108,7 @@ module Resolvers
         parent: [:parent],
         events: { events: [:target] },
         award_emoji: [:award_emoji],
+        participants: Epic.participant_includes,
         start_date_from_milestones: [:start_date_sourcing_milestone],
         start_date_from_inherited_source: [:start_date_sourcing_milestone, :start_date_sourcing_epic],
         due_date_from_milestones: [:due_date_sourcing_milestone],

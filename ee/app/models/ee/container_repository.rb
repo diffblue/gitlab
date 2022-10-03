@@ -7,6 +7,10 @@ module EE
     GITLAB_ORG_NAMESPACE = 'gitlab-org'
 
     prepended do
+      include ::Geo::ReplicableModel
+
+      with_replicator ::Geo::ContainerRepositoryReplicator
+
       scope :project_id_in, ->(ids) { joins(:project).merge(::Project.id_in(ids)) }
     end
 

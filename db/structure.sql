@@ -11485,6 +11485,9 @@ CREATE TABLE application_settings (
     dashboard_enforcement_limit integer DEFAULT 0 NOT NULL,
     dashboard_limit_new_namespace_creation_enforcement_date date,
     can_create_group boolean DEFAULT true NOT NULL,
+    lock_maven_package_requests_forwarding boolean DEFAULT false NOT NULL,
+    lock_pypi_package_requests_forwarding boolean DEFAULT false NOT NULL,
+    lock_npm_package_requests_forwarding boolean DEFAULT false NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
@@ -17868,6 +17871,12 @@ CREATE TABLE namespace_package_settings (
     maven_duplicate_exception_regex text DEFAULT ''::text NOT NULL,
     generic_duplicates_allowed boolean DEFAULT true NOT NULL,
     generic_duplicate_exception_regex text DEFAULT ''::text NOT NULL,
+    maven_package_requests_forwarding boolean,
+    lock_maven_package_requests_forwarding boolean DEFAULT false NOT NULL,
+    pypi_package_requests_forwarding boolean,
+    lock_pypi_package_requests_forwarding boolean DEFAULT false NOT NULL,
+    npm_package_requests_forwarding boolean,
+    lock_npm_package_requests_forwarding boolean DEFAULT false NOT NULL,
     CONSTRAINT check_31340211b1 CHECK ((char_length(generic_duplicate_exception_regex) <= 255)),
     CONSTRAINT check_d63274b2b6 CHECK ((char_length(maven_duplicate_exception_regex) <= 255))
 );
@@ -28026,8 +28035,6 @@ CREATE INDEX index_ci_build_report_results_on_project_id ON ci_build_report_resu
 CREATE UNIQUE INDEX index_ci_build_trace_chunks_on_build_id_and_chunk_index ON ci_build_trace_chunks USING btree (build_id, chunk_index);
 
 CREATE INDEX index_ci_build_trace_metadata_on_trace_artifact_id ON ci_build_trace_metadata USING btree (trace_artifact_id);
-
-CREATE UNIQUE INDEX index_ci_builds_metadata_on_build_id ON ci_builds_metadata USING btree (build_id);
 
 CREATE INDEX index_ci_builds_metadata_on_build_id_and_has_exposed_artifacts ON ci_builds_metadata USING btree (build_id) WHERE (has_exposed_artifacts IS TRUE);
 

@@ -14,9 +14,13 @@ class EpicPolicy < BasePolicy
     @subject.group.licensed_feature_available?(:related_epics)
   end
 
+  desc "User is the epic's author"
+  condition(:is_author) { @user && @subject.author == @user }
+
   rule { can?(:read_epic) }.policy do
     enable :read_epic_iid
     enable :read_note
+    enable :read_issuable_participables
   end
 
   rule { can?(:read_epic) & ~anonymous }.policy do
@@ -55,5 +59,10 @@ class EpicPolicy < BasePolicy
 
   rule { can?(:reporter_access) }.policy do
     enable :mark_note_as_confidential
+  end
+
+  # This rule replicates permissions in NotePolicy#can_read_confidential
+  rule { can?(:reporter_access) | is_author | admin }.policy do
+    enable :read_internal_note
   end
 end

@@ -41,7 +41,7 @@ class MergeRequest < ApplicationRecord
     'Ci::CompareCodequalityReportsService' => ->(project) { true }
   }.freeze
 
-  MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS = 100
+  MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS = 200
 
   belongs_to :target_project, class_name: "Project"
   belongs_to :source_project, class_name: "Project"
@@ -610,7 +610,7 @@ class MergeRequest < ApplicationRecord
   end
 
   def self.participant_includes
-    [:reviewers, :award_emoji] + super
+    [:assignees, :reviewers] + super
   end
 
   def committers

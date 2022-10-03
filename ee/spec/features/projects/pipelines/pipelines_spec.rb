@@ -19,10 +19,10 @@ RSpec.describe 'Pipelines', :js do
       expect(page).to have_pushed_frontend_feature_flags(useApiForPaymentValidation: true)
     end
 
-    describe 'when namespace is over_storage_limit?' do
+    describe 'when namespace is in read-only mode' do
       it 'does not render Run pipeline and CI lint link' do
         allow_next_found_instance_of(Namespace) do |instance|
-          allow(instance).to receive(:over_storage_limit?).and_return(true)
+          allow(instance).to receive(:read_only?).and_return(true)
         end
 
         visit project_pipelines_path(project)
@@ -35,10 +35,10 @@ RSpec.describe 'Pipelines', :js do
   end
 
   describe 'GET /:project/-/pipelines/new' do
-    describe 'when namespace is over_storage_limit?' do
+    describe 'when namespace is in read-only mode' do
       it 'renders 404' do
         allow_next_found_instance_of(Namespace) do |instance|
-          allow(instance).to receive(:over_storage_limit?).and_return(true)
+          allow(instance).to receive(:read_only?).and_return(true)
         end
 
         visit new_project_pipeline_path(project)

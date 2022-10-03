@@ -41,7 +41,7 @@ export default {
       required: false,
       default: false,
     },
-    selectedLabelIds: {
+    selectedLabelNames: {
       type: Array,
       required: false,
       default: () => [],
@@ -67,12 +67,12 @@ export default {
   computed: {
     ...mapState(['defaultGroupLabels']),
     selectedLabel() {
-      const { selectedLabelIds, labels = [] } = this;
-      if (!selectedLabelIds.length || !labels.length) return null;
-      return labels.find(({ id }) => selectedLabelIds.includes(id));
+      const { selectedLabelNames, labels = [] } = this;
+      if (!selectedLabelNames.length || !labels.length) return null;
+      return labels.find(({ title }) => selectedLabelNames.includes(title));
     },
     maxLabelsSelected() {
-      return this.selectedLabelIds.length >= this.maxLabels;
+      return this.selectedLabelNames.length >= this.maxLabels;
     },
     noMatchingLabels() {
       return Boolean(this.searchTerm.length && !this.labels.length);
@@ -120,7 +120,7 @@ export default {
       return label?.name || label.title;
     },
     isSelectedLabel(id) {
-      return Boolean(this.selectedLabelIds?.includes(id));
+      return Boolean(this.selectedLabelNames?.includes(id));
     },
     isDisabledLabel(id) {
       return Boolean(this.maxLabelsSelected && !this.isSelectedLabel(id));
@@ -156,12 +156,12 @@ export default {
         v-for="label in labels"
         :key="label.id"
         :class="{
-          'gl-pl-6!': !isSelectedLabel(label.id),
+          'gl-pl-6!': !isSelectedLabel(labelTitle(label)),
           'gl-cursor-not-allowed': disabled,
         }"
-        :active="isSelectedLabel(label.id)"
-        :is-checked="multiselect && isSelectedLabel(label.id)"
-        :is-check-item="isSelectedLabel(label.id)"
+        :active="isSelectedLabel(labelTitle(label))"
+        :is-checked="multiselect && isSelectedLabel(labelTitle(label))"
+        :is-check-item="isSelectedLabel(labelTitle(label))"
         @click.prevent="$emit('select-label', label)"
       >
         <span

@@ -10,6 +10,8 @@ module Geo
     include GeoQueue
     include ::Gitlab::Geo::LogHelpers
 
+    # Do not execute (in fact, don't even enqueue) another instance of this Worker with the same args
+    deduplicate :until_executed, including_scheduled: true
     idempotent!
 
     loggable_arguments 0

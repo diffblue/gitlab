@@ -9,7 +9,7 @@ import {
   TASKS_BY_TYPE_FILTERS,
 } from 'ee/analytics/cycle_analytics/constants';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
-import { tasksByTypeData, taskByTypeFilters, groupLabels } from '../mock_data';
+import { tasksByTypeData, taskByTypeFilters, groupLabels, groupLabelNames } from '../mock_data';
 
 const fakeTopRankedLabels = [
   ...groupLabels,
@@ -38,7 +38,7 @@ const fakeStore = ({ initialGetters, initialState }) =>
           tasksByTypeChartData: () => tasksByTypeData,
           selectedTasksByTypeFilters: () => taskByTypeFilters,
           currentGroupPath: () => 'fake/group/path',
-          selectedLabelIds: () => [],
+          selectedLabelNames: () => groupLabelNames,
           ...initialGetters,
         },
         state: {

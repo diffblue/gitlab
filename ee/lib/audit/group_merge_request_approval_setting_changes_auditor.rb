@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Audit
-  class GroupMergeRequestApprovalSettingChangesAuditor < ::EE::Audit::BaseChangesAuditor
+  class GroupMergeRequestApprovalSettingChangesAuditor < BaseChangesAuditor
     def initialize(current_user, approval_setting, params)
       @group = approval_setting.group
       @params = params

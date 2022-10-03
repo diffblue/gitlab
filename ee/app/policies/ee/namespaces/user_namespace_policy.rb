@@ -6,14 +6,14 @@ module EE
       extend ActiveSupport::Concern
 
       prepended do
-        condition(:over_storage_limit, scope: :subject) { @subject.over_storage_limit? }
+        condition(:read_only, scope: :subject) { @subject.read_only? }
         condition(:compliance_framework_available, scope: :subject) do
           @subject.licensed_feature_available?(:custom_compliance_frameworks)
         end
 
         rule { admin & is_gitlab_com }.enable :update_subscription_limit
 
-        rule { over_storage_limit }.policy do
+        rule { read_only }.policy do
           prevent :create_projects
         end
         rule { can?(:owner_access) & compliance_framework_available }.enable :admin_compliance_framework

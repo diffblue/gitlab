@@ -14,6 +14,7 @@ RSpec.describe 'admin Geo Replication Nav', :js, :geo do
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
     stub_current_geo_node(secondary_node)
+    stub_geo_setting(registry_replication: { enabled: true })
   end
 
   shared_examples 'active sidebar link' do |link_name|

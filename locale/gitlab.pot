@@ -1676,9 +1676,6 @@ msgstr ""
 msgid "A new email address has been added to your GitLab account: %{email}"
 msgstr ""
 
-msgid "A new impersonation token has been created."
-msgstr ""
-
 msgid "A new personal access token has been created"
 msgstr ""
 
@@ -10166,6 +10163,9 @@ msgid "Contacts"
 msgstr ""
 
 msgid "Container Registry"
+msgstr ""
+
+msgid "Container Repository"
 msgstr ""
 
 msgid "Container Scanning"
@@ -41361,9 +41361,6 @@ msgstr ""
 msgid "This will remove the fork relationship between this project and other projects in the fork network."
 msgstr ""
 
-msgid "Thread options"
-msgstr ""
-
 msgid "Thread to reply to cannot be found"
 msgstr ""
 
@@ -41960,6 +41957,9 @@ msgid "Toggle commit description"
 msgstr ""
 
 msgid "Toggle commit list"
+msgstr ""
+
+msgid "Toggle dropdown"
 msgstr ""
 
 msgid "Toggle emoji award"
@@ -44588,6 +44588,9 @@ msgstr ""
 msgid "Vulnerability|Tool"
 msgstr ""
 
+msgid "Vulnerability|Tool:"
+msgstr ""
+
 msgid "Vulnerability|Training"
 msgstr ""
 
@@ -47078,6 +47081,9 @@ msgid "ciReport|Found %{issuesWithCount}"
 msgstr ""
 
 msgid "ciReport|Full Report"
+msgstr ""
+
+msgid "ciReport|Generic Report"
 msgstr ""
 
 msgid "ciReport|IaC Scanning"

@@ -135,7 +135,7 @@ module EE
         @subject.feature_available?(:merge_request_approvers) && @subject.root?
       end
 
-      condition(:over_storage_limit, scope: :subject) { @subject.over_storage_limit? }
+      condition(:read_only, scope: :subject) { @subject.read_only? }
 
       condition(:eligible_for_trial, scope: :subject) { @subject.eligible_for_trial? }
 
@@ -445,7 +445,7 @@ module EE
 
       rule { maintainer & eligible_for_trial }.enable :start_trial
 
-      rule { over_storage_limit }.policy do
+      rule { read_only }.policy do
         prevent :create_projects
         prevent :create_epic
         prevent :update_epic
