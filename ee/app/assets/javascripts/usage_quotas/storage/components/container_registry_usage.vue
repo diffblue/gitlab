@@ -35,7 +35,7 @@ export default {
 };
 </script>
 <template>
-  <usage-banner>
+  <usage-banner data-qa-selector="container_registry_usage">
     <template #left-primary-text>
       {{ $options.i18n.containerRegistry }}
     </template>
@@ -52,7 +52,9 @@ export default {
       {{ $options.i18n.storageUsed }}
     </template>
     <template #right-secondary-text>
-      <span data-testid="total-size-section">{{ formattedContainerRegistrySize }}</span>
+      <span data-testid="total-size-section" data-qa-selector="container_registry_size">{{
+        formattedContainerRegistrySize
+      }}</span>
     </template>
   </usage-banner>
 </template>

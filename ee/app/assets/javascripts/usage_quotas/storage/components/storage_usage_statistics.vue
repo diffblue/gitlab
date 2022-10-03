@@ -120,6 +120,7 @@ export default {
       :show-progress-bar="storageLimitEnforced"
       :loading="loading"
       data-testid="purchased-usage-card"
+      data-qa-selector="purchased_usage_total_free"
       class="gl-w-half"
     >
       <template #actions>

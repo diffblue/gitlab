@@ -34,7 +34,7 @@ export default {
 };
 </script>
 <template>
-  <usage-banner :loading="loading">
+  <usage-banner :loading="loading" data-qa-selector="dependency_proxy_usage">
     <template #left-primary-text>
       {{ $options.i18n.dependencyProxy }}
     </template>
@@ -51,7 +51,9 @@ export default {
       {{ $options.i18n.storageUsed }}
     </template>
     <template #right-secondary-text>
-      <span data-testid="total-size-section">{{ dependencyProxyTotalSize }}</span>
+      <span data-testid="total-size-section" data-qa-selector="dependency_proxy_size">{{
+        dependencyProxyTotalSize
+      }}</span>
     </template>
   </usage-banner>
 </template>

@@ -63,6 +63,7 @@ export default {
       class="gl-responsive-table-row gl-border-solid gl-border-b-1 gl-pt-3 gl-pb-3 gl-border-b-gray-100 gl-hover-bg-blue-50 gl-hover-border-blue-200 gl-hover-cursor-pointer"
       role="row"
       data-testid="projectTableRow"
+      data-qa-selector="project"
       @click="toggleProject"
     >
       <div
@@ -99,7 +100,9 @@ export default {
         <div class="table-mobile-header gl-font-weight-bold" role="rowheader">
           {{ $options.i18n.PROJECT_TABLE_LABEL_USAGE }}
         </div>
-        <div class="table-mobile-content gl-text-gray-900">{{ storageSize }}</div>
+        <div class="table-mobile-content gl-text-gray-900" data-qa-selector="project_storage_used">
+          {{ storageSize }}
+        </div>
       </div>
     </div>
     <project-storage-detail v-if="isOpen" :storage-types="projectStorageTypes" />
