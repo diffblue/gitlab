@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples 'merge validation hooks' do |args|
-  def hooks_error
-    service.hooks_validation_error(merge_request)
+  def hooks_error(squashing: false)
+    service.hooks_validation_error(merge_request, validate_squash_message: squashing)
   end
 
-  def hooks_pass?
-    service.hooks_validation_pass?(merge_request)
+  def hooks_pass?(squashing: false)
+    service.hooks_validation_pass?(merge_request, validate_squash_message: squashing)
   end
 
   shared_examples 'hook validations are skipped when push rules unlicensed' do
@@ -94,6 +94,57 @@ RSpec.shared_examples 'merge validation hooks' do |args|
       expect(hooks_pass?).to be(true)
       expect(hooks_error).to be_nil
     end
+  end
+
+  shared_examples 'squashing commits' do
+    let(:squash_commit_message) { 'Squashed messages' }
+    let(:params) { super().merge(squash_commit_message: squash_commit_message) }
+
+    context 'and the project has a push rule for required characters' do
+      before do
+        allow(project).to receive(:push_rule) { build(:push_rule, commit_message_regex: params[:commit_message]) }
+      end
+
+      it 'returns false and saves error when invalid' do
+        expect(hooks_pass?(squashing: true)).to be(false)
+        expect(hooks_error(squashing: true)).not_to be_empty
+
+        if args[:persisted]
+          expect(merge_request.merge_error).to eq(hooks_error(squashing: true))
+        else
+          expect(merge_request.merge_error).to be_nil
+        end
+      end
+    end
+
+    context 'and the project has a push rule for forbidden characters' do
+      before do
+        allow(project).to receive(:push_rule) do
+          build(:push_rule, commit_message_negative_regex: squash_commit_message)
+        end
+      end
+
+      it 'returns false and saves error when invalid' do
+        expect(hooks_pass?(squashing: true)).to be(false)
+        expect(hooks_error(squashing: true)).not_to be_empty
+
+        if args[:persisted]
+          expect(merge_request.merge_error).to eq(hooks_error(squashing: true))
+        else
+          expect(merge_request.merge_error).to be_nil
+        end
+      end
+    end
+  end
+
+  it_behaves_like 'squashing commits'
+
+  context 'when the project uses the fast-forward merge method' do
+    before do
+      allow(project).to receive(:merge_requests_ff_only_enabled) { true }
+    end
+
+    it_behaves_like 'squashing commits'
   end
 end
 

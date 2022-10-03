@@ -13,12 +13,12 @@ module EE
       end
 
       override :hooks_validation_pass?
-      def hooks_validation_pass?(merge_request)
+      def hooks_validation_pass?(merge_request, validate_squash_message: false)
         # handle_merge_error needs this. We should move that to a separate
         # object instead of relying on the order of method calls.
         @merge_request = merge_request # rubocop:disable Gitlab/ModuleWithInstanceVariables
 
-        hooks_error = hooks_validation_error(merge_request)
+        hooks_error = hooks_validation_error(merge_request, validate_squash_message: validate_squash_message)
 
         return true unless hooks_error
 
@@ -31,11 +31,13 @@ module EE
       end
 
       override :hooks_validation_error
-      def hooks_validation_error(merge_request)
-        return if project.merge_requests_ff_only_enabled
-        return unless project.feature_available?(:push_rules)
+      def hooks_validation_error(merge_request, validate_squash_message: false)
+        if project.merge_requests_ff_only_enabled
+          return squash_message_validation_error if validate_squash_message
 
-        push_rule = merge_request.project.push_rule
+          return
+        end
+
         return unless push_rule
 
         if !push_rule.commit_message_allowed?(params[:commit_message])
@@ -44,10 +46,28 @@ module EE
           "Commit message contains the forbidden pattern '#{push_rule.commit_message_negative_regex}'"
         elsif !push_rule.author_email_allowed?(current_user.commit_email_or_default)
           "Author's commit email '#{current_user.commit_email_or_default}' does not follow the pattern '#{push_rule.author_email_regex}'"
+        elsif validate_squash_message
+          squash_message_validation_error
         end
       end
 
       private
+
+      def push_rule
+        strong_memoize(:push_rule) do
+          merge_request.project.push_rule if project.feature_available?(:push_rules)
+        end
+      end
+
+      def squash_message_validation_error
+        return unless push_rule
+
+        if !push_rule.commit_message_allowed?(params[:squash_commit_message])
+          "Squash commit message does not follow the pattern '#{push_rule.commit_message_regex}'"
+        elsif push_rule.commit_message_blocked?(params[:squash_commit_message])
+          "Squash commit message contains the forbidden pattern '#{push_rule.commit_message_negative_regex}'"
+        end
+      end
 
       def check_size_limit
         if size_checker.above_size_limit?
