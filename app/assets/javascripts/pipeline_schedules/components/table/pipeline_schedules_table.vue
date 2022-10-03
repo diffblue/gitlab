@@ -12,7 +12,7 @@ export default {
     {
       key: 'description',
       label: s__('PipelineSchedules|Description'),
-      columnClass: 'gl-w-half',
+      columnClass: 'gl-w-40p',
     },
     {
       key: 'target',
@@ -27,7 +27,7 @@ export default {
     {
       key: 'next',
       label: s__('PipelineSchedules|Next Run'),
-      columnClass: 'gl-w-10p',
+      columnClass: 'gl-w-15p',
     },
     {
       key: 'owner',
@@ -37,7 +37,7 @@ export default {
     {
       key: 'actions',
       label: '',
-      columnClass: 'gl-w-10p',
+      columnClass: 'gl-w-15p',
     },
   ],
   components: {
@@ -58,7 +58,7 @@ export default {
 </script>
 
 <template>
-  <gl-table-lite :fields="$options.fields" :items="schedules">
+  <gl-table-lite :fields="$options.fields" :items="schedules" stacked="md">
     <template #table-colgroup="{ fields }">
       <col v-for="field in fields" :key="field.key" :class="field.columnClass" />
     </template>

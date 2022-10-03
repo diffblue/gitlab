@@ -24,7 +24,7 @@ export default {
 
 <template>
   <div>
-    <ci-badge v-if="hasPipeline" :status="lastPipelineStatus" />
+    <ci-badge v-if="hasPipeline" :status="lastPipelineStatus" class="gl-vertical-align-middle" />
     <span v-else data-testid="pipeline-schedule-status-text">
       {{ s__('PipelineSchedules|None') }}
     </span>

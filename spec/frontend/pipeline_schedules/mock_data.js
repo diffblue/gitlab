@@ -20,3 +20,5 @@ const {
 export const mockPipelineScheduleNodes = nodes;
 
 export const mockPipelineScheduleAsGuestNodes = guestNodes;
+
+export { mockGetPipelineSchedulesGraphQLResponse };
