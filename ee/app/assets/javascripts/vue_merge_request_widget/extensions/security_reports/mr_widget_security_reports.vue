@@ -98,8 +98,6 @@ export default {
       this.isLoading = value;
     },
 
-    fetchExpandedData() {},
-
     fetchCollapsedData() {
       // TODO: check if gl.mrWidgetData can be safely removed after we migrate to the
       // widget extension.
@@ -125,7 +123,6 @@ export default {
     v-model="vulnerabilities"
     :error-text="$options.i18n.error"
     :fetch-collapsed-data="fetchCollapsedData"
-    :fetch-expanded-data="fetchExpandedData"
     :status-icon-name="statusIconName"
     :widget-name="$options.name"
     :is-collapsible="isCollapsible"
@@ -138,9 +135,6 @@ export default {
         v-if="!isLoading && totalNewVulnerabilities > 0"
         :highlights="highlights"
       />
-    </template>
-    <template #content>
-      <!-- complex content will go here, otherwise we can use the structured :content property. -->
     </template>
   </mr-widget>
 </template>
