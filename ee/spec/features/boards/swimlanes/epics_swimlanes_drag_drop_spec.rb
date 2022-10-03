@@ -20,9 +20,12 @@ RSpec.describe 'epics swimlanes', :js do
   let_it_be(:epic1) { create(:epic, group: group) }
   let_it_be(:epic2) { create(:epic, group: group) }
 
-  before do
+  before_all do
     project.add_maintainer(user)
     group.add_maintainer(user)
+  end
+
+  before do
     stub_licensed_features(epics: true, swimlanes: true)
 
     sign_in(user)
