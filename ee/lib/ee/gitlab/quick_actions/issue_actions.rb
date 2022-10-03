@@ -200,6 +200,24 @@ module EE
                 end
             end
           end
+
+          desc { _('Adds a resource link') }
+          explanation { _('Adds a resource link for this incident.') }
+          params do
+            '<url>, <link description (optional)>'
+          end
+          types Issue
+          condition do
+            quick_action_target.issuable_resource_links_available? &&
+            current_user.can?(:admin_issuable_resource_link, quick_action_target)
+          end
+          parse_params do |resource_link_params|
+            parse_resource_link_params(resource_link_params)
+          end
+          command :link do |link, link_text = nil|
+            result = add_resource_link(link, link_text)
+            @execution_message[:link] = result.message
+          end
         end
 
         private
@@ -243,6 +261,29 @@ module EE
           health_statuses = ::Issue.health_statuses.keys.map(&:downcase)
 
           health_statuses.include?(health_status_param) && health_status_param
+        end
+
+        def parse_resource_link_params(params)
+          return unless params
+
+          link_params = params.split(',', 2)
+          link = link_params[0]
+
+          return unless link
+
+          link_text = link_params[1]&.strip
+          [link, link_text.presence]
+        end
+
+        def add_resource_link(link, link_text)
+          resource_link = ::IncidentManagement::IssuableResourceLinks::CreateService.new(quick_action_target,
+            current_user, { link: link, link_text: link_text, link_type: :slack }).execute
+
+          if resource_link.success?
+            ServiceResponse.success(message: _('Resource link added'))
+          else
+            ServiceResponse.error(message: _('Failed to add a resource link'))
+          end
         end
       end
     end
