@@ -7,17 +7,11 @@ module EE
 
       override :execute
       def execute(user, options = {})
-        result = super(user, options) do |delete_user|
+        super(user, options) do |delete_user|
           mirror_cleanup(delete_user)
           oncall_rotations_cleanup(delete_user)
           escalation_rules_cleanup(delete_user)
         end
-
-        if ::Feature.disabled?(:user_destroy_with_limited_execution_time_worker) && result.try(:destroyed?)
-          log_audit_event(user)
-        end
-
-        result
       end
 
       def mirror_cleanup(user)
@@ -56,14 +50,6 @@ module EE
         mirror_owners -= [user]
 
         mirror_owners.first
-      end
-
-      def log_audit_event(user)
-        ::AuditEventService.new(
-          current_user,
-          user,
-          action: :destroy
-        ).for_user.security_event
       end
     end
   end
