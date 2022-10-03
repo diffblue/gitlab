@@ -10290,7 +10290,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="boardepicchildreniidstartswith"></a>`iidStartsWith` | [`String`](#string) | Filter epics by IID for autocomplete. |
 | <a id="boardepicchildreniids"></a>`iids` | [`[ID!]`](#id) | List of IIDs of epics, e.g., `[1, 2]`. |
 | <a id="boardepicchildrenin"></a>`in` | [`[IssuableSearchableField!]`](#issuablesearchablefield) | Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'. |
-| <a id="boardepicchildrenincludeancestorgroups"></a>`includeAncestorGroups` | [`Boolean`](#boolean) | Include epics from ancestor groups. |
+| <a id="boardepicchildrenincludeancestorgroups"></a>`includeAncestorGroups` | [`Boolean`](#boolean) | Include child epics from ancestor groups. |
 | <a id="boardepicchildrenincludedescendantgroups"></a>`includeDescendantGroups` | [`Boolean`](#boolean) | Include epics from descendant groups. |
 | <a id="boardepicchildrenlabelname"></a>`labelName` | [`[String!]`](#string) | Filter epics by labels. |
 | <a id="boardepicchildrenmilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Filter epics by milestone title, computed from epic's issues. |
@@ -12185,7 +12185,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="epicchildreniidstartswith"></a>`iidStartsWith` | [`String`](#string) | Filter epics by IID for autocomplete. |
 | <a id="epicchildreniids"></a>`iids` | [`[ID!]`](#id) | List of IIDs of epics, e.g., `[1, 2]`. |
 | <a id="epicchildrenin"></a>`in` | [`[IssuableSearchableField!]`](#issuablesearchablefield) | Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'. |
-| <a id="epicchildrenincludeancestorgroups"></a>`includeAncestorGroups` | [`Boolean`](#boolean) | Include epics from ancestor groups. |
+| <a id="epicchildrenincludeancestorgroups"></a>`includeAncestorGroups` | [`Boolean`](#boolean) | Include child epics from ancestor groups. |
 | <a id="epicchildrenincludedescendantgroups"></a>`includeDescendantGroups` | [`Boolean`](#boolean) | Include epics from descendant groups. |
 | <a id="epicchildrenlabelname"></a>`labelName` | [`[String!]`](#string) | Filter epics by labels. |
 | <a id="epicchildrenmilestonetitle"></a>`milestoneTitle` | [`String`](#string) | Filter epics by milestone title, computed from epic's issues. |
