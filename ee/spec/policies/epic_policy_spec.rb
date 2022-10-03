@@ -29,7 +29,8 @@ RSpec.describe EpicPolicy do
   shared_examples 'can only read epics' do
     it 'matches expected permissions' do
       is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
-                                :create_todo, :read_related_epic_link)
+                                :create_todo, :read_related_epic_link,
+                                :read_issuable_participables)
       is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
                                    :create_epic, :admin_related_epic_link,
                                    :set_epic_metadata, :set_confidentiality)
@@ -39,6 +40,7 @@ RSpec.describe EpicPolicy do
   shared_examples 'can manage epics' do
     it 'matches expected permissions' do
       is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
+                                :read_issuable_participables, :read_internal_note,
                                 :update_epic, :admin_epic, :create_epic,
                                 :create_todo, :read_related_epic_link,
                                 :admin_related_epic_link, :set_epic_metadata,
@@ -51,6 +53,7 @@ RSpec.describe EpicPolicy do
       is_expected.to be_disallowed(:read_epic, :read_epic_iid, :update_epic,
                                    :destroy_epic, :admin_epic, :create_epic,
                                    :create_note, :award_emoji, :read_note,
+                                   :read_issuable_participables,
                                    :create_todo, :read_related_epic_link,
                                    :admin_related_epic_link, :set_epic_metadata,
                                    :set_confidentiality)
@@ -62,8 +65,8 @@ RSpec.describe EpicPolicy do
       is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
                                 :admin_epic, :create_epic, :create_note,
                                 :award_emoji, :read_note, :create_todo,
-                                :read_related_epic_link,
-                                :admin_related_epic_link,
+                                :read_issuable_participables, :read_internal_note,
+                                :read_related_epic_link, :admin_related_epic_link,
                                 :set_epic_metadata, :set_confidentiality)
     end
   end
@@ -171,13 +174,13 @@ RSpec.describe EpicPolicy do
     end
 
     context 'when an epic is in a public group' do
-      let(:group) { create(:group, :public) }
+      let_it_be(:group) { create(:group, :public) }
 
       context 'anonymous user' do
         let(:user) { nil }
 
-        it { is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note) }
-        it { is_expected.to be_disallowed(:create_todo) }
+        it { is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note, :read_issuable_participables) }
+        it { is_expected.to be_disallowed(:create_todo, :read_internal_note) }
 
         it_behaves_like 'cannot comment on epics'
       end
@@ -185,6 +188,15 @@ RSpec.describe EpicPolicy do
       context 'user who is not a group member' do
         it_behaves_like 'can only read epics'
         it_behaves_like 'can comment on epics'
+      end
+
+      context 'when user is the epic author' do
+        let_it_be(:epic) { create(:epic, group: group) }
+        let(:user) { epic.author }
+
+        it 'can read internal notes' do
+          is_expected.to be_allowed(:read_internal_note)
+        end
       end
 
       it_behaves_like 'group member permissions'
@@ -263,7 +275,8 @@ RSpec.describe EpicPolicy do
       it 'matches expected permissions' do
         is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
                                   :admin_epic, :create_epic, :create_note,
-                                  :award_emoji, :read_note, :create_todo)
+                                  :award_emoji, :read_note, :create_todo,
+                                  :read_issuable_participables)
         is_expected.to be_disallowed(:read_related_epic_link,
                                      :admin_related_epic_link)
       end

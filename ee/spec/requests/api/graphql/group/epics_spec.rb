@@ -393,6 +393,30 @@ RSpec.describe 'Epics through GroupQuery' do
       end
     end
 
+    context 'when requesting participants' do
+      let_it_be(:epic_c) { create(:epic, group: group) }
+
+      let(:search_params) { { iids: [epic_a.iid.to_s, epic_c.iid.to_s] } }
+      let(:requested_fields) { 'participants { nodes { name } }' }
+
+      before do
+        create(:award_emoji, :upvote, awardable: epic_a)
+        create(:award_emoji, :upvote, awardable: epic_b)
+        create(:award_emoji, :upvote, awardable: epic_c)
+
+        note_with_emoji_a = create(:note_on_epic, noteable: epic_a)
+        note_with_emoji_b = create(:note_on_epic, noteable: epic_b)
+        note_with_emoji_c = create(:note_on_epic, noteable: epic_c)
+
+        create(:award_emoji, :upvote, awardable: note_with_emoji_a)
+        create(:award_emoji, :upvote, awardable: note_with_emoji_b)
+        create(:award_emoji, :upvote, awardable: note_with_emoji_c)
+      end
+
+      # Executes 4 extra queries to fetch participant_attrs
+      include_examples 'N+1 query check', 4
+    end
+
     context 'when award emoji votes' do
       let(:requested_fields) { [:upvotes, :downvotes] }
 
