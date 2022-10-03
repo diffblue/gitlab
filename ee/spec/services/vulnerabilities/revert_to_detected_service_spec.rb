@@ -49,57 +49,66 @@ RSpec.describe Vulnerabilities::RevertToDetectedService do
       project.add_developer(user)
     end
 
-    context 'when vulnerability is dismissed' do
-      let(:vulnerability) { create(:vulnerability, :dismissed, :with_findings, project: project) }
+    context 'when vulnerability state is different from the requested state' do
+      context 'when vulnerability is dismissed' do
+        let(:vulnerability) { create(:vulnerability, :dismissed, :with_findings, project: project) }
 
-      include_examples 'reverts vulnerability'
+        include_examples 'reverts vulnerability'
 
-      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+        context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+          before do
+            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+          end
+
+          it_behaves_like 'removes dismissal feedback from associated findings'
+        end
+      end
+
+      context 'when vulnerability is confirmed' do
+        let(:vulnerability) { create(:vulnerability, :confirmed, :with_findings, project: project) }
+
+        include_examples 'reverts vulnerability'
+
+        context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+          before do
+            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+          end
+
+          it_behaves_like 'removes dismissal feedback from associated findings'
+        end
+      end
+
+      context 'when vulnerability is resolved' do
+        let(:vulnerability) { create(:vulnerability, :resolved, :with_findings, project: project) }
+
+        include_examples 'reverts vulnerability'
+
+        context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+          before do
+            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+          end
+
+          it_behaves_like 'removes dismissal feedback from associated findings'
+        end
+      end
+
+      context 'when security dashboard feature is disabled' do
         before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+          stub_licensed_features(security_dashboard: false)
         end
 
-        it_behaves_like 'removes dismissal feedback from associated findings'
-      end
-    end
-
-    context 'when vulnerability is confirmed' do
-      let(:vulnerability) { create(:vulnerability, :confirmed, :with_findings, project: project) }
-
-      include_examples 'reverts vulnerability'
-
-      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        it 'raises an "access denied" error' do
+          expect { revert_vulnerability_to_detected }.to raise_error(Gitlab::Access::AccessDeniedError)
         end
-
-        it_behaves_like 'removes dismissal feedback from associated findings'
       end
     end
+  end
 
-    context 'when vulnerability is resolved' do
-      let(:vulnerability) { create(:vulnerability, :resolved, :with_findings, project: project) }
+  context 'when vulnerability state is not different from the requested state' do
+    let(:state) { :detected }
+    let(:action) { revert_vulnerability_to_detected }
 
-      include_examples 'reverts vulnerability'
-
-      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-        before do
-          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-        end
-
-        it_behaves_like 'removes dismissal feedback from associated findings'
-      end
-    end
-
-    context 'when security dashboard feature is disabled' do
-      before do
-        stub_licensed_features(security_dashboard: false)
-      end
-
-      it 'raises an "access denied" error' do
-        expect { revert_vulnerability_to_detected }.to raise_error(Gitlab::Access::AccessDeniedError)
-      end
-    end
+    it_behaves_like 'does not create state transition for same state'
   end
 
   describe 'permissions' do
