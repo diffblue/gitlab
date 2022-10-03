@@ -198,17 +198,32 @@ RSpec.describe 'Login' do
     end
   end
 
-  describe 'via Group SAML' do
+  describe 'via Group SAML', :saas do
     let(:saml_provider) { create(:saml_provider) }
     let(:group) { saml_provider.group }
     let(:identity) { create(:group_saml_identity, user: user, saml_provider: saml_provider) }
 
     before do
       stub_licensed_features(group_saml: true)
+      mock_group_saml(uid: identity.extern_uid)
     end
 
     around do |example|
       with_omniauth_full_host { example.run }
+    end
+
+    context 'with enforced terms' do
+      include TermsHelper
+
+      let(:user) { create(:user) }
+
+      it 'shows the terms disclaimer' do
+        enforce_terms
+
+        visit sso_group_saml_providers_path(group)
+
+        expect(page).to have_content('By clicking Sign in or registering through a third party you accept the GitLab Terms of Use and acknowledge the Privacy Policy and Cookie Policy')
+      end
     end
 
     context 'with U2F two factor', :js do
@@ -216,7 +231,6 @@ RSpec.describe 'Login' do
 
       before do
         stub_feature_flags(webauthn: false)
-        mock_group_saml(uid: identity.extern_uid)
       end
 
       it 'shows U2F prompt after SAML' do
