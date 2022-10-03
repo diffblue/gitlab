@@ -178,7 +178,7 @@ RSpec.describe Projects::UpdateMirrorService do
 
     context 'when tags on mirror are modified' do
       let(:mirror_project) { create(:project, :repository) }
-      let(:mirror_path) { File.join(TestEnv.repos_path, mirror_project.repository.relative_path) }
+      let(:mirror_path) { Gitlab::GitalyClient::StorageSettings.allow_disk_access { File.join(TestEnv.repos_path, mirror_project.repository.relative_path) } }
       let!(:mirror_modified_tag_sha) { modify_tag(mirror_project.repository, 'v1.0.0') }
       let!(:mirror_modified_branch_sha) { modify_branch(mirror_project.repository, 'feature') }
       let(:project) do
