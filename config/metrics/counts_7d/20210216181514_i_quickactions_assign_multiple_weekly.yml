@@ -15,6 +15,7 @@ options:
   events:
   - i_quickactions_assign_multiple
 distribution:
+- ce
 - ee
 tier:
 - premium
