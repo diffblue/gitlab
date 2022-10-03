@@ -481,7 +481,7 @@ RSpec.describe GroupPolicy do
         end
 
         after(:all) do
-          License.reset_cache_keys
+          License.reset_current
         end
 
         context 'without an enabled SAML provider' do
