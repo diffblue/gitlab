@@ -109,10 +109,11 @@ RSpec.describe RequirementsManagement::Requirement do
       end
     end
 
-    describe '.with_last_test_report_state' do
+    it_behaves_like 'a collection filtered by test reports state' do
       let_it_be(:requirement1) { create(:work_item, :requirement).requirement }
       let_it_be(:requirement2) { create(:work_item, :requirement).requirement }
       let_it_be(:requirement3) { create(:work_item, :requirement).requirement }
+      let_it_be(:requirement4) { create(:work_item, :requirement).requirement }
 
       before do
         create(:test_report, requirement_issue: requirement1.requirement_issue, state: :passed)
@@ -120,20 +121,6 @@ RSpec.describe RequirementsManagement::Requirement do
         create(:test_report, requirement_issue: requirement2.requirement_issue, state: :failed)
         create(:test_report, requirement_issue: requirement2.requirement_issue, state: :passed)
         create(:test_report, requirement_issue: requirement3.requirement_issue, state: :passed)
-      end
-
-      subject { described_class.with_last_test_report_state(state) }
-
-      context 'for passed state' do
-        let(:state) { 'passed' }
-
-        it { is_expected.to contain_exactly(requirement2, requirement3) }
-      end
-
-      context 'for failed state' do
-        let(:state) { 'failed' }
-
-        it { is_expected.to contain_exactly(requirement1) }
       end
     end
 
@@ -182,19 +169,6 @@ RSpec.describe RequirementsManagement::Requirement do
 
         it { is_expected.to eq([requirement1, requirement2, requirement3]) }
       end
-    end
-  end
-
-  describe '.without_test_reports' do
-    let_it_be(:requirement1) { create(:work_item, :requirement).requirement }
-    let_it_be(:requirement2) { create(:work_item, :requirement).requirement }
-
-    before do
-      create(:test_report, requirement_issue: requirement2.requirement_issue, state: :passed)
-    end
-
-    it 'returns requirements without test reports' do
-      expect(described_class.without_test_reports).to contain_exactly(requirement1)
     end
   end
 

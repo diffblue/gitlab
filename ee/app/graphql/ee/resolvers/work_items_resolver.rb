@@ -6,6 +6,12 @@ module EE
       extend ActiveSupport::Concern
       extend ::Gitlab::Utils::Override
 
+      prepended do
+        argument :status_widget, ::Types::WorkItems::Widgets::StatusFilterInputType,
+                 required: false,
+                 description: 'Input for status widget filter.'
+      end
+
       private
 
       override :widget_preloads

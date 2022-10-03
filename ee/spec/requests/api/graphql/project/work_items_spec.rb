@@ -85,6 +85,19 @@ RSpec.describe 'getting a work item list for a project' do
 
         expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
       end
+
+      context 'when filtering' do
+        context 'with status widget' do
+          let(:item_filter_params) { 'statusWidget: { status: FAILED }' }
+
+          it 'filters by status argument' do
+            post_graphql(query, current_user: current_user)
+
+            expect(response).to have_gitlab_http_status(:success)
+            expect(item_ids).to contain_exactly(work_item2.to_global_id.to_s)
+          end
+        end
+      end
     end
   end
 end

@@ -12,6 +12,7 @@ module RequirementsManagement
     include Sortable
     include Gitlab::SQL::Pattern
     include IgnorableColumns
+    include FilterableByTestReports
 
     ignore_columns(
       %i[
@@ -91,26 +92,6 @@ module RequirementsManagement
       end
     end
 
-    # Used to filter requirements by latest test report state
-    scope :include_last_test_report_with_state, -> do
-      joins(
-        "INNER JOIN LATERAL (
-           SELECT DISTINCT ON (issue_id) issue_id, state
-           FROM requirements_management_test_reports
-           WHERE issue_id = requirements.issue_id
-           ORDER BY issue_id, created_at DESC LIMIT 1
-        ) AS test_reports ON true"
-      )
-    end
-
-    scope :with_last_test_report_state, -> (state) do
-      include_last_test_report_with_state.where( test_reports: { state: state } )
-    end
-
-    scope :without_test_reports, -> do
-      left_joins(:test_reports).where(requirements_management_test_reports: { issue_id: nil })
-    end
-
     class << self
       # Searches for records with a matching title.
       #
@@ -130,6 +111,10 @@ module RequirementsManagement
       def to_issue_state_id(state)
         name = STATE_MAP.invert[state.to_s]
         Issue.available_states[name]
+      end
+
+      def test_reports_join_column
+        'requirements.issue_id'
       end
     end
 
