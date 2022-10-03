@@ -30,8 +30,6 @@ button[disabled] {
 }
 
 .diff-file:not(.discussion-wrapper) .note.draft-note {
-  margin: 0 0 $gl-padding;
-  padding: $gl-padding-8 $gl-padding-8 $gl-padding-8 $gl-padding;
   border: 0;
   background: $orange-50;
 
