@@ -213,6 +213,7 @@ module EE
     def over_storage_limit?
       ::Namespaces::Storage::RootSize.new(root_ancestor).above_size_limit?
     end
+    alias_method :read_only?, :over_storage_limit?
 
     def total_repository_size_excess
       strong_memoize(:total_repository_size_excess) do

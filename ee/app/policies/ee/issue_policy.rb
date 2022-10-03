@@ -5,9 +5,9 @@ module EE
     extend ActiveSupport::Concern
 
     prepended do
-      condition(:over_storage_limit, scope: :subject) { @subject.project.namespace.over_storage_limit? }
+      condition(:read_only, scope: :subject) { @subject.project.namespace.read_only? }
 
-      rule { over_storage_limit }.policy do
+      rule { read_only }.policy do
         prevent :create_issue
         prevent :update_issue
         prevent :read_issue_iid

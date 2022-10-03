@@ -24,21 +24,21 @@ RSpec.describe Namespaces::UserNamespacePolicy do
     end
   end
 
-  context ':over_storage_limit' do
+  context ':read_only' do
     let(:current_user) { owner }
 
     before do
-      allow(namespace).to receive(:over_storage_limit?).and_return(over_storage_limit)
+      allow(namespace).to receive(:read_only?).and_return(read_only)
     end
 
-    context 'when the namespace has exceeded its storage limit' do
-      let(:over_storage_limit) { true }
+    context 'when the namespace is read only' do
+      let(:read_only) { true }
 
       it { is_expected.to(be_disallowed(:create_projects)) }
     end
 
-    context 'when the namespace has not exceeded its storage limit' do
-      let(:over_storage_limit) { false }
+    context 'when the namespace is not read only' do
+      let(:read_only) { false }
 
       it { is_expected.to(be_allowed(:create_projects)) }
     end
