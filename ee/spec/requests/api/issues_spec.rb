@@ -229,6 +229,18 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
           expect_paginated_array_response([issue2.id, issue1.id])
         end
 
+        it 'returns issues with any health_status' do
+          get api('/issues', user), params: { health_status: 'any', scope: 'all' }
+
+          expect_paginated_array_response([issue3.id, issue2.id, issue1.id])
+        end
+
+        it 'returns issues with no health_status' do
+          get api('/issues', user), params: { health_status: 'none', scope: 'all' }
+
+          expect_paginated_array_response([issue.id])
+        end
+
         it 'returns bad request when unsupported value is supplied' do
           get api('/issues', user), params: { health_status: 'nonsense', scope: 'all' }
 
