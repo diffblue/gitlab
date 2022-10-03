@@ -17,59 +17,68 @@ RSpec.describe Vulnerabilities::ResolveService do
 
   subject(:resolve_vulnerability) { service.execute }
 
-  context 'with an authorized user with proper permissions' do
-    before do
-      project.add_developer(user)
-    end
-
-    it_behaves_like 'calls vulnerability statistics utility services in order'
-
-    context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+  context 'when vulnerability state is different from the requested state' do
+    context 'with an authorized user with proper permissions' do
       before do
-        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        project.add_developer(user)
       end
 
-      it_behaves_like 'removes dismissal feedback from associated findings'
-    end
+      it_behaves_like 'calls vulnerability statistics utility services in order'
 
-    it 'resolves a vulnerability' do
-      freeze_time do
+      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
+
+        it_behaves_like 'removes dismissal feedback from associated findings'
+      end
+
+      it 'resolves a vulnerability' do
+        freeze_time do
+          resolve_vulnerability
+
+          expect(vulnerability.reload).to(
+            have_attributes(state: 'resolved', resolved_by: user, resolved_at: be_like_time(Time.current)))
+        end
+      end
+
+      it 'creates note' do
+        expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
+
         resolve_vulnerability
-
-        expect(vulnerability.reload).to(
-          have_attributes(state: 'resolved', resolved_by: user, resolved_at: be_like_time(Time.current)))
-      end
-    end
-
-    it 'creates note' do
-      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
-
-      resolve_vulnerability
-    end
-
-    it 'creates state transition entry to `resolved`' do
-      expect { resolve_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
-        .from(0)
-        .to(1)
-      expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
-      expect(::Vulnerabilities::StateTransition.last.to_state).to eq('resolved')
-    end
-
-    it 'does not remove the feedback from associated findings' do
-      expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
-
-      resolve_vulnerability
-    end
-
-    context 'when security dashboard feature is disabled' do
-      before do
-        stub_licensed_features(security_dashboard: false)
       end
 
-      it 'raises an "access denied" error' do
-        expect { resolve_vulnerability }.to raise_error(Gitlab::Access::AccessDeniedError)
+      it 'creates state transition entry to `resolved`' do
+        expect { resolve_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
+          .from(0)
+          .to(1)
+        expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
+        expect(::Vulnerabilities::StateTransition.last.to_state).to eq('resolved')
+      end
+
+      it 'does not remove the feedback from associated findings' do
+        expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
+
+        resolve_vulnerability
+      end
+
+      context 'when security dashboard feature is disabled' do
+        before do
+          stub_licensed_features(security_dashboard: false)
+        end
+
+        it 'raises an "access denied" error' do
+          expect { resolve_vulnerability }.to raise_error(Gitlab::Access::AccessDeniedError)
+        end
       end
     end
+  end
+
+  context 'when vulnerability state is not different from the requested state' do
+    let(:state) { :resolved }
+    let(:action) { resolve_vulnerability }
+
+    it_behaves_like 'does not create state transition for same state'
   end
 
   describe 'permissions' do

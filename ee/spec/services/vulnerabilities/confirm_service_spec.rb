@@ -22,54 +22,63 @@ RSpec.describe Vulnerabilities::ConfirmService do
       project.add_developer(user)
     end
 
-    it_behaves_like 'calls vulnerability statistics utility services in order'
+    context 'when vulnerability state is different from the requested state' do
+      it_behaves_like 'calls vulnerability statistics utility services in order'
 
-    context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
-      before do
-        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+      context 'when feature flag deprecate_vulnerabilities_feedback is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
+
+        it_behaves_like 'removes dismissal feedback from associated findings'
       end
 
-      it_behaves_like 'removes dismissal feedback from associated findings'
-    end
+      it 'confirms a vulnerability' do
+        freeze_time do
+          confirm_vulnerability
 
-    it 'confirms a vulnerability' do
-      freeze_time do
+          expect(vulnerability.reload).to(
+            have_attributes(state: 'confirmed', confirmed_by: user, confirmed_at: be_like_time(Time.current)))
+        end
+      end
+
+      it 'creates note' do
+        expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
+
         confirm_vulnerability
-
-        expect(vulnerability.reload).to(
-          have_attributes(state: 'confirmed', confirmed_by: user, confirmed_at: be_like_time(Time.current)))
-      end
-    end
-
-    it 'creates note' do
-      expect(SystemNoteService).to receive(:change_vulnerability_state).with(vulnerability, user)
-
-      confirm_vulnerability
-    end
-
-    it 'creates state transition entry to `confirmed`' do
-      expect { confirm_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
-        .from(0)
-        .to(1)
-      expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
-      expect(::Vulnerabilities::StateTransition.last.to_state).to eq('confirmed')
-    end
-
-    it 'does not remove the feedback from associated findings' do
-      expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
-
-      confirm_vulnerability
-    end
-
-    context 'when security dashboard feature is disabled' do
-      before do
-        stub_licensed_features(security_dashboard: false)
       end
 
-      it 'raises an "access denied" error' do
-        expect { confirm_vulnerability }.to raise_error(Gitlab::Access::AccessDeniedError)
+      it 'creates state transition entry to `confirmed`' do
+        expect { confirm_vulnerability }.to change { ::Vulnerabilities::StateTransition.count }
+          .from(0)
+          .to(1)
+        expect(::Vulnerabilities::StateTransition.last.vulnerability_id).to eq(vulnerability.id)
+        expect(::Vulnerabilities::StateTransition.last.to_state).to eq('confirmed')
+      end
+
+      it 'does not remove the feedback from associated findings' do
+        expect(Vulnerabilities::DestroyDismissalFeedbackService).not_to receive(:new).with(user, vulnerability)
+
+        confirm_vulnerability
+      end
+
+      context 'when security dashboard feature is disabled' do
+        before do
+          stub_licensed_features(security_dashboard: false)
+        end
+
+        it 'raises an "access denied" error' do
+          expect { confirm_vulnerability }.to raise_error(Gitlab::Access::AccessDeniedError)
+        end
       end
     end
+  end
+
+  context 'when vulnerability state is not different from the requested state' do
+    let(:state) { :confirmed }
+    let(:action) { confirm_vulnerability }
+
+    it_behaves_like 'does not create state transition for same state'
   end
 
   describe 'permissions' do

@@ -16,21 +16,23 @@ module Vulnerabilities
     def execute
       raise Gitlab::Access::AccessDeniedError unless authorized?
 
-      update_vulnerability_with(state: Vulnerability.states[:dismissed], dismissed_by: @user, dismissed_at: Time.current) do
-        Vulnerabilities::StateTransition.create(
-          vulnerability: @vulnerability,
-          from_state: @vulnerability.state,
-          to_state: Vulnerability.states[:dismissed],
-          comment: @comment,
-          dismissal_reason: @dismissal_reason
-        )
+      unless @vulnerability.dismissed?
+        update_vulnerability_with(state: :dismissed, dismissed_by: @user, dismissed_at: Time.current) do
+          Vulnerabilities::StateTransition.create!(
+            vulnerability: @vulnerability,
+            from_state: @vulnerability.state,
+            to_state: :dismissed,
+            comment: @comment,
+            dismissal_reason: @dismissal_reason
+          )
 
-        if dismiss_findings && Feature.disabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
-          result = dismiss_vulnerability_findings
+          if dismiss_findings && Feature.disabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
+            result = dismiss_vulnerability_findings
 
-          unless result.ok?
-            handle_finding_dismissal_error(result.finding, result.message)
-            raise ActiveRecord::Rollback
+            unless result.ok?
+              handle_finding_dismissal_error(result.finding, result.message)
+              raise ActiveRecord::Rollback
+            end
           end
         end
       end
