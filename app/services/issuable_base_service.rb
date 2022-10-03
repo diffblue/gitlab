@@ -154,10 +154,13 @@ class IssuableBaseService < ::BaseProjectService
   end
 
   def filter_escalation_status(issuable)
+    status_params = params.delete(:escalation_status) || {}
+    status_params.permit! if status_params.respond_to?(:permit!)
+
     result = ::IncidentManagement::IssuableEscalationStatuses::PrepareUpdateService.new(
       issuable,
       current_user,
-      params.delete(:escalation_status)
+      status_params
     ).execute
 
     return unless result.success? && result[:escalation_status].present?
