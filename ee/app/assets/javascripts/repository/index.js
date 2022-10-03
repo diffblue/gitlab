@@ -4,7 +4,7 @@ import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import initTree from '~/repository';
-import CodeOwners from './components/code_owners.vue';
+import CodeOwners from '../vue_shared/components/code_owners/code_owners.vue';
 
 export default () => {
   const { router, data, apolloProvider, projectPath } = initTree();
