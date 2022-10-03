@@ -60,85 +60,85 @@ FactoryBot.define do
 
     trait :metrics_alternate do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :metrics_alternate, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :metrics_alternate, job: build)
       end
     end
 
     trait :sast_feature_branch do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :sast_feature_branch, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :sast_feature_branch, job: build)
       end
     end
 
     trait :secret_detection_feature_branch do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :secret_detection_feature_branch, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :secret_detection_feature_branch, job: build)
       end
     end
 
     trait :dast_feature_branch do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :dast_feature_branch, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :dast_feature_branch, job: build)
       end
     end
 
     trait :container_scanning_feature_branch do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :container_scanning_feature_branch, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :container_scanning_feature_branch, job: build)
       end
     end
 
     trait :corrupted_container_scanning_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :corrupted_container_scanning_report, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :corrupted_container_scanning_report, job: build)
       end
     end
 
     trait :cluster_image_scanning_feature_branch do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :cluster_image_scanning_feature_branch, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :cluster_image_scanning_feature_branch, job: build)
       end
     end
 
     trait :corrupted_cluster_image_scanning_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :corrupted_cluster_image_scanning_report, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :corrupted_cluster_image_scanning_report, job: build)
       end
     end
 
     trait :dependency_scanning_feature_branch do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :dependency_scanning_feature_branch, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :dependency_scanning_feature_branch, job: build)
       end
     end
 
     trait :dependency_scanning_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :dependency_scanning_report, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :dependency_scanning_report, job: build)
       end
     end
 
     trait :corrupted_dependency_scanning_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :corrupted_dependency_scanning_report, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :corrupted_dependency_scanning_report, job: build)
       end
     end
 
     trait :license_scanning_feature_branch do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :license_scanning_feature_branch, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :license_scanning_feature_branch, job: build)
       end
     end
 
     trait :corrupted_license_scanning_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :license_scan, :with_corrupted_data, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :license_scan, :with_corrupted_data, job: build)
       end
     end
 
     trait :low_severity_dast_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :low_severity_dast_report, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :low_severity_dast_report, job: build)
       end
     end
 
@@ -158,25 +158,25 @@ FactoryBot.define do
 
     trait :requirements_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :all_passing_requirements, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :all_passing_requirements, job: build)
       end
     end
 
     trait :coverage_fuzzing_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :coverage_fuzzing, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :coverage_fuzzing, job: build)
       end
     end
 
     trait :api_fuzzing_report do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :api_fuzzing, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :api_fuzzing, job: build)
       end
     end
 
     trait :cyclonedx do
       after(:build) do |build|
-        build.job_artifacts << create(:ee_ci_job_artifact, :cyclonedx, job: build)
+        build.job_artifacts << build(:ee_ci_job_artifact, :cyclonedx, job: build)
       end
     end
   end

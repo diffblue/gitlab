@@ -6,8 +6,10 @@ RSpec.describe Ci::JobArtifact do
   using RSpec::Parameterized::TableSyntax
   include EE::GeoHelpers
 
+  let_it_be(:job) { create(:ci_build) }
+
   describe '#save_verification_details' do
-    let(:verifiable_model_record) { build(:ci_job_artifact, :trace) }
+    let(:verifiable_model_record) { build(:ci_job_artifact, :trace, job: job) }
     let(:verification_state_table_class) { verifiable_model_record.class.verification_state_table_class }
 
     context 'when direct upload is enabled for trace artifacts' do
@@ -36,8 +38,8 @@ RSpec.describe Ci::JobArtifact do
       stub_artifacts_object_storage
     end
 
-    let(:verifiable_model_record) { build(:ci_job_artifact) } # add extra params if needed to make sure the record is included in `available_verifiables`
-    let(:unverifiable_model_record) { build(:ci_job_artifact, :remote_store) } # add extra params if needed to make sure the record is NOT included in `available_verifiables`
+    let(:verifiable_model_record) { build(:ci_job_artifact, job: job) } # add extra params if needed to make sure the record is included in `available_verifiables`
+    let(:unverifiable_model_record) { build(:ci_job_artifact, :remote_store, job: job) } # add extra params if needed to make sure the record is NOT included in `available_verifiables`
   end
 
   describe '#destroy' do
@@ -313,7 +315,7 @@ RSpec.describe Ci::JobArtifact do
   end
 
   describe '#security_report' do
-    let(:job_artifact) { create(:ee_ci_job_artifact, :sast) }
+    let(:job_artifact) { create(:ee_ci_job_artifact, :sast, job: job) }
     let(:validate) { false }
     let(:security_report) { job_artifact.security_report(validate: validate) }
 
@@ -334,7 +336,7 @@ RSpec.describe Ci::JobArtifact do
       end
 
       with_them do
-        let(:job_artifact) { create(:ee_ci_job_artifact, file_type) }
+        let(:job_artifact) { create(:ee_ci_job_artifact, file_type, job: job) }
 
         subject { security_report.is_a?(::Gitlab::Ci::Reports::Security::Report) }
 
@@ -343,7 +345,7 @@ RSpec.describe Ci::JobArtifact do
     end
 
     context 'when the parsing fails' do
-      let(:job_artifact) { create(:ee_ci_job_artifact, :sast) }
+      let(:job_artifact) { create(:ee_ci_job_artifact, :sast, job: job) }
       let(:errors) { security_report.errors }
 
       before do
@@ -386,7 +388,7 @@ RSpec.describe Ci::JobArtifact do
   end
 
   describe '#clear_security_report' do
-    let(:job_artifact) { create(:ee_ci_job_artifact, :sast) }
+    let(:job_artifact) { create(:ee_ci_job_artifact, :sast, job: job) }
 
     subject(:clear_security_report) { job_artifact.clear_security_report }
 

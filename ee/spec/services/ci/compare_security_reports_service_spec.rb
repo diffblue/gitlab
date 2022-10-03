@@ -69,8 +69,8 @@ RSpec.describe Ci::CompareSecurityReportsService do
       end
 
       context 'when head pipeline has corrupted dependency scanning vulnerability reports' do
-        let_it_be(:base_pipeline) { build(:ee_ci_pipeline, :with_corrupted_dependency_scanning_report, project: project) }
-        let_it_be(:head_pipeline) { build(:ee_ci_pipeline, :with_corrupted_dependency_scanning_report, project: project) }
+        let_it_be(:base_pipeline) { create(:ee_ci_pipeline, :with_corrupted_dependency_scanning_report, project: project) }
+        let_it_be(:head_pipeline) { create(:ee_ci_pipeline, :with_corrupted_dependency_scanning_report, project: project) }
 
         it 'returns status and error message' do
           expect(subject[:status]).to eq(:error)
