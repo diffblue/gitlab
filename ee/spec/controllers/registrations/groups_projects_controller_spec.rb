@@ -310,8 +310,9 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
               end
 
               specify do
-                expect(GitlabSubscriptions::ApplyTrialService).to receive(:execute).with(anything)
-                                                                                   .and_return(ServiceResponse.success)
+                expect(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:execute)
+                                                                            .with(anything)
+                                                                            .and_return(ServiceResponse.success)
 
                 is_expected.to redirect_to(success_path)
               end
@@ -362,13 +363,13 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
               allow(service).to receive(:execute).and_return(group)
             end
 
-            expect(GitlabSubscriptions::ApplyTrialService).to receive(:execute) # rubocop:disable RSpec/ExpectInHook
-                                                                .with(
-                                                                  {
-                                                                    uid: user.id,
-                                                                    trial_user_information: trial_user_information
-                                                                  }
-                                                                ).and_return(result)
+            expect(GitlabSubscriptions::Trials::ApplyTrialService) # rubocop:disable RSpec/ExpectInHook
+              .to receive(:execute).with(
+                {
+                  uid: user.id,
+                  trial_user_information: trial_user_information
+                }
+              ).and_return(result)
           end
 
           it 'applies a trial' do

@@ -14,10 +14,10 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyTrialWorker, type: :worker do
       let(:trial_user_information) { { 'namespace_id' => namespace.id } }
 
       context 'when trial is successfully applied' do
-        let(:service) { instance_double(GitlabSubscriptions::ApplyTrialService) }
+        let(:service) { instance_double(GitlabSubscriptions::Trials::ApplyTrialService) }
 
         before do
-          allow(GitlabSubscriptions::ApplyTrialService).to receive(:new).and_return(service)
+          allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service)
           allow(service).to receive(:execute).and_return(ServiceResponse.success)
         end
 
@@ -32,7 +32,10 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyTrialWorker, type: :worker do
       end
 
       context 'when not successful in generating a trial' do
-        let(:service) { instance_double(GitlabSubscriptions::ApplyTrialService, valid_to_generate_trial?: true) }
+        let(:service) do
+          instance_double(GitlabSubscriptions::Trials::ApplyTrialService, valid_to_generate_trial?: true)
+        end
+
         let(:result) { ServiceResponse.error(message: '_some_error_') }
         let(:log_params) do
           {
@@ -43,7 +46,7 @@ RSpec.describe GitlabSubscriptions::Trials::ApplyTrialWorker, type: :worker do
         end
 
         before do
-          allow(GitlabSubscriptions::ApplyTrialService)
+          allow(GitlabSubscriptions::Trials::ApplyTrialService)
             .to receive(:new)
                   .with(uid: user.id, trial_user_information: trial_user_information.deep_symbolize_keys)
                   .and_return(service)

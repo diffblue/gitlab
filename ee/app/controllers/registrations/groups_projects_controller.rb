@@ -167,7 +167,7 @@ module Registrations
           trial_user_information: trial_user_information
         }
 
-        result = GitlabSubscriptions::ApplyTrialService.execute(apply_trial_params)
+        result = GitlabSubscriptions::Trials::ApplyTrialService.execute(apply_trial_params)
         trial_errors = result.errors
 
         Gitlab::AppLogger.error "Failed to apply a trial with #{trial_errors}" if trial_errors.present?

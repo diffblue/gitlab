@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::ApplyTrialService do
+RSpec.describe GitlabSubscriptions::Trials::ApplyTrialService do
   let_it_be(:namespace) { create(:namespace) }
 
   let(:user) { namespace.owner }
