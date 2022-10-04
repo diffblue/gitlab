@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
-  include GitHelpers
-
   include_context 'push rules checks context'
 
   describe '#validate!' do
@@ -300,20 +298,25 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
         #
         # That means only the merge commit should be validated.
         let(:newrev) do
-          rugged = rugged_repo(project.repository)
           base = oldrev
           to_merge = '2d1096e3a0ecf1d2baf6dee036cc80775d4940ba'
 
-          merge_index = rugged.merge_commits(base, to_merge)
-          options = {
-            parents: [base, to_merge],
-            tree: merge_index.write_tree(rugged),
-            message: 'The merge commit',
-            author: { name: user.name, email: user.email, time: Time.now },
-            committer: { name: user.name, email: user.email, time: Time.now }
-          }
+          merge_id = project.repository.raw.merge_to_ref(
+            user,
+            branch: base,
+            first_parent_ref: base,
+            source_sha: to_merge,
+            target_ref: 'refs/merge-requests/test',
+            message: 'The merge commit'
+          )
 
-          Rugged::Commit.create(rugged, options)
+          # We are trying to simulate what the repository would look like
+          # during the pre-receive hook, before the actual ref is
+          # written/created. Repository#new_commits relies on there being no
+          # ref pointing to the merge commit.
+          project.repository.delete_refs('refs/merge-requests/test')
+
+          merge_id
         end
 
         before do
