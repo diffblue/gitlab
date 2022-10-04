@@ -15,9 +15,13 @@ module QA
                 include Page::Component::LicenseManagement
                 include Page::Component::SecureReport
 
+                view 'ee/app/assets/javascripts/pipelines/components/pipeline_tabs.vue' do
+                  element :licenses_counter
+                end
+
+                # TODO: Remove once pipeline_tabs_vue feature flag is enabled by default
+                # https://gitlab.com/gitlab-org/gitlab/-/issues/353118
                 view 'ee/app/views/projects/pipelines/_tabs_holder.html.haml' do
-                  element :security_tab
-                  element :licenses_tab
                   element :licenses_counter
                 end
 
@@ -29,13 +33,13 @@ module QA
 
             def click_on_security
               retry_until(sleep_interval: 3, message: "Security report didn't open") do
-                click_element(:security_tab)
+                click_link('Security')
                 has_element?(:security_report_content)
               end
             end
 
             def click_on_licenses
-              click_element(:licenses_tab)
+              click_link('Licenses')
             end
 
             def has_approved_license?(name)
