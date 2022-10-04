@@ -110,9 +110,14 @@ class IterationsFinder
 
   # rubocop: disable CodeReuse/ActiveRecord
   def order(items)
-    return items.sort_by_cadence_id_and_due_date_asc if params[:sort].present? && params[:sort] == :cadence_and_due_date_asc
-
-    items.reorder(:due_date).order(:title, { id: :asc })
+    case params[:sort]
+    when :cadence_and_due_date_asc
+      items.sort_by_cadence_id_and_due_date_asc
+    when :cadence_and_due_date_desc
+      items.sort_by_cadence_id_and_due_date_desc
+    else
+      items.reorder(:due_date).order(:title, { id: :asc })
+    end
   end
   # rubocop: enable CodeReuse/ActiveRecord
 

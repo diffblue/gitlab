@@ -11,7 +11,7 @@ RSpec.describe 'getting iterations' do
   let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 2, title: 'two week iterations') }
 
-  let_it_be(:current_group_iteration) { create(:iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence1, title: 'one test', start_date: 1.day.ago, due_date: 1.week.from_now) }
+  let_it_be(:current_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence1, title: 'one test', start_date: 1.day.ago, due_date: 1.week.from_now) }
   let_it_be(:upcoming_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence2, start_date: 1.day.from_now, due_date: 2.days.from_now) }
   let_it_be(:closed_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence1, start_date: 3.weeks.ago, due_date: 1.week.ago) }
 
@@ -99,6 +99,16 @@ RSpec.describe 'getting iterations' do
         post_graphql(iterations_query(group, "state: closed"), current_user: user)
 
         expect_iterations_response(closed_group_iteration)
+      end
+
+      context 'when sorting by cadence and due date DESC' do
+        let_it_be(:another_closed_iteration) { create(:iteration, iterations_cadence: iteration_cadence1, start_date: 5.weeks.ago, due_date: 4.weeks.ago) }
+
+        it 'returns `closed` iteration sorted by due date DESC' do
+          post_graphql(iterations_query(group, "state: closed, sort: CADENCE_AND_DUE_DATE_DESC"), current_user: user)
+
+          expect_iterations_response(another_closed_iteration, closed_group_iteration)
+        end
       end
     end
   end

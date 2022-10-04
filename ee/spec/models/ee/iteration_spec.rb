@@ -638,6 +638,12 @@ RSpec.describe Iteration do
 
       it { is_expected.to eq([plan_iteration2, plan_iteration1, product_iteration, cadence_iteration]) }
     end
+
+    describe '.sort_by_cadence_id_and_due_date_desc' do
+      subject { described_class.all.sort_by_cadence_id_and_due_date_desc }
+
+      it { is_expected.to eq([plan_iteration1, plan_iteration2, product_iteration, cadence_iteration]) }
+    end
   end
 
   context 'time scopes' do
