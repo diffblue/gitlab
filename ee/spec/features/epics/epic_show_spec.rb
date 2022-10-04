@@ -114,7 +114,7 @@ RSpec.describe 'Epic show', :js do
       end
 
       it 'does not show thread filter dropdown' do
-        expect(find('.js-noteable-awards')).to have_selector('.js-discussion-filter-container', visible: false)
+        expect(find('#notes')).to have_selector('.js-discussion-filter-container', visible: false)
       end
 
       it 'has no limit on container width', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/299440' do
@@ -186,7 +186,7 @@ RSpec.describe 'Epic show', :js do
     end
 
     it 'shows epic overview preferences dropdown' do
-      page.within('.js-noteable-awards') do
+      page.within('#notes') do
         expect(find('#discussion-preferences-dropdown')).to have_content('Sort or filter')
       end
     end

@@ -15,11 +15,10 @@ module EE
       epic_id.to_i != issue.epic_issue.epic_id
     end
 
+    override :show_timeline_view_toggle?
     def show_timeline_view_toggle?(issue)
       issue.incident? && issue.project.feature_available?(:incident_timeline_view)
     end
-
-    # OVERRIDES
 
     override :scoped_labels_available?
     def scoped_labels_available?(parent)
