@@ -31,27 +31,8 @@ RSpec.describe API::MemberRoles, api: true do
 
   let_it_be(:group_id) { group_with_member_roles.id }
 
-  shared_examples 'fails for non-root group' do
-    context 'with non-root group' do
-      let(:group_id) { child_group.id }
-      let(:current_user) { owner }
-
-      before do
-        stub_feature_flags(customizable_roles: [child_group])
-      end
-
-      it 'returns bad request' do
-        subject
-
-        expect(response).to have_gitlab_http_status(:bad_request)
-      end
-    end
-  end
-
   describe "GET /groups/:id/member_roles" do
     subject { get api("/groups/#{group_id}/member_roles", current_user) }
-
-    it_behaves_like 'fails for non-root group'
 
     context "when unauthorized" do
       it "returns forbidden error" do
@@ -120,8 +101,6 @@ RSpec.describe API::MemberRoles, api: true do
     let_it_be(:params) { { base_access_level: 40, download_code: 1 } }
 
     subject { post api("/groups/#{group_id}/member_roles", current_user), params: params }
-
-    it_behaves_like 'fails for non-root group'
 
     context "when feature flag is enabled" do
       before do
@@ -223,8 +202,6 @@ RSpec.describe API::MemberRoles, api: true do
     let_it_be(:member_role_id) { member_role_1.id }
 
     subject { delete api("/groups/#{group_id}/member_roles/#{member_role_id}", current_user) }
-
-    it_behaves_like 'fails for non-root group'
 
     context "when feature flag is enabled" do
       before do

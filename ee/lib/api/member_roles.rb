@@ -5,7 +5,6 @@ module API
     before { authenticate! }
     before { authorize_admin_group }
     before { not_found! unless Feature.enabled?(:customizable_roles, user_group) }
-    before { bad_request! unless user_group.root? }
 
     feature_category :authentication_and_authorization
 
