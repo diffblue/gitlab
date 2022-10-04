@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking just me and joining a project', :js, :saas, :saas_registration do
+RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas, :saas_registration do
   context 'when project_list_filter_bar feature flag is enabled' do
     before do
       stub_feature_flags(project_list_filter_bar: true)
@@ -66,8 +66,7 @@ RSpec.describe 'Standard flow for user picking just me and joining a project', :
     select 'A different reason', from: 'user_registration_objective'
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
-    choose 'Just me'
-    check 'I\'d like to receive updates about GitLab via email'
+    choose 'My company or team'
     choose 'Join a project'
   end
 
@@ -81,10 +80,12 @@ RSpec.describe 'Standard flow for user picking just me and joining a project', :
       expect(page).to have_content('I\'m signing up for GitLab because:')
       expect(page).to have_content('Who will be using GitLab?')
       expect(page).to have_content('What would you like to do?')
+      expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
   end
 
   def expect_to_be_on_projects_dashboard
+    # we set email opted in at the controller layer if setup for company is true
     expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
 
     expect(page).to have_content 'This user doesn\'t have any personal projects'
