@@ -361,6 +361,17 @@ RSpec.describe ProjectsFinder do
         it { is_expected.to match_array([internal_project]) }
       end
 
+      describe 'always filters by without_deleted' do
+        let_it_be(:pending_delete_project) { create(:project, :public, pending_delete: true) }
+
+        context 'when without_deleted is true' do
+          it 'returns projects that are not pending_delete' do
+            expect(subject).not_to include(pending_delete_project)
+            expect(subject).to include(public_project, internal_project)
+          end
+        end
+      end
+
       describe 'filter by last_activity_before' do
         let(:params) { { last_activity_before: 60.minutes.ago } }
 
