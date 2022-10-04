@@ -18,6 +18,31 @@ RSpec.describe Vulnerabilities::CreateService do
 
   subject { described_class.new(project, user, finding_id: finding_id).execute }
 
+  shared_examples 'creates a vulnerability state transition record' do
+    let(:comment) { "Dismissal comment" }
+    let(:dismissal_reason) { Vulnerabilities::DismissalReasonEnum.values[:false_positive] }
+    let(:service) do
+      described_class.new(
+        project, user,
+        finding_id: finding_id,
+        state: "dismissed",
+        comment: comment,
+        dismissal_reason: dismissal_reason
+      )
+    end
+
+    it 'creates a vulnerability state transition record' do
+      expect { service.execute }.to change { Vulnerabilities::StateTransition.count }.from(0).to(1)
+
+      state_transition = Vulnerabilities::StateTransition.last
+
+      expect(state_transition.from_state).to eq(finding.state)
+      expect(state_transition.to_state).to eq("dismissed")
+      expect(state_transition.comment).to eq(comment)
+      expect(state_transition.dismissal_reason).to eq(dismissal_reason)
+    end
+  end
+
   context 'with an authorized user with proper permissions' do
     before do
       project.add_developer(user)
@@ -41,19 +66,45 @@ RSpec.describe Vulnerabilities::CreateService do
         ))
     end
 
-    context 'and finding is dismissed' do
-      let(:finding) { create(:vulnerabilities_finding, :with_dismissal_feedback, project: project) }
+    it_behaves_like 'creates a vulnerability state transition record'
 
-      before do
-        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+    context 'and finding is dismissed' do
+      context 'when deprecate_vulnerabilities_feedback is enabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: true)
+        end
+
+        subject { described_class.new(project, user, finding_id: finding.id, state: state).execute }
+
+        context 'when the state is set to dismissed' do
+          let_it_be(:state) { :dismissed }
+
+          it 'creates a vulnerability in a dismissed state and sets dismissal information' do
+            freeze_time do
+              expect { subject }.to change { project.vulnerabilities.count }.by(1)
+
+              expect(vulnerability.state).to eq('dismissed')
+              expect(vulnerability.dismissed_at).to be_like_time(Time.current)
+              expect(vulnerability.dismissed_by_id).to eq(user.id)
+            end
+          end
+        end
       end
 
-      it 'creates a vulnerability in a dismissed state and sets dismissal information' do
-        expect { subject }.to change { project.vulnerabilities.count }.by(1)
+      context 'when deprecate_vulnerabilities_feedback is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
 
-        expect(vulnerability.state).to eq('dismissed')
-        expect(vulnerability.dismissed_at).to eq(finding.dismissal_feedback.created_at)
-        expect(vulnerability.dismissed_by_id).to eq(finding.dismissal_feedback.author_id)
+        let(:finding) { create(:vulnerabilities_finding, :with_dismissal_feedback, project: project) }
+
+        it 'creates a vulnerability in a dismissed state and sets dismissal information' do
+          expect { subject }.to change { project.vulnerabilities.count }.by(1)
+
+          expect(vulnerability.state).to eq('dismissed')
+          expect(vulnerability.dismissed_at).to eq(finding.dismissal_feedback.created_at)
+          expect(vulnerability.dismissed_by_id).to eq(finding.dismissal_feedback.author_id)
+        end
       end
     end
 
