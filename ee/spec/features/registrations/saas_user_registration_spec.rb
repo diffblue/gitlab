@@ -178,59 +178,6 @@ RSpec.describe "User registration", :js, :saas do
       fill_in_welcome_form
     end
 
-    context "just for me" do
-      before do
-        fill_in_welcome_form
-        choose 'Just me'
-        check 'I\'d like to receive updates about GitLab via email'
-      end
-
-      context "wanting to join a project" do
-        before do
-          choose 'Join a project'
-          click_on 'Continue'
-        end
-
-        it "takes me to my dashboard" do
-          expect(page).to have_content 'This user doesn\'t have any personal projects'
-        end
-
-        it_behaves_like 'signs me up for email updates'
-      end
-
-      context "wanting to create a project" do
-        before do
-          choose 'Create a new project'
-
-          click_on 'Continue'
-        end
-
-        it "creates my new group and project without a trial", :sidekiq_inline do
-          fill_in 'group_name', with: 'Test Group'
-          fill_in 'blank_project_name', with: 'Test Project'
-
-          click_on 'Create project'
-
-          # We end up in the continuous onboarding flow here...
-          expect(page).to have_content 'Get started with GitLab'
-
-          click_on "Ok, let's go"
-
-          expect(page).to have_content('Learn GitLab')
-          expect(page).to have_content('GitLab is better with colleagues!')
-
-          # So have to verify the newly created project by navigating to our projects...
-          visit projects_path
-
-          # Where we have two projects, one being part of continuous onboarding.
-          expect(page).to have_content 'Test Group / Test Project'
-          expect(page).to have_content 'Test Group / Learn GitLab'
-        end
-
-        it_behaves_like 'imports my existing project'
-      end
-    end
-
     context "for my company" do
       before do
         fill_in_welcome_form
@@ -364,24 +311,6 @@ RSpec.describe "User registration", :js, :saas do
 
       click_on 'Continue'
       fill_in_welcome_form
-    end
-
-    context "just for me" do
-      before do
-        choose 'Just me'
-        check 'I\'d like to receive updates about GitLab via email'
-
-        click_on 'Continue'
-
-        expect(page).to have_content 'About your company'
-        fill_in_company_form
-      end
-
-      it_behaves_like 'signs me up for email updates' do
-        let(:user) { User.find_by(email: user_attrs[:email]) }
-      end
-
-      it_behaves_like 'opting into a trial'
     end
 
     context "for my company" do
