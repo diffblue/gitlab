@@ -36291,7 +36291,7 @@ msgstr ""
 msgid "SecurityReports|Status"
 msgstr ""
 
-msgid "SecurityReports|Still Detected"
+msgid "SecurityReports|Still detected"
 msgstr ""
 
 msgid "SecurityReports|Submit vulnerability"
