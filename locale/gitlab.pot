@@ -46775,6 +46775,9 @@ msgstr ""
 msgid "cURL:"
 msgstr ""
 
+msgid "can contain only digits"
+msgstr ""
+
 msgid "can contain only letters of the Base64 alphabet (RFC4648) with the addition of '@', ':' and '.'"
 msgstr ""
 
