@@ -1,12 +1,12 @@
-import Vue from 'vue';
+import { nextTick } from 'vue';
+import { mount } from '@vue/test-utils';
 
-import roadmapTimelineSectionComponent from 'ee/roadmap/components/roadmap_timeline_section.vue';
+import RoadmapTimelineSectionComponent from 'ee/roadmap/components/roadmap_timeline_section.vue';
 import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 import eventHub from 'ee/roadmap/event_hub';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 
 import { mockEpic, mockTimeframeInitialDate } from 'ee_jest/roadmap/mock_data';
-import mountComponent from 'helpers/vue_mount_component_helper';
 
 const mockTimeframeMonths = getTimeframeForRangeType({
   timeframeRangeType: DATE_RANGES.CURRENT_YEAR,
@@ -14,93 +14,79 @@ const mockTimeframeMonths = getTimeframeForRangeType({
   initialDate: mockTimeframeInitialDate,
 });
 
-const createComponent = ({
-  presetType = PRESET_TYPES.MONTHS,
-  epics = [mockEpic],
-  timeframe = mockTimeframeMonths,
-} = {}) => {
-  const Component = Vue.extend(roadmapTimelineSectionComponent);
-
-  return mountComponent(Component, {
-    presetType,
-    epics,
-    timeframe,
-  });
-};
-
 describe('RoadmapTimelineSectionComponent', () => {
-  let vm;
+  let wrapper;
 
-  beforeEach(() => {
-    vm = createComponent();
-  });
+  const createComponent = ({
+    presetType = PRESET_TYPES.MONTHS,
+    epics = [mockEpic],
+    timeframe = mockTimeframeMonths,
+  } = {}) => {
+    wrapper = mount(RoadmapTimelineSectionComponent, {
+      propsData: {
+        presetType,
+        epics,
+        timeframe,
+      },
+    });
+  };
 
   afterEach(() => {
-    vm.$destroy();
+    wrapper.destroy();
   });
 
-  describe('data', () => {
-    it('returns default data props', () => {
-      expect(vm.scrolledHeaderClass).toBe('');
+  describe('section container styles', () => {
+    it('`width` value based on epic details cell width, timeline cell width and timeframe length', () => {
+      createComponent();
+
+      expect(wrapper.element.style.width).toBe('2480px'); // We now have fixed columns in timeframe.
     });
   });
 
-  describe('computed', () => {
-    describe('sectionContainerStyles', () => {
-      it('returns object containing `width` with value based on epic details cell width, timeline cell width and timeframe length', () => {
-        expect(vm.sectionContainerStyles).toEqual(
-          expect.objectContaining({
-            width: '2480px', // We now have fixed columns in timeframe.
-          }),
-        );
-      });
-    });
-  });
+  describe('on epicsListScrolled hub event', () => {
+    it('sets `scrolled-ahead` class on thead element based on provided scrollTop value', async () => {
+      createComponent();
 
-  describe('methods', () => {
-    describe('handleEpicsListScroll', () => {
-      it('sets `scrolled-ahead` class on thead element based on provided scrollTop value', () => {
-        // vm.$el.clientHeight is 0 during tests
-        // hence any value greater than 0 should
-        // update scrolledHeaderClass prop
-        vm.handleEpicsListScroll({ scrollTop: 1 });
+      eventHub.$emit('epicsListScrolled', { scrollTop: 1 });
+      await nextTick();
 
-        expect(vm.scrolledHeaderClass).toBe('scroll-top-shadow');
+      expect(wrapper.classes()).toContain('scroll-top-shadow');
 
-        vm.handleEpicsListScroll({ scrollTop: 0 });
+      eventHub.$emit('epicsListScrolled', { scrollTop: 0 });
+      await nextTick();
 
-        expect(vm.scrolledHeaderClass).toBe('');
-      });
+      expect(wrapper.classes()).not.toContain('scroll-top-shadow');
     });
   });
 
   describe('mounted', () => {
     it('binds `epicsListScrolled` event listener via eventHub', () => {
       jest.spyOn(eventHub, '$on').mockImplementation(() => {});
-      const vmX = createComponent({});
+      createComponent();
 
       expect(eventHub.$on).toHaveBeenCalledWith('epicsListScrolled', expect.any(Function));
-      vmX.$destroy();
     });
   });
 
   describe('beforeDestroy', () => {
     it('unbinds `epicsListScrolled` event listener via eventHub', () => {
       jest.spyOn(eventHub, '$off').mockImplementation(() => {});
-      const vmX = createComponent({});
-      vmX.$destroy();
+      createComponent();
+      wrapper.destroy();
 
       expect(eventHub.$off).toHaveBeenCalledWith('epicsListScrolled', expect.any(Function));
     });
   });
 
-  describe('template', () => {
-    it('renders component container element with class `roadmap-timeline-section`', () => {
-      expect(vm.$el.classList.contains('roadmap-timeline-section')).toBe(true);
-    });
+  it('renders component container element with class `roadmap-timeline-section`', () => {
+    createComponent();
 
-    it('renders empty header cell element with class `timeline-header-blank`', () => {
-      expect(vm.$el.querySelector('.timeline-header-blank')).not.toBeNull();
-    });
+    expect(wrapper.classes()).toContain('roadmap-timeline-section');
+  });
+
+  it('renders empty header cell element with class `timeline-header-blank`', () => {
+    createComponent();
+
+    expect(wrapper.find('.timeline-header-blank').exists()).toBe(true);
   });
 });

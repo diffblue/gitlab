@@ -23,12 +23,6 @@ export default {
     };
   },
   computed: {
-    quarterBeginDate() {
-      return this.timeframeItem.range[0];
-    },
-    quarterEndDate() {
-      return this.timeframeItem.range[2];
-    },
     headerSubItems() {
       return this.timeframeItem.range;
     },
