@@ -6766,7 +6766,16 @@ msgstr ""
 msgid "Branch rules"
 msgstr ""
 
+msgid "BranchRules|%{linkStart}Wildcards%{linkEnd} such as *-stable or production/ are supported"
+msgstr ""
+
 msgid "BranchRules|%{linkStart}Wildcards%{linkEnd} such as *-stable or production/* are supported."
+msgstr ""
+
+msgid "BranchRules|All branches"
+msgstr ""
+
+msgid "BranchRules|All users with push access are allowed to force push."
 msgstr ""
 
 msgid "BranchRules|Allow all users with push access to %{linkStart}force push%{linkEnd}."
@@ -6775,13 +6784,25 @@ msgstr ""
 msgid "BranchRules|Allowed to merge"
 msgstr ""
 
+msgid "BranchRules|Allowed to merge (%{total})"
+msgstr ""
+
 msgid "BranchRules|Allowed to push"
+msgstr ""
+
+msgid "BranchRules|Allowed to push (%{total})"
 msgstr ""
 
 msgid "BranchRules|An error occurred while fetching branches."
 msgstr ""
 
+msgid "BranchRules|Approvals"
+msgstr ""
+
 msgid "BranchRules|Branch"
+msgstr ""
+
+msgid "BranchRules|Branch name or pattern"
 msgstr ""
 
 msgid "BranchRules|Branch rules details"
@@ -6790,13 +6811,31 @@ msgstr ""
 msgid "BranchRules|Create wildcard: %{searchTerm}"
 msgstr ""
 
+msgid "BranchRules|Details"
+msgstr ""
+
+msgid "BranchRules|Force push"
+msgstr ""
+
+msgid "BranchRules|Force push is not allowed."
+msgstr ""
+
 msgid "BranchRules|Groups"
 msgstr ""
 
 msgid "BranchRules|Keep stable branches secure and force developers to use merge requests. %{linkStart}What are protected branches?%{linkEnd}"
 msgstr ""
 
+msgid "BranchRules|Manage in Protected Branches"
+msgstr ""
+
+msgid "BranchRules|No data to display"
+msgstr ""
+
 msgid "BranchRules|No matching results"
+msgstr ""
+
+msgid "BranchRules|Protect branch"
 msgstr ""
 
 msgid "BranchRules|Protections"
@@ -6809,6 +6848,9 @@ msgid "BranchRules|Require approval from code owners."
 msgstr ""
 
 msgid "BranchRules|Roles"
+msgstr ""
+
+msgid "BranchRules|Status checks"
 msgstr ""
 
 msgid "BranchRules|Target Branch"
