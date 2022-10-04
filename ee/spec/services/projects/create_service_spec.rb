@@ -269,6 +269,15 @@ RSpec.describe Projects::CreateService, '#execute' do
           group.update!(push_rule: group_push_rule)
         end
 
+        it 'does not error if new columns are created since the last schema load' do
+          PushRule.connection.execute('ALTER TABLE push_rules ADD COLUMN foobar boolean')
+
+          project = create_project(user, opts)
+
+          project_push_rule = project.push_rule
+          expect(project_push_rule).to be_persisted
+        end
+
         it 'creates push rule from group push rule' do
           project = create_project(user, opts)
           project_push_rule = project.push_rule

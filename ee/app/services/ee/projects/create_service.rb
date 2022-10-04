@@ -106,7 +106,7 @@ module EE
       end
 
       def create_push_rule_from_group
-        push_rule_attributes = project.group.predefined_push_rule.attributes.except("id")
+        push_rule_attributes = project.group.predefined_push_rule.attributes.slice(*PushRule.column_names).except("id")
         project.create_push_rule(push_rule_attributes.merge(is_sample: false))
         project.project_setting.update(push_rule: project.push_rule)
       end
