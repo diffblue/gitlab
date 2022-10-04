@@ -64,6 +64,52 @@ RSpec.describe ApprovalRules::CreateService do
       end
     end
 
+    context 'when group is a subgroup with indirect permissions' do
+      let(:subgroup) { create(:group, :private, parent: new_groups.first) }
+
+      before do
+        new_groups.first.add_guest(user)
+      end
+
+      it 'creates and includes eligible groups and subgroups' do
+        result = described_class.new(target, user, {
+          name: 'security',
+          approvals_required: 1,
+          group_ids: new_groups.map(&:id) + [subgroup.id]
+        }).execute
+
+        expect(result[:status]).to eq(:success)
+
+        rule = result[:rule]
+
+        expect(rule.name).to eq('security')
+        expect(rule.approvals_required).to eq(1)
+        expect(rule.groups).to contain_exactly(new_groups.first, subgroup)
+      end
+
+      context 'when approval_rules_eligible_filter FF is disabled' do
+        before do
+          stub_feature_flags(approval_rules_eligible_filter: false)
+        end
+
+        it 'does not include subgroups with indirect permissions' do
+          result = described_class.new(target, user, {
+            name: 'security',
+            approvals_required: 1,
+            group_ids: new_groups.map(&:id) + [subgroup.id]
+          }).execute
+
+          expect(result[:status]).to eq(:success)
+
+          rule = result[:rule]
+
+          expect(rule.name).to eq('security')
+          expect(rule.approvals_required).to eq(1)
+          expect(rule.groups).to contain_exactly(new_groups.first)
+        end
+      end
+    end
+
     context 'when validation fails' do
       it 'returns error message' do
         result = described_class.new(target, user, {
