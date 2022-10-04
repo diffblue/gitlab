@@ -1,22 +1,23 @@
 query getGroupRunnersCountEE(
   $groupFullPath: ID!
+  $membership: CiRunnerMembershipFilter
   $paused: Boolean
   $status: CiRunnerStatus
-  $upgradeStatus: CiRunnerUpgradeStatusType # Added in EE
   $type: CiRunnerType
   $tagList: [String!]
   $search: String
+  $upgradeStatus: CiRunnerUpgradeStatusType # Added in EE
 ) {
   group(fullPath: $groupFullPath) {
     id # Apollo required
     runners(
-      membership: DESCENDANTS
+      membership: $membership
       paused: $paused
       status: $status
-      upgradeStatus: $upgradeStatus # Added in EE
       type: $type
       tagList: $tagList
       search: $search
+      upgradeStatus: $upgradeStatus # Added in EE
     ) {
       count
     }

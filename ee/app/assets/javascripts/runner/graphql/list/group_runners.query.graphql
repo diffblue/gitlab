@@ -2,6 +2,7 @@
 
 query getGroupRunnersEE(
   $groupFullPath: ID!
+  $membership: CiRunnerMembershipFilter
   $before: String
   $after: String
   $first: Int
@@ -16,7 +17,7 @@ query getGroupRunnersEE(
   group(fullPath: $groupFullPath) {
     id # Apollo required
     runners(
-      membership: DESCENDANTS
+      membership: $membership
       before: $before
       after: $after
       first: $first

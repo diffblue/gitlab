@@ -34779,6 +34779,9 @@ msgstr ""
 msgid "Runners|Select your preferred option here. In the next step, you can choose the capacity for your runner in the AWS CloudFormation console."
 msgstr ""
 
+msgid "Runners|Show only inherited"
+msgstr ""
+
 msgid "Runners|Show runner installation and registration instructions"
 msgstr ""
 
