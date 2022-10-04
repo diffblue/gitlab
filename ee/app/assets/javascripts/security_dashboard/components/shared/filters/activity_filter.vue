@@ -8,7 +8,7 @@ import SimpleFilter from './simple_filter.vue';
 export const ITEMS = {
   STILL_DETECTED: {
     id: 'STILL_DETECTED',
-    name: s__('SecurityReports|Still Detected'),
+    name: s__('SecurityReports|Still detected'),
   },
   NO_LONGER_DETECTED: {
     id: 'NO_LONGER_DETECTED',
