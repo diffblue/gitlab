@@ -30,6 +30,17 @@ RSpec.describe Elastic::Latest::GitClassProxy, :elastic do
       expect(result.data).to include('Popen')
       expect(result.project).to eq(project)
     end
+
+    context 'with filters in the query' do
+      let(:query) { 'def extension:rb path:files/ruby' }
+
+      it 'returns matching results', :sidekiq_inline do
+        results = subject.elastic_search_as_found_blob(query)
+        paths = results.map(&:path)
+
+        expect(paths).to contain_exactly('files/ruby/regex.rb', 'files/ruby/popen.rb', 'files/ruby/version_info.rb')
+      end
+    end
   end
 
   describe '#blob_aggregations' do
