@@ -32,17 +32,16 @@ module Registrations
     end
 
     def create
-      group_id = params[:group][:id]
+      service = Registrations::NamespaceCreateService.new(current_user, params)
+      result = service.execute
 
-      if group_id # sad path: partial failure scenario where group was created, but project wasn't
-        @group = Group.find_by_id(group_id)
-
-        create_project_flow
+      if result.success?
+        redirect_successful_namespace_creation(service.project.id)
       else
-        # happy path: first time submit
-        @group = Groups::CreateService.new(current_user, modified_group_params).execute
+        @group = service.group
+        @project = service.project
 
-        create_with_new_group_flow
+        render :new
       end
     end
 
@@ -76,55 +75,22 @@ module Registrations
 
     private
 
-    def create_with_new_group_flow
-      if @group.persisted?
-        Gitlab::Tracking.event(self.class.name, 'create_group', namespace: @group, user: current_user)
-        helpers.require_verification_experiment.record_conversion(@group)
-
-        apply_trial if helpers.in_trial_onboarding_flow?
-
-        create_project_flow
-      else
-        @project = Project.new(project_params) # #new requires a Project
-
-        render :new
-      end
-    end
-
-    def create_project_flow
-      @project = ::Projects::CreateService.new(current_user, create_project_params).execute
-
-      if @project.persisted?
-        Gitlab::Tracking.event(self.class.name, 'create_project', namespace: @project.namespace, user: current_user)
-
-        create_learn_gitlab_project(@project.namespace_id)
-
-        redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: @project.id)
-
-        if helpers.registration_verification_enabled?
-          store_location_for(:user, redirect_path)
-          redirect_to new_users_sign_up_verification_path(project_id: @project.id, offer_trial: offer_trial?)
-        elsif offer_trial?
-          store_location_for(:user, redirect_path)
-          redirect_to new_trial_path
-        else
-          redirect_to redirect_path
-        end
-      else
-        render :new
-      end
-    end
-
     def authorize_create_group!
       access_denied! unless can?(current_user, :create_group)
     end
 
-    def create_project_params
-      project_params(:initialize_with_readme)
-    end
+    def redirect_successful_namespace_creation(project_id)
+      redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project_id)
 
-    def project_params(*extra)
-      params.require(:project).permit(project_params_attributes + extra).merge(namespace_id: @group.id)
+      if helpers.registration_verification_enabled?
+        store_location_for(:user, redirect_path)
+        redirect_to new_users_sign_up_verification_path(project_id: project_id, offer_trial: offer_trial?)
+      elsif offer_trial?
+        store_location_for(:user, redirect_path)
+        redirect_to new_trial_path
+      else
+        redirect_to redirect_path
+      end
     end
 
     def modified_group_params
@@ -160,36 +126,6 @@ module Registrations
                                                                               })
 
       GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(current_user.id, trial_user_information.to_h) # rubocop:todo CodeReuse/Worker
-    end
-
-    LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
-
-    def learn_gitlab_template_path
-      Rails.root.join('vendor', 'project_templates', LEARN_GITLAB_ULTIMATE_TEMPLATE)
-    end
-
-    def create_learn_gitlab_project(parent_project_namespace_id)
-      ::Onboarding::CreateLearnGitlabWorker.perform_async(learn_gitlab_template_path, # rubocop:todo CodeReuse/Worker
-                                                          learn_gitlab_project_name,
-                                                          parent_project_namespace_id,
-                                                          current_user.id)
-    end
-
-    def learn_gitlab_project_name
-      if helpers.in_trial_onboarding_flow?
-        Onboarding::LearnGitlab::PROJECT_NAME_ULTIMATE_TRIAL
-      else
-        Onboarding::LearnGitlab::PROJECT_NAME
-      end
-    end
-
-    def project_params_attributes
-      [
-        :namespace_id,
-        :name,
-        :path,
-        :visibility_level
-      ]
     end
   end
 end
