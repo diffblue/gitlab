@@ -28,8 +28,7 @@ module Iterations
       def can_update_iteration_cadence?
         group = iteration_cadence.group
 
-        group.iteration_cadences_feature_flag_enabled? &&
-          group.licensed_feature_available?(:iterations) &&
+        group.licensed_feature_available?(:iterations) &&
           can?(current_user, :admin_iteration_cadence, iteration_cadence)
       end
     end

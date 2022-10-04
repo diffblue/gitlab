@@ -86,17 +86,6 @@ RSpec.describe Mutations::Issues::Create do
               )
             end
           end
-
-          context 'when iteration cadences feature flag is disabled' do
-            before do
-              stub_feature_flags(iteration_cadences: false)
-            end
-
-            it 'is successful, and assigns the current iteration to the issue' do
-              expect(resolved_mutation[:errors]).to be_empty
-              expect(mutated_issue).to have_attributes(iteration: past_iteration)
-            end
-          end
         end
 
         context 'when iteration_wildcard_id is CURRENT' do

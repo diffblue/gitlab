@@ -22,13 +22,6 @@ module EE
 
         before_action :redirect_if_test_case, only: [:show]
 
-        before_action do
-          push_force_frontend_feature_flag(
-            :iteration_cadences,
-            project&.group&.iteration_cadences_feature_flag_enabled?
-          )
-        end
-
         before_action only: %i[show index] do
           @seat_count_data = generate_seat_count_alert_data(@project)
         end

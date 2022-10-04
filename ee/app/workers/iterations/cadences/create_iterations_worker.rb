@@ -15,7 +15,7 @@ module Iterations
 
       def perform(cadence_id)
         cadence = ::Iterations::Cadence.find_by_id(cadence_id)
-        return unless cadence && cadence.group.iteration_cadences_feature_flag_enabled? # keep this behind FF for now
+        return unless cadence
 
         response = Iterations::Cadences::CreateIterationsInAdvanceService.new(automation_bot, cadence).execute
         log_error(cadence, response) if response.error?

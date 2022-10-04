@@ -25,19 +25,7 @@ RSpec.describe Iteration do
 
     subject { iteration.display_text }
 
-    before do
-      stub_feature_flags(iteration_cadences: false)
-    end
-
-    it { is_expected.to eq('Sep 30, 2022 - Oct 4, 2022') }
-
-    context 'when iteration_cadences FF enabled' do
-      before do
-        stub_feature_flags(iteration_cadences: true)
-      end
-
-      it { is_expected.to eq('Plan cadence Sep 30, 2022 - Oct 4, 2022') }
-    end
+    it { is_expected.to eq('Plan cadence Sep 30, 2022 - Oct 4, 2022') }
   end
 
   describe '#period' do
@@ -220,17 +208,6 @@ RSpec.describe Iteration do
 
         shared_examples_for 'overlapping dates' do
           shared_examples_for 'invalid dates' do
-            context 'with iterations_cadences FF disabled' do
-              before do
-                stub_feature_flags(iteration_cadences: false)
-              end
-
-              it 'is not valid' do
-                expect(subject).not_to be_valid
-                expect(subject.errors[:base]).to include('Dates cannot overlap with other existing Iterations within this group')
-              end
-            end
-
             it 'is not valid' do
               expect(subject).not_to be_valid
               expect(subject.errors[:base]).to include('Dates cannot overlap with other existing Iterations within this iterations cadence')
@@ -637,12 +614,6 @@ RSpec.describe Iteration do
       subject { described_class.all.sort_by_cadence_id_and_due_date_asc }
 
       it { is_expected.to eq([plan_iteration2, plan_iteration1, product_iteration, cadence_iteration]) }
-    end
-
-    describe '.sort_by_cadence_id_and_due_date_desc' do
-      subject { described_class.all.sort_by_cadence_id_and_due_date_desc }
-
-      it { is_expected.to eq([plan_iteration1, plan_iteration2, product_iteration, cadence_iteration]) }
     end
   end
 

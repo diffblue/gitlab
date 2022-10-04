@@ -66,79 +66,43 @@ describe('IterationSidebarDropdownWidget', () => {
     wrapper.destroy();
   });
 
-  describe('iteration_cadences feature flag is off', () => {
-    describe('when showing the current iteration (dropdown is closed)', () => {
-      it('renders just iteration period for iteration without title', async () => {
-        await createComponentWithApollo();
+  describe('when showing the current iteration (dropdown is closed)', () => {
+    it('renders cadence title', async () => {
+      await createComponentWithApollo({ iterationCadences: true });
 
-        expect(findCurrentIterationText()).toContain(getIterationPeriod(mockIteration1));
-      });
-
-      it('renders iteration period with optional title for iteration with title', async () => {
-        await createComponentWithApollo({
-          iterationCadences: false,
-          currentIterationResponse: mockCurrentIterationResponse2,
-        });
-
-        expect(findCurrentIterationText()).toContain(getIterationPeriod(mockIteration2));
-        expect(findCurrentIterationText()).toContain(mockIteration2.title);
-      });
+      expect(findCurrentIterationText()).toContain(mockIteration1.iterationCadence.title);
     });
 
-    describe('when listing iterations in the dropdown', () => {
-      it('renders iterations', async () => {
-        await createComponentWithApollo();
-        await clickEdit(wrapper);
+    it('renders just iteration period for iteration without title', async () => {
+      await createComponentWithApollo({ iterationCadences: true });
 
-        // mockIteration1 has no title
-        expect(findIterationItemsTextAt(0)).toContain(getIterationPeriod(mockIteration1));
+      expect(findCurrentIterationText()).toContain(getIterationPeriod(mockIteration1));
+    });
 
-        // mockIteration2 has a title
-        expect(findIterationItemsTextAt(1)).toContain(getIterationPeriod(mockIteration2));
-        expect(findIterationItemsTextAt(1)).toContain(mockIteration2.title);
+    it('renders iteration period with optional title for iteration with title', async () => {
+      await createComponentWithApollo({
+        iterationCadences: true,
+        currentIterationResponse: mockCurrentIterationResponse2,
       });
+
+      expect(findCurrentIterationText()).toContain(getIterationPeriod(mockIteration2));
+      expect(findCurrentIterationText()).toContain(mockIteration2.title);
     });
   });
 
-  describe('iteration_cadences feature flag is on', () => {
-    describe('when showing the current iteration (dropdown is closed)', () => {
-      it('renders cadence title', async () => {
-        await createComponentWithApollo({ iterationCadences: true });
+  describe('when listing iterations in the dropdown', () => {
+    it('renders iterations with cadence names', async () => {
+      await createComponentWithApollo({ iterationCadences: true });
+      await clickEdit(wrapper);
 
-        expect(findCurrentIterationText()).toContain(mockIteration1.iterationCadence.title);
-      });
+      // mockIteration1 has no title
+      expect(findIterationCadenceTitleAt(0)).toContain(mockIteration1.iterationCadence.title);
+      expect(findIterationItemsTextAt(0)).toContain(getIterationPeriod(mockIteration1));
 
-      it('renders just iteration period for iteration without title', async () => {
-        await createComponentWithApollo({ iterationCadences: true });
-
-        expect(findCurrentIterationText()).toContain(getIterationPeriod(mockIteration1));
-      });
-
-      it('renders iteration period with optional title for iteration with title', async () => {
-        await createComponentWithApollo({
-          iterationCadences: true,
-          currentIterationResponse: mockCurrentIterationResponse2,
-        });
-
-        expect(findCurrentIterationText()).toContain(getIterationPeriod(mockIteration2));
-        expect(findCurrentIterationText()).toContain(mockIteration2.title);
-      });
-    });
-
-    describe('when listing iterations in the dropdown', () => {
-      it('renders iterations with cadence names', async () => {
-        await createComponentWithApollo({ iterationCadences: true });
-        await clickEdit(wrapper);
-
-        // mockIteration1 has no title
-        expect(findIterationCadenceTitleAt(0)).toContain(mockIteration1.iterationCadence.title);
-        expect(findIterationItemsTextAt(0)).toContain(getIterationPeriod(mockIteration1));
-
-        // mockIteration2 has a title
-        expect(findIterationCadenceTitleAt(1)).toContain(mockIteration2.iterationCadence.title);
-        expect(findIterationItemsTextAt(1)).toContain(getIterationPeriod(mockIteration2));
-        expect(findIterationItemsTextAt(1)).toContain(mockIteration2.title);
-      });
+      // mockIteration2 has a title
+      expect(findIterationCadenceTitleAt(1)).toContain(mockIteration2.iterationCadence.title);
+      expect(findIterationItemsTextAt(1)).toContain(getIterationPeriod(mockIteration2));
+      expect(findIterationItemsTextAt(1)).toContain(mockIteration2.title);
     });
   });
 });

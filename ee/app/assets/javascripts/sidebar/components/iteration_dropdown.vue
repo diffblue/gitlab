@@ -11,7 +11,6 @@ import {
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import { __ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { iterationSelectTextMap, iterationDisplayState } from '../constants';
 import groupIterationsQuery from '../queries/iterations.query.graphql';
 
@@ -29,7 +28,6 @@ export default {
     GlLoadingIcon,
     IterationTitle,
   },
-  mixins: [glFeatureFlagMixin()],
   apollo: {
     iterations: {
       query: groupIterationsQuery,
@@ -114,18 +112,6 @@ export default {
     </gl-dropdown-item>
     <gl-dropdown-divider />
     <gl-loading-icon v-if="$apollo.queries.iterations.loading" size="sm" />
-    <template v-else-if="!glFeatures.iterationCadences">
-      <gl-dropdown-item
-        v-for="iterationItem in iterations"
-        :key="iterationItem.id"
-        is-check-item
-        :is-checked="isIterationChecked(iterationItem.id)"
-        @click="onClick(iterationItem)"
-      >
-        {{ getIterationPeriod(iterationItem) }}
-        <iteration-title v-if="iterationItem.title" :title="iterationItem.title" />
-      </gl-dropdown-item>
-    </template>
     <template v-else>
       <template v-for="(cadence, index) in iterationCadences">
         <gl-dropdown-divider v-if="index !== 0" :key="index" />

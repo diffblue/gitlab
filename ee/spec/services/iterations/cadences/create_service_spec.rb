@@ -179,21 +179,4 @@ RSpec.describe Iterations::Cadences::CreateService do
       end
     end
   end
-
-  context 'iteration cadences feature flag disabled' do
-    before do
-      stub_licensed_features(iterations: true)
-      stub_feature_flags(iteration_cadences: false)
-    end
-
-    describe '#execute' do
-      let(:params) { { title: 'a' } }
-      let(:response) { described_class.new(group, user, params).execute }
-
-      it 'is not allowed' do
-        expect(response.error?).to be_truthy
-        expect(response.message).to eq('Operation not allowed')
-      end
-    end
-  end
 end

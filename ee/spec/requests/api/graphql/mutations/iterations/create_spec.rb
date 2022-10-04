@@ -98,61 +98,36 @@ RSpec.describe 'Creating an Iteration', :freeze_time do
         stub_licensed_features(iterations: true)
       end
 
-      context 'with iterations_cadences FF enabled' do
-        before do
-          stub_feature_flags(iteration_cadences: true)
-        end
+      it_behaves_like 'iteration create request'
 
-        it_behaves_like 'iteration create request'
+      context 'when title is not given' do
+        let(:attributes) { { start_date: start_date, due_date: end_date } }
 
-        context 'when title is not given' do
-          let(:attributes) { { start_date: start_date, due_date: end_date } }
+        it 'creates an iteration' do
+          post_graphql_mutation(mutation, current_user: current_user)
 
-          it 'creates an iteration' do
-            post_graphql_mutation(mutation, current_user: current_user)
-
-            iteration_hash = mutation_response['iteration']
-            aggregate_failures do
-              expect(iteration_hash['title']).to eq(nil)
-              expect(iteration_hash['startDate']).to eq(start_date)
-              expect(iteration_hash['dueDate']).to eq(end_date)
-            end
+          iteration_hash = mutation_response['iteration']
+          aggregate_failures do
+            expect(iteration_hash['title']).to eq(nil)
+            expect(iteration_hash['startDate']).to eq(start_date)
+            expect(iteration_hash['dueDate']).to eq(end_date)
           end
-        end
-
-        context 'when trying to add an iteration to the cadence that uses automatic scheduling' do
-          let_it_be(:auto_cadence) { create(:iterations_cadence, group: group) }
-
-          before do
-            attributes[:iterations_cadence_id] = auto_cadence.to_global_id.to_s
-          end
-
-          it 'does not create the iteration' do
-            expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
-          end
-
-          it_behaves_like 'a mutation that returns errors in the response',
-            errors: ['Iterations cannot be manually added to cadences that use automatic scheduling']
         end
       end
 
-      context 'with iterations_cadences FF disabled' do
+      context 'when trying to add an iteration to the cadence that uses automatic scheduling' do
+        let_it_be(:auto_cadence) { create(:iterations_cadence, group: group) }
+
         before do
-          stub_feature_flags(iteration_cadences: false)
+          attributes[:iterations_cadence_id] = auto_cadence.to_global_id.to_s
         end
 
-        it_behaves_like 'iteration create request'
-
-        context 'when title is not given' do
-          let(:attributes) { { start_date: start_date, due_date: end_date } }
-
-          it_behaves_like 'a mutation that returns top-level errors',
-                          errors: ["Title can't be blank"]
-
-          it 'does not create the iteration' do
-            expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
-          end
+        it 'does not create the iteration' do
+          expect { post_graphql_mutation(mutation, current_user: current_user) }.not_to change(Iteration, :count)
         end
+
+        it_behaves_like 'a mutation that returns errors in the response',
+          errors: ['Iterations cannot be manually added to cadences that use automatic scheduling']
       end
 
       context 'when there are ActiveRecord validation errors' do

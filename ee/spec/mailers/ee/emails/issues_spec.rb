@@ -18,24 +18,8 @@ RSpec.describe Emails::Issues do
     describe '#changed_iteration_issue_email', :aggregate_failures do
       subject { Notify.changed_iteration_issue_email(user.id, issue.id, iteration, user.id) }
 
-      before do
-        stub_feature_flags(iteration_cadences: false)
-      end
-
       it 'shows the iteration it was changed to' do
-        expect(subject).to have_body_text 'Iteration changed to'
-        expect(subject).to have_body_text iteration.period
-        expect(subject).not_to have_body_text iterations_cadence.title
-      end
-
-      context 'when iteration_cadences FF enabled' do
-        before do
-          stub_feature_flags(iteration_cadences: true)
-        end
-
-        it 'shows the iteration it was changed to' do
-          expect(subject).to have_body_text iteration.display_text
-        end
+        expect(subject).to have_body_text iteration.display_text
       end
     end
 

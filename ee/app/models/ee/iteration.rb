@@ -181,8 +181,6 @@ module EE
     end
 
     def display_text
-      return period unless group.iteration_cadences_feature_flag_enabled?
-
       "#{iterations_cadence.title} #{period}"
     end
 
@@ -304,11 +302,7 @@ module EE
       return unless iterations_cadence
       return unless iterations_cadence.iterations.where.not(id: self.id).within_timeframe(start_date, due_date).exists?
 
-      if group.iteration_cadences_feature_flag_enabled?
-        errors.add(:base, s_("Iteration|Dates cannot overlap with other existing Iterations within this iterations cadence"))
-      else
-        errors.add(:base, s_("Iteration|Dates cannot overlap with other existing Iterations within this group"))
-      end
+      errors.add(:base, s_("Iteration|Dates cannot overlap with other existing Iterations within this iterations cadence"))
     end
 
     def future_date

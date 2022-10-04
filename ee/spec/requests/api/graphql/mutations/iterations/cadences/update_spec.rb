@@ -95,14 +95,6 @@ RSpec.describe 'Updating an iteration cadence' do
         expect(iteration_cadence.description).to eq(description)
       end
 
-      context 'when iteration_cadences feature flag is disabled' do
-        before do
-          stub_feature_flags(iteration_cadences: false)
-        end
-
-        it_behaves_like 'a mutation that returns errors in the response', errors: ["Operation not allowed"]
-      end
-
       context 'when there are ActiveRecord validation errors' do
         let(:attributes) { { id: iteration_cadence.to_global_id.to_s, title: '' } }
 

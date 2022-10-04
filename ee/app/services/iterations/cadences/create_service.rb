@@ -28,8 +28,7 @@ module Iterations
       private
 
       def can_create_iteration_cadence?
-        group.iteration_cadences_feature_flag_enabled? &&
-          can?(current_user, :create_iteration_cadence, group)
+        can?(current_user, :create_iteration_cadence, group)
       end
     end
   end

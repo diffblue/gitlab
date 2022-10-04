@@ -92,10 +92,6 @@ RSpec.describe 'Scoped issue boards', :js do
           let_it_be(:cadence) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
           let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, title: 'one test', group: group, start_date: 1.day.ago, due_date: Date.today) }
 
-          before do
-            stub_feature_flags(iteration_cadences: true)
-          end
-
           it 'creates a board with any iteration within cadence' do
             create_board_iteration('Any')
 
@@ -313,13 +309,11 @@ RSpec.describe 'Scoped issue boards', :js do
         end
       end
 
-      context 'iteration - iteration_cadences FF on' do
+      context 'iteration' do
         let_it_be(:cadence) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
         let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, title: 'one test', group: group, start_date: 1.day.ago, due_date: Date.today) }
 
         before do
-          stub_feature_flags(iteration_cadences: true)
-
           visit project_boards_path(project)
           wait_for_requests
         end
@@ -367,80 +361,6 @@ RSpec.describe 'Scoped issue boards', :js do
           expect(find('.gl-filtered-search-scrollable')).to have_content('Any')
 
           expect(all('.board')[1]).to have_selector('.board-card', count: 0)
-        end
-      end
-
-      context 'iteration - iteration_cadences FF off' do
-        before do
-          stub_feature_flags(iteration_cadences: false)
-
-          visit project_boards_path(project)
-          wait_for_requests
-        end
-
-        context 'group with iterations' do
-          let_it_be(:cadence) { create(:iterations_cadence, group: group) }
-          let_it_be(:iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: cadence, group: group, start_date: 1.day.ago, due_date: Date.today) }
-
-          context 'board not scoped to iteration' do
-            it 'sets board to current iteration' do
-              expect(page).to have_selector('.board-card', count: 3)
-
-              update_board_scope('current_iteration', true)
-
-              expect(page).to have_selector('.board-card', count: 0)
-
-              expect(page).not_to have_text('Unable to save your changes. Please try again.')
-            end
-          end
-
-          context 'board scoped to current iteration' do
-            it 'adds current iteration to new issues' do
-              update_board_scope('current_iteration', true)
-
-              wait_for_requests
-
-              page.within(first('.board')) do
-                click_button 'New issue'
-              end
-
-              page.within(first('.board-new-issue-form')) do
-                find('.form-control').set('issue in current iteration')
-                click_button 'Create issue'
-              end
-
-              wait_for_requests
-
-              expect(find('[data-testid="issue-boards-sidebar"]')).to have_text(iteration.title)
-            end
-
-            it 'removes current iteration from board' do
-              create_board_scope('current_iteration', true)
-
-              expect(page).to have_selector('.board-card', count: 0)
-
-              update_board_scope('current_iteration', false)
-
-              expect(page).to have_selector('.board-card', count: 3)
-              expect(page).not_to have_text('Unable to save your changes. Please try again.')
-            end
-          end
-        end
-
-        context 'group without iterations' do
-          it 'sets board to current iteration' do
-            expect(page).to have_selector('.board-card', count: 3)
-
-            edit_board.click
-
-            click_value('current_iteration', true)
-
-            click_on_board_modal
-
-            click_button 'Save changes'
-
-            expect(page).to have_text('Unable to save your changes. Please try again.')
-          end
         end
       end
 

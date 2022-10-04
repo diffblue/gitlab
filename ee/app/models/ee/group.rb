@@ -627,10 +627,6 @@ module EE
       group_wiki_repository&.shard_name || ::Repository.pick_storage_shard
     end
 
-    def iteration_cadences_feature_flag_enabled?
-      feature_flag_enabled_for_self_or_ancestor?(:iteration_cadences)
-    end
-
     def user_cap_reached?(use_cache: false)
       return false unless user_cap_available?
 

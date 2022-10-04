@@ -41,13 +41,10 @@ module EE
               return ::Sidebars::NilMenuItem.new(item_id: :iterations)
             end
 
-            link = context.project.group&.iteration_cadences_feature_flag_enabled? ? project_iteration_cadences_path(context.project) : project_iterations_path(context.project)
-            controller = context.project.group&.iteration_cadences_feature_flag_enabled? ? :iteration_cadences : :iterations
-
             ::Sidebars::MenuItem.new(
               title: _('Iterations'),
-              link: link,
-              active_routes: { controller: controller },
+              link: project_iteration_cadences_path(context.project),
+              active_routes: { controller: :iteration_cadences },
               item_id: :iterations
             )
           end

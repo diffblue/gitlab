@@ -247,7 +247,7 @@ describe('BoardForm', () => {
       });
     });
 
-    it('should send iterationCadenceId when feature flag is on', async () => {
+    it('should send iterationCadenceId', async () => {
       mutate = jest.fn().mockResolvedValue({
         data: {
           updateBoard: { board: { id: 'gid://gitlab/Board/321' } },

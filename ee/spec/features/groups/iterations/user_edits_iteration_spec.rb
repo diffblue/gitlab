@@ -141,61 +141,25 @@ RSpec.describe 'User edits iteration' do
           end
         end
       end
-
-      # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/354878
-      # Remove with :iteration_cadences FF rollout
-      context 'using iteration without cadences' do
-        let(:iteration_page) { group_iteration_path(iteration.group, iteration.id) }
-        let(:edit_iteration_page) { edit_group_iteration_path(iteration.group, iteration.id) }
-        let(:new_start_date) { now - 1.day }
-        let(:new_due_date) { now }
-        let(:start_date_field) { page.first('[data-testid="gl-datepicker-input"]') }
-        let(:due_date_field) { all('[data-testid="gl-datepicker-input"]').last }
-        let(:start_date_input) { start_date_field.set(new_start_date) }
-        let(:due_date_input) { due_date_field.set(new_due_date) }
-
-        before do
-          stub_feature_flags(iteration_cadences: false)
-        end
-
-        it_behaves_like 'manually managed iteration'
-      end
     end
 
-    context 'as guest user' do
+    context 'as guest user', :js do
       before do
         sign_in(guest_user)
       end
 
-      context 'with cadences', :js do
-        it 'does not show edit dropdown' do
-          visit group_iteration_cadence_iteration_path(iteration.group, iteration_cadence_id: cadence.id, id: iteration.id)
+      it 'does not show edit dropdown' do
+        visit group_iteration_cadence_iteration_path(iteration.group, iteration_cadence_id: cadence.id, id: iteration.id)
 
-          expect(page).to have_content(iteration.title)
-          expect(page).not_to have_selector(dropdown_selector)
-        end
-
-        it 'redirects to cadence list page when loading edit page directly' do
-          visit edit_group_iteration_cadence_iteration_path(iteration.group, iteration_cadence_id: cadence.id, id: iteration.id)
-
-          expect(page).to have_content(cadence.title)
-          expect(page).to have_current_path("#{group_iteration_cadences_path(group)}/")
-        end
+        expect(page).to have_content(iteration.title)
+        expect(page).not_to have_selector(dropdown_selector)
       end
 
-      context 'without cadences' do
-        it 'does not show edit dropdown', :js do
-          visit group_iteration_path(iteration.group, iteration.id)
+      it 'redirects to cadence list page when loading edit page directly' do
+        visit edit_group_iteration_cadence_iteration_path(iteration.group, iteration_cadence_id: cadence.id, id: iteration.id)
 
-          expect(page).to have_content(iteration.title)
-          expect(page).not_to have_selector(dropdown_selector)
-        end
-
-        it '404s when loading edit page directly' do
-          visit edit_group_iteration_path(iteration.group, iteration.id)
-
-          expect(page).to have_gitlab_http_status(:not_found)
-        end
+        expect(page).to have_content(cadence.title)
+        expect(page).to have_current_path("#{group_iteration_cadences_path(group)}/")
       end
     end
   end

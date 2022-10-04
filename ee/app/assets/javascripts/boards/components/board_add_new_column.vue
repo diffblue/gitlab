@@ -16,7 +16,6 @@ import BoardAddNewColumnForm from '~/boards/components/board_add_new_column_form
 import { ListType } from '~/boards/constants';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 
@@ -71,7 +70,6 @@ export default {
   directives: {
     GlTooltip,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: [
     'scopedLabelsAvailable',
     'milestoneListsAvailable',
@@ -138,10 +136,6 @@ export default {
     },
     hasAssigneeSelection() {
       return this.assigneeTypeSelected && this.selectedItem;
-    },
-
-    shouldShowIterationCadence() {
-      return this.glFeatures.iterationCadences && this.iterationTypeSelected;
     },
 
     columnForSelected() {
@@ -309,7 +303,7 @@ export default {
 
     <template v-if="hasItems" #items>
       <gl-form-radio-group
-        v-if="shouldShowIterationCadence"
+        v-if="iterationTypeSelected"
         class="gl-overflow-hidden"
         data-testid="selectItem"
         @change="setSelectedItem"

@@ -21,7 +21,7 @@ module Types
 
     field :title, GraphQL::Types::String,
       null: true,
-      description: 'Title of the iteration. Title must be specified unless iteration_cadences feature flag is enabled.'
+      description: 'Title of the iteration.'
 
     field :description, GraphQL::Types::String,
       null: true, description: 'Description of the iteration.'

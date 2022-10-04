@@ -7,17 +7,15 @@ RSpec.shared_examples 'accessing iteration cadences' do
   let_it_be(:user) { create(:user) }
 
   before do
-    stub_feature_flags(iteration_cadences: feature_flag_available)
     group.add_member(user, role) unless role == :none
     sign_in(user)
   end
 
   describe 'index' do
-    where(:feature_flag_available, :role, :status) do
-      false | :developer | :not_found
-      true  | :none      | :not_found
-      true  | :guest     | :success
-      true  | :developer | :success
+    where(:role, :status) do
+      :none      | :not_found
+      :guest     | :success
+      :developer | :success
     end
 
     with_them do

@@ -35,28 +35,13 @@ RSpec.describe 'layouts/nav/sidebar/_project' do
         group.add_reporter(user)
       end
 
-      describe 'iteration_cadences flag enabled' do
-        it 'has a link to the iteration cadences path' do
-          stub_feature_flags(iteration_cadences: true)
-          allow(view).to receive(:current_user).and_return(user)
-          stub_licensed_features(iterations: true)
+      it 'has a link to the iteration cadences path' do
+        allow(view).to receive(:current_user).and_return(user)
+        stub_licensed_features(iterations: true)
 
-          render
+        render
 
-          expect(rendered).to have_link('Iterations', href: project_iteration_cadences_path(project))
-        end
-      end
-
-      describe 'iteration_cadences flag enabled' do
-        it 'has a link to the issue iterations path' do
-          stub_feature_flags(iteration_cadences: false)
-          allow(view).to receive(:current_user).and_return(user)
-          stub_licensed_features(iterations: true)
-
-          render
-
-          expect(rendered).to have_link('Iterations', href: project_iterations_path(project))
-        end
+        expect(rendered).to have_link('Iterations', href: project_iteration_cadences_path(project))
       end
     end
 

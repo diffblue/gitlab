@@ -86,14 +86,6 @@ RSpec.describe 'Creating an iteration cadence' do
         end
       end
 
-      context 'when iteration_cadences feature flag is disabled' do
-        before do
-          stub_feature_flags(iteration_cadences: false)
-        end
-
-        it_behaves_like 'a mutation that returns errors in the response', errors: ["Operation not allowed"]
-      end
-
       context 'when there are ActiveRecord validation errors' do
         let(:attributes) { { title: '', duration_in_weeks: 1, active: false, automatic: true } }
 
