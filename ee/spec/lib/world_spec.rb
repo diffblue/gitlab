@@ -7,7 +7,7 @@ RSpec.describe World do
     it 'does not return countries that are in the denied list' do
       result = described_class.all_countries
 
-      expect(result.map(&:name)).not_to include(World::DENYLIST)
+      expect(result.map(&:name)).not_to include(*World::DENYLIST)
     end
   end
 
@@ -30,6 +30,13 @@ RSpec.describe World do
       result = described_class.states_for_country('NLX')
 
       expect(result).to be_nil
+    end
+
+    it 'excludes blocked states from the list' do
+      country_code = 'UA' # Ukraine
+      states = described_class.states_for_country(country_code)
+
+      expect(states.keys).not_to include(*World::STATE_DENYLIST_FOR_COUNTRY[country_code])
     end
   end
 

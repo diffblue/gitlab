@@ -18,10 +18,19 @@ RSpec.describe CountriesController do
     it 'does not include list of denied countries' do
       get :index
 
-      # response is returned as [["Afghanistan", "AF"], ["Albania", "AL"], ..]
+      # response is returned as [["Country Name", "Country Code", "Country Flag Emoji", "Dialing Code"], ...]
       resultant_countries = json_response.map { |row| row[0] }
 
       expect(resultant_countries).not_to include(*world_deny_list)
+    end
+
+    it 'overrides Ukraine name and adds information about restricted regions' do
+      get :index
+
+      # response is returned as [["Country Name", "Country Code", "Country Flag Emoji", "Dialing Code"], ...]
+      country_ukraine = json_response.find { |row| row[0].include?('Ukraine') }
+
+      expect(country_ukraine[0]).to eq('Ukraine (except the Crimea, Donetsk, and Luhansk regions)')
     end
   end
 end
