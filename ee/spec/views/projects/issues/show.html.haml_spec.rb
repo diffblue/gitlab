@@ -20,16 +20,4 @@ RSpec.describe 'projects/issues/show' do
       expect(rendered).to have_selector('[aria-label="GitLab Team Member"]')
     end
   end
-
-  context 'for applicable incidents' do
-    before do
-      allow(view).to receive(:show_timeline_view_toggle?).and_return(true)
-    end
-
-    it 'renders a timeline toggle' do
-      render
-
-      expect(rendered).to have_selector('#js-incidents-timeline-toggle')
-    end
-  end
 end

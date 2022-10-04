@@ -38,7 +38,8 @@
     'data-roadmap-element-selector' => "##{roadmapElementID}",
     'data-container-element-selector' => ".#{containerClass}" }
 
-
+  .gl-display-flex.justify-content-between.content-block.content-block-small.emoji-list-container.js-noteable-awards
+    = render 'award_emoji/awards_block', awardable: @epic, inline: true, api_awards_path: award_emoji_epics_api_path(@epic)
   %div{ id: treeElementID, class: ['tab-pane', 'show', 'active'] }
     .row
       %section.col-md-12
@@ -75,12 +76,6 @@
       help_path: help_page_path('user/group/epics/linked_epics'),
       show_categorized_epics: 'true' } }
 
-  .d-flex.justify-content-between.content-block.content-block-small.emoji-list-container.js-noteable-awards
-    = render 'award_emoji/awards_block', awardable: @epic, inline: true, api_awards_path: award_emoji_epics_api_path(@epic)
-    .d-flex.flex-wrap.align-items-center.justify-content-lg-end
-      #js-vue-sort-issue-discussions
-      #js-vue-discussion-filter{ data: { default_filter: current_user&.notes_filter_for(@epic),
-        notes_filters: UserPreference.notes_filters.to_json } }
   .row
     %section.col-md-12
       -# haml-lint:disable InlineJavaScript

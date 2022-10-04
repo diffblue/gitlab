@@ -38,7 +38,7 @@ export default {
 
 <template>
   <div>
-    <div class="issuable-details detail-page-description content-block">
+    <div class="issuable-details detail-page-description content-block gl-pb-0 gl-border-none">
       <issuable-body
         :endpoint="endpoint"
         :update-endpoint="updateEndpoint"

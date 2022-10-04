@@ -221,6 +221,24 @@ RSpec.describe 'Incident details', :js do
     end
   end
 
+  describe 'timeline toggle button' do
+    let_it_be(:toggle_button_selector) { "[data-testid='timeline-toggle-button']" }
+
+    it 'by default, does not show timeline toggle button' do
+      visit(project_issues_incident_path(project, incident))
+
+      expect(page).not_to have_css(toggle_button_selector)
+    end
+
+    it 'with incident_timeline_view feature, shows timeline toggle button' do
+      stub_licensed_features(incident_timeline_view: true)
+
+      visit(project_issues_incident_path(project, incident))
+
+      expect(page).to have_css(toggle_button_selector)
+    end
+  end
+
   private
 
   def visit_incident_with_collapsed_sidebar
