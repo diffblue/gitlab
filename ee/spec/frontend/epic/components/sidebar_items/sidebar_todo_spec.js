@@ -45,7 +45,7 @@ describe('SidebarTodoComponent', () => {
     expect(buttonWrapper.exists()).toBe(true);
     expect(buttonWrapper.attributes()).toMatchObject({
       'aria-label': 'Add a to do',
-      'data-issuable-id': '1',
+      'data-issuable-id': mockEpicMeta.epicId.toString(),
       'data-issuable-type': 'epic',
     });
   });
