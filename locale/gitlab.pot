@@ -2384,12 +2384,6 @@ msgstr ""
 msgid "Add trigger"
 msgstr ""
 
-msgid "Add user(s) to the group:"
-msgstr ""
-
-msgid "Add users to group"
-msgstr ""
-
 msgid "Add variable"
 msgstr ""
 
@@ -32889,9 +32883,6 @@ msgstr ""
 msgid "Read more about GitLab at %{link_to_promo}."
 msgstr ""
 
-msgid "Read more about project permissions %{help_link_open}here%{help_link_close}"
-msgstr ""
-
 msgid "Read more about related epics"
 msgstr ""
 
@@ -43746,9 +43737,6 @@ msgid "Users requesting access to"
 msgstr ""
 
 msgid "Users to exclude from the rate limit"
-msgstr ""
-
-msgid "Users were successfully added."
 msgstr ""
 
 msgid "Users with a Guest role or those who don't belong to a Project or Group will not use a seat from your license."
