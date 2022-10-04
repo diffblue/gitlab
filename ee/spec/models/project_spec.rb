@@ -928,15 +928,15 @@ RSpec.describe Project do
       end
 
       it 'returns true' do
-        expect(project.has_active_hooks?).to be_truthy
-        expect(project.has_group_hooks?).to be_truthy
+        expect(project.has_active_hooks?).to eq(true)
+        expect(project.has_group_hooks?).to eq(true)
       end
     end
 
     context 'with no group hooks' do
       it 'returns false' do
-        expect(project.has_active_hooks?).to be_falsey
-        expect(project.has_group_hooks?).to be_falsey
+        expect(project.has_active_hooks?).to eq(false)
+        expect(project.has_group_hooks?).to eq(false)
       end
     end
   end
@@ -946,21 +946,21 @@ RSpec.describe Project do
 
     let(:project) { create(:project) }
 
-    it { is_expected.to eq(nil) }
+    it { is_expected.to eq(false) }
 
     context 'project is in a group' do
       let(:group) { create(:group) }
       let(:project) { create(:project, namespace: group) }
 
-      shared_examples 'returns nil when the feature is not available' do
+      shared_examples 'returns false when the feature is not available' do
         specify do
           stub_licensed_features(group_webhooks: false)
 
-          expect(subject).to eq(nil)
+          expect(subject).to eq(false)
         end
       end
 
-      it_behaves_like 'returns nil when the feature is not available'
+      it_behaves_like 'returns false when the feature is not available'
 
       it { is_expected.to eq(false) }
 
@@ -969,12 +969,12 @@ RSpec.describe Project do
 
         it { is_expected.to eq(true) }
 
-        it_behaves_like 'returns nil when the feature is not available'
+        it_behaves_like 'returns false when the feature is not available'
 
         context 'but the hook is not in scope' do
           subject { project.has_group_hooks?(:issue_hooks) }
 
-          it_behaves_like 'returns nil when the feature is not available'
+          it_behaves_like 'returns false when the feature is not available'
 
           it { is_expected.to eq(false) }
         end
@@ -985,7 +985,7 @@ RSpec.describe Project do
         let!(:group_hook) { create(:group_hook, group: parent_group) }
         let(:group) { create(:group, parent: parent_group) }
 
-        it_behaves_like 'returns nil when the feature is not available'
+        it_behaves_like 'returns false when the feature is not available'
 
         it { is_expected.to eq(true) }
       end

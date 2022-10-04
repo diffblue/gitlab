@@ -5744,40 +5744,40 @@ RSpec.describe Project, factory_default: :keep do
   describe '#has_active_hooks?' do
     let_it_be_with_refind(:project) { create(:project) }
 
-    it { expect(project.has_active_hooks?).to be_falsey }
+    it { expect(project.has_active_hooks?).to eq(false) }
 
     it 'returns true when a matching push hook exists' do
       create(:project_hook, push_events: true, project: project)
 
-      expect(project.has_active_hooks?(:merge_request_events)).to be_falsey
-      expect(project.has_active_hooks?).to be_truthy
+      expect(project.has_active_hooks?(:merge_request_hooks)).to eq(false)
+      expect(project.has_active_hooks?).to eq(true)
     end
 
     it 'returns true when a matching system hook exists' do
       create(:system_hook, push_events: true)
 
-      expect(project.has_active_hooks?(:merge_request_events)).to be_falsey
-      expect(project.has_active_hooks?).to be_truthy
+      expect(project.has_active_hooks?(:merge_request_hooks)).to eq(false)
+      expect(project.has_active_hooks?).to eq(true)
     end
 
     it 'returns true when a plugin exists' do
       expect(Gitlab::FileHook).to receive(:any?).twice.and_return(true)
 
-      expect(project.has_active_hooks?(:merge_request_events)).to be_truthy
-      expect(project.has_active_hooks?).to be_truthy
+      expect(project.has_active_hooks?(:merge_request_hooks)).to eq(true)
+      expect(project.has_active_hooks?).to eq(true)
     end
   end
 
   describe '#has_active_integrations?' do
     let_it_be(:project) { create(:project) }
 
-    it { expect(project.has_active_integrations?).to be_falsey }
+    it { expect(project.has_active_integrations?).to eq(false) }
 
     it 'returns true when a matching service exists' do
       create(:custom_issue_tracker_integration, push_events: true, merge_requests_events: false, project: project)
 
-      expect(project.has_active_integrations?(:merge_request_hooks)).to be_falsey
-      expect(project.has_active_integrations?).to be_truthy
+      expect(project.has_active_integrations?(:merge_request_hooks)).to eq(false)
+      expect(project.has_active_integrations?).to eq(true)
     end
   end
 

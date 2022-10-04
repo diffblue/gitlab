@@ -474,7 +474,7 @@ module EE
     end
 
     def has_group_hooks?(hooks_scope = :push_hooks)
-      return unless group && feature_available?(:group_webhooks)
+      return false unless group && feature_available?(:group_webhooks)
 
       group_hooks.hooks_for(hooks_scope).any?
     end
