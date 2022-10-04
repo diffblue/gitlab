@@ -17349,6 +17349,9 @@ msgstr ""
 msgid "Geo|Errors:"
 msgstr ""
 
+msgid "Geo|External URL"
+msgstr ""
+
 msgid "Geo|Failed"
 msgstr ""
 
