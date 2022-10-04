@@ -1,6 +1,6 @@
 import { GlModal, GlFormInput } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import Vuex from 'vuex';
 import {
   i18n,
@@ -98,6 +98,8 @@ describe('ValueStreamFormContent', () => {
 
   const findModal = () => wrapper.findComponent(GlModal);
   const findExtendedFormFields = () => wrapper.findByTestId('extended-form-fields');
+  const findDefaultStages = () => findExtendedFormFields().findAllComponents(DefaultStageFields);
+  const findCustomStages = () => findExtendedFormFields().findAllComponents(CustomStageFields);
   const findPresetSelector = () => wrapper.findByTestId('vsa-preset-selector');
   const findRestoreButton = () => wrapper.findByTestId('vsa-reset-button');
   const findRestoreStageButton = (index) => wrapper.findByTestId(`stage-action-restore-${index}`);
@@ -105,12 +107,12 @@ describe('ValueStreamFormContent', () => {
   const findBtn = (btn) => findModal().props(btn);
   const findCustomStageEventField = (index = 0) =>
     wrapper.findAllComponents(CustomStageEventField).at(index);
+  const findFieldErrors = (testId) => wrapper.findByTestId(testId).attributes('invalid-feedback');
 
   const clickSubmit = () => findModal().vm.$emit('primary', mockEvent);
   const clickAddStage = () => findModal().vm.$emit('secondary', mockEvent);
   const clickRestoreStageAtIndex = (index) => findRestoreStageButton(index).vm.$emit('click');
-  const expectFieldError = (testId, error = '') =>
-    expect(wrapper.findByTestId(testId).attributes('invalid-feedback')).toBe(error);
+  const expectFieldError = (testId, error = '') => expect(findFieldErrors(testId)).toBe(error);
   const expectCustomFieldError = (index, attr, error = '') =>
     expect(findCustomStageEventField(index).attributes(attr)).toBe(error);
   const expectStageTransitionKeys = (stages) =>
@@ -143,35 +145,38 @@ describe('ValueStreamFormContent', () => {
         expect(findPresetSelector().exists()).toBe(true);
       });
 
-      it('will toggle between the blank and default templates', () => {
-        expect(wrapper.vm.stages).toHaveLength(defaultStageConfig.length);
+      it('will toggle between the blank and default templates', async () => {
+        expect(findDefaultStages()).toHaveLength(defaultStageConfig.length);
+        expect(findCustomStages()).toHaveLength(0);
 
-        findPresetSelector().vm.$emit('input', PRESET_OPTIONS_BLANK);
+        await findPresetSelector().vm.$emit('input', PRESET_OPTIONS_BLANK);
 
-        expect(wrapper.vm.stages).toHaveLength(1);
+        expect(findDefaultStages()).toHaveLength(0);
+        expect(findCustomStages()).toHaveLength(1);
 
-        findPresetSelector().vm.$emit('input', PRESET_OPTIONS_DEFAULT);
+        await findPresetSelector().vm.$emit('input', PRESET_OPTIONS_DEFAULT);
 
-        expect(wrapper.vm.stages).toHaveLength(defaultStageConfig.length);
+        expect(findDefaultStages()).toHaveLength(defaultStageConfig.length);
+        expect(findCustomStages()).toHaveLength(0);
       });
-    });
 
-    it('each stage has a transition key when toggling', () => {
-      findPresetSelector().vm.$emit('input', PRESET_OPTIONS_BLANK);
+      it('each stage has a transition key when toggling', async () => {
+        await findPresetSelector().vm.$emit('input', PRESET_OPTIONS_BLANK);
 
-      expectStageTransitionKeys(wrapper.vm.stages);
+        expectStageTransitionKeys(wrapper.vm.stages);
 
-      findPresetSelector().vm.$emit('input', PRESET_OPTIONS_DEFAULT);
+        await findPresetSelector().vm.$emit('input', PRESET_OPTIONS_DEFAULT);
 
-      expectStageTransitionKeys(wrapper.vm.stages);
-    });
+        expectStageTransitionKeys(wrapper.vm.stages);
+      });
 
-    it('does not display any hidden stages', () => {
-      expect(findHiddenStages().length).toBe(0);
-    });
+      it('does not display any hidden stages', () => {
+        expect(findHiddenStages().length).toBe(0);
+      });
 
-    it('will fetch group labels', () => {
-      expect(fetchGroupLabelsMock).toHaveBeenCalled();
+      it('will fetch group labels', () => {
+        expect(fetchGroupLabelsMock).toHaveBeenCalled();
+      });
     });
 
     describe('Add stage button', () => {
@@ -187,20 +192,23 @@ describe('ValueStreamFormContent', () => {
         expect(findBtn('actionSecondary')).toMatchObject({ text: 'Add another stage' });
       });
 
-      it('adds a blank custom stage when clicked', () => {
-        expect(wrapper.vm.stages).toHaveLength(defaultStageConfig.length);
+      it('adds a blank custom stage when clicked', async () => {
+        expect(findDefaultStages().length).toBe(defaultStageConfig.length);
+        expect(findCustomStages().length).toBe(0);
 
-        clickAddStage();
+        await clickAddStage();
 
-        expect(wrapper.vm.stages.length).toBe(defaultStageConfig.length + 1);
+        expect(findDefaultStages().length).toBe(defaultStageConfig.length);
+        expect(findCustomStages().length).toBe(1);
       });
 
-      it('validates existing fields when clicked', () => {
-        expect(wrapper.vm.nameError).toHaveLength(0);
+      it('validates existing fields when clicked', async () => {
+        const fieldTestId = 'create-value-stream-name';
+        expect(findFieldErrors(fieldTestId)).toBeUndefined();
 
-        clickAddStage();
+        await clickAddStage();
 
-        expect(wrapper.vm.nameError).toEqual(['Name is required']);
+        expectFieldError(fieldTestId, 'Name is required');
       });
 
       it('each stage has a transition key', () => {
@@ -291,16 +299,15 @@ describe('ValueStreamFormContent', () => {
 
       describe('restore defaults button', () => {
         it('will clear the form fields', async () => {
-          expect(wrapper.vm.stages).toHaveLength(stageCount);
+          expect(findCustomStages().length).toBe(stageCount);
 
-          clickAddStage();
-          await nextTick();
+          await clickAddStage();
 
-          expect(wrapper.vm.stages).toHaveLength(stageCount + 1);
+          expect(findCustomStages().length).toBe(stageCount + 1);
 
-          findRestoreButton().vm.$emit('click');
+          await findRestoreButton().vm.$emit('click');
 
-          expect(wrapper.vm.stages).toHaveLength(stageCount);
+          expect(findCustomStages().length).toBe(stageCount);
         });
       });
 
@@ -326,15 +333,19 @@ describe('ValueStreamFormContent', () => {
         });
 
         it('when `Restore stage` is clicked, the stage is restored', async () => {
-          clickRestoreStageAtIndex(1);
-          await nextTick();
+          expect(findHiddenStages().length).toBe(hiddenStages.length);
+          expect(findDefaultStages().length).toBe(0);
+          expect(findCustomStages().length).toBe(stageCount);
+
+          await clickRestoreStageAtIndex(1);
 
           expect(findHiddenStages().length).toBe(hiddenStages.length - 1);
-          expect(wrapper.vm.stages.length).toBe(stageCount + 1);
+          expect(findDefaultStages().length).toBe(1);
+          expect(findCustomStages().length).toBe(stageCount);
         });
 
-        it('when a stage is restored it has a transition key', () => {
-          clickRestoreStageAtIndex(1);
+        it('when a stage is restored it has a transition key', async () => {
+          await clickRestoreStageAtIndex(1);
 
           expect(wrapper.vm.stages[stageCount].transitionKey).toContain(
             `stage-${hiddenStages[1].name}-`,
@@ -360,24 +371,25 @@ describe('ValueStreamFormContent', () => {
           expect(findBtn('actionSecondary')).toMatchObject({ text: i18n.BTN_ADD_ANOTHER_STAGE });
         });
 
-        it('adds a blank custom stage when clicked', () => {
-          expect(wrapper.vm.stages.length).toBe(stageCount);
+        it('adds a blank custom stage when clicked', async () => {
+          expect(findCustomStages().length).toBe(stageCount);
 
-          clickAddStage();
+          await clickAddStage();
 
-          expect(wrapper.vm.stages.length).toBe(stageCount + 1);
+          expect(findCustomStages().length).toBe(stageCount + 1);
         });
 
-        it('validates existing fields when clicked', () => {
-          expect(wrapper.vm.nameError).toEqual([]);
+        it('validates existing fields when clicked', async () => {
+          const fieldTestId = 'create-value-stream-name';
+          expect(findFieldErrors(fieldTestId)).toBeUndefined();
 
-          wrapper
+          await wrapper
             .findByTestId('create-value-stream-name')
             .findComponent(GlFormInput)
             .vm.$emit('input', '');
-          clickAddStage();
+          await clickAddStage();
 
-          expect(wrapper.vm.nameError).toEqual(['Name is required']);
+          expectFieldError(fieldTestId, 'Name is required');
         });
       });
 
