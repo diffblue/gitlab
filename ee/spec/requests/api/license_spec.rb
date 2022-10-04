@@ -137,7 +137,6 @@ RSpec.describe API::License, api: true do
       expect(response).to have_gitlab_http_status(:ok)
 
       2.times do
-        License.reset_current # user_limit attribute is cached for 1 minute
         expect(json_response.shift.symbolize_keys).to contain_exactly(*license_json(licenses.pop))
       end
     end
