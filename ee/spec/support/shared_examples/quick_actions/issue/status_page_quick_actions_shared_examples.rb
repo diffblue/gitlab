@@ -8,7 +8,6 @@ RSpec.shared_examples 'status page quick actions' do
 
     before do
       stub_licensed_features(status_page: true)
-      stub_feature_flags(remove_user_attributes_projects: false)
     end
 
     shared_examples 'skip silently' do
@@ -42,7 +41,7 @@ RSpec.shared_examples 'status page quick actions' do
         wait_for_requests
 
         expect(page).to have_content('Published issue')
-        expect(page).to have_content("#{user.username} published this issue to the status page")
+        expect(page).to have_content("#{user.name} published this issue to the status page")
       end
     end
 
@@ -52,7 +51,7 @@ RSpec.shared_examples 'status page quick actions' do
 
         add_note('/publish')
 
-        expect(page).not_to have_content("#{user.username} published this issue to the status page")
+        expect(page).not_to have_content("#{user.name} published this issue to the status page")
         expect(page).to have_content('Failed to publish issue on status page.')
       end
     end

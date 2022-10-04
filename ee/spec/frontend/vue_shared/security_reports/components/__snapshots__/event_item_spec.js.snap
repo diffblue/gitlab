@@ -35,14 +35,11 @@ exports[`Event Item with action buttons renders the action buttons 1`] = `
         <span
           class="note-header-author-name gl-font-weight-bold"
         >
-          Tanuki
+          
+        Tanuki
       
-          <!---->
-           
         </span>
       </a>
-       
-      <!---->
        
       <span
         class="text-nowrap author-username"

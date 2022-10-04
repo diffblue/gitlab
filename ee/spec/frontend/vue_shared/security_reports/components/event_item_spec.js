@@ -11,12 +11,6 @@ describe('Event Item', () => {
   const mountComponent = (propsData, mountFn = shallowMountExtended) => {
     wrapper = mountFn(Component, {
       ...propsData,
-      provide: {
-        glFeatures: {
-          removeUserAttributesProjects: false,
-          removeUserAttributesGroups: false,
-        },
-      },
     });
   };
 
