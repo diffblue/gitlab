@@ -347,7 +347,7 @@ Returns [`Namespace`](#namespace).
 
 ### `Query.package`
 
-Find a package. This field can only be resolved for one query in any single request.
+Find a package. This field can only be resolved for one query in any single request. Returns `null` if a package has no `default` status.
 
 Returns [`PackageDetailsType`](#packagedetailstype).
 
