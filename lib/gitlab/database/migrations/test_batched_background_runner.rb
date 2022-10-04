@@ -5,10 +5,9 @@ module Gitlab
     module Migrations
       class TestBatchedBackgroundRunner < BaseBackgroundRunner
         include Gitlab::Database::DynamicModelHelpers
-        attr_reader :connection
 
         def initialize(result_dir:, connection:)
-          super(result_dir: result_dir)
+          super(result_dir: result_dir, connection: connection)
           @connection = connection
         end
 

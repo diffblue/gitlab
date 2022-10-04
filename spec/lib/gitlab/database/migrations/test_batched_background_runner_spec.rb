@@ -67,20 +67,34 @@ RSpec.describe Gitlab::Database::Migrations::TestBatchedBackgroundRunner, :freez
     end
 
     context 'running a real background migration' do
-      it 'runs sampled jobs from the batched background migration' do
+      before do
         queue_migration('CopyColumnUsingBackgroundMigrationJob',
                         table_name, :id,
                         :id, :data,
                         batch_size: 100,
                         job_interval: 5.minutes) # job_interval is skipped when testing
+      end
 
+      subject(:sample_migration) do
+        described_class.new(result_dir: result_dir, connection: connection).run_jobs(for_duration: 1.minute)
+      end
+
+      it 'runs sampled jobs from the batched background migration' do
         # Expect that running sampling for this migration processes some of the rows. Sampling doesn't run
         # over every row in the table, so this does not completely migrate the table.
-        expect { described_class.new(result_dir: result_dir, connection: connection).run_jobs(for_duration: 1.minute) }
-          .to change {
-                define_batchable_model(table_name, connection: connection).where('id IS DISTINCT FROM data').count
-              }
-                .by_at_most(-1)
+        expect { subject }.to change {
+                                define_batchable_model(table_name, connection: connection)
+                                  .where('id IS DISTINCT FROM data').count
+                              }.by_at_most(-1)
+      end
+
+      it 'uses the correct connection to instrument the background migration' do
+        expect_next_instance_of(Gitlab::Database::Migrations::Instrumentation) do |instrumentation|
+          expect(instrumentation).to receive(:observe).with(hash_including(connection: connection))
+                                                      .at_least(:once).and_call_original
+        end
+
+        subject
       end
     end
 
