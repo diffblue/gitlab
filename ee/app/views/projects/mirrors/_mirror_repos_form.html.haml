@@ -9,9 +9,7 @@
 
 .form-group
   = label_tag :mirror_direction, _('Mirror direction'), class: 'label-light'
-  .select-wrapper
-    = select_tag :mirror_direction, options_for_select(direction_options), class: 'form-control gl-form-select select-control js-mirror-direction qa-mirror-direction', disabled: (direction_options.count == 1) || has_existing_pull_mirror
-    = sprite_icon('chevron-down', css_class: "gl-icon gl-absolute gl-top-3 gl-right-3 gl-text-gray-200")
+  = select_tag :mirror_direction, options_for_select(direction_options), class: 'custom-select gl-form-select js-mirror-direction qa-mirror-direction', disabled: (direction_options.count == 1) || has_existing_pull_mirror
 
 .js-form-insertion-point
 
@@ -28,8 +26,8 @@
     = render partial: 'projects/mirrors/authentication_method', locals: { f: import_form }
 
   .form-group
-    = f.label :mirror_user_id_select, _('Mirror user'), class: 'label-light'
-    = select_tag(:mirror_user_id_select, options_for_mirror_user, class: 'js-mirror-user select2 lg gl-mb-2', required: true, disabled: true)
+    = f.label :mirror_user_name, _('Mirror user'), class: 'label-light'
+    = f.text_field :mirror_user_name, value: current_user.name, class: 'js-mirror-user form-control gl-form-input gl-mb-2', required: true, disabled: true
     .help-block
       = _('You will be the author of all events in the activity feed that are the result of an update, like new branches being created or new commits being pushed to existing branches.')
 
