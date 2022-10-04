@@ -61,7 +61,7 @@ export default {
         </template>
       </gl-form-radio>
 
-      <div v-show="maskEnabled" class="gl-ml-6" data-testid="url-mask-section">
+      <div v-if="maskEnabled" class="gl-ml-6" data-testid="url-mask-section">
         <form-url-mask-item :index="0" />
         <gl-form-group :label="$options.i18n.urlPreview" label-for="webhook-url-preview">
           <gl-form-input id="webhook-url-preview" :value="maskedUrl" readonly />

@@ -30,10 +30,10 @@ describe('FormUrlApp', () => {
       expect(findUrlMaskEnable().text()).toBe(FormUrlApp.i18n.radioMaskUrlText);
     });
 
-    it('does not show mask section', () => {
+    it('does not render mask section', () => {
       createComponent();
 
-      expect(findUrlMaskSection().isVisible()).toBe(false);
+      expect(findUrlMaskSection().exists()).toBe(false);
     });
 
     describe('on radio select', () => {
@@ -44,8 +44,8 @@ describe('FormUrlApp', () => {
         await nextTick();
       });
 
-      it('shows mask section', () => {
-        expect(findUrlMaskSection().isVisible()).toBe(true);
+      it('renders mask section', () => {
+        expect(findUrlMaskSection().exists()).toBe(true);
       });
     });
   });
