@@ -48,14 +48,6 @@ RSpec.describe IncidentManagement::IssuableResourceLinksFinder do
 
         it { is_expected.to eq(IncidentManagement::IssuableResourceLink.none) }
       end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(incident_resource_links_widget: false)
-        end
-
-        it { is_expected.to eq(IncidentManagement::IssuableResourceLink.none) }
-      end
     end
 
     context 'when feature is not available' do

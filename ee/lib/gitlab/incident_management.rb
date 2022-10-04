@@ -11,7 +11,6 @@ module Gitlab
     end
 
     def self.issuable_resource_links_available?(project)
-      Feature.enabled?(:incident_resource_links_widget, project) &&
       project.licensed_feature_available?(:issuable_resource_links)
     end
   end

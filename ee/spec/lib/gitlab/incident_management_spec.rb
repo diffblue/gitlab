@@ -58,14 +58,6 @@ RSpec.describe Gitlab::IncidentManagement do
 
     it { is_expected.to be_truthy }
 
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(incident_resource_links_widget: false)
-      end
-
-      it { is_expected.to be_falsey }
-    end
-
     context 'when feature is not avaiable' do
       before do
         stub_licensed_features(issuable_resource_links: false)

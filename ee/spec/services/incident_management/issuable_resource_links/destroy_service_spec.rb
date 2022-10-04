@@ -59,14 +59,6 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::DestroyService do
       it_behaves_like 'error response'
     end
 
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(incident_resource_links_widget: false)
-      end
-
-      it_behaves_like 'error response'
-    end
-
     context 'when an error occurs during removal' do
       before do
         allow(issuable_resource_link).to receive(:destroy).and_return(false)

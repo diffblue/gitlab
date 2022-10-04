@@ -52,16 +52,4 @@ RSpec.describe 'Removing an issuable resource link' do
     )
     expect { issuable_resource_link.reload }.to raise_error ActiveRecord::RecordNotFound
   end
-
-  context 'when feature flag is disabled' do
-    before do
-      stub_feature_flags(incident_resource_links_widget: false)
-    end
-
-    it 'returns nil' do
-      post_graphql_mutation(mutation, current_user: user)
-
-      expect(mutation_response).to be_nil
-    end
-  end
 end
