@@ -1,51 +1,54 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import component from 'ee/reports/components/modal_open_name.vue';
+import { mount, createWrapper } from '@vue/test-utils';
+import ModalOpenName from 'ee/reports/components/modal_open_name.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
-import { mountComponentWithStore } from 'helpers/vue_mount_component_helper';
 import { BV_SHOW_MODAL } from '~/lib/utils/constants';
 
 Vue.use(Vuex);
 
 describe('Modal open name', () => {
-  const Component = Vue.extend(component);
-  let vm;
+  let wrapper;
+  let setModalDataAction;
 
-  const store = new Vuex.Store({
-    actions: {
-      setModalData: () => {},
-    },
-    state: {},
-    mutations: {},
-  });
+  const createComponent = () => {
+    setModalDataAction = jest.fn();
 
-  beforeEach(() => {
-    vm = mountComponentWithStore(Component, {
+    const store = new Vuex.Store({
+      actions: {
+        setModalData: setModalDataAction,
+      },
+    });
+
+    wrapper = mount(ModalOpenName, {
       store,
-      props: {
+      propsData: {
         issue: {
           title: 'Issue',
         },
         status: 'failed',
       },
     });
+  };
+
+  beforeEach(() => {
+    createComponent();
   });
 
   afterEach(() => {
-    vm.$destroy();
+    wrapper.destroy();
   });
 
   it('renders the issue name', () => {
-    expect(vm.$el.textContent.trim()).toEqual('Issue');
+    expect(wrapper.text()).toEqual('Issue');
   });
 
-  it('calls setModalData actions and opens modal when button is clicked', () => {
-    jest.spyOn(vm, 'setModalData').mockImplementation(() => {});
-    jest.spyOn(vm.$root, '$emit');
+  it('calls setModalData actions and opens modal when button is clicked', async () => {
+    const rootWrapper = createWrapper(wrapper.vm.$root);
 
-    vm.$el.click();
+    await wrapper.trigger('click');
 
-    expect(vm.setModalData).toHaveBeenCalled();
-    expect(vm.$root.$emit).toHaveBeenCalledWith(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
+    expect(setModalDataAction).toHaveBeenCalled();
+    expect(rootWrapper.emitted(BV_SHOW_MODAL)[0]).toStrictEqual([VULNERABILITY_MODAL_ID]);
   });
 });
