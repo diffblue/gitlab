@@ -303,6 +303,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/profiles/preferences.css"
     config.assets.precompile << "page_bundles/project.css"
     config.assets.precompile << "page_bundles/projects_edit.css"
+    config.assets.precompile << "page_bundles/prometheus.css"
     config.assets.precompile << "page_bundles/reports.css"
     config.assets.precompile << "page_bundles/roadmap.css"
     config.assets.precompile << "page_bundles/requirements.css"
