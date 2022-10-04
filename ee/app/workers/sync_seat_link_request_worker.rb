@@ -7,8 +7,11 @@ class SyncSeatLinkRequestWorker
 
   feature_category :provision
 
-  # Retry for up to approximately 6 days
+  # Retry for up to approximately 2 days
   sidekiq_options retry: 20
+  sidekiq_retry_in do |count, _exception|
+    30.minutes + rand(20.minutes)
+  end
 
   idempotent!
   worker_has_external_dependencies!
