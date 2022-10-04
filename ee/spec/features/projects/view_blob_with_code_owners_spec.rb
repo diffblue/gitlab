@@ -27,6 +27,7 @@ RSpec.describe 'File blob > Code owners', :js do
       it 'shows the code owners related to a file' do
         visit_blob('docs/CODEOWNERS', ref: 'with-codeowners')
 
+        wait_for_requests
         within('.file-owner-content') do
           expect(page).to have_content('Code owners')
           expect(page).to have_link(code_owner.name)
