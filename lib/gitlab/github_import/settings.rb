@@ -5,26 +5,24 @@ module Gitlab
     class Settings
       OPTIONAL_STAGES = {
         single_endpoint_issue_events_import: {
-          label: 'Import Issue/MR events',
+          label: 'Import issue and pull request events',
           details: <<-TEXT.split("\n").map(&:strip).join(' ')
-            Such as opened/closed, renamed, labeled/unlabeled etc.
-            Extra time of importing events commonly depends on how many issues/mr-s your project has.
+            For example, opened or closed, renamed, and labeled or unlabeled.
+            Time required to import these events depends on how many issues or pull requests your project has.
           TEXT
         },
         single_endpoint_notes_import: {
-          label: 'Thorough Notes import',
+          label: 'Use alternative comments import method',
           details: <<-TEXT.split("\n").map(&:strip).join(' ')
-            When GitHub Importer runs on extremely large projects (e.g. nodejs/node repository)
-            not all notes & diff notes are being imported.
+            The default method can skip some comments in large projects because of limitations of the GitHub API.
           TEXT
         },
         attachments_import: {
           label: 'Import Markdown attachments',
           details: <<-TEXT.split("\n").map(&:strip).join(' ')
-            Repository's comments, release posts, MR-s/Issues description could include some images,
-            text or binary attachments. The text of mentioned entities contains markdown with links to
-            those files on GitHub. If you decide not to import them - all of the links will become broken
-            with some time if you remove repository from GitHub.
+            Import Markdown attachments from repository comments, release posts, issue descriptions,
+            and pull request descriptions. These can include images, text, or binary attachments.
+            If not imported, links in Markdown to attachments break after you remove the attachments from GitHub.
           TEXT
         }
       }.freeze

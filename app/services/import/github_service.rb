@@ -104,7 +104,7 @@ module Import
       if blocked_url?
         log_and_return_error("Invalid URL: #{url}", _("Invalid URL: %{url}") % { url: url }, :bad_request)
       elsif !authorized?
-        error(_('This namespace has already been taken! Please choose another one.'), :unprocessable_entity)
+        error(_('This namespace has already been taken. Choose a different one.'), :unprocessable_entity)
       elsif oversized?
         error(oversize_error_message, :unprocessable_entity)
       end
