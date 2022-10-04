@@ -9893,17 +9893,17 @@ An API Fuzzing scan profile.
 
 ### `ApprovalProjectRule`
 
-Describes a project approval rule for who can approve merge requests.
+Describes a project approval rule regarding who can approve merge requests.
 
 #### Fields
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="approvalprojectruleapprovalsrequired"></a>`approvalsRequired` | [`Int!`](#int) | Number of required approvals. |
-| <a id="approvalprojectruleeligibleapprovers"></a>`eligibleApprovers` | [`UserCoreConnection`](#usercoreconnection) | List of users eligible to approve merge requests. (see [Connections](#connections)) |
+| <a id="approvalprojectruleapprovalsrequired"></a>`approvalsRequired` | [`Int`](#int) | Number of required approvals. |
+| <a id="approvalprojectruleeligibleapprovers"></a>`eligibleApprovers` | [`UserCoreConnection`](#usercoreconnection) | List of users eligible to approve merge requests for this approval rule. (see [Connections](#connections)) |
 | <a id="approvalprojectruleid"></a>`id` | [`GlobalID!`](#globalid) | ID of the rule. |
-| <a id="approvalprojectrulename"></a>`name` | [`String!`](#string) | Name of the rule. |
-| <a id="approvalprojectruletype"></a>`type` | [`ApprovalRuleType!`](#approvalruletype) | Type of the rule. |
+| <a id="approvalprojectrulename"></a>`name` | [`String`](#string) | Name of the rule. |
+| <a id="approvalprojectruletype"></a>`type` | [`ApprovalRuleType`](#approvalruletype) | Type of the rule. |
 
 ### `ApprovalRule`
 

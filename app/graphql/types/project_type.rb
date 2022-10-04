@@ -528,9 +528,9 @@ module Types
 
     field :branch_rules,
           Types::Projects::BranchRuleType.connection_type,
-          method: :protected_branches,
           null: true,
-          description: "Branch rules configured for the project."
+          description: "Branch rules configured for the project.",
+          resolver: Resolvers::Projects::BranchRulesResolver
 
     def timelog_categories
       object.project_namespace.timelog_categories if Feature.enabled?(:timelog_categories)

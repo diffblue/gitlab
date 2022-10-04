@@ -18,7 +18,6 @@ RSpec.describe 'getting approval project rules for a branch rule' do
   end
 
   let(:variables) { { path: project.full_path } }
-  let(:fields) { all_graphql_fields_for('ApprovalProjectRule') }
   let(:approval_project_rule_data) { approval_project_rules_data.first }
   let(:branch_rules_data) { graphql_data_at('project', 'branchRules', 'nodes') }
   let(:approval_project_rules_data) do
@@ -33,7 +32,7 @@ RSpec.describe 'getting approval project rules for a branch rule' do
           nodes {
             approvalRules {
               nodes {
-                #{fields}
+                #{all_graphql_fields_for('ApprovalProjectRule')}
               }
             }
           }
@@ -62,7 +61,7 @@ RSpec.describe 'getting approval project rules for a branch rule' do
       post_graphql(query, current_user: current_user, variables: variables)
     end
 
-    it_behaves_like 'a working graphql query' do
+    it_behaves_like 'a working graphql query', :aggregate_failures do
       it 'returns all approval project rule data' do
         expect(approval_project_rules_data).to be_an Array
         expect(approval_project_rules_data.size).to eq(1)
@@ -78,6 +77,21 @@ RSpec.describe 'getting approval project rules for a branch rule' do
         eligible_approvers = graphql_dig_at(approval_project_rule_data, 'eligibleApprovers', 'nodes')
         expect(eligible_approvers.count).to eq(1)
         expect(eligible_approvers.first['name']).to eq(approval_project_rule.approvers.first.name)
+      end
+
+      it 'avoids N+1 queries' do
+        control = ActiveRecord::QueryRecorder.new do
+          post_graphql(query, current_user: current_user, variables: variables)
+        end.count
+
+        number_of_rules = 3
+
+        create_list(:approval_project_rule, number_of_rules, :requires_approval,
+          project: project, protected_branches: [branch_rule], users: [current_user])
+
+        expect do
+          post_graphql(query, current_user: current_user, variables: variables)
+        end.not_to exceed_query_limit(control).with_threshold(number_of_rules * 2) # TODO: https://gitlab.com/gitlab-org/gitlab/-/issues/376723
       end
     end
   end
