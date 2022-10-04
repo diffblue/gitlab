@@ -54,6 +54,12 @@ RSpec.describe Resolvers::Epics::DefaultProjectForIssueCreationResolver do
       it { is_expected.to be_nil }
     end
 
+    context 'when there is no signed in user' do
+      let_it_be(:current_user) { nil }
+
+      it { is_expected.to be_nil }
+    end
+
     context 'with sufficient rights' do
       context 'when last event was an issue creation' do
         let_it_be(:issue_creation_event) do
