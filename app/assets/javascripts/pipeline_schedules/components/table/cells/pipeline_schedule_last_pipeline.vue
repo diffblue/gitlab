@@ -16,7 +16,7 @@ export default {
       return this.schedule.lastPipeline;
     },
     lastPipelineStatus() {
-      return this.schedule.lastPipeline.detailedStatus;
+      return this.schedule?.lastPipeline?.detailedStatus;
     },
   },
 };
