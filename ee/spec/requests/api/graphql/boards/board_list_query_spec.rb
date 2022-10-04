@@ -16,7 +16,7 @@ RSpec.describe 'Querying a Board list' do
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group) }
   let_it_be(:current_iteration1) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence1) }
   let_it_be(:current_iteration2) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence2) }
-  let_it_be(:issue1) { create(:issue, project: project, labels: [label], iteration: current_iteration1) }
+  let_it_be(:issue1) { create(:issue, project: project, labels: [label], iteration: current_iteration1, health_status: :at_risk) }
   let_it_be(:issue2) { create(:issue, project: project, labels: [label], iteration: current_iteration2) }
 
   let(:current_user) { unknown_user }
@@ -49,6 +49,12 @@ RSpec.describe 'Querying a Board list' do
     describe 'issue filters' do
       context 'when filtering by iteration arguments' do
         let(:filters) { { iterationWildcardId: :CURRENT, iterationCadenceId: [iteration_cadence2.to_global_id.to_s] } }
+
+        it { is_expected.to include({ 'issuesCount' => 1, 'title' => list.title }) }
+      end
+
+      context 'when filtering by health_status argument' do
+        let(:filters) { { health_status_filter: :ANY } }
 
         it { is_expected.to include({ 'issuesCount' => 1, 'title' => list.title }) }
       end

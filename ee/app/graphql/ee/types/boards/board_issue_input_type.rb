@@ -23,6 +23,11 @@ module EE
           argument :weight_wildcard_id, ::Types::Boards::WeightWildcardIdEnum,
                    required: false,
                    description: 'Filter by weight ID wildcard. Incompatible with weight.'
+
+          argument :health_status_filter, ::Types::HealthStatusFilterEnum,
+                    required: false,
+                    as: :health_status,
+                    description: 'Health status of the issue, "none" and "any" values are supported.'
         end
       end
     end

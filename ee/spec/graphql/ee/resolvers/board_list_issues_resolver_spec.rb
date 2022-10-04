@@ -18,10 +18,10 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
   let_it_be(:iteration) { create(:iteration, :with_title, group: group, start_date: 1.week.ago, due_date: 2.days.ago, iterations_cadence: iteration_cadence1) }
   let_it_be(:current_iteration) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence2) }
 
-  let_it_be(:issue1) { create(:issue, project: project, labels: [label], weight: 3) }
+  let_it_be(:issue1) { create(:issue, project: project, labels: [label], weight: 3, health_status: 'at_risk') }
   let_it_be(:issue2) { create(:issue, project: project, labels: [label], iteration: iteration) }
-  let_it_be(:issue3) { create(:issue, project: project, labels: [label]) }
-  let_it_be(:issue4) { create(:issue, project: project, labels: [label], iteration: current_iteration, weight: 1) }
+  let_it_be(:issue3) { create(:issue, project: project, labels: [label], health_status: 'on_track') }
+  let_it_be(:issue4) { create(:issue, project: project, labels: [label], iteration: current_iteration, weight: 1, health_status: 'needs_attention') }
 
   let_it_be(:epic_issue) { create(:epic_issue, epic: epic, issue: issue1) }
 
@@ -156,6 +156,30 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
 
           expect(result).to contain_exactly(issue2, issue4)
         end
+      end
+    end
+
+    describe 'filter by health status' do
+      context 'when filtering by specific health status' do
+        it 'only returns issues that are at risk' do
+          expect(resolve_board_list_issues({ filters: { health_status_filter: Issue.health_statuses[:at_risk] } })).to contain_exactly(issue1)
+        end
+
+        it 'only returns issues that need attention' do
+          expect(resolve_board_list_issues({ filters: { health_status_filter: Issue.health_statuses[:needs_attention] } })).to contain_exactly(issue4)
+        end
+
+        it 'only returns issues that are on track' do
+          expect(resolve_board_list_issues({ filters: { health_status_filter: Issue.health_statuses[:on_track] } })).to contain_exactly(issue3)
+        end
+      end
+
+      context 'when filtering by any health status' do
+        specify { expect(resolve_board_list_issues({ filters: { health_status_filter: 'any' } })).to contain_exactly(issue1, issue3, issue4) }
+      end
+
+      context 'when filtering by no health status' do
+        specify { expect(resolve_board_list_issues({ filters: { health_status_filter: 'none' } })).to contain_exactly(issue2) }
       end
     end
   end
