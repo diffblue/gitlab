@@ -10,6 +10,7 @@ RSpec.describe IterationsFinder do
   let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 1, title: 'one week iterations') }
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group, active: true, duration_in_weeks: 2, title: 'two week iterations') }
   let_it_be(:iteration_cadence3) { create(:iterations_cadence, group: root, active: true, duration_in_weeks: 3, title: 'three week iterations') }
+
   let_it_be(:closed_iteration) { create(:closed_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, start_date: 7.days.ago, due_date: 2.days.ago) }
   let_it_be(:started_group_iteration) { create(:current_iteration, :skip_future_date_validation, iterations_cadence: iteration_cadence2, title: 'one test', start_date: 1.day.ago, due_date: Date.today) }
   let_it_be(:upcoming_group_iteration) { create(:iteration, iterations_cadence: iteration_cadence1, title: 'Iteration 1', start_date: 1.day.from_now, due_date: 3.days.from_now) }
@@ -238,18 +239,36 @@ RSpec.describe IterationsFinder do
       end
 
       context 'sorting' do
-        it 'sorts by the default order (due_date, title, id asc) when no param is given' do
-          expect(subject).to eq([closed_iteration, root_closed_iteration, started_group_iteration, root_group_iteration, upcoming_group_iteration])
+        let(:cadence1_iterations) { [upcoming_group_iteration] }
+        let(:cadence2_iterations) { [closed_iteration, started_group_iteration] }
+        let(:cadence3_iterations) { [root_closed_iteration, root_group_iteration] }
+
+        shared_examples 'sorted by the default order' do
+          it 'sorts by the default order (due_date, title, id asc)' do
+            expect(subject).to eq([closed_iteration, root_closed_iteration, started_group_iteration, root_group_iteration, upcoming_group_iteration])
+          end
         end
 
-        it 'sorts correctly when supported sorting param provided' do
+        it_behaves_like 'sorted by the default order'
+
+        context 'when an unsupported sorting param is provided' do
+          before do
+            params[:sort] = :unsupported
+          end
+
+          it_behaves_like 'sorted by the default order'
+        end
+
+        it 'sorts correctly by cadence_and_due_date_asc' do
           params[:sort] = :cadence_and_due_date_asc
 
-          cadence1_iterations = [upcoming_group_iteration]
-          cadence2_iterations = [closed_iteration, started_group_iteration]
-          cadence3_iterations = [root_closed_iteration, root_group_iteration]
-
           expect(subject).to eq([*cadence1_iterations, *cadence2_iterations, *cadence3_iterations])
+        end
+
+        it 'sorts correctly by cadence_and_due_date_desc' do
+          params[:sort] = :cadence_and_due_date_desc
+
+          expect(subject).to eq([*cadence1_iterations.reverse, *cadence2_iterations.reverse, *cadence3_iterations.reverse])
         end
       end
     end

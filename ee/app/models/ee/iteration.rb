@@ -61,7 +61,10 @@ module EE
       after_commit :reset, on: [:update, :create], if: :saved_change_to_start_or_due_date?
 
       scope :due_date_order_asc, -> { order(:due_date) }
-      scope :sort_by_cadence_id_and_due_date_asc, -> { reorder(iterations_cadence_id: :asc).due_date_order_asc.order(id: :asc) }
+      scope :due_date_order_desc, -> { order(due_date: :desc) }
+      scope :sort_by_cadence_id_and_due_date_asc, -> { reorder(iterations_cadence_id: :asc).due_date_order_asc }
+      scope :sort_by_cadence_id_and_due_date_desc, -> { reorder(iterations_cadence_id: :asc).due_date_order_desc }
+      scope :sort_by_due_date_and_title, -> { reorder(:due_date).order(:title, { id: :asc }) }
       scope :upcoming, -> { with_state(:upcoming) }
       scope :current, -> { with_state(:current) }
       scope :closed, -> { with_state(:closed) }
