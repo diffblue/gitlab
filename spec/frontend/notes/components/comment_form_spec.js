@@ -75,7 +75,11 @@ describe('issue_comment_form component', () => {
   });
 
   const notableDataMockCannotUpdateIssuable = createNotableDataMock({
-    current_user: { can_update: false, can_create_note: true, can_create_confidential_note: true },
+    current_user: {
+      can_update: false,
+      can_create_note: false,
+      can_create_confidential_note: false,
+    },
   });
 
   const notableDataMockCannotCreateConfidentialNote = createNotableDataMock({

@@ -112,7 +112,6 @@ export default {
     },
     canSetInternalNote() {
       return (
-        this.getNoteableData.current_user.can_update &&
         this.getNoteableData.current_user.can_create_confidential_note &&
         (this.isIssue || this.isEpic)
       );
