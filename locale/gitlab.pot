@@ -41268,6 +41268,9 @@ msgstr ""
 msgid "This project will be deleted on %{date} since its parent group '%{parent_group_name}' has been scheduled for deletion."
 msgstr ""
 
+msgid "This project's pipeline configuration is located outside this repository"
+msgstr ""
+
 msgid "This release was created with a date in the past. Evidence collection at the moment of the release is unavailable."
 msgstr ""
 
@@ -41735,6 +41738,9 @@ msgid "To continue, you need to select the link in the confirmation email we sen
 msgstr ""
 
 msgid "To define internal users, first enable new users set to external"
+msgstr ""
+
+msgid "To edit the pipeline configuration, you must go to the project or external site that hosts the file."
 msgstr ""
 
 msgid "To enable Registration Features, first enable Service Ping."
