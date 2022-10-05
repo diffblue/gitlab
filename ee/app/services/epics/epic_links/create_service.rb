@@ -25,6 +25,11 @@ module Epics
 
       def create_single_link
         child_epic = referenced_issuables.first
+
+        unless can?(current_user, :read_epic, child_epic)
+          return error(issuables_not_found_message, 404)
+        end
+
         previous_parent_epic = child_epic.parent
 
         if linkable_epic?(child_epic) && set_child_epic(child_epic)
@@ -84,7 +89,6 @@ module Epics
         can_link_epic?(epic) &&
           epic.valid_parent?(
             parent_epic: issuable,
-            group_descendants: issuable_group_descendants,
             group_ancestors: issuable_group_ancestors
           )
       end
@@ -101,10 +105,6 @@ module Epics
         issuable.children.to_a
       end
 
-      def issuable_group_descendants
-        @descendants ||= issuable.group.self_and_descendants
-      end
-
       def issuable_group_ancestors
         @ancestors ||= issuable.group.ancestors
       end
@@ -114,8 +114,13 @@ module Epics
       end
 
       def can_link_epic?(epic)
-        return true unless ::Feature.enabled?(:child_epics_from_different_hierarchies, issuable.group)
-        return true if can?(current_user, :admin_epic_link, epic.group)
+        return true if issuable.group == epic.group
+
+        cross_group_children_disabled = [issuable.group, epic.group].all? do |group|
+          ::Feature.disabled?(:child_epics_from_different_hierarchies, group)
+        end
+
+        return true if cross_group_children_disabled || can?(current_user, :admin_epic_link, epic)
 
         epic.errors.add(:parent, _("This epic cannot be added. You don't have access to perform this action."))
 

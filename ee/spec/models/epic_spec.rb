@@ -320,12 +320,6 @@ RSpec.describe Epic do
         expect(epic.valid_parent?).to be_truthy
       end
 
-      it 'returns false with a parent in a descendant group' do
-        epic.parent = create(:epic, group: descendant_group)
-
-        expect(epic.valid_parent?).to be_falsey
-      end
-
       it 'returns false when level is too deep' do
         epic1 = create(:epic, group: group)
         add_parents_to(epic: epic1, count: 6)
@@ -333,6 +327,28 @@ RSpec.describe Epic do
         epic.parent = epic1
 
         expect(epic.valid_parent?).to be_falsey
+      end
+
+      context 'with parent in a descendant group' do
+        let_it_be(:parent_epic) { create(:epic, group: descendant_group) }
+
+        it 'returns false' do
+          epic.parent = parent_epic
+
+          expect(epic.valid_parent?).to be_falsey
+        end
+
+        context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+          before do
+            stub_feature_flags(child_epics_from_different_hierarchies: false)
+          end
+
+          it 'returns false' do
+            epic.parent = parent_epic
+
+            expect(epic.valid_parent?).to be_falsey
+          end
+        end
       end
 
       context 'with parent from a different group hierarchy' do

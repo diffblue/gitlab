@@ -10,7 +10,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
   let_it_be(:label2) { create(:label, project: project) }
   let_it_be(:milestone) { create(:milestone, group: group) }
   let_it_be(:description) { 'simple description' }
-  let_it_be_with_reload(:issue) do
+  let_it_be_with_refind(:issue) do
     create(:issue, project: project, labels: [label1, label2],
                    milestone: milestone, description: description, weight: 3)
   end
@@ -20,10 +20,6 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
   let(:epic) { Epic.last }
 
   describe '#execute' do
-    before do
-      issue.promoted_to_epic_id = nil
-    end
-
     context 'when epics are not enabled' do
       it 'raises a permission error' do
         group.add_developer(user)

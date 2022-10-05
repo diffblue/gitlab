@@ -92,13 +92,22 @@ RSpec.describe Epics::EpicLinks::CreateService do
 
             context 'when an epic from another group is given' do
               before do
-                other_group.add_developer(user)
                 epic_to_add.update!(group: other_group)
               end
 
-              include_examples 'returns success'
+              context 'when user has no permission to read child epic' do
+                let(:params) { { target_issuable: epic_to_add } }
 
-              context 'when user has insufficient permissions' do
+                subject { described_class.new(epic, user, params).execute }
+
+                before do
+                  epic_to_add.update!(confidential: true)
+                end
+
+                include_examples 'returns an error'
+              end
+
+              context 'when user has no permission to admin_epic_link' do
                 let(:expected_code) { 409 }
                 let(:expected_error) do
                   "This epic cannot be added. You don't have access to perform this action."
@@ -118,6 +127,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 end
 
                 before do
+                  other_group.add_developer(user)
                   stub_licensed_features(epics: true)
                   allow(group).to receive(:licensed_feature_available?).with(:subepics).and_return(true)
                   allow(other_group).to receive(:licensed_feature_available?).with(:subepics).and_return(false)
@@ -133,6 +143,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 end
 
                 before do
+                  other_group.add_developer(user)
                   stub_feature_flags(child_epics_from_different_hierarchies: false)
                   epic_to_add.update!(group: other_group)
                 end
@@ -314,8 +325,6 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 epic_to_add.update!(group: other_group)
               end
 
-              include_examples 'returns success'
-
               context 'when user has insufficient permissions' do
                 before do
                   other_group.add_guest(user)
@@ -418,6 +427,18 @@ RSpec.describe Epics::EpicLinks::CreateService do
 
           before do
             epic_to_add.update!(group: subgroup)
+          end
+
+          subject { add_epic([valid_reference]) }
+
+          include_examples 'returns success'
+          include_examples 'system notes created'
+        end
+
+        context 'when an epic from another group is given' do
+          before do
+            epic_to_add.update!(group: other_group)
+            other_group.add_reporter(user)
           end
 
           subject { add_epic([valid_reference]) }
