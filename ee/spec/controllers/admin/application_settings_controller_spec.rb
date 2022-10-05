@@ -400,6 +400,39 @@ RSpec.describe Admin::ApplicationSettingsController do
       end
     end
 
+    context 'warning outdated code search mappings' do
+      let_it_be(:helper) { ::Gitlab::Elastic::Helper.default }
+
+      before do
+        allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(helper)
+      end
+
+      it 'warns when outdated code mappings are used' do
+        allow(helper).to receive(:get_meta).and_return('created_by' => '15.4.9')
+        get :advanced_search
+        expect(assigns[:search_outdated_code_analyzer_detected]).to be_truthy
+      end
+
+      it 'warns when meta field is not present' do
+        allow(helper).to receive(:get_meta).and_return(nil)
+        get :advanced_search
+        expect(assigns[:search_outdated_code_analyzer_detected]).to be_truthy
+      end
+
+      it 'does NOT warn when using new mappings' do
+        allow(helper).to receive(:get_meta).and_return('created_by' => '15.5.0')
+        get :advanced_search
+        expect(assigns[:search_outdated_code_analyzer_detected]).to be_falsey
+      end
+
+      it 'does NOT blow up if elasticsearch is unreachable' do
+        allow(helper).to receive(:get_meta).and_raise(::Elasticsearch::Transport::Transport::ServerError, 'boom')
+        get :advanced_search
+        expect(assigns[:search_outdated_code_analyzer_detected]).to be_falsey
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
     context 'advanced search settings' do
       it 'updates the advanced search settings' do
         settings = {

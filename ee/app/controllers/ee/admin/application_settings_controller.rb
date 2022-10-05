@@ -11,6 +11,7 @@ module EE
         before_action :elasticsearch_index_settings, only: [:advanced_search]
         before_action :elasticsearch_warn_if_not_using_aliases, only: [:advanced_search]
         before_action :search_error_if_version_incompatible, only: [:advanced_search]
+        before_action :search_outdated_code_analyzer_detected, only: [:advanced_search]
         before_action :push_password_complexity_feature, only: [:general]
 
         feature_category :provision, [:seat_link_payload]
@@ -35,6 +36,21 @@ module EE
 
         def search_error_if_version_incompatible
           @search_error_if_version_incompatible = !::Gitlab::Elastic::Helper.default.supported_version?
+        end
+
+        def search_outdated_code_analyzer_detected
+          @search_outdated_code_analyzer_detected = begin
+            current_index_version = ::Gitlab::Elastic::Helper.default.get_meta&.dig('created_by')
+            version_info = ::Gitlab::VersionInfo.parse(current_index_version)
+
+            if version_info.valid?
+              version_info < ::Gitlab::VersionInfo.new(15, 5)
+            else
+              true # a very outdated version of GitLab
+            end
+          end
+        rescue StandardError => e
+          log_exception(e)
         end
       end
 
