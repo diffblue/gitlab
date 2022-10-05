@@ -26925,6 +26925,9 @@ msgid_plural "No worries, you can still use all the %{strong}%{plan_name}%{stron
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "No wrap"
+msgstr ""
+
 msgid "No. of commits"
 msgstr ""
 
@@ -37565,6 +37568,9 @@ msgid "Snippets|Snippets can't contain empty files. Ensure all files have conten
 msgstr ""
 
 msgid "Snowplow"
+msgstr ""
+
+msgid "Soft wrap"
 msgstr ""
 
 msgid "Solid"
