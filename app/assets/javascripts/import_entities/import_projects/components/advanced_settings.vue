@@ -33,7 +33,7 @@ export default {
       :visible="isInitiallyExpanded"
     >
       <gl-alert variant="warning" class="gl-mb-5" :dismissible="false">{{
-        s__('ImportProjects|Importing extra information may significantly increase import time')
+        s__('ImportProjects|The more information you select, the longer it will take to import')
       }}</gl-alert>
       <gl-form>
         <gl-form-checkbox

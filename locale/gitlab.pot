@@ -20415,9 +20415,6 @@ msgstr ""
 msgid "ImportProjects|Import repositories"
 msgstr ""
 
-msgid "ImportProjects|Importing extra information may significantly increase import time"
-msgstr ""
-
 msgid "ImportProjects|Importing the project failed"
 msgstr ""
 
@@ -20431,6 +20428,9 @@ msgid "ImportProjects|Requesting your %{provider} repositories failed"
 msgstr ""
 
 msgid "ImportProjects|Select the repositories you want to import"
+msgstr ""
+
+msgid "ImportProjects|The more information you select, the longer it will take to import"
 msgstr ""
 
 msgid "ImportProjects|The remote data could not be imported."
