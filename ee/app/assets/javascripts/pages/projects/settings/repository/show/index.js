@@ -14,6 +14,7 @@ import initSettingsPanels from '~/settings_panels';
 import UserCallout from '~/user_callout';
 import UsersSelect from '~/users_select';
 import mountBranchRules from '~/projects/settings/repository/branch_rules/mount_branch_rules';
+import mountDefaultBranchSelector from '~/projects/settings/mount_default_branch_selector';
 import EEMirrorRepos from './ee_mirror_repos';
 
 new UsersSelect();
@@ -46,3 +47,4 @@ fileUpload('.js-choose-file', '.js-object-map-input');
 initSearchSettings();
 
 mountBranchRules(document.getElementById('js-branch-rules'));
+mountDefaultBranchSelector(document.querySelector('.js-select-default-branch'));
