@@ -324,4 +324,91 @@ RSpec.describe SearchHelper do
       end
     end
   end
+
+  describe '.search_navigation' do
+    using RSpec::Parameterized::TableSyntax
+    let(:user) { build(:user) }
+    let(:project) { build(:project) }
+
+    before do
+      allow(self).to receive(:current_user).and_return(user)
+      allow(self).to receive(:can?).and_return(true)
+    end
+
+    context 'for epics' do
+      where(:global_project, :show_epics, :condition) do
+        nil                 | false      | false
+        ref(:project)       | true       | false
+        ref(:project)       | false      | false
+        nil                 | true       | true
+      end
+
+      with_them do
+        it 'data item condition is set correctly' do
+          @project = global_project
+          allow(search_service).to receive(:show_epics?).and_return(show_epics)
+
+          expect(search_navigation[:epics][:condition]).to eq(condition)
+        end
+      end
+    end
+  end
+
+  describe '.search_filter_link_json' do
+    using RSpec::Parameterized::TableSyntax
+
+    context 'with data' do
+      where(:scope, :label, :data, :search, :active_scope) do
+        "projects"       | "Projects"                | { qa_selector: 'projects_tab' } | nil                  | "projects"
+        "snippet_titles" | "Titles and Descriptions" | nil                             | { snippets: "test" } | "code"
+        "projects"       | "Projects"                | { qa_selector: 'projects_tab' } | nil                  | "issue"
+        "snippet_titles" | "Titles and Descriptions" | nil                             | { snippets: "test" } | "snippet_titles"
+      end
+
+      with_them do
+        it 'converts correctly' do
+          @timeout = false
+          @scope = active_scope
+          @search_results = double
+          dummy_count = 1000
+          allow(self).to receive(:search_path).with(any_args).and_return("link test")
+
+          allow(@search_results).to receive(:formatted_count).with(scope).and_return(dummy_count)
+          allow(self).to receive(:search_count_path).with(any_args).and_return("test count link")
+
+          current_scope = scope == active_scope
+
+          expected = {
+            label: label,
+            scope: scope,
+            data: data,
+            link: "link test",
+            active: current_scope
+          }
+
+          expected[:count] = dummy_count if current_scope
+          expected[:count_link] = "test count link" unless current_scope
+
+          expect(search_filter_link_json(scope, label, data, search)).to eq(expected)
+        end
+      end
+    end
+  end
+
+  describe 'show_elasticsearch_tabs' do
+    let(:user) { build(:user) }
+    let_it_be(:project) { build(:project) }
+
+    before do
+      stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+      allow(self).to receive(:current_user).and_return(user)
+      allow(self).to receive(:can?).and_return(false)
+      allow(self).to receive(:project_search_tabs?).and_return(false)
+      allow(self).to receive(:feature_flag_tab_enabled?).and_return(false)
+    end
+
+    it 'show_elasticsearch_tabs? returns true' do
+      expect(search_service.show_elasticsearch_tabs?).to eq(true)
+    end
+  end
 end

@@ -137,6 +137,11 @@ module EE
       options + original_options
     end
 
+    override :search_navigation
+    def search_navigation
+      super.merge(epics: { label: _("Epics"), condition: @project.nil? && search_service.show_epics? })
+    end
+
     private
 
     def recent_epics_autocomplete(term)
