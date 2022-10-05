@@ -7,7 +7,6 @@
 class License < ApplicationRecord
   include ActionView::Helpers::NumberHelper
   include Gitlab::Utils::StrongMemoize
-  extend Gitlab::Utils::StrongMemoize
 
   STARTER_PLAN = 'starter'
   PREMIUM_PLAN = 'premium'
@@ -48,13 +47,20 @@ class License < ApplicationRecord
   scope :recent, -> { reorder(id: :desc) }
   scope :last_hundred, -> { recent.limit(100) }
 
+  CACHE_KEY = :current_license
+
   class << self
     def current
-      strong_memoize(:current) { load_license }
+      cache.fetch(CACHE_KEY, as: License, expires_in: 1.minute) { load_license }
     end
 
     def reset_current
-      clear_memoization(:current)
+      cache.expire(CACHE_KEY)
+    end
+
+    def cache
+      Gitlab::SafeRequestStore[:license_cache] ||=
+        Gitlab::JsonCache.new(namespace: :ee, backend: ::Gitlab::ProcessMemoryCache.cache_backend, cache_key_strategy: :version)
     end
 
     def all_plans

@@ -154,7 +154,6 @@ RSpec.describe 'Admin views Subscription', :js do
     let_it_be(:license_to_be_created) { nil }
 
     before do
-      License.reset_current
       License.current.destroy!
 
       visit(admin_subscription_path)

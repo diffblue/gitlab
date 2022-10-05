@@ -466,6 +466,46 @@ RSpec.describe License do
   end
 
   describe 'Callbacks' do
+    describe '#reset_current', :request_store do
+      def current_license_cached_value
+        License.cache.read(License::CACHE_KEY, License)
+      end
+
+      before do
+        License.current # Set cache up front
+      end
+
+      context 'when a license is created' do
+        it 'expires the current_license cached value' do
+          expect(current_license_cached_value).to be_present
+
+          create(:license)
+
+          expect(current_license_cached_value).to be_nil
+        end
+      end
+
+      context 'when a license is updated' do
+        it 'expires the current_license cached value' do
+          expect(current_license_cached_value).to be_present
+
+          License.last.update!(updated_at: Time.current)
+
+          expect(current_license_cached_value).to be_nil
+        end
+      end
+
+      context 'when a license is destroyed' do
+        it 'expires the current_license cached value' do
+          expect(current_license_cached_value).to be_present
+
+          License.last.destroy!
+
+          expect(current_license_cached_value).to be_nil
+        end
+      end
+    end
+
     describe '#reset_future_dated', :request_store do
       let!(:future_dated_license) { create(:license, data: create(:gitlab_license, starts_at: Date.current + 1.month).export) }
 
@@ -572,12 +612,17 @@ RSpec.describe License do
           expect(described_class.current).to eq(current_license)
         end
 
-        it 'memoizes the current license' do
+        it 'caches the license' do
           described_class.reset_current
 
           expect(described_class).to receive(:load_license).once.and_call_original
 
           2.times do
+            expect(described_class.current).to eq(current_license)
+          end
+
+          travel_to(61.seconds.from_now) do
+            expect(described_class).to receive(:load_license).once.and_call_original
             expect(described_class.current).to eq(current_license)
           end
         end
