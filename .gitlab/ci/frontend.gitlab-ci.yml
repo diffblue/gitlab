@@ -32,7 +32,7 @@
         source scripts/gitlab_component_helpers.sh
         gitlab_assets_archive_doesnt_exist || run_timed_command "download_and_extract_gitlab_assets"
       fi
-    - run_timed_command "bin/rake gitlab:assets:compile"
+    - assets_compile_script
 
 compile-production-assets:
   extends:
