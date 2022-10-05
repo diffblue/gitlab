@@ -2251,6 +2251,7 @@ RSpec.describe GroupPolicy do
       let(:current_user) { auditor }
 
       it { is_expected.to be_allowed(:read_group_runners) }
+      it { is_expected.to be_allowed(:read_group_all_available_runners) }
       it { is_expected.to be_disallowed(:admin_group_runners) }
       it { is_expected.to be_disallowed(:register_group_runners) }
     end
