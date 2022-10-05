@@ -18,6 +18,9 @@ module EE
         state :awaiting, value: ::Member::STATE_AWAITING
         state :active, value: ::Member::STATE_ACTIVE
       end
+
+      validate :seat_available, on: :create
+
       scope :awaiting, -> { where(state: ::Member::STATE_AWAITING) }
       scope :non_awaiting, -> { where.not(state: ::Member::STATE_AWAITING) }
 
@@ -162,6 +165,15 @@ module EE
 
     def has_capacity_left?
       source.root_ancestor.capacity_left_for_user?(user)
+    end
+
+    def seat_available
+      return unless source # due to source being evaluated during creation, source must be present to evaluate
+      return if ::Namespaces::FreeUserCap::Standard.new(source.root_ancestor).seat_available?(user)
+
+      msg = format(_("cannot be added since you've reached your %{free_limit} member limit for %{namespace_name}"),
+                   free_limit: ::Namespaces::FreeUserCap.dashboard_limit, namespace_name: source.root_ancestor.name)
+      errors.add(:base, msg) # add to base here since :user is getting `The member's email address` appended
     end
   end
 end

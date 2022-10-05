@@ -86,6 +86,45 @@ RSpec.describe API::Invitations, 'EE Invitations' do
 
       it_behaves_like 'restricted email error', "The member's email address is not allowed for this group. Go to the group’s &#39;Settings &gt; General&#39; page, and check &#39;Restrict membership by email domain&#39;.", :success
     end
+
+    context 'with free user cap considerations', :saas do
+      let_it_be(:group) { create(:group_with_plan, :private, plan: :free_plan) }
+
+      before do
+        stub_ee_application_setting(dashboard_limit_enabled: true)
+      end
+
+      subject(:post_invitations) do
+        post api(url, admin),
+             params: { email: invite_email, access_level: Member::MAINTAINER }
+      end
+
+      context 'when there are no seats left' do
+        it 'does not add the member' do
+          expect do
+            post_invitations
+          end.not_to change { group.members.count }
+
+          msg = "cannot be added since you've reached your #{::Namespaces::FreeUserCap.dashboard_limit} " \
+                "member limit for #{group.name}"
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['status']).to eq('error')
+          expect(json_response['message'][invite_email]).to eq(msg)
+        end
+      end
+
+      context 'when there is a seat left' do
+        before do
+          stub_ee_application_setting(dashboard_enforcement_limit: 3)
+        end
+
+        it 'creates a member' do
+          expect { post_invitations }.to change { group.members.count }.by(1)
+          expect(response).to have_gitlab_http_status(:created)
+          expect(json_response['status']).to eq('success')
+        end
+      end
+    end
   end
 
   describe 'POST /projects/:id/invitations' do

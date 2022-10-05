@@ -4,6 +4,8 @@ module Namespaces
   module FreeUserCap
     # Remove/Merge back into Standard with https://gitlab.com/gitlab-org/gitlab/-/issues/375607
     class Base
+      include Gitlab::Utils::StrongMemoize
+
       def initialize(root_namespace)
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
@@ -14,6 +16,7 @@ module Namespaces
         users_count > limit
       end
 
+      strong_memoize_attr :enforce_cap?, :enforce_cap
       def enforce_cap?
         return false unless enforceable_subscription?
 
