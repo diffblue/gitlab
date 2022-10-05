@@ -36,7 +36,7 @@ module EE
       end
 
       override :after_update
-      def after_update(merge_request)
+      def after_update(merge_request, old_associations)
         super
 
         merge_request.run_after_commit do
