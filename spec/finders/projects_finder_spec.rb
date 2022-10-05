@@ -364,11 +364,9 @@ RSpec.describe ProjectsFinder do
       describe 'always filters by without_deleted' do
         let_it_be(:pending_delete_project) { create(:project, :public, pending_delete: true) }
 
-        context 'when without_deleted is true' do
-          it 'returns projects that are not pending_delete' do
-            expect(subject).not_to include(pending_delete_project)
-            expect(subject).to include(public_project, internal_project)
-          end
+        it 'returns projects that are not pending_delete' do
+          expect(subject).not_to include(pending_delete_project)
+          expect(subject).to include(public_project, internal_project)
         end
       end
 
