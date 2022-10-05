@@ -35,7 +35,7 @@
   = markdown_toolbar_button({ icon: "details-block",
                               data: { "md-tag" => "<details><summary>Click to expand</summary>\n{text}\n</details>", "md-prepend" => true, "md-select" => "Click to expand" },
                               title: _("Add a collapsible section") })
-  = markdown_toolbar_button({ icon: "table", data: { "md-tag" => "| header | header |\n| ------ | ------ |\n| cell | cell |\n| cell | cell |", "md-prepend" => true }, title: _("Add a table") })
+  = markdown_toolbar_button({ icon: "table", data: { "md-tag" => "| header | header |\n| ------ | ------ |\n|        |        |\n|        |        |", "md-prepend" => true }, title: _("Add a table") })
   - if supports_file_upload
     %button.gl-button.btn.btn-default-tertiary.btn-icon.has-tooltip.js-attach-file-button{ type: 'button',
       title: _("Attach a file or image"),
