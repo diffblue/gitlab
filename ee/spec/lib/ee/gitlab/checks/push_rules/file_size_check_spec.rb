@@ -42,7 +42,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::FileSizeCheck do
     it_behaves_like 'check ignored when push rule unlicensed'
 
     it 'returns an error if file exceeds the maximum file size' do
-      expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "File \"file.bin\" is larger than the allowed size of 1 MB")
+      expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "File \"file.bin\" is larger than the allowed size of 1 MB. Use Git LFS to manage this file.")
     end
   end
 end
