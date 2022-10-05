@@ -855,12 +855,13 @@ RSpec.describe Gitlab::GitAccess do
         end
       end
 
-      context "when license blocks changes" do
+      context "when license blocks changes", :without_license do
+        let(:actor) { create(:admin) }
+
         before do
           create_current_license(starts_at: 1.month.ago.to_date, block_changes_at: Date.current, notify_admins_at: Date.current)
-          user.update_attribute(:admin, true)
-          enable_admin_mode!(user)
-          project.add_role(user, :developer)
+          enable_admin_mode!(actor)
+          project.add_role(actor, :developer)
         end
 
         it 'raises an error' do
