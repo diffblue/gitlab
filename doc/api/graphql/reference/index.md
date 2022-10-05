@@ -4892,6 +4892,7 @@ Input type: `TimelineEventCreateInput`
 | <a id="mutationtimelineeventcreateincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | Incident ID of the timeline event. |
 | <a id="mutationtimelineeventcreatenote"></a>`note` | [`String!`](#string) | Text note of the timeline event. |
 | <a id="mutationtimelineeventcreateoccurredat"></a>`occurredAt` | [`Time!`](#time) | Timestamp of when the event occurred. |
+| <a id="mutationtimelineeventcreatetimelineeventtagnames"></a>`timelineEventTagNames` | [`[String!]`](#string) | Tags for the incident timeline event. |
 
 #### Fields
 
@@ -9319,6 +9320,29 @@ The edge type for [`TimeTrackingTimelogCategory`](#timetrackingtimelogcategory).
 | ---- | ---- | ----------- |
 | <a id="timetrackingtimelogcategoryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="timetrackingtimelogcategoryedgenode"></a>`node` | [`TimeTrackingTimelogCategory`](#timetrackingtimelogcategory) | The item at the end of the edge. |
+
+#### `TimelineEventTagTypeConnection`
+
+The connection type for [`TimelineEventTagType`](#timelineeventtagtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtagtypeconnectionedges"></a>`edges` | [`[TimelineEventTagTypeEdge]`](#timelineeventtagtypeedge) | A list of edges. |
+| <a id="timelineeventtagtypeconnectionnodes"></a>`nodes` | [`[TimelineEventTagType]`](#timelineeventtagtype) | A list of nodes. |
+| <a id="timelineeventtagtypeconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `TimelineEventTagTypeEdge`
+
+The edge type for [`TimelineEventTagType`](#timelineeventtagtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtagtypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="timelineeventtagtypeedgenode"></a>`node` | [`TimelineEventTagType`](#timelineeventtagtype) | The item at the end of the edge. |
 
 #### `TimelineEventTypeConnection`
 
@@ -18920,6 +18944,17 @@ Explains why we could not generate a timebox report.
 | <a id="timeboxreporterrorcode"></a>`code` | [`TimeboxReportErrorReason`](#timeboxreporterrorreason) | Machine readable code, categorizing the error. |
 | <a id="timeboxreporterrormessage"></a>`message` | [`String`](#string) | Human readable message explaining what happened. |
 
+### `TimelineEventTagType`
+
+Describes a tag on an incident management timeline event.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtagtypeid"></a>`id` | [`IncidentManagementTimelineEventTagID!`](#incidentmanagementtimelineeventtagid) | ID of the timeline event tag. |
+| <a id="timelineeventtagtypename"></a>`name` | [`String!`](#string) | Name of the timeline event tag. |
+
 ### `TimelineEventType`
 
 Describes an incident management timeline event.
@@ -18938,6 +18973,7 @@ Describes an incident management timeline event.
 | <a id="timelineeventtypenotehtml"></a>`noteHtml` | [`String`](#string) | HTML note of the timeline event. |
 | <a id="timelineeventtypeoccurredat"></a>`occurredAt` | [`Time!`](#time) | Timestamp when the event occurred. |
 | <a id="timelineeventtypepromotedfromnote"></a>`promotedFromNote` | [`Note`](#note) | Note from which the timeline event was created. |
+| <a id="timelineeventtypetimelineeventtags"></a>`timelineEventTags` | [`TimelineEventTagTypeConnection`](#timelineeventtagtypeconnection) | Tags for the incident timeline event. (see [Connections](#connections)) |
 | <a id="timelineeventtypeupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp when the event updated. |
 | <a id="timelineeventtypeupdatedbyuser"></a>`updatedByUser` | [`UserCore`](#usercore) | User that updated the timeline event. |
 
@@ -22528,6 +22564,12 @@ An example `IncidentManagementOncallRotationID` is: `"gid://gitlab/IncidentManag
 A `IncidentManagementTimelineEventID` is a global ID. It is encoded as a string.
 
 An example `IncidentManagementTimelineEventID` is: `"gid://gitlab/IncidentManagement::TimelineEvent/1"`.
+
+### `IncidentManagementTimelineEventTagID`
+
+A `IncidentManagementTimelineEventTagID` is a global ID. It is encoded as a string.
+
+An example `IncidentManagementTimelineEventTagID` is: `"gid://gitlab/IncidentManagement::TimelineEventTag/1"`.
 
 ### `Int`
 
