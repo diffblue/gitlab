@@ -3,6 +3,7 @@ import {
   modifyPolicy,
   convertScannersToTitleCase,
   isValidPolicy,
+  hasInvalidCron,
   slugify,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
@@ -131,6 +132,18 @@ describe('isValidPolicy', () => {
     ${{ policy: { foo: 'bar', actions: [{ zoo: 'dar' }, { goo: 'rar' }] }, primaryKeys: ['foo', 'actions'], rulesKeys: [], actionsKeys: ['zoo'] }} | ${false}
   `('returns `$output` when passed `$input`', ({ input, output }) => {
     expect(isValidPolicy(input)).toBe(output);
+  });
+});
+
+describe('hasInvalidCron', () => {
+  it.each`
+    input                                                                                                      | output
+    ${{ foo: 'bar', rules: [{ zoo: 'dar', cadence: '0 0 * * *' }] }}                                           | ${false}
+    ${{ foo: 'bar', rules: [{ zoo: 'dar', cadence: '* 0 0 * 5' }] }}                                           | ${true}
+    ${{ foo: 'bar', rules: [{ zoo: 'dar', cadence: '0 0 * asd ada' }] }}                                       | ${true}
+    ${{ foo: 'bar', rules: [{ zoo: 'dar', cadence: '0 0 * asd ada' }, { zoo: 'dar', cadence: '0 0 * * *' }] }} | ${true}
+  `('returns `$output` when passed `$input`', ({ input, output }) => {
+    expect(hasInvalidCron(input)).toBe(output);
   });
 });
 

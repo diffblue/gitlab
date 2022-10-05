@@ -7,6 +7,7 @@ import {
   unsupportedYamlObject,
   mockDastScanExecutionManifest,
   mockDastScanExecutionObject,
+  rulesWithInvalidCadence,
 } from 'ee_jest/security_orchestration/mocks/mock_data';
 
 describe('fromYaml', () => {
@@ -15,6 +16,7 @@ describe('fromYaml', () => {
     ${'returns the policy object for a supported manifest'}                                              | ${{ manifest: mockDastScanExecutionManifest }}                   | ${mockDastScanExecutionObject}
     ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedYamlManifest, validateRuleMode: true }} | ${{ error: true }}
     ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedYamlManifest }}                         | ${unsupportedYamlObject}
+    ${'returns error object for a policy with invalid cadence cron string'}                              | ${{ manifest: rulesWithInvalidCadence, validateRuleMode: true }} | ${{ error: true }}
   `('$title', ({ input, output }) => {
     expect(fromYaml(input)).toStrictEqual(output);
   });

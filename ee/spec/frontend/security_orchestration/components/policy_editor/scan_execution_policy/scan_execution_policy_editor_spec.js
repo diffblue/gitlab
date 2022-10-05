@@ -47,6 +47,8 @@ jest.mock('ee/security_orchestration/components/policy_editor/utils', () => ({
     branch: 'main',
     fullPath: 'path/to/new-project',
   }),
+  hasInvalidCron: jest.requireActual('ee/security_orchestration/components/policy_editor/utils')
+    .hasInvalidCron,
   modifyPolicy: jest.fn().mockResolvedValue({ id: '2' }),
   isValidPolicy: jest.requireActual('ee/security_orchestration/components/policy_editor/utils')
     .isValidPolicy,

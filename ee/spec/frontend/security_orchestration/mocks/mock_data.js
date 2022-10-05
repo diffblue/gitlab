@@ -25,6 +25,31 @@ export const unsupportedYamlObject = {
   ],
 };
 
+export const rulesWithInvalidCadence = {
+  name: 'This policy has an invalid cadence',
+  rules: [
+    {
+      type: 'pipeline',
+      branches: ['main'],
+    },
+    {
+      type: 'schedule',
+      branches: ['main'],
+      cadence: '0 0 * * INVALID',
+    },
+    {
+      type: 'schedule',
+      branches: ['main'],
+      cadence: '0 0 * * *',
+    },
+  ],
+  actions: [
+    {
+      scan: 'sast',
+    },
+  ],
+};
+
 export const mockUnsupportedAttributeScanExecutionPolicy = {
   __typename: 'ScanExecutionPolicy',
   name: unsupportedYamlObject.name,
