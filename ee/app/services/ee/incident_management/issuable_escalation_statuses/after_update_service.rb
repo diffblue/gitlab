@@ -30,6 +30,8 @@ module EE
         end
 
         def open_status_changed?
+          return false unless escalation_status.status_previously_changed?
+
           had_open_status? != has_open_status_now?
         end
 
