@@ -12,3 +12,8 @@ export const isValidUsername = (username) =>
   Boolean(username) && username.length >= MIN_USERNAME_LENGTH;
 
 export const isValidEntityId = (id) => Boolean(id) && isNumeric(id) && parseInt(id, 10) > 0;
+
+export const createToken = ({ type, data }) => ({
+  type,
+  value: { data, operator: '=' },
+});

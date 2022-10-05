@@ -114,4 +114,15 @@ describe('AuditEventsFilter', () => {
       expect(getAvailableTokens()).toMatchObject([{ type }]);
     });
   });
+
+  describe('view-only state', () => {
+    it.each([true, false])(
+      'passes the view-only value to the filtered search component when %s',
+      (viewOnly) => {
+        initComponent({ viewOnly });
+
+        expect(findFilteredSearch().props('viewOnly')).toBe(viewOnly);
+      },
+    );
+  });
 });

@@ -28,12 +28,18 @@ module AuditEventsHelper
     admin_audit_log_reports_url(format: :csv)
   end
 
-  def show_filter_for_project?(project)
-    can?(current_user, :admin_project, project)
+  def view_only_own_project_events?(project)
+    !can?(current_user, :admin_project, project)
   end
 
-  def show_filter_for_group?(group)
-    can?(current_user, :admin_group, group)
+  def view_only_own_group_events?(group)
+    !can?(current_user, :admin_group, group)
+  end
+
+  def filter_view_only_own_events_token_values(view_only)
+    return [] unless view_only
+
+    [{ type: FILTER_TOKEN_TYPES[:member], data: "@#{current_user.username}" }]
   end
 
   def show_streams_for_group?(group)
