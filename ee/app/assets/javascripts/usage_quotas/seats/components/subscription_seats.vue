@@ -286,6 +286,7 @@ export default {
           :percentage="seatsInUsePercentage"
           :usage-value="String(totalSeatsInUse)"
           :total-value="displayedTotalSeats"
+          data-qa-selector="seats_in_use"
         />
 
         <subscription-upgrade-info-card
@@ -330,6 +331,7 @@ export default {
       :busy="isLoaderShown"
       :show-empty="true"
       data-testid="table"
+      data-qa-selector="subscription_users"
       :empty-text="emptyText"
     >
       <template #cell(user)="{ item, toggleDetails, detailsShowing }">
@@ -394,6 +396,7 @@ export default {
           category="secondary"
           variant="danger"
           data-testid="remove-user"
+          data-qa-selector="remove_user"
           @click="displayRemoveMemberModal(data.item.user)"
         >
           {{ __('Remove user') }}
