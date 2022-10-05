@@ -8,6 +8,7 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
   let(:projects) { create_list(:project, 5, :public, :repository, :wiki_repo) }
 
   before do
+    stub_feature_flags(search_page_vertical_nav: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
     project.add_maintainer(user)
@@ -305,6 +306,10 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
 end
 
 RSpec.describe 'Global elastic search redactions', :elastic do
+  before do
+    stub_feature_flags(search_page_vertical_nav: false)
+  end
+
   context 'when block_anonymous_global_searches is disabled' do
     before do
       stub_feature_flags(block_anonymous_global_searches: false)

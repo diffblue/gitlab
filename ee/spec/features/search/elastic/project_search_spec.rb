@@ -7,6 +7,7 @@ RSpec.describe 'Project elastic search', :js, :elastic do
   let(:project) { create(:project, :repository, :wiki_repo, namespace: user.namespace) }
 
   before do
+    stub_feature_flags(search_page_vertical_nav: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
   end
 
@@ -126,6 +127,10 @@ RSpec.describe 'Project elastic search', :js, :elastic do
 end
 
 RSpec.describe 'Project elastic search redactions', :elastic do
+  before do
+    stub_feature_flags(search_page_vertical_nav: false)
+  end
+
   it_behaves_like 'a redacted search results page' do
     let(:search_path) { project_path(public_restricted_project) }
   end

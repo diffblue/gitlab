@@ -17,6 +17,7 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_might_not_need_in
   end
 
   before do
+    stub_feature_flags(search_page_vertical_nav: false)
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
 
     project.add_maintainer(user)
@@ -97,6 +98,10 @@ RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_might_not_need_in
 end
 
 RSpec.describe 'Group elastic search redactions', :elastic do
+  before do
+    stub_feature_flags(search_page_vertical_nav: false)
+  end
+
   it_behaves_like 'a redacted search results page' do
     let(:search_path) { group_path(public_group) }
   end
