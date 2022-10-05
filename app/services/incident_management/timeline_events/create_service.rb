@@ -130,8 +130,15 @@ module IncidentManagement
       end
 
       def create_timeline_event_tag_links(timeline_event, tag_names)
-        return unless params[:timeline_event_tag_names]
+        return unless tag_names&.any?
 
+        tag_names = tag_names.map(&:downcase)
+        # Just fetches names for comparison and auto create
+        defined_tag_names = project.incident_management_timeline_event_tags.pluck_names.map(&:downcase)
+
+        auto_create_predefined_tags(tag_names, defined_tag_names)
+
+        # Refetches the tag objects to consider predefined tags as well
         tags = project.incident_management_timeline_event_tags.by_names(tag_names)
 
         tag_links = tags.select(:id).map do |tag|
@@ -143,6 +150,16 @@ module IncidentManagement
         end
 
         IncidentManagement::TimelineEventTagLink.insert_all(tag_links) if tag_links.any?
+      end
+
+      def auto_create_predefined_tags(new_tags, existing_tags)
+        tags = []
+        tags << 'Start time' if new_tags.include?('start time') && existing_tags.exclude?('start time')
+        tags << 'End time' if new_tags.include?('end time') && existing_tags.exclude?('end time')
+
+        tags.each do |name|
+          project.incident_management_timeline_event_tags.create!(name: name)
+        end
       end
     end
   end

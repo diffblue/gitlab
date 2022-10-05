@@ -27,6 +27,8 @@ module Mutations
 
           authorize!(incident)
 
+          validate_tags(incident.project, args[:timeline_event_tag_names])
+
           response ::IncidentManagement::TimelineEvents::CreateService.new(
             incident, current_user, args.merge(editable: true)
           ).execute
@@ -36,6 +38,22 @@ module Mutations
 
         def find_object(id:)
           GitlabSchema.object_from_id(id, expected_type: ::Issue).sync
+        end
+
+        def validate_tags(project, tag_names)
+          return unless tag_names&.any?
+
+          tag_names_downcased = tag_names.map(&:downcase)
+
+          tags = project.incident_management_timeline_event_tags.by_names(tag_names).pluck_names.map(&:downcase)
+
+          # remove tags from given tag_names and also remove predefined tags which can be auto created
+          non_existing_tags = tag_names_downcased - tags - ['start time', 'end time']
+
+          return if non_existing_tags.empty?
+
+          raise Gitlab::Graphql::Errors::ArgumentError,
+              "Following tags don't exist: #{non_existing_tags}"
         end
       end
     end

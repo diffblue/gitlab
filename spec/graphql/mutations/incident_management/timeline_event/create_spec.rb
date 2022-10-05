@@ -7,7 +7,7 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
   let_it_be(:project) { create(:project) }
   let_it_be(:incident) { create(:incident, project: project) }
   let_it_be(:timeline_event_tag) do
-    create(:incident_management_timeline_event_tag, project: project)
+    create(:incident_management_timeline_event_tag, project: project, name: 'Test tag 1')
   end
 
   let(:args) { { note: 'note', occurred_at: Time.current } }
@@ -53,6 +53,58 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
         end
 
         it_behaves_like 'creating an incident timeline event'
+      end
+
+      context 'when predefined tags are passed' do
+        let(:args) do
+          {
+            note: 'note',
+            occurred_at: Time.current,
+            timeline_event_tag_names: ['Start time']
+          }
+        end
+
+        it_behaves_like 'creating an incident timeline event'
+
+        it 'creates and sets the tag on the event' do
+          resolve
+
+          timeline_event = IncidentManagement::TimelineEvent.last!
+
+          expect(timeline_event.timeline_event_tags.last.name).to eq('Start time')
+        end
+      end
+
+      context 'with case-insentive tags' do
+        let(:args) do
+          {
+            note: 'note',
+            occurred_at: Time.current,
+            timeline_event_tag_names: ['tESt tAg 1']
+          }
+        end
+
+        it 'sets the tag on the event' do
+          resolve
+
+          timeline_event = IncidentManagement::TimelineEvent.last!
+
+          expect(timeline_event.timeline_event_tags.last.name).to eq(timeline_event_tag.name)
+        end
+      end
+
+      context 'when non-existing tags are passed' do
+        let(:args) do
+          {
+            note: 'note',
+            occurred_at: Time.current,
+            timeline_event_tag_names: ['other time']
+          }
+        end
+
+        it 'raises an error' do
+          expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ArgumentError)
+        end
       end
     end
 
