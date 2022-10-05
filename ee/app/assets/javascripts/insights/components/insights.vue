@@ -154,10 +154,10 @@ export default {
     </div>
     <div v-else-if="configPresent" class="insights-wrapper">
       <gl-dropdown
-        class="js-insights-dropdown gl-w-full"
+        class="js-insights-dropdown"
         data-qa-selector="insights_dashboard_dropdown"
-        toggle-class="dropdown-menu-toggle gl-w-full gl-field-error-outline"
-        :text="__('Select Page')"
+        toggle-class="dropdown-menu-toggle gl-field-error-outline"
+        :text="__('Select report')"
         :disabled="pageLoading"
       >
         <gl-dropdown-item
