@@ -62,6 +62,14 @@ function bundle_install_script() {
   echo -e "section_end:`date +%s`:bundle-install\r\e[0K"
 }
 
+function yarn_install_script() {
+  echo -e "section_start:`date +%s`:yarn-install[collapsed=true]\r\e[0KInstalling Yarn packages"
+
+  run_timed_command "retry yarn install --frozen-lockfile"
+
+  echo -e "section_end:`date +%s`:yarn-install\r\e[0K"
+}
+
 function setup_db_user_only() {
   source scripts/create_postgres_user.sh
 }
