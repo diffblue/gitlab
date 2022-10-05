@@ -4,6 +4,7 @@ import {
   displayUsername,
   isValidUsername,
   isValidEntityId,
+  createToken,
 } from 'ee/audit_events/token_utils';
 
 describe('Audit Event Text Utils', () => {
@@ -59,6 +60,17 @@ describe('Audit Event Text Utils', () => {
     it('returns false if the entity id is not numeric', () => {
       const id = 'abc';
       expect(isValidEntityId(id)).toBe(false);
+    });
+  });
+
+  describe('createToken', () => {
+    it('returns the expected token value', () => {
+      const input = { type: 'member', data: 'abc' };
+
+      expect(createToken(input)).toEqual({
+        type: input.type,
+        value: { data: input.data, operator: '=' },
+      });
     });
   });
 });

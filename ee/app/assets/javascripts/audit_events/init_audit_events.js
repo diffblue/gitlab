@@ -20,10 +20,11 @@ export default (selector) => {
     isLastPage,
     filterTokenOptions,
     exportUrl = '',
-    showFilter,
     showStreams,
     groupPath,
     emptyStateSvgPath,
+    filterViewOnly,
+    filterTokenValues,
   } = el.dataset;
 
   const store = createStore();
@@ -44,13 +45,14 @@ export default (selector) => {
       isLastPage: parseBoolean(isLastPage) || false,
       filterTokenOptions: parsedFilterTokenOptions,
       exportUrl,
-      showFilter: parseBoolean(showFilter) || true,
       showStreams: parseBoolean(showStreams) || false,
       maxHeaders: MAX_HEADERS,
       groupPath,
       // group level and project level are mutually exclusive.
       isProject: !groupPath,
       emptyStateSvgPath,
+      filterViewOnly: parseBoolean(filterViewOnly) || false,
+      filterTokenValues: filterTokenValues ? JSON.parse(filterTokenValues) : [],
     },
     apolloProvider,
     render: (createElement) => createElement(AuditEventsApp),

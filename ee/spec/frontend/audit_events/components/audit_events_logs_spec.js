@@ -7,6 +7,7 @@ import AuditEventsTable from 'ee/audit_events/components/audit_events_table.vue'
 import DateRangeField from 'ee/audit_events/components/date_range_field.vue';
 import SortingField from 'ee/audit_events/components/sorting_field.vue';
 import { AVAILABLE_TOKEN_TYPES } from 'ee/audit_events/constants';
+import { createToken } from 'ee/audit_events/token_utils';
 import createStore from 'ee/audit_events/store';
 
 const TEST_SORT_BY = 'created_asc';
@@ -18,11 +19,17 @@ describe('AuditEventsLog', () => {
   let wrapper;
   let store;
 
+  const findDateRangeField = () => wrapper.findComponent(DateRangeField);
+  const findSortingField = () => wrapper.findComponent(SortingField);
+  const findAuditFilter = () => wrapper.findComponent(AuditEventsFilter);
+  const findAuditTable = () => wrapper.findComponent(AuditEventsTable);
+  const findAuditExportButton = () => wrapper.findComponent(AuditEventsExportButton);
+
   const events = [{ foo: 'bar' }];
   const filterTokenOptions = AVAILABLE_TOKEN_TYPES.map((type) => ({ type }));
   const exportUrl = 'http://example.com/audit_log_reports.csv';
 
-  const initComponent = ({ props = {} } = {}) => {
+  const initComponent = ({ inject = {} } = {}) => {
     wrapper = shallowMount(AuditEventsLog, {
       store,
       provide: {
@@ -30,8 +37,9 @@ describe('AuditEventsLog', () => {
         filterTokenOptions,
         events,
         exportUrl,
-        showFilter: true,
-        ...props,
+        filterViewOnly: false,
+        filterTokenValues: [],
+        ...inject,
       },
     });
   };
@@ -60,32 +68,33 @@ describe('AuditEventsLog', () => {
     });
 
     it('renders audit events table', () => {
-      expect(wrapper.findComponent(AuditEventsTable).props()).toEqual({
+      expect(findAuditTable().props()).toEqual({
         events,
         isLastPage: true,
       });
     });
 
     it('renders audit events filter', () => {
-      expect(wrapper.findComponent(AuditEventsFilter).props()).toEqual({
+      expect(findAuditFilter().props()).toEqual({
         filterTokenOptions,
         value: TEST_FILTER_VALUE,
+        viewOnly: false,
       });
     });
 
     it('renders date range field', () => {
-      expect(wrapper.findComponent(DateRangeField).props()).toEqual({
+      expect(findDateRangeField().props()).toEqual({
         startDate: TEST_START_DATE,
         endDate: TEST_END_DATE,
       });
     });
 
     it('renders sorting field', () => {
-      expect(wrapper.findComponent(SortingField).props()).toEqual({ sortBy: TEST_SORT_BY });
+      expect(findSortingField().props()).toEqual({ sortBy: TEST_SORT_BY });
     });
 
     it('renders the audit events export button', () => {
-      expect(wrapper.findComponent(AuditEventsExportButton).props()).toEqual({
+      expect(findAuditExportButton().props()).toEqual({
         exportHref:
           'http://example.com/audit_log_reports.csv?created_after=2020-01-01&created_before=2020-02-02',
       });
@@ -114,21 +123,38 @@ describe('AuditEventsLog', () => {
 
   describe('when the audit events export link is not present', () => {
     beforeEach(() => {
-      initComponent({ props: { exportUrl: '' } });
+      initComponent({ inject: { exportUrl: '' } });
     });
 
     it('does not render the audit events export button', () => {
-      expect(wrapper.findComponent(AuditEventsExportButton).exists()).toBe(false);
+      expect(findAuditExportButton().exists()).toBe(false);
     });
   });
 
-  describe('when the show filter flag is disabled', () => {
+  describe('when `filterViewOnly` is true', () => {
     beforeEach(() => {
-      initComponent({ props: { showFilter: false } });
+      return initComponent({ inject: { filterViewOnly: true } });
     });
 
-    it('does not render the audit events filter', () => {
-      expect(wrapper.findComponent(AuditEventsFilter).exists()).toBe(false);
+    it('sets view-only to true on the audit events filter', () => {
+      expect(findAuditFilter().props('viewOnly')).toBe(true);
+    });
+  });
+
+  describe('when `filterTokenValues` has elements', () => {
+    const filterTokenValues = [{ type: 'member', data: '@username' }];
+
+    beforeEach(() => {
+      jest.spyOn(store, 'dispatch').mockImplementation();
+
+      return initComponent({ inject: { filterTokenValues } });
+    });
+
+    it('sets the filter value to the token values', () => {
+      expect(store.dispatch).toHaveBeenCalledWith(
+        'setFilterValue',
+        filterTokenValues.map(createToken),
+      );
     });
   });
 });

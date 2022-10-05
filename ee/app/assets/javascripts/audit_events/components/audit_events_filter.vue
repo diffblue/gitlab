@@ -19,6 +19,11 @@ export default {
       default: () => AUDIT_FILTER_CONFIGS,
       validator: filterTokenOptionsValidator,
     },
+    viewOnly: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -65,6 +70,7 @@ export default {
       :clear-button-title="__('Clear')"
       :close-button-title="__('Close')"
       :available-tokens="enabledTokens"
+      :view-only="viewOnly"
       class="gl-h-32 w-100"
       @submit="onSubmit"
       @input="onInput"
