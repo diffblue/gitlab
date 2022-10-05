@@ -44126,6 +44126,9 @@ msgstr ""
 msgid "View blame prior to this change"
 msgstr ""
 
+msgid "View card matches"
+msgstr ""
+
 msgid "View chart"
 msgid_plural "View charts"
 msgstr[0] ""
@@ -48271,9 +48274,6 @@ msgid "or"
 msgstr ""
 
 msgid "organizations can only be added to root groups"
-msgstr ""
-
-msgid "other card matches"
 msgstr ""
 
 msgid "out of %d total test"
