@@ -1,5 +1,5 @@
 import { nextTick } from 'vue';
-import { GlFormRadio } from '@gitlab/ui';
+import { GlFormRadio, GlFormRadioGroup } from '@gitlab/ui';
 
 import FormUrlApp from '~/webhooks/components/form_url_app.vue';
 
@@ -17,6 +17,7 @@ describe('FormUrlApp', () => {
   });
 
   const findAllRadioButtons = () => wrapper.findAllComponents(GlFormRadio);
+  const findRadioGroup = () => wrapper.findComponent(GlFormRadioGroup);
   const findUrlMaskDisable = () => findAllRadioButtons().at(0);
   const findUrlMaskEnable = () => findAllRadioButtons().at(1);
   const findUrlMaskSection = () => wrapper.findByTestId('url-mask-section');
@@ -40,7 +41,7 @@ describe('FormUrlApp', () => {
       beforeEach(async () => {
         createComponent();
 
-        findUrlMaskEnable().vm.$emit('input', true);
+        findRadioGroup().vm.$emit('input', true);
         await nextTick();
       });
 

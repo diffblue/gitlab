@@ -1,5 +1,5 @@
 <script>
-import { GlFormGroup, GlFormInput, GlFormRadio } from '@gitlab/ui';
+import { GlFormGroup, GlFormInput, GlFormRadio, GlFormRadioGroup } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 
 import FormUrlMaskItem from './form_url_mask_item.vue';
@@ -10,6 +10,7 @@ export default {
     GlFormGroup,
     GlFormInput,
     GlFormRadio,
+    GlFormRadioGroup,
   },
   data() {
     return {
@@ -51,15 +52,15 @@ export default {
       />
     </gl-form-group>
     <div class="gl-mt-5">
-      <gl-form-radio v-model="maskEnabled" :value="false">{{
-        $options.i18n.radioFullUrlText
-      }}</gl-form-radio>
-      <gl-form-radio v-model="maskEnabled" :value="true"
-        >{{ $options.i18n.radioMaskUrlText }}
-        <template #help>
-          {{ $options.i18n.radioMaskUrlHelp }}
-        </template>
-      </gl-form-radio>
+      <gl-form-radio-group v-model="maskEnabled">
+        <gl-form-radio :value="false">{{ $options.i18n.radioFullUrlText }}</gl-form-radio>
+        <gl-form-radio :value="true"
+          >{{ $options.i18n.radioMaskUrlText }}
+          <template #help>
+            {{ $options.i18n.radioMaskUrlHelp }}
+          </template>
+        </gl-form-radio>
+      </gl-form-radio-group>
 
       <div v-if="maskEnabled" class="gl-ml-6" data-testid="url-mask-section">
         <form-url-mask-item :index="0" />
