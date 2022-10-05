@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
-  let_it_be(:project) { create(:project, :repository) }
+  let_it_be_with_refind(:project) { create(:project, :repository) }
 
   let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project, current_ref: project.repository.root_ref) }
@@ -69,6 +69,15 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
 
         specify { is_expected.to be_nil }
       end
+
+      describe 'when issues are disabled' do
+        before do
+          project.issues_enabled = false
+          project.save!
+        end
+
+        specify { is_expected.to be_nil }
+      end
     end
 
     describe 'Merge Request' do
@@ -78,6 +87,15 @@ RSpec.describe Sidebars::Projects::Menus::AnalyticsMenu do
 
       describe 'when the user does not have access' do
         let(:user) { nil }
+
+        specify { is_expected.to be_nil }
+      end
+
+      describe 'when merge requests are disabled' do
+        before do
+          project.merge_requests_enabled = false
+          project.save!
+        end
 
         specify { is_expected.to be_nil }
       end

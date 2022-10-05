@@ -268,6 +268,24 @@ RSpec.describe ProjectPolicy do
       it 'disables boards permissions' do
         expect_disallowed :admin_issue_board, :create_test_case
       end
+
+      it 'disables issues analytics' do
+        expect_disallowed :read_issues_analytics
+      end
+    end
+  end
+
+  context 'merge requests feature' do
+    let(:current_user) { owner }
+
+    context 'when the feature is disabled' do
+      before do
+        project.update!(merge_requests_enabled: false)
+      end
+
+      it 'disables issues analytics' do
+        expect_disallowed :read_project_merge_request_analytics
+      end
     end
   end
 

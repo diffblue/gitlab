@@ -66,7 +66,7 @@ module EE
 
           def show_issues_analytics?
             context.project.licensed_feature_available?(:issues_analytics) &&
-              can?(context.current_user, :read_project, context.project)
+              can?(context.current_user, :read_issue_analytics, context.project)
           end
 
           def merge_request_analytics_menu_item
