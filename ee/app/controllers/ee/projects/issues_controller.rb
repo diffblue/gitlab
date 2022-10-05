@@ -64,13 +64,28 @@ module EE
       def create_vulnerability_issue_feedback(issue)
         return unless issue.persisted? && vulnerability
 
-        result = VulnerabilityFeedback::CreateService.new(
-          issue.project,
-          current_user,
-          vulnerability_issue_feedback_params(issue, vulnerability)
-        ).execute
+        if ::Feature.enabled?(:deprecate_vulnerabilities_feedback, vulnerability.project)
+          result = create_vulnerability_issue_link(vulnerability, issue)
+        else
+          result = VulnerabilityFeedback::CreateService.new(
+            issue.project,
+            current_user,
+            vulnerability_issue_feedback_params(issue, vulnerability)
+          ).execute
+        end
 
         flash[:raw] = render_vulnerability_link_alert.html_safe unless result[:message].errors.blank?
+      end
+
+      def create_vulnerability_issue_link(vulnerability, issue)
+        issue_link_response = ::VulnerabilityIssueLinks::CreateService
+          .new(current_user, vulnerability, issue, link_type: ::Vulnerabilities::IssueLink.link_types[:created])
+          .execute
+
+        if issue_link_response[:status] == :error
+          @error_message = issue_link_response[:message]
+          raise ActiveRecord::Rollback
+        end
       end
 
       def vulnerability

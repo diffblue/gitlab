@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Projects::IssuesController do
+
   let(:namespace) { create(:group, :public) }
   let(:project)   { create(:project_empty_repo, :public, namespace: namespace) }
   let(:user) { create(:user) }
@@ -108,6 +109,7 @@ RSpec.describe Projects::IssuesController do
 
           before do
             stub_licensed_features(security_dashboard: true)
+            stub_feature_flags(deprecate_vulnerabilities_feedback: false)
           end
 
           it 'links the issue to the vulnerability' do
