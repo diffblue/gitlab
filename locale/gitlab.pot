@@ -20403,6 +20403,9 @@ msgstr ""
 msgid "ImportProjects|%{provider} rate limit exceeded. Try again later"
 msgstr ""
 
+msgid "ImportProjects|Advanced import settings"
+msgstr ""
+
 msgid "ImportProjects|Blocked import URL: %{message}"
 msgstr ""
 
@@ -20410,6 +20413,9 @@ msgid "ImportProjects|Error importing repository %{project_safe_import_url} into
 msgstr ""
 
 msgid "ImportProjects|Import repositories"
+msgstr ""
+
+msgid "ImportProjects|Importing extra information may significantly increase import time"
 msgstr ""
 
 msgid "ImportProjects|Importing the project failed"
