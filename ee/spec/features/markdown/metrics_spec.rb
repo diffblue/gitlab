@@ -8,7 +8,7 @@ RSpec.describe 'Metrics rendering', :js, :kubeclient, :use_clean_rails_memory_st
   include MetricsDashboardUrlHelpers
 
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { create(:prometheus_project) }
+  let_it_be(:project) { create(:project, :with_prometheus_integration) }
 
   let(:issue) { create(:issue, project: project, description: description) }
 

@@ -1409,7 +1409,7 @@ RSpec.describe Project, factory_default: :keep do
 
     it "is false if used other tracker" do
       # NOTE: The current nature of this factory requires persistence
-      project = create(:redmine_project)
+      project = create(:project, :with_redmine_integration)
 
       expect(project.default_issues_tracker?).to be_falsey
     end
@@ -1454,7 +1454,7 @@ RSpec.describe Project, factory_default: :keep do
   describe '#external_issue_tracker' do
     it 'sets Project#has_external_issue_tracker when it is nil' do
       project_with_no_tracker = create(:project, has_external_issue_tracker: nil)
-      project_with_tracker = create(:redmine_project, has_external_issue_tracker: nil)
+      project_with_tracker = create(:project, :with_redmine_integration, has_external_issue_tracker: nil)
 
       expect do
         project_with_no_tracker.external_issue_tracker
@@ -1473,7 +1473,7 @@ RSpec.describe Project, factory_default: :keep do
     end
 
     it 'retrieves external_issue_tracker querying services and cache it when there is external issue tracker' do
-      project = create(:redmine_project)
+      project = create(:project, :with_redmine_integration)
 
       expect(project).to receive(:integrations).once.and_call_original
       2.times { expect(project.external_issue_tracker).to be_a_kind_of(Integrations::Redmine) }
