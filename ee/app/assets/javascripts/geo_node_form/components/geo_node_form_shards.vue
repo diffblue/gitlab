@@ -54,7 +54,7 @@ export default {
 </script>
 
 <template>
-  <gl-dropdown id="node-synchronization-shards-field" :text="dropdownTitle">
+  <gl-dropdown id="node-synchronization-shards-field" :text="dropdownTitle" menu-class="gl-w-auto!">
     <li
       v-for="shard in syncShardsOptions"
       :key="shard.value"
