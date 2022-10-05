@@ -1,5 +1,5 @@
 import { safeLoad } from 'js-yaml';
-import { isValidPolicy } from '../../utils';
+import { isValidPolicy, hasInvalidCron } from '../../utils';
 
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
@@ -17,7 +17,8 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
     const primaryKeys = ['type', 'name', 'description', 'enabled', 'rules', 'actions'];
     const rulesKeys = ['type', 'branches', 'cadence'];
     const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables'];
-    return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys })
+
+    return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) && !hasInvalidCron(policy)
       ? policy
       : { error: true };
   }

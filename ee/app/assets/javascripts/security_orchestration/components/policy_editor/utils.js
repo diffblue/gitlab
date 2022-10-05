@@ -1,3 +1,4 @@
+import { isValidCron } from 'cron-validator';
 import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
@@ -157,6 +158,17 @@ export const isValidPolicy = ({
   }
 
   return true;
+};
+
+/**
+ * Validate cadence cron string if it exists in rule
+ * @param policy
+ * @returns {Boolean}
+ */
+export const hasInvalidCron = (policy) => {
+  const hasInvalidCronString = (cronString) => (cronString ? !isValidCron(cronString) : false);
+
+  return (policy.rules || []).some((rule) => hasInvalidCronString(rule?.cadence));
 };
 
 /**
