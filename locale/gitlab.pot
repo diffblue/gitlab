@@ -36417,9 +36417,6 @@ msgstr ""
 msgid "Select Git revision"
 msgstr ""
 
-msgid "Select Page"
-msgstr ""
-
 msgid "Select Profile"
 msgstr ""
 
@@ -36535,6 +36532,9 @@ msgid "Select project to create issue"
 msgstr ""
 
 msgid "Select projects"
+msgstr ""
+
+msgid "Select report"
 msgstr ""
 
 msgid "Select reviewer(s)"
