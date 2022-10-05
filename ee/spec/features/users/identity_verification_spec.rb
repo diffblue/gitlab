@@ -30,7 +30,9 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js d
 
         expect(page).to have_current_path(users_successful_verification_path)
         expect(page).to have_content(s_('IdentityVerification|Verification successful'))
-        expect(page).to have_selector("meta[http-equiv='refresh'][content='3; url=#{root_path}']", visible: :hidden)
+        expect(page).to have_selector(
+          "meta[http-equiv='refresh'][content='3; url=#{users_sign_up_welcome_path}']", visible: :hidden
+        )
       end
 
       it 'shows client side empty eror message' do
