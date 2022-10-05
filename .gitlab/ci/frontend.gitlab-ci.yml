@@ -294,7 +294,7 @@ coverage-frontend:
     - .yarn-cache
     - .frontend:rules:qa-frontend-node
   stage: test
-  dependencies: []
+  needs: []
   script:
     - !reference [.yarn-install, script]
     - run_timed_command "retry yarn run webpack-prod"
