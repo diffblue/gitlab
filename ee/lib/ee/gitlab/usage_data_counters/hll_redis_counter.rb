@@ -9,6 +9,7 @@ module EE
         EE_CATEGORIES_COLLECTED_FROM_METRICS_DEFINITIONS = %w[
           compliance
           epic_boards_usage
+          epics_usage
           network_policies
           ci_secrets_management
           geo
