@@ -265,6 +265,14 @@ module EE
         enable :admin_merge_request
       end
 
+      rule { issues_disabled }.policy do
+        prevent :read_issue_analytics
+      end
+
+      rule { merge_requests_disabled }.policy do
+        prevent :read_project_merge_request_analytics
+      end
+
       rule { issues_disabled & merge_requests_disabled }.policy do
         prevent(*create_read_update_admin_destroy(:iteration))
       end
