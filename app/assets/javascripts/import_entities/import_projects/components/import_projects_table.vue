@@ -175,6 +175,7 @@ export default {
       v-model="optionalStagesSelection"
       :stages="optionalStages"
       :is-initially-expanded="isAdvancedSettingsPanelInitiallyExpanded"
+      class="gl-mb-5"
     />
     <div v-if="repositories.length" class="gl-w-full">
       <table>

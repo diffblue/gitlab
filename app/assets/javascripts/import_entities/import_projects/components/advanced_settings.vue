@@ -27,12 +27,12 @@ export default {
 };
 </script>
 <template>
-  <gl-accordion class="gl-mb-5" :header-level="3">
+  <gl-accordion :header-level="3">
     <gl-accordion-item
       :title="s__('ImportProjects|Advanced import settings')"
       :visible="isInitiallyExpanded"
     >
-      <gl-alert variant="warning" class="gl-mb-5">{{
+      <gl-alert variant="warning" class="gl-mb-5" :dismissible="false">{{
         s__('ImportProjects|Importing extra information may significantly increase import time')
       }}</gl-alert>
       <gl-form>
