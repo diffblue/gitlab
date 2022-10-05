@@ -347,7 +347,7 @@ RSpec.describe Project do
 
     describe '.with_active_prometheus_integration' do
       it 'returns the correct project' do
-        project_with_active_prometheus_integration = create(:prometheus_project)
+        project_with_active_prometheus_integration = create(:project, :with_prometheus_integration)
         project_without_active_prometheus_integration = create(:project)
 
         expect(described_class.with_active_prometheus_integration).to include(project_with_active_prometheus_integration)
