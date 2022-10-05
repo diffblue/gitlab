@@ -368,6 +368,6 @@ export default {
         </div>
       </template>
     </template>
-    <url-sync :query="query" />
+    <url-sync :query="query" url-params-update-strategy="set" />
   </div>
 </template>
