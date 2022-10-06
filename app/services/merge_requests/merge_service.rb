@@ -26,6 +26,7 @@ module MergeRequests
 
       @merge_request = merge_request
       @options = options
+      jid = merge_jid
 
       validate!
 
@@ -37,7 +38,7 @@ module MergeRequests
         end
       end
 
-      log_info("Merge process finished on JID #{merge_jid} with state #{state}")
+      log_info("Merge process finished on JID #{jid} with state #{state}")
     rescue MergeError => e
       handle_merge_error(log_message: e.message, save_message_on_model: true)
     ensure
