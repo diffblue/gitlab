@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Protect' do
+  RSpec.describe 'Govern' do
     describe 'Policies List page' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
