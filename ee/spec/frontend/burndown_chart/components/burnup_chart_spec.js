@@ -64,6 +64,8 @@ describe('Burnup chart', () => {
   });
 
   it('only shows integers on axis labels', () => {
+    createComponent({ loading: false });
+
     const msInOneDay = 60 * 60 * 24 * 1000;
     expect(findChart().props('option')).toMatchObject({
       xAxis: {
@@ -77,6 +79,8 @@ describe('Burnup chart', () => {
   });
 
   it('does not show average or max values in legend', () => {
+    createComponent({ loading: false });
+
     expect(findChart().props('includeLegendAvgMax')).toBe(false);
   });
 });

@@ -221,7 +221,7 @@ describe('DevopsAdoptionAddDropdown', () => {
 
     describe('while loading', () => {
       beforeEach(() => {
-        wrapper.setProps({ isLoadingGroups: true });
+        createComponent({ props: { isLoadingGroups: true } });
       });
 
       it('displays a loading icon', () => {

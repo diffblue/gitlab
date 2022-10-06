@@ -58,9 +58,6 @@ describe('RelatedItemsTree', () => {
 
     beforeEach(() => {
       wrapper = createComponent();
-    });
-
-    beforeAll(() => {
       wrapperExpanded = createComponent();
       wrapperExpanded.vm.$store.dispatch('expandItem', {
         parentItem: mockItem,
@@ -74,9 +71,6 @@ describe('RelatedItemsTree', () => {
 
     afterEach(() => {
       wrapper.destroy();
-    });
-
-    afterAll(() => {
       wrapperExpanded.destroy();
       wrapperCollapsed.destroy();
     });

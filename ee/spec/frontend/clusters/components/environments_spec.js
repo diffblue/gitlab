@@ -39,7 +39,7 @@ describe('Environments', () => {
   describe('environments table', () => {
     let table;
 
-    beforeAll(() => {
+    beforeEach(() => {
       wrapper = mount(Environments, {
         propsData: { ...propsData, environments },
         stubs: { deploymentInstance: { template: '<div class="js-deployment-instance"></div>' } },
@@ -68,7 +68,13 @@ describe('Environments', () => {
     describe('deployment instances', () => {
       let tableRows;
 
-      beforeAll(() => {
+      beforeEach(() => {
+        wrapper = mount(Environments, {
+          propsData: { ...propsData, environments },
+          stubs: { deploymentInstance: { template: '<div class="js-deployment-instance"></div>' } },
+        });
+
+        table = wrapper.findComponent(GlTable);
         tableRows = table.findAll('tbody tr');
       });
 
