@@ -155,11 +155,11 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
           post_create
 
-          expect_snowplow_event(category: described_class.name,
+          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
                                 action: 'create_group',
                                 namespace: an_instance_of(Group),
                                 user: user)
-          expect_snowplow_event(category: described_class.name,
+          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
                                 action: 'create_project',
                                 namespace: an_instance_of(Group),
                                 user: user)
@@ -217,11 +217,11 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         it 'selectively tracks events for group and project creation' do
           post_create
 
-          expect_snowplow_event(category: described_class.name,
+          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
                                 action: 'create_group',
                                 namespace: an_instance_of(Group),
                                 user: user)
-          expect_no_snowplow_event(category: described_class.name, action: 'create_project')
+          expect_no_snowplow_event(category: 'Registrations::NamespaceCreateService', action: 'create_project')
         end
 
         it { is_expected.to have_gitlab_http_status(:ok) }
@@ -247,8 +247,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
           post_create
 
-          expect_no_snowplow_event(category: described_class.name, action: 'create_group')
-          expect_snowplow_event(category: described_class.name,
+          expect_no_snowplow_event(category: 'Registrations::NamespaceCreateService', action: 'create_group')
+          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
                                 action: 'create_project',
                                 namespace: an_instance_of(Group),
                                 user: user)
@@ -338,8 +338,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
       context 'with learn gitlab project' do
         where(:trial, :project_name, :template) do
-          false | 'Learn GitLab' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
-          true  | 'Learn GitLab - Ultimate trial' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
+          false | 'Learn GitLab' | 'learn_gitlab_ultimate.tar.gz'
+          true  | 'Learn GitLab - Ultimate trial' | 'learn_gitlab_ultimate.tar.gz'
         end
 
         with_them do
