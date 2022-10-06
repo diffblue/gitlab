@@ -9,6 +9,13 @@ export default {
     PreScanVerificationStatus,
     PreScanVerificationSidebar,
   },
+  props: {
+    showTrigger: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
+  },
   data() {
     return {
       isSidebarOpen: false,
@@ -32,15 +39,14 @@ export default {
 
 <template>
   <div>
-    <slot name="action-trigger" :open-sidebar="openSidebar">
-      <pre-scan-verification-status
-        :status="status"
-        pipeline-id="2343434"
-        pipeline-created-at="2022-09-23 11:19:49 UTC"
-        pipeline-path="test-path"
-        @select-results="openSidebar"
-      />
-    </slot>
+    <pre-scan-verification-status
+      v-if="showTrigger"
+      :status="status"
+      pipeline-id="2343434"
+      pipeline-created-at="2022-09-23 11:19:49 UTC"
+      pipeline-path="test-path"
+      @select-results="openSidebar"
+    />
 
     <pre-scan-verification-sidebar
       :is-open="isSidebarOpen"

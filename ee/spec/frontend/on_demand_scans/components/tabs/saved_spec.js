@@ -5,6 +5,7 @@ import dastProfilesMock from 'test_fixtures/graphql/on_demand_scans/graphql/dast
 import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import SavedTab from 'ee/on_demand_scans/components/tabs/saved.vue';
 import BaseTab from 'ee/on_demand_scans/components/tabs/base_tab.vue';
+import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import dastProfilesQuery from 'ee/on_demand_scans/graphql/dast_profiles.query.graphql';
@@ -52,6 +53,8 @@ describe('Saved tab', () => {
   const findCellAt = (index) => findFirstRow().findAll('td').at(index);
   const findRunScanButton = () => wrapper.findByTestId('dast-scan-run-button');
   const findDeleteModal = () => wrapper.findComponent({ ref: 'delete-scan-modal' });
+  const findPreScanVerificationConfigurator = () =>
+    wrapper.findComponent(PreScanVerificationConfigurator);
 
   // Helpers
   const createMockApolloProvider = () => {
@@ -77,7 +80,10 @@ describe('Saved tab', () => {
     },
   });
 
-  const createComponentFactory = (mountFn = shallowMountExtended) => (options = {}) => {
+  const createComponentFactory = (mountFn = shallowMountExtended) => (
+    options = {},
+    glFeatures = {},
+  ) => {
     router = createRouter();
     wrapper = mountFn(
       SavedTab,
@@ -92,6 +98,7 @@ describe('Saved tab', () => {
           provide: {
             projectPath,
             projectOnDemandScanCountsEtag: PROJECT_ON_DEMAND_SCAN_COUNTS_ETAG_MOCK,
+            ...glFeatures,
           },
           stubs: {
             BaseTab,
@@ -338,6 +345,28 @@ describe('Saved tab', () => {
 
         expect(wrapper.text()).not.toContain(errorMessage);
       });
+    });
+
+    describe('Pre-scan verification', () => {
+      it.each`
+        featureFlag | expectedResult
+        ${true}     | ${true}
+        ${false}    | ${false}
+      `(
+        'should display Pre-scan verification based on  feature flag',
+        async ({ featureFlag, expectedResult }) => {
+          createComponent(
+            {},
+            {
+              glFeatures: {
+                dastPreScanVerification: featureFlag,
+              },
+            },
+          );
+
+          expect(findPreScanVerificationConfigurator().exists()).toBe(expectedResult);
+        },
+      );
     });
   });
 });

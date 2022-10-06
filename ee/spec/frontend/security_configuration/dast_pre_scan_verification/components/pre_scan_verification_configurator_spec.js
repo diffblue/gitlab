@@ -32,4 +32,14 @@ describe('PreScanVerificationConfigurator', () => {
 
     expect(findPreScanVerificationSidebar().props('isOpen')).toBe(false);
   });
+
+  it.each`
+    showTrigger | expectedResult
+    ${true}     | ${true}
+    ${false}    | ${false}
+  `('should render side drawer trigger', ({ showTrigger, expectedResult }) => {
+    createComponent({ showTrigger });
+
+    expect(findPreScanVerificationStatus().exists()).toBe(expectedResult);
+  });
 });
