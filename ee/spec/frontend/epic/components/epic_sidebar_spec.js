@@ -109,7 +109,7 @@ describe('EpicSidebarComponent', () => {
       const todoWidget = wrapper.findComponent(SidebarTodoWidget);
       expect(todoWidget.exists()).toBe(true);
       expect(todoWidget.props()).toMatchObject({
-        issuableId: 'gid://gitlab/Epic/1',
+        issuableId: `gid://gitlab/Epic/${mockEpicMeta.epicId}`,
         issuableIid: '1',
         fullPath: 'frontend-fixtures-group',
         issuableType: 'epic',
