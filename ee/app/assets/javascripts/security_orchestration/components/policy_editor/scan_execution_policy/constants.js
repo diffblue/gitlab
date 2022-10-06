@@ -4,7 +4,6 @@ import {
   DAST_SHORT_NAME,
   SECRET_DETECTION_NAME,
   CONTAINER_SCANNING_NAME,
-  CLUSTER_IMAGE_SCANNING_NAME,
 } from '~/security_configuration/components/constants';
 
 export const SCANNER_DAST = 'dast';
@@ -42,5 +41,4 @@ export const TEMPORARY_LIST_OF_SCANNERS = {
   dast: DAST_SHORT_NAME,
   secret_detection: SECRET_DETECTION_NAME,
   container_scanning: CONTAINER_SCANNING_NAME,
-  cluster_image_scanning: CLUSTER_IMAGE_SCANNING_NAME,
 };
