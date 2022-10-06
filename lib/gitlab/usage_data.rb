@@ -346,7 +346,6 @@ module Gitlab
         start = minimum_id(Project)
         finish = maximum_id(Project)
 
-        results[:projects_with_expiration_policy_disabled] = -1
         # rubocop: disable UsageData/LargeTable
         base = ::ContainerExpirationPolicy.active
         # rubocop: enable UsageData/LargeTable
