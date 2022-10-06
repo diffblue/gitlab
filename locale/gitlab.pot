@@ -30736,10 +30736,19 @@ msgstr ""
 msgid "PreScanVerification|Test your configuration and identify potential errors before running a full scan."
 msgstr ""
 
+msgid "PreScanVerification|The last pre-scan verification job is no longer valid because this scan’s configuration has changed."
+msgstr ""
+
+msgid "PreScanVerification|The pre-scan verification status was reset for this scan"
+msgstr ""
+
 msgid "PreScanVerification|Verification checks"
 msgstr ""
 
 msgid "PreScanVerification|Verification checks are determined by a scan’s configuration details. Changing configuration details may alter or reset the verification checks and their status."
+msgstr ""
+
+msgid "PreScanVerification|Verification was "
 msgstr ""
 
 msgid "PreScanVerification|Verify configuration"
