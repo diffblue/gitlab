@@ -1134,6 +1134,9 @@ msgstr ""
 msgid "%{total} warnings found: showing first %{warningsDisplayed}"
 msgstr ""
 
+msgid "%{type} must be a %{help_link}"
+msgstr ""
+
 msgid "%{type} only supports %{name} name"
 msgstr ""
 
@@ -48580,6 +48583,9 @@ msgid "suggestPipeline|The template is ready! You can now commit it to create yo
 msgstr ""
 
 msgid "suggestPipeline|We’re adding a GitLab CI configuration file to add a pipeline to the project. You could create it manually, but we recommend that you start with a GitLab template that works out of the box."
+msgstr ""
+
+msgid "supported SSH public key."
 msgstr ""
 
 msgid "tag name"
