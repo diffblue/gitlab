@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial flow for user picking just me and importing a project', :js, :saas, :saas_registration do
+RSpec.describe 'Trial flow for user picking company and importing a project', :js, :saas, :saas_registration do
   it 'registers the user and starts to import a project' do
     visit new_trial_registration_path
 
@@ -55,8 +55,7 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
     select 'A different reason', from: 'user_registration_objective'
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
-    choose 'Just me'
-    check 'I\'d like to receive updates about GitLab via email'
+    choose 'My company or team'
   end
 
   def expect_to_be_on_trial_user_registration
@@ -73,6 +72,7 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
       expect(page).to have_content('I\'m signing up for GitLab because:')
       expect(page).to have_content('Who will be using this GitLab trial?')
       expect(page).not_to have_content('What would you like to do?')
+      expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
   end
 

@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial flow for user picking just me and importing a project', :js, :saas, :saas_registration do
-  it 'registers the user and starts to import a project' do
+RSpec.describe 'Trial flow for user picking company and creating a project', :js, :saas, :saas_registration do
+  it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
     visit new_trial_registration_path
 
     expect_to_be_on_trial_user_registration
@@ -22,14 +22,14 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
 
     expect_to_see_group_and_project_creation_form
 
-    click_on 'Import'
+    fills_in_group_and_project_creation_form
+    click_on 'Create project'
 
-    expect_to_see_import_form
+    expect_to_be_in_continuous_onboarding
 
-    fills_in_import_form
-    click_on 'GitHub'
+    click_on 'Ok, let\'s go'
 
-    expect_to_be_in_import_process
+    expect_to_be_in_learn_gitlab
   end
 
   def user_signs_up_through_trial_registration
@@ -47,7 +47,7 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
   end
 
   def user_email
-    'onboardinguser@example.com'
+    'trialuser@example.com'
   end
 
   def fills_in_welcome_form
@@ -55,8 +55,7 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
     select 'A different reason', from: 'user_registration_objective'
     fill_in 'Why are you signing up? (optional)', with: 'My reason'
 
-    choose 'Just me'
-    check 'I\'d like to receive updates about GitLab via email'
+    choose 'My company or team'
   end
 
   def expect_to_be_on_trial_user_registration
@@ -73,6 +72,7 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
       expect(page).to have_content('I\'m signing up for GitLab because:')
       expect(page).to have_content('Who will be using this GitLab trial?')
       expect(page).not_to have_content('What would you like to do?')
+      expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
   end
 
@@ -81,8 +81,6 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
   end
 
   def expect_to_see_group_and_project_creation_form
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
     expect(page).to have_content('Create or import your first project')
     expect(page).to have_content('Projects help you organize your work')
     expect(page).to have_content('Your project will be created at:')
@@ -100,6 +98,31 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
     select 'Florida', from: 'state'
     fill_in 'phone_number', with: '+1234567890'
     fill_in 'website_url', with: 'https://gitlab.com'
+  end
+
+  def fills_in_group_and_project_creation_form
+    # The groups_and_projects_controller (on `click_on 'Create project'`) is over
+    # the query limit threshold, so we have to adjust it.
+    # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(137)
+
+    service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
+    allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service_instance)
+
+    expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
+
+    expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
+      .to receive(:perform_async).with(
+        user.id,
+        hash_including(
+          namespace_id: anything,
+          gitlab_com_trial: true,
+          sync_to_gl: true
+        )
+      ).and_call_original
+
+    fill_in 'group_name', with: 'Test Group'
+    fill_in 'blank_project_name', with: 'Test Project'
   end
 
   def user
@@ -122,19 +145,12 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
     ).permit!
   end
 
-  def fills_in_import_form
-    fill_in 'import_group_name', with: 'Test Group'
+  def expect_to_be_in_continuous_onboarding
+    expect(page).to have_content 'Get started with GitLab'
   end
 
-  def expect_to_be_in_import_process
-    expect(page).to have_content <<~MESSAGE.tr("\n", ' ')
-      To connect GitHub repositories, you first need to authorize
-      GitLab to access the list of your GitHub repositories.
-    MESSAGE
-  end
-
-  def expect_to_see_import_form
-    expect_to_see_group_and_project_creation_form
-    expect(page).to have_content('GitLab export')
+  def expect_to_be_in_learn_gitlab
+    expect(page).to have_content('Learn GitLab')
+    expect(page).to have_content('GitLab is better with colleagues!')
   end
 end
