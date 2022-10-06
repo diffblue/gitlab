@@ -46,6 +46,9 @@ RSpec.describe Gitlab::ImportExport::RepoRestorer do
 
         expect { restorer.restore }.to change { GroupWikiRepository.count }.by(1)
 
+        group.wiki.repository.expire_status_cache
+        expect(group.wiki_repository_exists?).to be true
+
         pages = group.wiki.list_pages(load_content: true)
         expect(pages.size).to eq 1
         expect(pages.first.title).to eq page_title
