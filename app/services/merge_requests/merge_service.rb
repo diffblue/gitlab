@@ -165,7 +165,8 @@ module MergeRequests
 
     def log_info(message)
       @logger ||= Gitlab::AppLogger
-      @logger.info("#{merge_request_info} - #{message}")
+      payload = ::Gitlab::ApplicationContext.current.merge(message: "#{merge_request_info} - #{message}")
+      @logger.info(**payload)
     end
 
     def merge_request_info
