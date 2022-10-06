@@ -8,6 +8,8 @@ module Resolvers
       alias_method :epic, :object
 
       def resolve(**args)
+        return unless current_user
+
         project = last_issue_creation_event&.project
 
         return unless project
