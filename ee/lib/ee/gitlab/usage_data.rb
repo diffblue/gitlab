@@ -400,7 +400,7 @@ module EE
           finish = maximum_id(::Security::Scan, :build_id)
 
           {}.tap do |secure_jobs|
-            ::Security::Scan.scan_types.each do |name, scan_type|
+            ::Security::Scan.scan_types.except('cluster_image_scanning').each do |name, scan_type|
               by_scan_type = ::Security::Scan.where(scan_type: scan_type).where(time_period)
               # increase the batch size to match ee/lib/gitlab/usage/metrics/instrumentations/count_ci_builds_metric.rb
               secure_jobs["#{name}_scans".to_sym] =
@@ -416,7 +416,7 @@ module EE
 
           start_id, finish_id = min_max_security_scan_id(time_period)
 
-          ::Security::Scan.scan_types.each do |name, _|
+          ::Security::Scan.scan_types.except('cluster_image_scanning').each do |name, _|
             relation = ::Security::Scan
                          .by_scan_types(name)
                          .where(time_period)

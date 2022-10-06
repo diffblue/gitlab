@@ -2,11 +2,13 @@
 key_path: usage_activity_by_stage.secure.cluster_image_scanning_scans
 description: 'Counts cluster image scanning jobs'
 product_section: sec
-product_stage: protect
-product_group: container_security
+product_stage: secure
+product_group: composition_analysis
 product_category: container_scanning
 value_type: number
-status: active
+status: removed
+milestone_removed: '15.5'
+removed_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/98858'
 milestone: "14.1"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/64877
 time_frame: all
