@@ -887,9 +887,9 @@ RSpec.describe Issue do
 
     it 'takes issue branch template into account' do
       project = create(:project)
-      project.project_setting.update!(issue_branch_template: 'feature-%{id}')
+      project.project_setting.update!(issue_branch_template: 'feature-%{id}-%{title}')
 
-      expect(described_class.to_branch_name(123, 'title', project: project)).to eq('feature-123')
+      expect(described_class.to_branch_name(123, 'issue title', project: project)).to eq('feature-123-issue-title')
     end
   end
 

@@ -6831,6 +6831,9 @@ msgstr ""
 msgid "Branch name"
 msgstr ""
 
+msgid "Branch name template"
+msgstr ""
+
 msgid "Branch not loaded - %{branchId}"
 msgstr ""
 
@@ -10117,9 +10120,6 @@ msgid "Configure advanced permissions, Large File Storage, two-factor authentica
 msgstr ""
 
 msgid "Configure advanced permissions, Large File Storage, two-factor authentication, and customer relations settings."
-msgstr ""
-
-msgid "Configure default branch name for branches created from issues."
 msgstr ""
 
 msgid "Configure existing installation"
@@ -31802,7 +31802,7 @@ msgstr ""
 msgid "ProjectSettings|Badges"
 msgstr ""
 
-msgid "ProjectSettings|Branches name"
+msgid "ProjectSettings|Branches created from issues follow this pattern."
 msgstr ""
 
 msgid "ProjectSettings|Build, test, and deploy your changes."
@@ -31836,9 +31836,6 @@ msgid "ProjectSettings|Container registry"
 msgstr ""
 
 msgid "ProjectSettings|Customize this project's badges."
-msgstr ""
-
-msgid "ProjectSettings|Default branch name for branches created from merge request."
 msgstr ""
 
 msgid "ProjectSettings|Determine what happens to the commit history when you merge a merge request."
@@ -45623,6 +45620,9 @@ msgid "What is squashing?"
 msgstr ""
 
 msgid "What templates can I create?"
+msgstr ""
+
+msgid "What variables can I use?"
 msgstr ""
 
 msgid "What will you use this group for?"
