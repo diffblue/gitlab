@@ -13,7 +13,7 @@ RSpec.describe 'Epics through GroupQuery' do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, :public, group: group) }
-  let_it_be(:label) { create(:label) }
+  let_it_be(:label) { create(:group_label, group: group) }
   let_it_be_with_reload(:epic) do
     create(:labeled_epic,
            group: group, state: :closed, created_at: 3.days.ago, updated_at: 2.days.ago,
@@ -414,7 +414,7 @@ RSpec.describe 'Epics through GroupQuery' do
       end
 
       # Executes 4 extra queries to fetch participant_attrs
-      include_examples 'N+1 query check', 4
+      include_examples 'N+1 query check', threshold: 4
     end
 
     context 'when award emoji votes' do
@@ -426,6 +426,19 @@ RSpec.describe 'Epics through GroupQuery' do
       end
 
       include_examples 'N+1 query check'
+    end
+
+    context 'when requesting labels' do
+      let(:requested_fields) { ['labels { nodes { id } }'] }
+
+      before do
+        group_labels = create_list(:group_label, 2, group: group)
+
+        epic_a.update!(labels: [label])
+        epic_b.update!(labels: [label, group_labels].flatten)
+      end
+
+      include_examples 'N+1 query check', skip_cached: false
     end
   end
 
