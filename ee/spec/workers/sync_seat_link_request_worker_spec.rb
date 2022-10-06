@@ -267,4 +267,12 @@ RSpec.describe SyncSeatLinkRequestWorker, type: :worker do
 
     it_behaves_like 'unsuccessful request'
   end
+
+  describe 'sidekiq_retry_in_block' do
+    it 'is at least 30 minutes in the first retry' do
+      expect(
+        described_class.sidekiq_retry_in_block.call(0, nil)
+      ).to be >= 30.minutes
+    end
+  end
 end
