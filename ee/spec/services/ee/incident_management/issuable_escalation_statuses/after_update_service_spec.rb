@@ -109,6 +109,7 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateServic
           expect(::SystemNoteService).to receive(:start_escalation).with(issue, escalation_policy, current_user)
         else
           expect(::IncidentManagement::PendingEscalations::IssueCreateWorker).not_to receive(:perform_async)
+          expect(::SystemNoteService).not_to receive(:start_escalation)
         end
 
         if should_delete
@@ -116,6 +117,31 @@ RSpec.describe IncidentManagement::IssuableEscalationStatuses::AfterUpdateServic
         else
           expect { result }.not_to change(::IncidentManagement::PendingEscalations::Issue, :count)
         end
+      end
+    end
+
+    context 'with an open status and existing policy' do
+      let(:status) { :triggered }
+      let(:status_event) { escalation_status.status_event_for(status) }
+      let(:escalations_started_at) { Time.current }
+
+      before do
+        create(:incident_management_pending_issue_escalation,
+               issue: issue, policy: policy, project: project)
+
+        update_issue(status_event, policy, escalations_started_at)
+
+        # Reloading clears previous changes for issue and its associations.
+        issue.reload
+      end
+
+      it 'when updating arbitary fields does not create pending escalations' do
+        issue.update!(title: "#{issue.title} #{Time.current}")
+
+        expect(::IncidentManagement::PendingEscalations::IssueCreateWorker).not_to receive(:perform_async)
+        expect(::SystemNoteService).not_to receive(:start_escalation)
+
+        result
       end
     end
   end
