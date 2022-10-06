@@ -266,7 +266,7 @@ module EE
         def parse_resource_link_params(params)
           return unless params
 
-          link_params = params.split(',', 2)
+          link_params = params.split(' ', 2)
           link = link_params[0]
 
           return unless link
