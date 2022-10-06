@@ -16,10 +16,18 @@ module EE
           .new(issuable, current_user, blocking_merge_requests_params)
           .execute
 
+        trigger_suggested_reviewers_fetch(issuable)
         stream_audit_event(issuable)
       end
 
       private
+
+      def trigger_suggested_reviewers_fetch(issuable)
+        return unless project.suggested_reviewers_available?
+        return unless issuable.can_suggest_reviewers?
+
+        ::MergeRequests::FetchSuggestedReviewersWorker.perform_async(issuable.id)
+      end
 
       def stream_audit_event(merge_request)
         audit_context = {
