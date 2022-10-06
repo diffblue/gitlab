@@ -58,14 +58,36 @@ RSpec.describe MergeRequests::ResetApprovalsService do
     end
 
     context 'when skip_reset_checks: true' do
-      it 'deletes all approvals directly without additional checks or side-effects' do
+      before do
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
         end
 
         create(:approval, merge_request: merge_request, user: approver)
         create(:approval, merge_request: merge_request, user: owner)
+      end
 
+      it 'deletes all approvals directly without additional checks or side-effects' do
+        expect(service).to receive(:delete_approvals).and_call_original
+        expect(service).not_to receive(:reset_approvals)
+
+        service.execute("refs/heads/master", newrev, skip_reset_checks: true)
+
+        merge_request.reload
+
+        expect(merge_request.approvals).to be_empty
+        expect(approval_todos(merge_request)).to be_empty
+      end
+
+      it 'will delete approvals in situations where a false setting would not' do
+        expect(service).to receive(:reset_approvals?).and_return(false)
+
+        expect do
+          service.execute("refs/heads/master", newrev)
+          merge_request.reload
+        end.not_to change { merge_request.approvals.length }
+
+        allow(service).to receive(:reset_approvals?).and_call_original
         expect(service).to receive(:delete_approvals).and_call_original
         expect(service).not_to receive(:reset_approvals)
 
