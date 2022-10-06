@@ -160,18 +160,32 @@ module MergeRequests
     end
 
     def handle_merge_error(log_message:, save_message_on_model: false)
-      Gitlab::AppLogger.error("MergeService ERROR: #{merge_request_info} - #{log_message}")
+      log_error("MergeService ERROR: #{merge_request_info} - #{log_message}")
       @merge_request.update(merge_error: log_message) if save_message_on_model
     end
 
     def log_info(message)
+      payload = log_payload("#{merge_request_info} - #{message}")
+      logger.info(**payload)
+    end
+
+    def log_error(message)
+      payload = log_payload(message)
+      logger.error(**payload)
+    end
+
+    def logger
       @logger ||= Gitlab::AppLogger
-      payload = ::Gitlab::ApplicationContext.current.merge(message: "#{merge_request_info} - #{message}")
-      @logger.info(**payload)
+    end
+
+    def log_payload(message)
+      Gitlab::ApplicationContext.current
+        .merge(merge_request_info: merge_request_info,
+               message: message)
     end
 
     def merge_request_info
-      merge_request.to_reference(full: true)
+      @merge_request_info ||= merge_request.to_reference(full: true)
     end
 
     def source_matches?
