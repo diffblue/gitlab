@@ -703,18 +703,6 @@ subgroup.members_and_requesters.map(&:errors).map(&:full_messages)
 
 ## Routes
 
-### Remove redirecting routes
-
-See <https://gitlab.com/gitlab-org/gitlab-foss/-/issues/41758#note_54828133>.
-
-```ruby
-path = 'foo'
-conflicting_permanent_redirects = RedirectRoute.matching_path_and_descendants(path)
-
-# Check that conflicting_permanent_redirects is as expected
-conflicting_permanent_redirects.destroy_all
-```
-
 ## Merge requests
 
 ### Close a merge request
