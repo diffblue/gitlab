@@ -204,7 +204,7 @@ module EE
           desc { _('Adds a resource link') }
           explanation { _('Adds a resource link for this incident.') }
           params do
-            '<url>, <link description (optional)>'
+            '<url> <link description (optional)>'
           end
           types Issue
           condition do
