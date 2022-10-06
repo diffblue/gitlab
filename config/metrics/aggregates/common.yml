@@ -17,15 +17,6 @@
 #                Corresponding feature flag should have `default_enabled` attribute set to `false`.
 #                This attribute is OPTIONAL and can be omitted, when `feature_flag` is missing no feature flag will be checked.
 ---
-- name: xmau_plan
-  operator: OR
-  source: redis
-  time_frame: [7d, 28d]
-  events:
-    - users_creating_work_items
-    - users_updating_work_item_title
-    - users_updating_work_item_dates
-  feature_flag: track_work_items_activity
 - name: xmau_project_management
   operator: OR
   source: redis
