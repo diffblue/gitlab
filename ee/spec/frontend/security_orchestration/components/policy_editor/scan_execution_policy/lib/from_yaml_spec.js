@@ -1,7 +1,8 @@
 import {
   createPolicyObject,
   fromYaml,
-} from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib';
+  hasRuleModeSupportedScanners,
+} from 'ee/security_orchestration/components/policy_editor/scan_execution_policy/lib/from_yaml';
 import {
   unsupportedYamlManifest,
   unsupportedYamlObject,
@@ -29,5 +30,17 @@ describe('createPolicyObject', () => {
     ${'returns the error policy object and the error an unsupported manifest'} | ${unsupportedYamlManifest}       | ${{ policy: { error: true }, hasParsingError: true }}
   `('$title', ({ input, output }) => {
     expect(createPolicyObject(input)).toStrictEqual(output);
+  });
+});
+
+describe('hasRuleModeSupportedScanners', () => {
+  it.each`
+    title                                                 | input                                                                    | output
+    ${'return true when all scanners are supported'}      | ${{ actions: [{ scan: 'sast' }, { scan: 'dast' }] }}                     | ${true}
+    ${'return false when not all scanners are supported'} | ${{ actions: [{ scan: 'sast' }, { scan: 'cluster_image_scanning' }] }}   | ${false}
+    ${'return true when no actions on policy'}            | ${{ name: 'test' }}                                                      | ${true}
+    ${'return false when no valid scanners'}              | ${{ actions: [{ scan2: 'sast' }, { scan3: 'cluster_image_scanning' }] }} | ${false}
+  `('$title', ({ input, output }) => {
+    expect(hasRuleModeSupportedScanners(input)).toBe(output);
   });
 });

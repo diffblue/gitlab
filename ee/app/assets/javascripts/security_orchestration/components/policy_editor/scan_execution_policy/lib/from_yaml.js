@@ -1,5 +1,24 @@
 import { safeLoad } from 'js-yaml';
 import { isValidPolicy, hasInvalidCron } from '../../utils';
+import { TEMPORARY_LIST_OF_SCANNERS } from '../constants';
+
+/**
+ * Checks if rule mode supports the inputted scanner
+ * @param {Object} policy
+ * @returns {Boolean} if all inputted scanners are in the available scanners dictionary
+ */
+export const hasRuleModeSupportedScanners = (policy) => {
+  /**
+   * If policy has no actions just return as valid
+   */
+  if (!policy?.actions) {
+    return true;
+  }
+
+  const availableScanners = Object.keys(TEMPORARY_LIST_OF_SCANNERS);
+  const configuredScanners = policy.actions.map((action) => action.scan);
+  return configuredScanners.every((scanner) => availableScanners.includes(scanner));
+};
 
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
@@ -18,7 +37,9 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
     const rulesKeys = ['type', 'branches', 'cadence'];
     const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables'];
 
-    return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) && !hasInvalidCron(policy)
+    return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
+      !hasInvalidCron(policy) &&
+      hasRuleModeSupportedScanners(policy)
       ? policy
       : { error: true };
   }
