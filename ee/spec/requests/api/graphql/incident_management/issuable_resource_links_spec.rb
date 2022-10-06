@@ -79,20 +79,6 @@ RSpec.describe 'Getting issuable resource links' do
     end
   end
 
-  context 'when feature flag is disabled' do
-    before do
-      stub_feature_flags(incident_resource_links_widget: false)
-      project.add_reporter(current_user)
-      post_graphql(query, current_user: current_user)
-    end
-
-    it_behaves_like 'a working graphql query'
-
-    it 'returns empty results' do
-      expect(issuable_resource_links).to be_empty
-    end
-  end
-
   context 'when feature is unavailable' do
     before do
       stub_licensed_features(issuable_resource_links: false)

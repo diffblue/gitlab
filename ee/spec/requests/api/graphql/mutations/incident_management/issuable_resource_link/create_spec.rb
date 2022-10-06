@@ -66,17 +66,5 @@ RSpec.describe 'Creating an issuable resource link' do
         expect(mutation_response['errors']).to contain_exactly('Link is blocked: Only allowed schemes are http, https')
       end
     end
-
-    context 'when feature flag is disabled' do
-      before do
-        stub_feature_flags(incident_resource_links_widget: false)
-      end
-
-      it 'returns nil' do
-        post_graphql_mutation(mutation, current_user: user)
-
-        expect(mutation_response).to be_nil
-      end
-    end
   end
 end

@@ -34,16 +34,6 @@ RSpec.describe Resolvers::IncidentManagement::IssuableResourceLinksResolver do
     expect(resolved_issuable_resource_links.first).to be_a(::IncidentManagement::IssuableResourceLink)
   end
 
-  context 'when feature flag is disabled' do
-    before do
-      stub_feature_flags(incident_resource_links_widget: false)
-    end
-
-    it 'returns no resource links' do
-      expect(resolved_issuable_resource_links.length).to eq(0)
-    end
-  end
-
   context 'when user does not have permissions' do
     before do
       project.add_guest(current_user)

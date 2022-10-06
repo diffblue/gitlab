@@ -73,16 +73,6 @@ RSpec.describe Mutations::IncidentManagement::IssuableResourceLink::Create do
           expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
         end
       end
-
-      context 'when feature flag is disabled' do
-        before do
-          stub_feature_flags(incident_resource_links_widget: false)
-        end
-
-        it 'raises an error' do
-          expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ResourceNotAvailable)
-        end
-      end
     end
 
     context 'when a user has no permissions to create issuable resource link' do

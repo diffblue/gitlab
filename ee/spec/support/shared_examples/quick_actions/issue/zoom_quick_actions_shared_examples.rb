@@ -7,7 +7,6 @@ RSpec.shared_examples 'zoom quick actions ee' do
   describe '/zoom' do
     before do
       stub_licensed_features(issuable_resource_links: true)
-      stub_feature_flags(incident_resource_links_widget: true)
     end
 
     context 'with valid zoom_meetings' do
