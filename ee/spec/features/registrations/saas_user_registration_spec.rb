@@ -10,11 +10,6 @@ RSpec.describe "User registration", :js, :saas do
 
   before do
     stub_feature_flags(
-      # This is the feature flag for the new registration flows where the user is
-      # required to provide company details when registering for their company in
-      # both the standard registration and trial flows.
-      about_your_company_registration_flow: true,
-
       # This is a feature flag to update the single-sign on registration flow
       # to match the standard registration flow
       update_oauth_registration_flow: true,

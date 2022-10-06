@@ -46,8 +46,7 @@ module EE
       private
 
       def show_company_form?
-        update_params[:setup_for_company] == 'true' &&
-          ::Feature.enabled?(:about_your_company_registration_flow)
+        update_params[:setup_for_company] == 'true'
       end
 
       override :update_params
@@ -96,12 +95,10 @@ module EE
       def update_success_path
         if params[:joining_project] == 'true'
           path_for_signed_in_user(current_user)
+        elsif show_company_form?
+          new_users_sign_up_company_path(passed_through_params)
         else
-          if show_company_form?
-            new_users_sign_up_company_path(passed_through_params)
-          else
-            new_users_sign_up_groups_project_path
-          end
+          new_users_sign_up_groups_project_path
         end
       end
 
@@ -110,13 +107,12 @@ module EE
         return users_almost_there_path(email: user.email) if requires_confirmation?(user)
 
         stored_url = stored_location_for(user)
-        if ::Feature.enabled?(:about_your_company_registration_flow) &&
-            stored_url&.include?(new_users_sign_up_company_path)
-          redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, passed_through_params)
-          store_location_for(:user, redirect_uri)
-        else
-          stored_url || members_activity_path(user.members)
-        end
+
+        return members_activity_path(user.members) unless stored_url.present?
+        return stored_url unless stored_url.include?(new_users_sign_up_company_path)
+
+        redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, passed_through_params)
+        store_location_for(:user, redirect_uri)
       end
     end
   end

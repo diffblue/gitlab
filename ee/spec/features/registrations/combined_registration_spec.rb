@@ -2,22 +2,21 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Registration group and project creation flow', :js do
+RSpec.describe 'Registration group and project creation flow', :saas, :js do
   let_it_be(:user) { create(:user) }
 
-  let(:feature_flags) { { about_your_company_registration_flow: false } }
+  let(:feature_flags) { {} }
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
     allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(136)
     stub_feature_flags(feature_flags)
-    allow(Gitlab).to receive(:com?).and_return(true)
     sign_in(user)
     visit users_sign_up_welcome_path
 
     expect(page).to have_content('Welcome to GitLab') # rubocop:disable RSpec/ExpectInHook
 
-    choose 'My company or team'
+    choose 'Just me'
     choose 'Create a new project'
     click_on 'Continue'
   end
@@ -45,7 +44,7 @@ RSpec.describe 'Registration group and project creation flow', :js do
 
     click_on 'Create project'
 
-    expect(page).to have_content('Start your Free Ultimate Trial')
+    expect(page).to have_content('Get started with GitLab Ready to get started with GitLab?')
   end
 
   it 'a user can create a group and import a project' do
@@ -80,7 +79,6 @@ RSpec.describe 'Registration group and project creation flow', :js do
     context 'when require_verification_for_namespace_creation experiment is enabled' do
       let(:feature_flags) do
         {
-          about_your_company_registration_flow: false,
           require_verification_for_namespace_creation: true
         }
       end

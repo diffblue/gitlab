@@ -12,7 +12,7 @@ class TrialRegistrationsController < RegistrationsController
   skip_before_action :require_no_authentication
 
   before_action :check_if_gl_com_or_dev
-  before_action :set_redirect_url, only: [:new]
+  before_action :redirect_to_trial_or_store_location, only: [:new]
   before_action :add_onboarding_parameter_to_redirect_url, only: :create
   before_action only: [:new] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
@@ -24,18 +24,11 @@ class TrialRegistrationsController < RegistrationsController
 
   private
 
-  def set_redirect_url
-    target_url =
-      if ::Feature.enabled?(:about_your_company_registration_flow) && !user_signed_in?
-        new_users_sign_up_company_path(glm_tracking_params.merge(trial: true))
-      else
-        new_trial_url(params: request.query_parameters)
-      end
-
+  def redirect_to_trial_or_store_location
     if user_signed_in?
-      redirect_to target_url
+      redirect_to new_trial_url(params: request.query_parameters)
     else
-      store_location_for(:user, target_url)
+      store_location_for(:user, new_users_sign_up_company_path(glm_tracking_params.merge(trial: true)))
     end
   end
 
