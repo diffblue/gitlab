@@ -358,12 +358,13 @@ export default {
         :storage-key="$options.WORK_ITEM_VIEWED_STORAGE_KEY"
       >
         <work-item-information
-          v-if="showInfoBanner"
+          v-if="showInfoBanner && !error"
           :show-info-banner="showInfoBanner"
           @work-item-banner-dismissed="dismissBanner"
         />
       </local-storage-sync>
       <work-item-title
+        v-if="workItem.title"
         :work-item-id="workItem.id"
         :work-item-title="workItem.title"
         :work-item-type="workItemType"
@@ -423,6 +424,7 @@ export default {
         @error="updateError = $event"
       />
       <gl-empty-state
+        v-if="error"
         :title="$options.i18n.fetchErrorTitle"
         :description="error"
         :svg-path="noAccessSvgPath"

@@ -405,6 +405,7 @@ describe('WorkItemDetail component', () => {
 
     expect(errorHandler).toHaveBeenCalled();
     expect(findEmptyState().props('description')).toBe(i18n.fetchError);
+    expect(findWorkItemTitle().exists()).toBe(false);
   });
 
   it('shows an error message when WorkItemTitle emits an `error` event', async () => {
