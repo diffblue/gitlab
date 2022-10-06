@@ -17,22 +17,6 @@
 #                Corresponding feature flag should have `default_enabled` attribute set to `false`.
 #                This attribute is OPTIONAL and can be omitted, when `feature_flag` is missing no feature flag will be checked.
 ---
-- name: incident_management_incidents_total_unique_counts
-  operator: OR
-  source: redis
-  time_frame: [7d, 28d]
-  events:
-    - 'incident_management_incident_created'
-    - 'incident_management_incident_reopened'
-    - 'incident_management_incident_closed'
-    - 'incident_management_incident_assigned'
-    - 'incident_management_incident_todo'
-    - 'incident_management_incident_comment'
-    - 'incident_management_incident_zoom_meeting'
-    - 'incident_management_incident_published'
-    - 'incident_management_incident_relate'
-    - 'incident_management_incident_unrelate'
-    - 'incident_management_incident_change_confidential'
 - name: xmau_plan
   operator: OR
   source: redis
