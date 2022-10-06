@@ -5,11 +5,11 @@ import { __ } from '~/locale';
  */
 export const PRE_SCAN_VERIFICATION_STATUS = {
   DEFAULT: __('Default - Never run'),
-  IN_PROGRESS: __('In progress'),
-  COMPLETE: __('Complete'),
-  COMPLETE_WITH_ERRORS: __('Complete with errors'),
-  FAILED: __('Failed'),
-  INVALIDATED: __('Invalidated'),
+  IN_PROGRESS: __('running'),
+  COMPLETE: __('complete'),
+  COMPLETE_WITH_ERRORS: __('complete_with_errors'),
+  FAILED: __('failed'),
+  INVALIDATED: __('invalidated'),
 };
 
 export const STATUS_STYLE_MAP = {
@@ -41,3 +41,43 @@ export const STATUS_STYLE_MAP = {
 };
 
 export const DEFAULT_STYLING = STATUS_STYLE_MAP[PRE_SCAN_VERIFICATION_STATUS.DEFAULT];
+
+export const SUMMARY_STATUS_STYLE_MAP = {
+  [PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS]: {
+    icon: 'status_running',
+    iconColor: 'gl-text-blue-500',
+    borderColor: 'border-color: #428fdc',
+  },
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE]: {
+    icon: 'check-circle',
+    iconColor: 'gl-text-green-500',
+    borderColor: 'border-color: #108548',
+  },
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE_WITH_ERRORS]: {
+    icon: 'status_warning',
+    iconColor: 'gl-text-orange-500',
+    borderColor: 'border-color: #c17d10',
+  },
+  [PRE_SCAN_VERIFICATION_STATUS.FAILED]: {
+    icon: 'status_failed',
+    iconColor: 'gl-text-red-500',
+    borderColor: 'border-color: #ec5941',
+  },
+  [PRE_SCAN_VERIFICATION_STATUS.INVALIDATED]: {
+    icon: 'status_failed',
+    iconColor: 'gl-text-red-500',
+    borderColor: 'border-color: #ec5941',
+  },
+};
+
+export const STATUS_LABEL_MAP = {
+  [PRE_SCAN_VERIFICATION_STATUS.DEFAULT]: __('default'),
+  [PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS]: __('running'),
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE]: __('complete'),
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE_WITH_ERRORS]: __('complete'),
+  [PRE_SCAN_VERIFICATION_STATUS.FAILED]: __('failed'),
+  [PRE_SCAN_VERIFICATION_STATUS.INVALIDATED]: __('failed'),
+};
+
+export const DEFAULT_STYLING_SUMMARY_STYLING =
+  SUMMARY_STATUS_STYLE_MAP[PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS];

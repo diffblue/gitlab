@@ -1,6 +1,7 @@
 <script>
 import PreScanVerificationStatus from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_status.vue';
 import PreScanVerificationSidebar from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_sidebar.vue';
+import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
 
 export default {
   name: 'PreScanVerificationConfigurator',
@@ -11,6 +12,7 @@ export default {
   data() {
     return {
       isSidebarOpen: false,
+      status: PRE_SCAN_VERIFICATION_STATUS.DEFAULT,
     };
   },
   methods: {
@@ -28,6 +30,7 @@ export default {
   <div>
     <slot name="action-trigger" :open-sidebar="openSidebar">
       <pre-scan-verification-status
+        :status="status"
         pipeline-id="2343434"
         pipeline-created-at="2022-09-23 11:19:49 UTC"
         pipeline-path="test-path"
@@ -35,6 +38,10 @@ export default {
       />
     </slot>
 
-    <pre-scan-verification-sidebar :is-open="isSidebarOpen" @close="closeSidebar" />
+    <pre-scan-verification-sidebar
+      :is-open="isSidebarOpen"
+      :status="status"
+      @close="closeSidebar"
+    />
   </div>
 </template>
