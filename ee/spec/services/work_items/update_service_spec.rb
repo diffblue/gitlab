@@ -78,7 +78,7 @@ RSpec.describe WorkItems::UpdateService do
         end
 
         context 'when weight widget param is not provided' do
-          let(:widget_params) {}
+          let(:widget_params) { {} }
 
           it "does not trigger 'issuableWeightUpdated' for issuable weight update subscription" do
             expect(GraphqlTriggers).not_to receive(:issuable_weight_updated)
@@ -121,7 +121,7 @@ RSpec.describe WorkItems::UpdateService do
         end
 
         context 'when iteration widget param is not provided' do
-          let(:widget_params) {}
+          let(:widget_params) { {} }
 
           it "does not trigger 'issuableIterationUpdated' for issuable iteration update subscription" do
             expect(GraphqlTriggers).not_to receive(:issuable_iteration_updated)
