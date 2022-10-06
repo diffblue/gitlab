@@ -28,6 +28,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
 
     namespace :analytics do
       resource :ci_cd_analytics, only: :show, path: 'ci_cd'
+      resources :dashboards, only: :index
       resource :devops_adoption, controller: :devops_adoption, only: :show
       resource :productivity_analytics, only: :show
       resources :coverage_reports, only: :index

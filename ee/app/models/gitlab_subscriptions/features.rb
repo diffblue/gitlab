@@ -180,6 +180,7 @@ module GitlabSubscriptions
       git_abuse_rate_limit
       group_ci_cd_analytics
       group_level_compliance_dashboard
+      group_level_analytics_dashboard
       group_level_devops_adoption
       incident_management
       inline_codequality
