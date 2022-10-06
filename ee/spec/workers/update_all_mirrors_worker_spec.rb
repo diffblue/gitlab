@@ -239,69 +239,7 @@ RSpec.describe UpdateAllMirrorsWorker do
 
       let(:unlicensed_projects) { [unlicensed_project1, unlicensed_project2, unlicensed_project3, unlicensed_project4] }
 
-      context 'when using SQL to filter projects' do
-        before do
-          allow(subject).to receive(:check_mirror_plans_in_query?).and_return(true)
-        end
-
-        context 'when capacity is in excess' do
-          it 'schedules all available mirrors' do
-            schedule_mirrors!(capacity: 4)
-
-            expect_import_not_scheduled(*unlicensed_projects, public_project)
-            expect_import_scheduled(licensed_project1, licensed_project2)
-
-            expect_mirror_scheduling_tracked([licensed_project1, licensed_project2])
-          end
-
-          context 'when skip_scheduling_mirrors_for_free is disabled' do
-            before do
-              stub_feature_flags(skip_scheduling_mirrors_for_free: false)
-            end
-
-            it 'schedules all available mirrors including public projects' do
-              schedule_mirrors!(capacity: 4)
-
-              expect_import_not_scheduled(*unlicensed_projects)
-              expect_import_scheduled(licensed_project1, licensed_project2, public_project)
-
-              expect_mirror_scheduling_tracked([licensed_project1, licensed_project2, public_project])
-            end
-
-            context 'when public project does not have a open source license' do
-              it 'marks the mirror as hard failed' do
-                project_without_opensource_license = scheduled_mirror(at: 9.weeks.ago, licensed: false, public: true)
-                project_without_opensource_license.project_setting.update!(legacy_open_source_license_available: false)
-
-                schedule_mirrors!(capacity: 4)
-
-                expect_import_not_scheduled(*unlicensed_projects)
-                expect_import_scheduled(licensed_project1, licensed_project2, public_project)
-                expect_import_failed(project_without_opensource_license)
-
-                expect_mirror_scheduling_tracked([project_without_opensource_license, licensed_project1, licensed_project2, public_project])
-              end
-            end
-          end
-        end
-
-        context 'when capacity is exactly sufficient' do
-          it 'does not include unlicensed non-public projects in batches' do
-            # We expect that all three eligible projects will be
-            # included in the first batch because the query will only
-            # return eligible projects.
-            expect(subject).to receive(:pull_mirrors_batch).with(hash_including(batch_size: 6)).and_call_original.once
-
-            schedule_mirrors!(capacity: 3)
-          end
-        end
-      end
-
       context 'when checking licenses on each record individually' do
-        before do
-          allow(subject).to receive(:check_mirror_plans_in_query?).and_return(false)
-        end
-
         context 'when capacity is in excess' do
           it "schedules all available mirrors" do
             schedule_mirrors!(capacity: 4)
@@ -401,26 +339,6 @@ RSpec.describe UpdateAllMirrorsWorker do
             schedule_mirrors!(capacity: 1)
           end
         end
-      end
-    end
-  end
-
-  describe '#check_mirror_plans_in_query?' do
-    using RSpec::Parameterized::TableSyntax
-
-    where(:should_check_namespace_plan, :skip_checking_namespace_in_query, :check_mirror_plans_in_query) do
-      false | false | false
-      false | true | false
-      true | false | true
-      true | true | false
-    end
-
-    with_them do
-      it 'defines whether a mirror plans are checked in query' do
-        allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(should_check_namespace_plan)
-        stub_feature_flags(skip_checking_namespace_in_query: skip_checking_namespace_in_query)
-
-        expect(subject.send(:check_mirror_plans_in_query?)).to eq(check_mirror_plans_in_query)
       end
     end
   end

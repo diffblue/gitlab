@@ -76,12 +76,7 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
       projects = pull_mirrors_batch(freeze_at: now, batch_size: batch_size, offset_at: last).to_a
       break if projects.empty?
 
-      projects_to_schedule =
-        if check_mirror_plans_in_query?
-          projects.take(capacity)
-        else
-          projects.lazy.select(&:mirror?).take(capacity).force
-        end
+      projects_to_schedule = projects.lazy.select(&:mirror?).take(capacity).force
 
       capacity -= projects_to_schedule.size
 
@@ -102,9 +97,8 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
   private
 
   def with_lease
-    if lease_uuid = try_obtain_lease
-      yield
-    end
+    lease_uuid = try_obtain_lease
+    yield if lease_uuid
 
     lease_uuid
   ensure
@@ -132,22 +126,6 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
 
     relation = relation.where('import_state.next_execution_timestamp > ?', offset_at) if offset_at
 
-    if check_mirror_plans_in_query?
-      root_namespaces_join = "INNER JOIN namespaces AS root_namespaces ON root_namespaces.id = (#{root_namespaces_sql})"
-
-      relation = relation
-        .joins(root_namespaces_join)
-        .joins('LEFT JOIN gitlab_subscriptions ON gitlab_subscriptions.namespace_id = root_namespaces.id')
-        .joins('LEFT JOIN plans ON plans.id = gitlab_subscriptions.hosted_plan_id')
-
-      relation =
-        if Feature.enabled?(:skip_scheduling_mirrors_for_free)
-          relation.where(plans: { name: ::Plan::PAID_HOSTED_PLANS })
-        else
-          relation.where(['plans.name IN (?) OR projects.visibility_level = ?', ::Plan::PAID_HOSTED_PLANS, ::Gitlab::VisibilityLevel::PUBLIC])
-        end
-    end
-
     relation
   end
   # rubocop: enable CodeReuse/ActiveRecord
@@ -163,10 +141,6 @@ class UpdateAllMirrorsWorker # rubocop:disable Scalability/IdempotentWorker
       arguments_proc: -> (project) { project.id },
       context_proc: -> (project) { { project: project } }
     )
-  end
-
-  def check_mirror_plans_in_query?
-    ::Gitlab::CurrentSettings.should_check_namespace_plan? && Feature.disabled?(:skip_checking_namespace_in_query)
   end
 
   # rubocop: disable CodeReuse/ActiveRecord
