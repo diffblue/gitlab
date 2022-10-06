@@ -18,7 +18,7 @@ RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execut
   let_it_be(:report) { create(:ci_reports_security_report, pipeline: pipeline, type: :dast) }
   let_it_be(:scan) { create(:security_scan, :latest_successful, scan_type: :dast, build: artifact.job) }
   let_it_be(:security_findings) { [] }
-  let(:state) { 'confirmed' }
+  let_it_be(:state) { Vulnerability.states[:dismissed] }
   let(:params) { { security_finding_uuid: security_finding_uuid } }
   let(:service) do
     described_class.new(
@@ -50,13 +50,62 @@ RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execut
         project: project, findings: [create(:vulnerabilities_finding, uuid: security_finding_uuid)])
     end
 
-    it 'does not creates a new Vulnerability' do
+    it 'does not create a new Vulnerability' do
       expect { subject }.not_to change(Vulnerability, :count)
     end
 
     it 'returns the existing Vulnerability' do
       expect(subject).to be_success
       expect(subject.payload[:vulnerability].id).to eq(vulnerability.id)
+    end
+
+    context 'when the vulnerability state is different from the requested one' do
+      it 'updates the state' do
+        expect { subject }.to change { vulnerability.reload.state }.from("detected").to("dismissed")
+      end
+
+      context 'when comment and dismissal_reason is not given' do
+        it 'creates a state transition entry', :aggregate_failures do
+          expect { subject }.to change(Vulnerabilities::StateTransition, :count).from(0).to(1)
+          state_transition = Vulnerabilities::StateTransition.last
+          expect(state_transition.from_state).to eq("detected")
+          expect(state_transition.to_state).to eq("dismissed")
+          expect(state_transition.comment).to be_nil
+          expect(state_transition.dismissal_reason).to be_nil
+        end
+      end
+
+      context 'when comment and dismissal_reason is given', :aggregate_failures do
+        let(:comment) { "Dismissal comment" }
+        let(:dismissal_reason) { Vulnerabilities::DismissalReasonEnum.values[:false_positive] }
+
+        before do
+          params.merge!({ comment: comment, dismissal_reason: dismissal_reason })
+        end
+
+        it 'creates a state transition entry with comment and dismissal_reason', :aggregate_failures do
+          expect { subject }.to change(Vulnerabilities::StateTransition, :count).from(0).to(1)
+
+          state_transition = Vulnerabilities::StateTransition.last
+          expect(state_transition.comment).to eq(comment)
+          expect(state_transition.dismissal_reason).to eq(dismissal_reason)
+        end
+      end
+    end
+
+    context 'when the vulnerability state is same with the requested one' do
+      before do
+        vulnerability.state = Vulnerability.states[:dismissed]
+        vulnerability.save!
+      end
+
+      it 'does not update the state' do
+        expect { subject }.not_to change { vulnerability.reload.state }
+      end
+
+      it 'does not create a state transition entry' do
+        expect { subject }.not_to change(Vulnerabilities::StateTransition, :count)
+      end
     end
   end
 
@@ -69,7 +118,7 @@ RSpec.describe Vulnerabilities::FindOrCreateFromSecurityFindingService, '#execut
 
     it 'returns a vulnerability with the given state and present_on_default_branch' do
       expect(subject).to be_success
-      expect(subject.payload[:vulnerability].state).to eq(state)
+      expect(subject.payload[:vulnerability].state).to eq("dismissed")
       expect(subject.payload[:vulnerability].present_on_default_branch).to eq(present_on_default_branch)
     end
   end
