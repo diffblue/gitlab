@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Ci::PipelineEditorHelper do
-  include CycleAnalyticsHelpers
-
   let_it_be(:project) { create(:project) }
 
   describe 'can_view_pipeline_editor?' do
@@ -117,7 +115,12 @@ RSpec.describe Ci::PipelineEditorHelper do
       let(:user) { create(:user) }
 
       before do
-        create_commit('Message', project, user, 'feature')
+        project.repository.commit_files(
+          user,
+          branch_name: 'feature',
+          message: 'Message',
+          actions: [{ action: :create, file_path: 'a/new.file', content: 'This is a new file' }]
+        )
         controller.params[:branch_name] = 'feature'
       end
 
