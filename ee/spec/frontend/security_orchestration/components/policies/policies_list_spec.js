@@ -267,7 +267,7 @@ describe('PoliciesList component', () => {
     });
   });
 
-  describe('policy drawer ', () => {
+  describe('policy drawer', () => {
     it('should close drawer when new security project is selected', async () => {
       const scanExecutionPolicy = mockScanExecutionPoliciesResponse[0];
 

@@ -74,7 +74,7 @@ describe('WorkItemWeight component', () => {
       ${'when available'}     | ${true}                | ${true}
       ${'when not available'} | ${false}               | ${false}
     `('$description', ({ hasIssueWeightsFeature, exists }) => {
-      it(hasIssueWeightsFeature ? 'renders component' : 'does not render component', () => {
+      it(`${hasIssueWeightsFeature ? 'renders' : 'does not render'} component`, () => {
         createComponent({ hasIssueWeightsFeature });
 
         expect(findForm().exists()).toBe(exists);

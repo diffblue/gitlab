@@ -151,17 +151,15 @@ describe('EE - DAST Profiles Selector', () => {
         await nextTick();
       };
 
-      it(
-        hasConflict
-          ? `warns about conflicting profiles when user selects ${description}`
-          : `does not report any conflict when user selects ${description}`,
-        async () => {
-          createComponent();
-          await setFormData();
+      const testDescription = hasConflict
+        ? `warns about conflicting profiles when user selects ${description}`
+        : `does not report any conflict when user selects ${description}`;
+      it(`${testDescription}`, async () => {
+        createComponent();
+        await setFormData();
 
-          expect(findProfilesConflictAlert().exists()).toBe(hasConflict);
-        },
-      );
+        expect(findProfilesConflictAlert().exists()).toBe(hasConflict);
+      });
     },
   );
 

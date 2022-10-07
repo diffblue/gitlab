@@ -562,18 +562,16 @@ describe('OnDemandScansForm', () => {
         await nextTick();
       };
 
-      it(
-        hasConflict
-          ? `warns about conflicting profiles when user selects ${description}`
-          : `does not report any conflict when user selects ${description}`,
-        async () => {
-          createShallowComponent();
-          await setFormData();
+      const testDescription = hasConflict
+        ? `warns about conflicting profiles when user selects ${description}`
+        : `does not report any conflict when user selects ${description}`;
+      it(`${testDescription}`, async () => {
+        createShallowComponent();
+        await setFormData();
 
-          expect(findProfilesConflictAlert().exists()).toBe(hasConflict);
-          expect(findSubmitButton().props('disabled')).toBe(hasConflict);
-        },
-      );
+        expect(findProfilesConflictAlert().exists()).toBe(hasConflict);
+        expect(findSubmitButton().props('disabled')).toBe(hasConflict);
+      });
     },
   );
 
