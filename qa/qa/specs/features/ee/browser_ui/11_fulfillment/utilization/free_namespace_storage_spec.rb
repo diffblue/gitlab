@@ -23,11 +23,12 @@ module QA
       end
 
       before do
+        Flow::Login.sign_in(as: owner_user)
+
         Runtime::Feature.enable(:namespace_storage_limit, group: free_plan_group)
         Runtime::Feature.enable(:enforce_storage_limit_for_free, group: free_plan_group)
         Runtime::Feature.enable(:namespace_storage_limit_bypass_date_check, group: free_plan_group)
 
-        Flow::Login.sign_in(as: owner_user)
         free_plan_group.visit!
         Page::Group::Menu.perform(&:go_to_usage_quotas)
       end
@@ -75,8 +76,9 @@ module QA
           testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/375059'
         ) do
           Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+            usage_quota.storage_tab
             Support::Waiter.wait_until(max_duration: 60, reload_page: page, message: "Storage data not updated") do
-              usage_quota.project_storage_data_available?
+              usage_quota.project_storage_data_available? && usage_quota.used_storage_message.include?("storage")
             end
 
             aggregate_failures do
