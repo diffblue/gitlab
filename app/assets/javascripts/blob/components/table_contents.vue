@@ -26,6 +26,8 @@ export default {
       } else if (blobViewerAttr('data-loaded') === 'true') {
         this.isHidden = false;
         this.generateHeaders();
+
+        this.observer.disconnect();
       }
     });
 
