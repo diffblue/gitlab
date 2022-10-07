@@ -17,7 +17,7 @@ RSpec.describe 'User edits hooks' do
     visit(group_hooks_path(group))
   end
 
-  it 'updates existing hook' do
+  it 'updates existing hook', :js do
     click_link('Edit')
 
     expect(page).to have_current_path(edit_group_hook_path(group, hook), ignore_query: true)
