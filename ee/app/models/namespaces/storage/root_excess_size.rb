@@ -33,7 +33,7 @@ module Namespaces
       end
 
       def enforce_limit?
-        root_namespace.additional_repo_storage_by_namespace_enabled?
+        ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
       end
 
       private
