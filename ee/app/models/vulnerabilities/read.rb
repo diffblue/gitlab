@@ -2,6 +2,7 @@
 
 module Vulnerabilities
   class Read < ApplicationRecord
+    include EachBatch
     include UnnestedInFilters::Dsl
 
     self.table_name = "vulnerability_reads"
@@ -47,6 +48,7 @@ module Vulnerabilities
     scope :with_scanner_external_ids, -> (scanner_external_ids) { joins(:scanner).merge(::Vulnerabilities::Scanner.with_external_id(scanner_external_ids)) }
     scope :with_findings_scanner_and_identifiers, -> { includes(vulnerability: { findings: [:scanner, :identifiers, finding_identifiers: :identifier] }) }
     scope :with_created_issue_links_and_issues, -> { includes(vulnerability: { created_issue_links: :issue }) }
+    scope :resolved_on_default_branch, -> { where('resolved_on_default_branch IS TRUE') }
 
     scope :as_vulnerabilities, -> do
       preload(vulnerability: { project: [:route] }).current_scope.tap do |relation|

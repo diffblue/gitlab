@@ -219,6 +219,51 @@ RSpec.describe StoreSecurityReportsWorker do
       end
     end
 
+    context 'when resolving dropped identifiers', :sidekiq_inline do
+      let(:artifact_semgrep1) { create(:ee_ci_job_artifact, :sast_semgrep_for_multiple_findings, job: semgrep1_build) }
+      let(:semgrep1_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline, project: project) }
+
+      let(:pipeline2) { create(:ee_ci_pipeline, ref: 'master', project: project) }
+      let(:artifact_semgrep2) { create(:ee_ci_job_artifact, :sast_semgrep_for_gosec, job: semgrep2_build) }
+      let(:semgrep2_build) { create(:ci_build, :sast, :success, user: project.creator, pipeline: pipeline2, project: project) }
+
+      before do
+        stub_licensed_features(
+          sast: true
+        )
+        stub_feature_flags(sec_mark_dropped_findings_as_resolved: true)
+        pipeline.update!(user: semgrep1_build.user)
+        pipeline2.update!(user: semgrep2_build.user)
+      end
+
+      it 'resolves vulnerabilities' do
+        expect do
+          Security::StoreGroupedScansService.execute([artifact_semgrep1])
+        end.to change { Security::Finding.count }.by(2)
+          .and change { Security::Scan.count }.by(1)
+
+        expect do
+          described_class.new.perform(pipeline.id)
+        end.to change { Vulnerabilities::Finding.count }.by(2)
+          .and change { Vulnerability.count }.by(2)
+          .and change { project.vulnerabilities.with_resolution(false).count }.by(2)
+          .and change { project.vulnerabilities.with_states(%w[detected]).count }.by(2)
+
+        expect do
+          Security::StoreGroupedScansService.execute([artifact_semgrep2])
+        end.to change { Security::Finding.count }.by(1)
+          .and change { Security::Scan.count }.by(1)
+
+        expect do
+          described_class.new.perform(pipeline2.id)
+        end.to change { Vulnerabilities::Finding.count }.by(0)
+          .and change { Vulnerability.count }.by(0)
+          .and change { project.vulnerabilities.with_resolution(true).count }.by(1)
+          .and change { project.vulnerabilities.with_states(%w[detected]).count }.by(-1)
+          .and change { project.vulnerabilities.with_states(%w[resolved]).count }.by(1)
+      end
+    end
+
     context "when security reports feature is not available" do
       let(:default_branch) { pipeline.ref }
 
