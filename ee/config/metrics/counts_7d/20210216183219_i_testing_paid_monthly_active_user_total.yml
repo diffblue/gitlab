@@ -10,7 +10,18 @@ product_category: code_testing
 value_type: number
 status: active
 time_frame: 7d
-data_source: database
+instrumentation_class: AggregatedMetric
+data_source: redis_hll
+options:
+  aggregate:
+    operator: OR
+    attribute: user_id
+  events:
+    - 'i_testing_web_performance_widget_total'
+    - 'i_testing_full_code_quality_report_total'
+    - 'i_testing_group_code_coverage_visit_total'
+    - 'i_testing_load_performance_widget_total'
+    - 'i_testing_metrics_report_widget_total'
 distribution:
 - ee
 tier:
