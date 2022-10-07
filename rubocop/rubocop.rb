@@ -1,6 +1,10 @@
 # rubocop:disable Naming/FileName
 # frozen_string_literal: true
 
+# Performance improvements to be upstreamed soon:
+# See https://gitlab.com/gitlab-org/gitlab/-/issues/377469
+require_relative 'ext/path_util'
+
 # Auto-require all cops under `rubocop/cop/**/*.rb`
 Dir[File.join(__dir__, 'cop', '**', '*.rb')].sort.each(&method(:require))
 
