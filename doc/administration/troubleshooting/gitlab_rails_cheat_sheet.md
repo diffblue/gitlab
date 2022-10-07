@@ -77,29 +77,6 @@ irb(#<Project>)> web_url
 # => "https://gitlab-example/root/discard"
 ```
 
-## Profile a page
-
-```ruby
-url = '<url/of/the/page>'
-
-# Before 11.6.0
-logger = Logger.new($stdout)
-admin_token = User.find_by_username('<admin-username>').personal_access_tokens.first.token
-app.get("#{url}/?private_token=#{admin_token}")
-
-# From 11.6.0
-admin = User.find_by_username('<admin-username>')
-Gitlab::Profiler.with_user(admin) { app.get(url) }
-```
-
-## Using the GitLab profiler inside console (used as of 10.5)
-
-```ruby
-logger = Logger.new($stdout)
-admin = User.find_by_username('<admin-username>')
-Gitlab::Profiler.profile('<url/of/the/page>', logger: logger, user: admin)
-```
-
 ## Time an operation
 
 ```ruby
