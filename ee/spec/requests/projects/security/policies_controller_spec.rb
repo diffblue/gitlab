@@ -59,7 +59,7 @@ RSpec.describe Projects::Security::PoliciesController, type: :request do
             allow_next_instance_of(Repository) do |repository|
               allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
             end
-            allow(::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService).to receive(:new).with(policy: policy, project: project, current_user: user).and_return(service)
+            allow(::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService).to receive(:new).with(policy: policy, container: project, current_user: user).and_return(service)
           end
 
           it 'renders the edit page with approvers data' do

@@ -77,7 +77,7 @@ module Projects
 
         result = ::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService.new(
           policy: @policy,
-          project: project,
+          container: project,
           current_user: @current_user
         ).execute
 

@@ -7,7 +7,7 @@ RSpec.describe Groups::Security::PoliciesController, type: :request do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:policy_management_project) { create(:project, :repository, namespace: group) }
-  let_it_be(:policy) { build(:scan_execution_policy) }
+  let(:policy) { build(:scan_execution_policy) }
   let_it_be(:policy_configuration) do
     create(:security_orchestration_policy_configuration, :namespace,
       security_policy_management_project: policy_management_project,
@@ -67,6 +67,44 @@ RSpec.describe Groups::Security::PoliciesController, type: :request do
           )
           expect(app.attributes['data-namespace-path'].value).to eq(group.full_path)
           expect(app.attributes['data-namespace-id'].value).to eq(group.id.to_s)
+        end
+
+        it 'does not contain any approver data' do
+          get edit
+          app = Nokogiri::HTML.parse(response.body).at_css('div#js-group-policy-builder-app')
+
+          expect(app['data-scan-result-approvers']).to be_nil
+        end
+
+        context 'with scan result policy type' do
+          let(:policy) { build(:scan_result_policy) }
+          let(:policy_type) { 'scan_result_policy' }
+          let(:service_result) { { users: [user], groups: [group], status: :success } }
+
+          let(:service) do
+            instance_double('::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService',
+              execute: service_result)
+          end
+
+          before do
+            allow(::Security::SecurityOrchestrationPolicies::FetchPolicyApproversService).to receive(:new)
+              .with(policy: policy, container: group, current_user: user).and_return(service)
+            allow_next_instance_of(Repository) do |repository|
+              allow(repository).to receive(:blob_data_at).and_return({ scan_result_policy: [policy] }.to_yaml)
+            end
+          end
+
+          it 'renders the edit page with approvers data' do
+            get edit
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(response).to render_template(:edit)
+
+            app = Nokogiri::HTML.parse(response.body).at_css('div#js-group-policy-builder-app')
+
+            expect(app['data-scan-result-approvers']).to include(user.name,
+              user.id.to_s, group.full_path, group.id.to_s)
+          end
         end
 
         context 'when type is missing' do

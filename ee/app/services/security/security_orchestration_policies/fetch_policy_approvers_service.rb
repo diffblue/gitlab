@@ -5,9 +5,9 @@ module Security
     class FetchPolicyApproversService
       include BaseServiceUtility
 
-      def initialize(policy:, project:, current_user:)
+      def initialize(policy:, container:, current_user:)
         @policy = policy
-        @project = project
+        @container = container
         @current_user = current_user
       end
 
@@ -21,7 +21,7 @@ module Security
 
       private
 
-      attr_reader :policy, :project, :current_user
+      attr_reader :policy, :container, :current_user
 
       def required_approval(policy)
         policy&.fetch(:actions)&.find { |action| action&.fetch(:type) == Security::ScanResultPolicy::REQUIRE_APPROVAL }
@@ -31,7 +31,14 @@ module Security
         return [] unless action[:user_approvers] || action[:user_approvers_ids]
 
         user_names, user_ids = approvers_within_limit(action[:user_approvers], action[:user_approvers_ids])
-        project.team.users.by_ids_or_usernames(user_ids, user_names)
+        case container
+        when Project
+          container.team.users.by_ids_or_usernames(user_ids, user_names)
+        when Group
+          container.users.by_ids_or_usernames(user_ids, user_names)
+        else
+          []
+        end
       end
 
       # rubocop: disable Cop/GroupPublicOrVisibleToUser

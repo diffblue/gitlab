@@ -30,7 +30,7 @@ module Resolvers
 
       def approvers(policy)
         Security::SecurityOrchestrationPolicies::FetchPolicyApproversService
-          .new(policy: policy, project: project, current_user: context[:current_user])
+          .new(policy: policy, container: project, current_user: context[:current_user])
           .execute
       end
     end
