@@ -7,6 +7,21 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model do
 
   subject { create(:vulnerability_state_transitions, vulnerability: vulnerability) }
 
+  it_behaves_like 'a BulkInsertSafe model', described_class do
+    let(:vulnerability) { create(:vulnerability) }
+    let(:current_time) { Time.zone.now }
+
+    let(:valid_items_for_bulk_insertion) do
+      build_list(
+        :vulnerability_state_transitions, 10,
+        vulnerability: vulnerability,
+        created_at: current_time,
+        updated_at: current_time)
+    end
+
+    let(:invalid_items_for_bulk_insertion) { [] } # class does not have any validations defined
+  end
+
   describe 'associations' do
     it { is_expected.to belong_to(:vulnerability) }
   end

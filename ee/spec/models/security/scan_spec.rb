@@ -331,6 +331,17 @@ RSpec.describe Security::Scan do
     it { is_expected.to match_array(artifact_finding_uuids) }
   end
 
+  describe '#report_primary_identifiers' do
+    it 'returns the matching primary_identifiers' do
+      artifact = create(:ee_ci_job_artifact, :sast_semgrep_for_gosec)
+      scan = create(:security_scan, scan_type: 'sast', build: artifact.job)
+
+      expect(scan.report_primary_identifiers).to match_array(
+        artifact.security_report.primary_identifiers
+      )
+    end
+  end
+
   describe '#processing_errors' do
     let(:scan) { build(:security_scan, :with_error) }
 

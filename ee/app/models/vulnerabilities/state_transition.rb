@@ -2,6 +2,8 @@
 
 module Vulnerabilities
   class StateTransition < ApplicationRecord
+    include BulkInsertSafe
+
     self.table_name = 'vulnerability_state_transitions'
 
     belongs_to :author, class_name: 'User', inverse_of: :vulnerability_state_transitions

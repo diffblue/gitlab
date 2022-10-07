@@ -23,6 +23,7 @@ RSpec.describe Security::Ingestion::IngestReportsService do
     before do
       allow(Security::Ingestion::IngestReportService).to receive(:execute).and_return(ids_1, ids_2)
       allow(Security::Ingestion::MarkAsResolvedService).to receive(:execute)
+      allow(Security::Ingestion::ScheduleMarkDroppedAsResolvedService).to receive(:execute)
     end
 
     it 'calls IngestReportService for each succeeded security scan' do
@@ -42,6 +43,16 @@ RSpec.describe Security::Ingestion::IngestReportsService do
       ingest_reports
 
       expect(Security::Ingestion::MarkAsResolvedService).to have_received(:execute).with(project, ids_1)
+    end
+
+    it 'calls ScheduleMarkDroppedAsResolvedService with primary identifier IDs' do
+      artifact = create(:ci_job_artifact, :sast_semgrep_for_gosec, job: build)
+
+      ingest_reports
+
+      expect(
+        Security::Ingestion::ScheduleMarkDroppedAsResolvedService
+      ).to have_received(:execute).with(project.id, artifact.security_report.primary_identifiers)
     end
 
     describe 'scheduling the AutoFix background job' do

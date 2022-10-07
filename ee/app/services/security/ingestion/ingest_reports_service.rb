@@ -17,6 +17,7 @@ module Security
         store_reports
         mark_project_as_vulnerable!
         set_latest_pipeline!
+        schedule_mark_dropped_vulnerabilities
         schedule_auto_fix
       end
 
@@ -49,6 +50,17 @@ module Security
 
       def set_latest_pipeline!
         Vulnerabilities::Statistic.set_latest_pipeline_with(pipeline)
+      end
+
+      def schedule_mark_dropped_vulnerabilities
+        primary_identifiers_by_scan_type.each_value do |identifiers|
+          ScheduleMarkDroppedAsResolvedService.execute(pipeline.project_id, identifiers)
+        end
+      end
+
+      def primary_identifiers_by_scan_type
+        latest_security_scans.group_by(&:scan_type)
+                             .transform_values { |scans| scans.flat_map(&:report_primary_identifiers).compact }
       end
 
       def schedule_auto_fix

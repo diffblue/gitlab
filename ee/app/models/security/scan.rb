@@ -102,6 +102,10 @@ module Security
       @report_findings ||= security_report&.findings.to_a
     end
 
+    def report_primary_identifiers
+      @report_primary_identifiers ||= security_report&.primary_identifiers
+    end
+
     private
 
     def security_report

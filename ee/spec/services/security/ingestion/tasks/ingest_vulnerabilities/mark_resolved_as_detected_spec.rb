@@ -38,7 +38,7 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::MarkResolvedAs
       .from("detected")
   end
 
-  it 'creates state transiotion entry for each vulnerability' do
+  it 'creates state transition entry for each vulnerability' do
     expect { mark_resolved_as_detected }.to change { ::Vulnerabilities::StateTransition.count }
       .from(0)
       .to(1)
