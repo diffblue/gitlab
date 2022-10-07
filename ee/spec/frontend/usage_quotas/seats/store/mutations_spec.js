@@ -15,7 +15,7 @@ describe('Usage Quotas Seats mutations', () => {
   });
 
   describe('GitLab subscription', () => {
-    it(types.REQUEST_GITLAB_SUBSCRIPTION, () => {
+    it(`${types.REQUEST_GITLAB_SUBSCRIPTION}`, () => {
       state.isLoadingGitlabSubscription = false;
       state.hasError = true;
 
@@ -97,7 +97,7 @@ describe('Usage Quotas Seats mutations', () => {
       });
     });
 
-    it(types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR, () => {
+    it(`${types.RECEIVE_GITLAB_SUBSCRIPTION_ERROR}`, () => {
       state.isLoadingGitlabSubscription = true;
       state.hasError = false;
 
@@ -125,20 +125,20 @@ describe('Usage Quotas Seats mutations', () => {
       });
     });
 
-    it(types.SET_CURRENT_PAGE, () => {
+    it(`${types.SET_CURRENT_PAGE}`, () => {
       state.page = 1;
       mutations[types.SET_CURRENT_PAGE](state, 42);
       expect(state.page).toBe(42);
     });
 
-    it(types.SET_SORT_OPTION, () => {
+    it(`${types.SET_SORT_OPTION}`, () => {
       mutations[types.SET_SORT_OPTION](state, 'last_activity_on_desc');
       expect(state.sort).toBe('last_activity_on_desc');
     });
   });
 
   describe('Billable member list', () => {
-    it(types.REQUEST_BILLABLE_MEMBERS, () => {
+    it(`${types.REQUEST_BILLABLE_MEMBERS}`, () => {
       state.isLoadingBillableMembers = false;
       state.hasError = true;
       mutations[types.REQUEST_BILLABLE_MEMBERS](state);
@@ -148,7 +148,7 @@ describe('Usage Quotas Seats mutations', () => {
       });
     });
 
-    it(types.RECEIVE_BILLABLE_MEMBERS_SUCCESS, () => {
+    it(`${types.RECEIVE_BILLABLE_MEMBERS_SUCCESS}`, () => {
       state.isLoadingBillableMembers = true;
       mutations[types.RECEIVE_BILLABLE_MEMBERS_SUCCESS](state, mockDataSeats);
       expect(state.members).toMatchObject(mockDataSeats.data);
@@ -160,7 +160,7 @@ describe('Usage Quotas Seats mutations', () => {
       });
     });
 
-    it(types.RECEIVE_BILLABLE_MEMBERS_ERROR, () => {
+    it(`${types.RECEIVE_BILLABLE_MEMBERS_ERROR}`, () => {
       state.hasError = false;
       state.isLoadingBillableMembers = true;
       mutations[types.RECEIVE_BILLABLE_MEMBERS_ERROR](state);
@@ -179,19 +179,19 @@ describe('Usage Quotas Seats mutations', () => {
       mutations[types.RECEIVE_BILLABLE_MEMBERS_SUCCESS](state, mockDataSeats);
     });
 
-    it(types.SET_BILLABLE_MEMBER_TO_REMOVE, () => {
+    it(`${types.SET_BILLABLE_MEMBER_TO_REMOVE}`, () => {
       mutations[types.SET_BILLABLE_MEMBER_TO_REMOVE](state, memberToRemove);
 
       expect(state.billableMemberToRemove).toMatchObject(memberToRemove);
     });
 
-    it(types.REMOVE_BILLABLE_MEMBER, () => {
+    it(`${types.REMOVE_BILLABLE_MEMBER}`, () => {
       mutations[types.REMOVE_BILLABLE_MEMBER](state, memberToRemove);
 
       expect(state).toMatchObject({ isRemovingBillableMember: true, hasError: false });
     });
 
-    it(types.REMOVE_BILLABLE_MEMBER_SUCCESS, () => {
+    it(`${types.REMOVE_BILLABLE_MEMBER_SUCCESS}`, () => {
       mutations[types.REMOVE_BILLABLE_MEMBER_SUCCESS](state, memberToRemove);
 
       expect(state).toMatchObject({
@@ -200,7 +200,7 @@ describe('Usage Quotas Seats mutations', () => {
       });
     });
 
-    it(types.REMOVE_BILLABLE_MEMBER_ERROR, () => {
+    it(`${types.REMOVE_BILLABLE_MEMBER_ERROR}`, () => {
       mutations[types.REMOVE_BILLABLE_MEMBER_ERROR](state, memberToRemove);
 
       expect(state).toMatchObject({
@@ -217,13 +217,13 @@ describe('Usage Quotas Seats mutations', () => {
       delete state.userDetails[member.id];
     });
 
-    it(types.FETCH_BILLABLE_MEMBER_DETAILS, () => {
+    it(`${types.FETCH_BILLABLE_MEMBER_DETAILS}`, () => {
       mutations[types.FETCH_BILLABLE_MEMBER_DETAILS](state, { memberId: member.id });
 
       expect(state.userDetails[member.id].isLoading).toBe(true);
     });
 
-    it(types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS, () => {
+    it(`${types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS}`, () => {
       mutations[types.FETCH_BILLABLE_MEMBER_DETAILS_SUCCESS](state, {
         memberId: member.id,
         memberships: mockMemberDetails,
@@ -233,7 +233,7 @@ describe('Usage Quotas Seats mutations', () => {
       expect(state.userDetails[member.id].items).toEqual(mockMemberDetails);
     });
 
-    it(types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR, () => {
+    it(`${types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR}`, () => {
       mutations[types.FETCH_BILLABLE_MEMBER_DETAILS_ERROR](state, { memberId: member.id });
 
       expect(state.userDetails[member.id].isLoading).toBe(false);

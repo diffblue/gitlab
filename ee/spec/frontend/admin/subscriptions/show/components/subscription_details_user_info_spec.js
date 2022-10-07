@@ -61,16 +61,19 @@ describe('Subscription Details User Info', () => {
     });
 
     itif(link)(`displays the content with a link`, () => {
+      // eslint-disable-next-line jest/no-standalone-expect
       expect(findUseCard().findComponent(GlSprintf).attributes('message')).toBe(text);
     });
 
     itif(link)(`has a link`, () => {
       createComponent({}, true);
+      // eslint-disable-next-line jest/no-standalone-expect
       expect(findUseCard().findComponent(GlLink).attributes('href')).toBe(link);
     });
 
     itif(!link)(`has not a link`, () => {
       createComponent({}, true);
+      // eslint-disable-next-line jest/no-standalone-expect
       expect(findUseCard().findComponent(GlLink).exists()).toBe(link);
     });
   });

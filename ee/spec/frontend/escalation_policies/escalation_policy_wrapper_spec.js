@@ -51,26 +51,24 @@ describe('Escalation Policies Wrapper', () => {
     ${'is loading'}   | ${true}  | ${[]}                     | ${false}        | ${true}
     ${'is empty'}     | ${false} | ${[]}                     | ${true}         | ${false}
     ${'has policies'} | ${false} | ${mockEscalationPolicies} | ${false}        | ${false}
-  `(``, ({ state, loading, escalationPolicies, showsEmptyState, showsLoader }) => {
-    describe(`When ${state}`, () => {
-      beforeEach(() => {
-        mountComponent({
-          loading,
-          escalationPolicies: escalationPolicies.map(parsePolicy),
-        });
+  `(`When $state`, ({ loading, escalationPolicies, showsEmptyState, showsLoader }) => {
+    beforeEach(() => {
+      mountComponent({
+        loading,
+        escalationPolicies: escalationPolicies.map(parsePolicy),
       });
+    });
 
-      it(`does ${loading ? 'show' : 'not show'} a loader`, () => {
-        expect(findLoader().exists()).toBe(showsLoader);
-      });
+    it(`does ${loading ? 'show' : 'not show'} a loader`, () => {
+      expect(findLoader().exists()).toBe(showsLoader);
+    });
 
-      it(`does ${showsEmptyState ? 'show' : 'not show'} an empty state`, () => {
-        expect(findEmptyState().exists()).toBe(showsEmptyState);
-      });
+    it(`does ${showsEmptyState ? 'show' : 'not show'} an empty state`, () => {
+      expect(findEmptyState().exists()).toBe(showsEmptyState);
+    });
 
-      it(`does ${escalationPolicies.length ? 'show' : 'not show'} escalation policies`, () => {
-        expect(findEscalationPolicies()).toHaveLength(escalationPolicies.length);
-      });
+    it(`does ${escalationPolicies.length ? 'show' : 'not show'} escalation policies`, () => {
+      expect(findEscalationPolicies()).toHaveLength(escalationPolicies.length);
     });
   });
 });

@@ -148,7 +148,7 @@ describe('SubscriptionTable component', () => {
           });
         });
 
-        it(testDescription, () => {
+        it(`${testDescription}`, () => {
           expect(findManageButton().exists()).toBe(expected);
         });
       },
@@ -180,7 +180,7 @@ describe('SubscriptionTable component', () => {
           });
         });
 
-        it(testDescription, () => {
+        it(`${testDescription}`, () => {
           expect(findRenewButton().exists()).toBe(expected);
         });
       },
@@ -232,7 +232,7 @@ describe('SubscriptionTable component', () => {
           });
         });
 
-        it(testDescription, () => {
+        it(`${testDescription}`, () => {
           expect(findAddSeatsButton().exists()).toBe(expected);
         });
       },

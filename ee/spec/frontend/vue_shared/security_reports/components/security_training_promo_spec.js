@@ -47,7 +47,7 @@ describe('Security training promo component', () => {
     it('passes expected slot props to child', () => {
       createComponent();
 
-      expect(defaultScopedSlotSpy).lastCalledWith({
+      expect(defaultScopedSlotSpy).toHaveBeenLastCalledWith({
         buttonLink: `${SECURITY_CONFIGURATION_PATH}?tab=vulnerability-management`,
         buttonText: SecurityTrainingPromo.i18n.buttonText,
         dismiss: expect.any(Function),
