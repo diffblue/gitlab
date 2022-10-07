@@ -33,13 +33,13 @@ module EE::SecurityOrchestrationHelper
       policy: policy&.to_json,
       policy_editor_empty_state_svg_path: image_path('illustrations/monitoring/unable_to_connect.svg'),
       policy_type: policy_type,
-      scan_policy_documentation_path: help_page_path('user/application_security/policies/index')
+      scan_policy_documentation_path: help_page_path('user/application_security/policies/index'),
+      scan_result_approvers: approvers&.to_json
     }
 
     if container.is_a?(::Project)
       policy_data.merge(
-        create_agent_help_path: help_page_url('user/clusters/agent/install/index'),
-        scan_result_approvers: approvers&.to_json
+        create_agent_help_path: help_page_url('user/clusters/agent/install/index')
       )
     else
       policy_data

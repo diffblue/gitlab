@@ -9,10 +9,11 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
     let_it_be(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
     let_it_be(:user) { create(:user) }
 
+    let(:container) { project }
     let(:policy) { build(:scan_result_policy, actions: [action]) }
 
     subject(:service) do
-      described_class.new(policy: policy, current_user: user, project: project)
+      described_class.new(policy: policy, current_user: user, container: container)
     end
 
     before do
@@ -39,6 +40,30 @@ RSpec.describe Security::SecurityOrchestrationPolicies::FetchPolicyApproversServ
         expect(response[:status]).to eq(:success)
         expect(response[:users]).to match_array([user])
         expect(response[:groups]).to be_empty
+      end
+
+      context 'with container of a group type' do
+        let(:container) { group }
+
+        it 'returns user approvers' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:success)
+          expect(response[:users]).to match_array([user])
+          expect(response[:groups]).to be_empty
+        end
+      end
+
+      context 'with container of any other type' do
+        let(:container) { create(:namespace) }
+
+        it 'does returns any user approvers' do
+          response = service.execute
+
+          expect(response[:status]).to eq(:success)
+          expect(response[:users]).to be_empty
+          expect(response[:groups]).to be_empty
+        end
       end
     end
 

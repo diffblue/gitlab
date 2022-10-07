@@ -172,7 +172,8 @@ RSpec.describe EE::SecurityOrchestrationHelper do
           policies_path: kind_of(String),
           scan_policy_documentation_path: kind_of(String),
           namespace_path: namespace.full_path,
-          namespace_id: namespace.id
+          namespace_id: namespace.id,
+          scan_result_approvers: approvers&.to_json
         }
       end
 
