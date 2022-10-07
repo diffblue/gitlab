@@ -4,13 +4,14 @@ require 'spec_helper'
 
 RSpec.describe Epics::TreeReorderService do
   describe '#execute' do
-    let(:user) { create(:user) }
-    let(:ancestor) { create(:group) }
-    let(:group) { create(:group, parent: ancestor) }
-    let(:project) { create(:project, group: group) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:ancestor) { create(:group) }
+    let_it_be(:group) { create(:group, parent: ancestor) }
+    let_it_be(:project) { create(:project, group: group) }
+    let_it_be(:issue1) { create(:issue, project: project) }
+    let_it_be(:issue2) { create(:issue, project: project) }
+
     let(:epic) { create(:epic, group: group) }
-    let(:issue1) { create(:issue, project: project) }
-    let(:issue2) { create(:issue, project: project) }
     let(:epic1) { create(:epic, group: group, parent: epic, relative_position: 10) }
     let(:epic2) { create(:epic, group: group, parent: epic, relative_position: 20) }
     let(:epic_issue1) { create(:epic_issue, epic: epic, issue: issue1, relative_position: 30) }
@@ -258,16 +259,58 @@ RSpec.describe Epics::TreeReorderService do
             end
 
             context 'when there is some other error with the new parent' do
-              let(:other_group) { create(:group) }
-              let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
+              context 'when the new parent is in a new group hierarchy' do
+                let_it_be(:other_group) { create(:group) }
 
-              before do
-                other_group.add_developer(user)
-                epic.update!(group: other_group)
-                epic2.update!(parent: epic1)
+                let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
+
+                before do
+                  other_group.add_developer(user)
+                  epic.update!(group: other_group)
+                  epic2.update!(parent: epic1)
+                end
+
+                it 'returns success status' do
+                  expect(subject[:status]).to eq(:success)
+                end
+
+                it 'does not return errors' do
+                  expect(subject[:message]).to be_nil
+                end
+
+                context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                  before do
+                    stub_feature_flags(child_epics_from_different_hierarchies: false)
+                  end
+
+                  it_behaves_like 'error for the tree update',
+                                  "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
+                end
               end
 
-              it_behaves_like 'error for the tree update', "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
+              context 'when the new parent is in a descendant group' do
+                let_it_be(:descendant_group) { create(:group, parent: group ) }
+
+                let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
+
+                before do
+                  descendant_group.add_developer(user)
+                  epic.update!(group: descendant_group)
+                  epic2.update!(parent: epic1)
+                end
+
+                it_behaves_like 'error for the tree update',
+                                "This epic cannot be added. An epic cannot belong to an ancestor group of its parent epic."
+
+                context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                  before do
+                    stub_feature_flags(child_epics_from_different_hierarchies: false)
+                  end
+
+                  it_behaves_like 'error for the tree update',
+                                  "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
+                end
+              end
             end
 
             context 'when user does not have permissions to admin the new parent' do

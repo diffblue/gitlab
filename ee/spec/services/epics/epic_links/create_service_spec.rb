@@ -6,8 +6,11 @@ RSpec.describe Epics::EpicLinks::CreateService do
   include NestedEpicsHelper
 
   describe '#execute' do
-    let(:group) { create(:group) }
-    let(:user) { create(:user) }
+    let_it_be(:ancestor) { create(:group) }
+    let_it_be(:group) { create(:group, parent: ancestor) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:other_group) { create(:group) }
+
     let(:epic) { create(:epic, group: group) }
     let(:epic_to_add) { create(:epic, group: group) }
     let(:expected_error) { 'No matching epic found. Make sure that you are adding a valid epic URL.' }
@@ -88,17 +91,91 @@ RSpec.describe Epics::EpicLinks::CreateService do
             end
 
             context 'when an epic from another group is given' do
-              let(:other_group) { create(:group) }
-              let(:expected_code) { 409 }
-              let(:expected_error) do
-                "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
-              end
-
               before do
                 epic_to_add.update!(group: other_group)
               end
 
+              context 'when user has no permission to read child epic' do
+                let(:params) { { target_issuable: epic_to_add } }
+
+                subject { described_class.new(epic, user, params).execute }
+
+                before do
+                  epic_to_add.update!(confidential: true)
+                end
+
+                include_examples 'returns an error'
+              end
+
+              context 'when user has no permission to admin_epic_link' do
+                let(:expected_code) { 409 }
+                let(:expected_error) do
+                  "This epic cannot be added. You don't have access to perform this action."
+                end
+
+                before do
+                  other_group.add_guest(user)
+                end
+
+                include_examples 'returns an error'
+              end
+
+              context 'when subepics feature is not available for child group' do
+                let(:expected_code) { 409 }
+                let(:expected_error) do
+                  "This epic cannot be added. You don't have access to perform this action."
+                end
+
+                before do
+                  other_group.add_developer(user)
+                  stub_licensed_features(epics: true)
+                  allow(group).to receive(:licensed_feature_available?).with(:subepics).and_return(true)
+                  allow(other_group).to receive(:licensed_feature_available?).with(:subepics).and_return(false)
+                end
+
+                include_examples 'returns an error'
+              end
+
+              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                let(:expected_code) { 409 }
+                let(:expected_error) do
+                  'This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.'
+                end
+
+                before do
+                  other_group.add_developer(user)
+                  stub_feature_flags(child_epics_from_different_hierarchies: false)
+                  epic_to_add.update!(group: other_group)
+                end
+
+                include_examples 'returns an error'
+              end
+            end
+
+            context 'when an epic from an ancestor group is given' do
+              let(:expected_code) { 409 }
+              let(:expected_error) do
+                'This epic cannot be added. An epic cannot belong to an ancestor group of its parent epic.'
+              end
+
+              before do
+                ancestor.add_developer(user)
+                epic_to_add.update!(group: ancestor)
+              end
+
               include_examples 'returns an error'
+
+              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                let(:expected_error) do
+                  'This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.'
+                end
+
+                before do
+                  stub_feature_flags(child_epics_from_different_hierarchies: false)
+                end
+
+                include_examples 'returns an error'
+              end
             end
 
             context 'when hierarchy is cyclic' do
@@ -201,7 +278,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
         end
 
         context 'when multiple epics are given' do
-          let(:another_epic) { create(:epic) }
+          let_it_be(:another_epic) { create(:epic, group: ancestor) }
 
           subject do
             add_epic(
@@ -239,19 +316,41 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 add_children_to(epic: epic_to_add, count: 5)
               end
 
-              let(:another_epic) { create(:epic) }
-
               include_examples 'returns an error'
             end
 
             context 'when an epic from a another group is given' do
-              let(:other_group) { create(:group) }
-
               before do
+                other_group.add_developer(user)
                 epic_to_add.update!(group: other_group)
               end
 
-              include_examples 'returns an error'
+              context 'when user has insufficient permissions' do
+                before do
+                  other_group.add_guest(user)
+                end
+
+                include_examples 'returns an error'
+              end
+
+              context 'when subepics feature is not available for child group' do
+                before do
+                  stub_licensed_features(epics: true)
+                  allow(group).to receive(:licensed_feature_available?).with(:subepics).and_return(true)
+                  allow(other_group).to receive(:licensed_feature_available?).with(:subepics).and_return(false)
+                end
+
+                include_examples 'returns an error'
+              end
+
+              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                before do
+                  stub_feature_flags(child_epics_from_different_hierarchies: false)
+                  epic_to_add.update!(group: other_group)
+                end
+
+                include_examples 'returns an error'
+              end
             end
 
             context 'when hierarchy is cyclic' do
@@ -277,10 +376,10 @@ RSpec.describe Epics::EpicLinks::CreateService do
             end
 
             context 'when there are invalid references' do
-              let(:epic) { create(:epic, confidential: true, group: group) }
-              let(:invalid_epic1) { create(:epic, group: group) }
-              let(:valid_epic) { create(:epic, :confidential, group: group) }
-              let(:invalid_epic2) { create(:epic, group: group) }
+              let_it_be(:epic) { create(:epic, confidential: true, group: group) }
+              let_it_be(:invalid_epic1) { create(:epic, group: group) }
+              let_it_be(:valid_epic) { create(:epic, :confidential, group: group) }
+              let_it_be(:invalid_epic2) { create(:epic, group: group) }
 
               subject do
                 add_epic([invalid_epic1.to_reference(full: true),
@@ -310,6 +409,8 @@ RSpec.describe Epics::EpicLinks::CreateService do
       end
 
       context 'when everything is ok' do
+        let_it_be_with_reload(:another_epic) { create(:epic, group: group) }
+
         before do
           group.add_developer(user)
         end
@@ -322,7 +423,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
         end
 
         context 'when an epic from a subgroup is given' do
-          let(:subgroup) { create(:group, parent: group) }
+          let_it_be(:subgroup) { create(:group, parent: group) }
 
           before do
             epic_to_add.update!(group: subgroup)
@@ -334,9 +435,19 @@ RSpec.describe Epics::EpicLinks::CreateService do
           include_examples 'system notes created'
         end
 
-        context 'when multiple valid epics are given' do
-          let(:another_epic) { create(:epic, group: group) }
+        context 'when an epic from another group is given' do
+          before do
+            epic_to_add.update!(group: other_group)
+            other_group.add_reporter(user)
+          end
 
+          subject { add_epic([valid_reference]) }
+
+          include_examples 'returns success'
+          include_examples 'system notes created'
+        end
+
+        context 'when multiple valid epics are given' do
           subject do
             add_epic(
               [epic_to_add.to_reference(full: true), another_epic.to_reference(full: true)]
@@ -377,8 +488,6 @@ RSpec.describe Epics::EpicLinks::CreateService do
         end
 
         context 'when at least one epic is still not assigned to the parent epic' do
-          let(:another_epic) { create(:epic, group: group) }
-
           before do
             epic_to_add.update!(parent: epic)
           end
@@ -420,8 +529,6 @@ RSpec.describe Epics::EpicLinks::CreateService do
         end
 
         context 'when an epic is already assigned to another epic' do
-          let(:another_epic) { create(:epic, group: group) }
-
           before do
             epic_to_add.update!(parent: another_epic)
           end

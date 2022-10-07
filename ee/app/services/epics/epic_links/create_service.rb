@@ -25,13 +25,18 @@ module Epics
 
       def create_single_link
         child_epic = referenced_issuables.first
+
+        unless can?(current_user, :read_epic, child_epic)
+          return error(issuables_not_found_message, 404)
+        end
+
         previous_parent_epic = child_epic.parent
 
         if linkable_epic?(child_epic) && set_child_epic(child_epic)
           create_notes(child_epic, previous_parent_epic)
           success(created_references: [child_epic])
         else
-          error(child_epic.errors.values.flatten.to_sentence, 409)
+          error(child_epic.errors.map(&:message).to_sentence, 409)
         end
       end
 
@@ -81,10 +86,11 @@ module Epics
       end
 
       def linkable_epic?(epic)
-        epic.valid_parent?(
-          parent_epic: issuable,
-          parent_group_descendants: issuable_group_descendants
-        )
+        can_link_epic?(epic) &&
+          epic.valid_parent?(
+            parent_epic: issuable,
+            group_ancestors: issuable_group_ancestors
+          )
       end
 
       def references(extractor)
@@ -99,12 +105,26 @@ module Epics
         issuable.children.to_a
       end
 
-      def issuable_group_descendants
-        @descendants ||= issuable.group.self_and_descendants
+      def issuable_group_ancestors
+        @ancestors ||= issuable.group.ancestors
       end
 
       def target_issuable_type
         :epic
+      end
+
+      def can_link_epic?(epic)
+        return true if issuable.group == epic.group
+
+        cross_group_children_disabled = [issuable.group, epic.group].all? do |group|
+          ::Feature.disabled?(:child_epics_from_different_hierarchies, group)
+        end
+
+        return true if cross_group_children_disabled || can?(current_user, :admin_epic_link, epic)
+
+        epic.errors.add(:parent, _("This epic cannot be added. You don't have access to perform this action."))
+
+        false
       end
     end
   end

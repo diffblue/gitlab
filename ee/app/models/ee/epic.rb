@@ -520,30 +520,23 @@ module EE
     def update_project_counter_caches
     end
 
-    def valid_parent?(parent_epic: nil, parent_group_descendants: nil)
+    def valid_parent?(parent_epic: nil, group_ancestors: nil)
       self.parent = parent_epic if parent_epic
 
-      validate_parent(parent_group_descendants)
+      validate_parent(group_ancestors: group_ancestors)
 
       errors.empty?
     end
 
-    def validate_parent(preloaded_parent_group_and_descendants = nil)
+    def validate_parent(group_ancestors: nil)
       return unless parent
 
-      preloaded_parent_group_and_descendants ||= parent.group.self_and_descendants
+      validate_parent_epic
+      return if errors.any?
 
-      if self == parent
-        errors.add :parent, "This epic cannot be added. An epic cannot be added to itself."
-      elsif parent.children.to_a.include?(self)
-        errors.add :parent, "This epic cannot be added. It is already assigned to the parent epic."
-      elsif parent.has_ancestor?(self)
-        errors.add :parent, "This epic cannot be added. It is already an ancestor of the parent epic."
-      elsif !preloaded_parent_group_and_descendants.include?(group)
-        errors.add :parent, "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
-      elsif level_depth_exceeded?(parent)
-        errors.add :parent, "This epic cannot be added. One or more epics would exceed the maximum depth (#{MAX_HIERARCHY_DEPTH}) from its most distant ancestor."
-      end
+      group_ancestors ||= parent.group.ancestors
+
+      validate_parent_epic_group(group_ancestors)
     end
 
     def issues_readable_by(current_user, preload: nil)
@@ -564,16 +557,16 @@ module EE
       super.merge(label_url_method: :group_epics_url)
     end
 
-    def level_depth_exceeded?(parent_epic)
-      hierarchy.max_descendants_depth.to_i + parent_epic.base_and_ancestors.count >= MAX_HIERARCHY_DEPTH
-    end
-    private :level_depth_exceeded?
-
     def base_and_ancestors
       return self.class.none unless parent_id
 
       hierarchy.base_and_ancestors(hierarchy_order: :asc)
     end
+
+    def level_depth_exceeded?(parent_epic)
+      hierarchy.max_descendants_depth.to_i + parent_epic.base_and_ancestors.count >= MAX_HIERARCHY_DEPTH
+    end
+    private :level_depth_exceeded?
 
     def validate_confidential_issues_and_subepics
       return unless confidential?
@@ -705,5 +698,51 @@ module EE
 
       errors.add(:parent, _('You cannot add any more epics. This epic already has maximum number of child epics.'))
     end
+
+    def validate_parent_epic
+      if self == parent
+        errors.add :parent, _("This epic cannot be added. An epic cannot be added to itself.")
+      elsif parent.children.to_a.include?(self)
+        errors.add :parent, _("This epic cannot be added. It is already assigned to the parent epic.")
+      elsif parent.has_ancestor?(self)
+        errors.add :parent, _("This epic cannot be added. It is already an ancestor of the parent epic.")
+      elsif level_depth_exceeded?(parent)
+        errors.add(:parent,
+          format(
+            _('This epic cannot be added. One or more epics would exceed the maximum '\
+              "depth (%{max_depth}) from its most distant ancestor."),
+              max_depth: MAX_HIERARCHY_DEPTH
+          )
+        )
+      end
+    end
+    private :validate_parent_epic
+
+    def validate_parent_epic_group(parent_ancestors)
+      return if self.group_id == parent.group_id
+
+      if ::Feature.enabled?(:child_epics_from_different_hierarchies, group) &&
+          ::Feature.enabled?(:child_epics_from_different_hierarchies, parent.group)
+
+        if parent_ancestors.include?(group)
+          errors.add(:parent,
+            _(
+              'This epic cannot be added. An epic cannot belong to ' \
+              'an ancestor group of its parent epic.'
+            )
+          )
+        end
+      else
+        unless group.ancestors.include?(parent.group)
+          errors.add(:parent,
+            _(
+              'This epic cannot be added. An epic must belong to the ' \
+              'same group or subgroup as its parent epic.'
+            )
+          )
+        end
+      end
+    end
+    private :validate_parent_epic_group
   end
 end

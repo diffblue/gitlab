@@ -2,14 +2,15 @@
 require 'spec_helper'
 
 RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
-  let(:project) { create(:project, group: group) }
-  let(:label1) { create(:group_label, group: group) }
-  let(:label2) { create(:label, project: project) }
-  let(:milestone) { create(:milestone, group: group) }
-  let(:description) { 'simple description' }
-  let(:issue) do
+  let_it_be(:user) { create(:user) }
+  let_it_be(:ancestor) { create(:group) }
+  let_it_be(:group) { create(:group, parent: ancestor) }
+  let_it_be(:project) { create(:project, group: group) }
+  let_it_be(:label1) { create(:group_label, group: group) }
+  let_it_be(:label2) { create(:label, project: project) }
+  let_it_be(:milestone) { create(:milestone, group: group) }
+  let_it_be(:description) { 'simple description' }
+  let_it_be_with_refind(:issue) do
     create(:issue, project: project, labels: [label1, label2],
                    milestone: milestone, description: description, weight: 3)
   end
@@ -65,10 +66,13 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
         end
 
         context 'when promoting issue', :snowplow do
-          let!(:issue_mentionable_note) { create(:note, noteable: issue, author: user, project: project, note: "note with mention #{user.to_reference}") }
-          let!(:issue_note) { create(:note, noteable: issue, author: user, project: project, note: "note without mention") }
+          let_it_be(:issue_mentionable_note) { create(:note, noteable: issue, author: user, project: project, note: "note with mention #{user.to_reference}") }
+          let_it_be(:issue_note) { create(:note, noteable: issue, author: user, project: project, note: "note without mention") }
+
+          let(:new_description) { "New description" }
 
           before do
+            issue.update!(description: new_description)
             subject.execute(issue)
           end
 
@@ -107,7 +111,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
           end
 
           context 'when issue description has mentions and has notes with mentions' do
-            let(:issue) { create(:issue, project: project, description: "description with mention to #{user.to_reference}") }
+            let(:new_description) { "description with mention to #{user.to_reference}" }
 
             it 'only saves user mentions with actual mentions' do
               expect(epic.user_mentions.find_by(note_id: nil).mentioned_users_ids).to match_array([user.id])
@@ -119,7 +123,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
 
           context 'when issue description has an attachment' do
             let(:image_uploader) { build(:file_uploader, project: project) }
-            let(:description) { "A description and image: #{image_uploader.markdown_link}" }
+            let(:new_description) { "A description and image: #{image_uploader.markdown_link}" }
 
             it 'copies the description, rewriting the attachment' do
               new_image_uploader = Upload.last.retrieve_uploader
@@ -131,7 +135,7 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
         end
 
         context 'when issue has resource state event' do
-          let!(:issue_event) { create(:resource_state_event, issue: issue) }
+          let_it_be(:issue_event) { create(:resource_state_event, issue: issue) }
 
           it 'does not raise error' do
             expect { subject.execute(issue) }.not_to raise_error
@@ -172,8 +176,8 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
         end
 
         context 'when an issue belongs to an epic' do
-          let(:parent_epic) { create(:epic, group: group) }
-          let!(:epic_issue) { create(:epic_issue, epic: parent_epic, issue: issue) }
+          let_it_be(:parent_epic) { create(:epic, group: group) }
+          let_it_be(:epic_issue) { create(:epic_issue, epic: parent_epic, issue: issue) }
 
           it 'creates a new epic with correct attributes' do
             subject.execute(issue)
@@ -187,30 +191,64 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
 
           context 'when promoting issue to a different group' do
             it 'creates a new epic with correct attributes' do
-              expect { subject.execute(issue, new_group) }
-                .to raise_error(StandardError, 'Validation failed: Parent This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.')
+              subject.execute(issue, new_group)
 
-              expect(issue.reload.state).to eq("opened")
-              expect(issue.reload.promoted_to_epic_id).to be_nil
-            end
-          end
-
-          context 'when promoting issue to a different group in the hierarchy' do
-            let(:new_group) { create(:group, parent: group) }
-
-            before do
-              new_group.add_developer(user)
-            end
-
-            it 'creates a new epic with correct attributes' do
-              epic = subject.execute(issue, new_group)
-
-              expect(issue.reload.promoted_to_epic_id).to eq(epic.id)
               expect(epic.title).to eq(issue.title)
               expect(epic.description).to eq(issue.description)
               expect(epic.author).to eq(user)
               expect(epic.group).to eq(new_group)
               expect(epic.parent).to eq(parent_epic)
+            end
+
+            context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+              before do
+                stub_feature_flags(child_epics_from_different_hierarchies: false)
+              end
+
+              it 'does not promote to epic and raises error' do
+                expect { subject.execute(issue, new_group) }
+                  .to raise_error(StandardError, 'Validation failed: Parent This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.')
+
+                expect(issue.reload.state).to eq("opened")
+                expect(issue.reload.promoted_to_epic_id).to be_nil
+              end
+            end
+          end
+
+          context 'when promoting issue to a different group in the hierarchy' do
+            context 'when the group is a descendant group' do
+              let(:new_group) { create(:group, parent: group) }
+
+              before do
+                new_group.add_developer(user)
+              end
+
+              it 'creates a new epic with correct attributes' do
+                epic = subject.execute(issue, new_group)
+
+                expect(issue.reload.promoted_to_epic_id).to eq(epic.id)
+                expect(epic.title).to eq(issue.title)
+                expect(epic.description).to eq(issue.description)
+                expect(epic.author).to eq(user)
+                expect(epic.group).to eq(new_group)
+                expect(epic.parent).to eq(parent_epic)
+              end
+            end
+
+            context 'when the group is an ancestor group' do
+              let(:new_group) { ancestor }
+
+              before do
+                new_group.add_developer(user)
+              end
+
+              it 'does not promote to epic and raises error' do
+                expect { subject.execute(issue, new_group) }
+                  .to raise_error(ActiveRecord::RecordInvalid)
+
+                expect(issue.reload.state).to eq("opened")
+                expect(issue.reload.promoted_to_epic_id).to be_nil
+              end
             end
           end
 
