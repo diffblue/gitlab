@@ -54,6 +54,107 @@ RSpec.describe MergeRequests::PostMergeService do
       end
     end
 
+    context 'auditing invalid logs' do
+      shared_examples 'auditing invalid logs' do
+        let(:expected_params) do
+          {
+            name: 'merge_request_invalid_approver_rules',
+            author: merge_request.author,
+            scope: merge_request.project,
+            target: merge_request,
+            target_details: {
+              title: merge_request.title,
+              iid: merge_request.iid,
+              id: merge_request.id,
+              rule_type: rule.rule_type,
+              rule_name: rule.name
+            },
+            message: 'Invalid merge request approver rules'
+          }
+        end
+
+        context 'when the rule is valid' do
+          let!(:rule) { valid_rule }
+
+          it 'does not audit the event' do
+            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+            subject
+          end
+        end
+
+        context 'when invalid' do
+          let!(:rule) { invalid_rule }
+
+          it 'audit logs the event' do
+            expect(::Gitlab::Audit::Auditor).to receive(:audit).with(expected_params)
+
+            subject
+          end
+
+          context 'when audit_invalid_approver_rules is disabled' do
+            before do
+              stub_feature_flags(audit_invalid_approver_rules: false)
+            end
+
+            it 'does not track the event' do
+              expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+              subject
+            end
+          end
+        end
+      end
+
+      context 'when the rule is code owner' do
+        let(:valid_rule) { create(:code_owner_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+        let(:invalid_rule) { create(:code_owner_rule, merge_request: merge_request) }
+
+        before do
+          stub_licensed_features(code_owner_approval_required: true)
+          create(:protected_branch, project: project, name: merge_request.target_branch, code_owner_approval_required: true)
+        end
+
+        include_examples 'auditing invalid logs'
+      end
+
+      context 'when the rule is any_approver' do
+        context 'when the rule is valid' do
+          let!(:rule) { create(:any_approver_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+
+          it 'does not audit the event' do
+            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+            subject
+          end
+        end
+
+        context 'when invalid' do
+          let!(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
+
+          it 'does not audit the event' do
+            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+            subject
+          end
+        end
+      end
+
+      context 'when the rule is approval_merge_request_rule' do
+        let(:valid_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+        let(:invalid_rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1) }
+
+        include_examples 'auditing invalid logs'
+      end
+
+      context 'when the rule is report_approver' do
+        let(:valid_rule) { create(:report_approver_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+        let(:invalid_rule) { create(:report_approver_rule, merge_request: merge_request, approvals_required: 1) }
+
+        include_examples 'auditing invalid logs'
+      end
+    end
+
     context 'security orchestration policy configuration' do
       let(:security_orchestration_enabled) { true }
       let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: main_project, security_policy_management_project: project) }
