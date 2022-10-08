@@ -81,9 +81,9 @@ class GroupsController < Groups::ApplicationController
       successful_creation_hooks
 
       notice = if @group.chat_team.present?
-                 format(_("Group %{group_name} and its Mattermost team were successfully created."), group_name: @group.name)
+                 _("Group %{group_name} and its Mattermost team were successfully created.") % { group_name: @group.name }
                else
-                 format(_("Group %{group_name} was successfully created."), group_name: @group.name)
+                 _("Group %{group_name} was successfully created.") % { group_name: @group.name }
                end
 
       redirect_to @group, notice: notice
