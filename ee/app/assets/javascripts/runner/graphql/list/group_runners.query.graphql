@@ -11,6 +11,7 @@ query getGroupRunnersEE(
   $status: CiRunnerStatus
   $upgradeStatus: CiRunnerUpgradeStatus
   $type: CiRunnerType
+  $tagList: [String!]
   $search: String
   $sort: CiRunnerSort
 ) {
@@ -26,6 +27,7 @@ query getGroupRunnersEE(
       status: $status
       upgradeStatus: $upgradeStatus # Added in EE
       type: $type
+      tagList: $tagList
       search: $search
       sort: $sort
     ) {
