@@ -147,3 +147,5 @@ module Registrations
     end
   end
 end
+
+Registrations::NamespaceCreateService.prepend_mod
