@@ -4,32 +4,69 @@ module Gitlab
   module GithubImport
     module Markdown
       class Attachment
-        class << self
-          def from_markdown(markdown_text)
-            url = extract_url_from_markdown(markdown_text)
-            name = extract_name_from_markdown(markdown_text)
-            new(name, url)
-          end
+        MEDIA_TYPES = %w[gif jpeg jpg mov mp4 png svg webm].freeze
+        DOC_TYPES = %w[
+          csv docx fodg fodp fods fodt gz log md odf odg odp ods
+          odt pdf pptx tgz txt xls xlsx zip
+        ].freeze
 
-          # img - An instance of `Nokogiri::XML::Element`
-          def from_img_tag(img)
-            new(img[:alt], img[:src])
+        class << self
+          # markdown_node - CommonMarker::Node
+          def from_markdown(markdown_node)
+            case markdown_node.type
+            when :html, :inline_html
+              from_inline_html(markdown_node)
+            when :image
+              from_markdown_image(markdown_node)
+            when :link
+              from_markdown_link(markdown_node)
+            end
           end
 
           private
 
-          # in: "![image-icon](https://user-images.githubusercontent.com/..)"
-          # out: https://user-images.githubusercontent.com/..
-          def extract_url_from_markdown(text)
-            text.match(%r{https://.*\)$}).to_a[0].chop
+          def from_markdown_image(markdown_node)
+            url = markdown_node.url
+
+            return unless github_url?(url, media: true)
+            return unless whitelisted_type?(url, media: true)
+
+            new(markdown_node.to_plaintext.strip, url)
           end
 
-          # in: "![image-icon](https://user-images.githubusercontent.com/..)"
-          # out: image-icon
-          def extract_name_from_markdown(text)
-            name = text.match(%r{^!?\[.*\]}).to_a[0]
-            name = name.chop # ![image-icon] => ![image-icon
-            name.start_with?('!') ? name[2..] : name[1..]
+          def from_markdown_link(markdown_node)
+            url = markdown_node.url
+
+            return unless github_url?(url, docs: true)
+            return unless whitelisted_type?(url, docs: true)
+
+            new(markdown_node.to_plaintext.strip, url)
+          end
+
+          def from_inline_html(markdown_node)
+            img = Nokogiri::HTML.parse(markdown_node.string_content).xpath('//img')[0]
+
+            return unless img
+            return unless github_url?(img[:src], media: true)
+            return unless whitelisted_type?(img[:src], media: true)
+
+            new(img[:alt], img[:src])
+          end
+
+          def github_url?(url, docs: false, media: false)
+            if media
+              url.start_with?(::Gitlab::GithubImport::MarkdownText::GITHUB_MEDIA_CDN)
+            elsif docs
+              url.start_with?(::Gitlab::GithubImport::MarkdownText.github_url)
+            end
+          end
+
+          def whitelisted_type?(url, docs: false, media: false)
+            if media
+              MEDIA_TYPES.any? { |type| url.end_with?(type) }
+            elsif docs
+              DOC_TYPES.any? { |type| url.end_with?(type) }
+            end
           end
         end
 
@@ -41,7 +78,7 @@ module Gitlab
         end
 
         def inspect
-          "Attachment { name: #{name}, url: #{url} }"
+          "<#{self.class.name}: { name: #{name}, url: #{url} }>"
         end
       end
     end

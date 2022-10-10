@@ -61,7 +61,7 @@ RSpec.describe Gitlab::GithubImport::MarkdownText do
   end
 
   describe '.fetch_attachments' do
-    let(:image_extension) { described_class::MEDIA_TYPES.sample }
+    let(:image_extension) { Gitlab::GithubImport::Markdown::Attachment::MEDIA_TYPES.sample }
     let(:image_attachment) do
       "![special-image](https://user-images.githubusercontent.com/1/uuid-1.#{image_extension})"
     end
@@ -75,7 +75,7 @@ RSpec.describe Gitlab::GithubImport::MarkdownText do
       "<img width=\"248\" alt=\"tag-image\" src=\"https://user-images.githubusercontent.com"
     end
 
-    let(:doc_extension) { described_class::DOC_TYPES.sample }
+    let(:doc_extension) { Gitlab::GithubImport::Markdown::Attachment::DOC_TYPES.sample }
     let(:doc_attachment) do
       "[some-doc](https://github.com/nickname/public-test-repo/"\
       "files/3/git-cheat-sheet.#{doc_extension})"
