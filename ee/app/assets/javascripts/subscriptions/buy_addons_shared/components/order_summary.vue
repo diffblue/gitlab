@@ -10,7 +10,7 @@ import { sprintf } from '~/locale';
 
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import orderPreviewQuery from 'ee/subscriptions/graphql/queries/order_preview.customer.query.graphql';
-import SummaryDetails from './order_summary/summary_details.vue';
+import SummaryDetails from 'jh_else_ee/subscriptions/buy_addons_shared/components/order_summary/summary_details.vue';
 
 export default {
   components: {
