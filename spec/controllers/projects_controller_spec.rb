@@ -235,8 +235,6 @@ RSpec.describe ProjectsController do
 
       before do
         sign_in(user)
-
-        allow(Project).to receive(:repo).and_raise(Gitlab::Git::Repository::NoRepository)
       end
 
       User.project_views.keys.each do |project_view|
