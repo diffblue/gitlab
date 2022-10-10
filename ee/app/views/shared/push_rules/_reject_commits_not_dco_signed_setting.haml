@@ -1,0 +1,11 @@
+- context = local_assigns.fetch(:context)
+
+- return unless push_rule.available?(:reject_non_dco_commits, object: context)
+
+- form = local_assigns.fetch(:form)
+- push_rule = local_assigns.fetch(:push_rule)
+
+= form.gitlab_ui_checkbox_component :reject_non_dco_commits,
+    s_("PushRules|Reject commits that aren't DCO certified"),
+    checkbox_options: { data: { qa_selector: 'reject_non_dco_commits_checkbox' }, disabled: !can_change_push_rule?(form.object, :reject_non_dco_commits, context) },
+    help_text: reject_non_dco_commits_description(push_rule)

@@ -38,6 +38,32 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
       end
     end
 
+    context 'DCO check rules' do
+      let(:push_rule) { create(:push_rule, reject_non_dco_commits: true) }
+
+      before do
+        stub_licensed_features(reject_non_dco_commits: true)
+      end
+
+      it_behaves_like 'check ignored when push rule unlicensed'
+
+      context 'when enabled in Project and commit is not DCO signed' do
+        it 'returns an error' do
+          expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Commit message must contain a DCO signoff")
+        end
+      end
+
+      context 'when enabled in Project and the commit is DCO signed' do
+        it 'does not return an error' do
+          commit_message = "DCO Signed Commit\n\nSigned-off-by: Test user <test-user@example.com>"
+
+          allow_any_instance_of(Commit).to receive(:safe_message).and_return(commit_message)
+
+          expect { subject.validate! }.not_to raise_error
+        end
+      end
+    end
+
     context 'author email rules' do
       let!(:push_rule) { create(:push_rule, author_email_regex: '.*@valid.com') }
 

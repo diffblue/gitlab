@@ -5,10 +5,9 @@ import environments from './mock_data';
 
 describe('Environments', () => {
   let wrapper;
-  let propsData;
 
-  beforeEach(() => {
-    propsData = {
+  const createComponent = (props = {}) => {
+    const propsData = {
       environments: [],
       environmentsHelpPath: 'path/to/environments',
       clustersHelpPath: 'path/to/clusters',
@@ -17,15 +16,18 @@ describe('Environments', () => {
     };
 
     wrapper = mount(Environments, {
-      propsData,
+      propsData: { ...propsData, environments, ...props },
+      stubs: { deploymentInstance: { template: '<div class="js-deployment-instance"></div>' } },
     });
-  });
+  };
 
   afterEach(() => {
     wrapper.destroy();
   });
 
   it('renders an empty state if no deployments are found', () => {
+    createComponent({ environments: [] });
+
     const emptyState = wrapper.findComponent(GlEmptyState);
     const emptyStateText = emptyState.text().replace(/\s+/g, ' ');
 
@@ -39,12 +41,8 @@ describe('Environments', () => {
   describe('environments table', () => {
     let table;
 
-    beforeAll(() => {
-      wrapper = mount(Environments, {
-        propsData: { ...propsData, environments },
-        stubs: { deploymentInstance: { template: '<div class="js-deployment-instance"></div>' } },
-      });
-
+    beforeEach(() => {
+      createComponent();
       table = wrapper.findComponent(GlTable);
     });
 
@@ -68,7 +66,9 @@ describe('Environments', () => {
     describe('deployment instances', () => {
       let tableRows;
 
-      beforeAll(() => {
+      beforeEach(() => {
+        createComponent();
+        table = wrapper.findComponent(GlTable);
         tableRows = table.findAll('tbody tr');
       });
 

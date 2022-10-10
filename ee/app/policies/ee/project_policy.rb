@@ -78,6 +78,11 @@ module EE
       end
 
       with_scope :subject
+      condition(:reject_non_dco_commits_available) do
+        @subject.feature_available?(:reject_non_dco_commits)
+      end
+
+      with_scope :subject
       condition(:security_orchestration_policies_enabled) do
         @subject.feature_available?(:security_orchestration_policies)
       end
@@ -369,6 +374,12 @@ module EE
       rule { commit_committer_check_available }.enable :read_commit_committer_check
 
       rule { ~commit_committer_check_available }.prevent :change_commit_committer_check
+
+      rule { admin | maintainer }.enable :change_reject_non_dco_commits
+
+      rule { reject_non_dco_commits_available }.enable :read_reject_non_dco_commits
+
+      rule { ~reject_non_dco_commits_available }.prevent :change_reject_non_dco_commits
 
       rule { owner | reporter | internal_access | public_project }.enable :build_read_project
 

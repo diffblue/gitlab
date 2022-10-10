@@ -1,5 +1,5 @@
 <script>
-import { GlButton, GlBadge } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { __ } from '~/locale';
 import GeoNodeActions from './geo_node_actions.vue';
 import GeoNodeHealthStatus from './geo_node_health_status.vue';
@@ -8,13 +8,11 @@ import GeoNodeLastUpdated from './geo_node_last_updated.vue';
 export default {
   name: 'GeoNodeHeader',
   i18n: {
-    currentNodeLabel: __('Current'),
     expand: __('Expand'),
     collapse: __('Collapse'),
   },
   components: {
     GlButton,
-    GlBadge,
     GeoNodeHealthStatus,
     GeoNodeLastUpdated,
     GeoNodeActions,
@@ -63,9 +61,6 @@ export default {
         class="gl-display-flex gl-flex-direction-column gl-md-flex-direction-row gl-md-align-items-center gl-flex-grow-1"
       >
         <div class="gl-display-flex gl-align-items-center gl-flex-grow-1 gl-flex-basis-0">
-          <gl-badge v-if="node.current" variant="info" class="gl-mr-2">{{
-            $options.i18n.currentNodeLabel
-          }}</gl-badge>
           <h4 class="gl-font-lg">{{ node.name }}</h4>
         </div>
         <div class="gl-display-flex gl-align-items-center gl-flex-grow-2 gl-flex-basis-0">

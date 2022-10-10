@@ -10,7 +10,7 @@ RSpec.describe RequirementsManagement::RequirementPolicy do
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:guest) { create(:user) }
   let_it_be(:project) { create(:project, :public, namespace: owner.namespace) }
-  let_it_be(:resource, reload: true) { create(:requirement, project: project) }
+  let_it_be(:resource, reload: true) { create(:work_item, :requirement, project: project).requirement }
 
   before do
     project.add_reporter(reporter)

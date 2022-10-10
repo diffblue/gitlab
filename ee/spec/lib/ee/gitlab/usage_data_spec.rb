@@ -209,12 +209,12 @@ RSpec.describe Gitlab::UsageData do
   describe '.requirements_counts' do
     subject { described_class.requirements_counts }
 
-    let_it_be(:requirement1) { create(:requirement) }
-    let_it_be(:requirement2) { create(:requirement) }
-    let_it_be(:requirement3) { create(:requirement) }
-    let_it_be(:test_report1) { create(:test_report, requirement_issue: requirement1.requirement_issue) }
-    let_it_be(:test_report2) { create(:test_report, requirement_issue: requirement2.requirement_issue, build: nil) }
-    let_it_be(:test_report3) { create(:test_report, requirement_issue: requirement1.requirement_issue) }
+    let_it_be(:requirement1) { create(:work_item, :requirement) }
+    let_it_be(:requirement2) { create(:work_item, :requirement) }
+    let_it_be(:requirement3) { create(:work_item, :requirement) }
+    let_it_be(:test_report1) { create(:test_report, requirement_issue: requirement1) }
+    let_it_be(:test_report2) { create(:test_report, requirement_issue: requirement2, build: nil) }
+    let_it_be(:test_report3) { create(:test_report, requirement_issue: requirement1) }
 
     context 'when requirements are disabled' do
       it 'returns empty hash' do

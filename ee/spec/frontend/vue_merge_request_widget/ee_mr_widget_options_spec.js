@@ -10,12 +10,8 @@ import {
 
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
-import _GroupedBrowserPerformanceReportsApp from 'ee/reports/browser_performance_report/grouped_browser_performance_reports_app.vue';
-// eslint-disable-next-line no-unused-vars
 import _GroupedLoadPerformanceReportsApp from 'ee/reports/load_performance_report/grouped_load_performance_reports_app.vue';
 
-import StatusChecksReportsApp from 'ee/reports/status_checks_report/status_checks_reports_app.vue';
-import PerformanceIssueBody from 'ee/vue_merge_request_widget/components/performance_issue_body.vue';
 import MrWidgetOptions from 'ee/vue_merge_request_widget/mr_widget_options.vue';
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
@@ -49,12 +45,7 @@ import { SUCCESS } from '~/vue_merge_request_widget/components/deployment/consta
 import _Deployment from '~/vue_merge_request_widget/components/deployment/deployment.vue';
 import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_merge_request_download_paths.query.graphql';
 
-import mockData, {
-  baseBrowserPerformance,
-  headBrowserPerformance,
-  baseLoadPerformance,
-  headLoadPerformance,
-} from './mock_data';
+import mockData from './mock_data';
 
 jest.mock('~/vue_shared/components/help_popover.vue');
 
@@ -71,16 +62,6 @@ const API_FUZZING_SELECTOR = '.js-api-fuzzing-widget';
 describe('ee merge request widget options', () => {
   let wrapper;
   let mock;
-
-  const DEFAULT_BROWSER_PERFORMANCE = {
-    head_path: 'head.json',
-    base_path: 'base.json',
-  };
-
-  const DEFAULT_LOAD_PERFORMANCE = {
-    head_path: 'head.json',
-    base_path: 'base.json',
-  };
 
   const createComponent = (options) => {
     wrapper = mount(MrWidgetOptions, {
@@ -99,6 +80,8 @@ describe('ee merge request widget options', () => {
   });
 
   afterEach(() => {
+    registeredExtensions.extensions = [];
+
     // This is needed because the `fetchInitialData` is triggered while
     // the `mock.restore` is trying to clean up, causing a bunch of
     // unmocked requests...
@@ -112,22 +95,8 @@ describe('ee merge request widget options', () => {
     });
   });
 
-  const findBrowserPerformanceWidget = () => wrapper.find('.js-browser-performance-widget');
   const findExtendedSecurityWidget = () => wrapper.find('.js-security-widget');
   const findBaseSecurityWidget = () => wrapper.find('[data-testid="security-mr-widget"]');
-  const findStatusChecksReport = () => wrapper.findComponent(StatusChecksReportsApp);
-
-  const setBrowserPerformance = (data = {}) => {
-    const browserPerformance = { ...DEFAULT_BROWSER_PERFORMANCE, ...data };
-    gl.mrWidgetData.browserPerformance = browserPerformance;
-    wrapper.vm.mr.browserPerformance = browserPerformance;
-  };
-
-  const setLoadPerformance = (data = {}) => {
-    const loadPerformance = { ...DEFAULT_LOAD_PERFORMANCE, ...data };
-    gl.mrWidgetData.loadPerformance = loadPerformance;
-    wrapper.vm.mr.loadPerformance = loadPerformance;
-  };
 
   const VULNERABILITY_FEEDBACK_ENDPOINT = 'vulnerability_feedback_path';
 
@@ -344,256 +313,6 @@ describe('ee merge request widget options', () => {
         expect(
           trimText(findExtendedSecurityWidget().find(DEPENDENCY_SCANNING_SELECTOR).text()),
         ).toContain('Dependency scanning: Loading resulted in an error');
-      });
-    });
-  });
-
-  describe('browser_performance', () => {
-    beforeEach(() => {
-      gl.mrWidgetData = {
-        ...mockData,
-        browserPerformance: {},
-      };
-    });
-
-    describe('with successful request', () => {
-      beforeEach(() => {
-        mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, headBrowserPerformance);
-        mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, baseBrowserPerformance);
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-      });
-
-      describe('default', () => {
-        beforeEach(() => {
-          setBrowserPerformance();
-          return axios.waitForAll();
-        });
-
-        it('should render provided data', () => {
-          expect(
-            trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-          ).toEqual('Browser performance test metrics: 2 degraded, 1 same, 1 improved');
-        });
-
-        it('should render performance issue body component', () => {
-          expect(wrapper.findComponent(PerformanceIssueBody).exists()).toBe(true);
-        });
-
-        describe('text connector', () => {
-          it('should only render information about fixed issues', async () => {
-            wrapper.vm.mr.browserPerformanceMetrics.degraded = [];
-            wrapper.vm.mr.browserPerformanceMetrics.same = [];
-
-            await nextTick();
-            expect(
-              trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-            ).toEqual('Browser performance test metrics: 1 improved');
-          });
-
-          it('should only render information about added issues', async () => {
-            wrapper.vm.mr.browserPerformanceMetrics.improved = [];
-            wrapper.vm.mr.browserPerformanceMetrics.same = [];
-
-            await nextTick();
-            expect(
-              trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-            ).toEqual('Browser performance test metrics: 2 degraded');
-          });
-        });
-      });
-
-      describe.each`
-        degradation_threshold | shouldExist
-        ${1}                  | ${true}
-        ${3}                  | ${false}
-      `(
-        'with degradation_threshold = $degradation_threshold',
-        ({ degradation_threshold, shouldExist }) => {
-          beforeEach(() => {
-            setBrowserPerformance({ degradation_threshold });
-
-            return waitForPromises();
-          });
-
-          if (shouldExist) {
-            it('should render widget when total score degradation is above threshold', () => {
-              expect(findBrowserPerformanceWidget().exists()).toBe(true);
-            });
-          } else {
-            it('should not render widget when total score degradation is below threshold', () => {
-              expect(findBrowserPerformanceWidget().exists()).toBe(false);
-            });
-          }
-        },
-      );
-    });
-
-    describe('with empty successful request', () => {
-      beforeEach(() => {
-        mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(200, []);
-        mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(200, []);
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        gl.mrWidgetData.browserPerformance = { ...DEFAULT_BROWSER_PERFORMANCE };
-        wrapper.vm.mr.browserPerformance = gl.mrWidgetData.browserPerformance;
-
-        // wait for network request from component watch update method
-        return axios.waitForAll();
-      });
-
-      it('should render provided data', () => {
-        expect(
-          trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-        ).toEqual('Browser performance test metrics: No changes');
-      });
-
-      it('does not show Expand button', () => {
-        const expandButton = wrapper.find('.js-browser-performance-widget .js-collapse-btn');
-
-        expect(expandButton.exists()).toBe(false);
-      });
-
-      it('shows success icon', () => {
-        expect(
-          wrapper
-            .find(
-              '.js-browser-performance-widget [data-testid="status-success-icon"] use[href="#status-success"]',
-            )
-            .exists(),
-        ).toBe(true);
-      });
-    });
-
-    describe('with failed request', () => {
-      beforeEach(() => {
-        mock.onGet(DEFAULT_BROWSER_PERFORMANCE.head_path).reply(500, []);
-        mock.onGet(DEFAULT_BROWSER_PERFORMANCE.base_path).reply(500, []);
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        gl.mrWidgetData.browserPerformance = { ...DEFAULT_BROWSER_PERFORMANCE };
-        wrapper.vm.mr.browserPerformance = gl.mrWidgetData.browserPerformance;
-        return axios.waitForAll();
-      });
-
-      it('should render error indicator', () => {
-        expect(
-          trimText(wrapper.find('.js-browser-performance-widget .js-code-text').text()),
-        ).toContain('Failed to load browser-performance report');
-      });
-    });
-  });
-
-  describe('load_performance', () => {
-    beforeEach(() => {
-      gl.mrWidgetData = {
-        ...mockData,
-        loadPerformance: {},
-      };
-    });
-
-    describe('with successful request', () => {
-      beforeEach(async () => {
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, headLoadPerformance);
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, baseLoadPerformance);
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        await waitForPromises();
-      });
-
-      describe('default', () => {
-        beforeEach(() => {
-          setLoadPerformance();
-
-          // wait for network request from component watch update method
-          return axios.waitForAll();
-        });
-
-        it('should render provided data', () => {
-          expect(trimText(wrapper.find('.js-load-performance-widget .js-code-text').text())).toBe(
-            'Load performance test metrics: 1 degraded, 1 same, 2 improved',
-          );
-        });
-
-        it('should render performance issue body component', () => {
-          expect(wrapper.findComponent(PerformanceIssueBody).exists()).toBe(true);
-        });
-
-        describe('text connector', () => {
-          it('should only render information about fixed issues', async () => {
-            wrapper.vm.mr.loadPerformanceMetrics.degraded = [];
-            wrapper.vm.mr.loadPerformanceMetrics.same = [];
-
-            await nextTick();
-            expect(trimText(wrapper.find('.js-load-performance-widget .js-code-text').text())).toBe(
-              'Load performance test metrics: 2 improved',
-            );
-          });
-
-          it('should only render information about added issues', async () => {
-            wrapper.vm.mr.loadPerformanceMetrics.improved = [];
-            wrapper.vm.mr.loadPerformanceMetrics.same = [];
-
-            await nextTick();
-            expect(trimText(wrapper.find('.js-load-performance-widget .js-code-text').text())).toBe(
-              'Load performance test metrics: 1 degraded',
-            );
-          });
-        });
-      });
-    });
-
-    describe('with empty successful request', () => {
-      beforeEach(() => {
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(200, {});
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(200, {});
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        gl.mrWidgetData.loadPerformance = { ...DEFAULT_LOAD_PERFORMANCE };
-        wrapper.vm.mr.loadPerformance = gl.mrWidgetData.loadPerformance;
-
-        // wait for network request from component watch update method
-        return axios.waitForAll();
-      });
-
-      it('should render provided data', () => {
-        expect(trimText(wrapper.find('.js-load-performance-widget .js-code-text').text())).toBe(
-          'Load performance test metrics: No changes',
-        );
-      });
-
-      it('does not show Expand button', () => {
-        const expandButton = wrapper.find('.js-load-performance-widget .js-collapse-btn');
-
-        expect(expandButton.exists()).toBe(false);
-      });
-
-      it('shows success icon', () => {
-        expect(
-          wrapper
-            .find(
-              '.js-load-performance-widget [data-testid="status-success-icon"] use[href="#status-success"]',
-            )
-            .exists(),
-        ).toBe(true);
-      });
-    });
-
-    describe('with failed request', () => {
-      beforeEach(() => {
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.head_path).reply(500, []);
-        mock.onGet(DEFAULT_LOAD_PERFORMANCE.base_path).reply(500, []);
-        createComponent({ propsData: { mrData: gl.mrWidgetData } });
-
-        gl.mrWidgetData.loadPerformance = { ...DEFAULT_LOAD_PERFORMANCE };
-        wrapper.vm.mr.loadPerformance = gl.mrWidgetData.loadPerformance;
-
-        return axios.waitForAll();
-      });
-
-      it('should render error indicator', () => {
-        expect(
-          trimText(wrapper.find('.js-load-performance-widget .js-code-text').text()),
-        ).toContain('Failed to load load-performance report');
       });
     });
   });
@@ -1146,37 +865,7 @@ describe('ee merge request widget options', () => {
     });
   });
 
-  describe.each`
-    path             | mergeState          | shouldRender
-    ${'http://test'} | ${'readyToMerge'}   | ${true}
-    ${'http://test'} | ${'nothingToMerge'} | ${false}
-    ${undefined}     | ${'readyToMerge'}   | ${false}
-    ${undefined}     | ${'nothingToMerge'} | ${false}
-  `('status checks widget', ({ path, mergeState, shouldRender }) => {
-    it(`${
-      shouldRender ? 'renders' : 'does not render'
-    } when the path is '${path}' and the merge state is '${mergeState}'`, async () => {
-      createComponent({
-        propsData: {
-          mrData: {
-            ...mockData,
-            api_status_checks_path: path,
-          },
-        },
-      });
-
-      wrapper.vm.mr.state = mergeState;
-      await nextTick();
-
-      expect(findStatusChecksReport().exists()).toBe(shouldRender);
-    });
-  });
-
   describe('license scanning report', () => {
-    afterEach(() => {
-      registeredExtensions.extensions = [];
-    });
-
     it.each`
       shouldRegisterExtension | description
       ${true}                 | ${'extension is registered'}

@@ -7,10 +7,10 @@ RSpec.describe 'Requirements list', :js do
   let_it_be(:user_guest) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:public_project) { create(:project, :public) }
-  let_it_be(:requirement1) { create(:requirement, project: project, title: 'Some requirement-1', description: 'Sample description', author: user, created_at: 5.days.ago, updated_at: 2.days.ago) }
-  let_it_be(:requirement2) { create(:requirement, project: project, title: 'Some requirement-2', description: 'Sample description', author: user, created_at: 6.days.ago, updated_at: 2.days.ago) }
-  let_it_be(:requirement3) { create(:requirement, project: project, title: 'Some requirement-3', description: 'Sample description', author: user, created_at: 7.days.ago, updated_at: 2.days.ago) }
-  let_it_be(:requirement_archived) { create(:requirement, project: project, title: 'Some requirement-3', description: 'Sample description', state: :archived, author: user, created_at: 8.days.ago, updated_at: 2.days.ago) }
+  let_it_be(:requirement1) { create(:work_item, :requirement, project: project, title: 'Some requirement-1', description: 'Sample description', author: user, created_at: 5.days.ago, updated_at: 2.days.ago).requirement }
+  let_it_be(:requirement2) { create(:work_item, :requirement, project: project, title: 'Some requirement-2', description: 'Sample description', author: user, created_at: 6.days.ago, updated_at: 2.days.ago).requirement }
+  let_it_be(:requirement3) { create(:work_item, :requirement, project: project, title: 'Some requirement-3', description: 'Sample description', author: user, created_at: 7.days.ago, updated_at: 2.days.ago).requirement }
+  let_it_be(:requirement_archived) { create(:work_item, :requirement, project: project, title: 'Some requirement-3', description: 'Sample description', state: :closed, author: user, created_at: 8.days.ago, updated_at: 2.days.ago).requirement }
 
   def create_requirement(title)
     page.within('.nav-controls') do

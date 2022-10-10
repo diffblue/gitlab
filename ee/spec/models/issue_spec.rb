@@ -66,10 +66,10 @@ RSpec.describe Issue do
 
     describe '.for_requirement_iids' do
       let_it_be(:project) { create(:project) }
-      let_it_be(:requirement_1) { create(:requirement, project: project) }
-      let_it_be(:requirement_2) { create(:requirement, project: project) }
-      let_it_be(:requirement_3) { create(:requirement, project: project) }
-      let_it_be(:requirement_4) { create(:requirement, project: project) }
+      let_it_be(:requirement_1) { create(:work_item, :requirement, project: project).requirement }
+      let_it_be(:requirement_2) { create(:work_item, :requirement, project: project).requirement }
+      let_it_be(:requirement_3) { create(:work_item, :requirement, project: project).requirement }
+      let_it_be(:requirement_4) { create(:work_item, :requirement, project: project).requirement }
 
       context 'when issue is of type requirement' do
         it 'filters requirement issues by associated requirements iids' do

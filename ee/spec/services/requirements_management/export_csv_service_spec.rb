@@ -6,7 +6,7 @@ RSpec.describe RequirementsManagement::ExportCsvService do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create_default(:group) }
   let_it_be(:project) { create_default(:project, :public) }
-  let_it_be_with_reload(:requirement) { create(:requirement, state: :opened, author: user) }
+  let_it_be_with_reload(:requirement) { create(:work_item, :requirement, state: :opened, author: user).requirement }
 
   let(:fields) { [] }
 

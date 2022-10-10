@@ -48,6 +48,8 @@ module EE
           "Author's commit email '#{current_user.commit_email_or_default}' does not follow the pattern '#{push_rule.author_email_regex}'"
         elsif validate_squash_message
           squash_message_validation_error
+        elsif !push_rule.non_dco_commit_allowed?(params[:commit_message])
+          "Commit message must contain a DCO signoff"
         end
       end
 

@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe MergeRequests::RefreshService do
   include ProjectForksHelper
-  include ProjectHelpers
+  include UserHelpers
 
   let(:group) { create(:group) }
   let(:project) { create(:project, :repository, namespace: group, approvals_before_merge: 1, reset_approvals_on_push: true) }

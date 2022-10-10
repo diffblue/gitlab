@@ -7,8 +7,8 @@ RSpec.describe 'getting requirement counts for a project' do
 
   let_it_be(:project) { create(:project) }
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:requirement1) { create(:requirement, project: project, state: :opened) }
-  let_it_be(:requirement2) { create(:requirement, project: project, state: :archived) }
+  let_it_be(:requirement1) { create(:work_item, :requirement, project: project, state: :opened) }
+  let_it_be(:requirement2) { create(:work_item, :requirement, project: project, state: :closed) }
 
   let(:counts) { graphql_data['project']['requirementStatesCount'] }
 

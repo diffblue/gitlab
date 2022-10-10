@@ -60,6 +60,10 @@ module EE
             committer_error_message = committer_check(commit)
             return committer_error_message if committer_error_message
 
+            unless push_rule.non_dco_commit_allowed?(commit.safe_message)
+              return "Commit message must contain a DCO signoff"
+            end
+
             if !updated_from_web? && !push_rule.commit_signature_allowed?(commit)
               return "Commit must be signed with a GPG key"
             end

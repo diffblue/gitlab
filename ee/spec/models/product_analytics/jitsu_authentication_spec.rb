@@ -81,6 +81,11 @@ RSpec.describe ProductAnalytics::JitsuAuthentication do
       end
 
       it { is_expected.to eq({ jsAuth: 'Mp1N4PYvRXNk1KIh2MLDE7BYghnSwdnt', uid: 'yijlmncqjot0xy9h6rv54p.s7zz20' }) }
+
+      it do
+        expect { subject }.to change(project.reload.project_setting, :jitsu_key).from(nil)
+                                                                                .to('Mp1N4PYvRXNk1KIh2MLDE7BYghnSwdnt')
+      end
     end
 
     context 'when request is unsuccessful' do
