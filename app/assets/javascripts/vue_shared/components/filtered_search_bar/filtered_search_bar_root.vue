@@ -346,6 +346,8 @@ export default {
       :suggestions-list-class="suggestionsListClass"
       :search-button-attributes="searchButtonAttributes"
       :search-input-attributes="searchInputAttributes"
+      :no-recent-searches-text="__(`You don't have any recent searches`)"
+      :recent-searches-header="__('Recent searches')"
       class="flex-grow-1"
       @history-item-selected="handleHistoryItemSelected"
       @clear="onClear"
