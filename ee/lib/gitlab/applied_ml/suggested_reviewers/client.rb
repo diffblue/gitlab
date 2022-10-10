@@ -24,6 +24,8 @@ module Gitlab
         end
 
         def initialize(rpc_url: self.class.default_rpc_url, certs: DEFAULT_CERTS)
+          raise Errors::ConfigurationError, "gRPC host unknown" if rpc_url.blank?
+
           @rpc_url = rpc_url
           @certs = certs
           @secret = read_secret!
@@ -31,7 +33,6 @@ module Gitlab
 
         def suggested_reviewers(merge_request_iid:, project_id:, changes:, author_username:, top_n: 5)
           raise Errors::ArgumentError, "Changes empty" if changes.blank?
-          raise Errors::ConfigurationError, "gRPC host unknown" if rpc_url.blank?
 
           model_input = {
             merge_request_iid: merge_request_iid,
@@ -52,8 +53,6 @@ module Gitlab
         end
 
         def register_project(project_id:, project_name:, project_namespace:, access_token:)
-          raise Errors::ConfigurationError, "gRPC host unknown" if rpc_url.blank?
-
           registration_input = {
             project_id: project_id,
             project_name: project_name,
