@@ -143,6 +143,7 @@ module GitlabSubscriptions
       productivity_analytics
       project_aliases
       protected_environments
+      reject_non_dco_commits
       reject_unsigned_commits
       saml_group_sync
       scoped_labels

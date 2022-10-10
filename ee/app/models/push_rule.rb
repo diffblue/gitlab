@@ -22,6 +22,7 @@ class PushRule < ApplicationRecord
   AUDIT_LOG_ALLOWLIST = {
     commit_committer_check: 'reject unverified users',
     reject_unsigned_commits: 'reject unsigned commits',
+    reject_non_dco_commits: 'reject non-dco commits',
     deny_delete_tag: 'do not allow users to remove Git tags with git push',
     member_check: 'check whether the commit author is a GitLab user',
     prevent_secrets: 'prevent pushing secret files',
@@ -45,7 +46,10 @@ class PushRule < ApplicationRecord
   SETTINGS_WITH_GLOBAL_DEFAULT = %i[
     reject_unsigned_commits
     commit_committer_check
+    reject_non_dco_commits
   ].freeze
+
+  DCO_COMMIT_REGEX = 'Signed-off-by:.+<.+@.+>'
 
   def self.global
     find_by(is_sample: true)
@@ -57,6 +61,7 @@ class PushRule < ApplicationRecord
       branch_name_regex.present? ||
       author_email_regex.present? ||
       reject_unsigned_commits ||
+      reject_non_dco_commits ||
       commit_committer_check ||
       member_check ||
       file_name_regex.present? ||
@@ -75,6 +80,13 @@ class PushRule < ApplicationRecord
     return true unless commit_committer_check
 
     current_user.verified_email?(committer_email)
+  end
+
+  def non_dco_commit_allowed?(message)
+    return true unless available?(:reject_non_dco_commits)
+    return true unless reject_non_dco_commits
+
+    data_match?(message, DCO_COMMIT_REGEX)
   end
 
   def commit_message_allowed?(message)
@@ -130,6 +142,15 @@ class PushRule < ApplicationRecord
 
   def commit_committer_check=(value)
     write_setting_with_global_default(:commit_committer_check, value)
+  end
+
+  def reject_non_dco_commits
+    read_setting_with_global_default(:reject_non_dco_commits)
+  end
+  alias_method :reject_non_dco_commits?, :reject_non_dco_commits
+
+  def reject_non_dco_commits=(value)
+    write_setting_with_global_default(:reject_non_dco_commits, value)
   end
 
   private
