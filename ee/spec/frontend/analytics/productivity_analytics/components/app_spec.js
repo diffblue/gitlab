@@ -12,29 +12,18 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
+import UrlSync from '~/vue_shared/components/url_sync.vue';
 import ProductivityApp from 'ee/analytics/productivity_analytics/components/app.vue';
 import MetricChart from 'ee/analytics/productivity_analytics/components/metric_chart.vue';
 import MergeRequestTable from 'ee/analytics/productivity_analytics/components/mr_table.vue';
 import { chartKeys } from 'ee/analytics/productivity_analytics/constants';
 import { getStoreConfig } from 'ee/analytics/productivity_analytics/store';
 import Scatterplot from 'ee/analytics/shared/components/scatterplot.vue';
-import UrlSyncMixin from 'ee/analytics/shared/mixins/url_sync_mixin';
 import { TEST_HOST } from 'helpers/test_constants';
-import * as commonUtils from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
-import * as urlUtils from '~/lib/utils/url_utility';
 import { mockFilters } from '../mock_data';
 
 Vue.use(Vuex);
-
-jest.mock('~/lib/utils/url_utility', () => ({
-  setUrlParams: jest.fn(),
-}));
-
-jest.mock('~/lib/utils/common_utils', () => ({
-  ...jest.requireActual('~/lib/utils/common_utils'),
-  historyPushState: jest.fn(),
-}));
 
 describe('ProductivityApp component', () => {
   let wrapper;
@@ -86,7 +75,6 @@ describe('ProductivityApp component', () => {
     });
     wrapper = shallowMount(ProductivityApp, {
       store: mockStore,
-      mixins: [UrlSyncMixin],
       propsData: {
         ...propsData,
         ...props,
@@ -568,8 +556,8 @@ describe('ProductivityApp component', () => {
     };
 
     const shouldSetUrlParams = (result) => {
-      expect(urlUtils.setUrlParams).toHaveBeenCalledWith(result, window.location.href, true);
-      expect(commonUtils.historyPushState).toHaveBeenCalled();
+      const urlSync = wrapper.findComponent(UrlSync);
+      expect(urlSync.props('query')).toStrictEqual(result);
     };
 
     beforeEach(() => {
