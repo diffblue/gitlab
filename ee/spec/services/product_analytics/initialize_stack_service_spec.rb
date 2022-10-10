@@ -18,7 +18,7 @@ RSpec.describe ProductAnalytics::InitializeStackService do
 
     context 'when feature flag is disabled' do
       before do
-        stub_feature_flags(jitsu_connection_proof_of_concept: false)
+        stub_feature_flags(cube_api_proxy: false)
       end
 
       it 'does not enqueue a job' do

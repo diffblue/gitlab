@@ -3,7 +3,7 @@
 module ProductAnalytics
   class InitializeStackService < BaseContainerService
     def execute
-      return unless ::Feature.enabled?(:jitsu_connection_proof_of_concept, container.group)
+      return unless ::Feature.enabled?(:cube_api_proxy, container.group)
 
       ::ProductAnalytics::InitializeAnalyticsWorker.perform_async(container.id)
     end
