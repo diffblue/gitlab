@@ -40,18 +40,6 @@ RSpec.describe 'Every metric definition' do
 
   let(:events_not_defined_yet) do
     %w(
-      redis_hll_counters.incident_management.incident_management_timeline_event_created_monthly
-      redis_hll_counters.incident_management.incident_management_timeline_event_created_weekly
-      redis_hll_counters.incident_management.incident_management_timeline_event_deleted_monthly
-      redis_hll_counters.incident_management.incident_management_timeline_event_deleted_weekly
-      redis_hll_counters.incident_management.incident_management_timeline_event_edited_monthly
-      redis_hll_counters.incident_management.incident_management_timeline_event_edited_weekly
-      redis_hll_counters.incident_management.incident_management_issuable_resource_link_created_weekly
-      redis_hll_counters.incident_management.incident_management_issuable_resource_link_created_monthly
-      redis_hll_counters.incident_management.incident_management_issuable_resource_link_deleted_weekly
-      redis_hll_counters.incident_management.incident_management_issuable_resource_link_deleted_monthly
-      redis_hll_counters.incident_management.incident_management_issuable_resource_link_visited_weekly
-      redis_hll_counters.incident_management.incident_management_issuable_resource_link_visited_monthly
       redis_hll_counters.environments.users_visiting_environments_pages_weekly
     )
   end

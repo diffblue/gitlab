@@ -1,4 +1,15 @@
 ---
+# Incident management
+- name: incident_management_incident_published
+  redis_slot: incident_management
+  category: incident_management
+  aggregation: weekly
+  feature_flag: usage_data_incident_management_incident_published
+# Incident management on-call
+- name: i_incident_management_oncall_notification_sent
+  redis_slot: incident_management
+  category: incident_management_oncall
+  aggregation: weekly
 # Testing category
 - name: i_testing_full_code_quality_report_total
   category: testing
@@ -57,6 +68,19 @@
 - name: i_compliance_credential_inventory
   category: compliance
   redis_slot: compliance
+  aggregation: weekly
+# Incident management linked resources
+- name: incident_management_issuable_resource_link_created
+  redis_slot: incident_management
+  category: incident_management
+  aggregation: weekly
+- name: incident_management_issuable_resource_link_deleted
+  redis_slot: incident_management
+  category: incident_management
+  aggregation: weekly
+- name: incident_management_issuable_resource_link_visited
+  redis_slot: incident_management
+  category: incident_management
   aggregation: weekly
 # Project Management group
 - name: g_project_management_issue_added_to_epic
