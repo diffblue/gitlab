@@ -82,7 +82,10 @@ export default {
             );
 
         const seriesData = apiDataToChartSeries(apiData, startDate, endDate, CHART_TITLE, null);
-        const nullSeries = buildNullSeries(seriesData, this.$options.i18n.noMergeRequestsDeployed);
+        const nullSeries = buildNullSeries({
+          seriesData,
+          nullSeriesTitle: this.$options.i18n.noMergeRequestsDeployed,
+        });
 
         const { data } = seriesData[0];
         const medianSeries = {
@@ -93,8 +96,6 @@ export default {
           ),
         };
 
-        // TODO: Refactor buildNullSeriesForLeadTimeChart into 2 separate utils to clean this up
-        // https://gitlab.com/gitlab-org/gitlab/-/issues/351318
         this.chartData[id] = [nullSeries[1], medianSeries, nullSeries[0]];
       }),
     );

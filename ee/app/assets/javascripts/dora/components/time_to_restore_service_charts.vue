@@ -117,7 +117,10 @@ export default {
           );
 
           const seriesData = apiDataToChartSeries(apiData, startDate, endDate, CHART_TITLE, null);
-          const nullSeries = buildNullSeries(seriesData, this.$options.i18n.noIncidents);
+          const nullSeries = buildNullSeries({
+            seriesData,
+            nullSeriesTitle: this.$options.i18n.noIncidents,
+          });
           const { data } = seriesData[0];
 
           const medianSeries = {

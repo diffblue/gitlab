@@ -80,12 +80,12 @@ export const transformChartDataForGlCharts = (
           datasets,
         });
 
-        formattedData.datasets = buildNullSeries(
-          paired,
-          INSIGHTS_NO_DATA_TOOLTIP,
-          BASE_SERIES_DATA_OPTIONS,
-          BASE_NULL_SERIES_OPTIONS,
-        );
+        formattedData.datasets = buildNullSeries({
+          seriesData: paired,
+          seriesDataOptions: BASE_SERIES_DATA_OPTIONS,
+          nullSeriesTitle: INSIGHTS_NO_DATA_TOOLTIP,
+          nullSeriesOptions: BASE_NULL_SERIES_OPTIONS,
+        });
       } else {
         formattedData.datasets.push(
           ...datasets.map((dataset) => ({
