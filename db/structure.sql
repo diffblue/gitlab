@@ -412,7 +412,7 @@ PARTITION BY RANGE (process_at);
 
 CREATE TABLE loose_foreign_keys_deleted_records (
     id bigint NOT NULL,
-    partition bigint DEFAULT 1 NOT NULL,
+    partition bigint DEFAULT 2 NOT NULL,
     primary_key_value bigint NOT NULL,
     status smallint DEFAULT 1 NOT NULL,
     created_at timestamp with time zone DEFAULT now() NOT NULL,
@@ -11434,7 +11434,6 @@ CREATE TABLE application_settings (
     inactive_projects_min_size_mb integer DEFAULT 0 NOT NULL,
     inactive_projects_send_warning_email_after_months integer DEFAULT 1 NOT NULL,
     delayed_group_deletion boolean DEFAULT true NOT NULL,
-    maven_package_requests_forwarding boolean DEFAULT true NOT NULL,
     arkose_labs_namespace text DEFAULT 'client'::text NOT NULL,
     max_export_size integer DEFAULT 0,
     encrypted_slack_app_signing_secret bytea,
@@ -11465,14 +11464,15 @@ CREATE TABLE application_settings (
     error_tracking_api_url text,
     git_rate_limit_users_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
     error_tracking_access_token_encrypted text,
-    invitation_flow_enforcement boolean DEFAULT false NOT NULL,
     package_registry_cleanup_policies_worker_capacity integer DEFAULT 2 NOT NULL,
     deactivate_dormant_users_period integer DEFAULT 90 NOT NULL,
     auto_ban_user_on_excessive_projects_download boolean DEFAULT false NOT NULL,
+    invitation_flow_enforcement boolean DEFAULT false NOT NULL,
     max_pages_custom_domains_per_project integer DEFAULT 0 NOT NULL,
     cube_api_base_url text,
     encrypted_cube_api_key bytea,
     encrypted_cube_api_key_iv bytea,
+    maven_package_requests_forwarding boolean DEFAULT true NOT NULL,
     jitsu_host text,
     jitsu_project_xid text,
     clickhouse_connection_string text,
@@ -17917,7 +17917,6 @@ CREATE TABLE namespace_settings (
     subgroup_runner_token_expiration_interval integer,
     project_runner_token_expiration_interval integer,
     exclude_from_free_user_cap boolean DEFAULT false NOT NULL,
-    show_diff_preview_in_email boolean DEFAULT true NOT NULL,
     enabled_git_access_protocol smallint DEFAULT 0 NOT NULL,
     unique_project_download_limit smallint DEFAULT 0 NOT NULL,
     unique_project_download_limit_interval_in_seconds integer DEFAULT 0 NOT NULL,
@@ -17925,6 +17924,7 @@ CREATE TABLE namespace_settings (
     include_for_free_user_cap_preview boolean DEFAULT false NOT NULL,
     unique_project_download_limit_allowlist text[] DEFAULT '{}'::text[] NOT NULL,
     auto_ban_user_on_excessive_projects_download boolean DEFAULT false NOT NULL,
+    show_diff_preview_in_email boolean DEFAULT true NOT NULL,
     CONSTRAINT check_0ba93c78c7 CHECK ((char_length(default_branch_name) <= 255)),
     CONSTRAINT namespace_settings_unique_project_download_limit_allowlist_size CHECK ((cardinality(unique_project_download_limit_allowlist) <= 100))
 );
@@ -28109,8 +28109,6 @@ CREATE INDEX index_ci_builds_metadata_on_build_id_and_has_exposed_artifacts ON c
 CREATE INDEX index_ci_builds_metadata_on_build_id_and_id_and_interruptible ON ci_builds_metadata USING btree (build_id) INCLUDE (id) WHERE (interruptible = true);
 
 CREATE UNIQUE INDEX index_ci_builds_metadata_on_build_id_partition_id_unique ON ci_builds_metadata USING btree (build_id, partition_id);
-
-CREATE UNIQUE INDEX index_ci_builds_metadata_on_id_partition_id_unique ON ci_builds_metadata USING btree (id, partition_id);
 
 CREATE INDEX index_ci_builds_metadata_on_project_id ON ci_builds_metadata USING btree (project_id);
 
