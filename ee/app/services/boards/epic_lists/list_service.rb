@@ -5,10 +5,10 @@ module Boards
     class ListService < ::Boards::Lists::ListService
       private
 
-      def unavailable_list_types_for(board)
-        [].tap do |hidden|
-          hidden << ::Boards::EpicList.list_types[:backlog] if board.hide_backlog_list?
-          hidden << ::Boards::EpicList.list_types[:closed] if board.hide_closed_list?
+      def visible_lists(board)
+        [].tap do |visible|
+          visible << ::Boards::EpicList.list_types[:backlog] unless board.hide_backlog_list?
+          visible << ::Boards::EpicList.list_types[:closed] unless board.hide_closed_list?
         end
       end
     end
