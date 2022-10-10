@@ -121,12 +121,15 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
     end
 
     it 'does not mark the calculating as failed for non-valid repo' do
-      project_broken_repo = create(:project, :broken_repo)
+      stub_project_repository(project, repository)
+      stub_wiki_repository(project.wiki, wiki)
 
-      service = described_class.new(project_broken_repo)
-      service.execute
+      expect(repository).to receive(:checksum).and_raise(Gitlab::Git::Repository::InvalidRepository)
+      expect(wiki).to receive(:checksum).and_raise(Gitlab::Git::Repository::InvalidRepository)
 
-      expect(project_broken_repo.repository_state).to have_attributes(
+      subject.execute
+
+      expect(project.repository_state).to have_attributes(
         repository_verification_checksum: '0000000000000000000000000000000000000000',
         last_repository_verification_ran_at: be_present,
         last_repository_verification_failure: nil,

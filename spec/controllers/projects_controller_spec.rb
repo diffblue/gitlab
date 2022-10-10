@@ -231,10 +231,12 @@ RSpec.describe ProjectsController do
     end
 
     context "project with broken repo" do
-      let_it_be(:empty_project) { create(:project_broken_repo, :public) }
+      let_it_be(:empty_project) { create(:project, :public) }
 
       before do
         sign_in(user)
+
+        allow(Project).to receive(:repo).and_raise(Gitlab::Git::Repository::NoRepository)
       end
 
       User.project_views.keys.each do |project_view|
@@ -246,8 +248,6 @@ RSpec.describe ProjectsController do
           end
 
           it "renders the empty project view" do
-            allow(Project).to receive(:repo).and_raise(Gitlab::Git::Repository::NoRepository)
-
             expect(response).to render_template('projects/no_repo')
           end
         end
