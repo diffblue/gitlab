@@ -1080,6 +1080,16 @@ $system-note-svg-size: 1rem;
     }
   }
 
+  .draft-note-component .draft-note.timeline-entry {
+    .timeline-content:not(.flash-container) {
+      padding: $gl-padding-8 $gl-padding-8 $gl-padding-8 $gl-padding;
+    }
+
+    .timeline-avatar {
+      margin: $gl-padding-8 0 0 $gl-padding;
+    }
+  }
+
   .diff-comment-form {
     display: block;
   }
