@@ -146,36 +146,6 @@ RSpec.describe MergeRequest do
     let(:set_mentionable_text) { ->(txt) { subject.description = txt } }
   end
 
-  describe '#can_suggest_reviewers?' do
-    subject { merge_request.can_suggest_reviewers? }
-
-    context 'when open' do
-      let_it_be(:merge_request) { create(:merge_request, :opened) }
-
-      it { is_expected.to be(true) }
-
-      context 'when modified_paths is empty' do
-        before do
-          allow(merge_request).to receive(:modified_paths).and_return([])
-        end
-
-        it { is_expected.to be(false) }
-      end
-    end
-
-    context 'when closed' do
-      let_it_be(:merge_request) { create(:merge_request, :closed) }
-
-      it { is_expected.to be(false) }
-    end
-
-    context 'when merged' do
-      let_it_be(:merge_request) { create(:merge_request, :merged) }
-
-      it { is_expected.to be(false) }
-    end
-  end
-
   describe '#allows_multiple_assignees?' do
     it 'does not allow multiple assignees without license' do
       stub_licensed_features(multiple_merge_request_assignees: false)

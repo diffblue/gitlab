@@ -81,10 +81,6 @@ module EE
       def merge_requests_disable_committers_approval?
         !!target_project&.merge_requests_disable_committers_approval?
       end
-
-      def can_suggest_reviewers?
-        open? && modified_paths.any?
-      end
     end
 
     class_methods do
@@ -323,6 +319,31 @@ module EE
       @latest_pipeline ||= project.ci_pipelines
           .order(id: :desc)
           .find_by(ref: target_branch)
+    end
+
+    override :can_suggest_reviewers?
+    def can_suggest_reviewers?
+      open? && modified_paths.any?
+    end
+
+    override :suggested_reviewer_users
+    def suggested_reviewer_users
+      return ::User.none unless predictions && predictions.suggested_reviewers.is_a?(Hash)
+
+      usernames = Array.wrap(suggested_reviewers["reviewers"])
+      return ::User.none if usernames.empty?
+
+      # Preserve the original order of suggested usernames
+      join_sql = ::MergeRequest.sanitize_sql_array(
+        [
+          'JOIN UNNEST(ARRAY[?]::varchar[]) WITH ORDINALITY AS t(username, ord) USING(username)',
+          usernames
+        ]
+      )
+
+      project.authorized_users.active
+        .joins(Arel.sql(join_sql))
+        .order('t.ord')
     end
 
     private
