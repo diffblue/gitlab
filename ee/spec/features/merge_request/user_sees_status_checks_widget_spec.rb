@@ -17,14 +17,12 @@ RSpec.describe 'Merge request > User sees status checks widget', :js do
 
   shared_examples 'no status checks widget' do
     it 'does not show the widget' do
-      expect(page).not_to have_selector('[data-test-id="mr-status-checks"]')
+      expect(page).not_to have_selector('[data-test-id="widget-extension"]')
     end
   end
 
   before do
     stub_licensed_features(external_status_checks: true)
-    stub_feature_flags(refactor_mr_widgets_extensions: false)
-    stub_feature_flags(refactor_mr_widgets_extensions_user: false)
     stub_feature_flags(refactor_security_extension: false)
   end
 
@@ -37,22 +35,22 @@ RSpec.describe 'Merge request > User sees status checks widget', :js do
     end
 
     it 'shows the widget' do
-      expect(page).to have_content('Status checks 1 failed, and 1 pending')
+      expect(page).to have_content('Status checks 1 failed, 1 pending')
     end
 
     where(:check, :icon_class) do
-      lazy { check_pending } | '.ci-status-icon-pending'
-      lazy { check_passed } | '.ci-status-icon-success'
-      lazy { check_failed } | '.ci-status-icon-failed'
+      lazy { check_pending } | '.gl-text-gray-400'
+      lazy { check_passed } | '.gl-text-green-500'
+      lazy { check_failed } | '.gl-text-red-500'
     end
 
     with_them do
       it 'is rendered correctly', :aggregate_failures do
-        within '[data-test-id="mr-status-checks"]' do
-          find('[data-testid="report-section-expand-button"]').click
+        within '[data-testid="widget-extension"]' do
+          find('[data-testid="toggle-button"]').click
         end
 
-        within "[data-testid='mr-status-check-issue-#{check.id}']" do
+        within '[data-testid="widget-extension"]' do
           expect(page).to have_css(icon_class)
           expect(page).to have_content("#{check.name}: #{check.external_url}")
         end
