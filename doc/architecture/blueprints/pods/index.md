@@ -172,7 +172,7 @@ Organizations solve the following problems:
 1. We can isolate organizations from each other. Top-level namespaces of the same organization can interact within organizations but are not allowed to interact with other namespaces in other organizations. This is useful for customers because it means an organization provides clear boundaries - similar to a self-managed instance. This means we don't have to aggregate user dashboards across everything and can locally scope them to organizations.
 1. We don't need to define hierarchies inside an organization. It is a container that could be filled with whatever hierarchy / entity set makes sense (workspaces, top-level namespaces etc.)
 1. Self-managed instances would set a default organization.
-1. Organizations can control user-profiles in a central way. This could be achieved by having an organization specific user-profile. Such a profile makes it possible for the organization administrators to control the user role in a company, enforce user e-mails, or show a graphical indicator of a user being part of the organization. An example would be a "GitLab Employee stamp" on comments.
+1. Organizations can control user-profiles in a central way. This could be achieved by having an organization specific user-profile. Such a profile makes it possible for the organization administrators to control the user role in a company, enforce user emails, or show a graphical indicator of a user being part of the organization. An example would be a "GitLab Employee stamp" on comments.
 
 ![Move to Organizations](2022-10-05-Pods-Organizations-Iteration0.png)
 
