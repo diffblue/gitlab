@@ -2,6 +2,8 @@
 
 module Geo
   class RepositoryVerificationSecondaryService < BaseRepositoryVerificationService
+    include ::Gitlab::Utils::StrongMemoize
+
     def initialize(registry, type)
       @registry = registry
       @type     = type.to_sym
@@ -37,7 +39,20 @@ module Geo
     end
 
     def primary_checksum
-      project.repository_state.public_send("#{type}_verification_checksum") # rubocop:disable GitlabSecurity/PublicSend
+      strong_memoize(:primary_checksum) do
+        case type
+        when :repository then primary_project_repository_checksum
+        when :wiki then primary_wiki_repository_checksum
+        end
+      end
+    end
+
+    def primary_wiki_repository_checksum
+      project.wiki_repository_state&.verification_checksum || project.repository_state.wiki_verification_checksum
+    end
+
+    def primary_project_repository_checksum
+      project.repository_state.repository_verification_checksum
     end
 
     def secondary_checksum
@@ -71,7 +86,8 @@ module Geo
 
       resync_retry_at, resync_retry_count =
         if reverify
-          Array(calculate_next_retry_attempt(registry, type))
+          retry_count = registry.public_send("#{type}_retry_count") # rubocop:disable GitlabSecurity/PublicSend
+          calculate_next_retry_attempt(retry_count)
         end
 
       registry.update!(

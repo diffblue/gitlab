@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :repository_state, class: 'ProjectRepositoryState' do
+  factory :repository_state, aliases: [:project_repository_state], class: 'ProjectRepositoryState' do
     project
 
     trait :repository_failed do
