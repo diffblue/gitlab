@@ -28,7 +28,13 @@ module ProductAnalytics
 
       json = Gitlab::Json.parse(response.body)
 
-      response.success? ? { jsAuth: json['jsAuth'], uid: json['uid'] } : log_jitsu_api_error(json)
+      if response.success?
+        @project.project_setting.update(jitsu_key: json['jsAuth'])
+
+        return { jsAuth: json['jsAuth'], uid: json['uid'] }
+      end
+
+      log_jitsu_api_error(json)
     rescue StandardError => e
       Gitlab::ErrorTracking.track_exception(e)
     end
