@@ -7,13 +7,14 @@ module EE
         extend ActiveSupport::Concern
         EE_KNOWN_EVENTS_PATH = File.expand_path('known_events/*.yml', __dir__)
         EE_CATEGORIES_COLLECTED_FROM_METRICS_DEFINITIONS = %w[
+          ci_secrets_management
           compliance
           epic_boards_usage
           epics_usage
-          network_policies
-          ci_secrets_management
+          incident_management_oncall
           geo
           growth
+          network_policies
         ].freeze
 
         class_methods do
