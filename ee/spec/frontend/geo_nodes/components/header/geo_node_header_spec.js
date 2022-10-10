@@ -1,4 +1,4 @@
-import { GlButton, GlBadge } from '@gitlab/ui';
+import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import GeoNodeActions from 'ee/geo_nodes/components/header/geo_node_actions.vue';
 import GeoNodeHeader from 'ee/geo_nodes/components/header/geo_node_header.vue';
@@ -28,7 +28,6 @@ describe('GeoNodeHeader', () => {
   });
 
   const findHeaderCollapseButton = () => wrapper.findComponent(GlButton);
-  const findCurrentNodeBadge = () => wrapper.findComponent(GlBadge);
   const findGeoNodeHealthStatus = () => wrapper.findComponent(GeoNodeHealthStatus);
   const findGeoNodeLastUpdated = () => wrapper.findComponent(GeoNodeLastUpdated);
   const findGeoNodeActions = () => wrapper.findComponent(GeoNodeActions);
@@ -78,28 +77,6 @@ describe('GeoNodeHeader', () => {
 
         it('emits the collapse event', () => {
           expect(wrapper.emitted('collapse')).toHaveLength(1);
-        });
-      });
-    });
-
-    describe('Current Node Badge', () => {
-      describe('when current node is true', () => {
-        beforeEach(() => {
-          createComponent();
-        });
-
-        it('renders', () => {
-          expect(findCurrentNodeBadge().exists()).toBe(true);
-        });
-      });
-
-      describe('when current node is false', () => {
-        beforeEach(() => {
-          createComponent({ node: MOCK_SECONDARY_NODE });
-        });
-
-        it('does not render', () => {
-          expect(findCurrentNodeBadge().exists()).toBe(false);
         });
       });
     });
