@@ -42,6 +42,10 @@ class Groups::PushRulesController < Groups::ApplicationController
       allowed_fields << :commit_committer_check
     end
 
+    if can?(current_user, :change_reject_non_dco_commits, group)
+      allowed_fields << :reject_non_dco_commits
+    end
+
     params.require(:push_rule).permit(allowed_fields)
   end
 

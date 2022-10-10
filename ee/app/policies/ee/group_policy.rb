@@ -132,6 +132,10 @@ module EE
         @subject.feature_available?(:reject_unsigned_commits)
       end
 
+      condition(:reject_non_dco_commits_available, scope: :subject) do
+        @subject.feature_available?(:reject_non_dco_commits)
+      end
+
       condition(:push_rules_available, scope: :subject) do
         @subject.feature_available?(:push_rules)
       end
@@ -447,6 +451,12 @@ module EE
       rule { reject_unsigned_commits_available }.enable :read_reject_unsigned_commits
 
       rule { ~reject_unsigned_commits_available }.prevent :change_reject_unsigned_commits
+
+      rule { admin | maintainer }.enable :change_reject_non_dco_commits
+
+      rule { reject_non_dco_commits_available }.enable :read_reject_non_dco_commits
+
+      rule { ~reject_non_dco_commits_available }.prevent :change_reject_non_dco_commits
 
       rule { can?(:maintainer_access) & push_rules_available }.enable :change_push_rules
 

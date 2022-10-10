@@ -87,6 +87,38 @@ RSpec.shared_examples 'merge validation hooks' do |args|
     end
   end
 
+  context 'DCO signoff validation' do
+    before do
+      stub_licensed_features(reject_non_dco_commits: true)
+      allow(project).to receive(:push_rule) { build(:push_rule, reject_non_dco_commits: true) }
+    end
+
+    it_behaves_like 'hook validations are skipped when push rules unlicensed'
+
+    context 'when a non DCO commit message is used' do
+      it 'returns false and saves error when invalid' do
+        expect(hooks_pass?).to be(false)
+        expect(hooks_error).not_to be_empty
+
+        if args[:persisted]
+          expect(merge_request.merge_error).to eq(hooks_error)
+        else
+          expect(merge_request.merge_error).to be_nil
+        end
+      end
+    end
+
+    context 'when a DCO compliant commit message is used' do
+      let(:dco_commit_message) { 'DCO Signed Commit\n\nSigned-off-by: Test user <test-user@example.com>' }
+      let(:params) { super().merge(commit_message: dco_commit_message) }
+
+      it 'accepts the commit message' do
+        expect(hooks_pass?).to be(true)
+        expect(hooks_error).to be_nil
+      end
+    end
+  end
+
   context 'fast forward merge request' do
     it 'returns true when fast forward is enabled' do
       allow(project).to receive(:merge_requests_ff_only_enabled) { true }

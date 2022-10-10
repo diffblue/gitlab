@@ -42,6 +42,10 @@ class Admin::PushRulesController < Admin::ApplicationController
       allowed_fields << :commit_committer_check
     end
 
+    if @push_rule.available?(:reject_non_dco_commits)
+      allowed_fields << :reject_non_dco_commits
+    end
+
     params.require(:push_rule).permit(allowed_fields)
   end
 

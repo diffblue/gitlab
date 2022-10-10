@@ -11,6 +11,12 @@ module PushRulesHelper
     push_rule_update_description(message, push_rule, :reject_unsigned_commits)
   end
 
+  def reject_non_dco_commits_description(push_rule)
+    message = format(s_("ProjectSettings|Only commits that include a %{code_block_start}Signed-off-by:%{code_block_end} element can be pushed to this repository.").html_safe, code_block_start: '<code>'.html_safe, code_block_end: '</code>'.html_safe)
+
+    push_rule_update_description(message, push_rule, :reject_non_dco_commits)
+  end
+
   def commit_committer_check_description(push_rule)
     message = s_("ProjectSettings|Users can only push commits to this repository "\
                  "if the committer email is one of their own verified emails.")
@@ -39,6 +45,6 @@ module PushRulesHelper
       end
     end
 
-    messages.join(' ')
+    messages.join(' ').html_safe
   end
 end
