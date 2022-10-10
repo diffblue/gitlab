@@ -15,7 +15,7 @@ module Gitlab
 
         def certificate_data
           OpenSSL::X509::Certificate.new(@filedata)
-        rescue StandardError => err
+        rescue OpenSSL::X509::CertificateError => err
           @error = err.to_s
           nil
         end

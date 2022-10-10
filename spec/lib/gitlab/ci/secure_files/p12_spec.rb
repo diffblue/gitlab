@@ -26,6 +26,18 @@ RSpec.describe Gitlab::Ci::SecureFiles::P12 do
     end
   end
 
+  context 'when the supplied certificate can be parsed, but the password is invalid' do
+    let(:sample_file) { fixture_file('ci_secure_files/sample.p12') }
+    let(:subject) { described_class.new(sample_file, 'foo') }
+
+    describe '#certificate_data' do
+      it 'assigns the error message and returns nil' do
+        expect(subject.certificate_data).to be nil
+        expect(subject.error).to eq('PKCS12_parse: mac verify failure')
+      end
+    end
+  end
+
   context 'when the supplied certificate can be parsed' do
     let(:sample_file) { fixture_file('ci_secure_files/sample.p12') }
     let(:subject) { described_class.new(sample_file) }

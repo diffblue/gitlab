@@ -15,7 +15,7 @@ module Gitlab
 
         def certificate_data
           OpenSSL::PKCS12.new(@filedata, @password).certificate
-        rescue StandardError => err
+        rescue OpenSSL::PKCS12::PKCS12Error => err
           @error = err.to_s
           nil
         end
