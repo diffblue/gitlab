@@ -203,7 +203,7 @@ describe('DiffsStoreActions', () => {
   });
 
   describe('fetchDiffFilesMeta', () => {
-    const endpointMetadata = '/fetch/diffs_metadata.json?view=inline';
+    const endpointMetadata = '/fetch/diffs_metadata.json?view=inline&w=0';
     const noFilesData = { ...diffMetadata };
 
     beforeEach(() => {
@@ -216,7 +216,7 @@ describe('DiffsStoreActions', () => {
       return testAction(
         diffActions.fetchDiffFilesMeta,
         {},
-        { endpointMetadata, diffViewType: 'inline' },
+        { endpointMetadata, diffViewType: 'inline', showWhitespace: true },
         [
           { type: types.SET_LOADING, payload: true },
           { type: types.SET_LOADING, payload: false },
