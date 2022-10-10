@@ -154,6 +154,7 @@ exports[`License Compliance extension expanded data with new licenses displays a
                       id="__BVID__619"
                       lazy=""
                       no-caret=""
+                      title="Options"
                     >
                       <!---->
                       <button
@@ -566,6 +567,7 @@ exports[`License Compliance extension expanded data with new licenses displays u
                       id="__BVID__527"
                       lazy=""
                       no-caret=""
+                      title="Options"
                     >
                       <!---->
                       <button
