@@ -67,7 +67,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       let(:client_arguments) { { rpc_url: '' } }
 
       it 'raises a configuration error' do
-        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError, 'gRPC host unknown')
       end
     end
 
@@ -75,7 +75,8 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       let(:secret) { nil }
 
       it 'raises a configuration error' do
-        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError,
+                                          'Variable SUGGESTED_REVIEWERS_SECRET is missing')
       end
     end
 
@@ -83,7 +84,7 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       let(:secret) { '@s3cr3tunt0ld' }
 
       it 'raises a configuration error' do
-        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError)
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConfigurationError, 'Secret must contain 64 bytes')
       end
     end
   end
