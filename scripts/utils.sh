@@ -15,9 +15,10 @@ function retry() {
 
 function test_url() {
   local url="${1}"
+  local curl_args="${2}"
   local status
 
-  status=$(curl --output /dev/null -L -s -w ''%{http_code}'' "${url}")
+  status=$(curl ${curl_args} --output /dev/null -L -s -w ''%{http_code}'' "${url}")
 
   if [[ $status == "200" ]]; then
     return 0
@@ -202,4 +203,15 @@ function danger_as_local() {
   unset GITLAB_CI
   # We need to base SHA to help danger determine the base commit for this shallow clone.
   bundle exec danger dry_run --fail-on-errors=true --verbose --base="${CI_MERGE_REQUEST_DIFF_BASE_SHA}" --head="${CI_MERGE_REQUEST_SOURCE_BRANCH_SHA:-$CI_COMMIT_SHA}" --dangerfile="${DANGER_DANGERFILE:-Dangerfile}"
+}
+
+function assets_image_tag() {
+  local cache_assets_hash_file="cached-assets-hash.txt"
+
+  if [[ ! -f "${cache_assets_hash_file}" ]]; then
+    echoerr "The ${cache_assets_hash_file} is missing!"
+    exit 1
+  else
+    echo -n "assets-hash-$(cat ${cache_assets_hash_file} | cut -c1-10)"
+  fi
 }
