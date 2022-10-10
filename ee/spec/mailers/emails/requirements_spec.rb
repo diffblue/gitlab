@@ -42,7 +42,7 @@ RSpec.describe Emails::Requirements do
   end
 
   describe '#requirements_csv_email' do
-    let_it_be(:requirements) { create_list(:requirement, 10) }
+    let_it_be(:requirements) { create_list(:work_item, 10, :requirement) }
     let(:export_status) do
       {
         rows_expected: 10,

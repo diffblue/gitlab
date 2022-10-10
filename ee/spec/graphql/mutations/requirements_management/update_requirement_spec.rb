@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Mutations::RequirementsManagement::UpdateRequirement do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
-  let_it_be(:requirement) { create(:requirement, title: 'old title', project: project) }
+  let_it_be(:requirement) { create(:work_item, :requirement, title: 'old title', project: project).requirement }
 
   let(:mutation_params) do
     {

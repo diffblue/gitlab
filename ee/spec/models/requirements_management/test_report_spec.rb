@@ -14,9 +14,6 @@ RSpec.describe RequirementsManagement::TestReport do
   describe 'validations' do
     subject { build(:test_report) }
 
-    let(:requirement) { build(:requirement) }
-    let(:requirement_issue) { build(:requirement_issue) }
-
     it { is_expected.to validate_presence_of(:state) }
     it { is_expected.to validate_presence_of(:requirement_issue) }
 
@@ -24,8 +21,6 @@ RSpec.describe RequirementsManagement::TestReport do
       subject { build(:test_report, requirement_issue: requirement_issue_arg) }
 
       context 'when only requirement issue is set' do
-        let(:requirement_arg) { nil }
-
         it_behaves_like 'a model with a requirement issue association'
       end
     end
@@ -83,21 +78,22 @@ RSpec.describe RequirementsManagement::TestReport do
         end
 
         it 'creates test report with expected status for each open requirement' do
-          requirement1 = create(:requirement, state: :opened, project: project)
-          requirement2 = create(:requirement, state: :opened, project: project)
-          create(:requirement, state: :opened) # different project
-          create(:requirement, state: :archived, project: project) # archived
+          requirement1 = create(:work_item, :requirement, state: :opened, project: project)
+          requirement2 = create(:work_item, :requirement, state: :opened, project: project)
+          create(:work_item, :requirement, state: :opened) # different project
+          create(:work_item, :requirement, state: :closed, project: project) # archived
 
           expect { subject }.to change { RequirementsManagement::TestReport.count }.by(2)
 
           reports = RequirementsManagement::TestReport.where(build: build)
 
+          requirement_type_id = WorkItems::Type.requirement.first.id
           expect(reports).to match_array(
             [
-              have_attributes(requirement_issue: requirement1.requirement_issue,
+              have_attributes(requirement_issue: have_attributes(id: requirement1.id, work_item_type_id: requirement_type_id),
                               author: build.user,
                               state: 'passed'),
-              have_attributes(requirement_issue: requirement2.requirement_issue,
+              have_attributes(requirement_issue: have_attributes(id: requirement2.id, work_item_type_id: requirement_type_id),
                               author: build.user,
                               state: 'failed')
             ])
@@ -115,8 +111,8 @@ RSpec.describe RequirementsManagement::TestReport do
 
         it 'creates test report with expected status for each open requirement' do
           # ignore requirement IIDs that appear in the test but are missing
-          create(:requirement, state: :opened, project: project, iid: 1)
-          create(:requirement, state: :opened, project: project, iid: 2)
+          create(:work_item, :requirement, state: :opened, project: project, iid: 1)
+          create(:work_item, :requirement, state: :opened, project: project, iid: 2)
 
           expect { subject }.not_to change { RequirementsManagement::TestReport.count }
         end
@@ -128,17 +124,17 @@ RSpec.describe RequirementsManagement::TestReport do
     let_it_be(:user) { create(:user) }
     let_it_be(:build_author) { create(:user) }
     let_it_be(:build) { create(:ci_build, author: build_author) }
-    let_it_be(:requirement_issue) { create(:requirement_issue) }
+    let_it_be(:requirement) { create(:work_item, :requirement) }
 
     let(:now) { Time.current }
 
     context 'when build is passed as argument' do
       it 'builds test report with correct attributes' do
-        test_report = described_class.build_report(requirement_issue: requirement_issue, author: user, state: 'failed', build: build, timestamp: now)
+        test_report = described_class.build_report(requirement_issue: requirement, author: user, state: 'failed', build: build, timestamp: now)
 
         expect(test_report.author).to eq(build.author)
         expect(test_report.build).to eq(build)
-        expect(test_report.requirement_issue).to eq(requirement_issue)
+        expect(test_report.issue_id).to eq(requirement.id)
         expect(test_report.state).to eq('failed')
         expect(test_report.created_at).to eq(now)
       end
@@ -146,11 +142,11 @@ RSpec.describe RequirementsManagement::TestReport do
 
     context 'when build is not passed as argument' do
       it 'builds test report with correct attributes' do
-        test_report = described_class.build_report(requirement_issue: requirement_issue, author: user, state: 'passed', timestamp: now)
+        test_report = described_class.build_report(requirement_issue: requirement, author: user, state: 'passed', timestamp: now)
 
         expect(test_report.author).to eq(user)
         expect(test_report.build).to eq(nil)
-        expect(test_report.requirement_issue).to eq(requirement_issue)
+        expect(test_report.issue_id).to eq(requirement.id)
         expect(test_report.state).to eq('passed')
         expect(test_report.created_at).to eq(now)
       end
