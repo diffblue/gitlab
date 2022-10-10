@@ -4,6 +4,8 @@ module Gitlab
   module Ci
     module SecureFiles
       class Cer
+        include Gitlab::Utils::StrongMemoize
+
         attr_reader :error
 
         def initialize(filedata)
@@ -12,13 +14,12 @@ module Gitlab
         end
 
         def certificate_data
-          @certificate_data ||= begin
-            OpenSSL::X509::Certificate.new(@filedata)
-          rescue StandardError => err
-            @error = err.to_s
-            nil
-          end
+          OpenSSL::X509::Certificate.new(@filedata)
+        rescue StandardError => err
+          @error = err.to_s
+          nil
         end
+        strong_memoize_attr :certificate_data
 
         def metadata
           return {} unless certificate_data
@@ -30,14 +31,13 @@ module Gitlab
             expires_at: expires_at
           }
         end
-
-        def expires_at
-          return unless certificate_data
-
-          certificate_data.not_before
-        end
+        strong_memoize_attr :metadata
 
         private
+
+        def expires_at
+          certificate_data.not_before
+        end
 
         def id
           certificate_data.serial.to_s

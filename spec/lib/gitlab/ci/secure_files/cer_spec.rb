@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe Gitlab::Ci::SecureFiles::Cer do
   context 'when the supplied certificate cannot be parsed' do
     let(:invalid_certificate) { described_class.new('xyzabc') }
-    let(:subject) { described_class.new('xyzabc') }
 
     describe '#certificate_data' do
       it 'assigns the error message and returns nil' do
@@ -22,7 +21,7 @@ RSpec.describe Gitlab::Ci::SecureFiles::Cer do
 
     describe '#expires_at' do
       it 'returns nil' do
-        expect(invalid_certificate.expires_at).to be_nil
+        expect(invalid_certificate.metadata[:expires_at]).to be_nil
       end
     end
   end
@@ -51,7 +50,7 @@ RSpec.describe Gitlab::Ci::SecureFiles::Cer do
 
     describe '#expires_at' do
       it 'returns the certificate expiration timestamp' do
-        expect(subject.expires_at).to eq('2022-04-26 19:20:40 UTC')
+        expect(subject.metadata[:expires_at]).to eq('2022-04-26 19:20:40 UTC')
       end
     end
 

@@ -58,7 +58,7 @@ module Ci
       begin
         parser = metadata_parser
         self.metadata = parser.metadata
-        self.expires_at = parser.expires_at if parser.respond_to?(:expires_at)
+        self.expires_at = parser.metadata[:expires_at]
         save!
       rescue StandardError => err
         Gitlab::AppLogger.error("Secure File Parser Failure (#{id}): #{err.message} - #{parser.error}.")
