@@ -1,4 +1,4 @@
-- notification = ::Ci::Minutes::Notification.new(local_assigns.dig(:project), local_assigns.dig(:namespace))
+- notification = ::Ci::Minutes::Notification.new(local_assigns[:project], local_assigns[:namespace])
 - namespace ||= project.namespace
 - return unless notification.show?(current_user, cookies)
 
