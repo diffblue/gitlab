@@ -48,11 +48,4 @@ class GroupHook < WebHook
   def present
     super(presenter_class: ::WebHooks::Group::HookPresenter)
   end
-
-  private
-
-  override :web_hooks_disable_failed?
-  def web_hooks_disable_failed?
-    Feature.enabled?(:web_hooks_disable_failed, group)
-  end
 end
