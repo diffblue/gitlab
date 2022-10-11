@@ -72,7 +72,7 @@ export default {
       required: false,
       default: '',
     },
-    initOnAutofocus: {
+    autofocus: {
       type: Boolean,
       required: false,
       default: false,
@@ -87,7 +87,7 @@ export default {
     return {
       editingMode: EDITING_MODE_MARKDOWN_FIELD,
       switchEditingControlEnabled: true,
-      autofocus: this.initOnAutofocus,
+      autofocusExecuted: false,
     };
   },
   computed: {
@@ -96,11 +96,11 @@ export default {
     },
     contentEditorAutofocus() {
       // Match textarea focus behavior
-      return this.autofocus ? 'end' : false;
+      return this.autofocus && !this.autofocusExecuted ? 'end' : false;
     },
   },
   mounted() {
-    this.autofocusTextarea(this.editingMode);
+    this.autofocusTextarea();
   },
   methods: {
     updateMarkdownFromContentEditor({ markdown }) {
@@ -120,7 +120,6 @@ export default {
     },
     onEditingModeChange(editingMode) {
       this.notifyEditingModeChange(editingMode);
-      this.enableAutofocus(editingMode);
     },
     onEditingModeRestored(editingMode) {
       this.notifyEditingModeChange(editingMode);
@@ -128,14 +127,14 @@ export default {
     notifyEditingModeChange(editingMode) {
       this.$emit(editingMode);
     },
-    enableAutofocus(editingMode) {
-      this.autofocus = true;
-      this.autofocusTextarea(editingMode);
-    },
-    autofocusTextarea(editingMode) {
-      if (this.autofocus && editingMode === EDITING_MODE_MARKDOWN_FIELD) {
+    autofocusTextarea() {
+      if (this.autofocus && this.editingMode === EDITING_MODE_MARKDOWN_FIELD) {
         this.$refs.textarea.focus();
+        this.autofocusExecuted = true;
       }
+    },
+    autofocusContentEditor() {
+      this.autofocusExecuted = true;
     },
   },
   switchEditingControlOptions: [
@@ -198,6 +197,7 @@ export default {
         :uploads-path="uploadsPath"
         :markdown="value"
         :autofocus="contentEditorAutofocus"
+        @initialized="autofocusContentEditor"
         @change="updateMarkdownFromContentEditor"
         @loading="disableSwitchEditingControl"
         @loadingSuccess="enableSwitchEditingControl"
