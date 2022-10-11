@@ -12,7 +12,7 @@ module Sbom
       end
 
       def execute
-        sbom_reports.each { |report| ingest_report(report) }
+        sbom_reports.each { |report| ingest_report(report) if report.valid? }
       end
 
       private
