@@ -356,16 +356,6 @@ RSpec.describe Project do
       end
     end
 
-    describe '.with_enabled_incident_sla' do
-      it 'returns the correct project' do
-        project_with_enabled_incident_sla = create(:project_incident_management_setting, :sla_enabled).project
-        project_without_enabled_incident_sla = create(:project_incident_management_setting).project
-
-        expect(described_class.with_enabled_incident_sla).to include(project_with_enabled_incident_sla)
-        expect(described_class.with_enabled_incident_sla).not_to include(project_without_enabled_incident_sla)
-      end
-    end
-
     describe '.has_vulnerabilities' do
       let_it_be(:project_1) { create(:project) }
       let_it_be(:project_2) { create(:project) }
