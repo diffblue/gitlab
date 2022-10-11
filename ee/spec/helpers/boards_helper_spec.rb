@@ -99,6 +99,7 @@ RSpec.describe BoardsHelper do
          [:issue_weights, :weight_feature_available],
          [:board_milestone_lists, :milestone_lists_available],
          [:board_assignee_lists, :assignee_lists_available],
+         [:issuable_health_status, :health_status_feature_available],
          [:scoped_labels, :scoped_labels],
          [:scoped_issue_board, :scoped_issue_board_feature_enabled]].each do |feature_name, feature_key|
           include_examples "serializes the availability of a licensed feature", feature_name, feature_key
@@ -109,6 +110,7 @@ RSpec.describe BoardsHelper do
         [[:board_iteration_lists, :iteration_lists_available],
          [:epics, :epic_feature_available],
          [:iterations, :iteration_feature_available],
+         [:issuable_health_status, :health_status_feature_available],
          [:subepics, :sub_epics_feature_available]].each do |feature_name, feature_key|
           include_examples "serializes the availability of a licensed feature", feature_name, feature_key
         end

@@ -19,6 +19,7 @@ describe('IssueBoardFilter', () => {
         boardType: 'group',
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
+        healthStatusFeatureAvailable: true,
       },
     });
   };

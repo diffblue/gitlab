@@ -55,6 +55,7 @@ export default {
         myReactionEmoji,
         releaseTag,
         confidential,
+        healthStatus,
       } = this.filterParams;
       const filteredSearchValue = [];
 
@@ -154,6 +155,13 @@ export default {
         });
       }
 
+      if (healthStatus) {
+        filteredSearchValue.push({
+          type: 'health_status',
+          value: { data: healthStatus, operator: '=' },
+        });
+      }
+
       if (this.filterParams['not[authorUsername]']) {
         filteredSearchValue.push({
           type: 'author',
@@ -248,6 +256,7 @@ export default {
         iterationCadenceId,
         releaseTag,
         confidential,
+        healthStatus,
       } = this.filterParams;
       let iteration = iterationId;
       let cadence = iterationCadenceId;
@@ -292,6 +301,7 @@ export default {
           my_reaction_emoji: myReactionEmoji,
           release_tag: releaseTag,
           confidential,
+          health_status: healthStatus,
         },
         (value) => {
           if (value || value === false) {
@@ -389,6 +399,9 @@ export default {
             break;
           case 'filtered-search-term':
             if (filter.value.data) plainText.push(filter.value.data);
+            break;
+          case 'health_status':
+            filterParams.healthStatus = filter.value.data;
             break;
           default:
             break;

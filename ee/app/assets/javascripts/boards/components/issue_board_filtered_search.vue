@@ -7,9 +7,15 @@ import { orderBy } from 'lodash';
 import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filtered_search.vue';
 import { BoardType } from '~/boards/constants';
 import { __ } from '~/locale';
-import { OPERATOR_IS_AND_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';
+import {
+  OPERATOR_IS_AND_IS_NOT,
+  OPERATOR_IS_ONLY,
+} from '~/vue_shared/components/filtered_search_bar/constants';
+import { TOKEN_TYPE_HEALTH } from '~/issues/list/constants';
+import { TOKEN_TITLE_HEALTH } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
+import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
 
@@ -22,7 +28,7 @@ export default {
     weight: __('Weight'),
   },
   mixins: [glFeatureFlagMixin()],
-  inject: ['epicFeatureAvailable', 'iterationFeatureAvailable'],
+  inject: ['epicFeatureAvailable', 'iterationFeatureAvailable', 'healthStatusFeatureAvailable'],
   computed: {
     isGroupBoard() {
       return this.boardType === BoardType.group;
@@ -73,6 +79,18 @@ export default {
           token: WeightToken,
           unique: true,
         },
+        ...(this.healthStatusFeatureAvailable
+          ? [
+              {
+                type: TOKEN_TYPE_HEALTH,
+                title: TOKEN_TITLE_HEALTH,
+                icon: 'status-health',
+                operators: OPERATOR_IS_ONLY,
+                token: HealthToken,
+                unique: true,
+              },
+            ]
+          : []),
       ];
 
       return orderBy(tokens, ['title']);

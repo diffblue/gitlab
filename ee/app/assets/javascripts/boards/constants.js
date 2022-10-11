@@ -32,6 +32,7 @@ export const FilterFields = {
     'iterationTitle',
     'iterationWildcardId',
     'iterationCadenceId',
+    'healthStatusFilter',
   ],
   [issuableTypes.epic]: ['authorUsername', 'labelName', 'search', 'myReactionEmoji'],
 };

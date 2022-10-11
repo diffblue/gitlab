@@ -41,6 +41,7 @@ describe('BoardTopBar', () => {
         releasesFetchPath: '/releases',
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
+        healthStatusFeatureAvailable: true,
         ...provide,
       },
       stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch },

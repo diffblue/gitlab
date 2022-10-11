@@ -8,6 +8,7 @@ import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import ReleaseToken from '~/vue_shared/components/filtered_search_bar/tokens/release_token.vue';
 import WeightToken from 'ee/vue_shared/components/filtered_search_bar/tokens/weight_token.vue';
+import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
 
 export const mockEpicBoard = {
   id: 'gid://gitlab/Board::EpicBoard/1',
@@ -585,5 +586,13 @@ export const mockTokens = (
     title: __('Weight'),
     token: WeightToken,
     unique: true,
+  },
+  {
+    type: 'health_status',
+    icon: 'status-health',
+    title: __('Health'),
+    token: HealthToken,
+    unique: true,
+    operators: [{ value: '=', description: 'is' }],
   },
 ];
