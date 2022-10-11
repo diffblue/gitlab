@@ -16,6 +16,7 @@ RSpec.shared_examples 'link quick actions' do
       where(:link, :link_text, :link_text_expected, :link_type) do
         [
           [slack_link, '', slack_link, 'slack'],
+          [slack_link, 'Slack link for incident', 'Slack link for incident', 'slack'],
           [zoom_link, ' Demo zoom link', 'Demo zoom link', 'zoom'],
           [general_link, 'General link, general with command', 'General link, general with command', 'general']
         ]
