@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/browser';
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import OrderSummary from 'ee/subscriptions/buy_addons_shared/components/order_summary.vue';
 import { ERROR_FETCHING_DATA_HEADER, ERROR_FETCHING_DATA_DESCRIPTION } from '~/ensure_data';
-import Checkout from 'ee/subscriptions/buy_addons_shared/components/checkout.vue';
+import Checkout from 'jh_else_ee/subscriptions/buy_addons_shared/components/checkout.vue';
 import AddonPurchaseDetails from 'ee/subscriptions/buy_addons_shared/components/checkout/addon_purchase_details.vue';
 import { formatNumber, sprintf } from '~/locale';
 import { CUSTOMERSDOT_CLIENT } from 'ee/subscriptions/buy_addons_shared/constants';

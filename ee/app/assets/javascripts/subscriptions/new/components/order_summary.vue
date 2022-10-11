@@ -3,8 +3,8 @@ import { GlCard, GlIcon, GlCollapse, GlCollapseToggleDirective } from '@gitlab/u
 import { mapGetters, mapState } from 'vuex';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout } from '~/google_tag_manager';
+import SummaryDetails from 'jh_else_ee/subscriptions/new/components/order_summary/summary_details.vue';
 import formattingMixins from '../formatting_mixins';
-import SummaryDetails from './order_summary/summary_details.vue';
 
 export default {
   components: {

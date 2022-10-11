@@ -1,6 +1,6 @@
 <script>
 import Tracking from '~/tracking';
-import BillingAddress from 'jh_else_ee/subscriptions/new/components/checkout/billing_address.vue';
+import BillingAddress from './checkout/billing_address.vue';
 import ConfirmOrder from './checkout/confirm_order.vue';
 import PaymentMethod from './checkout/payment_method.vue';
 import SubscriptionDetails from './checkout/subscription_details.vue';

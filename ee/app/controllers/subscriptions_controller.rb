@@ -232,3 +232,5 @@ class SubscriptionsController < ApplicationController
     user.present? && !user.credit_card_verified?
   end
 end
+
+SubscriptionsController.prepend_mod
