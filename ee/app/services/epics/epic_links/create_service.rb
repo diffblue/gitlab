@@ -86,11 +86,7 @@ module Epics
       end
 
       def linkable_epic?(epic)
-        can_link_epic?(epic) &&
-          epic.valid_parent?(
-            parent_epic: issuable,
-            group_ancestors: issuable_group_ancestors
-          )
+        can_link_epic?(epic) && epic.valid_parent?(parent_epic: issuable)
       end
 
       def references(extractor)
@@ -103,10 +99,6 @@ module Epics
 
       def previous_related_issuables
         issuable.children.to_a
-      end
-
-      def issuable_group_ancestors
-        @ancestors ||= issuable.group.ancestors
       end
 
       def target_issuable_type
