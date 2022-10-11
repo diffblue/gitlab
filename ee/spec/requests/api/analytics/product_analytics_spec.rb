@@ -11,6 +11,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
   describe 'GET projects/:id/product_analytics/request/load' do
     before do
       stub_cube_load
+      stub_ee_application_setting(product_analytics_enabled: true)
       stub_ee_application_setting(cube_api_key: 'testtest')
       stub_ee_application_setting(cube_api_base_url: 'http://cube.dev')
     end
@@ -87,6 +88,18 @@ RSpec.describe API::Analytics::ProductAnalytics do
 
       it 'returns a 404' do
         get api("/projects/#{project.id}/product_analytics/request/load", current_user)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when enable_product_analytics application setting is false' do
+      before do
+        stub_ee_application_setting(product_analytics_enabled: false)
+      end
+
+      it 'returns a 404' do
+        post api("/projects/#{project.id}/product_analytics/request", current_user)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
