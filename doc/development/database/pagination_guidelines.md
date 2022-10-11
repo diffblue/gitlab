@@ -50,9 +50,9 @@ When we list records on the page we often provide additional filters and differe
 For the MVC version, consider the following:
 
 - Reduce the number of sort options to the minimum.
-- Reduce the number of filters (dropdown, search bar) to the minimum.
+- Reduce the number of filters (dropdown list, search bar) to the minimum.
 
-To make sorting and pagination efficient, for each sort option we need at least two database indexes (ascending, descending order). If we add filter options (by state or by author), we might need more indexes to maintain good performance. Note that indexes are not free, they can significantly affect the `UPDATE` query timings.
+To make sorting and pagination efficient, for each sort option we need at least two database indexes (ascending, descending order). If we add filter options (by state or by author), we might need more indexes to maintain good performance. Indexes are not free, they can significantly affect the `UPDATE` query timings.
 
 It's not possible to make all filter and sort combinations performant, so we should try optimizing the performance by usage patterns.
 
