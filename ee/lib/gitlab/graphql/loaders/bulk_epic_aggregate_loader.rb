@@ -32,7 +32,7 @@ module Gitlab
           # This is so we can aggregate the epic counts for every epic
           raw_results = []
           epic_ids.in_groups_of(EPIC_BATCH_SIZE).each do |epic_batch_ids|
-            raw_results += ::Epic.issue_metadata_for_epics(epic_ids: epic_ids, limit: MAXIMUM_LOADABLE)
+            raw_results += ::Epic.issue_metadata_for_epics(epic_ids: epic_batch_ids, limit: MAXIMUM_LOADABLE)
             raise ArgumentError, "There are too many records to load. Please select fewer epics or contact your administrator." if raw_results.count >= MAXIMUM_LOADABLE
           end
 
