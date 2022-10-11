@@ -148,7 +148,7 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
       namespace_id: anything,
       gitlab_com_trial: true,
       sync_to_gl: true
-    }
+    }.merge(glm_params)
 
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
       .to receive(:perform_async).with(
