@@ -275,6 +275,18 @@ module EE
       def configured_to_create_issues_from_vulnerabilities?
         !!jira_integration&.configured_to_create_issues_from_vulnerabilities?
       end
+
+      def can_suggest_reviewers?
+        suggested_reviewers_available? && suggested_reviewers_enabled
+      end
+
+      def suggested_reviewers_available?
+        strong_memoize(:suggested_reviewers_available) do
+          ::Gitlab.com? &&
+            ::Feature.enabled?(:suggested_reviewers_control, self) &&
+            licensed_feature_available?(:suggested_reviewers)
+        end
+      end
     end
 
     def mirror_last_update_succeeded?
@@ -913,16 +925,6 @@ module EE
       end
 
       epic_ids.to_a
-    end
-
-    def suggested_reviewers_available?
-      strong_memoize(:suggested_reviewers_available) do
-        next false unless ::Gitlab.com? &&
-                          ::Feature.enabled?(:suggested_reviewers_control, self) &&
-                          licensed_feature_available?(:suggested_reviewers)
-
-        true
-      end
     end
 
     private

@@ -171,9 +171,9 @@ RSpec.describe MergeRequests::RefreshService do
         end
       end
 
-      context 'when suggested reviewers is available for the project' do
+      context 'when suggested reviewers is possible for the project' do
         before do
-          allow(project).to receive(:suggested_reviewers_available?).and_return(true)
+          allow(project).to receive(:can_suggest_reviewers?).and_return(true)
         end
 
         context 'when merge request can suggest reviewers' do
@@ -193,9 +193,9 @@ RSpec.describe MergeRequests::RefreshService do
         end
       end
 
-      context 'when suggested reviewers is not available for the project' do
+      context 'when suggested reviewers is not possible for the project' do
         before do
-          allow(project).to receive(:suggested_reviewers_available?).and_return(false)
+          allow(project).to receive(:can_suggest_reviewers?).and_return(false)
         end
 
         context 'when merge request can suggest reviewers' do
