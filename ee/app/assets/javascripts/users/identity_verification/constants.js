@@ -7,6 +7,10 @@ export const PAGE_SUBTITLE = s__(
 
 export const STEP_1_TITLE = s__('IdentityVerification|Step 1: Verify phone number');
 
+export const I18N_PHONE_VERIFICATION = {
+  title: s__('IdentityVerification|Step %{stepNumber}: Verify phone number'),
+};
+
 export const PHONE_NUMBER_LABEL = s__('IdentityVerification|Phone number');
 export const COUNTRY_LABEL = s__('IdentityVerification|International dial code');
 
@@ -30,14 +34,18 @@ export const PHONE_NUMBER_LENGTH_ERROR = sprintf(
   },
 );
 
-export const I18N_CC_FORM_SUBMIT = s__('IdentityVerification|Verify payment method');
-export const I18N_CC_FORM_INFO = s__(
-  'IdentityVerification|GitLab will not charge or store your payment information, it will only be used for verification.',
-);
+export const I18N_CC_VERIFICATION = {
+  title: s__('IdentityVerification|Step %{stepNumber}: Verify a payment method'),
+  form_submit: s__('IdentityVerification|Verify payment method'),
+  form_info: s__(
+    'IdentityVerification|GitLab will not charge or store your payment information, it will only be used for verification.',
+  ),
+};
 
 export const SUCCESS_RESPONSE = 'success';
 export const FAILURE_RESPONSE = 'failure';
 export const I18N_EMAIL_VERIFICATION = {
+  title: s__('IdentityVerification|Step %{stepNumber}: Verify email address'),
   header: s__(
     "IdentityVerification|For added security, you'll need to verify your identity. We've sent a verification code to %{email}",
   ),

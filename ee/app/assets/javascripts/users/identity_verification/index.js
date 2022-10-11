@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import apolloProvider from 'ee/subscriptions/buy_addons_shared/graphql';
-import { parseBoolean } from '~/lib/utils/common_utils';
+import { convertArrayToCamelCase, convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 
 import IdentityVerificationWizard from './components/wizard.vue';
 
@@ -10,23 +10,21 @@ export const initIdentityVerification = () => {
   if (!el) return false;
 
   const {
-    emailObfuscated,
-    emailVerifyPath,
-    emailResendPath,
-    creditCardFormId,
-    creditCardCompleted,
-  } = el.dataset;
+    email,
+    creditCard,
+    verificationState,
+    verificationMethods,
+  } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
 
   return new Vue({
     el,
     apolloProvider,
     name: 'IdentityVerificationRoot',
     provide: {
-      emailObfuscated,
-      emailVerifyPath,
-      emailResendPath,
-      creditCardFormId,
-      creditCardCompleted: parseBoolean(creditCardCompleted),
+      email,
+      creditCard,
+      verificationSteps: convertArrayToCamelCase(verificationMethods),
+      initialVerificationState: verificationState,
     },
     render: (createElement) => createElement(IdentityVerificationWizard),
   });

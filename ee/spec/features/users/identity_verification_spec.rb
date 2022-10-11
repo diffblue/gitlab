@@ -13,6 +13,7 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js d
     before do
       stub_application_setting(require_admin_approval_after_user_signup: false)
       stub_application_setting(send_user_confirmation_email: true)
+      stub_feature_flags(identity_verification_credit_card: false)
       stub_feature_flags(soft_email_confirmation: false)
       stub_feature_flags(arkose_labs_signup_challenge: false)
 
