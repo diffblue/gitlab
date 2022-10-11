@@ -27,6 +27,13 @@ module EE
 
         return update_failed! if project.errors.any?
 
+        if params[:project_setting_attributes].present?
+          suggested_reviewers_already_enabled = project.suggested_reviewers_enabled
+          unless project.suggested_reviewers_available?
+            params[:project_setting_attributes].delete(:suggested_reviewers_enabled)
+          end
+        end
+
         result = super do
           # Repository size limit comes as MB from the view
           project.repository_size_limit = ::Gitlab::Utils.try_megabytes_to_bytes(limit) if limit
@@ -40,12 +47,22 @@ module EE
           sync_wiki_on_enable if !wiki_was_enabled && project.wiki_enabled?
           project.import_state.force_import_job! if params[:mirror].present? && project.mirror?
           project.remove_import_data if project.previous_changes.include?('mirror') && !project.mirror?
+          trigger_project_registration unless suggested_reviewers_already_enabled
         end
 
         result
       end
 
       private
+
+      def trigger_project_registration
+        return unless params[:project_setting_attributes].present? &&
+          params[:project_setting_attributes][:suggested_reviewers_enabled] == '1'
+
+        return unless project.suggested_reviewers_available?
+
+        ::Projects::RegisterSuggestedReviewersProjectWorker.perform_async(project.id, current_user.id)
+      end
 
       override :after_default_branch_change
       def after_default_branch_change(previous_default_branch)

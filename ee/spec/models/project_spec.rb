@@ -3491,4 +3491,44 @@ RSpec.describe Project do
       end
     end
   end
+
+  describe '#can_suggest_reviewers?' do
+    subject { project.can_suggest_reviewers? }
+
+    context 'when available' do
+      before do
+        allow(project).to receive(:suggested_reviewers_available?).and_return(true)
+      end
+
+      context 'when enabled' do
+        before do
+          allow(project).to receive(:suggested_reviewers_enabled).and_return(true)
+        end
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when not enabled' do
+        before do
+          allow(project).to receive(:suggested_reviewers_enabled).and_return(false)
+        end
+
+        it { is_expected.to eq false }
+      end
+    end
+
+    context 'when not available' do
+      before do
+        allow(project).to receive(:suggested_reviewers_available?).and_return(false)
+      end
+
+      context 'when enabled' do
+        before do
+          allow(project).to receive(:suggested_reviewers_enabled).and_return(true)
+        end
+
+        it { is_expected.to eq false }
+      end
+    end
+  end
 end

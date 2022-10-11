@@ -20,7 +20,7 @@ module EE
       end
 
       def trigger_suggested_reviewers_fetch
-        return unless project.suggested_reviewers_available?
+        return unless project.can_suggest_reviewers?
 
         merge_requests_for_source_branch.each do |mr|
           next unless mr.can_suggest_reviewers?

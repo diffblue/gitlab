@@ -86,13 +86,15 @@ RSpec.describe Projects::Settings::MergeRequestsController do
     end
 
     context 'when suggested_reviewers_enabled param is specified' do
-      let(:params) { { project_setting_attributes: { suggested_reviewers_enabled: true } } }
+      let(:params) { { project_setting_attributes: { suggested_reviewers_enabled: '1' } } }
 
       let(:request) do
         put :update, params: { namespace_id: project.namespace, project_id: project, project: params }
       end
 
       it 'updates the attribute' do
+        allow_any_instance_of(Project).to receive(:suggested_reviewers_available?).and_return(true)  # rubocop:disable RSpec/AnyInstanceOf
+
         request
         expect(project.reload.suggested_reviewers_enabled).to be(true)
       end

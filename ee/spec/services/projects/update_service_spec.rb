@@ -361,6 +361,87 @@ RSpec.describe Projects::UpdateService, '#execute' do
     end
   end
 
+  context 'triggering suggested reviewer project registrations' do
+    let(:opts) { { project_setting_attributes: { suggested_reviewers_enabled: '1' } } }
+
+    shared_examples 'calling registration worker' do
+      it 'calls perform_async' do
+        expect(::Projects::RegisterSuggestedReviewersProjectWorker)
+          .to receive(:perform_async)
+                .with(project.id, user.id)
+
+        update_project(project, user, opts)
+      end
+    end
+
+    shared_examples 'not calling registration worker' do
+      it 'does not call perform_async' do
+        expect(::Projects::RegisterSuggestedReviewersProjectWorker).not_to receive(:perform_async)
+
+        update_project(project, user, opts)
+      end
+    end
+
+    context 'when available' do
+      before do
+        allow(project).to receive(:suggested_reviewers_available?).and_return(true)
+      end
+
+      context 'when enabled' do
+        before do
+          project.project_setting.update! suggested_reviewers_enabled: true
+        end
+
+        it_behaves_like 'not calling registration worker'
+      end
+
+      context 'when not enabled' do
+        before do
+          project.project_setting.update! suggested_reviewers_enabled: false
+        end
+
+        it_behaves_like 'calling registration worker'
+
+        it 'sets the setting' do
+          expect { update_project(project, user, opts) }
+            .to change { project.reload.suggested_reviewers_enabled }.from(false).to(true)
+        end
+
+        context 'when form param is set to false' do
+          let(:opts) { { project_setting_attributes: { suggested_reviewers_enabled: '0' } } }
+
+          it_behaves_like 'not calling registration worker'
+        end
+      end
+    end
+
+    context 'when not available' do
+      before do
+        allow(project).to receive(:suggested_reviewers_available?).and_return(false)
+      end
+
+      context 'when enabled' do
+        before do
+          project.project_setting.update! suggested_reviewers_enabled: true
+        end
+
+        it_behaves_like 'not calling registration worker'
+      end
+
+      context 'when not enabled' do
+        before do
+          project.project_setting.update! suggested_reviewers_enabled: false
+        end
+
+        it_behaves_like 'not calling registration worker'
+
+        it 'does not set the setting' do
+          expect { update_project(project, user, opts) }.not_to change { project.reload.suggested_reviewers_enabled }
+        end
+      end
+    end
+  end
+
   context 'custom compliance frameworks' do
     let(:group) { create(:group) }
     let(:project) { create(:project, group: group) }
