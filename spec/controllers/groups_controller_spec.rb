@@ -247,6 +247,23 @@ RSpec.describe GroupsController, factory_default: :keep do
       end
     end
 
+    context 'when create chat team' do
+      before do
+        stub_mattermost_setting(enabled: true)
+        allow_any_instance_of(::Mattermost::CreateTeamService).to receive(:execute).and_return({ name: 'test-chat-team', id: 1 })
+      end
+
+      it 'triggers the service' do
+        sign_in(user)
+
+        expect do
+          post :create, params: { group: { name: 'new_group', path: "new_group", create_chat_team: 1 } }
+        end.to change { Group.count }.by(1)
+
+        expect(response).to have_gitlab_http_status(:found)
+      end
+    end
+
     context 'when creating subgroups' do
       [true, false].each do |can_create_group_status|
         context "and can_create_group is #{can_create_group_status}" do
