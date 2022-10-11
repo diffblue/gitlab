@@ -6,8 +6,9 @@ RSpec.describe API::Analytics::ProductAnalytics do
   let_it_be(:project) { create(:project) }
 
   let(:current_user) { project.owner }
+  let(:cube_api_url) { "http://cube.dev/cubejs-api/v1/load" }
 
-  describe 'POST projects/:id/product_analytics/request' do
+  describe 'GET projects/:id/product_analytics/request/load' do
     before do
       stub_cube_load
       stub_ee_application_setting(cube_api_key: 'testtest')
@@ -20,7 +21,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns a 404' do
-        post api("/projects/#{project.id}/product_analytics/request", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -34,7 +35,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns an unauthorized error' do
-        post api("/projects/#{project.id}/product_analytics/request", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
 
         expect(response).to have_gitlab_http_status(:unauthorized)
       end
@@ -47,10 +48,23 @@ RSpec.describe API::Analytics::ProductAnalytics do
         project.add_developer(current_user)
       end
 
-      it 'returns a 201' do
-        post api("/projects/#{project.id}/product_analytics/request", current_user)
+      it 'returns a 200' do
+        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
 
-        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+
+      it 'only passes on predefined parameters' do
+        params = {
+          query: { measures: ['Jitsu.count'] }.to_json,
+          'queryType': 'multi',
+          'badParam': 1
+        }.to_query
+        get api("/projects/#{project.id}/product_analytics/request/load?#{params}", current_user)
+
+        expect(WebMock).to have_requested(:post, cube_api_url).with(
+          body: { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' }.to_json
+        )
       end
     end
 
@@ -60,7 +74,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns a 404' do
-        post api("/projects/#{project.id}/product_analytics/request", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -72,7 +86,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns a 404' do
-        post api("/projects/#{project.id}/product_analytics/request", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -82,7 +96,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
   private
 
   def stub_cube_load
-    stub_request(:post, "http://cube.dev/cubejs-api/v1/load")
+    stub_request(:post, cube_api_url)
       .to_return(status: 201, body: "{}", headers: {})
   end
 end
