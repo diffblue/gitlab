@@ -1,9 +1,0 @@
-query getIssueHealthStatus($fullPath: ID!, $iid: String!) {
-  project(fullPath: $fullPath) {
-    id
-    issue(iid: $iid) {
-      id
-      healthStatus
-    }
-  }
-}
