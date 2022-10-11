@@ -13,14 +13,6 @@ module Gitlab
 
           private
 
-          def report_data
-            @report_data ||= begin
-              super.then do |data|
-                Formatters::Dast.satisfies?(data) ? Formatters::Dast.new(data).format : data
-              end
-            end
-          end
-
           def create_scanned_resources(scanned_resources)
             return [] unless scanned_resources
 
