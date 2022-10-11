@@ -15,12 +15,12 @@ import {
   DEFAULT_SCANNER,
   SCANNER_DAST,
   SCANNER_HUMANIZED_TEMPLATE,
-  TEMPORARY_LIST_OF_SCANNERS,
+  RULE_MODE_SCANNERS,
 } from './constants';
 import { buildScannerAction } from './lib';
 
 export default {
-  SCANNERS: TEMPORARY_LIST_OF_SCANNERS,
+  SCANNERS: RULE_MODE_SCANNERS,
   components: {
     GlButton,
     GlDropdown,

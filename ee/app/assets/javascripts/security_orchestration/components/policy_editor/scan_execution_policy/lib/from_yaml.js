@@ -1,6 +1,6 @@
 import { safeLoad } from 'js-yaml';
 import { isValidPolicy, hasInvalidCron } from '../../utils';
-import { TEMPORARY_LIST_OF_SCANNERS } from '../constants';
+import { RULE_MODE_SCANNERS } from '../constants';
 
 /**
  * Checks if rule mode supports the inputted scanner
@@ -15,7 +15,7 @@ export const hasRuleModeSupportedScanners = (policy) => {
     return true;
   }
 
-  const availableScanners = Object.keys(TEMPORARY_LIST_OF_SCANNERS);
+  const availableScanners = Object.keys(RULE_MODE_SCANNERS);
   const configuredScanners = policy.actions.map((action) => action.scan);
   return configuredScanners.every((scanner) => availableScanners.includes(scanner));
 };

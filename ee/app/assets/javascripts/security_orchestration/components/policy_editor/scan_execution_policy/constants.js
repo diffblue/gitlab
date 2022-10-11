@@ -35,8 +35,7 @@ export const DAST_HUMANIZED_TEMPLATE = s__(
   'ScanExecutionPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require a %{scan} scan to run with site profile %{siteProfile} and scanner profile %{scannerProfile}',
 );
 
-// TODO remove after https://gitlab.com/gitlab-org/gitlab/-/issues/365579
-export const TEMPORARY_LIST_OF_SCANNERS = {
+export const RULE_MODE_SCANNERS = {
   sast: SAST_SHORT_NAME,
   dast: DAST_SHORT_NAME,
   secret_detection: SECRET_DETECTION_NAME,
