@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
 require_dependency 'gitlab/cluster/lifecycle_events'
 
 RSpec.describe Gitlab::Memory::Watchdog::Configuration do
@@ -23,7 +23,7 @@ RSpec.describe Gitlab::Memory::Watchdog::Configuration do
   describe '#logger' do
     context 'when logger is not set, defaults to stdout logger' do
       it 'defaults to Logger' do
-        expect(configuration.logger).to be_an_instance_of(Gitlab::Logger)
+        expect(configuration.logger).to be_an_instance_of(::Gitlab::Logger)
       end
     end
   end
@@ -38,29 +38,76 @@ RSpec.describe Gitlab::Memory::Watchdog::Configuration do
 
   describe '#monitors' do
     context 'when monitors are configured to be used' do
-      let(:monitor) { monitor_class.new }
-      let(:monitor_class) do
-        Class.new do
-          def call; end
+      let(:payload1) do
+        {
+          message: 'monitor_1_text',
+          memwd_max_strikes: 5,
+          memwd_cur_strikes: 0
+        }
+      end
+
+      let(:payload2) do
+        {
+          message: 'monitor_2_text',
+          memwd_max_strikes: 0,
+          memwd_cur_strikes: 1
+        }
+      end
+
+      let(:monitor_class_1) do
+        Struct.new(:threshold_violated, :payload) do
+          def call
+            { threshold_violated: !!threshold_violated, payload: payload || {} }
+          end
+
+          def self.name
+            'Monitor1'
+          end
         end
       end
 
-      it 'builds monitor with args and provided block' do
-        block = -> {}
-        expect(monitor_class).to receive(:new).with(custom_arg: 'dummy_text').and_yield.and_return(monitor)
-        expect(Gitlab::Memory::Watchdog::MonitorState).to receive(:new).with(monitor, max_strikes: 5)
-
-        configuration.monitors.use(monitor_class, custom_arg: 'dummy_text', max_strikes: 5, &block)
-      end
-
-      context 'when monitor is used twice' do
-        before do
-          allow_next_instance_of(Gitlab::Memory::Watchdog::MonitorState) do |monitor|
-            allow(monitor).to receive(:call)
+      let(:monitor_class_2) do
+        Struct.new(:threshold_violated, :payload) do
+          def call
+            { threshold_violated: !!threshold_violated, payload: payload || {} }
           end
 
-          configuration.monitors.use(monitor_class)
-          configuration.monitors.use(monitor_class)
+          def self.name
+            'Monitor2'
+          end
+        end
+      end
+
+      context 'when two monitors are configured to be used' do
+        before do
+          configuration.monitors.use monitor_class_1, false, { message: 'monitor_1_text' }, max_strikes: 5
+          configuration.monitors.use monitor_class_2, true, { message: 'monitor_2_text' }, max_strikes: 0
+        end
+
+        it 'calls each monitor and returns correct results', :aggregate_failures do
+          payloads = []
+          thresholds = []
+          strikes = []
+          monitor_names = []
+
+          configuration.monitors.call_each do |result|
+            payloads << result.payload
+            thresholds << result.threshold_violated?
+            strikes << result.strikes_exceeded?
+            monitor_names << result.monitor_name
+          end
+
+          expect(payloads).to eq([payload1, payload2])
+          expect(thresholds).to eq([false, true])
+          expect(strikes).to eq([false, true])
+          expect(monitor_names).to eq([:monitor1, :monitor2])
+        end
+      end
+
+      context 'when same monitor class is configured to be used twice' do
+        before do
+          configuration.monitors.use monitor_class_1
+          configuration.monitors.use monitor_class_1
         end
 
         it 'calls same monitor only once' do

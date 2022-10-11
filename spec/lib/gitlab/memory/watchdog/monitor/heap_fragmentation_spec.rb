@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
+require 'support/shared_examples/lib/gitlab/memory/watchdog/monitor_result_shared_examples'
+require 'prometheus/client'
 
 RSpec.describe Gitlab::Memory::Watchdog::Monitor::HeapFragmentation do
   let(:heap_frag_limit_gauge) { instance_double(::Prometheus::Client::Gauge) }

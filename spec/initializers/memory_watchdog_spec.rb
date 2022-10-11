@@ -12,7 +12,7 @@ RSpec.describe 'memory watchdog' do
     let(:watchdog_monitors) do
       [
         Gitlab::Memory::Watchdog::Monitor::HeapFragmentation,
-        Gitlab::Memory::Watchdog::Monitor::MemoryGrowth
+        Gitlab::Memory::Watchdog::Monitor::UniqueMemoryGrowth
       ]
     end
 

@@ -19,7 +19,7 @@ Gitlab::Cluster::LifecycleEvents.on_worker_start do
     config.logger = Gitlab::AppLogger
     # config.monitor.use MonitorClass, args**, &block
     config.monitors.use Gitlab::Memory::Watchdog::Monitor::HeapFragmentation
-    config.monitors.use Gitlab::Memory::Watchdog::Monitor::MemoryGrowth
+    config.monitors.use Gitlab::Memory::Watchdog::Monitor::UniqueMemoryGrowth
   end
 
   Gitlab::BackgroundTask.new(watchdog).start

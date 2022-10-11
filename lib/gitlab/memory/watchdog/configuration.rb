@@ -54,7 +54,7 @@ module Gitlab
         end
 
         def logger
-          @logger ||= Logger.new($stdout)
+          @logger ||= Gitlab::Logger.new($stdout)
         end
 
         # Used to control the frequency with which the watchdog will wake up and poll the GC.

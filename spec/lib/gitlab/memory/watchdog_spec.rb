@@ -9,12 +9,23 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
     let(:logger) { instance_double(::Logger) }
     let(:sleep_time_seconds) { 60 }
     let(:threshold_violated) { false }
-    let(:strikes_exceeded) { false }
     let(:violations_counter) { instance_double(::Prometheus::Client::Counter) }
     let(:violations_handled_counter) { instance_double(::Prometheus::Client::Counter) }
     let(:watchdog_iterations) { 1 }
     let(:name) { :monitor_name }
     let(:payload) { { message: 'dummy_text' } }
+    let(:max_strikes) { 2 }
+    let(:monitor_class) do
+      Struct.new(:threshold_violated, :payload) do
+        def call
+          { threshold_violated: threshold_violated, payload: payload }
+        end
+
+        def self.name
+          'MonitorName'
+        end
+      end
+    end
 
     subject(:watchdog) do
       described_class.new.tap do |instance|
@@ -38,19 +49,6 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
       allow(violations_handled_counter).to receive(:increment)
     end
 
-    before do
-      stub_prometheus_metrics
-      allow(Gitlab::Metrics::System).to receive(:memory_usage_rss).at_least(:once).and_return(1024)
-      allow(::Prometheus::PidProvider).to receive(:worker_id).and_return('worker_1')
-      allow(described_class::Configuration).to receive(:new).and_return(configuration)
-      allow(configuration).to receive(:handler).and_return(handler)
-      allow(configuration).to receive(:logger).and_return(logger)
-      allow(configuration).to receive(:sleep_time_seconds).and_return(sleep_time_seconds)
-      allow(handler).to receive(:call).and_return(true)
-      allow(logger).to receive(:info)
-      allow(logger).to receive(:warn)
-    end
-
     describe '#initialize' do
       it 'initialize new configuration' do
         expect(described_class::Configuration).to receive(:new)
@@ -60,14 +58,21 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
     end
 
     describe '#call' do
-      let(:result) { instance_double(described_class::MonitorState::Result) }
-
       before do
-        allow(configuration).to receive_message_chain(:monitors, :call_each).and_yield(result)
-        allow(result).to receive(:threshold_violated?).and_return(threshold_violated)
-        allow(result).to receive(:strikes_exceeded?).and_return(strikes_exceeded)
-        allow(result).to receive(:monitor_name).and_return(name)
-        allow(result).to receive(:payload).and_return(payload)
+        stub_prometheus_metrics
+        allow(Gitlab::Metrics::System).to receive(:memory_usage_rss).at_least(:once).and_return(1024)
+        allow(::Prometheus::PidProvider).to receive(:worker_id).and_return('worker_1')
+
+        watchdog.configure do |config|
+          config.handler = handler
+          config.logger = logger
+          config.sleep_time_seconds = sleep_time_seconds
+          config.monitors.use monitor_class, threshold_violated, payload, max_strikes: max_strikes
+        end
+
+        allow(handler).to receive(:call).and_return(true)
+        allow(logger).to receive(:info)
+        allow(logger).to receive(:warn)
       end
 
       it 'logs start message once' do
@@ -149,8 +154,8 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
           end
         end
 
-        context 'when process exceeds the allowed number of strikes' do
-          let(:strikes_exceeded) { true }
+        context 'when monitor exceeds the allowed number of strikes' do
+          let(:max_strikes) { 0 }
 
           it 'increments handled violations counter' do
             expect(violations_handled_counter).to receive(:increment).with(reason: name)
@@ -166,6 +171,8 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
                 memwd_handler_class: handler.class.name,
                 memwd_sleep_time_s: sleep_time_seconds,
                 memwd_rss_bytes: 1024,
+                memwd_cur_strikes: 1,
+                memwd_max_strikes: max_strikes,
                 message: 'dummy_text')
 
             watchdog.call
@@ -190,10 +197,18 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
             end
           end
 
-          context 'when multiple monitors exceeds threshold' do
-            it 'only calls the handler once' do
-              expect(configuration).to receive_message_chain(:monitors, :call_each).and_yield(result).and_yield(result)
+          context 'when multiple monitors exceeds allowed number of strikes' do
+            before do
+              watchdog.configure do |config|
+                config.handler = handler
+                config.logger = logger
+                config.sleep_time_seconds = sleep_time_seconds
+                config.monitors.use monitor_class, threshold_violated, payload, max_strikes: max_strikes
+                config.monitors.use monitor_class, threshold_violated, payload, max_strikes: max_strikes
+              end
+            end
 
+            it 'only calls the handler once' do
               expect(handler).to receive(:call).once.and_return(true)
 
               watchdog.call
@@ -218,7 +233,7 @@ RSpec.describe Gitlab::Memory::Watchdog, :aggregate_failures do
 
     describe '#configure' do
       it 'yields block' do
-        expect { |b| watchdog.configure(&b) }.to yield_with_args(configuration)
+        expect { |b| watchdog.configure(&b) }.to yield_control
       end
     end
   end

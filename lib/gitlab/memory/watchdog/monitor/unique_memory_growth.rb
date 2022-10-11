@@ -4,7 +4,7 @@ module Gitlab
   module Memory
     class Watchdog
       module Monitor
-        class MemoryGrowth
+        class UniqueMemoryGrowth
           attr_reader :max_mem_growth
 
           def initialize(max_mem_growth: Gitlab::Memory::Watchdog::Configuration::MAX_MEM_GROWTH, **options)
@@ -38,7 +38,7 @@ module Gitlab
           # We initialize this lazily because in the initializer the application may not have
           # finished booting yet, which would yield an incorrect baseline.
           def reference_mem
-            Gitlab::Metrics::System.memory_usage_uss_pss(pid: Gitlab::Cluster::PRIMARY_PID)
+            @reference_mem ||= Gitlab::Metrics::System.memory_usage_uss_pss(pid: Gitlab::Cluster::PRIMARY_PID)
           end
         end
       end

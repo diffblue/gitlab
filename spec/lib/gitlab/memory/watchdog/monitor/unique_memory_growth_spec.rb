@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
+require 'support/shared_examples/lib/gitlab/memory/watchdog/monitor_result_shared_examples'
 require_dependency 'gitlab/cluster/lifecycle_events'
 
-RSpec.describe Gitlab::Memory::Watchdog::Monitor::MemoryGrowth do
+RSpec.describe Gitlab::Memory::Watchdog::Monitor::UniqueMemoryGrowth do
   let(:primary_memory) { 2048 }
   let(:worker_memory) { 0 }
   let(:max_mem_growth) { 2 }
@@ -31,10 +32,20 @@ RSpec.describe Gitlab::Memory::Watchdog::Monitor::MemoryGrowth do
 
   describe '#call' do
     it 'gets memory_usage_uss_pss' do
-      expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss)
+      expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss).with(no_args)
       expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss).with(pid: Gitlab::Cluster::PRIMARY_PID)
 
       monitor.call
+    end
+
+    context 'when monitor is called twice' do
+      it 'reference memory is calculated only once' do
+        expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss).with(no_args).twice
+        expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss).with(pid: Gitlab::Cluster::PRIMARY_PID).once
+
+        monitor.call
+        monitor.call
+      end
     end
 
     context 'when process exceeds threshold' do
