@@ -28,6 +28,10 @@ module IdentityVerifiable
     [User::VERIFICATION_METHODS[:EMAIL]]
   end
 
+  def credit_card_verified?
+    credit_card_validation.present?
+  end
+
   private
 
   def verification_state
@@ -35,10 +39,6 @@ module IdentityVerifiable
       credit_card: -> { credit_card_verified? },
       email: -> { email_verified? }
     }.stringify_keys
-  end
-
-  def credit_card_verified?
-    credit_card_validation.present?
   end
 
   def email_verified?

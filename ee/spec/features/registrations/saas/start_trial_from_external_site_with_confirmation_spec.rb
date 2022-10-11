@@ -9,6 +9,7 @@ RSpec.describe 'Start trial from external site with confirmation', :js, :saas, :
 
   before do
     stub_application_setting(send_user_confirmation_email: true)
+    stub_feature_flags(identity_verification: false)
 
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
