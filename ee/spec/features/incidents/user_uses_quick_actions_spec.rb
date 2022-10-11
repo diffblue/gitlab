@@ -22,5 +22,6 @@ RSpec.describe 'Incidents > User uses EE quick actions', :js do
     end
 
     it_behaves_like 'zoom quick actions ee'
+    it_behaves_like 'link quick actions'
   end
 end
