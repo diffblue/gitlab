@@ -23,7 +23,7 @@ module EE
       private
 
       def trigger_suggested_reviewers_fetch(issuable)
-        return unless project.suggested_reviewers_available?
+        return unless project.can_suggest_reviewers?
         return unless issuable.can_suggest_reviewers?
 
         ::MergeRequests::FetchSuggestedReviewersWorker.perform_async(issuable.id)
