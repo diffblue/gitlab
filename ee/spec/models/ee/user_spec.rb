@@ -2117,4 +2117,8 @@ RSpec.describe User do
       it { is_expected.to eq(true) }
     end
   end
+
+  it 'includes IdentityVerifiable' do
+    expect(described_class).to include_module(IdentityVerifiable)
+  end
 end

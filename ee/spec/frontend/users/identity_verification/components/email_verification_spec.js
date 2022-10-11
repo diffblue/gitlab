@@ -17,14 +17,16 @@ describe('EmailVerification', () => {
   let wrapper;
   let axiosMock;
 
-  const emailObfuscated = 'al**@g*****.com';
-  const emailVerifyPath = '/users/identity_verification/verify_email_code';
-  const emailResendPath = '/users/identity_verification/resend_email_code';
+  const PROVIDE = {
+    email: {
+      obfuscated: 'al**@g*****.com',
+      verifyPath: '/users/identity_verification/verify_email_code',
+      resendPath: '/users/identity_verification/resend_email_code',
+    },
+  };
 
   const createComponent = () => {
-    wrapper = mount(EmailVerification, {
-      provide: { emailObfuscated, emailVerifyPath, emailResendPath },
-    });
+    wrapper = mount(EmailVerification, { provide: PROVIDE });
   };
 
   const findHeader = () => wrapper.find('p');
@@ -50,21 +52,29 @@ describe('EmailVerification', () => {
 
   describe('rendering the form', () => {
     it('contains the obfuscated email address', () => {
-      expect(findHeader().text()).toContain(emailObfuscated);
+      expect(findHeader().text()).toContain(PROVIDE.email.obfuscated);
     });
   });
 
   describe('verifying the code', () => {
     describe('when successfully verifying the code', () => {
-      it('redirects to the returned redirect_url', async () => {
+      beforeEach(async () => {
         enterCode('123456');
 
-        axiosMock.onPost(emailVerifyPath).reply(200, { status: 'success', redirect_url: 'root' });
+        axiosMock
+          .onPost(PROVIDE.email.verifyPath)
+          .reply(200, { status: 'success', redirect_url: 'root' });
 
         await submitForm();
         await axios.waitForAll();
+      });
 
+      it('redirects to the returned redirect_url', () => {
         expect(visitUrl).toHaveBeenCalledWith('root');
+      });
+
+      it('emits completed event', () => {
+        expect(wrapper.emitted('completed')).toHaveLength(1);
       });
     });
 
@@ -81,7 +91,7 @@ describe('EmailVerification', () => {
         enterCode(code);
 
         if (submit && codeValid) {
-          axiosMock.onPost(emailVerifyPath).replyOnce(200, { status: 'failure', message });
+          axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(200, { status: 'failure', message });
         }
 
         if (submit) {
@@ -99,7 +109,7 @@ describe('EmailVerification', () => {
         enterCode('123456');
 
         axiosMock
-          .onPost(emailVerifyPath)
+          .onPost(PROVIDE.email.verifyPath)
           .replyOnce(200, { status: 'failure', message: 'error message' });
 
         await submitForm();
@@ -120,7 +130,7 @@ describe('EmailVerification', () => {
       it('captures the error and shows a flash message when the request failed', async () => {
         enterCode('123456');
 
-        axiosMock.onPost(emailVerifyPath).replyOnce(404);
+        axiosMock.onPost(PROVIDE.email.verifyPath).replyOnce(404);
 
         await submitForm();
         await axios.waitForAll();
@@ -145,7 +155,7 @@ describe('EmailVerification', () => {
 
       await submitForm();
 
-      axiosMock.onPost(emailResendPath).replyOnce(statusCode, response);
+      axiosMock.onPost(PROVIDE.email.resendPath).replyOnce(statusCode, response);
 
       findResendLink().trigger('click');
 

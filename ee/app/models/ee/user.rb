@@ -17,6 +17,7 @@ module EE
     prepended do
       include UsageStatistics
       include PasswordComplexity
+      include IdentityVerifiable
 
       EMAIL_OPT_IN_SOURCE_ID_GITLAB_COM = 1
 
