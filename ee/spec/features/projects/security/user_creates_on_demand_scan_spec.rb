@@ -38,6 +38,15 @@ RSpec.describe 'User creates On-demand Scan' do
       end
     end
 
+    it 'on save and run', :js do
+      fill_in_form
+
+      click_button 'Save and run scan'
+      wait_for_requests
+
+      expect(page).not_to have_current_path(on_demand_scans_path, ignore_query: true)
+    end
+
     it 'on save', :js do
       fill_in_form
 
