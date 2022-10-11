@@ -32,9 +32,14 @@ describe('RunnerUpdateCostFactorFields', () => {
       createComponent();
     });
 
-    it('shows cost factor fields', () => {
-      expect(findPrivateProjectsCostFactor().exists()).toBe(true);
-      expect(findPublicProjectsCostFactor().exists()).toBe(true);
+    it('shows cost factor number fields', () => {
+      const fieldAttrs = {
+        step: 'any',
+        type: 'number',
+      };
+
+      expect(findPrivateProjectsCostFactor().find('input').attributes()).toMatchObject(fieldAttrs);
+      expect(findPublicProjectsCostFactor().find('input').attributes()).toMatchObject(fieldAttrs);
     });
 
     it('handles input of private cost factor', async () => {
