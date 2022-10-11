@@ -51,6 +51,7 @@ export default {
       <gl-form-input-group
         :value="value.publicProjectsMinutesCostFactor"
         type="number"
+        step="any"
         @input="onInputPublicProjectMinutesCostFactor"
       />
     </gl-form-group>
@@ -62,6 +63,7 @@ export default {
       <gl-form-input-group
         :value="value.privateProjectsMinutesCostFactor"
         type="number"
+        step="any"
         @input="onInputPrivateProjectMinutesCostFactor"
       />
     </gl-form-group>

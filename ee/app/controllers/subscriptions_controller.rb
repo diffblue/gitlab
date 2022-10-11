@@ -9,7 +9,14 @@ class SubscriptionsController < ApplicationController
   include GoogleAnalyticsCSP
 
   layout 'minimal'
-  skip_before_action :authenticate_user!, only: [:new]
+
+  # Skip user authentication if the user is currently verifying their identity
+  # by providing a payment method as part of a three-stage (payment method,
+  # phone number, and email verification) identity verification process.
+  # Authentication is skipped since active_for_authentication? is false at
+  # this point and becomes true only after the user completes the verification
+  # process.
+  before_action :authenticate_user!, except: :new, unless: :identity_verification_request?
 
   before_action :load_eligible_groups, only: :new
 
@@ -215,5 +222,13 @@ class SubscriptionsController < ApplicationController
     return [] unless result.success?
 
     (result.payload || []).map { |h| h.dig(:namespace) }
+  end
+
+  def identity_verification_request?
+    # true only for actions used to verify a user's credit card
+    return false unless %w[payment_form validate_payment_method].include?(action_name)
+
+    user = User.find_by_id(session[:verification_user_id])
+    user.present? && !user.credit_card_verified?
   end
 end

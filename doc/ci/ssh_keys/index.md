@@ -12,7 +12,7 @@ environment (where the GitLab Runner runs).
 
 Use SSH keys when:
 
-1. You want to checkout internal submodules
+1. You want to check out internal submodules
 1. You want to download private packages using your package manager (for example, Bundler)
 1. You want to deploy your application to your own server, or, for example, Heroku
 1. You want to execute SSH commands from the build environment to a remote server
@@ -115,9 +115,9 @@ SSH key.
 You can generate the SSH key from the machine that GitLab Runner is installed
 on, and use that key for all projects that are run on this machine.
 
-1. First, log in to the server that runs your jobs.
+1. First, sign in to the server that runs your jobs.
 
-1. Then, from the terminal, log in as the `gitlab-runner` user:
+1. Then, from the terminal, sign in as the `gitlab-runner` user:
 
    ```shell
    sudo su - gitlab-runner

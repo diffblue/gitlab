@@ -80,9 +80,9 @@
                   %tr
                     %td= setting.alias_name
                     %td
-                      = f.number_field :elasticsearch_shards, name: "application_setting[elasticsearch_shards][#{setting.alias_name}]", value: setting.number_of_shards, class: 'form-control gl-form-input', id: "application_setting_elasticsearch_shards[#{setting.alias_name}]"
+                      = f.number_field :elasticsearch_shards, name: "application_setting[elasticsearch_shards][#{setting.alias_name}]", value: setting.number_of_shards, min: 0, class: 'form-control gl-form-input', id: "application_setting_elasticsearch_shards[#{setting.alias_name}]"
                     %td
-                      = f.number_field :elasticsearch_replicas, name: "application_setting[elasticsearch_replicas][#{setting.alias_name}]", value: setting.number_of_replicas, class: 'form-control gl-form-input', id: "application_setting_elasticsearch_replicas[#{setting.alias_name}]"
+                      = f.number_field :elasticsearch_replicas, name: "application_setting[elasticsearch_replicas][#{setting.alias_name}]", value: setting.number_of_replicas, min: 0, class: 'form-control gl-form-input', id: "application_setting_elasticsearch_replicas[#{setting.alias_name}]"
             .form-group
               .form-text.gl-text-gray-600.gl-mt-0
                 - configuration_link_url = help_page_url('integration/advanced_search/elasticsearch.md', anchor: 'advanced-search-configuration')

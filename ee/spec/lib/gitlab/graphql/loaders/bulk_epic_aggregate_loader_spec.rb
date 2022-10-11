@@ -88,6 +88,22 @@ RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
       expect(result.keys).to match_array([parent_epic.id, epic_with_issues.id, epic_without_issues.id])
     end
 
+    it 'loads epic issues metadata in batches' do
+      stub_const("#{described_class}::EPIC_BATCH_SIZE", 1)
+      allow(Epic).to receive(:issue_metadata_for_epics).and_return([])
+
+      ids_batch_1 = [parent_epic.id]
+      ids_batch_2 = [epic_with_issues.id]
+      ids_batch_3 = [epic_without_issues.id]
+      limit = described_class::MAXIMUM_LOADABLE
+
+      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_1, limit: limit)
+      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_2, limit: limit)
+      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_3, limit: limit)
+
+      subject.execute
+    end
+
     it 'errors when the number of retrieved records exceeds the maximum' do
       stub_const("Gitlab::Graphql::Loaders::BulkEpicAggregateLoader::MAXIMUM_LOADABLE", 4)
 

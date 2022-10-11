@@ -5,23 +5,15 @@ fragment PageInfo on PageInfo {
   endCursor
 }
 
-fragment RelatedTreeBaseEpic on Epic {
+fragment BaseEpic on Epic {
   id
   iid
   title
   webPath
   relativePosition
-  defaultProjectForIssueCreation {
-    id
-    nameWithNamespace
-  }
   userPermissions {
     adminEpic
     createEpic
-  }
-  descendantWeightSum {
-    closedIssues
-    openedIssues
   }
   descendantCounts {
     openedEpics
@@ -36,8 +28,20 @@ fragment RelatedTreeBaseEpic on Epic {
   }
 }
 
-fragment EpicNode on Epic {
-  ...RelatedTreeBaseEpic
+fragment RelatedTreeParentEpic on Epic {
+  ...BaseEpic
+  defaultProjectForIssueCreation {
+    id
+    nameWithNamespace
+  }
+  descendantWeightSum {
+    closedIssues
+    openedIssues
+  }
+}
+
+fragment ChildEpicNode on Epic {
+  ...BaseEpic
   state
   reference(full: true)
   relationPath
@@ -73,11 +77,11 @@ query childItems(
     path
     fullPath
     epic(iid: $iid) {
-      ...RelatedTreeBaseEpic
+      ...RelatedTreeParentEpic
       children(first: $pageSize, after: $epicEndCursor) {
         edges {
           node {
-            ...EpicNode
+            ...ChildEpicNode
           }
         }
         pageInfo {

@@ -15,7 +15,7 @@ export default {
     GlSprintf,
     GlButton,
   },
-  inject: ['emailObfuscated', 'emailVerifyPath', 'emailResendPath'],
+  inject: ['email'],
   data() {
     return {
       verificationCode: '',
@@ -55,19 +55,21 @@ export default {
       if (!this.isValidInput) return;
 
       axios
-        .post(this.emailVerifyPath, { code: this.verificationCode })
+        .post(this.email.verifyPath, { code: this.verificationCode })
         .then(this.handleVerificationResponse)
         .catch(this.handleError);
     },
     resend() {
       axios
-        .post(this.emailResendPath)
+        .post(this.email.resendPath)
         .then(this.handleResendResponse)
         .catch(this.handleError)
         .finally(this.resetForm);
     },
     handleVerificationResponse(response) {
       if (response.data.status === SUCCESS_RESPONSE) {
+        this.$emit('completed');
+
         visitUrl(response.data.redirect_url);
       } else if (response.data.status === FAILURE_RESPONSE) {
         this.verifyError = response.data.message;
@@ -103,7 +105,7 @@ export default {
     <p class="gl-text-center">
       <gl-sprintf :message="$options.i18n.header">
         <template #email>
-          <b>{{ emailObfuscated }}</b>
+          <b>{{ email.obfuscated }}</b>
         </template>
       </gl-sprintf>
     </p>

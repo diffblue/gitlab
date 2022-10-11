@@ -79,7 +79,7 @@ GitLab provides built-in tools to help improve performance and availability:
 - [Service measurement](service_measurement.md) for measuring and logging service execution.
 
 GitLab team members can use [GitLab.com's performance monitoring systems](https://about.gitlab.com/handbook/engineering/monitoring/) located at
-[`dashboards.gitlab.net`](https://dashboards.gitlab.net), this requires you to log in using your
+[`dashboards.gitlab.net`](https://dashboards.gitlab.net), this requires you to sign in using your
 `@gitlab.com` email address. Non-GitLab team-members are advised to set up their
 own Prometheus and Grafana stack.
 
@@ -925,7 +925,7 @@ SOME_CONSTANT = 'bar'
 ## How to seed a database with millions of rows
 
 You might want millions of project rows in your local database, for example,
-in order to compare relative query performance, or to reproduce a bug. You could
+to compare relative query performance, or to reproduce a bug. You could
 do this by hand with SQL commands or using [Mass Inserting Rails Models](mass_insert.md) functionality.
 
 Assuming you are working with ActiveRecord models, you might also find these links helpful:

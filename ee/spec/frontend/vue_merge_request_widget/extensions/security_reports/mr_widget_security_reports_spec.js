@@ -15,7 +15,10 @@ describe('MR Widget Security Reports', () => {
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
       propsData: {
-        mr: {},
+        mr: {
+          securityConfigurationPath: '/help/user/application_security/index.md',
+          sourceProjectFullPath: 'namespace/project',
+        },
         ...propsData,
       },
     });

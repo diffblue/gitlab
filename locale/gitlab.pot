@@ -1565,6 +1565,9 @@ msgstr ""
 msgid "404|Make sure the address is correct and the page hasn't moved."
 msgstr ""
 
+msgid "404|Not found"
+msgstr ""
+
 msgid "404|Page Not Found"
 msgstr ""
 
@@ -2475,6 +2478,12 @@ msgid "Adds %{labels} %{label_text}."
 msgstr ""
 
 msgid "Adds a Zoom meeting."
+msgstr ""
+
+msgid "Adds a resource link"
+msgstr ""
+
+msgid "Adds a resource link for this incident."
 msgstr ""
 
 msgid "Adds a timeline event to incident."
@@ -14105,6 +14114,9 @@ msgstr ""
 msgid "Do not force push over diverged refs. After the mirror is created, this setting can only be modified using the API. %{mirroring_docs_link_start}Learn more about this option%{link_closing_tag} and %{mirroring_api_docs_link_start}the API.%{link_closing_tag}"
 msgstr ""
 
+msgid "Do not show again"
+msgstr ""
+
 msgid "Do you want to remove this deploy key?"
 msgstr ""
 
@@ -16168,6 +16180,9 @@ msgid "Failed on"
 msgstr ""
 
 msgid "Failed to add a Zoom meeting"
+msgstr ""
+
+msgid "Failed to add a resource link"
 msgstr ""
 
 msgid "Failed to apply commands."
@@ -20091,6 +20106,15 @@ msgid "IdentityVerification|Send code"
 msgstr ""
 
 msgid "IdentityVerification|Something went wrong. Please try again."
+msgstr ""
+
+msgid "IdentityVerification|Step %{stepNumber}: Verify a payment method"
+msgstr ""
+
+msgid "IdentityVerification|Step %{stepNumber}: Verify email address"
+msgstr ""
+
+msgid "IdentityVerification|Step %{stepNumber}: Verify phone number"
 msgstr ""
 
 msgid "IdentityVerification|Step 1: Verify phone number"
@@ -24586,6 +24610,9 @@ msgstr ""
 msgid "MarkdownEditor|Add strikethrough text (%{modifier_key}⇧X)"
 msgstr ""
 
+msgid "MarkdownEditor|Click to expand"
+msgstr ""
+
 msgid "MarkdownEditor|Indent line (%{modifierKey}])"
 msgstr ""
 
@@ -24596,6 +24623,9 @@ msgid "MarkdownEditor|Outdent line (%{modifierKey}[)"
 msgstr ""
 
 msgid "MarkdownEditor|Outdent line (%{modifier_key}[)"
+msgstr ""
+
+msgid "MarkdownEditor|header"
 msgstr ""
 
 msgid "MarkdownToolbar|Supports %{markdownDocsLinkStart}Markdown%{markdownDocsLinkEnd}"
@@ -34223,6 +34253,9 @@ msgstr ""
 msgid "Resolved by %{name}"
 msgstr ""
 
+msgid "Resource link added"
+msgstr ""
+
 msgid "Response"
 msgstr ""
 
@@ -34489,6 +34522,9 @@ msgid "Runners|%d selected runner deleted"
 msgid_plural "Runners|%d selected runners deleted"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "Runners|%{link_start}These runners%{link_end} are available to all groups and projects."
+msgstr ""
 
 msgid "Runners|%{percentage} spot."
 msgstr ""
@@ -36439,7 +36475,13 @@ msgstr ""
 msgid "SecurityReports|scanned resources"
 msgstr ""
 
+msgid "SecurityTraining|Enable security training to learn how to fix vulnerabilities. View security training from selected educational providers relevant to the detected vulnerability."
+msgstr ""
+
 msgid "SecurityTraining|Primary Training"
+msgstr ""
+
+msgid "SecurityTraining|Resolve with security training"
 msgstr ""
 
 msgid "SecurityTraining|Training from this partner takes precedence when more than one training partner is enabled."
@@ -40795,9 +40837,6 @@ msgid "These existing issues have a similar title. It might be better to comment
 msgstr ""
 
 msgid "These runners are shared across projects in this group."
-msgstr ""
-
-msgid "These runners are shared across this GitLab instance."
 msgstr ""
 
 msgid "These runners are specific to this project."
@@ -45566,9 +45605,6 @@ msgstr ""
 msgid "WorkItem|Something went wrong when fetching tasks. Please refresh this page."
 msgstr ""
 
-msgid "WorkItem|Something went wrong when fetching the work item. Please try again."
-msgstr ""
-
 msgid "WorkItem|Something went wrong when fetching work item types. Please try again"
 msgstr ""
 
@@ -45599,6 +45635,9 @@ msgstr ""
 msgid "WorkItem|Test case"
 msgstr ""
 
+msgid "WorkItem|This work item is not available. It either doesn't exist or you don't have permission to view it."
+msgstr ""
+
 msgid "WorkItem|Turn off confidentiality"
 msgstr ""
 
@@ -45615,6 +45654,9 @@ msgid "WorkItem|Work Items"
 msgstr ""
 
 msgid "WorkItem|Work item"
+msgstr ""
+
+msgid "WorkItem|Work item not found"
 msgstr ""
 
 msgid "Would you like to create a new branch?"

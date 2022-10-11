@@ -106,6 +106,17 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::CreateService do
       end
     end
 
+    context 'when link type is absent' do
+      let(:args) { { link: 'https://gitlab.slack.com/messages/IDHERE', link_text: link_text } }
+
+      it 'sets correct link type based on link' do
+        result = execute.payload[:issuable_resource_link]
+
+        expect(execute).to be_success
+        expect(result.link_type).to eq('slack')
+      end
+    end
+
     it 'successfully creates a database record', :aggregate_failures do
       expect { execute }.to change { ::IncidentManagement::IssuableResourceLink.count }.by(1)
     end

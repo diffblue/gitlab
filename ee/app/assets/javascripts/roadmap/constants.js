@@ -54,10 +54,12 @@ export const emptyStateWithEpicIidFiltered = s__(
 );
 
 export const EPIC_LEVEL_MARGIN = {
-  1: 'ml-4',
-  2: 'ml-6',
-  3: 'ml-8',
-  4: 'ml-10',
+  1: 'ml-3',
+  2: 'ml-4',
+  3: 'ml-5',
+  4: 'ml-6',
+  5: 'ml-7',
+  6: 'ml-8',
 };
 
 export const ROADMAP_PAGE_SIZE = 50;
