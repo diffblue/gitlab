@@ -48,7 +48,7 @@ RSpec.describe MergeRequests::CreateService do
     describe 'suggested reviewers' do
       context 'when suggested reviewers is available for project' do
         before do
-          allow(project).to receive(:suggested_reviewers_available?).and_return(true)
+          allow(project).to receive(:can_suggest_reviewers?).and_return(true)
         end
 
         context 'when merge request can suggest reviewers' do
@@ -82,7 +82,7 @@ RSpec.describe MergeRequests::CreateService do
 
       context 'when suggested reviewers is not available for project' do
         before do
-          allow(project).to receive(:suggested_reviewers_available?).and_return(false)
+          allow(project).to receive(:can_suggest_reviewers?).and_return(false)
         end
 
         context 'when merge request can suggest reviewers' do
