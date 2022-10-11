@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe IdentityVerifiable do
-  let_it_be(:user) { create(:user) }
+  let_it_be_with_reload(:user) { create(:user, credit_card_validation: nil) }
 
   describe('#required_identity_verification_methods') do
     subject { user.required_identity_verification_methods }
@@ -54,6 +54,20 @@ RSpec.describe IdentityVerifiable do
 
         it { is_expected.to eq true }
       end
+    end
+  end
+
+  describe('#credit_card_verified?') do
+    subject { user.credit_card_verified? }
+
+    context 'when user has not verified a credit card' do
+      it { is_expected.to eq false }
+    end
+
+    context 'when user has verified a credit card' do
+      let!(:credit_card_validation) { create(:credit_card_validation, user: user) }
+
+      it { is_expected.to eq true }
     end
   end
 end
