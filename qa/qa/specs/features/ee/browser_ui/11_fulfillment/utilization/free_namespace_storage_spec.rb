@@ -3,7 +3,10 @@
 module QA
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging },
                                                  feature_flag: { name: 'namespace_storage_limit', scope: :group } do
-    describe 'Utilization' do
+    describe 'Utilization', quarantine: {
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/377442',
+      type: :investigating
+    } do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:owner_api_client) { Runtime::API::Client.new(:gitlab, user: owner_user) }
       let(:hash) { SecureRandom.hex(8) }
