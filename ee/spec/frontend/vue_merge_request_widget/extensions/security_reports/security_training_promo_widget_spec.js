@@ -1,4 +1,4 @@
-import { GlIcon, GlButton } from '@gitlab/ui';
+import { GlIcon } from '@gitlab/ui';
 import { stubComponent } from 'helpers/stub_component';
 import SecurityTrainingPromo from 'ee/vue_shared/security_reports/components/security_training_promo.vue';
 import SecurityTraininPromoWidget, {
@@ -43,8 +43,8 @@ describe('Security training promo widget component', () => {
 
   const findSecurityTrainingPromo = () => wrapper.findComponent(SecurityTrainingPromo);
   const findIcon = () => wrapper.findComponent(GlIcon);
-  const findEnableButton = () => wrapper.findAllComponents(GlButton).at(0);
-  const findCancelButton = () => wrapper.findAllComponents(GlButton).at(1);
+  const findEnableButton = () => wrapper.findByTestId('enableButton');
+  const findCancelButton = () => wrapper.findByTestId('cancelButton');
 
   beforeEach(() => {
     createWrapper();
