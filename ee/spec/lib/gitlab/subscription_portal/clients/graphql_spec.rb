@@ -16,7 +16,8 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
             "data" => {
               "cloudActivationActivate" => {
                 "licenseKey" => license_key,
-                "errors" => []
+                "errors" => [],
+                "futureSubscriptions" => []
               }
             }
           }
@@ -25,56 +26,118 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
 
       result = client.activate('activation_code_abc')
 
-      expect(result).to eq({ license_key: license_key, success: true })
+      expect(result).to eq({ license_key: license_key, success: true, future_subscriptions: [] })
     end
 
-    it 'returns failure' do
-      expect(client).to receive(:execute_graphql_query).and_return(
-        {
-          success: true,
-          data: {
-            "data" => {
-              "cloudActivationActivate" => {
-                "licenseKey" => nil,
-                "errors" => ["invalid activation code"]
+    context 'when there are future subscriptions' do
+      it 'returns success' do
+        future_date = 4.days.from_now.to_date
+
+        expect(client).to receive(:execute_graphql_query).and_return(
+          {
+            success: true,
+            data: {
+              "data" => {
+                "cloudActivationActivate" => {
+                  "licenseKey" => license_key,
+                  "errors" => [],
+                  "futureSubscriptions" => [
+                    {
+                      "cloudLicenseEnabled" => true,
+                      "offlineCloudLicenseEnabled" => false,
+                      "plan" => "ultimate",
+                      "name" => "User Example",
+                      "company" => "Example Inc",
+                      "email" => "user@example.com",
+                      "startsAt" => future_date.to_s,
+                      "expiresAt" => (future_date + 1.year).to_s,
+                      "usersInLicenseCount" => 10
+                    }
+                  ]
+                }
               }
             }
           }
-        }
-      )
+        )
 
-      result = client.activate('activation_code_abc')
+        result = client.activate('activation_code_abc')
 
-      expect(result).to eq({ errors: ["invalid activation code"], success: false })
+        expect(result).to eq(
+          {
+            license_key: license_key,
+            success: true,
+            future_subscriptions: [
+              {
+                "cloud_license_enabled" => true,
+                "offline_cloud_license_enabled" => false,
+                "plan" => "ultimate",
+                "name" => "User Example",
+                "company" => "Example Inc",
+                "email" => "user@example.com",
+                "starts_at" => future_date.to_s,
+                "expires_at" => (future_date + 1.year).to_s,
+                "users_in_license_count" => 10
+              }
+            ]
+          }
+        )
+      end
     end
 
-    it 'returns connectivity error when remote server returns error' do
-      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL)
-        .to_return(status: [500, "Internal Server Error"], body: 'body')
-      allow(Gitlab::ErrorTracking).to receive(:log_exception)
+    context 'when the activation code is invalid' do
+      it 'returns failure' do
+        expect(client).to receive(:execute_graphql_query).and_return(
+          {
+            success: true,
+            data: {
+              "data" => {
+                "cloudActivationActivate" => {
+                  "licenseKey" => nil,
+                  "errors" => ["invalid activation code"],
+                  "futureSubscriptions" => []
+                }
+              }
+            }
+          }
+        )
 
-      result = client.activate('activation_code_abc')
+        result = client.activate('activation_code_abc')
 
-      expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
-
-      expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
-        instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
-        {
-          status: 500,
-          message: "Internal Server Error",
-          body: 'body'
-        }
-      )
+        expect(result).to eq({ errors: ["invalid activation code"], success: false })
+      end
     end
 
-    it 'returns connectivity error when the remote server is unreachable' do
-      stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_timeout
-      allow(Gitlab::ErrorTracking).to receive(:log_exception)
+    context 'when remote server returns error' do
+      it 'returns connectivity error' do
+        stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+          .to_return(status: [500, "Internal Server Error"], body: 'body')
+        allow(Gitlab::ErrorTracking).to receive(:log_exception)
 
-      result = client.activate('activation_code_abc')
+        result = client.activate('activation_code_abc')
 
-      expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
-      expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(kind_of(Timeout::Error))
+        expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+
+        expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(
+          instance_of(::Gitlab::SubscriptionPortal::Client::ResponseError),
+          {
+            status: 500,
+            message: "Internal Server Error",
+            body: 'body'
+          }
+        )
+      end
+    end
+
+    context 'when the remote server is unreachable' do
+      it 'returns connectivity error' do
+        stub_request(:any, EE::SUBSCRIPTIONS_GRAPHQL_URL).to_timeout
+        allow(Gitlab::ErrorTracking).to receive(:log_exception)
+
+        result = client.activate('activation_code_abc')
+
+        expect(result).to eq({ errors: described_class::CONNECTIVITY_ERROR, success: false })
+        expect(Gitlab::ErrorTracking).to have_received(:log_exception).with(kind_of(Timeout::Error))
+      end
     end
   end
 

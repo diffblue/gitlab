@@ -36,9 +36,10 @@ RSpec.describe GitlabSchema.types['SubscriptionFutureEntry'], :enable_admin_mode
       let_it_be(:starts_at) { Date.current - 3.months }
       let_it_be(:expires_at) { Date.current + 9.months }
 
-      let_it_be(:subscription) do
+      let(:subscription) do
         {
-          'type' => License::ONLINE_CLOUD_TYPE,
+          'offline_cloud_licensing' => offline_cloud_licensing,
+          'cloud_license_enabled' => cloud_license_enabled,
           'plan' => 'ultimate',
           'name' => 'User Example',
           'email' => 'user@example.com',
@@ -49,12 +50,29 @@ RSpec.describe GitlabSchema.types['SubscriptionFutureEntry'], :enable_admin_mode
         }
       end
 
+      let(:offline_cloud_licensing) { false }
+      let(:cloud_license_enabled) { false }
+
       subject { resolve_field(field_name, subscription) }
 
       describe 'type' do
         let(:field_name) { :type }
 
-        it { is_expected.to eq(License::ONLINE_CLOUD_TYPE) }
+        context 'when offline cloud licensing and cloud license enabled are true' do
+          let(:offline_cloud_licensing) { true }
+          let(:cloud_license_enabled) { true }
+
+          it { is_expected.to eq(License::OFFLINE_CLOUD_TYPE) }
+        end
+
+        context 'when offline cloud licensing is false and cloud license enabled is true' do
+          let(:offline_cloud_licensing) { false }
+          let(:cloud_license_enabled) { true }
+
+          it { is_expected.to eq(License::ONLINE_CLOUD_TYPE) }
+        end
+
+        it { is_expected.to eq(License::LEGACY_LICENSE_TYPE) }
       end
 
       describe 'plan' do

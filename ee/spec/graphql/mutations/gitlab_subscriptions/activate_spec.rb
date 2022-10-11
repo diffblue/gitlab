@@ -11,7 +11,8 @@ RSpec.describe Mutations::GitlabSubscriptions::Activate do
   let_it_be(:created_license) { License.last }
 
   let(:activation_code) { 'activation_code' }
-  let(:result) { { success: true, license: created_license } }
+  let(:future_subscriptions) { [] }
+  let(:result) { { success: true, license: created_license, future_subscriptions: future_subscriptions } }
 
   describe '#resolve' do
     before do
@@ -23,10 +24,36 @@ RSpec.describe Mutations::GitlabSubscriptions::Activate do
     end
 
     context 'when successful' do
-      it 'adds the issue to the epic' do
+      it 'returns no errors, a license and no future subscriptions' do
         result = mutation.resolve(activation_code: activation_code)
 
-        expect(result).to eq({ errors: [], license: created_license })
+        expect(result).to eq({ errors: [], license: created_license, future_subscriptions: future_subscriptions })
+      end
+
+      context 'when there are future subscriptions' do
+        let(:future_subscriptions) do
+          future_date = 4.days.from_now.to_date
+
+          [
+            {
+              cloud_license_enabled: true,
+              offline_cloud_license_enabled: false,
+              plan: 'ultimate',
+              name: 'User Example',
+              company: 'Example Inc',
+              email: 'user@example.com',
+              starts_at: future_date.to_s,
+              expires_at: (future_date + 1.year).to_s,
+              users_in_license_count: 10
+            }
+          ]
+        end
+
+        it 'returns the no errors, a license and the future subscriptions' do
+          result = mutation.resolve(activation_code: activation_code)
+
+          expect(result).to eq({ errors: [], license: created_license, future_subscriptions: future_subscriptions })
+        end
       end
     end
 
@@ -36,7 +63,7 @@ RSpec.describe Mutations::GitlabSubscriptions::Activate do
       it 'returns errors' do
         result = mutation.resolve(activation_code: activation_code)
 
-        expect(result).to eq({ errors: ['foo'], license: nil })
+        expect(result).to eq({ errors: ['foo'], license: nil, future_subscriptions: [] })
       end
     end
 

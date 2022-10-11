@@ -31,6 +31,16 @@ module Types
 
         field :users_in_license_count, GraphQL::Types::Int,
           null: true, description: 'Number of paid user seats.'
+
+        def type
+          if object['offline_cloud_licensing'] && object['cloud_license_enabled']
+            License::OFFLINE_CLOUD_TYPE
+          elsif object['cloud_license_enabled'] && !object['offline_cloud_licensing']
+            License::ONLINE_CLOUD_TYPE
+          else
+            License::LEGACY_LICENSE_TYPE
+          end
+        end
       end
     end
   end

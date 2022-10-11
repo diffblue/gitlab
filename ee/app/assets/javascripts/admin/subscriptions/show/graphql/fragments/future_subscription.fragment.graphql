@@ -1,0 +1,10 @@
+fragment FutureSubscription on SubscriptionFutureEntry {
+  type
+  plan
+  name
+  email
+  company
+  usersInLicenseCount
+  startsAt
+  expiresAt
+}
