@@ -5,9 +5,7 @@ require 'spec_helper'
 RSpec.describe GitlabSubscriptions::ActivateService do
   subject(:execute_service) { described_class.new.execute(activation_code) }
 
-  let!(:application_settings) do
-    stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
-  end
+  let!(:application_settings) { create(:application_setting) }
 
   let_it_be(:license_key) { build(:gitlab_license, :cloud).export }
 
@@ -20,28 +18,94 @@ RSpec.describe GitlabSubscriptions::ActivateService do
   end
 
   before do
+    stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
+
     allow(Gitlab::CurrentSettings).to receive(:current_application_settings).and_return(application_settings)
   end
 
   context 'when CustomerDot returns success' do
-    let(:customer_dot_response) { { success: true, license_key: license_key } }
+    let(:future_subscriptions) { [] }
+    let(:customer_dot_response) do
+      { success: true, license_key: license_key, future_subscriptions: future_subscriptions }
+    end
 
     before do
       stub_client_activate
     end
 
-    it 'persists license' do
-      freeze_time do
-        result = execute_service
-        created_license = License.current
+    context 'when there are no future subscriptions' do
+      it 'persists license and clears the future subscriptions' do
+        freeze_time do
+          result = execute_service
+          created_license = License.current
 
-        expect(result).to eq({ success: true, license: created_license })
+          expect(result).to eq({ success: true, license: created_license, future_subscriptions: future_subscriptions })
 
-        expect(created_license).to have_attributes(
-          data: license_key,
-          cloud: true,
-          last_synced_at: Time.current
-        )
+          expect(created_license).to have_attributes(
+            data: license_key,
+            cloud: true,
+            last_synced_at: Time.current
+          )
+
+          expect(application_settings.reload.future_subscriptions).to eq(future_subscriptions)
+        end
+      end
+    end
+
+    context 'when there are future subscriptions' do
+      let(:future_subscriptions) do
+        future_date = 4.days.from_now.to_date
+
+        [
+          {
+            "cloud_license_enabled" => true,
+            "offline_cloud_license_enabled" => false,
+            "plan" => 'ultimate',
+            "name" => 'User Example',
+            "company" => 'Example Inc',
+            "email" => 'user@example.com',
+            "starts_at" => future_date.to_s,
+            "expires_at" => (future_date + 1.year).to_s,
+            "users_in_license_count" => 10
+          }
+        ]
+      end
+
+      it 'persists license and stores the future subscriptions' do
+        freeze_time do
+          expect(application_settings.future_subscriptions).to eq([])
+
+          result = execute_service
+          created_license = License.current
+
+          expect(result).to eq({ success: true, license: created_license, future_subscriptions: future_subscriptions })
+
+          expect(created_license).to have_attributes(
+            data: license_key,
+            cloud: true,
+            last_synced_at: Time.current
+          )
+
+          expect(application_settings.reload.future_subscriptions).to eq(future_subscriptions)
+        end
+      end
+
+      context 'when saving the future subscriptions fails' do
+        it 'logs error and returns an empty future_subscriptions array' do
+          result = nil
+
+          allow(Gitlab::CurrentSettings.current_application_settings).to receive(:update!).and_raise('saving fails')
+
+          expect(application_settings.future_subscriptions).to eq([])
+          expect(Gitlab::ErrorTracking).to receive(:track_and_raise_for_dev_exception)
+
+          expect { result = execute_service }.not_to raise_error
+
+          created_license = License.current
+
+          expect(result).to eq({ success: true, license: created_license, future_subscriptions: [] })
+          expect(application_settings.future_subscriptions).to eq([])
+        end
       end
     end
 

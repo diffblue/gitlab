@@ -34,6 +34,17 @@ module Gitlab
                   }
                 ) {
                   licenseKey
+                  futureSubscriptions {
+                    cloudLicenseEnabled
+                    offlineCloudLicenseEnabled
+                    plan
+                    company
+                    email
+                    name
+                    startsAt
+                    expiresAt
+                    usersInLicenseCount
+                  }
                   errors
                 }
               }
@@ -48,7 +59,15 @@ module Gitlab
             response = response.dig(:data, 'data', 'cloudActivationActivate')
 
             if response['errors'].blank?
-              { success: true, license_key: response['licenseKey'] }
+              future_subscriptions = Array(response['futureSubscriptions']).each do |future_subscription_hash|
+                future_subscription_hash.deep_transform_keys!(&:underscore)
+              end
+
+              {
+                success: true,
+                license_key: response['licenseKey'],
+                future_subscriptions: future_subscriptions
+              }
             else
               error(response['errors'])
             end

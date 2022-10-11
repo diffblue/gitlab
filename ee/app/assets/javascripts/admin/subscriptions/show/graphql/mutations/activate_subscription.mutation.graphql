@@ -1,10 +1,14 @@
 #import "../fragments/license.fragment.graphql"
+#import "../fragments/future_subscription.fragment.graphql"
 
 mutation activateSubscription($gitlabSubscriptionActivateInput: GitlabSubscriptionActivateInput!) {
   gitlabSubscriptionActivate(input: $gitlabSubscriptionActivateInput) {
     errors
     license {
       ...License
+    }
+    futureSubscriptions {
+      ...FutureSubscription
     }
   }
 }

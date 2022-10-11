@@ -85,6 +85,10 @@ export const subscriptionFutureHistory = [
   },
 ];
 
+export function makeSubscriptionFutureEntry(subscription) {
+  return { __typename: 'SubscriptionFutureEntry', ...subscription };
+}
+
 export const activateLicenseMutationResponse = {
   FAILURE: [
     {
@@ -115,6 +119,7 @@ export const activateLicenseMutationResponse = {
     data: {
       gitlabSubscriptionActivate: {
         license: null,
+        futureSubscriptions: [],
         errors: [CONNECTIVITY_ERROR],
         __typename: 'GitlabSubscriptionActivatePayload',
       },
@@ -124,6 +129,7 @@ export const activateLicenseMutationResponse = {
     data: {
       gitlabSubscriptionActivate: {
         license: null,
+        futureSubscriptions: [],
         errors: ['invalid activation code'],
         __typename: 'GitlabSubscriptionActivatePayload',
       },
@@ -133,6 +139,7 @@ export const activateLicenseMutationResponse = {
     data: {
       gitlabSubscriptionActivate: {
         license: null,
+        futureSubscriptions: [],
         errors: ["undefined method `[]' for nil:NilClass"],
         __typename: 'GitlabSubscriptionActivatePayload',
       },
@@ -158,6 +165,7 @@ export const activateLicenseMutationResponse = {
           maximumUserCount: 50,
           usersOverLicenseCount: 0,
         },
+        futureSubscriptions: [],
         errors: [],
       },
     },

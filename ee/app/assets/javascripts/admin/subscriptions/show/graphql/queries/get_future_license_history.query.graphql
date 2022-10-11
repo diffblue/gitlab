@@ -1,14 +1,9 @@
+#import "../fragments/future_subscription.fragment.graphql"
+
 query getFutureLicenseHistory {
   subscriptionFutureEntries {
     nodes {
-      type
-      plan
-      name
-      email
-      company
-      usersInLicenseCount
-      startsAt
-      expiresAt
+      ...FutureSubscription
     }
   }
 }
