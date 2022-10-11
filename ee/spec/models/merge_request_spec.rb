@@ -1438,7 +1438,7 @@ RSpec.describe MergeRequest do
     end
   end
 
-  describe '#validate_reviewer_and_assignee_size_length' do
+  describe '#validate_reviewer_length' do
     let(:reviewer1) { create(:user) }
     let(:reviewer2) { create(:user) }
     let(:reviewer3) { create(:user) }
@@ -1446,7 +1446,7 @@ RSpec.describe MergeRequest do
     subject { create(:merge_request) }
 
     before do
-      stub_const("MergeRequest::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
+      stub_const("Issuable::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
     end
 
     it 'will not exceed the reviewer limit' do
