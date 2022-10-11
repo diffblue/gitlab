@@ -732,6 +732,9 @@ RSpec.describe MergeRequests::PushOptionsHandlerService do
     it_behaves_like 'with the project default branch'
 
     context 'when passing in usernames' do
+      # makes sure that usernames starting with numbers aren't treated as IDs
+      let(:user2) { create(:user, username: '123user', developer_projects: [project]) }
+      let(:user3) { create(:user, username: '999user', developer_projects: [project]) }
       let(:assigned) { { user2.username => 1, user3.username => 1 } }
 
       it_behaves_like 'with an existing branch that has a merge request open in foss'
