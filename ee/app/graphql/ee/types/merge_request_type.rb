@@ -53,21 +53,9 @@ module EE
       end
 
       def suggested_reviewers
-        return unless ::Gitlab.com?
-        return unless ::Feature.enabled?(:suggested_reviewers_control, object.project)
-        return unless suggested_reviewers_licensed_feature_available?
+        return unless object.project.can_suggest_reviewers?
 
-        {
-          version: '0.0.0',
-          top_n: 1,
-          reviewers: ['root']
-        }
-      end
-
-      private
-
-      def suggested_reviewers_licensed_feature_available?
-        object.project.licensed_feature_available?(:suggested_reviewers)
+        object.predictions&.suggested_reviewers
       end
     end
   end

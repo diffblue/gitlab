@@ -6,11 +6,19 @@ RSpec.describe 'getting merge request information nested in a project' do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
+  let_it_be(:project) { create(:project, :repository, :public) }
 
-  let(:project) { create(:project, :repository, :public, group: group) }
   let(:merge_request) { create(:merge_request, source_project: project) }
   let(:merge_request_graphql_data) { graphql_data_at(:project, :merge_request) }
   let(:mr_fields) { "suggestedReviewers { #{all_graphql_fields_for('SuggestedReviewersType')} }" }
+  let(:machine_learning_result) do
+    {
+      'version' => '0.0.0',
+      'top_n' => 1,
+      'reviewers' => ['root']
+    }
+  end
+
   let(:api_result) do
     {
       'version' => '0.0.0',
@@ -28,6 +36,13 @@ RSpec.describe 'getting merge request information nested in a project' do
   end
 
   describe 'suggestedReviewers' do
+    before do
+      merge_request.build_predictions
+      merge_request.predictions.update!(suggested_reviewers: machine_learning_result)
+      allow_any_instance_of(Project)  # rubocop:disable RSpec/AnyInstanceOf
+        .to receive(:can_suggest_reviewers?).and_return(available)
+    end
+
     shared_examples 'feature available' do
       it 'returns the right suggested reviewers' do
         post_graphql(query, current_user: current_user)
@@ -52,85 +67,14 @@ RSpec.describe 'getting merge request information nested in a project' do
       end
     end
 
-    context 'on GitLab.com', :saas do
-      context 'with an ultimate plan' do
-        let(:group) { create(:group_with_plan, plan: :ultimate_plan) }
+    context 'when suggested reviewers is available for the project' do
+      let(:available) { true }
 
-        context 'with licensed feature available' do
-          before do
-            stub_application_setting(check_namespace_plan: true)
-            stub_licensed_features(suggested_reviewers: true)
-          end
-
-          context 'with feature flag enabled' do
-            before do
-              stub_feature_flags(suggested_reviewers_control: project)
-            end
-
-            include_examples 'feature available'
-          end
-
-          context 'with feature flag disabled' do
-            before do
-              stub_feature_flags(suggested_reviewers_control: false, thing: project)
-            end
-
-            include_examples 'feature unavailable'
-          end
-        end
-
-        context 'with licensed feature unavailable' do
-          before do
-            stub_licensed_features(suggested_reviewers: false)
-          end
-
-          context 'with feature flag enabled' do
-            before do
-              stub_feature_flags(suggested_reviewers_control: project)
-            end
-
-            include_examples 'feature unavailable'
-          end
-
-          context 'with feature flag disabled' do
-            before do
-              stub_feature_flags(suggested_reviewers_control: false, thing: project)
-            end
-
-            include_examples 'feature unavailable'
-          end
-        end
-      end
-
-      context 'with an non-ultimate plan' do
-        let(:group) { create(:group_with_plan, plan: :premium_plan) }
-
-        context 'with licensed feature unavailable' do
-          before do
-            stub_licensed_features(suggested_reviewers: false)
-          end
-
-          context 'with feature flag enabled' do
-            before do
-              stub_feature_flags(suggested_reviewers_control: project)
-            end
-
-            include_examples 'feature unavailable'
-          end
-
-          context 'with feature flag disabled' do
-            before do
-              stub_feature_flags(suggested_reviewers_control: false, thing: project)
-            end
-
-            include_examples 'feature unavailable'
-          end
-        end
-      end
+      include_examples 'feature available'
     end
 
-    context 'on self managed' do
-      let(:group) { create(:group) }
+    context 'when suggested reviewers is not available for the project' do
+      let(:available) { false }
 
       include_examples 'feature unavailable'
     end
