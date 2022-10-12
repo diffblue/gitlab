@@ -2251,8 +2251,17 @@ RSpec.describe GroupPolicy do
       let(:current_user) { auditor }
 
       it { is_expected.to be_allowed(:read_group_runners) }
+      it { is_expected.to be_allowed(:read_group_all_available_runners) }
       it { is_expected.to be_disallowed(:admin_group_runners) }
       it { is_expected.to be_disallowed(:register_group_runners) }
+
+      context 'with :runners_finder_all_available FF disabled' do
+        before do
+          stub_feature_flags(runners_finder_all_available: false)
+        end
+
+        it { is_expected.to be_disallowed(:read_group_all_available_runners) }
+      end
     end
   end
 end

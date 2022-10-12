@@ -18,8 +18,9 @@ RSpec.describe Ci::RunnerPolicy do
       context 'with instance runner' do
         let(:runner) { instance_runner }
 
-        it 'disallows all permissions' do
-          expect_disallowed :read_runner, :assign_runner, :update_runner, :delete_runner
+        it 'allows only read permissions' do
+          expect_allowed :read_runner
+          expect_disallowed :assign_runner, :update_runner, :delete_runner
         end
       end
 

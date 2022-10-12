@@ -220,6 +220,8 @@ module EE
         enable :read_cluster
         enable :read_dependency_proxy
         enable :read_wiki
+
+        enable :read_group_all_available_runners
       end
 
       rule { auditor }.policy do
