@@ -49,6 +49,8 @@ module Ci
       case file_extension
       when 'cer'
         Gitlab::Ci::SecureFiles::Cer.new(file.read)
+      when 'p12'
+        Gitlab::Ci::SecureFiles::P12.new(file.read)
       end
     end
 
