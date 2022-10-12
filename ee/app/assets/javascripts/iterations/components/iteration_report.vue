@@ -208,6 +208,7 @@ export default {
       <div
         ref="description"
         v-safe-html:[$options.safeHtmlConfig]="iteration.descriptionHtml"
+        class="description md gl-mb-5"
       ></div>
       <burn-charts
         :start-date="iteration.startDate"
