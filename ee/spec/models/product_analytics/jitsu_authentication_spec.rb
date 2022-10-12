@@ -155,13 +155,13 @@ RSpec.describe ProductAnalytics::JitsuAuthentication do
   private
 
   def stub_signin_success
-    stub_request(:post, "http://jitsu.dev/configurator/api/v1/users/signin")
+    stub_request(:post, "http://jitsu.dev/api/v1/users/signin")
       .with(body: "{\"email\":\"test@test.com\",\"password\":\"testtest\"}")
       .to_return(status: 200, body: { access_token: 'thisisanaccesstoken' }.to_json, headers: {})
   end
 
   def stub_signin_failure
-    stub_request(:post, "http://jitsu.dev/configurator/api/v1/users/signin")
+    stub_request(:post, "http://jitsu.dev/api/v1/users/signin")
       .with(body: "{\"email\":\"test@test.com\",\"password\":\"testtest\"}")
       .to_return(status: 401,
                  body: { error: 'invalid password', message: 'Authorization failed: invalid password' }.to_json,
@@ -169,44 +169,44 @@ RSpec.describe ProductAnalytics::JitsuAuthentication do
   end
 
   def stub_signin_exception
-    stub_request(:post, "http://jitsu.dev/configurator/api/v1/users/signin")
+    stub_request(:post, "http://jitsu.dev/api/v1/users/signin")
       .with(body: "{\"email\":\"test@test.com\",\"password\":\"testtest\"}")
       .to_raise(Gitlab::HTTP::Error)
   end
 
   def stub_api_key_success
-    stub_request(:post, "http://jitsu.dev/configurator/api/v2/objects/testtesttesttestprj/api_keys")
+    stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/api_keys")
       .to_return(status: 200,
                  body: "{\"jsAuth\":\"Mp1N4PYvRXNk1KIh2MLDE7BYghnSwdnt\",\"uid\":\"yijlmncqjot0xy9h6rv54p.s7zz20\"}",
                  headers: {})
   end
 
   def stub_api_key_failure
-    stub_request(:post, "http://jitsu.dev/configurator/api/v2/objects/testtesttesttestprj/api_keys")
+    stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/api_keys")
       .to_return(status: 401,
                  body: { error: 'token required', message: 'Authorization failed: token required' }.to_json,
                  headers: {})
   end
 
   def stub_api_key_exception
-    stub_request(:post, "http://jitsu.dev/configurator/api/v2/objects/testtesttesttestprj/api_keys")
+    stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/api_keys")
       .to_raise(Gitlab::HTTP::Error)
   end
 
   def stub_clickhouse_success
-    stub_request(:post, "http://jitsu.dev/configurator/api/v2/objects/testtesttesttestprj/destinations")
+    stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/destinations")
       .to_return(status: 200)
   end
 
   def stub_clickhouse_failure
-    stub_request(:post, "http://jitsu.dev/configurator/api/v2/objects/testtesttesttestprj/destinations")
+    stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/destinations")
       .to_return(status: 401,
                  body: { error: 'token required', message: 'Authorization failed: token required' }.to_json,
                  headers: {})
   end
 
   def stub_clickhouse_exception
-    stub_request(:post, "http://jitsu.dev/configurator/api/v2/objects/testtesttesttestprj/destinations")
+    stub_request(:post, "http://jitsu.dev/api/v2/objects/testtesttesttestprj/destinations")
       .to_raise(Gitlab::HTTP::Error)
   end
 end
