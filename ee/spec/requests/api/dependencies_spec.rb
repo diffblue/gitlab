@@ -13,7 +13,7 @@ RSpec.describe API::Dependencies do
     let(:snowplow_standard_context_params) { { user: user, project: project, namespace: project.namespace } }
 
     before do
-      stub_licensed_features(dependency_scanning: true, security_dashboard: true)
+      stub_licensed_features(dependency_scanning: true, license_scanning: true, security_dashboard: true)
     end
 
     it_behaves_like 'a gitlab tracking event', described_class.name, 'view_dependencies'
@@ -22,6 +22,7 @@ RSpec.describe API::Dependencies do
       let_it_be(:finding) { create(:vulnerabilities_finding, :detected, :with_dependency_scanning_metadata) }
       let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report, project: project) }
       let_it_be(:finding_pipeline) { create(:vulnerabilities_finding_pipeline, finding: finding, pipeline: pipeline) }
+      let_it_be(:license_build) { create(:ee_ci_build, :success, :license_scanning, pipeline: pipeline) }
 
       before do
         project.add_developer(user)
@@ -44,6 +45,13 @@ RSpec.describe API::Dependencies do
         expect(vulnerability['severity']).to eq('high')
         expect(vulnerability['id']).to eq(finding.vulnerability_id)
         expect(vulnerability['url']).to end_with(path)
+      end
+
+      it 'include license information to response' do
+        license = json_response.find { |dep| dep['name'] == 'nokogiri' }['licenses'][0]
+
+        expect(license['name']).to eq('MIT')
+        expect(license['url']).to eq('http://opensource.org/licenses/mit-license')
       end
 
       context 'with nil package_manager' do
@@ -93,6 +101,19 @@ RSpec.describe API::Dependencies do
 
       it 'returns empty vulnerabilities' do
         expect(json_response.first['vulnerabilities']).to be_nil
+      end
+    end
+
+    context 'without permissions to see licenses' do
+      before do
+        # The only way a user can access this API but not license scanning results is when the feature is disabled
+        stub_licensed_features(dependency_scanning: true, license_scanning: false, security_dashboard: true)
+        create(:ee_ci_pipeline, :with_dependency_list_report, project: project)
+        request
+      end
+
+      it 'returns empty licenses' do
+        expect(json_response.first['licenses']).to be_nil
       end
     end
 
