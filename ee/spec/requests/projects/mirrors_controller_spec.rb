@@ -20,13 +20,13 @@ RSpec.describe Projects::MirrorsController do
 
     it 'complains about passing an empty URL' do
       patch project_mirror_path(project),
-        params: {
-                project: {
-          mirror: '1',
-          import_url: '',
-          mirror_trigger_builds: '0'
-        }
-      }
+            params: {
+              project: {
+                mirror: '1',
+                import_url: '',
+                mirror_trigger_builds: '0'
+              }
+            }
 
       expect(response).to have_gitlab_http_status(:found)
       expect(response).to redirect_to(project_settings_repository_path(project, anchor: 'js-push-remote-settings'))
