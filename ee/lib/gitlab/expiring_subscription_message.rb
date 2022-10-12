@@ -132,9 +132,15 @@ module Gitlab
     end
 
     def subscription_future_renewal?
-      return if self_managed? || namespace.nil? || !namespace.root_ancestor.gitlab_subscription.present?
+      return self_managed_subscription_future_renewal? if self_managed?
+
+      return if namespace.nil? || !namespace.root_ancestor.gitlab_subscription.present?
 
       ::GitlabSubscriptions::CheckFutureRenewalService.new(namespace: namespace).execute
+    end
+
+    def self_managed_subscription_future_renewal?
+      ::Gitlab::CurrentSettings.current_application_settings.future_subscriptions.present?
     end
 
     def require_notification?

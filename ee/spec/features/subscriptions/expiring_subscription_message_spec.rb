@@ -52,6 +52,20 @@ RSpec.describe 'Expiring Subscription Message', :js, :freeze_time do
 
         include_examples 'no expiration notification'
       end
+
+      context 'when self-managed subscription is already renewed' do
+        let(:expires_at) { Date.current + 5.days }
+
+        before do
+          allow(::Gitlab::CurrentSettings.current_application_settings).to receive(
+            :future_subscriptions
+          ).and_return([{ 'license' => 'test' }])
+
+          page.refresh
+        end
+
+        include_examples 'no expiration notification'
+      end
     end
 
     context 'when signed in user is not an admin' do

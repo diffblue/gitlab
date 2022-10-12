@@ -203,6 +203,19 @@ RSpec.describe Gitlab::ExpiringSubscriptionMessage, :saas do
                 end
               end
 
+              context 'when self-managed subscription is already renewed' do
+                before do
+                  allow(subscribable).to receive(:is_a?).with(::License).and_return(true)
+                  allow(::Gitlab::CurrentSettings.current_application_settings).to receive(
+                    :future_subscriptions
+                  ).and_return([{ 'license' => 'test' }])
+                end
+
+                it 'does not return a message' do
+                  expect(message).to be_nil
+                end
+              end
+
               context 'with namespace' do
                 using RSpec::Parameterized::TableSyntax
 
