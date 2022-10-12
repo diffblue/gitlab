@@ -4,7 +4,9 @@ require 'cfpropertylist'
 module Gitlab
   module Ci
     module SecureFiles
-      class Mobileprovision
+      class MobileProvision
+        include Gitlab::Utils::StrongMemoize
+
         attr_reader :error
 
         def initialize(filedata)
@@ -21,6 +23,7 @@ module Gitlab
             nil
           end
         end
+        strong_memoize_attr :decoded_plist
 
         def properties
           @properties ||= begin
@@ -30,6 +33,7 @@ module Gitlab
             nil
           end
         end
+        strong_memoize_attr :properties
 
         def metadata
           return {} unless properties
@@ -49,25 +53,22 @@ module Gitlab
             certificate_ids: certificate_ids
           }
         end
+        strong_memoize_attr :metadata
+
+        private
 
         def id
-          return unless properties
-
           properties['UUID']
         end
 
         def expires_at
-          return unless properties
-
           properties['ExpirationDate']
         end
-
-        private
 
         def certificate_ids
           return [] if developer_certificates.empty?
 
-          developer_certificates.map(&:id)
+          developer_certificates.map { |c| c.metadata[:id] }
         end
 
         def developer_certificates

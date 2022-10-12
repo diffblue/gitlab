@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::SecureFiles::Mobileprovision do
+RSpec.describe Gitlab::Ci::SecureFiles::MobileProvision do
   context 'when the supplied profile cannot be parsed' do
     context 'when the supplied certificate cannot be parsed' do
       let(:invalid_profile) { described_class.new('xyzabc') }
@@ -28,7 +28,7 @@ RSpec.describe Gitlab::Ci::SecureFiles::Mobileprovision do
 
       describe '#expires_at' do
         it 'returns nil' do
-          expect(invalid_profile.expires_at).to be_nil
+          expect(invalid_profile.metadata[:expires_at]).to be_nil
         end
       end
     end
@@ -45,6 +45,22 @@ RSpec.describe Gitlab::Ci::SecureFiles::Mobileprovision do
       end
     end
 
+    describe '#properties' do
+      it 'returns the property list of the decoded plist provided' do
+        expect(subject.properties.class).to be(Hash)
+        expect(subject.properties.keys).to match_array(%w[AppIDName ApplicationIdentifierPrefix CreationDate
+                                                          Platform IsXcodeManaged DeveloperCertificates
+                                                          DER-Encoded-Profile PPQCheck Entitlements ExpirationDate
+                                                          Name ProvisionedDevices TeamIdentifier TeamName
+                                                          TimeToLive UUID Version])
+      end
+
+      it 'returns nil if the property list fails to be parsed from the decoded plist' do
+        allow(subject).to receive(:decoded_plist).and_return('foo/bar')
+        expect(subject.properties).to be nil
+      end
+    end
+
     describe '#metadata' do
       it 'returns a hash with the expected keys' do
         expect(subject.metadata.keys).to match_array([:id, :expires_at, :app_id, :app_id_prefix, :app_name,
@@ -55,13 +71,13 @@ RSpec.describe Gitlab::Ci::SecureFiles::Mobileprovision do
 
     describe '#id' do
       it 'returns the profile UUID' do
-        expect(subject.id).to eq('6b9fcce1-b9a9-4b37-b2ce-ec4da2044abf')
+        expect(subject.metadata[:id]).to eq('6b9fcce1-b9a9-4b37-b2ce-ec4da2044abf')
       end
     end
 
     describe '#expires_at' do
       it 'returns the expiration timestamp of the profile' do
-        expect(subject.expires_at.utc).to eq('2023-08-01 23:15:13 UTC')
+        expect(subject.metadata[:expires_at].utc).to eq('2023-08-01 23:15:13 UTC')
       end
     end
 

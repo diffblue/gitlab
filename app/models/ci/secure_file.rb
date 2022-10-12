@@ -51,6 +51,8 @@ module Ci
         Gitlab::Ci::SecureFiles::Cer.new(file.read)
       when 'p12'
         Gitlab::Ci::SecureFiles::P12.new(file.read)
+      when 'mobileprovision'
+        Gitlab::Ci::SecureFiles::MobileProvision.new(file.read)
       end
     end
 
