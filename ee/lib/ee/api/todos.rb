@@ -15,11 +15,12 @@ module EE
         end
 
         resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-          desc 'Create a todo on an epic' do
+          desc 'Create a to-do item for the current user on an epic' do
             success ::API::Entities::Todo
           end
           params do
-            requires :epic_iid, type: Integer, desc: 'The IID of an epic'
+            requires :id, type: String, desc: 'The ID or URL-encoded path of the group owned by the authenticated user'
+            requires :epic_iid, type: Integer, desc: 'The internal ID of a group’s epic'
           end
           post ":id/epics/:epic_iid/todo" do
             authorize_can_read!
