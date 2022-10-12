@@ -6,7 +6,7 @@ module ProductAnalytics
       @jid = jid
       @project = project
 
-      @root_url = "#{Gitlab::CurrentSettings.jitsu_host}/configurator"
+      @root_url = Gitlab::CurrentSettings.jitsu_host
       @clickhouse_connection_string = Gitlab::CurrentSettings.clickhouse_connection_string
       @jitsu_project_xid = Gitlab::CurrentSettings.jitsu_project_xid
       @jitsu_administrator_email = Gitlab::CurrentSettings.jitsu_administrator_email
