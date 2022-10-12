@@ -154,7 +154,7 @@ Here we're leveraging the ordered property of the b-tree database index. Values 
 
 ##### `COUNT(*)` on a large dataset
 
-Kaminari by default executes a count query to determine the number of pages for rendering the page links. Count queries can be quite expensive for a large table. In an unfortunate scenario the queries simply time out.
+Kaminari by default executes a count query to determine the number of pages for rendering the page links. Count queries can be quite expensive for a large table. In an unfortunate scenario the queries time out.
 
 To work around this, we can run Kaminari without invoking the count SQL query.
 
@@ -264,7 +264,7 @@ Looking at the query execution plan, we can see that this query read only 5 rows
 
 ##### No page numbers
 
-Offset pagination provides an easy way to request a specific page. We can simply edit the URL and modify the `page=` URL parameter. Keyset pagination cannot provide page numbers because the paging logic might depend on different columns.
+Offset pagination provides an easy way to request a specific page. We can edit the URL and modify the `page=` URL parameter. Keyset pagination cannot provide page numbers because the paging logic might depend on different columns.
 
 In the previous example, the column is the `id`, so we might see something like this in the `URL`:
 
