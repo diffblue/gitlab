@@ -30,6 +30,10 @@ export const i18n = {
   expired: s__('Artifacts|Expired'),
   destroyArtifactError: s__('Artifacts|An error occurred while deleting the artifact'),
   fetchArtifactsError: s__('Artifacts|An error occurred while retrieving job artifacts'),
+  artifactsLabel: s__('Artifacts|Artifacts'),
+  jobLabel: s__('Artifacts|Job'),
+  sizeLabel: s__('Artifacts|Size'),
+  createdLabel: s__('Artifacts|Created'),
 };
 
 export const JOBS_PER_PAGE = 20;

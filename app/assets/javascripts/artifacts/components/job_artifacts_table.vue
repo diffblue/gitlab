@@ -9,24 +9,14 @@ import {
   GlIcon,
   GlPagination,
 } from '@gitlab/ui';
-import createFlash from '~/flash';
-import { s__ } from '~/locale';
+import { createAlert } from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
-import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scroller';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
-import destroyArtifactMutation from '../graphql/mutations/destroy_artifact.mutation.graphql';
-import { removeArtifactFromStore } from '../graphql/cache_update';
-import { totalArtifactsSizeForJob, mapArchivesToJobNodes } from '../utils';
-import {
-  JOB_STATUS_GROUP_SUCCESS,
-  STATUS_BADGE_VARIANTS,
-  JOBS_PER_PAGE,
-  INITIAL_PAGINATION_STATE,
-  i18n,
-} from '../constants';
-import ArtifactRow from './artifact_row.vue';
+import { totalArtifactsSizeForJob, mapArchivesToJobNodes, mapJobSucceeded } from '../utils';
+import { STATUS_BADGE_VARIANTS, JOBS_PER_PAGE, INITIAL_PAGINATION_STATE, i18n } from '../constants';
+import ArtifactsTableRowDetails from './artifacts_table_row_details.vue';
 
 export default {
   name: 'JobArtifactsTable',
@@ -41,9 +31,7 @@ export default {
     GlPagination,
     CiIcon,
     TimeAgo,
-    DynamicScroller,
-    DynamicScrollerItem,
-    ArtifactRow,
+    ArtifactsTableRowDetails,
   },
   inject: ['projectPath'],
   apollo: {
@@ -54,13 +42,13 @@ export default {
       },
       update({ project: { jobs: { nodes = [], pageInfo = {}, count = 0 } = {} } }) {
         return {
-          nodes: nodes.map(mapArchivesToJobNodes),
+          nodes: nodes.map(mapArchivesToJobNodes).map(mapJobSucceeded),
           count,
           pageInfo,
         };
       },
       error() {
-        createFlash({
+        createAlert({
           message: i18n.fetchArtifactsError,
         });
       },
@@ -73,7 +61,6 @@ export default {
         count: 0,
         pageInfo: {},
       },
-      deletingArtifactId: null,
       pagination: INITIAL_PAGINATION_STATE,
     };
   },
@@ -98,34 +85,11 @@ export default {
     },
   },
   methods: {
-    destroyArtifact(id) {
-      this.deletingArtifactId = id;
-      this.$apollo
-        .mutate({
-          mutation: destroyArtifactMutation,
-          variables: { id },
-          update: (store) => {
-            removeArtifactFromStore(store, id, getJobArtifactsQuery, this.queryVariables);
-          },
-        })
-        .catch(() => {
-          createFlash({
-            message: i18n.destroyArtifactError,
-          });
-          this.$apollo.queries.jobArtifacts.refetch();
-        })
-        .finally(() => {
-          this.deletingArtifactId = null;
-        });
+    refetchArtifacts() {
+      this.$apollo.queries.jobArtifacts.refetch();
     },
     artifactsSize(item) {
       return totalArtifactsSizeForJob(item);
-    },
-    jobSucceeded(item) {
-      return item.detailedStatus.group === JOB_STATUS_GROUP_SUCCESS;
-    },
-    statusVariant(item) {
-      return STATUS_BADGE_VARIANTS[item.detailedStatus.group];
     },
     pipelineId(item) {
       const id = getIdFromGraphQLId(item.pipeline.id);
@@ -156,23 +120,23 @@ export default {
   fields: [
     {
       key: 'artifacts',
-      label: s__('Artifacts|Artifacts'),
+      label: i18n.artifactsLabel,
       thClass: 'gl-w-quarter',
     },
     {
       key: 'job',
-      label: s__('Artifacts|Job'),
+      label: i18n.jobLabel,
       thClass: 'gl-w-40p',
     },
     {
       key: 'size',
-      label: s__('Artifacts|Size'),
+      label: i18n.sizeLabel,
       thClass: 'gl-w-10p gl-text-right',
       tdClass: 'gl-text-right',
     },
     {
       key: 'created',
-      label: s__('Artifacts|Created'),
+      label: i18n.createdLabel,
       thClass: 'gl-w-eighth gl-text-center',
       tdClass: 'gl-text-center',
     },
@@ -183,6 +147,7 @@ export default {
       tdClass: 'gl-text-right',
     },
   ],
+  STATUS_BADGE_VARIANTS,
   i18n,
 };
 </script>
@@ -214,11 +179,11 @@ export default {
       <template #cell(job)="{ item }">
         <span class="gl-display-inline-flex gl-align-items-center gl-w-full gl-mb-4">
           <span data-testid="job-artifacts-job-status">
-            <ci-icon v-if="jobSucceeded(item)" :status="item.detailedStatus" class="gl-mr-3" />
+            <ci-icon v-if="item.succeeded" :status="item.detailedStatus" class="gl-mr-3" />
             <gl-badge
               v-else
               :icon="item.detailedStatus.icon"
-              :variant="statusVariant(item)"
+              :variant="$options.STATUS_BADGE_VARIANTS[item.detailedStatus.group]"
               class="gl-mr-3"
             >
               {{ item.detailedStatus.label }}
@@ -285,27 +250,11 @@ export default {
         </gl-button-group>
       </template>
       <template #row-details="{ item: { artifacts } }">
-        <div style="max-height: 222px">
-          <dynamic-scroller :items="artifacts.nodes" :min-item-size="64">
-            <template #default="{ item, index, active }">
-              <dynamic-scroller-item :item="item" :active="active" :class="{ active }">
-                <div
-                  :class="{
-                    'gl-border-b-solid gl-border-b-1 gl-border-gray-100':
-                      index !== artifacts.nodes.length - 1,
-                  }"
-                  class="gl-py-5"
-                >
-                  <artifact-row
-                    :artifact="item"
-                    :deleting="item.id === deletingArtifactId"
-                    @delete="destroyArtifact(item.id)"
-                  />
-                </div>
-              </dynamic-scroller-item>
-            </template>
-          </dynamic-scroller>
-        </div>
+        <artifacts-table-row-details
+          :artifacts="artifacts"
+          :refetch-artifacts="refetchArtifacts"
+          :query-variables="queryVariables"
+        />
       </template>
     </gl-table>
     <gl-pagination

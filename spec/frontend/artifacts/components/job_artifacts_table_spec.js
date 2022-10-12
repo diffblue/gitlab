@@ -13,7 +13,7 @@ import destroyArtifactMutation from '~/artifacts/graphql/mutations/destroy_artif
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { ARCHIVE_FILE_TYPE, JOBS_PER_PAGE, i18n } from '~/artifacts/constants';
 import { totalArtifactsSizeForJob } from '~/artifacts/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 jest.mock('~/flash');
 
@@ -91,14 +91,14 @@ describe('JobArtifactsTable component', () => {
     expect(findLoadingState().exists()).toBe(true);
   });
 
-  it('on error, shows a flash message', async () => {
+  it('on error, shows an alert', async () => {
     createComponent({
       getJobArtifactsQuery: jest.fn().mockRejectedValue(new Error('Error!')),
     });
 
     await waitForPromises();
 
-    expect(createFlash).toHaveBeenCalledWith({ message: i18n.fetchArtifactsError });
+    expect(createAlert).toHaveBeenCalledWith({ message: i18n.fetchArtifactsError });
   });
 
   it('with data, renders the table', async () => {
@@ -198,7 +198,7 @@ describe('JobArtifactsTable component', () => {
       wrapper.findComponent(ArtifactRow).vm.$emit('delete');
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({ message: i18n.destroyArtifactError });
+      expect(createAlert).toHaveBeenCalledWith({ message: i18n.destroyArtifactError });
     });
   });
 

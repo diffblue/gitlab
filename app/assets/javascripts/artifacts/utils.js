@@ -1,5 +1,5 @@
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import { ARCHIVE_FILE_TYPE } from './constants';
+import { ARCHIVE_FILE_TYPE, JOB_STATUS_GROUP_SUCCESS } from './constants';
 
 export const totalArtifactsSizeForJob = (job) =>
   numberToHumanSize(
@@ -13,6 +13,13 @@ export const mapArchivesToJobNodes = (jobNode) => {
     archive: {
       ...jobNode.artifacts.nodes.find((artifact) => artifact.fileType === ARCHIVE_FILE_TYPE),
     },
+    ...jobNode,
+  };
+};
+
+export const mapJobSucceeded = (jobNode) => {
+  return {
+    succeeded: jobNode.detailedStatus.group === JOB_STATUS_GROUP_SUCCESS,
     ...jobNode,
   };
 };
