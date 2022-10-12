@@ -263,11 +263,11 @@ To change your group path (group URL):
 1. Under **Change group URL**, enter a new name.
 1. Select **Change group URL**.
 
-WARNING:
-* It is not possible to rename a namespace if it contains a
+WARNING: It is not possible to rename a namespace if it contains a
 project with [Container Registry](../packages/container_registry/index.md) tags,
 because the project cannot be moved.
-* All hard-coded references to the original project url will need to be changed to the new url, including include statements and docker image references in CI files and variables that specify a project or namespace.
+
+WARNING: All hard-coded references to the original project URL will need to be changed to the new URL, including include statements and Docker image references in CI files and variables that specify a project or namespace.
 
 ## Change the default branch protection of a group
 
