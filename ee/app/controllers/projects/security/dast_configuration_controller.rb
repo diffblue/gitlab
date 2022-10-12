@@ -13,6 +13,7 @@ module Projects
       end
 
       feature_category :dynamic_application_security_testing
+      urgency :low, [:show]
 
       def show
       end
