@@ -1,6 +1,11 @@
 <script>
+import { GlSprintf } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
+import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
+import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
+import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
+import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
 import SummaryText from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
@@ -11,9 +16,11 @@ export default {
   name: 'MRSecurityWidget',
   components: {
     MrWidget,
+    MrWidgetRow,
     SummaryText,
     SummaryHighlights,
     SecurityTrainingPromoWidget,
+    GlSprintf,
   },
   i18n,
   props: {
@@ -63,18 +70,11 @@ export default {
       //  { scanner: "DAST", added: [{ id: 15, severity: 'high' }] },
       //  ...
       // ]
-      return this.vulnerabilities.collapsed
-        .flatMap((vuln) => vuln.added)
-        .reduce((acc, vuln) => {
-          if (vuln.severity === HIGH) {
-            acc[HIGH] += 1;
-          } else if (vuln.severity === CRITICAL) {
-            acc[CRITICAL] += 1;
-          } else {
-            acc.other += 1;
-          }
-          return acc;
-        }, highlights);
+      this.vulnerabilities.collapsed.forEach((report) =>
+        this.highlightsFromReport(report, highlights),
+      );
+
+      return highlights;
     },
 
     totalNewVulnerabilities() {
@@ -93,6 +93,10 @@ export default {
       }
 
       return 'success';
+    },
+
+    reportsWithNewVulnerabilities() {
+      return this.vulnerabilities.collapsed?.filter((report) => report?.added?.length > 0) || [];
     },
   },
   methods: {
@@ -116,7 +120,39 @@ export default {
         axios.get(path).then((r) => ({ ...r, data: { ...r.data, reportType } })),
       );
     },
+
+    highlightsFromReport(report, highlights = { [HIGH]: 0, [CRITICAL]: 0, other: 0 }) {
+      // The data we receive from the API is something like:
+      // [
+      //  { scanner: "SAST", added: [{ id: 15, severity: 'critical' }] },
+      //  { scanner: "DAST", added: [{ id: 15, severity: 'high' }] },
+      //  ...
+      // ]
+      return report.added.reduce((acc, vuln) => {
+        if (vuln.severity === HIGH) {
+          acc[HIGH] += 1;
+        } else if (vuln.severity === CRITICAL) {
+          acc[CRITICAL] += 1;
+        } else {
+          acc.other += 1;
+        }
+        return acc;
+      }, highlights);
+    },
+
+    statusIconNameReportType(report) {
+      if (report.added?.length > 0) {
+        return EXTENSION_ICONS.warning;
+      }
+
+      return EXTENSION_ICONS.success;
+    },
+
+    statusIconNameVulnerability(vuln) {
+      return EXTENSION_ICONS[`severity${capitalizeFirstCharacter(vuln.severity)}`];
+    },
   },
+  SEVERITY_LEVELS,
 };
 </script>
 
@@ -143,6 +179,46 @@ export default {
         :security-configuration-path="mr.securityConfigurationPath"
         :project-full-path="mr.sourceProjectFullPath"
       />
+      <mr-widget-row
+        v-for="report in reportsWithNewVulnerabilities"
+        :key="report.reportType"
+        :widget-name="$options.name"
+        :level="2"
+        :status-icon-name="statusIconNameReportType(report)"
+      >
+        <template #header>
+          <div :data-testid="`${report.reportType}-report-header`">
+            <gl-sprintf :message="$options.i18n.newVulnerabilities">
+              <template #scanner>{{ report.reportType }}</template>
+              <template #number
+                ><strong>{{ report.added.length }}</strong></template
+              >
+              <template #vulnStr>{{
+                n__('vulnerability', 'vulnerabilities', report.added.length)
+              }}</template>
+            </gl-sprintf>
+          </div>
+          <summary-highlights :highlights="highlightsFromReport(report)" />
+        </template>
+        <template #body>
+          <div class="gl-mt-2">
+            <strong>{{ $options.i18n.new }}</strong>
+            <div class="gl-mt-2">
+              <mr-widget-row
+                v-for="vuln in report.added"
+                :key="vuln.uuid"
+                :level="3"
+                :widget-name="$options.name"
+                :status-icon-name="statusIconNameVulnerability(vuln)"
+              >
+                <template #body>
+                  {{ $options.SEVERITY_LEVELS[vuln.severity] }} {{ vuln.name }}
+                </template>
+              </mr-widget-row>
+            </div>
+          </div>
+        </template>
+      </mr-widget-row>
     </template>
   </mr-widget>
 </template>

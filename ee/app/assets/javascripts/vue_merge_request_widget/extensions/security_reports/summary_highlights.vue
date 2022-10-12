@@ -33,7 +33,7 @@ export default {
 </script>
 
 <template>
-  <div>
+  <div class="gl-font-sm">
     <gl-sprintf :message="$options.i18n.highlights">
       <template #critical="{ content }"
         ><strong class="gl-text-red-800">{{ criticalSeverity }} {{ content }}</strong></template
