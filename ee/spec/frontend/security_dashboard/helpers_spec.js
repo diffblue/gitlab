@@ -129,4 +129,26 @@ describe('getFormattedScanners', () => {
 
     expect(getFormattedScanners(vulnerabilityScanners)[0].name).toBe(manuallyAddedName);
   });
+
+  it('sorts "GENERIC" as the last item and everything else alphabetically', () => {
+    const unsortedVulnerabilityScanners = [
+      { ...manuallyAddedScanner },
+      { reportType: 'SAST' },
+      { reportType: 'DEPENDENCY_SCANNING' },
+      { reportType: 'CONTAINER_SCANNING' },
+      { reportType: 'DAST' },
+    ];
+
+    const formattedReportTypes = getFormattedScanners(unsortedVulnerabilityScanners).map(
+      ({ reportType }) => reportType,
+    );
+
+    expect(formattedReportTypes).toEqual([
+      'CONTAINER_SCANNING',
+      'DAST',
+      'DEPENDENCY_SCANNING',
+      'SAST',
+      'GENERIC',
+    ]);
+  });
 });
