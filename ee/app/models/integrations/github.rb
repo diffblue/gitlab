@@ -145,7 +145,7 @@ module Integrations
       log_info(
         "GitHub Commit Status update API call succeeded",
         {
-          github_response: result&.try(:to_h)&.try(
+          github_response: result&.try(
             :slice,
             :url, :id, :node_id, :state,
             :description, :target_url, :context,

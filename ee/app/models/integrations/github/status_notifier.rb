@@ -10,7 +10,7 @@ module Integrations
       end
 
       def notify(ref, state, params = {})
-        client.create_status(@repo_path, ref, state, params)
+        client.create_status(@repo_path, ref, state, params).to_h
       end
 
       def last_client_response

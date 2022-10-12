@@ -216,7 +216,11 @@ RSpec.describe Integrations::Github do
 
     it 'uses GitHub API to update status' do
       github_status_api = "https://api.github.com/repos/#{owner}/#{repository_name}/statuses/#{sha}"
-      stub_request(:post, github_status_api)
+      stub_request(:post, github_status_api).to_return(
+        status: 200,
+        body: { id: 1, state: 'success' }.to_json,
+        headers: { 'Content-Type' => 'application/json' }
+      )
 
       subject.execute(pipeline_sample_data)
 
