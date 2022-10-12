@@ -57,6 +57,10 @@ class EpicPolicy < BasePolicy
     enable :admin_related_epic_link
   end
 
+  rule { can?(:reporter_access) }.policy do
+    enable :mark_note_as_confidential
+  end
+
   # This rule replicates permissions in NotePolicy#can_read_confidential
   rule { can?(:reporter_access) | is_author | admin }.policy do
     enable :read_internal_note

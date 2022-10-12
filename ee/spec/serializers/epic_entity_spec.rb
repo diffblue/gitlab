@@ -18,4 +18,6 @@ RSpec.describe EpicEntity do
   it 'has epic specific attributes' do
     expect(subject).to include(:start_date, :end_date, :group_id, :group_name, :group_full_name, :group_full_path, :web_url, :color, :text_color)
   end
+
+  it_behaves_like 'issuable entity current_user properties'
 end

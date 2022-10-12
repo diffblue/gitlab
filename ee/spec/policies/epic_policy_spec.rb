@@ -33,7 +33,8 @@ RSpec.describe EpicPolicy do
                                 :read_issuable_participables)
       is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
                                    :create_epic, :admin_related_epic_link,
-                                   :set_epic_metadata, :set_confidentiality)
+                                   :set_epic_metadata, :set_confidentiality,
+                                   :mark_note_as_confidential)
     end
   end
 
@@ -44,7 +45,7 @@ RSpec.describe EpicPolicy do
                                 :update_epic, :admin_epic, :create_epic,
                                 :create_todo, :read_related_epic_link,
                                 :admin_related_epic_link, :set_epic_metadata,
-                                :set_confidentiality)
+                                :set_confidentiality, :mark_note_as_confidential)
     end
   end
 
@@ -67,7 +68,8 @@ RSpec.describe EpicPolicy do
                                 :award_emoji, :read_note, :create_todo,
                                 :read_issuable_participables, :read_internal_note,
                                 :read_related_epic_link, :admin_related_epic_link,
-                                :set_epic_metadata, :set_confidentiality)
+                                :set_epic_metadata, :set_confidentiality,
+                                :mark_note_as_confidential)
     end
   end
 
