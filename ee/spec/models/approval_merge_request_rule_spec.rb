@@ -264,9 +264,11 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
     end
 
     context 'when project merge_requests_author_approval is false' do
-      it 'does not contain author' do
+      before do
         merge_request.project.update!(merge_requests_author_approval: false)
+      end
 
+      it 'does not contain author' do
         expect(described_class.find(subject.id).approvers).to be_empty
       end
 
@@ -435,99 +437,6 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
           expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).not_to receive(:track_invalid_approvers)
 
           rule.users << project.first_owner
-        end
-      end
-    end
-  end
-
-  describe '#audit_log_for_invalid_report_approver' do
-    let(:expected_params) do
-      {
-        name: 'merge_request_invalid_approver_rules',
-        author: merge_request.author,
-        scope: merge_request.project,
-        target: merge_request,
-        target_details: { title: merge_request.title, iid: merge_request.iid, id: merge_request.id },
-        message: 'Invalid merge request approver rules'
-      }
-    end
-
-    context 'when audit_invalid_approver_rules is disabled' do
-      before do
-        stub_feature_flags(audit_invalid_approver_rules: false)
-      end
-
-      it 'does not call track_invalid_approvers' do
-        expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-
-        create(:code_owner_rule, merge_request: merge_request)
-      end
-    end
-
-    context 'when audit_invalid_approver_rules is enabled' do
-      before do
-        stub_feature_flags(audit_invalid_approver_rules: true)
-      end
-
-      context 'with any_approver as rule_type' do
-        it 'does not call track_invalid_approvers' do
-          create(:any_approver_rule, merge_request: merge_request)
-
-          expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-        end
-      end
-
-      context 'with code_owner_rule as rule_type' do
-        it 'calls track_invalid_approvers' do
-          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(expected_params)
-
-          create(:code_owner_rule, merge_request: merge_request)
-        end
-
-        context 'with approvers' do
-          it 'does not call track_invalid_approvers' do
-            rule = create(:code_owner_rule, merge_request: merge_request)
-
-            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-
-            rule.users << project.first_owner
-          end
-        end
-      end
-
-      context 'with approval_merge_request_rule as rule_type' do
-        it 'calls track_invalid_approvers' do
-          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(expected_params)
-
-          create(:approval_merge_request_rule, merge_request: merge_request)
-        end
-
-        context 'with approvers' do
-          it 'does not call track_invalid_approvers' do
-            rule = create(:approval_merge_request_rule, merge_request: merge_request)
-
-            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-
-            rule.users << project.first_owner
-          end
-        end
-      end
-
-      context 'with report_approver as rule_type' do
-        it 'calls track_invalid_approvers' do
-          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(expected_params)
-
-          create(:report_approver_rule, merge_request: merge_request)
-        end
-
-        context 'with approvers' do
-          it 'does not call track_invalid_approvers' do
-            rule = create(:report_approver_rule, merge_request: merge_request)
-
-            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-
-            rule.users << project.first_owner
-          end
         end
       end
     end
