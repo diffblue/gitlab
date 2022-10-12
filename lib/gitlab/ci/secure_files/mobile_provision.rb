@@ -14,24 +14,21 @@ module Gitlab
         end
 
         def decoded_plist
-          @decoded_plist ||= begin
-            p7 = OpenSSL::PKCS7.new(@filedata)
-            p7.verify(nil, OpenSSL::X509::Store.new, nil, OpenSSL::PKCS7::NOVERIFY)
-            p7.data
-          rescue StandardError => err
-            @error = err.to_s
-            nil
-          end
+          p7 = OpenSSL::PKCS7.new(@filedata)
+          p7.verify(nil, OpenSSL::X509::Store.new, nil, OpenSSL::PKCS7::NOVERIFY)
+          p7.data
+        rescue ArgumentError, OpenSSL::PKCS7::PKCS7Error => err
+          @error = err.to_s
+          nil
         end
         strong_memoize_attr :decoded_plist
 
         def properties
-          @properties ||= begin
-            list = CFPropertyList::List.new(data: decoded_plist).value
-            CFPropertyList.native_types(list)
-          rescue CFFormatError
-            nil
-          end
+          list = CFPropertyList::List.new(data: decoded_plist).value
+          CFPropertyList.native_types(list)
+        rescue CFFormatError, CFPlistError, CFTypeError => err
+          @error = err.to_s
+          nil
         end
         strong_memoize_attr :properties
 
