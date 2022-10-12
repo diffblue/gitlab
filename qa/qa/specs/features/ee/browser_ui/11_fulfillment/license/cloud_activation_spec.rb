@@ -42,20 +42,6 @@ module QA
       end
     end
 
-    context 'License usage' do
-      before do
-        activate_license
-      end
-
-      it 'shows correct billable user on subscription page',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/364830',
-         quarantine: { issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/366093', type: :flaky } do
-        Gitlab::Page::Admin::Subscription.perform do |subscription|
-          expect(subscription.billable_users.to_i).to eq(billable_user_count)
-        end
-      end
-    end
-
     context 'Remove cloud subscription' do
       before do
         activate_license
@@ -72,10 +58,6 @@ module QA
     end
 
     private
-
-    def billable_user_count
-      Resource::User.all.select { _1[:using_license_seat] == true }.size
-    end
 
     def activate_license
       Gitlab::Page::Admin::Subscription.perform do |subscription|
