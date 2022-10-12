@@ -10,7 +10,18 @@ product_category: compliance_management
 value_type: number
 status: active
 time_frame: 28d
-data_source: database
+instrumentation_class: AggregatedMetric
+data_source: redis_hll
+options:
+  aggregate:
+    operator: OR
+    attribute: user_id
+  events:
+    - 'g_compliance_audit_events'
+    - 'g_compliance_dashboard'
+    - 'i_compliance_audit_events'
+    - 'a_compliance_audit_events_api'
+    - 'i_compliance_credential_inventory'
 distribution:
 - ee
 tier:
