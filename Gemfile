@@ -577,3 +577,6 @@ gem 'cvss-suite', '~> 3.0.1', require: 'cvss_suite'
 
 # Work with RPM packages
 gem 'arr-pm', '~> 0.0.12'
+
+# Apple plist parsing
+gem 'CFPropertyList'

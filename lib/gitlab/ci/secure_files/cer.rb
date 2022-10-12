@@ -40,6 +40,8 @@ module Gitlab
         end
 
         def id
+          return unless certificate_data
+
           certificate_data.serial.to_s
         end
 

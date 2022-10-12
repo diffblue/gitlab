@@ -44,7 +44,7 @@ RSpec.describe Gitlab::Ci::SecureFiles::Cer do
 
     describe '#id' do
       it 'returns the certificate serial number' do
-        expect(subject.metadata[:id]).to eq('33669367788748363528491290218354043267')
+        expect(subject.id).to eq('33669367788748363528491290218354043267')
       end
     end
 
