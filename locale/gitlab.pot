@@ -34903,6 +34903,9 @@ msgstr ""
 msgid "Runners|Runners are the agents that run your CI/CD jobs. Follow the %{linkStart}installation and registration instructions%{linkEnd} to set up a runner."
 msgstr ""
 
+msgid "Runners|Runners are the agents that run your CI/CD jobs. To register new runners, please contact your administrator."
+msgstr ""
+
 msgid "Runners|Runs untagged jobs"
 msgstr ""
 
