@@ -4,11 +4,17 @@ require 'spec_helper'
 
 RSpec.describe 'Trial flow for user picking company and creating a project', :js, :saas, :saas_registration do
   it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-    visit new_trial_registration_path
+    visit new_trial_registration_path(glm_params)
 
     expect_to_be_on_trial_user_registration
 
     user_signs_up_through_trial_registration
+
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
 
     expect_to_see_welcome_form
 
@@ -46,10 +52,6 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
     click_button 'Continue'
   end
 
-  def user_email
-    'trialuser@example.com'
-  end
-
   def fills_in_welcome_form
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
@@ -74,10 +76,6 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
       expect(page).not_to have_content('What would you like to do?')
       expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
-  end
-
-  def expect_to_be_see_company_form
-    expect(page).to have_content 'About your company'
   end
 
   def expect_to_see_group_and_project_creation_form
@@ -111,46 +109,37 @@ RSpec.describe 'Trial flow for user picking company and creating a project', :js
 
     expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
 
+    trial_user_information = {
+      namespace_id: anything,
+      gitlab_com_trial: true,
+      sync_to_gl: true
+    }
+
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
       .to receive(:perform_async).with(
         user.id,
-        hash_including(
-          namespace_id: anything,
-          gitlab_com_trial: true,
-          sync_to_gl: true
-        )
+        trial_user_information
       ).and_call_original
 
     fill_in 'group_name', with: 'Test Group'
     fill_in 'blank_project_name', with: 'Test Project'
   end
 
-  def user
-    User.find_by(email: user_email)
-  end
-
   def company_params_trial_true
     ActionController::Parameters.new(
-      company_name: 'Test Company',
-      company_size: '1-99',
-      phone_number: '+1234567890',
-      country: 'US',
-      state: 'FL',
-      website_url: 'https://gitlab.com',
-      trial_onboarding_flow: 'true',
-      # these are the passed through params
-      role: 'software_developer',
-      registration_objective: 'other',
-      jobs_to_be_done_other: 'My reason'
+      {
+        company_name: 'Test Company',
+        company_size: '1-99',
+        phone_number: '+1234567890',
+        country: 'US',
+        state: 'FL',
+        website_url: 'https://gitlab.com',
+        trial_onboarding_flow: 'true',
+        # these are the passed through params
+        role: 'software_developer',
+        registration_objective: 'other',
+        jobs_to_be_done_other: 'My reason'
+      }.merge(glm_params)
     ).permit!
-  end
-
-  def expect_to_be_in_continuous_onboarding
-    expect(page).to have_content 'Get started with GitLab'
-  end
-
-  def expect_to_be_in_learn_gitlab
-    expect(page).to have_content('Learn GitLab')
-    expect(page).to have_content('GitLab is better with colleagues!')
   end
 end

@@ -11,6 +11,12 @@ RSpec.describe 'Standard flow for user picking company and joining a project', :
     it 'registers the user and sends them to a project listing page' do
       user_signs_up
 
+      expect_to_see_account_confirmation_page
+
+      confirm_account
+
+      user_signs_in
+
       expect_to_see_welcome_form
 
       fills_in_welcome_form
@@ -27,6 +33,12 @@ RSpec.describe 'Standard flow for user picking company and joining a project', :
 
     it 'registers the user and sends them to a project listing page' do
       user_signs_up
+
+      expect_to_see_account_confirmation_page
+
+      confirm_account
+
+      user_signs_in
 
       expect_to_see_welcome_form
 
@@ -53,14 +65,6 @@ RSpec.describe 'Standard flow for user picking company and joining a project', :
     click_button 'Register'
   end
 
-  def user_email
-    'onboardinguser@example.com'
-  end
-
-  def user
-    User.find_by(email: user_email)
-  end
-
   def fills_in_welcome_form
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
@@ -82,19 +86,5 @@ RSpec.describe 'Standard flow for user picking company and joining a project', :
       expect(page).to have_content('What would you like to do?')
       expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
-  end
-
-  def expect_to_be_on_projects_dashboard
-    # we set email opted in at the controller layer if setup for company is true
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
-    expect(page).to have_content 'This user doesn\'t have any personal projects'
-  end
-
-  def expect_to_be_on_projects_dashboard_with_zero_authorized_projects
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
-    expect(page).to have_content 'Welcome to GitLab'
-    expect(page).to have_content 'Faster releases. Better code. Less pain.'
   end
 end

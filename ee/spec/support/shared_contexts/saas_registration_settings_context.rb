@@ -9,18 +9,23 @@
 # - unsettled feature flag settings in SaaS(still in rollout), instead test both branches to cover SaaS
 RSpec.shared_context 'with saas settings for registration flows', shared_context: :metadata do
   include TermsHelper
+  include SaasRegistrationHelpers
 
   before do
     stub_application_setting(
       # Saas doesn't require admin approval.
-      require_admin_approval_after_user_signup: false
+      require_admin_approval_after_user_signup: false,
+      # SaaS always requires confirmation
+      send_user_confirmation_email: true
     )
 
     stub_feature_flags(
       # our focus isn't around arkose/signup challenges, so we'll omit those
       arkose_labs_signup_challenge: false,
       # Saas will always need emails confirmed
-      soft_email_confirmation: false
+      soft_email_confirmation: false,
+      # currently being rolled out, not yet on in prod
+      identity_verification: false
     )
 
     enforce_terms

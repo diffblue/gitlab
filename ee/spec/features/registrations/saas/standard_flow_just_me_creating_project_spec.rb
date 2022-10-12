@@ -6,6 +6,12 @@ RSpec.describe 'Standard flow for user picking just me and creating a project', 
   it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
     user_signs_up
 
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+
     expect_to_see_welcome_form
 
     fills_in_welcome_form
@@ -62,22 +68,6 @@ RSpec.describe 'Standard flow for user picking just me and creating a project', 
     end
   end
 
-  def expect_to_see_group_and_project_creation_form
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
-    expect(page).to have_content('Create or import your first project')
-    expect(page).to have_content('Projects help you organize your work')
-    expect(page).to have_content('Your project will be created at:')
-  end
-
-  def user_email
-    'onboardinguser@example.com'
-  end
-
-  def user
-    User.find_by(email: user_email)
-  end
-
   def fills_in_group_and_project_creation_form
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
@@ -86,14 +76,5 @@ RSpec.describe 'Standard flow for user picking just me and creating a project', 
 
     fill_in 'group_name', with: 'Test Group'
     fill_in 'blank_project_name', with: 'Test Project'
-  end
-
-  def expect_to_be_in_continuous_onboarding
-    expect(page).to have_content 'Get started with GitLab'
-  end
-
-  def expect_to_be_in_learn_gitlab
-    expect(page).to have_content('Learn GitLab')
-    expect(page).to have_content('GitLab is better with colleagues!')
   end
 end

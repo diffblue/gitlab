@@ -10,6 +10,12 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
 
     user_signs_up_through_trial_registration
 
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+
     expect_to_see_welcome_form
 
     fills_in_welcome_form
@@ -46,10 +52,6 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
     click_button 'Continue'
   end
 
-  def user_email
-    'trialuser@example.com'
-  end
-
   def fills_in_welcome_form
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
@@ -74,16 +76,6 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
       expect(page).to have_content('Who will be using this GitLab trial?')
       expect(page).not_to have_content('What would you like to do?')
     end
-  end
-
-  def expect_to_be_see_company_form
-    expect(page).to have_content 'About your company'
-  end
-
-  def expect_to_see_group_and_project_creation_form
-    expect(page).to have_content('Create or import your first project')
-    expect(page).to have_content('Projects help you organize your work')
-    expect(page).to have_content('Your project will be created at:')
   end
 
   def fill_in_company_form
@@ -125,10 +117,6 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
     fill_in 'blank_project_name', with: 'Test Project'
   end
 
-  def user
-    User.find_by(email: user_email)
-  end
-
   def company_params_trial_true
     ActionController::Parameters.new(
       company_name: 'Test Company',
@@ -143,14 +131,5 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
       registration_objective: 'other',
       jobs_to_be_done_other: 'My reason'
     ).permit!
-  end
-
-  def expect_to_be_in_continuous_onboarding
-    expect(page).to have_content 'Get started with GitLab'
-  end
-
-  def expect_to_be_in_learn_gitlab
-    expect(page).to have_content('Learn GitLab')
-    expect(page).to have_content('GitLab is better with colleagues!')
   end
 end
