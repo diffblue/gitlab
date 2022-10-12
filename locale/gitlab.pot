@@ -28622,10 +28622,19 @@ msgstr ""
 msgid "PackageRegistry|Delete package asset"
 msgstr ""
 
+msgid "PackageRegistry|Delete package version"
+msgstr ""
+
 msgid "PackageRegistry|Delete selected"
 msgstr ""
 
 msgid "PackageRegistry|Delete this package"
+msgstr ""
+
+msgid "PackageRegistry|Deleting all package assets will remove version %{version} of %{name}. Are you sure?"
+msgstr ""
+
+msgid "PackageRegistry|Deleting the last package asset will remove version %{version} of %{name}. Are you sure?"
 msgstr ""
 
 msgid "PackageRegistry|Duplicate packages"
