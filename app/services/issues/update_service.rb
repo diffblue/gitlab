@@ -201,15 +201,6 @@ module Issues
       ::IncidentManagement::AddSeveritySystemNoteWorker.perform_async(issue.id, current_user.id)
     end
 
-    def handle_escalation_status_change(issue)
-      return unless issue.supports_escalation? && issue.escalation_status
-
-      ::IncidentManagement::IssuableEscalationStatuses::AfterUpdateService.new(
-        issue,
-        current_user
-      ).execute
-    end
-
     def create_confidentiality_note(issue)
       SystemNoteService.change_issue_confidentiality(issue, issue.project, current_user)
     end
