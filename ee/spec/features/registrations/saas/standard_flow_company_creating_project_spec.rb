@@ -5,7 +5,13 @@ require 'spec_helper'
 RSpec.describe 'Standard flow for user picking company and creating a project', :js, :saas, :saas_registration do
   context 'when opting into a trial' do
     it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-      user_signs_up
+      user_signs_up(glm_params)
+
+      expect_to_see_account_confirmation_page
+
+      confirm_account
+
+      user_signs_in
 
       expect_to_see_welcome_form
 
@@ -36,6 +42,12 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
     it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
       user_signs_up
 
+      expect_to_see_account_confirmation_page
+
+      confirm_account
+
+      user_signs_in
+
       expect_to_see_welcome_form
 
       fills_in_welcome_form
@@ -57,26 +69,6 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
 
       expect_to_be_in_learn_gitlab
     end
-  end
-
-  def toggle_trial
-    find('[data-testid="trial_onboarding_flow"] button').click
-  end
-
-  def user_signs_up
-    new_user = build(:user, name: 'Registering User', email: user_email)
-
-    visit new_user_registration_path
-
-    fill_in 'First name', with: new_user.first_name
-    fill_in 'Last name', with: new_user.last_name
-    fill_in 'Username', with: new_user.username
-    fill_in 'Email', with: new_user.email
-    fill_in 'Password', with: new_user.password
-
-    wait_for_all_requests
-
-    click_button 'Register'
   end
 
   def fills_in_welcome_form
@@ -102,14 +94,10 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
     end
   end
 
-  def expect_to_be_see_company_form
-    expect(page).to have_content 'About your company'
-  end
-
   def fill_in_company_form(trial: true)
     expect(GitlabSubscriptions::CreateTrialOrLeadService).to receive(:new).with(
       user: user,
-      params: company_params(trial: trial.to_s)
+      params: company_params(trial: trial)
     ).and_return(instance_double(GitlabSubscriptions::CreateTrialOrLeadService, execute: ServiceResponse.success))
 
     fill_in 'company_name', with: 'Test Company'
@@ -120,37 +108,24 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
     fill_in 'website_url', with: 'https://gitlab.com'
   end
 
-  def expect_to_see_group_and_project_creation_form
-    # we set email opted in at the controller layer if setup for company is true
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
-    expect(page).to have_content('Create or import your first project')
-    expect(page).to have_content('Projects help you organize your work')
-    expect(page).to have_content('Your project will be created at:')
-  end
-
-  def user_email
-    'onboardinguser@example.com'
-  end
-
-  def user
-    User.find_by(email: user_email)
-  end
-
-  def company_params(trial: 'true')
-    ActionController::Parameters.new(
+  def company_params(trial: true)
+    base_params = ActionController::Parameters.new(
       company_name: 'Test Company',
       company_size: '1-99',
       phone_number: '+1234567890',
       country: 'US',
       state: 'FL',
       website_url: 'https://gitlab.com',
-      trial_onboarding_flow: trial,
+      trial_onboarding_flow: trial.to_s,
       # these are the passed through params
       role: 'software_developer',
       registration_objective: 'other',
       jobs_to_be_done_other: 'My reason'
     ).permit!
+
+    return base_params unless trial
+
+    base_params.merge(glm_params)
   end
 
   def fills_in_group_and_project_creation_form
@@ -169,23 +144,16 @@ RSpec.describe 'Standard flow for user picking company and creating a project', 
 
     expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
 
+    trial_user_information = {
+      namespace_id: anything,
+      gitlab_com_trial: true,
+      sync_to_gl: true
+    }
+
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
       .to receive(:perform_async).with(
         user.id,
-        hash_including(
-          namespace_id: anything,
-          gitlab_com_trial: true,
-          sync_to_gl: true
-        )
+        trial_user_information
       ).and_call_original
-  end
-
-  def expect_to_be_in_continuous_onboarding
-    expect(page).to have_content 'Get started with GitLab'
-  end
-
-  def expect_to_be_in_learn_gitlab
-    expect(page).to have_content('Learn GitLab')
-    expect(page).to have_content('GitLab is better with colleagues!')
   end
 end

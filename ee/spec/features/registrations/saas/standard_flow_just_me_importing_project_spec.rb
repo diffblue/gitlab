@@ -6,6 +6,12 @@ RSpec.describe 'Standard flow for user picking just me and importing a project',
   it 'registers the user and starts to import a project' do
     user_signs_up
 
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+
     expect_to_see_welcome_form
 
     fills_in_welcome_form
@@ -37,14 +43,6 @@ RSpec.describe 'Standard flow for user picking just me and importing a project',
     wait_for_all_requests
 
     click_button 'Register'
-  end
-
-  def user_email
-    'onboardinguser@example.com'
-  end
-
-  def user
-    User.find_by(email: user_email)
   end
 
   def fills_in_welcome_form

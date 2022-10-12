@@ -10,6 +10,12 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
 
     user_signs_up_through_trial_registration
 
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+
     expect_to_see_welcome_form
 
     fills_in_welcome_form
@@ -76,10 +82,6 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
     end
   end
 
-  def expect_to_be_see_company_form
-    expect(page).to have_content 'About your company'
-  end
-
   def expect_to_see_group_and_project_creation_form
     expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
 
@@ -100,10 +102,6 @@ RSpec.describe 'Trial flow for user picking just me and importing a project', :j
     select 'Florida', from: 'state'
     fill_in 'phone_number', with: '+1234567890'
     fill_in 'website_url', with: 'https://gitlab.com'
-  end
-
-  def user
-    User.find_by(email: user_email)
   end
 
   def company_params_trial_true

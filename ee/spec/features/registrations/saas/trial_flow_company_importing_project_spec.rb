@@ -10,6 +10,12 @@ RSpec.describe 'Trial flow for user picking company and importing a project', :j
 
     user_signs_up_through_trial_registration
 
+    expect_to_see_account_confirmation_page
+
+    confirm_account
+
+    user_signs_in
+
     expect_to_see_welcome_form
 
     fills_in_welcome_form
@@ -46,10 +52,6 @@ RSpec.describe 'Trial flow for user picking company and importing a project', :j
     click_button 'Continue'
   end
 
-  def user_email
-    'onboardinguser@example.com'
-  end
-
   def fills_in_welcome_form
     select 'Software Developer', from: 'user_role'
     select 'A different reason', from: 'user_registration_objective'
@@ -74,18 +76,6 @@ RSpec.describe 'Trial flow for user picking company and importing a project', :j
       expect(page).not_to have_content('What would you like to do?')
       expect(page).not_to have_content('I\'d like to receive updates about GitLab via email')
     end
-  end
-
-  def expect_to_be_see_company_form
-    expect(page).to have_content 'About your company'
-  end
-
-  def expect_to_see_group_and_project_creation_form
-    expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
-
-    expect(page).to have_content('Create or import your first project')
-    expect(page).to have_content('Projects help you organize your work')
-    expect(page).to have_content('Your project will be created at:')
   end
 
   def fill_in_company_form

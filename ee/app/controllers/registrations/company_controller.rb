@@ -22,6 +22,7 @@ module Registrations
       result = GitlabSubscriptions::CreateTrialOrLeadService.new(user: current_user, params: permitted_params).execute
 
       if result.success?
+        # TODO: add glm_tracking_params here https://gitlab.com/gitlab-org/gitlab/-/issues/377338
         redirect_to new_users_sign_up_groups_project_path(redirect_param)
       else
         flash.now[:alert] = result[:message]
