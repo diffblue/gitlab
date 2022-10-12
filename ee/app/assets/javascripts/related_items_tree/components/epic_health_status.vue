@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlPopover } from '@gitlab/ui';
+import { GlAlert, GlPopover, GlBadge } from '@gitlab/ui';
 
 import { i18n } from '../constants';
 
@@ -7,6 +7,7 @@ export default {
   components: {
     GlAlert,
     GlPopover,
+    GlBadge,
   },
   props: {
     healthStatus: {
@@ -23,6 +24,7 @@ export default {
     },
   },
   i18n,
+  badgeClasses: 'gl-ml-0! gl-mr-2 gl-font-weight-bold',
 };
 </script>
 
@@ -52,42 +54,19 @@ export default {
       </gl-alert>
     </gl-popover>
 
-    <span class="gl-label gl-label-text-dark gl-label-sm status-on-track gl-mr-2">
-      <span class="gl-label-text">
-        {{ healthStatus.issuesOnTrack }}
-      </span>
-    </span>
-    <span class="gl-mr-2 mr-md-2 gl-text-gray-500 health-label-long gl-display-none!">
-      {{ __('issues on track') }}
-    </span>
-    <span
-      class="gl-mr-2 mr-md-2 gl-text-gray-500 gl-str-truncated health-label-short gl-display-none!"
-      >{{ __('on track') }}</span
-    >
+    <gl-badge :class="$options.badgeClasses" size="sm" variant="success">
+      {{ healthStatus.issuesOnTrack }}
+      <span class="gl-sr-only">&nbsp;{{ __('issues on track') }}</span>
+    </gl-badge>
 
-    <span class="gl-label gl-label-text-dark gl-label-sm status-needs-attention gl-mr-2">
-      <span class="gl-label-text">
-        {{ healthStatus.issuesNeedingAttention }}
-      </span>
-    </span>
-    <span class="gl-mr-2 mr-md-2 gl-text-gray-500 health-label-long gl-display-none!">
-      {{ __('issues need attention') }}
-    </span>
-    <span
-      class="gl-mr-2 mr-md-2 gl-text-gray-500 gl-str-truncated health-label-short gl-display-none!"
-      >{{ __('need attention') }}</span
-    >
+    <gl-badge :class="$options.badgeClasses" size="sm" variant="warning">
+      {{ healthStatus.issuesNeedingAttention }}
+      <span class="gl-sr-only">&nbsp;{{ __('issues need attention') }}</span>
+    </gl-badge>
 
-    <span class="gl-label gl-label-text-dark gl-label-sm status-at-risk gl-mr-2">
-      <span class="gl-label-text">
-        {{ healthStatus.issuesAtRisk }}
-      </span>
-    </span>
-    <span class="gl-text-gray-500 health-label-long gl-display-none!">
-      {{ __('issues at risk') }}
-    </span>
-    <span class="gl-text-gray-500 gl-str-truncated health-label-short gl-display-none!">
-      {{ __('at risk') }}
-    </span>
+    <gl-badge :class="$options.badgeClasses" size="sm" variant="danger">
+      {{ healthStatus.issuesAtRisk }}
+      <span class="gl-sr-only">&nbsp;{{ __('issues at risk') }}</span>
+    </gl-badge>
   </div>
 </template>

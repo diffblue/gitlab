@@ -1,5 +1,9 @@
+import { GlBadge } from '@gitlab/ui';
 import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
-import { issueHealthStatus, issueHealthStatusCSSMapping } from 'ee/related_items_tree/constants';
+import {
+  issueHealthStatus,
+  issueHealthStatusVariantMapping,
+} from 'ee/related_items_tree/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { mockIssue1 } from '../mock_data';
@@ -18,7 +22,7 @@ describe('IssueHealthStatus', () => {
       },
     });
 
-  const findHealthStatus = () => wrapper.findByText(issueHealthStatus[healthStatus]);
+  const findHealthStatus = () => wrapper.findComponent(GlBadge);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -31,13 +35,13 @@ describe('IssueHealthStatus', () => {
   it('renders health status text', () => {
     const expectedValue = issueHealthStatus[healthStatus];
 
-    expect(wrapper.text()).toBe(expectedValue);
+    expect(findHealthStatus().text()).toBe(expectedValue);
   });
 
   it('applies correct health status class', () => {
-    const expectedValue = issueHealthStatusCSSMapping[healthStatus];
-
-    expect(wrapper.find(`.${expectedValue}`).exists()).toBe(true);
+    expect(findHealthStatus().attributes('variant')).toBe(
+      issueHealthStatusVariantMapping[healthStatus],
+    );
   });
 
   it('contains health status tooltip', () => {
