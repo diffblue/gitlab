@@ -6,20 +6,29 @@ import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports
 import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
+import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 import axios from '~/lib/utils/axios_utils';
+
+jest.mock('~/vue_shared/components/user_callout_dismisser.vue', () => ({ render: () => {} }));
 
 describe('MR Widget Security Reports', () => {
   let wrapper;
   let mockAxios;
 
+  const securityConfigurationPath = '/help/user/application_security/index.md';
+  const sourceProjectFullPath = 'namespace/project';
+
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
       propsData: {
         mr: {
-          securityConfigurationPath: '/help/user/application_security/index.md',
-          sourceProjectFullPath: 'namespace/project',
+          securityConfigurationPath,
+          sourceProjectFullPath,
         },
         ...propsData,
+      },
+      stubs: {
+        MrWidgetRow,
       },
     });
   };
@@ -33,7 +42,6 @@ describe('MR Widget Security Reports', () => {
   });
 
   afterEach(() => {
-    wrapper.destroy();
     mockAxios.restore();
   });
 
@@ -83,15 +91,15 @@ describe('MR Widget Security Reports', () => {
     const mockWithData = () => {
       mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(200, {
         added: [
-          { id: 1, severity: 'critical' },
-          { id: 2, severity: 'high' },
+          { id: 1, severity: 'critical', name: 'Password leak' },
+          { id: 2, severity: 'high', name: 'XSS vulnerability' },
         ],
       });
 
       mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
         added: [
-          { id: 5, severity: 'low' },
-          { id: 3, severity: 'unknown' },
+          { id: 5, severity: 'low', name: 'SQL Injection' },
+          { id: 3, severity: 'unknown', name: 'Weak password' },
         ],
       });
     };
@@ -122,6 +130,27 @@ describe('MR Widget Security Reports', () => {
       expect(findWidget().props('isCollapsible')).toBe(false);
       await waitForPromises();
       expect(findWidget().props('isCollapsible')).toBe(true);
+    });
+
+    it('displays detailed data when expanded', async () => {
+      mockWithData();
+
+      createComponent({
+        propsData: { mr: { ...reportEndpoints, securityConfigurationPath, sourceProjectFullPath } },
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      // Click on the toggle button to expand data
+      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+
+      expect(wrapper.findByText(/Weak password/).exists()).toBe(true);
+      expect(wrapper.findByText(/Password leak/).exists()).toBe(true);
+      expect(wrapper.findByTestId('SAST-report-header').text()).toBe(
+        'SAST detected 2 new potential vulnerabilities',
+      );
     });
   });
 });
