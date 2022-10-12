@@ -55,6 +55,14 @@ module BoardsActions
     end
   end
 
+  def board_path(board)
+    if group?
+      group_board_path(parent, board)
+    else
+      project_board_path(parent, board)
+    end
+  end
+
   def group?
     instance_variable_defined?(:@group)
   end
