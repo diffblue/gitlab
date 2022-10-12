@@ -53,10 +53,10 @@ export const issueHealthStatus = {
   needsAttention: __('Needs attention'),
 };
 
-export const issueHealthStatusCSSMapping = {
-  atRisk: 'status-at-risk',
-  onTrack: 'status-on-track',
-  needsAttention: 'status-needs-attention',
+export const issueHealthStatusVariantMapping = {
+  atRisk: 'danger',
+  onTrack: 'success',
+  needsAttention: 'warning',
 };
 
 export const trackingAddedIssue = 'g_project_management_users_epic_issue_added_from_epic';

@@ -1,10 +1,13 @@
 <script>
-import { GlTooltipDirective } from '@gitlab/ui';
-import { issueHealthStatus, issueHealthStatusCSSMapping } from '../constants';
+import { GlBadge, GlTooltipDirective } from '@gitlab/ui';
+import { issueHealthStatus, issueHealthStatusVariantMapping } from '../constants';
 
 export default {
   directives: {
     GlTooltip: GlTooltipDirective,
+  },
+  components: {
+    GlBadge,
   },
   props: {
     healthStatus: {
@@ -18,18 +21,22 @@ export default {
       return issueHealthStatus[this.healthStatus];
     },
     statusClass() {
-      return issueHealthStatusCSSMapping[this.healthStatus];
+      return issueHealthStatusVariantMapping[this.healthStatus];
     },
   },
 };
 </script>
 
 <template>
-  <span class="health-status">
-    <span class="gl-label gl-label-sm" :class="statusClass">
-      <span v-gl-tooltip class="gl-label-text" :title="__('Health status')">
-        {{ statusText }}
-      </span>
-    </span>
+  <span ref="healthStatus" class="health-status">
+    <gl-badge
+      v-gl-tooltip
+      title="Health status"
+      class="gl-font-weight-bold"
+      size="sm"
+      :variant="statusClass"
+    >
+      {{ statusText }}
+    </gl-badge>
   </span>
 </template>

@@ -1,4 +1,5 @@
-import { GlPopover, GlAlert } from '@gitlab/ui';
+import { GlPopover, GlAlert, GlBadge } from '@gitlab/ui';
+
 import { shallowMount } from '@vue/test-utils';
 
 import EpicHealthStatus from 'ee/related_items_tree/components/epic_health_status.vue';
@@ -29,11 +30,7 @@ describe('EpicHealthStatus', () => {
     });
 
     it('does not render health labels', () => {
-      const longLabels = wrapper.findAll('.health-label-long');
-      const shortLabels = wrapper.findAll('.health-label-short');
-
-      expect(longLabels).toHaveLength(0);
-      expect(shortLabels).toHaveLength(0);
+      expect(wrapper.findAllComponents(GlBadge)).toHaveLength(0);
     });
   });
 
@@ -58,27 +55,15 @@ describe('EpicHealthStatus', () => {
       expect(wrapper.vm.hasHealthStatus).toBe(true);
     });
 
-    it('renders label with both short and long text', () => {
-      const longLabels = wrapper.findAll('.health-label-long');
-      const shortLabels = wrapper.findAll('.health-label-short');
+    it('renders badges', () => {
+      const badges = wrapper.findAllComponents(GlBadge);
 
-      expect(longLabels).toHaveLength(3);
-      expect(shortLabels).toHaveLength(3);
+      expect(badges).toHaveLength(3);
 
-      const expectedLongLabels = ['issues on track', 'issues need attention', 'issues at risk'];
+      const expectedVariants = ['success', 'warning', 'danger'];
 
-      expect(longLabels).toHaveLength(expectedLongLabels.length);
-
-      longLabels.wrappers.forEach((longLabelWrapper, index) => {
-        expect(longLabelWrapper.text()).toEqual(expectedLongLabels[index]);
-      });
-
-      const expectedShortLabels = ['on track', 'need attention', 'at risk'];
-
-      expect(shortLabels).toHaveLength(expectedShortLabels.length);
-
-      shortLabels.wrappers.forEach((shortLabelWrapper, index) => {
-        expect(shortLabelWrapper.text()).toEqual(expectedShortLabels[index]);
+      badges.wrappers.forEach((badge, index) => {
+        expect(badge.attributes('variant')).toBe(expectedVariants[index]);
       });
     });
 
