@@ -278,7 +278,7 @@ attributes.
 - `summary`, `time_summary` - Top-level aggregations, most of the metrics are using different APIs/
 finders and not invoking the aggregated backend.
 
-When clicking on a specific stage, the `records` endpoint is invoked, which returns the related
+When selecting a specific stage, the `records` endpoint is invoked, which returns the related
 records (paginated) for the chosen stage in a specific order.
 
 ### Database decomposition
