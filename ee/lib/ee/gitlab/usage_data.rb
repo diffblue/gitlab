@@ -330,7 +330,10 @@ module EE
             operations_dashboard_users_with_projects_added: distinct_count(UsersOpsDashboardProject.joins(:user).merge(::User.active).where(time_period), :user_id)
           })
 
-          data[:projects_incident_sla_enabled] = count(::Project.with_enabled_incident_sla) if time_period.blank?
+          if time_period.blank?
+            data[:projects_incident_sla_enabled] = count(
+              ::IncidentManagement::ProjectIncidentManagementSetting.where(sla_timer: true), :project_id)
+          end
 
           data
         end
