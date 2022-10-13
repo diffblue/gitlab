@@ -1,5 +1,5 @@
 <script>
-import { GlIcon, GlLink, GlSprintf, GlTableLite } from '@gitlab/ui';
+import { GlIcon, GlLink, GlSprintf, GlTableLite, GlPopover } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { thWidthPercent } from '~/lib/utils/table_utility';
 import { sprintf } from '~/locale';
@@ -8,6 +8,8 @@ import {
   HELP_LINK_ARIA_LABEL,
   PROJECT_TABLE_LABEL_STORAGE_TYPE,
   PROJECT_TABLE_LABEL_USAGE,
+  containerRegistryId,
+  containerRegistryPopoverId,
 } from '../constants';
 import { descendingStorageUsageSort } from '../utils';
 import StorageTypeIcon from './storage_type_icon.vue';
@@ -20,8 +22,10 @@ export default {
     GlTableLite,
     GlSprintf,
     StorageTypeIcon,
+    GlPopover,
   },
   mixins: [glFeatureFlagMixin()],
+  inject: ['containerRegistryPopoverContent'],
   props: {
     storageTypes: {
       type: Array,
@@ -39,6 +43,7 @@ export default {
         linkTitle,
       });
     },
+    numberToHumanSize,
   },
   projectTableFields: [
     {
@@ -50,11 +55,10 @@ export default {
       key: 'value',
       label: PROJECT_TABLE_LABEL_USAGE,
       thClass: thWidthPercent(10),
-      formatter: (value) => {
-        return numberToHumanSize(value, 1);
-      },
     },
   ],
+  containerRegistryId,
+  containerRegistryPopoverId,
 };
 </script>
 <template>
@@ -93,6 +97,25 @@ export default {
           </p>
         </div>
       </div>
+    </template>
+
+    <template #cell(value)="{ item }">
+      {{ numberToHumanSize(item.value, 1) }}
+
+      <template v-if="item.storageType.id === $options.containerRegistryId">
+        <gl-icon
+          :id="$options.containerRegistryPopoverId"
+          name="warning"
+          class="gl-mt-2 gl-lg-mt-0 gl-lg-ml-2"
+        />
+        <gl-popover
+          triggers="hover focus"
+          placement="top"
+          :target="$options.containerRegistryPopoverId"
+          :content="containerRegistryPopoverContent"
+          :data-testid="$options.containerRegistryPopoverId"
+        />
+      </template>
     </template>
   </gl-table-lite>
 </template>

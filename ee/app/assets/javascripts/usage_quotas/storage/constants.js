@@ -113,3 +113,14 @@ export const projectHelpPaths = {
     anchor: 'reduce-wiki-repository-size',
   }),
 };
+
+export const namespaceContainerRegistryPopoverContent = s__(
+  'UsageQuotas|This project-level storage statistic does not include savings for site-wide deduplication and is not used to calculate total namespace storage.',
+);
+
+export const projectContainerRegistryPopoverContent = s__(
+  'UsageQuotas|The project-level storage statistics for the Container Registry are directional only and do not include savings for instance-wide deduplication.',
+);
+
+export const containerRegistryId = 'containerRegistrySize';
+export const containerRegistryPopoverId = 'container-registry-popover';

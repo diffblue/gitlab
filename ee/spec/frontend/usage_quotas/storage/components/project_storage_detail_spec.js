@@ -1,7 +1,8 @@
-import { GlTableLite } from '@gitlab/ui';
+import { GlTableLite, GlPopover } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ProjectStorageDetail from 'ee/usage_quotas/storage/components/project_storage_detail.vue';
+import { containerRegistryPopoverId } from 'ee/usage_quotas/storage/constants';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { projectData, projectHelpLinks } from '../mock_data';
 
@@ -18,11 +19,16 @@ describe('ProjectStorageDetail', () => {
           ...defaultProps,
           ...props,
         },
+        provide: {
+          containerRegistryPopoverContent: 'Sample popover message',
+        },
       }),
     );
   };
 
   const findTable = () => wrapper.findComponent(GlTableLite);
+  const findPopover = () => wrapper.findComponent(GlPopover);
+  const findWarningIcon = () => wrapper.find(`#${containerRegistryPopoverId}`);
 
   beforeEach(() => {
     createComponent();
@@ -68,6 +74,43 @@ describe('ProjectStorageDetail', () => {
 
     it('should not render any table data <td>', () => {
       expect(findTable().find('td').exists()).toBe(false);
+    });
+  });
+
+  describe('container registry popover note', () => {
+    describe('storageTypes does not include container registry', () => {
+      it('does not render warning icon and popover', () => {
+        createComponent({
+          storageTypes: [
+            {
+              storageType: {
+                id: 'buildArtifactsSize',
+                name: 'Artifacts',
+                description: 'Pipeline artifacts and job artifacts, created with CI/CD.',
+                helpPath: '/build-artifacts',
+              },
+              value: 400000,
+            },
+          ],
+        });
+
+        expect(findPopover().exists()).toBe(false);
+      });
+    });
+
+    describe('storageTypes includes container registry', () => {
+      beforeEach(() => {
+        createComponent();
+      });
+
+      it('renders warning icon and popover', () => {
+        expect(findPopover().exists()).toBe(true);
+        expect(findWarningIcon().exists()).toBe(true);
+      });
+
+      it('renders popover that uses icon as target', () => {
+        expect(findPopover().props().target).toBe(containerRegistryPopoverId);
+      });
     });
   });
 });
