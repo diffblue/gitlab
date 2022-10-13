@@ -8,7 +8,6 @@ export default () => {
   return new Vue({
     el,
     name: 'DashboardsApp',
-    store: {},
     render: (createElement) =>
       createElement(DashboardsApp, {
         props: {

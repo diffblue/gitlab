@@ -45,6 +45,9 @@ export const mockPreviousTimePeriod = Object.entries(mockCurrentTimePeriod).redu
   {},
 );
 
+export const mockCurrentApiResponse = Object.values(mockCurrentTimePeriod);
+export const mockPreviousApiResponse = Object.values(mockPreviousTimePeriod);
+
 export const mockComparativeTableData = [
   {
     change: '1070.59%',

@@ -1,8 +1,5 @@
-import { flatten } from 'lodash';
 import { buildApiUrl } from '~/api/api_utils';
 import axios from '~/lib/utils/axios_utils';
-import { METRICS_POPOVER_CONTENT } from '~/analytics/shared/constants';
-import { prepareTimeMetricsData } from '~/analytics/shared/utils';
 
 export const DEPLOYMENT_FREQUENCY_METRIC_TYPE = 'deployment_frequency';
 export const LEAD_TIME_FOR_CHANGES = 'lead_time_for_changes';
@@ -66,18 +63,3 @@ export function getProjectDoraMetrics(projectId, metric, params = {}) {
 export function getGroupDoraMetrics(groupId, metric, params = {}) {
   return getDoraMetrics(GROUPS_DORA_METRICS_PATH, groupId, metric, params);
 }
-
-const requestData = ({ request, endpoint, path, params, name }) => {
-  return request({ endpoint, params, requestPath: path })
-    .then(({ data }) => data)
-    .catch(() => {
-      throw new Error(name);
-    });
-};
-
-export const fetchMetricsData = (reqs = [], path, params) => {
-  const promises = reqs.map((r) => requestData({ ...r, path, params }));
-  return Promise.all(promises).then((responses) =>
-    prepareTimeMetricsData(flatten(responses), METRICS_POPOVER_CONTENT),
-  );
-};

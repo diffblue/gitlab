@@ -41,6 +41,8 @@ export const extractDoraMetrics = (metrics = []) =>
     }, {});
 
 /**
+ * Takes 2 time periods of DORA metrics and generates the data rows
+ * for the comparison table.
  *
  * @param {Object} obj
  * @param {Array} obj.current - DORA metrics data for the current time period

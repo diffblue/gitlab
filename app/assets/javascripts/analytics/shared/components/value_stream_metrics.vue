@@ -3,8 +3,7 @@ import { GlSkeletonLoader } from '@gitlab/ui';
 import { isEqual, keyBy } from 'lodash';
 import { createAlert } from '~/flash';
 import { sprintf, s__ } from '~/locale';
-import { fetchMetricsData } from 'ee/api/dora_api';
-import { removeFlash } from '../utils';
+import { fetchMetricsData, removeFlash } from '../utils';
 import MetricTile from './metric_tile.vue';
 
 const extractMetricsGroupData = (keyList = [], data = []) => {

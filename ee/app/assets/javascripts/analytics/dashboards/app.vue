@@ -4,7 +4,7 @@ import { sprintf } from '~/locale';
 import { createAlert } from '~/flash';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
 import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
-import { fetchMetricsData } from 'ee/api/dora_api';
+import { fetchMetricsData } from '~/analytics/shared/utils';
 import {
   COMPARISON_INTERVAL_IN_DAYS,
   DASHBOARD_TITLE,
@@ -40,6 +40,8 @@ const fetchComparativeDoraTimePeriods = async ({
   ];
 
   const [current, previous] = await Promise.all(promises);
+  // console.log('current', current);
+  // console.log('previous', previous);
   return { current: extractDoraMetrics(current), previous: extractDoraMetrics(previous) };
 };
 
@@ -92,7 +94,11 @@ export default {
         requestPath: `groups/${this.groupFullPath}`,
       })
         .then((response) => {
+          // console.log('then', response);
           this.data = generateDoraTimePeriodComparisonTable(response);
+
+          console.log('data', this.data[0].metric);
+          console.log('data', this.data[1].metric);
         })
         .catch(() => createAlert({ message: DASHBOARD_LOADING_FAILURE }))
         .finally(() => {
