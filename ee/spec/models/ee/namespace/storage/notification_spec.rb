@@ -6,14 +6,19 @@ RSpec.describe EE::Namespace::Storage::Notification do
   include NamespaceStorageHelpers
 
   let_it_be(:group, refind: true) { create(:group) }
-  let_it_be(:user) { create(:user) }
-  let_it_be(:alert_level) { :info }
+  let_it_be(:owner) { create(:user) }
+  let_it_be(:maintainer) { create(:user) }
+  let_it_be(:developer) { create(:user) }
+  let(:user) { owner }
+  let(:alert_level) { :info }
 
   describe '#show?' do
     subject { described_class.new(group, user).show? }
 
     before do
-      group.add_owner(user)
+      group.add_owner(owner)
+      group.add_maintainer(maintainer)
+      group.add_developer(developer)
       stub_ee_application_setting(should_check_namespace_plan: true)
       stub_ee_application_setting(enforce_namespace_storage_limit: true)
       stub_ee_application_setting(automatic_purchased_storage_allocation: true)
@@ -35,23 +40,37 @@ RSpec.describe EE::Namespace::Storage::Notification do
     end
 
     context 'when the user is not provided' do
-      let_it_be(:user) { nil }
+      let(:user) { nil }
 
       it { is_expected.to be false }
     end
 
     context 'when the user does not have at least maintainer access to the group' do
-      before do
-        allow(user).to receive(:can?).with(:maintainer_access, group.root_ancestor).and_return(false)
-      end
+      let(:user) { developer }
 
       it { is_expected.to be false }
     end
 
     context 'when alert level is none' do
-      let_it_be(:alert_level) { :none }
+      let(:alert_level) { :none }
 
       it { is_expected.to be false }
+    end
+
+    context 'for repository limits' do
+      before do
+        stub_feature_flags(namespace_storage_limit: false)
+      end
+
+      it 'returns true if all conditions are met' do
+        is_expected.to be true
+      end
+
+      context 'when the user does not have at least owner access to the group' do
+        let(:user) { maintainer }
+
+        it { is_expected.to be false }
+      end
     end
   end
 
