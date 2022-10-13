@@ -8,6 +8,7 @@ import { __ } from '~/locale';
 import {
   FILTERED_SEARCH_TERM,
   FILTER_ANY,
+  TOKEN_TYPE_HEALTH,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearch from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import { AssigneeFilterType } from '~/boards/constants';
@@ -157,7 +158,7 @@ export default {
 
       if (healthStatus) {
         filteredSearchValue.push({
-          type: 'health_status',
+          type: TOKEN_TYPE_HEALTH,
           value: { data: healthStatus, operator: '=' },
         });
       }
@@ -301,7 +302,7 @@ export default {
           my_reaction_emoji: myReactionEmoji,
           release_tag: releaseTag,
           confidential,
-          health_status: healthStatus,
+          [TOKEN_TYPE_HEALTH]: healthStatus,
         },
         (value) => {
           if (value || value === false) {
@@ -400,7 +401,7 @@ export default {
           case 'filtered-search-term':
             if (filter.value.data) plainText.push(filter.value.data);
             break;
-          case 'health_status':
+          case TOKEN_TYPE_HEALTH:
             filterParams.healthStatus = filter.value.data;
             break;
           default:

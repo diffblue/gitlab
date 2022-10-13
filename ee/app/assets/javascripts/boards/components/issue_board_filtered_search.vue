@@ -10,8 +10,8 @@ import { __ } from '~/locale';
 import {
   OPERATOR_IS_AND_IS_NOT,
   OPERATOR_IS_ONLY,
+  TOKEN_TYPE_HEALTH,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import { TOKEN_TYPE_HEALTH } from '~/issues/list/constants';
 import { TOKEN_TITLE_HEALTH } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';

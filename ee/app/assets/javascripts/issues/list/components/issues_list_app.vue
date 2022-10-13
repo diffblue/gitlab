@@ -2,17 +2,13 @@
 import { ITEM_TYPE } from '~/groups/constants';
 import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
 import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
-import {
-  TOKEN_TYPE_EPIC,
-  TOKEN_TYPE_ITERATION,
-  TOKEN_TYPE_WEIGHT,
-  TOKEN_TYPE_HEALTH,
-} from '~/issues/list/constants';
+import { TOKEN_TYPE_EPIC, TOKEN_TYPE_ITERATION, TOKEN_TYPE_WEIGHT } from '~/issues/list/constants';
 import {
   TOKEN_TITLE_EPIC,
   TOKEN_TITLE_ITERATION,
   TOKEN_TITLE_WEIGHT,
   TOKEN_TITLE_HEALTH,
+  TOKEN_TYPE_HEALTH,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
