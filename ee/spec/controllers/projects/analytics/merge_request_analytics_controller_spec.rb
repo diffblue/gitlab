@@ -28,7 +28,7 @@ RSpec.describe Projects::Analytics::MergeRequestAnalyticsController do
       let(:target_id) { 'p_analytics_merge_request' }
     end
 
-    it_behaves_like 'Snowplow event tracking' do
+    it_behaves_like 'Snowplow event tracking with RedisHLL context' do
       let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
       let(:category) { described_class.name }
       let(:action) { 'perform_analytics_usage_action' }

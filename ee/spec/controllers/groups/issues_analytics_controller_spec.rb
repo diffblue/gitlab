@@ -34,7 +34,7 @@ RSpec.describe Groups::IssuesAnalyticsController do
       let(:target_id) { 'g_analytics_issues' }
     end
 
-    it_behaves_like 'Snowplow event tracking' do
+    it_behaves_like 'Snowplow event tracking with RedisHLL context' do
       subject { get :show, params: { group_id: group.to_param } }
 
       let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }

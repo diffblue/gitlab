@@ -107,7 +107,7 @@ RSpec.describe Projects::InsightsController do
         let(:target_id) { 'p_analytics_insights' }
       end
 
-      it_behaves_like 'Snowplow event tracking' do
+      it_behaves_like 'Snowplow event tracking with RedisHLL context' do
         subject { get :show, params: params, format: :html }
 
         let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }

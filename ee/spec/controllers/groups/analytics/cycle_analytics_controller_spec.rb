@@ -59,8 +59,10 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController do
       end
 
       describe 'tracking events', :snowplow do
+        let(:event) { 'g_analytics_valuestream' }
+
         it 'tracks redis hll event' do
-          expect(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).with('g_analytics_valuestream', { values: anything })
+          expect(Gitlab::UsageDataCounters::HLLRedisCounter).to receive(:track_event).with(event, { values: anything })
 
           get(:show, params: { group_id: group })
         end
@@ -68,11 +70,14 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController do
         it 'tracks snowplow event' do
           get(:show, params: { group_id: group })
 
+          context = Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: event).to_context.to_json
+
           expect_snowplow_event(
             category: 'Groups::Analytics::CycleAnalyticsController',
-            action: 'g_analytics_valuestream',
+            action: event,
             namespace: group,
-            user: user
+            user: user,
+            context: [context]
           )
         end
       end
