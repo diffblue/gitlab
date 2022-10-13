@@ -26,6 +26,10 @@ module RuboCop
       @cop_class&.support_autocorrect?
     end
 
+    def generate?
+      previously_disabled || grace_period || files.any?
+    end
+
     def to_yaml
       yaml = []
       yaml << '---'
@@ -39,8 +43,12 @@ module RuboCop
       end
 
       yaml << "  #{RuboCop::Formatter::GracefulFormatter.grace_period_key_value}" if grace_period
-      yaml << '  Exclude:'
-      yaml.concat files.sort.map { |file| "    - '#{file}'" }
+
+      if files.any?
+        yaml << '  Exclude:'
+        yaml.concat files.sort.map { |file| "    - '#{file}'" }
+      end
+
       yaml << ''
 
       yaml.join("\n")
