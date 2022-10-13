@@ -19,6 +19,7 @@ RSpec.describe Project do
     it { is_expected.to delegate_method(:pipeline_configuration_full_path).to(:compliance_management_framework) }
 
     it { is_expected.to delegate_method(:prevent_merge_without_jira_issue).to(:project_setting) }
+    it { is_expected.to delegate_method(:only_allow_merge_if_all_status_checks_passed).to(:project_setting) }
 
     it { is_expected.to belong_to(:deleting_user) }
 
@@ -3519,6 +3520,52 @@ RSpec.describe Project do
 
         it { is_expected.to eq false }
       end
+    end
+  end
+
+  describe '#any_external_status_checks_not_passed?' do
+    let(:protected_branch) { create(:protected_branch, name: 'main', project: project) }
+    let(:merge_request) { create(:merge_request, source_project: project, target_project: project, target_branch: protected_branch.name) }
+
+    subject { project.any_external_status_checks_not_passed?(merge_request) }
+
+    before do
+      allow(merge_request).to receive(:diff_head_sha).and_return('abcd1234')
+    end
+
+    context 'when no external status checks are present' do
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when merge request branch is applicable' do
+      let(:status_check) { create(:external_status_check, project: project, protected_branches: [protected_branch]) }
+
+      context 'when all external status checks have passed' do
+        before do
+          create(:status_check_response, merge_request: merge_request, external_status_check: status_check, sha: merge_request.diff_head_sha, status: 'passed')
+        end
+
+        it { is_expected.to be_falsey }
+      end
+
+      context 'when not all external status checks have passed' do
+        before do
+          create(:status_check_response, merge_request: merge_request, external_status_check: status_check, sha: merge_request.diff_head_sha, status: 'passed')
+          create(:status_check_response, merge_request: merge_request, external_status_check: status_check, sha: merge_request.diff_head_sha, status: 'failed')
+        end
+
+        it { is_expected.to be_truthy }
+      end
+    end
+
+    context 'when merge request branch is non applicable ' do
+      let(:status_check) { create(:external_status_check, project: project, protected_branches: []) }
+
+      before do
+        create(:status_check_response, merge_request: merge_request, sha: merge_request.diff_head_sha, status: 'passed')
+      end
+
+      it { is_expected.to be_falsey }
     end
   end
 end

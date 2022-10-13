@@ -16,6 +16,7 @@ module EE
           end
 
           params :optional_project_params_ee do
+            optional :only_allow_merge_if_all_status_checks_passed, type: Grape::API::Boolean, desc: 'Blocks merge requests from merging unless all status checks have passed'
             optional :approvals_before_merge, type: Integer, desc: 'How many approvers should approve merge request by default'
             optional :mirror, type: Grape::API::Boolean, desc: 'Enables pull mirroring in a project'
             optional :mirror_trigger_builds, type: Grape::API::Boolean, desc: 'Pull mirroring triggers builds'
@@ -51,6 +52,7 @@ module EE
           # https://gitlab.com/gitlab-org/gitlab-foss/issues/50911.
           def update_params_at_least_one_of
             super.concat [
+              :only_allow_merge_if_all_status_checks_passed,
               :approvals_before_merge,
               :external_authorization_classification_label,
               :fallback_approvals_required,
