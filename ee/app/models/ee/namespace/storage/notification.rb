@@ -17,7 +17,8 @@ module EE
         def show?
           return false unless ::Gitlab::CurrentSettings.should_check_namespace_plan?
           return false unless user.present?
-          return false unless user.can?(:maintainer_access, context)
+          return false if enforcement_type == :namespace && !user.can?(:maintainer_access, context)
+          return false if enforcement_type == :repository && !user.can?(:owner_access, context)
           return false if alert_level == :none
 
           root_storage_size.enforce_limit?
