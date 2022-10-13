@@ -31,6 +31,7 @@ module EE
         mount ::API::GroupPushRule
         mount ::API::MergeTrains
         mount ::API::MemberRoles
+        mount ::API::ProviderIdentity
         mount ::API::GroupHooks
         mount ::API::MergeRequestApprovalSettings
         mount ::API::Scim
