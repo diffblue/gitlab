@@ -223,7 +223,7 @@ module EE
         override :zoom_link_params
         def zoom_link_params
           if quick_action_target.issuable_resource_links_available?
-            '<Zoom meeting URL>, <link description (optional)>'
+            '<Zoom meeting URL> <link description (optional)>'
           else
             super
           end

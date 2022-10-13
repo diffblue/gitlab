@@ -24,7 +24,7 @@ module IncidentManagement
       def parse_link(link_params)
         return unless link_params
 
-        link_params = link_params.split(',', 2)
+        link_params = link_params.split(' ', 2)
         link = parse_link_param(link_params[0])
 
         return unless link

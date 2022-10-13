@@ -106,18 +106,17 @@ RSpec.describe IncidentManagement::IssuableResourceLinks::ZoomLinkService do
   end
 
   describe '#parse_link' do
-    let(:link) { 'https://zoom.us/j/123456789' }
-
     subject { service.parse_link(link_params) }
 
     context 'with valid Zoom links' do
       where(:link_params, :link, :link_text) do
         [
-          ['https://zoom.us/j/123456789, Demo meeting', link, 'Demo meeting'],
-          ['https://zoom.us/j/123456789 http://example.com,  Space fire, fire again', link, 'Space fire, fire again'],
-          ['https://zoom.us/my/name https://zoom.us/j/123456789,Fire, fire on!, extinguishe now!',
-           link, 'Fire, fire on!, extinguishe now!'],
-          ['https://zoom.us/my/name https://zoom.us/j/123456789', link, nil]
+          ['https://zoom.us/j/123456789 Demo meeting', 'https://zoom.us/j/123456789', 'Demo meeting'],
+          ['https://zoom.us/j/123456789 http://example.com Space fire, fire again', 'https://zoom.us/j/123456789',
+           'http://example.com Space fire, fire again'],
+          ['https://zoom.us/my/name https://zoom.us/j/123456789 Fire, fire on!, extinguishe now!',
+           'https://zoom.us/my/name', 'https://zoom.us/j/123456789 Fire, fire on!, extinguishe now!'],
+          ['https://zoom.us/my/name https://zoom.us/j/123456789', 'https://zoom.us/my/name', 'https://zoom.us/j/123456789']
         ]
       end
 

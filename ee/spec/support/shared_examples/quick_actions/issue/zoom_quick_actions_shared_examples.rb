@@ -21,7 +21,7 @@ RSpec.shared_examples 'zoom quick actions ee' do
 
       with_them do
         it 'adds a Zoom link' do
-          add_note("/zoom #{zoom_link},#{link_text}")
+          add_note("/zoom #{zoom_link} #{link_text}")
 
           expect(page).to have_content('Zoom meeting added')
           expect(issue.issuable_resource_links.first.link).to eq(zoom_link)
