@@ -1,4 +1,4 @@
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 import {
   DEPLOYMENT_FREQUENCY_METRIC_TYPE,
   LEAD_TIME_FOR_CHANGES,
@@ -13,13 +13,15 @@ export const DORA_METRIC_IDENTIFIERS = [
   CHANGE_FAILURE_RATE,
 ];
 
-export const DASHBOARD_NO_DATA_MESSAGE = __('No data available');
-export const DASHBOARD_LOADING_FAILURE_MESSAGE = __('Failed to load');
+export const DASHBOARD_TITLE = __('Executive Dashboard');
+export const DASHBOARD_DESCRIPTION = s__('DORA4Metrics|DORA metrics for %{groupName} group');
+export const DASHBOARD_NO_DATA = __('No data available');
+export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
 
 export const DASHBOARD_COLUMN_TITLE_CHANGE = __('Change');
 export const DASHBOARD_COLUMN_TITLE_PREVIOUS = __('30 Before that');
 export const DASHBOARD_COLUMN_TITLE_CURRENT = __('Last 30 Days');
-export const DASHBOARD_COLUMN_TITLE_METRIC = __('Value');
+export const DASHBOARD_COLUMN_TITLE_METRIC = __('Metric');
 
 export const COMPARISON_INTERVAL_IN_DAYS = 30;
 

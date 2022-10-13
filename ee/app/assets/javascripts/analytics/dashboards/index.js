@@ -3,7 +3,7 @@ import DashboardsApp from './app.vue';
 
 export default () => {
   const el = document.querySelector('#js-analytics-dashboards-app');
-  const { groupFullPath } = el.dataset;
+  const { groupFullPath, groupName } = el.dataset;
 
   return new Vue({
     el,
@@ -13,6 +13,7 @@ export default () => {
       createElement(DashboardsApp, {
         props: {
           groupFullPath,
+          groupName,
         },
       }),
   });
