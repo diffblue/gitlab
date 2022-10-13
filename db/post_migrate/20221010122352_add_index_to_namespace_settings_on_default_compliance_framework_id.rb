@@ -6,7 +6,7 @@ class AddIndexToNamespaceSettingsOnDefaultComplianceFrameworkId < Gitlab::Databa
   INDEX_NAME = 'idx_namespace_settings_on_default_compliance_framework_id'
 
   def up
-    add_concurrent_index :namespace_settings, :default_compliance_framework_id, name: INDEX_NAME
+    add_concurrent_index :namespace_settings, :default_compliance_framework_id, unique: true, name: INDEX_NAME
   end
 
   def down
