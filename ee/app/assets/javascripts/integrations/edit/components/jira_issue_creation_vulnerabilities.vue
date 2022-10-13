@@ -140,6 +140,7 @@ export default {
       v-model="isJiraVulnerabilitiesEnabled"
       data-testid="enable-jira-vulnerabilities"
       :disabled="checkboxDisabled"
+      data-qa-selector="service_jira_enable_vulnerabilities_checkbox"
     >
       <span>{{ $options.i18n.checkbox.label }}</span
       ><gl-badge
@@ -190,12 +191,15 @@ export default {
               :disabled="!jiraIssueTypes.length"
               :loading="isLoadingJiraIssueTypes"
               :text="checkedIssueType.name || $options.i18n.issueTypeSelect.defaultText"
+              data-qa-selector="service_jira_select_issue_type_dropdown"
             >
               <gl-dropdown-item
                 v-for="jiraIssueType in jiraIssueTypes"
                 :key="jiraIssueType.id"
                 :is-checked="checkedIssueType.id === jiraIssueType.id"
                 is-check-item
+                data-qa-selector="service_jira_type"
+                :data-qa-service-type="jiraIssueType.name"
                 @click="selectedJiraIssueType = jiraIssueType"
               >
                 {{ jiraIssueType.name }}
@@ -208,6 +212,7 @@ export default {
               :disabled="!projectKey"
               icon="retry"
               data-testid="fetch-issue-types"
+              data-qa-selector="service_jira_issue_types_fetch_retry_button"
               @click="handleLoadJiraIssueTypesClick"
             />
           </gl-button-group>
