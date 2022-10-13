@@ -11,7 +11,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
     let(:policy) { build(:scan_result_policy, name: 'Test Policy') }
     let(:policy_yaml) { Gitlab::Config::Loader::Yaml.new(policy.to_yaml).load! }
     let(:approver) { create(:user) }
-    let(:service) { described_class.new(policy_configuration: policy_configuration, policy: policy, policy_index: 0) }
+    let(:service) { described_class.new(project: project, policy_configuration: policy_configuration, policy: policy, policy_index: 0) }
 
     before do
       group.add_maintainer(approver)

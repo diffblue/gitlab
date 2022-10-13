@@ -42,5 +42,21 @@ RSpec.describe Approvals::ScanFindingWrappedRuleSet do
         end
       end
     end
+
+    context 'with various security_orchestration_policy_configuration_id' do
+      let(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
+      let(:security_orchestration_policy_configuration_2) { create(:security_orchestration_policy_configuration) }
+      let(:approval_rules_w_sec_orch_config) { create_list(:approval_merge_request_rule, 2, :scan_finding, merge_request: merge_request, users: [approver], security_orchestration_policy_configuration: security_orchestration_policy_configuration) }
+      let(:approval_rules_w_sec_orch_config_2) { create_list(:approval_merge_request_rule, 2, :scan_finding, merge_request: merge_request, users: [approver], security_orchestration_policy_configuration: security_orchestration_policy_configuration_2) }
+      let(:approval_rules_list) { approval_rules + approval_rules_w_sec_orch_config + approval_rules_w_sec_orch_config_2 }
+
+      it 'returns one rule for each security_orchestration_policy_configuration_id' do
+        expect(subject.count).to be 3
+
+        security_orchestration_policy_configuration_ids = subject.map { |wrapped_rule| wrapped_rule.approval_rule.security_orchestration_policy_configuration_id }
+
+        expect(security_orchestration_policy_configuration_ids).to contain_exactly(nil, security_orchestration_policy_configuration.id, security_orchestration_policy_configuration_2.id)
+      end
+    end
   end
 end

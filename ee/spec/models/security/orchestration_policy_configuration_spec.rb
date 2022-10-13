@@ -588,8 +588,12 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
         create(:security_orchestration_policy_configuration, :namespace, security_policy_management_project: security_policy_management_project)
       end
 
-      it 'returns empty array' do
-        expect(active_scan_result_policies).to match_array([])
+      it 'returns only enabled policies' do
+        expect(active_scan_result_policies.pluck(:enabled).uniq).to contain_exactly(true)
+      end
+
+      it 'returns only 5 from all active policies' do
+        expect(active_scan_result_policies.count).to be(5)
       end
     end
   end
@@ -651,19 +655,20 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     let(:project) { security_orchestration_policy_configuration.project }
     let(:merge_request) { create(:merge_request, target_project: project, source_project: project) }
+    let(:security_orchestration_policy_configuration_id) { security_orchestration_policy_configuration.id }
 
     before do
       create(:approval_project_rule,
         :scan_finding,
         project: project,
-        security_orchestration_policy_configuration: security_orchestration_policy_configuration)
+        security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id)
       create(:report_approver_rule,
         :scan_finding,
         merge_request: merge_request,
-        security_orchestration_policy_configuration: security_orchestration_policy_configuration)
+        security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id)
     end
 
-    context 'when associated to a project' do
+    shared_examples 'approval rules deletion' do
       it 'deletes project approval rules' do
         expect { delete_scan_finding_rules }.to change(ApprovalProjectRule, :count).from(1).to(0)
       end
@@ -673,14 +678,73 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       end
     end
 
+    context 'when associated to a project' do
+      it_behaves_like 'approval rules deletion'
+
+      context 'with orphans rules' do
+        let(:security_orchestration_policy_configuration_id) { nil }
+
+        it_behaves_like 'approval rules deletion'
+      end
+    end
+
     context 'when associated to namespace' do
       let(:project) { create(:project) }
       let(:security_orchestration_policy_configuration) do
         create(:security_orchestration_policy_configuration, :namespace)
       end
 
-      it 'does not delete project approval rules' do
-        expect { delete_scan_finding_rules }.not_to change(ApprovalProjectRule, :count)
+      it_behaves_like 'approval rules deletion'
+    end
+  end
+
+  describe '#delete_scan_finding_rules_for_project' do
+    subject(:delete_scan_finding_rules_for_project) { security_orchestration_policy_configuration.delete_scan_finding_rules_for_project(project.id) }
+
+    let(:project) { security_orchestration_policy_configuration.project }
+    let(:merge_request) { create(:merge_request, target_project: project, source_project: project) }
+    let(:security_orchestration_policy_configuration_id) { security_orchestration_policy_configuration.id }
+
+    before do
+      create(:approval_project_rule,
+        :scan_finding,
+        project: project,
+        security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id)
+      create(:report_approver_rule,
+        :scan_finding,
+        merge_request: merge_request,
+        security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id)
+    end
+
+    it 'deletes project approval rules' do
+      expect { delete_scan_finding_rules_for_project }.to change(ApprovalProjectRule, :count).from(1).to(0)
+    end
+
+    it 'deletes merge request approval rules' do
+      expect { delete_scan_finding_rules_for_project }.to change(ApprovalMergeRequestRule, :count).from(1).to(0)
+    end
+
+    context 'with unrelated resources' do
+      let_it_be(:unrelated_project) { create(:project) }
+      let(:unrelated_mr) { create(:merge_request, target_project: unrelated_project, source_project: unrelated_project) }
+
+      before do
+        create(:approval_project_rule,
+          :scan_finding,
+          project: unrelated_project,
+          security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id)
+        create(:report_approver_rule,
+          :scan_finding,
+          merge_request: unrelated_mr,
+          security_orchestration_policy_configuration_id: security_orchestration_policy_configuration_id)
+      end
+
+      it 'does not delete unrelated project approval rules' do
+        expect { delete_scan_finding_rules_for_project }.to change(ApprovalProjectRule, :count).from(2).to(1)
+      end
+
+      it 'does not delete unrelated merge request approval rules' do
+        expect { delete_scan_finding_rules_for_project }.to change(ApprovalMergeRequestRule, :count).from(2).to(1)
       end
     end
   end

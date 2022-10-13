@@ -2,6 +2,7 @@
 
 module ApprovalRuleLike
   extend ActiveSupport::Concern
+  include EachBatch
 
   DEFAULT_NAME = 'Default'
   DEFAULT_NAME_FOR_LICENSE_REPORT = 'License-Check'
