@@ -4,7 +4,7 @@ module API
   class License < ::API::Base
     before { authenticated_as_admin! }
 
-    feature_category :provision
+    feature_category :sm_provisioning
     urgency :low
 
     resource :license do
