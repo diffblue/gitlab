@@ -109,7 +109,11 @@ module EE
           end
           get ":id/gitlab_subscription", urgency: :low, feature_category: :purchase do
             namespace = find_namespace!(params[:id])
-            authorize! :admin_namespace, namespace
+            if ::Feature.enabled?(:auditor_billing_page_access)
+              authorize! :read_billing, namespace
+            else
+              authorize! :admin_namespace, namespace
+            end
 
             present namespace.gitlab_subscription || {}, with: ::API::Entities::GitlabSubscription
           end

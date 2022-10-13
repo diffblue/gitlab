@@ -1,0 +1,8 @@
+---
+name: auditor_billing_page_access
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/97430
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/374575
+milestone: '15.5'
+type: development
+group: group::billing and subscription management
+default_enabled: false

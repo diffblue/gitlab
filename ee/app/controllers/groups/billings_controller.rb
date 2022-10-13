@@ -3,11 +3,12 @@
 class Groups::BillingsController < Groups::ApplicationController
   include GitlabSubscriptions::SeatCountAlert
 
-  before_action :authorize_admin_group!
+  before_action :verify_authorization
   before_action :verify_namespace_plan_check_enabled
 
   before_action only: [:index] do
     push_frontend_feature_flag(:refresh_billings_seats, type: :ops)
+    push_frontend_feature_flag(:auditor_billing_page_access)
   end
 
   before_action only: :index do
@@ -54,5 +55,13 @@ class Groups::BillingsController < Groups::ApplicationController
 
     gitlab_subscription.refresh_seat_attributes!
     gitlab_subscription.save
+  end
+
+  def verify_authorization
+    if Feature.enabled?(:auditor_billing_page_access)
+      authorize_billings_page!
+    else
+      authorize_admin_group!
+    end
   end
 end
