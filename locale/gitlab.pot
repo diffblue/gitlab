@@ -48327,6 +48327,9 @@ msgstr ""
 msgid "must be set for a project namespace"
 msgstr ""
 
+msgid "must be top-level namespace"
+msgstr ""
+
 msgid "must be unique by status and elapsed time within a policy"
 msgstr ""
 
