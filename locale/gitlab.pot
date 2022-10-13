@@ -20058,6 +20058,9 @@ msgstr ""
 msgid "Highest role:"
 msgstr ""
 
+msgid "Highlight"
+msgstr ""
+
 msgid "HighlightBar|Alert events:"
 msgstr ""
 
