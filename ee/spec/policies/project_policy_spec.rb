@@ -495,6 +495,50 @@ RSpec.describe ProjectPolicy do
       end
     end
 
+    context 'with transparent SSO' do
+      let_it_be(:current_user) { create(:user) }
+      let_it_be(:group) { create(:group, :private) }
+      let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
+      let_it_be(:project) { create(:project, group: saml_provider.group) }
+
+      before do
+        stub_licensed_features(group_saml: true)
+        group.add_guest(current_user)
+      end
+
+      around do |example|
+        Gitlab::Session.with_session({}) do
+          example.run
+        end
+      end
+
+      it 'allows access with a SAML session' do
+        is_expected.to be_allowed(:read_project)
+      end
+
+      context 'when the user has a Group SAML identity' do
+        before do
+          create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+        end
+
+        it 'prevents access without a SAML session' do
+          is_expected.not_to be_allowed(:read_project)
+        end
+
+        it 'allows access with a SAML session' do
+          Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+          is_expected.to be_allowed(:read_project)
+        end
+
+        it 'allows access when the feature flag is disabled' do
+          stub_feature_flags(transparent_sso_enforcement: false)
+
+          is_expected.to be_allowed(:read_project)
+        end
+      end
+    end
+
     context 'with ip restriction' do
       let(:current_user) { create(:admin) }
       let(:group) { create(:group, :public) }

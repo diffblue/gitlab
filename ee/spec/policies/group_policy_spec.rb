@@ -620,6 +620,44 @@ RSpec.describe GroupPolicy do
           end
         end
       end
+
+      context 'with transparent SSO' do
+        let(:current_user) { guest }
+
+        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
+
+        around do |example|
+          Gitlab::Session.with_session({}) do
+            example.run
+          end
+        end
+
+        it 'allows access when the user has no Group SAML identity' do
+          is_expected.to be_allowed(:read_group)
+        end
+
+        context 'when the user has a Group SAML identity' do
+          before do
+            create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+          end
+
+          it 'prevents access without a SAML session' do
+            is_expected.not_to be_allowed(:read_group)
+          end
+
+          it 'allows access with a SAML session' do
+            Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+            is_expected.to be_allowed(:read_group)
+          end
+
+          it 'allows access when the feature flag is disabled' do
+            stub_feature_flags(transparent_sso_enforcement: false)
+
+            is_expected.to be_allowed(:read_group)
+          end
+        end
+      end
     end
   end
 
