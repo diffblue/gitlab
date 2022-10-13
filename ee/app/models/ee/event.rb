@@ -24,7 +24,10 @@ module EE
 
     override :capabilities
     def capabilities
-      super.merge(read_epic: %i[epic? epic_note?])
+      super.merge(
+        read_epic: %i[epic? epic_note?],
+        read_security_resource: %i[vulnerability?]
+      )
     end
 
     def epic_note?
@@ -33,6 +36,14 @@ module EE
 
     def epic?
       target_type == 'Epic'
+    end
+
+    def vulnerability_note?
+      note? && note_target.is_a?(::Vulnerability)
+    end
+
+    def vulnerability?
+      target_type == 'Vulnerability'
     end
   end
 end
