@@ -419,14 +419,6 @@ RSpec.describe "Git HTTP requests (Geo)", :geo do
             it_behaves_like 'a Geo 200 git-lfs request'
           end
 
-          context 'when the repository does not exist', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/377573' do
-            let_it_be(:project) { project_no_repo }
-
-            let(:redirect_url) { redirected_primary_url }
-
-            it_behaves_like 'a Geo 302 redirect to Primary'
-          end
-
           context 'when the repository has been updated' do
             let_it_be(:project) { project_with_repo }
 
