@@ -3,17 +3,16 @@
 require 'spec_helper'
 
 RSpec.describe Groups::BillingsController, :saas do
-  let_it_be(:user)  { create(:user) }
+  let_it_be(:owner) { create(:user) }
+  let_it_be(:auditor) { create(:auditor) }
+  let_it_be(:developer) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
 
   before do
-    sign_in(user)
-    stub_application_setting(check_namespace_plan: true)
+    group.add_developer(developer)
+    group.add_guest(auditor)
+    group.add_owner(owner)
     allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
-  end
-
-  def add_group_owner
-    group.add_owner(user)
   end
 
   describe 'GET index' do
@@ -23,12 +22,12 @@ RSpec.describe Groups::BillingsController, :saas do
 
     subject { response }
 
-    context 'authorized' do
+    shared_examples 'authorized' do
       before do
-        add_group_owner
         allow_next_instance_of(GitlabSubscriptions::FetchSubscriptionPlansService) do |instance|
           allow(instance).to receive(:execute).and_return([])
         end
+
         allow(controller).to receive(:track_experiment_event)
       end
 
@@ -71,18 +70,45 @@ RSpec.describe Groups::BillingsController, :saas do
       end
     end
 
+    context 'auditor' do
+      before do
+        sign_in(auditor)
+      end
+
+      it_behaves_like 'authorized'
+    end
+
+    context 'owner' do
+      before do
+        sign_in(owner)
+      end
+
+      it_behaves_like 'authorized'
+    end
+
     context 'unauthorized' do
       it 'renders 404 when user is not an owner' do
-        group.add_developer(user)
+        sign_in(developer)
 
         get_index
 
         is_expected.to have_gitlab_http_status(:not_found)
       end
 
-      it 'renders 404 when it is not gitlab.com' do
-        add_group_owner
-        expect(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).at_least(:once) { false }
+      it 'renders 404 when the namespace check is disabled' do
+        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { false }
+
+        sign_in(owner)
+
+        get_index
+
+        is_expected.to have_gitlab_http_status(:not_found)
+      end
+
+      it 'renders 404 when user is an auditor without feature flag' do
+        stub_feature_flags(auditor_billing_page_access: false)
+
+        sign_in(auditor)
 
         get_index
 
@@ -97,7 +123,7 @@ RSpec.describe Groups::BillingsController, :saas do
     end
 
     before do
-      add_group_owner
+      sign_in(owner)
     end
 
     subject(:post_refresh_seats) do
@@ -107,7 +133,8 @@ RSpec.describe Groups::BillingsController, :saas do
     context 'authorized' do
       context 'with feature flag on' do
         it 'refreshes subscription seats' do
-          expect { post_refresh_seats }.to change { group.gitlab_subscription.reload.seats_in_use }.from(0).to(1)
+          # Developer and Owner users are added as billable users. Guests are not counted
+          expect { post_refresh_seats }.to change { group.gitlab_subscription.reload.seats_in_use }.from(0).to(2)
         end
 
         it 'renders 200' do
@@ -146,7 +173,7 @@ RSpec.describe Groups::BillingsController, :saas do
 
     context 'unauthorized' do
       it 'renders 404 when user is not an owner' do
-        group.add_developer(user)
+        sign_in(developer)
 
         post_refresh_seats
 
@@ -154,8 +181,8 @@ RSpec.describe Groups::BillingsController, :saas do
       end
 
       it 'renders 404 when it is not gitlab.com' do
-        add_group_owner
-        expect(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).at_least(:once) { false }
+        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { false }
+        sign_in(owner)
 
         post_refresh_seats
 

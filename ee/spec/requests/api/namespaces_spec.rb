@@ -512,15 +512,44 @@ RSpec.describe API::Namespaces do
     end
   end
 
+  shared_examples 'authorized user using user namespace for billing' do
+    it 'has access to the object' do
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+
+    it 'is successful using full_path when namespace path contains dots' do
+      get api("/namespaces/#{group1.full_path}/gitlab_subscription", admin)
+
+      expect(response).to have_gitlab_http_status(:ok)
+    end
+  end
+
+  shared_examples 'authorized user using group namespace for billing' do
+    it_behaves_like 'authorized user using user namespace for billing'
+
+    it 'returns data in a proper format' do
+      expect(json_response.keys).to match_array(%w[plan usage billing])
+      expect(json_response['plan'].keys).to match_array(%w[name code trial upgradable exclude_guests auto_renew])
+      expect(json_response['plan']['name']).to eq('Premium')
+      expect(json_response['plan']['code']).to eq('premium')
+      expect(json_response['plan']['trial']).to eq(false)
+      expect(json_response['plan']['upgradable']).to eq(true)
+      expect(json_response['plan']['exclude_guests']).to eq(false)
+      expect(json_response['usage'].keys).to match_array(%w[seats_in_subscription seats_in_use max_seats_used seats_owed])
+      expect(json_response['billing'].keys).to match_array(%w[subscription_start_date subscription_end_date trial_ends_on])
+    end
+  end
+
   describe 'GET :id/gitlab_subscription', :saas do
-    def do_get(current_user)
-      get api("/namespaces/#{namespace.id}/gitlab_subscription", current_user)
+    def do_get(current_user, namespace_id = namespace.id)
+      get api("/namespaces/#{namespace_id}/gitlab_subscription", current_user)
     end
 
     let_it_be(:premium_plan) { create(:premium_plan) }
     let_it_be(:owner) { create(:user) }
     let_it_be(:developer) { create(:user) }
     let_it_be(:maintainer) { create(:user) }
+    let_it_be(:auditor) { create(:auditor) }
     let_it_be(:namespace) { create(:group) }
     let_it_be(:gitlab_subscription) { create(:gitlab_subscription, hosted_plan: premium_plan, namespace: namespace) }
 
@@ -528,9 +557,18 @@ RSpec.describe API::Namespaces do
       namespace.add_owner(owner)
       namespace.add_maintainer(maintainer)
       namespace.add_developer(developer)
+      namespace.add_guest(auditor)
     end
 
-    context 'with a regular user' do
+    context 'with a developer user' do
+      context 'using a user namespace does not error' do
+        before do
+          do_get(developer, developer.namespace.id)
+        end
+
+        it_behaves_like 'authorized user using user namespace for billing'
+      end
+
       it 'returns an unauthorized error' do
         do_get(developer)
 
@@ -539,6 +577,14 @@ RSpec.describe API::Namespaces do
     end
 
     context 'with a maintainer' do
+      context 'using a user namespace does not error' do
+        before do
+          do_get(maintainer, maintainer.namespace.id)
+        end
+
+        it_behaves_like 'authorized user using user namespace for billing'
+      end
+
       it 'returns an unauthorized error' do
         do_get(maintainer)
 
@@ -546,31 +592,48 @@ RSpec.describe API::Namespaces do
       end
     end
 
+    context 'with an auditor' do
+      context 'without :auditor_billing_page_access feature flag' do
+        before do
+          stub_feature_flags(auditor_billing_page_access: false)
+          do_get(auditor)
+        end
+
+        it 'returns an unauthorized error' do
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+
+      context 'with :auditor_billing_page_access feature flag' do
+        before do
+          do_get(auditor)
+        end
+
+        it_behaves_like 'authorized user using group namespace for billing'
+
+        context 'using a user namespace' do
+          before do
+            do_get(auditor, auditor.namespace.id)
+          end
+
+          it_behaves_like 'authorized user using user namespace for billing'
+        end
+      end
+    end
+
     context 'with the owner of the Group' do
-      it 'has access to the object' do
+      before do
         do_get(owner)
-
-        expect(response).to have_gitlab_http_status(:ok)
       end
 
-      it 'is successful using full_path when namespace path contains dots' do
-        get api("/namespaces/#{group1.full_path}/gitlab_subscription", admin)
+      it_behaves_like 'authorized user using group namespace for billing'
 
-        expect(response).to have_gitlab_http_status(:ok)
-      end
+      context 'using a user namespace' do
+        before do
+          do_get(owner, owner.namespace.id)
+        end
 
-      it 'returns data in a proper format' do
-        do_get(owner)
-
-        expect(json_response.keys).to match_array(%w[plan usage billing])
-        expect(json_response['plan'].keys).to match_array(%w[name code trial upgradable exclude_guests auto_renew])
-        expect(json_response['plan']['name']).to eq('Premium')
-        expect(json_response['plan']['code']).to eq('premium')
-        expect(json_response['plan']['trial']).to eq(false)
-        expect(json_response['plan']['upgradable']).to eq(true)
-        expect(json_response['plan']['exclude_guests']).to eq(false)
-        expect(json_response['usage'].keys).to match_array(%w[seats_in_subscription seats_in_use max_seats_used seats_owed])
-        expect(json_response['billing'].keys).to match_array(%w[subscription_start_date subscription_end_date trial_ends_on])
+        it_behaves_like 'authorized user using user namespace for billing'
       end
     end
 

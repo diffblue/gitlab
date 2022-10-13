@@ -336,6 +336,7 @@ module EE
         enable :read_group
         enable :read_group_security_dashboard
         enable :read_group_audit_events
+        enable :read_billing
       end
 
       rule { group_saml_globally_enabled & group_saml_available & (admin | owner) }.enable :admin_group_saml

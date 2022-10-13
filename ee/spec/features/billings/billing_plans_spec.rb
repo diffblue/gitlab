@@ -7,6 +7,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
   include BillingPlansHelpers
 
   let(:user) { create(:user, first_name: 'James', last_name: 'Bond', organization: 'ACME') }
+  let(:auditor) { create(:auditor, first_name: 'James', last_name: 'Bond', organization: 'ACME') }
   let(:namespace) { user.namespace }
   let(:free_plan) { create(:free_plan) }
   let(:bronze_plan) { create(:bronze_plan) }
@@ -386,10 +387,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
           end
         end
 
-        it 'does not display the billing plans table' do
-          expect(page).not_to have_selector("[data-testid='billing-plans']")
-        end
-
+        it_behaves_like 'does not display the billing plans'
         it_behaves_like 'plan with subscription table'
       end
 
@@ -468,6 +466,23 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
 
         it_behaves_like 'non-upgradable plan'
         it_behaves_like 'used seats rendering for non paid subscriptions'
+        it_behaves_like 'plan with subscription table'
+      end
+
+      context 'with auditor user' do
+        let(:plan) { ultimate_plan }
+        let!(:group_member) { create(:group_member, :guest, group: namespace, user: auditor) }
+        let!(:subscription) { create(:gitlab_subscription, namespace: namespace, hosted_plan: plan, seats: 15) }
+
+        before do
+          stub_licensed_features(auditor_user: true)
+
+          sign_in(auditor)
+
+          visit page_path
+        end
+
+        it_behaves_like 'does not display the billing plans'
         it_behaves_like 'plan with subscription table'
       end
     end

@@ -22,6 +22,7 @@ RSpec.describe GroupPolicy do
       read_group_security_dashboard
       read_cluster
       read_group_runners
+      read_billing
     ]
   end
 
