@@ -2107,6 +2107,100 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
     end
   end
 
+  describe '#create_temporary_columns_and_triggers' do
+    let(:table) { :test_table }
+    let(:column) { :id }
+    let(:mappings) do
+      {
+        id: {
+          from_type: :int,
+          to_type: :bigint
+        }
+      }
+    end
+
+    let(:old_bigint_column_naming) { false }
+
+    subject do
+      model.create_temporary_columns_and_triggers(
+        table,
+        mappings,
+        old_bigint_column_naming: old_bigint_column_naming
+      )
+    end
+
+    before do
+      model.create_table table, id: false do |t|
+        t.integer :id, primary_key: true
+        t.integer :non_nullable_column, null: false
+        t.integer :nullable_column
+        t.timestamps
+      end
+    end
+
+    context 'when no mappings are provided' do
+      let(:mappings) { nil }
+
+      it 'raises an error' do
+        expect { subject }.to raise_error("No mappings for column conversion provided")
+      end
+    end
+
+    context 'when any of the mappings does not have the required keys' do
+      let(:mappings) do
+        {
+          id: {
+            from_type: :int
+          }
+        }
+      end
+
+      it 'raises an error' do
+        expect { subject }.to raise_error("Some mappings don't have required keys provided")
+      end
+    end
+
+    context 'when the target table does not exist' do
+      it 'raises an error' do
+        expect { model.create_temporary_columns_and_triggers(:non_existent_table, mappings) }.to raise_error("Table non_existent_table does not exist")
+      end
+    end
+
+    context 'when the column to migrate does not exist' do
+      let(:missing_column) { :test }
+      let(:mappings) do
+        {
+          missing_column => {
+            from_type: :int,
+            to_type: :bigint
+          }
+        }
+      end
+
+      it 'raises an error' do
+        expect { subject }.to raise_error("Column #{missing_column} does not exist on #{table}")
+      end
+    end
+
+    context 'when old_bigint_column_naming is true' do
+      let(:old_bigint_column_naming) { true }
+
+      it 'calls convert_to_bigint_column' do
+        expect(model).to receive(:convert_to_bigint_column).with(:id).and_return("id_convert_to_bigint")
+
+        subject
+      end
+    end
+
+    context 'when old_bigint_column_naming is false' do
+      it 'calls convert_to_type_column' do
+        expect(model).to receive(:convert_to_type_column).with(:id, :int, :bigint).and_return("id_convert_to_bigint")
+
+        subject
+      end
+    end
+  end
+
   describe '#initialize_conversion_of_integer_to_bigint' do
     let(:table) { :test_table }
     let(:column) { :id }

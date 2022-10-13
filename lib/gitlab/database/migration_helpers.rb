@@ -1205,7 +1205,7 @@ into similar problems in the future (e.g. when new tables are created).
 
       # rubocop:disable Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
       def create_temporary_columns_and_triggers(table, mappings, primary_key: :id, old_bigint_column_naming: false)
-        raise ArgumentError, "No mappings provided" if mappings.empty?
+        raise ArgumentError, "No mappings for column conversion provided" if mappings.blank?
 
         unless mappings.values.all? { |values| mapping_has_required_columns?(values) }
           raise ArgumentError, "Some mappings don't have required keys provided"
@@ -1292,6 +1292,12 @@ into similar problems in the future (e.g. when new tables are created).
 
       def cascade_statement(cascade)
         cascade ? 'CASCADE' : ''
+      end
+
+      def validate_check_constraint_name!(constraint_name)
+        if constraint_name.to_s.length > MAX_IDENTIFIER_NAME_LENGTH
+          raise "The maximum allowed constraint name is #{MAX_IDENTIFIER_NAME_LENGTH} characters"
+        end
       end
 
       # mappings => {} where keys are column names and values are hashes with the following keys:
