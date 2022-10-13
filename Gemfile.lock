@@ -15,6 +15,7 @@ PATH
   specs:
     devise-pbkdf2-encryptable (0.0.0)
       devise (~> 4.0)
+      devise-two-factor (~> 4.0)
 
 PATH
   remote: vendor/gems/error_tracking_open_api
