@@ -28,14 +28,6 @@ RSpec.describe Gitlab::Memory::Watchdog::Monitor::HeapFragmentation do
 
       monitor
     end
-
-    context 'when no max_heap_fragmentation is provided' do
-      it 'initializes with defaults' do
-        monitor = described_class.new
-
-        expect(monitor.max_heap_fragmentation).to eq(Gitlab::Memory::Watchdog::Configuration::MAX_HEAP_FRAG)
-      end
-    end
   end
 
   describe '#call' do

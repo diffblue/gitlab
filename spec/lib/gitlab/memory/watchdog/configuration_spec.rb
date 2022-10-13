@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Memory::Watchdog::Configuration do
   describe '#sleep_time_seconds' do
     context 'when sleep_time_seconds is not set' do
       it 'defaults to SLEEP_TIME_SECONDS' do
-        expect(configuration.sleep_time_seconds).to eq(described_class::SLEEP_TIME_SECONDS)
+        expect(configuration.sleep_time_seconds).to eq(described_class::DEFAULT_SLEEP_TIME_SECONDS)
       end
     end
   end
@@ -106,8 +106,8 @@ RSpec.describe Gitlab::Memory::Watchdog::Configuration do
 
       context 'when same monitor class is configured to be used twice' do
         before do
-          configuration.monitors.use monitor_class_1
-          configuration.monitors.use monitor_class_1
+          configuration.monitors.use monitor_class_1, max_strikes: 1
+          configuration.monitors.use monitor_class_1, max_strikes: 1
         end
 
         it 'calls same monitor only once' do

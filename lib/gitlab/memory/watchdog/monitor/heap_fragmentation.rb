@@ -14,7 +14,7 @@ module Gitlab
 
           # max_heap_fragmentation:
           #   The degree to which the Ruby heap is allowed to be fragmented. Range [0,1].
-          def initialize(max_heap_fragmentation: Gitlab::Memory::Watchdog::Configuration::MAX_HEAP_FRAG)
+          def initialize(max_heap_fragmentation:)
             @max_heap_fragmentation = max_heap_fragmentation
             init_frag_limit_metrics
           end

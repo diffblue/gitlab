@@ -18,12 +18,6 @@ RSpec.describe 'memory watchdog' do
       let(:watchdog) { instance_double(Gitlab::Memory::Watchdog) }
       let(:background_task) { instance_double(Gitlab::BackgroundTask) }
       let(:logger) { Gitlab::AppLogger }
-      let(:watchdog_monitors) do
-        [
-          Gitlab::Memory::Watchdog::Monitor::HeapFragmentation,
-          Gitlab::Memory::Watchdog::Monitor::UniqueMemoryGrowth
-        ]
-      end
 
       before do
         allow(Gitlab::Runtime).to receive(:application?).and_return(true)
@@ -37,21 +31,63 @@ RSpec.describe 'memory watchdog' do
 
       shared_examples 'starts configured watchdog' do |handler_class|
         let(:configuration) { Gitlab::Memory::Watchdog::Configuration.new }
+        let(:watchdog_monitors_params) do
+          {
+            Gitlab::Memory::Watchdog::Monitor::HeapFragmentation => {
+              max_heap_fragmentation: max_heap_fragmentation,
+              max_strikes: max_strikes
+            },
+            Gitlab::Memory::Watchdog::Monitor::UniqueMemoryGrowth => {
+              max_mem_growth: max_mem_growth,
+              max_strikes: max_strikes
+            }
+          }
+        end
 
-        it "correctly configures and starts watchdog", :aggregate_failures do
-          expect(watchdog).to receive(:configure).and_yield(configuration)
+        shared_examples 'configures and starts watchdog' do
+          it "correctly configures and starts watchdog", :aggregate_failures do
+            expect(watchdog).to receive(:configure).and_yield(configuration)
 
-          expect(watchdog_monitors).to all(receive(:new))
+            watchdog_monitors_params.each do |monitor_class, params|
+              expect(configuration.monitors).to receive(:use).with(monitor_class, **params)
+            end
 
-          expect(Gitlab::Memory::Watchdog).to receive(:new).and_return(watchdog)
-          expect(Gitlab::BackgroundTask).to receive(:new).with(watchdog).and_return(background_task)
-          expect(background_task).to receive(:start)
-          expect(Gitlab::Cluster::LifecycleEvents).to receive(:on_worker_start).and_yield
+            expect(Gitlab::Memory::Watchdog).to receive(:new).and_return(watchdog)
+            expect(Gitlab::BackgroundTask).to receive(:new).with(watchdog).and_return(background_task)
+            expect(background_task).to receive(:start)
+            expect(Gitlab::Cluster::LifecycleEvents).to receive(:on_worker_start).and_yield
 
-          run_initializer
+            run_initializer
 
-          expect(configuration.handler).to be_an_instance_of(handler_class)
-          expect(configuration.logger).to eq(logger)
+            expect(configuration.handler).to be_an_instance_of(handler_class)
+            expect(configuration.logger).to eq(logger)
+            expect(configuration.sleep_time_seconds).to eq(sleep_time_seconds)
+          end
+        end
+
+        context 'when settings are not passed through the environment' do
+          let(:max_strikes) { 5 }
+          let(:max_heap_fragmentation) { 0.5 }
+          let(:max_mem_growth) { 3.0 }
+          let(:sleep_time_seconds) { 60 }
+
+          include_examples 'configures and starts watchdog'
+        end
+
+        context 'when settings are passed through the environment' do
+          let(:max_strikes) { 6 }
+          let(:max_heap_fragmentation) { 0.4 }
+          let(:max_mem_growth) { 2.0 }
+          let(:sleep_time_seconds) { 50 }
+
+          before do
+            stub_env('GITLAB_MEMWD_MAX_STRIKES', 6)
+            stub_env('GITLAB_MEMWD_SLEEP_TIME_SEC', 50)
+            stub_env('GITLAB_MEMWD_MAX_MEM_GROWTH', 2.0)
+            stub_env('GITLAB_MEMWD_MAX_HEAP_FRAG', 0.4)
+          end
+
+          include_examples 'configures and starts watchdog'
         end
       end
 

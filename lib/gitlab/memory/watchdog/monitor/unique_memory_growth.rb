@@ -7,7 +7,7 @@ module Gitlab
         class UniqueMemoryGrowth
           attr_reader :max_mem_growth
 
-          def initialize(max_mem_growth: Gitlab::Memory::Watchdog::Configuration::MAX_MEM_GROWTH, **options)
+          def initialize(max_mem_growth:)
             @max_mem_growth = max_mem_growth
           end
 

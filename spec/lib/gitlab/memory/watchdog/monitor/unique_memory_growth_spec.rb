@@ -20,16 +20,6 @@ RSpec.describe Gitlab::Memory::Watchdog::Monitor::UniqueMemoryGrowth do
     ).and_return({ uss: primary_memory })
   end
 
-  describe '#initialize' do
-    context 'when no settings are set in the environment' do
-      it 'initializes with defaults' do
-        monitor = described_class.new
-
-        expect(monitor.max_mem_growth).to eq(Gitlab::Memory::Watchdog::Configuration::MAX_MEM_GROWTH)
-      end
-    end
-  end
-
   describe '#call' do
     it 'gets memory_usage_uss_pss' do
       expect(Gitlab::Metrics::System).to receive(:memory_usage_uss_pss).with(no_args)
