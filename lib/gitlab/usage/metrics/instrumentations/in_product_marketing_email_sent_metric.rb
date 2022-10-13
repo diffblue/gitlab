@@ -4,15 +4,11 @@ module Gitlab
   module Usage
     module Metrics
       module Instrumentations
-        class InProductMarketingEmailMetric < DatabaseMetric
+        class InProductMarketingEmailSentMetric < DatabaseMetric
           operation :count
 
           def initialize(metric_definition)
             super
-
-            unless only_clicked.in?(allowed_only_clicked)
-              raise ArgumentError, "only_clicked '#{only_clicked}' must be one of: #{allowed_only_clicked.join(', ')}"
-            end
 
             unless track.in?(allowed_track)
               raise ArgumentError, "track '#{track}' must be one of: #{allowed_track.join(', ')}"
@@ -29,13 +25,8 @@ module Gitlab
 
           def relation
             scope = super
-            scope = scope.where.not(cta_clicked_at: nil) if only_clicked
             scope = scope.where(series: series)
             scope.where(track: track)
-          end
-
-          def only_clicked
-            options[:only_clicked]
           end
 
           def track
@@ -44,10 +35,6 @@ module Gitlab
 
           def series
             options[:series]
-          end
-
-          def allowed_only_clicked
-            @allowed_only_clicked ||= [true, false]
           end
 
           def allowed_track
