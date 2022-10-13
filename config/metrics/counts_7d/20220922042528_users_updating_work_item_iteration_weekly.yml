@@ -1,4 +1,3 @@
-
 ---
 key_path: redis_hll_counters.work_items.users_updating_work_item_iteration_weekly
 description: Unique users updating a work item's iteration
