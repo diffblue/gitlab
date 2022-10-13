@@ -473,30 +473,48 @@ RSpec.describe User do
     end
 
     context 'with Groups with custom project templates' do
-      let!(:group_1) { create(:group, name: 'group-1') }
-      let!(:group_2) { create(:group, name: 'group-2') }
-      let!(:group_3) { create(:group, name: 'group-3') }
+      let_it_be(:group_1) { create(:group, name: 'group-1') }
+      let_it_be(:group_2) { create(:group, :private, name: 'group-2') }
+      let_it_be(:group_3) { create(:group, name: 'group-3') }
 
-      let!(:subgroup_1) { create(:group, parent: group_1, name: 'subgroup-1') }
-      let!(:subgroup_2) { create(:group, parent: group_2, name: 'subgroup-2') }
-      let!(:subgroup_3) { create(:group, parent: group_3, name: 'subgroup-3') }
+      let_it_be(:subgroup_1) { create(:group, parent: group_1, name: 'subgroup-1') }
+      let_it_be(:subgroup_2) { create(:group, :private, parent: group_2, name: 'subgroup-2') }
+      let_it_be(:subgroup_3) { create(:group, parent: group_3, name: 'subgroup-3') }
 
-      before do
+      let_it_be(:public_project) { create(:project, namespace: subgroup_1) }
+      let_it_be(:private_project) { create(:project, :private, namespace: subgroup_2) }
+
+      before_all do
         group_1.update!(custom_project_templates_group_id: subgroup_1.id)
         group_2.update!(custom_project_templates_group_id: subgroup_2.id)
         group_3.update!(custom_project_templates_group_id: subgroup_3.id)
-
-        create(:project, namespace: subgroup_1)
-        create(:project, namespace: subgroup_2)
       end
 
-      context 'when the access level of the user is below the required one' do
-        before do
-          group_1.add_reporter(user)
+      context 'when a user is not a member of the groups' do
+        subject(:available_subgroups) { user.available_subgroups_with_custom_project_templates }
+
+        it 'only templates in publicly visible groups with projects are available' do
+          expect(available_subgroups).to match_array([subgroup_1])
+        end
+      end
+
+      context 'when a user is a member of the groups' do
+        subject(:available_subgroups) { user.available_subgroups_with_custom_project_templates }
+
+        where(:access_level) do
+          [:guest, :reporter, :developer, :maintainer, :owner]
         end
 
-        it 'returns an empty collection' do
-          expect(user.available_subgroups_with_custom_project_templates).to be_empty
+        with_them do
+          before do
+            group_1.add_member(user, access_level)
+            group_2.add_member(user, access_level)
+            group_3.add_member(user, access_level)
+          end
+
+          it 'the templates in groups with projects are available' do
+            expect(available_subgroups).to match_array([subgroup_1, subgroup_2])
+          end
         end
       end
 

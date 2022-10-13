@@ -227,7 +227,7 @@ module EE
     def available_subgroups_with_custom_project_templates(group_id = nil)
       found_groups = GroupsWithTemplatesFinder.new(group_id).execute
 
-      GroupsFinder.new(self, min_access_level: ::Gitlab::Access::DEVELOPER)
+      GroupsFinder.new(self)
         .execute
         .where(id: found_groups.select(:custom_project_templates_group_id))
         .preload(:projects)
