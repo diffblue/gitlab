@@ -2,7 +2,6 @@
 
 module Registrations
   class GroupsProjectsController < ApplicationController
-    include LearnGitlabHelper
     include OneTrustCSP
     include GoogleAnalyticsCSP
 
@@ -25,39 +24,34 @@ module Registrations
     def new
       helpers.require_verification_experiment.publish_to_database
 
-      @group = Group.new(visibility_level: helpers.default_group_visibility)
+      @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
       @project = Project.new(namespace: @group)
 
       Gitlab::Tracking.event(self.class.name, 'view_new_group_action', user: current_user)
     end
 
     def create
-      service = Registrations::NamespaceCreateService.new(current_user, params)
-      result = service.execute
+      result = Registrations::StandardNamespaceCreateService.new(current_user, params).execute
 
       if result.success?
-        redirect_successful_namespace_creation(service.project.id)
+        redirect_successful_namespace_creation(result.payload[:project].id)
       else
-        @group = service.group
-        @project = service.project
+        @group = result.payload[:group]
+        @project = result.payload[:project]
 
         render :new
       end
     end
 
     def import
-      @group = Groups::CreateService.new(current_user, modified_group_params).execute
+      result = Registrations::ImportNamespaceCreateService.new(current_user, params).execute
 
-      if @group.persisted?
-        Gitlab::Tracking.event(self.class.name, 'create_group_import', namespace: @group, user: current_user)
-        helpers.require_verification_experiment.record_conversion(@group)
-
-        apply_trial if helpers.in_trial_onboarding_flow?
-
-        import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{@group.id}").to_s
+      if result.success?
+        import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{result.payload[:group].id}").to_s
         redirect_to import_url
       else
-        @project = Project.new(namespace: @group) # #new requires a Project
+        @group = result.payload[:group]
+        @project = result.payload[:project]
 
         render :new
       end
@@ -93,39 +87,8 @@ module Registrations
       end
     end
 
-    def modified_group_params
-      group_name = params.dig(:group, :name)
-      modifed_group_params = group_params
-      if group_name.present? && params.dig(:group, :path).blank?
-        modifed_group_params = modifed_group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
-      end
-
-      modifed_group_params
-    end
-
-    def group_params
-      params.require(:group).permit(
-        :name,
-        :path,
-        :visibility_level
-      ).merge(
-        create_event: true,
-        setup_for_company: current_user.setup_for_company
-      )
-    end
-
     def offer_trial?
       current_user.setup_for_company && !helpers.in_trial_onboarding_flow? && !params[:skip_trial].present?
-    end
-
-    def apply_trial
-      trial_user_information = params.permit(:glm_source, :glm_content).merge({
-                                                                                namespace_id: @group.id,
-                                                                                gitlab_com_trial: true,
-                                                                                sync_to_gl: true
-                                                                              })
-
-      GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(current_user.id, trial_user_information.to_h) # rubocop:todo CodeReuse/Worker
     end
   end
 end

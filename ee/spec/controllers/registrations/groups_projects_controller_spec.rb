@@ -87,15 +87,13 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     subject(:post_create) { post :create, params: params }
 
     let(:com) { true }
-    let(:setup_for_company) { nil }
     let(:params) { { group: group_params, project: project_params }.merge(extra_params) }
     let(:extra_params) { {} }
     let(:group_params) do
       {
         name: 'Group name',
         path: 'group-path',
-        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s,
-        setup_for_company: setup_for_company
+        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s
       }
     end
 
@@ -121,49 +119,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
 
       it_behaves_like 'hides email confirmation warning'
 
-      it_behaves_like 'with recording a conversion event'
-
-      context 'when group and project can be created' do
-        it 'creates a group' do
-          expect { post_create }.to change(Group, :count).by(1)
-        end
-
-        it 'passes create_event: true to the Groups::CreateService' do
-          expect(Groups::CreateService).to receive(:new)
-                                             .with(user, ActionController::Parameters
-                                                           .new(group_params.merge(create_event: true)).permit!)
-                                             .and_call_original
-
-          post_create
-        end
-
-        it 'allows for the project to be initialized with a README' do
-          allow(::Projects::CreateService).to receive(:new).and_call_original # a learn gitlab project is created too
-
-          expect(::Projects::CreateService).to receive(:new).with(
-            user,
-            an_object_satisfying { |permitted| permitted.include?(:initialize_with_readme) }
-          )
-
-          post_create
-        end
-
-        it 'tracks group and project creation events' do
-          allow_next_instance_of(::Projects::CreateService) do |service|
-            allow(service).to receive(:after_create_actions)
-          end
-
-          post_create
-
-          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
-                                action: 'create_group',
-                                namespace: an_instance_of(Group),
-                                user: user)
-          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
-                                action: 'create_project',
-                                namespace: an_instance_of(Group),
-                                user: user)
-        end
+      it 'creates a group and project' do
+        expect { post_create }.to change(Group, :count).by(1).and change(Project, :count).by(1)
       end
 
       context 'when there is no suggested path based from the name' do
@@ -180,13 +137,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         it 'does not create a group', :aggregate_failures do
           expect { post_create }.not_to change(Group, :count)
           expect(assigns(:group).errors).not_to be_blank
-        end
-
-        it 'does not track events for group or project creation' do
-          post_create
-
-          expect_no_snowplow_event(category: described_class.name, action: 'create_group')
-          expect_no_snowplow_event(category: described_class.name, action: 'create_project')
         end
 
         it 'the project is not disregarded completely' do
@@ -214,16 +164,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           expect(assigns(:project).errors).not_to be_blank
         end
 
-        it 'selectively tracks events for group and project creation' do
-          post_create
-
-          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
-                                action: 'create_group',
-                                namespace: an_instance_of(Group),
-                                user: user)
-          expect_no_snowplow_event(category: 'Registrations::NamespaceCreateService', action: 'create_project')
-        end
-
         it { is_expected.to have_gitlab_http_status(:ok) }
         it { is_expected.to render_template(:new) }
       end
@@ -238,20 +178,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
         it 'creates a project and not another group', :aggregate_failures do
           expect { post_create }.to change(Project, :count)
           expect { post_create }.not_to change(Group, :count)
-        end
-
-        it 'selectively tracks events group and project creation' do
-          allow_next_instance_of(::Projects::CreateService) do |service|
-            allow(service).to receive(:after_create_actions)
-          end
-
-          post_create
-
-          expect_no_snowplow_event(category: 'Registrations::NamespaceCreateService', action: 'create_group')
-          expect_snowplow_event(category: 'Registrations::NamespaceCreateService',
-                                action: 'create_project',
-                                namespace: an_instance_of(Group),
-                                user: user)
         end
       end
 
@@ -304,75 +230,18 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           end
         end
       end
-
-      context 'when in the trial onboarding flow' do
-        let(:extra_params) do
-          { trial_onboarding_flow: true, glm_source: 'about.gitlab.com', glm_content: 'content' }
-        end
-
-        let(:trial_user_information) do
-          ActionController::Parameters.new(
-            {
-              glm_source: 'about.gitlab.com',
-              glm_content: 'content',
-              namespace_id: group.id,
-              gitlab_com_trial: true,
-              sync_to_gl: true
-            }
-          ).permit!
-        end
-
-        before do
-          allow_next_instance_of(::Groups::CreateService) do |service|
-            allow(service).to receive(:execute).and_return(group)
-          end
-
-          expect(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async) # rubocop:disable RSpec/ExpectInHook
-                                                                     .with(user.id, trial_user_information)
-        end
-
-        it 'applies a trial' do
-          post_create
-        end
-      end
-
-      context 'with learn gitlab project' do
-        where(:trial, :project_name, :template) do
-          false | 'Learn GitLab' | 'learn_gitlab_ultimate.tar.gz'
-          true  | 'Learn GitLab - Ultimate trial' | 'learn_gitlab_ultimate.tar.gz'
-        end
-
-        with_them do
-          let(:path) { Rails.root.join('vendor', 'project_templates', template) }
-          let(:group_params) { { id: group.id } }
-          let(:extra_params) { { trial_onboarding_flow: trial } }
-
-          before do
-            group.add_owner(user)
-          end
-
-          specify do
-            expect(::Onboarding::CreateLearnGitlabWorker).to receive(:perform_async)
-                                                               .with(path, project_name, group.id, user.id)
-
-            subject
-          end
-        end
-      end
     end
   end
 
-  describe 'POST #import' do
+  describe 'POST #import', :saas do
     subject(:post_import) { post :import, params: params }
 
-    let(:com) { true }
     let(:params) { { group: group_params, import_url: new_import_github_path } }
     let(:group_params) do
       {
         name: 'Group name',
         path: 'group-path',
-        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s,
-        setup_for_company: nil
+        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s
       }
     end
 
@@ -384,24 +253,15 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     context 'with an authenticated user' do
       before do
         sign_in(user)
-        allow(::Gitlab).to receive(:com?).and_return(com)
       end
 
       it_behaves_like 'hides email confirmation warning'
-
-      it_behaves_like 'with recording a conversion event'
 
       context "when a group can't be created" do
         before do
           allow_next_instance_of(::Groups::CreateService) do |service|
             allow(service).to receive(:execute).and_return(Group.new)
           end
-        end
-
-        it "doesn't track for group creation" do
-          post_import
-
-          expect_no_snowplow_event(category: described_class.name, action: 'create_group_import')
         end
 
         it { is_expected.to render_template(:new) }
@@ -419,24 +279,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
       context 'when group can be created' do
         it 'creates a group' do
           expect { post_import }.to change(Group, :count).by(1)
-        end
-
-        it 'passes create_event: true to the Groups::CreateService' do
-          expect(Groups::CreateService).to receive(:new)
-                                             .with(user, ActionController::Parameters
-                                                           .new(group_params.merge(create_event: true)).permit!)
-                                             .and_call_original
-
-          post_import
-        end
-
-        it 'tracks an event for group creation' do
-          post_import
-
-          expect_snowplow_event(category: described_class.name,
-                                action: 'create_group_import',
-                                namespace: an_instance_of(Group),
-                                user: user)
         end
 
         it 'redirects to the import url with a namespace_id parameter' do
