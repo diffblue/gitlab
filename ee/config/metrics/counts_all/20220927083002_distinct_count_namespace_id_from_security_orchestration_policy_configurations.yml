@@ -1,0 +1,19 @@
+---
+  key_path: usage_activity_by_stage.govern.distinct_count_namespace_id_from_security_orchestration_policy_configurations
+  description: "The total number of groups with an assigned security policy project"
+  product_section: sec
+  product_stage: govern
+  product_group: security_policies
+  product_category: security_policy_management
+  value_type: number
+  status: active
+  milestone: "15.5"
+  introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/99957
+  time_frame: all
+  data_source: database
+  data_category: operational
+  instrumentation_class: CountGroupsWithAssignedSecurityPolicyProjectMetric
+  distribution:
+  - ee
+  tier:
+  - ultimate
