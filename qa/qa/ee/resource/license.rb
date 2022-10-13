@@ -36,6 +36,8 @@ module QA
         end
 
         def self.delete_all
+          raise 'Unable to delete license on live environment' if QA::Specs::Helpers::ContextSelector.dot_com?
+
           result = true
 
           all.each do |license|
