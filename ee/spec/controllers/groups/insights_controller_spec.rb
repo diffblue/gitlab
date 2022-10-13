@@ -138,7 +138,7 @@ RSpec.describe Groups::InsightsController do
           let(:target_id) { 'g_analytics_insights' }
         end
 
-        it_behaves_like 'Snowplow event tracking', overrides: { project: nil } do
+        it_behaves_like 'Snowplow event tracking with RedisHLL context', overrides: { project: nil } do
           subject { get :show, params: params.merge(group_id: parent_group.to_param) }
 
           let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }

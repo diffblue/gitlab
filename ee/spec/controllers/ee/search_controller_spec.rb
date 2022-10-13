@@ -33,9 +33,12 @@ RSpec.describe SearchController, :elastic do
         it 'emits all search events' do
           subject
 
-          expect_snowplow_event(category: category, action: 'i_search_total', namespace: namespace, user: user)
-          expect_snowplow_event(category: category, action: 'i_search_paid', namespace: namespace, user: user)
-          expect_snowplow_event(category: category, action: 'i_search_advanced', namespace: namespace, user: user)
+          expect_snowplow_event(category: category, action: 'i_search_total', namespace: namespace, user: user,
+                                context: context('i_search_total'))
+          expect_snowplow_event(category: category, action: 'i_search_paid', namespace: namespace, user: user,
+                                context: context('i_search_paid'))
+          expect_snowplow_event(category: category, action: 'i_search_advanced', namespace: namespace, user: user,
+                                context: context('i_search_advanced'))
         end
       end
 
@@ -397,5 +400,11 @@ RSpec.describe SearchController, :elastic do
         get :show, params: { search: 'hello world', basic_search: true }
       end
     end
+  end
+
+  private
+
+  def context(event)
+    [Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: event).to_context.to_json]
   end
 end

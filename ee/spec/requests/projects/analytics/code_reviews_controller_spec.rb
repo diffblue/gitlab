@@ -65,7 +65,7 @@ RSpec.describe Projects::Analytics::CodeReviewsController, type: :controller do
     let(:target_id) { 'p_analytics_code_reviews' }
   end
 
-  it_behaves_like 'Snowplow event tracking' do
+  it_behaves_like 'Snowplow event tracking with RedisHLL context' do
     subject { get :index, params: request_params, format: :html }
 
     let(:request_params) { { namespace_id: project.namespace, project_id: project } }

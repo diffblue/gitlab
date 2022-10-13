@@ -43,7 +43,7 @@ RSpec.describe Admin::DevOpsReportController do
       ['', 'dev', 'sec', 'ops'].each do |tab|
         it_behaves_like 'tracks usage event', 'i_analytics_dev_ops_adoption', tab
 
-        it_behaves_like 'Snowplow event tracking' do
+        it_behaves_like 'Snowplow event tracking with RedisHLL context' do
           subject { get :show, params: { tab: tab }, format: :html }
 
           let(:feature_flag_name) { :route_hll_to_snowplow_phase2 }
