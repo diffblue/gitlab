@@ -46050,6 +46050,9 @@ msgstr ""
 msgid "You can't add any more, but you can manage your existing members, for example, by removing inactive members and replacing them with new members. To get more members an owner of the group can start a trial or upgrade to a paid tier."
 msgstr ""
 
+msgid "You can't follow more than %{limit} users. To follow more users, unfollow some others."
+msgstr ""
+
 msgid "You cannot %{action} %{state} users."
 msgstr ""
 
