@@ -1,0 +1,8 @@
+---
+name: transparent_sso_enforcement
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/99264
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/375788
+milestone: '15.5'
+type: development
+group: group::authentication and authorization
+default_enabled: false

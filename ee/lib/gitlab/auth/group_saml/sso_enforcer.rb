@@ -6,10 +6,11 @@ module Gitlab
       class SsoEnforcer
         DEFAULT_SESSION_TIMEOUT = 1.day
 
-        attr_reader :saml_provider
+        attr_reader :saml_provider, :user
 
-        def initialize(saml_provider)
+        def initialize(saml_provider, user: nil)
           @saml_provider = saml_provider
+          @user = user
         end
 
         def update_session
@@ -28,29 +29,34 @@ module Gitlab
           saml_enforced? && !active_session?
         end
 
-        def self.group_access_restricted?(group, user: nil)
+        def self.group_access_restricted?(group, user: nil, for_project: false)
           return false unless group
           return false unless group.root_ancestor
 
           saml_provider = group.root_saml_provider
 
           return false unless saml_provider
-          return false if user_authorized?(user, group)
+          return false if user_authorized?(user, group, for_project)
 
-          new(saml_provider).access_restricted?
+          new(saml_provider, user: user).access_restricted?
         end
 
         private
 
         def saml_enforced?
-          saml_provider&.enforced_sso?
+          return true if saml_provider&.enforced_sso?
+          return false unless user && group
+          return false unless Feature.enabled?(:transparent_sso_enforcement, group)
+
+          user.group_sso?(group)
         end
 
         def group
           saml_provider&.group
         end
 
-        def self.user_authorized?(user, group)
+        def self.user_authorized?(user, group, for_project)
+          return false if for_project
           return true if !group.has_parent? && group.owned_by?(user)
         end
       end
