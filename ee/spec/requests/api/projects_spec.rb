@@ -359,6 +359,32 @@ RSpec.describe API::Projects do
       end
     end
 
+    context 'when external_status_checks is available' do
+      before do
+        stub_licensed_features(external_status_checks: true)
+      end
+
+      it 'returns only_allow_merge_if_all_status_checks_passed flag' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).to have_key 'only_allow_merge_if_all_status_checks_passed'
+      end
+    end
+
+    context 'when external_status_checks not available' do
+      before do
+        stub_licensed_features(external_status_checks: false)
+      end
+
+      it 'does not return only_allow_merge_if_all_status_checks_passed enabled flag' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).not_to have_key 'only_allow_merge_if_all_status_checks_passed'
+      end
+    end
+
     context 'merge trains feature is available' do
       before do
         stub_licensed_features(merge_pipelines: true, merge_trains: true)
@@ -1057,6 +1083,50 @@ RSpec.describe API::Projects do
 
         expect(response).to have_gitlab_http_status(:ok)
         expect(json_response).not_to have_key 'merge_pipelines_enabled'
+      end
+    end
+
+    context 'when external_status_checks is available' do
+      before do
+        stub_licensed_features(external_status_checks: true)
+      end
+
+      let(:project_params) { { only_allow_merge_if_all_status_checks_passed: true } }
+
+      it 'updates the content' do
+        expect { subject }.to change { project.reload.only_allow_merge_if_all_status_checks_passed }.from(false).to(true)
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response['only_allow_merge_if_all_status_checks_passed']).to eq(project_params[:only_allow_merge_if_all_status_checks_passed])
+      end
+
+      context 'when user does not have permission' do
+        let(:developer_user) { create(:user) }
+
+        before do
+          project.add_developer(developer_user)
+        end
+
+        it 'does not update the content' do
+          expect do
+            put api("/projects/#{project.id}", developer_user), params: project_params
+          end.not_to change { project.reload.only_allow_merge_if_all_status_checks_passed }
+
+          expect(response).to have_gitlab_http_status(:forbidden)
+        end
+      end
+    end
+
+    context 'when external_status_checks not available' do
+      before do
+        stub_licensed_features(external_status_checks: false)
+      end
+
+      let(:project_params) { { only_allow_merge_if_all_status_checks_passed: true } }
+
+      it 'does not update the content' do
+        expect { subject }.to not_change { project.reload.only_allow_merge_if_all_status_checks_passed }
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response).not_to have_key 'only_allow_merge_if_all_status_checks_passed'
       end
     end
 

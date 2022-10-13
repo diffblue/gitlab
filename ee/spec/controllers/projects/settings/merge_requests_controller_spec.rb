@@ -130,6 +130,16 @@ RSpec.describe Projects::Settings::MergeRequestsController do
       end
     end
 
+    context 'when only_allow_merge_if_all_status_checks_passed param is specified' do
+      let(:params) { { project_setting_attributes: { only_allow_merge_if_all_status_checks_passed: true } } }
+
+      let(:request) do
+        put :update, params: { namespace_id: project.namespace, project_id: project, project: params }
+      end
+
+      it_behaves_like 'update only allow merge if all status checks passed'
+    end
+
     context 'when auto_rollback_enabled param is specified' do
       let(:params) { { auto_rollback_enabled: true } }
 

@@ -95,7 +95,13 @@ module EE
 
     override :project_setting_attributes
     def project_setting_attributes
-      super + [:prevent_merge_without_jira_issue, :cve_id_request_enabled]
+      attributes = %i[prevent_merge_without_jira_issue cve_id_request_enabled]
+
+      if project&.licensed_feature_available?(:external_status_checks)
+        attributes << :only_allow_merge_if_all_status_checks_passed
+      end
+
+      super + attributes
     end
 
     def project_params_ee

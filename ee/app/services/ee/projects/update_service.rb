@@ -64,6 +64,15 @@ module EE
         ::Projects::RegisterSuggestedReviewersProjectWorker.perform_async(project.id, current_user.id)
       end
 
+      override :remove_unallowed_params
+      def remove_unallowed_params
+        super
+
+        unless project.licensed_feature_available?(:external_status_checks)
+          params.delete(:only_allow_merge_if_all_status_checks_passed)
+        end
+      end
+
       override :after_default_branch_change
       def after_default_branch_change(previous_default_branch)
         ::AuditEventService.new(

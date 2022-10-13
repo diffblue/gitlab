@@ -215,6 +215,11 @@ module EE
               null: true,
               description: 'Container images reported on the project vulnerabilities.',
               resolver: ::Resolvers::Vulnerabilities::ContainerImagesResolver
+
+        field :only_allow_merge_if_all_status_checks_passed, GraphQL::Types::Boolean,
+              null: true,
+              description: 'Indicates that merges of merge requests should be blocked ' \
+                           'unless all status checks have passed.'
       end
 
       def api_fuzzing_ci_configuration

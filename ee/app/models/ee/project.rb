@@ -225,6 +225,8 @@ module EE
       delegate :prevent_merge_without_jira_issue,
                :selective_code_owner_removals,
                :suggested_reviewers_enabled,
+               :only_allow_merge_if_all_status_checks_passed,
+               :only_allow_merge_if_all_status_checks_passed=,
                to: :project_setting
 
       validates :repository_size_limit,
@@ -924,6 +926,13 @@ module EE
       end
 
       epic_ids.to_a
+    end
+
+    def any_external_status_checks_not_passed?(merge_request)
+      status_checks = external_status_checks.applicable_to_branch(merge_request.target_branch)
+      return false if status_checks.empty?
+
+      status_checks.any? { |check| check.status(merge_request, merge_request.diff_head_sha) != 'passed' }
     end
 
     private
