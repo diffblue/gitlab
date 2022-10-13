@@ -12,8 +12,10 @@ import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { captureException } from '~/runner/sentry_utils';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { PROJECT_TABLE_LABEL_STORAGE_USAGE } from '../constants';
+import {
+  PROJECT_TABLE_LABEL_STORAGE_USAGE,
+  namespaceContainerRegistryPopoverContent,
+} from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { formatUsageSize, parseGetStorageResults } from '../utils';
@@ -47,7 +49,6 @@ export default {
   directives: {
     GlModalDirective,
   },
-  mixins: [glFeatureFlagsMixin()],
   inject: [
     'namespacePath',
     'purchaseStorageUrl',
@@ -55,6 +56,9 @@ export default {
     'helpLinks',
     'defaultPerPage',
   ],
+  provide: {
+    containerRegistryPopoverContent: namespaceContainerRegistryPopoverContent,
+  },
   apollo: {
     namespace: {
       query,

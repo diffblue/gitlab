@@ -11,6 +11,7 @@ import {
   TOTAL_USAGE_DEFAULT_TEXT,
   HELP_LINK_ARIA_LABEL,
   RECALCULATE_REPOSITORY_LABEL,
+  projectContainerRegistryPopoverContent,
 } from '../constants';
 import getProjectStorageStatistics from '../queries/project_storage.query.graphql';
 import { parseGetProjectStorageResults } from '../utils';
@@ -28,6 +29,9 @@ export default {
     ProjectStorageDetail,
   },
   inject: ['projectPath', 'helpLinks'],
+  provide: {
+    containerRegistryPopoverContent: projectContainerRegistryPopoverContent,
+  },
   apollo: {
     project: {
       query: getProjectStorageStatistics,
