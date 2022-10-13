@@ -151,6 +151,24 @@ RSpec.describe RequirementsManagement::TestReport do
         expect(test_report.created_at).to eq(now)
       end
     end
+
+    context 'when state param is invalid' do
+      context 'when state is nil' do
+        it 'test report is not valid' do
+          report = described_class.build_report(requirement_issue: requirement, author: user, state: nil, timestamp: now)
+
+          expect(report).not_to be_valid
+        end
+      end
+
+      context 'when state is a non-nil invalid value' do
+        it 'raises ArgumentError' do
+          expect do
+            described_class.build_report(requirement_issue: requirement, author: user, state: 'nonsense', timestamp: now)
+          end.to raise_error(ArgumentError, /not a valid state/)
+        end
+      end
+    end
   end
 
   it_behaves_like 'cleanup by a loose foreign key' do

@@ -192,4 +192,86 @@ RSpec.describe 'Update a work item' do
       end
     end
   end
+
+  context 'with status widget input' do
+    let(:new_status) { 'FAILED' }
+    let(:input) { { 'statusWidget' => { 'status' => new_status } } }
+
+    let_it_be_with_refind(:work_item) { create(:work_item, :satisfied_status, project: project) }
+
+    let(:fields) do
+      <<~FIELDS
+        workItem {
+          widgets {
+            type
+            ... on WorkItemWidgetStatus {
+              status
+            }
+          }
+        }
+        errors
+      FIELDS
+    end
+
+    def work_item_status
+      state = work_item.requirement&.last_test_report_state
+      ::WorkItems::Widgets::Status::STATUS_MAP[state]
+    end
+
+    context 'when requirements is unlicensed' do
+      let(:current_user) { reporter }
+
+      before do
+        stub_licensed_features(requirements: false)
+      end
+
+      it_behaves_like 'work item is not updated'
+    end
+
+    context 'when requirements is licensed' do
+      before do
+        stub_licensed_features(requirements: true)
+      end
+
+      context 'when user has permissions to admin a work item' do
+        let(:current_user) { reporter }
+
+        it_behaves_like 'update work item status widget'
+
+        context 'when setting status to an invalid value' do
+          # while a requirement can have a status 'unverified'
+          # it can't be directly set that way
+
+          let(:input) do
+            { 'statusWidget' => { 'status' => 'UNVERIFIED' } }
+          end
+
+          it "does not update the work item's status" do
+            # due to 'passed' internally and 'satisfied' externally, map it here
+            expect(work_item_status).to eq("satisfied")
+
+            expect do
+              post_graphql_mutation(mutation, current_user: current_user)
+              work_item.reload
+            end.not_to change { work_item_status }
+
+            expect(work_item_status).to eq("satisfied")
+          end
+        end
+      end
+
+      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+
+      context 'when the user does not have permission to update the work item' do
+        let(:current_user) { guest }
+
+        it_behaves_like 'a mutation that returns top-level errors', errors: [
+          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+          'perform this action'
+        ]
+
+        it_behaves_like 'work item is not updated'
+      end
+    end
+  end
 end
