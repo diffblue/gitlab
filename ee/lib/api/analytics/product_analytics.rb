@@ -24,7 +24,7 @@ module API
 
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         desc 'Proxy request to cube installation'
-        post ':project_id/product_analytics/request' do
+        get ':project_id/product_analytics/request/load' do
           not_found! unless ::Feature.enabled?(:cube_api_proxy, project)
           unauthorized! unless can?(current_user, :developer_access, project)
 
@@ -42,7 +42,7 @@ module API
               "Content-Type": 'application/json',
               Authorization: JWT.encode(payload, Gitlab::CurrentSettings.cube_api_key, 'HS256')
             },
-            body: { "query" => params["query"] }.to_json
+            body: { query: Gitlab::Json.parse(params["query"]), "queryType": params["queryType"] }.to_json
           )
 
           Gitlab::Json.parse(response.body)
