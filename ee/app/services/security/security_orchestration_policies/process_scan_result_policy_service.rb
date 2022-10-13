@@ -3,11 +3,11 @@
 module Security
   module SecurityOrchestrationPolicies
     class ProcessScanResultPolicyService
-      def initialize(policy_configuration:, policy:, policy_index:)
+      def initialize(project:, policy_configuration:, policy:, policy_index:)
         @policy_configuration = policy_configuration
         @policy = policy
         @policy_index = policy_index
-        @project = policy_configuration.project
+        @project = project
         @author = policy_configuration.policy_last_updated_by
       end
 

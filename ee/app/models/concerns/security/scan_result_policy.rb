@@ -23,22 +23,41 @@ module Security
 
       def delete_scan_finding_rules
         if project? # To be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/369473#feature-update
-          project.approval_rules.scan_finding.delete_all
-          project.approval_merge_request_rules.scan_finding.delete_all
-        else
-          approval_merge_request_rules.delete_all
-          approval_project_rules.delete_all
+          project
+            .approval_rules
+            .scan_finding
+            .where(security_orchestration_policy_configuration_id: nil)
+            .delete_all
+
+          project
+            .approval_merge_request_rules
+            .scan_finding
+            .where(security_orchestration_policy_configuration_id: nil)
+            .delete_all
         end
+
+        approval_merge_request_rules.each_batch { |batch| delete_batch(batch) }
+        approval_project_rules.each_batch { |batch| delete_batch(batch) }
+      end
+
+      def delete_scan_finding_rules_for_project(project_id)
+        approval_project_rules.where(project_id: project_id).each_batch { |batch| delete_batch(batch) }
+        approval_merge_request_rules
+          .joins(:merge_request)
+          .where(merge_request: { target_project_id: project_id })
+          .each_batch { |batch| delete_batch(batch) }
       end
 
       def active_scan_result_policies
-        return [] if project.blank?
-
         scan_result_policies&.select { |config| config[:enabled] }&.first(LIMIT)
       end
 
       def scan_result_policies
         policy_by_type(:scan_result_policy)
+      end
+
+      def delete_batch(batch)
+        batch.delete_all
       end
     end
   end

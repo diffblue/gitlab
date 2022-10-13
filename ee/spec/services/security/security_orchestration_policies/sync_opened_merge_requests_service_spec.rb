@@ -27,7 +27,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsS
   end
 
   describe "#execute" do
-    subject { described_class.new(policy_configuration: policy_configuration).execute }
+    subject { described_class.new(project: project).execute }
 
     it "synchronizes rules to opened merge requests" do
       subject

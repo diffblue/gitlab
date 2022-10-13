@@ -8,7 +8,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHea
   let_it_be(:opened_merge_request) { create(:merge_request, :opened, source_project: project) }
 
   describe "#execute" do
-    subject { described_class.new(policy_configuration: policy_configuration).execute }
+    subject { described_class.new(project: project).execute }
 
     it 'does not trigger SyncReportsToReportApprovalRulesWorker' do
       expect(::Ci::SyncReportsToReportApprovalRulesWorker).not_to receive(:perform_async)

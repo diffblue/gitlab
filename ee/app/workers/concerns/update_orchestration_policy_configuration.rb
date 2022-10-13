@@ -17,24 +17,7 @@ module UpdateOrchestrationPolicyConfiguration
         .execute
     end
 
-    if configuration.project?
-      configuration.transaction do
-        configuration.delete_scan_finding_rules
-
-        configuration.active_scan_result_policies.each_with_index do |policy, policy_index|
-          Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService
-            .new(policy_configuration: configuration, policy: policy, policy_index: policy_index)
-            .execute
-        end
-
-        Security::SecurityOrchestrationPolicies::SyncOpenedMergeRequestsService
-          .new(policy_configuration: configuration)
-          .execute
-      end
-      Security::SecurityOrchestrationPolicies::SyncOpenMergeRequestsHeadPipelineService
-          .new(policy_configuration: configuration)
-          .execute
-    end
+    Security::SecurityOrchestrationPolicies::SyncScanResultPoliciesService.new(configuration).execute
 
     configuration.update!(configured_at: Time.current)
   end

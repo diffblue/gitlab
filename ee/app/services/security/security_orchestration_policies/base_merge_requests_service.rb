@@ -3,8 +3,8 @@
 module Security
   module SecurityOrchestrationPolicies
     class BaseMergeRequestsService
-      def initialize(policy_configuration:)
-        @project = policy_configuration.project
+      def initialize(project:)
+        @project = project
       end
 
       def each_open_merge_request
