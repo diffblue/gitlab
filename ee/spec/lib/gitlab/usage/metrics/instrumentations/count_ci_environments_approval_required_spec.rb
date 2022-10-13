@@ -39,7 +39,7 @@ RSpec.describe Gitlab::Usage::Metrics::Instrumentations::CountCiEnvironmentsAppr
     end
 
     let_it_be(:protected_environment_approval_rules) do
-      create_list(:protected_environment_approval_rule, 2, :maintainer_access, created_at: 2.days.ago)
+      create_list(:protected_environment_approval_rule, 2, :maintainer_access, created_at: 3.days.ago)
     end
 
     let(:start) { 30.days.ago.to_s(:db) }
