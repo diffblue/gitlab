@@ -46,22 +46,25 @@ export default {
         <div>
           <div class="gl-font-weight-bold">{{ $options.i18n.title }}</div>
           <p class="gl-mb-3">{{ $options.i18n.content }}</p>
-          <gl-button
-            variant="confirm"
-            :href="buttonLink"
-            data-testid="enableButton"
-            @click="trackCTAClick"
-          >
-            {{ buttonText }}
-          </gl-button>
-          <gl-button
-            class="gl-ml-2"
-            category="secondary"
-            data-testid="cancelButton"
-            @click="dismiss"
-          >
-            {{ $options.i18n.buttonCancel }}
-          </gl-button>
+          <div class="gl-display-inline-flex gl-flex-wrap gl-gap-3">
+            <gl-button
+              class="gl-flex-grow-1"
+              variant="confirm"
+              :href="buttonLink"
+              data-testid="enableButton"
+              @click="trackCTAClick"
+            >
+              {{ buttonText }}
+            </gl-button>
+            <gl-button
+              category="secondary"
+              class="gl-flex-grow-1"
+              data-testid="cancelButton"
+              @click="dismiss"
+            >
+              {{ $options.i18n.buttonCancel }}
+            </gl-button>
+          </div>
         </div>
       </div>
     </template>
