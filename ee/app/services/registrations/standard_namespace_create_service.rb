@@ -1,17 +1,7 @@
 # frozen_string_literal: true
 
 module Registrations
-  class NamespaceCreateService
-    include BaseServiceUtility
-    include Gitlab::Experiment::Dsl
-
-    attr_reader :project, :group
-
-    def initialize(user, params = {})
-      @user = user
-      @params = params.dup
-    end
-
+  class StandardNamespaceCreateService < BaseNamespaceCreateService
     def execute
       if new_group?
         create_with_new_group_flow
@@ -26,8 +16,6 @@ module Registrations
 
     LEARN_GITLAB_ULTIMATE_TEMPLATE = 'learn_gitlab_ultimate.tar.gz'
 
-    attr_reader :user, :params
-
     def new_group?
       !existing_group_id
     end
@@ -40,49 +28,13 @@ module Registrations
       @group = Groups::CreateService.new(user, modified_group_params).execute
 
       if group.persisted?
-        Gitlab::Tracking.event(self.class.name, 'create_group', namespace: group, user: user)
-        require_verification_experiment.record_conversion(group)
-
-        apply_trial if in_trial_onboarding_flow?
-
+        after_successful_group_creation(group_track_action: 'create_group')
         create_project_flow
       else
         @project = Project.new(project_params)
 
-        ServiceResponse.error(message: 'Group failed to be created')
+        ServiceResponse.error(message: 'Group failed to be created', payload: { group: group, project: project })
       end
-    end
-
-    def modified_group_params
-      group_name = params.dig(:group, :name)
-      modifed_group_params = group_params
-      if group_name.present? && params.dig(:group, :path).blank?
-        modifed_group_params = modifed_group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
-      end
-
-      modifed_group_params
-    end
-
-    def require_verification_experiment
-      experiment(:require_verification_for_namespace_creation, user: user)
-    end
-
-    def in_trial_onboarding_flow?
-      params[:trial_onboarding_flow] == 'true'
-    end
-
-    def apply_trial
-      trial_user_information = glm_params.merge({
-                                                  namespace_id: group.id,
-                                                  gitlab_com_trial: true,
-                                                  sync_to_gl: true
-                                                })
-
-      GitlabSubscriptions::Trials::ApplyTrialWorker.perform_async(user.id, trial_user_information.to_h)
-    end
-
-    def glm_params
-      params.permit(:glm_source, :glm_content)
     end
 
     def create_project_params
@@ -110,9 +62,9 @@ module Registrations
 
         create_learn_gitlab_project
 
-        ServiceResponse.success
+        ServiceResponse.success(payload: { project: project })
       else
-        ServiceResponse.error(message: 'Project failed to be created')
+        ServiceResponse.error(message: 'Project failed to be created', payload: { group: group, project: project })
       end
     end
 
@@ -134,18 +86,7 @@ module Registrations
         Onboarding::LearnGitlab::PROJECT_NAME
       end
     end
-
-    def group_params
-      params.require(:group).permit(
-        :name,
-        :path,
-        :visibility_level
-      ).merge(
-        create_event: true,
-        setup_for_company: user.setup_for_company
-      )
-    end
   end
 end
 
-Registrations::NamespaceCreateService.prepend_mod
+Registrations::StandardNamespaceCreateService.prepend_mod

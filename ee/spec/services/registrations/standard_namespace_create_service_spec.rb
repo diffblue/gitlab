@@ -2,20 +2,18 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::NamespaceCreateService, :aggregate_failures do
+RSpec.describe Registrations::StandardNamespaceCreateService, :aggregate_failures do
   using RSpec::Parameterized::TableSyntax
 
   describe '#execute' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }
     let(:extra_params) { {} }
-    let(:setup_for_company) { nil }
     let(:group_params) do
       {
         name: 'Group name',
         path: 'group-path',
-        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s,
-        setup_for_company: setup_for_company
+        visibility_level: Gitlab::VisibilityLevel::PRIVATE.to_s
       }
     end
 
@@ -39,14 +37,16 @@ RSpec.describe Registrations::NamespaceCreateService, :aggregate_failures do
     subject(:execute) { described_class.new(user, params).execute }
 
     context 'when group and project can be created' do
-      it 'creates a group' do
-        expect { expect(execute).to be_success }.to change(Group, :count).by(1)
+      it 'creates a group and project' do
+        expect { expect(execute).to be_success }.to change(Group, :count).by(1).and change(Project, :count).by(1)
       end
 
       it 'passes create_event: true to the Groups::CreateService' do
+        added_params = { create_event: true, setup_for_company: nil }
+
         expect(Groups::CreateService).to receive(:new)
                                            .with(user, ActionController::Parameters
-                                                         .new(group_params.merge(create_event: true)).permit!)
+                                                         .new(group_params.merge(added_params)).permit!)
                                            .and_call_original
 
         expect(execute).to be_success
@@ -89,12 +89,10 @@ RSpec.describe Registrations::NamespaceCreateService, :aggregate_failures do
       let(:group_params) { { name: '', path: '' } }
 
       it 'does not create a group' do
-        instance = described_class.new(user, params)
-
         expect do
-          expect(instance.execute).to be_error
+          expect(execute).to be_error
         end.not_to change(Group, :count)
-        expect(instance.group.errors).not_to be_blank
+        expect(execute.payload[:group].errors).not_to be_blank
       end
 
       it 'does not track events for group or project creation' do
@@ -105,11 +103,9 @@ RSpec.describe Registrations::NamespaceCreateService, :aggregate_failures do
       end
 
       it 'the project is not disregarded completely' do
-        instance = described_class.new(user, params)
+        expect(execute).to be_error
 
-        expect(instance.execute).to be_error
-
-        expect(instance.project.name).to eq('New project')
+        expect(execute.payload[:project].name).to eq('New project')
       end
 
       context 'with trial concerns' do
@@ -127,12 +123,10 @@ RSpec.describe Registrations::NamespaceCreateService, :aggregate_failures do
       let(:project_params) { { name: '', path: '', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
 
       it 'does not create a project' do
-        instance = described_class.new(user, params)
-
         expect do
-          expect(instance.execute).to be_error
+          expect(execute).to be_error
         end.to change(Group, :count).and change(Project, :count).by(0)
-        expect(instance.project.errors).not_to be_blank
+        expect(execute.payload[:project].errors).not_to be_blank
       end
 
       it 'selectively tracks events for group and project creation' do
@@ -177,7 +171,7 @@ RSpec.describe Registrations::NamespaceCreateService, :aggregate_failures do
       end
     end
 
-    context 'with learn gitlab project' do
+    context 'with learn gitlab project', :sidekiq_inline do
       where(:trial, :project_name, :template) do
         'false' | 'Learn GitLab'                  | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
         'true'  | 'Learn GitLab - Ultimate trial' | described_class::LEARN_GITLAB_ULTIMATE_TEMPLATE
@@ -193,7 +187,7 @@ RSpec.describe Registrations::NamespaceCreateService, :aggregate_failures do
                                                              .with(path, project_name, group.id, user.id)
                                                              .and_call_original
 
-          expect(execute).to be_success
+          expect { expect(execute).to be_success }.to change(Project, :count).by(2)
         end
       end
     end
