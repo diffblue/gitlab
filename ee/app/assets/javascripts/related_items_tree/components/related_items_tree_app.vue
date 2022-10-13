@@ -177,7 +177,7 @@ export default {
 <template>
   <div class="related-items-tree-container">
     <div
-      class="related-items-tree card card-slim gl-mt-5 gl-mb-0"
+      class="related-items-tree card card-slim gl-mt-4 gl-mb-0"
       :class="{
         'disabled-content': disableContents,
         'overflow-auto': directChildren.length > $options.OVERFLOW_AFTER,
