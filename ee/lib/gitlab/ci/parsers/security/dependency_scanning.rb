@@ -5,10 +5,6 @@ module Gitlab
     module Parsers
       module Security
         class DependencyScanning < Common
-          include Security::Concerns::DeprecatedSyntax
-
-          DEPRECATED_REPORT_VERSION = "1.3"
-
           private
 
           def create_location(location_data)
