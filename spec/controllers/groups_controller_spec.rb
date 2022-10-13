@@ -229,7 +229,7 @@ RSpec.describe GroupsController, factory_default: :keep do
       sign_in(user)
 
       expect do
-        post :create, params: { group: { name: 'new_group', path: "new_group" } }
+        post :create, params: { group: { name: 'new_group', path: 'new_group' } }
       end.to change { Group.count }.by(1)
 
       expect(response).to have_gitlab_http_status(:found)
@@ -240,7 +240,7 @@ RSpec.describe GroupsController, factory_default: :keep do
         sign_in(create(:admin))
 
         expect do
-          post :create, params: { group: { name: 'new_group', path: "new_group" } }
+          post :create, params: { group: { name: 'new_group', path: 'new_group' } }
         end.to change { Group.count }.by(1)
 
         expect(response).to have_gitlab_http_status(:found)
