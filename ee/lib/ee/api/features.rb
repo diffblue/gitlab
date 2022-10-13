@@ -3,6 +3,7 @@
 module EE
   module API
     module Features
+      # TODO: remove this file with set_feature_flag_service feature flag
       extend ActiveSupport::Concern
 
       prepended do
