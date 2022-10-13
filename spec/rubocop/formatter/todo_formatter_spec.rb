@@ -82,7 +82,7 @@ RSpec.describe RuboCop::Formatter::TodoFormatter do
 
       expect(todo_yml('B/AutoCorrect')).to eq(<<~YAML)
         ---
-        # Cop supports --auto-correct.
+        # Cop supports --autocorrect.
         B/AutoCorrect:
           Exclude:
             - 'd.rb'

@@ -109,7 +109,7 @@ RSpec.describe RuboCop::CopTodo do
       specify do
         expect(yaml).to eq(<<~YAML)
           ---
-          # Cop supports --auto-correct.
+          # Cop supports --autocorrect.
           #{cop_name}:
         YAML
       end

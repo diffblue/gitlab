@@ -33,7 +33,7 @@ module RuboCop
     def to_yaml
       yaml = []
       yaml << '---'
-      yaml << '# Cop supports --auto-correct.' if autocorrectable?
+      yaml << '# Cop supports --autocorrect.' if autocorrectable?
       yaml << "#{cop_name}:"
 
       if previously_disabled
