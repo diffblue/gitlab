@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import createFlash from '~/flash';
+import createFlash, { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
@@ -244,9 +244,9 @@ export const requestRemoveItem = ({ commit }, data) => commit(types.REQUEST_REMO
 export const receiveRemoveItemSuccess = ({ commit }, data) =>
   commit(types.RECEIVE_REMOVE_ITEM_SUCCESS, data);
 export const receiveRemoveItemFailure = ({ commit }, { item, status }) => {
-  commit(types.RECEIVE_REMOVE_ITEM_FAILURE, item);
+  commit(types.RECEIVE_REMOVE_ITEM_FAILURE, { item });
   const issuableType = issuableTypesMap[item.type.toUpperCase()];
-  createFlash({
+  createAlert({
     message:
       status === httpStatusCodes.NOT_FOUND
         ? pathIndeterminateErrorMap[issuableType]

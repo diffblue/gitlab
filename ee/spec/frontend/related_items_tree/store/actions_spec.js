@@ -16,7 +16,7 @@ import Tracking from '~/tracking';
 
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
-import createFlash from '~/flash';
+import createFlash, { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import {
   issuableTypesMap,
@@ -751,7 +751,7 @@ describe('RelatedItemTree', () => {
             [
               {
                 type: types.RECEIVE_REMOVE_ITEM_FAILURE,
-                payload: { type: ChildType.Epic },
+                payload: { item: { type: ChildType.Epic } },
               },
             ],
             [],
@@ -768,7 +768,7 @@ describe('RelatedItemTree', () => {
             },
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message: 'An error occurred while removing epics.',
           });
         });
