@@ -217,7 +217,7 @@ export default {
           data-testid="purchased-usage-overview"
         />
       </section>
-      <minutes-usage-charts :ci-minutes-usage="ciMinutesUsages" />
+      <minutes-usage-charts :ci-minutes-usages="ciMinutesUsages" />
       <section class="gl-py-5">
         <project-list
           :projects="projects"
