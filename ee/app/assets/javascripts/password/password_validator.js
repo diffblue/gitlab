@@ -41,7 +41,9 @@ export default class PasswordValidator extends InputValidator {
           this.password = passwordInputBox.value;
         });
 
-        const submitButtonElement = passwordInputBox.form.querySelector('input[type="submit"]');
+        const submitButtonElement = passwordInputBox.form.querySelector(
+          'input[type="submit"],button[type="submit"]',
+        );
         submitButtonElement.addEventListener('click', () => {
           const { passwordRequirementList } = this.$refs;
           this.submitted = true;
