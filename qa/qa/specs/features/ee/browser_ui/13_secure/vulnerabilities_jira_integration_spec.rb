@@ -103,6 +103,7 @@ testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
           jira.set_jira_project_key(jira_project_key)
           jira.enable_jira_vulnerabilities
           jira.select_vulnerability_bug_type("Bug")
+          jira.click_save_changes_and_wait
         end
 
         expect(page).not_to have_text("Url is blocked")
