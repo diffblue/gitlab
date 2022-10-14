@@ -44,10 +44,10 @@ Array [
       "type": "dashed",
     },
     "name": "No data available",
+    "showSymbol": false,
   },
   Object {
     "areaStyle": Object {
-      "color": "#5772ff",
       "opacity": 0,
     },
     "data": Array [

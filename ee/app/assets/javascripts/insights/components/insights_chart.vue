@@ -1,14 +1,56 @@
 <script>
-import { GlColumnChart, GlLineChart, GlStackedColumnChart } from '@gitlab/ui/dist/charts';
+import {
+  GlColumnChart,
+  GlLineChart,
+  GlStackedColumnChart,
+  GlChartLegend,
+} from '@gitlab/ui/dist/charts';
 
+import { isNumber } from 'lodash';
 import { getSvgIconPathContent } from '~/lib/utils/icon_utils';
 import ResizableChartContainer from '~/vue_shared/components/resizable_chart/resizable_chart_container.vue';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
+import ChartTooltipText from 'ee/analytics/shared/components/chart_tooltip_text.vue';
 
-import { CHART_TYPES } from '../constants';
+import { CHART_TYPES, INSIGHTS_DATA_SOURCE_DORA, INSIGHTS_NO_DATA_TOOLTIP } from '../constants';
 import InsightsChartError from './insights_chart_error.vue';
 
 const CHART_HEIGHT = 300;
+
+const generateInsightsSeriesInfo = (datasets = []) => {
+  if (!datasets.length) return [];
+  const [nullSeries, dataSeries] = datasets;
+  return [
+    {
+      type: 'solid',
+      name: dataSeries.name,
+      // eslint-disable-next-line no-unused-vars
+      data: dataSeries.data.map(([_, v]) => v),
+      color: dataSeries.itemStyle.color,
+    },
+    {
+      type: 'dashed',
+      name: nullSeries.name,
+      color: nullSeries.itemStyle.color,
+    },
+  ];
+};
+
+const extractDataSeriesTooltipValue = (seriesData) => {
+  const [, dataSeries] = seriesData;
+  if (!dataSeries.data) {
+    return [];
+  }
+  const [, dataSeriesValue] = dataSeries.data;
+  return isNumber(dataSeriesValue)
+    ? [
+        {
+          title: dataSeries.seriesName,
+          value: dataSeriesValue,
+        },
+      ]
+    : [];
+};
 
 export default {
   components: {
@@ -18,6 +60,8 @@ export default {
     InsightsChartError,
     ResizableChartContainer,
     ChartSkeletonLoader,
+    ChartTooltipText,
+    GlChartLegend,
   },
   props: {
     loaded: {
@@ -54,6 +98,9 @@ export default {
   data() {
     return {
       svgs: {},
+      tooltipTitle: null,
+      tooltipValue: null,
+      chart: null,
     };
   },
   computed: {
@@ -61,6 +108,9 @@ export default {
       const handleIcon = this.svgs['scroll-handle'];
 
       return handleIcon ? { handleIcon } : {};
+    },
+    seriesInfo() {
+      return generateInsightsSeriesInfo(this.data.datasets);
     },
     chartOptions() {
       let options = {
@@ -96,6 +146,9 @@ export default {
     isLineChart() {
       return this.type === this.$options.chartTypes.LINE;
     },
+    isDoraChart() {
+      return this.dataSource === INSIGHTS_DATA_SOURCE_DORA;
+    },
   },
   methods: {
     setSvg(name) {
@@ -110,12 +163,23 @@ export default {
           console.error('SVG could not be rendered correctly: ', e);
         });
     },
-    onChartCreated() {
+    onChartCreated(chart) {
+      this.chart = chart;
       this.setSvg('scroll-handle');
+    },
+    formatTooltipText(params) {
+      const { seriesData } = params;
+      const tooltipValue = extractDataSeriesTooltipValue(seriesData);
+
+      this.tooltipTitle = params.value;
+      this.tooltipValue = tooltipValue;
     },
   },
   height: CHART_HEIGHT,
   chartTypes: CHART_TYPES,
+  i18n: {
+    noDataText: INSIGHTS_NO_DATA_TOOLTIP,
+  },
 };
 </script>
 <template>
@@ -128,8 +192,8 @@ export default {
     />
   </div>
   <resizable-chart-container v-else class="insights-chart">
-    <h5 class="text-center">{{ title }}</h5>
-    <p v-if="description" class="text-center">{{ description }}</p>
+    <h5 class="gl-text-center">{{ title }}</h5>
+    <p v-if="description" class="gl-text-center">{{ description }}</p>
     <gl-column-chart
       v-if="loaded && isColumnChart"
       v-bind="$attrs"
@@ -153,14 +217,28 @@ export default {
       :option="chartOptions"
       @created="onChartCreated"
     />
-    <gl-line-chart
-      v-else-if="loaded && isLineChart"
-      v-bind="$attrs"
-      :height="$options.height"
-      :data="data.datasets"
-      :option="chartOptions"
-      @created="onChartCreated"
-    />
+    <template v-else-if="loaded && isLineChart">
+      <gl-line-chart
+        v-bind="$attrs"
+        :height="$options.height"
+        :data="data.datasets"
+        :option="chartOptions"
+        :format-tooltip-text="formatTooltipText"
+        :show-legend="!isDoraChart"
+        @created="onChartCreated"
+      >
+        <template #tooltip-title> {{ tooltipTitle }} </template>
+        <template #tooltip-content>
+          <chart-tooltip-text
+            :empty-value-text="$options.i18n.noDataText"
+            :tooltip-value="tooltipValue"
+          />
+        </template>
+      </gl-line-chart>
+      <div v-if="isDoraChart" class="gl-pl-11">
+        <gl-chart-legend v-if="chart" :chart="chart" :series-info="seriesInfo" />
+      </div>
+    </template>
     <chart-skeleton-loader v-else />
   </resizable-chart-container>
 </template>

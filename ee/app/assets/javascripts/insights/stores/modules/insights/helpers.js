@@ -1,4 +1,10 @@
-import { CHART_TYPES } from 'ee/insights/constants';
+import { pairDataAndLabels, buildNullSeries } from 'ee/analytics/shared/utils';
+import { BASE_NULL_SERIES_OPTIONS, BASE_SERIES_DATA_OPTIONS } from 'ee/analytics/shared/constants';
+import {
+  CHART_TYPES,
+  INSIGHTS_DATA_SOURCE_DORA,
+  INSIGHTS_NO_DATA_TOOLTIP,
+} from 'ee/insights/constants';
 import { __, s__ } from '~/locale';
 
 const getGroupByValue = (queryParams) => {
@@ -38,13 +44,16 @@ export const transformChartDataForGlCharts = (
   { type, query: queryParams },
   { labels, datasets },
 ) => {
+  const yAxisTitle = getAxisTitle(getTypeValue(queryParams));
   const formattedData = {
     xAxisTitle: getAxisTitle(getGroupByValue(queryParams)),
-    yAxisTitle: getAxisTitle(getTypeValue(queryParams)),
+    yAxisTitle,
     labels,
     datasets: [],
     seriesNames: [],
   };
+
+  const { data_source: dataSource = '' } = queryParams;
 
   switch (type) {
     case CHART_TYPES.BAR:
@@ -64,13 +73,27 @@ export const transformChartDataForGlCharts = (
       );
       break;
     case CHART_TYPES.LINE:
-      formattedData.datasets.push(
-        ...datasets.map((dataset) => ({
-          name: dataset.label,
-          data: labels.map((label, i) => [label, dataset.data[i]]),
-        })),
-      );
+      if (dataSource === INSIGHTS_DATA_SOURCE_DORA) {
+        const paired = pairDataAndLabels({
+          datasetNames: [yAxisTitle],
+          axisLabels: labels,
+          datasets,
+        });
 
+        formattedData.datasets = buildNullSeries(
+          paired,
+          INSIGHTS_NO_DATA_TOOLTIP,
+          BASE_SERIES_DATA_OPTIONS,
+          BASE_NULL_SERIES_OPTIONS,
+        );
+      } else {
+        formattedData.datasets.push(
+          ...datasets.map((dataset) => ({
+            name: dataset.label,
+            data: labels.map((label, i) => [label, dataset.data[i]]),
+          })),
+        );
+      }
       break;
     default:
       formattedData.datasets = { all: labels.map((label, i) => [label, datasets[0].data[i]]) };

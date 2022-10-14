@@ -1,5 +1,6 @@
 import { CHART_TYPES } from 'ee/insights/constants';
 import { transformChartDataForGlCharts } from 'ee/insights/stores/modules/insights/helpers';
+import { doraSeries } from '../../mock_data';
 
 describe('Insights helpers', () => {
   describe('transformChartDataForGlCharts', () => {
@@ -143,6 +144,37 @@ describe('Insights helpers', () => {
           ['January', 1],
           ['February', 2],
         ],
+      });
+    });
+
+    describe("dataSource is 'dora'", () => {
+      const chart = {
+        type: CHART_TYPES.LINE,
+        query: { group_by: 'month', issuable_type: 'issue', data_source: 'dora' },
+      };
+      const data = {
+        labels: ['January', 'February'],
+        datasets: [{ label: 'Dora series 1', data: [1, 2] }],
+      };
+
+      it('generates a null series for display', () => {
+        expect(transformChartDataForGlCharts(chart, data).datasets).toStrictEqual(doraSeries);
+      });
+
+      it('pairs each data item with the relevant label', () => {
+        const res = transformChartDataForGlCharts(chart, data).datasets;
+        const seriesData = res.map(({ data: _data }) => _data);
+
+        expect(seriesData).toStrictEqual([
+          [
+            ['January', null],
+            ['February', null],
+          ],
+          [
+            ['January', 1],
+            ['February', 2],
+          ],
+        ]);
       });
     });
   });

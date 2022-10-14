@@ -326,7 +326,6 @@ export const aggregationData = {
 
 export const durationDataSeries = {
   areaStyle: {
-    color: '#5772ff',
     opacity: 0,
   },
   data: durationChartPlottableData,

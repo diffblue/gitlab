@@ -15,6 +15,7 @@ import {
   EMPTY_STATE_DESCRIPTION,
   EMPTY_STATE_SVG_PATH,
   INSIGHTS_CONFIGURATION_TEXT,
+  INSIGHTS_PAGE_FILTERED_OUT,
 } from '../constants';
 import InsightsPage from './insights_page.vue';
 
@@ -122,6 +123,7 @@ export default {
   },
   i18n: {
     insightsConfigurationText: INSIGHTS_CONFIGURATION_TEXT,
+    insightsPageFilteredOut: INSIGHTS_PAGE_FILTERED_OUT,
   },
   insightsDocumentationLink: helpPagePath('user/group/insights/index.md', {
     anchor: 'configure-your-insights',
@@ -140,17 +142,11 @@ export default {
         </template>
       </gl-sprintf>
     </p>
-    <div v-if="configLoading" class="insights-config-loading text-center">
+    <div v-if="configLoading" class="insights-config-loading gl-text-center">
       <gl-loading-icon :inline="true" size="lg" />
     </div>
     <div v-else-if="allItemsAreFilteredOut" class="insights-wrapper">
-      <gl-alert>
-        {{
-          s__(
-            'Insights|This project is filtered out in the insights.yml file (see the projects.only config for more information).',
-          )
-        }}
-      </gl-alert>
+      <gl-alert>{{ $options.i18n.insightsPageFilteredOut }}</gl-alert>
     </div>
     <div v-else-if="configPresent" class="insights-wrapper">
       <gl-dropdown

@@ -1,9 +1,9 @@
-import { dataVizBlue500, gray300 } from '@gitlab/ui/scss_to_js/scss_variables';
-import { merge, cloneDeep } from 'lodash';
+import { merge, cloneDeep, zip } from 'lodash';
 import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
 import { convertObjectPropsToCamelCase, parseBoolean } from '~/lib/utils/common_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
+import { DEFAULT_NULL_SERIES_OPTIONS, DEFAULT_SERIES_DATA_OPTIONS } from './constants';
 
 export const formattedDate = (d) => dateFormat(d, dateFormats.defaultDate);
 
@@ -175,13 +175,17 @@ const lerp = (valueAtT0, valueAtT1, t) => {
  * and "non-null" data sets.
  * This function returns new series data and does not modify the original instance.
  *
- * @param {Array} seriesData The lead time series data that has already been processed
- * by the `apiDataToChartSeries` function above.
+ * @param {Array} seriesData The time series data that has already been processed
+ * by the `apiDataToChartSeries` function.
  * @returns {Array} A new series Array
  */
-export const buildNullSeries = (seriesData, nullSeriesTitle) => {
+export const buildNullSeries = (
+  seriesData,
+  nullSeriesTitle,
+  seriesDataOptions = DEFAULT_SERIES_DATA_OPTIONS,
+  nullSeriesOptions = DEFAULT_NULL_SERIES_OPTIONS,
+) => {
   const nonNullSeries = cloneDeep(seriesData[0]);
-
   // Loop through the series data and build a list of all the "gaps". A "gap" is
   // a section of the data set that only include `null` values. Each gap object
   // includes the start and end indices and the start and end values of the gap.
@@ -222,36 +226,36 @@ export const buildNullSeries = (seriesData, nullSeriesTitle) => {
     }
   });
 
-  merge(nonNullSeries, {
-    showSymbol: true,
-    showAllSymbol: true,
-    symbolSize: 8,
-    lineStyle: {
-      color: dataVizBlue500,
-    },
-    areaStyle: {
-      color: dataVizBlue500,
-      opacity: 0,
-    },
-    itemStyle: {
-      color: dataVizBlue500,
-    },
-  });
+  merge(nonNullSeries, seriesDataOptions);
 
   const nullSeries = {
+    ...nullSeriesOptions,
     name: nullSeriesTitle,
     data: nullSeriesData,
-    lineStyle: {
-      type: 'dashed',
-      color: gray300,
-    },
-    areaStyle: {
-      color: 'none',
-    },
-    itemStyle: {
-      color: gray300,
-    },
   };
 
   return [nullSeries, nonNullSeries];
 };
+
+/**
+ * Takes an ordered array of axisLabels and 1 or more datasets and creates
+ * pairs, each pair consists of the axisLabel and the value from one or more datasets at
+ * the current index.
+ *
+ * datasetName: 'Cool dataset'
+ * axisLabels: ['label 1', 'label 2']
+ * dataset: [10, 20]
+ * returns [{ name: 'Cool dataset', data: [['label 1', 10], ['label 2', 20]]}]
+ *
+ * @param {object} params - function arguments
+ * @param {Array} params.datasetNames - Name parameter for each dataset
+ * @param {Array} params.datasets - Array of datasets
+ * @param {Array} params.axisLabels - Array of axis labels to be applied to each point in each dataset
+ * @returns {Array} Array of objects with the name and paired dataset
+ */
+export const pairDataAndLabels = ({ datasetNames, datasets = [], axisLabels }) => [
+  ...datasets.map((dataset, datasetIndex) => ({
+    name: datasetNames[datasetIndex],
+    data: zip(axisLabels, dataset.data),
+  })),
+];
