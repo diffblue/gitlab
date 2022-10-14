@@ -220,6 +220,23 @@ describe('DastSiteProfileForm', () => {
       });
     });
 
+    it('when updating a profile with empty excludedUrls', async () => {
+      createComponent({
+        propsData: {
+          profile: {
+            ...siteProfileWithSecrets,
+            excludedUrls: ['url1', 'url2'],
+          },
+        },
+      });
+
+      expect(findExcludedUrlsInput().element.value).toBe('url1,url2');
+
+      await setFieldValue(findExcludedUrlsInput(), '');
+
+      expect(findBaseDastProfileForm().props('mutationVariables').excludedUrls).toEqual([]);
+    });
+
     describe('when target type is API', () => {
       const getScanMethodOption = (index) => {
         return findScanMethodInput().findAll('option').at(index);

@@ -142,9 +142,11 @@ export default {
       });
     },
     parsedExcludedUrls() {
-      return this.form.fields.excludedUrls.value
-        .split(EXCLUDED_URLS_SEPARATOR)
-        .map((url) => url.trim());
+      const { value } = this.form.fields.excludedUrls;
+      if (!value) {
+        return [];
+      }
+      return value.split(EXCLUDED_URLS_SEPARATOR).map((url) => url.trim());
     },
     serializedAuthFields() {
       const authFields = { ...this.authSection.fields };
@@ -184,7 +186,6 @@ export default {
         targetUrl,
         targetType,
         requestHeaders,
-        excludedUrls,
         scanMethod,
         scanFilePath,
       } = serializeFormObject(this.form.fields);
@@ -197,9 +198,7 @@ export default {
         ...(this.isAuthFieldSupport && {
           auth: this.serializedAuthFields,
         }),
-        ...(excludedUrls && {
-          excludedUrls: this.parsedExcludedUrls,
-        }),
+        excludedUrls: this.parsedExcludedUrls,
         ...(requestHeaders !== REDACTED_REQUEST_HEADERS && {
           requestHeaders,
         }),
