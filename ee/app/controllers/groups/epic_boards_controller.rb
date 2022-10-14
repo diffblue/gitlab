@@ -6,7 +6,6 @@ class Groups::EpicBoardsController < Groups::ApplicationController
   include Gitlab::Utils::StrongMemoize
   extend ::Gitlab::Utils::Override
 
-  before_action :assign_endpoint_vars
   before_action do
     push_frontend_feature_flag(:fe_epic_board_total_weight, group)
     push_frontend_feature_flag(:epic_color_highlight, group)
@@ -51,10 +50,6 @@ class Groups::EpicBoardsController < Groups::ApplicationController
     strong_memoize :board_create_service do
       ::Boards::EpicBoards::CreateService.new(parent, current_user)
     end
-  end
-
-  def assign_endpoint_vars
-    @boards_endpoint = group_epic_boards_path(group)
   end
 
   def authorize_read_board!
