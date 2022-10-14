@@ -3,7 +3,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import UsageOverview from 'ee/usage_quotas/pipelines/components/usage_overview.vue';
 import { defaultProvide, defaultUsageOverviewProps } from '../mock_data';
 
-describe('ProjectCIMinutesList', () => {
+describe('UsageOverview', () => {
   let wrapper;
 
   const createComponent = ({ provide = {}, props = {} } = {}) => {
