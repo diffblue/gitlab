@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Trial flow for user picking just me and creating a project', :js, :saas, :saas_registration do
   it 'registers the user and creates a group and project reaching onboarding', :sidekiq_inline do
-    visit new_trial_registration_path
+    visit new_trial_registration_path(glm_params)
 
     expect_to_be_on_trial_user_registration
 
@@ -121,17 +121,19 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
 
   def company_params_trial_true
     ActionController::Parameters.new(
-      company_name: 'Test Company',
-      company_size: '1-99',
-      phone_number: '+1234567890',
-      country: 'US',
-      state: 'FL',
-      website_url: 'https://gitlab.com',
-      trial_onboarding_flow: 'true',
-      # these are the passed through params
-      role: 'software_developer',
-      registration_objective: 'other',
-      jobs_to_be_done_other: 'My reason'
+      {
+        company_name: 'Test Company',
+        company_size: '1-99',
+        phone_number: '+1234567890',
+        country: 'US',
+        state: 'FL',
+        website_url: 'https://gitlab.com',
+        trial_onboarding_flow: 'true',
+        # these are the passed through params
+        role: 'software_developer',
+        registration_objective: 'other',
+        jobs_to_be_done_other: 'My reason'
+      }.merge(glm_params)
     ).permit!
   end
 end
