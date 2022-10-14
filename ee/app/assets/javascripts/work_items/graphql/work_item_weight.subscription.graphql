@@ -4,6 +4,7 @@ subscription issuableWeightUpdated($issuableId: IssuableID!) {
       id
       widgets {
         ... on WorkItemWidgetWeight {
+          type
           weight
         }
       }
