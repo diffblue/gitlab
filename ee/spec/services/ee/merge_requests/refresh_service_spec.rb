@@ -151,59 +151,31 @@ RSpec.describe MergeRequests::RefreshService do
     end
 
     describe '#trigger_suggested_reviewers_fetch' do
-      before do
-        merge_request
+      using RSpec::Parameterized::TableSyntax
+
+      where(:project_can_suggest, :merge_request_can_suggest, :triggered) do
+        true  | true  | true
+        true  | false | false
+        false | true  | false
+        false | false | false
       end
 
-      shared_examples 'calling suggested reviewer worker' do
-        it 'calls perform_async for the worker' do
-          expect(::MergeRequests::FetchSuggestedReviewersWorker).to receive(:perform_async).with(merge_request.id)
+      with_them do
+        before do
+          allow(project).to receive(:can_suggest_reviewers?).and_return(project_can_suggest)
+
+          allow(merge_request).to receive(:can_suggest_reviewers?).and_return(merge_request_can_suggest)
+          allow(service).to receive(:merge_requests_for_source_branch).and_return([merge_request])
+        end
+
+        it do
+          if triggered
+            expect(::MergeRequests::FetchSuggestedReviewersWorker).to receive(:perform_async).with(merge_request.id)
+          else
+            expect(::MergeRequests::FetchSuggestedReviewersWorker).not_to receive(:perform_async).with(merge_request.id)
+          end
 
           subject
-        end
-      end
-
-      shared_examples 'not calling suggested reviewer worker' do
-        it 'does not call perform_async for the worker' do
-          expect(::MergeRequests::FetchSuggestedReviewersWorker).not_to receive(:perform_async).with(merge_request.id)
-
-          subject
-        end
-      end
-
-      context 'when suggested reviewers is possible for the project' do
-        before do
-          allow(project).to receive(:can_suggest_reviewers?).and_return(true)
-        end
-
-        context 'when merge request can suggest reviewers' do
-          before do
-            allow_any_instance_of(::MergeRequest).to receive(:can_suggest_reviewers?).and_return(true)
-          end
-
-          it_behaves_like 'calling suggested reviewer worker'
-        end
-
-        context 'when merge request cannot suggest reviewers' do
-          before do
-            allow_any_instance_of(::MergeRequest).to receive(:can_suggest_reviewers?).and_return(false)
-          end
-
-          it_behaves_like 'not calling suggested reviewer worker'
-        end
-      end
-
-      context 'when suggested reviewers is not possible for the project' do
-        before do
-          allow(project).to receive(:can_suggest_reviewers?).and_return(false)
-        end
-
-        context 'when merge request can suggest reviewers' do
-          before do
-            allow_any_instance_of(::MergeRequest).to receive(:can_suggest_reviewers?).and_return(true)
-          end
-
-          it_behaves_like 'not calling suggested reviewer worker'
         end
       end
     end
