@@ -52,6 +52,13 @@ RSpec.describe Registrations::CompanyController, :saas do
   describe '#create' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:glm_params) do
+      {
+        glm_source: 'some_source',
+        glm_content: 'some_content'
+      }
+    end
+
     let(:params) do
       {
         company_name: 'GitLab',
@@ -59,10 +66,8 @@ RSpec.describe Registrations::CompanyController, :saas do
         phone_number: '+1 23 456-78-90',
         country: 'US',
         state: 'CA',
-        website_url: 'gitlab.com',
-        glm_source: 'some_source',
-        glm_content: 'some_content'
-      }
+        website_url: 'gitlab.com'
+      }.merge(glm_params)
     end
 
     context 'on success' do
@@ -86,7 +91,7 @@ RSpec.describe Registrations::CompanyController, :saas do
           post :create, params: params.merge(trial_onboarding_flow: trial_onboarding_flow)
 
           expect(response).to have_gitlab_http_status(:redirect)
-          expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query))
+          expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query.merge(glm_params)))
         end
       end
     end

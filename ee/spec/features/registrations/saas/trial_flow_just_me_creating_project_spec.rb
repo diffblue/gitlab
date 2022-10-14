@@ -103,14 +103,16 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
 
     expect(service_instance).to receive(:execute).and_return(ServiceResponse.success)
 
+    trial_user_information = {
+      namespace_id: anything,
+      gitlab_com_trial: true,
+      sync_to_gl: true
+    }.merge(glm_params)
+
     expect(GitlabSubscriptions::Trials::ApplyTrialWorker)
       .to receive(:perform_async).with(
         user.id,
-        hash_including(
-          namespace_id: anything,
-          gitlab_com_trial: true,
-          sync_to_gl: true
-        )
+        trial_user_information
       ).and_call_original
 
     fill_in 'group_name', with: 'Test Group'
