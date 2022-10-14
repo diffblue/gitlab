@@ -14,6 +14,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
   let(:new_request_headers) { "Authorization: Bearer #{SecureRandom.hex}" }
   let(:new_target_type) { 'api' }
   let(:new_scan_method) { 'postman' }
+  let(:new_scan_file_path) { 'https://www.domain.com/test-api-recording.har' }
 
   let(:new_auth) do
     {
@@ -45,6 +46,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
         excluded_urls: new_excluded_urls,
         request_headers: new_request_headers,
         scan_method: new_scan_method,
+        scan_file_path: new_scan_file_path,
         auth: new_auth
       )
     end
@@ -67,6 +69,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             excluded_urls: new_excluded_urls,
             request_headers: new_request_headers,
             scan_method: new_scan_method,
+            scan_file_path: new_scan_file_path,
             auth_enabled: new_auth[:enabled],
             auth_url: new_auth[:url],
             auth_username_field: new_auth[:username_field],
@@ -95,6 +98,7 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             auth_submit_field: new_auth[:submit_field],
             auth_username: new_auth[:username],
             scan_method: new_scan_method,
+            scan_file_path: new_scan_file_path,
             dast_site: have_attributes(url: new_target_url)
           )
 
@@ -164,6 +168,12 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             dast_site_profile = subject[:id].find
 
             expect(dast_site_profile.scan_method).to eq('openapi')
+          end
+
+          it 'does not update the scan_file_path' do
+            dast_site_profile = subject[:id].find
+
+            expect(dast_site_profile.scan_file_path).to be_nil
           end
         end
       end
