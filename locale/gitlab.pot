@@ -34957,6 +34957,9 @@ msgstr ""
 msgid "Runners|Runs untagged jobs"
 msgstr ""
 
+msgid "Runners|Select all"
+msgstr ""
+
 msgid "Runners|Select projects to assign to this runner"
 msgstr ""
 
@@ -35041,6 +35044,9 @@ msgid "Runners|To register them, go to the %{link_start}group's Runners page%{li
 msgstr ""
 
 msgid "Runners|Token expiry"
+msgstr ""
+
+msgid "Runners|Unselect all"
 msgstr ""
 
 msgid "Runners|Up to date"
