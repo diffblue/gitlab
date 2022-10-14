@@ -9,7 +9,6 @@ RSpec.describe ::Ci::Runners::RegisterRunnerService, '#execute' do
   let(:runner) { execute.payload[:runner] }
 
   before do
-    stub_feature_flags(runner_registration_control: false)
     stub_application_setting(runners_registration_token: registration_token)
     stub_application_setting(valid_runner_registrars: ApplicationSetting::VALID_RUNNER_REGISTRAR_TYPES)
 

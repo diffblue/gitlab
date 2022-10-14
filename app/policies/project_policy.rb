@@ -222,7 +222,7 @@ class ProjectPolicy < BasePolicy
   end
 
   condition(:project_runner_registration_allowed) do
-    Feature.disabled?(:runner_registration_control) || Gitlab::CurrentSettings.valid_runner_registrars.include?('project')
+    Gitlab::CurrentSettings.valid_runner_registrars.include?('project')
   end
 
   condition :registry_enabled do
