@@ -1925,6 +1925,9 @@ msgstr ""
 msgid "Acceptable for use in this project"
 msgstr ""
 
+msgid "Access Denied"
+msgstr ""
+
 msgid "Access Git repositories or the API."
 msgstr ""
 
@@ -25896,6 +25899,9 @@ msgstr ""
 msgid "Milestone lists not available with your current license"
 msgstr ""
 
+msgid "Milestone(s) not found: %{milestones}"
+msgstr ""
+
 msgid "MilestoneCombobox|An error occurred while searching for milestones"
 msgstr ""
 
@@ -33322,6 +33328,9 @@ msgstr[1] ""
 msgid "Release %{deletedRelease} has been successfully deleted."
 msgstr ""
 
+msgid "Release already exists"
+msgstr ""
+
 msgid "Release assets"
 msgstr ""
 
@@ -33329,6 +33338,9 @@ msgid "Release assets documentation"
 msgstr ""
 
 msgid "Release date"
+msgstr ""
+
+msgid "Release does not exist"
 msgstr ""
 
 msgid "Release does not have the same project as the milestone"
@@ -39443,6 +39455,9 @@ msgid "Table of contents"
 msgstr ""
 
 msgid "Tag"
+msgstr ""
+
+msgid "Tag does not exist"
 msgstr ""
 
 msgid "Tag list:"
@@ -45871,6 +45886,9 @@ msgstr ""
 msgid "You are not allowed to approve a user"
 msgstr ""
 
+msgid "You are not allowed to create this tag as it is protected."
+msgstr ""
+
 msgid "You are not allowed to log in using password"
 msgstr ""
 
@@ -48444,6 +48462,9 @@ msgid "packages"
 msgstr ""
 
 msgid "pages"
+msgstr ""
+
+msgid "params is empty"
 msgstr ""
 
 msgid "parent"
