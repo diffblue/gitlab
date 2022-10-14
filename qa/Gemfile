@@ -45,5 +45,5 @@ gem 'deprecation_toolkit', '~> 1.5.1', require: false
 
 group :development do
   gem 'pry-byebug', '~> 3.5.1', platform: :mri
-  gem "ruby-debug-ide", "~> 0.7.0"
+  gem "ruby-debug-ide", "~> 0.7.3"
 end
