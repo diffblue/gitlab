@@ -3,6 +3,7 @@ import { s__, __ } from '~/locale';
 export const ChildType = {
   // eslint-disable-next-line @gitlab/require-i18n-strings
   Epic: 'Epic',
+  EpicWithChildren: 'EpicWithChildren',
   // eslint-disable-next-line @gitlab/require-i18n-strings
   Issue: 'Issue',
 };
@@ -24,6 +25,12 @@ export const relativePositions = {
 
 export const RemoveItemModalProps = {
   Epic: {
+    title: s__('Epics|Remove epic'),
+    body: s__(
+      'Epics|Are you sure you want to remove %{bStart}%{targetEpicTitle}%{bEnd} from %{bStart}%{parentEpicTitle}%{bEnd}?',
+    ),
+  },
+  EpicWithChildren: {
     title: s__('Epics|Remove epic'),
     body: s__(
       'Epics|This will also remove any descendents of %{bStart}%{targetEpicTitle}%{bEnd} from %{bStart}%{parentEpicTitle}%{bEnd}. Are you sure?',

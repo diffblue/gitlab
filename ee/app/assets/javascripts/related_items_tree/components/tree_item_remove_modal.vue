@@ -16,9 +16,16 @@ export default {
     SafeHtml: GlSafeHtmlDirective,
   },
   computed: {
-    ...mapState(['parentItem', 'removeItemModalProps']),
+    ...mapState(['childrenFlags', 'parentItem', 'removeItemModalProps']),
     removeItemType() {
-      return this.removeItemModalProps.item.type;
+      const removeItem = this.removeItemModalProps.item;
+      if (
+        removeItem.type === ChildType.Epic &&
+        this.childrenFlags[removeItem.reference].itemHasChildren
+      ) {
+        return ChildType.EpicWithChildren;
+      }
+      return removeItem.type;
     },
     modalTitle() {
       return this.removeItemType ? RemoveItemModalProps[this.removeItemType].title : '';
@@ -30,7 +37,10 @@ export default {
           bEnd: '</b>',
         };
 
-        if (this.removeItemType === ChildType.Epic) {
+        if (
+          this.removeItemType === ChildType.Epic ||
+          this.removeItemType === ChildType.EpicWithChildren
+        ) {
           Object.assign(sprintfParams, {
             targetEpicTitle: escape(this.removeItemModalProps.item.title),
             parentEpicTitle: escape(this.parentItem.title),

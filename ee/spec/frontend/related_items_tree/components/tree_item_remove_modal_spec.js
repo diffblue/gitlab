@@ -1,6 +1,6 @@
 import { GlModal } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Vue, { nextTick } from 'vue';
+import Vue from 'vue';
 import Vuex from 'vuex';
 
 import TreeItemRemoveModal from 'ee/related_items_tree/components/tree_item_remove_modal.vue';
@@ -10,7 +10,7 @@ import createDefaultStore from 'ee/related_items_tree/store';
 import * as epicUtils from 'ee/related_items_tree/utils/epic_utils';
 import { PathIdSeparator } from '~/related_issues/constants';
 
-import { mockParentItem, mockQueryResponse, mockIssue1 } from '../mock_data';
+import { mockParentItem, mockQueryResponse, mockIssue1, mockEpic1 } from '../mock_data';
 
 Vue.use(Vuex);
 
@@ -19,6 +19,12 @@ const mockItem = {
   type: ChildType.Issue,
   pathIdSeparator: PathIdSeparator.Issue,
   assignees: epicUtils.extractIssueAssignees(mockIssue1.assignees),
+};
+
+const mockItemWithChildren = {
+  ...mockEpic1,
+  type: ChildType.Epic,
+  pathIdSeparator: PathIdSeparator.Epic,
 };
 
 const createComponent = (parentItem = mockParentItem, item = mockItem) => {
@@ -57,62 +63,6 @@ describe('RelatedItemsTree', () => {
       wrapper.destroy();
     });
 
-    describe('computed', () => {
-      describe('removeItemType', () => {
-        it('returns value of `state.removeItemModalProps.item.type', () => {
-          expect(wrapper.vm.removeItemType).toBe(mockItem.type);
-        });
-      });
-
-      describe('modalTitle', () => {
-        it('returns title for modal when item.type is `Epic`', async () => {
-          wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
-            parentItem: mockParentItem,
-            item: { ...mockItem, type: ChildType.Epic },
-          });
-
-          await nextTick();
-          expect(wrapper.vm.modalTitle).toBe('Remove epic');
-        });
-
-        it('returns title for modal when item.type is `Issue`', async () => {
-          wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
-            parentItem: mockParentItem,
-            item: mockItem,
-          });
-
-          await nextTick();
-          expect(wrapper.vm.modalTitle).toBe('Remove issue');
-        });
-      });
-
-      describe('modalBody', () => {
-        it('returns body text for modal when item.type is `Epic`', async () => {
-          wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
-            parentItem: mockParentItem,
-            item: { ...mockItem, type: ChildType.Epic },
-          });
-
-          await nextTick();
-          expect(wrapper.vm.modalBody).toBe(
-            'This will also remove any descendents of <b>Nostrum cum mollitia quia recusandae fugit deleniti voluptatem delectus.</b> from <b>Some sample epic</b>. Are you sure?',
-          );
-        });
-
-        it('returns body text for modal when item.type is `Issue`', async () => {
-          wrapper.vm.$store.dispatch('setRemoveItemModalProps', {
-            parentItem: mockParentItem,
-            item: mockItem,
-          });
-
-          await nextTick();
-          expect(wrapper.vm.modalBody).toBe(
-            'Are you sure you want to remove <b>Nostrum cum mollitia quia recusandae fugit deleniti voluptatem delectus.</b> from <b>Some sample epic</b>?',
-          );
-        });
-      });
-    });
-
     describe('template', () => {
       it('renders modal component', () => {
         const modal = wrapper.findComponent(GlModal);
@@ -127,6 +77,35 @@ describe('RelatedItemsTree', () => {
           text: 'Cancel',
           attributes: { variant: 'default' },
         });
+      });
+
+      it.each`
+        type               | modalTitle
+        ${ChildType.Epic}  | ${'Remove epic'}
+        ${ChildType.Issue} | ${'Remove issue'}
+      `('renders modal title when item type is $itemType', ({ type, modalTitle }) => {
+        wrapper = createComponent(mockParentItem, { ...mockItem, type });
+        const modal = wrapper.findComponent(GlModal);
+
+        expect(modal.props('title')).toBe(modalTitle);
+      });
+
+      it('renders modal body message when item has no children present', () => {
+        wrapper = createComponent(mockParentItem, { ...mockItem, type: ChildType.Epic });
+        const modal = wrapper.findComponent(GlModal);
+
+        expect(modal.text()).toBe(
+          `Are you sure you want to remove ${mockItem.title} from ${mockParentItem.title}?`,
+        );
+      });
+
+      it('renders modal body message when item has children present', () => {
+        wrapper = createComponent(mockParentItem, mockItemWithChildren);
+        const modal = wrapper.findComponent(GlModal);
+
+        expect(modal.text()).toBe(
+          `This will also remove any descendents of ${mockItemWithChildren.title} from ${mockParentItem.title}. Are you sure?`,
+        );
       });
     });
   });
