@@ -191,7 +191,7 @@ module EE
           end
 
           desc 'Get a list of users provisioned by the group' do
-            success Entities::UserPublic
+            success ::API::Entities::UserPublic
           end
           params do
             optional :username, type: String, desc: 'Return a single user with a specific username'
