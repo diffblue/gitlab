@@ -64,49 +64,53 @@ Inc._
 
 ## Continuing building on Docker Machine
 
-At this moment one of our core products - GitLab Runner - and one of it's most important
-features - ability to auto-scale job execution environments - depends on an external
-product that is abandoned.
+At this moment one of our core products - GitLab Runner - and one of its most
+important features - ability to auto-scale job execution environments - depends
+on an external product that is abandoned.
 
-Docker Machine project itself is also hard to maintain. Its design starts to show up its age,
-which makes it not easy to bring there new features and fixes. A huge codebase that it brings
-with a lack of internal knowledge about it makes it hard for our maintainers to support
-and properly handle incoming feature requests and community contributions.
+Docker Machine project itself is also hard to maintain. Its design starts to
+show its age, which makes it hard to bring new features and fixes. A huge
+codebase that it brings with a lack of internal knowledge about it makes it
+hard for our maintainers to support and properly handle incoming feature
+requests and community contributions.
 
 An example problem that we could point is that the latest version available
-still depends on Go 1.12 (which is unsupported since a few years now) and on `Gopkg`
-packaging tooling. Migration of that to what we're using now for rest of our Golang
-based products would require a lot of effort.
+still depends on Go 1.12 (which is unsupported since a few years now) and on
+`Gopkg` packaging tooling. Migration of that to what we're using now for rest
+of our Golang based products would require a lot of effort.
 
-Another problem is the fact that Docker Machine, from its beginnings, was focused
-on managing Linux based instances only. Despite that at some moment Docker got
-official and native integration on Windows, Docker Machine never followed this step.
-Nor it's designed to make such integration easy.
+Another problem is the fact that Docker Machine, from its beginnings, was
+focused on managing Linux based instances only. Despite that at some moment
+Docker got official and native integration on Windows, Docker Machine never
+followed this step.  Nor its designed to make such integration easy.
 
-There is also no support for MacOS. This one is obvious - Docker Machine is a tool to
-maintain hosts for Docker Engine and there is no native Docker Engine for MacOS. And
-by native we mean MacOS containers executed within MacOS operating system. Docker for MacOS
-product is not a native support - it's just a tooling and a virtualized Linux instance
-installed with it that makes it easier to develop Linux containers on MacOS development
-instances.
+There is also no support for MacOS. This one is obvious - Docker Machine is a
+tool to maintain hosts for Docker Engine and there is no native Docker Engine
+for MacOS. And by native we mean MacOS containers executed within MacOS
+operating system. Docker for MacOS product is not a native support - it's just
+a tooling and a virtualized Linux instance installed with it that makes it
+easier to develop Linux containers on MacOS development instances.
 
-This means that only one of three of our officially supported platforms - Linux, Windows
-and MacOS - have a fully-featured support for CI/CD auto-scaling. For Windows there is a
-possibility to use Kubernetes (which in some cases have limitations) and maybe with a lot of
-effort we could bring support for Windows into Docker Machine. But for MacOS, there is
-no auto-scaling solution provided natively by GitLab Runner.
+This means that only one of three of our officially supported platforms -
+Linux, Windows and MacOS - have a fully-featured support for CI/CD
+auto-scaling. For Windows there is a possibility to use Kubernetes (which in
+some cases have limitations) and maybe with a lot of effort we could bring
+support for Windows into Docker Machine. But for MacOS, there is no
+auto-scaling solution provided natively by GitLab Runner.
 
-This is a huge limitation for our users and a frequently requested feature. It's also
-a limitation for our SaaS runners offering. We've maintained to create some sort of
-auto-scaling for our SaaS Windows and SaaS MacOS runners hacking around Custom executor.
-But experiences from past three years show that it's not the best way of doing this.
-And yet, after this time, Windows and MacOS runners autoscaling lacks a lot of performance
-and feature support that we have with our SaaS Linux runners.
+This is a huge limitation for our users and a frequently requested feature.
+It's also a limitation for our SaaS runners offering. We've maintained to
+create some sort of auto-scaling for our SaaS Windows and SaaS MacOS runners
+hacking around Custom executor.  But experiences from past three years show
+that it's not the best way of doing this.  And yet, after this time, Windows
+and MacOS runners autoscaling lacks a lot of performance and feature support
+that we have with our SaaS Linux runners.
 
-To keep supporting our customers and the wider community and to improve our SaaS runners
-maintenance we need to design a new mechanism for GitLab Runner auto-scaling. It not
-only needs to support auto-scaling, but it also needs to do that in the way to enable
-us to build on top of it to improve efficiency, reliability and availability.
+To keep supporting our customers and the wider community and to improve our
+SaaS runners maintenance we need to design a new mechanism for GitLab Runner
+auto-scaling. It not only needs to support auto-scaling, but it also needs to
+do that in the way to enable us to build on top of it to improve efficiency,
+reliability and availability.
 
 ### Design principles
 
