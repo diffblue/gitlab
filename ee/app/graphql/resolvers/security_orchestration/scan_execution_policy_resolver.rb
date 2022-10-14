@@ -5,8 +5,6 @@ module Resolvers
     class ScanExecutionPolicyResolver < BaseResolver
       include ResolvesOrchestrationPolicy
 
-      POLICY_YAML_ATTRIBUTES = %i[name description enabled actions rules].freeze
-
       type Types::SecurityOrchestration::ScanExecutionPolicyType, null: true
 
       argument :action_scan_types, [::Types::Security::ReportTypeEnum],

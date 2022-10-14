@@ -8,18 +8,15 @@ module Resolvers
       type Types::SecurityOrchestration::ScanResultPolicyType, null: true
 
       def resolve(**args)
-        return [] unless valid?
-
-        authorize!
-
-        policy_configuration.scan_result_policies.map do |policy|
+        policies = Security::ScanResultPoliciesFinder.new(context[:current_user], project, args).execute
+        policies.map do |policy|
           approvers = approvers(policy)
           {
             name: policy[:name],
             description: policy[:description],
             enabled: policy[:enabled],
-            yaml: YAML.dump(policy.deep_stringify_keys),
-            updated_at: policy_configuration.policy_last_updated_at,
+            yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
+            updated_at: policy[:config].policy_last_updated_at,
             user_approvers: approvers[:users],
             group_approvers: approvers[:groups]
           }

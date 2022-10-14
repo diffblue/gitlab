@@ -20,10 +20,8 @@ RSpec.shared_examples 'as an orchestration policy' do
         stub_licensed_features(security_orchestration_policies: false)
       end
 
-      it 'raises ResourceNotAvailable error' do
-        expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
-          resolve_scan_policies
-        end
+      it 'returns empty collection' do
+        expect(resolve_scan_policies).to be_empty
       end
     end
 
@@ -39,10 +37,8 @@ RSpec.shared_examples 'as an orchestration policy' do
       context 'when user is unauthorized' do
         let(:user) { create(:user) }
 
-        it 'raises ResourceNotAvailable error' do
-          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ResourceNotAvailable) do
-            resolve_scan_policies
-          end
+        it 'returns empty collection' do
+          expect(resolve_scan_policies).to be_empty
         end
       end
     end
