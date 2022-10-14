@@ -40,7 +40,7 @@ class GeoLogCursorOptionParser
   end
 end
 
-if $0 == __FILE__
+if $PROGRAM_NAME == __FILE__
   options = GeoLogCursorOptionParser.parse(ARGV)
 
   # We load rails environment / initializers only here to get faster command line startup when `--help` and `--version`
