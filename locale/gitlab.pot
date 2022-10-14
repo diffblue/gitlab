@@ -42076,7 +42076,28 @@ msgstr ""
 msgid "Todos count"
 msgstr ""
 
+msgid "Todos|Added"
+msgstr ""
+
+msgid "Todos|Alert"
+msgstr ""
+
+msgid "Todos|Any Action"
+msgstr ""
+
+msgid "Todos|Any Type"
+msgstr ""
+
 msgid "Todos|Are you looking for things to do? Take a look at %{strongStart}%{openIssuesLinkStart}open issues%{openIssuesLinkEnd}%{strongEnd}, contribute to %{strongStart}%{mergeRequestLinkStart}a merge request%{mergeRequestLinkEnd}%{mergeRequestLinkEnd}%{strongEnd}, or mention someone in a comment to automatically assign them a new to-do item."
+msgstr ""
+
+msgid "Todos|Assigned"
+msgstr ""
+
+msgid "Todos|Design"
+msgstr ""
+
+msgid "Todos|Epic"
 msgstr ""
 
 msgid "Todos|Filter by author"
@@ -42100,16 +42121,31 @@ msgstr ""
 msgid "Todos|Isn't an empty To-Do List beautiful?"
 msgstr ""
 
+msgid "Todos|Issue"
+msgstr ""
+
 msgid "Todos|It's how you always know what to work on next."
 msgstr ""
 
 msgid "Todos|Mark all as done"
 msgstr ""
 
+msgid "Todos|Mentioned"
+msgstr ""
+
+msgid "Todos|Merge request"
+msgstr ""
+
 msgid "Todos|Nothing is on your to-do list. Nice work!"
 msgstr ""
 
 msgid "Todos|Nothing left to do. High five!"
+msgstr ""
+
+msgid "Todos|Pipelines"
+msgstr ""
+
+msgid "Todos|Review requested"
 msgstr ""
 
 msgid "Todos|Undo mark all as done"
