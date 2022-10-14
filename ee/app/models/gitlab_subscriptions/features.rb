@@ -193,6 +193,7 @@ module GitlabSubscriptions
       kubernetes_cluster_vulnerabilities
       license_scanning
       personal_access_token_expiration_policy
+      product_analytics
       project_quality_summary
       prometheus_alerts
       quality_management
