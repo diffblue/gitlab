@@ -1874,6 +1874,8 @@ RSpec.describe ProjectPolicy do
           project.add_maintainer(maintainer)
         end
 
+        it_behaves_like 'GitLab.com Paid plan resource access tokens'
+
         context 'create resource access tokens' do
           it { is_expected.to be_allowed(:create_resource_access_tokens) }
 
