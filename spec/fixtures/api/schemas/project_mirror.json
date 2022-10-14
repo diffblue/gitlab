@@ -2,89 +2,46 @@
   "type": "object",
   "required": [
     "id",
-    "remote_mirrors_attributes",
-    "mirror",
-    "import_url",
-    "username_only_import_url",
-    "mirror_user_id",
-    "mirror_trigger_builds",
-    "only_mirror_protected_branches",
-    "mirror_overwrites_diverged_branches",
-    "import_data_attributes"
+    "url",
+    "update_status",
+    "last_update_at",
+    "last_update_started_at",
+    "last_successful_update_at",
+    "last_error"
   ],
   "properties": {
     "id": {
       "type": "integer"
     },
-    "remote_mirrors_attributes": {
-      "type": "array",
-      "items": {
-        "$ref": "remote_mirror.json"
-      }
-    },
-    "mirror": {
-      "type": "boolean"
-    },
-    "import_url": {
+    "url": {
       "type": "string"
     },
-    "username_only_import_url": {
+    "update_status": {
       "type": "string"
     },
-    "mirror_user_id": {
-      "type": "integer"
-    },
-    "mirror_trigger_builds": {
-      "type": "boolean"
-    },
-    "only_mirror_protected_branches": {
+    "last_update_at": {
       "type": [
-        "boolean",
+        "string",
         "null"
       ]
     },
-    "mirror_overwrites_diverged_branches": {
+    "last_update_started_at": {
       "type": [
-        "boolean",
+        "string",
         "null"
       ]
     },
-    "import_data_attributes": {
-      "type": "object",
-      "required": [
-        "id",
-        "auth_method",
-        "ssh_known_hosts",
-        "ssh_known_hosts_verified_at",
-        "ssh_public_key",
-        "ssh_known_hosts_fingerprints"
-      ],
-      "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "auth_method": {
-          "type": "string"
-        },
-        "ssh_known_hosts": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "ssh_public_key": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "ssh_known_hosts_fingerprints": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
+    "last_successful_update_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "last_error": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "additionalProperties": false

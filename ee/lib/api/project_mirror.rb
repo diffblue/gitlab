@@ -71,19 +71,19 @@ module API
 
     params do
       requires :id, type: String, desc: 'The ID of a project'
-
-      # pull_request params
-      optional :action, type: String, desc: 'Pull Request action'
-      optional 'pull_request.number', type: Integer, desc: 'Pull request IID'
-      optional 'pull_request.head.ref', type: String, desc: 'Source branch'
-      optional 'pull_request.head.sha', type: String, desc: 'Source sha'
-      optional 'pull_request.head.repo.full_name', type: String, desc: 'Source repository'
-      optional 'pull_request.base.ref', type: String, desc: 'Target branch'
-      optional 'pull_request.base.sha', type: String, desc: 'Target sha'
-      optional 'pull_request.base.repo.full_name', type: String, desc: 'Target repository'
     end
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       desc 'Triggers a pull mirror operation'
+      params do
+        optional :action, type: String, desc: 'Pull Request action'
+        optional 'pull_request.number', type: Integer, desc: 'Pull request IID'
+        optional 'pull_request.head.ref', type: String, desc: 'Source branch'
+        optional 'pull_request.head.sha', type: String, desc: 'Source sha'
+        optional 'pull_request.head.repo.full_name', type: String, desc: 'Source repository'
+        optional 'pull_request.base.ref', type: String, desc: 'Target branch'
+        optional 'pull_request.base.sha', type: String, desc: 'Target sha'
+        optional 'pull_request.base.repo.full_name', type: String, desc: 'Target repository'
+      end
       post ":id/mirror/pull" do
         try_authenticate_with_webhook_token!
 
@@ -98,14 +98,16 @@ module API
         status 200
       end
 
-      desc 'Get a pull mirror'
+      desc 'Get a pull mirror' do
+        success Entities::PullMirror
+      end
       get ':id/mirror/pull' do
-        try_authenticate_with_webhook_token!
+        authenticate!
+        authorize_admin_project
 
-        break render_api_error!('The project is not mirrored', 400) unless project.mirror?
+        render_api_error!('The project is not mirrored', 400) unless project.mirror?
 
-        status 200
-        ProjectMirrorSerializer.new.represent(project)
+        present project.import_state, with: Entities::PullMirror
       end
     end
   end

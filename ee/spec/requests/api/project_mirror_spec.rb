@@ -355,38 +355,51 @@ RSpec.describe API::ProjectMirror do
   end
 
   describe 'GET /projects/:id/mirror/pull' do
-    let_it_be(:visibility) { Gitlab::VisibilityLevel::PUBLIC }
-    let_it_be(:project_mirrored) { create(:project, :repository, :mirror, visibility: visibility) }
+    let_it_be(:project) { create(:project, :repository, :mirror) }
     let_it_be(:user) { create(:user) }
 
-    let(:route) { "/projects/#{project_mirrored.id}/mirror/pull" }
+    let(:route) { "/projects/#{project.id}/mirror/pull" }
 
-    it 'returns pull mirror details' do
-      project_mirrored.add_maintainer(user)
+    context 'when user is missing' do
+      it 'returns Unauthorized' do
+        get api(route, nil)
 
-      get api(route, user)
-
-      expect(response).to have_gitlab_http_status(:success)
-      expect(response).to match_response_schema('project_mirror')
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
     end
 
-    context 'with private project' do
-      let(:visibility) { Gitlab::VisibilityLevel::PRIVATE }
+    context 'when user has no admin permissions' do
+      before do
+        project.add_developer(user)
+      end
 
-      it 'returns a 403 status' do
+      it 'returns forbidden error' do
         get api(route, user)
 
         expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
 
-    context 'with internal project' do
-      let(:visibility) { Gitlab::VisibilityLevel::INTERNAL }
+    context 'when user has admin permissions' do
+      before do
+        project.add_maintainer(user)
+      end
 
-      it 'returns a 403 status' do
+      it 'returns pull mirror details' do
         get api(route, user)
 
-        expect(response).to have_gitlab_http_status(:forbidden)
+        expect(response).to have_gitlab_http_status(:success)
+        expect(response).to match_response_schema('project_mirror')
+      end
+
+      context 'when project does not support mirroring' do
+        let_it_be(:project) { create(:project, :repository, :with_import_url) }
+
+        it 'returns BadRequest' do
+          get api(route, user)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
       end
     end
   end
