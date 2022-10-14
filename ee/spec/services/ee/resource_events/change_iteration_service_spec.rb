@@ -18,7 +18,7 @@ RSpec.describe ResourceEvents::ChangeIterationService do
   describe 'events tracking' do
     let_it_be(:user) { create(:user) }
 
-    subject { described_class.new(resource, user, old_iteration_id: nil).execute }
+    subject(:changed_service_instance) { described_class.new(resource, user, old_iteration_id: nil) }
 
     context 'when the resource is a work item' do
       let(:resource) { create(:work_item, iteration: timebox) }
@@ -28,7 +28,7 @@ RSpec.describe ResourceEvents::ChangeIterationService do
           .to receive(:track_work_item_iteration_changed_action)
           .with(author: user)
 
-        subject
+        changed_service_instance.execute
       end
     end
 
@@ -38,7 +38,8 @@ RSpec.describe ResourceEvents::ChangeIterationService do
       it 'does not track work item usage data counters' do
         expect(Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter)
           .not_to receive(:track_work_item_iteration_changed_action)
-        subject
+
+        changed_service_instance.execute
       end
     end
   end
