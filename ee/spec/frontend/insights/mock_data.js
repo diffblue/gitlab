@@ -80,3 +80,37 @@ export const configData = {
     key: 'key',
   },
 };
+
+export const doraSeries = [
+  {
+    data: [
+      ['January', null],
+      ['February', null],
+    ],
+    itemStyle: {
+      color: '#999',
+    },
+    lineStyle: {
+      color: '#999',
+      type: 'dashed',
+    },
+    name: 'No data available',
+    showSymbol: false,
+  },
+  {
+    data: [
+      ['January', 1],
+      ['February', 2],
+    ],
+    itemStyle: {
+      color: '#5772ff',
+    },
+    lineStyle: {
+      color: '#5772ff',
+    },
+    name: 'Issues',
+    showAllSymbol: true,
+    showSymbol: true,
+    symbolSize: 8,
+  },
+];

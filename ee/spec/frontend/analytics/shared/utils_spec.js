@@ -4,6 +4,7 @@ import {
   buildCycleAnalyticsInitialData,
   buildNullSeries,
   toLocalDate,
+  pairDataAndLabels,
 } from 'ee/analytics/shared/utils';
 
 const rawValueStream = `{
@@ -190,163 +191,209 @@ describe('buildCycleAnalyticsInitialData', () => {
       expect(buildCycleAnalyticsInitialData()).toMatchObject({ [field]: null });
     });
   });
+});
 
-  describe('buildNullSeries', () => {
-    it('returns series data with the expected styles and text', () => {
-      const inputSeries = [
-        {
-          name: 'Chart title',
-          data: [],
-        },
-      ];
+describe('buildNullSeries', () => {
+  it('returns series data with the expected styles and text', () => {
+    const inputSeries = [
+      {
+        name: 'Chart title',
+        data: [],
+      },
+    ];
 
-      const expectedSeries = [
-        {
-          name: NO_DATA_MESSAGE,
-          data: expect.any(Array),
-          lineStyle: {
-            color: expect.any(String),
-            type: 'dashed',
-          },
-          areaStyle: {
-            color: 'none',
-          },
-          itemStyle: {
-            color: expect.any(String),
-          },
+    const expectedSeries = [
+      {
+        name: NO_DATA_MESSAGE,
+        data: expect.any(Array),
+        showSymbol: false,
+        lineStyle: {
+          color: expect.any(String),
+          type: 'dashed',
         },
-        {
-          name: 'Chart title',
-          showAllSymbol: true,
-          showSymbol: true,
-          symbolSize: 8,
-          data: expect.any(Array),
-          lineStyle: {
-            color: expect.any(String),
-          },
-          areaStyle: {
-            color: expect.any(String),
-            opacity: 0,
-          },
-          itemStyle: {
-            color: expect.any(String),
-          },
+        areaStyle: {
+          color: 'none',
         },
-      ];
+        itemStyle: {
+          color: expect.any(String),
+        },
+      },
+      {
+        name: 'Chart title',
+        showAllSymbol: true,
+        showSymbol: true,
+        symbolSize: 8,
+        data: expect.any(Array),
+        lineStyle: {
+          color: expect.any(String),
+        },
+        areaStyle: {
+          opacity: 0,
+        },
+        itemStyle: {
+          color: expect.any(String),
+        },
+      },
+    ];
 
-      expect(buildNullSeries(inputSeries, NO_DATA_MESSAGE)).toEqual(expectedSeries);
+    expect(buildNullSeries(inputSeries, NO_DATA_MESSAGE)).toEqual(expectedSeries);
+  });
+
+  describe('series data', () => {
+    describe('non-empty series', () => {
+      it('returns the provided non-empty series data unmodified as the second series', () => {
+        const inputSeries = [
+          {
+            data: [
+              ['Mar 1', 4],
+              ['Mar 2', null],
+              ['Mar 3', null],
+              ['Mar 4', 10],
+            ],
+          },
+        ];
+
+        const actualSeries = buildNullSeries(inputSeries, NO_DATA_MESSAGE);
+
+        expect(actualSeries[1]).toMatchObject(inputSeries[0]);
+      });
     });
 
-    describe('series data', () => {
-      describe('non-empty series', () => {
-        it('returns the provided non-empty series data unmodified as the second series', () => {
-          const inputSeries = [
-            {
-              data: [
-                ['Mar 1', 4],
-                ['Mar 2', null],
-                ['Mar 3', null],
-                ['Mar 4', 10],
-              ],
-            },
+    describe('empty series', () => {
+      const compareSeriesData = (inputSeriesData, expectedEmptySeriesData) => {
+        const actualEmptySeriesData = buildNullSeries(
+          [{ data: inputSeriesData }],
+          NO_DATA_MESSAGE,
+        )[0].data;
+
+        expect(actualEmptySeriesData).toEqual(expectedEmptySeriesData);
+      };
+
+      describe('when the data contains a gap in the middle of the data set', () => {
+        it('builds the "no data" series by linealy interpolating between the provided data points', () => {
+          const inputSeriesData = [
+            ['Mar 1', 4],
+            ['Mar 2', null],
+            ['Mar 3', null],
+            ['Mar 4', 10],
           ];
 
-          const actualSeries = buildNullSeries(inputSeries, NO_DATA_MESSAGE);
+          const expectedEmptySeriesData = [
+            ['Mar 1', 4],
+            ['Mar 2', 6],
+            ['Mar 3', 8],
+            ['Mar 4', 10],
+          ];
 
-          expect(actualSeries[1]).toMatchObject(inputSeries[0]);
+          compareSeriesData(inputSeriesData, expectedEmptySeriesData);
         });
       });
 
-      describe('empty series', () => {
-        const compareSeriesData = (inputSeriesData, expectedEmptySeriesData) => {
-          const actualEmptySeriesData = buildNullSeries(
-            [{ data: inputSeriesData }],
-            NO_DATA_MESSAGE,
-          )[0].data;
+      describe('when the data contains a gap at the beginning of the data set', () => {
+        it('fills in the gap using the first non-null data point value', () => {
+          const inputSeriesData = [
+            ['Mar 1', null],
+            ['Mar 2', null],
+            ['Mar 3', null],
+            ['Mar 4', 10],
+          ];
 
-          expect(actualEmptySeriesData).toEqual(expectedEmptySeriesData);
-        };
+          const expectedEmptySeriesData = [
+            ['Mar 1', 10],
+            ['Mar 2', 10],
+            ['Mar 3', 10],
+            ['Mar 4', 10],
+          ];
 
-        describe('when the data contains a gap in the middle of the data set', () => {
-          it('builds the "no data" series by linealy interpolating between the provided data points', () => {
-            const inputSeriesData = [
-              ['Mar 1', 4],
-              ['Mar 2', null],
-              ['Mar 3', null],
-              ['Mar 4', 10],
-            ];
-
-            const expectedEmptySeriesData = [
-              ['Mar 1', 4],
-              ['Mar 2', 6],
-              ['Mar 3', 8],
-              ['Mar 4', 10],
-            ];
-
-            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
-          });
-        });
-
-        describe('when the data contains a gap at the beginning of the data set', () => {
-          it('fills in the gap using the first non-null data point value', () => {
-            const inputSeriesData = [
-              ['Mar 1', null],
-              ['Mar 2', null],
-              ['Mar 3', null],
-              ['Mar 4', 10],
-            ];
-
-            const expectedEmptySeriesData = [
-              ['Mar 1', 10],
-              ['Mar 2', 10],
-              ['Mar 3', 10],
-              ['Mar 4', 10],
-            ];
-
-            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
-          });
-        });
-
-        describe('when the data contains a gap at the end of the data set', () => {
-          it('fills in the gap using the last non-null data point value', () => {
-            const inputSeriesData = [
-              ['Mar 1', 10],
-              ['Mar 2', null],
-              ['Mar 3', null],
-              ['Mar 4', null],
-            ];
-
-            const expectedEmptySeriesData = [
-              ['Mar 1', 10],
-              ['Mar 2', 10],
-              ['Mar 3', 10],
-              ['Mar 4', 10],
-            ];
-
-            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
-          });
-        });
-
-        describe('when the data contains all null values', () => {
-          it('fills the empty series with all zeros', () => {
-            const inputSeriesData = [
-              ['Mar 1', null],
-              ['Mar 2', null],
-              ['Mar 3', null],
-              ['Mar 4', null],
-            ];
-
-            const expectedEmptySeriesData = [
-              ['Mar 1', 0],
-              ['Mar 2', 0],
-              ['Mar 3', 0],
-              ['Mar 4', 0],
-            ];
-
-            compareSeriesData(inputSeriesData, expectedEmptySeriesData);
-          });
+          compareSeriesData(inputSeriesData, expectedEmptySeriesData);
         });
       });
+
+      describe('when the data contains a gap at the end of the data set', () => {
+        it('fills in the gap using the last non-null data point value', () => {
+          const inputSeriesData = [
+            ['Mar 1', 10],
+            ['Mar 2', null],
+            ['Mar 3', null],
+            ['Mar 4', null],
+          ];
+
+          const expectedEmptySeriesData = [
+            ['Mar 1', 10],
+            ['Mar 2', 10],
+            ['Mar 3', 10],
+            ['Mar 4', 10],
+          ];
+
+          compareSeriesData(inputSeriesData, expectedEmptySeriesData);
+        });
+      });
+
+      describe('when the data contains all null values', () => {
+        it('fills the empty series with all zeros', () => {
+          const inputSeriesData = [
+            ['Mar 1', null],
+            ['Mar 2', null],
+            ['Mar 3', null],
+            ['Mar 4', null],
+          ];
+
+          const expectedEmptySeriesData = [
+            ['Mar 1', 0],
+            ['Mar 2', 0],
+            ['Mar 3', 0],
+            ['Mar 4', 0],
+          ];
+
+          compareSeriesData(inputSeriesData, expectedEmptySeriesData);
+        });
+      });
+    });
+  });
+});
+
+describe('pairDataAndLabels', () => {
+  let result = [];
+
+  const datasetNames = ['Dataset one', 'Dataset two'];
+  const axisLabels = ['label 1', 'label 2', 'label 3'];
+  const datasets = [{ data: ['a', 'b', 'c'] }, { data: ['d', 'e', 'f'] }];
+  const expectedDatasets = [
+    {
+      name: datasetNames[0],
+      data: [
+        ['label 1', 'a'],
+        ['label 2', 'b'],
+        ['label 3', 'c'],
+      ],
+    },
+    {
+      name: datasetNames[1],
+      data: [
+        ['label 1', 'd'],
+        ['label 2', 'e'],
+        ['label 3', 'f'],
+      ],
+    },
+  ];
+
+  beforeEach(() => {
+    result = pairDataAndLabels({ axisLabels, datasetNames, datasets });
+  });
+
+  afterEach(() => {
+    result = null;
+  });
+
+  it('sets the correct dataset name for each dataset', () => {
+    result.forEach(({ name }, index) => {
+      expect(datasetNames[index]).toBe(name);
+    });
+  });
+
+  it('pairs each data point with the relevant label', () => {
+    result.forEach((res, index) => {
+      expect(res).toEqual(expectedDatasets[index]);
     });
   });
 });
