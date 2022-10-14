@@ -15,6 +15,7 @@ RSpec.describe 'User searches for epics', :js do
   end
 
   before do
+    stub_feature_flags(search_page_vertical_nav: false)
     stub_licensed_features(epics: true)
 
     group.add_maintainer(user)

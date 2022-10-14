@@ -7,6 +7,7 @@ RSpec.describe SearchController, :elastic do
 
   before do
     sign_in(user)
+    stub_feature_flags(search_page_vertical_nav: false)
   end
 
   describe 'GET #show' do

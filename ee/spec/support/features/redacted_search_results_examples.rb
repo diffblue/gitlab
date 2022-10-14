@@ -8,6 +8,7 @@ RSpec.shared_examples 'a redacted search results page' do |include_anonymous: tr
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
+    stub_feature_flags(search_page_vertical_nav: false)
 
     Sidekiq::Testing.inline! do
       # Create a public project that the user is not member of.
