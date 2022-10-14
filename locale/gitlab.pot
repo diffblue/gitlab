@@ -5251,24 +5251,6 @@ msgstr ""
 msgid "Artifacts|Browse"
 msgstr ""
 
-msgid "Artifacts|Created"
-msgstr ""
-
-msgid "Artifacts|Delete"
-msgstr ""
-
-msgid "Artifacts|Download"
-msgstr ""
-
-msgid "Artifacts|Expired"
-msgstr ""
-
-msgid "Artifacts|Job"
-msgstr ""
-
-msgid "Artifacts|Size"
-msgstr ""
-
 msgid "Artifacts|Total artifacts size"
 msgstr ""
 

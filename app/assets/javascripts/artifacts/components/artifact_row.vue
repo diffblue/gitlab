@@ -15,7 +15,7 @@ export default {
       type: Object,
       required: true,
     },
-    deleting: {
+    isLoading: {
       type: Boolean,
       required: true,
     },
@@ -70,7 +70,7 @@ export default {
           icon="remove"
           :title="$options.i18n.delete"
           :aria-label="$options.i18n.delete"
-          :loading="deleting"
+          :loading="isLoading"
           data-testid="job-artifact-row-delete-button"
           @click="$emit('delete')"
         />

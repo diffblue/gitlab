@@ -1,4 +1,4 @@
-import { s__ } from '~/locale';
+import { __, s__ } from '~/locale';
 
 export const JOB_STATUS_GROUP_SUCCESS = 'success';
 
@@ -24,16 +24,16 @@ export const STATUS_BADGE_VARIANTS = {
 };
 
 export const i18n = {
-  download: s__('Artifacts|Download'),
+  download: __('Download'),
   browse: s__('Artifacts|Browse'),
-  delete: s__('Artifacts|Delete'),
-  expired: s__('Artifacts|Expired'),
+  delete: __('Delete'),
+  expired: __('Expired'),
   destroyArtifactError: s__('Artifacts|An error occurred while deleting the artifact'),
   fetchArtifactsError: s__('Artifacts|An error occurred while retrieving job artifacts'),
-  artifactsLabel: s__('Artifacts|Artifacts'),
-  jobLabel: s__('Artifacts|Job'),
-  sizeLabel: s__('Artifacts|Size'),
-  createdLabel: s__('Artifacts|Created'),
+  artifactsLabel: __('Artifacts'),
+  jobLabel: __('Job'),
+  sizeLabel: __('Size'),
+  createdLabel: __('Created'),
 };
 
 export const JOBS_PER_PAGE = 20;

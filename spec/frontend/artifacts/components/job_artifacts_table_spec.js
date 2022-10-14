@@ -5,7 +5,6 @@ import getJobArtifactsResponse from 'test_fixtures/graphql/artifacts/graphql/que
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import waitForPromises from 'helpers/wait_for_promises';
 import JobArtifactsTable from '~/artifacts/components/job_artifacts_table.vue';
-import ArtifactRow from '~/artifacts/components/artifact_row.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import getJobArtifactsQuery from '~/artifacts/graphql/queries/get_job_artifacts.query.graphql';
@@ -169,36 +168,6 @@ describe('JobArtifactsTable component', () => {
       expect(findDownloadButton().attributes('href')).toBe(archiveArtifact.downloadPath);
       expect(findBrowseButton().attributes('disabled')).toBe('disabled');
       expect(findDeleteButton().attributes('disabled')).toBe('disabled');
-    });
-  });
-
-  describe('when an artifact row emits the delete event', () => {
-    it('triggers the destroyArtifact GraphQL mutation', async () => {
-      createComponent();
-      await waitForPromises();
-
-      findCount().trigger('click');
-      await waitForPromises();
-
-      wrapper.findComponent(ArtifactRow).vm.$emit('delete');
-
-      expect(requestHandlers.destroyArtifactMutation).toHaveBeenCalled();
-    });
-
-    it('displays a flash message when the mutation fails', async () => {
-      createComponent({
-        getJobArtifactsQuery: jest.fn().mockResolvedValue(getJobArtifactsResponse),
-        destroyArtifactMutation: jest.fn().mockRejectedValue(new Error('Error!')),
-      });
-      await waitForPromises();
-
-      findCount().trigger('click');
-      await waitForPromises();
-
-      wrapper.findComponent(ArtifactRow).vm.$emit('delete');
-      await waitForPromises();
-
-      expect(createAlert).toHaveBeenCalledWith({ message: i18n.destroyArtifactError });
     });
   });
 

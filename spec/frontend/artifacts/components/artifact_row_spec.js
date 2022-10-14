@@ -20,7 +20,7 @@ describe('ArtifactRow component', () => {
     wrapper = mountFn(ArtifactRow, {
       propsData: {
         artifact,
-        deleting: false,
+        isLoading: false,
       },
       stubs: { GlBadge, GlButton },
     });

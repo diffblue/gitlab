@@ -71,7 +71,7 @@ export default {
           >
             <artifact-row
               :artifact="item"
-              :deleting="item.id === deletingArtifactId"
+              :is-loading="item.id === deletingArtifactId"
               @delete="destroyArtifact(item.id)"
             />
           </div>
