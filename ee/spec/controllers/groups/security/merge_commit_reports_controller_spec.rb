@@ -19,15 +19,8 @@ RSpec.describe Groups::Security::MergeCommitReportsController do
 
     context 'when feature is enabled' do
       context 'when user has access to dashboard' do
-        let(:csv_data) do
-          <<~CSV
-            Merge Commit,Author,Merge Request,Merged By,Pipeline,Group,Project,Approver(s)
-            12bsr67h,John Cena,10034,Brock Lesnar,2301,Kombucha lovers,Starter kit,Brock Lesnar | Kane
-          CSV
-        end
-
         let(:export_csv_service) do
-          instance_spy(MergeCommits::ExportCsvService, csv_data: ServiceResponse.success(payload: csv_data))
+          instance_spy(MergeCommits::ExportCsvService)
         end
 
         before_all do
@@ -36,68 +29,14 @@ RSpec.describe Groups::Security::MergeCommitReportsController do
 
         before do
           stub_licensed_features(group_level_compliance_dashboard: true)
-          stub_feature_flags(async_chain_of_custody_report: false)
           allow(MergeCommits::ExportCsvService).to receive(:new).and_return(export_csv_service)
         end
 
-        it 'returns a csv file in response' do
+        it "tells the service to enqueue a job" do
           subject
 
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(response.headers['Content-Type']).to eq('text/csv; charset=utf-8')
-        end
-
-        context 'when async report feature flag is enabled' do
-          before do
-            stub_feature_flags(async_chain_of_custody_report: true)
-          end
-
-          it do
-            subject
-
-            expect(flash[:notice]).to eq 'An email will be sent with the report attached after it is generated.'
-          end
-        end
-
-        context 'data validation' do
-          it do
-            subject
-
-            expect(csv_response).to eq([
-                                         [
-                                           'Merge Commit',
-                                           'Author',
-                                           'Merge Request',
-                                           'Merged By',
-                                           'Pipeline',
-                                           'Group',
-                                           'Project',
-                                           'Approver(s)'
-                                         ],
-                                         [
-                                           '12bsr67h',
-                                           'John Cena',
-                                           '10034',
-                                           'Brock Lesnar',
-                                           '2301',
-                                           'Kombucha lovers',
-                                           'Starter kit',
-                                           'Brock Lesnar | Kane'
-                                         ]
-                                       ])
-          end
-        end
-
-        context 'when invalid' do
-          let(:export_csv_service) do
-            instance_spy(MergeCommits::ExportCsvService, csv_data: nil)
-          end
-
-          it do
-            subject
-
-            expect(flash[:alert]).to eq 'An error occurred while trying to generate the report. Please try again later.'
-          end
+          expect(flash[:notice]).to eq 'An email will be sent with the report attached after it is generated.'
+          expect(export_csv_service).to have_received(:enqueue_worker).once
         end
       end
 
