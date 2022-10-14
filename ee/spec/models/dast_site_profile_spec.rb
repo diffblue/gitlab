@@ -7,7 +7,7 @@ RSpec.describe DastSiteProfile, type: :model do
 
   subject { create(:dast_site_profile, :with_dast_site_validation, project: project) }
 
-  it_behaves_like 'sanitizable', :dast_site_profile, %i[name]
+  it_behaves_like 'sanitizable', :dast_site_profile, %i[name scan_file_path]
 
   describe 'associations' do
     it { is_expected.to belong_to(:project) }
@@ -29,6 +29,7 @@ RSpec.describe DastSiteProfile, type: :model do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:project_id) }
     it { is_expected.to validate_uniqueness_of(:name).scoped_to(:project_id) }
+    it { is_expected.to validate_length_of(:scan_file_path).is_at_most(1024) }
 
     describe '#auth_url' do
       context 'when the auth_uri is nil' do
@@ -93,6 +94,55 @@ RSpec.describe DastSiteProfile, type: :model do
         it 'is not valid', :aggregate_failures do
           expect(subject).not_to be_valid
           expect(subject.errors.full_messages).to include('Project does not match dast_site.project')
+        end
+      end
+    end
+
+    describe '#scan_file_path' do
+      context 'when the scan_file_path is nil' do
+        subject do
+          build(:dast_site_profile, dast_site: dast_site, project: project,
+                                    target_type: target_type,
+                                    scan_file_path: nil)
+        end
+
+        context 'when the target_type is website' do
+          let_it_be(:target_type) { 'website' }
+
+          it 'is valid' do
+            expect(subject).to be_valid
+          end
+        end
+
+        context 'when the target_type is api' do
+          let_it_be(:target_type) { 'api' }
+
+          it 'returns the dast_site.url' do
+            expect(subject.scan_file_path_or_dast_site_url).to eq(subject.dast_site.url)
+          end
+        end
+      end
+
+      context 'when the scan_file_path is not nil' do
+        let_it_be(:scan_file_path) { 'https://www.domain.com/test-api-specification.json' }
+
+        subject do
+          build(:dast_site_profile, dast_site: dast_site, project: project,
+                                    target_type: target_type,
+                                    scan_file_path: scan_file_path)
+        end
+
+        context 'when the target_type is api' do
+          let_it_be(:target_type) { 'api' }
+
+          context 'when scan_file_path is not a valid url' do
+            let_it_be(:scan_file_path) { 'invalid_url' }
+
+            it 'is not valid', :aggregate_failures do
+              expect(subject).not_to be_valid
+              expect(subject.errors.full_messages).to include("Scan file path is not a valid URL.")
+            end
+          end
         end
       end
     end
@@ -264,15 +314,127 @@ RSpec.describe DastSiteProfile, type: :model do
       end
 
       context 'when target_type=api' do
-        subject { build(:dast_site_profile, target_type: :api) }
+        let_it_be(:dast_site) { create(:dast_site, project: project) }
 
-        it 'returns a collection of variables with api configuration only', :aggregate_failures do
-          expect(keys).not_to include('DAST_WEBSITE')
-          expect(keys).not_to include('DAST_EXCLUDE_URLS')
+        shared_examples 'an api target' do
+          subject do
+            build(:dast_site_profile, target_type: :api, scan_method: scan_method,
+                                      scan_file_path: scan_file_path,
+                                      dast_site: dast_site)
+          end
 
-          expect(collection).to include(key: 'DAST_API_SPECIFICATION', value: subject.dast_site.url, public: true)
-          expect(collection).to include(key: 'DAST_API_HOST_OVERRIDE', value: URI(subject.dast_site.url).host, public: true)
-          expect(collection).to include(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true)
+          it 'has the correct collection of variables', :aggregate_failures do
+            expect(keys).not_to include(*excluded)
+            expect(collection).to include(*included)
+          end
+        end
+
+        shared_examples 'an api target when dast_api_scanner is disabled' do
+          context 'when the feature flag dast_api_scanner is disabled' do
+            before do
+              stub_feature_flags(dast_api_scanner: false)
+            end
+
+            let(:included) do
+              [
+                { key: 'DAST_API_SPECIFICATION', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_HOST_OVERRIDE', value: URI(subject.dast_site.url).host, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
+              ]
+            end
+
+            it_behaves_like 'an api target'
+          end
+        end
+
+        context 'when scan_method is openapi' do
+          let(:targeting_api) { 'test-api-specification.json' }
+          let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
+          let(:scan_method) { :openapi }
+
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_HAR DAST_API_POSTMAN_COLLECTION] }
+
+          let(:included) do
+            [
+              { key: 'DAST_API_OPENAPI', value: scan_file_path, public: true }
+            ]
+          end
+
+          it_behaves_like 'an api target'
+
+          it_behaves_like 'an api target when dast_api_scanner is disabled'
+
+          context 'when scan_file_path is blank' do
+            let(:scan_file_path) { nil }
+
+            let(:included) do
+              [
+                { key: 'DAST_API_OPENAPI', value: subject.dast_site.url, public: true }
+              ]
+            end
+
+            it_behaves_like 'an api target'
+          end
+        end
+
+        context 'when scan_method is har' do
+          let(:targeting_api) { 'test-api-recording.har' }
+          let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
+          let(:scan_method) { :har }
+
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_POSTMAN_COLLECTION] }
+
+          let(:included) do
+            [
+              { key: 'DAST_API_HAR', value: scan_file_path, public: true }
+            ]
+          end
+
+          it_behaves_like 'an api target'
+
+          it_behaves_like 'an api target when dast_api_scanner is disabled'
+
+          context 'when scan_file_path is blank' do
+            let(:scan_file_path) { nil }
+
+            let(:included) do
+              [
+                { key: 'DAST_API_HAR', value: subject.dast_site.url, public: true }
+              ]
+            end
+
+            it_behaves_like 'an api target'
+          end
+        end
+
+        context 'when scan_method is postman' do
+          let(:targeting_api) { 'postman-collection_serviceA.json' }
+          let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
+          let(:scan_method) { :postman }
+
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_HAR] }
+
+          let(:included) do
+            [
+              { key: 'DAST_API_POSTMAN_COLLECTION', value: scan_file_path, public: true }
+            ]
+          end
+
+          it_behaves_like 'an api target'
+
+          it_behaves_like 'an api target when dast_api_scanner is disabled'
+
+          context 'when scan_file_path is blank' do
+            let(:scan_file_path) { nil }
+
+            let(:included) do
+              [
+                { key: 'DAST_API_POSTMAN_COLLECTION', value: subject.dast_site.url, public: true }
+              ]
+            end
+
+            it_behaves_like 'an api target'
+          end
         end
       end
 
@@ -361,8 +523,12 @@ RSpec.describe DastSiteProfile, type: :model do
     describe '#ensure_scan_method' do
       let(:target_type) { 'website' }
       let(:scan_method) { 'site' }
+      let(:scan_file_path) { nil }
 
-      subject { create(:dast_site_profile, scan_method: scan_method, target_type: target_type) }
+      subject do
+        create(:dast_site_profile, scan_method: scan_method, target_type: target_type,
+                                   scan_file_path: scan_file_path)
+      end
 
       context 'when the target_type is website' do
         it 'does not change the scan_method' do
@@ -372,9 +538,57 @@ RSpec.describe DastSiteProfile, type: :model do
 
       context 'when the target type is api' do
         let(:target_type) { 'api' }
+        let(:scan_file_path) { 'https://www.domain.com/test-api-specification.json' }
 
         it 'does set the scan_method to openapi' do
           expect(subject.scan_method).to eq('openapi')
+        end
+      end
+    end
+
+    describe '#ensure_scan_file_path' do
+      let(:target_type) { 'website' }
+      let(:scan_method) { 'site' }
+      let(:scan_file_path) { nil }
+
+      subject do
+        create(:dast_site_profile, scan_method: scan_method, target_type: target_type,
+                                   scan_file_path: scan_file_path)
+      end
+
+      context 'when the target_type is website' do
+        context 'when the scan_file_path is nil' do
+          it 'does not set the scan_file_path' do
+            expect(subject.scan_file_path_or_dast_site_url).to be_nil
+          end
+        end
+
+        context 'when the scan_file_path is not nil' do
+          let(:scan_file_path) { 'https://www.domain.com/test-api-specification.json' }
+
+          it 'does set the scan_file_path to nil' do
+            expect(subject.scan_file_path_or_dast_site_url).to be_nil
+          end
+        end
+      end
+
+      context 'when the target type is api' do
+        let(:target_type) { 'api' }
+
+        context 'when the scan_file_path is nil' do
+          let(:scan_file_path) { nil }
+
+          it 'does set the scan_file_path to dast_site.url' do
+            expect(subject.scan_file_path_or_dast_site_url).to eq(subject.dast_site.url)
+          end
+        end
+
+        context 'when the scan_file_path is not nil' do
+          let(:scan_file_path) { 'https://www.domain.com/test-api-specification.json' }
+
+          it 'does not set the scan_file_path' do
+            expect(subject.scan_file_path_or_dast_site_url).to eq(scan_file_path)
+          end
         end
       end
     end

@@ -55,6 +55,7 @@ module Mutations
 
         if Feature.enabled?(:dast_api_scanner, dast_site_profile.project)
           dast_site_profile_params[:scan_method] = params[:scan_method]
+          dast_site_profile_params[:scan_file_path] = params[:scan_file_path]
         end
 
         result = ::AppSec::Dast::SiteProfiles::UpdateService.new(dast_site_profile.project, current_user).execute(**dast_site_profile_params)

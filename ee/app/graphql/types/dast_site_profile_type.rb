@@ -57,6 +57,11 @@ module Types
       description: 'Scan method used by the scanner. Always returns `null` ' \
                    'if `dast_api_scanner` feature flag is disabled.'
 
+    field :scan_file_path, GraphQL::Types::String,
+      null: true,
+      description: 'Scan File Path used as input for the scanner. Will always return `null` ' \
+                   'if `dast_api_scanner` feature flag is disabled.'
+
     def target_url
       object.dast_site.url
     end
@@ -84,6 +89,12 @@ module Types
       return unless Feature.enabled?(:dast_api_scanner, object.project)
 
       object.scan_method
+    end
+
+    def scan_file_path
+      return unless Feature.enabled?(:dast_api_scanner, object.project)
+
+      object.scan_file_path_or_dast_site_url
     end
   end
 end
