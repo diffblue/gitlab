@@ -90,6 +90,29 @@ RSpec.describe Projects::IssuesController do
         end
       end
 
+      shared_examples 'creates vulnerability issue link' do
+        it 'links the issue to the vulnerability' do
+          send_request
+
+          expect(project.issues.last.vulnerability_links.first.vulnerability).to eq(vulnerability)
+        end
+
+        context 'when vulnerability already has a linked issue' do
+          render_views
+
+          let!(:vulnerabilities_issue_link) { create(:vulnerabilities_issue_link, :created, vulnerability: vulnerability) }
+
+          it 'shows an error message' do
+            send_request
+
+            expect(flash[:raw]).to include('id="js-unable-to-link-vulnerability"')
+            expect(flash[:raw]).to include("data-vulnerability-link=\"/#{namespace.path}/#{project.path}/-/security/vulnerabilities/#{vulnerabilities_issue_link.vulnerability.id}\"")
+
+            expect(vulnerability.issue_links.map(&:issue)).to eq([vulnerabilities_issue_link.issue])
+          end
+        end
+      end
+
       describe '#create' do
         it 'sets issue weight and epic' do
           perform :post, :create, issue: new_issue.attributes.merge(epic_id: epic.id)
@@ -110,18 +133,6 @@ RSpec.describe Projects::IssuesController do
             stub_licensed_features(security_dashboard: true)
           end
 
-          it 'links the issue to the vulnerability' do
-            send_request
-
-            expect(project.issues.last.vulnerability_links.first.vulnerability).to eq(vulnerability)
-          end
-
-          it 'creates vulnerability feedback' do
-            send_request
-
-            expect(project.issues.last).to eq(Vulnerabilities::Feedback.last.issue)
-          end
-
           it 'overwrites the default fields' do
             send_request
 
@@ -135,19 +146,30 @@ RSpec.describe Projects::IssuesController do
             expect(flash[:alert]).to be_nil
           end
 
-          context 'when vulnerability already has a linked issue' do
-            render_views
+          context 'when deprecate_vulnerabilities_feedback is disabled' do
+            before do
+              stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+            end
 
-            let!(:vulnerabilities_issue_link) { create(:vulnerabilities_issue_link, :created, vulnerability: vulnerability) }
-
-            it 'shows an error message' do
+            it 'creates vulnerability feedback' do
               send_request
 
-              expect(flash[:raw]).to include('id="js-unable-to-link-vulnerability"')
-              expect(flash[:raw]).to include("data-vulnerability-link=\"/#{namespace.path}/#{project.path}/-/security/vulnerabilities/#{vulnerabilities_issue_link.vulnerability.id}\"")
-
-              expect(vulnerability.issue_links.map(&:issue)).to eq([vulnerabilities_issue_link.issue])
+              expect(project.issues.last).to eq(Vulnerabilities::Feedback.last.issue)
             end
+
+            it_behaves_like 'creates vulnerability issue link'
+          end
+
+          context 'when deprecate_vulnerabilities_feedback is enabled' do
+            before do
+              stub_feature_flags(deprecate_vulnerabilities_feedback: true)
+            end
+
+            it 'does not create vulnerability feedback' do
+              expect { send_request }.not_to change(Vulnerabilities::Feedback, :count)
+            end
+
+            it_behaves_like 'creates vulnerability issue link'
           end
 
           private
