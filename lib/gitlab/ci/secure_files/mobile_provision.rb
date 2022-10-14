@@ -24,7 +24,7 @@ module Gitlab
         strong_memoize_attr :decoded_plist
 
         def properties
-          list = CFPropertyList::List.new(data: decoded_plist).value
+          list = CFPropertyList::List.new(data: decoded_plist, format: CFPropertyList::List::FORMAT_XML).value
           CFPropertyList.native_types(list)
         rescue CFFormatError, CFPlistError, CFTypeError => err
           @error = err.to_s
