@@ -65,10 +65,12 @@ RSpec.describe API::ProviderIdentity, api: true do
             get_identities
 
             expect(json_response).to(
-              match([
-                      { "extern_uid" => provider_extern_uid_1, "user_id" => user.id },
-                      { "extern_uid" => provider_extern_uid_2, "user_id" => owner.id }
-                    ])
+              match_array(
+                [
+                  { "extern_uid" => provider_extern_uid_1, "user_id" => user.id },
+                  { "extern_uid" => provider_extern_uid_2, "user_id" => owner.id }
+                ]
+              )
             )
           end
         end
