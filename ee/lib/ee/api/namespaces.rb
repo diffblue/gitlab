@@ -56,7 +56,7 @@ module EE
           end
 
           desc 'Update a namespace' do
-            success Entities::Namespace
+            success ::API::Entities::Namespace
           end
           params do
             optional :shared_runners_minutes_limit, type: Integer, desc: "Pipeline minutes quota for this namespace"
