@@ -58,7 +58,7 @@ RSpec.describe Gitlab::Ci::SecureFiles::MobileProvision do
       it 'returns nil if the property list fails to be parsed from the decoded plist' do
         allow(subject).to receive(:decoded_plist).and_return('foo/bar')
         expect(subject.properties).to be nil
-        expect(subject.error).to eq('content after root object')
+        expect(subject.error).to start_with('invalid XML')
       end
     end
 
