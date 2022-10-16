@@ -13,7 +13,9 @@ module EE
           escalation_rules_cleanup(delete_user)
         end
 
-        log_audit_event(user) if result.try(:destroyed?)
+        if ::Feature.disabled?(:user_destroy_with_limited_execution_time_worker) && result.try(:destroyed?)
+          log_audit_event(user)
+        end
 
         result
       end
