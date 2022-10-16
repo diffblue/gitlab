@@ -12,6 +12,7 @@ module Projects
       end
 
       feature_category :dynamic_application_security_testing
+      urgency :low
 
       def new
       end

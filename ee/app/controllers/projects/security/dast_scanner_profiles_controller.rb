@@ -8,6 +8,7 @@ module Projects
       before_action :authorize_read_on_demand_dast_scan!
 
       feature_category :dynamic_application_security_testing
+      urgency :low
 
       def new
       end
