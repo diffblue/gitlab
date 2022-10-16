@@ -2,7 +2,12 @@ import { shallowMount, mount } from '@vue/test-utils';
 import { GlTableLite } from '@gitlab/ui';
 import * as utils from '~/analytics/shared/utils';
 import Component from 'ee/analytics/dashboards/app.vue';
-import { mockCurrentApiResponse, mockPreviousApiResponse } from './mock_data';
+import DoraComparisonTable from 'ee/analytics/dashboards/dora_comparison_table.vue';
+import {
+  mockCurrentApiResponse,
+  mockPreviousApiResponse,
+  mockComparativeTableData,
+} from './mock_data';
 
 const mockProps = { groupName: 'Exec group', groupFullPath: 'exec-group' };
 
@@ -20,7 +25,8 @@ describe('Executive dashboard app', () => {
     });
   }
 
-  const findComparisonTable = () => wrapper.findComponent(GlTableLite);
+  const findComparisonTable = () => wrapper.findComponent(DoraComparisonTable);
+  const getTableData = () => findComparisonTable().props('data');
 
   afterEach(() => {
     wrapper.destroy();
@@ -65,11 +71,21 @@ describe('Executive dashboard app', () => {
       wrapper = await createComponent();
     });
 
-    it.skip('renders each DORA metric', () => {
-      const tableItems = findComparisonTable().attributes();
-      tableItems.forEach((item) => {
-        expect(item).toBe({});
-      });
+    it('renders each DORA metric', () => {
+      const metricNames = getTableData().map(({ metric }) => metric);
+
+      expect(metricNames).toEqual([
+        'Deployment Frequency',
+        'Lead Time for Changes',
+        'Time to Restore Service',
+        'Change Failure Rate',
+      ]);
+    });
+
+    it('calculates % change for each DORA metric', () => {
+      const momChange = getTableData().map(({ change }) => change);
+
+      expect(momChange).toEqual(['1070.59%', '-92%', '-98.21%', '64.23%']);
     });
   });
 });

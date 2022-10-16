@@ -1,15 +1,15 @@
 <script>
-import { GlAlert, GlSkeletonLoader, GlTableLite } from '@gitlab/ui';
+import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import { createAlert } from '~/flash';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
 import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
 import { fetchMetricsData } from '~/analytics/shared/utils';
+import DoraComparisonTable from './dora_comparison_table.vue';
 import {
   COMPARISON_INTERVAL_IN_DAYS,
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
-  DASHBOARD_TABLE_FIELDS,
   DASHBOARD_LOADING_FAILURE,
   DASHBOARD_NO_DATA,
 } from './constants';
@@ -40,8 +40,6 @@ const fetchComparativeDoraTimePeriods = async ({
   ];
 
   const [current, previous] = await Promise.all(promises);
-  // console.log('current', current);
-  // console.log('previous', previous);
   return { current: extractDoraMetrics(current), previous: extractDoraMetrics(previous) };
 };
 
@@ -50,7 +48,7 @@ export default {
   components: {
     GlAlert,
     GlSkeletonLoader,
-    GlTableLite,
+    DoraComparisonTable,
   },
   props: {
     groupFullPath: {
@@ -94,11 +92,7 @@ export default {
         requestPath: `groups/${this.groupFullPath}`,
       })
         .then((response) => {
-          // console.log('then', response);
           this.data = generateDoraTimePeriodComparisonTable(response);
-
-          console.log('data', this.data[0].metric);
-          console.log('data', this.data[1].metric);
         })
         .catch(() => createAlert({ message: DASHBOARD_LOADING_FAILURE }))
         .finally(() => {
@@ -106,7 +100,6 @@ export default {
         });
     },
   },
-  fields: DASHBOARD_TABLE_FIELDS,
   i18n: {
     title: DASHBOARD_TITLE,
     description: DASHBOARD_DESCRIPTION,
@@ -119,7 +112,7 @@ export default {
     <h1 class="page-title">{{ $options.i18n.title }}</h1>
     <h4>{{ description }}</h4>
     <gl-skeleton-loader v-if="loading" />
-    <gl-table-lite v-else-if="hasData" :fields="$options.fields" :items="data" />
+    <dora-comparison-table v-else-if="hasData" :data="data" />
     <gl-alert v-else variant="info" :dismissible="false">{{ $options.i18n.noData }}</gl-alert>
   </div>
 </template>
