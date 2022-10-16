@@ -30,7 +30,7 @@ supported by many email clients.
 ## Favicon
 
 By default, the favicon (used by the browser as the tab icon, as well as the CI status icon)
-uses the GitLab logo, but this can be customized with any icon desired. It must be a
+uses the GitLab logo. This can be customized with any icon desired. It must be a
 32x32 `.png` or `.ico` image.
 
 After you select and upload an icon, select **Update appearance settings** at the bottom
@@ -71,7 +71,7 @@ You can add also add a [customized help message](settings/help_page.md) below th
 
 ## New project pages
 
-You can add a new project guidelines message to the **New project page** within GitLab.
+You can add a new project guidelines message to the **New project page** in GitLab.
 You can make full use of [Markdown](../markdown.md) in the description:
 
 The message is displayed below the **New Project** message, on the left side
