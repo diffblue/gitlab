@@ -852,9 +852,9 @@ GEM
     mail (2.7.1)
       mini_mime (>= 0.1.1)
     marcel (1.0.2)
-    marginalia (1.10.0)
-      actionpack (>= 2.3)
-      activerecord (>= 2.3)
+    marginalia (1.11.1)
+      actionpack (>= 5.2)
+      activerecord (>= 5.2)
     memoist (0.16.2)
     memory_profiler (0.9.14)
     method_source (1.0.0)
@@ -1691,7 +1691,7 @@ DEPENDENCIES
   lru_redux
   mail (= 2.7.1)
   mail-smtp_pool (~> 0.1.0)!
-  marginalia (~> 1.10.0)
+  marginalia (~> 1.11.1)
   memory_profiler (~> 0.9)
   microsoft_graph_mailer (~> 0.1.0)!
   mini_magick (~> 4.10.1)

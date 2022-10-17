@@ -318,7 +318,7 @@
 {"name":"lumberjack","version":"1.2.7","platform":"ruby","checksum":"a5c6aae6b4234f1420dbcd80b23e3bca0817bd239440dde097ebe3fa63c63b1f"},
 {"name":"mail","version":"2.7.1","platform":"ruby","checksum":"ec2a3d489f7510b90d8eaa3f6abaad7038cf1d663cdf8ee66d0214a0bdf99c03"},
 {"name":"marcel","version":"1.0.2","platform":"ruby","checksum":"a013b677ef46cbcb49fd5c59b3d35803d2ee04dd75d8bfdc43533fc5a31f7e4e"},
-{"name":"marginalia","version":"1.10.0","platform":"ruby","checksum":"68289091ee493e1a8f22369c245f250652a6538e497fdeef68cb2a2490830380"},
+{"name":"marginalia","version":"1.11.1","platform":"ruby","checksum":"cb63212ab63e42746e27595e912cb20408a1a28bcd0edde55d15b7c45fa289cf"},
 {"name":"memoist","version":"0.16.2","platform":"ruby","checksum":"a52c53a3f25b5875151670b2f3fd44388633486dc0f09f9a7150ead1e3bf3c45"},
 {"name":"memory_profiler","version":"0.9.14","platform":"ruby","checksum":"de558cf6525d8d56d2c0ea465b1664517fbe45560f892dc7a898d3b8c2863b12"},
 {"name":"method_source","version":"1.0.0","platform":"ruby","checksum":"d779455a2b5666a079ce58577bfad8534f571af7cec8107f4dce328f0981dede"},
