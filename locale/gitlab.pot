@@ -15820,6 +15820,57 @@ msgstr ""
 msgid "Events API"
 msgstr ""
 
+msgid "Event|accepted"
+msgstr ""
+
+msgid "Event|added"
+msgstr ""
+
+msgid "Event|approved"
+msgstr ""
+
+msgid "Event|closed"
+msgstr ""
+
+msgid "Event|commented on"
+msgstr ""
+
+msgid "Event|created"
+msgstr ""
+
+msgid "Event|deleted"
+msgstr ""
+
+msgid "Event|destroyed"
+msgstr ""
+
+msgid "Event|imported"
+msgstr ""
+
+msgid "Event|joined"
+msgstr ""
+
+msgid "Event|left"
+msgstr ""
+
+msgid "Event|opened"
+msgstr ""
+
+msgid "Event|pushed new"
+msgstr ""
+
+msgid "Event|pushed to"
+msgstr ""
+
+msgid "Event|removed"
+msgstr ""
+
+msgid "Event|removed due to membership expiration from"
+msgstr ""
+
+msgid "Event|updated"
+msgstr ""
+
 msgid "Every %{action} attempt has failed: %{job_error_message}. Please try again."
 msgstr ""
 
@@ -46956,9 +47007,6 @@ msgstr[1] ""
 msgid "access:"
 msgstr ""
 
-msgid "added"
-msgstr ""
-
 msgid "added %{emails}"
 msgstr ""
 
@@ -48623,9 +48671,6 @@ msgid "remove start date"
 msgstr ""
 
 msgid "remove weight"
-msgstr ""
-
-msgid "removed"
 msgstr ""
 
 msgid "removed a %{link_type} link"
