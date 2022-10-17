@@ -8,7 +8,6 @@ RSpec.describe 'Profiles > Billing', :js do
 
   let_it_be(:namespace) { create(:namespace) }
   let_it_be(:user) { create(:user, namespace: namespace) }
-  let_it_be(:bronze_plan) { create(:bronze_plan) }
 
   def formatted_date(date)
     date.strftime("%B %-d, %Y")
@@ -20,7 +19,9 @@ RSpec.describe 'Profiles > Billing', :js do
 
   before do
     allow(Gitlab).to receive(:com?).and_return(true)
+    stub_signing_key
     stub_application_setting(check_namespace_plan: true)
+    stub_subscription_management_data(namespace.id)
 
     sign_in(user)
   end
@@ -35,6 +36,13 @@ RSpec.describe 'Profiles > Billing', :js do
     context 'with a free plan' do
       let!(:subscription) do
         create(:gitlab_subscription, namespace: user.namespace, hosted_plan: nil)
+      end
+
+      it 'hides add seats and renew buttons' do
+        visit profile_billings_path
+
+        expect(page).not_to have_link("Add seats")
+        expect(page).not_to have_link("Renew")
       end
 
       it 'does not have search settings field' do

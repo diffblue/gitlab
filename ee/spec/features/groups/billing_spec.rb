@@ -23,6 +23,7 @@ RSpec.describe 'Groups > Billing', :js, :saas do
   end
 
   before do
+    stub_signing_key
     stub_application_setting(check_namespace_plan: true)
 
     sign_in(user)
@@ -44,7 +45,6 @@ RSpec.describe 'Groups > Billing', :js, :saas do
 
     context 'with a free plan' do
       let(:plan) { 'free' }
-
       let!(:subscription) do
         create(:gitlab_subscription, namespace: group, hosted_plan: nil, seats: 15)
       end
@@ -58,6 +58,8 @@ RSpec.describe 'Groups > Billing', :js, :saas do
         within subscription_table do
           expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
           expect(page).not_to have_link("Manage")
+          expect(page).not_to have_link("Add seats")
+          expect(page).not_to have_link("Renew")
         end
       end
     end
@@ -69,42 +71,67 @@ RSpec.describe 'Groups > Billing', :js, :saas do
         create(:gitlab_subscription, end_date: Date.today + 14.days, namespace: group, hosted_plan: bronze_plan, seats: 15)
       end
 
-      it_behaves_like 'hides search settings'
-
-      it 'shows the proper title and subscription data' do
-        extra_seats_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
-        renew_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
-
-        visit group_billings_path(group)
-
-        expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
-        within subscription_table do
-          expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
-          expect(page).to have_link("Manage", href: EE::SUBSCRIPTIONS_MANAGE_URL)
-          expect(page).to have_link("Add seats", href: extra_seats_url)
-          expect(page).to have_link("Renew", href: renew_url)
-          expect(page).to have_link("See usage", href: group_usage_quotas_path(group, anchor: 'seats-quota-tab'))
-        end
-      end
-
-      context 'when gitlab subscription has end date more than 15 days' do
+      context 'with all available management activities' do
         before do
-          subscription.update!(end_date: Date.tomorrow + 15.days)
+          stub_subscription_management_data(group.id)
         end
 
-        it 'does not display renew button' do
+        it_behaves_like 'hides search settings'
+
+        it 'shows the proper title and subscription data' do
+          extra_seats_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/extra_seats"
           renew_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
 
           visit group_billings_path(group)
 
+          expect(page).to have_content("#{group.name} is currently using the Bronze Plan")
           within subscription_table do
-            expect(page).not_to have_link("Renew", href: renew_url)
+            expect(page).to have_content("start date #{formatted_date(subscription.start_date)}")
+            expect(page).to have_link("Manage", href: EE::SUBSCRIPTIONS_MANAGE_URL)
+            expect(page).to have_link("Add seats", href: extra_seats_url)
+            expect(page).to have_link("Renew", href: renew_url)
+            expect(page).to have_link("See usage", href: group_usage_quotas_path(group, anchor: 'seats-quota-tab'))
+          end
+        end
+
+        context 'when gitlab subscription has end date more than 15 days' do
+          before do
+            subscription.update!(end_date: Date.tomorrow + 15.days)
+          end
+
+          it 'does not display renew button' do
+            renew_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
+
+            visit group_billings_path(group)
+
+            within subscription_table do
+              expect(page).not_to have_link("Renew", href: renew_url)
+            end
+          end
+        end
+      end
+
+      context 'with disabled seats and review buttons' do
+        before do
+          stub_subscription_management_data(group.id, can_add_seats: false, in_renewal_period: false)
+        end
+
+        it 'hides add seats and renew buttons' do
+          visit group_billings_path(group)
+
+          within subscription_table do
+            expect(page).not_to have_link("Add seats")
+            expect(page).not_to have_link("Renew")
           end
         end
       end
     end
 
     context 'with a legacy paid plan' do
+      before do
+        stub_subscription_management_data(group.id)
+      end
+
       let(:plan) { 'bronze' }
 
       let!(:subscription) do

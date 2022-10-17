@@ -11,6 +11,7 @@ RSpec.describe 'Show trial banner', :js do
   let(:ultimate_plan) { create(:ultimate_plan) }
 
   before do
+    stub_signing_key
     stub_application_setting(check_namespace_plan: true)
     allow(Gitlab).to receive(:com?).and_return(true).at_least(:once)
     stub_billing_plans(nil)
@@ -22,6 +23,7 @@ RSpec.describe 'Show trial banner', :js do
     before do
       create(:gitlab_subscription, :active_trial, namespace: user.namespace, hosted_plan: ultimate_plan)
       stub_billing_plans(user.namespace_id)
+      stub_subscription_management_data(user.namespace_id)
     end
 
     it 'renders congratulations banner for user in profile billing page' do
@@ -36,6 +38,7 @@ RSpec.describe 'Show trial banner', :js do
       group.add_owner(user)
       create(:gitlab_subscription, :active_trial, namespace: group, hosted_plan: ultimate_plan)
       stub_billing_plans(group.id)
+      stub_subscription_management_data(group.id)
     end
 
     it 'renders congratulations banner for group in group details page' do

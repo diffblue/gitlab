@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import SubscriptionApp from './components/app.vue';
 import initialStore from './store';
+import apolloProvider from './provider';
 
 Vue.use(Vuex);
 
@@ -28,6 +29,7 @@ export default (containerId = 'js-billing-plans') => {
   return new Vue({
     el: containerEl,
     store: new Vuex.Store(initialStore()),
+    apolloProvider,
     provide: {
       namespaceId: Number(namespaceId),
       namespaceName,

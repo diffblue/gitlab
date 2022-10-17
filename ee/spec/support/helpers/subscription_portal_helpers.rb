@@ -54,6 +54,21 @@ module SubscriptionPortalHelpers
     }.to_json, headers: { 'Content-Type' => 'application/json' })
   end
 
+  def stub_subscription_management_data(namespace_id, can_add_seats: true, in_renewal_period: true)
+    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
+      .with(
+        body: "{\"operationName\":\"getSubscriptionData\",\"variables\":{\"namespaceId\":#{namespace_id}},\"query\":\"query getSubscriptionData($namespaceId: ID!) {\\n  subscription(namespaceId: $namespaceId) {\\n    canAddSeats\\n    inRenewalPeriod\\n    __typename\\n  }\\n}\\n\"}"
+      )
+      .to_return(status: 200, body: {
+        "data": {
+          "subscription": {
+            "canAddSeats": can_add_seats,
+            "inRenewalPeriod": in_renewal_period
+          }
+        }
+      }.to_json)
+  end
+
   private
 
   def plans_fixture
