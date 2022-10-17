@@ -15,6 +15,11 @@ that they can be served as efficiently as possible. Housekeeping tasks include:
 - Maintaining data structures that improve performance.
 - Updating object pools to improve object deduplication across forks.
 
+WARNING:
+Do not manually execute Git commands to perform housekeeping in Git
+repositories that are controlled by GitLab. Doing so may lead to corrupt
+repositories and data loss.
+
 ## Configure housekeeping
 
 GitLab automatically runs `git gc` and `git repack` on repositories after Git pushes:
@@ -64,12 +69,6 @@ Housekeeping also [removes unreferenced LFS files](../raketasks/cleanup.md#remov
 from your project on the same schedule as the `git gc` operation, freeing up storage space for your
 project.
 
-WARNING:
-Running `git gc` or `git repack` commands manually in the
-[repository folder](repository_storage_types.md#from-project-name-to-hashed-path)
-is discouraged. If the created pack files get incorrect access rights (that is, owned by the wrong user)
-browsing to the project page might result in `404` and `503` errors.
-
 ## How housekeeping handles pool repositories
 
 Housekeeping for pool repositories is handled differently from standard repositories. It is
@@ -87,7 +86,3 @@ This is the current call stack by which it is invoked:
 To manually invoke it from a [Rails console](operations/rails_console.md) if needed, you can call
 `project.pool_repository.object_pool.fetch`. This is a potentially long-running task, though Gitaly
 times out in about 8 hours.
-
-WARNING:
-Do not run `git prune` or `git gc` in pool repositories! This can cause data loss in "real"
-repositories that depend on the pool in question.
