@@ -7,11 +7,15 @@ product_stage: manage
 product_group: compliance
 product_category: compliance_management
 value_type: number
-status: active
+status: broken
+repair_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/378091
 time_frame: 28d
 data_source: redis_hll
-instrumentation_class: RedisHLLMetric
+instrumentation_class: AggregatedMetric
 options:
+  aggregate:
+    operator: OR
+    attribute: user_id
   events:
   - g_compliance_dashboard
   - g_compliance_audit_events
