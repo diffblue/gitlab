@@ -16324,9 +16324,6 @@ msgstr ""
 msgid "Failed to create import label for jira import."
 msgstr ""
 
-msgid "Failed to create new access token: %{token_response_message}"
-msgstr ""
-
 msgid "Failed to create repository"
 msgstr ""
 
@@ -46845,9 +46842,6 @@ msgid "Your new %{accessTokenType} has been created."
 msgstr ""
 
 msgid "Your new %{type}"
-msgstr ""
-
-msgid "Your new access token has been created."
 msgstr ""
 
 msgid "Your new comment"
