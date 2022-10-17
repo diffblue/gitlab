@@ -93,8 +93,8 @@ export default {
 </script>
 
 <template>
-  <div class="gl-bg-gray-10 gl-rounded-base gl-pl-5 gl-pr-7 gl-py-5 gl-relative">
-    <gl-form inline class="gl-gap-3" @submit.prevent>
+  <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-display-flex gl-relative">
+    <gl-form inline class="gl-flex-grow-1 gl-gap-3" @submit.prevent>
       <gl-sprintf :message="actionMessage">
         <template #thenLabel>
           <label class="text-uppercase gl-font-lg" data-testid="action-component-label">
@@ -144,12 +144,13 @@ export default {
         </template>
       </gl-sprintf>
     </gl-form>
-    <gl-button
-      icon="remove"
-      category="tertiary"
-      class="gl-absolute gl-top-1 gl-right-1"
-      :aria-label="__('Remove')"
-      @click="$emit('remove', $event)"
-    />
+    <div class="gl-min-w-7">
+      <gl-button
+        icon="remove"
+        category="tertiary"
+        :aria-label="__('Remove')"
+        @click="$emit('remove', $event)"
+      />
+    </div>
   </div>
 </template>

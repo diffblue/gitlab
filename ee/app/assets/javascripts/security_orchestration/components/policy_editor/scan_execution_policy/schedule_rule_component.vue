@@ -1,6 +1,7 @@
 <script>
-import { GlSprintf, GlDropdown, GlDropdownItem } from '@gitlab/ui';
+import { GlFormInput, GlSprintf, GlDropdown, GlDropdownItem } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import { slugify, slugifyToArray } from '../utils';
 import {
   DAYS,
   HOUR_MINUTE_LIST,
@@ -11,6 +12,8 @@ import {
   isCronDaily,
 } from './lib';
 import {
+  AGENT_KEY,
+  DEFAULT_AGENT_NAME,
   SCAN_EXECUTION_RULES_LABELS,
   SCAN_EXECUTION_RULE_SCOPE_TYPE,
   SCAN_EXECUTION_RULE_PERIOD_TYPE,
@@ -25,11 +28,14 @@ export default {
   DAYS,
   i18n: {
     scanResultExecutionPeriod: s__('ScanExecutionPolicy|%{period} %{days} at %{time}'),
-    selectedBranchesPlaceholder: s__('ScanExecutionPolicy|Select branches'),
+    selectedAgentsPlaceholder: s__('ScanExecutionPolicy|Select agent'),
+    selectedNamespacesPlaceholder: s__('ScanExecutionPolicy|Select namespaces'),
+    namespaceLabel: s__('ScanExecutionPolicy|in namespaces'),
   },
   name: 'ScheduleRuleComponent',
   components: {
     BaseRuleComponent,
+    GlFormInput,
     GlDropdown,
     GlDropdownItem,
     GlSprintf,
@@ -51,20 +57,33 @@ export default {
       selectedDayIndex: 0,
       selectedTimeIndex: 0,
       cronString: this.initRule.cadence,
-      selectedScope: this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.branch,
+      agent: Object.keys(this.initRule.agents || {})[0] || DEFAULT_AGENT_NAME,
+      selectedScope:
+        AGENT_KEY in this.initRule
+          ? this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.agent
+          : this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.branch,
       selectedPeriod: isCronDaily(this.initRule.cadence)
         ? this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE.daily
         : this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE.weekly,
     };
   },
   computed: {
+    isBranchScope() {
+      return this.selectedScope === this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE.branch;
+    },
     isCronDaily() {
       return this.selectedPeriod === this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE.daily;
+    },
+    nameSpacesToAdd() {
+      return (this.initRule.agents?.[this.agent]?.namespaces || []).join(',') || '';
     },
   },
   methods: {
     triggerChanged(value) {
       this.$emit('changed', { ...this.initRule, ...value });
+    },
+    triggerChangedScope(value) {
+      this.$emit('changed', { type: this.initRule.type, ...value, cadence: this.initRule.cadence });
     },
     isPeriodSelected(key) {
       return this.selectedPeriod === this.$options.SCAN_EXECUTION_RULE_PERIOD_TYPE[key];
@@ -74,6 +93,10 @@ export default {
     },
     isDaySelected(key) {
       return this.selectedDay === DAYS[key];
+    },
+    resetScope() {
+      this.updateNamespaces('');
+      this.agent = Object.keys(this.initRule.agents || {})[0] || DEFAULT_AGENT_NAME;
     },
     resetTime() {
       this.selectedTimeIndex = 0;
@@ -101,6 +124,37 @@ export default {
       this.cronString = setCronTime({ time, day });
       this.triggerChanged({ cadence: this.cronString });
     },
+    setScopeSelected(key) {
+      this.selectedScope = this.$options.SCAN_EXECUTION_RULE_SCOPE_TYPE[key];
+      this.resetScope();
+      const payload = this.isBranchScope
+        ? { branches: [] }
+        : { agents: { [DEFAULT_AGENT_NAME]: { namespaces: [] } } };
+      this.triggerChangedScope(payload);
+    },
+    slugifyNamespaces(values) {
+      return slugifyToArray(values, ',');
+    },
+    updateAgent(values) {
+      this.agent = slugify(values, '') || DEFAULT_AGENT_NAME;
+
+      this.triggerChanged({
+        agents: {
+          [this.agent]: {
+            namespaces: this.slugifyNamespaces(this.nameSpacesToAdd) || [],
+          },
+        },
+      });
+    },
+    updateNamespaces(values) {
+      this.triggerChanged({
+        agents: {
+          [this.agent]: {
+            namespaces: this.slugifyNamespaces(values),
+          },
+        },
+      });
+    },
   },
 };
 </script>
@@ -110,6 +164,7 @@ export default {
     :default-selected-rule="$options.SCAN_EXECUTION_RULES_LABELS.schedule"
     :init-rule="initRule"
     :rule-label="ruleLabel"
+    :is-branch-scope="isBranchScope"
     v-on="$listeners"
   >
     <template #scopes>
@@ -118,16 +173,41 @@ export default {
           v-for="(label, key) in $options.SCAN_EXECUTION_RULE_SCOPE_TYPE"
           :key="key"
           is-check-item
+          @click="setScopeSelected(key)"
         >
           {{ label }}
         </gl-dropdown-item>
       </gl-dropdown>
     </template>
 
+    <template #agents>
+      <gl-form-input
+        v-if="!isBranchScope"
+        class="gl-max-w-34"
+        :value="agent"
+        :placeholder="$options.i18n.selectedAgentsPlaceholder"
+        data-testid="pipeline-rule-agent"
+        @update="updateAgent"
+      />
+    </template>
+
+    <template #namespaces>
+      <template v-if="!isBranchScope">
+        <span>{{ $options.i18n.namespaceLabel }}</span>
+      </template>
+
+      <gl-form-input
+        v-if="!isBranchScope"
+        class="gl-max-w-34"
+        :value="nameSpacesToAdd"
+        :placeholder="$options.i18n.selectedNamespacesPlaceholder"
+        data-testid="pipeline-rule-namespaces"
+        @update="updateNamespaces"
+      />
+    </template>
+
     <template #content>
-      <div
-        class="gl-w-full gl-mt-3 gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap gl-ml-7"
-      >
+      <div class="gl-w-full gl-mt-3 gl-display-flex gl-gap-3 gl-align-items-center gl-flex-wrap">
         <gl-sprintf :message="$options.i18n.scanResultExecutionPeriod">
           <template #period>
             <gl-dropdown class="gl-mr-3" :text="selectedPeriod" data-testid="rule-component-period">

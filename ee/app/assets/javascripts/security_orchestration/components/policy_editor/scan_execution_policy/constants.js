@@ -7,6 +7,8 @@ import {
 } from '~/security_configuration/components/constants';
 
 export const SCANNER_DAST = 'dast';
+export const DEFAULT_AGENT_NAME = 'default';
+export const AGENT_KEY = 'agents';
 
 export const SCAN_EXECUTION_RULES_LABELS = {
   pipeline: s__('ScanExecutionPolicy|A pipeline is run'),
@@ -18,6 +20,7 @@ export const SCAN_EXECUTION_SCHEDULE_RULE = 'schedule';
 
 export const SCAN_EXECUTION_RULE_SCOPE_TYPE = {
   branch: s__('ScanExecutionPolicy|branch'),
+  agent: s__('ScanExecutionPolicy|agent'),
 };
 
 export const SCAN_EXECUTION_RULE_PERIOD_TYPE = {
