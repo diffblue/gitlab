@@ -47,3 +47,5 @@ export const INITIAL_PAGINATION_STATE = {
 };
 
 export const ARCHIVE_FILE_TYPE = 'ARCHIVE';
+
+export const ROW_HEIGHT = 56;

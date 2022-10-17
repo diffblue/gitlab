@@ -4,7 +4,7 @@ import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scrolle
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
 import destroyArtifactMutation from '../graphql/mutations/destroy_artifact.mutation.graphql';
 import { removeArtifactFromStore } from '../graphql/cache_update';
-import { i18n } from '../constants';
+import { i18n, ROW_HEIGHT } from '../constants';
 import ArtifactRow from './artifact_row.vue';
 
 export default {
@@ -55,11 +55,12 @@ export default {
         });
     },
   },
+  ROW_HEIGHT,
 };
 </script>
 <template>
-  <div style="max-height: 222px">
-    <dynamic-scroller :items="artifacts.nodes" :min-item-size="64">
+  <div :style="`max-height: ${4 * ($options.ROW_HEIGHT + 1)}px`">
+    <dynamic-scroller :items="artifacts.nodes" :min-item-size="$options.ROW_HEIGHT">
       <template #default="{ item, index, active }">
         <dynamic-scroller-item :item="item" :active="active" :class="{ active }">
           <div
@@ -67,7 +68,7 @@ export default {
               'gl-border-b-solid gl-border-b-1 gl-border-gray-100':
                 index !== artifacts.nodes.length - 1,
             }"
-            class="gl-py-5"
+            class="gl-py-4"
           >
             <artifact-row
               :artifact="item"

@@ -17,9 +17,10 @@ export const mapArchivesToJobNodes = (jobNode) => {
   };
 };
 
-export const mapJobSucceeded = (jobNode) => {
+export const mapBooleansToJobNodes = (jobNode) => {
   return {
     succeeded: jobNode.detailedStatus.group === JOB_STATUS_GROUP_SUCCESS,
+    hasArtifacts: jobNode.artifacts.nodes.length > 0,
     ...jobNode,
   };
 };

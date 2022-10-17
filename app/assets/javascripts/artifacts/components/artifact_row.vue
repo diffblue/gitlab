@@ -36,10 +36,7 @@ export default {
 </script>
 <template>
   <div class="gl-display-inline-flex gl-align-items-center gl-w-full">
-    <span
-      class="gl-w-40p gl-pl-8 gl-display-flex gl-align-items-center"
-      data-testid="job-artifact-row-name"
-    >
+    <span class="gl-w-half gl-pl-8 gl-display-flex" data-testid="job-artifact-row-name">
       {{ artifact.name }}
       <gl-badge size="sm" variant="neutral" class="gl-ml-2">
         {{ artifact.fileType.toLowerCase() }}
@@ -49,9 +46,7 @@ export default {
       </gl-badge>
     </span>
 
-    <span class="gl-w-quarter"></span>
-
-    <span class="gl-w-10p gl-text-right gl-pr-5" data-testid="job-artifact-row-size">
+    <span class="gl-w-quarter gl-text-right gl-pr-5" data-testid="job-artifact-row-size">
       {{ artifactSize }}
     </span>
 

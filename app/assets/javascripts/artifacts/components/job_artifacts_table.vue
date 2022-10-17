@@ -14,7 +14,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
-import { totalArtifactsSizeForJob, mapArchivesToJobNodes, mapJobSucceeded } from '../utils';
+import { totalArtifactsSizeForJob, mapArchivesToJobNodes, mapBooleansToJobNodes } from '../utils';
 import { STATUS_BADGE_VARIANTS, JOBS_PER_PAGE, INITIAL_PAGINATION_STATE, i18n } from '../constants';
 import ArtifactsTableRowDetails from './artifacts_table_row_details.vue';
 
@@ -42,7 +42,7 @@ export default {
       },
       update({ project: { jobs: { nodes = [], pageInfo = {}, count = 0 } = {} } }) {
         return {
-          nodes: nodes.map(mapArchivesToJobNodes).map(mapJobSucceeded),
+          nodes: nodes.map(mapArchivesToJobNodes).map(mapBooleansToJobNodes),
           count,
           pageInfo,
         };
@@ -113,7 +113,8 @@ export default {
         };
       }
     },
-    handleRowToggle(toggleDetails) {
+    handleRowToggle(toggleDetails, hasArtifacts) {
+      if (!hasArtifacts) return;
       toggleDetails();
     },
   },
@@ -126,12 +127,12 @@ export default {
     {
       key: 'job',
       label: i18n.jobLabel,
-      thClass: 'gl-w-40p',
+      thClass: 'gl-w-35p',
     },
     {
       key: 'size',
       label: i18n.sizeLabel,
-      thClass: 'gl-w-10p gl-text-right',
+      thClass: 'gl-w-15p gl-text-right',
       tdClass: 'gl-text-right',
     },
     {
@@ -158,21 +159,26 @@ export default {
       :fields="$options.fields"
       :busy="$apollo.queries.jobArtifacts.loading"
       stacked="sm"
-      details-td-class="gl-bg-gray-10! gl-p-0! gl-overflow-auto gl-min-h-0 gl-h-13"
+      details-td-class="gl-bg-gray-10! gl-p-0! gl-overflow-auto"
     >
       <template #table-busy>
         <gl-loading-icon size="lg" />
       </template>
-      <template #cell(artifacts)="{ item, toggleDetails, detailsShowing }">
+      <template
+        #cell(artifacts)="{ item: { artifacts, hasArtifacts }, toggleDetails, detailsShowing }"
+      >
         <span
-          class="gl-cursor-pointer"
+          :class="{ 'gl-cursor-pointer': hasArtifacts }"
           data-testid="job-artifacts-count"
-          @click="handleRowToggle(toggleDetails)"
+          @click="handleRowToggle(toggleDetails, hasArtifacts)"
         >
-          <gl-icon v-if="detailsShowing" name="chevron-down" class="gl-mr-2" />
-          <gl-icon v-else name="chevron-right" class="gl-mr-2" />
+          <gl-icon
+            v-if="hasArtifacts"
+            :name="detailsShowing ? 'chevron-down' : 'chevron-right'"
+            class="gl-mr-2"
+          />
           <strong>
-            {{ n__('%d file', '%d files', item.artifacts.nodes.length) }}
+            {{ n__('%d file', '%d files', artifacts.nodes.length) }}
           </strong>
         </span>
       </template>
