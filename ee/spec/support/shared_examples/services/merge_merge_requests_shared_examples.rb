@@ -188,7 +188,6 @@ RSpec.shared_examples 'service with multiple reviewers' do
     let(:reviewer2) { create(:user) }
 
     before do
-      stub_feature_flags(merge_request_reviewer: true)
       project.add_developer(reviewer1)
       project.add_developer(reviewer2)
     end
