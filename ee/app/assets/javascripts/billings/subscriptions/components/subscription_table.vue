@@ -15,6 +15,7 @@ import axios from '~/lib/utils/axios_utils';
 import { getDayDifference } from '~/lib/utils/datetime/date_calculation_utility';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { getSubscriptionData } from '../subscription_actions.customer.query.graphql';
 import SubscriptionTableRow from './subscription_table_row.vue';
 
 const createButtonProps = (text, href, testId) => ({ text, href, testId });
@@ -58,6 +59,24 @@ export default {
       default: '',
     },
   },
+  data() {
+    return {
+      subscription: null,
+    };
+  },
+  apollo: {
+    subscription: {
+      query: getSubscriptionData,
+      variables() {
+        return {
+          namespaceId: this.namespaceId,
+        };
+      },
+      skip() {
+        return this.isFreePlan;
+      },
+    },
+  },
   computed: {
     ...mapState([
       'isLoadingSubscription',
@@ -72,12 +91,16 @@ export default {
       return !this.isFreePlan;
     },
     subscriptionHeader() {
-      const planName = this.isFreePlan
-        ? s__('SubscriptionTable|Free')
-        : escape(removeTrialSuffix(this.planName));
+      const planName = this.isFreePlan ? s__('SubscriptionTable|Free') : this.escapedPlanName;
       const suffix = this.isSubscription && this.plan.trial ? s__('SubscriptionTable|Trial') : '';
 
       return `${this.namespaceName}: ${planName} ${suffix}`;
+    },
+    escapedPlanName() {
+      if (!this.planName) {
+        return '';
+      }
+      return escape(removeTrialSuffix(this.planName));
     },
     canRefreshSeats() {
       return this.glFeatures.refreshBillingsSeats;
@@ -92,7 +115,7 @@ export default {
       );
     },
     addSeatsButton() {
-      return this.isSubscription
+      return this.isSubscription && this.subscription?.canAddSeats
         ? createButtonProps(
             s__('SubscriptionTable|Add seats'),
             this.addSeatsHref,
@@ -101,7 +124,7 @@ export default {
         : null;
     },
     renewButton() {
-      return this.canRenew
+      return this.canRenew && this.subscription?.inRenewalPeriod
         ? createButtonProps(s__('SubscriptionTable|Renew'), this.planRenewHref, 'renew-button')
         : null;
     },
@@ -127,6 +150,9 @@ export default {
       }
 
       return this.tables[tableKey].rows;
+    },
+    isLoading() {
+      return this.isLoadingSubscription || this.$apollo.loading;
     },
   },
   created() {
@@ -157,7 +183,7 @@ export default {
 <template>
   <div>
     <gl-card
-      v-if="!isLoadingSubscription && !hasErrorSubscription"
+      v-if="!isLoading && !hasErrorSubscription"
       class="gl-mt-3 subscription-table js-subscription-table"
       body-class="gl-display-flex gl-flex-direction-column gl-sm-flex-direction-row gl-lg-flex-direction-column! flex-grid gl-p-0"
       header-class="gl-display-flex gl-justify-content-space-between gl-align-items-center"
@@ -209,7 +235,7 @@ export default {
     </gl-card>
 
     <gl-loading-icon
-      v-else-if="isLoadingSubscription && !hasErrorSubscription"
+      v-else-if="isLoading && !hasErrorSubscription"
       :label="s__('SubscriptionTable|Loading subscriptions')"
       size="lg"
       class="gl-mt-3 gl-mb-3"

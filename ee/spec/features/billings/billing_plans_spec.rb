@@ -17,6 +17,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
   let(:plans_data) { billing_plans_data }
 
   before do
+    stub_signing_key
     stub_application_setting(check_namespace_plan: true)
 
     stub_feature_flags(show_billing_eoa_banner: true)
@@ -25,6 +26,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
     stub_billing_plans(nil)
     stub_billing_plans(namespace.id, plan.name, plans_data.to_json)
     stub_eoa_eligibility_request(namespace.id)
+    stub_subscription_management_data(namespace.id)
 
     sign_in(user)
   end

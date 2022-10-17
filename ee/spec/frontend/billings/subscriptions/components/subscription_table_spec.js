@@ -1,6 +1,7 @@
 import { GlLoadingIcon } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import MockAdapter from 'axios-mock-adapter';
 import Vuex from 'vuex';
 import SubscriptionTable from 'ee/billings/subscriptions/components/subscription_table.vue';
@@ -12,9 +13,13 @@ import { mockDataSubscription } from 'ee_jest/billings/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import axios from '~/lib/utils/axios_utils';
+import { getSubscriptionData } from 'ee/billings/subscriptions/subscription_actions.customer.query.graphql';
 
 jest.mock('~/flash');
+
+Vue.use(VueApollo);
 
 const defaultInjectedProps = {
   namespaceName: 'GitLab.com',
@@ -27,19 +32,30 @@ Vue.use(Vuex);
 describe('SubscriptionTable component', () => {
   let store;
   let wrapper;
+  let mockApollo;
 
   const findAddSeatsButton = () => wrapper.findByTestId('add-seats-button');
   const findManageButton = () => wrapper.findByTestId('manage-button');
   const findRenewButton = () => wrapper.findByTestId('renew-button');
   const findRefreshSeatsButton = () => wrapper.findByTestId('refresh-seats-button');
+  const findSubscriptionHeader = () => wrapper.findByTestId('subscription-header');
 
   const createComponentWithStore = async ({ props = {}, provide = {}, state = {} } = {}) => {
     store = new Vuex.Store(initialStore());
     jest.spyOn(store, 'dispatch').mockImplementation();
+    mockApollo = createMockApollo([
+      [
+        getSubscriptionData,
+        jest.fn().mockResolvedValue({
+          data: { subscription: { canAddSeats: true, inRenewalPeriod: true } },
+        }),
+      ],
+    ]);
 
     wrapper = extendedWrapper(
       mount(SubscriptionTable, {
         store,
+        apolloProvider: mockApollo,
         provide: {
           ...defaultInjectedProps,
           ...provide,
@@ -85,11 +101,29 @@ describe('SubscriptionTable component', () => {
     });
 
     it('should render the card title "GitLab.com: Gold"', () => {
-      expect(wrapper.findByTestId('subscription-header').text()).toContain('GitLab.com: Gold');
+      expect(findSubscriptionHeader().text()).toContain('GitLab.com: Gold');
     });
 
     it('should render a "Usage" and a "Billing" row', () => {
       expect(wrapper.findAllComponents(SubscriptionTableRow)).toHaveLength(2);
+    });
+  });
+
+  describe('edge case: null planName is provided', () => {
+    it('should skip plan name in the card title "GitLab.com:"', async () => {
+      await createComponentWithStore({
+        provide: {
+          planName: null,
+        },
+        state: {
+          plan: {
+            code: 'Silver',
+          },
+        },
+      });
+      await waitForPromises();
+
+      expect(findSubscriptionHeader().text()).toContain('GitLab.com:');
     });
   });
 
@@ -105,9 +139,10 @@ describe('SubscriptionTable component', () => {
           },
         },
       });
-      const subscriptionHeaderText = wrapper.findByTestId('subscription-header').text();
 
-      expect(subscriptionHeaderText).toContain('GitLab.com: Gold Plan Trial');
+      await waitForPromises();
+
+      expect(findSubscriptionHeader().text()).toContain('GitLab.com: Gold Plan Trial');
     });
 
     it('renders the title for a plan with Trial in the name', async () => {
@@ -121,9 +156,10 @@ describe('SubscriptionTable component', () => {
           },
         },
       });
-      const subscriptionHeaderText = wrapper.findByTestId('subscription-header').text();
 
-      expect(subscriptionHeaderText).toContain('GitLab.com: Ultimate SaaS Plan Trial');
+      await waitForPromises();
+
+      expect(findSubscriptionHeader().text()).toContain('GitLab.com: Ultimate SaaS Plan Trial');
     });
   });
 
@@ -136,7 +172,7 @@ describe('SubscriptionTable component', () => {
     `(
       'given a plan with state: planCode = $planCode',
       ({ planCode, upgradable, expected, testDescription }) => {
-        beforeEach(() => {
+        beforeEach(async () => {
           createComponentWithStore({
             state: {
               isLoadingSubscription: false,
@@ -146,6 +182,8 @@ describe('SubscriptionTable component', () => {
               },
             },
           });
+
+          await waitForPromises();
         });
 
         it(`${testDescription}`, () => {
@@ -165,7 +203,7 @@ describe('SubscriptionTable component', () => {
     `(
       'given a plan with state: planCode = $planCode, trial = $trial',
       ({ planCode, trial, expected, testDescription }) => {
-        beforeEach(() => {
+        beforeEach(async () => {
           createComponentWithStore({
             state: {
               isLoadingSubscription: false,
@@ -178,6 +216,8 @@ describe('SubscriptionTable component', () => {
               },
             },
           });
+
+          await waitForPromises();
         });
 
         it(`${testDescription}`, () => {
@@ -220,7 +260,7 @@ describe('SubscriptionTable component', () => {
     `(
       'given a plan with state: planCode = $planCode',
       ({ planCode, expected, testDescription }) => {
-        beforeEach(() => {
+        beforeEach(async () => {
           createComponentWithStore({
             state: {
               isLoadingSubscription: false,
@@ -230,6 +270,8 @@ describe('SubscriptionTable component', () => {
               },
             },
           });
+
+          await waitForPromises();
         });
 
         it(`${testDescription}`, () => {
@@ -244,7 +286,7 @@ describe('SubscriptionTable component', () => {
 
     const refreshSeatsHref = '/url';
 
-    beforeEach(() => {
+    beforeEach(async () => {
       mock = new MockAdapter(axios);
 
       createComponentWithStore({
@@ -256,6 +298,8 @@ describe('SubscriptionTable component', () => {
           glFeatures: { refreshBillingsSeats: true },
         },
       });
+
+      await waitForPromises();
     });
 
     afterEach(() => {
@@ -323,13 +367,15 @@ describe('SubscriptionTable component', () => {
   `(
     'with availableTrialAction=$availableTrialAction',
     ({ availableTrialAction, buttonVisible }) => {
-      beforeEach(() => {
+      beforeEach(async () => {
         createComponentWithStore({
           provide: {
             namespaceId: 1,
             availableTrialAction,
           },
         });
+
+        await waitForPromises();
       });
 
       if (buttonVisible) {

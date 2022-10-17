@@ -21,6 +21,7 @@ RSpec.describe 'Billings > Extend / Reactivate Trial', :js, :saas do
     group.add_owner(user)
 
     allow(Gitlab).to receive(:com?).and_return(true)
+    stub_signing_key
     stub_ee_application_setting(should_check_namespace_plan: true)
     stub_feature_flags(allow_extend_reactivate_trial: true)
     stub_billing_plans(nil)
@@ -28,6 +29,7 @@ RSpec.describe 'Billings > Extend / Reactivate Trial', :js, :saas do
       .to_return(status: 200, body: plans_data.to_json)
     stub_full_request("#{EE::SUBSCRIPTIONS_URL}/trials/extend_reactivate_trial", method: :put)
       .to_return(status: 200)
+    stub_subscription_management_data(group.id)
     sign_in(user)
   end
 
