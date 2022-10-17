@@ -968,7 +968,7 @@ module Ci
 
     def collect_codequality_reports!(codequality_report)
       each_report(Ci::JobArtifact.file_types_for_report(:codequality)) do |file_type, blob|
-        Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, codequality_report)
+        Gitlab::Ci::Parsers.fabricate!(file_type).parse!(blob, codequality_report, { project: project, commit_sha: pipeline.sha })
       end
 
       codequality_report
