@@ -17,4 +17,6 @@ fragment DastSiteProfileFragment on DastSiteProfile {
   }
   excludedUrls
   requestHeaders
+  scanMethod
+  scanFilePath
 }
