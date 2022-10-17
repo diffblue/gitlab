@@ -12,10 +12,6 @@ module SlashCommands
     def trigger
       return false unless valid_token?
 
-      if help_command?
-        return Gitlab::SlashCommands::ApplicationHelp.new(nil, params).execute
-      end
-
       unless slack_integration = find_slack_integration
         error_message = 'GitLab error: project or alias not found'
         return Gitlab::SlashCommands::Presenters::Error.new(error_message).message
@@ -25,6 +21,10 @@ module SlashCommands
       project = integration.project
 
       chat_user = ChatNames::FindUserService.new(integration, params).execute
+
+      if help_command?
+        return Gitlab::SlashCommands::ApplicationHelp.new(nil, chat_user, params).execute
+      end
 
       if chat_user&.user
         Gitlab::SlashCommands::Command.new(project, chat_user, params).execute
@@ -50,7 +50,11 @@ module SlashCommands
 
     # rubocop: disable CodeReuse/ActiveRecord
     def find_slack_integration
-      SlackIntegration.find_by(team_id: params[:team_id], alias: project_alias)
+      if project_alias.nil?
+        SlackIntegration.find_by(team_id: params[:team_id])
+      else
+        SlackIntegration.find_by(team_id: params[:team_id], alias: project_alias)
+      end
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
@@ -58,8 +62,12 @@ module SlashCommands
     # '/gitlab help' => [nil, 'help']
     # '/gitlab group/project issue new some title' => ['group/project', 'issue new some title']
     def parse_command_text(params)
-      fragments = params[:text].split(/\s/, 2)
-      fragments.size == 1 ? [nil, fragments.first] : fragments
+      if params[:text] == 'incident declare'
+        [nil, params[:text]]
+      else
+        fragments = params[:text].split(/\s/, 2)
+        fragments.size == 1 ? [nil, fragments.first] : fragments
+      end
     end
   end
 end
