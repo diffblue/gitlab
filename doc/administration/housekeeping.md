@@ -28,7 +28,8 @@ There are different ways in which GitLab runs housekeeping tasks:
 
 ### Push-based trigger
 
-GitLab automatically runs `git gc` and `git repack` on repositories after Git pushes:
+GitLab automatically runs repository housekeeping tasks after a configured
+number of pushes:
 
 - [`git gc`](https://git-scm.com/docs/git-gc) runs a number of housekeeping tasks such as:
   - Compressing Git objects to reduce disk space and increase performance.
@@ -39,10 +40,13 @@ GitLab automatically runs `git gc` and `git repack` on repositories after Git pu
   - Runs a full repack, according to a [configured period](#configure-push-based-maintenance). This repacks all
     packfiles and loose objects into a single new packfile, and deletes the old now-redundant loose
     objects and packfiles. It also optionally creates bitmaps for the new packfile.
+- [`git pack-refs`](https://git-scm.com/docs/git-pack-refs) compresses references
+  stored as loose files into a single file.
 
 #### Configure push-based maintenance
 
-You can change how often this happens or turn it off:
+You can change how often these tasks run when pushes occur, or you can turn
+them off entirely:
 
 1. On the top bar, select **Main menu > Admin**.
 1. On the left sidebar, select **Settings > Repository**.
@@ -52,7 +56,7 @@ You can change how often this happens or turn it off:
 
 The following housekeeping options are available:
 
-- **Enable automatic repository housekeeping**: Regularly run `git repack` and `git gc`. If you
+- **Enable automatic repository housekeeping**: Regularly run housekeeping tasks. If you
   keep this setting disabled for a long time, Git repository access on your GitLab server becomes
   slower and your repositories use more disk space.
 - **Incremental repack period**: Number of Git pushes after which an incremental `git repack` is
