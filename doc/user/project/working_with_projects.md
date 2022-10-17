@@ -90,8 +90,7 @@ To create a blank project:
    - In the **Project slug** field, enter the path to your project. The GitLab instance uses the
      slug as the URL path to the project. To change the slug, first enter the project name,
      then change the slug.
-   - In the **Project description (optional)** field, enter the description of your project's dashboard.
-   - In the **Project target (optional)** field, select your project's deployment target.
+   - In the **Project deployment target (optional)** field, select your project's deployment target.
      This information helps GitLab better understand its users and their deployment requirements.
    - To modify the project's [viewing and access rights](../public_access.md) for
      users, change the **Visibility Level**.
