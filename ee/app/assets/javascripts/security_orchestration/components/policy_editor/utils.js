@@ -1,5 +1,5 @@
 import { isValidCron } from 'cron-validator';
-import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
+import { convertToTitleCase, humanize, slugify as slugifyUtility } from '~/lib/utils/text_utility';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
@@ -159,6 +159,15 @@ export const isValidPolicy = ({
 
   return true;
 };
+
+/**
+ * Replaces whitespace and non-sluggish characters with a given separator and returns array of values
+ * @param str - The string to slugify
+ * @param separator - The separator used to separate words (defaults to "-")
+ * @returns {String[]}
+ */
+export const slugifyToArray = (str, separator = '-') =>
+  slugifyUtility(str, separator).split(',').filter(Boolean);
 
 /**
  * Validate cadence cron string if it exists in rule

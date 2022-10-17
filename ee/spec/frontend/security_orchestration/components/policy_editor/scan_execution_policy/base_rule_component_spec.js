@@ -79,6 +79,16 @@ describe('BaseRuleComponent', () => {
       });
     });
 
+    it.each`
+      isBranchScope | expectedResult
+      ${true}       | ${true}
+      ${false}      | ${false}
+    `('should render branches input', ({ isBranchScope, expectedResult }) => {
+      createComponent({ isBranchScope });
+
+      expect(findBranchesInputField().exists()).toBe(expectedResult);
+    });
+
     it('should emit array of branches and correct type', async () => {
       await selectBranches('main, branch');
 

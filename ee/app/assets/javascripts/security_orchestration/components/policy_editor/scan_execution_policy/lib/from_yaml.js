@@ -34,7 +34,7 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
      * schema.
      */
     const primaryKeys = ['type', 'name', 'description', 'enabled', 'rules', 'actions'];
-    const rulesKeys = ['type', 'branches', 'cadence'];
+    const rulesKeys = ['type', 'agents', 'branches', 'cadence'];
     const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables'];
 
     return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
