@@ -27,6 +27,8 @@ There are different ways in which GitLab runs housekeeping tasks:
 - A project's administrator can [manually trigger](#manual-trigger) repository
   housekeeping tasks.
 - GitLab can automatically schedule housekeeping tasks [after a number of Git pushes](#push-based-trigger).
+- GitLab can [schedule a job](#scheduled-housekeeping) that runs housekeeping
+  tasks for all repositories in a configurable timeframe.
 
 ### Manual trigger
 
@@ -99,6 +101,46 @@ When the:
 Housekeeping also [removes unreferenced LFS files](../raketasks/cleanup.md#remove-unreferenced-lfs-files)
 from your project on the same schedule as the `git gc` operation, freeing up storage space for your
 project.
+
+### Scheduled housekeeping
+
+While GitLab automatically performs housekeeping tasks based on the number of
+pushes, it does not maintain repositories that don't receive any pushes at all.
+As a result, inactive repositories or repositories that are only getting read
+requests may not benefit from improvements in the repository housekeeping
+strategy.
+
+Administrators can enable a background job that performs housekeeping in all
+repositories at a customizable interval to remedy this situation. This
+background job processes all repositories hosted by a Gitaly node in a random
+order and eagerly performs housekeeping tasks on them. The Gitaly node will stop
+processing repositories if it takes longer than the configured interval.
+
+#### Configure scheduled housekeeping
+
+Background maintenance of Git repositories is configured in Gitaly. By default,
+Gitaly performs background repository maintenance every day at 12:00 noon for a
+duration of 10 minutes.
+
+You can change this default in Gitaly configuration. The following snippet
+enables daily background repository maintenance starting at 23:00 for 1 hour
+for the `default` storage:
+
+```toml
+[daily_maintenance]
+start_hour = 23
+start_minute = 00
+duration = 1h
+storages = ["default"]
+```
+
+Use the following snippet to completely disable background repository
+maintenance:
+
+```toml
+[daily_maintenance]
+disabled = true
+```
 
 ## How housekeeping handles pool repositories
 
