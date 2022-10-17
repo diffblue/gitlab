@@ -18725,6 +18725,9 @@ msgstr ""
 msgid "Group"
 msgstr ""
 
+msgid "Group %{group_name} and its Mattermost team were successfully created."
+msgstr ""
+
 msgid "Group %{group_name} couldn't be exported."
 msgstr ""
 
