@@ -15,7 +15,6 @@ import allRunnersQuery from 'ee_else_ce/runner/graphql/list/all_runners.query.gr
 import allRunnersCountQuery from 'ee_else_ce/runner/graphql/list/all_runners_count.query.graphql';
 
 import RegistrationDropdown from '../components/registration/registration_dropdown.vue';
-import RunnerStackedLayoutBanner from '../components/runner_stacked_layout_banner.vue';
 import RunnerFilteredSearchBar from '../components/runner_filtered_search_bar.vue';
 import RunnerBulkDelete from '../components/runner_bulk_delete.vue';
 import RunnerBulkDeleteCheckbox from '../components/runner_bulk_delete_checkbox.vue';
@@ -43,7 +42,6 @@ export default {
   components: {
     GlLink,
     RegistrationDropdown,
-    RunnerStackedLayoutBanner,
     RunnerFilteredSearchBar,
     RunnerBulkDelete,
     RunnerBulkDeleteCheckbox,
@@ -172,8 +170,6 @@ export default {
 </script>
 <template>
   <div>
-    <runner-stacked-layout-banner />
-
     <div
       class="gl-display-flex gl-align-items-center gl-flex-direction-column-reverse gl-md-flex-direction-row gl-mt-3 gl-md-mt-0"
     >
