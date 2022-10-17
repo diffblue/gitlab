@@ -82,6 +82,7 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
         expect(page).to have_content('Suggestion(s)')
         expect(page).to have_content(suggested_user.name)
         expect(page).to have_content(suggested_user.username)
+        expect(page).to have_css("[data-user-suggested='true']")
       end
     end
 
