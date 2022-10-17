@@ -363,13 +363,27 @@ hierarchy. Choosing a proper solution will require a thoughtful research.
 
 ## Phases and iterations
 
-TODO Grzegorz: describe all 5 (or 6 phases):
-
-1. Triangulate Rate Limiting abstraction in Rails, extract limits to YAML, build Rails SDK, sample of using limits  – Owning team
-2. Team Fanout of Rails SDK – Stage groups
-3. Extract rate limiting service (or implement Go library) – Owning team
-4. SDK for satellite service + sample implementations – Owning team
-5. Team fanout for satellite services – Stage groups
+**Phase 1**: Compile examples of current most important application limits — Owning Team
+    a. Owning Team (in collaboration with Stage Groups) compiles a list of the
+    most important application limits used in Rails today.
+**Phase 2**: Implement Rate Limiting Framework in Rails – Owning Team
+    a. Triangulate rate limiting abstractions based on the data gathered in Phase 1
+    b. Develop YAML model for limits.
+    c. Build Rails SDK.
+    d. Create examples showcasing usage of the new rate limits SDK.
+**Phase 3**: Team Fanout of Rails SDK – Stage Groups
+    a. Individual stage groups begin using the SDK built in Phase 2 for new limit and policies.
+    b. Stage groups begin replacing historical ad-hoc limit implementations with the SDK.
+**Phase 4**: Enable Satellite Services to Use the Rate Limiting Framework – Owning Team
+    a. Determine if the goals of Phase 4 are best met by either
+        1. Extracting the Rails rate limiting service into a decoupled service OR
+        2. Implementing a separate Go library
+**Phase 5**: SDK for Satellite Services – Owning Team
+    a. Build Golang SDK.
+    c. Create examples showcasing usage of the new rate limits SDK.
+**Phase 6**: Team Fanout for Satellite Services – Stage Groups
+    a. Individual stage groups being using the SDK built in Phase 5 for new limit and policies.
+    b. Stage groups begin replacing historical ad hoc limit implementations with the SDK.
 
 ## Status
 
