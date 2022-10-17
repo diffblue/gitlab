@@ -28,8 +28,8 @@ module EE
           end
 
           override :search_type
-          def search_type
-            search_service.use_elasticsearch? ? 'advanced' : super
+          def search_type(additional_params = {})
+            search_service(additional_params).use_elasticsearch? ? 'advanced' : super
           end
         end
       end
