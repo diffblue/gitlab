@@ -4,7 +4,7 @@ import { nextTick } from 'vue';
 import Approvals from 'ee/vue_merge_request_widget/components/approvals/approvals.vue';
 import ApprovalsAuth from 'ee/vue_merge_request_widget/components/approvals/approvals_auth.vue';
 import ApprovalsFooter from 'ee/vue_merge_request_widget/components/approvals/approvals_footer.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import ApprovalsFoss from '~/vue_merge_request_widget/components/approvals/approvals.vue';
 import ApprovalsSummary from '~/vue_merge_request_widget/components/approvals/approvals_summary.vue';
 import ApprovalsSummaryOptional from '~/vue_merge_request_widget/components/approvals/approvals_summary_optional.vue';
@@ -130,7 +130,7 @@ describe('EE MRWidget approvals', () => {
     });
 
     it('hides loading message', () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
       expect(wrapper.text()).not.toContain(FETCH_LOADING);
     });
   });
@@ -148,7 +148,7 @@ describe('EE MRWidget approvals', () => {
     });
 
     it('flashes error', () => {
-      expect(createFlash).toHaveBeenCalledWith({ message: FETCH_ERROR });
+      expect(createAlert).toHaveBeenCalledWith({ message: FETCH_ERROR });
     });
   });
 
@@ -302,7 +302,7 @@ describe('EE MRWidget approvals', () => {
           });
 
           it('flashes error message', () => {
-            expect(createFlash).toHaveBeenCalledWith({ message: APPROVE_ERROR });
+            expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
           });
         });
       });
@@ -353,7 +353,7 @@ describe('EE MRWidget approvals', () => {
             });
 
             it('shows flash if general error', () => {
-              expect(createFlash).toHaveBeenCalledWith({ message: APPROVE_ERROR });
+              expect(createAlert).toHaveBeenCalledWith({ message: APPROVE_ERROR });
             });
           });
         });
@@ -412,7 +412,7 @@ describe('EE MRWidget approvals', () => {
           });
 
           it('flashes error message', () => {
-            expect(createFlash).toHaveBeenCalledWith({ message: UNAPPROVE_ERROR });
+            expect(createAlert).toHaveBeenCalledWith({ message: UNAPPROVE_ERROR });
           });
         });
       });
