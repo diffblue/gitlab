@@ -6,7 +6,6 @@ RSpec.describe 'layouts/application', :themed_layout do
   let_it_be(:user) { create(:user) }
 
   before do
-    allow(view).to receive(:experiment_enabled?).and_return(false)
     allow(view).to receive(:session).and_return({})
     allow(view).to receive(:user_signed_in?).and_return(true)
     allow(view).to receive(:current_user).and_return(user)
