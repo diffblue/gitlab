@@ -7,8 +7,18 @@ module ResourceEvents
     def initialize(resource, user, old_iteration_id:)
       super(resource, user)
 
+      @resource = resource
+      @user = user
       @iteration = resource&.iteration
       @old_iteration_id = old_iteration_id
+    end
+
+    def execute
+      super
+
+      return unless resource.is_a?(WorkItem)
+
+      Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter.track_work_item_iteration_changed_action(author: user)
     end
 
     private
