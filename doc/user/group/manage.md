@@ -250,7 +250,7 @@ If you are changing the path so it can be claimed by another group or user,
 you must rename the group too. Both names and paths must
 be unique.
 
-Changing a group's path is equal to transfer a group to a new namespace.
+Changing a group's path is equivalent to transfer a group to a new namespace so all hard-coded references to the original project URL will need to be changed to the new group's path, including include statements, Docker image references in CI files and variables that specify a project or namespace.
 
 To retain ownership of the original namespace and protect the URL redirects,
 create a new group and transfer projects to it instead.
@@ -267,9 +267,6 @@ WARNING:
 It is not possible to rename a namespace if it contains a
 project with [Container Registry](../packages/container_registry/index.md) tags,
 because the project cannot be moved.
-
-WARNING:
-All hard-coded references to the original project URL will need to be changed to the new URL, including include statements and Docker image references in CI files and variables that specify a project or namespace.
 
 ## Change the default branch protection of a group
 
