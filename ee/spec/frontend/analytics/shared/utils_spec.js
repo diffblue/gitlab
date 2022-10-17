@@ -236,7 +236,9 @@ describe('buildNullSeries', () => {
       },
     ];
 
-    expect(buildNullSeries(inputSeries, NO_DATA_MESSAGE)).toEqual(expectedSeries);
+    expect(buildNullSeries({ seriesData: inputSeries, nullSeriesTitle: NO_DATA_MESSAGE })).toEqual(
+      expectedSeries,
+    );
   });
 
   describe('series data', () => {
@@ -253,7 +255,10 @@ describe('buildNullSeries', () => {
           },
         ];
 
-        const actualSeries = buildNullSeries(inputSeries, NO_DATA_MESSAGE);
+        const actualSeries = buildNullSeries({
+          seriesData: inputSeries,
+          nullSeriesTitle: NO_DATA_MESSAGE,
+        });
 
         expect(actualSeries[1]).toMatchObject(inputSeries[0]);
       });
@@ -261,10 +266,10 @@ describe('buildNullSeries', () => {
 
     describe('empty series', () => {
       const compareSeriesData = (inputSeriesData, expectedEmptySeriesData) => {
-        const actualEmptySeriesData = buildNullSeries(
-          [{ data: inputSeriesData }],
-          NO_DATA_MESSAGE,
-        )[0].data;
+        const actualEmptySeriesData = buildNullSeries({
+          seriesData: [{ data: inputSeriesData }],
+          nullSeriesTitle: NO_DATA_MESSAGE,
+        })[0].data;
 
         expect(actualEmptySeriesData).toEqual(expectedEmptySeriesData);
       };

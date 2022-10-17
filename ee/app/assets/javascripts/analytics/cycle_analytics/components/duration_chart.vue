@@ -9,7 +9,7 @@ import { dateFormats } from '~/analytics/shared/constants';
 import dateFormat from '~/lib/dateformat';
 import { isNumeric } from '~/lib/utils/number_utils';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
-import { n__, sprintf } from '~/locale';
+import { n__, sprintf, __ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import {
   DURATION_STAGE_TIME_DESCRIPTION,
@@ -89,10 +89,12 @@ export default {
         },
       ];
 
-      const nullSeries = buildNullSeries(
-        valuesSeries,
-        `${DURATION_CHART_Y_AXIS_TITLE} no data series`,
-      );
+      const nullSeries = buildNullSeries({
+        seriesData: valuesSeries,
+        nullSeriesTitle: sprintf(__('%{chartTitle} no data series'), {
+          chartTitle: DURATION_CHART_Y_AXIS_TITLE,
+        }),
+      });
       const [nullData, nonNullData] = nullSeries;
       return [nonNullData, { ...nullData, showSymbol: false }];
     },

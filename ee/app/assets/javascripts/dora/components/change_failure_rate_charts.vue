@@ -121,7 +121,10 @@ export default {
 
           // The nullSeries is used to indicate sections of the chart that have no data available
           // This is displayed as the third series and is different to sections that have values of `0`
-          const nullSeries = buildNullSeries(seriesData, this.$options.i18n.noIncidents);
+          const nullSeries = buildNullSeries({
+            seriesData,
+            nullSeriesTitle: this.$options.i18n.noIncidents,
+          });
 
           const { data } = seriesData[0];
 

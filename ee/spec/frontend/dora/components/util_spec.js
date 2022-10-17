@@ -49,16 +49,16 @@ describe('ee/dora/components/util.js', () => {
 
   describe('lead time data', () => {
     it('returns the correct lead time chart data after all processing of the API response', () => {
-      const chartData = buildNullSeries(
-        apiDataToChartSeries(
+      const chartData = buildNullSeries({
+        seriesData: apiDataToChartSeries(
           lastWeekData,
           new Date(2015, 5, 27, 10),
           new Date(2015, 6, 4, 10),
           'Lead time',
           null,
         ),
-        NO_DATA_MESSAGE,
-      );
+        nullSeriesTitle: NO_DATA_MESSAGE,
+      });
 
       expect(chartData).toMatchSnapshot();
     });

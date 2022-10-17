@@ -175,16 +175,20 @@ const lerp = (valueAtT0, valueAtT1, t) => {
  * and "non-null" data sets.
  * This function returns new series data and does not modify the original instance.
  *
- * @param {Array} seriesData The time series data that has already been processed
+ * @param {object} params - function arguments
+ * @param {Array} params.seriesData The time series data that has already been processed
  * by the `apiDataToChartSeries` function.
+ * @param {string} params.nullSeriesTitle Sets the title name for the null series
+ * @param {object} params.seriesDataOptions Adds additional options for the series data
+ * @param {object} params.nullSeriesOptions Adds additional options for the null data
  * @returns {Array} A new series Array
  */
-export const buildNullSeries = (
+export const buildNullSeries = ({
   seriesData,
   nullSeriesTitle,
   seriesDataOptions = DEFAULT_SERIES_DATA_OPTIONS,
   nullSeriesOptions = DEFAULT_NULL_SERIES_OPTIONS,
-) => {
+}) => {
   const nonNullSeries = cloneDeep(seriesData[0]);
   // Loop through the series data and build a list of all the "gaps". A "gap" is
   // a section of the data set that only include `null` values. Each gap object
