@@ -6,10 +6,14 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Housekeeping **(FREE SELF)**
 
-GitLab supports and automates housekeeping tasks in your current repository such as:
+GitLab supports and automates housekeeping tasks in Git repositories to ensure
+that they can be served as efficiently as possible. Housekeeping tasks include:
 
-- Compressing Git objects.
+- Compressing Git objects and revisions.
 - Removing unreachable objects.
+- Removing stale data like lock files.
+- Maintaining data structures that improve performance.
+- Updating object pools to improve object deduplication across forks.
 
 ## Configure housekeeping
 
