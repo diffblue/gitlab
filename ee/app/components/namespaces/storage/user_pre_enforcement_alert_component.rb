@@ -2,7 +2,7 @@
 
 module Namespaces
   module Storage
-    class UserNamespacePreEnforcementAlertComponent < ::Namespaces::Storage::PreEnforcementAlertComponent
+    class UserPreEnforcementAlertComponent < ::Namespaces::Storage::PreEnforcementAlertComponent
       private
 
       def text_paragraph_2
@@ -29,10 +29,17 @@ module Namespaces
       end
 
       def dismissed?
-        user.dismissed_callout_for_namespace?(
-          feature_name: callout_feature_name,
-          namespace: root_namespace
+        user.dismissed_callout?(
+          feature_name: callout_feature_name
         )
+      end
+
+      def dismiss_endpoint
+        callouts_path
+      end
+
+      def extra_callout_data
+        {}
       end
     end
   end

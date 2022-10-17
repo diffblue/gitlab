@@ -125,12 +125,19 @@ module Namespaces
 
       def callout_data
         {
+          **extra_callout_data,
           feature_id: callout_feature_name,
-          dismiss_endpoint: root_namespace.user_namespace? ? namespace_callouts_path : group_callouts_path,
+          dismiss_endpoint: dismiss_endpoint,
           defer_links: "true"
-        }.merge(
-          root_namespace.user_namespace? ? { namespace_id: root_namespace_id } : { group_id: root_namespace_id }
-        )
+        }
+      end
+
+      def extra_callout_data
+        { group_id: root_namespace_id }
+      end
+
+      def dismiss_endpoint
+        group_callouts_path
       end
 
       def root_namespace_id

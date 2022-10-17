@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Namespaces::Storage::UserNamespacePreEnforcementAlertComponent, :saas, type: :component do
+RSpec.describe Namespaces::Storage::UserPreEnforcementAlertComponent, :saas, type: :component do
   include ActionView::Helpers::NumberHelper
   include StorageHelper
 
