@@ -238,7 +238,7 @@ GEM
       proc_to_ast
       rspec (>= 2.13, < 4)
       unparser
-    rspec-retry (0.6.1)
+    rspec-retry (0.6.2)
       rspec-core (> 3.3)
     rspec-support (3.10.2)
     rspec_junit_formatter (0.6.0)
@@ -324,7 +324,7 @@ DEPENDENCIES
   rotp (~> 3.1.0)
   rspec (~> 3.10)
   rspec-parameterized (~> 0.5.2)
-  rspec-retry (~> 0.6.1)
+  rspec-retry (~> 0.6.2)
   rspec_junit_formatter (~> 0.6.0)
   ruby-debug-ide (~> 0.7.3)
   selenium-webdriver (~> 4.5)
@@ -336,4 +336,4 @@ DEPENDENCIES
   zeitwerk (~> 2.4)
 
 BUNDLED WITH
-   2.3.23
+   2.3.24

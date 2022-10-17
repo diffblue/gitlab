@@ -12,7 +12,7 @@ gem 'rspec', '~> 3.10'
 gem 'selenium-webdriver', '~> 4.5'
 gem 'airborne', '~> 0.3.7', require: false # airborne is messing with rspec sandboxed mode so not requiring by default
 gem 'rest-client', '~> 2.1.0'
-gem 'rspec-retry', '~> 0.6.1', require: 'rspec/retry'
+gem 'rspec-retry', '~> 0.6.2', require: 'rspec/retry'
 gem 'rspec_junit_formatter', '~> 0.6.0'
 gem 'faker', '~> 2.19', '>= 2.19.0'
 gem 'knapsack', '~> 4.0'
