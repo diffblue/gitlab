@@ -9,7 +9,7 @@ GEM
       zeitwerk (~> 2.3)
     addressable (2.8.1)
       public_suffix (>= 2.0.2, < 6.0)
-    airborne (0.3.4)
+    airborne (0.3.7)
       activesupport
       rack
       rack-test (>= 1.1.0, < 2.0)
@@ -298,7 +298,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (~> 6.1.4.7)
-  airborne (~> 0.3.4)
+  airborne (~> 0.3.7)
   allure-rspec (~> 2.16.0)
   capybara (~> 3.35.0)
   capybara-screenshot (~> 1.0.26)
