@@ -143,6 +143,13 @@ describe('setFilters', () => {
         filterVariables: { iterationWildcardId: 'NONE', not: {} },
       },
     ],
+    [
+      "and use 'healthStatusFilter' as filter variable when health status is used",
+      {
+        filters: { healthStatus: 'NONE' },
+        filterVariables: { healthStatusFilter: 'NONE', not: {} },
+      },
+    ],
   ])('should commit mutation SET_FILTERS %s', (_, { filters, filterVariables }) => {
     testAction(
       actions.setFilters,

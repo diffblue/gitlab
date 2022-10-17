@@ -263,6 +263,10 @@ export const FiltersInfo = {
   weight: {
     negatedSupport: true,
   },
+  healthStatus: {
+    negatedSupport: false,
+    remap: () => 'healthStatusFilter',
+  },
 };
 
 export default {

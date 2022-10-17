@@ -46,6 +46,7 @@ module EE
         iteration_lists_available: current_board_namespace.feature_available?(:board_iteration_lists).to_s,
         epic_feature_available: current_board_namespace.feature_available?(:epics).to_s,
         iteration_feature_available: current_board_namespace.feature_available?(:iterations).to_s,
+        health_status_feature_available: current_board_namespace.feature_available?(:issuable_health_status).to_s,
         sub_epics_feature_available: current_board_namespace.feature_available?(:subepics).to_s
       }
     end

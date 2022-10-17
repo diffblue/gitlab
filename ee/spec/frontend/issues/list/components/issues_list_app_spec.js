@@ -24,8 +24,8 @@ import {
   TOKEN_TYPE_RELEASE,
   TOKEN_TYPE_TYPE,
   TOKEN_TYPE_WEIGHT,
-  TOKEN_TYPE_HEALTH,
 } from '~/issues/list/constants';
+import { TOKEN_TYPE_HEALTH } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import IssuesListApp from 'ee/issues/list/components/issues_list_app.vue';
 
