@@ -24,7 +24,28 @@ repositories and data loss.
 
 There are different ways in which GitLab runs housekeeping tasks:
 
+- A project's administrator can [manually trigger](#manual-trigger) repository
+  housekeeping tasks.
 - GitLab can automatically schedule housekeeping tasks [after a number of Git pushes](#push-based-trigger).
+
+### Manual trigger
+
+Administrators of repositories can manually trigger housekeeping tasks in a
+repository. In general this is not required as GitLab knows to automatically run
+housekeeping tasks. The manual trigger can be useful when either:
+
+- A repository is known to require housekeeping.
+- Automated push-based scheduling of housekeeping tasks has been disabled.
+
+To trigger housekeeping tasks manually:
+
+1. On the top bar, select **Main menu > Projects** and find your project.
+1. On the left sidebar, select **Settings > General**.
+1. Expand **Advanced**.
+1. Select **Run housekeeping**.
+
+This starts an asynchronous background worker for the project's repository. The
+background worker executes `git gc`, which performs a number of optimizations.
 
 ### Push-based trigger
 
