@@ -6,7 +6,7 @@ module EE
 
     override :todo_types_options
     def todo_types_options
-      super + [{ id: 'Epic', text: 'Epic' }]
+      super + [{ id: 'Epic', text: s_('Todos|Epic') }]
     end
 
     override :todo_author_display?
