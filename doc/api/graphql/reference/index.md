@@ -5388,9 +5388,15 @@ Input type: `UpdateNamespacePackageSettingsInput`
 | <a id="mutationupdatenamespacepackagesettingsclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationupdatenamespacepackagesettingsgenericduplicateexceptionregex"></a>`genericDuplicateExceptionRegex` | [`UntrustedRegexp`](#untrustedregexp) | When generic_duplicates_allowed is false, you can publish duplicate packages with names that match this regex. Otherwise, this setting has no effect. |
 | <a id="mutationupdatenamespacepackagesettingsgenericduplicatesallowed"></a>`genericDuplicatesAllowed` | [`Boolean`](#boolean) | Indicates whether duplicate generic packages are allowed for this namespace. |
+| <a id="mutationupdatenamespacepackagesettingslockmavenpackagerequestsforwarding"></a>`lockMavenPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether Maven package forwarding is locked for all descendent namespaces. |
+| <a id="mutationupdatenamespacepackagesettingslocknpmpackagerequestsforwarding"></a>`lockNpmPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether npm package forwarding is locked for all descendent namespaces. |
+| <a id="mutationupdatenamespacepackagesettingslockpypipackagerequestsforwarding"></a>`lockPypiPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether PyPI package forwarding is locked for all descendent namespaces. |
 | <a id="mutationupdatenamespacepackagesettingsmavenduplicateexceptionregex"></a>`mavenDuplicateExceptionRegex` | [`UntrustedRegexp`](#untrustedregexp) | When maven_duplicates_allowed is false, you can publish duplicate packages with names that match this regex. Otherwise, this setting has no effect. |
 | <a id="mutationupdatenamespacepackagesettingsmavenduplicatesallowed"></a>`mavenDuplicatesAllowed` | [`Boolean`](#boolean) | Indicates whether duplicate Maven packages are allowed for this namespace. |
+| <a id="mutationupdatenamespacepackagesettingsmavenpackagerequestsforwarding"></a>`mavenPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether Maven package forwarding is allowed for this namespace. |
 | <a id="mutationupdatenamespacepackagesettingsnamespacepath"></a>`namespacePath` | [`ID!`](#id) | Namespace path where the namespace package setting is located. |
+| <a id="mutationupdatenamespacepackagesettingsnpmpackagerequestsforwarding"></a>`npmPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether npm package forwarding is allowed for this namespace. |
+| <a id="mutationupdatenamespacepackagesettingspypipackagerequestsforwarding"></a>`pypiPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether PyPI package forwarding is allowed for this namespace. |
 
 #### Fields
 
@@ -15738,8 +15744,17 @@ Namespace-level Package Registry settings.
 | ---- | ---- | ----------- |
 | <a id="packagesettingsgenericduplicateexceptionregex"></a>`genericDuplicateExceptionRegex` | [`UntrustedRegexp`](#untrustedregexp) | When generic_duplicates_allowed is false, you can publish duplicate packages with names that match this regex. Otherwise, this setting has no effect. |
 | <a id="packagesettingsgenericduplicatesallowed"></a>`genericDuplicatesAllowed` | [`Boolean!`](#boolean) | Indicates whether duplicate generic packages are allowed for this namespace. |
+| <a id="packagesettingslockmavenpackagerequestsforwarding"></a>`lockMavenPackageRequestsForwarding` | [`Boolean!`](#boolean) | Indicates whether Maven package forwarding is locked for all descendent namespaces. |
+| <a id="packagesettingslocknpmpackagerequestsforwarding"></a>`lockNpmPackageRequestsForwarding` | [`Boolean!`](#boolean) | Indicates whether npm package forwarding is locked for all descendent namespaces. |
+| <a id="packagesettingslockpypipackagerequestsforwarding"></a>`lockPypiPackageRequestsForwarding` | [`Boolean!`](#boolean) | Indicates whether PyPI package forwarding is locked for all descendent namespaces. |
 | <a id="packagesettingsmavenduplicateexceptionregex"></a>`mavenDuplicateExceptionRegex` | [`UntrustedRegexp`](#untrustedregexp) | When maven_duplicates_allowed is false, you can publish duplicate packages with names that match this regex. Otherwise, this setting has no effect. |
 | <a id="packagesettingsmavenduplicatesallowed"></a>`mavenDuplicatesAllowed` | [`Boolean!`](#boolean) | Indicates whether duplicate Maven packages are allowed for this namespace. |
+| <a id="packagesettingsmavenpackagerequestsforwarding"></a>`mavenPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether Maven package forwarding is allowed for this namespace. |
+| <a id="packagesettingsmavenpackagerequestsforwardinglocked"></a>`mavenPackageRequestsForwardingLocked` | [`Boolean!`](#boolean) | Indicates whether Maven package forwarding settings are locked by a parent namespace. |
+| <a id="packagesettingsnpmpackagerequestsforwarding"></a>`npmPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether npm package forwarding is allowed for this namespace. |
+| <a id="packagesettingsnpmpackagerequestsforwardinglocked"></a>`npmPackageRequestsForwardingLocked` | [`Boolean!`](#boolean) | Indicates whether npm package forwarding settings are locked by a parent namespace. |
+| <a id="packagesettingspypipackagerequestsforwarding"></a>`pypiPackageRequestsForwarding` | [`Boolean`](#boolean) | Indicates whether PyPI package forwarding is allowed for this namespace. |
+| <a id="packagesettingspypipackagerequestsforwardinglocked"></a>`pypiPackageRequestsForwardingLocked` | [`Boolean!`](#boolean) | Indicates whether PyPI package forwarding settings are locked by a parent namespace. |
 
 ### `PackageTag`
 
