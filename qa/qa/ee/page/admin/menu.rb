@@ -12,16 +12,16 @@ module QA
 
             base.class_eval do
               view 'app/views/layouts/nav/sidebar/_admin.html.haml' do
-                element :admin_settings_template_item
-                element :admin_settings_advanced_search
+                element :admin_settings_templates_link
+                element :admin_settings_advanced_search_link
               end
 
               view 'ee/app/views/layouts/nav/ee/admin/_geo_sidebar.html.haml' do
-                element :link_geo_menu
+                element :admin_geo_menu_link
               end
 
               view 'ee/app/views/layouts/nav/sidebar/_licenses_link.html.haml' do
-                element :link_subscription_menu
+                element :admin_subscription_menu_link
               end
 
               view 'ee/app/views/layouts/nav/ee/admin/_new_monitoring_sidebar.html.haml' do
@@ -31,33 +31,33 @@ module QA
           end
 
           def go_to_monitoring_audit_logs
-            hover_element(:admin_monitoring_link) do
-              within_submenu(:admin_sidebar_monitoring_submenu_content) do
+            hover_element(:admin_monitoring_menu_link) do
+              within_submenu(:admin_monitoring_submenu_content) do
                 click_element :admin_monitoring_audit_logs_link
               end
             end
           end
 
           def click_geo_menu_link
-            click_element :link_geo_menu
+            click_element :admin_geo_menu_link
           end
 
           def click_subscription_menu_link
-            click_element :link_subscription_menu
+            click_element :admin_subscription_menu_link
           end
 
           def go_to_template_settings
-            hover_element(:admin_settings_item) do
-              within_submenu(:admin_sidebar_settings_submenu_content) do
-                click_element :admin_settings_template_item
+            hover_element(:admin_settings_menu_link) do
+              within_submenu(:admin_settings_submenu_content) do
+                click_element :admin_settings_templates_link
               end
             end
           end
 
           def go_to_advanced_search
-            hover_element(:admin_settings_item) do
-              within_submenu(:admin_sidebar_settings_submenu_content) do
-                click_element :admin_settings_advanced_search
+            hover_element(:admin_settings_menu_link) do
+              within_submenu(:admin_settings_submenu_content) do
+                click_element :admin_settings_advanced_search_link
               end
             end
           end

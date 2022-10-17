@@ -1,5 +1,5 @@
 = nav_link(controller: ['admin/subscriptions', 'admin/licenses']) do
-  = link_to admin_subscription_path, class: "qa-link-subscription-menu" do
+  = link_to admin_subscription_path, data: { qa_selector: "admin_subscription_menu_link" } do
     .nav-icon-container
       = sprite_icon('license')
     %span.nav-item-name
