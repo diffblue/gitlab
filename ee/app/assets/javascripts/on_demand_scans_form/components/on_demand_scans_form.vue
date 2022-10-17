@@ -34,6 +34,7 @@ import {
 } from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
+import PreScanVerificationStatus from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_status.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
@@ -149,6 +150,7 @@ export default {
     SectionLayout,
     ConfigurationPageLayout,
     DastProfilesConfigurator,
+    PreScanVerificationStatus,
     GlPopover,
   },
   directives: {
@@ -563,6 +565,15 @@ export default {
           <scan-schedule v-model="profileSchedule" />
         </template>
       </section-layout>
+
+      <div v-if="!failedToLoadProfiles && glFeatures.dastPreScanVerification">
+        <pre-scan-verification-status
+          class="gl-mt-6"
+          pipeline-id="2343434"
+          pipeline-created-at="2022-09-23 11:19:49 UTC"
+          pipeline-path="test-path"
+        />
+      </div>
 
       <div v-if="!failedToLoadProfiles">
         <profile-conflict-alert
