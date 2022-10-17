@@ -10,13 +10,9 @@ module EE
         expose :removable
         expose :created_at
         expose :last_owner?, as: :is_last_owner
-        expose :last_login_at
+        expose :current_sign_in_at, as: :last_login_at
 
         private
-
-        def last_login_at
-          object.current_sign_in_at&.to_formatted_s(:db)
-        end
 
         def membership_type
           return 'group_member'   if user_in_array?(:group_member_user_ids)

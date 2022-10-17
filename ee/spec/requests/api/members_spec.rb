@@ -534,7 +534,7 @@ RSpec.describe API::Members do
             it 'returns paginated users sorted by last_login_at in desc order' do
               get_billable_members
 
-              expect(json_response[0]["last_login_at"]).to eq(user4.current_sign_in_at.to_formatted_s(:db))
+              expect(Time.parse(json_response[0]["last_login_at"])).to be_like_time(user4.current_sign_in_at)
               expect_paginated_array_response(user4.id, user3.id, user2.id, user1.id)
             end
           end
@@ -545,7 +545,7 @@ RSpec.describe API::Members do
             it 'returns paginated users sorted by last_login_at in asc order' do
               get_billable_members
 
-              expect(json_response[0]["last_login_at"]).to eq(user1.current_sign_in_at.to_formatted_s(:db))
+              expect(Time.parse(json_response[0]["last_login_at"])).to be_like_time(user1.current_sign_in_at)
               expect_paginated_array_response(user1.id, user2.id, user3.id, user4.id)
             end
           end

@@ -27,7 +27,7 @@ RSpec.describe ::EE::API::Entities::BillableMember do
   end
 
   it 'exposes the last_login_at field' do
-    expect(entity_representation[:last_login_at]).to eq current_sign_in_at.utc.to_formatted_s(:db)
+    expect(entity_representation[:last_login_at]).to eq current_sign_in_at
   end
 
   it 'exposes the created_at field' do
