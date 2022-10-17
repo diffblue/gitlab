@@ -6,6 +6,7 @@ module Geo
 
     extend ActiveSupport::Concern
 
+    event :created
     event :updated
 
     class << self
@@ -45,6 +46,11 @@ module Geo
       def data_type_title
         _('Container Repository')
       end
+    end
+
+    # Called by Gitlab::Geo::Replicator#consume
+    def consume_event_created(**params)
+      consume_event_updated(params)
     end
 
     # Called by Gitlab::Geo::Replicator#consume
