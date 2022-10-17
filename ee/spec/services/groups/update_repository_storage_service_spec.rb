@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Groups::UpdateRepositoryStorageService do
-  include Gitlab::ShellAdapter
-
   subject { described_class.new(repository_storage_move) }
 
   describe "#execute" do
@@ -33,10 +31,6 @@ RSpec.describe Groups::UpdateRepositoryStorageService do
 
     context 'when the move succeeds' do
       it 'moves the repository to the new storage and unmarks the repository as read-only', :aggregate_failures do
-        old_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
-          wiki.repository.path_to_repo
-        end
-
         expect(wiki_repository_double).to receive(:replicate)
           .with(wiki.repository.raw)
         expect(wiki_repository_double).to receive(:checksum)
@@ -49,7 +43,6 @@ RSpec.describe Groups::UpdateRepositoryStorageService do
         expect(result).to be_success
         expect(group).not_to be_repository_read_only
         expect(wiki.repository_storage).to eq(destination)
-        expect(gitlab_shell.repository_exists?('default', old_path)).to be(false)
         expect(group.group_wiki_repository.shard_name).to eq(destination)
       end
     end
