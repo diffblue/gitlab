@@ -45146,9 +45146,6 @@ msgstr ""
 msgid "Webhooks|The webhook failed to connect, and is disabled. To re-enable it, check %{strong_start}Recent events%{strong_end} for error details, then test your settings below."
 msgstr ""
 
-msgid "Webhooks|The webhook was triggered more than %{limit} times per minute and is now disabled. To re-enable this webhook, fix the problems shown in %{strong_start}Recent events%{strong_end}, then re-test your settings. %{support_link_start}Contact Support%{support_link_end} if you need help re-enabling your webhook."
-msgstr ""
-
 msgid "Webhooks|Trigger"
 msgstr ""
 
@@ -45173,7 +45170,10 @@ msgstr ""
 msgid "Webhooks|Webhook fails to connect"
 msgstr ""
 
-msgid "Webhooks|Webhook was automatically disabled"
+msgid "Webhooks|Webhook rate limit has been reached"
+msgstr ""
+
+msgid "Webhooks|Webhooks for %{root_namespace} are now disabled because they've been triggered more than %{limit} times per minute. They'll be automatically re-enabled in the next minute."
 msgstr ""
 
 msgid "Webhooks|Wiki page events"
