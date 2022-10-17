@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import DashboardsApp from './app.vue';
+import DashboardsApp from './components/app.vue';
 
 export default () => {
   const el = document.querySelector('#js-analytics-dashboards-app');

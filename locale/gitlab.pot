@@ -11936,7 +11936,7 @@ msgstr ""
 msgid "DORA4Metrics|%{startDate} - %{endDate}"
 msgstr ""
 
-msgid "DORA4Metrics|30 Before that"
+msgid "DORA4Metrics|30 days before that"
 msgstr ""
 
 msgid "DORA4Metrics|Average (last %{days}d)"
@@ -11963,7 +11963,7 @@ msgstr ""
 msgid "DORA4Metrics|Deployment frequency"
 msgstr ""
 
-msgid "DORA4Metrics|Last 30 Days"
+msgid "DORA4Metrics|Last 30 days"
 msgstr ""
 
 msgid "DORA4Metrics|Lead time for changes"

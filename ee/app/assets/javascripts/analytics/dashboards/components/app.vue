@@ -5,15 +5,20 @@ import { createAlert } from '~/flash';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
 import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
 import { fetchMetricsData } from '~/analytics/shared/utils';
-import DoraComparisonTable from './dora_comparison_table.vue';
 import {
   COMPARISON_INTERVAL_IN_DAYS,
   DASHBOARD_TITLE,
   DASHBOARD_DESCRIPTION,
   DASHBOARD_LOADING_FAILURE,
   DASHBOARD_NO_DATA,
-} from './constants';
-import { toUtcYmd, extractDoraMetrics, generateDoraTimePeriodComparisonTable } from './utils';
+} from '../constants';
+import {
+  toUtcYMD,
+  toMMMDD,
+  extractDoraMetrics,
+  generateDoraTimePeriodComparisonTable,
+} from '../utils';
+import DoraComparisonTable from './dora_comparison_table.vue';
 
 export const DEFAULT_TODAY = new Date();
 export const DEFAULT_END_DATE = getDateInPast(DEFAULT_TODAY, COMPARISON_INTERVAL_IN_DAYS - 1);
@@ -62,9 +67,9 @@ export default {
   },
   data() {
     return {
-      startDate: toUtcYmd(DEFAULT_END_DATE),
-      endDate: toUtcYmd(DEFAULT_TODAY),
-      previousStartDate: toUtcYmd(COMPARATIVE_START_DATE),
+      startDate: toUtcYMD(DEFAULT_END_DATE),
+      endDate: toUtcYMD(DEFAULT_TODAY),
+      previousStartDate: toUtcYMD(COMPARATIVE_START_DATE),
       data: [],
       loading: false,
     };
@@ -76,6 +81,19 @@ export default {
     description() {
       const { groupName } = this;
       return sprintf(this.$options.i18n.description, { groupName });
+    },
+    dateRanges() {
+      const { startDate, endDate, previousStartDate } = this;
+      return {
+        current: {
+          startDate: toMMMDD(startDate),
+          endDate: toMMMDD(endDate),
+        },
+        previous: {
+          startDate: toMMMDD(previousStartDate),
+          endDate: toMMMDD(startDate),
+        },
+      };
     },
   },
   mounted() {
@@ -112,7 +130,7 @@ export default {
     <h1 class="page-title">{{ $options.i18n.title }}</h1>
     <h4>{{ description }}</h4>
     <gl-skeleton-loader v-if="loading" />
-    <dora-comparison-table v-else-if="hasData" :data="data" />
+    <dora-comparison-table v-else-if="hasData" :data="data" :date-ranges="dateRanges" />
     <gl-alert v-else variant="info" :dismissible="false">{{ $options.i18n.noData }}</gl-alert>
   </div>
 </template>

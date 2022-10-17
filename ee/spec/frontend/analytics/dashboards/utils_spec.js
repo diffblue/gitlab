@@ -21,7 +21,7 @@ describe('Analytics Dashboards utils', () => {
   describe('formatMetricString', () => {
     it.each`
       identifier                          | value   | unit      | result
-      ${DEPLOYMENT_FREQUENCY_METRIC_TYPE} | ${19.9} | ${'/day'} | ${'19.9/day'}
+      ${DEPLOYMENT_FREQUENCY_METRIC_TYPE} | ${19.9} | ${'/day'} | ${'19.9/d'}
       ${CHANGE_FAILURE_RATE}              | ${8.54} | ${'%'}    | ${'8.54%'}
     `('formats $identifier with no space', ({ identifier, value, unit, result }) => {
       expect(formatMetricString({ identifier, value, unit })).toBe(result);
@@ -29,8 +29,8 @@ describe('Analytics Dashboards utils', () => {
 
     it.each`
       identifier                 | value  | result
-      ${LEAD_TIME_FOR_CHANGES}   | ${0.2} | ${'0.2 days'}
-      ${TIME_TO_RESTORE_SERVICE} | ${0.4} | ${'0.4 days'}
+      ${LEAD_TIME_FOR_CHANGES}   | ${0.2} | ${'0.2/d'}
+      ${TIME_TO_RESTORE_SERVICE} | ${0.4} | ${'0.4/d'}
     `('formats $identifier with a space', ({ identifier, value, result }) => {
       expect(formatMetricString({ identifier, value, unit: 'days' })).toBe(result);
     });
@@ -73,7 +73,13 @@ describe('Analytics Dashboards utils', () => {
     });
 
     it('calculates the changes between the 2 time periods', () => {
-      expect(res).toEqual(mockComparativeTableData);
+      const formattedValues = mockComparativeTableData.map(({ current, previous, ...rest }) => ({
+        ...rest,
+        current: current.replace(' days', '/d').replace('/day', '/d'),
+        previous: previous.replace(' days', '/d').replace('/day', '/d'),
+      }));
+
+      expect(res).toEqual(formattedValues);
     });
   });
 

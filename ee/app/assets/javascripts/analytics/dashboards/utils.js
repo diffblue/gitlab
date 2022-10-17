@@ -1,6 +1,6 @@
 import { roundOffFloat } from '~/lib/utils/common_utils';
 import dateformat from '~/lib/dateformat';
-import { DEPLOYMENT_FREQUENCY_METRIC_TYPE, CHANGE_FAILURE_RATE } from 'ee/api/dora_api';
+import { CHANGE_FAILURE_RATE } from 'ee/api/dora_api';
 import { DORA_METRIC_IDENTIFIERS } from './constants';
 
 export const formatPercentChange = ({ current, previous, precision = 2 }) =>
@@ -8,12 +8,13 @@ export const formatPercentChange = ({ current, previous, precision = 2 }) =>
     ? `${roundOffFloat(((current - previous) / previous) * 100, precision)}%`
     : '-';
 
-export const formatMetricString = ({ identifier, value, unit }) =>
-  [DEPLOYMENT_FREQUENCY_METRIC_TYPE, CHANGE_FAILURE_RATE].includes(identifier)
-    ? `${value}${unit}`
-    : `${value} ${unit}`;
+export const formatMetricString = ({ identifier, value }) => {
+  const unit = identifier === CHANGE_FAILURE_RATE ? '%' : '/d';
+  return `${value}${unit}`;
+};
 
-export const toUtcYmd = (d) => dateformat(d, 'UTC:yyyy-mm-dd');
+export const toUtcYMD = (d) => dateformat(d, 'UTC:yyyy-mm-dd');
+export const toMMMDD = (d) => dateformat(d, 'mmm dd');
 
 /**
  * Takes a flat array of metrics and extracts only the DORA metrics,

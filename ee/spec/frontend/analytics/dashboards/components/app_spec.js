@@ -1,13 +1,8 @@
-import { shallowMount, mount } from '@vue/test-utils';
-import { GlTableLite } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
+import Component from 'ee/analytics/dashboards/components/app.vue';
+import DoraComparisonTable from 'ee/analytics/dashboards/components/dora_comparison_table.vue';
 import * as utils from '~/analytics/shared/utils';
-import Component from 'ee/analytics/dashboards/app.vue';
-import DoraComparisonTable from 'ee/analytics/dashboards/dora_comparison_table.vue';
-import {
-  mockCurrentApiResponse,
-  mockPreviousApiResponse,
-  mockComparativeTableData,
-} from './mock_data';
+import { mockCurrentApiResponse, mockPreviousApiResponse } from '../mock_data';
 
 const mockProps = { groupName: 'Exec group', groupFullPath: 'exec-group' };
 
@@ -16,8 +11,8 @@ jest.mock('~/analytics/shared/utils');
 describe('Executive dashboard app', () => {
   let wrapper;
 
-  function createComponent({ props = {}, mountFn = shallowMount } = {}) {
-    return mountFn(Component, {
+  function createComponent({ props = {} } = {}) {
+    return shallowMount(Component, {
       propsData: {
         ...mockProps,
         ...props,
@@ -59,6 +54,20 @@ describe('Executive dashboard app', () => {
 
       expectDataRequests({ created_after: '2020-06-07', created_before: '2020-07-06' });
       expectDataRequests({ created_after: '2020-05-09', created_before: '2020-06-07' });
+    });
+  });
+
+  describe('no data', () => {
+    beforeEach(async () => {
+      utils.fetchMetricsData
+        .mockImplementationOnce(() => Promise.resolve([]))
+        .mockImplementationOnce(() => Promise.resolve([]));
+
+      wrapper = await createComponent();
+    });
+
+    it('renders the no data message', () => {
+      expect(wrapper.text()).toContain('No data available');
     });
   });
 
