@@ -54,4 +54,15 @@ fragment WorkItemWidgets on WorkItemWidget {
       }
     }
   }
+  ... on WorkItemWidgetIteration {
+    iteration {
+      description
+      id
+      iid
+      title
+      startDate
+      dueDate
+    }
+    type
+  }
 }

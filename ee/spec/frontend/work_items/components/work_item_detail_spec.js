@@ -3,6 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
+import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
 import workItemWeightSubscription from 'ee/work_items/graphql/work_item_weight.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -12,12 +13,14 @@ import {
   workItemResponseFactory,
   workItemWeightSubscriptionResponse,
   workItemAssigneesSubscriptionResponse,
+  workItemIterationSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 import WorkItemDetail from '~/work_items/components/work_item_detail.vue';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 import workItemDatesSubscription from '~/work_items/graphql/work_item_dates.subscription.graphql';
 import workItemTitleSubscription from '~/work_items/graphql/work_item_title.subscription.graphql';
 import workItemAssigneesSubscription from '~/work_items/graphql/work_item_assignees.subscription.graphql';
+import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 
 describe('WorkItemDetail component', () => {
@@ -33,12 +36,17 @@ describe('WorkItemDetail component', () => {
   const assigneesSubscriptionHandler = jest
     .fn()
     .mockResolvedValue(workItemAssigneesSubscriptionResponse);
+  const iterationSubscriptionHandler = jest
+    .fn()
+    .mockResolvedValue(workItemIterationSubscriptionResponse);
 
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
+  const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
 
   const createComponent = ({
     handler = successHandler,
+    workItemsMvc2Enabled = false,
     confidentialityMock = [updateWorkItemMutation, jest.fn()],
   } = {}) => {
     wrapper = shallowMount(WorkItemDetail, {
@@ -48,10 +56,16 @@ describe('WorkItemDetail component', () => {
         [workItemTitleSubscription, titleSubscriptionHandler],
         [workItemWeightSubscription, weightSubscriptionHandler],
         [workItemAssigneesSubscription, assigneesSubscriptionHandler],
+        [workItemIterationSubscription, iterationSubscriptionHandler],
         confidentialityMock,
       ]),
       provide: {
+        glFeatures: {
+          workItemsMvc2: workItemsMvc2Enabled,
+        },
         hasIssueWeightsFeature: true,
+        hasIterationsFeature: true,
+        projectNamespace: 'namespace',
       },
       propsData: {
         workItemId: workItemQueryResponse.data.workItem.id,
@@ -61,6 +75,36 @@ describe('WorkItemDetail component', () => {
 
   afterEach(() => {
     wrapper.destroy();
+  });
+
+  describe('iteration widget', () => {
+    describe.each`
+      description                               | iterationWidgetPresent | exists
+      ${'when widget is returned from API'}     | ${true}                | ${true}
+      ${'when widget is not returned from API'} | ${false}               | ${false}
+    `('$description', ({ iterationWidgetPresent, exists }) => {
+      it(`${
+        iterationWidgetPresent ? 'renders' : 'does not render'
+      } iteration component`, async () => {
+        const response = workItemResponseFactory({ iterationWidgetPresent });
+        const handler = jest.fn().mockResolvedValue(response);
+        createComponent({ handler, workItemsMvc2Enabled: true });
+        await waitForPromises();
+
+        expect(findWorkItemIteration().exists()).toBe(exists);
+      });
+    });
+
+    it('shows an error message when it emits an `error` event', async () => {
+      createComponent({ workItemsMvc2Enabled: true });
+      await waitForPromises();
+      const updateError = 'Failed to update';
+
+      findWorkItemIteration().vm.$emit('error', updateError);
+      await waitForPromises();
+
+      expect(findAlert().text()).toBe(updateError);
+    });
   });
 
   describe('weight widget', () => {

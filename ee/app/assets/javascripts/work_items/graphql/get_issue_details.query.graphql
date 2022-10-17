@@ -1,0 +1,14 @@
+#import "ee/sidebar/queries/iteration.fragment.graphql"
+
+query issuableDetailsEE($fullPath: ID!, $iid: String) {
+  workspace: project(fullPath: $fullPath) {
+    id
+    issuable: issue(iid: $iid) {
+      id
+      confidential
+      iteration {
+        ...IterationFragment
+      }
+    }
+  }
+}

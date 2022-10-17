@@ -1,0 +1,20 @@
+subscription issuableIterationUpdated($issuableId: IssuableID!) {
+  issuableIterationUpdated(issuableId: $issuableId) {
+    ... on WorkItem {
+      id
+      widgets {
+        ... on WorkItemWidgetIteration {
+          type
+          iteration {
+            description
+            id
+            iid
+            title
+            startDate
+            dueDate
+          }
+        }
+      }
+    }
+  }
+}
