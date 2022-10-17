@@ -74,22 +74,32 @@ codebase that it brings with a lack of internal knowledge about it makes it
 hard for our maintainers to support and properly handle incoming feature
 requests and community contributions.
 
-An example problem that we could point is that the latest version available
-still depends on Go 1.12 (which is unsupported since a few years now) and on
-`Gopkg` packaging tooling. Migration of that to what we're using now for rest
-of our Golang based products would require a lot of effort.
+Docker Machine and it integrated 20+ drivers for cloud and virtualization
+providers creates also another subset of problems, like:
+
+- Each cloud/virtualization environment brings features that come and go
+  and we would need to maintain support for them (add new features, fix
+  bugs).
+
+- We basically need to become experts for each of the virtualization/cloud
+  provider to properly support integration with their API,
+
+- Every single provider that Docker Machine integrates with has its
+  bugs, security releases, vulnerabilities - to maintain the project properly
+  we would need to be on top of all of that and handle updates whenever
+  they are needed.
 
 Another problem is the fact that Docker Machine, from its beginnings, was
 focused on managing Linux based instances only. Despite that at some moment
 Docker got official and native integration on Windows, Docker Machine never
-followed this step.  Nor its designed to make such integration easy.
+followed this step. Nor its designed to make such integration easy.
 
 There is also no support for MacOS. This one is obvious - Docker Machine is a
 tool to maintain hosts for Docker Engine and there is no native Docker Engine
 for MacOS. And by native we mean MacOS containers executed within MacOS
 operating system. Docker for MacOS product is not a native support - it's just
 a tooling and a virtualized Linux instance installed with it that makes it
-easier to develop Linux containers on MacOS development instances.
+easier to develop **Linux containers** on MacOS development instances.
 
 This means that only one of three of our officially supported platforms -
 Linux, Windows and MacOS - have a fully-featured support for CI/CD
@@ -101,8 +111,8 @@ auto-scaling solution provided natively by GitLab Runner.
 This is a huge limitation for our users and a frequently requested feature.
 It's also a limitation for our SaaS runners offering. We've maintained to
 create some sort of auto-scaling for our SaaS Windows and SaaS MacOS runners
-hacking around Custom executor.  But experiences from past three years show
-that it's not the best way of doing this.  And yet, after this time, Windows
+hacking around Custom executor. But experiences from past three years show
+that it's not the best way of doing this. And yet, after this time, Windows
 and MacOS runners autoscaling lacks a lot of performance and feature support
 that we have with our SaaS Linux runners.
 
@@ -111,49 +121,6 @@ SaaS runners maintenance we need to design a new mechanism for GitLab Runner
 auto-scaling. It not only needs to support auto-scaling, but it also needs to
 do that in the way to enable us to build on top of it to improve efficiency,
 reliability and availability.
-
-### Design principles
-
-Knowing the above problems that exist with our existing auto-scaling mechanism, let's
-define few high-level principles that we should have in mind when designing
-next GitLab Runner Scaling architecture:
-
-1. New auto-scaling method should become a core component of GitLab Runner product.
-
-   We should be able to easily maintain it, use the same tooling, test configuration
-   and Go language setup as we do in our other main products.
-
-1. It should support multiple job execution environments - not only Docker containers
-   on Linux operating system.
-
-   The best design would be to bring auto-scaling as a feature added on top
-   of our current execution environments like Docker (on Linux and Windows)
-   or shell (on any OS platform where Runner is currently supported).
-
-1. It should provide a clear and well documented plugin interface.
-
-   This way our community will be able to provide integrations for less
-   popular cloud/environments providers or integrations that are supporting
-   specific workflows.
-
-   Boundaries of such pluggable interface are a thing to design. We should make
-   sure that core parts of job execution are left within Runner (so that
-   we can make sure they work properly) and customizable parts can be left
-   for the user to maintain.
-
-1. The auto-scaling mechanism design should allow us to add improvements that
-   were hard to do with our Docker Machine executor.
-
-   Examples of these are:
-
-    - supporting execution of more than one job at once on a single, ephemeral VM;
-    - simplify the configuration of auto-scaling.
-
-1. The auto-scaling mechanism should be fully owned by GitLab.
-
-   This way we can make sure that evolution of the mechanism goes in a direction
-   that works for our needs. Even if the mechanism itself could be extracted
-   and used for other projects.
 
 ## Proposal
 
@@ -339,9 +306,17 @@ abstraction.
 - Design the new auto-scaling architecture aiming for having more choices and
   flexibility in the future, instead of imposing new constraints.
 - Design the new auto-scaling architecture to experiment with running multiple
- jobs in parallel, on a single machine.
+  jobs in parallel, on a single machine.
 - Design the new provisioning architecture to replace Docker Machine in a way
   that the wider community can easily build on top of the new abstractions.
+- New auto-scaling method should become a core component of GitLab Runner product so that
+  we can simplify maintenance, use the same tooling, test configuration and Go language
+  setup as we do in our other main products.
+- It should support multiple job execution environments - not only Docker containers
+  on Linux operating system.
+
+    The best design would be to bring auto-scaling as a feature wrapped around
+    our current executors like Docker or Shell.
 
 #### Principles for the new plugin system
 
@@ -363,10 +338,14 @@ abstraction.
 - Favor gRPC communication between a plugin and GitLab Runner.
 - Make it possible to version communication interface and support many versions.
 - Make Go a primary language for writing plugins but accept other languages too.
-- Prefer a GitLab job-aware autoscaler to provider specific autoscalers. Cloud provider
-  autoscalers don't know which VM to delete when scaling down so they make sub-optimal
-  decisions. Rather than teaching all autoscalers about GitLab jobs, we prefer to
-  have one, GitLab-owned autoscaler (not in the plugin).
+- Autoscaling mechanism should be fully owned by GitLab.
+
+    Cloud provider autoscalers don't know which VM to delete when scaling down so
+    they make sub-optimal decisions. Rather than teaching all autoscalers about GitLab
+    jobs, we prefer to have one, GitLab-owned autoscaler (not in the plugin).
+
+    It will also ensure that we can shape the future of the mechanism and make decisions
+    that fit our needs and requirements.
 
 ## Plugin boundary proposals
 
@@ -443,7 +422,7 @@ Proposal:
 
 <!-- vale gitlab.Spelling = NO -->
 
-| Role                         | Who
+| Role                         | Who                                             |
 |------------------------------|-------------------------------------------------|
 | Authors                      | Grzegorz Bizon, Tomasz Maczukin, Joseph Burnett |
 | Architecture Evolution Coach | Kamil Trzciński                                 |
@@ -453,16 +432,16 @@ Proposal:
 
 DRIs:
 
-| Role                         | Who
-|------------------------------|------------------------|
-| Leadership                   | Elliot Rushton         |
-| Product                      | Darren Eastman         |
-| Engineering                  | Tomasz Maczukin        |
+| Role        | Who             |
+|-------------|-----------------|
+| Leadership  | Elliot Rushton  |
+| Product     | Darren Eastman  |
+| Engineering | Tomasz Maczukin |
 
 Domain experts:
 
-| Area                         | Who
-|------------------------------|------------------------|
-| Domain Expert / Runner       | Arran Walker           |
+| Area                   | Who          |
+|------------------------|--------------|
+| Domain Expert / Runner | Arran Walker |
 
 <!-- vale gitlab.Spelling = YES -->
