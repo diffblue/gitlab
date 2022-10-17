@@ -21,7 +21,7 @@ gem 'rotp', '~> 3.1.0'
 gem 'timecop', '~> 0.9.5'
 gem 'parallel', '~> 1.19'
 gem 'rainbow', '~> 3.0.0'
-gem 'rspec-parameterized', '~> 0.4.2'
+gem 'rspec-parameterized', '~> 0.5.2'
 gem 'octokit', '~> 5.6.1'
 gem "faraday-retry", "~> 2.0"
 gem 'webdrivers', '~> 5.2'
