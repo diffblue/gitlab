@@ -160,10 +160,6 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
 
     context 'updating maintenance mode setting' do
-      before do
-        stub_feature_flags(maintenance_mode: true)
-      end
-
       let(:settings) do
         {
           maintenance_mode: true,

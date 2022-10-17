@@ -271,10 +271,6 @@ RSpec.describe API::Settings, 'EE Settings' do
   end
 
   context 'maintenance mode' do
-    before do
-      stub_feature_flags(maintenance_mode: true)
-    end
-
     let(:settings) do
       {
         maintenance_mode: true,
