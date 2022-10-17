@@ -6,6 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import labelSearchQuery from '~/vue_shared/components/sidebar/labels_select_widget/graphql/project_labels.query.graphql';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
+import workItemLabelsSubscription from 'ee_else_ce/work_items/graphql/work_item_labels.subscription.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import WorkItemLabels from '~/work_items/components/work_item_labels.vue';
 import {
@@ -13,6 +14,7 @@ import {
   workItemQueryResponse,
   workItemResponseFactory,
   updateWorkItemMutationResponse,
+  workItemLabelsSubscriptionResponse,
 } from 'jest/work_items/mock_data';
 
 Vue.use(VueApollo);
@@ -30,6 +32,7 @@ describe('WorkItemLabels component', () => {
   const successUpdateWorkItemMutationHandler = jest
     .fn()
     .mockResolvedValue(updateWorkItemMutationResponse);
+  const subscriptionHandler = jest.fn().mockResolvedValue(workItemLabelsSubscriptionResponse);
 
   const createComponent = ({
     canUpdate = true,
@@ -41,6 +44,7 @@ describe('WorkItemLabels component', () => {
       [workItemQuery, workItemQueryHandler],
       [labelSearchQuery, searchQueryHandler],
       [updateWorkItemMutation, updateWorkItemMutationHandler],
+      [workItemLabelsSubscription, subscriptionHandler],
     ]);
 
     wrapper = mount(WorkItemLabels, {
