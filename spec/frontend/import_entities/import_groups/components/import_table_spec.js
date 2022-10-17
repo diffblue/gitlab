@@ -536,7 +536,7 @@ describe('import table', () => {
     await waitForPromises();
 
     expect(wrapper.getComponent(PaginationBar).props('storageKey')).toBe(
-      wrapper.vm.$options.LOCAL_STORAGE_KEY,
+      ImportTable.LOCAL_STORAGE_KEY,
     );
   });
 
