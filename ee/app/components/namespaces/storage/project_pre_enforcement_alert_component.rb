@@ -13,17 +13,34 @@ module Namespaces
       end
 
       def dismissed?
-        if root_namespace.user_namespace?
-          user.dismissed_callout_for_namespace?(
-            feature_name: callout_feature_name,
-            namespace: root_namespace
-          )
-        else
-          user.dismissed_callout_for_group?(
-            feature_name: callout_feature_name,
-            group: root_namespace
-          )
-        end
+        return super unless user_namespace?
+
+        # This callout is used when user A is viewing a project that belongs to a User B
+        # i.e. User B Namespace owns the project, and user A is a maintainer on given project
+        # We can't use Users::Callout because we'd dismiss user A Namespace alert
+        # So we rely on Users::ProjectCallout for proper dismissal without side effects
+        user.dismissed_callout_for_project?(
+          feature_name: callout_feature_name,
+          project: context
+        )
+      end
+
+      def extra_callout_data
+        return super unless user_namespace?
+
+        # In this context we rely on Users::ProjectCallout for proper dismissal without side effects
+        { project_id: context.id }
+      end
+
+      def dismiss_endpoint
+        return super unless user_namespace?
+
+        # In this context we rely on Users::ProjectCallout for proper dismissal without side effects
+        project_callouts_path
+      end
+
+      def user_namespace?
+        root_namespace.user_namespace?
       end
     end
   end
