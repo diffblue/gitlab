@@ -142,20 +142,40 @@ maintenance:
 disabled = true
 ```
 
-## How housekeeping handles pool repositories
+## Object pool repositories
 
-Housekeeping for pool repositories is handled differently from standard repositories. It is
-ultimately performed by the Gitaly RPC `FetchIntoObjectPool`.
+Object pool repositories are used by GitLab to deduplicate objects across forks
+of a repository. When creating the first fork, we:
 
-This is the current call stack by which it is invoked:
+1. Create an object pool repository that contains all objects of the repository
+   that is about to be forked.
+1. Link the repository to this new object pool via Git's altenates mechanism.
+1. Repack the repository so that it uses objects from the object pool. It thus
+   can drop its own copy of the objects.
 
-1. `Repositories::HousekeepingService#execute_gitlab_shell_gc`
-1. `Projects::GitGarbageCollectWorker#perform`
-1. `Projects::GitDeduplicationService#fetch_from_source`
-1. `ObjectPool#fetch`
-1. `ObjectPoolService#fetch`
-1. `Gitaly::FetchIntoObjectPoolRequest`
+Any forks of this repository can now link against the object pool and thus only
+have to keep objects that diverge from the primary repository.
 
-To manually invoke it from a [Rails console](operations/rails_console.md) if needed, you can call
-`project.pool_repository.object_pool.fetch`. This is a potentially long-running task, though Gitaly
-times out in about 8 hours.
+GitLab needs to perform special housekeeping operations in object pools:
+
+- Gitaly cannot ever delete unreachable objects from object pools because they
+  might be used by any of the forks that are connected to it.
+- Gitaly must keep all objects reachable due to the same reason. Object pools
+  thus maintain references to unreachable "dangling" objects so that they don't
+  ever get deleted.
+- GitLab must update object pools regularly to pull in new objects that have
+  been added in the primary repository. Otherwise, an object pool will become
+  increasingly inefficient at deduplicating objects.
+
+These housekeeping operations are performed by the specialized
+`FetchIntoObjectPool` RPC that handles all of these special tasks while also
+executing the regular housekeeping tasks we execute for normal Git
+repositories.
+
+Object pools are getting optimized automatically whenever the primary member is
+getting garbage collected. Therefore, the cadence can be configured using the
+same Git GC period in that project.
+
+If you need to manually invoke the RPC from a [Rails console](operations/rails_console.md),
+you can call `project.pool_repository.object_pool.fetch`. This is a potentially
+long-running task, though Gitaly times out after about 8 hours.
