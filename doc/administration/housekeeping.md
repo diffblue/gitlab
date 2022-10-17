@@ -20,7 +20,13 @@ Do not manually execute Git commands to perform housekeeping in Git
 repositories that are controlled by GitLab. Doing so may lead to corrupt
 repositories and data loss.
 
-## Configure housekeeping
+## Running housekeeping tasks
+
+There are different ways in which GitLab runs housekeeping tasks:
+
+- GitLab can automatically schedule housekeeping tasks [after a number of Git pushes](#push-based-trigger).
+
+### Push-based trigger
 
 GitLab automatically runs `git gc` and `git repack` on repositories after Git pushes:
 
@@ -28,21 +34,21 @@ GitLab automatically runs `git gc` and `git repack` on repositories after Git pu
   - Compressing Git objects to reduce disk space and increase performance.
   - Removing unreachable objects that may have been created from changes to the repository, like force-overwriting branches.
 - [`git repack`](https://git-scm.com/docs/git-repack) either:
-  - Runs an incremental repack, according to a [configured period](#housekeeping-options). This
+  - Runs an incremental repack, according to a [configured period](#configure-push-based-maintenance). This
     packs all loose objects into a new packfile and prunes the now-redundant loose objects.
-  - Runs a full repack, according to a [configured period](#housekeeping-options). This repacks all
+  - Runs a full repack, according to a [configured period](#configure-push-based-maintenance). This repacks all
     packfiles and loose objects into a single new packfile, and deletes the old now-redundant loose
     objects and packfiles. It also optionally creates bitmaps for the new packfile.
+
+#### Configure push-based maintenance
 
 You can change how often this happens or turn it off:
 
 1. On the top bar, select **Main menu > Admin**.
 1. On the left sidebar, select **Settings > Repository**.
 1. Expand **Repository maintenance**.
-1. In the **Housekeeping** section, configure the [housekeeping options](#housekeeping-options).
+1. In the **Housekeeping** section, configure the housekeeping options.
 1. Select **Save changes**.
-
-### Housekeeping options
 
 The following housekeeping options are available:
 
