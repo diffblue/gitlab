@@ -163,6 +163,7 @@ module GitlabSubscriptions
     ].freeze
 
     ULTIMATE_FEATURES = %i[
+      ai_assist
       api_fuzzing
       auto_rollback
       cluster_image_scanning
