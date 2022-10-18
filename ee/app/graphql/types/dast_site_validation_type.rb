@@ -15,5 +15,8 @@ module Types
 
     field :normalized_target_url, GraphQL::Types::String,
       null: true, method: :url_base, description: 'Normalized URL of the target to be validated.'
+
+    field :validation_started_at, Types::TimeType,
+          null: true, description: 'Timestamp of when the validation started.'
   end
 end

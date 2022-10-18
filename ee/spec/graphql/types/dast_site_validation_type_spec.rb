@@ -6,7 +6,7 @@ RSpec.describe GitlabSchema.types['DastSiteValidation'] do
   let_it_be(:dast_site_validation) { create(:dast_site_validation, state: :passed) }
   let_it_be(:project) { dast_site_validation.dast_site_token.project }
   let_it_be(:user) { create(:user) }
-  let_it_be(:fields) { %i[id status normalizedTargetUrl] }
+  let_it_be(:fields) { %i[id status normalizedTargetUrl validationStartedAt] }
 
   let(:response) do
     GitlabSchema.execute(
@@ -52,6 +52,12 @@ RSpec.describe GitlabSchema.types['DastSiteValidation'] do
       subject { response.dig('data', 'project', 'dastSiteValidations', 'edges', 0, 'node', 'status') }
 
       it { is_expected.to eq('PASSED_VALIDATION') }
+    end
+
+    describe 'validation_started_at field' do
+      subject { response.dig('data', 'project', 'dastSiteValidations', 'edges', 0, 'node', 'validation_started_at') }
+
+      it { is_expected.to eq(dast_site_validation.validation_started_at) }
     end
   end
 end
