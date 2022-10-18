@@ -20,6 +20,8 @@ module Gitlab
         Commit
       ].freeze
 
+      INDEXED_CLASSES = (ES_SEPARATE_CLASSES + [Repository]).freeze
+
       attr_reader :version, :client
       attr_accessor :target_name
 
@@ -129,7 +131,13 @@ module Gitlab
       end
 
       def standalone_indices_proxies(target_classes: nil)
-        classes = target_classes.presence || ES_SEPARATE_CLASSES
+        classes = if target_classes.present?
+                    # Only allow classes from ES_SEPARATE_CLASSES
+                    target_classes & ES_SEPARATE_CLASSES
+                  else
+                    ES_SEPARATE_CLASSES
+                  end
+
         classes.map do |class_name|
           ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
         end

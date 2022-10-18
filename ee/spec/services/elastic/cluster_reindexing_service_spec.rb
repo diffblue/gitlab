@@ -58,7 +58,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
 
       expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('indexing_paused').to('reindexing')
 
-      subtasks = task.subtasks
+      subtasks = task.subtasks.order(:index_name_to)
       expect(subtasks.count).to eq(2)
 
       slice_1 = subtasks.first.slices.first
@@ -74,6 +74,38 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
       expect(slice_2.elastic_max_slice).to eq(6)
       expect(slice_2.elastic_task).to eq('task_id_2')
       expect(slice_2.elastic_slice).to eq(5)
+    end
+
+    context 'when targets are provided' do
+      let(:task) { create(:elastic_reindexing_task, state: :indexing_paused, targets: targets) }
+
+      before do
+        allow(helper).to receive(:create_standalone_indices)
+                          .with(with_alias: false, options: { settings: described_class::INITIAL_INDEX_OPTIONS }, target_classes: task.target_classes)
+                          .and_return('new_issues_name' => 'new_issues')
+      end
+
+      context 'targets set to issue and repository' do
+        let(:targets) { %w[Issue Repository] }
+
+        it 'creates multiple indices' do
+          expect(helper).to receive(:create_empty_index).and_return('new_index_name' => 'new_index')
+          is_expected.to receive(:launch_subtasks).with('new_index_name' => 'new_index', 'new_issues_name' => 'new_issues')
+
+          cluster_reindexing_service.execute
+        end
+      end
+
+      context 'targets do not include repository' do
+        let(:targets) { %w[Issue] }
+
+        it 'does not create the main index' do
+          expect(helper).not_to receive(:create_empty_index)
+          is_expected.to receive(:launch_subtasks).with('new_issues_name' => 'new_issues')
+
+          cluster_reindexing_service.execute
+        end
+      end
     end
   end
 

@@ -14981,6 +14981,7 @@ CREATE TABLE elastic_reindexing_tasks (
     delete_original_index_at timestamp with time zone,
     max_slices_running smallint DEFAULT 60 NOT NULL,
     slice_multiplier smallint DEFAULT 2 NOT NULL,
+    targets text[],
     CONSTRAINT check_7f64acda8e CHECK ((char_length(error_message) <= 255))
 );
 
