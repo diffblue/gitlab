@@ -19529,12 +19529,6 @@ msgstr ""
 msgid "GroupsTree|Loading groups"
 msgstr ""
 
-msgid "GroupsTree|No groups matched your search"
-msgstr ""
-
-msgid "GroupsTree|No groups or projects matched your search"
-msgstr ""
-
 msgid "GroupsTree|Options"
 msgstr ""
 
