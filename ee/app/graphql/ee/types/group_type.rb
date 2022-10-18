@@ -127,6 +127,13 @@ module EE
               description: 'Indicates whether the group has limited users for a free plan.',
               method: :enforce_free_user_cap?
 
+        field :gitlab_subscriptions_preview_billable_user_change,
+              ::Types::GitlabSubscriptions::PreviewBillableUserChangeType,
+              null: true,
+              complexity: 100,
+              description: 'Preview Billable User Changes',
+              resolver: ::Resolvers::GitlabSubscriptions::PreviewBillableUserChangeResolver
+
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)
         end

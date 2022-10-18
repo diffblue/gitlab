@@ -220,6 +220,13 @@ module EE
               null: true,
               description: 'Indicates that merges of merge requests should be blocked ' \
                            'unless all status checks have passed.'
+
+        field :gitlab_subscriptions_preview_billable_user_change,
+              ::Types::GitlabSubscriptions::PreviewBillableUserChangeType,
+              null: true,
+              complexity: 100,
+              description: 'Preview Billable User Changes',
+              resolver: ::Resolvers::GitlabSubscriptions::PreviewBillableUserChangeResolver
       end
 
       def api_fuzzing_ci_configuration
