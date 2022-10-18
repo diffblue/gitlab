@@ -14,68 +14,10 @@ RSpec.describe SessionsController, :geo do
   end
 
   describe '#new' do
-    let_it_be(:primary_node) { create(:geo_node, :primary) }
-    let_it_be(:secondary_node) { create(:geo_node) }
-
-    context 'on a Geo primary node' do
-      before do
-        stub_current_geo_node(primary_node)
-      end
-
-      shared_examples_for 'it does not set a session variable' do
-        it 'does not set a session variable' do
-          get(:new)
-
-          expect(session[::Gitlab::Geo::SIGN_IN_VIA_GEO_SITE_ID]).to be_nil
-        end
-      end
-
-      context 'when feature flag geo_fix_redirect_after_saml_sign_in is enabled' do
-        context 'when the request was proxied via a Geo secondary node' do
-          before do
-            stub_proxied_site(secondary_node)
-          end
-
-          context 'when the secondary node does not use a Unified URL' do
-            it 'remembers the secondary node ID' do
-              get(:new)
-
-              expect(session[::Gitlab::Geo::SIGN_IN_VIA_GEO_SITE_ID]).to eq(secondary_node.id)
-            end
-          end
-
-          context 'when the secondary node uses a Unified URL' do
-            let(:secondary_node) { create(:geo_node, url: primary_node.url) }
-
-            it_behaves_like 'it does not set a session variable'
-          end
-        end
-
-        context 'when the request was not proxied via a Geo secondary node' do
-          before do
-            allow(::Gitlab::Geo).to receive(:proxied_site).and_return(nil)
-          end
-
-          it_behaves_like 'it does not set a session variable'
-        end
-      end
-
-      context 'when feature flag geo_fix_redirect_after_saml_sign_in is disabled' do
-        before do
-          stub_feature_flags(geo_fix_redirect_after_saml_sign_in: false)
-        end
-
-        context 'when the request was proxied via a Geo secondary node' do
-          before do
-            stub_proxied_site(secondary_node)
-          end
-
-          it_behaves_like 'it does not set a session variable'
-        end
-      end
-    end
-
     context 'on a Geo secondary node' do
+      let_it_be(:primary_node) { create(:geo_node, :primary) }
+      let_it_be(:secondary_node) { create(:geo_node) }
+
       before do
         stub_current_geo_node(secondary_node)
       end
