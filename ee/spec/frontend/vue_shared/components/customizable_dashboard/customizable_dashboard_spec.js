@@ -56,6 +56,8 @@ describe('CustomizableDashboard', () => {
 
   describe('when mounted', () => {
     beforeEach(() => {
+      loadCSSFile.mockResolvedValue();
+
       createWrapper({
         widgets,
       });
