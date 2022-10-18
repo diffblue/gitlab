@@ -51,21 +51,21 @@ export const mockPreviousApiResponse = Object.values(mockPreviousTimePeriod);
 export const mockComparativeTableData = [
   {
     change: '1070.59%',
-    current: '19.9/day',
+    current: '19.9/d',
     metric: 'Deployment Frequency',
-    previous: '1.7/day',
+    previous: '1.7/d',
   },
   {
     change: '-92%',
-    current: '0.2 days',
+    current: '0.2 d',
     metric: 'Lead Time for Changes',
-    previous: '2.5 days',
+    previous: '2.5 d',
   },
   {
     change: '-98.21%',
-    current: '0.4 days',
+    current: '0.4 d',
     metric: 'Time to Restore Service',
-    previous: '22.32 days',
+    previous: '22.32 d',
   },
   {
     change: '64.23%',

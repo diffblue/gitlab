@@ -29,8 +29,8 @@ describe('Analytics Dashboards utils', () => {
 
     it.each`
       identifier                 | value  | result
-      ${LEAD_TIME_FOR_CHANGES}   | ${0.2} | ${'0.2/d'}
-      ${TIME_TO_RESTORE_SERVICE} | ${0.4} | ${'0.4/d'}
+      ${LEAD_TIME_FOR_CHANGES}   | ${0.2} | ${'0.2 d'}
+      ${TIME_TO_RESTORE_SERVICE} | ${0.4} | ${'0.4 d'}
     `('formats $identifier with a space', ({ identifier, value, result }) => {
       expect(formatMetricString({ identifier, value, unit: 'days' })).toBe(result);
     });
@@ -73,13 +73,7 @@ describe('Analytics Dashboards utils', () => {
     });
 
     it('calculates the changes between the 2 time periods', () => {
-      const formattedValues = mockComparativeTableData.map(({ current, previous, ...rest }) => ({
-        ...rest,
-        current: current.replace(' days', '/d').replace('/day', '/d'),
-        previous: previous.replace(' days', '/d').replace('/day', '/d'),
-      }));
-
-      expect(res).toEqual(formattedValues);
+      expect(res).toEqual(mockComparativeTableData);
     });
   });
 

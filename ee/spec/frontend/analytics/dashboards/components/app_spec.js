@@ -27,7 +27,7 @@ describe('Executive dashboard app', () => {
     wrapper.destroy();
   });
 
-  describe('data', () => {
+  describe('data requests', () => {
     beforeEach(async () => {
       wrapper = await createComponent();
     });
@@ -59,9 +59,7 @@ describe('Executive dashboard app', () => {
 
   describe('no data', () => {
     beforeEach(async () => {
-      utils.fetchMetricsData
-        .mockImplementationOnce(() => Promise.resolve([]))
-        .mockImplementationOnce(() => Promise.resolve([]));
+      utils.fetchMetricsData.mockReturnValueOnce({});
 
       wrapper = await createComponent();
     });
@@ -71,11 +69,25 @@ describe('Executive dashboard app', () => {
     });
   });
 
-  describe('with data', () => {
+  describe('no previous data', () => {
+    beforeEach(async () => {
+      utils.fetchMetricsData.mockReturnValueOnce(mockCurrentApiResponse).mockReturnValueOnce([]);
+
+      wrapper = await createComponent();
+    });
+
+    it('calculates no % change for each DORA metric', async () => {
+      const momChange = getTableData().map(({ change }) => change);
+
+      expect(momChange).toEqual(['-', '-', '-', '-']);
+    });
+  });
+
+  describe('with current and previous data to compare', () => {
     beforeEach(async () => {
       utils.fetchMetricsData
-        .mockImplementationOnce(() => Promise.resolve(mockCurrentApiResponse))
-        .mockImplementationOnce(() => Promise.resolve(mockPreviousApiResponse));
+        .mockReturnValueOnce(mockCurrentApiResponse)
+        .mockReturnValueOnce(mockPreviousApiResponse);
 
       wrapper = await createComponent();
     });

@@ -1,6 +1,6 @@
 import { roundOffFloat } from '~/lib/utils/common_utils';
 import dateformat from '~/lib/dateformat';
-import { CHANGE_FAILURE_RATE } from 'ee/api/dora_api';
+import { CHANGE_FAILURE_RATE, DEPLOYMENT_FREQUENCY_METRIC_TYPE } from 'ee/api/dora_api';
 import { DORA_METRIC_IDENTIFIERS } from './constants';
 
 export const formatPercentChange = ({ current, previous, precision = 2 }) =>
@@ -9,7 +9,18 @@ export const formatPercentChange = ({ current, previous, precision = 2 }) =>
     : '-';
 
 export const formatMetricString = ({ identifier, value }) => {
-  const unit = identifier === CHANGE_FAILURE_RATE ? '%' : '/d';
+  let unit = '';
+  switch (identifier) {
+    case CHANGE_FAILURE_RATE:
+      unit = '%';
+      break;
+    case DEPLOYMENT_FREQUENCY_METRIC_TYPE:
+      unit = '/d';
+      break;
+    default:
+      unit = ' d';
+      break;
+  }
   return `${value}${unit}`;
 };
 
@@ -54,11 +65,15 @@ export const generateDoraTimePeriodComparisonTable = ({ current, previous }) => 
   return DORA_METRIC_IDENTIFIERS.map((identifier) => {
     const c = current[identifier];
     const p = previous[identifier];
+
+    const pValue = p ? p.value : '-';
+    const cValue = c ? c.value : '-';
+
     return {
       metric: c.label,
-      current: formatMetricString(c),
-      previous: formatMetricString(p),
-      change: formatPercentChange({ current: c.value, previous: p.value }),
+      current: c?.identifier ? formatMetricString(c) : '-',
+      previous: p?.identifier ? formatMetricString(p) : '-',
+      change: formatPercentChange({ current: cValue, previous: pValue }),
     };
   });
 };

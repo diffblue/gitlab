@@ -3,6 +3,7 @@ import { GlAlert, GlSkeletonLoader } from '@gitlab/ui';
 import { sprintf } from '~/locale';
 import { createAlert } from '~/flash';
 import { getDateInPast } from '~/lib/utils/datetime_utility';
+import { isNumeric } from '~/lib/utils/number_utils';
 import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import {
@@ -20,12 +21,9 @@ import {
 } from '../utils';
 import DoraComparisonTable from './dora_comparison_table.vue';
 
-export const DEFAULT_TODAY = new Date();
-export const DEFAULT_END_DATE = getDateInPast(DEFAULT_TODAY, COMPARISON_INTERVAL_IN_DAYS - 1);
-export const COMPARATIVE_START_DATE = getDateInPast(
-  DEFAULT_END_DATE,
-  COMPARISON_INTERVAL_IN_DAYS - 1,
-);
+const DEFAULT_TODAY = new Date();
+const DEFAULT_END_DATE = getDateInPast(DEFAULT_TODAY, COMPARISON_INTERVAL_IN_DAYS - 1);
+const COMPARATIVE_START_DATE = getDateInPast(DEFAULT_END_DATE, COMPARISON_INTERVAL_IN_DAYS - 1);
 
 const fetchComparativeDoraTimePeriods = async ({
   startDate,
@@ -45,8 +43,17 @@ const fetchComparativeDoraTimePeriods = async ({
   ];
 
   const [current, previous] = await Promise.all(promises);
-  return { current: extractDoraMetrics(current), previous: extractDoraMetrics(previous) };
+  return {
+    current: extractDoraMetrics(current),
+    previous: extractDoraMetrics(previous),
+  };
 };
+
+const hasDataInTimePeriod = (timePeriod) =>
+  Object.values(timePeriod).some(({ value }) => isNumeric(value) && Number(value) > 0);
+
+const hasAnyMetricValue = ({ current, previous }) =>
+  hasDataInTimePeriod(current) || hasDataInTimePeriod(previous);
 
 export default {
   name: 'DashboardsApp',
@@ -110,9 +117,13 @@ export default {
         requestPath: `groups/${this.groupFullPath}`,
       })
         .then((response) => {
-          this.data = generateDoraTimePeriodComparisonTable(response);
+          this.data = hasAnyMetricValue(response)
+            ? generateDoraTimePeriodComparisonTable(response)
+            : [];
         })
-        .catch(() => createAlert({ message: DASHBOARD_LOADING_FAILURE }))
+        .catch(() => {
+          createAlert({ message: DASHBOARD_LOADING_FAILURE });
+        })
         .finally(() => {
           this.loading = false;
         });
