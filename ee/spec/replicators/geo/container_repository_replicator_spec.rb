@@ -81,6 +81,14 @@ RSpec.describe Geo::ContainerRepositoryReplicator do
       end
     end
 
+    describe 'created event consumption' do
+      it 'calls update event consumer' do
+        expect(replicator).to receive(:consume_event_updated)
+
+        replicator.consume(:created)
+      end
+    end
+
     describe '#model' do
       let(:invoke_model) { replicator.class.model }
 
