@@ -21,8 +21,8 @@ module Vulnerabilities
     validates :uuid, uniqueness: { case_sensitive: false }, presence: true
 
     validates :location_image, length: { maximum: 2048 }
-    validates :has_issues, inclusion: { in: [true, false], message: _('must be a boolean value') }
-    validates :resolved_on_default_branch, inclusion: { in: [true, false], message: _('must be a boolean value') }
+    validates :has_issues, inclusion: { in: [true, false], message: N_('must be a boolean value') }
+    validates :resolved_on_default_branch, inclusion: { in: [true, false], message: N_('must be a boolean value') }
 
     enum state: ::Enums::Vulnerability.vulnerability_states
     enum report_type: ::Enums::Vulnerability.report_types

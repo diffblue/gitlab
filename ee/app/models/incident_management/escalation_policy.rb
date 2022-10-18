@@ -10,7 +10,7 @@ module IncidentManagement
     has_many :rules, class_name: 'EscalationRule', inverse_of: :policy, foreign_key: 'policy_id', index_errors: true
     has_many :active_rules, -> { not_removed.order(:elapsed_time_seconds, :status) }, class_name: 'EscalationRule', inverse_of: :policy, foreign_key: 'policy_id'
 
-    validates :project_id, uniqueness: { message: _('can only have one escalation policy') }, on: :create
+    validates :project_id, uniqueness: { message: N_('can only have one escalation policy') }, on: :create
     validates :name, presence: true, uniqueness: { scope: [:project_id] }, length: { maximum: 72 }
     validates :description, length: { maximum: 160 }
 

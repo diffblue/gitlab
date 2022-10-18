@@ -28,7 +28,7 @@ module Dast
     validates :masked, inclusion: { in: [true] }
     validates :variable_type, inclusion: { in: ['env_var'] }
 
-    validates :key, uniqueness: { scope: :dast_site_profile_id, message: _('(%{value}) has already been taken') }
+    validates :key, uniqueness: { scope: :dast_site_profile_id, message: N_('(%{value}) has already been taken') }
 
     # Since user input is base64 encoded before being encrypted, we must validate against the encoded length
     MAX_VALUE_LENGTH = 10_000
