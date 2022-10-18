@@ -12,8 +12,11 @@ milestone: '13.11'
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56891
 time_frame: 7d
 data_source: redis_hll
-instrumentation_class: RedisHLLMetric
+instrumentation_class: AggregatedMetric
 options:
+  aggregate:
+    operator: OR
+    attribute: user_id
   events:
     - g_project_management_epic_created
     - project_management_users_unchecking_epic_task
