@@ -415,6 +415,73 @@ RSpec.describe Projects::CreateService, '#execute' do
     end
   end
 
+  describe 'after create actions' do
+    describe 'set_default_compliance_framework' do
+      let_it_be(:group, reload: true) { create(:group) }
+      let_it_be(:framework) { create(:compliance_framework, namespace: group, name: 'GDPR') }
+      let_it_be(:framework_two) { create(:compliance_framework, namespace: group, name: 'HIPAA') }
+
+      context 'when default compliance framework is set at the root namespace' do
+        before do
+          group.add_owner(user)
+          group.namespace_settings.update!(default_compliance_framework_id: framework.id)
+        end
+
+        it 'sets the default compliance framework for new projects when licensed', :sidekiq_inline do
+          stub_licensed_features(custom_compliance_frameworks: true, compliance_framework: true)
+
+          expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).to receive(:perform_async).with(
+            user.id,
+            anything,
+            framework.id
+          ).and_call_original
+
+          project = create_project(user, { name: "GitLab", namespace_id: group.id })
+
+          expect(project.compliance_management_framework.id).to eq(framework.id)
+          expect(project.compliance_management_framework.name).to eq('GDPR')
+        end
+
+        it 'does not set the default compliance framework for new projects when not licensed' do
+          expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
+
+          project = create_project(user, { name: "GitLab", namespace_id: group.id })
+
+          expect(project.compliance_framework_setting).to eq(nil)
+        end
+      end
+
+      context 'when default compliance framework is not set at the root namespace' do
+        before do
+          group.add_owner(user)
+          group.namespace_settings.update!(default_compliance_framework_id: nil)
+        end
+
+        it 'does not set the default compliance framework for new projects' do
+          stub_licensed_features(custom_compliance_frameworks: true, compliance_framework: true)
+
+          expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
+
+          project = create_project(user, { name: "GitLab", namespace_id: group.id })
+
+          expect(project.compliance_framework_setting).to eq(nil)
+        end
+      end
+
+      context 'when project belongs to a user namespace' do
+        it 'does not set the default compliance framework for new projects' do
+          stub_licensed_features(custom_compliance_frameworks: true, compliance_framework: true)
+
+          expect(::ComplianceManagement::UpdateDefaultFrameworkWorker).not_to receive(:perform_async)
+
+          project = create_project(user, opts)
+
+          expect(project.compliance_framework_setting).to eq(nil)
+        end
+      end
+    end
+  end
+
   def create_project(user, opts)
     described_class.new(user, opts).execute
   end

@@ -64,6 +64,7 @@ module EE
         end
 
         create_predefined_push_rule
+        set_default_compliance_framework
       end
 
       def create_security_policy_configuration_if_exists
@@ -97,6 +98,22 @@ module EE
           project.push_rule = push_rule
           project.project_setting.update(push_rule: push_rule)
         end
+      end
+
+      def set_default_compliance_framework
+        return unless project.group
+
+        return unless project.licensed_feature_available?(:custom_compliance_frameworks)
+
+        default_compliance_framework_id = project.root_namespace.namespace_settings.default_compliance_framework_id
+
+        return if default_compliance_framework_id.blank?
+
+        ::ComplianceManagement::UpdateDefaultFrameworkWorker.perform_async(
+          current_user.id,
+          project.id,
+          default_compliance_framework_id
+        )
       end
 
       def group_push_rule_available?
