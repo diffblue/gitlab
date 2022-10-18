@@ -39,7 +39,6 @@ module EE
 
         USAGE_THRESHOLDS = {
           none: 0.0,
-          info: 0.5,
           warning: 0.75,
           alert: 0.95,
           error: 1.0
