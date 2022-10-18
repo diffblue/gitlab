@@ -82,9 +82,10 @@ You can set pending or running pipelines to cancel automatically when a new pipe
 Use the [`interruptible`](../yaml/index.md#interruptible) keyword to indicate if a
 running job can be cancelled before it completes.
 
-## Skip outdated deployment jobs
+## Prevent outdated deployment jobs
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/25276) in GitLab 12.9.
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/25276) in GitLab 12.9.
+> - In GitLab 15.5, the behavior was [changed](https://gitlab.com/gitlab-org/gitlab/-/issues/363328) to prevent outdated job runs.
 
 Your project may have multiple concurrent deployment jobs that are
 scheduled to run in the same time frame.
@@ -97,17 +98,20 @@ To avoid this scenario:
 1. On the top bar, select **Main menu > Projects** and find your project.
 1. On the left sidebar, select **Settings > CI/CD**.
 1. Expand **General pipelines**.
-1. Select the **Skip outdated deployment jobs** checkbox.
+1. Select the **Prevent outdated deployment jobs** checkbox.
 1. Select **Save changes**.
 
-When a new deployment starts, older deployment jobs are skipped. Skipped jobs are labeled:
+When an older deployment job starts, it fails and is labeled:
 
-- `forward deployment failure` in the pipeline view.
-- `The deployment job is older than the previously succeeded deployment job, and therefore cannot be run`
+- `failed outdated deployment job` in the pipeline view.
+- `The deployment job is older than the latest deployment, and therefore failed.`
   when viewing the completed job.
 
+When an older deployment job is manual, the play button is disabled with a message
+`This deployment job does not run automatically and must be started manually, but it's older than the latest deployment, and therefore can't run.`.
+
 Job age is determined by the job start time, not the commit time, so a newer commit
-can be skipped in some circumstances.
+can be prevented in some circumstances.
 
 For more information, see [Deployment safety](../environments/deployment_safety.md).
 

@@ -30704,6 +30704,9 @@ msgstr ""
 msgid "Prevent environment from auto-stopping"
 msgstr ""
 
+msgid "Prevent outdated deployment jobs"
+msgstr ""
+
 msgid "Prevent project forking outside current group"
 msgstr ""
 
@@ -37772,9 +37775,6 @@ msgid "Size Limits"
 msgstr ""
 
 msgid "Size limit per repository (MB)"
-msgstr ""
-
-msgid "Skip outdated deployment jobs"
 msgstr ""
 
 msgid "Skipped"
@@ -45466,7 +45466,7 @@ msgstr ""
 msgid "What's new"
 msgstr ""
 
-msgid "When a deployment job is successful, skip older deployment jobs that are still pending."
+msgid "When a deployment job is successful, prevent older deployment jobs that are still pending."
 msgstr ""
 
 msgid "When a runner is locked, it cannot be assigned to other projects"
