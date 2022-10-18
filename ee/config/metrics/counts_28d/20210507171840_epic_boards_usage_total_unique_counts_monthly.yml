@@ -11,8 +11,11 @@ status: active
 milestone: '13.12'
 time_frame: 28d
 data_source: redis_hll
-instrumentation_class: RedisHLLMetric
+instrumentation_class: AggregatedMetric
 options:
+  aggregate:
+    operator: OR
+    attribute: user_id
   events:
   - g_project_management_users_creating_epic_boards
   - g_project_management_users_viewing_epic_boards
