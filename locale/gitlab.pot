@@ -24045,9 +24045,6 @@ msgstr ""
 msgid "Leave zen mode"
 msgstr ""
 
-msgid "Leaving this setting enabled is recommended."
-msgstr ""
-
 msgid "Legacy burndown chart"
 msgstr ""
 
@@ -34755,6 +34752,9 @@ msgid "Run CI/CD pipelines with Jenkins."
 msgstr ""
 
 msgid "Run housekeeping"
+msgstr ""
+
+msgid "Run housekeeping tasks to automatically optimize Git repositories. Disabling this option will cause performance to degenerate over time."
 msgstr ""
 
 msgid "Run manual or delayed jobs"
