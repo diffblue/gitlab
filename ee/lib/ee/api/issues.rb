@@ -32,7 +32,7 @@ module EE
               success Entities::IssuableMetricImage
             end
             params do
-              requires :file, type: ::API::Validations::Types::WorkhorseFile, desc: 'The image file to be uploaded'
+              requires :file, type: ::API::Validations::Types::WorkhorseFile, desc: 'The image file to be uploaded', documentation: { type: 'file' }
               optional :url, type: String, desc: 'The url to view more metric info'
               optional :url_text, type: String, desc: 'A description of the image or URL'
             end
