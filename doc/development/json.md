@@ -1,0 +1,43 @@
+---
+stage: none
+group: unassigned
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments
+---
+
+# JSON Guidelines
+
+At GitLab we handle a lot of JSON data. To best ensure we remain performant
+when handling large JSON encodes or decodes, we use our own JSON class
+instead of the default methods
+
+## `Gitlab::Json`
+
+This class should be used in place of any calls to the default `JSON` class,
+`.to_json` calls, and the like. It implements the majority of the public
+methods provided by `JSON`, such as `.parse`, `.generate`, `.dump`, etc, and
+should be entirely identical in its response.
+
+The difference being that by sending all JSON handling through `Gitlab::Json`
+we can change the gem being used in the background. Currently, we use `oj`
+instead of the `json` gem, which uses C extensions and is therefore notably
+faster.
+
+This class came into existence because, due to the age of the GitLab application,
+it was proving impossible to just replace the `json` gem with `oj` by default
+due to the number of tests that have exact expectations of the responses,
+and there is a subtle variance between different JSON processors, particularly
+around formatting. The `Gitlab::Json` class takes this into account and can
+vary the adapter based on the use-case, as well as account for outdated
+expectations of formatting.
+
+## `Gitlab::Json::PrecompiledJson`
+
+This class is used by our hooks into the Grape framework to ensure that
+JSON that has already been generated is not then run through JSON generation
+a second time when returning the response.
+
+## `Gitlab::Json::LimitedEncoder`
+
+This class can be used to generate JSON but fail with an error if the
+resulting JSON would be too large. The default limit for the `.encode`
+method is 25MB but this can be customised when using the method.
