@@ -14,11 +14,9 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
   end
 
   describe 'maintenance mode' do
-    let(:maintenance_mode_flag) { true }
     let(:license_allows) { true }
 
     before do
-      stub_feature_flags(maintenance_mode: maintenance_mode_flag)
       allow(Gitlab::Geo).to receive(:license_allows?).and_return(license_allows)
 
       render
