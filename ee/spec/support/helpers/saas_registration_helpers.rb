@@ -15,8 +15,9 @@ module SaasRegistrationHelpers
 
     fill_in 'Password', with: new_password
 
-    click_button 'Sign in'
     wait_for_all_requests
+
+    click_button 'Sign in'
   end
 
   def expect_to_see_account_confirmation_page
