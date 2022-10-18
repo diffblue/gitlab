@@ -4,15 +4,24 @@ import { siteProfiles } from 'ee_jest/security_configuration/dast_profiles/mocks
 
 const [profile] = siteProfiles;
 
+const scanMethodOption = {
+  scanMethod: 'OPENAPI',
+  scanFilePath: 'https://example.com',
+};
+
 describe('DastScannerProfileSummary', () => {
   let wrapper;
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMount(App, {
       propsData: {
-        profile,
+        profile: {
+          ...profile,
+          ...scanMethodOption,
+        },
         ...props,
       },
+      provide: { glFeatures: { dastApiScanner: true } },
     });
   };
 
