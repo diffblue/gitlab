@@ -242,7 +242,7 @@ export default {
 <template>
   <gl-form-group
     v-if="hasIterationsFeature"
-    class="work-item-iteration"
+    class="work-item-dropdown"
     :label="$options.i18n.ITERATION"
     label-class="gl-pb-0! gl-overflow-wrap-break gl-mt-3"
     label-cols="3"
