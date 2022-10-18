@@ -45,6 +45,15 @@ RSpec.describe 'groups/settings/_remove.html.haml' do
       expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
     end
 
+    it 'enables the Remove group button for group with a trial plan', :saas do
+      create(:gitlab_subscription, :ultimate_trial, trial: true, namespace: group)
+      render 'groups/settings/remove', group: group
+
+      expect(rendered).to have_selector '[data-button-testid="remove-group-button"]'
+      expect(rendered).not_to match 'data-disabled="true"'
+      expect(rendered).not_to have_selector '[data-testid="group-has-linked-subscription-alert"]'
+    end
+
     context 'when delayed deletes are enabled' do
       before do
         stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)

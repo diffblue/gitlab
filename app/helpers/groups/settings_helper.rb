@@ -9,7 +9,7 @@ module Groups
         remove_form_id: remove_form_id,
         button_text: _('Remove group'),
         button_testid: 'remove-group-button',
-        disabled: group.paid?.to_s,
+        disabled: (group.paid? && !group.trial?).to_s,
         confirm_danger_message: remove_group_message(group),
         phrase: group.full_path
       }

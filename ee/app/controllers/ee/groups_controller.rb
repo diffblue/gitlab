@@ -73,7 +73,7 @@ module EE
     private
 
     def check_subscription!
-      if group.paid?
+      if group.paid? && !group.trial?
         redirect_to edit_group_path(group),
           status: :found,
           alert: _('This group is linked to a subscription')

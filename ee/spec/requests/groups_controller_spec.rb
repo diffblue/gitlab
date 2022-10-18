@@ -391,5 +391,33 @@ RSpec.describe GroupsController, type: :request do
         expect(response).to redirect_to(root_path)
       end
     end
+
+    context 'delayed deletion feature is enabled' do
+     before do
+      stub_licensed_features(adjourned_deletion_for_projects_and_groups: true)
+     end
+
+     it 'Deletes a group with trial plan', :saas do
+      create(:gitlab_subscription, :ultimate_trial, trial: true, namespace: group)
+
+      Sidekiq::Testing.fake! do
+        expect { delete(group_path(group)) }.to change { group.reload.marked_for_deletion? }.from(false).to(true)
+      end
+     end
+    end
+
+    context 'delayed deletion feature is disabled' do
+     before do
+      stub_licensed_features(adjourned_deletion_for_projects_and_groups: false)
+     end
+
+     it 'immediately schedules a group destroy', :saas do
+      create(:gitlab_subscription, :ultimate_trial, trial: true, namespace: group)
+
+      Sidekiq::Testing.fake! do
+       expect { delete(group_path(group)) }.to change(GroupDestroyWorker.jobs, :size).by(1)
+      end
+     end
+    end
   end
 end
