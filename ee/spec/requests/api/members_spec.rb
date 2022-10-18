@@ -502,23 +502,52 @@ RSpec.describe API::Members do
           end
         end
 
-        context 'when sorting users with same last_activity_on' do
-          let(:sort_group) { create :group }
-          let(:user1) { create(:user, last_activity_on: Date.today) }
-          let(:users) { create_list(:user, 4, last_activity_on: Date.today) }
-          let(:params) { { sort: 'last_activity_on_desc', per_page: 1, page: 2 } }
-          let(:url) { "/groups/#{sort_group.id}/billable_members" }
-          let(:owner) { user1 }
+        context 'when sorting users' do
+          let_it_be(:sort_group) { create :group }
+          let_it_be(:last_activity_on_date) { Date.today - 1.day }
+          let_it_be(:user1) { create(:user, last_activity_on: Date.today, current_sign_in_at: DateTime.now - 4.days) }
+          let_it_be(:user2) { create(:user, last_activity_on: last_activity_on_date, current_sign_in_at: DateTime.now - 3.days) }
+          let_it_be(:user3) { create(:user, last_activity_on: last_activity_on_date, current_sign_in_at: DateTime.now - 2.days) }
+          let_it_be(:user4) { create(:user, last_activity_on: last_activity_on_date, current_sign_in_at: DateTime.now - 1.day) }
+
+          let_it_be(:url) { "/groups/#{sort_group.id}/billable_members" }
+          let_it_be(:owner) { user1 }
 
           before do
             sort_group.add_owner(user1)
-            users.each { |user| sort_group.add_developer(user) }
+            [user2, user3, user4].each { |user| sort_group.add_developer(user) }
           end
 
-          it 'returns paginated users in deterministic order to avoid duplicates and flaky behavior' do
-            get_billable_members
+          context 'with sort param last_activity_on_desc' do
+            let(:params) { { sort: 'last_activity_on_desc', per_page: 1, page: 2 } }
 
-            expect_paginated_array_response(users[0].id)
+            it 'returns paginated users in deterministic order to avoid duplicates and flaky behavior' do
+              get_billable_members
+
+              expect_paginated_array_response(user2.id)
+            end
+          end
+
+          context 'with sort param recent_sign_in' do
+            let(:params) { { sort: 'recent_sign_in', per_page: 5, page: 1 } }
+
+            it 'returns paginated users sorted by last_login_at in desc order' do
+              get_billable_members
+
+              expect(Time.parse(json_response[0]["last_login_at"])).to be_like_time(user4.current_sign_in_at)
+              expect_paginated_array_response(user4.id, user3.id, user2.id, user1.id)
+            end
+          end
+
+          context 'with sort param oldest_sign_in' do
+            let(:params) { { sort: 'oldest_sign_in', per_page: 5, page: 1 } }
+
+            it 'returns paginated users sorted by last_login_at in asc order' do
+              get_billable_members
+
+              expect(Time.parse(json_response[0]["last_login_at"])).to be_like_time(user1.current_sign_in_at)
+              expect_paginated_array_response(user1.id, user2.id, user3.id, user4.id)
+            end
           end
         end
       end

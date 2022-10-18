@@ -10,6 +10,7 @@ module EE
         expose :removable
         expose :created_at
         expose :last_owner?, as: :is_last_owner
+        expose :current_sign_in_at, as: :last_login_at
 
         private
 

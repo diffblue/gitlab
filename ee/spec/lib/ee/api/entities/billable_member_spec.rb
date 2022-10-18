@@ -3,9 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe ::EE::API::Entities::BillableMember do
-  let_it_be(:last_activity_on) { Date.today }
+  let_it_be(:last_activity_on) { Date.today - 1.day }
+  let_it_be(:current_sign_in_at) { DateTime.now - 2.days }
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:user, last_activity_on: last_activity_on) }
+  let_it_be(:user) { create(:user, last_activity_on: last_activity_on, current_sign_in_at: current_sign_in_at) }
   let_it_be(:member) { create(:group_member, :owner, user: user, group: group) }
 
   let(:options) do
@@ -23,6 +24,10 @@ RSpec.describe ::EE::API::Entities::BillableMember do
 
   it 'returns the last_activity_on attribute' do
     expect(entity_representation[:last_activity_on]).to eq last_activity_on
+  end
+
+  it 'exposes the last_login_at field' do
+    expect(entity_representation[:last_login_at]).to eq current_sign_in_at
   end
 
   it 'exposes the created_at field' do
