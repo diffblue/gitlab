@@ -1253,6 +1253,9 @@ msgstr ""
 msgid "'%{template_name}' is unknown or invalid"
 msgstr ""
 
+msgid "'%{value}' days of inactivity must be greater than or equal to 90"
+msgstr ""
+
 msgid "(%d closed)"
 msgid_plural "(%d closed)"
 msgstr[0] ""
@@ -12563,6 +12566,9 @@ msgid "DayTitle|W"
 msgstr ""
 
 msgid "Days"
+msgstr ""
+
+msgid "Days of inactivity before deactivation"
 msgstr ""
 
 msgid "Days to merge"
@@ -26426,6 +26432,9 @@ msgstr ""
 msgid "Multiplier to apply to polling intervals. Decimal values are supported. Defaults to 1."
 msgstr ""
 
+msgid "Must be 90 days or more."
+msgstr ""
+
 msgid "My awesome group"
 msgstr ""
 
@@ -29352,12 +29361,6 @@ msgid "PerformanceBar|wall"
 msgstr ""
 
 msgid "Period in seconds"
-msgstr ""
-
-msgid "Period of inactivity (days)"
-msgstr ""
-
-msgid "Period of inactivity before deactivation."
 msgstr ""
 
 msgid "Permalink"
