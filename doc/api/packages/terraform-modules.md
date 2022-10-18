@@ -25,7 +25,7 @@ GET packages/terraform/modules/v1/:module_namespace/:module_name/:module_system/
 
 | Attribute | Type | Required | Description |
 | --------- | ---- | -------- | ----------- |
-| `module_namespace` | string | yes | The group to which Terraform module's project belongs. |
+| `module_namespace` | string | yes | The top-level group (namespace) to which Terraform module's project or subgroup belongs.|
 | `module_name` | string | yes | The module name. |
 | `module_system` | string | yes | The name of the module system or [provider](https://www.terraform.io/registry/providers). |
 
