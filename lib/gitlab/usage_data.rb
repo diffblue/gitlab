@@ -621,16 +621,6 @@ module Gitlab
         { redis_hll_counters: ::Gitlab::UsageDataCounters::HLLRedisCounter.unique_events_data }
       end
 
-      def aggregated_metrics_data
-        {
-          counts_weekly: { aggregated_metrics: aggregated_metrics.weekly_data },
-          counts_monthly: { aggregated_metrics: aggregated_metrics.monthly_data },
-          counts: aggregated_metrics
-                    .all_time_data
-                    .to_h { |key, value| ["aggregate_#{key}".to_sym, value.round] }
-        }
-      end
-
       def action_monthly_active_users(time_period)
         date_range = { date_from: time_period[:created_at].first, date_to: time_period[:created_at].last }
 
@@ -677,7 +667,6 @@ module Gitlab
           .merge(usage_activity_by_stage)
           .merge(usage_activity_by_stage(:usage_activity_by_stage_monthly, monthly_time_range_db_params))
           .merge(redis_hll_counters)
-          .deep_merge(aggregated_metrics_data)
       end
 
       def metric_time_period(time_period)
