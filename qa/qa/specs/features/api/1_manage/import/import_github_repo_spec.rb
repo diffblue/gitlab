@@ -50,6 +50,7 @@ module QA
           verify_milestones_import
           verify_wikis_import
           verify_merge_requests_import
+          verify_release_import
         end
       end
 
@@ -159,6 +160,19 @@ module QA
             "*Created by: gitlab-qa-github*\n\n```suggestion:-0+0\nProject for GitHub import test to GitLab\r\n```",
             "*Created by: gitlab-qa-github*\n\nSome test PR comment"
           ]
+        )
+      end
+
+      def verify_release_import
+        releases = imported_project.releases
+
+        expect(releases.length).to eq(1)
+        expect(releases.first).to include(
+          tag_name: "0.0.1",
+          name: "0.0.1",
+          description: "Initial release",
+          created_at: "2022-03-07T07:59:22.000Z",
+          released_at: "2022-03-07T08:02:09.000Z"
         )
       end
     end
