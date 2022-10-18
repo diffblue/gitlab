@@ -57,4 +57,18 @@ RSpec.describe Elastic::ReindexingTask, type: :model do
       end
     end
   end
+
+  describe '#target_classes' do
+    let(:task) { described_class.new }
+
+    it 'returns custom classes' do
+      task.targets = %w[Issue Repository]
+
+      expect(task.target_classes).to match_array([Issue, Repository])
+    end
+
+    it 'returns all classes when targets are empty' do
+      expect(task.target_classes).to eq(::Gitlab::Elastic::Helper::INDEXED_CLASSES)
+    end
+  end
 end

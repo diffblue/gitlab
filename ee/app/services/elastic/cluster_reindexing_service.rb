@@ -72,11 +72,34 @@ module Elastic
     end
 
     def indexing_paused!
-      # Create indices with custom settings
-      main_index = elastic_helper.create_empty_index(with_alias: false, options: { settings: INITIAL_INDEX_OPTIONS })
-      standalone_indices = elastic_helper.create_standalone_indices(with_alias: false, options: { settings: INITIAL_INDEX_OPTIONS })
+      target_classes = current_task.target_classes
 
-      main_index.merge(standalone_indices).each do |new_index_name, alias_name|
+      # Create indices with custom settings
+      items_to_reindex = elastic_helper.create_standalone_indices(
+        with_alias: false,
+        options: { settings: INITIAL_INDEX_OPTIONS },
+        target_classes: target_classes
+      )
+
+      # Repository is a marker class for the main index
+      if target_classes.include?(Repository)
+        items_to_reindex.merge!(
+          elastic_helper.create_empty_index(
+            with_alias: false,
+            options: { settings: INITIAL_INDEX_OPTIONS }
+          )
+        )
+      end
+
+      launch_subtasks(items_to_reindex)
+
+      current_task.update!(state: :reindexing)
+
+      true
+    end
+
+    def launch_subtasks(items_to_reindex)
+      items_to_reindex.each do |new_index_name, alias_name|
         old_index_name = elastic_helper.target_index_name(target: alias_name)
         # Record documents count
         documents_count = elastic_helper.documents_count(index_name: old_index_name)
@@ -98,9 +121,6 @@ module Elastic
       end
 
       trigger_reindexing_slices
-      current_task.update!(state: :reindexing)
-
-      true
     end
 
     def save_documents_count!(refresh:)

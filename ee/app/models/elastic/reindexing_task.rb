@@ -39,6 +39,12 @@ class Elastic::ReindexingTask < ApplicationRecord
     end
   end
 
+  def target_classes
+    return ::Gitlab::Elastic::Helper::INDEXED_CLASSES if targets.blank?
+
+    targets.map(&:constantize)
+  end
+
   private
 
   def set_in_progress_flag
