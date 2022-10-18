@@ -92,7 +92,7 @@ class Dashboard::ProjectsController < Dashboard::ApplicationController
 
   def load_events
     projects = ProjectsFinder
-                .new(params: params.merge(non_public: true), current_user: current_user)
+                .new(params: params.merge(non_public: true, not_aimed_for_deletion: true), current_user: current_user)
                 .execute
 
     @events = EventCollection
