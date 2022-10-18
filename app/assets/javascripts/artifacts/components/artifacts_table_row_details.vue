@@ -33,7 +33,15 @@ export default {
       deletingArtifactId: null,
     };
   },
+  computed: {
+    scrollContainerStyle() {
+      return { maxHeight: `${4 * (ROW_HEIGHT + 1)}px` };
+    },
+  },
   methods: {
+    isLastRow(index) {
+      return index === this.artifacts.nodes.length - 1;
+    },
     destroyArtifact(id) {
       this.deletingArtifactId = id;
       this.$apollo
@@ -59,23 +67,16 @@ export default {
 };
 </script>
 <template>
-  <div :style="`max-height: ${4 * ($options.ROW_HEIGHT + 1)}px`">
+  <div :style="scrollContainerStyle">
     <dynamic-scroller :items="artifacts.nodes" :min-item-size="$options.ROW_HEIGHT">
       <template #default="{ item, index, active }">
         <dynamic-scroller-item :item="item" :active="active" :class="{ active }">
-          <div
-            :class="{
-              'gl-border-b-solid gl-border-b-1 gl-border-gray-100':
-                index !== artifacts.nodes.length - 1,
-            }"
-            class="gl-py-4"
-          >
-            <artifact-row
-              :artifact="item"
-              :is-loading="item.id === deletingArtifactId"
-              @delete="destroyArtifact(item.id)"
-            />
-          </div>
+          <artifact-row
+            :artifact="item"
+            :is-last-row="isLastRow(index)"
+            :is-loading="item.id === deletingArtifactId"
+            @delete="destroyArtifact(item.id)"
+          />
         </dynamic-scroller-item>
       </template>
     </dynamic-scroller>

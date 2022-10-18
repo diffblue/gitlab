@@ -21,6 +21,7 @@ describe('ArtifactRow component', () => {
       propsData: {
         artifact,
         isLoading: false,
+        isLastRow: false,
       },
       stubs: { GlBadge, GlButton },
     });
