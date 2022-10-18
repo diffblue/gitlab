@@ -1115,7 +1115,12 @@ RSpec.describe Namespace do
 
     context 'when no security report feature is available' do
       before do
-        stub_feature_flags(store_security_reports: true)
+        security_features = [
+          :sast, :secret_detection, :dast, :dependency_scanning, :container_scanning,
+          :cluster_image_scanning, :coverage_fuzzing, :api_fuzzing
+        ]
+
+        stub_licensed_features(security_features.index_with { false })
       end
 
       it { is_expected.to be false }
