@@ -27,7 +27,7 @@ const mockRules = [
   {
     type: 'schedule',
     cadence: '* */20 4 * *',
-    clusters: { protect: { namespaces: ['default-cluster'] } },
+    agents: { protect: { namespaces: ['default-cluster'] } },
   },
   { type: 'pipeline' },
 ];
