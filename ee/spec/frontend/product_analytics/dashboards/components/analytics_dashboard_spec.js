@@ -1,18 +1,16 @@
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
+import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
+import { widgets } from 'ee_jest/vue_shared/components/customizable_dashboard/mock_data';
 
-describe('ee/product_analytics/dashboards/components/analytics_dashboard.vue', () => {
+describe('AnalyticsDashboard', () => {
   let wrapper;
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   const createWrapper = (data = {}) => {
-    wrapper = mountExtended(AnalyticsDashboard, {
+    wrapper = shallowMountExtended(AnalyticsDashboard, {
       data() {
         return {
-          dashboard: {},
+          widgets: [],
           ...data,
         };
       },
@@ -21,11 +19,16 @@ describe('ee/product_analytics/dashboards/components/analytics_dashboard.vue', (
 
   describe('when mounted', () => {
     beforeEach(() => {
-      createWrapper();
+      createWrapper({
+        widgets,
+      });
     });
 
     it('should render', () => {
-      expect(wrapper.exists()).toBe(true);
+      expect(wrapper.findComponent(CustomizableDashboard).props()).toStrictEqual({
+        widgets,
+        editable: false,
+      });
     });
   });
 });
