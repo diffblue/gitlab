@@ -1291,6 +1291,9 @@ msgstr ""
 msgid "(max size 15 MB)"
 msgstr ""
 
+msgid "(no user)"
+msgstr ""
+
 msgid "(optional)"
 msgstr ""
 
