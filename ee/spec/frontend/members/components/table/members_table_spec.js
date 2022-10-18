@@ -2,7 +2,12 @@ import { within } from '@testing-library/dom';
 import { mount, createWrapper } from '@vue/test-utils';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import { member as memberMock, directMember, members } from 'jest/members/mock_data';
+import {
+  member as memberMock,
+  directMember,
+  members,
+  bannedMember,
+} from 'ee_else_ce_jest/members/mock_data';
 import MembersTable from '~/members/components/table/members_table.vue';
 import { MEMBER_TYPES } from '~/members/constants';
 
@@ -72,15 +77,23 @@ describe('MemberList', () => {
         canOverride: true,
       };
 
+      const memberCanUnban = {
+        ...bannedMember,
+        canUnban: true,
+      };
+
       const memberNoPermissions = {
         ...memberMock,
         id: 2,
       };
 
-      describe('when one of the members has `canOverride` permissions', () => {
+      describe.each([
+        ['canOverride', memberCanOverride],
+        ['canUnban', memberCanUnban],
+      ])('when one of the members has `%s` permissions', (_, memberWithPermission) => {
         it('renders the "Actions" field', () => {
           createComponent({
-            members: [memberNoPermissions, memberCanOverride],
+            members: [memberNoPermissions, memberWithPermission],
             tableFields: ['actions'],
           });
 
@@ -89,19 +102,22 @@ describe('MemberList', () => {
           expect(
             findTableCellByMemberId('Actions', memberNoPermissions.id).classes(),
           ).toStrictEqual(['col-actions', 'gl-display-none!', 'gl-lg-display-table-cell!']);
-          expect(findTableCellByMemberId('Actions', memberCanOverride.id).classes()).toStrictEqual([
-            'col-actions',
-          ]);
+          expect(
+            findTableCellByMemberId('Actions', memberWithPermission.id).classes(),
+          ).toStrictEqual(['col-actions']);
         });
       });
 
-      describe('when none of the members have `canOverride` permissions', () => {
-        it('does not render the "Actions" field', () => {
-          createComponent({ members, tableFields: ['actions'] });
+      describe.each([['canOverride'], ['canUnban']])(
+        'when none of the members has `%s` permissions',
+        () => {
+          it('does not render the "Actions" field', () => {
+            createComponent({ members, tableFields: ['actions'] });
 
-          expect(within(wrapper.element).queryByTestId('col-actions')).toBe(null);
-        });
-      });
+            expect(within(wrapper.element).queryByTestId('col-actions')).toBe(null);
+          });
+        },
+      );
     });
   });
 });
