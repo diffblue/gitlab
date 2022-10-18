@@ -417,15 +417,6 @@
   :weight: 1
   :idempotent: false
   :tags: []
-- :name: cronjob:security_findings_cleanup
-  :worker_name: Security::Findings::CleanupWorker
-  :feature_category: :vulnerability_management
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :unknown
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: cronjob:security_orchestration_policy_rule_schedule
   :worker_name: Security::OrchestrationPolicyRuleScheduleWorker
   :feature_category: :security_policy_management
@@ -434,6 +425,15 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: false
+  :tags: []
+- :name: cronjob:security_scans_purge
+  :worker_name: Security::Scans::PurgeWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
   :tags: []
 - :name: cronjob:sync_seat_link
   :worker_name: SyncSeatLinkWorker
@@ -1416,15 +1416,6 @@
   :weight: 1
   :idempotent: true
   :tags: []
-- :name: security_findings_delete_by_job_id
-  :worker_name: Security::Findings::DeleteByJobIdWorker
-  :feature_category: :vulnerability_management
-  :has_external_dependencies: false
-  :urgency: :low
-  :resource_boundary: :cpu
-  :weight: 1
-  :idempotent: true
-  :tags: []
 - :name: security_orchestration_policy_rule_schedule_namespace
   :worker_name: Security::OrchestrationPolicyRuleScheduleNamespaceWorker
   :feature_category: :security_policy_management
@@ -1442,6 +1433,15 @@
   :resource_boundary: :unknown
   :weight: 1
   :idempotent: false
+  :tags: []
+- :name: security_scans_purge_by_job_id
+  :worker_name: Security::Scans::PurgeByJobIdWorker
+  :feature_category: :vulnerability_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :cpu
+  :weight: 1
+  :idempotent: true
   :tags: []
 - :name: security_sync_scan_policies
   :worker_name: Security::SyncScanPoliciesWorker

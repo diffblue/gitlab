@@ -11,13 +11,10 @@ RSpec.describe Ci::JobArtifacts::DestroyBatchService do
     let(:service) { described_class.new(Ci::JobArtifact.all, pick_up_at: Time.current) }
 
     let_it_be(:artifact) { create(:ci_job_artifact, :zip) }
-    let_it_be(:security_scan) { create(:security_scan, build: artifact.job) }
-    let_it_be(:security_finding) { create(:security_finding, scan: security_scan) }
     let_it_be(:event_data) { { job_ids: [artifact.job_id] } }
 
     it 'destroys all expired artifacts', :sidekiq_inline do
       expect { subject }.to change { Ci::JobArtifact.count }.by(-1)
-                        .and change { Security::Finding.count }.from(1).to(0)
     end
 
     it 'publishes Ci::JobArtifactsDeletedEvent' do

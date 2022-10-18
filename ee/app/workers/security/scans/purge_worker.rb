@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Security
-  module Findings
-    class CleanupWorker
+  module Scans
+    class PurgeWorker
       include ApplicationWorker
       include CronjobQueue # rubocop: disable Scalability/CronWorkerContext
 
@@ -14,7 +14,7 @@ module Security
       def perform
         return unless Feature.enabled?(:purge_stale_security_findings, type: :ops)
 
-        ::Security::Findings::CleanupService.delete_stale_records
+        ::Security::PurgeScansService.purge_stale_records
       end
     end
   end
