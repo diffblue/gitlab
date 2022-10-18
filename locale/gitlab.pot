@@ -7056,6 +7056,9 @@ msgstr ""
 msgid "Broadcast Messages"
 msgstr ""
 
+msgid "BroadcastMessages|There was an issue deleting this message, please try again later."
+msgstr ""
+
 msgid "Browse Directory"
 msgstr ""
 
