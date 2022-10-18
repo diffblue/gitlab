@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan' do
-    describe 'Jira issues integration', :jira, :orchestrated, :requires_admin do
+  RSpec.describe 'Manage' do
+    describe 'Jira issues integration', :jira, :orchestrated, :requires_admin, product_group: :integrations do
+      # rubocop:disable RSpec/InstanceVariable
       before(:context) do
         jira_project_key = Vendor::Jira::JiraAPI.perform(&:create_project)
 
@@ -97,6 +98,7 @@ module QA
           end
         end
       end
+      # rubocop:enable RSpec/InstanceVariable
     end
   end
 end
