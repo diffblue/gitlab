@@ -1,0 +1,19 @@
+---
+  key_path: usage_activity_by_stage.govern.count_distinct_project_id_from_scan_finding_approval_project_rules
+  description: "The total number of projects with at least one scan result policy"
+  product_section: sec
+  product_stage: govern
+  product_group: security_policies
+  product_category: security_policy_management
+  value_type: number
+  status: active
+  milestone: "15.5"
+  introduced_by_url: "https://gitlab.com/gitlab-org/gitlab/-/merge_requests/99955"
+  time_frame: all
+  data_source: database
+  data_category: operational
+  instrumentation_class: CountProjectsWithAppliedScanResultPoliciesMetric
+  distribution:
+  - ee
+  tier:
+  - ultimate
