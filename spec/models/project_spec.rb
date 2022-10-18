@@ -149,6 +149,7 @@ RSpec.describe Project, factory_default: :keep do
     it { is_expected.to have_one(:build_artifacts_size_refresh).class_name('Projects::BuildArtifactsSizeRefresh') }
     it { is_expected.to have_many(:project_callouts).class_name('Users::ProjectCallout').with_foreign_key(:project_id) }
     it { is_expected.to have_many(:pipeline_metadata).class_name('Ci::PipelineMetadata') }
+    it { is_expected.to have_many(:incident_management_timeline_event_tags).class_name('IncidentManagement::TimelineEventTag') }
 
     # GitLab Pages
     it { is_expected.to have_many(:pages_domains) }
