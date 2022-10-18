@@ -45803,6 +45803,9 @@ msgstr ""
 msgid "WorkItem|Add to iteration"
 msgstr ""
 
+msgid "WorkItem|Add to milestone"
+msgstr ""
+
 msgid "WorkItem|Are you sure you want to cancel editing?"
 msgstr ""
 
@@ -45859,10 +45862,16 @@ msgstr ""
 msgid "WorkItem|Learn about tasks."
 msgstr ""
 
+msgid "WorkItem|Milestone"
+msgstr ""
+
 msgid "WorkItem|No iteration"
 msgstr ""
 
 msgid "WorkItem|No matching results"
+msgstr ""
+
+msgid "WorkItem|No milestone"
 msgstr ""
 
 msgid "WorkItem|No tasks are currently assigned. Use tasks to break down this issue into smaller parts."
@@ -45911,6 +45920,9 @@ msgid "WorkItem|Something went wrong when trying to add a child. Please try agai
 msgstr ""
 
 msgid "WorkItem|Something went wrong when trying to create a child. Please try again."
+msgstr ""
+
+msgid "WorkItem|Something went wrong while fetching milestones. Please try again."
 msgstr ""
 
 msgid "WorkItem|Something went wrong while updating the %{workItemType}. Please try again."

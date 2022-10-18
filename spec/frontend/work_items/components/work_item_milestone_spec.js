@@ -3,68 +3,57 @@ import {
   GlDropdownItem,
   GlSearchBoxByType,
   GlSkeletonLoader,
-  GlDropdownText,
   GlFormGroup,
+  GlDropdownText,
 } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
+import WorkItemMilestone from '~/work_items/components/work_item_milestone.vue';
+import { resolvers, temporaryConfig } from '~/graphql_shared/issuable_client';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mockTracking } from 'helpers/tracking_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { getIterationPeriod } from 'ee/iterations/utils';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
-import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
-import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
-import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
+import projectMilestonesQuery from '~/sidebar/queries/project_milestones.query.graphql';
 import {
-  groupIterationsResponse,
-  groupIterationsResponseWithNoIterations,
-  mockIterationWidgetResponse,
-  updateWorkItemMutationResponse,
+  projectMilestonesResponse,
+  projectMilestonesResponseWithNoMilestones,
+  mockMilestoneWidgetResponse,
   workItemResponseFactory,
-  workItemIterationSubscriptionResponse,
   updateWorkItemMutationErrorResponse,
 } from 'jest/work_items/mock_data';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 
-describe('WorkItemIteration component', () => {
+describe('WorkItemMilestone component', () => {
   Vue.use(VueApollo);
 
   let wrapper;
 
   const workItemId = 'gid://gitlab/WorkItem/1';
   const workItemType = 'Task';
+  const fullPath = 'full-path';
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
   const findSearchBox = () => wrapper.findComponent(GlSearchBoxByType);
   const findSkeletonLoader = () => wrapper.findComponent(GlSkeletonLoader);
-  const findNoIterationDropdownItem = () => wrapper.findByTestId('no-iteration');
+  const findNoMilestoneDropdownItem = () => wrapper.findByTestId('no-milestone');
   const findDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
-  const findDropdownTexts = () => wrapper.findAllComponents(GlDropdownText);
   const findFirstDropdownItem = () => findDropdownItems().at(0);
+  const findDropdownTexts = () => wrapper.findAllComponents(GlDropdownText);
   const findDropdownItemAtIndex = (index) => findDropdownItems().at(index);
   const findDisabledTextSpan = () => wrapper.findByTestId('disabled-text');
   const findDropdownTextAtIndex = (index) => findDropdownTexts().at(index);
   const findInputGroup = () => wrapper.findComponent(GlFormGroup);
 
   const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
-  const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
 
   const networkResolvedValue = new Error();
 
-  const iterationSubscriptionHandler = jest
+  const successSearchQueryHandler = jest.fn().mockResolvedValue(projectMilestonesResponse);
+  const successSearchWithNoMatchingMilestones = jest
     .fn()
-    .mockResolvedValue(workItemIterationSubscriptionResponse);
-  const successSearchQueryHandler = jest.fn().mockResolvedValue(groupIterationsResponse);
-  const successSearchWithNoMatchingIterations = jest
-    .fn()
-    .mockResolvedValue(groupIterationsResponseWithNoIterations);
-
-  const successUpdateWorkItemMutationHandler = jest
-    .fn()
-    .mockResolvedValue(updateWorkItemMutationResponse);
+    .mockResolvedValue(projectMilestonesResponseWithNoMilestones);
 
   const showDropdown = () => {
     findDropdown().vm.$emit('shown');
@@ -76,46 +65,56 @@ describe('WorkItemIteration component', () => {
 
   const createComponent = ({
     canUpdate = true,
-    iteration = mockIterationWidgetResponse,
+    milestone = mockMilestoneWidgetResponse,
     searchQueryHandler = successSearchQueryHandler,
-    mutationHandler = successUpdateWorkItemMutationHandler,
   } = {}) => {
-    wrapper = shallowMountExtended(WorkItemIteration, {
-      apolloProvider: createMockApollo([
-        [workItemQuery, workItemQueryHandler],
-        [workItemIterationSubscription, iterationSubscriptionHandler],
-        [groupIterationsQuery, searchQueryHandler],
-        [updateWorkItemMutation, mutationHandler],
-      ]),
+    const apolloProvider = createMockApollo(
+      [[projectMilestonesQuery, searchQueryHandler]],
+      resolvers,
+      {
+        typePolicies: temporaryConfig.cacheConfig.typePolicies,
+      },
+    );
+
+    apolloProvider.clients.defaultClient.writeQuery({
+      query: workItemQuery,
+      variables: {
+        id: workItemId,
+      },
+      data: workItemQueryResponse.data,
+    });
+
+    wrapper = shallowMountExtended(WorkItemMilestone, {
+      apolloProvider,
       propsData: {
         canUpdate,
-        iteration,
+        workItemMilestone: milestone,
         workItemId,
         workItemType,
+        fullPath,
       },
-      provide: {
-        projectNamespace: 'namespace',
-        hasIterationsFeature: true,
+      stubs: {
+        GlDropdown,
+        GlSearchBoxByType,
       },
-      stubs: { GlDropdown, GlSearchBoxByType },
     });
   };
 
-  it('has "Iteration" label', () => {
+  it('has "Milestone" label', () => {
     createComponent();
-    expect(findInputGroup().exists()).toBe(true);
 
-    expect(findInputGroup().attributes('label')).toBe(WorkItemIteration.i18n.ITERATION);
+    expect(findInputGroup().exists()).toBe(true);
+    expect(findInputGroup().attributes('label')).toBe(WorkItemMilestone.i18n.MILESTONE);
   });
 
-  describe('Default text with canUpdate false and iteration value', () => {
+  describe('Default text with canUpdate false and milestone value', () => {
     describe.each`
-      description             | iteration                      | value
-      ${'when no iteration'}  | ${null}                        | ${WorkItemIteration.i18n.NONE}
-      ${'when iteration set'} | ${mockIterationWidgetResponse} | ${mockIterationWidgetResponse.title}
-    `('$description', ({ iteration, value }) => {
+      description             | milestone                      | value
+      ${'when no milestone'}  | ${null}                        | ${WorkItemMilestone.i18n.NONE}
+      ${'when milestone set'} | ${mockMilestoneWidgetResponse} | ${mockMilestoneWidgetResponse.title}
+    `('$description', ({ milestone, value }) => {
       it(`has a value of "${value}"`, () => {
-        createComponent({ canUpdate: false, iteration });
+        createComponent({ canUpdate: false, milestone });
 
         expect(findDisabledTextSpan().text()).toBe(value);
         expect(findDropdown().exists()).toBe(false);
@@ -123,11 +122,11 @@ describe('WorkItemIteration component', () => {
     });
   });
 
-  describe('Default text value when canUpdate true and no iteration set', () => {
-    it(`has a value of "Add to iteration"`, () => {
-      createComponent({ canUpdate: true, iteration: null });
+  describe('Default text value when canUpdate true and no milestone set', () => {
+    it(`has a value of "Add to milestone"`, () => {
+      createComponent({ canUpdate: true, milestone: null });
 
-      expect(findDropdown().props('text')).toBe(WorkItemIteration.i18n.ITERATION_PLACEHOLDER);
+      expect(findDropdown().props('text')).toBe(WorkItemMilestone.i18n.MILESTONE_PLACEHOLDER);
     });
   });
 
@@ -140,10 +139,10 @@ describe('WorkItemIteration component', () => {
 
     it('shows no matching results when no items', () => {
       createComponent({
-        searchQueryHandler: successSearchWithNoMatchingIterations,
+        searchQueryHandler: successSearchWithNoMatchingMilestones,
       });
 
-      expect(findDropdownTextAtIndex(0).text()).toBe(WorkItemIteration.i18n.NO_MATCHING_RESULTS);
+      expect(findDropdownTextAtIndex(0).text()).toBe(WorkItemMilestone.i18n.NO_MATCHING_RESULTS);
       expect(findDropdownItems()).toHaveLength(1);
       expect(findDropdownTexts()).toHaveLength(1);
     });
@@ -161,19 +160,18 @@ describe('WorkItemIteration component', () => {
       expect(findSkeletonLoader().exists()).toBe(true);
     });
 
-    it('shows the iterations in dropdown when the items have finished fetching', async () => {
+    it('shows the milestones in dropdown when the items have finished fetching', async () => {
       showDropdown();
-      await nextTick();
       await waitForPromises();
 
       expect(findSkeletonLoader().exists()).toBe(false);
-      expect(findNoIterationDropdownItem().exists()).toBe(true);
+      expect(findNoMilestoneDropdownItem().exists()).toBe(true);
       expect(findDropdownItems()).toHaveLength(
-        groupIterationsResponse.data.workspace.attributes.nodes.length + 1,
+        projectMilestonesResponse.data.workspace.attributes.nodes.length + 1,
       );
     });
 
-    it('changes the iteration to null when clicked on no iteration', async () => {
+    it('changes the milestone to null when clicked on no milestone', async () => {
       showDropdown();
       findFirstDropdownItem().vm.$emit('click');
 
@@ -184,27 +182,23 @@ describe('WorkItemIteration component', () => {
       await waitForPromises();
 
       expect(findDropdown().props('loading')).toBe(false);
-      expect(findDropdown().props('text')).toBe(WorkItemIteration.i18n.ITERATION_PLACEHOLDER);
+      expect(findDropdown().props('text')).toBe(WorkItemMilestone.i18n.MILESTONE_PLACEHOLDER);
     });
 
-    it('changes the iteration to the selected iteration', async () => {
-      const iterationIndex = 1;
+    it('changes the milestone to the selected milestone', async () => {
+      const milestoneIndex = 1;
       /** the index is -1 since no matching results is also a dropdown item */
-      const iterationAtIndex =
-        groupIterationsResponse.data.workspace.attributes.nodes[iterationIndex - 1];
+      const milestoneAtIndex =
+        projectMilestonesResponse.data.workspace.attributes.nodes[milestoneIndex - 1];
       showDropdown();
 
       await waitForPromises();
-      findDropdownItemAtIndex(iterationIndex).vm.$emit('click');
+      findDropdownItemAtIndex(milestoneIndex).vm.$emit('click');
 
       hideDropdown();
-      await nextTick();
-
       await waitForPromises();
 
-      expect(findDropdown().props('text')).toBe(
-        iterationAtIndex.title || getIterationPeriod(iterationAtIndex),
-      );
+      expect(findDropdown().props('text')).toBe(milestoneAtIndex.title);
     });
   });
 
@@ -233,7 +227,7 @@ describe('WorkItemIteration component', () => {
   });
 
   describe('Tracking event', () => {
-    it('tracks updating the iteration', async () => {
+    it('tracks updating the milestone', async () => {
       const trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
       createComponent({ canUpdate: true });
 
@@ -243,9 +237,9 @@ describe('WorkItemIteration component', () => {
 
       await waitForPromises();
 
-      expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_iteration', {
+      expect(trackingSpy).toHaveBeenCalledWith(TRACKING_CATEGORY_SHOW, 'updated_milestone', {
         category: TRACKING_CATEGORY_SHOW,
-        label: 'item_iteration',
+        label: 'item_milestone',
         property: 'type_Task',
       });
     });
