@@ -3,16 +3,10 @@ import { GlButton, GlCard, GlLoadingIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
-import {
-  TABLE_TYPE_DEFAULT,
-  TABLE_TYPE_FREE,
-  TABLE_TYPE_TRIAL,
-  DAYS_FOR_RENEWAL,
-} from 'ee/billings/constants';
+import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';
 import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/components/extend_reactivate_trial_button.vue';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
-import { getDayDifference } from '~/lib/utils/datetime/date_calculation_utility';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { getSubscriptionData } from '../subscription_actions.customer.query.graphql';
@@ -78,14 +72,7 @@ export default {
     },
   },
   computed: {
-    ...mapState([
-      'isLoadingSubscription',
-      'hasErrorSubscription',
-      'plan',
-      'billing',
-      'tables',
-      'endpoint',
-    ]),
+    ...mapState(['isLoadingSubscription', 'hasErrorSubscription', 'plan', 'tables', 'endpoint']),
     ...mapGetters(['isFreePlan']),
     isSubscription() {
       return !this.isFreePlan;
@@ -105,15 +92,6 @@ export default {
     canRefreshSeats() {
       return this.glFeatures.refreshBillingsSeats;
     },
-    canRenew() {
-      const subscriptionEndDate = new Date(this.billing.subscriptionEndDate);
-      const todayDate = new Date();
-      return (
-        this.isSubscription &&
-        !this.plan.trial &&
-        DAYS_FOR_RENEWAL >= getDayDifference(todayDate, subscriptionEndDate)
-      );
-    },
     addSeatsButton() {
       return this.isSubscription && this.subscription?.canAddSeats
         ? createButtonProps(
@@ -124,7 +102,7 @@ export default {
         : null;
     },
     renewButton() {
-      return this.canRenew && this.subscription?.inRenewalPeriod
+      return this.subscription?.inRenewalPeriod
         ? createButtonProps(s__('SubscriptionTable|Renew'), this.planRenewHref, 'renew-button')
         : null;
     },

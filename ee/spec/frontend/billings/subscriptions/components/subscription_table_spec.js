@@ -40,14 +40,19 @@ describe('SubscriptionTable component', () => {
   const findRefreshSeatsButton = () => wrapper.findByTestId('refresh-seats-button');
   const findSubscriptionHeader = () => wrapper.findByTestId('subscription-header');
 
-  const createComponentWithStore = async ({ props = {}, provide = {}, state = {} } = {}) => {
+  const createComponentWithStore = async ({
+    props = {},
+    provide = {},
+    state = {},
+    apolloMock = { subscription: { canAddSeats: true, inRenewalPeriod: true } },
+  } = {}) => {
     store = new Vuex.Store(initialStore());
     jest.spyOn(store, 'dispatch').mockImplementation();
     mockApollo = createMockApollo([
       [
         getSubscriptionData,
         jest.fn().mockResolvedValue({
-          data: { subscription: { canAddSeats: true, inRenewalPeriod: true } },
+          data: apolloMock,
         }),
       ],
     ]);
@@ -195,26 +200,23 @@ describe('SubscriptionTable component', () => {
 
   describe('Renew button', () => {
     describe.each`
-      planCode    | trial    | expected | testDescription
-      ${'silver'} | ${false} | ${true}  | ${'renders the button'}
-      ${'silver'} | ${true}  | ${false} | ${'does not render the button'}
-      ${null}     | ${false} | ${false} | ${'does not render the button'}
-      ${'free'}   | ${false} | ${false} | ${'does not render the button'}
+      planCode    | inRenewalPeriod | expected | testDescription
+      ${'silver'} | ${true}         | ${true}  | ${'renders the button'}
+      ${'silver'} | ${false}        | ${false} | ${'does not render the button'}
+      ${null}     | ${true}         | ${false} | ${'does not render the button'}
+      ${'free'}   | ${true}         | ${false} | ${'does not render the button'}
     `(
-      'given a plan with state: planCode = $planCode, trial = $trial',
-      ({ planCode, trial, expected, testDescription }) => {
+      'given a plan with state: planCode = $planCode, inRenewalPeriod = $inRenewalPeriod',
+      ({ planCode, inRenewalPeriod, expected, testDescription }) => {
         beforeEach(async () => {
           createComponentWithStore({
             state: {
               isLoadingSubscription: false,
               plan: {
                 code: planCode,
-                trial,
-              },
-              billing: {
-                subscriptionEndDate: new Date(),
               },
             },
+            apolloMock: { subscription: { canAddSeats: true, inRenewalPeriod } },
           });
 
           await waitForPromises();
@@ -225,41 +227,18 @@ describe('SubscriptionTable component', () => {
         });
       },
     );
-
-    describe('when subscriptionEndDate is more than 15 days', () => {
-      beforeEach(() => {
-        const today = new Date();
-        const subscriptionEndDate = today.setDate(today.getDate() + 16);
-
-        createComponentWithStore({
-          state: {
-            isLoadingSubscription: false,
-            plan: {
-              code: mockDataSubscription.planCode,
-              trial: false,
-            },
-            billing: {
-              subscriptionEndDate,
-            },
-          },
-        });
-      });
-
-      it('does not display the renew button', () => {
-        expect(findRenewButton().exists()).toBe(false);
-      });
-    });
   });
 
   describe('Add seats button', () => {
     describe.each`
-      planCode    | expected | testDescription
-      ${'silver'} | ${true}  | ${'renders the button'}
-      ${null}     | ${false} | ${'does not render the button'}
-      ${'free'}   | ${false} | ${'does not render the button'}
+      planCode    | canAddSeats | expected | testDescription
+      ${'silver'} | ${true}     | ${true}  | ${'renders the button'}
+      ${'silver'} | ${false}    | ${false} | ${'does not render the button'}
+      ${null}     | ${true}     | ${false} | ${'does not render the button'}
+      ${'free'}   | ${true}     | ${false} | ${'does not render the button'}
     `(
       'given a plan with state: planCode = $planCode',
-      ({ planCode, expected, testDescription }) => {
+      ({ planCode, canAddSeats, expected, testDescription }) => {
         beforeEach(async () => {
           createComponentWithStore({
             state: {
@@ -269,6 +248,7 @@ describe('SubscriptionTable component', () => {
                 upgradable: true,
               },
             },
+            apolloMock: { subscription: { canAddSeats, inRenewalPeriod: true } },
           });
 
           await waitForPromises();
