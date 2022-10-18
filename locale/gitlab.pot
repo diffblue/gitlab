@@ -12254,6 +12254,9 @@ msgstr ""
 msgid "DastProfiles|Save profile"
 msgstr ""
 
+msgid "DastProfiles|Scan Method"
+msgstr ""
+
 msgid "DastProfiles|Scan method"
 msgstr ""
 

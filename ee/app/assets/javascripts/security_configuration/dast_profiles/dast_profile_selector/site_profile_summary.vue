@@ -3,10 +3,12 @@ import DastSiteValidationBadge from 'ee/security_configuration/dast_profiles/com
 import {
   EXCLUDED_URLS_SEPARATOR,
   TARGET_TYPES,
+  SCAN_METHODS,
 } from 'ee/security_configuration/dast_profiles/dast_site_profiles/constants';
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { SITE_TYPE } from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import DastProfileSummaryCard from './dast_profile_summary_card.vue';
 import SummaryCell from './summary_cell.vue';
 
@@ -18,6 +20,7 @@ export default {
     SummaryCell,
     DastSiteValidationBadge,
   },
+  mixins: [glFeatureFlagMixin()],
   props: {
     profile: {
       type: Object,
@@ -47,6 +50,7 @@ export default {
           : s__('DastProfiles|Excluded URLs'),
         requestHeaders: s__('DastProfiles|Request headers'),
         validationStatus: s__('DastProfiles|Validation status'),
+        scanMethod: s__('DastProfiles|Scan Method'),
       };
     },
     hasExcludedUrls() {
@@ -67,6 +71,12 @@ export default {
       return this.profile.validationStatus === DAST_SITE_VALIDATION_STATUS.PASSED
         ? s__('DastProfiles|Validated')
         : s__('DastProfiles|Not Validated');
+    },
+    selectedScanMethod() {
+      return SCAN_METHODS[this.profile.scanMethod];
+    },
+    hasScanMethod() {
+      return this.glFeatures.dastApiScanner && this.selectedScanMethod;
     },
   },
   EXCLUDED_URLS_SEPARATOR,
@@ -101,6 +111,16 @@ export default {
       <summary-cell :label="i18n.validationStatus">
         <dast-site-validation-badge :status="profile.validationStatus" />
       </summary-cell>
+      <summary-cell
+        v-if="hasScanMethod"
+        :label="i18n.scanMethod"
+        :value="selectedScanMethod.text"
+      />
+      <summary-cell
+        v-if="hasScanMethod"
+        :label="selectedScanMethod.inputLabel"
+        :value="profile.scanFilePath"
+      />
     </template>
   </dast-profile-summary-card>
 </template>
