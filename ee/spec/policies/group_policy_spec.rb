@@ -2236,24 +2236,32 @@ RSpec.describe GroupPolicy do
 
     subject { described_class.new(user, group) }
 
-    context 'user is not banned' do
+    context 'when user is not banned' do
       it { is_expected.to be_allowed(:read_group) }
     end
 
-    context 'user is banned' do
+    context 'when user is banned' do
       before do
         create(:namespace_ban, user: user, namespace: group.root_ancestor)
       end
 
       it { is_expected.to be_disallowed(:read_group) }
 
-      context 'group is a subgroup' do
+      context 'when group is a subgroup' do
         let_it_be(:group) { create(:group, :private, :nested) }
 
         it { is_expected.to be_disallowed(:read_group) }
+
+        context 'when user is an owner' do
+          before do
+            group.add_owner(user)
+          end
+
+          it { is_expected.to be_disallowed(:read_group) }
+        end
       end
 
-      context 'feature flag is disabled' do
+      context 'when feature flag is disabled' do
         before do
           stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
         end
@@ -2261,21 +2269,23 @@ RSpec.describe GroupPolicy do
         it { is_expected.to be_allowed(:read_group) }
       end
 
-      context 'group is public' do
+      context 'when group is public' do
         let_it_be(:group) { create(:group, :public) }
 
         it { is_expected.to be_allowed(:read_group) }
       end
 
-      context 'user is a group owner' do
+      # In practice, this should not happen since we don't ban root namespace
+      # owners at the service layer
+      context 'when user is a group owner' do
         before do
           group.add_owner(user)
         end
 
-        it { is_expected.to be_allowed(:read_group) }
+        it { is_expected.to be_disallowed(:read_group) }
       end
 
-      context 'user is an admin' do
+      context 'when user is an admin' do
         let(:user) { create(:user, :admin) }
 
         before do

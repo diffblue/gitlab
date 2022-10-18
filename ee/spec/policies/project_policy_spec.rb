@@ -2257,24 +2257,26 @@ RSpec.describe ProjectPolicy do
 
     subject { described_class.new(user, project) }
 
-    context 'user is not banned' do
+    context 'when user is not banned' do
       it { is_expected.to be_allowed(:read_project) }
     end
 
-    context 'user is banned' do
+    context 'when user is banned' do
       before do
         create(:namespace_ban, user: user, namespace: group.root_ancestor)
       end
 
       it { is_expected.to be_disallowed(:read_project) }
 
-      context 'group is a subgroup' do
-        let_it_be(:group) { create(:group, :private, :nested) }
+      context 'when group is a subgroup' do
+        let_it_be(:group) { create(:group, :private) }
+        let_it_be(:sub_group) { create(:group, :private, parent: group) }
+        let_it_be(:project) { create(:project, :private, group: sub_group) }
 
         it { is_expected.to be_disallowed(:read_project) }
       end
 
-      context 'feature flag is disabled' do
+      context 'when feature flag is disabled' do
         before do
           stub_feature_flags(limit_unique_project_downloads_per_namespace_user: false)
         end
@@ -2282,28 +2284,30 @@ RSpec.describe ProjectPolicy do
         it { is_expected.to be_allowed(:read_project) }
       end
 
-      context 'project is public' do
+      context 'when project is public' do
         let_it_be(:group) { create(:group, :public) }
         let_it_be(:project) { create(:project, :public, group: group) }
 
         it { is_expected.to be_allowed(:read_project) }
 
-        context 'group is a subgroup' do
-          let_it_be(:group) { create(:group, :public, :nested) }
+        context 'when group is a subgroup' do
+          let_it_be(:group) { create(:group, :public) }
+          let_it_be(:sub_group) { create(:group, :public, parent: group) }
+          let_it_be(:project) { create(:project, :public, group: sub_group) }
 
           it { is_expected.to be_allowed(:read_project) }
         end
       end
 
-      context 'user is a project owner' do
+      context 'when user is a project owner' do
         before do
           project.add_owner(user)
         end
 
-        it { is_expected.to be_allowed(:read_project) }
+        it { is_expected.to be_disallowed(:read_project) }
       end
 
-      context 'user is an admin' do
+      context 'when user is an admin' do
         let(:user) { create(:user, :admin) }
 
         before do

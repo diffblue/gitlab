@@ -173,7 +173,11 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
-      rule { ~public_group & ~can?(:owner_access) & user_banned_from_group }.policy do
+      # Owners can be banned from their own group except for top-level group
+      # owners. This exception is made at the service layer
+      # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
+      # is created.
+      rule { ~public_group & ~admin & user_banned_from_group }.policy do
         prevent :read_group
       end
 
