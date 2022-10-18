@@ -64,7 +64,29 @@ RSpec.describe Project do
     it { is_expected.to have_many(:security_scans) }
     it { is_expected.to have_many(:security_trainings) }
 
-    include_examples 'ci_cd_settings delegation'
+    include_examples 'ci_cd_settings delegation' do
+      let(:attributes_with_prefix) do
+        {
+          'group_runners_enabled' => '',
+          'default_git_depth' => 'ci_',
+          'forward_deployment_enabled' => 'ci_',
+          'keep_latest_artifact' => '',
+          'restrict_user_defined_variables' => '',
+          'runner_token_expiration_interval' => '',
+          'separated_caches' => 'ci_',
+          'opt_in_jwt' => 'ci_',
+          'allow_fork_pipelines_to_run_in_parent_project' => 'ci_',
+          'inbound_job_token_scope_enabled' => 'ci_',
+          'job_token_scope_enabled' => 'ci_outbound_',
+          # EE only
+          'auto_rollback_enabled' => '',
+          'merge_pipelines_enabled' => '',
+          'merge_trains_enabled' => ''
+        }
+      end
+
+      let(:exclude_attributes) { [] }
+    end
 
     describe '#merge_pipelines_enabled?' do
       it_behaves_like 'a ci_cd_settings predicate method' do
