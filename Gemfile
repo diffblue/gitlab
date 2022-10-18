@@ -43,7 +43,7 @@ gem 'rugged', '~> 1.2'
 gem 'grape-path-helpers', '~> 1.7.1'
 
 gem 'faraday', '~> 1.0'
-gem 'marginalia', '~> 1.10.0'
+gem 'marginalia', '~> 1.11.1'
 
 # Authorization
 gem 'declarative_policy', '~> 1.1.0'
