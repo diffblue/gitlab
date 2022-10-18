@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Security
-  module Findings
-    class DeleteByJobIdWorker
+  module Scans
+    class PurgeByJobIdWorker
       include ApplicationWorker
       include Gitlab::EventStore::Subscriber
 
@@ -14,7 +14,7 @@ module Security
       idempotent!
 
       def handle_event(event)
-        ::Security::Findings::CleanupService.delete_by_build_ids(event.data[:job_ids])
+        ::Security::PurgeScansService.purge_by_build_ids(event.data[:job_ids])
       end
     end
   end
