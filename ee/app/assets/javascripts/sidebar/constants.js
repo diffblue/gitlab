@@ -1,8 +1,10 @@
+import { invert } from 'lodash';
 import { IssuableType } from '~/issues/constants';
 import { __, s__, sprintf } from '~/locale';
 import {
   IssuableAttributeType as IssuableAttributeTypeFoss,
   IssuableAttributeState as IssuableAttributeStateFoss,
+  LocalizedIssuableAttributeType as LocalizedIssuableAttributeTypeFoss,
   issuableAttributesQueries as issuableAttributesQueriesFoss,
   dropdowni18nText as dropdowni18nTextFoss,
   Tracking,
@@ -134,6 +136,17 @@ export const IssuableAttributeType = {
   EscalationPolicy: 'escalation policy', // eslint-disable-line @gitlab/require-i18n-strings
 };
 
+export const LocalizedIssuableAttributeType = {
+  ...LocalizedIssuableAttributeTypeFoss,
+  Iteration: s__('Issuable|iteration'),
+  Epic: s__('Issuable|epic'),
+  EscalationPolicy: s__('Issuable|escalation policy'),
+};
+
+// The reason we did this conversion is that we want to keep track of the keys via referencing the object itself
+// Thus we have to convert value as key, and use is in the method.
+export const IssuableAttributeTypeKeyMap = invert(IssuableAttributeType);
+
 export const IssuableAttributeState = {
   ...IssuableAttributeStateFoss,
   [IssuableAttributeType.Iteration]: 'opened',
@@ -183,7 +196,7 @@ export const healthStatusQueries = {
 export function dropdowni18nText(issuableAttribute, issuableType) {
   let noAttributesFound = s__('DropdownWidget|No %{issuableAttribute} found');
 
-  if (issuableAttribute === IssuableAttributeType.Iteration) {
+  if (issuableAttribute === LocalizedIssuableAttributeType.Iteration) {
     noAttributesFound = s__('DropdownWidget|No open %{issuableAttribute} found');
   }
 
