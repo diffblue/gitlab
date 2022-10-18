@@ -21,11 +21,12 @@ module ComplianceManagement
           return error
         end
 
-        framework.update(params) ? success : error
+        framework.update(params.except(:default)) ? success : error
       end
 
       def success
         audit_changes
+        update_default_framework
         ServiceResponse.success(payload: { framework: framework })
       end
 
@@ -53,6 +54,23 @@ module ComplianceManagement
 
       def permitted?
         can? current_user, :manage_compliance_framework, framework
+      end
+
+      def update_default_framework
+        return if params[:default].nil?
+
+        if params[:default]
+          default_framework_id = framework.id
+        else
+          return unless framework.id == framework.namespace.namespace_settings.default_compliance_framework_id
+
+          default_framework_id = nil
+        end
+
+        setting_params = ActionController::Parameters.new(default_compliance_framework_id: default_framework_id)
+                                                     .permit!
+
+        ::Groups::UpdateService.new(framework.namespace, current_user, setting_params).execute
       end
     end
   end

@@ -134,6 +134,38 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
           expect(framework.pipeline_configuration_full_path).to eq('.compliance-gitlab-ci.yml@compliance/hipaa')
         end
       end
+
+      context 'when default param is used' do
+        context 'when true' do
+          before do
+            params[:default] = true
+            namespace.namespace_settings.update!(default_compliance_framework_id: nil)
+          end
+
+          it 'sets the new framework as the default framework for the namespace' do
+            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+
+            framework = subject.execute.payload[:framework]
+
+            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to eq(framework.id)
+          end
+        end
+
+        context 'when false' do
+          before do
+            params[:default] = false
+            namespace.namespace_settings.update!(default_compliance_framework_id: nil)
+          end
+
+          it 'does not set the new framework as the default framework for the namespace' do
+            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+
+            subject.execute
+
+            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+          end
+        end
+      end
     end
   end
 end

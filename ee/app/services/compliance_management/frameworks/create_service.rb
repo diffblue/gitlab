@@ -37,6 +37,7 @@ module ComplianceManagement
 
       def success
         audit_create
+        set_default_framework
         ServiceResponse.success(payload: { framework: framework })
       end
 
@@ -53,7 +54,15 @@ module ComplianceManagement
       end
 
       def error
-        ServiceResponse.error(message: _('Failed to create framework'), payload: framework.errors )
+        ServiceResponse.error(message: _('Failed to create framework'), payload: framework.errors)
+      end
+
+      def set_default_framework
+        return unless params[:default].present?
+
+        setting_params = ActionController::Parameters.new(default_compliance_framework_id: framework.id).permit!
+
+        ::Groups::UpdateService.new(framework.namespace, current_user, setting_params).execute
       end
     end
   end

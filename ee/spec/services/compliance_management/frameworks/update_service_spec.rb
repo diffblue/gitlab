@@ -82,6 +82,45 @@ RSpec.describe ComplianceManagement::Frameworks::UpdateService do
           'Changed compliance framework\'s description from The General Data Protection Regulation (GDPR) is a regulation in EU law on data protection and privacy in the European Union (EU) and the European Economic Area (EEA). to New Description'
         )
       end
+
+      context 'when default param is used' do
+        context 'when true' do
+          before do
+            params[:default] = true
+            namespace.namespace_settings.update!(default_compliance_framework_id: nil)
+          end
+
+          it 'updates the default compliance framework for the namespace' do
+            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+
+            subject.execute
+
+            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to eq(framework.id)
+          end
+        end
+
+        context 'when false' do
+          before do
+            params[:default] = false
+          end
+
+          it 'does not update the default framework for the namespace' do
+            namespace.namespace_settings.update!(default_compliance_framework_id: nil)
+
+            subject.execute
+
+            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to eq(nil)
+          end
+
+          it 'removes the default framework for the namespace' do
+            namespace.namespace_settings.update!(default_compliance_framework_id: framework.id)
+
+            subject.execute
+
+            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to eq(nil)
+          end
+        end
+      end
     end
   end
 end
