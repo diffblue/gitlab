@@ -45205,6 +45205,9 @@ msgstr ""
 msgid "Webhooks Help"
 msgstr ""
 
+msgid "Webhooks|+ Mask another portion of URL"
+msgstr ""
+
 msgid "Webhooks|A comment is added to a confidential issue."
 msgstr ""
 
