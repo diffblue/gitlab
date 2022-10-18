@@ -619,7 +619,7 @@
 {"name":"validates_hostname","version":"1.0.11","platform":"ruby","checksum":"d506bae0342ec14c920eb319e057fc1886c321a59b85b4b6e966ee4b88fab8c3"},
 {"name":"version_gem","version":"1.1.0","platform":"ruby","checksum":"6b009518020db57f51ec7b410213fae2bf692baea9f1b51770db97fbc93d9a80"},
 {"name":"version_sorter","version":"2.2.4","platform":"ruby","checksum":"7ad071609edfaa3cf28c42d83b1a03096e43512244ae5a9e2fce1404f7e06d41"},
-{"name":"view_component","version":"2.71.0","platform":"ruby","checksum":"c1880647800d9cfb03ff4ba92313db624a4a4b3d5753e137effe86e5f2b3662b"},
+{"name":"view_component","version":"2.74.1","platform":"ruby","checksum":"0bbd47a9c11455a45043dc01aa604db708654718a4d8755c911425482e8392c0"},
 {"name":"vmstat","version":"2.3.0","platform":"ruby","checksum":"ab5446a3e3bd0a9cdb9d9ac69a0bbd119c4f161d945a0846a519dd7018af656d"},
 {"name":"warden","version":"1.2.9","platform":"ruby","checksum":"46684f885d35a69dbb883deabf85a222c8e427a957804719e143005df7a1efd0"},
 {"name":"warning","version":"1.3.0","platform":"ruby","checksum":"23695a5d8e50bd5c46068931b529bee0b28e4982cbcefbe77d867800dde8069e"},
