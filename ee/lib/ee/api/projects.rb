@@ -8,7 +8,7 @@ module EE
       prepended do
         resource :projects do
           desc 'Restore a project' do
-            success Entities::Project
+            success ::API::Entities::Project
           end
           post ':id/restore', feature_category: :authentication_and_authorization do
             authorize!(:remove_project, user_project)
