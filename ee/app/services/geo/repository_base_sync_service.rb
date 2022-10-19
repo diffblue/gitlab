@@ -175,14 +175,6 @@ module Geo
       retries.present? && retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
     end
 
-    def force_to_redownload
-      false # Must be overridden in the children classes
-    end
-
-    def retries
-      0 # Must be overridden in the children classes
-    end
-
     def reschedule_sync
       log_info("Reschedule #{type} sync because a RepositoryUpdateEvent was processed during the sync")
 
