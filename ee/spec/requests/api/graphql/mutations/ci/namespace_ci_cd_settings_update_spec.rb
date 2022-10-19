@@ -5,9 +5,7 @@ require 'spec_helper'
 RSpec.describe 'NamespaceCiCdSettingsUpdate' do
   include GraphqlHelpers
 
-  let_it_be(:namespace) do
-    create(:group, :public, allow_stale_runner_pruning: true).tap(&:save!)
-  end
+  let_it_be(:namespace) { create(:group, :public) }
 
   let(:variables) do
     {
@@ -17,6 +15,10 @@ RSpec.describe 'NamespaceCiCdSettingsUpdate' do
   end
 
   let(:mutation) { graphql_mutation(:namespace_ci_cd_settings_update, variables) }
+
+  before_all do
+    namespace.ci_cd_settings.update!(allow_stale_runner_pruning: true)
+  end
 
   subject(:request) { post_graphql_mutation(mutation, current_user: user) }
 
