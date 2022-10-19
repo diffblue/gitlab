@@ -218,20 +218,6 @@ module EE
 
         ::Epic::RelatedEpicLink.inverse_link_type(type)
       end
-
-      private
-
-      def set_fixed_start_date
-        self.start_date = start_date_fixed
-      end
-
-      def set_fixed_due_date
-        self.end_date = due_date_fixed
-      end
-
-      def usage_ping_record_epic_creation
-        ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_created_action(author: author, namespace: group)
-      end
     end
 
     class_methods do
@@ -561,11 +547,6 @@ module EE
       hierarchy.base_and_ancestors(hierarchy_order: :asc)
     end
 
-    def level_depth_exceeded?(parent_epic)
-      hierarchy.max_descendants_depth.to_i + parent_epic.base_and_ancestors.count >= MAX_HIERARCHY_DEPTH
-    end
-    private :level_depth_exceeded?
-
     def validate_confidential_issues_and_subepics
       return unless confidential?
 
@@ -697,6 +678,8 @@ module EE
       errors.add(:parent, _('You cannot add any more epics. This epic already has maximum number of child epics.'))
     end
 
+    private
+
     def validate_parent_epic
       if self == parent
         errors.add :parent, _("This epic cannot be added. An epic cannot be added to itself.")
@@ -714,7 +697,6 @@ module EE
         )
       end
     end
-    private :validate_parent_epic
 
     def validate_parent_epic_group
       return if self.group_id == parent.group_id
@@ -731,6 +713,21 @@ module EE
         )
       end
     end
-    private :validate_parent_epic_group
+
+    def set_fixed_start_date
+      self.start_date = start_date_fixed
+    end
+
+    def set_fixed_due_date
+      self.end_date = due_date_fixed
+    end
+
+    def usage_ping_record_epic_creation
+      ::Gitlab::UsageDataCounters::EpicActivityUniqueCounter.track_epic_created_action(author: author, namespace: group)
+    end
+
+    def level_depth_exceeded?(parent_epic)
+      hierarchy.max_descendants_depth.to_i + parent_epic.base_and_ancestors.count >= MAX_HIERARCHY_DEPTH
+    end
   end
 end
