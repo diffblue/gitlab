@@ -75,6 +75,16 @@ RSpec.describe Resolvers::ProjectIssuesResolver do
             expect(resolve_issues(sort: :blocking_issues_desc).to_a).to eq [issue3, issue2, issue1, issue4]
           end
         end
+
+        context 'when sorting by health status' do
+          it 'sorts issues ascending' do
+            expect(resolve_issues(sort: :health_status_asc).to_a).to eq [issue3, issue4, issue1, issue2]
+          end
+
+          it 'sorts issues descending' do
+            expect(resolve_issues(sort: :health_status_desc).to_a).to eq [issue1, issue4, issue3, issue2]
+          end
+        end
       end
 
       describe 'filtering by iteration' do

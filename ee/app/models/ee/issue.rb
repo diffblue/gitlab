@@ -25,6 +25,8 @@ module EE
       scope :order_blocking_issues_desc, -> { reorder(blocking_issues_count: :desc) }
       scope :order_weight_desc, -> { reorder(arel_table[:weight].desc.nulls_last) }
       scope :order_weight_asc, -> { reorder(arel_table[:weight].asc.nulls_last) }
+      scope :order_health_status_desc, -> { reorder(arel_table[:health_status].desc.nulls_last) }
+      scope :order_health_status_asc, -> { reorder(arel_table[:health_status].asc.nulls_last) }
       scope :order_status_page_published_first, -> do
         build_keyset_order_on_joined_column(
           scope: includes(:status_page_published_incident),
@@ -262,6 +264,8 @@ module EE
         when 'published_desc'       then order_status_page_published_first
         when 'sla_due_at_asc'       then with_feature(:sla).order_sla_due_at_asc
         when 'sla_due_at_desc'      then with_feature(:sla).order_sla_due_at_desc
+        when 'health_status_asc'    then order_health_status_asc
+        when 'health_status_desc'   then order_health_status_desc
         else
           super
         end
