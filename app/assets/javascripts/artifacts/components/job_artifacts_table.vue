@@ -15,8 +15,34 @@ import TimeAgo from '~/vue_shared/components/time_ago_tooltip.vue';
 import CiIcon from '~/vue_shared/components/ci_icon.vue';
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
 import { totalArtifactsSizeForJob, mapArchivesToJobNodes, mapBooleansToJobNodes } from '../utils';
-import { STATUS_BADGE_VARIANTS, JOBS_PER_PAGE, INITIAL_PAGINATION_STATE, i18n } from '../constants';
+import {
+  STATUS_BADGE_VARIANTS,
+  I18N_DOWNLOAD,
+  I18N_BROWSE,
+  I18N_DELETE,
+  I18N_EXPIRED,
+  I18N_DESTROY_ERROR,
+  I18N_FETCH_ERROR,
+  I18N_ARTIFACTS,
+  I18N_JOB,
+  I18N_SIZE,
+  I18N_CREATED,
+  I18N_ARTIFACTS_COUNT,
+  INITIAL_CURRENT_PAGE,
+  INITIAL_PREVIOUS_PAGE_CURSOR,
+  INITIAL_NEXT_PAGE_CURSOR,
+  JOBS_PER_PAGE,
+  INITIAL_LAST_PAGE_SIZE,
+} from '../constants';
 import ArtifactsTableRowDetails from './artifacts_table_row_details.vue';
+
+const INITIAL_PAGINATION_STATE = {
+  currentPage: INITIAL_CURRENT_PAGE,
+  prevPageCursor: INITIAL_PREVIOUS_PAGE_CURSOR,
+  nextPageCursor: INITIAL_NEXT_PAGE_CURSOR,
+  firstPageSize: JOBS_PER_PAGE,
+  lastPageSize: INITIAL_LAST_PAGE_SIZE,
+};
 
 export default {
   name: 'JobArtifactsTable',
@@ -49,7 +75,7 @@ export default {
       },
       error() {
         createAlert({
-          message: i18n.fetchArtifactsError,
+          message: I18N_FETCH_ERROR,
         });
       },
     },
@@ -121,23 +147,23 @@ export default {
   fields: [
     {
       key: 'artifacts',
-      label: i18n.artifactsLabel,
+      label: I18N_ARTIFACTS,
       thClass: 'gl-w-quarter',
     },
     {
       key: 'job',
-      label: i18n.jobLabel,
+      label: I18N_JOB,
       thClass: 'gl-w-35p',
     },
     {
       key: 'size',
-      label: i18n.sizeLabel,
+      label: I18N_SIZE,
       thClass: 'gl-w-15p gl-text-right',
       tdClass: 'gl-text-right',
     },
     {
       key: 'created',
-      label: i18n.createdLabel,
+      label: I18N_CREATED,
       thClass: 'gl-w-eighth gl-text-center',
       tdClass: 'gl-text-center',
     },
@@ -149,7 +175,19 @@ export default {
     },
   ],
   STATUS_BADGE_VARIANTS,
-  i18n,
+  i18n: {
+    download: I18N_DOWNLOAD,
+    browse: I18N_BROWSE,
+    delete: I18N_DELETE,
+    expired: I18N_EXPIRED,
+    destroyArtifactError: I18N_DESTROY_ERROR,
+    fetchArtifactsError: I18N_FETCH_ERROR,
+    artifactsLabel: I18N_ARTIFACTS,
+    jobLabel: I18N_JOB,
+    sizeLabel: I18N_SIZE,
+    createdLabel: I18N_CREATED,
+    artifactsCount: I18N_ARTIFACTS_COUNT,
+  },
 };
 </script>
 <template>
@@ -178,7 +216,7 @@ export default {
             class="gl-mr-2"
           />
           <strong>
-            {{ n__('%d file', '%d files', artifacts.nodes.length) }}
+            {{ $options.i18n.artifactsCount(artifacts.nodes.length) }}
           </strong>
         </span>
       </template>
@@ -258,8 +296,8 @@ export default {
       <template #row-details="{ item: { artifacts } }">
         <artifacts-table-row-details
           :artifacts="artifacts"
-          :refetch-artifacts="refetchArtifacts"
           :query-variables="queryVariables"
+          @refetch="refetchArtifacts"
         />
       </template>
     </gl-table>

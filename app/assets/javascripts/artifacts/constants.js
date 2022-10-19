@@ -1,4 +1,4 @@
-import { __, s__ } from '~/locale';
+import { __, s__, n__ } from '~/locale';
 
 export const JOB_STATUS_GROUP_SUCCESS = 'success';
 
@@ -23,29 +23,25 @@ export const STATUS_BADGE_VARIANTS = {
   notfound: 'muted',
 };
 
-export const i18n = {
-  download: __('Download'),
-  browse: s__('Artifacts|Browse'),
-  delete: __('Delete'),
-  expired: __('Expired'),
-  destroyArtifactError: s__('Artifacts|An error occurred while deleting the artifact'),
-  fetchArtifactsError: s__('Artifacts|An error occurred while retrieving job artifacts'),
-  artifactsLabel: __('Artifacts'),
-  jobLabel: __('Job'),
-  sizeLabel: __('Size'),
-  createdLabel: __('Created'),
-};
+export const I18N_DOWNLOAD = __('Download');
+export const I18N_BROWSE = s__('Artifacts|Browse');
+export const I18N_DELETE = __('Delete');
+export const I18N_EXPIRED = __('Expired');
+export const I18N_DESTROY_ERROR = s__('Artifacts|An error occurred while deleting the artifact');
+export const I18N_FETCH_ERROR = s__('Artifacts|An error occurred while retrieving job artifacts');
+export const I18N_ARTIFACTS = __('Artifacts');
+export const I18N_JOB = __('Job');
+export const I18N_SIZE = __('Size');
+export const I18N_CREATED = __('Created');
+export const I18N_ARTIFACTS_COUNT = (count) => n__('%d file', '%d files', count);
 
+export const INITIAL_CURRENT_PAGE = 1;
+export const INITIAL_PREVIOUS_PAGE_CURSOR = '';
+export const INITIAL_NEXT_PAGE_CURSOR = '';
 export const JOBS_PER_PAGE = 20;
-
-export const INITIAL_PAGINATION_STATE = {
-  currentPage: 1,
-  prevPageCursor: '',
-  nextPageCursor: '',
-  firstPageSize: JOBS_PER_PAGE,
-  lastPageSize: null,
-};
+export const INITIAL_LAST_PAGE_SIZE = null;
 
 export const ARCHIVE_FILE_TYPE = 'ARCHIVE';
 
-export const ROW_HEIGHT = 56;
+export const ARTIFACT_ROW_HEIGHT = 56;
+export const ARTIFACTS_SHOWN_WITHOUT_SCROLLING = 4;

@@ -1,4 +1,4 @@
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import getJobArtifactsResponse from 'test_fixtures/graphql/artifacts/graphql/queries/get_job_artifacts.query.graphql.json';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -7,7 +7,7 @@ import ArtifactRow from '~/artifacts/components/artifact_row.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import destroyArtifactMutation from '~/artifacts/graphql/mutations/destroy_artifact.mutation.graphql';
-import { i18n } from '~/artifacts/constants';
+import { I18N_DESTROY_ERROR } from '~/artifacts/constants';
 import { createAlert } from '~/flash';
 
 jest.mock('~/flash');
@@ -62,6 +62,24 @@ describe('ArtifactsTableRowDetails component', () => {
   });
 
   describe('when an artifact row emits the delete event', () => {
+    it('sets isLoading to true for that row', async () => {
+      createComponent();
+      await waitForPromises();
+
+      wrapper.findComponent(ArtifactRow).vm.$emit('delete');
+
+      await nextTick();
+
+      [
+        { index: 0, expectedLoading: true },
+        { index: 1, expectedLoading: false },
+      ].forEach(({ index, expectedLoading }) => {
+        expect(wrapper.findAllComponents(ArtifactRow).at(index).props('isLoading')).toBe(
+          expectedLoading,
+        );
+      });
+    });
+
     it('triggers the destroyArtifact GraphQL mutation', async () => {
       createComponent();
       await waitForPromises();
@@ -77,11 +95,13 @@ describe('ArtifactsTableRowDetails component', () => {
       });
       await waitForPromises();
 
+      expect(wrapper.emitted('refetch')).toBeUndefined();
+
       wrapper.findComponent(ArtifactRow).vm.$emit('delete');
       await waitForPromises();
 
-      expect(createAlert).toHaveBeenCalledWith({ message: i18n.destroyArtifactError });
-      expect(refetchArtifacts).toHaveBeenCalled();
+      expect(createAlert).toHaveBeenCalledWith({ message: I18N_DESTROY_ERROR });
+      expect(wrapper.emitted('refetch')).toBeDefined();
     });
   });
 });

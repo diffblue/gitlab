@@ -10,7 +10,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import getJobArtifactsQuery from '~/artifacts/graphql/queries/get_job_artifacts.query.graphql';
 import destroyArtifactMutation from '~/artifacts/graphql/mutations/destroy_artifact.mutation.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import { ARCHIVE_FILE_TYPE, JOBS_PER_PAGE, i18n } from '~/artifacts/constants';
+import { ARCHIVE_FILE_TYPE, JOBS_PER_PAGE, I18N_FETCH_ERROR } from '~/artifacts/constants';
 import { totalArtifactsSizeForJob } from '~/artifacts/utils';
 import { createAlert } from '~/flash';
 
@@ -97,7 +97,7 @@ describe('JobArtifactsTable component', () => {
 
     await waitForPromises();
 
-    expect(createAlert).toHaveBeenCalledWith({ message: i18n.fetchArtifactsError });
+    expect(createAlert).toHaveBeenCalledWith({ message: I18N_FETCH_ERROR });
   });
 
   it('with data, renders the table', async () => {

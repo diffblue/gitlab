@@ -4,7 +4,11 @@ import { DynamicScroller, DynamicScrollerItem } from 'vendor/vue-virtual-scrolle
 import getJobArtifactsQuery from '../graphql/queries/get_job_artifacts.query.graphql';
 import destroyArtifactMutation from '../graphql/mutations/destroy_artifact.mutation.graphql';
 import { removeArtifactFromStore } from '../graphql/cache_update';
-import { i18n, ROW_HEIGHT } from '../constants';
+import {
+  I18N_DESTROY_ERROR,
+  ARTIFACT_ROW_HEIGHT,
+  ARTIFACTS_SHOWN_WITHOUT_SCROLLING,
+} from '../constants';
 import ArtifactRow from './artifact_row.vue';
 
 export default {
@@ -19,10 +23,6 @@ export default {
       type: Object,
       required: true,
     },
-    refetchArtifacts: {
-      type: Function,
-      required: true,
-    },
     queryVariables: {
       type: Object,
       required: true,
@@ -35,7 +35,12 @@ export default {
   },
   computed: {
     scrollContainerStyle() {
-      return { maxHeight: `${4 * (ROW_HEIGHT + 1)}px` };
+      /*
+       limit the height of the expanded artifacts container to a number of artifacts
+       if a job has more artifacts than ARTIFACTS_SHOWN_WITHOUT_SCROLLING, scroll to see the rest
+       add one pixel to row height to account for borders
+      */
+      return { maxHeight: `${ARTIFACTS_SHOWN_WITHOUT_SCROLLING * (ARTIFACT_ROW_HEIGHT + 1)}px` };
     },
   },
   methods: {
@@ -54,21 +59,21 @@ export default {
         })
         .catch(() => {
           createAlert({
-            message: i18n.destroyArtifactError,
+            message: I18N_DESTROY_ERROR,
           });
-          this.refetchArtifacts();
+          this.$emit('refetch');
         })
         .finally(() => {
           this.deletingArtifactId = null;
         });
     },
   },
-  ROW_HEIGHT,
+  ARTIFACT_ROW_HEIGHT,
 };
 </script>
 <template>
   <div :style="scrollContainerStyle">
-    <dynamic-scroller :items="artifacts.nodes" :min-item-size="$options.ROW_HEIGHT">
+    <dynamic-scroller :items="artifacts.nodes" :min-item-size="$options.ARTIFACT_ROW_HEIGHT">
       <template #default="{ item, index, active }">
         <dynamic-scroller-item :item="item" :active="active" :class="{ active }">
           <artifact-row

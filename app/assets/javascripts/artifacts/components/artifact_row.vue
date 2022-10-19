@@ -1,7 +1,7 @@
 <script>
 import { GlButtonGroup, GlButton, GlBadge } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
-import { i18n } from '../constants';
+import { I18N_EXPIRED, I18N_DOWNLOAD, I18N_DELETE } from '../constants';
 
 export default {
   name: 'ArtifactRow',
@@ -34,17 +34,19 @@ export default {
     artifactSize() {
       return numberToHumanSize(this.artifact.size);
     },
-    wrapperClass() {
-      return `gl-py-4 ${
-        this.isLastRow ? '' : 'gl-border-b-solid gl-border-b-1 gl-border-gray-100'
-      }`;
-    },
   },
-  i18n,
+  i18n: {
+    expired: I18N_EXPIRED,
+    download: I18N_DOWNLOAD,
+    delete: I18N_DELETE,
+  },
 };
 </script>
 <template>
-  <div :class="wrapperClass">
+  <div
+    class="gl-py-4"
+    :class="{ 'gl-border-b-solid gl-border-b-1 gl-border-gray-100': !isLastRow }"
+  >
     <div class="gl-display-inline-flex gl-align-items-center gl-w-full">
       <span class="gl-w-half gl-pl-8 gl-display-flex" data-testid="job-artifact-row-name">
         {{ artifact.name }}
