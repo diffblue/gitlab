@@ -12,16 +12,21 @@ RSpec.describe Groups::SettingsHelper do
 
     fake_form_id = "fake_form_id"
 
-    where(:is_paid, :is_button_disabled, :form_value_id) do
-      true      | "true"      | nil
-      true      | "true"      | fake_form_id
-      false     | "false"     | nil
-      false     | "false"     | fake_form_id
+    where(:is_paid, :is_trial, :is_button_disabled, :form_value_id) do
+      true     | false     | "true"       | nil
+      true     | false     | "true"       | fake_form_id
+      false    | true      | "false"      | nil
+      false    | true      | "false"      | fake_form_id
+      false    | false     | "false"      | nil
+      false    | false     | "false"      | fake_form_id
+      true     | true      | "false"      | nil
+      true     | true      | "false"      | fake_form_id
     end
 
     with_them do
       it "returns expected parameters" do
         allow(group).to receive(:paid?).and_return(is_paid)
+        allow(group).to receive(:trial?).and_return(is_trial)
 
         expected = helper.group_settings_confirm_modal_data(group, form_value_id)
         expect(expected).to eq({
