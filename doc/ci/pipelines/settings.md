@@ -101,28 +101,6 @@ To avoid this scenario:
 1. Select the **Prevent outdated deployment jobs** checkbox.
 1. Select **Save changes**.
 
-When an older deployment job starts, it fails and is labeled:
-
-- `failed outdated deployment job` in the pipeline view.
-- `The deployment job is older than the latest deployment, and therefore failed.`
-  when viewing the completed job.
-
-When an older deployment job is manual, the play button is disabled with a message
-`This deployment job does not run automatically and must be started manually, but it's older than the latest deployment, and therefore can't run.`.
-
-Job age is determined by the job start time, not the commit time, so a newer commit
-can be prevented in some circumstances.
-
-For more information, see [Deployment safety](../environments/deployment_safety.md).
-
-## Retry outdated jobs
-
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/211339) in GitLab 13.6.
-
-A deployment job can fail because a newer one has run. If you retry the failed deployment job, the
-environment could be overwritten with older source code. If you select **Retry**, a modal warns you
-about this and asks for confirmation.
-
 For more information, see [Deployment safety](../environments/deployment_safety.md).
 
 ## Specify a custom CI/CD configuration file

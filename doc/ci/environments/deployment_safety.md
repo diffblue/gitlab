@@ -65,6 +65,9 @@ For more information, see [Resource Group documentation](../resource_groups/inde
 
 ## Prevent outdated deployment jobs
 
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/25276) in GitLab 12.9.
+> - In GitLab 15.5, the behavior was [changed](https://gitlab.com/gitlab-org/gitlab/-/issues/363328) to prevent outdated job runs.
+
 The effective execution order of pipeline jobs can vary from run to run, which
 could cause undesired behavior. For example, a [deployment job](../jobs/index.md#deployment-jobs)
 in a newer pipeline could finish before a deployment job in an older pipeline.
@@ -73,6 +76,29 @@ overwriting the "newer" deployment.
 
 You can prevent older deployment jobs from running when a newer deployment
 job is started by enabling the [Prevent outdated deployment jobs](../pipelines/settings.md#prevent-outdated-deployment-jobs) feature.
+
+When an older deployment job starts, it fails and is labeled:
+
+- `failed outdated deployment job` in the pipeline view.
+- `The deployment job is older than the latest deployment, and therefore failed.`
+  when viewing the completed job.
+
+When an older deployment job is manual, the play button is disabled with a message
+`This deployment job does not run automatically and must be started manually, but it's older than the latest deployment, and therefore can't run.`.
+
+Job age is determined by the job start time, not the commit time, so a newer commit
+can be prevented in some circumstances.
+
+### How to rollback to an outdated deployment
+
+In some cases, you need to rollback to an outdated deployment. Current workarounds are:
+
+- Temporarily disable this feature, rollback and re-enable.
+- Run a new pipeline with previous commit. It contains newer deployment jobs than the latest deployment.
+
+Please see [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/378359) for more information about improving the usability.
+
+### Example
 
 Example of a problematic pipeline flow **before** enabling Prevent outdated deployment jobs:
 
