@@ -13,7 +13,6 @@ class TrialRegistrationsController < RegistrationsController
 
   before_action :check_if_gl_com_or_dev
   before_action :redirect_to_trial_or_store_location, only: [:new]
-  before_action :add_onboarding_parameter_to_redirect_url, only: :create
   before_action only: [:new] do
     push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
     push_frontend_feature_flag(:trial_email_validation, type: :development)
@@ -30,14 +29,6 @@ class TrialRegistrationsController < RegistrationsController
     else
       store_location_for(:user, new_users_sign_up_company_path(glm_tracking_params.merge(trial: true)))
     end
-  end
-
-  def add_onboarding_parameter_to_redirect_url
-    stored_url = stored_location_for(:user)
-    return unless stored_url.present?
-
-    redirect_uri = Gitlab::Utils.add_url_parameters(stored_url, onboarding: true)
-    store_location_for(:user, redirect_uri)
   end
 
   def sign_up_params

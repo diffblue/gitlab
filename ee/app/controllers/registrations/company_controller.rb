@@ -48,11 +48,9 @@ module Registrations
     end
 
     def redirect_params
-      if params[:trial_onboarding_flow] == 'true'
-        { trial_onboarding_flow: true }
-      else
-        { skip_trial: true }
-      end.merge(glm_tracking_params)
+      return glm_tracking_params unless params[:trial_onboarding_flow] == 'true'
+
+      glm_tracking_params.merge(trial_onboarding_flow: true)
     end
   end
 end

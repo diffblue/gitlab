@@ -85,16 +85,9 @@ RSpec.describe TrialsController, :saas do
     end
 
     context 'with success' do
-      it { is_expected.to redirect_to(select_trials_url) }
+      let(:post_params) { { glm_source: '_glm_source_', glm_content: '_glm_content_' } }
 
-      context 'when the onboarding=true parameter is set' do
-        let(:post_params) { { glm_source: 'about.gitlab.com', onboarding: true } }
-
-        it 'redirects to the combined registration path' do
-          is_expected.to redirect_to(new_users_sign_up_groups_project_path(glm_source: 'about.gitlab.com',
-                                                                           trial_onboarding_flow: true))
-        end
-      end
+      it { is_expected.to redirect_to(select_trials_path(post_params)) }
 
       context 'when user has 1 trial eligible namespace', :experiment do
         let_it_be(:namespace) { create(:group, path: 'namespace-test') }
@@ -113,10 +106,11 @@ RSpec.describe TrialsController, :saas do
           it 'applies a trial to the namespace' do
             apply_trial_params = {
               uid: user.id,
-              trial_user_information: ActionController::Parameters.new(post_params).permit(:namespace_id)
-                                                      .merge(namespace_id: namespace.id,
-                                                             gitlab_com_trial: true,
-                                                             sync_to_gl: true)
+              trial_user_information: ActionController::Parameters
+                                        .new(post_params).permit(:namespace_id, :glm_source, :glm_content)
+                                        .merge(namespace_id: namespace.id,
+                                               gitlab_com_trial: true,
+                                               sync_to_gl: true)
             }
             service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
             allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).with(apply_trial_params)
@@ -594,12 +588,6 @@ RSpec.describe TrialsController, :saas do
     subject(:get_skip) { get :skip, params: params }
 
     let(:params) { {} }
-
-    context 'when the onboarding=true parameter is set' do
-      let(:params) { { onboarding: true } }
-
-      it { is_expected.to redirect_to(new_users_sign_up_groups_project_path(skip_trial: true)) }
-    end
 
     context 'when the user is `setup_for_company: true`' do
       let(:user) { create(:user, setup_for_company: true) }
