@@ -520,23 +520,21 @@ module EE
     def update_project_counter_caches
     end
 
-    def valid_parent?(parent_epic: nil, group_ancestors: nil)
+    def valid_parent?(parent_epic: nil)
       self.parent = parent_epic if parent_epic
 
-      validate_parent(group_ancestors: group_ancestors)
+      validate_parent
 
       errors.empty?
     end
 
-    def validate_parent(group_ancestors: nil)
+    def validate_parent
       return unless parent
 
       validate_parent_epic
       return if errors.any?
 
-      group_ancestors ||= parent.group.ancestors
-
-      validate_parent_epic_group(group_ancestors)
+      validate_parent_epic_group
     end
 
     def issues_readable_by(current_user, preload: nil)
@@ -718,29 +716,19 @@ module EE
     end
     private :validate_parent_epic
 
-    def validate_parent_epic_group(parent_ancestors)
+    def validate_parent_epic_group
       return if self.group_id == parent.group_id
 
-      if ::Feature.enabled?(:child_epics_from_different_hierarchies, group) &&
-          ::Feature.enabled?(:child_epics_from_different_hierarchies, parent.group)
+      return if ::Feature.enabled?(:child_epics_from_different_hierarchies, group) &&
+        ::Feature.enabled?(:child_epics_from_different_hierarchies, parent.group)
 
-        if parent_ancestors.include?(group)
-          errors.add(:parent,
-            _(
-              'This epic cannot be added. An epic cannot belong to ' \
-              'an ancestor group of its parent epic.'
-            )
+      unless group.ancestors.include?(parent.group)
+        errors.add(:parent,
+          _(
+            'This epic cannot be added. An epic must belong to the ' \
+            'same group or subgroup as its parent epic.'
           )
-        end
-      else
-        unless group.ancestors.include?(parent.group)
-          errors.add(:parent,
-            _(
-              'This epic cannot be added. An epic must belong to the ' \
-              'same group or subgroup as its parent epic.'
-            )
-          )
-        end
+        )
       end
     end
     private :validate_parent_epic_group

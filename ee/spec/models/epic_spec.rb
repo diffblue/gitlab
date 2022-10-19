@@ -332,10 +332,10 @@ RSpec.describe Epic do
       context 'with parent in a descendant group' do
         let_it_be(:parent_epic) { create(:epic, group: descendant_group) }
 
-        it 'returns false' do
+        it 'returns true' do
           epic.parent = parent_epic
 
-          expect(epic.valid_parent?).to be_falsey
+          expect(epic.valid_parent?).to be_truthy
         end
 
         context 'when child_epics_from_different_hierarchies feature flag is disabled' do

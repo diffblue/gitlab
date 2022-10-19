@@ -163,8 +163,6 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 epic_to_add.update!(group: ancestor)
               end
 
-              include_examples 'returns an error'
-
               context 'when child_epics_from_different_hierarchies feature flag is disabled' do
                 let(:expected_error) do
                   'This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.'
@@ -439,6 +437,18 @@ RSpec.describe Epics::EpicLinks::CreateService do
           before do
             epic_to_add.update!(group: other_group)
             other_group.add_reporter(user)
+          end
+
+          subject { add_epic([valid_reference]) }
+
+          include_examples 'returns success'
+          include_examples 'system notes created'
+        end
+
+        context 'when an epic from ancestor group is given' do
+          before do
+            ancestor.add_developer(user)
+            epic_to_add.update!(group: ancestor)
           end
 
           subject { add_epic([valid_reference]) }

@@ -259,17 +259,7 @@ RSpec.describe Epics::TreeReorderService do
             end
 
             context 'when there is some other error with the new parent' do
-              context 'when the new parent is in a new group hierarchy' do
-                let_it_be(:other_group) { create(:group) }
-
-                let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
-
-                before do
-                  other_group.add_developer(user)
-                  epic.update!(group: other_group)
-                  epic2.update!(parent: epic1)
-                end
-
+              shared_examples 'new parent not in an ancestor group' do
                 it 'returns success status' do
                   expect(subject[:status]).to eq(:success)
                 end
@@ -288,6 +278,20 @@ RSpec.describe Epics::TreeReorderService do
                 end
               end
 
+              context 'when the new parent is in a new group hierarchy' do
+                let_it_be(:other_group) { create(:group) }
+
+                let(:new_parent_id) { GitlabSchema.id_from_object(epic) }
+
+                before do
+                  other_group.add_developer(user)
+                  epic.update!(group: other_group)
+                  epic2.update!(parent: epic1)
+                end
+
+                it_behaves_like 'new parent not in an ancestor group'
+              end
+
               context 'when the new parent is in a descendant group' do
                 let_it_be(:descendant_group) { create(:group, parent: group ) }
 
@@ -299,17 +303,7 @@ RSpec.describe Epics::TreeReorderService do
                   epic2.update!(parent: epic1)
                 end
 
-                it_behaves_like 'error for the tree update',
-                                "This epic cannot be added. An epic cannot belong to an ancestor group of its parent epic."
-
-                context 'when child_epics_from_different_hierarchies feature flag is disabled' do
-                  before do
-                    stub_feature_flags(child_epics_from_different_hierarchies: false)
-                  end
-
-                  it_behaves_like 'error for the tree update',
-                                  "This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic."
-                end
+                it_behaves_like 'new parent not in an ancestor group'
               end
             end
 

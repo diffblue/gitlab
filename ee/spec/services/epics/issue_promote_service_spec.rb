@@ -179,60 +179,61 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
           let_it_be(:parent_epic) { create(:epic, group: group) }
           let_it_be(:epic_issue) { create(:epic_issue, epic: parent_epic, issue: issue) }
 
-          it 'creates a new epic with correct attributes' do
-            subject.execute(issue)
-
-            expect(epic.title).to eq(issue.title)
-            expect(epic.description).to eq(issue.description)
-            expect(epic.author).to eq(user)
-            expect(epic.group).to eq(group)
-            expect(epic.parent).to eq(parent_epic)
-          end
-
-          context 'when promoting issue to a different group' do
+          shared_examples 'successfully promotes issue to epic' do
             it 'creates a new epic with correct attributes' do
-              subject.execute(issue, new_group)
+              epic = subject.execute(issue, new_group)
 
+              expect(issue.reload.promoted_to_epic_id).to eq(epic.id)
               expect(epic.title).to eq(issue.title)
               expect(epic.description).to eq(issue.description)
               expect(epic.author).to eq(user)
               expect(epic.group).to eq(new_group)
               expect(epic.parent).to eq(parent_epic)
             end
+          end
+
+          shared_examples 'fails to promote issue' do
+            it 'does not promote to epic and raises error' do
+              expect { subject.execute(issue, new_group) }
+                .to raise_error(StandardError,
+                                'Validation failed: Parent This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.')
+
+              expect(issue.reload.state).to eq("opened")
+              expect(issue.reload.promoted_to_epic_id).to be_nil
+            end
+          end
+
+          it_behaves_like 'successfully promotes issue to epic' do
+            let(:new_group) { group }
+          end
+
+          context 'when promoting issue to a different group' do
+            let_it_be(:new_group) { create(:group) }
+
+            before do
+              new_group.add_developer(user)
+            end
+
+            it_behaves_like 'successfully promotes issue to epic'
 
             context 'when child_epics_from_different_hierarchies feature flag is disabled' do
               before do
                 stub_feature_flags(child_epics_from_different_hierarchies: false)
               end
 
-              it 'does not promote to epic and raises error' do
-                expect { subject.execute(issue, new_group) }
-                  .to raise_error(StandardError, 'Validation failed: Parent This epic cannot be added. An epic must belong to the same group or subgroup as its parent epic.')
-
-                expect(issue.reload.state).to eq("opened")
-                expect(issue.reload.promoted_to_epic_id).to be_nil
-              end
+              it_behaves_like 'fails to promote issue'
             end
           end
 
-          context 'when promoting issue to a different group in the hierarchy' do
+          context 'when promoting issue to a different group in the same hierarchy' do
             context 'when the group is a descendant group' do
-              let(:new_group) { create(:group, parent: group) }
+              let_it_be(:issue_group) { create(:group, parent: group) }
 
               before do
                 new_group.add_developer(user)
               end
 
-              it 'creates a new epic with correct attributes' do
-                epic = subject.execute(issue, new_group)
-
-                expect(issue.reload.promoted_to_epic_id).to eq(epic.id)
-                expect(epic.title).to eq(issue.title)
-                expect(epic.description).to eq(issue.description)
-                expect(epic.author).to eq(user)
-                expect(epic.group).to eq(new_group)
-                expect(epic.parent).to eq(parent_epic)
-              end
+              it_behaves_like 'successfully promotes issue to epic'
             end
 
             context 'when the group is an ancestor group' do
@@ -242,12 +243,14 @@ RSpec.describe Epics::IssuePromoteService, :aggregate_failures do
                 new_group.add_developer(user)
               end
 
-              it 'does not promote to epic and raises error' do
-                expect { subject.execute(issue, new_group) }
-                  .to raise_error(ActiveRecord::RecordInvalid)
+              it_behaves_like 'successfully promotes issue to epic'
 
-                expect(issue.reload.state).to eq("opened")
-                expect(issue.reload.promoted_to_epic_id).to be_nil
+              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                before do
+                  stub_feature_flags(child_epics_from_different_hierarchies: false)
+                end
+
+                it_behaves_like 'fails to promote issue'
               end
             end
           end

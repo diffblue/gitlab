@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Epics::CreateService do
-  let_it_be(:group) { create(:group, :internal) }
+  let_it_be(:ancestor_group) { create(:group, :internal) }
+  let_it_be(:group) { create(:group, :internal, parent: ancestor_group) }
   let_it_be(:user) { create(:user) }
   let_it_be(:parent_epic) { create(:epic, group: group) }
 
@@ -98,26 +99,87 @@ RSpec.describe Epics::CreateService do
 
         context 'when description param has quick action' do
           context 'for /parent_epic' do
-            it 'assigns parent epic' do
-              parent_epic = create(:epic, group: group)
-              description = "/parent_epic #{parent_epic.to_reference}"
-              params = { title: 'New epic with parent', description: description }
-
-              epic = described_class.new(group: group, current_user: user, params: params).execute
-
-              expect(epic.parent).to eq(parent_epic)
-            end
-
-            context 'when parent epic cannot be assigned' do
-              it 'does not assign parent epic' do
-                other_group = create(:group, :private)
-                parent_epic = create(:epic, group: other_group)
-                description = "/parent_epic #{parent_epic.to_reference(group)}"
+            shared_examples 'assigning a valid parent epic' do
+              it 'sets parent epic' do
+                parent = create(:epic, group: new_group)
+                description = "/parent_epic #{parent.to_reference(new_group, full: true)}"
                 params = { title: 'New epic with parent', description: description }
 
                 epic = described_class.new(group: group, current_user: user, params: params).execute
 
-                expect(epic.parent).to eq(nil)
+                expect(epic.reset.parent).to eq(parent)
+              end
+            end
+
+            shared_examples 'assigning an invalid parent epic' do
+              it 'does not set parent epic' do
+                parent = create(:epic, group: new_group)
+                description = "/parent_epic #{parent.to_reference(new_group, full: true)}"
+                params = { title: 'New epic with parent', description: description }
+
+                epic = described_class.new(group: group, current_user: user, params: params).execute
+
+                expect(epic.reset.parent).to eq(nil)
+              end
+            end
+
+            context 'when parent is in the same group' do
+              let(:new_group) { group }
+
+              it_behaves_like 'assigning a valid parent epic'
+            end
+
+            context 'when parent is in an ancestor group' do
+              let(:new_group) { ancestor_group }
+
+              before do
+                ancestor_group.add_reporter(user)
+              end
+
+              it_behaves_like 'assigning a valid parent epic'
+            end
+
+            context 'when parent is in a descendant group' do
+              let_it_be(:descendant_group) { create(:group, :private, parent: group) }
+              let(:new_group) { descendant_group }
+
+              before do
+                descendant_group.add_reporter(user)
+              end
+
+              it_behaves_like 'assigning a valid parent epic'
+
+              context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                before do
+                  stub_feature_flags(child_epics_from_different_hierarchies: false)
+                end
+
+                it_behaves_like 'assigning an invalid parent epic'
+              end
+            end
+
+            context 'when parent is in a different group hierarchy' do
+              let_it_be(:other_group) { create(:group, :private) }
+              let(:new_group) { other_group }
+
+              context 'when user has access to the group' do
+                before do
+                  other_group.add_reporter(user)
+                end
+
+                it_behaves_like 'assigning a valid parent epic'
+
+                context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+                  before do
+                    stub_feature_flags(child_epics_from_different_hierarchies: false)
+                  end
+
+                  it_behaves_like 'assigning an invalid parent epic'
+                end
+              end
+
+              context 'when user does not have access to the group' do
+                it_behaves_like 'assigning an invalid parent epic'
               end
             end
           end
