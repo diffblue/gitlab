@@ -2,14 +2,17 @@
 
 require './spec/support/sidekiq_middleware'
 require './spec/support/helpers/test_env'
+require 'active_support/testing/time_helpers'
 
 class Gitlab::Seeder::Burndown
+  include ActiveSupport::Testing::TimeHelpers
+
   def initialize(project, perf: false)
     @project = project
   end
 
   def seed!
-    Timecop.travel 10.days.ago
+    travel_to(10.days.ago)
 
     Sidekiq::Worker.skipping_transaction_check do
       Sidekiq::Testing.inline! do
@@ -63,7 +66,7 @@ class Gitlab::Seeder::Burndown
 
   def close_issues
     @milestone.start_date.upto(@milestone.due_date) do |date|
-      Timecop.travel(date)
+      travel_to(date)
 
       close_number = rand(1..3)
       open_issues  = @milestone.issues.opened

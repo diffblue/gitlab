@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
 require './spec/support/sidekiq_middleware'
+require 'active_support/testing/time_helpers'
 
 class Gitlab::Seeder::ProductivityAnalytics
+  include ActiveSupport::Testing::TimeHelpers
+
   def initialize(project)
     @project = project
     @user = User.admins.first
@@ -12,26 +15,26 @@ class Gitlab::Seeder::ProductivityAnalytics
   def seed!
     Sidekiq::Worker.skipping_transaction_check do
       Sidekiq::Testing.inline! do
-        Timecop.travel 90.days.ago
+        travel_to(90.days.ago)
         issues = create_issues
         print '.'
 
-        Timecop.travel 10.days.from_now
+        travel_to(10.days.from_now)
         add_milestones_and_list_labels(issues)
         print '.'
 
-        Timecop.travel 10.days.from_now
+        travel_to(10.days.from_now)
         branches = mention_in_commits(issues)
         print '.'
 
-        Timecop.travel 10.days.from_now
+        travel_to(10.days.from_now)
         merge_requests = create_merge_requests_closing_issues(issues, branches)
         print '.'
 
-        Timecop.travel 10.days.from_now
+        travel_to(10.days.from_now)
         create_notes(merge_requests)
 
-        Timecop.travel 10.days.from_now
+        travel_to(10.days.from_now)
         merge_merge_requests(merge_requests)
         print '.'
       end
@@ -51,7 +54,7 @@ class Gitlab::Seeder::ProductivityAnalytics
         assignees: [@project.team.users.sample]
       }
 
-      Timecop.travel rand(10).days.from_now do
+      travel_to(rand(10).days.from_now) do
         Issues::CreateService.new(project: @project, current_user: @project.team.users.sample, params: issue_params, spam_params: nil).execute[:issue]
       end
     end
@@ -59,7 +62,7 @@ class Gitlab::Seeder::ProductivityAnalytics
 
   def add_milestones_and_list_labels(issues)
     issues.shuffle.map.with_index do |issue, index|
-      Timecop.travel 12.hours.from_now do
+      travel_to(12.hours.from_now) do
         if index.even?
           issue.update(milestone: @project.milestones.sample)
         else
@@ -78,7 +81,7 @@ class Gitlab::Seeder::ProductivityAnalytics
     issues.map do |issue|
       branch_name = filename = "#{FFaker::Product.brand}-#{FFaker::Product.brand}-#{rand(1000)}"
 
-      Timecop.travel 12.hours.from_now do
+      travel_to(12.hours.from_now) do
         issue.project.repository.add_branch(@user, branch_name, 'master')
 
         commit_sha = issue.project.repository.create_file(@user, filename, "content", message: "Commit for #{issue.to_reference}", branch_name: branch_name)
@@ -107,7 +110,7 @@ class Gitlab::Seeder::ProductivityAnalytics
         source_branch: branch,
         target_branch: 'master'
       }
-      Timecop.travel issue.created_at do
+      travel_to(issue.created_at) do
         MergeRequests::CreateService.new(project: issue.project, current_user: @user, params: opts).execute
       end
     end
@@ -115,7 +118,7 @@ class Gitlab::Seeder::ProductivityAnalytics
 
   def create_notes(merge_requests)
     merge_requests.each do |merge_request|
-      Timecop.travel merge_request.created_at + rand(5).days do
+      travel_to(merge_request.created_at + rand(5).days) do
         Note.create!(
           author: @user,
           project: merge_request.project,
@@ -128,7 +131,7 @@ class Gitlab::Seeder::ProductivityAnalytics
 
   def merge_merge_requests(merge_requests)
     merge_requests.each do |merge_request|
-      Timecop.travel rand(15).days.from_now do
+      travel_to(rand(15).days.from_now) do
         MergeRequests::MergeService.new(project: merge_request.project, current_user: @user).execute(merge_request)
       end
     end
