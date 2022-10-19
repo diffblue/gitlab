@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class DastSiteProfile < ApplicationRecord
+  API_SECRETS_KEYS = [Dast::SiteProfileSecretVariable::PASSWORD,
+                      Dast::SiteProfileSecretVariable::REQUEST_HEADERS].freeze
+
   include Sanitizable
 
   belongs_to :project
@@ -75,8 +78,10 @@ class DastSiteProfile < ApplicationRecord
     return collection unless Ability.allowed?(user, :read_on_demand_dast_scan, self)
 
     collection.concat(secret_variables).tap do |variables|
-      if variables[Dast::SiteProfileSecretVariable::PASSWORD]
-        variables.append(api_password_secret(variables[Dast::SiteProfileSecretVariable::PASSWORD]))
+      API_SECRETS_KEYS.each do |key|
+        if variables[key]
+          variables.append(api_secret_variable(key, variables[key]))
+        end
       end
     end
   end
@@ -145,12 +150,6 @@ class DastSiteProfile < ApplicationRecord
     end
   end
 
-  def api_password_secret(password_secret)
-    secret = password_secret.to_runner_variable
-    secret[:key] = Dast::SiteProfileSecretVariable::API_PASSWORD
-    secret
-  end
-
   def ensure_scan_file_path
     return unless Feature.enabled?(:dast_api_scanner, project)
 
@@ -185,5 +184,11 @@ class DastSiteProfile < ApplicationRecord
     variables.append(key: 'DAST_API_SPECIFICATION', value: url)
     variables.append(key: 'DAST_API_HOST_OVERRIDE', value: URI(url).host)
     variables.append(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
+  end
+
+  def api_secret_variable(key, value)
+    secret = value.to_runner_variable
+    secret[:key] = Dast::SiteProfileSecretVariable::API_SCAN_VARIABLES_MAP[key]
+    secret
   end
 end

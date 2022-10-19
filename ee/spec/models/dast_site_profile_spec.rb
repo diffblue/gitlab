@@ -504,6 +504,16 @@ RSpec.describe DastSiteProfile, type: :model do
               expect(subject.secret_ci_variables(user).to_runner_variables).to include(key: api_password, value: variable.value, public: false, masked: true)
             end
           end
+
+          context 'when request headers are configured' do
+            let(:api_request_header) { Dast::SiteProfileSecretVariable::API_REQUEST_HEADERS }
+
+            it 'returns a collection containing the api request headers' do
+              variable = create(:dast_site_profile_secret_variable, :request_headers, dast_site_profile: subject)
+
+              expect(subject.secret_ci_variables(user).to_runner_variables).to include(key: api_request_header, value: variable.value, public: false, masked: true)
+            end
+          end
         end
       end
 
