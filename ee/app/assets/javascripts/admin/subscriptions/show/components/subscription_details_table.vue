@@ -6,7 +6,6 @@ import { copySubscriptionIdButtonText, detailsLabels } from '../constants';
 
 const placeholderHeightFactor = 32;
 const placeholderWidth = 180;
-const DEFAULT_TH_CLASSES = 'gl-display-none';
 const DEFAULT_TD_CLASSES = 'gl-border-none! gl-h-7 gl-line-height-normal! gl-p-0!';
 
 export default {
@@ -18,14 +17,12 @@ export default {
     {
       key: 'label',
       label: '',
-      thClass: DEFAULT_TH_CLASSES,
       tdClass: `${DEFAULT_TD_CLASSES} gl-w-13`,
     },
     {
       key: 'value',
       formatter: (v, k, item) => item.value?.toString() || '-',
       label: '',
-      thClass: DEFAULT_TH_CLASSES,
       tdClass: DEFAULT_TD_CLASSES,
     },
   ],
@@ -91,6 +88,7 @@ export default {
     :fields="$options.fields"
     :items="details"
     class="gl-m-0!"
+    thead-class="gl-display-none"
     :tbody-tr-attr="rowAttr"
     :tbody-tr-class="rowClass"
   >
