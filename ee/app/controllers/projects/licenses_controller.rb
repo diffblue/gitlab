@@ -29,30 +29,6 @@ module Projects
       end
     end
 
-    def create
-      result = ::Projects::Licenses::CreatePolicyService
-        .new(project, current_user, software_license_policy_params)
-        .execute
-
-      if result[:status] == :success
-        render json: LicenseEntity.represent(result[:software_license_policy]), status: :created
-      else
-        render_error_for(result)
-      end
-    end
-
-    def update
-      result = ::Projects::Licenses::UpdatePolicyService
-        .new(project, current_user, software_license_policy_params)
-        .execute(params[:id])
-
-      if result[:status] == :success
-        render json: LicenseEntity.represent(result[:software_license_policy]), status: :ok
-      else
-        render_error_for(result)
-      end
-    end
-
     private
 
     def serializer
@@ -62,14 +38,6 @@ module Projects
 
     def pageable(items)
       ::Gitlab::ItemsCollection.new(items)
-    end
-
-    def software_license_policy_params
-      params.require(:software_license_policy).permit(:software_license_id, :spdx_identifier, :classification)
-    end
-
-    def render_error_for(result)
-      render json: { errors: result[:message].as_json }, status: result.fetch(:http_status, :unprocessable_entity)
     end
 
     def matching_policies_params
