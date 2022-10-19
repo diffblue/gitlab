@@ -2,6 +2,8 @@
 
 module Geo
   class ProjectWikiRepositoryRegistry < Geo::BaseRegistry
+    include ::Geo::ReplicableRegistry
+
     MODEL_CLASS = ::Project
     MODEL_FOREIGN_KEY = :project_id
 
