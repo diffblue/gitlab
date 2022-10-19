@@ -225,8 +225,8 @@ RSpec.describe 'SAML provider settings' do
         it "shows the sso page so user can sign in" do
           visit sso_group_saml_providers_path(group)
 
-          expect(page).to have_content('SAML SSO')
-          expect(page).to have_content("Sign in to \"#{group.full_name}\"")
+          expect(page).to have_content('SAML single sign-on')
+          expect(page).to have_content("Sign in to #{group.full_name}")
         end
       end
 
@@ -262,7 +262,7 @@ RSpec.describe 'SAML provider settings' do
           it 'sign in button redirects to auth flow' do
             visit sso_group_saml_providers_path(group)
 
-            click_link 'Sign in with Single Sign-On'
+            click_link 'Sign in with single sign-on'
 
             expect(page).to have_current_path group_path(group), ignore_query: true
             expect(page).to have_content('Already signed in')
