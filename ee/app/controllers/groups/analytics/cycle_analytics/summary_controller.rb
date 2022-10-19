@@ -7,7 +7,6 @@ module Groups
         extend ::Gitlab::Utils::Override
         include CycleAnalyticsParams
 
-        before_action :load_group
         before_action :authorize_access
         before_action :validate_params
 

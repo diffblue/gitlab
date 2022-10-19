@@ -7,7 +7,6 @@ module Groups
         include ::Analytics::CycleAnalytics::StageActions
         extend ::Gitlab::Utils::Override
 
-        before_action :load_group
         before_action :validate_params, only: %i[median average records average_duration_chart count]
         before_action :authorize_read_group_stage, only: %i[median average records average_duration_chart count]
 

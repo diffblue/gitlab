@@ -5,7 +5,6 @@ class Groups::Analytics::CoverageReportsController < Groups::Analytics::Applicat
 
   COVERAGE_PARAM = 'coverage'
 
-  before_action :load_group
   before_action -> { authorize_view_by_action!(:read_group_coverage_reports) }
 
   def index
