@@ -44,6 +44,6 @@ gem 'nokogiri', '~> 1.13', '>= 1.13.8'
 gem 'deprecation_toolkit', '~> 2.0.0', require: false
 
 group :development do
-  gem 'pry-byebug', '~> 3.5.1', platform: :mri
+  gem 'pry-byebug', '~> 3.10.1', platform: :mri
   gem "ruby-debug-ide", "~> 0.7.3"
 end
