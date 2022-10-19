@@ -31065,8 +31065,6 @@ CREATE INDEX tmp_idx_project_features_on_releases_al_and_repo_al_partial ON proj
 
 CREATE INDEX tmp_idx_vulnerabilities_on_id_where_report_type_7_99 ON vulnerabilities USING btree (id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
-CREATE INDEX tmp_index_approval_merge_request_rules_on_report_type_equal_one ON approval_merge_request_rules USING btree (id, report_type) WHERE (report_type = 1);
-
 CREATE INDEX tmp_index_ci_job_artifacts_on_expire_at_where_locked_unknown ON ci_job_artifacts USING btree (expire_at, job_id) WHERE ((locked = 2) AND (expire_at IS NOT NULL));
 
 CREATE INDEX tmp_index_ci_job_artifacts_on_id_expire_at_file_type_trace ON ci_job_artifacts USING btree (id) WHERE (((date_part('day'::text, timezone('UTC'::text, expire_at)) = ANY (ARRAY[(21)::double precision, (22)::double precision, (23)::double precision])) AND (date_part('minute'::text, timezone('UTC'::text, expire_at)) = ANY (ARRAY[(0)::double precision, (30)::double precision, (45)::double precision])) AND (date_part('second'::text, timezone('UTC'::text, expire_at)) = (0)::double precision)) OR (file_type = 3));
