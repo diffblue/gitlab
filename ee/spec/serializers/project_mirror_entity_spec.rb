@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe ProjectMirrorEntity do
+RSpec.describe ProjectMirrorEntity, feature_category: :source_code_management do
   subject(:entity) { described_class.new(project).as_json.deep_symbolize_keys }
 
   describe 'pull mirror' do
@@ -33,7 +33,8 @@ RSpec.describe ProjectMirrorEntity do
             ssh_known_hosts_verified_by_id: nil,
             ssh_public_key: nil
           },
-          remote_mirrors_attributes: []
+          remote_mirrors_attributes: [],
+          mirror_branch_regex: project.mirror_branch_regex
         )
       end
 
@@ -67,8 +68,19 @@ RSpec.describe ProjectMirrorEntity do
             ssh_known_hosts_verified_by_id: import_data.ssh_known_hosts_verified_by_id,
             ssh_public_key: import_data.ssh_public_key
           },
-          remote_mirrors_attributes: []
+          remote_mirrors_attributes: [],
+          mirror_branch_regex: project.mirror_branch_regex
         )
+      end
+    end
+
+    context 'when mirror_only_branches_match_regex is disabled' do
+      before do
+        stub_feature_flags(mirror_only_branches_match_regex: false)
+      end
+
+      it 'exclude mirror_branch_regex' do
+        expect(subject).not_to include(:mirror_branch_regex)
       end
     end
   end
