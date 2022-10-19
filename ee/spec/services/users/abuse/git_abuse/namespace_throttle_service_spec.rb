@@ -210,7 +210,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
           namespace_id: namespace.id
         })
 
-        expect(Gitlab::AppLogger).to receive(:info).with({
+        expect(Gitlab::AppLogger).not_to receive(:info).with({
           message: "Namespace-level user ban",
           username: user.username,
           email: user.email,
