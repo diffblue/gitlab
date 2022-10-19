@@ -204,31 +204,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
             expect(controller.stored_location_for(:user)).to eq(success_path)
           end
         end
-
-        context 'when setup_for_company is true' do
-          let_it_be(:user) { create(:user, setup_for_company: true) }
-
-          it 'is expected to store the success path and redirect to the new trial page' do
-            expect(subject).to redirect_to(new_trial_path)
-            expect(controller.stored_location_for(:user)).to eq(success_path)
-          end
-
-          context 'when the skip_trial param is set' do
-            let(:extra_params) { { skip_trial: true } }
-
-            it { is_expected.to redirect_to(success_path) }
-          end
-
-          context 'when the trial_onboarding_flow param is set' do
-            let(:extra_params) { { trial_onboarding_flow: true } }
-
-            before do
-              allow(GitlabSubscriptions::Trials::ApplyTrialWorker).to receive(:perform_async)
-            end
-
-            it { is_expected.to redirect_to(success_path) }
-          end
-        end
       end
     end
   end

@@ -21,8 +21,7 @@ module EE
         submit_path: create_lead_trials_path(glm_params),
         first_name: current_user.first_name,
         last_name: current_user.last_name,
-        company_name: current_user.organization,
-        onboarding: params[:onboarding]
+        company_name: current_user.organization
       }.merge(params.slice(:first_name, :last_name, :company_name, :company_size, :phone_number, :country, :state).to_unsafe_h.symbolize_keys)
     end
 

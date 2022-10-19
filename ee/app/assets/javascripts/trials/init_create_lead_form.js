@@ -14,7 +14,6 @@ export const initTrialCreateLeadForm = () => {
     country,
     state,
     phoneNumber,
-    onboarding,
   } = el.dataset;
 
   return new Vue({
@@ -30,7 +29,6 @@ export const initTrialCreateLeadForm = () => {
         state: state || '',
         phoneNumber,
       },
-      onboarding,
       submitPath,
     },
     render(createElement) {

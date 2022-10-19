@@ -74,15 +74,6 @@ RSpec.describe EE::RegistrationsHelper do
       end
     end
 
-    context 'with `offer_trial` parameter present' do
-      let(:params) { { offer_trial: 'true' } }
-
-      it 'return expected data' do
-        expect(helper.registration_verification_data)
-          .to eq(next_step_url: helper.new_trial_path)
-      end
-    end
-
     context 'with no relevant parameters present' do
       let(:params) { { xxx: 1 } }
 
