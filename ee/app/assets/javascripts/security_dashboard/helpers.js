@@ -177,6 +177,24 @@ export const preparePageInfo = (pageInfo) => {
 };
 
 /**
+ * Provided a groupBy vulnerability scanners, this returns an array that is
+ * sorted alphabetically with the "GENERIC" custom scanner name as the last item
+ *
+ * @param {Object} groupedByReportType
+ * @returns {Array} sorted groupedByReportType
+ */
+const sortGroupedReportType = (groupedByReportType) => {
+  const manuallyAddedScannerId = 'GENERIC';
+
+  return Object.entries(groupedByReportType).sort(([a], [b]) => {
+    if (a === manuallyAddedScannerId) return 1;
+    if (b === manuallyAddedScannerId) return -1;
+
+    return a.localeCompare(b);
+  });
+};
+
+/**
  * Provided a vulnerability scanners from the GraphQL API, this returns an array that is
  * formatted so it can be displayed in the dropdown UI.
  *
@@ -185,8 +203,9 @@ export const preparePageInfo = (pageInfo) => {
  */
 export const getFormattedScanners = (vulnerabilityScanners) => {
   const groupedByReportType = groupBy(vulnerabilityScanners, 'reportType');
+  const sortedGroupedByReportType = sortGroupedReportType(groupedByReportType);
 
-  return Object.entries(groupedByReportType).map(([reportType, scanners]) => {
+  return sortedGroupedByReportType.map(([reportType, scanners]) => {
     return {
       id: reportType,
       reportType,
