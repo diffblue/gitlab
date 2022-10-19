@@ -90,7 +90,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
 
         it 'creates multiple indices' do
           expect(helper).to receive(:create_empty_index).and_return('new_index_name' => 'new_index')
-          is_expected.to receive(:launch_subtasks).with('new_index_name' => 'new_index', 'new_issues_name' => 'new_issues')
+          is_expected.to receive(:launch_subtasks).with({ 'new_index_name' => 'new_index', 'new_issues_name' => 'new_issues' })
 
           cluster_reindexing_service.execute
         end
@@ -101,7 +101,7 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
 
         it 'does not create the main index' do
           expect(helper).not_to receive(:create_empty_index)
-          is_expected.to receive(:launch_subtasks).with('new_issues_name' => 'new_issues')
+          is_expected.to receive(:launch_subtasks).with({ 'new_issues_name' => 'new_issues' })
 
           cluster_reindexing_service.execute
         end
