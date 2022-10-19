@@ -1,22 +1,22 @@
-- page_title _('SAML SSO for %{group_name}') % { group_name: @group_name }
+- page_title _('SAML single sign-on for %{group_name}') % { group_name: @group_name }
 
 - if @auto_redirect_to_provider
   = gl_loading_icon(size: 'lg')
   .gl-text-center.gl-mt-7
     %h4= _('Reauthenticating with SAML provider.')
-  = saml_link _('Sign in with Single Sign-On'), @group_path, id: 'js-auto-redirect-to-provider', html_class: 'gl-display-none', redirect: @redirect_path
+  = saml_link _('Sign in with single sign-on'), @group_path, id: 'js-auto-redirect-to-provider', html_class: 'gl-display-none', redirect: @redirect_path
 - else
-  = render 'devise/shared/tab_single', tab_title: _('SAML SSO')
+  = render 'devise/shared/tab_single', tab_title: _('SAML single sign-on')
   .login-box
     .login-body.gl-px-5.gl-pt-5
       - if @group_saml_identity || !user_signed_in?
-        %h4.gl-mt-0= _('Sign in to "%{group_name}"') % { group_name: @group_name }
-        %p= s_('SAML|To access "%{group_name}" you must sign in with your Single Sign-On account, through an external sign-in page.') % { group_name: @group_name }
+        %h4.gl-mt-0= _('Sign in to %{group_name}') % { group_name: @group_name }
+        %p= s_('SAML|To access %{strongOpen}%{group_name}%{strongClose}, you must sign in using single sign-on through an external sign-in page.').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe }
         = saml_link _('Sign in'), @group_path, html_class: 'btn btn-confirm btn-md gl-button btn-block', data: { qa_selector: 'saml_sso_signin_button' }, redirect: @redirect_path
       - else
-        %h4.gl-mt-0= s_('Allow "%{group_name}" to sign you in') % { group_name: @group_name }
-        %p= s_('SAML|The "%{group_path}" group allows you to sign in with your Single Sign-On Account.') % { group_path: @group_path }
+        %h4.gl-mt-0= s_('Allow %{strongOpen}%{group_name}%{strongClose} to sign you in?').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe }
+        %p= s_('SAML|The %{strongOpen}%{group_path}%{strongClose} group allows you to sign in using single sign-on.').html_safe % { strongOpen: '<strong>'.html_safe, group_path: @group_path, strongClose: '</strong>'.html_safe }
         = render Pajamas::AlertComponent.new(variant: :warning, dismissible: false, alert_options: { class: 'gl-mb-5 gl-word-break-word' }) do |c|
           = c.body do
-            = s_('SAML|Select "Authorize" to allow %{group_name} to manage your GitLab account "%{username}" (%{email}) after you sign in successfully with your single sign-on account.') % { group_name: @group_name, username: current_user.username, email: current_user.email }
+            = s_('SAML|To allow %{strongOpen}%{group_name}%{strongClose} to manage your GitLab account %{strongOpen}%{username}%{strongClose} (%{email}) after you sign in successfully using single sign-on, select %{strongOpen}Authorize%{strongClose}.').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe, username: current_user.username, email: current_user.email }
         = saml_link _('Authorize'), @group_path, html_class: 'btn btn-confirm btn-md gl-button btn-block', data: { qa_selector: 'saml_sso_signin_button' }

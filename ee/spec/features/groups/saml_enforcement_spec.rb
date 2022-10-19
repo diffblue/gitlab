@@ -25,7 +25,7 @@ RSpec.describe 'SAML access enforcement' do
       end
 
       it 'prevents access to resource via SSO redirect' do
-        expect(page).to have_content("SAML SSO Sign in to \"#{group.name}\"")
+        expect(page).to have_content("SAML single sign-on Sign in to #{group.name}")
         expect(current_url).to match(%r{groups/#{group.to_param}/-/saml/sso\?redirect=.+&token=})
       end
     end
