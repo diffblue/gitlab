@@ -7,7 +7,7 @@ import * as CEMountSidebar from '~/sidebar/mount_sidebar';
 import CveIdRequest from './components/cve_id_request/cve_id_request_sidebar.vue';
 import IterationSidebarDropdownWidget from './components/iteration_sidebar_dropdown_widget.vue';
 import SidebarDropdownWidget from './components/sidebar_dropdown_widget.vue';
-import SidebarStatus from './components/status/sidebar_status.vue';
+import SidebarHealthStatusWidget from './components/health_status/sidebar_health_status_widget.vue';
 import SidebarWeightWidget from './components/weight/sidebar_weight_widget.vue';
 import SidebarEscalationPolicy from './components/incidents/sidebar_escalation_policy.vue';
 import { IssuableAttributeType } from './constants';
@@ -43,32 +43,27 @@ const mountWeightComponent = () => {
   });
 };
 
-const mountStatusComponent = (store) => {
-  const el = document.querySelector('.js-sidebar-status-entry-point');
+const mountHealthStatusComponent = (store) => {
+  const el = document.querySelector('.js-sidebar-health-status-entry-point');
 
   if (!el) {
-    return false;
+    return null;
   }
 
   const { iid, fullPath, issuableType, canEdit } = el.dataset;
 
   return new Vue({
     el,
-    name: 'SidebarHealthStatusRoot',
+    name: 'SidebarHealthStatusWidgetRoot',
     apolloProvider,
     store,
-    components: {
-      SidebarStatus,
+    provide: {
+      canUpdate: parseBoolean(canEdit),
+      fullPath,
+      iid,
+      issuableType,
     },
-    render: (createElement) =>
-      createElement('sidebar-status', {
-        props: {
-          issuableType,
-          iid,
-          fullPath,
-          canUpdate: parseBoolean(canEdit),
-        },
-      }),
+    render: (createElement) => createElement(SidebarHealthStatusWidget),
   });
 };
 
@@ -190,7 +185,7 @@ export const { getSidebarOptions } = CEMountSidebar;
 export function mountSidebar(mediator, store) {
   CEMountSidebar.mountSidebar(mediator, store);
   mountWeightComponent();
-  mountStatusComponent(store);
+  mountHealthStatusComponent(store);
   mountEpicsSelect();
   mountIterationSelect();
   mountEscalationPoliciesSelect();

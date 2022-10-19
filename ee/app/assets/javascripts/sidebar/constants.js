@@ -28,19 +28,49 @@ import projectEscalationPoliciesQuery from './queries/project_escalation_policie
 
 export { Tracking, defaultEpicSort, epicIidPattern };
 
-export const healthStatus = {
-  ON_TRACK: 'onTrack',
-  NEEDS_ATTENTION: 'needsAttention',
-  AT_RISK: 'atRisk',
-};
-
 export const edit = __('Edit');
 export const none = __('None');
 
+export const HEALTH_STATUS_I18N_ASSIGN_HEALTH_STATUS = s__('Sidebar|Assign health status');
+export const HEALTH_STATUS_I18N_FETCH_ERROR = __(
+  'An error occurred while fetching the health status.',
+);
+export const HEALTH_STATUS_I18N_HEALTH_STATUS = s__('Sidebar|Health status');
+export const HEALTH_STATUS_I18N_NO_STATUS = s__('Sidebar|No status');
+export const HEALTH_STATUS_I18N_NONE = s__('Sidebar|None');
+export const HEALTH_STATUS_I18N_SELECT_HEALTH_STATUS = __('Select health status');
+export const HEALTH_STATUS_I18N_UPDATE_ERROR = __(
+  'Something went wrong while setting %{issuableType} health status.',
+);
+export const HEALTH_STATUS_OPEN_DROPDOWN_DELAY = 100;
+
+export const HEALTH_STATUS_AT_RISK = 'atRisk';
+export const HEALTH_STATUS_NEEDS_ATTENTION = 'needsAttention';
+export const HEALTH_STATUS_ON_TRACK = 'onTrack';
+
 export const healthStatusTextMap = {
-  [healthStatus.ON_TRACK]: __('On track'),
-  [healthStatus.NEEDS_ATTENTION]: __('Needs attention'),
-  [healthStatus.AT_RISK]: __('At risk'),
+  [HEALTH_STATUS_ON_TRACK]: __('On track'),
+  [HEALTH_STATUS_NEEDS_ATTENTION]: __('Needs attention'),
+  [HEALTH_STATUS_AT_RISK]: __('At risk'),
+};
+
+export const healthStatusForRestApi = {
+  NO_STATUS: '0',
+  [HEALTH_STATUS_ON_TRACK]: 'on_track',
+  [HEALTH_STATUS_NEEDS_ATTENTION]: 'needs_attention',
+  [HEALTH_STATUS_AT_RISK]: 'at_risk',
+};
+
+export const healthStatusDropdownOptions = [
+  { text: __('On track'), value: HEALTH_STATUS_ON_TRACK },
+  { text: __('Needs attention'), value: HEALTH_STATUS_NEEDS_ATTENTION },
+  { text: __('At risk'), value: HEALTH_STATUS_AT_RISK },
+];
+
+export const healthStatusTracking = {
+  event: Tracking.editEvent,
+  label: Tracking.rightSidebarLabel,
+  property: 'health_status',
 };
 
 export const iterationSelectTextMap = {
@@ -53,28 +83,13 @@ export const iterationSelectTextMap = {
   noIterationsFound: s__('Iterations|No iterations found'),
 };
 
-export const noIteration = null;
 export const noAttributeId = null;
 
 export const iterationDisplayState = 'opened';
 
-export const healthStatusForRestApi = {
-  NO_STATUS: '0',
-  [healthStatus.ON_TRACK]: 'on_track',
-  [healthStatus.NEEDS_ATTENTION]: 'needs_attention',
-  [healthStatus.AT_RISK]: 'at_risk',
-};
-
 export const SIDEBAR_ESCALATION_POLICY_TITLE = __('Escalation policy');
 
 export const MAX_DISPLAY_WEIGHT = 99999;
-
-export const I18N_DROPDOWN = {
-  dropdownHeaderText: s__('Sidebar|Assign health status'),
-  noStatusText: s__('Sidebar|No status'),
-  noneText: s__('Sidebar|None'),
-  selectPlaceholderText: __('Select health status'),
-};
 
 export const CVE_ID_REQUEST_SIDEBAR_I18N = {
   action: s__('CVE|Request CVE ID'),

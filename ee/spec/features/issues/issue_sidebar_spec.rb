@@ -128,7 +128,7 @@ RSpec.describe 'Issue Sidebar' do
           end
 
           page.within('.health-status') do
-            expect(page).to have_button('Edit', disabled: true)
+            expect(page).not_to have_button('Edit')
           end
         end
       end
