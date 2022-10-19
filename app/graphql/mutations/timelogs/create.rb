@@ -11,7 +11,7 @@ module Mutations
                description: 'Amount of time spent.'
 
       argument :spent_at,
-               Types::DateType,
+               Types::TimeType,
                required: true,
                description: 'When the time was spent.'
 
