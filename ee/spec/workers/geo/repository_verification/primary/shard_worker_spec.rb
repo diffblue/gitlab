@@ -6,9 +6,14 @@ RSpec.describe Geo::RepositoryVerification::Primary::ShardWorker, :clean_gitlab_
   include ::EE::GeoHelpers
   include ExclusiveLeaseHelpers
 
-  let!(:primary)   { create(:geo_node, :primary) }
+  let_it_be(:primary) { create(:geo_node, :primary) }
+
   let(:shard_name) { Gitlab.config.repositories.storages.each_key.first }
   let(:primary_singleworker) { Geo::RepositoryVerification::Primary::SingleWorker }
+
+  before_all do
+    Project.delete_all
+  end
 
   before do
     stub_current_geo_node(primary)
