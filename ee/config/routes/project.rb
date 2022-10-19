@@ -100,7 +100,7 @@ constraints(::Constraints::ProjectUrlConstrainer.new) do
           get :count
         end
         resources :dependencies, only: [:index]
-        resources :licenses, only: [:index, :create, :update]
+        resources :licenses, only: [:index]
 
         resources :feature_flags, param: :iid do
           resources :feature_flag_issues, only: [:index, :create, :destroy], as: 'issues', path: 'issues'
