@@ -3,8 +3,6 @@
 module Users
   module Abuse
     class ExcessiveProjectsDownloadBanService < BaseService
-      attr_reader :admins_alerted
-
       def self.execute(user, project)
         new(project, user).execute
       end
@@ -33,6 +31,8 @@ module Users
 
       private
 
+      attr_reader :admins_alerted
+
       def rate_limited?(peek: false)
         ::Gitlab::ApplicationRateLimiter.throttled?(
           :unique_project_downloads_for_application,
@@ -51,9 +51,9 @@ module Users
 
           log_info(
             message: "User ban",
-            user: "#{current_user.username}",
-            email: "#{current_user.email}",
-            ban_by: "#{self.class.name}"
+            user: current_user.username,
+            email: current_user.email,
+            ban_by: self.class.name
           )
 
           result
@@ -62,9 +62,9 @@ module Users
           # we'll log the event, ignore the exception, and proceed as normal.
           log_info(
             message: "Invalid transition when banning: #{e.message}",
-            user: "#{current_user.username}",
-            email: "#{current_user.email}",
-            ban_by: "#{self.class.name}"
+            user: current_user.username,
+            email: current_user.email,
+            ban_by: self.class.name
           )
 
           true

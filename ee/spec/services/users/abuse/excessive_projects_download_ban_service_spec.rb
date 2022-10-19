@@ -10,6 +10,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
 
     let_it_be_with_reload(:user) { create(:user) }
     let_it_be(:admin) { create(:user, :admin) }
+    let_it_be(:inactive_admin) { create(:user, :admin, :deactivated) }
     let_it_be(:project) { create(:project) }
 
     let(:mail_instance) { instance_double(ActionMailer::MessageDelivery, deliver_later: true) }
@@ -23,26 +24,9 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       stub_application_setting(auto_ban_user_on_excessive_projects_download: true)
     end
 
-    def mock_throttled_calls(resource, peek_result, result)
-      key = :unique_project_downloads_for_application
-      args = {
-        scope: user,
-        resource: resource,
-        users_allowlist: allowlist
-      }
-
-      allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-        .with(key, hash_including(args.merge(peek: true)))
-        .and_return(peek_result)
-
-      allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-        .with(key, hash_including(args.merge(peek: false)))
-        .and_return(result)
-    end
-
     context 'when user is not rate-limited' do
       before do
-        mock_throttled_calls(project, false, false)
+        mock_throttled_calls(project, peek_result: false, result: false)
       end
 
       it 'returns { banned: false }' do
@@ -60,7 +44,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
 
     context 'when user is rate-limited' do
       before do
-        mock_throttled_calls(project, false, true)
+        mock_throttled_calls(project, peek_result: false, result: true)
       end
 
       it 'returns { banned: true }' do
@@ -93,11 +77,14 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
         execute
       end
 
-      it 'sends an email to admins', :mailer do
+      it 'sends an email to active admins', :mailer do
         expect(Notify).to receive(:user_auto_banned_email)
           .with(admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
           .once
           .and_return(mail_instance)
+
+        expect(Notify).not_to receive(:user_auto_banned_email)
+          .with(inactive_admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
 
         execute
       end
@@ -106,7 +93,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
         let(:another_project) { build_stubbed(:project) }
 
         before do
-          mock_throttled_calls(another_project, true, true)
+          mock_throttled_calls(another_project, peek_result: true, result: true)
         end
 
         it 'does not send another email to admins', :mailer do
@@ -121,7 +108,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       before do
         stub_application_setting(auto_ban_user_on_excessive_projects_download: false)
 
-        mock_throttled_calls(project, false, true)
+        mock_throttled_calls(project, peek_result: false, result: true)
       end
 
       it 'returns { banned: false }' do
@@ -168,7 +155,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       before do
         user.ban!
 
-        mock_throttled_calls(project, false, true)
+        mock_throttled_calls(project, peek_result: false, result: true)
       end
 
       it 'returns { banned: true }' do
@@ -210,7 +197,7 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       let(:allowlist) { [user.username] }
 
       before do
-        mock_throttled_calls(project, false, false)
+        mock_throttled_calls(project, peek_result: false, result: false)
       end
 
       it 'returns { banned: false }' do
@@ -237,5 +224,24 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
         execute
       end
     end
+  end
+
+  private
+
+  def mock_throttled_calls(resource, peek_result:, result:)
+    key = :unique_project_downloads_for_application
+    args = {
+      scope: user,
+      resource: resource,
+      users_allowlist: allowlist
+    }
+
+    allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+      .with(key, hash_including(args.merge(peek: true)))
+      .and_return(peek_result)
+
+    allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+      .with(key, hash_including(args.merge(peek: false)))
+      .and_return(result)
   end
 end

@@ -22,6 +22,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
 
     let_it_be_with_reload(:user) { create(:user) }
     let_it_be(:namespace_admin) { create(:user) }
+    let_it_be(:inactive_namespace_admin) { create(:user, :deactivated) }
     let_it_be(:project) { create(:project, namespace: namespace) }
 
     let(:mail_instance) { instance_double(ActionMailer::MessageDelivery, deliver_later: true) }
@@ -30,30 +31,12 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
 
     before do
       namespace.add_owner(namespace_admin)
-    end
-
-    def mock_throttled_calls(resource, peek_result, result)
-      key = :unique_project_downloads_for_namespace
-      args = {
-        scope: [user, namespace],
-        resource: resource,
-        threshold: limit,
-        interval: time_period_in_seconds,
-        users_allowlist: allowlist
-      }
-
-      allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-        .with(key, hash_including(args.merge(peek: true)))
-        .and_return(peek_result)
-
-      allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
-        .with(key, hash_including(args.merge(peek: false)))
-        .and_return(result)
+      namespace.add_owner(inactive_namespace_admin)
     end
 
     context 'when user is not rate-limited' do
       before do
-        mock_throttled_calls(project, false, false)
+        mock_throttled_calls(project, peek_result: false, result: false)
       end
 
       it 'returns { banned: false }' do
@@ -71,7 +54,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
 
     context 'when user is rate-limited' do
       before do
-        mock_throttled_calls(project, false, true)
+        mock_throttled_calls(project, peek_result: false, result: true)
       end
 
       it 'returns { banned: true }' do
@@ -106,7 +89,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
         execute
       end
 
-      it 'sends an email to namespace admins', :mailer do
+      it 'sends an email to active namespace admins', :mailer do
         expect(Notify).to receive(:user_auto_banned_email)
           .with(
             namespace_admin.id,
@@ -118,6 +101,15 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
           .once
           .and_return(mail_instance)
 
+        expect(Notify).not_to receive(:user_auto_banned_email)
+          .with(
+            inactive_namespace_admin.id,
+            user.id,
+            max_project_downloads: limit,
+            within_seconds: time_period_in_seconds,
+            group: namespace
+          )
+
         execute
       end
 
@@ -125,7 +117,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
         let(:another_project) { build_stubbed(:project, namespace: namespace) }
 
         before do
-          mock_throttled_calls(another_project, true, true)
+          mock_throttled_calls(another_project, peek_result: true, result: true)
         end
 
         it 'does not send another email to namespace admins', :mailer do
@@ -140,7 +132,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       let(:user) { namespace_admin }
 
       before do
-        mock_throttled_calls(project, false, true)
+        mock_throttled_calls(project, peek_result: false, result: true)
       end
 
       it 'returns { banned: false }' do
@@ -194,7 +186,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
     context 'when user is already banned and gets throttled' do
       before do
         create(:namespace_ban, namespace: namespace, user: user)
-        mock_throttled_calls(project, false, true)
+        mock_throttled_calls(project, peek_result: false, result: true)
       end
 
       it 'returns { banned: true }' do
@@ -235,7 +227,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
 
       before do
         namespace.namespace_settings.update!(unique_project_download_limit_allowlist: allowlist)
-        mock_throttled_calls(project, false, false)
+        mock_throttled_calls(project, peek_result: false, result: false)
       end
 
       it 'returns { banned: false }' do
@@ -269,7 +261,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
           auto_ban_user_on_excessive_projects_download: false
         })
 
-        mock_throttled_calls(project, false, true)
+        mock_throttled_calls(project, peek_result: false, result: true)
       end
 
       it 'returns { banned: false }' do
@@ -319,5 +311,26 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
         execute
       end
     end
+  end
+
+  private
+
+  def mock_throttled_calls(resource, peek_result:, result:)
+    key = :unique_project_downloads_for_namespace
+    args = {
+      scope: [user, namespace],
+      resource: resource,
+      threshold: limit,
+      interval: time_period_in_seconds,
+      users_allowlist: allowlist
+    }
+
+    allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+      .with(key, hash_including(args.merge(peek: true)))
+      .and_return(peek_result)
+
+    allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?)
+      .with(key, hash_including(args.merge(peek: false)))
+      .and_return(result)
   end
 end
