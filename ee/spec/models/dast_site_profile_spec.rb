@@ -356,7 +356,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
           let(:included) do
             [
-              { key: 'DAST_API_OPENAPI', value: scan_file_path, public: true }
+              { key: 'DAST_API_OPENAPI', value: scan_file_path, public: true },
+              { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
             ]
           end
 
@@ -369,7 +370,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
             let(:included) do
               [
-                { key: 'DAST_API_OPENAPI', value: subject.dast_site.url, public: true }
+                { key: 'DAST_API_OPENAPI', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
 
@@ -386,7 +388,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
           let(:included) do
             [
-              { key: 'DAST_API_HAR', value: scan_file_path, public: true }
+              { key: 'DAST_API_HAR', value: scan_file_path, public: true },
+              { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
             ]
           end
 
@@ -399,7 +402,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
             let(:included) do
               [
-                { key: 'DAST_API_HAR', value: subject.dast_site.url, public: true }
+                { key: 'DAST_API_HAR', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
 
@@ -416,7 +420,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
           let(:included) do
             [
-              { key: 'DAST_API_POSTMAN_COLLECTION', value: scan_file_path, public: true }
+              { key: 'DAST_API_POSTMAN_COLLECTION', value: scan_file_path, public: true },
+              { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
             ]
           end
 
@@ -429,7 +434,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
             let(:included) do
               [
-                { key: 'DAST_API_POSTMAN_COLLECTION', value: subject.dast_site.url, public: true }
+                { key: 'DAST_API_POSTMAN_COLLECTION', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
 
