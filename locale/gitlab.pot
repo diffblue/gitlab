@@ -22673,6 +22673,21 @@ msgstr ""
 msgid "IssuesAnalytics|Total:"
 msgstr ""
 
+msgid "Issues|Move selected"
+msgstr ""
+
+msgid "Issues|Tasks and test cases can not be moved."
+msgstr ""
+
+msgid "Issues|Tasks can not be moved."
+msgstr ""
+
+msgid "Issues|Test cases can not be moved."
+msgstr ""
+
+msgid "Issues|There was an error while moving the issues."
+msgstr ""
+
 msgid "Issue|Title"
 msgstr ""
 

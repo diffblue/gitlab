@@ -209,6 +209,7 @@ export default {
       :dropdown-button-title="selectProjectDropdownButtonTitle"
       :dropdown-header-title="__('Move test case')"
       :move-in-progress="testCaseMoveInProgress"
+      class="block"
       @dropdown-close="handleSidebarDropdownClose"
       @toggle-collapse="handleProjectsCollapsedButtonClick"
       @move-issuable="moveTestCase"
