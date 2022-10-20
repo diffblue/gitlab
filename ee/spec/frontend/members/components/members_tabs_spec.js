@@ -43,6 +43,7 @@ describe('MembersTabs', () => {
       stubs: ['members-app'],
       provide: {
         canManageMembers: true,
+        canManageAccessRequests: true,
         canExportMembers: true,
         exportCsvPath: '',
       },
