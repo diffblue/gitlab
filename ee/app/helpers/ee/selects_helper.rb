@@ -13,12 +13,18 @@ module EE
     end
 
     def admin_email_select_tag(id, opts = {})
-      css_class = ["ajax-admin-email-select"]
+      css_class = ["ajax-admin-email-select gl-display-none"]
       css_class << "multiselect" if opts[:multiple]
       css_class << opts[:class] if opts[:class]
       value = opts[:selected] || ''
 
-      hidden_field_tag(id, value, class: css_class.join(' '))
+      text_field_tag(
+        id,
+        value,
+        class: css_class.join(' '),
+        required: true,
+        title: s_('AdminEmail|Recipient group or project is required.')
+      )
     end
 
     override :users_select_data_attributes
