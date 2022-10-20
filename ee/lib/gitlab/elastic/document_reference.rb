@@ -10,6 +10,8 @@ module Gitlab
     class DocumentReference
       include Gitlab::Utils::StrongMemoize
 
+      PRELOAD_BATCH_SIZE = 1_000
+
       InvalidError = Class.new(StandardError)
 
       class Collection
@@ -29,15 +31,18 @@ module Gitlab
 
         def preload_database_records
           @refs.group_by(&:klass).each do |klass, group|
-            ids = group.map(&:db_id)
+            group.each_slice(PRELOAD_BATCH_SIZE) do |group_slice|
+              ids = group_slice.map(&:db_id)
 
-            records = klass.id_in(ids).preload_indexing_data
-            records_by_id = records.index_by(&:id)
+              records = klass.id_in(ids).preload_indexing_data
+              records_by_id = records.index_by(&:id)
 
-            group.each do |ref|
-              ref.database_record = records_by_id[ref.db_id.to_i]
+              group_slice.each do |ref|
+                ref.database_record = records_by_id[ref.db_id.to_i]
+              end
             end
           end
+
           self
         end
       end
