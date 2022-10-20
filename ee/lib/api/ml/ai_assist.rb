@@ -7,10 +7,7 @@ module API
 
       before do
         authenticate!
-
-        allowed_groups = 0
-        current_user.groups.each { |group| allowed_groups += 1 if Feature.enabled?(:ai_assist_flag, group) == true }
-        not_found! unless allowed_groups > 0
+        not_found! unless current_user.groups.any? { |group| Feature.enabled?(:ai_assist_flag, group) }
       end
 
       allow_access_with_scope :api
@@ -22,7 +19,7 @@ module API
         end
         get 'aiassist' do
           response = {
-            user_is_allowed: ::License.feature_available?(:ai_assist)
+            user_is_allowed: true
           }
           present response, with: EE::API::Entities::Ml::AiAssist
         end
