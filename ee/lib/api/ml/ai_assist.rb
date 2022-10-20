@@ -7,7 +7,10 @@ module API
 
       before do
         authenticate!
-        not_found! unless current_user.groups.any? { |group| Feature.enabled?(:ai_assist_flag, group) }
+
+        not_found! unless current_user.groups.any? do |group|
+          Feature.enabled?(:ai_assist_flag, group) && group.licensed_feature_available?(:ai_assist)
+        end
       end
 
       allow_access_with_scope :api
