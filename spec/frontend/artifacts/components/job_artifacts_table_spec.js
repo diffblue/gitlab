@@ -166,7 +166,7 @@ describe('JobArtifactsTable component', () => {
 
     it('shows the download, browse, and delete buttons', () => {
       expect(findDownloadButton().attributes('href')).toBe(archiveArtifact.downloadPath);
-      expect(findBrowseButton().attributes('disabled')).toBe('disabled');
+      expect(findBrowseButton().attributes('href')).toBe(job.browseArtifactsPath);
       expect(findDeleteButton().attributes('disabled')).toBe('disabled');
     });
   });

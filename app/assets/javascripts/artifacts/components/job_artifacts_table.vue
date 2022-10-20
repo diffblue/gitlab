@@ -279,10 +279,11 @@ export default {
           />
           <gl-button
             icon="folder-open"
+            :disabled="!item.browseArtifactsPath"
+            :href="item.browseArtifactsPath"
             :title="$options.i18n.browse"
             :aria-label="$options.i18n.browse"
             data-testid="job-artifacts-browse-button"
-            disabled
           />
           <gl-button
             icon="remove"
