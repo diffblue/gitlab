@@ -93,22 +93,6 @@ RSpec.describe 'Groups > Billing', :js, :saas do
             expect(page).to have_link("See usage", href: group_usage_quotas_path(group, anchor: 'seats-quota-tab'))
           end
         end
-
-        context 'when gitlab subscription has end date more than 15 days' do
-          before do
-            subscription.update!(end_date: Date.tomorrow + 15.days)
-          end
-
-          it 'does not display renew button' do
-            renew_url = "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew"
-
-            visit group_billings_path(group)
-
-            within subscription_table do
-              expect(page).not_to have_link("Renew", href: renew_url)
-            end
-          end
-        end
       end
 
       context 'with disabled seats and review buttons' do
