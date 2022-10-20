@@ -157,6 +157,9 @@ export const mockProjectScanExecutionPolicy = {
   enabled: true,
   source: {
     __typename: 'ProjectSecurityPolicySource',
+    project: {
+      fullPath: 'project/path',
+    },
   },
 };
 
@@ -245,7 +248,7 @@ export const mockScanResultObject = {
   ],
 };
 
-export const mockScanResultPolicy = {
+export const mockProjectScanResultPolicy = {
   __typename: 'ScanResultPolicy',
   name: 'critical vulnerability CS approvals',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
@@ -253,9 +256,35 @@ export const mockScanResultPolicy = {
   enabled: false,
   userApprovers: [],
   groupApprovers: [],
+  source: {
+    __typename: 'ProjectSecurityPolicySource',
+    project: {
+      fullPath: 'project/path',
+    },
+  },
 };
 
-export const mockScanResultPolicySecond = {
+export const mockGroupScanResultPolicy = {
+  __typename: 'ScanResultPolicy',
+  name: 'critical vulnerability CS approvals',
+  updatedAt: new Date('2021-06-07T00:00:00.000Z'),
+  yaml: mockScanResultManifest,
+  enabled: false,
+  userApprovers: [],
+  groupApprovers: [],
+  source: {
+    __typename: 'GroupSecurityPolicySource',
+    inherited: true,
+    namespace: {
+      __typename: 'Namespace',
+      id: '1',
+      fullPath: 'parent-group-path',
+      name: 'parent-group-name',
+    },
+  },
+};
+
+export const mockProjectScanResultPolicySecond = {
   __typename: 'ScanResultPolicy',
   name: 'low vulnerability sast approvals second',
   updatedAt: new Date('2021-06-07T00:00:00.000Z'),
@@ -263,6 +292,12 @@ export const mockScanResultPolicySecond = {
   enabled: true,
   userApprovers: [],
   groupApprovers: [],
+  source: {
+    __typename: 'ProjectSecurityPolicySource',
+    project: {
+      fullPath: 'project/path/second',
+    },
+  },
 };
 
 export const mockScanExecutionPoliciesResponse = [
@@ -270,7 +305,10 @@ export const mockScanExecutionPoliciesResponse = [
   mockGroupScanExecutionPolicy,
 ];
 
-export const mockScanResultPoliciesResponse = [mockScanResultPolicy];
+export const mockScanResultPoliciesResponse = [
+  mockProjectScanResultPolicy,
+  mockGroupScanResultPolicy,
+];
 
 export const createRequiredApprovers = (count) => {
   const approvers = [];

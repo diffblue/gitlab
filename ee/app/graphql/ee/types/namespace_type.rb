@@ -67,6 +67,13 @@ module EE
               description: 'Scan Execution Policies of the namespace.',
               resolver: ::Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver
 
+        field :scan_result_policies,
+              ::Types::SecurityOrchestration::ScanResultPolicyType.connection_type,
+              calls_gitaly: true,
+              null: true,
+              description: 'Scan Result Policies of the project',
+              resolver: ::Resolvers::SecurityOrchestration::ScanResultPolicyResolver
+
         def additional_purchased_storage_size
           object.additional_purchased_storage_size.megabytes
         end

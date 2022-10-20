@@ -2,6 +2,7 @@
 import { GlLink, GlButton, GlFormGroup } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { __, s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import Container from '../rules.vue';
 import ScanResultPolicy from './scan_result_policy.vue';
@@ -25,6 +26,7 @@ export default {
     PolicyDetails,
     GlFormGroup,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['fullPath', 'newPolicyPath'],
   computed: {
     ...mapState('securityOrchestrationModule', ['scanResultPolicies']),
@@ -36,7 +38,10 @@ export default {
     },
   },
   mounted() {
-    this.fetchScanResultPolicies(this.fullPath);
+    this.fetchScanResultPolicies({
+      fullPath: this.fullPath,
+      featureFlagEnabled: this.glFeatures.groupLevelScanResultPolicies,
+    });
   },
   methods: {
     ...mapActions('securityOrchestrationModule', ['fetchScanResultPolicies']),
