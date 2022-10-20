@@ -342,7 +342,7 @@ To move an issue:
 
 #### From the issues list
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/15991) in GitLab 15.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/15991) in GitLab 15.6.
 
 You can move multiple issues at the same time when you’re in a project.
 You can't move tasks or test cases.
