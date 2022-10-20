@@ -174,74 +174,6 @@ RSpec.describe Nav::TopNavHelper do
             expect(projects_view[:linksSecondary]).to eq([])
           end
 
-          context 'when extra submenu options are not hidden' do
-            before do
-              stub_feature_flags(remove_extra_primary_submenu_options: false)
-            end
-
-            it 'has expected :linksPrimary' do
-              expected_links_primary = [
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Your projects',
-                    **menu_data_tracking_attrs('your_projects')
-                  },
-                  href: '/dashboard/projects',
-                  id: 'your',
-                  title: 'Your projects'
-                ),
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Starred projects',
-                    **menu_data_tracking_attrs('starred_projects')
-                  },
-                  href: '/dashboard/projects/starred',
-                  id: 'starred',
-                  title: 'Starred projects'
-                ),
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Explore projects',
-                    **menu_data_tracking_attrs('explore_projects')
-                  },
-                  href: '/explore',
-                  id: 'explore',
-                  title: 'Explore projects'
-                ),
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Explore topics',
-                    **menu_data_tracking_attrs('explore_topics')
-                  },
-                  href: '/explore/projects/topics',
-                  id: 'topics',
-                  title: 'Explore topics'
-                )
-              ]
-              expect(projects_view[:linksPrimary]).to eq(expected_links_primary)
-            end
-
-            it 'has expected :linksSecondary' do
-              expected_links_secondary = [
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Create new project',
-                    **menu_data_tracking_attrs('create_new_project')
-                  },
-                  href: '/projects/new',
-                  id: 'create',
-                  title: 'Create new project'
-                )
-              ]
-              expect(projects_view[:linksSecondary]).to eq(expected_links_secondary)
-            end
-          end
-
           context 'with current nav as project' do
             before do
               helper.nav('project')
@@ -337,54 +269,6 @@ RSpec.describe Nav::TopNavHelper do
 
           it 'does not have any :linksSecondary' do
             expect(groups_view[:linksSecondary]).to eq([])
-          end
-
-          context 'when extra submenu options are not hidden' do
-            before do
-              stub_feature_flags(remove_extra_primary_submenu_options: false)
-            end
-
-            it 'has expected :linksPrimary' do
-              expected_links_primary = [
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Your groups',
-                    **menu_data_tracking_attrs('your_groups')
-                  },
-                  href: '/dashboard/groups',
-                  id: 'your',
-                  title: 'Your groups'
-                ),
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Explore groups',
-                    **menu_data_tracking_attrs('explore_groups')
-                  },
-                  href: '/explore/groups',
-                  id: 'explore',
-                  title: 'Explore groups'
-                )
-              ]
-              expect(groups_view[:linksPrimary]).to eq(expected_links_primary)
-            end
-
-            it 'has expected :linksSecondary' do
-              expected_links_secondary = [
-                ::Gitlab::Nav::TopNavMenuItem.build(
-                  data: {
-                    qa_selector: 'menu_item_link',
-                    qa_title: 'Create group',
-                    **menu_data_tracking_attrs('create_group')
-                  },
-                  href: '/groups/new',
-                  id: 'create',
-                  title: 'Create group'
-                )
-              ]
-              expect(groups_view[:linksSecondary]).to eq(expected_links_secondary)
-            end
           end
 
           context 'with external user' do

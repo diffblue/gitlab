@@ -57,22 +57,6 @@ module EE
         end
       end
 
-      override :projects_submenu_items
-      def projects_submenu_items(builder:)
-        super
-
-        if current_user.can?(:list_removable_projects) && ::Feature.disabled?(:remove_extra_primary_submenu_options)
-          title = _('Pending deletion')
-
-          builder.add_primary_menu_item(
-            id: 'deleted',
-            title: title,
-            data: { qa_selector: 'menu_item_link', qa_title: title, **menu_data_tracking_attrs(title) },
-            href: removed_dashboard_projects_path
-          )
-        end
-      end
-
       override :top_nav_localized_headers
       def top_nav_localized_headers
         super.merge(
