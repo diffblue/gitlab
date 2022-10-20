@@ -29693,6 +29693,9 @@ msgstr ""
 msgid "PipelineSchedules|Last Pipeline"
 msgstr ""
 
+msgid "PipelineSchedules|New schedule"
+msgstr ""
+
 msgid "PipelineSchedules|Next Run"
 msgstr ""
 
