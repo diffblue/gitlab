@@ -1758,7 +1758,7 @@ DEPENDENCIES
   redis (~> 4.7.0)
   redis-actionpack (~> 5.3.0)
   redis-namespace (~> 1.9.0)
-  request_store (~> 1.5)
+  request_store (~> 1.5.1)
   responders (~> 3.0)
   retriable (~> 3.1.2)
   rexml (~> 3.2.5)
