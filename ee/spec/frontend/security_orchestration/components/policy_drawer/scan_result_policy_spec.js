@@ -3,7 +3,7 @@ import PolicyDrawerLayout from 'ee/security_orchestration/components/policy_draw
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import RequireApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
-import { mockScanResultPolicy } from '../../mocks/mock_data';
+import { mockProjectScanResultPolicy } from '../../mocks/mock_data';
 
 describe('ScanResultPolicy component', () => {
   let wrapper;
@@ -27,7 +27,7 @@ describe('ScanResultPolicy component', () => {
 
   describe('default policy', () => {
     beforeEach(() => {
-      factory({ propsData: { policy: mockScanResultPolicy } });
+      factory({ propsData: { policy: mockProjectScanResultPolicy } });
     });
 
     it('does render the policy summary', () => {

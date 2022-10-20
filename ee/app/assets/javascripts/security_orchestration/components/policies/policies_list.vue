@@ -6,9 +6,12 @@ import createFlash from '~/flash';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
-import scanResultPoliciesQuery from '../../graphql/queries/scan_result_policies.query.graphql';
+import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
+import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_result_policies.query.graphql';
+import deprecatedScanResultPoliciesQuery from '../../graphql/queries/scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
@@ -23,8 +26,14 @@ import PolicyTypeFilter from './filters/policy_type_filter.vue';
 import NoPoliciesEmptyState from './no_policies_empty_state.vue';
 
 const NAMESPACE_QUERY_DICT = {
-  [NAMESPACE_TYPES.PROJECT]: projectScanExecutionPoliciesQuery,
-  [NAMESPACE_TYPES.GROUP]: groupScanExecutionPoliciesQuery,
+  scanExecution: {
+    [NAMESPACE_TYPES.PROJECT]: projectScanExecutionPoliciesQuery,
+    [NAMESPACE_TYPES.GROUP]: groupScanExecutionPoliciesQuery,
+  },
+  scanResult: {
+    [NAMESPACE_TYPES.PROJECT]: projectScanResultPoliciesQuery,
+    [NAMESPACE_TYPES.GROUP]: groupScanResultPoliciesQuery,
+  },
 };
 
 const createPolicyFetchError = ({ gqlError, networkError }) => {
@@ -58,6 +67,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: ['documentationPath', 'namespacePath', 'namespaceType', 'newPolicyPath'],
   props: {
     hasPolicyProject: {
@@ -74,7 +84,7 @@ export default {
   apollo: {
     scanExecutionPolicies: {
       query() {
-        return NAMESPACE_QUERY_DICT[this.namespaceType];
+        return NAMESPACE_QUERY_DICT.scanExecution[this.namespaceType];
       },
       variables() {
         return {
@@ -88,20 +98,32 @@ export default {
       error: createPolicyFetchError,
     },
     scanResultPolicies: {
-      query: scanResultPoliciesQuery,
+      query() {
+        if (
+          !this.glFeatures.groupLevelScanResultPolicies &&
+          this.namespaceType === NAMESPACE_TYPES.PROJECT
+        ) {
+          return deprecatedScanResultPoliciesQuery;
+        }
+        return NAMESPACE_QUERY_DICT.scanResult[this.namespaceType];
+      },
       variables() {
-        return {
-          fullPath: this.namespacePath,
-        };
+        if (this.glFeatures.groupLevelScanResultPolicies) {
+          return {
+            fullPath: this.namespacePath,
+            relationship: this.selectedPolicySource,
+          };
+        }
+        return { fullPath: this.namespacePath };
       },
       update(data) {
-        return data?.project?.scanResultPolicies?.nodes ?? [];
+        return data?.namespace?.scanResultPolicies?.nodes ?? [];
       },
       error: createPolicyFetchError,
       skip() {
         return (
-          this.namespaceType !== NAMESPACE_TYPES.PROJECT ||
-          this.selectedPolicySource === POLICY_SOURCE_OPTIONS.INHERITED.value
+          this.namespaceType !== NAMESPACE_TYPES.PROJECT &&
+          !this.glFeatures.groupLevelScanResultPolicies
         );
       },
     },

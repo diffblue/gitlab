@@ -24,11 +24,25 @@ export const groupScanExecutionPolicies = (nodes) =>
     },
   });
 
-export const scanResultPolicies = (nodes) =>
+export const projectScanResultPolicies = (nodes) =>
   jest.fn().mockResolvedValue({
     data: {
-      project: {
+      namespace: {
         id: '3',
+        __typename: 'Project',
+        scanResultPolicies: {
+          nodes,
+        },
+      },
+    },
+  });
+
+export const groupScanResultPolicies = (nodes) =>
+  jest.fn().mockResolvedValue({
+    data: {
+      namespace: {
+        id: '3',
+        __typename: 'Group',
         scanResultPolicies: {
           nodes,
         },

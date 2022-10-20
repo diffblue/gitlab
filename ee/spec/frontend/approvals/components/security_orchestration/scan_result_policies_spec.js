@@ -9,15 +9,19 @@ import { gqClient } from 'ee/security_orchestration/utils';
 import ScanResultPolicy from 'ee/approvals/components/security_orchestration/scan_result_policy.vue';
 import PolicyDetails from 'ee/approvals/components/security_orchestration/policy_details.vue';
 import {
-  mockScanResultPolicy,
-  mockScanResultPolicySecond,
+  mockProjectScanResultPolicy,
+  mockProjectScanResultPolicySecond,
 } from '../../../security_orchestration/mocks/mock_data';
 
 Vue.use(Vuex);
 
 const queryResponse = {
   data: {
-    project: { scanResultPolicies: { nodes: [mockScanResultPolicy, mockScanResultPolicySecond] } },
+    namespace: {
+      scanResultPolicies: {
+        nodes: [mockProjectScanResultPolicy, mockProjectScanResultPolicySecond],
+      },
+    },
   },
 };
 const emptyQueryResponse = { data: { project: { scanResultPolicies: { nodes: [] } } } };
@@ -33,7 +37,6 @@ describe('ScanResultPolicies', () => {
       provide: {
         fullPath: 'full/path',
         newPolicyPath: 'policy/new',
-        securityPoliciesPath: 'security/path',
       },
       store: new Vuex.Store(store),
     });

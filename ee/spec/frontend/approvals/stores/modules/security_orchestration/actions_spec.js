@@ -25,12 +25,18 @@ describe('security orchestration actions', () => {
           yaml: 'name: policyName',
           userApprovers: [{ id: 1, name: 'username' }],
           groupApprovers: [],
+          source: { project: { fullPath: 'path/policy' } },
         },
       ];
       const expectedPolicies = [
-        { name: 'policyName', isSelected: false, approvers: [{ id: 1, name: 'username' }] },
+        {
+          name: 'policyName',
+          isSelected: false,
+          approvers: [{ id: 1, name: 'username' }],
+          source: { project: { fullPath: 'path/policy' } },
+        },
       ];
-      const queryResponse = { data: { project: { scanResultPolicies: { nodes: policies } } } };
+      const queryResponse = { data: { namespace: { scanResultPolicies: { nodes: policies } } } };
 
       jest.spyOn(gqClient, 'query').mockResolvedValue(queryResponse);
 
@@ -46,7 +52,7 @@ describe('security orchestration actions', () => {
     it('sets SCAN_RESULT_POLICIES_FAILED with empty payload if parsing failed', () => {
       const policies = [{ name: 'policyName', yaml: '' }];
       const expectedPolicies = [];
-      const queryResponse = { data: { project: { scanResultPolicies: { nodes: policies } } } };
+      const queryResponse = { data: { namespace: { scanResultPolicies: { nodes: policies } } } };
 
       jest.spyOn(gqClient, 'query').mockResolvedValue(queryResponse);
 

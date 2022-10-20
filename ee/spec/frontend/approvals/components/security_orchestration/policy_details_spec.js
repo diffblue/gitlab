@@ -3,8 +3,6 @@ import { shallowMount } from '@vue/test-utils';
 import PolicyDetails from 'ee/approvals/components/security_orchestration/policy_details.vue';
 import RequestApprovals from 'ee/security_orchestration/components/policy_drawer/require_approvals.vue';
 
-const SECURITY_POLICY_PATH = 'policy/path';
-
 describe('PolicyDetails', () => {
   let wrapper;
 
@@ -23,6 +21,11 @@ describe('PolicyDetails', () => {
     ],
     actions: [{ type: 'require_approval', approvals_required: 1, user_approvers: ['admin'] }],
     approvers: [{ __typename: 'UserCore', id: 1, name: 'name' }],
+    source: {
+      project: {
+        fullPath: 'policy/path',
+      },
+    },
   };
 
   const factory = (policyData = {}) => {
@@ -32,9 +35,6 @@ describe('PolicyDetails', () => {
           ...initialPolicy,
           ...policyData,
         },
-      },
-      provide: {
-        securityPoliciesPath: SECURITY_POLICY_PATH,
       },
     });
   };
@@ -55,11 +55,25 @@ describe('PolicyDetails', () => {
     });
 
     it('renders a link to policy path', () => {
-      const policyPath = `policy/path/${encodeURIComponent(
+      const policyPath = `/policy/path/-/security/policies/${encodeURIComponent(
         initialPolicy.name,
       )}/edit?type=scan_result_policy`;
 
       expect(findLink().attributes('href')).toBe(policyPath);
+    });
+
+    describe('with an inherited policy', () => {
+      beforeEach(() => {
+        factory({ source: { inherited: true, namespace: { fullPath: 'policy/path' } } });
+      });
+
+      it('renders a link to policy path', () => {
+        const policyPath = `/groups/policy/path/-/security/policies/${encodeURIComponent(
+          initialPolicy.name,
+        )}/edit?type=scan_result_policy`;
+
+        expect(findLink().attributes('href')).toBe(policyPath);
+      });
     });
   });
 

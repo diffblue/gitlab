@@ -13,7 +13,6 @@ export default {
     GlLink,
     RequireApprovals,
   },
-  inject: ['securityPoliciesPath'],
   props: {
     policy: {
       type: Object,
@@ -28,9 +27,14 @@ export default {
       return humanizeRules(this.policy.rules);
     },
     policyEditPath() {
-      return `${this.securityPoliciesPath}/${encodeURIComponent(
+      return `/${this.policyPath}/-/security/policies/${encodeURIComponent(
         this.policy.name,
       )}/edit?type=scan_result_policy`;
+    },
+    policyPath() {
+      return this.policy.source.inherited
+        ? `groups/${this.policy.source.namespace.fullPath}`
+        : `${this.policy.source.project.fullPath}`;
     },
     approvers() {
       return this.policy.approvers;

@@ -7,8 +7,15 @@ module Resolvers
 
       type Types::SecurityOrchestration::ScanResultPolicyType, null: true
 
+      argument :relationship, ::Types::SecurityOrchestration::SecurityPolicyRelationTypeEnum,
+               description: 'Filter policies by the given policy relationship.',
+               required: false,
+               default_value: :direct
+
       def resolve(**args)
-        policies = Security::ScanResultPoliciesFinder.new(context[:current_user], project, args).execute
+        return [] if object.is_a?(Group) && Feature.disabled?(:group_level_scan_result_policies, object)
+
+        policies = Security::ScanResultPoliciesFinder.new(context[:current_user], object, filtered_args(args)).execute
         policies.map do |policy|
           approvers = approvers(policy)
           {
@@ -18,7 +25,12 @@ module Resolvers
             yaml: YAML.dump(policy.slice(*POLICY_YAML_ATTRIBUTES).deep_stringify_keys),
             updated_at: policy[:config].policy_last_updated_at,
             user_approvers: approvers[:users],
-            group_approvers: approvers[:groups]
+            group_approvers: approvers[:groups],
+            source: {
+              project: policy[:project],
+              namespace: policy[:namespace],
+              inherited: policy[:inherited]
+            }
           }
         end
       end
@@ -27,8 +39,17 @@ module Resolvers
 
       def approvers(policy)
         Security::SecurityOrchestrationPolicies::FetchPolicyApproversService
-          .new(policy: policy, container: project, current_user: context[:current_user])
+          .new(policy: policy, container: object, current_user: context[:current_user])
           .execute
+      end
+
+      def filtered_args(args)
+        if object.is_a?(Group) ||
+            (object.is_a?(Project) && Feature.enabled?(:group_level_scan_result_policies, object.namespace))
+          args
+        else
+          args.except(:relationship)
+        end
       end
     end
   end

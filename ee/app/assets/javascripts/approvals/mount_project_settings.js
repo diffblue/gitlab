@@ -17,7 +17,6 @@ export default function mountProjectSettingsApprovals(el) {
     licenseCheckHelpPagePath,
     coverageCheckHelpPagePath,
     fullPath,
-    securityPoliciesPath,
     newPolicyPath,
   } = el.dataset;
 
@@ -48,7 +47,6 @@ export default function mountProjectSettingsApprovals(el) {
       licenseCheckHelpPagePath,
       coverageCheckHelpPagePath,
       fullPath,
-      securityPoliciesPath,
       newPolicyPath,
     },
     render(h) {

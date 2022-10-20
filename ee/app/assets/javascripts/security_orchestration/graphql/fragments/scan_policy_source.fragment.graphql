@@ -7,4 +7,9 @@ fragment SecurityPolicySource on SecurityPolicySource {
       name
     }
   }
+  ... on ProjectSecurityPolicySource {
+    project {
+      fullPath
+    }
+  }
 }

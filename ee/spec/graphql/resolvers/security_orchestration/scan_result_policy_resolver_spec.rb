@@ -18,7 +18,12 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanResultPolicyResolver do
         yaml: YAML.dump(policy.deep_stringify_keys),
         updated_at: policy_last_updated_at,
         user_approvers: [],
-        group_approvers: []
+        group_approvers: [],
+        source: {
+          inherited: false,
+          namespace: nil,
+          project: project
+        }
       }
     ]
   end

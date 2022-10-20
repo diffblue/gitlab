@@ -12,6 +12,9 @@ module Types
       implements OrchestrationPolicyType
 
       field :group_approvers, ['::Types::GroupType'], null: true, description: 'Approvers of the group type.'
+      field :source, Types::SecurityOrchestration::SecurityPolicySourceType,
+            null: false,
+            description: 'Source of the policy. Its fields depend on the source type.'
       field :user_approvers, [::Types::UserType], null: true, description: 'Approvers of the user type.'
     end
     # rubocop: enable Graphql/AuthorizeTypes

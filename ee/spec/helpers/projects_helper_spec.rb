@@ -471,7 +471,6 @@ RSpec.describe ProjectsHelper do
         coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
         group_name: project.root_ancestor.name,
         full_path: project.full_path,
-        security_policies_path: expose_path(project_security_policies_path(project)),
         new_policy_path: expose_path(new_project_security_policy_path(project))
       )
     end
