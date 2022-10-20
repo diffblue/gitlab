@@ -76,13 +76,12 @@ module Registrations
     def redirect_successful_namespace_creation(project_id)
       redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project_id)
 
-      # TODO: rewrite this in more of a GLEX way with candidate and control blocks
-      # https://gitlab.com/gitlab-org/gitlab/-/work_items/116902599
-      if helpers.registration_verification_enabled?
-        store_location_for(:user, redirect_path)
-        redirect_to new_users_sign_up_verification_path(project_id: project_id)
-      else
-        redirect_to redirect_path
+      experiment(:registration_verification, user: current_user) do |e|
+        e.control { redirect_to redirect_path }
+        e.candidate do
+          store_location_for(:user, redirect_path)
+          redirect_to new_users_sign_up_verification_path(project_id: project_id)
+        end
       end
     end
   end
