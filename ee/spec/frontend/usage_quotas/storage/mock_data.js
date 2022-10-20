@@ -1,83 +1,14 @@
 import mockGetProjectStorageStatisticsGraphQLResponse from 'test_fixtures/graphql/usage_quotas/storage/project_storage.query.graphql.json';
+import mockGetNamespaceStorageStatisticsGraphQLResponse from 'test_fixtures/graphql/usage_quotas/storage/namespace_storage.query.graphql.json';
 
-export { mockGetProjectStorageStatisticsGraphQLResponse };
+export {
+  mockGetProjectStorageStatisticsGraphQLResponse,
+  mockGetNamespaceStorageStatisticsGraphQLResponse,
+};
 
+export const projects =
+  mockGetNamespaceStorageStatisticsGraphQLResponse.data.namespace.projects.nodes;
 export const mockEmptyResponse = { data: { project: null } };
-
-export const projects = [
-  {
-    id: 24,
-    fullPath: 'h5bp/dummy-project',
-    nameWithNamespace: 'H5bp / dummy project',
-    avatarUrl: null,
-    webUrl: 'http://localhost:3001/h5bp/dummy-project',
-    name: 'dummy project',
-    statistics: {
-      commitCount: 1,
-      containerRegistrySize: 3_900_000,
-      storageSize: 41943,
-      repositorySize: 41943,
-      lfsObjectsSize: 0,
-      buildArtifactsSize: 0,
-      packagesSize: 0,
-      wikiSize: 104800,
-      snippetsSize: 0,
-      uploadsSize: 0,
-    },
-    actualRepositorySizeLimit: 100000,
-    totalCalculatedUsedStorage: 41943,
-    totalCalculatedStorageLimit: 41943000,
-    repositorySizeExcess: 0,
-  },
-  {
-    id: 8,
-    fullPath: 'h5bp/html5-boilerplate',
-    nameWithNamespace: 'H5bp / Html5 Boilerplate',
-    avatarUrl: null,
-    webUrl: 'http://localhost:3001/h5bp/html5-boilerplate',
-    name: 'Html5 Boilerplate',
-    statistics: {
-      commitCount: 0,
-      containerRegistrySize: 0,
-      storageSize: 99000,
-      repositorySize: 0,
-      lfsObjectsSize: 0,
-      buildArtifactsSize: 1272375,
-      packagesSize: 0,
-      wikiSize: 104800,
-      snippetsSize: 0,
-      uploadsSize: 0,
-    },
-    actualRepositorySizeLimit: 100000,
-    totalCalculatedUsedStorage: 89000,
-    totalCalculatedStorageLimit: 99430,
-    repositorySizeExcess: 0,
-  },
-  {
-    id: 80,
-    fullPath: 'twit/twitter',
-    nameWithNamespace: 'Twitter',
-    avatarUrl: null,
-    webUrl: 'http://localhost:3001/twit/twitter',
-    name: 'Twitter',
-    statistics: {
-      commitCount: 0,
-      containerRegistrySize: 0,
-      storageSize: 12933460,
-      repositorySize: 209710,
-      lfsObjectsSize: 209720,
-      buildArtifactsSize: 1272375,
-      packagesSize: 0,
-      wikiSize: 104800,
-      snippetsSize: 0,
-      uploadsSize: 0,
-    },
-    actualRepositorySizeLimit: 100000,
-    totalCalculatedUsedStorage: 13143170,
-    totalCalculatedStorageLimit: 12143170,
-    repositorySizeExcess: 0,
-  },
-];
 
 export const projectData = {
   storage: {
@@ -211,10 +142,6 @@ export const withRootStorageStatistics = {
     wikiSize: 1000,
     snippetsSize: 10000,
   },
-};
-
-export const mockGetNamespaceStorageStatisticsGraphQLResponse = {
-  nodes: projects.map((node) => node),
 };
 
 export const statisticsCardDefaultProps = {
