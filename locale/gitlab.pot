@@ -46855,6 +46855,9 @@ msgstr ""
 msgid "Your account uses dedicated credentials for the \"%{group_name}\" group and can only be updated through SSO."
 msgstr ""
 
+msgid "Your action has been rejected because the namespace storage limit has been reached. For more information, visit %{doc_url}."
+msgstr ""
+
 msgid "Your action succeeded."
 msgstr ""
 
