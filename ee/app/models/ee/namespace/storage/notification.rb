@@ -46,7 +46,12 @@ module EE
         }.freeze
 
         def enforcement_type
-          @enforcement_type ||= ::Feature.enabled?(:namespace_storage_limit, root_namespace) ? :namespace : :repository
+          @enforcement_type ||=
+            if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
+              :namespace
+            else
+              :repository
+            end
         end
 
         def alert_level
