@@ -17,23 +17,27 @@ RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
   let!(:user) { users.create!(name: 'test', email: 'test@example.com', projects_limit: 5) }
 
   let!(:root_group) do
-    namespaces.create!(id: 1, name: 'root-group', path: 'root-group',
-                       type: 'Group', traversal_ids: [1])
+    namespaces.create!(name: 'root-group', path: 'root-group', type: 'Group').tap do |new_group|
+      new_group.update!(traversal_ids: [new_group.id])
+    end
   end
 
   let!(:group) do
-    namespaces.create!(id: 2, name: 'group', path: 'group', parent_id: root_group.id,
-                       type: 'Group', traversal_ids: [1, 2])
+    namespaces.create!(name: 'group', path: 'group', parent_id: root_group.id, type: 'Group').tap do |new_group|
+      new_group.update!(traversal_ids: [root_group.id, new_group.id])
+    end
   end
 
   let!(:sub_group) do
-    namespaces.create!(id: 3, name: 'subgroup', path: 'subgroup', parent_id: group.id,
-                       type: 'Group', traversal_ids: [1, 2, 3])
+    namespaces.create!(name: 'subgroup', path: 'subgroup', parent_id: group.id, type: 'Group').tap do |new_group|
+      new_group.update!(traversal_ids: [root_group.id, group.id, new_group.id])
+    end
   end
 
   let!(:other_group) do
-    namespaces.create!(id: 4, name: 'other group', path: 'other-group',
-                       type: 'Group', traversal_ids: [4])
+    namespaces.create!(name: 'other group', path: 'other-group', type: 'Group').tap do |new_group|
+      new_group.update!(traversal_ids: [new_group.id])
+    end
   end
 
   let!(:project_root) do
