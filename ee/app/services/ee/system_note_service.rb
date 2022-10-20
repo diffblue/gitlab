@@ -111,6 +111,11 @@ module EE
       vulnerabilities_service(noteable, noteable.project, author).change_vulnerability_state
     end
 
+    # Called when marking dropped vulnerabilities as resolved
+    def mark_dropped_vulnerability_as_resolved(noteable, project, author, comment)
+      vulnerabilities_service(noteable, noteable.project, author).mark_dropped_as_resolved(comment)
+    end
+
     # Called when quick action to publish an issue to status page is called
     def publish_issue_to_status_page(noteable, project, author)
       issuables_service(noteable, project, author).publish_issue_to_status_page
