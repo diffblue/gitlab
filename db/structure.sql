@@ -13061,8 +13061,9 @@ ALTER SEQUENCE ci_pipeline_messages_id_seq OWNED BY ci_pipeline_messages.id;
 CREATE TABLE ci_pipeline_metadata (
     project_id bigint NOT NULL,
     pipeline_id bigint NOT NULL,
-    title text NOT NULL,
-    CONSTRAINT check_e6a636a3f3 CHECK ((char_length(title) <= 255))
+    name text,
+    CONSTRAINT check_25d23931f1 CHECK ((name IS NOT NULL)),
+    CONSTRAINT check_9d3665463c CHECK ((char_length(name) <= 255))
 );
 
 CREATE TABLE ci_pipeline_schedule_variables (
@@ -28355,7 +28356,7 @@ CREATE UNIQUE INDEX index_ci_pipeline_chat_data_on_pipeline_id ON ci_pipeline_ch
 
 CREATE INDEX index_ci_pipeline_messages_on_pipeline_id ON ci_pipeline_messages USING btree (pipeline_id);
 
-CREATE INDEX index_ci_pipeline_metadata_on_pipeline_id_title ON ci_pipeline_metadata USING btree (pipeline_id, title);
+CREATE INDEX index_ci_pipeline_metadata_on_pipeline_id_name ON ci_pipeline_metadata USING btree (pipeline_id, name);
 
 CREATE INDEX index_ci_pipeline_metadata_on_project_id ON ci_pipeline_metadata USING btree (project_id);
 
