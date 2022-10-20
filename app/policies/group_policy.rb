@@ -283,6 +283,10 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
     prevent :create_resource_access_tokens
   end
 
+  rule { can?(:admin_group_member) }.policy do
+    enable :admin_member_access_requests
+  end
+
   rule { support_bot & has_project_with_service_desk_enabled }.policy do
     enable :read_label
   end

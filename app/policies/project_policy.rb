@@ -834,6 +834,7 @@ class ProjectPolicy < BasePolicy
 
   rule { can?(:admin_project_member) }.policy do
     enable :import_project_members_from_another_project
+    enable :admin_member_access_requests
   end
 
   rule { registry_enabled & can?(:admin_container_image) }.policy do
