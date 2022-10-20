@@ -2,6 +2,7 @@ import { GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
 import DastProfilesSelector from 'ee/on_demand_scans_form/components/profile_selector/dast_profiles_selector.vue';
+import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
 import ConfigurationForm from 'ee/security_configuration/dast/components/configuration_form.vue';
@@ -51,6 +52,8 @@ describe('EE - DAST Configuration Form', () => {
   const findConfigurationSnippetModal = () => wrapper.findComponent(ConfigurationSnippetModal);
   const findDastProfilesSelector = () => wrapper.findComponent(DastProfilesSelector);
   const findAlert = () => wrapper.findByTestId('dast-configuration-error');
+  const findPreScanVerificationConfigurator = () =>
+    wrapper.findComponent(PreScanVerificationConfigurator);
 
   const createComponentFactory = (mountFn = shallowMount) => (
     options = {},
@@ -200,6 +203,25 @@ describe('EE - DAST Configuration Form', () => {
     it('cancel button points to Security Configuration page', () => {
       createComponent();
       expect(findCancelButton().attributes('href')).toBe(securityConfigurationPath);
+    });
+  });
+
+  describe('Dast pre-scan verification', () => {
+    it.each`
+      featureFlag | expectedResult
+      ${true}     | ${true}
+      ${false}    | ${false}
+    `('should render pre-scan verification configurator', ({ featureFlag, expectedResult }) => {
+      createComponent(
+        {},
+        {
+          glFeatures: {
+            dastPreScanVerification: featureFlag,
+          },
+        },
+      );
+
+      expect(findPreScanVerificationConfigurator().exists()).toBe(expectedResult);
     });
   });
 });
