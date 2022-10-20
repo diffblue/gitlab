@@ -91,7 +91,9 @@ RSpec.describe ComplianceManagement::Frameworks::UpdateService do
           end
 
           it 'updates the default compliance framework for the namespace' do
-            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+            expect_next_instance_of(::Groups::UpdateService) do |group_update_service|
+              expect(group_update_service).to receive(:execute).and_call_original
+            end
 
             subject.execute
 
@@ -104,20 +106,26 @@ RSpec.describe ComplianceManagement::Frameworks::UpdateService do
             params[:default] = false
           end
 
-          it 'does not update the default framework for the namespace' do
+          it 'does not update the default framework for the namespace when default framework is not set' do
             namespace.namespace_settings.update!(default_compliance_framework_id: nil)
+
+            expect(::Groups::UpdateService).not_to receive(:new)
 
             subject.execute
 
-            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to eq(nil)
+            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to be_nil
           end
 
           it 'removes the default framework for the namespace' do
             namespace.namespace_settings.update!(default_compliance_framework_id: framework.id)
 
+            expect_next_instance_of(::Groups::UpdateService) do |group_update_service|
+              expect(group_update_service).to receive(:execute).and_call_original
+            end
+
             subject.execute
 
-            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to eq(nil)
+            expect(namespace.reload.namespace_settings.default_compliance_framework_id).to be_nil
           end
         end
       end

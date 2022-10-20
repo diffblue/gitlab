@@ -21,17 +21,18 @@ module ComplianceManagement
           return error
         end
 
-        framework.update(params.except(:default)) ? success : error
+        return error unless framework.update(params.except(:default))
+
+        after_execute
+        success
       end
 
       def success
-        audit_changes
-        update_default_framework
         ServiceResponse.success(payload: { framework: framework })
       end
 
       def error
-        ServiceResponse.error(message: _('Failed to update framework'), payload: framework.errors )
+        ServiceResponse.error(message: _('Failed to update framework'), payload: framework.errors)
       end
 
       private
@@ -60,8 +61,12 @@ module ComplianceManagement
         return if params[:default].nil?
 
         if params[:default]
+          # do not update if the current framework is already set as the default framework
+          return if framework.id == framework.namespace.namespace_settings.default_compliance_framework_id
+
           default_framework_id = framework.id
         else
+          # do not update if the current framework is not the default framework
           return unless framework.id == framework.namespace.namespace_settings.default_compliance_framework_id
 
           default_framework_id = nil
@@ -71,6 +76,11 @@ module ComplianceManagement
                                                      .permit!
 
         ::Groups::UpdateService.new(framework.namespace, current_user, setting_params).execute
+      end
+
+      def after_execute
+        audit_changes
+        update_default_framework
       end
     end
   end

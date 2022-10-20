@@ -143,7 +143,9 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
           end
 
           it 'sets the new framework as the default framework for the namespace' do
-            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+            expect_next_instance_of(::Groups::UpdateService) do |group_update_service|
+              expect(group_update_service).to receive(:execute).and_call_original
+            end
 
             framework = subject.execute.payload[:framework]
 
@@ -158,11 +160,11 @@ RSpec.describe ComplianceManagement::Frameworks::CreateService do
           end
 
           it 'does not set the new framework as the default framework for the namespace' do
-            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+            expect(::Groups::UpdateService).not_to receive(:new)
 
             subject.execute
 
-            expect(namespace.namespace_settings.default_compliance_framework_id).to eq(nil)
+            expect(namespace.namespace_settings.default_compliance_framework_id).to be_nil
           end
         end
       end
