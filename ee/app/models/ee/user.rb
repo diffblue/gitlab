@@ -443,6 +443,11 @@ module EE
       namespace_bans.find_by!(namespace: namespace)
     end
 
+    def download_code_for?(project)
+      roles = preloaded_member_roles_for_projects([project.id])[project.id]
+      roles.include?(:download_code)
+    end
+
     protected
 
     override :password_required?
@@ -453,6 +458,20 @@ module EE
     end
 
     private
+
+    def preloaded_member_roles_for_projects(project_ids)
+      resource_key = "member_roles_in_projects:#{self.class}:#{self.id}"
+
+      ::Gitlab::SafeRequestLoader.execute(
+        resource_key: resource_key,
+        resource_ids: project_ids
+      ) do |project_ids|
+        ::Preloaders::UserMemberRolesInProjectsPreloader.new(
+          project_ids: project_ids,
+          user: self
+        ).execute
+      end
+    end
 
     def block_auto_created_users?
       if ldap_user?
