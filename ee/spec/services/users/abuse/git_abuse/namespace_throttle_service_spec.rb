@@ -110,6 +110,8 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
             group: namespace
           )
 
+        expect(mail_instance).to receive(:deliver_later)
+
         execute
       end
 
@@ -178,6 +180,8 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
           )
           .once
           .and_return(mail_instance)
+
+        expect(mail_instance).to receive(:deliver_later)
 
         execute
       end
@@ -307,6 +311,8 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
           )
           .once
           .and_return(mail_instance)
+
+        expect(mail_instance).to receive(:deliver_later)
 
         execute
       end

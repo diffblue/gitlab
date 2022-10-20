@@ -83,6 +83,8 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
           .once
           .and_return(mail_instance)
 
+        expect(mail_instance).to receive(:deliver_later)
+
         expect(Notify).not_to receive(:user_auto_banned_email)
           .with(inactive_admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
 
@@ -147,6 +149,8 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
           .once
           .and_return(mail_instance)
 
+        expect(mail_instance).to receive(:deliver_later)
+
         execute
       end
     end
@@ -188,6 +192,8 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
           .with(admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
           .once
           .and_return(mail_instance)
+
+        expect(mail_instance).to receive(:deliver_later)
 
         execute
       end
