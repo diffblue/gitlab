@@ -7,7 +7,6 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
 
   increment_usage_counter Gitlab::UsageDataCounters::CycleAnalyticsCounter, :views, only: :show
 
-  before_action :load_group, only: %I[show use_aggregated_backend]
   before_action :load_project, only: :show
   before_action :load_value_stream, only: :show
   before_action :request_params, only: :show

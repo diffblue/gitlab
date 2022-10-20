@@ -3,7 +3,6 @@
 class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analytics::ApplicationController
   respond_to :json
 
-  before_action :load_group
   before_action do
     render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
   end

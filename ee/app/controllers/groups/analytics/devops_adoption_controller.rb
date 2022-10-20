@@ -5,7 +5,6 @@ class Groups::Analytics::DevopsAdoptionController < Groups::Analytics::Applicati
 
   layout 'group'
 
-  before_action :load_group
   before_action -> { authorize_view_by_action!(:view_group_devops_adoption) }
 
   track_custom_event :show,

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Groups::Analytics::TasksByTypeController < Groups::Analytics::ApplicationController
-  before_action :load_group
   before_action -> { check_feature_availability!(:type_of_work_analytics) }
   before_action -> { authorize_view_by_action!(:view_type_of_work_charts) }
   before_action :validate_label_name, only: :show
