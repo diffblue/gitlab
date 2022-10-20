@@ -1945,6 +1945,41 @@ RSpec.describe User do
     end
   end
 
+  describe '#download_code_for?', :request_store do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:user) { create(:user) }
+
+    before_all do
+      project_member = create(:project_member, :guest, user: user, source: project)
+      create(
+        :member_role,
+        :guest,
+        download_code: true,
+        members: [project_member]
+      )
+    end
+
+    context 'when download_code present in preloaded custom roles' do
+      before do
+        user.download_code_for?(project)
+      end
+
+      it 'returns true' do
+        expect(user.download_code_for?(project)).to be true
+      end
+
+      it 'does not perform extra queries when asked for projects have already been preloaded' do
+        expect { user.download_code_for?(project) }.not_to exceed_query_limit(0)
+      end
+    end
+
+    context 'when project not present in preloaded custom roles' do
+      it 'loads the custom role' do
+        expect(user.download_code_for?(project)).to be true
+      end
+    end
+  end
+
   describe '#has_valid_credit_card?' do
     it 'returns true when a credit card validation is present' do
       credit_card_validation = build(:credit_card_validation, credit_card_validated_at: Time.current)
