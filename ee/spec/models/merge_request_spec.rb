@@ -1435,5 +1435,20 @@ RSpec.describe MergeRequest do
         expect(described_class.with_head_pipeline).to eq([merge_request_with_head_pipeline])
       end
     end
+
+    describe '.for_projects_with_security_policy_project' do
+      let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
+
+      let_it_be(:merge_request_with_security_policy_project) do
+        create(:ee_merge_request, source_project: security_orchestration_policy_configuration.project)
+      end
+
+      let_it_be(:merge_request_without_security_policy_project) { create(:ee_merge_request) }
+
+      it 'returns MRs for projects with security policy project on target project' do
+        expect(described_class.for_projects_with_security_policy_project).to eq(
+          [merge_request_with_security_policy_project])
+      end
+    end
   end
 end
