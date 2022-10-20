@@ -660,6 +660,38 @@ RSpec.describe Projects::JobsController, :clean_gitlab_redis_shared_state do
           end
         end
       end
+
+      context 'when CI_DEBUG_SERVICES enabled' do
+        let!(:variable) { create(:ci_instance_variable, key: 'CI_DEBUG_SERVICES', value: 'true') }
+
+        context 'with proper permissions on a project' do
+          let(:user) { developer }
+
+          before do
+            sign_in(user)
+          end
+
+          it 'returns response ok' do
+            get_trace
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+        end
+
+        context 'without proper permissions for debug logging' do
+          let(:user) { guest }
+
+          before do
+            sign_in(user)
+          end
+
+          it 'returns response forbidden' do
+            get_trace
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+      end
     end
 
     context 'when job has a live trace' do
@@ -1187,6 +1219,40 @@ RSpec.describe Projects::JobsController, :clean_gitlab_redis_shared_state do
       context 'when CI_DEBUG_TRACE enabled' do
         before do
           create(:ci_instance_variable, key: 'CI_DEBUG_TRACE', value: 'true')
+        end
+
+        context 'with proper permissions for debug logging on a project' do
+          let(:user) { developer }
+
+          before do
+            sign_in(user)
+          end
+
+          it 'returns response ok' do
+            response = subject
+
+            expect(response).to have_gitlab_http_status(:ok)
+          end
+        end
+
+        context 'without proper permissions for debug logging on a project' do
+          let(:user) { reporter }
+
+          before do
+            sign_in(user)
+          end
+
+          it 'returns response forbidden' do
+            response = subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
+      end
+
+      context 'when CI_DEBUG_SERVICES enabled' do
+        before do
+          create(:ci_instance_variable, key: 'CI_DEBUG_SERVICES', value: 'true')
         end
 
         context 'with proper permissions for debug logging on a project' do
