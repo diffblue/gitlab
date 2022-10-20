@@ -69,26 +69,6 @@ RSpec.describe GroupSamlGroupSyncWorker do
                 .to eq(top_level_group.saml_provider.default_membership_role)
             end
 
-            context 'when the feature flag is disabled' do
-              before do
-                stub_feature_flags(saml_group_sync_retain_default_membership: false)
-              end
-
-              it 'passes the top level group to the sync service as group to manage' do
-                top_level_group.add_member(user, saml_provider.default_membership_role)
-
-                expect_sync_service_call(group_links: [group_link], manage_group_ids: [top_level_group.id, group.id])
-
-                perform([group_link.id])
-              end
-
-              it 'removes the user from the top level group' do
-                perform([group_link.id])
-
-                expect(top_level_group.member?(user)).to eq(false)
-              end
-            end
-
             context 'when the member is the last owner' do
               before do
                 top_level_group.add_member(user, Gitlab::Access::OWNER)
