@@ -4647,9 +4647,6 @@ msgstr ""
 msgid "Application settings update failed"
 msgstr ""
 
-msgid "Application uninstalled but failed to destroy: %{error_message}"
-msgstr ""
-
 msgid "Application was successfully destroyed."
 msgstr ""
 
@@ -28407,9 +28404,6 @@ msgid "Operation failed. Check pod logs for %{pod_name} for more details."
 msgstr ""
 
 msgid "Operation not allowed"
-msgstr ""
-
-msgid "Operation timed out. Check pod logs for %{pod_name} for more details."
 msgstr ""
 
 msgid "Operations"
