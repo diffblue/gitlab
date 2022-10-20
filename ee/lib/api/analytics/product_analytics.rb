@@ -17,6 +17,7 @@ module API
         end
 
         def check_application_settings!
+          not_found! unless Gitlab::CurrentSettings.product_analytics_enabled?
           not_found! unless Gitlab::CurrentSettings.cube_api_base_url.present?
           not_found! unless Gitlab::CurrentSettings.cube_api_key.present?
         end
