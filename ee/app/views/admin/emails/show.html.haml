@@ -6,23 +6,21 @@
 - page_title _("Email Notification")
 %h1.page-title.gl-font-size-h-display
   = _('Send email notification')
-%p.light
+%p
   = _('You can notify the app / group or a project by sending them an email notification')
 
-= form_tag admin_email_path, id: 'new-admin-email' do
-  .form-group.row.ml-1
-    %label.col-form-label{ for: :subject } Subject
-    .col-sm-10
-      = text_field_tag :subject, '', class: 'form-control', required: true
+= form_tag admin_email_path, id: 'new-admin-email', class: 'gl-show-field-errors' do
+  .form-group.gl-form-group{ role: 'group' }
+    = label_tag :subject, s_('AdminEmail|Subject'), class: 'gl-display-block col-form-label'
+    = text_field_tag :subject, '', class: 'gl-form-input form-control gl-lg-form-input-xl', required: true, title: s_('AdminEmail|Subject is required.')
 
-  .form-group.row.ml-1
-    %label.col-form-label{ for: :body } Body
-    .col-sm-10
-      = text_area_tag :body, '', class: 'form-control', rows: 15, required: true
+  .form-group.gl-form-group{ role: 'group' }
+    = label_tag :body, s_('AdminEmail|Body'), class: 'gl-display-block col-form-label'
+    = text_area_tag :body, '', class: 'gl-form-input gl-form-textarea form-control gl-lg-form-input-xl', rows: 15, required: true, title: s_('AdminEmail|Body is required.')
 
-  .form-group.row.ml-1
-    %label.col-form-label{ for: :recipients } Recipient group
-    .col-sm-10
+  .form-group.gl-form-group{ role: 'group' }
+    = label_tag :recipients, s_('AdminEmail|Recipient group or project'), class: 'gl-display-block col-form-label'
+    .gl-lg-form-input-xl
       = admin_email_select_tag(:recipients)
-  .form-actions
+  .gl-mt-5
     = submit_tag _('Send message'), class: 'gl-button btn btn-confirm', disabled: admin_emails_are_currently_rate_limited?
