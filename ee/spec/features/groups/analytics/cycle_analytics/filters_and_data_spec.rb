@@ -291,7 +291,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
     end
   end
 
-  context 'with lots of data', :js do
+  context 'with lots of data', :js, :sidekiq_inline do
     let(:issue) { create(:issue, project: project) }
 
     around do |example|
@@ -332,7 +332,7 @@ RSpec.describe 'Group value stream analytics filters and data', :js do
       { title: 'Test', description: 'Total test time for all commits/merges', events_count: 0, time: "-" }
     ]
 
-    it 'each stage with events will display the stage events list when selected', :sidekiq_might_not_need_inline do
+    it 'each stage with events will display the stage events list when selected' do
       stages_without_data.each do |stage|
         select_stage(stage[:title])
         expect(page).not_to have_selector('[data-testid="vsa-stage-event"]')

@@ -38,7 +38,7 @@ RSpec.describe Analytics::CycleAnalytics::GroupLevel do
       ::Dora::DailyMetrics::RefreshWorker.new.perform(environment.id, pipeline.created_at.to_date.to_s)
     end
 
-    it 'returns medians for each stage for a specific group' do
+    it 'returns medians for each stage for a specific group', :sidekiq_inline do
       expect(subject.summary.map { |summary| summary[:value] }).to contain_exactly('0.1', '1', '1')
     end
   end
