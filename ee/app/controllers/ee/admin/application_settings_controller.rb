@@ -14,7 +14,7 @@ module EE
         before_action :search_outdated_code_analyzer_detected, only: [:advanced_search]
         before_action :push_password_complexity_feature, only: [:general]
 
-        feature_category :provision, [:seat_link_payload]
+        feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
         feature_category :global_search, [:advanced_search]
         urgency :low, [:advanced_search, :seat_link_payload]
