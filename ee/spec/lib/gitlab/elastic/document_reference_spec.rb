@@ -185,21 +185,23 @@ RSpec.describe Gitlab::Elastic::DocumentReference do
     end
 
     describe '#preload_database_records' do
-      let(:issue1) { create(:issue) }
-      let(:issue2) { create(:issue) }
-      let(:note1) { create(:note) }
-      let(:note2) { create(:note) }
-      let(:note_deleted) do
+      let_it_be(:issue1) { create(:issue) }
+      let_it_be(:issue2) { create(:issue) }
+      let_it_be(:note1) { create(:note) }
+      let_it_be(:note2) { create(:note) }
+      let_it_be(:note_deleted) do
         note = create(:note)
         note.delete
         note
       end
 
-      let(:issue_ref1) { described_class.new(Issue, issue1.id, issue1.es_id, issue1.es_parent) }
-      let(:issue_ref2) { described_class.new(Issue, issue2.id, issue2.es_id, issue2.es_parent) }
-      let(:note_ref1) { described_class.new(Note, note1.id, note1.es_id, note1.es_parent) }
-      let(:note_ref2) { described_class.new(Note, note2.id, note2.es_id, note2.es_parent) }
-      let(:note_ref_deleted) { described_class.new(Note, note_deleted.id, note_deleted.es_id, note_deleted.es_parent) }
+      let_it_be(:issue_ref1) { described_class.new(Issue, issue1.id, issue1.es_id, issue1.es_parent) }
+      let_it_be(:issue_ref2) { described_class.new(Issue, issue2.id, issue2.es_id, issue2.es_parent) }
+      let_it_be(:note_ref1) { described_class.new(Note, note1.id, note1.es_id, note1.es_parent) }
+      let_it_be(:note_ref2) { described_class.new(Note, note2.id, note2.es_id, note2.es_parent) }
+      let_it_be(:note_ref_deleted) do
+        described_class.new(Note, note_deleted.id, note_deleted.es_id, note_deleted.es_parent)
+      end
 
       it 'preloads database records to avoid N+1 queries' do
         collection = described_class::Collection.new
@@ -225,6 +227,31 @@ RSpec.describe Gitlab::Elastic::DocumentReference do
         expect(database_records[2]).to eq(issue2)
         expect(database_records[3]).to eq(note2)
         expect(database_records[4]).to eq(nil) # Deleted database record will be nil
+      end
+
+      it 'batches database records to avoid sql timeouts' do
+        stub_const("#{described_class.name}::PRELOAD_BATCH_SIZE", 2)
+
+        note3 = create(:note)
+        note_ref3 = described_class.new(Note, note3.id, note3.es_id, note3.es_parent)
+
+        collection = described_class::Collection.new
+        collection.deserialize_and_add(note_ref1.serialize)
+        collection.deserialize_and_add(note_ref2.serialize)
+
+        control = ActiveRecord::QueryRecorder.new { collection.preload_database_records.map(&:database_record) }
+
+        collection = described_class::Collection.new
+        collection.deserialize_and_add(note_ref1.serialize)
+        collection.deserialize_and_add(note_ref2.serialize)
+        collection.deserialize_and_add(note_ref3.serialize)
+
+        # preloading is done in batches. we use the query recorder to validate that batching
+        # is occurring. this is proven by setting the batch size to a low number and verify each set of queries
+        # is run for each batch
+        expect do
+          collection.preload_database_records.map(&:database_record)
+        end.not_to exceed_query_limit(control.count * 2)
       end
     end
   end
