@@ -353,4 +353,54 @@ RSpec.describe API::ProjectMirror do
       end
     end
   end
+
+  describe 'GET /projects/:id/mirror/pull' do
+    let_it_be(:project) { create(:project, :repository, :mirror) }
+    let_it_be(:user) { create(:user) }
+
+    let(:route) { "/projects/#{project.id}/mirror/pull" }
+
+    context 'when user is missing' do
+      it 'returns Unauthorized' do
+        get api(route, nil)
+
+        expect(response).to have_gitlab_http_status(:unauthorized)
+      end
+    end
+
+    context 'when user has no admin permissions' do
+      before do
+        project.add_developer(user)
+      end
+
+      it 'returns forbidden error' do
+        get api(route, user)
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when user has admin permissions' do
+      before do
+        project.add_maintainer(user)
+      end
+
+      it 'returns pull mirror details' do
+        get api(route, user)
+
+        expect(response).to have_gitlab_http_status(:success)
+        expect(response).to match_response_schema('project_mirror')
+      end
+
+      context 'when project does not support mirroring' do
+        let_it_be(:project) { create(:project, :repository, :with_import_url) }
+
+        it 'returns BadRequest' do
+          get api(route, user)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+    end
+  end
 end
