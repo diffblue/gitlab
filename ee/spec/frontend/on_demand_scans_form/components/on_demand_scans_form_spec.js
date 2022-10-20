@@ -24,7 +24,7 @@ import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
-import PreScanVerificationStatus from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_status.vue';
+import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import {
   siteProfiles,
@@ -92,7 +92,8 @@ describe('OnDemandScansForm', () => {
   const findCancelButton = () => findByTestId('on-demand-scan-cancel-button');
   const findProfileSummary = () => findByTestId('selected-profile-summary');
   const findDastProfilesConfigurator = () => wrapper.findComponent(DastProfilesConfigurator);
-  const findPreScanVerificationStatus = () => wrapper.findComponent(PreScanVerificationStatus);
+  const findPreScanVerificationConfigurator = () =>
+    wrapper.findComponent(PreScanVerificationConfigurator);
 
   const hasSiteProfileAttributes = () => {
     expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.dastScannerProfile.id);
@@ -720,14 +721,14 @@ describe('OnDemandScansForm', () => {
       featureFlag | expectedResult
       ${true}     | ${true}
       ${false}    | ${false}
-    `('should render pre-scan verification status', ({ featureFlag, expectedResult }) => {
+    `('should render pre-scan verification configurator', ({ featureFlag, expectedResult }) => {
       createShallowComponent({}, false, {
         glFeatures: {
           dastPreScanVerification: featureFlag,
         },
       });
 
-      expect(findPreScanVerificationStatus().exists()).toBe(expectedResult);
+      expect(findPreScanVerificationConfigurator().exists()).toBe(expectedResult);
     });
   });
 });
