@@ -111,7 +111,6 @@ module EE
 
       def send_git_audit_streaming_event
         return if user.blank? || project.blank?
-        return unless ::Feature.enabled?(:audit_event_streaming_git_operations, project.group)
 
         audit_context = {
           name: 'repository_git_operation',

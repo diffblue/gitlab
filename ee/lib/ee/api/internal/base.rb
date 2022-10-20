@@ -26,7 +26,6 @@ module EE
             override :send_git_audit_streaming_event
             def send_git_audit_streaming_event(msg)
               return if actor.user.blank? || @project.blank?
-              return unless ::Feature.enabled?(:audit_event_streaming_git_operations, @project.group)
 
               audit_context = {
                 name: 'repository_git_operation',
