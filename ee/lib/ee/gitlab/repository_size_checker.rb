@@ -25,7 +25,7 @@ module EE
 
       override :additional_repo_storage_available?
       def additional_repo_storage_available?
-        !!namespace&.additional_repo_storage_by_namespace_enabled?
+        namespace.present? && ::Gitlab::CurrentSettings.automatic_purchased_storage_allocation?
       end
 
       private
