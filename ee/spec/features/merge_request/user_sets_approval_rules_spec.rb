@@ -65,7 +65,7 @@ RSpec.describe 'Merge request > User sets approval rules', :js do
         end
       end
 
-      it "persists hidden groups that author has no access to when creating MR" do
+      it "persists hidden groups that author has no access to when creating MR", :sidekiq_inline do
         click_on("Create merge request")
         wait_for_requests
 

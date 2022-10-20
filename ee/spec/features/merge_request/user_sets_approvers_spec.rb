@@ -69,7 +69,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         sign_in(user)
       end
 
-      it 'allows setting groups as approvers' do
+      it 'allows setting groups as approvers', :sidekiq_inline do
         visit project_new_merge_request_path(project, merge_request: { target_branch: 'master', source_branch: 'feature' })
 
         open_modal(text: 'Add approval rule')
@@ -97,7 +97,7 @@ RSpec.describe 'Merge request > User sets approvers', :js do
         expect(page).to have_selector("img[alt='#{other_user.name}']")
       end
 
-      it 'allows delete approvers group when it is set in project' do
+      it 'allows delete approvers group when it is set in project', :sidekiq_inline do
         approver = create :user
         project.add_developer(approver)
         group.add_developer(approver)
