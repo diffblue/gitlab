@@ -2,7 +2,7 @@
 
 module QA
   # Issue to enable this test in live environments: https://gitlab.com/gitlab-org/quality/team-tasks/-/issues/614
-  RSpec.describe 'Manage', :skip_live_env do
+  RSpec.describe 'Govern', :skip_live_env, product_group: :compliance do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         sign_in
@@ -22,7 +22,7 @@ module QA
       only: { job: 'review-qa-*' },
       issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/373794'
     } do
-      context 'Failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
+      context 'for failed sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347913' do
         before do
           Runtime::Browser.visit(:gitlab, Page::Main::Login)
           invalid_user = Resource::User.init do |user|
@@ -39,7 +39,7 @@ module QA
         it_behaves_like 'audit event', ["Failed to login with STANDARD authentication"]
       end
 
-      context 'Successful sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347914' do
+      context 'for successful sign in', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347914' do
         before do
           sign_in
         end
@@ -47,7 +47,7 @@ module QA
         it_behaves_like 'audit event', ["Signed in with STANDARD authentication"]
       end
 
-      context 'Add SSH key', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347915' do
+      context 'for add SSH key', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347915' do
         key = nil
 
         before do
@@ -64,7 +64,8 @@ module QA
         it_behaves_like 'audit event', ["Added SSH key"]
       end
 
-      context 'Add and delete email', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347918' do
+      context 'for add and delete email',
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347918' do
         before do
           sign_in
 
@@ -75,9 +76,9 @@ module QA
           Support::Retrier.retry_until(sleep_interval: 3) do
             Page::Profile::Emails.perform do |emails|
               emails.add_email_address(new_email_address)
-              expect(emails).to have_text(new_email_address)
+              expect(emails).to have_text(new_email_address) # rubocop:disable RSpec/ExpectInHook
               emails.delete_email_address(new_email_address)
-              expect(emails).not_to have_text(new_email_address)
+              expect(emails).not_to have_text(new_email_address) # rubocop:disable RSpec/ExpectInHook
             end
           end
         end
@@ -85,7 +86,8 @@ module QA
         it_behaves_like 'audit event', ["Added email", "Removed email"]
       end
 
-      context 'Change password', :skip_signup_disabled, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347917' do
+      context 'for change password', :skip_signup_disabled,
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347917' do
         before do
           user = Resource::User.fabricate_via_api! do |user|
             user.username = "user_#{SecureRandom.hex(4)}"
@@ -108,7 +110,8 @@ module QA
         it_behaves_like 'audit event', ["Changed password"]
       end
 
-      context 'Start and stop user impersonation', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347916' do
+      context 'for start and stop user impersonation',
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347916' do
         let!(:user_for_impersonation) { Resource::User.fabricate_via_api! }
 
         before do
@@ -125,11 +128,11 @@ module QA
           Page::Main::Menu.perform(&:click_stop_impersonation_link)
         end
 
-        it_behaves_like 'audit event', ["Started Impersonation", "Stopped Impersonation"]
-
         after do
           user_for_impersonation.remove_via_api!
         end
+
+        it_behaves_like 'audit event', ["Started Impersonation", "Stopped Impersonation"]
       end
 
       def sign_in
