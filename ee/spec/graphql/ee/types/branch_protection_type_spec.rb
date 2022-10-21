@@ -11,6 +11,7 @@ RSpec.describe GitlabSchema.types['BranchProtection'] do
       code_owner_approval_required
       merge_access_levels
       push_access_levels
+      unprotect_access_levels
     ]
   end
 
