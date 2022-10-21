@@ -31,5 +31,7 @@ FactoryBot.define do
       id { 'GPL-1.0-only' }
       name { 'GNU General Public License v1.0 only' }
     end
+
+    skip_create
   end
 end

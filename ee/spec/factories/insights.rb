@@ -15,6 +15,8 @@ FactoryBot.define do
         undefined: 1
       }.with_indifferent_access
     end
+
+    skip_create
   end
 
   factory :insights_merge_requests_per_month, class: 'Hash' do
@@ -25,6 +27,8 @@ FactoryBot.define do
         'March 2019' => 3
       }
     end
+
+    skip_create
   end
 
   factory :insights_issues_by_team_per_month, class: 'Hash' do
@@ -50,5 +54,7 @@ FactoryBot.define do
         }.with_indifferent_access
       }
     end
+
+    skip_create
   end
 end

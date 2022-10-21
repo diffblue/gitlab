@@ -2,7 +2,9 @@
 
 FactoryBot.define do
   factory :license_scanning_license, class: '::Gitlab::Ci::Reports::LicenseScanning::License' do
-    initialize_with { new(id: id, name: name, url: url) }
+    id { 'ID' }
+    name { 'Some License' }
+    url { '' }
 
     trait :mit do
       id { 'MIT' }
@@ -15,5 +17,9 @@ FactoryBot.define do
       name { 'Unknown' }
       url { '' }
     end
+
+    initialize_with { new(id: id, name: name, url: url) }
+
+    skip_create
   end
 end

@@ -55,9 +55,6 @@ class Gitlab::Seeder::ComplianceReportViolations
 end
 
 Gitlab::Seeder.quiet do
-  FactoryBot.definition_file_paths << Rails.root.join('ee', 'spec', 'factories')
-  FactoryBot.reload # rubocop:disable Cop/ActiveRecordAssociationReload
-
   projects = Project
       .non_archived
       .with_merge_requests_enabled

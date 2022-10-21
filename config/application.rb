@@ -473,6 +473,11 @@ module Gitlab
       g.factory_bot false
     end
 
+    if defined?(FactoryBotRails)
+      config.factory_bot.definition_file_paths << 'ee/spec/factories' if Gitlab.ee?
+      config.factory_bot.definition_file_paths << 'jh/spec/factories' if Gitlab.jh?
+    end
+
     # sprocket-rails adds some precompile assets we actually do not need.
     #
     # It copies all _non_ js and CSS files from the app/assets/ older.
