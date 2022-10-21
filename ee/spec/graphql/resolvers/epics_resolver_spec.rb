@@ -128,7 +128,7 @@ RSpec.describe Resolvers::EpicsResolver do
       context 'with author_username' do
         it 'filters epics by author' do
           user = create(:user)
-          epic = create(:epic, group: group, author: user )
+          epic = create(:epic, group: group, author: user)
           create(:epic, group: group)
 
           epics = resolve_epics(author_username: user.username)
