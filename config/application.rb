@@ -293,6 +293,7 @@ module Gitlab
     config.assets.precompile << "page_bundles/merge_requests.css"
     config.assets.precompile << "page_bundles/milestone.css"
     config.assets.precompile << "page_bundles/new_namespace.css"
+    config.assets.precompile << "page_bundles/notifications.css"
     config.assets.precompile << "page_bundles/oncall_schedules.css"
     config.assets.precompile << "page_bundles/operations.css"
     config.assets.precompile << "page_bundles/escalation_policies.css"
