@@ -60,17 +60,11 @@ module ComplianceManagement
       def update_default_framework
         return if params[:default].nil?
 
-        if params[:default]
-          # do not update if the current framework is already set as the default framework
-          return if framework.id == framework.namespace.namespace_settings.default_compliance_framework_id
+        # do not update if the current framework default matches `params[:default]`
+        is_framework_default = framework.id == framework.namespace.namespace_settings.default_compliance_framework_id
+        return if is_framework_default == params[:default]
 
-          default_framework_id = framework.id
-        else
-          # do not update if the current framework is not the default framework
-          return unless framework.id == framework.namespace.namespace_settings.default_compliance_framework_id
-
-          default_framework_id = nil
-        end
+        default_framework_id = params[:default] ? framework.id : nil
 
         setting_params = ActionController::Parameters.new(default_compliance_framework_id: default_framework_id)
                                                      .permit!
