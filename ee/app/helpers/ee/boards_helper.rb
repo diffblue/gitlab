@@ -18,7 +18,7 @@ module EE
         board_assignee_username: board.assignee&.username,
         board_assignee_id: board.assignee&.id,
         label_ids: board.label_ids,
-        labels: board.labels.to_json(only: [:id, :title, :color, :text_color] ),
+        labels: board.labels.to_json(only: [:id, :title, :color, :text_color]),
         board_weight: board.weight,
         show_promotion: show_feature_promotion,
         emails_disabled: current_board_parent.emails_disabled?.to_s,
