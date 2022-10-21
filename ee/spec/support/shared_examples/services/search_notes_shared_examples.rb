@@ -86,15 +86,14 @@ RSpec.shared_examples 'search confidential notes shared examples' do
           let(:expected_objects) do
             [
               not_confidential_note, nil_confidential_note,
-              not_confidential_note_on_confidential_issue,
-              confidential_note_on_confidential_issue
+              not_confidential_note_on_confidential_issue
             ]
           end
 
           context 'as issue author' do
             let(:confidential_issue) { create :issue, confidential: true, project: noteable.project, author: user }
 
-            it 'does not filter confidential issue notes' do
+            it 'filters confidential issue notes' do
               ensure_elasticsearch_index!
 
               expect_search_results(user, 'notes', expected_objects: expected_objects) do |user|
@@ -106,7 +105,7 @@ RSpec.shared_examples 'search confidential notes shared examples' do
           context 'as issue assignee' do
             let(:confidential_issue) { create :issue, confidential: true, project: noteable.project, assignees: [user] }
 
-            it 'does not filter confidential issue notes' do
+            it 'filters confidential issue notes' do
               ensure_elasticsearch_index!
 
               expect_search_results(user, 'notes', expected_objects: expected_objects) do |user|
