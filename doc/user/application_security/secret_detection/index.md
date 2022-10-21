@@ -94,7 +94,7 @@ Add the following extract to your `.gitlab-ci.yml` file:
 
 ```yaml
 include:
-  - template: Security/Secret-Detection.gitlab-ci.yml
+  - template: Jobs/Secret-Detection.gitlab-ci.yml
 ```
 
 Pipelines now include a Secret Detection job, and the results are included in the merge request
