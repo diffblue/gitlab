@@ -1,12 +1,17 @@
 ---
-stage: none
-group: unassigned
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments
+dynamic: true
+feedback: false
 comments: false
-description: 'Architecture Practice at GitLab'
 ---
 
 # Architecture at GitLab
 
+## Resources
+
 - [Architecture at GitLab](https://about.gitlab.com/handbook/engineering/architecture/)
 - [Architecture Workflow](https://about.gitlab.com/handbook/engineering/architecture/workflow/)
+
+## Blueprints
+
+<%= render '/blueprints/count.*', :blueprints => all_blueprints %>
+<%= render '/blueprints/table.*', :blueprints => all_blueprints %>
