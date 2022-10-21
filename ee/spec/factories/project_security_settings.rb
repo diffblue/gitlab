@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :project_security_setting do
-    project
+    project { association :project, security_setting: instance }
     auto_fix_container_scanning { true }
     auto_fix_dast { true }
     auto_fix_dependency_scanning { true }

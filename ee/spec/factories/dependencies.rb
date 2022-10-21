@@ -78,5 +78,7 @@ FactoryBot.define do
     end
 
     initialize_with { attributes }
+
+    skip_create
   end
 end
