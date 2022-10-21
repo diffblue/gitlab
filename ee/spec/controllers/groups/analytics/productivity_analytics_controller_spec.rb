@@ -176,7 +176,7 @@ RSpec.describe Groups::Analytics::ProductivityAnalyticsController do
       end
 
       context 'for list of MRs' do
-        let!(:merge_request ) { create :merge_request, :merged }
+        let!(:merge_request) { create :merge_request, :merged }
 
         let(:serializer_mock) { instance_double('BaseSerializer') }
 
