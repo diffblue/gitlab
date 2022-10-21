@@ -26,6 +26,7 @@ module Gitlab
             return @config unless extend_configuration?
 
             merged_config = @config.deep_merge(merge_policies_with_stages(@config))
+            merged_config = config_with_overridden_variables(merged_config) if merged_config.key?(:variables)
 
             observe_processing_duration(Time.current - @start)
 
@@ -35,6 +36,19 @@ module Gitlab
           private
 
           attr_reader :project
+
+          def config_with_overridden_variables(config)
+            config.tap do |cfg|
+              cfg[:variables] = cfg[:variables].merge(variable_overrides).compact
+            end
+          end
+
+          def variable_overrides
+            ::Security::SecurityOrchestrationPolicies::ScanPipelineService::SCAN_VARIABLES
+              .values
+              .reduce({}, :merge)
+              .symbolize_keys
+          end
 
           def valid_security_orchestration_policy_configurations
             @valid_security_orchestration_policy_configurations ||= project.all_security_orchestration_policy_configurations
