@@ -14,8 +14,9 @@ module Gitlab
 
           # Because facets "count" and "weight_sum" share the same db query, but have a different graphql type object,
           # we can separate them and serve only the fields which are requested by the GraphQL query
-          def initialize(query_ctx, epic_id, aggregate_facet, &block)
+          def initialize(query_ctx, epic_id, aggregate_facet, epic: nil, &block)
             @epic_id = epic_id
+            @epic = epic
 
             error = validate_facet(aggregate_facet)
             if error
@@ -46,6 +47,7 @@ module Gitlab
 
             node = tree[@epic_id]
             object = aggregate_object(node)
+            check_cached_aggregations(object)
 
             @block ? @block.call(node, object) : object
           end
@@ -104,6 +106,21 @@ module Gitlab
             else
               node.aggregate_weight_sum
             end
+          end
+
+          def check_cached_aggregations(object)
+            return unless @epic
+            return unless Feature.enabled?(:check_epic_cached_values, @epic.group)
+
+            return if facet == :weight_sum &&
+              @epic.total_opened_issue_weight == object.opened_issues.to_i &&
+              @epic.total_closed_issue_weight == object.closed_issues.to_i
+
+            return if facet == :count &&
+              @epic.total_opened_issue_count == object.opened_issues.to_i &&
+              @epic.total_closed_issue_count == object.closed_issues.to_i
+
+            Gitlab::AppJsonLogger.error(message: 'epic cached count mismatch', aggregation: facet, epic_id: @epic_id)
           end
         end
       end
