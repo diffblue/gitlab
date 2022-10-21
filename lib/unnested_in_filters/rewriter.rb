@@ -163,22 +163,6 @@ module UnnestedInFilters
       index_only_filter_query
     end
 
-    def filter_query
-      model.from(from)
-           .limit(limit_value)
-           .order(order_values)
-           .includes(relation.includes_values)
-           .preload(relation.preload_values)
-           .eager_load(relation.eager_load_values)
-    end
-
-    def index_only_filter_query
-      model.where(model.primary_key => filter_query.select(model.primary_key))
-           .includes(relation.includes_values)
-           .preload(relation.preload_values)
-           .eager_load(relation.eager_load_values)
-    end
-
     def rewrite?
       strong_memoize(:rewrite) do
         in_filters.present? && has_index_coverage?
@@ -193,6 +177,23 @@ module UnnestedInFilters
 
     def log_rewrite
       ::Gitlab::AppLogger.info(message: 'Query is being rewritten by `UnnestedInFilters`', model: model.name)
+    end
+
+    def filter_query
+      model.from(from).then { add_relation_defaults(_1) }
+    end
+
+    def index_only_filter_query
+      model.where(model.primary_key => filter_query.select(model.primary_key))
+           .then { add_relation_defaults(_1) }
+    end
+
+    def add_relation_defaults(relation)
+      relation.limit(limit_value)
+              .order(order_values)
+              .includes(relation.includes_values)
+              .preload(relation.preload_values)
+              .eager_load(relation.eager_load_values)
     end
 
     def from
