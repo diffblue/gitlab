@@ -34,7 +34,7 @@ RSpec.describe EpicPolicy do
       is_expected.to be_disallowed(:update_epic, :destroy_epic, :admin_epic,
                                    :create_epic, :admin_related_epic_link,
                                    :set_epic_metadata, :set_confidentiality,
-                                   :mark_note_as_confidential)
+                                   :mark_note_as_confidential, :read_internal_note)
     end
   end
 
@@ -190,15 +190,6 @@ RSpec.describe EpicPolicy do
       context 'user who is not a group member' do
         it_behaves_like 'can only read epics'
         it_behaves_like 'can comment on epics'
-      end
-
-      context 'when user is the epic author' do
-        let_it_be(:epic) { create(:epic, group: group) }
-        let(:user) { epic.author }
-
-        it 'can read internal notes' do
-          is_expected.to be_allowed(:read_internal_note)
-        end
       end
 
       it_behaves_like 'group member permissions'
