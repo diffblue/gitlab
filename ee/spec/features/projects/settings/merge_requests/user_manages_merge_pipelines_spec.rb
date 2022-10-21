@@ -40,14 +40,4 @@ RSpec.describe 'EE > Projects > Settings > Merge requests > User manages merge p
       expect(page).not_to have_css('#project_merge_pipelines_enabled')
     end
   end
-
-  context 'when feature flag is disabled' do
-    before do
-      stub_feature_flags(merge_pipelines: false)
-    end
-
-    it 'does not see the checkbox' do
-      expect(page).not_to have_css('#project_merge_pipelines_enabled')
-    end
-  end
 end
