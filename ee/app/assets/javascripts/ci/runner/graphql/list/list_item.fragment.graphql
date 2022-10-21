@@ -1,0 +1,6 @@
+#import "~/ci/runner/graphql/list/list_item_shared.fragment.graphql"
+
+fragment ListItem on CiRunner {
+  ...ListItemShared
+  upgradeStatus
+}

@@ -10,7 +10,7 @@ import {
 } from '@gitlab/ui';
 import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
-import { captureException } from '~/runner/sentry_utils';
+import { captureException } from '~/ci/runner/sentry_utils';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import {
   PROJECT_TABLE_LABEL_STORAGE_USAGE,
