@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Auth::Smartcard::LdapCertificate do
   let(:openssl_certificate) do
     instance_double(OpenSSL::X509::Certificate,
                     { issuer: issuer,
-                      serial: '42' } )
+                      serial: '42' })
   end
 
   let(:ldap_provider) { 'ldapmain' }

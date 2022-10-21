@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Auth::GroupSaml::AuthHash do
   let(:raw_info_attr) { { group_attribute => %w(Developers Owners) } }
   let(:omniauth_auth_hash) do
-    OmniAuth::AuthHash.new(extra: { raw_info: OneLogin::RubySaml::Attributes.new(raw_info_attr) } )
+    OmniAuth::AuthHash.new(extra: { raw_info: OneLogin::RubySaml::Attributes.new(raw_info_attr) })
   end
 
   subject(:saml_auth_hash) { described_class.new(omniauth_auth_hash) }
