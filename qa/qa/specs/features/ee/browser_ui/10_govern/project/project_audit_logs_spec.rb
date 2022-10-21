@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage' do
+  RSpec.describe 'Govern', product_group: :compliance do
     shared_examples 'audit event' do |expected_events|
       it 'logs audit events for UI operations' do
         QA::Support::Retrier.retry_on_exception do
@@ -29,7 +29,7 @@ module QA
         sign_in
       end
 
-      context "Add project", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
+      context "for add project", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347904' do
         before do
           Resource::Project.fabricate_via_browser_ui! do |project|
             project.name = 'audit-add-project-via-ui'
@@ -37,10 +37,12 @@ module QA
             project.description = nil
           end.visit!
         end
+
         it_behaves_like 'audit event', ["Added project"]
       end
 
-      context "Add user access as guest", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347906' do
+      context "for add user access as guest",
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347906' do
         before do
           project.visit!
 
@@ -53,7 +55,7 @@ module QA
         it_behaves_like 'audit event', ["Added user access as Guest"]
       end
 
-      context "Add deploy key", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347907' do
+      context "for add deploy key", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347907' do
         before do
           key = Runtime::Key::RSA.new
           deploy_key_title = 'deploy key title'
@@ -69,7 +71,7 @@ module QA
         it_behaves_like 'audit event', ["Added deploy key"]
       end
 
-      context "Change visibility", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347905' do
+      context "for change visibility", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347905' do
         before do
           project.visit!
 
@@ -85,7 +87,8 @@ module QA
         it_behaves_like 'audit event', ["Changed visibility from Public to Private"]
       end
 
-      context "Export file download", :skip_live_env, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347939' do
+      context "for export file download", :skip_live_env,
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347939' do
         before do
           QA::Support::Retrier.retry_until do
             project = Resource::Project.fabricate_via_api! do |project|
@@ -98,7 +101,7 @@ module QA
             Page::Project::Menu.perform(&:go_to_general_settings)
             Page::Project::Settings::Main.perform do |settings|
               settings.expand_advanced_settings(&:click_export_project_link)
-              expect(page).to have_text("Project export started")
+              expect(page).to have_text("Project export started") # rubocop:disable RSpec/ExpectInHook
 
               Page::Project::Menu.perform(&:go_to_general_settings)
               settings.expand_advanced_settings do |advanced_settings|
@@ -116,7 +119,8 @@ module QA
         it_behaves_like 'audit event', ["Export file download started"]
       end
 
-      context "Project archive and unarchive", testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347903' do
+      context "for project archive and unarchive",
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347903' do
         before do
           project.visit!
 

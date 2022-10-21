@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage', :reliable do
+  RSpec.describe 'Plan', :reliable, product_group: :optimize do
     shared_examples 'default insights page' do
       it 'displays issues and merge requests dashboards' do
         EE::Page::Insights::Show.perform do |show|
@@ -16,7 +16,7 @@ module QA
       end
     end
 
-    context 'group insights page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347888' do
+    context 'for group insights page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347888' do
       before do
         Flow::Login.sign_in
 
@@ -28,7 +28,7 @@ module QA
       it_behaves_like 'default insights page'
     end
 
-    context 'project insights page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347889' do
+    context 'for project insights page', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347889' do
       before do
         Flow::Login.sign_in
 

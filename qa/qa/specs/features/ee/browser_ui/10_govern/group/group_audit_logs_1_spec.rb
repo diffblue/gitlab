@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Manage' do
+  RSpec.describe 'Govern', product_group: :compliance do
     include Support::API
 
     let(:api_client) { Runtime::API::Client.new(:gitlab) }
@@ -36,13 +36,16 @@ module QA
         end
       end
 
+      let(:user) do
+        Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1)
+      end
+
+      # rubocop:disable RSpec/InstanceVariable
       before do
         @event_count = get_audit_event_count(group)
       end
 
-      let(:user) { Resource::User.fabricate_or_use(Runtime::Env.gitlab_qa_username_1, Runtime::Env.gitlab_qa_password_1) }
-
-      context 'Add group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347910' do
+      context 'for add group', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347910' do
         before do
           @event_count = 0
           sign_in
@@ -54,7 +57,8 @@ module QA
         it_behaves_like 'audit event', ['Added group']
       end
 
-      context 'Change repository size limit', :requires_admin, testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
+      context 'for change repository size limit', :requires_admin,
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347908' do
         before do
           sign_in(as_admin: true)
           group.visit!
@@ -64,10 +68,11 @@ module QA
             settings.click_save_name_visibility_settings_button
           end
         end
+
         it_behaves_like 'audit event', ['Changed repository size limit']
       end
 
-      context 'Update group name', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347909' do
+      context 'for update group name', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347909' do
         before do
           sign_in
           group.visit!
@@ -82,7 +87,8 @@ module QA
         it_behaves_like 'audit event', ['Changed name']
       end
 
-      context 'Add user, change access level, remove user', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
+      context 'for add user, change access level, remove user',
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347911' do
         before do
           sign_in
           group.visit!
@@ -97,7 +103,8 @@ module QA
         it_behaves_like 'audit event', ['Added user access as Guest', 'Changed access level', 'Removed user access']
       end
 
-      context 'Add and remove project access', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
+      context 'for add and remove project access',
+              testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347912' do
         before do
           sign_in
           project.visit!
@@ -120,11 +127,11 @@ module QA
     end
 
     def sign_in(as_admin: false)
-      unless Page::Main::Menu.perform(&:signed_in?)
-        Runtime::Browser.visit(:gitlab, Page::Main::Login)
-        Page::Main::Login.perform do |login|
-          as_admin ? login.sign_in_using_admin_credentials : login.sign_in_using_credentials
-        end
+      return if Page::Main::Menu.perform(&:signed_in?)
+
+      Runtime::Browser.visit(:gitlab, Page::Main::Login)
+      Page::Main::Login.perform do |login|
+        as_admin ? login.sign_in_using_admin_credentials : login.sign_in_using_credentials
       end
     end
 
@@ -140,5 +147,6 @@ module QA
         get_audit_event_count(group) >= new_event_count
       end
     end
+    # rubocop:enable RSpec/InstanceVariable
   end
 end
