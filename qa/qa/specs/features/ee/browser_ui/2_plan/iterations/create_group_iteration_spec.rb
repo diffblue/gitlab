@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Plan', feature_flag: { name: 'iteration_cadences', scope: :group } do
-    describe 'Group Iterations' do
+    describe 'Group Iterations', product_group: :project_management do
       include Support::Dates
 
       let(:title) { "Group iteration cadence created via GUI #{SecureRandom.hex(8)}" }

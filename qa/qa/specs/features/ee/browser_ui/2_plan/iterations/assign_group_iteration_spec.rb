@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Plan', feature_flag: { name: 'iteration_cadences', scope: :group } do
-    describe 'Assign Iterations' do
+    describe 'Assign Iterations', product_group: :project_management do
       include Support::Dates
 
       let!(:start_date) { current_date_yyyy_mm_dd }

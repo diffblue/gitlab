@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Plan' do
-    describe 'Editing scoped labels on issues' do
+    describe 'Editing scoped labels on issues', product_group: :project_management do
       let(:initial_label) { 'animal::fox' }
       let(:new_label_same_scope) { 'animal::dolphin' }
       let(:new_label_different_scope) { 'plant::orchid' }

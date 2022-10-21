@@ -3,7 +3,7 @@
 require 'airborne'
 
 module QA
-  RSpec.describe 'Plan' do
+  RSpec.describe 'Plan', product_group: :product_planning do
     # TODO: Convert back to reliable once proved to be stable. Related issue: https://gitlab.com/gitlab-org/gitlab/-/issues/219495
     describe 'Epics milestone dates API' do
       let(:milestone_start_date) { (Date.today.to_date + 100).strftime("%Y-%m-%d") }
