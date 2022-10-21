@@ -36,68 +36,28 @@ RSpec.describe EpicIssue do
 
       subject { described_class.new(epic: epic, issue: issue) }
 
-      context 'when epic_issues_from_different_hierarchies flag is disabled' do
-        let(:error_message) do
-          'Cannot assign an issue that does not belong under the same group (or descendant) as the epic.'
-        end
+      context 'when epic and issue are from different group hierarchies' do
+        let_it_be(:issue) { create(:issue) }
 
-        before do
-          stub_feature_flags(epic_issues_from_different_hierarchies: false)
-        end
-
-        context 'when epic and issue are from different group hierarchies' do
-          let_it_be(:issue) { create(:issue) }
-
-          it 'is valid' do
-            expect(subject).not_to be_valid
-            expect(subject.errors.full_messages.to_sentence).to include(error_message)
-          end
-        end
-
-        context 'when epic and issue belong to the same group' do
-          it { is_expected.to be_valid }
-        end
-
-        context 'when epic is in an ancestor group' do
-          let_it_be_with_refind(:project) { create(:project, group: create(:group, parent: group)) }
-
-          it { is_expected.to be_valid }
-        end
-
-        context 'when epic is in a descendant group' do
-          let_it_be(:project) { create(:project, group: ancestor) }
-
-          it 'is invalid' do
-            expect(subject).not_to be_valid
-            expect(subject.errors.full_messages.to_sentence).to include(error_message)
-          end
+        it 'is valid' do
+          expect(subject).to be_valid
         end
       end
 
-      context 'when epic_issues_from_different_hierarchies is enabled' do
-        context 'when epic and issue are from different group hierarchies' do
-          let_it_be(:issue) { create(:issue) }
+      context 'when epic and issue belong to the same group' do
+        it { is_expected.to be_valid }
+      end
 
-          it 'is valid' do
-            expect(subject).to be_valid
-          end
-        end
+      context 'when epic is in an ancestor group' do
+        let_it_be_with_refind(:project) { create(:project, group: create(:group, parent: group)) }
 
-        context 'when epic and issue belong to the same group' do
-          it { is_expected.to be_valid }
-        end
+        it { is_expected.to be_valid }
+      end
 
-        context 'when epic is in an ancestor group' do
-          let_it_be_with_refind(:project) { create(:project, group: create(:group, parent: group)) }
+      context 'when epic is in a descendant group' do
+        let_it_be(:project) { create(:project, group: ancestor) }
 
-          it { is_expected.to be_valid }
-        end
-
-        context 'when epic is in a descendant group' do
-          let_it_be(:project) { create(:project, group: ancestor) }
-
-          it { is_expected.to be_valid }
-        end
+        it { is_expected.to be_valid }
       end
     end
   end

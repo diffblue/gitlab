@@ -17,7 +17,6 @@ class EpicIssue < ApplicationRecord
   scope :in_epic, ->(epic_id) { where(epic_id: epic_id) }
 
   validate :validate_confidential_epic
-  validate :validate_group_structure
   after_commit :update_cached_metadata
 
   def epic_tree_root?
@@ -30,16 +29,6 @@ class EpicIssue < ApplicationRecord
     SELECT_LIST
 
     select(selection).in_epic(node.parent_ids)
-  end
-
-  # We can remove this method when :epic_issues_from_different_hierarchies flag rolls out
-  def validate_group_structure
-    return unless issue && epic
-    return if Feature.enabled?(:epic_issues_from_different_hierarchies, epic.group)
-    return if issue.project.group&.id == epic.group_id
-    return if issue.project.ancestors.include?(epic.group)
-
-    errors.add :issue, _('Cannot assign an issue that does not belong under the same group (or descendant) as the epic.')
   end
 
   private
