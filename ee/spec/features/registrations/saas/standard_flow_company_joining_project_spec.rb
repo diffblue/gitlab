@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas, :saas_registration do
   context 'when project_list_filter_bar feature flag is enabled' do
-    before do
+    before do # rubocop:disable Gitlab/RSpec/AvoidSetup
       stub_feature_flags(project_list_filter_bar: true)
     end
 
@@ -27,7 +27,7 @@ RSpec.describe 'Standard flow for user picking company and joining a project', :
   end
 
   context 'when project_list_filter_bar feature flag is disabled' do
-    before do
+    before do # rubocop:disable Gitlab/RSpec/AvoidSetup
       stub_feature_flags(project_list_filter_bar: false)
     end
 
