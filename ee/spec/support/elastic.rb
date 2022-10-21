@@ -60,7 +60,27 @@ RSpec.configure do |config|
     meta[:clean_gitlab_redis_cache] = true if meta[:elastic] || meta[:elastic_delete_by_query]
   end
 
+  # If using the :elastic tag is causing issues, use :elastic_clean instead.
+  # :elastic is significantly faster than :elastic_clean and should be used
+  # wherever possible.
+  config.before(:all, :elastic) do
+    helper = Elastic::TestHelpers.new
+    helper.setup
+  end
+
+  config.after(:all, :elastic) do
+    helper = Elastic::TestHelpers.new
+    helper.teardown
+  end
+
   config.around(:each, :elastic) do |example|
+    helper = Elastic::TestHelpers.new
+    helper.refresh_elasticsearch_index!
+
+    example.run
+  end
+
+  config.around(:each, :elastic_clean) do |example|
     helper = Elastic::TestHelpers.new
     helper.setup
 
@@ -87,5 +107,6 @@ RSpec.configure do |config|
   end
 
   config.include ElasticsearchHelpers, :elastic
+  config.include ElasticsearchHelpers, :elastic_clean
   config.include ElasticsearchHelpers, :elastic_delete_by_query
 end

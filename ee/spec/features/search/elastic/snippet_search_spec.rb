@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Snippet elastic search', :js, :elastic, :aggregate_failures, :sidekiq_might_not_need_inline do
+RSpec.describe 'Snippet elastic search', :js, :elastic_clean, :aggregate_failures, :sidekiq_might_not_need_inline do
   let(:public_project) { create(:project, :public) }
   let(:authorized_user) { create(:user) }
   let(:authorized_project) { create(:project, namespace: authorized_user.namespace) }
