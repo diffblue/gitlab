@@ -4,7 +4,8 @@ module Namespaces
   class StatisticsRefresherService
     RefresherError = Class.new(StandardError)
 
-    def execute(root_namespace)
+    def execute(namespace)
+      root_namespace = namespace.root_ancestor
       root_storage_statistics = find_or_create_root_storage_statistics(root_namespace.id)
 
       root_storage_statistics.recalculate!
