@@ -31,29 +31,11 @@
 #   top_level_hierarchy_only: boolean
 
 class EpicsFinder < IssuableFinder
-  include TimeFrameFilter
+  include ::Epics::Findable
   include Gitlab::Utils::StrongMemoize
   extend ::Gitlab::Utils::Override
 
   IID_STARTS_WITH_PATTERN = %r{\A(\d)+\z}.freeze
-
-  def self.scalar_params
-    @scalar_params ||= %i[
-      parent_id
-      author_id
-      author_username
-      label_name
-      milestone_title
-      start_date
-      end_date
-      search
-      my_reaction_emoji
-    ]
-  end
-
-  def self.array_params
-    @array_params ||= { issues: [], label_name: [] }
-  end
 
   def self.valid_iid_query?(query)
     query.match?(IID_STARTS_WITH_PATTERN)
@@ -69,17 +51,12 @@ class EpicsFinder < IssuableFinder
     raise ArgumentError, 'group_id argument is missing' unless params[:group_id]
     return Epic.none unless Ability.allowed?(current_user, :read_epic, params.group)
 
-    items = init_collection
-    items = filter_items(items)
-    items = filter_negated_items(items)
-
-    # This has to be last as we use a CTE as an optimization fence
-    # for counts by passing the force_cte param
-    # https://www.postgresql.org/docs/current/static/queries-with.html
-    items = by_search(items)
+    items = filter_and_search(init_collection)
 
     sort(items)
   end
+
+  private
 
   def init_collection
     groups = if params[:iids].present?
@@ -94,8 +71,6 @@ class EpicsFinder < IssuableFinder
     epics = Epic.in_selected_groups(groups)
     with_confidentiality_access_check(epics, groups)
   end
-
-  private
 
   def permissioned_related_groups
     strong_memoize(:permissioned_related_groups) do
@@ -115,44 +90,12 @@ class EpicsFinder < IssuableFinder
       groups_user_can_read_epics(groups)
     end
   end
+  alias_method :milestone_groups, :permissioned_related_groups
 
   def groups_user_can_read_epics(groups)
     # `same_root` should be set only if we are sure that all groups
     # in related_groups have the same ancestor root group
     Group.groups_user_can(groups, current_user, :read_epic, same_root: true)
-  end
-
-  def filter_items(items)
-    items = by_created_at(items)
-    items = by_updated_at(items)
-    items = by_author(items)
-    items = by_timeframe(items)
-    items = by_state(items)
-    items = by_label(items)
-    items = by_parent(items)
-    items = by_child(items)
-    items = by_iids(items)
-    items = by_my_reaction_emoji(items)
-    items = by_confidential(items)
-    items = by_milestone(items)
-
-    starts_with_iid(items)
-  end
-
-  def filter_negated_items(items)
-    # API endpoints send in `nil` values so we test if there are any non-nil
-    return items unless not_params&.values&.any?
-
-    by_negated_my_reaction_emoji(items)
-  end
-
-  def starts_with_iid(items)
-    return items unless params[:iid_starts_with].present?
-
-    query = params[:iid_starts_with]
-    raise ArgumentError unless self.class.valid_iid_query?(query)
-
-    items.iid_starts_with(query)
   end
 
   def related_groups
@@ -176,37 +119,6 @@ class EpicsFinder < IssuableFinder
       last_value.to_sym
     end
   end
-
-  def parent_id?
-    params[:parent_id].present?
-  end
-
-  def child_id?
-    params[:child_id].present?
-  end
-
-  # rubocop: disable CodeReuse/ActiveRecord
-  def by_parent(items)
-    if top_level_only? && !parent_id?
-      items.where(parent_id: nil)
-    elsif parent_id?
-      items.where(parent_id: params[:parent_id])
-    else
-      items
-    end
-  end
-  # rubocop: enable CodeReuse/ActiveRecord
-
-  # rubocop: disable CodeReuse/ActiveRecord
-  def by_child(items)
-    return items unless child_id?
-
-    hierarchy_order = params[:hierarchy_order] || :asc
-
-    ancestors = Epic.find(params[:child_id]).ancestors(hierarchy_order: hierarchy_order)
-    ancestors.where(id: items.select(:id))
-  end
-  # rubocop: enable CodeReuse/ActiveRecord
 
   def with_confidentiality_access_check(epics, groups)
     return epics if can_read_all_epics_in_related_groups?
@@ -267,32 +179,6 @@ class EpicsFinder < IssuableFinder
     !include_confidential && Ability.allowed?(current_user, :list_subgroup_epics, parent)
   end
 
-  def by_confidential(items)
-    return items if params[:confidential].nil?
-
-    params[:confidential] ? items.confidential : items.public_only
-  end
-
-  # rubocop: disable CodeReuse/ActiveRecord
-  def by_milestone(items)
-    return items unless params[:milestone_title].present?
-
-    milestones = Milestone.for_projects_and_groups(group_projects, permissioned_related_groups)
-                          .where(title: params[:milestone_title])
-
-    items.in_milestone(milestones)
-  end
-  # rubocop: enable CodeReuse/ActiveRecord
-
-  def group_projects
-    Project.in_namespace(permissioned_related_groups).with_issues_available_for_user(current_user)
-  end
-
-  override :feature_flag_scope
-  def feature_flag_scope
-    params.group
-  end
-
   override :sort
   def sort(items)
     return items if params[:hierarchy_order]
@@ -306,9 +192,5 @@ class EpicsFinder < IssuableFinder
 
   def include_ancestors
     @include_ancestors ||= params.fetch(:include_ancestor_groups, false)
-  end
-
-  def top_level_only?
-    params.fetch(:top_level_hierarchy_only, false)
   end
 end
