@@ -161,11 +161,12 @@ module EE
               relation.where(migration_state: 'import_done')
             ).select(:project_id).distinct
           }
+          operation_name :update_container_registry_size
         end
 
         override :perform
         def perform
-          each_sub_batch(operation_name: :update_container_registry_size) do |sub_batch|
+          each_sub_batch do |sub_batch|
             stats = ProjectStatistics.where(project_id: sub_batch)
             stats.each do |stat|
               # Should trigger an API hit to get the actual `container_registry_size` for the project if required, via
