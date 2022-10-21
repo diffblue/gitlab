@@ -103,7 +103,7 @@ describe IpynbDiff::Transformer do
       end
     end
 
-    context 'because it can not be parsed' do
+    context 'when notebook can not be parsed' do
       it 'raises error' do
         notebook = '{"cells":[]}'
         allow(Oj::Parser.usual).to receive(:parse).and_return(nil)
