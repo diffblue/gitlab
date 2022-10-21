@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import IdentityVerificationWizard from 'ee/users/identity_verification/components/wizard.vue';
 import VerificationStep from 'ee/users/identity_verification/components/verification_step.vue';
 import CreditCardVerification from 'ee/users/identity_verification/components/credit_card_verification.vue';
+import PhoneVerification from 'ee/users/identity_verification/components/phone_verification.vue';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
 import { PAGE_TITLE } from 'ee/users/identity_verification/constants';
 
@@ -31,7 +32,12 @@ describe('IdentityVerificationWizard', () => {
 
   describe('Default', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent({
+        provide: {
+          verificationSteps: ['creditCard', 'phone', 'email'],
+          initialVerificationState: { creditCard: false, phone: false, email: false },
+        },
+      });
     });
 
     it('displays the header', () => {
@@ -39,14 +45,16 @@ describe('IdentityVerificationWizard', () => {
     });
 
     it('renders the correct verification method components in order', () => {
-      expect(steps).toHaveLength(2);
+      expect(steps).toHaveLength(3);
       expect(steps.at(0).findComponent(CreditCardVerification).exists()).toBe(true);
-      expect(steps.at(1).findComponent(EmailVerification).exists()).toBe(true);
+      expect(steps.at(1).findComponent(PhoneVerification).exists()).toBe(true);
+      expect(steps.at(2).findComponent(EmailVerification).exists()).toBe(true);
     });
 
     it('renders steps with correct number and title', () => {
       expect(steps.at(0).props('title')).toBe('Step 1: Verify a payment method');
-      expect(steps.at(1).props('title')).toBe('Step 2: Verify email address');
+      expect(steps.at(1).props('title')).toBe('Step 2: Verify phone number');
+      expect(steps.at(2).props('title')).toBe('Step 3: Verify email address');
     });
   });
 
@@ -64,12 +72,14 @@ describe('IdentityVerificationWizard', () => {
       it('is the first incomplete step', () => {
         createComponent({
           provide: {
-            initialVerificationState: { creditCard: true, email: false },
+            verificationSteps: ['creditCard', 'phone', 'email'],
+            initialVerificationState: { creditCard: true, phone: false, email: false },
           },
         });
 
         expect(steps.at(0).props('isActive')).toBe(false);
         expect(steps.at(1).props('isActive')).toBe(true);
+        expect(steps.at(2).props('isActive')).toBe(false);
       });
     });
 

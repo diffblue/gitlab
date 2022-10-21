@@ -1,15 +1,22 @@
 <script>
 import { kebabCase } from 'lodash';
 import { sprintf } from '~/locale';
-import { PAGE_TITLE, I18N_CC_VERIFICATION, I18N_EMAIL_VERIFICATION } from '../constants';
+import {
+  PAGE_TITLE,
+  I18N_CC_VERIFICATION,
+  I18N_EMAIL_VERIFICATION,
+  I18N_PHONE_VERIFICATION,
+} from '../constants';
 import EmailVerification from './email_verification.vue';
 import CreditCardVerification from './credit_card_verification.vue';
+import PhoneVerification from './phone_verification.vue';
 import VerificationStep from './verification_step.vue';
 
 export default {
   name: 'IdentityVerificationWizard',
   components: {
     CreditCardVerification,
+    PhoneVerification,
     EmailVerification,
     VerificationStep,
   },
@@ -36,6 +43,7 @@ export default {
     stepTitle(step, number) {
       const templates = {
         creditCard: I18N_CC_VERIFICATION.title,
+        phone: I18N_PHONE_VERIFICATION.title,
         email: I18N_EMAIL_VERIFICATION.title,
       };
       return sprintf(templates[step], { stepNumber: number });
