@@ -374,10 +374,11 @@ hierarchy. Choosing a proper solution will require a thoughtful research.
 **Phase 3**: Team Fanout of Rails SDK – Stage Groups
     a. Individual stage groups begin using the SDK built in Phase 2 for new limit and policies.
     b. Stage groups begin replacing historical ad-hoc limit implementations with the SDK.
+    c. Provides means to monitor and observe the progress of the replacement effort. Ideally this is broken down to the `feature_category` level to drive group-level buy-in -- Owning Team. 
 **Phase 4**: Enable Satellite Services to Use the Rate Limiting Framework – Owning Team
     a. Determine if the goals of Phase 4 are best met by either
         1. Extracting the Rails rate limiting service into a decoupled service OR
-        2. Implementing a separate Go library
+        2. Implementing a separate Go library which uses the same backend (eg, Redis) for rate limiting. 
 **Phase 5**: SDK for Satellite Services – Owning Team
     a. Build Golang SDK.
     c. Create examples showcasing usage of the new rate limits SDK.
