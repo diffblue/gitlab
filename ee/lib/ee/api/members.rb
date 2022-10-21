@@ -11,7 +11,7 @@ module EE
         end
         resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
           desc 'Overrides the access level of an LDAP group member.' do
-            success ::API::Entities::Member
+            success Entities::Member
           end
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the member'
@@ -33,7 +33,7 @@ module EE
           end
 
           desc 'Remove an LDAP group member access level override.' do
-            success ::API::Entities::Member
+            success Entities::Member
           end
           params do
             requires :user_id, type: Integer, desc: 'The user ID of the member'
@@ -112,7 +112,7 @@ module EE
           end
 
           desc 'Gets a list of billable users of root group.' do
-            success ::API::Entities::Member
+            success Entities::Member
           end
           params do
             use :pagination
