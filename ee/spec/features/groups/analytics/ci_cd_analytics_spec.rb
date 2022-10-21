@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'Group CI/CD Analytics', :js do
   let_it_be(:user) { create(:user) }
   let_it_be_with_refind(:group) { create(:group) }
-  let_it_be(:subgroup) { create(:group, parent: group ) }
+  let_it_be(:subgroup) { create(:group, parent: group) }
   let_it_be(:project_1) { create(:project, group: group) }
   let_it_be(:project_2) { create(:project, group: group) }
   let_it_be(:project_3) { create(:project, group: subgroup) }

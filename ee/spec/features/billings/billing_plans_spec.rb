@@ -364,7 +364,7 @@ RSpec.describe 'Billing plan pages', :feature, :saas, :js do
 
       before do
         expect_next_instance_of(GitlabSubscriptions::CreateHandRaiseLeadService) do |service|
-          expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true ))
+          expect(service).to receive(:execute).with(lead_params).and_return(double('lead', success?: true))
         end
       end
     end
