@@ -37,8 +37,12 @@ RSpec.describe SessionsController do
         expect(request.session[:verification_user_id]).to eq(user.id)
       end
 
-      context 'when the user is confirmed' do
-        let_it_be(:user) { create(:user) }
+      context 'when the user is verified' do
+        before do
+          allow_next_found_instance_of(User) do |user|
+            allow(user).to receive(:identity_verified?).and_return(true)
+          end
+        end
 
         it { is_expected.to redirect_to(root_path) }
       end
