@@ -203,6 +203,10 @@ RSpec.describe UnnestedInFilters::Rewriter do
                   LIMIT
                       2
               )
+          ORDER BY
+              "users"."id" DESC
+          LIMIT
+              2
         SQL
       end
 
