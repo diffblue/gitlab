@@ -188,12 +188,12 @@ module UnnestedInFilters
            .then { add_relation_defaults(_1) }
     end
 
-    def add_relation_defaults(relation)
-      relation.limit(limit_value)
-              .order(order_values)
-              .includes(relation.includes_values)
-              .preload(relation.preload_values)
-              .eager_load(relation.eager_load_values)
+    def add_relation_defaults(new_relation)
+      new_relation.limit(limit_value)
+                  .order(order_values)
+                  .includes(relation.includes_values)
+                  .preload(relation.preload_values)
+                  .eager_load(relation.eager_load_values)
     end
 
     def from
