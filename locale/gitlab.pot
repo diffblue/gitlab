@@ -42866,6 +42866,12 @@ msgstr ""
 msgid "Two-factor authentication has been disabled for your GitLab account."
 msgstr ""
 
+msgid "Two-factor authentication has been disabled successfully for %{user_email}!"
+msgstr ""
+
+msgid "Two-factor authentication has been disabled successfully for %{username}!"
+msgstr ""
+
 msgid "Two-factor authentication has been disabled successfully!"
 msgstr ""
 
