@@ -1291,4 +1291,34 @@ RSpec.describe Epic do
       end
     end
   end
+
+  describe '#confidentiality_errors' do
+    let_it_be(:epic) { create(:epic, group: group) }
+
+    it 'returns correct message if epic has non-confidential issues' do
+      create(:issue, project: project, epic: epic)
+
+      expect(epic.confidentiality_errors)
+        .to contain_exactly('Cannot make the epic confidential if it contains non-confidential issues')
+    end
+
+    it 'returns correct message if epic has non-confidential subepics' do
+      create(:epic, parent: epic, group: group)
+
+      expect(epic.confidentiality_errors)
+        .to contain_exactly('Cannot make the epic confidential if it contains non-confidential child epics')
+    end
+
+    it 'is empty if epic has only confidential subepics' do
+      create(:epic, :confidential, parent: epic, group: group)
+
+      expect(epic.confidentiality_errors).to be_empty
+    end
+
+    it 'is empty if epic has only confidential issues' do
+      create(:issue, :confidential, project: project, epic: epic)
+
+      expect(epic.confidentiality_errors).to be_empty
+    end
+  end
 end
