@@ -6,7 +6,7 @@ RSpec.describe Projects::Settings::AccessTokensController, :saas do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
   let_it_be(:resource) { create(:project, group: group) }
-  let_it_be(:bot_user) { create(:user, :project_bot) }
+  let_it_be(:access_token_user) { create(:user, :project_bot) }
 
   before do
     allow(Gitlab).to receive(:com?).and_return(true)
@@ -15,7 +15,7 @@ RSpec.describe Projects::Settings::AccessTokensController, :saas do
   end
 
   before_all do
-    resource.add_maintainer(bot_user)
+    resource.add_maintainer(access_token_user)
     resource.add_maintainer(user)
   end
 
@@ -36,26 +36,6 @@ RSpec.describe Projects::Settings::AccessTokensController, :saas do
     end
   end
 
-  describe 'GET /:namespace/:project/-/settings/access_tokens' do
-    let(:get_access_tokens) do
-      get project_settings_access_tokens_path(resource)
-      response
-    end
-
-    let(:get_access_tokens_json) do
-      get project_settings_access_tokens_path(resource), params: { format: :json }
-      response
-    end
-
-    subject(:get_access_tokens_with_page) do
-      get project_settings_access_tokens_path(resource), params: { page: 1 }
-      response
-    end
-
-    it_behaves_like 'feature unavailable'
-    it_behaves_like 'GET resource access tokens available'
-  end
-
   describe 'POST /:namespace/:project/-/settings/access_tokens' do
     let_it_be(:access_token_params) { { name: 'Nerd bot', scopes: ["api"], expires_at: Date.today + 1.month } }
 
@@ -69,7 +49,7 @@ RSpec.describe Projects::Settings::AccessTokensController, :saas do
   end
 
   describe 'PUT /:namespace/:project/-/settings/access_tokens/:id', :sidekiq_inline do
-    let(:resource_access_token) { create(:personal_access_token, user: bot_user) }
+    let(:resource_access_token) { create(:personal_access_token, user: access_token_user) }
 
     subject do
       put revoke_project_settings_access_token_path(resource, resource_access_token)
