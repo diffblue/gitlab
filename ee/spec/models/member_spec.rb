@@ -492,4 +492,16 @@ RSpec.describe Member, type: :model do
       )
     end
   end
+
+  describe '.banned_from scope' do
+    let!(:group) { create :group }
+    let!(:member1) { create :group_member, source: group }
+    let!(:member2) { create :group_member, source: group }
+    let!(:ban) { create :namespace_ban, namespace: group, user: member1.user }
+
+    it 'returns only banned members from the given namespace' do
+      expect(described_class.count).to eq 2
+      expect(described_class.banned_from(group).map(&:user_id)).to match_array([member1.user_id])
+    end
+  end
 end

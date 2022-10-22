@@ -32,7 +32,7 @@ module EE
       def index
         super
 
-        @banned = banned_members # rubocop:disable Gitlab/ModuleWithInstanceVariables
+        @banned = presented_banned_members # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
 
       # rubocop:disable Gitlab/ModuleWithInstanceVariables
@@ -63,6 +63,21 @@ module EE
         redirect_to group_group_members_path(group), notice: _('CSV is being generated and will be emailed to you upon completion.')
       end
 
+      def unban
+        member = banned_members.find(params[:id])
+        ban = member.user.namespace_ban_for(group)
+
+        result = ::Users::Abuse::NamespaceBans::DestroyService.new(ban, current_user).execute
+
+        redirect_url = group_group_members_path(tab: 'banned')
+
+        if result.success?
+          redirect_to redirect_url, notice: _("User was successfully unbanned.")
+        else
+          redirect_to redirect_url, alert: result.message
+        end
+      end
+
       protected
 
       override :invited_members
@@ -75,11 +90,11 @@ module EE
         super.non_awaiting
       end
 
-      def banned_members
+      def presented_banned_members
         return unless group.unique_project_download_limit_enabled?
         return unless can?(current_user, :admin_group_member, group)
 
-        present_members(group_members.banned)
+        present_members(banned_members(params: filter_params))
       end
 
       def authorize_update_group_member!
@@ -102,6 +117,18 @@ module EE
       override :filter_params
       def filter_params
         super.merge(params.permit(:enterprise))
+      end
+
+      private
+
+      def banned_members(params: {})
+        # User bans are enforced at the top-level group. Here, we return all
+        # members of the group hierarchy that are banned from the top-level
+        # group
+        @banned_members ||= ::GroupMembersFinder # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          .new(group, current_user, params: params)
+          .execute(include_relations: %i[direct descendants])
+          .banned_from(group)
       end
     end
   end
