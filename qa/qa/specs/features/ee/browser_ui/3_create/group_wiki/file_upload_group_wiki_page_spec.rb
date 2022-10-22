@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create' do
+  RSpec.describe 'Create', product_group: :editor do
     describe 'Testing group wiki file upload' do
       let(:initial_wiki) { Resource::Wiki::GroupPage.fabricate_via_api! }
       let(:page_title) { 'Content Editor Page' }

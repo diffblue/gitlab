@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create' do
+  RSpec.describe 'Create', product_group: :editor do
     describe 'Creating pages in group wikis' do
       let(:wiki_title) { 'New Wiki page' }
       let(:wiki_content) { 'New Wiki content' }

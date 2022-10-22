@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create' do
-    describe 'Contribution Analytics' do
+  RSpec.describe 'Plan' do
+    describe 'Contribution Analytics', product_group: :optimize do
       let(:group) do
         Resource::Group.fabricate_via_api! do |group|
           group.path = "contribution_analytics-#{SecureRandom.hex(8)}"
