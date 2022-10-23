@@ -132,7 +132,7 @@ NOTE:
 Any changes to this setting applies to new artifacts only. The expiration time is not
 be updated for artifacts created before this setting was changed.
 The administrator may need to manually search for and expire previously-created
-artifacts, as described in the [troubleshooting documentation](../../../administration/troubleshooting/gitlab_rails_cheat_sheet.md#remove-artifacts-more-than-a-week-old).
+artifacts, as described in the [troubleshooting documentation](../../../administration/job_artifacts.md#delete-job-artifacts-from-jobs-completed-before-a-specific-date).
 
 ## Keep the latest artifacts for all jobs in the latest successful pipelines
 
