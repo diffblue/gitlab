@@ -272,7 +272,7 @@ To select a CI/CD template for the required pipeline configuration:
 1. On the top bar, select **Main menu > Admin**.
 1. On the left sidebar, select **Settings > CI/CD**.
 1. Expand the **Required pipeline configuration** section.
-1. Select a CI/CD template from the dropdown.
+1. Select a CI/CD template from the dropdown list.
 1. Select **Save changes**.
 
 ## Package Registry configuration
