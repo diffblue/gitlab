@@ -18,10 +18,10 @@ export const DASHBOARD_DESCRIPTION = s__('DORA4Metrics|DORA metrics for %{groupN
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
 
-export const DASHBOARD_COLUMN_TITLE_CHANGE = __('Change');
-export const DASHBOARD_COLUMN_TITLE_PREVIOUS = s__('DORA4Metrics|30 days before that');
-export const DASHBOARD_COLUMN_TITLE_CURRENT = s__('DORA4Metrics|Last 30 days');
-export const DASHBOARD_COLUMN_TITLE_METRIC = __('Metric');
+const DASHBOARD_COLUMN_TITLE_CHANGE = __('Change');
+const DASHBOARD_COLUMN_TITLE_PREVIOUS = s__('DORA4Metrics|30 days before that');
+const DASHBOARD_COLUMN_TITLE_CURRENT = s__('DORA4Metrics|Last 30 days');
+const DASHBOARD_COLUMN_TITLE_METRIC = __('Metric');
 
 export const COMPARISON_INTERVAL_IN_DAYS = 30;
 

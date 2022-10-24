@@ -25,7 +25,7 @@ export const formatMetricString = ({ identifier, value }) => {
 };
 
 export const toUtcYMD = (d) => dateformat(d, 'UTC:yyyy-mm-dd');
-export const toMMMDD = (d) => dateformat(d, 'mmm dd');
+export const toMonthDay = (d) => dateformat(d, 'mmm dd');
 
 /**
  * Takes a flat array of metrics and extracts only the DORA metrics,
@@ -42,13 +42,9 @@ export const extractDoraMetrics = (metrics = []) =>
   metrics
     .filter(({ identifier }) => DORA_METRIC_IDENTIFIERS.includes(identifier))
     .reduce((acc, curr) => {
-      const { identifier, ...rest } = curr;
       return {
         ...acc,
-        [identifier]: {
-          ...rest,
-          identifier,
-        },
+        [curr.identifier]: curr,
       };
     }, {});
 
