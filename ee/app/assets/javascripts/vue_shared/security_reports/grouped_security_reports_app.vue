@@ -1,13 +1,7 @@
 <script>
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { once } from 'lodash';
-import {
-  GlButton,
-  GlSprintf,
-  GlLink,
-  GlModalDirective,
-  GlTooltipDirective as GlTooltip,
-} from '@gitlab/ui';
+import { GlButton, GlSprintf, GlLink, GlModalDirective, GlPopover } from '@gitlab/ui';
 import { spriteIcon } from '~/lib/utils/common_utils';
 import { s__, n__, __, sprintf } from '~/locale';
 import { componentNames } from 'ee/reports/components/issue_body';
@@ -31,6 +25,7 @@ import {
   coverageFuzzingPopover,
   apiFuzzingPopover,
 } from 'ee/vue_shared/security_reports/constants';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import DastModal from './components/dast_modal.vue';
 import IssueModal from './components/modal.vue';
 
@@ -62,10 +57,10 @@ export default {
     GlLink,
     DastModal,
     GlButton,
+    GlPopover,
   },
   directives: {
     'gl-modal': GlModalDirective,
-    GlTooltip,
   },
   mixins: [vulnerabilityModalMixin()],
   props: {
@@ -275,6 +270,12 @@ export default {
     ),
     viewDetails: __('View details'),
     scannedUrls: (count) => n__('%d URL scanned', '%d URLs scanned', count),
+    infoPopover: {
+      title: s__('SecurityReports|Security scan results'),
+      description: s__(
+        'SecurityReports|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch.',
+      ),
+    },
   },
   componentNames,
   computed: {
@@ -528,6 +529,9 @@ export default {
     COVERAGE_FUZZING: [securityReportTypeEnumToReportType.COVERAGE_FUZZING],
     DAST: [securityReportTypeEnumToReportType.DAST],
   },
+  infoPopoverHelpPagePath: helpPagePath('user/application_security/index', {
+    anchor: 'ultimate',
+  }),
 };
 </script>
 <template>
@@ -544,8 +548,25 @@ export default {
       <security-summary :key="slot" :message="groupedSummaryText" />
     </template>
 
-    <template v-if="pipelinePath" #action-buttons>
+    <template #action-buttons>
+      <div class="gl-mr-3">
+        <gl-button ref="infoButton" data-testid="info-button" variant="link" icon="information-o" />
+        <gl-popover :target="() => $refs.infoButton.$el">
+          <template #title>
+            {{ $options.i18n.infoPopover.title }}
+          </template>
+          {{ $options.i18n.infoPopover.description }}
+          <gl-link
+            class="gl-display-inline-block gl-reset-font-size"
+            :href="$options.infoPopoverHelpPagePath"
+          >
+            {{ __('Learn more') }}
+          </gl-link>
+        </gl-popover>
+      </div>
+
       <gl-button
+        v-if="pipelinePath"
         :href="securityTab"
         target="_blank"
         class="report-btn"
