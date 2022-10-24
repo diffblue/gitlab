@@ -59,7 +59,7 @@ module Dora
       end
 
       unless start_date < end_date
-        return error(_('The start date must be ealier than the end date.'), :bad_request)
+        return error(_('The start date must be earlier than the end date.'), :bad_request)
       end
 
       if group_project_ids.present? && !group_container?

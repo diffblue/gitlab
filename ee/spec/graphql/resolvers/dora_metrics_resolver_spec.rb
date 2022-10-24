@@ -174,7 +174,7 @@ RSpec.describe Resolvers::DoraMetricsResolver, time_travel_to: '2021-05-01' do
         let(:args) { { metric: 'deployment_frequency', start_date: '2021-04-01'.to_datetime, end_date: '2021-03-01'.to_datetime } }
 
         it 'generates an error' do
-          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'The start date must be ealier than the end date.') do
+          expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError, 'The start date must be earlier than the end date.') do
             resolve_metrics
           end
         end
