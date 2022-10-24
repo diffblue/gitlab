@@ -661,6 +661,13 @@ module EE
       end
     end
 
+    def product_analytics_enabled?
+      return false unless licensed_feature_available?(:product_analytics)
+      return false unless ::Feature.enabled?(:cube_api_proxy, self)
+
+      true
+    end
+
     def repository_size_excess
       return 0 unless actual_size_limit.to_i > 0
 
