@@ -4,12 +4,21 @@ import { __ } from '~/locale';
  * when backend is ready
  */
 export const PRE_SCAN_VERIFICATION_STATUS = {
-  DEFAULT: __('Default - Never run'),
-  IN_PROGRESS: __('running'),
-  COMPLETE: __('complete'),
-  COMPLETE_WITH_ERRORS: __('complete_with_errors'),
-  FAILED: __('failed'),
-  INVALIDATED: __('invalidated'),
+  DEFAULT: 'default',
+  IN_PROGRESS: 'running',
+  COMPLETE: 'complete',
+  COMPLETE_WITH_ERRORS: 'complete_with_errors',
+  FAILED: 'failed',
+  INVALIDATED: 'invalidated',
+};
+
+export const PRE_SCAN_VERIFICATION_STATUS_LABEL_MAP = {
+  [PRE_SCAN_VERIFICATION_STATUS.DEFAULT]: __('Default - Never run'),
+  [PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS]: __('Running'),
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE]: __('Complete'),
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE_WITH_ERRORS]: __('Complete with errors'),
+  [PRE_SCAN_VERIFICATION_STATUS.FAILED]: __('Failed'),
+  [PRE_SCAN_VERIFICATION_STATUS.INVALIDATED]: __('Invalidated'),
 };
 
 export const STATUS_STYLE_MAP = {
@@ -76,7 +85,7 @@ export const STATUS_LABEL_MAP = {
   [PRE_SCAN_VERIFICATION_STATUS.COMPLETE]: __('complete'),
   [PRE_SCAN_VERIFICATION_STATUS.COMPLETE_WITH_ERRORS]: __('complete'),
   [PRE_SCAN_VERIFICATION_STATUS.FAILED]: __('failed'),
-  [PRE_SCAN_VERIFICATION_STATUS.INVALIDATED]: __('failed'),
+  [PRE_SCAN_VERIFICATION_STATUS.INVALIDATED]: __('invalidated'),
 };
 
 export const DEFAULT_STYLING_SUMMARY_STYLING =

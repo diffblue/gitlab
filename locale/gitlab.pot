@@ -9897,6 +9897,9 @@ msgstr ""
 msgid "Complete verification to sign up."
 msgstr ""
 
+msgid "Complete with errors"
+msgstr ""
+
 msgid "Completed"
 msgstr ""
 
@@ -22122,6 +22125,9 @@ msgstr ""
 msgid "Invalid yaml"
 msgstr ""
 
+msgid "Invalidated"
+msgstr ""
+
 msgid "Investigate vulnerability: %{title}"
 msgstr ""
 
@@ -30615,9 +30621,6 @@ msgid "Potentially unwanted character detected: Unicode BiDi Control"
 msgstr ""
 
 msgid "Pre-defined push rules"
-msgstr ""
-
-msgid "PreScanVerification|%{description}%{runTimeAgo} in pipeline "
 msgstr ""
 
 msgid "PreScanVerification|(optional)"
@@ -47858,9 +47861,6 @@ msgid "committed"
 msgstr ""
 
 msgid "complete"
-msgstr ""
-
-msgid "complete_with_errors"
 msgstr ""
 
 msgid "compliance violation has already been recorded"

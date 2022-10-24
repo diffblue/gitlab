@@ -24,7 +24,7 @@ describe('PreScanVerificationStatus', () => {
 
   describe('status text', () => {
     it('should render correct default status message', () => {
-      createComponent({ status: PRE_SCAN_VERIFICATION_STATUS.DEFAULT });
+      createComponent();
       expect(findStatusMessage().text()).toContain(
         'Test your configuration and identify potential errors before running a full scan.',
       );

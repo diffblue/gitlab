@@ -2,6 +2,7 @@
 import { GlIcon, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import {
   DEFAULT_STYLING_SUMMARY_STYLING,
+  PRE_SCAN_VERIFICATION_STATUS_LABEL_MAP,
   PRE_SCAN_VERIFICATION_STATUS,
   SUMMARY_STATUS_STYLE_MAP,
   STATUS_LABEL_MAP,
@@ -21,7 +22,7 @@ export default {
     status: {
       type: String,
       required: false,
-      default: PRE_SCAN_VERIFICATION_STATUS.DEFAULT,
+      default: PRE_SCAN_VERIFICATION_STATUS_LABEL_MAP[PRE_SCAN_VERIFICATION_STATUS.DEFAULT],
     },
   },
   computed: {
@@ -32,6 +33,9 @@ export default {
       return (
         STATUS_LABEL_MAP[this.status] || STATUS_LABEL_MAP[PRE_SCAN_VERIFICATION_STATUS.COMPLETE]
       );
+    },
+    tooltipLabel() {
+      return PRE_SCAN_VERIFICATION_STATUS_LABEL_MAP[this.status];
     },
   },
 };
@@ -48,7 +52,7 @@ export default {
     />
     <div
       v-gl-tooltip
-      :title="status"
+      :title="tooltipLabel"
       class="gl-display-flex gl-py-2 gl-align-items-center gl-justify-content-center gl-border gl-rounded-base gl-bg-white"
       data-testid="pre-scan-status"
       :style="styling.borderColor"

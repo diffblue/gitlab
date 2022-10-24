@@ -1,5 +1,5 @@
 import { GlIcon } from '@gitlab/ui';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import PreScanVerificationSummary from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_summary.vue';
 import {
   PRE_SCAN_VERIFICATION_STATUS,
@@ -12,7 +12,7 @@ describe('PreScanVerificationSummary', () => {
   let wrapper;
 
   const createComponent = (options = {}) => {
-    wrapper = mountExtended(PreScanVerificationSummary, {
+    wrapper = shallowMountExtended(PreScanVerificationSummary, {
       propsData: {
         ...options,
       },

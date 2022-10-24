@@ -6,9 +6,6 @@ import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
 
 export default {
   i18n: {
-    preScanVerificationPipelineInfo: s__(
-      'PreScanVerification|%{description}%{runTimeAgo} in pipeline ',
-    ),
     preScanVerificationInProgressText: s__('PreScanVerification|Started %{timeAgo} in pipeline'),
     preScanVerificationText: s__('PreScanVerification|Last run %{timeAgo} in pipeline'),
   },
