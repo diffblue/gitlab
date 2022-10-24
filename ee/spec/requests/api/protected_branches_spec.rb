@@ -116,7 +116,7 @@ RSpec.describe API::ProtectedBranches do
             patch api(route, user), params: { code_owner_approval_required: true }
           end.not_to change { protected_branch.reload.code_owner_approval_required }
 
-          expect(response).to have_gitlab_http_status(:forbidden)
+          expect(response).to have_gitlab_http_status(:ok)
         end
       end
     end
