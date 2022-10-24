@@ -4,6 +4,7 @@ module Projects
   class RegisterSuggestedReviewersProjectService < BaseProjectService
     def execute
       return unless project.suggested_reviewers_available? && project.suggested_reviewers_enabled
+      return unless current_user.can?(:create_resource_access_tokens, project)
 
       registration_input = {
         project_id: project.id,
