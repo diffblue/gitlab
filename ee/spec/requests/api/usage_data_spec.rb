@@ -27,7 +27,6 @@ RSpec.describe API::UsageData do
           stub_application_setting(usage_ping_enabled: true)
           stub_feature_flags(usage_data_api: true)
           allow(Gitlab::RequestForgeryProtection).to receive(:verified?).and_return(true)
-          stub_feature_flags("usage_data_#{prefix}_#{event}" => true)
         end
 
         with_them do
