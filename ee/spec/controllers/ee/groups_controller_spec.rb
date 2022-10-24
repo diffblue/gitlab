@@ -405,7 +405,7 @@ RSpec.describe GroupsController do
         create(:group_with_managed_accounts, :private, max_personal_access_token_lifetime: 1)
       end
 
-      let_it_be(:user) { create(:user, :group_managed, managing_group: managed_group ) }
+      let_it_be(:user) { create(:user, :group_managed, managing_group: managed_group) }
 
       let(:params) { { max_personal_access_token_lifetime: max_personal_access_token_lifetime } }
       let(:max_personal_access_token_lifetime) { 10 }

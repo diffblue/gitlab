@@ -141,7 +141,7 @@ RSpec.describe Projects::Settings::OperationsController do
       context 'without existing status page setting' do
         subject(:status_page_setting) do
           valid_attributes = attributes_for(:status_page_setting).except(:enabled)
-          update_project(project, status_page_params: valid_attributes )
+          update_project(project, status_page_params: valid_attributes)
 
           project.status_page_setting
         end
@@ -255,7 +255,7 @@ RSpec.describe Projects::Settings::OperationsController do
           sla_timer_minutes: 60
         }
 
-        update_project(project, incident_management_params: default_attributes.merge(sla_settings) )
+        update_project(project, incident_management_params: default_attributes.merge(sla_settings))
 
         setting = project.incident_management_setting
 

@@ -69,7 +69,7 @@ RSpec.describe Projects::IssuesController do
           subject { get :new, params: { namespace_id: project.namespace, project_id: project } }
 
           context 'when a template has been set via project settings' do
-            let(:project) { create(:project, :custom_repo, namespace: namespace, issues_template: 'Content', files: files ) }
+            let(:project) { create(:project, :custom_repo, namespace: namespace, issues_template: 'Content', files: files) }
 
             it 'does not select a default template' do
               subject
@@ -79,7 +79,7 @@ RSpec.describe Projects::IssuesController do
           end
 
           context 'when a template has not been set via project settings' do
-            let(:project) { create(:project, :custom_repo, namespace: namespace, files: files ) }
+            let(:project) { create(:project, :custom_repo, namespace: namespace, files: files) }
 
             it 'selects a default template' do
               subject

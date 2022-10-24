@@ -362,7 +362,15 @@ RSpec.describe Projects::UpdateService, '#execute' do
   end
 
   context 'triggering suggested reviewer project registrations' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, group: group) }
+
     let(:opts) { { project_setting_attributes: { suggested_reviewers_enabled: '1' } } }
+
+    before do
+      group.add_maintainer(user)
+      project.add_maintainer(user)
+    end
 
     shared_examples 'calling registration worker' do
       it 'calls perform_async' do
@@ -400,17 +408,31 @@ RSpec.describe Projects::UpdateService, '#execute' do
           project.project_setting.update! suggested_reviewers_enabled: false
         end
 
-        it_behaves_like 'calling registration worker'
-
-        it 'sets the setting' do
-          expect { update_project(project, user, opts) }
-            .to change { project.reload.suggested_reviewers_enabled }.from(false).to(true)
-        end
-
-        context 'when form param is set to false' do
-          let(:opts) { { project_setting_attributes: { suggested_reviewers_enabled: '0' } } }
+        context 'when not allowed to create access token' do
+          before do
+            group.namespace_settings.update! resource_access_token_creation_allowed: false
+          end
 
           it_behaves_like 'not calling registration worker'
+        end
+
+        context 'when allowed to create access token', :saas do
+          before do
+            group.namespace_settings.update! resource_access_token_creation_allowed: true
+          end
+
+          it_behaves_like 'calling registration worker'
+
+          it 'sets the setting' do
+            expect { update_project(project, user, opts) }
+              .to change { project.reload.suggested_reviewers_enabled }.from(false).to(true)
+          end
+
+          context 'when form param is set to false' do
+            let(:opts) { { project_setting_attributes: { suggested_reviewers_enabled: '0' } } }
+
+            it_behaves_like 'not calling registration worker'
+          end
         end
       end
     end

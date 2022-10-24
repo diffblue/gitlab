@@ -2,9 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::RegisterSuggestedReviewersProjectService do
+RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas do
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { project.owner }
+  let_it_be(:user) { create(:user) }
 
   subject(:service) { described_class.new(project: project, current_user: user).execute }
 
@@ -35,6 +35,10 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectService do
       end
     end
 
+    before do
+      project.add_maintainer(user)
+    end
+
     context 'when the suggested reviewers is not available' do
       before do
         allow(project).to receive(:suggested_reviewers_available?).and_return(false)
@@ -62,35 +66,51 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectService do
           allow(project).to receive(:suggested_reviewers_enabled).and_return(true)
         end
 
-        it 'creates an access token', :aggre do
-          freeze_time do
-            token_params = {
-              name: 'Suggested reviewers token',
-              scopes: [Gitlab::Auth::READ_API_SCOPE],
-              expires_at: 95.days.from_now
-            }
-
-            allow_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
-              allow(client).to receive(:register_project)
-                                 .with(hash_including(registration_input))
-                                 .and_return(registration_result)
-            end
-
-            expect_next_instance_of(ResourceAccessTokens::CreateService, user, project, token_params) do |token_service|
-              expect(token_service).to receive(:execute).and_call_original
-            end
-            expect(service[:status]).to eq(:success)
+        context 'when the user cannot create access tokens' do
+          before do
+            project.add_developer(user)
           end
+
+          it_behaves_like 'not calling suggested reviewers client'
         end
 
-        it 'returns success and calls suggested reviewers client', :aggregate_failures do
-          expect_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
-            expect(client).to receive(:register_project)
-                                .with(hash_including(registration_input))
-                                .and_return(registration_result)
+        context 'when the user can create access tokens' do
+          before do
+            project.add_maintainer(user)
           end
 
-          expect(service[:status]).to eq(:success)
+          it 'creates an access token', :aggregate_failures do
+            freeze_time do
+              token_params = {
+                name: 'Suggested reviewers token',
+                scopes: [Gitlab::Auth::READ_API_SCOPE],
+                expires_at: 95.days.from_now
+              }
+
+              allow_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
+                allow(client).to receive(:register_project)
+                                   .with(hash_including(registration_input))
+                                   .and_return(registration_result)
+              end
+
+              expect_next_instance_of(
+                ResourceAccessTokens::CreateService, user, project, token_params
+              ) do |token_service|
+                expect(token_service).to receive(:execute).and_call_original
+              end
+              expect(service[:status]).to eq(:success)
+            end
+          end
+
+          it 'returns success and calls suggested reviewers client', :aggregate_failures do
+            expect_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
+              expect(client).to receive(:register_project)
+                                  .with(hash_including(registration_input))
+                                  .and_return(registration_result)
+            end
+
+            expect(service[:status]).to eq(:success)
+          end
         end
       end
     end

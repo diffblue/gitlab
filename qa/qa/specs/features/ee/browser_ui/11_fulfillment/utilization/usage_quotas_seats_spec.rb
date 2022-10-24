@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
-require 'active_support/testing/time_helpers'
-
 module QA
   include QA::Support::Helpers::Plan
 
   RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
-      let(:start_date) { Time.now.utc.strftime("%B %-d, %Y") }
-      let(:end_date) { Time.now.utc.advance(years: 1).strftime("%B %-d, %Y") }
       let(:hash) { SecureRandom.hex(8) }
 
       let(:user) do
@@ -20,13 +16,13 @@ module QA
         end
       end
 
-      let(:guest_user) do
+      let(:developer_user) do
         Resource::User.fabricate_via_api! do |user|
           user.api_client = admin_api_client
         end
       end
 
-      let(:developer_user) do
+      let(:guest_user) do
         Resource::User.fabricate_via_api! do |user|
           user.api_client = admin_api_client
         end
@@ -55,30 +51,32 @@ module QA
         developer_user.remove_via_api!
       end
 
-      context 'in ultimate plan billing settings' do
+      context 'in usage quotas' do
         it(
-          'displays correct information for seat usage',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/373506'
+          'user seat data is displayed correctly',
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377358'
         ) do
           Gitlab::Page::Group::Settings::Billing.perform do |billing|
             # waiting for the plan to be updated in the UI
             expect { billing.billing_plan_header }
               .to eventually_match(/ultimate saas/i).within(max_attempts: 30, sleep_interval: 2, reload_page: page)
             billing.refresh_subscription_seats
+          end
+
+          Page::Group::Menu.perform(&:go_to_usage_quotas)
+          Gitlab::Page::Group::Settings::UsageQuotas.perform do |usage_quota|
+            usage_quota.seats_tab
 
             aggregate_failures do
-              expect { billing.seats_in_subscription }.to eventually_eq('1')
-              # Members with Guest permissions on an Ultimate subscription do not count towards the subscription
-              expect { billing.seats_currently_in_use }.to eventually_eq('2')
-              expect { billing.max_seats_used }.to eventually_eq('2')
-              expect { billing.seats_owed }.to eventually_eq('1')
-
-              expect(billing.subscription_start_date).to eq(start_date)
-              expect(billing.subscription_end_date).to eq(end_date)
-
-              expect(billing.subscription_header).to match(/#{group.path}: Ultimate SaaS Plan/i)
-              expect(billing.billing_plan_header)
-                .to match(/#{group.path} is currently using the Ultimate SaaS Plan/i)
+              expect(usage_quota.seats_in_use).to match(%r{2 / 1})
+              expect(usage_quota.seats_in_use).to match(%r{Seats in use / Seats in subscription}i)
+              expect(usage_quota.seats_used).to match(/2 Max seats used/i)
+              expect(usage_quota.seats_owed).to match(/1 Seats owed/i)
+              expect(usage_quota.subscription_users).to match(/#{user.name}/)
+              expect(usage_quota.subscription_users).to match(/#{developer_user.name}/)
+              # Guest user not shown in Usage Quotas seats for Ultimate License
+              expect(usage_quota.subscription_users).not_to match(/#{guest_user.name}/)
+              expect(usage_quota.group_usage_message).to match(/fulfillment-free-plan-group-#{hash} group/)
             end
           end
         end
