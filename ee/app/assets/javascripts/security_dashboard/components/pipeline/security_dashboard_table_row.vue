@@ -114,6 +114,8 @@ export default {
         :checked="isSelected"
         :inline="true"
         class="my-0 ml-1 mr-3"
+        data-qa-selector="security_finding_checkbox"
+        :data-qa-finding-name="vulnerability.name"
         @change="toggleVulnerability"
       />
     </div>
@@ -142,6 +144,8 @@ export default {
             class="text-body gl-display-grid"
             button-text-classes="gl-text-left gl-white-space-normal! gl-pr-4!"
             variant="link"
+            data-qa-selector="security_finding_name_button"
+            :data-qa-status-description="vulnerability.name"
             @click="openModal({ vulnerability })"
             >{{ vulnerability.name }}</gl-button
           >

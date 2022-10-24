@@ -16,10 +16,6 @@ module QA
                 element :filter_dropdown_content
               end
 
-              view 'ee/app/assets/javascripts/security_dashboard/components/security_dashboard_table_row.vue' do
-                element :vulnerability_info_content
-              end
-
               view 'ee/app/assets/javascripts/security_dashboard/components/security_dashboard_table.vue' do
                 element :security_report_content
               end
