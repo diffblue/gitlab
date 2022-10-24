@@ -63,15 +63,15 @@ export default {
       @input="onInput"
     />
     <gl-daterange-picker
-      class="daterange-picker gl-display-flex gl-pl-0"
+      class="daterange-picker gl-display-flex gl-pl-0 gl-flex-direction-column gl-lg-flex-direction-row"
       :default-start-date="defaultStartDate"
       :default-end-date="defaultEndDate"
       :default-max-date="$options.CURRENT_DATE"
       :max-date-range="$options.MAX_DATE_RANGE"
       :same-day-selection="true"
       :tooltip="$options.i18n.dateRangeTooltip"
-      start-picker-class="gl-mb-5 gl-pr-3 gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-lg-align-items-flex-end"
-      end-picker-class="gl-mb-5 gl-lg-mr-3 gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-lg-align-items-flex-end"
+      start-picker-class="gl-mb-5 gl-md-pr-3 gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-lg-align-items-flex-end"
+      end-picker-class="gl-mb-5 gl-md-mr-3 gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row gl-lg-align-items-flex-end"
       date-range-indicator-class="gl-mb-5 gl-white-space-nowrap"
       @input="onInput"
     >
