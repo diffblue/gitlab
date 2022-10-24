@@ -27,7 +27,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Lease, :clean_gitlab_redis_shared_state d
     it 'logs with the correct caller class' do
       stub_const("Gitlab::Geo::LogCursor::Logger::PID", 111)
 
-      expect(::Gitlab::Logger).to receive(:debug).with(
+      expect(::Gitlab::JsonLogger).to receive(:debug).with(
         {
          pid: 111,
          class: 'Gitlab::Geo::LogCursor::Lease',
