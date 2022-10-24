@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Mutations::AppSec::Fuzzing::Coverage::Corpus::Create do
   let_it_be(:project) { create(:project) }
-  let_it_be(:developer) { create(:user, developer_projects: [project] ) }
+  let_it_be(:developer) { create(:user, developer_projects: [project]) }
   let_it_be(:package) { create(:package, project: project, creator: developer) }
 
   let(:corpus) { AppSec::Fuzzing::Coverage::Corpus.find_by(user: developer, project: project) }

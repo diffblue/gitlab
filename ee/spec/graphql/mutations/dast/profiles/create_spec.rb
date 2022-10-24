@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Mutations::Dast::Profiles::Create do
   let_it_be(:project) { create(:project, :repository) }
-  let_it_be(:developer) { create(:user, developer_projects: [project] ) }
+  let_it_be(:developer) { create(:user, developer_projects: [project]) }
   let_it_be(:dast_site_profile) { create(:dast_site_profile, project: project) }
   let_it_be(:dast_scanner_profile) { create(:dast_scanner_profile, project: project) }
 

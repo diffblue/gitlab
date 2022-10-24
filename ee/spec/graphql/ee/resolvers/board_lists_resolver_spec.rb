@@ -6,7 +6,7 @@ RSpec.describe Resolvers::BoardListsResolver do
   include GraphqlHelpers
 
   let_it_be(:user)          { create(:user) }
-  let_it_be(:project)       { create(:project, creator_id: user.id, namespace: user.namespace ) }
+  let_it_be(:project)       { create(:project, creator_id: user.id, namespace: user.namespace) }
   let_it_be(:group)         { create(:group, :private) }
   let_it_be(:project_milestone) { create(:milestone, project: project) }
   let_it_be(:group_milestone)   { create(:milestone, group: group) }
