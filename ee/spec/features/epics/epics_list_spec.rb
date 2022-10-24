@@ -22,7 +22,6 @@ RSpec.describe 'epics list', :js do
 
   before do
     stub_licensed_features(epics: true)
-    stub_feature_flags(unfiltered_epic_aggregates: false)
 
     sign_in(user)
   end
