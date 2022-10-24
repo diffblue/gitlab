@@ -142,6 +142,15 @@ module EE
       super.merge(epics: { label: _("Epics"), condition: @project.nil? && search_service.show_epics? })
     end
 
+    override :search_scope
+    def search_scope
+      if current_controller?(:epics)
+        'epics'
+      else
+        super
+      end
+    end
+
     private
 
     def recent_epics_autocomplete(term)
