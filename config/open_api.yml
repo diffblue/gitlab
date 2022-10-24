@@ -20,5 +20,7 @@ metadata:
     description: Operations related to access requests
   - name: merge_requests
     description: Operations related to merge requests
+  - name: deploy_keys
+    description: Operations related to deploy keys
   - name: deployments
     description: Operations related to deployments
