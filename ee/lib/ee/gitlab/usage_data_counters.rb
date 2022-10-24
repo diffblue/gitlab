@@ -5,7 +5,7 @@ module EE
     module UsageDataCounters
       extend ActiveSupport::Concern
 
-      EE_COUNTERS_MIGRATED_TO_INSTRUMENTATION_CLASSES = [
+      EE_COUNTERS = [
         ::Gitlab::UsageDataCounters::LicensesList,
         ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter,
         ::Gitlab::UsageDataCounters::LicenseTestingCounter
@@ -14,11 +14,9 @@ module EE
       class_methods do
         extend ::Gitlab::Utils::Override
 
-        private
-
-        override :migrated_counters
-        def migrated_counters
-          super + EE_COUNTERS_MIGRATED_TO_INSTRUMENTATION_CLASSES
+        override :counters
+        def counters
+          super + EE_COUNTERS
         end
       end
     end
