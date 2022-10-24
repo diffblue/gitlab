@@ -10,7 +10,7 @@ RSpec.describe EE::Namespace::Storage::Notification do
   let_it_be(:maintainer) { create(:user) }
   let_it_be(:developer) { create(:user) }
   let(:user) { owner }
-  let(:alert_level) { :info }
+  let(:alert_level) { :warning }
 
   describe '#show?' do
     subject { described_class.new(group, user).show? }
