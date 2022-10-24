@@ -63,6 +63,7 @@ class PushRule < ApplicationRecord
       reject_unsigned_commits ||
       reject_non_dco_commits ||
       commit_committer_check ||
+      commit_committer_name_check ||
       member_check ||
       file_name_regex.present? ||
       prevent_secrets
@@ -80,6 +81,13 @@ class PushRule < ApplicationRecord
     return true unless commit_committer_check
 
     current_user.verified_email?(committer_email)
+  end
+
+  def committer_name_allowed?(committer_name, current_user)
+    return true unless available?(:commit_committer_name_check)
+    return true unless commit_committer_name_check
+
+    current_user.name == committer_name
   end
 
   def non_dco_commit_allowed?(message)
@@ -144,6 +152,11 @@ class PushRule < ApplicationRecord
   def commit_committer_check=(value)
     write_setting_with_global_default(:commit_committer_check, value)
   end
+
+  def commit_committer_name_check
+    read_setting_with_global_default(:commit_committer_name_check)
+  end
+  alias_method :commit_committer_name_check?, :commit_committer_name_check
 
   def reject_non_dco_commits
     read_setting_with_global_default(:reject_non_dco_commits)

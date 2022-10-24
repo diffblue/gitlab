@@ -92,5 +92,95 @@ RSpec.describe Projects::PushRulesController do
         end
       end
     end
+
+    shared_examples 'updates push rule commit_committer_name_check of project' do |result|
+      it 'matches the given result' do
+        patch :update, params: { namespace_id: project.namespace, project_id: project, id: 1, push_rule: { commit_committer_name_check: true } }
+
+        expect(project.reload_push_rule.commit_committer_name_check).to eq(result)
+      end
+    end
+
+    context "Updating commit_committer_name_check rule" do
+      context 'when commit_committer_name_check is disabled' do
+        before do
+          stub_licensed_features(commit_committer_name_check: false)
+        end
+
+        context 'as an admin' do
+          let(:user) { create(:admin) }
+
+          it_behaves_like 'updates push rule commit_committer_name_check of project', false
+        end
+
+        context 'as a maintainer user' do
+          before do
+            project.add_maintainer(user)
+          end
+          it_behaves_like 'updates push rule commit_committer_name_check of project', false
+        end
+
+        context 'as a developer user' do
+          before do
+            project.add_developer(user)
+          end
+          it_behaves_like 'updates push rule commit_committer_name_check of project', false
+        end
+      end
+
+      context 'when commit_committer_name_check is enabled' do
+        before do
+          stub_licensed_features(commit_committer_name_check: true)
+        end
+
+        context 'when commit_committer_name_check_ff enabled' do
+          context 'as an admin' do
+            let(:user) { create(:admin) }
+
+            it_behaves_like 'updates push rule commit_committer_name_check of project', true
+          end
+
+          context 'as a maintainer user' do
+            before do
+              project.add_maintainer(user)
+            end
+            it_behaves_like 'updates push rule commit_committer_name_check of project', true
+          end
+
+          context 'as a developer user' do
+            before do
+              project.add_developer(user)
+            end
+            it_behaves_like 'updates push rule commit_committer_name_check of project', false
+          end
+        end
+
+        context 'when commit_committer_name_check_ff disabled' do
+          before do
+            stub_feature_flags(commit_committer_name_check_ff: false)
+          end
+
+          context 'as an admin' do
+            let(:user) { create(:admin) }
+
+            it_behaves_like 'updates push rule commit_committer_name_check of project', false
+          end
+
+          context 'as a maintainer user' do
+            before do
+              project.add_maintainer(user)
+            end
+            it_behaves_like 'updates push rule commit_committer_name_check of project', false
+          end
+
+          context 'as a developer user' do
+            before do
+              project.add_developer(user)
+            end
+            it_behaves_like 'updates push rule commit_committer_name_check of project', false
+          end
+        end
+      end
+    end
   end
 end

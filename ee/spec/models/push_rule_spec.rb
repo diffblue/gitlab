@@ -131,15 +131,16 @@ RSpec.describe PushRule, :saas do
     let(:settings_with_global_default) { %i(reject_unsigned_commits) }
 
     where(:setting, :value, :result) do
-      :commit_message_regex    | 'regex'       | true
-      :branch_name_regex       | 'regex'       | true
-      :author_email_regex      | 'regex'       | true
-      :file_name_regex         | 'regex'       | true
-      :reject_unsigned_commits | true          | true
-      :commit_committer_check  | true          | true
-      :member_check            | true          | true
-      :prevent_secrets         | true          | true
-      :max_file_size           | 1             | false
+      :commit_message_regex        | 'regex'       | true
+      :branch_name_regex           | 'regex'       | true
+      :author_email_regex          | 'regex'       | true
+      :file_name_regex             | 'regex'       | true
+      :reject_unsigned_commits     | true          | true
+      :commit_committer_check      | true          | true
+      :commit_committer_name_check | true          | true
+      :member_check                | true          | true
+      :prevent_secrets             | true          | true
+      :max_file_size               | 1             | false
     end
 
     with_them do

@@ -86,6 +86,7 @@ module GitlabSubscriptions
       cluster_deployments
       code_owner_approval_required
       commit_committer_check
+      commit_committer_name_check
       compliance_framework
       custom_compliance_frameworks
       cross_project_pipelines

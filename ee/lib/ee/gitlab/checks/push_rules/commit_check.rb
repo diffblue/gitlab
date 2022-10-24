@@ -93,10 +93,14 @@ module EE
               committer_is_current_user = committer == user_access.user
 
               if committer_is_current_user && !committer.verified_email?(commit.committer_email)
-                ERROR_MESSAGES[:committer_not_verified] % { committer_email: commit.committer_email }
+                return ERROR_MESSAGES[:committer_not_verified] % { committer_email: commit.committer_email }
               else
-                ERROR_MESSAGES[:committer_not_allowed] % { committer_email: commit.committer_email }
+                return ERROR_MESSAGES[:committer_not_allowed] % { committer_email: commit.committer_email }
               end
+            end
+
+            unless push_rule.committer_name_allowed?(commit.committer_name, user_access.user)
+              "Your git username is inconsistent with GitLab account name"
             end
           end
         end
