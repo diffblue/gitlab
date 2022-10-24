@@ -6843,6 +6843,9 @@ msgstr ""
 msgid "BranchRules|Allow all users with push access to %{linkStart}force push%{linkEnd}."
 msgstr ""
 
+msgid "BranchRules|Allowed to force push"
+msgstr ""
+
 msgid "BranchRules|Allowed to merge"
 msgstr ""
 
@@ -6916,6 +6919,9 @@ msgid "BranchRules|Require approval from code owners."
 msgstr ""
 
 msgid "BranchRules|Required approvals (%{total})"
+msgstr ""
+
+msgid "BranchRules|Requires CODEOWNERS approval"
 msgstr ""
 
 msgid "BranchRules|Roles"
