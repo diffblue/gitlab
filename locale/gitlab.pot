@@ -5275,6 +5275,15 @@ msgstr ""
 msgid "Artifacts|Browse"
 msgstr ""
 
+msgid "Artifacts|Delete %{name}?"
+msgstr ""
+
+msgid "Artifacts|Delete artifact"
+msgstr ""
+
+msgid "Artifacts|This artifact will be permanently deleted. Any reports generated from this artifact will be empty."
+msgstr ""
+
 msgid "Artifacts|Total artifacts size"
 msgstr ""
 
