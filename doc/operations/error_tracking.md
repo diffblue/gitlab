@@ -55,7 +55,7 @@ least Maintainer [permissions](../user/permissions.md) to enable the Sentry inte
    1. Ensure the **Active** checkbox is selected.
 1. In the **Sentry API URL** box, enter your Sentry hostname. For example, enter `https://sentry.example.com`. For the SaaS version of Sentry, the hostname is `https://sentry.io`.
 1. In the **Auth Token** box, enter the token you previously generated.
-1. To test the connection to Sentry and populate the **Project** dropdown, select **Connect**.
+1. To test the connection to Sentry and populate the **Project** dropdown list, select **Connect**.
 1. From the **Project** list, choose a Sentry project to link to your GitLab project.
 1. Select **Save changes**.
 
