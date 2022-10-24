@@ -38,7 +38,7 @@ RSpec.describe Projects::MergeRequests::CreationsController do
       end
 
       context 'when a template has been set via project settings' do
-        let(:project) { create(:project, :custom_repo, merge_requests_template: 'Content', files: files ) }
+        let(:project) { create(:project, :custom_repo, merge_requests_template: 'Content', files: files) }
 
         it 'does not select a default template' do
           subject
@@ -48,7 +48,7 @@ RSpec.describe Projects::MergeRequests::CreationsController do
       end
 
       context 'when a template has not been set via project settings' do
-        let(:project) { create(:project, :custom_repo, files: files ) }
+        let(:project) { create(:project, :custom_repo, files: files) }
 
         it 'selects a default template' do
           subject

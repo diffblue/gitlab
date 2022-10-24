@@ -113,7 +113,7 @@ RSpec.describe Admin::LicensesController do
     let_it_be(:historical_data) { create(:historical_data, recorded_at: Time.current) }
 
     before do
-      allow(License).to receive(:current).and_return(create(:license, cloud: cloud_license_enabled ))
+      allow(License).to receive(:current).and_return(create(:license, cloud: cloud_license_enabled))
     end
 
     context 'with a cloud license' do
