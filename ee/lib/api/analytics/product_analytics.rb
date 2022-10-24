@@ -26,7 +26,7 @@ module API
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         desc 'Proxy request to cube installation'
         get ':project_id/product_analytics/request/load' do
-          not_found! unless ::Feature.enabled?(:cube_api_proxy, project)
+          not_found! unless project.product_analytics_enabled?
           unauthorized! unless can?(current_user, :developer_access, project)
 
           payload = {
