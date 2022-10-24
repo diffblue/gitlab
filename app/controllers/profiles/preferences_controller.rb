@@ -26,6 +26,16 @@ class Profiles::PreferencesController < Profiles::ApplicationController
     render status: :bad_request, json: { type: :alert, message: message }
   end
 
+  def toggle_new_navigation
+    result = Users::UpdateService.new(current_user, preferences_params.merge(user: user)).execute
+
+    if result[:status] == :success
+      head :ok
+    else
+      head :bad_request
+    end
+  end
+
   private
 
   def user
@@ -57,7 +67,8 @@ class Profiles::PreferencesController < Profiles::ApplicationController
       :render_whitespace_in_code,
       :markdown_surround_selection,
       :markdown_automatic_lists,
-      :use_legacy_web_ide
+      :use_legacy_web_ide,
+      :use_new_navigation
     ]
   end
 end
