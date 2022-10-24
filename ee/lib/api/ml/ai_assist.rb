@@ -8,7 +8,7 @@ module API
       before do
         authenticate!
 
-        not_found! unless current_user.groups.any? do |group|
+        not_found! unless current_user.groups.select(&:root?).any? do |group|
           Feature.enabled?(:ai_assist_flag, group) && group.licensed_feature_available?(:ai_assist)
         end
       end
@@ -20,7 +20,7 @@ module API
         desc 'Get status if user can use AI Assist' do
           success EE::API::Entities::Ml::AiAssist
         end
-        get 'aiassist' do
+        get 'ai-assist' do
           response = {
             user_is_allowed: true
           }

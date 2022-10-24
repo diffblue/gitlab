@@ -13,85 +13,67 @@ RSpec.describe API::Ml::AiAssist do
     group
   end
 
-  describe 'GET /ml/aiassist user_is_allowed' do
+  describe 'GET /ml/ai-assist user_is_allowed' do
+    using RSpec::Parameterized::TableSyntax
+
     before do
-      stub_licensed_features(ai_assist: false)
-      stub_feature_flags(ai_assist_flag: false)
+      stub_licensed_features(ai_assist: license_flag)
+      stub_feature_flags(ai_assist_flag: feature_flag)
     end
 
-    subject { get api("/ml/aiassist", current_user) }
+    subject { get api('/ml/ai-assist', current_user) }
 
-    context "when unauthorized" do
-      it "returns forbidden error" do
-        subject
-        expect(response).to have_gitlab_http_status(:unauthorized)
+    context 'when user not logged in' do
+      let(:current_user) { nil }
+
+      where(:feature_flag, :license_flag, :result) do
+        false | false | :unauthorized
+        true | false | :unauthorized
+        false | true | :unauthorized
+        true | true | :unauthorized
+      end
+
+      with_them do
+        it 'returns unauthorized' do
+          subject
+          expect(response).to have_gitlab_http_status(result)
+        end
       end
     end
 
-    context "when authorized but not ultimate, not in group, no FF" do
+    context 'when user is logged in' do
       let(:current_user) { user }
 
-      it "returns forbidden error" do
-        subject
+      where(:feature_flag, :license_flag, :result) do
+        false | false | :not_found
+        true | false | :not_found
+        false | true | :not_found
+        true | true | :not_found
+      end
 
-        expect(response).to have_gitlab_http_status(:not_found)
+      with_them do
+        it 'returns not found' do
+          subject
+          expect(response).to have_gitlab_http_status(result)
+        end
       end
     end
 
-    context "when authorized but not ultimate, in group, no FF" do
+    context 'when user is logged in and in group' do
       let(:current_user) { group_user }
 
-      it "returns forbidden error" do
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
+      where(:feature_flag, :license_flag, :result) do
+        false | false | :not_found
+        true | false | :not_found
+        false | true | :not_found
+        true | true | :ok
       end
-    end
 
-    context "when authorized and ultimate, not in group but no FF" do
-      let(:current_user) { user }
-
-      it "returns forbidden error" do
-        stub_licensed_features(ai_assist: true)
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context "when authorized and ultimate, in group but no FF" do
-      let(:current_user) { group_user }
-
-      it "returns forbidden error" do
-        stub_licensed_features(ai_assist: true)
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context "when authorized and ultimate, not in group and FF" do
-      let(:current_user) { user }
-
-      it "returns forbidden error" do
-        stub_licensed_features(ai_assist: true)
-        stub_feature_flags(ai_assist_flag: allowed_group)
-        subject
-
-        expect(response).to have_gitlab_http_status(:not_found)
-      end
-    end
-
-    context "when authorized and ultimate, in group and FF" do
-      let(:current_user) { group_user }
-
-      it "returns forbidden error" do
-        stub_licensed_features(ai_assist: true)
-        stub_feature_flags(ai_assist_flag: allowed_group)
-        subject
-
-        expect(response).to have_gitlab_http_status(:ok)
-        expect(json_response["user_is_allowed"]).to eq true
+      with_them do
+        it 'returns not found except when both flags true' do
+          subject
+          expect(response).to have_gitlab_http_status(result)
+        end
       end
     end
   end
