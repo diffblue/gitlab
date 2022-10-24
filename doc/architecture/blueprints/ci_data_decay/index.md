@@ -1,5 +1,5 @@
 ---
-status: accepted
+status: ready
 creation-date: "2021-09-10"
 authors: [ "@grzesiek" ]
 coach: "@kamil"
