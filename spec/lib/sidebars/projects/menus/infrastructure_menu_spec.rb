@@ -27,13 +27,14 @@ RSpec.describe Sidebars::Projects::Menus::InfrastructureMenu do
         project.project_feature.update!(operations_access_level: operations_access_level)
         project.project_feature.update!(infrastructure_access_level: infrastructure_access_level)
 
-        binding.pry
         expect(subject.render?).to be render
       end
     end
 
     context 'when `split_operations_visibility_permissions` feature flag is disabled' do
-      before { stub_feature_flags(split_operations_visibility_permissions: false) }
+      before do
+        stub_feature_flags(split_operations_visibility_permissions: false)
+      end
 
       where(:operations_access_level, :infrastructure_access_level, :render) do
         ref(:disabled) | ref(:enabled)  | false
