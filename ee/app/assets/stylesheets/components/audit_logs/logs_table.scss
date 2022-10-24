@@ -1,12 +1,3 @@
 .audit-log-table .gl-table th {
   @include gl-line-height-normal;
 }
-
-.audit-log-filter {
-  @include media-breakpoint-down(md) {
-    .daterange-picker {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-}

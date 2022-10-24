@@ -51,7 +51,7 @@ export default {
         <audit-events-export-button :export-href="exportHref" />
       </div>
     </header>
-    <div class="audit-log-filter row-content-block second-block gl-pb-0">
+    <div class="row-content-block second-block gl-pb-0">
       <div class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row!">
         <audit-events-filter
           :filter-token-options="filterTokenOptions"
