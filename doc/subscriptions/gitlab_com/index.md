@@ -309,6 +309,10 @@ locked. Projects can only be unlocked by purchasing more storage subscription un
 
 ### Purchase more storage and transfer
 
+Prerequisite:
+
+- You must have at least the Owner role.
+
 You can purchase a storage subscription for your personal or group namespace.
 
 NOTE:
