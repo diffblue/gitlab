@@ -10,14 +10,6 @@ module EE
       options.to_a.shuffle.append(other).map { |option| option.reverse }
     end
 
-    def registration_verification_enabled?
-      experiment(:registration_verification, user: current_user) do |e|
-        e.candidate { true }
-        e.publish_to_database
-        e.run
-      end
-    end
-
     def registration_verification_data
       url = if params[:learn_gitlab_project_id].present?
               trial_getting_started_users_sign_up_welcome_path(params.slice(:learn_gitlab_project_id).permit!)
