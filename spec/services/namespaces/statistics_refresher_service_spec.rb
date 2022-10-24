@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Namespaces::StatisticsRefresherService, '#execute' do
   let(:group) { create(:group) }
-  let(:sub_group) { create(:group, parent: group) }
+  let(:subgroup) { create(:group, parent: group) }
   let(:projects) { create_list(:project, 5, namespace: group) }
   let(:service) { described_class.new }
 
@@ -25,11 +25,11 @@ RSpec.describe Namespaces::StatisticsRefresherService, '#execute' do
       service.execute(group)
     end
 
-    context 'when given a sub-group' do
-      it 'does not create statistics for the sub-group' do
-        service.execute(sub_group)
+    context 'when given a subgroup' do
+      it 'does not create statistics for the subgroup' do
+        service.execute(subgroup)
 
-        expect(sub_group.reload.root_storage_statistics).not_to be_present
+        expect(subgroup.reload.root_storage_statistics).not_to be_present
       end
     end
   end
@@ -53,13 +53,13 @@ RSpec.describe Namespaces::StatisticsRefresherService, '#execute' do
       service.execute(group)
     end
 
-    context 'when given a sub-group' do
+    context 'when given a subgroup' do
       it "recalculates the root namespace's statistics" do
         expect(Namespace::RootStorageStatistics)
           .to receive(:safe_find_or_create_by!).with({ namespace_id: group.id })
           .and_return(group.root_storage_statistics)
 
-        service.execute(sub_group)
+        service.execute(subgroup)
       end
     end
   end
