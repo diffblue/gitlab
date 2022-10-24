@@ -415,6 +415,7 @@ class ProjectPolicy < BasePolicy
     prevent(*create_read_update_admin_destroy(:cluster))
     prevent(:read_pod_logs)
     prevent(:read_prometheus)
+    prevent(:admin_project_google_cloud)
   end
 
   rule { can?(:metrics_dashboard) }.policy do

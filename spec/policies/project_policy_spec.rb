@@ -2305,12 +2305,11 @@ RSpec.describe ProjectPolicy do
     let(:guest_permissions) { [] }
 
     let(:developer_permissions) do
-      # TODO: check about read_pod_logs
       guest_permissions + [:read_terraform_state, :read_pod_logs, :read_prometheus]
     end
 
     let(:maintainer_permissions) do
-      developer_permissions + [:create_cluster, :read_cluster, :update_cluster, :admin_cluster, :admin_terraform_state]
+      developer_permissions + [:create_cluster, :read_cluster, :update_cluster, :admin_cluster, :admin_terraform_state, :admin_project_google_cloud]
     end
 
     where(:project_visibility, :access_level, :role, :allowed) do
