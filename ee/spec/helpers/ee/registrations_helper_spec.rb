@@ -20,36 +20,6 @@ RSpec.describe EE::RegistrationsHelper do
     end
   end
 
-  describe '#registration_verification_enabled?' do
-    let_it_be(:current_user) { create(:user) }
-
-    before do
-      allow(helper).to receive(:current_user).and_return(current_user)
-    end
-
-    subject(:action) { helper.registration_verification_enabled? }
-
-    context 'when experiment is candidate' do
-      before do
-        stub_experiments(registration_verification: :candidate)
-      end
-
-      it { is_expected.to eq(true) }
-    end
-
-    context 'when experiment is control' do
-      before do
-        stub_experiments(registration_verification: :control)
-      end
-
-      it { is_expected.to be_falsey }
-    end
-
-    it_behaves_like 'tracks assignment and records the subject', :registration_verification, :user do
-      subject { current_user }
-    end
-  end
-
   describe '#registration_verification_data' do
     before do
       allow(helper).to receive(:params).and_return(ActionController::Parameters.new(params))
