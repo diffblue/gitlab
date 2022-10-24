@@ -147,7 +147,7 @@ Maintainers can:
 
 - Update existing protected environments at any time by changing the access in the
   **Allowed to Deploy** dropdown list.
-- Unprotect a protected environment by clicking the **Unprotect** button for that environment.
+- Unprotect a protected environment by selecting the **Unprotect** button for that environment.
 
 After an environment is unprotected, all access entries are deleted and must
 be re-entered if the environment is re-protected.
