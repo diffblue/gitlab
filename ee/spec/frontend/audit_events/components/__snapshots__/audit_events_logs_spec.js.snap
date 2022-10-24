@@ -13,7 +13,7 @@ exports[`AuditEventsLog when initialized matches the snapshot 1`] = `
   </header>
    
   <div
-    class="audit-log-filter row-content-block second-block gl-pb-0"
+    class="row-content-block second-block gl-pb-0"
   >
     <div
       class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row!"
