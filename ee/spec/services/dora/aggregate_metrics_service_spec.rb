@@ -36,7 +36,7 @@ RSpec.describe Dora::AggregateMetricsService do
         let(:extra_params) { { end_date: 1.year.ago.to_date } }
 
         it_behaves_like 'request failure' do
-          let(:message) { 'The start date must be ealier than the end date.' }
+          let(:message) { 'The start date must be earlier than the end date.' }
           let(:http_status) { :bad_request }
         end
       end
