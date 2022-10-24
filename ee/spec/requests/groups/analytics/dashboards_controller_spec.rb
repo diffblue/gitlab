@@ -4,7 +4,13 @@ require 'spec_helper'
 
 RSpec.describe Groups::Analytics::DashboardsController do
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:user).tap { |user| group.add_reporter(user) } }
+  let_it_be(:another_group) { create(:group) }
+  let_it_be(:user) do
+    create(:user).tap do |user|
+      group.add_reporter(user)
+      another_group.add_reporter(user)
+    end
+  end
 
   let(:request) { get(group_analytics_dashboards_path(group)) }
 
@@ -85,13 +91,19 @@ RSpec.describe Groups::Analytics::DashboardsController do
 
         context 'when the feature is enabled' do
           before do
-            stub_feature_flags(group_analytics_dashboards_page: true)
+            stub_feature_flags(group_analytics_dashboards_page: group)
           end
 
           it 'succeeds' do
             request
 
             expect(response).to be_successful
+          end
+
+          context 'when the feature is not enabled for that group' do
+            let(:request) { get(group_analytics_dashboards_path(another_group)) }
+
+            it_behaves_like 'forbidden response'
           end
         end
       end
