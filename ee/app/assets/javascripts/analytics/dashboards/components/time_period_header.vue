@@ -19,8 +19,7 @@ export default {
 </script>
 <template>
   <div>
-    <span class="gl-display-inline-block gl-mb-2">{{ name }}</span
-    ><br />
-    <span class="gl-font-weight-normal">{{ startDate }} - {{ endDate }}</span>
+    <span class="gl-display-block gl-mb-2">{{ name }}</span>
+    <span class="gl-display-block gl-font-weight-normal">{{ startDate }} - {{ endDate }}</span>
   </div>
 </template>

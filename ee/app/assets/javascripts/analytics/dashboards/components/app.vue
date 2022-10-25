@@ -15,7 +15,7 @@ import {
 } from '../constants';
 import {
   toUtcYMD,
-  toMMMDD,
+  toMonthDay,
   extractDoraMetrics,
   generateDoraTimePeriodComparisonTable,
 } from '../utils';
@@ -93,12 +93,12 @@ export default {
       const { startDate, endDate, previousStartDate } = this;
       return {
         current: {
-          startDate: toMMMDD(startDate),
-          endDate: toMMMDD(endDate),
+          startDate: toMonthDay(startDate),
+          endDate: toMonthDay(endDate),
         },
         previous: {
-          startDate: toMMMDD(previousStartDate),
-          endDate: toMMMDD(startDate),
+          startDate: toMonthDay(previousStartDate),
+          endDate: toMonthDay(startDate),
         },
       };
     },
