@@ -23037,7 +23037,8 @@ CREATE TABLE vulnerability_state_transitions (
     author_id bigint,
     comment text,
     dismissal_reason smallint,
-    CONSTRAINT check_fca4a7ca39 CHECK ((char_length(comment) <= 255))
+    CONSTRAINT check_fca4a7ca39 CHECK ((char_length(comment) <= 255)),
+    CONSTRAINT state_not_equal CHECK ((from_state <> to_state))
 );
 
 CREATE SEQUENCE vulnerability_state_transitions_id_seq
