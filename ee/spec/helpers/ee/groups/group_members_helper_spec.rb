@@ -13,16 +13,6 @@ RSpec.describe Groups::GroupMembersHelper do
     allow(helper).to receive(:current_user).and_return(current_user)
   end
 
-  describe '.group_member_select_options' do
-    before do
-      helper.instance_variable_set(:@group, group)
-    end
-
-    it 'returns an options hash with skip_ldap' do
-      expect(helper.group_member_select_options).to include(skip_ldap: false)
-    end
-  end
-
   describe '#group_members_app_data' do
     let(:banned) { [] }
 
