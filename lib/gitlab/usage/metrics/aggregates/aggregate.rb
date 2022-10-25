@@ -27,7 +27,7 @@ module Gitlab
 
           private
 
-          attr_accessor :aggregated_metrics, :recorded_at
+          attr_accessor :recorded_at
 
           def aggregated_metrics_data(time_frame)
             aggregated_metrics.each_with_object({}) do |aggregation, data|
