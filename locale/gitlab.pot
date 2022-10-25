@@ -27853,9 +27853,6 @@ msgstr ""
 msgid "October"
 msgstr ""
 
-msgid "OfSearchInADropdown|Filter"
-msgstr ""
-
 msgid "Off"
 msgstr ""
 
@@ -36871,9 +36868,6 @@ msgid "Select a template repository"
 msgstr ""
 
 msgid "Select a template type"
-msgstr ""
-
-msgid "Select a timezone"
 msgstr ""
 
 msgid "Select all"
