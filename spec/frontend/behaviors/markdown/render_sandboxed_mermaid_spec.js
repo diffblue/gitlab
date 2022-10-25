@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import renderMermaid from '~/behaviors/markdown/render_sandboxed_mermaid';
 
@@ -22,7 +21,7 @@ describe('Render mermaid diagrams for Gitlab Flavoured Markdown', () => {
           </button>
         </copy-code>
       </div>`);
-    const els = $('pre.js-syntax-highlight').find('.js-render-mermaid');
+    const els = [...document.querySelectorAll('pre.js-syntax-highlight .js-render-mermaid')];
 
     renderMermaid(els);
 
