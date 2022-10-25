@@ -101,6 +101,7 @@ module Security
           Vulnerabilities::FindingSignature.new(signature.to_hash)
         end
         finding.finding_evidence = Vulnerabilities::Finding::Evidence.new(data: report_finding.evidence.data) if report_finding.evidence
+        finding.details = report_finding.details
 
         if calculate_false_positive?
           finding.vulnerability_flags = report_finding.flags.map do |flag|
