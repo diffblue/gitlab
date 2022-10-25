@@ -250,9 +250,10 @@ you must rename the group too. Both names and paths must
 be unique.
 
 After you change the group path, the new group path is a new namespace and you must update the existing project URL in the following resources:
-- [include statements](../../ci/yaml/includes.md#include-a-single-configuration-file).
-- Docker image references in CI files.
-- Variables that specify a project or namespace.
+
+-  [Include statements](../../ci/yaml/includes.md#include-a-single-configuration-file).
+-  Docker image references in CI files.
+-  Variables that specify a project or namespace.
 
 To retain ownership of the original namespace and protect the URL redirects,
 create a new group and transfer projects to it instead.
