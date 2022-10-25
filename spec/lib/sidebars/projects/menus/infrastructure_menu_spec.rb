@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Sidebars::Projects::Menus::InfrastructureMenu do
-  let(:project) { build(:project) }
+  let(:project) { create(:project) }
   let(:user) { project.first_owner }
   let(:context) { Sidebars::Projects::Context.new(current_user: user, container: project, show_cluster_hint: false) }
 
