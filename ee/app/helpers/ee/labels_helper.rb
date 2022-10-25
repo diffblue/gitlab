@@ -30,7 +30,7 @@ module EE
 
       border_width = small ? '1px' : '2px'
 
-      %(<span class="#{wrapper_classes.join(' ')}" style="--label-inset-border: inset 0 0 0 #{border_width} #{label.color}; color: #{label.color}">#{label_html}</span>).html_safe
+      %(<span class="#{wrapper_classes.join(' ')}" style="--label-inset-border: inset 0 0 0 #{border_width} #{html_escape(label.color)}; color: #{html_escape(label.color)}">#{label_html}</span>).html_safe
     end
 
     def label_tooltip_title(label)
