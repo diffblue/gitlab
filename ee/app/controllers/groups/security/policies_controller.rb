@@ -9,6 +9,7 @@ module Groups
       before_action do
         push_frontend_feature_flag(:group_level_scan_result_policies, group)
         push_frontend_feature_flag(:scan_execution_rule_mode, group)
+        push_frontend_feature_flag(:scan_result_role_action, group)
       end
 
       feature_category :security_policy_management
