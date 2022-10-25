@@ -22,6 +22,8 @@ metadata:
     description: Operations related to merge requests
   - name: deploy_keys
     description: Operations related to deploy keys
+  - name: deploy_tokens
+    description: Operations related to deploy tokens
   - name: deployments
     description: Operations related to deployments
   - name: release_links

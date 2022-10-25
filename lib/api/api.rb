@@ -172,6 +172,7 @@ module API
         mount ::API::AccessRequests
         mount ::API::Appearance
         mount ::API::DeployKeys
+        mount ::API::DeployTokens
         mount ::API::Deployments
         mount ::API::Metadata
         mount ::API::MergeRequestDiffs
@@ -221,7 +222,6 @@ module API
       mount ::API::DebianGroupPackages
       mount ::API::DebianProjectPackages
       mount ::API::DependencyProxy
-      mount ::API::DeployTokens
       mount ::API::Discussions
       mount ::API::Environments
       mount ::API::ErrorTracking::ClientKeys
