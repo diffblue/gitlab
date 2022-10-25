@@ -134,7 +134,7 @@ gem 'hashie', '~> 5.0.0'
 gem 'hashie-forbidden_attributes'
 
 # Pagination
-gem 'kaminari', '~> 1.0'
+gem 'kaminari', '~> 1.2.2'
 
 # HAML
 gem 'hamlit', '~> 2.15.0'
