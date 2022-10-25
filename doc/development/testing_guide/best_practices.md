@@ -282,7 +282,7 @@ end
 
 #### Stubbing methods within factories
 
-You should avoid using `allow(object).to receive(:method)` in factories, as this makes the factory unable to be used with `let_it_be`.
+You should avoid using `allow(object).to receive(:method)` in factories, as this makes the factory unable to be used with `let_it_be`, as described in [common test setup](#common-test-setup).
 
 Instead, you can use `stub_method` to stub the method:
 

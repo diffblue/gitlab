@@ -3,6 +3,7 @@ import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import {
   EDITOR_MODE_YAML,
@@ -18,6 +19,7 @@ import PolicyEditorLayout from '../policy_editor_layout.vue';
 import { assignSecurityPolicyProject, modifyPolicy } from '../utils';
 import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
+import PolicyActionBuilderV2 from './policy_action_builder_v2.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
 import {
   DEFAULT_SCAN_RESULT_POLICY,
@@ -49,10 +51,12 @@ export default {
     GlEmptyState,
     GlButton,
     PolicyActionBuilder,
+    PolicyActionBuilderV2,
     PolicyRuleBuilder,
     PolicyEditorLayout,
     DimDisableContainer,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',
@@ -117,6 +121,9 @@ export default {
     },
     isWithinLimit() {
       return this.policy.rules.length < 5;
+    },
+    areRolesAvailable() {
+      return this.glFeatures.scanResultRoleAction;
     },
   },
   watch: {
@@ -296,15 +303,28 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <policy-action-builder
-          v-for="(action, index) in policy.actions"
-          :key="index"
-          class="gl-mb-4"
-          :init-action="action"
-          :existing-approvers="existingApprovers"
-          @changed="updateAction(index, $event)"
-          @approversUpdated="updatePolicyApprovers"
-        />
+        <template v-if="areRolesAvailable">
+          <policy-action-builder-v-2
+            v-for="(action, index) in policy.actions"
+            :key="index"
+            class="gl-mb-4"
+            :init-action="action"
+            :existing-approvers="existingApprovers"
+            @changed="updateAction(index, $event)"
+            @approversUpdated="updatePolicyApprovers"
+          />
+        </template>
+        <template v-else>
+          <policy-action-builder
+            v-for="(action, index) in policy.actions"
+            :key="index"
+            class="gl-mb-4"
+            :init-action="action"
+            :existing-approvers="existingApprovers"
+            @changed="updateAction(index, $event)"
+            @approversUpdated="updatePolicyApprovers"
+          />
+        </template>
       </dim-disable-container>
     </template>
   </policy-editor-layout>
