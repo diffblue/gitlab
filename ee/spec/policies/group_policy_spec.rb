@@ -23,6 +23,7 @@ RSpec.describe GroupPolicy do
       read_cluster
       read_group_runners
       read_billing
+      read_container_image
     ]
   end
 
@@ -1265,7 +1266,7 @@ RSpec.describe GroupPolicy do
 
       specify do
         expect_allowed(*auditor_permissions)
-        expect_disallowed(*reporter_permissions)
+        expect_disallowed(*(reporter_permissions - auditor_permissions))
         expect_disallowed(*(developer_permissions - auditor_permissions))
         expect_disallowed(*maintainer_permissions)
         expect_disallowed(*(owner_permissions - auditor_permissions))
@@ -2305,6 +2306,15 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_allowed(:read_group_all_available_runners) }
       it { is_expected.to be_disallowed(:admin_group_runners) }
       it { is_expected.to be_disallowed(:register_group_runners) }
+    end
+  end
+
+  describe 'group container registry' do
+    context 'auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_container_image) }
+      it { is_expected.to be_disallowed(:admin_container_image) }
     end
   end
 end
