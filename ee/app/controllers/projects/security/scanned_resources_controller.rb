@@ -9,6 +9,7 @@ module Projects
       before_action :scanned_resources
 
       feature_category :dynamic_application_security_testing
+      urgency :low
 
       def index
         respond_to do |format|
