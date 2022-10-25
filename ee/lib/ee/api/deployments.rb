@@ -7,18 +7,19 @@ module EE
 
       prepended do
         params do
-          requires :id, type: String, desc: 'The project ID'
+          requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project owned by the authenticated user'
         end
         resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
           desc 'Approve or reject a blocked deployment' do
             detail 'This feature was introduced in GitLab 14.8.'
             success ::API::Entities::Deployments::Approval
+            tags %w[deployments]
           end
           params do
-            requires :deployment_id, type: String, desc: 'The Deployment ID'
-            requires :status, type: String, values: ::Deployments::Approval.statuses.keys
+            requires :deployment_id, type: Integer, desc: 'The ID of the deployment'
+            requires :status, type: String, values: ::Deployments::Approval.statuses.keys, desc: 'The status of the approval (either `approved` or `rejected`)'
             optional :comment, type: String, desc: 'A comment to go with the approval'
-            optional :represented_as, type: String, desc: 'The name of the User/Group/Role to use for the approval, when the user belongs to multiple approval rules.'
+            optional :represented_as, type: String, desc: 'The name of the User/Group/Role to use for the approval, when the user belongs to multiple approval rules'
           end
           post ':id/deployments/:deployment_id/approval' do
             deployment = user_project.deployments.find(params[:deployment_id])

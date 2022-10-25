@@ -170,6 +170,7 @@ module API
       # Mount endpoints to include in the OpenAPI V2 documentation here
       namespace do
         mount ::API::AccessRequests
+        mount ::API::Deployments
         mount ::API::Metadata
         mount ::API::UserCounts
 
@@ -216,7 +217,6 @@ module API
       mount ::API::DependencyProxy
       mount ::API::DeployKeys
       mount ::API::DeployTokens
-      mount ::API::Deployments
       mount ::API::Discussions
       mount ::API::Environments
       mount ::API::ErrorTracking::ClientKeys
