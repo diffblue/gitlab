@@ -79,6 +79,10 @@ module EE
               'ON merge_requests.target_project_id = security_orchestration_policy_configurations.project_id')
       end
 
+      scope :with_applied_scan_result_policies, -> do
+        joins(:approval_rules).merge(ApprovalMergeRequestRule.scan_finding)
+      end
+
       def merge_requests_author_approval?
         !!target_project&.merge_requests_author_approval?
       end
