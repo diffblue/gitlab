@@ -240,13 +240,7 @@ RSpec.describe Ci::RegisterJobService, '#execute' do
     end
   end
 
-  context 'when new pending builds table is used' do
-    before do
-      stub_feature_flags(ci_pending_builds_queue_source: true)
-    end
-
-    include_examples 'namespace minutes quota'
-  end
+  include_examples 'namespace minutes quota'
 
   describe 'ensure plan limitation', :saas do
     let(:allowed_plans) { [] }
