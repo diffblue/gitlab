@@ -1751,7 +1751,7 @@ RSpec.describe Ci::Build do
 
         context 'and start action is defined' do
           before do
-            build.update!(options: { environment: { action: 'start' } } )
+            build.update!(options: { environment: { action: 'start' } })
           end
 
           it { is_expected.to be_truthy }
@@ -1781,7 +1781,7 @@ RSpec.describe Ci::Build do
 
         context 'and stop action is defined' do
           before do
-            build.update!(options: { environment: { action: 'stop' } } )
+            build.update!(options: { environment: { action: 'stop' } })
           end
 
           it { is_expected.to be_truthy }
