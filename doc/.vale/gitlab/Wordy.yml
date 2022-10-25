@@ -3,7 +3,7 @@
 #
 # Suggests shorter versions of wordy phrases.
 #
-# For a list of all options, see https://docs.errata.ai/vale/styles
+# For a list of all options, see https://vale.sh/docs/topics/styles/
 extends: substitution
 message: '%s "%s".'
 link: https://docs.gitlab.com/ee/development/documentation/styleguide/word_list.html
