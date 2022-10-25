@@ -769,7 +769,6 @@ lib/gitlab/checks/** @proglottis @toon @zj-gitlab
 /doc/operations/index.md @msedlakjakubowski
 /doc/operations/metrics/ @msedlakjakubowski
 /doc/operations/metrics/dashboards/ @msedlakjakubowski
-/doc/operations/product_analytics.md @lciutacu
 /doc/operations/tracing.md @msedlakjakubowski
 /doc/policy/ @axil
 /doc/raketasks/ @axil
