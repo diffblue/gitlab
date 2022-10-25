@@ -13,11 +13,12 @@ RSpec::Matchers.define :have_aggregate do |type, facet, state, expected_value|
   end
 
   def method_name(type, state)
-    if type == ISSUE_TYPE
+    case type
+    when ISSUE_TYPE
       return :opened_issues if state == OPENED_ISSUE_STATE
 
       :closed_issues
-    elsif type == EPIC_TYPE
+    when EPIC_TYPE
       return :opened_epics if state == OPENED_EPIC_STATE
 
       :closed_epics

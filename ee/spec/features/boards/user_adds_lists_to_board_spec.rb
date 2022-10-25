@@ -38,9 +38,10 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
 
       set_cookie('sidebar_collapsed', 'true')
 
-      if board_type == :project
+      case board_type
+      when :project
         visit project_board_path(project, project_board)
-      elsif board_type == :group
+      when :group
         visit group_board_path(group, group_board)
       end
 

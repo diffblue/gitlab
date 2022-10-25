@@ -116,13 +116,14 @@ RSpec.describe 'Every metric definition' do
         constant = parent_module.const_get(const_name, false)
         next if parent_metric_classes.include?(constant) || ignored_classes.include?(constant)
 
-        if constant.is_a? Class
+        case constant
+        when Class
           metric_class_instance = instance_double(constant)
           expect(constant).to receive(:new).at_least(:once).and_return(metric_class_instance)
           allow(metric_class_instance).to receive(:available?).and_return(true)
           allow(metric_class_instance).to receive(:value).and_return(-1)
           expect(metric_class_instance).to receive(:value).at_least(:once)
-        elsif constant.is_a? Module
+        when Module
           assert_uses_all_nested_classes(constant)
         end
       end

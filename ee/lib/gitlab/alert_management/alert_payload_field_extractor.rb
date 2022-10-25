@@ -67,9 +67,10 @@ module Gitlab
         until pairs.empty?
           key, value = pairs.shift
 
-          if value.is_a?(Hash)
+          case value
+          when Hash
             value.each { |k, v| pairs.unshift [key + [k], v] }
-          elsif value.is_a?(Array)
+          when Array
             yield key, value
 
             value.each.with_index do |element, index|
