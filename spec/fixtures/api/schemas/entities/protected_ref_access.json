@@ -2,6 +2,7 @@
   "type": "object",
   "required": [
     "id",
+    "access_level",
     "access_level_description"
   ],
   "properties": {
@@ -19,19 +20,6 @@
         "string",
         "null"
       ]
-    },
-    "user_id": {
-      "type": [
-        "integer",
-        "null"
-      ]
-    },
-    "group_id": {
-      "type": [
-        "integer",
-        "null"
-      ]
     }
-  },
-  "additionalProperties": false
+  }
 }
