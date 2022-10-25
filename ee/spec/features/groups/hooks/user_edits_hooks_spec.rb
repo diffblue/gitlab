@@ -52,7 +52,7 @@ RSpec.describe 'User edits hooks' do
     it 'shows dom element for vue', :js do
       click_link('Edit')
 
-      expect(page).to have_selector('.js-vue-push-events', visible: :all)
+      expect(page).to have_content('Push events')
     end
   end
 end

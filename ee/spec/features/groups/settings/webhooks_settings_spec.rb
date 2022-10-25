@@ -108,7 +108,7 @@ RSpec.describe 'Groups > Settings > Group Hooks' do
           expect(page).to have_content('SSL Verification: enabled')
           expect(page).to have_content('Tag push events')
           expect(page).to have_content('Job events')
-          expect(page).to have_selector('.js-vue-push-events', visible: :all)
+          expect(page).to have_content('Push events')
         end
       end
 

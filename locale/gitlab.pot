@@ -45418,6 +45418,12 @@ msgstr ""
 msgid "Webhooks|Push to the repository."
 msgstr ""
 
+msgid "Webhooks|Regex such as %{REGEX_CODE} is supported."
+msgstr ""
+
+msgid "Webhooks|Regular expression"
+msgstr ""
+
 msgid "Webhooks|Releases events"
 msgstr ""
 
@@ -45476,6 +45482,12 @@ msgid "Webhooks|Webhooks for %{root_namespace} are now disabled because they've 
 msgstr ""
 
 msgid "Webhooks|Wiki page events"
+msgstr ""
+
+msgid "Webhooks|Wildcard pattern"
+msgstr ""
+
+msgid "Webhooks|Wildcards such as %{WILDCARD_CODE_STABLE} or %{WILDCARD_CODE_PRODUCTION} are supported."
 msgstr ""
 
 msgid "Website"
