@@ -21,7 +21,7 @@ RSpec.describe 'User visits issue boards', :js do
 
   let_it_be(:label) { create(:group_label, group: group, name: label_name) }
   let_it_be(:scoped_label) { create(:group_label, group: group, name: scoped_label_name) }
-  let_it_be(:assignee) { create_default(:group_member, :maintainer, user: create(:user, username: assignee_username), group: group ).user }
+  let_it_be(:assignee) { create_default(:group_member, :maintainer, user: create(:user, username: assignee_username), group: group).user }
 
   before_all do
     create_default(:issue, project: project, title: issue_with_label, labels: [label])
