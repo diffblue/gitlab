@@ -40,3 +40,5 @@ export const eventlistenersMockDefaultMap = [
     namespace: 'atwho',
   },
 ];
+
+export { crmContactsMock } from '../../../../spec/frontend/gfm_auto_complete/mock_data';
