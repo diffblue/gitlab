@@ -26,6 +26,7 @@ RSpec.describe GitlabSchema.types['PipelineSecurityReportFinding'] do
        falsePositive
        solution
        state
+       details
        description_html]
   end
 

@@ -53,7 +53,7 @@ RSpec.describe 'Burnup charts', :js do
   end
 
   def burnup_chart_points
-    fill_color = "#5772ff"
+    fill_color = "#617ae2"
     burnup_chart.all("path[fill='#{fill_color}']", count: 12)
   end
 
