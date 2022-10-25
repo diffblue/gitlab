@@ -422,13 +422,70 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
     context 'by all filters' do
       context 'with found entity' do
-        let(:params) { { report_type: %w[sast dast container_scanning dependency_scanning], scanner: %w[find_sec_bugs gemnasium-maven trivy zaproxy], scope: 'all' } }
+        let(:params) do
+          { report_type: %w[sast dast container_scanning dependency_scanning],
+            scanner: %w[find_sec_bugs gemnasium-maven trivy zaproxy], scope: 'all' }
+        end
+
+        let(:expected_details) do
+          { "diff" =>
+            { "type" => "diff",
+              "name" => "Diff",
+              "before" => "one potato,\ntwo potato,\nthree potato,\nfloor",
+              "after" => "one potato,\ntwo potato,\ntequila!,\nfloor" },
+            "table" =>
+              { "type" => "table",
+                "name" => "Pretty table",
+                "header" => [{ "type" => "text", "value" => "Number" }, { "type" => "text", "value" => "Address" }],
+                "rows" => [[{ "type" => "text", "value" => "1" },
+                            { "type" => "url", "href" => "http://1.example.com/" }],
+                           [{ "type" => "text", "value" => "2" },
+                            { "type" => "url", "href" => "http://2.example.com/" }]] },
+            "comments" =>
+              { "name" => "Comments",
+                "type" => "named-list",
+                "items" =>
+                  { "Comment #1" => { "name" => "Fred:",
+                                      "type" => "text",
+                                      "value" => "Hi Wilma" },
+                    "Comment #2" => { "name" => "Wilma:",
+                                      "type" => "markdown",
+                                      "value" => "Hi Fred. Checkout [GitLab](http://gitlab.com)" },
+                    "A list" => { "name" => "resources",
+                                  "type" => "list",
+                                  "items" => [{ "type" => "value", "value" => "42" },
+                                              { "type" => "value",
+                                                "value" => "Life, the universe and everything" }] } } },
+            "code" =>
+            { "type" => "code", "name" => "code sample", "value" => "<img src=x onerror=alert(1)>", "lang" => "html" },
+            "file" =>
+             { "type" => "file-location",
+               "name" => "a file location",
+               "file_name" => "index.js",
+               "line_start" => 1,
+               "line_end" => 2 },
+            "commit" =>
+             { "type" => "commit", "name" => "some commit", "value" => "<img src=x onerror=alert(1)>" },
+            "another_commit" =>
+             { "type" => "commit", "name" => "another_commit", "value" => "deadbeef" },
+            "login_url" =>
+             { "name" => "Login URL", "type" => "url", "href" => "http://site.com/login" },
+            "logout_url" =>
+             { "name" => "Logout URL", "type" => "url", "href" => "http://site.com/logout" },
+            "urls" =>
+             { "name" => "URLs",
+               "type" => "list",
+               "items" => [{ "type" => "url", "href" => "http://site.com/page/1" },
+                           { "type" => "url", "href" => "http://site.com/page/2" },
+                           { "type" => "url", "href" => "http://site.com/page/3" }] } }
+        end
 
         it 'filters by all params' do
           expect(subject.findings.count).to eq(cs_count + dast_count + ds_count + sast_count)
           expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium-maven trivy zaproxy]
           expect(subject.findings.map(&:confidence).uniq).to match_array(%w[unknown low medium high])
           expect(subject.findings.map(&:severity).uniq).to match_array(%w[unknown low medium high critical info])
+          expect(subject.findings.map(&:details).find(&:present?)).to eq(expected_details)
         end
       end
 
