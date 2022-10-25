@@ -1436,6 +1436,15 @@ RSpec.describe MergeRequest do
       end
     end
 
+    describe '.with_applied_scan_result_policies' do
+      let_it_be(:scan_finding_approval_rule) { create(:report_approver_rule, :code_coverage) }
+      let_it_be(:code_coverage_approval_rule) { create(:report_approver_rule, :scan_finding) }
+
+      it 'returns MRs that have applied scan result policies' do
+        expect(described_class.with_applied_scan_result_policies).to eq([code_coverage_approval_rule.merge_request])
+      end
+    end
+
     describe '.for_projects_with_security_policy_project' do
       let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
 
