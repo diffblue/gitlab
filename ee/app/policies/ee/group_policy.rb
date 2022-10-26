@@ -224,6 +224,11 @@ module EE
         enable :read_group_runners
       end
 
+      rule { auditor & group_ci_cd_analytics_available }.policy do
+        enable :view_group_ci_cd_analytics
+        enable :read_group_release_stats
+      end
+
       rule { group_level_compliance_dashboard_enabled & auditor }.policy do
         enable :read_group_compliance_dashboard
       end
@@ -250,7 +255,7 @@ module EE
       rule { has_access & group_activity_analytics_available }
         .enable :read_group_activity_analytics
 
-      rule { (admin | reporter) & dora4_analytics_available }
+      rule { (admin | reporter | auditor) & dora4_analytics_available }
         .enable :read_dora4_analytics
 
       rule { reporter & group_repository_analytics_available }
