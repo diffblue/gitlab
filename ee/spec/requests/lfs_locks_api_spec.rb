@@ -42,7 +42,9 @@ RSpec.describe 'Git LFS File Locking API', :saas do
 
         expect(response).to have_gitlab_http_status(:not_acceptable)
 
-        expect(json_response['message']).to match(/namespace storage limit of 10 MB has been reached/)
+        expect(json_response['message']).to eq(
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
+        )
       end
     end
   end
@@ -75,7 +77,9 @@ RSpec.describe 'Git LFS File Locking API', :saas do
 
         expect(response).to have_gitlab_http_status(:not_acceptable)
 
-        expect(json_response['message']).to match(/namespace storage limit of 10 MB has been reached/)
+        expect(json_response['message']).to eq(
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
+        )
       end
     end
   end
@@ -90,7 +94,9 @@ RSpec.describe 'Git LFS File Locking API', :saas do
 
         expect(response).to have_gitlab_http_status(:not_acceptable)
 
-        expect(json_response['message']).to match(/namespace storage limit of 10 MB has been reached/)
+        expect(json_response['message']).to eq(
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
+        )
       end
     end
   end

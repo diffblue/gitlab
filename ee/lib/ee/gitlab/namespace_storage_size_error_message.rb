@@ -28,9 +28,7 @@ module EE
       end
 
       def push_error(change_size = 0)
-        "Your push to this repository has been rejected because the namespace storage limit " \
-        "of #{formatted(limit)} has been reached. " \
-        "Reduce your namespace storage or purchase additional storage."
+        self.class.storage_limit_reached_error_msg
       end
 
       def new_changes_error
@@ -43,6 +41,15 @@ module EE
         "The namespace storage size (#{formatted(current_size)}) exceeds the limit of #{formatted(limit)} " \
         "by #{formatted(exceeded_size)}. You won't be able to push new code to this project. " \
         "Please contact your GitLab administrator for more information."
+      end
+
+      def self.storage_limit_reached_error_msg
+        _(
+          "Your action has been rejected because the namespace storage limit has been reached. " \
+          "For more information, visit %{doc_url}." % {
+            doc_url: Rails.application.routes.url_helpers.help_page_url('user/usage_quotas')
+          }
+        )
       end
 
       private
