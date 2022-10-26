@@ -4,6 +4,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { createAlert } from '~/flash';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
+import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import HealthStatusDropdown from 'ee/sidebar/components/health_status/health_status_dropdown.vue';
 import SidebarHealthStatusWidget from 'ee/sidebar/components/health_status/sidebar_health_status_widget.vue';
 import {
@@ -27,6 +28,7 @@ describe('SidebarHealthStatusWidget component', () => {
   Vue.use(VueApollo);
 
   const findHealthStatusDropdown = () => wrapper.findComponent(HealthStatusDropdown);
+  const findIssueHealthStatus = () => wrapper.findComponent(IssueHealthStatus);
 
   const createQueryHandler = ({ state, healthStatus }) =>
     jest.fn().mockResolvedValue(getHealthStatusQueryResponse({ state, healthStatus }));
@@ -65,6 +67,8 @@ describe('SidebarHealthStatusWidget component', () => {
       await waitForPromises();
 
       expect(wrapper.findComponent(SidebarEditableItem).text()).toContain(healthStatusText);
+      expect(findIssueHealthStatus().exists()).toBe(true);
+      expect(findIssueHealthStatus().props('healthStatus')).toBe(healthStatus);
     },
   );
 
