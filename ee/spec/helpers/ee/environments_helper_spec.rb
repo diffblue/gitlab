@@ -45,7 +45,9 @@ RSpec.describe EnvironmentsHelper do
                 can_approve_deployment
                 deployable_name
                 approvals
+                has_approval_rules
                 project_id
+                project_path
                 name
                 tier)
 

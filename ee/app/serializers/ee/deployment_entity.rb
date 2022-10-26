@@ -11,6 +11,10 @@ module EE
       expose :can_approve_deployment do |deployment|
         can?(request.current_user, :update_deployment, deployment)
       end
+
+      expose :has_approval_rules do |deployment|
+        deployment.environment.has_approval_rules?
+      end
     end
   end
 end

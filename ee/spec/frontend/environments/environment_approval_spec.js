@@ -1,9 +1,14 @@
+import Vue, { nextTick } from 'vue';
+import VueApollo from 'vue-apollo';
 import { GlButton, GlModal } from '@gitlab/ui';
-import { nextTick } from 'vue';
+import mockDeploymentFixture from 'test_fixtures/graphql/environments/graphql/queries/deployment.query.graphql.json';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import { trimText } from 'helpers/text_helper';
 import waitForPromises from 'helpers/wait_for_promises';
+import createMockApollo from 'helpers/mock_apollo_helper';
 import EnvironmentApproval from 'ee/environments/components/environment_approval.vue';
+import MultipleApprovalRulesTable from 'ee/environments/components/multiple_approval_rules_table.vue';
+import deploymentApprovalQuery from 'ee/environments/graphql/queries/deployment.query.graphql';
 import Api from 'ee/api';
 import { __, s__, sprintf } from '~/locale';
 import { createAlert } from '~/flash';
@@ -13,16 +18,22 @@ import { environment as mockEnvironment } from './mock_data';
 jest.mock('ee/api.js');
 jest.mock('~/flash');
 
+Vue.use(VueApollo);
+
 describe('ee/environments/components/environment_approval.vue', () => {
   let wrapper;
+  let apollo;
 
   const environment = convertObjectPropsToCamelCase(mockEnvironment, { deep: true });
 
-  const createWrapper = ({ propsData = {} } = {}) =>
-    mountExtended(EnvironmentApproval, {
+  const createWrapper = ({ propsData = {} } = {}) => {
+    apollo = createMockApollo([[deploymentApprovalQuery, () => mockDeploymentFixture]]);
+    return mountExtended(EnvironmentApproval, {
       propsData: { environment, ...propsData },
-      provide: { projectId: '5' },
+      provide: { projectId: '5', projectPath: 'test/hello' },
+      apolloProvider: apollo,
     });
+  };
 
   afterEach(() => {
     wrapper.destroy();
@@ -261,6 +272,31 @@ describe('ee/environments/components/environment_approval.vue', () => {
 
         expect(modal.props('visible')).toBe(false);
       });
+    });
+  });
+
+  describe('multiple approval rules', () => {
+    beforeEach(async () => {
+      wrapper = createWrapper({
+        propsData: {
+          environment: {
+            ...environment,
+            upcomingDeployment: {
+              ...environment.upcomingDeployment,
+              hasApprovalRules: true,
+            },
+          },
+        },
+      });
+
+      await findButton().trigger('click');
+    });
+
+    it('should pass the approval rules to the table', () => {
+      const table = wrapper.findComponent(MultipleApprovalRulesTable);
+      expect(table.props('rules')).toEqual(
+        mockDeploymentFixture.data.project.deployment.approvalSummary.rules,
+      );
     });
   });
 
