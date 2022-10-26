@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::CacheInvalidationEvent, :clean_gi
         skippable: false
       }
 
-      expect(::Gitlab::Logger)
+      expect(::Gitlab::JsonLogger)
         .to receive(:info)
         .with(hash_including(:event_id, data))
 
