@@ -30,7 +30,6 @@ module Gitlab
       deployment_minimum_id
       deployment_maximum_id
       auth_providers
-      aggregated_metrics
       recorded_at
     ).freeze
 
@@ -681,10 +680,6 @@ module Gitlab
 
           result['value'].last.to_f
         end
-      end
-
-      def aggregated_metrics
-        @aggregated_metrics ||= ::Gitlab::Usage::Metrics::Aggregates::Aggregate.new(recorded_at)
       end
 
       def event_monthly_active_users(date_range)
