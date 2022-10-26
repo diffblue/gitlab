@@ -26,7 +26,7 @@ module Vulnerabilities
             dismissal_reason: @dismissal_reason
           )
 
-          if dismiss_findings && Feature.disabled?(:deprecate_vulnerabilities_feedback, @vulnerability.project)
+          if dismiss_findings
             result = dismiss_vulnerability_findings
 
             unless result.ok?

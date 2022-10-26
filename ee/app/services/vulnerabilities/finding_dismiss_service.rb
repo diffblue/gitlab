@@ -24,24 +24,32 @@ module Vulnerabilities
     end
 
     def dismiss_finding
-      result = if Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
-                 create_or_dismiss_vulnerability
-               else
-                 ::VulnerabilityFeedback::CreateService.new(
-                   @project,
-                   @current_user,
-                   feedback_params_for(@finding, @comment, @dismissal_reason)
-                 ).execute
-               end
+      @error_message = nil
 
-      case result[:status]
-      when :success
-        ServiceResponse.success(payload: { finding: @finding })
-      when :error
-        all_errors = result[:message].full_messages.join(",")
-        error_string = _("failed to dismiss finding: %{message}") % { message: all_errors }
-        ServiceResponse.error(message: error_string, http_status: :unprocessable_entity)
+      ApplicationRecord.transaction do
+        create_feedback
+        create_or_dismiss_vulnerability
       end
+
+      if @error_message
+        error_string = _("failed to dismiss finding: %{message}") % { message: @error_message }
+        ServiceResponse.error(message: error_string, http_status: :unprocessable_entity)
+      else
+        ServiceResponse.success(payload: { finding: @finding })
+      end
+    end
+
+    def create_feedback
+      result = ::VulnerabilityFeedback::CreateService.new(
+        @project,
+        @current_user,
+        feedback_params_for(@finding, @comment, @dismissal_reason)
+      ).execute
+
+      return if result[:status] == :success
+
+      @error_message = result[:message].full_messages.join(",")
+      raise ActiveRecord::Rollback
     end
 
     def create_or_dismiss_vulnerability

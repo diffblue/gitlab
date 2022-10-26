@@ -232,26 +232,14 @@ RSpec.describe Security::VulnerabilitiesFinder do
 
     let(:filters) { { report_type: %w[dast] } }
 
-    context 'when deprecate_vulnerabilities_feedback feature flag is enabled' do
-      it 'only returns vulnerabilities on the default branch by default' do
-        is_expected.to contain_exactly(vulnerability3)
-      end
-
-      context 'when present_on_default_branch is passed' do
-        let(:filters) { { report_type: %w[dast], present_on_default_branch: false } }
-
-        it 'returns vulnerabilities on all branches' do
-          is_expected.to contain_exactly(vulnerability3, vulnerability4)
-        end
-      end
+    it 'only returns vulnerabilities on the default branch by default' do
+      is_expected.to contain_exactly(vulnerability3)
     end
 
-    context 'when deprecate_vulnerabilities_feedback feature flag is disabled' do
-      before do
-        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-      end
+    context 'when present_on_default_branch is passed' do
+      let(:filters) { { report_type: %w[dast], present_on_default_branch: false } }
 
-      it 'returns vulnerabilities in all branches' do
+      it 'returns vulnerabilities on all branches' do
         is_expected.to contain_exactly(vulnerability3, vulnerability4)
       end
     end

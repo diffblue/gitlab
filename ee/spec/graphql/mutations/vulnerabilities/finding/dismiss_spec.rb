@@ -26,7 +26,7 @@ RSpec.describe Mutations::Vulnerabilities::Finding::Dismiss do
       shared_examples_for 'vulnerability finding dismissal' do
         it 'returns the dismissed finding' do
           expect(mutated_finding).to eq(finding)
-          expect(mutated_finding.state).to eq('dismissed')
+          expect(mutated_finding.reload.state).to eq('dismissed')
           expect(subject[:errors]).to be_empty
         end
       end

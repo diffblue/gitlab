@@ -146,31 +146,13 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
             expect(flash[:alert]).to be_nil
           end
 
-          context 'when deprecate_vulnerabilities_feedback is disabled' do
-            before do
-              stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-            end
+          it 'creates vulnerability feedback' do
+            send_request
 
-            it 'creates vulnerability feedback' do
-              send_request
-
-              expect(project.issues.last).to eq(Vulnerabilities::Feedback.last.issue)
-            end
-
-            it_behaves_like 'creates vulnerability issue link'
+            expect(project.issues.last).to eq(Vulnerabilities::Feedback.last.issue)
           end
 
-          context 'when deprecate_vulnerabilities_feedback is enabled' do
-            before do
-              stub_feature_flags(deprecate_vulnerabilities_feedback: true)
-            end
-
-            it 'does not create vulnerability feedback' do
-              expect { send_request }.not_to change(Vulnerabilities::Feedback, :count)
-            end
-
-            it_behaves_like 'creates vulnerability issue link'
-          end
+          it_behaves_like 'creates vulnerability issue link'
 
           private
 
