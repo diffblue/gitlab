@@ -27,9 +27,9 @@ import { unrestrictedPages } from './constants';
 
 const SANDBOX_FRAME_PATH = '/-/sandbox/mermaid';
 // This is an arbitrary number; Can be iterated upon when suitable.
-const MAX_CHAR_LIMIT = 2000;
+export const MAX_CHAR_LIMIT = 2000;
 // Max # of mermaid blocks that can be rendered in a page.
-const MAX_MERMAID_BLOCK_LIMIT = 50;
+export const MAX_MERMAID_BLOCK_LIMIT = 50;
 // Max # of `&` allowed in Chaining of links syntax
 const MAX_CHAINING_OF_LINKS_LIMIT = 30;
 
@@ -37,7 +37,7 @@ export const BUFFER_IFRAME_HEIGHT = 10;
 export const SANDBOX_ATTRIBUTES = 'allow-scripts allow-popups';
 
 const ALERT_CONTAINER_CLASS = 'mermaid-alert-container';
-const LAZY_ALERT_SHOWN_CLASS = 'lazy-alert-shown';
+export const LAZY_ALERT_SHOWN_CLASS = 'lazy-alert-shown';
 
 // Keep a map of mermaid blocks we've already rendered.
 const elsProcessingMap = new WeakMap();
