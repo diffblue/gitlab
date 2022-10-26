@@ -3,7 +3,8 @@
 module QA
   include QA::Support::Helpers::Plan
 
-  RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' } do
+  RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' },
+                                                                 product_group: :provision do
     let(:user) { 'GitLab QA' }
     let(:company) { 'QA User' }
     let(:user_count) { 10_000 }
