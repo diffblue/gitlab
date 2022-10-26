@@ -42,9 +42,7 @@ RSpec.describe API::Files do
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response['message']).to eq(
-          'Your push to this repository has been rejected because the ' \
-          'namespace storage limit of 5 MB has been reached. ' \
-          'Reduce your namespace storage or purchase additional storage.'
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
         )
       end
     end
@@ -73,9 +71,7 @@ RSpec.describe API::Files do
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response['message']).to eq(
-          'Your push to this repository has been rejected because the ' \
-          'namespace storage limit of 5 MB has been reached. ' \
-          'Reduce your namespace storage or purchase additional storage.'
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
         )
       end
     end
@@ -103,9 +99,7 @@ RSpec.describe API::Files do
 
         expect(response).to have_gitlab_http_status(:bad_request)
         expect(json_response['message']).to eq(
-          'Your push to this repository has been rejected because the ' \
-          'namespace storage limit of 5 MB has been reached. ' \
-          'Reduce your namespace storage or purchase additional storage.'
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
         )
       end
     end

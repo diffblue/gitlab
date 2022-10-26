@@ -18,11 +18,9 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
 
   describe '#commit_error' do
     it 'returns the expected message' do
-      expected_message = "Your push to this repository has been rejected because " \
-        "the namespace storage limit of 10 MB has been reached. " \
-        "Reduce your namespace storage or purchase additional storage."
-
-      expect(error_message.commit_error).to eq(expected_message)
+      expect(error_message.commit_error).to eq(
+        described_class.storage_limit_reached_error_msg
+      )
     end
   end
 
@@ -39,11 +37,9 @@ RSpec.describe EE::Gitlab::NamespaceStorageSizeErrorMessage, :saas do
 
   describe '#push_error' do
     it 'returns the expected message' do
-      expected_message = "Your push to this repository has been rejected because " \
-        "the namespace storage limit of 10 MB has been reached. " \
-        "Reduce your namespace storage or purchase additional storage."
-
-      expect(error_message.push_error).to eq(expected_message)
+      expect(error_message.push_error).to eq(
+        described_class.storage_limit_reached_error_msg
+      )
     end
   end
 
