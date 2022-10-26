@@ -56,9 +56,7 @@ RSpec.describe Commits::CreateService do
 
         expect(result[:status]).to be(:error)
         expect(result[:message]).to eq(
-          'Your push to this repository has been rejected because ' \
-          'the namespace storage limit of 1 MB has been reached. ' \
-          'Reduce your namespace storage or purchase additional storage.'
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
         )
       end
 
@@ -74,9 +72,7 @@ RSpec.describe Commits::CreateService do
 
           expect(result[:status]).to be(:error)
           expect(result[:message]).to eq(
-            'Your push to this repository has been rejected because ' \
-            'the namespace storage limit of 1 MB has been reached. ' \
-            'Reduce your namespace storage or purchase additional storage.'
+            EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
           )
         end
       end

@@ -26,7 +26,10 @@ RSpec.describe Gitlab::GitAccessProject do
       it 'rejects the push' do
         expect do
           push_changes("#{Gitlab::Git::BLANK_SHA} #{sha_with_smallest_changes} refs/heads/master")
-        end.to raise_error(described_class::ForbiddenError, /Your push to this repository has been rejected/)
+        end.to raise_error(
+          described_class::ForbiddenError,
+          EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
+        )
       end
 
       context 'when deleting a branch' do

@@ -353,9 +353,7 @@ RSpec.describe API::Internal::Base do
             expect(response).to have_gitlab_http_status(:unauthorized)
             expect(json_response["status"]).to eq(false)
             expect(json_response["message"]).to eq(
-              'Your push to this repository has been rejected because ' \
-              'the namespace storage limit of 4 MB has been reached. ' \
-              'Reduce your namespace storage or purchase additional storage.'
+              EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
             )
           end
 
