@@ -2174,4 +2174,60 @@ RSpec.describe User do
   it 'includes IdentityVerifiable' do
     expect(described_class).to include_module(IdentityVerifiable)
   end
+
+  it 'includes Elastic::ApplicationVersionedSearch' do
+    expect(described_class).to include_module(Elastic::ApplicationVersionedSearch)
+  end
+
+  context 'when elasticsearch_indexing is true' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      allow(Gitlab::CurrentSettings).to receive(:elasticsearch_indexing?).and_return(true)
+    end
+
+    it 'invokes maintain_elasticsearch_update callback' do
+      expect(user).to receive(:maintain_elasticsearch_update).once
+
+      user.update!(name: 'New Name')
+    end
+
+    context 'when feature index_user_callback is disabled' do
+      before do
+        stub_feature_flags(index_user_callback: false)
+      end
+
+      it 'does not invoke maintain_elasticsearch_update callback' do
+        expect(user).not_to receive(:maintain_elasticsearch_update)
+
+        user.update!(name: 'New Name')
+      end
+    end
+  end
+
+  it 'overrides .use_separate_indices? to true' do
+    expect(described_class.use_separate_indices?).to eq(true)
+  end
+
+  [true, false].each do |matcher|
+    describe '#use_elasticsearch?' do
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:elasticsearch_search?).and_return(matcher)
+      end
+
+      it 'is equal to elasticsearch_search setting' do
+        expect(subject.use_elasticsearch?).to eq(matcher)
+      end
+    end
+
+    describe '#maintaining_elasticsearch?' do
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:elasticsearch_indexing?).and_return(matcher)
+      end
+
+      it 'is equal to elasticsearch_indexing setting' do
+        expect(subject.maintaining_elasticsearch?).to eq(matcher)
+      end
+    end
+  end
 end
