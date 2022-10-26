@@ -738,6 +738,10 @@ module EE
       ElasticCommitIndexerWorker.perform_async(id, true) if use_elasticsearch? && !forked?
     end
 
+    def elastic_namespace_ancestry
+      namespace.elastic_namespace_ancestry + "p#{id}-"
+    end
+
     def log_geo_updated_events
       repository.log_geo_updated_event
       wiki.repository.log_geo_updated_event
