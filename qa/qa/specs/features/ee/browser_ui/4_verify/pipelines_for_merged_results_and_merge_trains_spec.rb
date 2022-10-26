@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Verify', :runner, :reliable do
+  RSpec.describe 'Verify', :runner, :reliable, product_group: :pipeline_execution do
     describe 'Pipelines for merged results and merge trains' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
