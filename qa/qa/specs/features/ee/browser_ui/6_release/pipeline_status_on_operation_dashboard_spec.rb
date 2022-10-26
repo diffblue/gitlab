@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Verify' do
+  RSpec.describe 'Release', product_group: :release do
     describe 'Operations Dashboard' do
       let(:group) { Resource::Group.fabricate_via_api! }
       let!(:runner) do
@@ -54,7 +54,8 @@ module QA
         remove_projects
       end
 
-      it 'has many pipelines with appropriate statuses', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348072' do
+      it 'has many pipelines with appropriate statuses',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348072' do
         add_projects_to_board
 
         EE::Page::OperationsDashboard.perform do |operation|
@@ -101,7 +102,8 @@ module QA
       end
 
       def add_projects_to_board
-        [project_with_success_run, project_with_pending_run, project_without_ci, project_with_failed_run].each do |project|
+        [project_with_success_run, project_with_pending_run, project_without_ci, project_with_failed_run]
+          .each do |project|
           EE::Page::OperationsDashboard.perform do |operation|
             operation.add_project(project.name)
             expect(operation).to have_project_card
@@ -110,9 +112,7 @@ module QA
       end
 
       def remove_projects
-        EE::Page::OperationsDashboard.perform do |operation|
-          operation.remove_all_projects
-        end
+        EE::Page::OperationsDashboard.perform(&:remove_all_projects)
       end
 
       def ci_file_with_tag

@@ -3,7 +3,7 @@
 module QA
   # This test uses `needs:project` premium feature,
   # it can only be run against an EE instance with an active license
-  RSpec.describe 'Verify', :runner, :reliable do
+  RSpec.describe 'Verify', :runner, :reliable, product_group: :pipeline_execution do
     describe 'Parent-child pipelines dependent relationship' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|

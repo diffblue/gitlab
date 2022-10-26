@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Verify', :runner do
+  RSpec.describe 'Verify', :runner, product_group: :pipeline_execution do
     describe 'In merge trains' do
       context 'new thread discussion' do
         let(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(number: 8)}" }

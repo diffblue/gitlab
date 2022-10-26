@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Verify' do
-    describe 'Pipeline subscription with a group owned project', :runner do
+    describe 'Pipeline subscription with a group owned project', :runner, product_group: :pipeline_execution do
       let(:executor) { "qa-runner-#{SecureRandom.hex(3)}" }
       let(:tag_name) { "awesome-tag-#{SecureRandom.hex(3)}" }
 

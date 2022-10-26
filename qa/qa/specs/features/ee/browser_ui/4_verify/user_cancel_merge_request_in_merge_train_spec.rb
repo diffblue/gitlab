@@ -2,7 +2,7 @@
 
 module QA
   RSpec.describe 'Verify' do
-    describe 'Cancelling merge request in merge train', :runner, :requires_admin do
+    describe 'Cancelling merge request in merge train', :runner, :requires_admin, product_group: :pipeline_execution do
       context 'when user cancels the merge request' do
         include_context 'merge train spec with user prep'
 
