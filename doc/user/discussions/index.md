@@ -45,7 +45,8 @@ mentions for yourself (the user currently signed in) are highlighted
 in a different color.
 
 Avoid mentioning `@all` in issues and merge requests, because it sends an email notification
-to all the members of that project's group. This might be interpreted as spam.
+to all the members of that project's parent _group_, not only the participants of the project. 
+This might be interpreted as spam.
 Notifications and mentions can be disabled in
 [a group's settings](../group/manage.md#disable-email-notifications).
 
