@@ -5,9 +5,9 @@ require 'spec_helper'
 RSpec.describe 'Projects > Audit Events', :js do
   include Spec::Support::Helpers::Features::MembersHelpers
 
-  let(:user) { create(:user) }
-  let(:pete) { create(:user, name: 'Pete') }
-  let(:project) { create(:project, :repository, namespace: user.namespace) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:pete) { create(:user, name: 'Pete') }
+  let_it_be_with_reload(:project) { create(:project, :repository, namespace: user.namespace) }
 
   before do
     project.add_maintainer(user)
@@ -171,20 +171,10 @@ RSpec.describe 'Projects > Audit Events', :js do
     end
   end
 
-  describe 'filter by date' do
-    let!(:audit_event_1) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: 5.days.ago) }
-    let!(:audit_event_2) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: 3.days.ago) }
-    let!(:audit_event_3) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: Date.current) }
-    let!(:events_path) { :project_audit_events_path }
-    let!(:entity) { project }
-
-    it_behaves_like 'audit events date filter'
-  end
-
   describe 'combined list of authenticated and unauthenticated users' do
-    let!(:audit_event_1) { create(:project_audit_event, :unauthenticated, entity_type: 'Project', entity_id: project.id) }
-    let!(:audit_event_2) { create(:project_audit_event, author_id: non_existing_record_id, entity_type: 'Project', entity_id: project.id) }
-    let!(:audit_event_3) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id) }
+    let_it_be(:audit_event_1) { create(:project_audit_event, :unauthenticated, entity_type: 'Project', entity_id: project.id) }
+    let_it_be(:audit_event_2) { create(:project_audit_event, author_id: non_existing_record_id, entity_type: 'Project', entity_id: project.id) }
+    let_it_be(:audit_event_3) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id) }
 
     it 'displays the correct authors names' do
       visit project_audit_events_path(project)
@@ -195,6 +185,34 @@ RSpec.describe 'Projects > Audit Events', :js do
         expect(page).to have_content('An unauthenticated user')
         expect(page).to have_content("#{audit_event_2.author_name} (removed)")
         expect(page).to have_content(audit_event_3.user.name)
+      end
+    end
+  end
+
+  describe 'audit event filter' do
+    let_it_be(:events_path) { :project_audit_events_path }
+    let_it_be(:entity) { project }
+
+    describe 'filter by date' do
+      let_it_be(:audit_event_1) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: 5.days.ago) }
+      let_it_be(:audit_event_2) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: 3.days.ago) }
+      let_it_be(:audit_event_3) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: Date.current) }
+
+      it_behaves_like 'audit events date filter'
+    end
+
+    context 'signed in as a developer' do
+      before do
+        project.add_developer(pete)
+        sign_in(pete)
+      end
+
+      describe 'filter by author' do
+        let_it_be(:audit_event_1) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: Date.today, ip_address: '1.1.1.1', author_id: pete.id) }
+        let_it_be(:audit_event_2) { create(:project_audit_event, entity_type: 'Project', entity_id: project.id, created_at: Date.today, ip_address: '0.0.0.0', author_id: user.id) }
+        let_it_be(:author) { user }
+
+        it_behaves_like 'audit events author filtering without entity admin permission'
       end
     end
   end

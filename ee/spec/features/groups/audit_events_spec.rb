@@ -5,9 +5,9 @@ require 'spec_helper'
 RSpec.describe 'Groups > Audit Events', :js do
   include Spec::Support::Helpers::Features::MembersHelpers
 
-  let(:user) { create(:user) }
-  let(:alex) { create(:user, name: 'Alex') }
-  let(:group) { create(:group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:alex) { create(:user, name: 'Alex') }
+  let_it_be_with_reload(:group) { create(:group) }
 
   before do
     group.add_owner(user)
@@ -65,13 +65,30 @@ RSpec.describe 'Groups > Audit Events', :js do
     end
   end
 
-  describe 'filter by date' do
-    let!(:audit_event_1) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: 5.days.ago) }
-    let!(:audit_event_2) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: 3.days.ago) }
-    let!(:audit_event_3) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: Date.current) }
-    let!(:events_path) { :group_audit_events_path }
-    let!(:entity) { group }
+  describe 'audit event filter' do
+    let_it_be(:events_path) { :group_audit_events_path }
+    let_it_be(:entity) { group }
 
-    it_behaves_like 'audit events date filter'
+    describe 'filter by date' do
+      let_it_be(:audit_event_1) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: 5.days.ago) }
+      let_it_be(:audit_event_2) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: 3.days.ago) }
+      let_it_be(:audit_event_3) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: Date.current) }
+
+      it_behaves_like 'audit events date filter'
+    end
+
+    context 'signed in as a developer' do
+      before do
+        sign_in(alex)
+      end
+
+      describe 'filter by author' do
+        let_it_be(:audit_event_1) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: Date.today, ip_address: '1.1.1.1', author_id: alex.id) }
+        let_it_be(:audit_event_2) { create(:group_audit_event, entity_type: 'Group', entity_id: group.id, created_at: Date.today, ip_address: '0.0.0.0', author_id: user.id) }
+        let_it_be(:author) { user }
+
+        it_behaves_like 'audit events author filtering without entity admin permission'
+      end
+    end
   end
 end
