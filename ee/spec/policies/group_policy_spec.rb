@@ -224,6 +224,12 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_allowed(:read_dora4_analytics) }
     end
 
+    context 'when the user is an auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_dora4_analytics) }
+    end
+
     context 'when the user is an admin', :enable_admin_mode do
       let(:current_user) { admin }
 
@@ -297,6 +303,12 @@ RSpec.describe GroupPolicy do
         let(:current_user) { guest }
 
         it { is_expected.not_to be_allowed(:view_group_ci_cd_analytics) }
+      end
+
+      context 'when the user has auditor permissions' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_allowed(:view_group_ci_cd_analytics) }
       end
     end
 
