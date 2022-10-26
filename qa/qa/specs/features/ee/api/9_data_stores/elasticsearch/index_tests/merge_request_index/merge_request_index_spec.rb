@@ -3,7 +3,7 @@
 require 'airborne'
 
 module QA
-  RSpec.describe 'Data Stores' do
+  RSpec.describe 'Data Stores', product_group: :global_search do
     describe(
       'When using elasticsearch API to search for a public merge request',
       :orchestrated,
