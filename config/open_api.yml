@@ -28,6 +28,8 @@ metadata:
     description: Operations related to deployments
   - name: feature_flags_user_lists
     description: Operations related to accessing GitLab feature flag user lists
+  - name: feature_flags
+    description: Operations related to feature flags
   - name: features
     description: Operations related to managing Flipper-based feature flags
   - name: freeze_periods
