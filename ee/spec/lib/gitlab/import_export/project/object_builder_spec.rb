@@ -65,7 +65,6 @@ RSpec.describe Gitlab::ImportExport::Project::ObjectBuilder do
           'start_date' => '2022-01-01',
           'due_date' => '2022-02-02',
           'iterations_cadence' => cadence,
-          'project' => project,
           'group' => project.group
         }
       )
@@ -79,18 +78,7 @@ RSpec.describe Gitlab::ImportExport::Project::ObjectBuilder do
                                      'iid' => 2,
                                      'start_date' => '2022-01-01',
                                      'due_date' => '2022-02-02',
-                                     'project' => project,
                                      'group' => project.group)).to eq(nil)
-      end
-    end
-
-    context 'when project is not associated with a group' do
-      it 'returns' do
-        expect(described_class.build(Iteration,
-                                     'iid' => 2,
-                                     'start_date' => '2022-01-01',
-                                     'due_date' => '2022-02-02',
-                                     'project' => build(:project))).to eq(nil)
       end
     end
   end
