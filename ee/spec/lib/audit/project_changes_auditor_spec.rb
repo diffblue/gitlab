@@ -60,18 +60,20 @@ RSpec.describe Audit::ProjectChangesAuditor do
           project.update!(path: 'newpath')
 
           expect(Gitlab::Audit::Auditor).to receive(:audit).with(
-            name: 'project_path_updated',
-            author: user,
-            scope: project,
-            target: project,
-            message: "Changed path to #{project.full_path}",
-            additional_details: {
-              change: "path",
-              from: "",
-              target_details: project.full_path.to_s,
-              to: project.full_path.to_s
-            },
-            target_details: project.full_path.to_s
+            {
+              name: 'project_path_updated',
+              author: user,
+              scope: project,
+              target: project,
+              message: "Changed path to #{project.full_path}",
+              additional_details: {
+                change: "path",
+                from: "",
+                target_details: project.full_path.to_s,
+                to: project.full_path.to_s
+              },
+              target_details: project.full_path.to_s
+            }
           ).and_call_original
 
           auditor_instance.execute
