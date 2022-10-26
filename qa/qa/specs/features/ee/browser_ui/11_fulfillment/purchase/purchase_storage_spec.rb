@@ -17,7 +17,7 @@ module QA
     end
   end
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
     let(:hash) { SecureRandom.hex(4) }
     let(:free_name_space) { true }
     let(:user) do

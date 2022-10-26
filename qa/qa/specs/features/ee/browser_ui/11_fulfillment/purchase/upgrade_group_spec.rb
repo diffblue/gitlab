@@ -3,7 +3,7 @@
 module QA
   include QA::Support::Helpers::Plan
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
     describe 'Purchase' do
       describe 'group plan' do
         let(:hash) { SecureRandom.hex(4) }
