@@ -26,3 +26,5 @@ metadata:
     description: Operations related to deployments
   - name: release_links
     description: Operations related to release assets (links)
+  - name: cluster_agents
+    description: Operations related to the GitLab agent for Kubernetes

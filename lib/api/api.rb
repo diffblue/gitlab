@@ -171,6 +171,8 @@ module API
       namespace do
         mount ::API::AccessRequests
         mount ::API::Appearance
+        mount ::API::Clusters::Agents
+        mount ::API::Clusters::AgentTokens
         mount ::API::DeployKeys
         mount ::API::Deployments
         mount ::API::Metadata
@@ -209,8 +211,6 @@ module API
       mount ::API::Ci::SecureFiles
       mount ::API::Ci::Triggers
       mount ::API::Ci::Variables
-      mount ::API::Clusters::Agents
-      mount ::API::Clusters::AgentTokens
       mount ::API::CommitStatuses
       mount ::API::Commits
       mount ::API::ComposerPackages
