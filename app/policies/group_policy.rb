@@ -284,7 +284,7 @@ class GroupPolicy < Namespaces::GroupProjectNamespaceSharedPolicy
   end
 
   rule { can?(:admin_group_member) }.policy do
-    # ability to both approve or reject member access requests of other users
+    # ability to read, approve or reject member access requests of other users
     enable :admin_member_access_requests
   end
 

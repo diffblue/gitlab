@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class ProjectMemberPolicy < BasePolicy
+  include MemberPolicyHelpers
   delegate { @subject.project }
 
   condition(:target_is_holder_of_the_personal_namespace, scope: :subject) do
@@ -9,9 +10,9 @@ class ProjectMemberPolicy < BasePolicy
 
   desc "Membership is users' own access request"
   with_score 0
-  condition(:access_request_of_self) { access_request_of_self? }
+  condition(:access_request_of_self) { record_is_access_request_of_self? }
 
-  condition(:target_is_self) { target_is_self? }
+  condition(:target_is_self) { record_belongs_to_self? }
   condition(:project_bot) { @subject.user&.project_bot? }
 
   rule { anonymous }.prevent_all
@@ -34,15 +35,5 @@ class ProjectMemberPolicy < BasePolicy
 
   rule { access_request_of_self }.policy do
     enable :withdraw_member_access_request
-  end
-
-  private
-
-  def access_request_of_self?
-    target_is_self? && @subject.request?
-  end
-
-  def target_is_self?
-    @user && @subject.user == @user
   end
 end
