@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging },
-                                                 feature_flag: { name: 'namespace_storage_limit', scope: :group } do
+  RSpec.describe 'Fulfillment', :requires_admin,
+                                only: { subdomain: :staging },
+                                feature_flag: { name: 'namespace_storage_limit', scope: :group },
+                                product_group: :utilization do
     describe 'Utilization', quarantine: {
       issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/377442',
       type: :investigating

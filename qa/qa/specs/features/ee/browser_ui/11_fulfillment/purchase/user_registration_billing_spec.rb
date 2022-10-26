@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' } do
+  RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' },
+                                                                 product_group: :billing_and_subscription_management do
     describe 'Purchase' do
       describe 'User Registration' do
         let(:group) do
