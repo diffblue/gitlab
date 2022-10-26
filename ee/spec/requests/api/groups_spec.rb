@@ -1068,7 +1068,7 @@ RSpec.describe API::Groups do
 
                   context 'when feature flag is disabled for the group' do
                     before do
-                      stub_feature_flags(immediate_delete_subgroup_api: false, thing: group)
+                      stub_feature_flags(immediate_delete_subgroup_api: false)
                     end
 
                     it_behaves_like 'does not immediately enqueues the job to delete the group', 'Group has been already marked for deletion'
