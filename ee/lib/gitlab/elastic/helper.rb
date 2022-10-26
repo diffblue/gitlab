@@ -10,14 +10,16 @@ module Gitlab
         Note,
         Milestone,
         ProjectWiki,
-        Repository
+        Repository,
+        User
       ].freeze
 
       ES_SEPARATE_CLASSES = [
         Issue,
         Note,
         MergeRequest,
-        Commit
+        Commit,
+        User
       ].freeze
 
       INDEXED_CLASSES = (ES_SEPARATE_CLASSES + [Repository]).freeze

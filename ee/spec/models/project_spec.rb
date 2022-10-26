@@ -2303,6 +2303,14 @@ RSpec.describe Project do
     end
   end
 
+  describe '#elastic_namespace_ancestry' do
+    let_it_be(:project) { create(:project) }
+
+    it 'is a combination of the namespace and project id' do
+      expect(project.elastic_namespace_ancestry).to eq("#{project.namespace.id}-p#{project.id}-")
+    end
+  end
+
   describe '#object_pool_missing?' do
     let(:pool) { create(:pool_repository, :ready) }
 
