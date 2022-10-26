@@ -174,6 +174,7 @@ module API
         mount ::API::DeployKeys
         mount ::API::DeployTokens
         mount ::API::Deployments
+        mount ::API::FeatureFlagsUserLists
         mount ::API::Features
         mount ::API::Metadata
         mount ::API::MergeRequestDiffs
@@ -230,7 +231,6 @@ module API
       mount ::API::ErrorTracking::ProjectSettings
       mount ::API::Events
       mount ::API::FeatureFlags
-      mount ::API::FeatureFlagsUserLists
       mount ::API::Files
       mount ::API::FreezePeriods
       mount ::API::GenericPackages
