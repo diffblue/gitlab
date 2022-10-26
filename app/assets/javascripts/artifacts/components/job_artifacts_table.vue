@@ -143,6 +143,15 @@ export default {
       if (!hasArtifacts) return;
       toggleDetails();
     },
+    downloadPath(job) {
+      return job.archive?.downloadPath;
+    },
+    downloadButtonDisabled(job) {
+      return !job.archive?.downloadPath;
+    },
+    browseButtonDisabled(job) {
+      return !job.browseArtifactsPath;
+    },
   },
   fields: [
     {
@@ -271,15 +280,15 @@ export default {
         <gl-button-group>
           <gl-button
             icon="download"
-            :disabled="!item.archive.downloadPath"
-            :href="item.archive.downloadPath"
+            :disabled="downloadButtonDisabled(item)"
+            :href="downloadPath(item)"
             :title="$options.i18n.download"
             :aria-label="$options.i18n.download"
             data-testid="job-artifacts-download-button"
           />
           <gl-button
             icon="folder-open"
-            :disabled="!item.browseArtifactsPath"
+            :disabled="browseButtonDisabled(item)"
             :href="item.browseArtifactsPath"
             :title="$options.i18n.browse"
             :aria-label="$options.i18n.browse"
