@@ -1,6 +1,5 @@
-import { GlTab } from '@gitlab/ui';
-import { shallowMount } from '@vue/test-utils';
 import merge from 'lodash/merge';
+import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { trackIncidentDetailsViewsOptions } from '~/incidents/constants';
 import DescriptionComponent from '~/issues/show/components/description.vue';
 import HighlightBar from '~/issues/show/components/incidents/highlight_bar.vue';
@@ -8,6 +7,7 @@ import IncidentTabs from '~/issues/show/components/incidents/incident_tabs.vue';
 import INVALID_URL from '~/lib/utils/invalid_url';
 import Tracking from '~/tracking';
 import AlertDetailsTable from '~/vue_shared/components/alert_details_table.vue';
+import { incidentTabsI18n } from '~/issues/show/components/incidents/constants';
 import { descriptionProps } from '../../mock_data/mock_data';
 
 const mockAlert = {
@@ -16,11 +16,24 @@ const mockAlert = {
   iid: '1',
 };
 
+const defaultMocks = {
+  $apollo: {
+    queries: {
+      alert: {
+        loading: true,
+      },
+      timelineEvents: {
+        loading: false,
+      },
+    },
+  },
+};
+
 describe('Incident Tabs component', () => {
   let wrapper;
 
-  const mountComponent = (data = {}, options = {}) => {
-    wrapper = shallowMount(
+  const mountComponent = ({ data = {}, options = {}, mount = shallowMountExtended } = {}) => {
+    wrapper = mount(
       IncidentTabs,
       merge(
         {
@@ -29,7 +42,7 @@ describe('Incident Tabs component', () => {
           },
           stubs: {
             DescriptionComponent: true,
-            MetricsTab: true,
+            IncidentMetricTab: true,
           },
           provide: {
             fullPath: '',
@@ -37,38 +50,33 @@ describe('Incident Tabs component', () => {
             projectId: '',
             issuableId: '',
             uploadMetricsFeatureAvailable: true,
+            slaFeatureAvailable: true,
+            canUpdate: true,
+            canUpdateTimelineEvent: true,
           },
           data() {
             return { alert: mockAlert, ...data };
           },
-          mocks: {
-            $apollo: {
-              queries: {
-                alert: {
-                  loading: true,
-                },
-                timelineEvents: {
-                  loading: false,
-                },
-              },
-            },
-          },
+          mocks: defaultMocks,
         },
         options,
       ),
     );
   };
 
-  const findTabs = () => wrapper.findAllComponents(GlTab);
-  const findSummaryTab = () => findTabs().at(0);
-  const findAlertDetailsTab = () => wrapper.find('[data-testid="alert-details-tab"]');
+  const findSummaryTab = () => wrapper.findByTestId('summary-tab');
+  const findAlertDetailsTab = () => wrapper.findByTestId('alert-details-tab');
   const findAlertDetailsComponent = () => wrapper.findComponent(AlertDetailsTable);
   const findDescriptionComponent = () => wrapper.findComponent(DescriptionComponent);
   const findHighlightBarComponent = () => wrapper.findComponent(HighlightBar);
+  const findTabButtonByFilter = (filter) => wrapper.findAllByRole('tab').filter(filter);
+  const findTimelineTabButton = () =>
+    findTabButtonByFilter((inner) => inner.text() === incidentTabsI18n.timelineTitle).at(0);
+  const findActiveTabs = () => findTabButtonByFilter((inner) => inner.classes('active'));
 
   describe('empty state', () => {
     beforeEach(() => {
-      mountComponent({ alert: null });
+      mountComponent({ data: { alert: null } });
     });
 
     it('does not show the alert details tab', () => {
@@ -123,6 +131,24 @@ describe('Incident Tabs component', () => {
     it('should track incident details views', () => {
       const { category, action } = trackIncidentDetailsViewsOptions;
       expect(Tracking.event).toHaveBeenCalledWith(category, action);
+    });
+  });
+
+  describe('tab changing', () => {
+    beforeEach(() => {
+      mountComponent({ mount: mountExtended });
+    });
+
+    it('shows only the summary tab by default', async () => {
+      expect(findActiveTabs()).toHaveLength(1);
+      expect(findActiveTabs().at(0).text()).toBe(incidentTabsI18n.summaryTitle);
+    });
+
+    it("shows the timeline tab after it's clicked", async () => {
+      await findTimelineTabButton().trigger('click');
+
+      expect(findActiveTabs()).toHaveLength(1);
+      expect(findActiveTabs().at(0).text()).toBe(incidentTabsI18n.timelineTitle);
     });
   });
 });

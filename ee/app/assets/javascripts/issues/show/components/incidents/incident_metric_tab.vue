@@ -7,11 +7,10 @@ export default {
   components: {
     MetricImagesTab,
   },
-  inject: ['uploadMetricsFeatureAvailable'],
   store: createStore({}, service),
 };
 </script>
 
 <template>
-  <metric-images-tab v-if="uploadMetricsFeatureAvailable" data-testid="metrics-tab" />
+  <metric-images-tab data-testid="metrics-tab" />
 </template>
