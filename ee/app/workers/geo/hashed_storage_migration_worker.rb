@@ -8,7 +8,7 @@ module Geo
 
     include GeoQueue
 
-    loggable_arguments 1, 2, 2
+    loggable_arguments 1, 2
 
     def perform(project_id, old_disk_path, new_disk_path, old_storage_version)
       Geo::HashedStorageMigrationService.new(
