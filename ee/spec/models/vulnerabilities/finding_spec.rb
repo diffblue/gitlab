@@ -894,10 +894,10 @@ RSpec.describe Vulnerabilities::Finding do
         it { is_expected.to eql(expected_cve) }
       end
 
-      context 'when cve data is present' do
+      context 'when cve text field is present' do
         let(:finding) { build(:vulnerabilities_finding, cve: 'Vulnerability cve') }
 
-        it { is_expected.to eq('Vulnerability cve') }
+        it { is_expected.to eq(expected_cve) }
       end
     end
 

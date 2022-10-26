@@ -301,7 +301,7 @@ module Vulnerabilities
     end
 
     def cve_value
-      cve || identifiers.find(&:cve?)&.name
+      identifiers.find(&:cve?)&.name
     end
 
     def cwe_value
