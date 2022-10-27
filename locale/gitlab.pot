@@ -47869,6 +47869,9 @@ msgstr ""
 msgid "committed"
 msgstr ""
 
+msgid "complete"
+msgstr ""
+
 msgid "compliance violation has already been recorded"
 msgstr ""
 
@@ -47926,6 +47929,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "days"
+msgstr ""
+
+msgid "default"
 msgstr ""
 
 msgid "default branch"
@@ -48185,6 +48191,9 @@ msgid "internal note"
 msgstr ""
 
 msgid "invalid milestone state `%{state}`"
+msgstr ""
+
+msgid "invalidated"
 msgstr ""
 
 msgid "is"
@@ -48993,6 +49002,9 @@ msgid "repository:"
 msgstr ""
 
 msgid "role's base access level does not match the access level of the membership"
+msgstr ""
+
+msgid "running"
 msgstr ""
 
 msgid "satisfied"
