@@ -49,6 +49,22 @@ RSpec.describe Epics::UpdateCachedMetadataWorker do
 
     it_behaves_like 'successful metadata update'
 
+    it 'logs extra params' do
+      expect(worker).to receive(:log_extra_metadata_on_done).with(:changed, true)
+      expect(worker).to receive(:log_extra_metadata_on_done).with(:epic_id, epic.id)
+      expect(worker).to receive(:log_extra_metadata_on_done).with(:epic_iid, epic.iid)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_opened_issue_weight, 20)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_closed_issue_weight, 10)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_opened_issue_count, 1)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_closed_issue_count, 1)
+
+      perform
+    end
+
     include_examples 'an idempotent worker' do
       let(:job_args) { epic_ids }
 
