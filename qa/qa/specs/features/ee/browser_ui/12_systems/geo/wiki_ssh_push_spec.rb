@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab wiki SSH push' do
       key = nil
 

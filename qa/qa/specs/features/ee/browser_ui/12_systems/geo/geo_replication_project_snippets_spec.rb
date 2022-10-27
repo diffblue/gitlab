@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'Project snippet' do
       let(:snippet_title) { "Geo project snippet-#{SecureRandom.hex(8)}" }
       let(:snippet_description) { 'Geo snippet description' }

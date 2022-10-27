@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab wiki SSH push to secondary' do
       wiki_content = 'This tests replication of wikis via SSH to secondary'
       push_content = 'This is from the Geo wiki push via SSH to secondary!'

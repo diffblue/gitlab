@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :geo,
-    quarantine: {
-      only: { subdomain: 'staging-ref' },
-      type: :test_environment,
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
-    } do
+  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo, quarantine: {
+    only: { subdomain: 'staging-ref' },
+    type: :test_environment,
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+  } do
     let(:git_push_http_path_prefix) { '/-/push_from_secondary' }
 
     describe 'GitLab Geo HTTP push secondary' do
