@@ -89,7 +89,6 @@ module EE
       scope :in_parents, -> (parent_ids) { where(parent_id: parent_ids) }
       scope :inc_group, -> { includes(:group) }
       scope :in_selected_groups, -> (groups) { where(group_id: groups) }
-      scope :not_in_groups, -> (groups) { where.not(group_id: groups) }
       scope :in_milestone, -> (milestone_id) { joins(:issues).where(issues: { milestone_id: milestone_id }).distinct }
       scope :in_issues, -> (issues) { joins(:epic_issues).where(epic_issues: { issue_id: issues }).distinct }
       scope :has_parent, -> { where.not(parent_id: nil) }
@@ -98,6 +97,7 @@ module EE
 
       scope :with_web_entity_associations, -> { preload(:author, group: [:ip_restrictions, :route]) }
       scope :with_api_entity_associations, -> { preload(:author, :labels) }
+      scope :with_child_api_entity_associations, -> { preload(:author, :labels, :parent, { group: [:route, :saml_provider] }) }
 
       scope :within_timeframe, -> (start_date, end_date) do
         epics = ::Epic.arel_table

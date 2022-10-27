@@ -28,7 +28,7 @@ module Resolvers
       end
 
       def cross_hierarchy_children_enabled?
-        ::Feature.enabled?(:child_epics_from_different_hierarchies)
+        ::Feature.enabled?(:child_epics_from_different_hierarchies, parent&.group)
       end
     end
   end
