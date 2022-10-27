@@ -111,7 +111,7 @@ module Members
     end
 
     def can_destroy_member_access_request?(member)
-      can?(current_user, :admin_member_access_requests, member.source)
+      can?(current_user, :admin_member_access_request, member.source)
     end
 
     def can_withdraw_member_access_request?(member)

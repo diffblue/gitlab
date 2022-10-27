@@ -26,7 +26,7 @@ RSpec.describe Groups::GroupMembersHelper do
       allow(helper).to receive(:group_group_member_path).with(shared_group, ':id').and_return('/groups/foo-bar/-/group_members/:id')
       allow(helper).to receive(:group_group_link_path).with(shared_group, ':id').and_return('/groups/foo-bar/-/group_links/:id')
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, shared_group).and_return(true)
-      allow(helper).to receive(:can?).with(current_user, :admin_member_access_requests, shared_group).and_return(true)
+      allow(helper).to receive(:can?).with(current_user, :admin_member_access_request, shared_group).and_return(true)
     end
 
     subject do
@@ -101,7 +101,7 @@ RSpec.describe Groups::GroupMembersHelper do
           allow(helper).to receive(:group_group_member_path).with(sub_shared_group, ':id').and_return('/groups/foo-bar/-/group_members/:id')
           allow(helper).to receive(:group_group_link_path).with(sub_shared_group, ':id').and_return('/groups/foo-bar/-/group_links/:id')
           allow(helper).to receive(:can?).with(current_user, :admin_group_member, sub_shared_group).and_return(true)
-          allow(helper).to receive(:can?).with(current_user, :admin_member_access_requests, sub_shared_group).and_return(true)
+          allow(helper).to receive(:can?).with(current_user, :admin_member_access_request, sub_shared_group).and_return(true)
           allow(helper).to receive(:can?).with(current_user, :export_group_memberships, sub_shared_group).and_return(true)
         end
 

@@ -25,7 +25,7 @@ module Members
     end
 
     def can_approve_access_requester?(access_requester)
-      can?(current_user, :admin_member_access_requests, access_requester.source)
+      can?(current_user, :admin_member_access_request, access_requester.source)
     end
 
     def approving_member_with_owner_access_level?(access_requester)
