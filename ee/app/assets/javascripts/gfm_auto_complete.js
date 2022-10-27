@@ -8,7 +8,14 @@ import GfmAutoComplete, { showAndHideHelper } from '~/gfm_auto_complete';
  * Some modules import `defaultAutocompleteConfig` or `membersBeforeSave`
  * which will be undefined if not exported from here in EE.
  */
-export { defaultAutocompleteConfig, membersBeforeSave, highlighter } from '~/gfm_auto_complete';
+export {
+  defaultAutocompleteConfig,
+  membersBeforeSave,
+  highlighter,
+  CONTACT_STATE_ACTIVE,
+  CONTACTS_ADD_COMMAND,
+  CONTACTS_REMOVE_COMMAND,
+} from '~/gfm_auto_complete';
 
 const EPICS_ALIAS = 'epics';
 const VULNERABILITIES_ALIAS = 'vulnerabilities';

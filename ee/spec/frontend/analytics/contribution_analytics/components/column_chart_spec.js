@@ -24,10 +24,6 @@ describe('Contribution Analytics Column Chart', () => {
     });
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('matches the snapshot', () => {
     expect(wrapper.element).toMatchSnapshot();
   });

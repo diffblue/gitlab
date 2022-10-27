@@ -178,7 +178,7 @@ deploy_prod:
 The `when: manual` action:
 
 - Exposes a play button for the job in the GitLab UI, with the text **Can be manually deployed to &lt;environment&gt;**.
-- Means the `deploy_prod` job is only triggered when the play button is clicked.
+- Means the `deploy_prod` job is only triggered when the play button is selected.
 
 You can find the play button in the pipelines, environments, deployments, and jobs views.
 
@@ -382,6 +382,11 @@ To retry or rollback a deployment:
 1. To the right of the deployment name:
    - To retry a deployment, select **Re-deploy to environment**.
    - To roll back to a deployment, next to a previously successful deployment, select **Rollback environment**.
+
+NOTE:
+If you have [prevented outdated deployment jobs](deployment_safety.md#prevent-outdated-deployment-jobs) in your project,
+the rollback buttons might be hidden or disabled.
+In this case, see [how to rollback to an outdated deployment](deployment_safety.md#how-to-rollback-to-an-outdated-deployment).
 
 ### Environment URL
 
@@ -721,7 +726,7 @@ build:
 ```
 
 This gives you access to environment-scoped variables, and can be used to protect builds from unauthorized access. Also,
-it's effective to avoid the [skip outdated deployment jobs](deployment_safety.md#skip-outdated-deployment-jobs) feature.
+it's effective to avoid the [prevent outdated deployment jobs](deployment_safety.md#prevent-outdated-deployment-jobs) feature.
 
 ### Group similar environments
 

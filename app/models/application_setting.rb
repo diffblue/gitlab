@@ -20,6 +20,7 @@ class ApplicationSetting < ApplicationRecord
     'Admin Area > Settings > General > Kroki'
 
   enum whats_new_variant: { all_tiers: 0, current_tier: 1, disabled: 2 }, _prefix: true
+  enum email_confirmation_setting: { off: 0, soft: 1, hard: 2 }
 
   add_authentication_token_field :runners_registration_token, encrypted: -> { Feature.enabled?(:application_settings_tokens_optional_encryption) ? :optional : :required }
   add_authentication_token_field :health_check_access_token
@@ -527,6 +528,11 @@ class ApplicationSetting < ApplicationRecord
             length: { maximum: 255, message: N_('is too long (maximum is %{count} characters)') },
             allow_blank: true
 
+  validates :jira_connect_proxy_url,
+            length: { maximum: 255, message: N_('is too long (maximum is %{count} characters)') },
+            allow_blank: true,
+            addressable_url: true
+
   with_options(presence: true, numericality: { only_integer: true, greater_than: 0 }) do
     validates :throttle_unauthenticated_api_requests_per_period
     validates :throttle_unauthenticated_api_period_in_seconds
@@ -634,6 +640,10 @@ class ApplicationSetting < ApplicationRecord
 
   validates :cube_api_base_url,
             addressable_url: { allow_localhost: true, allow_local_network: false },
+            allow_blank: true
+
+  validates :product_analytics_enabled,
+            presence: true,
             allow_blank: true
 
   attr_encrypted :asset_proxy_secret_key,

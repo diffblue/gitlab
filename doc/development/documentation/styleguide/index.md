@@ -23,6 +23,16 @@ In addition to this page, the following resources can help you craft and contrib
 - [Google Developer Documentation Style Guide](https://developers.google.com/style)
 - [Recent updates to this guide](https://gitlab.com/dashboard/merge_requests?scope=all&state=merged&label_name[]=tw-style&not[label_name][]=docs%3A%3Afix)
 
+## The GitLab voice
+
+The GitLab brand guidelines define the
+[voice used by the larger organization](https://design.gitlab.com/brand/overview#tone-of-voice).
+
+Building on that guidance, the voice in the GitLab documentation strives to be concise,
+direct, and precise. The goal is to provide information that's easy to search and scan.
+
+The voice in the documentation should be conversational but brief, friendly but succinct.
+
 ## Documentation is the single source of truth (SSOT)
 
 The GitLab documentation is the SSOT for all
@@ -124,6 +134,22 @@ the team is happy to review and improve upon your content. Review the
 Maintaining a knowledge base separate from the documentation would
 be against the documentation-first methodology, because the content would overlap with
 the documentation.
+
+## Writing for localization
+
+The GitLab documentation is not localized, but we follow guidelines that
+help benefit translation. For example, we:
+
+- Write in [active voice](word_list.md#active-voice).
+- Write in [present tense](word_list.md#future-tense).
+- Avoid words that can be translated incorrectly, like:
+  - [since and because](word_list.md#since)
+  - [once and after](word_list.md#once)
+- Avoid [ing](word_list.md#-ing-words) words.
+
+[The GitLab voice](#the-gitlab-voice) dictates that we write clearly and directly,
+and with translation in mind. [The word list](word_list.md) and our Vale rules
+also aid in consistency, which is important for localization.
 
 ## Markdown
 
@@ -823,7 +849,7 @@ To open either project or group settings:
 
 ```markdown
 1. On the top bar, select **Main menu**, and:
-   - For a project, select ***Projects** and find your project.
+   - For a project, select **Projects** and find your project.
    - For a group, select **Groups** and find your group.
 1. On the left sidebar, select **Settings > CI/CD**.
 1. Expand **General pipelines**.
@@ -1311,6 +1337,7 @@ It renders on the GitLab documentation site as:
 > - Second item in the list
 
 ## Tabs
+<!-- markdownlint-disable tabs-blank-lines -->
 
 On the docs site, you can format text so it's displayed as tabs.
 
@@ -1329,6 +1356,7 @@ Here's some other content in tab two.
 
 ::EndTabs
 ```
+<!-- markdownlint-enable tabs-blank-lines -->
 
 This code renders on the GitLab documentation site as:
 

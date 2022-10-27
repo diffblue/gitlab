@@ -9,6 +9,7 @@ class RegistrationsController < Devise::RegistrationsController
   include BizibleCSP
   include GoogleAnalyticsCSP
   include RegistrationsTracking
+  include Gitlab::Tracking::Helpers::WeakPasswordErrorEvent
 
   layout 'devise'
 
@@ -40,8 +41,8 @@ class RegistrationsController < Devise::RegistrationsController
 
       persist_accepted_terms_if_required(new_user)
       set_role_required(new_user)
-      track_experiment_event(new_user)
       send_custom_confirmation_instructions(new_user, token)
+      track_weak_password_error(new_user, self.class.name, 'create')
 
       if pending_approval?
         NotificationService.new.new_instance_access_request(new_user)
@@ -237,14 +238,6 @@ class RegistrationsController < Devise::RegistrationsController
 
   def context_user
     current_user
-  end
-
-  def track_experiment_event(new_user)
-    # Track signed up event to relate it with click "Sign up" button events from
-    # the experimental logged out header with marketing links. This allows us to
-    # have a funnel of visitors clicking on the header and those visitors
-    # signing up and becoming users
-    experiment(:logged_out_marketing_header, actor: new_user).track(:signed_up) if new_user.persisted?
   end
 
   def identity_verification_redirect_path

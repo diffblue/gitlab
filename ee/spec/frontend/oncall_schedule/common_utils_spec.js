@@ -41,10 +41,10 @@ describe('getParticipantsForSave', () => {
 describe('getShiftStyles', () => {
   it.each`
     isDarkMode | colorWeight | expectedTextClass     | expectedBackgroundColor
-    ${true}    | ${900}      | ${'gl-text-white'}    | ${'#d4dcfa'}
-    ${true}    | ${500}      | ${'gl-text-gray-900'} | ${'#5772ff'}
-    ${false}   | ${400}      | ${'gl-text-white'}    | ${'#748eff'}
-    ${false}   | ${700}      | ${'gl-text-white'}    | ${'#3547de'}
+    ${true}    | ${900}      | ${'gl-text-white'}    | ${'#d2dcff'}
+    ${true}    | ${500}      | ${'gl-text-gray-900'} | ${'#617ae2'}
+    ${false}   | ${400}      | ${'gl-text-white'}    | ${'#7992f5'}
+    ${false}   | ${700}      | ${'gl-text-white'}    | ${'#3f51ae'}
   `(
     'sets correct styles and class',
     ({ isDarkMode, colorWeight, expectedTextClass, expectedBackgroundColor }) => {
@@ -65,10 +65,10 @@ describe('getParticipantColor', () => {
 
   it.each`
     isDarkMode | colorWeight | expectedTextClass     | expectedBackgroundColor
-    ${true}    | ${900}      | ${'gl-text-white'}    | ${'#d4dcfa'}
-    ${true}    | ${500}      | ${'gl-text-gray-900'} | ${'#5772ff'}
-    ${false}   | ${400}      | ${'gl-text-white'}    | ${'#748eff'}
-    ${false}   | ${700}      | ${'gl-text-white'}    | ${'#3547de'}
+    ${true}    | ${900}      | ${'gl-text-white'}    | ${'#d2dcff'}
+    ${true}    | ${500}      | ${'gl-text-gray-900'} | ${'#617ae2'}
+    ${false}   | ${400}      | ${'gl-text-white'}    | ${'#7992f5'}
+    ${false}   | ${700}      | ${'gl-text-white'}    | ${'#3f51ae'}
   `(
     'sets correct styles and class',
     ({ isDarkMode, colorWeight, expectedTextClass, expectedBackgroundColor }) => {
@@ -93,27 +93,27 @@ describe('getParticipantColor', () => {
     const expectedParticipants = [
       {
         textClass: 'gl-text-white',
-        backgroundStyle: { backgroundColor: '#5772ff' },
+        backgroundStyle: { backgroundColor: '#617ae2' },
       },
       {
         textClass: 'gl-text-white',
-        backgroundStyle: { backgroundColor: '#d14e00' },
+        backgroundStyle: { backgroundColor: '#c95d2e' },
       },
       {
         textClass: 'gl-text-white',
-        backgroundStyle: { backgroundColor: '#0094b6' },
+        backgroundStyle: { backgroundColor: '#0090b1' },
       },
       {
         textClass: 'gl-text-white',
-        backgroundStyle: { backgroundColor: '#608b2f' },
+        backgroundStyle: { backgroundColor: '#619025' },
       },
       {
         textClass: 'gl-text-white',
-        backgroundStyle: { backgroundColor: '#d84280' },
+        backgroundStyle: { backgroundColor: '#cf4d81' },
       },
       {
         textClass: 'gl-text-white',
-        backgroundStyle: { backgroundColor: '#445cf2' },
+        backgroundStyle: { backgroundColor: '#4e65cd' },
       },
     ];
 
@@ -129,7 +129,7 @@ describe('getParticipantColor', () => {
 
     const lastParticipantColor = {
       textClass: 'gl-text-white',
-      backgroundStyle: { backgroundColor: '#5772ff' },
+      backgroundStyle: { backgroundColor: '#617ae2' },
     };
 
     expect(getParticipantColor(numberOfColorCombinations)).toEqual(lastParticipantColor);
@@ -173,32 +173,32 @@ describe('formatParticipantsForTokenSelector', () => {
       {
         ...mockParticipants[0],
         class: 'gl-text-white',
-        style: { backgroundColor: '#5772ff' },
+        style: { backgroundColor: '#617ae2' },
       },
       {
         ...mockParticipants[1],
         class: 'gl-text-white',
-        style: { backgroundColor: '#d14e00' },
+        style: { backgroundColor: '#c95d2e' },
       },
       {
         ...mockParticipants[2],
         class: 'gl-text-white',
-        style: { backgroundColor: '#0094b6' },
+        style: { backgroundColor: '#0090b1' },
       },
       {
         ...mockParticipants[3],
         class: 'gl-text-white',
-        style: { backgroundColor: '#608b2f' },
+        style: { backgroundColor: '#619025' },
       },
       {
         ...mockParticipants[4],
         class: 'gl-text-white',
-        style: { backgroundColor: '#d84280' },
+        style: { backgroundColor: '#cf4d81' },
       },
       {
         ...mockParticipants[5],
         class: 'gl-text-white',
-        style: { backgroundColor: '#445cf2' },
+        style: { backgroundColor: '#4e65cd' },
       },
     ];
 
@@ -213,32 +213,32 @@ describe('formatParticipantsForTokenSelector', () => {
       {
         ...mockParticipants[0],
         class: 'gl-text-gray-900',
-        style: { backgroundColor: '#5772ff' },
+        style: { backgroundColor: '#617ae2' },
       },
       {
         ...mockParticipants[1],
         class: 'gl-text-gray-900',
-        style: { backgroundColor: '#d14e00' },
+        style: { backgroundColor: '#c95d2e' },
       },
       {
         ...mockParticipants[2],
         class: 'gl-text-gray-900',
-        style: { backgroundColor: '#0094b6' },
+        style: { backgroundColor: '#0090b1' },
       },
       {
         ...mockParticipants[3],
         class: 'gl-text-gray-900',
-        style: { backgroundColor: '#608b2f' },
+        style: { backgroundColor: '#619025' },
       },
       {
         ...mockParticipants[4],
         class: 'gl-text-gray-900',
-        style: { backgroundColor: '#d84280' },
+        style: { backgroundColor: '#cf4d81' },
       },
       {
         ...mockParticipants[5],
         class: 'gl-text-white',
-        style: { backgroundColor: '#748eff' },
+        style: { backgroundColor: '#7992f5' },
       },
     ];
 

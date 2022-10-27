@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MigrationRecord, :elastic do
+RSpec.describe Elastic::MigrationRecord, :elastic_clean do
   using RSpec::Parameterized::TableSyntax
 
   let(:record) { described_class.new(version: Time.now.to_i, name: 'ExampleMigration', filename: nil) }

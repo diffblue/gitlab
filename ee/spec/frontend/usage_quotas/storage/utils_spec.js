@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import {
   usageRatioToThresholdLevel,
   formatUsageSize,
@@ -6,7 +7,9 @@ import {
   parseGetProjectStorageResults,
   descendingStorageUsageSort,
   formatSizeAndSplit,
+  getStorageTypesFromProjectStatistics,
 } from 'ee/usage_quotas/storage/utils';
+import { PROJECT_STORAGE_TYPES } from 'ee/usage_quotas/storage/constants';
 import {
   projectData,
   projects as mockProjectsData,
@@ -26,7 +29,7 @@ describe('parseGetProjectStorageResults', () => {
   });
 
   it('includes storage type with size of 0 in returned value', () => {
-    const mockedResponse = mockGetProjectStorageStatisticsGraphQLResponse.data;
+    const mockedResponse = cloneDeep(mockGetProjectStorageStatisticsGraphQLResponse.data);
     // ensuring a specific storage type item has size of 0
     mockedResponse.project.statistics.repositorySize = 0;
 
@@ -43,6 +46,41 @@ describe('parseGetProjectStorageResults', () => {
         },
       ]),
     );
+  });
+});
+
+describe('getStorageTypesFromProjectStatistics', () => {
+  const projectStatistics = mockGetProjectStorageStatisticsGraphQLResponse.data.project.statistics;
+
+  describe('matches project statistics value with matching storage type', () => {
+    const typesWithStats = getStorageTypesFromProjectStatistics(projectStatistics);
+
+    it.each(PROJECT_STORAGE_TYPES)('storage type: $id', ({ id }) => {
+      expect(typesWithStats).toContainEqual({
+        storageType: expect.objectContaining({
+          id,
+        }),
+        value: projectStatistics[id],
+      });
+    });
+  });
+
+  it('adds helpPath to a relevant type', () => {
+    const trimTypeId = (id) => id.replace('Size', '');
+    const helpLinks = PROJECT_STORAGE_TYPES.reduce((acc, { id }) => {
+      const key = trimTypeId(id);
+      return {
+        ...acc,
+        [key]: `url://${id}`,
+      };
+    }, {});
+
+    const typesWithStats = getStorageTypesFromProjectStatistics(projectStatistics, helpLinks);
+
+    typesWithStats.forEach((type) => {
+      const key = trimTypeId(type.storageType.id);
+      expect(type.storageType.helpPath).toBe(helpLinks[key]);
+    });
   });
 });
 
@@ -89,12 +127,12 @@ describe('formatUsageSize', () => {
 describe('calculateUsedAndRemStorage', () => {
   it.each`
     description                                       | project                | purchasedStorageRemaining | totalCalculatedUsedStorage | totalCalculatedStorageLimit
-    ${'project within limit and purchased 0'}         | ${mockProjectsData[0]} | ${0}                      | ${41943}                   | ${100000}
-    ${'project within limit and purchased 10000'}     | ${mockProjectsData[0]} | ${100000}                 | ${41943}                   | ${200000}
-    ${'project in warning state and purchased 0'}     | ${mockProjectsData[1]} | ${0}                      | ${0}                       | ${100000}
-    ${'project in warning state and purchased 10000'} | ${mockProjectsData[1]} | ${100000}                 | ${0}                       | ${200000}
-    ${'project in error state and purchased 0'}       | ${mockProjectsData[2]} | ${0}                      | ${419430}                  | ${419430}
-    ${'project in error state and purchased 10000'}   | ${mockProjectsData[2]} | ${100000}                 | ${419430}                  | ${519430}
+    ${'project in error state and purchased 0'}       | ${mockProjectsData[0]} | ${0}                      | ${419430}                  | ${419430}
+    ${'project in error state and purchased 10000'}   | ${mockProjectsData[0]} | ${100000}                 | ${419430}                  | ${519430}
+    ${'project within limit and purchased 0'}         | ${mockProjectsData[1]} | ${0}                      | ${41943}                   | ${100000}
+    ${'project within limit and purchased 10000'}     | ${mockProjectsData[1]} | ${100000}                 | ${41943}                   | ${200000}
+    ${'project in warning state and purchased 0'}     | ${mockProjectsData[2]} | ${0}                      | ${0}                       | ${100000}
+    ${'project in warning state and purchased 10000'} | ${mockProjectsData[2]} | ${100000}                 | ${0}                       | ${200000}
   `(
     'returns used: $totalCalculatedUsedStorage and remaining: $totalCalculatedStorageLimit storage for $description',
     ({
@@ -114,7 +152,7 @@ describe('calculateUsedAndRemStorage', () => {
 describe('parseProjects', () => {
   it('ensures all projects have totalCalculatedUsedStorage and totalCalculatedStorageLimit', () => {
     const projects = parseProjects({
-      projects: mockGetNamespaceStorageStatisticsGraphQLResponse,
+      projects: mockGetNamespaceStorageStatisticsGraphQLResponse.data.namespace.projects,
       additionalPurchasedStorageSize: 10000,
       totalRepositorySizeExcess: 5000,
     });

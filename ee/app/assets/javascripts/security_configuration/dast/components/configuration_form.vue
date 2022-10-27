@@ -2,6 +2,7 @@
 import { GlLink, GlSprintf, GlButton, GlForm, GlAlert } from '@gitlab/ui';
 import DastProfilesSelector from 'ee/on_demand_scans_form/components/profile_selector/dast_profiles_selector.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
+import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
 import { s__, __ } from '~/locale';
@@ -28,6 +29,7 @@ export default {
     ConfigurationSnippetModal,
     DastProfilesSelector,
     DastProfilesConfigurator,
+    PreScanVerificationConfigurator,
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
@@ -113,6 +115,8 @@ export default {
         </p>
       </template>
     </dast-profiles-configurator>
+
+    <pre-scan-verification-configurator v-if="glFeatures.dastPreScanVerification" class="gl-my-6" />
 
     <section v-if="!glFeatures.dastUiRedesign" class="gl-mt-5">
       <p>

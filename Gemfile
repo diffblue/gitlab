@@ -31,7 +31,7 @@ gem 'responders', '~> 3.0'
 
 gem 'sprockets', '~> 3.7.0'
 
-gem 'view_component', '~> 2.71.0'
+gem 'view_component', '~> 2.74.1'
 
 # Default values for AR models
 gem 'default_value_for', '~> 3.4.0'
@@ -129,12 +129,12 @@ gem 'apollo_upload_server', '~> 2.1.0'
 gem 'graphql-docs', '~> 2.1.0', group: [:development, :test]
 gem 'graphlient', '~> 0.5.0' # Used by BulkImport feature (group::import)
 
-gem 'hashie'
+gem 'hashie', '~> 5.0.0'
 # Disable strong_params so that Mash does not respond to :permitted?
 gem 'hashie-forbidden_attributes'
 
 # Pagination
-gem 'kaminari', '~> 1.0'
+gem 'kaminari', '~> 1.2.2'
 
 # HAML
 gem 'hamlit', '~> 2.15.0'
@@ -176,7 +176,7 @@ gem 'typhoeus', '~> 1.4.0' # Used with Elasticsearch to support http keep-alive 
 
 # Markdown and HTML processing
 gem 'html-pipeline', '~> 2.13.2'
-gem 'deckar01-task_list', '2.3.1'
+gem 'deckar01-task_list', '2.3.2'
 gem 'gitlab-markup', '~> 1.8.0'
 gem 'github-markup', '~> 1.7.0', require: 'github/markup'
 gem 'commonmarker', '~> 0.23.6'
@@ -229,7 +229,7 @@ gem 'gitlab-sidekiq-fetcher', '0.8.0', require: 'sidekiq-reliable-fetch'
 gem 'fugit', '~> 1.2.1'
 
 # HTTP requests
-gem 'httparty', '~> 0.16.4'
+gem 'httparty', '~> 0.20.0'
 
 # Colored output to console
 gem 'rainbow', '~> 3.0'
@@ -319,7 +319,7 @@ gem 'terser', '1.0.2'
 gem 'addressable', '~> 2.8'
 gem 'tanuki_emoji', '~> 0.6'
 gem 'gon', '~> 6.4.0'
-gem 'request_store', '~> 1.5'
+gem 'request_store', '~> 1.5.1'
 gem 'base32', '~> 0.3.0'
 
 gem 'gitlab-license', '~> 2.2.1'
@@ -340,7 +340,7 @@ gem 'pg_query', '~> 2.1.4'
 gem 'premailer-rails', '~> 1.10.3'
 
 # LabKit: Tracing and Correlation
-gem 'gitlab-labkit', '~> 0.24.0'
+gem 'gitlab-labkit', '~> 0.27.0'
 gem 'thrift', '>= 0.16.0'
 
 # I18n
@@ -370,7 +370,7 @@ group :development do
   gem 'solargraph', '~> 0.47.2', require: false
 
   gem 'letter_opener_web', '~> 2.0.0'
-  gem 'lookbook', '~> 1.0', '>= 1.0.8'
+  gem 'lookbook', '~> 1.2', '>= 1.2.1'
 
   # Better errors handler
   gem 'better_errors', '~> 2.9.1'
@@ -428,7 +428,7 @@ group :development, :test do
 end
 
 group :development, :test, :danger do
-  gem 'gitlab-dangerfiles', '~> 3.5.2', require: false
+  gem 'gitlab-dangerfiles', '~> 3.6.1', require: false
 end
 
 group :development, :test, :coverage do
@@ -503,14 +503,14 @@ gem 'ssh_data', '~> 1.3'
 gem 'spamcheck', '~> 1.0.0'
 
 # Gitaly GRPC protocol definitions
-gem 'gitaly', '~> 15.4.0-rc2'
+gem 'gitaly', '~> 15.5.0'
 
 # KAS GRPC protocol definitions
 gem 'kas-grpc', '~> 0.0.2'
 
 gem 'grpc', '~> 1.42.0'
 
-gem 'google-protobuf', '~> 3.21'
+gem 'google-protobuf', '~> 3.21', '>= 3.21.9'
 
 gem 'toml-rb', '~> 2.2.0'
 

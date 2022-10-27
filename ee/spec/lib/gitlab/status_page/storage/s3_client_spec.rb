@@ -182,7 +182,7 @@ RSpec.describe Gitlab::StatusPage::Storage::S3Client, :aws_s3 do
     }
   end
 
-  def list_objects_data(key_list:, next_continuation_token:, is_truncated: )
+  def list_objects_data(key_list:, next_continuation_token:, is_truncated:)
     contents = key_list.map { |key| Aws::S3::Types::Object.new(key: key) }
     Aws::S3::Types::ListObjectsV2Output.new(
       contents: contents,

@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Metrics::GlobalSearchIndexingSlis do
         )
 
         described_class.record_apdex(
-          elapsed: 15,
+          elapsed: 150,
           document_type: 'Code'
         )
       end

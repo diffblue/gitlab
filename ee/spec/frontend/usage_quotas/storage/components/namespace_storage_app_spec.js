@@ -3,7 +3,7 @@ import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { captureException } from '~/runner/sentry_utils';
+import { captureException } from '~/ci/runner/sentry_utils';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -29,7 +29,7 @@ import {
 const TEST_LIMIT = 1000;
 
 jest.mock('~/flash');
-jest.mock('~/runner/sentry_utils');
+jest.mock('~/ci/runner/sentry_utils');
 
 Vue.use(VueApollo);
 

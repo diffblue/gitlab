@@ -299,7 +299,7 @@ RSpec.describe Gitlab::Geo::GitSSHProxy, :geo do
 
         context 'authorization header is scoped' do
           it 'passes the scope when .info_refs_receive_pack is called' do
-            expect(Gitlab::Geo::BaseRequest).to receive(:new).with(scope: project.repository.full_path, gl_id: key_identifier )
+            expect(Gitlab::Geo::BaseRequest).to receive(:new).with(scope: project.repository.full_path, gl_id: key_identifier)
 
             subject.info_refs_receive_pack
           end

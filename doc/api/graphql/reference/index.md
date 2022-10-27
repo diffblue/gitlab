@@ -5774,6 +5774,7 @@ Input type: `WorkItemCreateInput`
 | <a id="mutationworkitemcreateconfidential"></a>`confidential` | [`Boolean`](#boolean) | Sets the work item confidentiality. |
 | <a id="mutationworkitemcreatedescription"></a>`description` | [`String`](#string) | Description of the work item. |
 | <a id="mutationworkitemcreatehierarchywidget"></a>`hierarchyWidget` | [`WorkItemWidgetHierarchyCreateInput`](#workitemwidgethierarchycreateinput) | Input for hierarchy widget. |
+| <a id="mutationworkitemcreatemilestonewidget"></a>`milestoneWidget` | [`WorkItemWidgetMilestoneInput`](#workitemwidgetmilestoneinput) | Input for milestone widget. |
 | <a id="mutationworkitemcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project the work item is associated with. |
 | <a id="mutationworkitemcreatetitle"></a>`title` | [`String!`](#string) | Title of the work item. |
 | <a id="mutationworkitemcreateworkitemtypeid"></a>`workItemTypeId` | [`WorkItemsTypeID!`](#workitemstypeid) | Global ID of a work item type. |
@@ -5887,6 +5888,7 @@ Input type: `WorkItemUpdateInput`
 | <a id="mutationworkitemupdateid"></a>`id` | [`WorkItemID!`](#workitemid) | Global ID of the work item. |
 | <a id="mutationworkitemupdateiterationwidget"></a>`iterationWidget` | [`WorkItemWidgetIterationInput`](#workitemwidgetiterationinput) | Input for iteration widget. |
 | <a id="mutationworkitemupdatelabelswidget"></a>`labelsWidget` | [`WorkItemWidgetLabelsUpdateInput`](#workitemwidgetlabelsupdateinput) | Input for labels widget. |
+| <a id="mutationworkitemupdatemilestonewidget"></a>`milestoneWidget` | [`WorkItemWidgetMilestoneInput`](#workitemwidgetmilestoneinput) | Input for milestone widget. |
 | <a id="mutationworkitemupdatestartandduedatewidget"></a>`startAndDueDateWidget` | [`WorkItemWidgetStartAndDueDateUpdateInput`](#workitemwidgetstartandduedateupdateinput) | Input for start and due date widget. |
 | <a id="mutationworkitemupdatestateevent"></a>`stateEvent` | [`WorkItemStateEvent`](#workitemstateevent) | Close or reopen a work item. |
 | <a id="mutationworkitemupdatestatuswidget"></a>`statusWidget` | [`StatusInput`](#statusinput) | Input for status widget. |
@@ -9437,6 +9439,29 @@ The edge type for [`TreeEntry`](#treeentry).
 | <a id="treeentryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="treeentryedgenode"></a>`node` | [`TreeEntry`](#treeentry) | The item at the end of the edge. |
 
+#### `UnprotectAccessLevelConnection`
+
+The connection type for [`UnprotectAccessLevel`](#unprotectaccesslevel).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="unprotectaccesslevelconnectionedges"></a>`edges` | [`[UnprotectAccessLevelEdge]`](#unprotectaccessleveledge) | A list of edges. |
+| <a id="unprotectaccesslevelconnectionnodes"></a>`nodes` | [`[UnprotectAccessLevel]`](#unprotectaccesslevel) | A list of nodes. |
+| <a id="unprotectaccesslevelconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `UnprotectAccessLevelEdge`
+
+The edge type for [`UnprotectAccessLevel`](#unprotectaccesslevel).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="unprotectaccessleveledgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="unprotectaccessleveledgenode"></a>`node` | [`UnprotectAccessLevel`](#unprotectaccesslevel) | The item at the end of the edge. |
+
 #### `UploadRegistryConnection`
 
 The connection type for [`UploadRegistry`](#uploadregistry).
@@ -10333,6 +10358,7 @@ Branch protection details for a branch rule.
 | <a id="branchprotectioncodeownerapprovalrequired"></a>`codeOwnerApprovalRequired` | [`Boolean!`](#boolean) | Enforce code owner approvals before allowing a merge. |
 | <a id="branchprotectionmergeaccesslevels"></a>`mergeAccessLevels` | [`MergeAccessLevelConnection`](#mergeaccesslevelconnection) | Details about who can merge when this branch is the source branch. (see [Connections](#connections)) |
 | <a id="branchprotectionpushaccesslevels"></a>`pushAccessLevels` | [`PushAccessLevelConnection`](#pushaccesslevelconnection) | Details about who can push when this branch is the source branch. (see [Connections](#connections)) |
+| <a id="branchprotectionunprotectaccesslevels"></a>`unprotectAccessLevels` | [`UnprotectAccessLevelConnection`](#unprotectaccesslevelconnection) | Details about who can unprotect this branch. (see [Connections](#connections)) |
 
 ### `BranchRule`
 
@@ -11442,6 +11468,33 @@ The deployment of an environment.
 | <a id="deploymenttriggerer"></a>`triggerer` | [`UserCore`](#usercore) | User who executed the deployment. |
 | <a id="deploymentupdatedat"></a>`updatedAt` | [`Time`](#time) | When the deployment record was updated. |
 
+### `DeploymentApproval`
+
+Approval of the deployment.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="deploymentapprovalcomment"></a>`comment` | [`String`](#string) | Additional comment. |
+| <a id="deploymentapprovalcreatedat"></a>`createdAt` | [`Time`](#time) | When the user approved/rejected first time. |
+| <a id="deploymentapprovalstatus"></a>`status` | [`DeploymentsApprovalStatus`](#deploymentsapprovalstatus) | Whether the deployment was approved/rejected. |
+| <a id="deploymentapprovalupdatedat"></a>`updatedAt` | [`Time`](#time) | When the user updated the approval. |
+| <a id="deploymentapprovaluser"></a>`user` | [`UserCore`](#usercore) | User who approved or rejected the deployment. |
+
+### `DeploymentApprovalSummary`
+
+Approval summary of the deployment.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="deploymentapprovalsummaryrules"></a>`rules` | [`[ProtectedEnvironmentApprovalRuleForSummary!]`](#protectedenvironmentapprovalruleforsummary) | Approval Rules for the deployment. |
+| <a id="deploymentapprovalsummarystatus"></a>`status` | [`DeploymentApprovalSummaryStatus`](#deploymentapprovalsummarystatus) | Status of the approvals. |
+| <a id="deploymentapprovalsummarytotalpendingapprovalcount"></a>`totalPendingApprovalCount` | [`Int`](#int) | Total pending approval count. |
+| <a id="deploymentapprovalsummarytotalrequiredapprovals"></a>`totalRequiredApprovals` | [`Int`](#int) | Total number of required approvals. |
+
 ### `DeploymentDetails`
 
 The details of the deployment.
@@ -11450,6 +11503,7 @@ The details of the deployment.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="deploymentdetailsapprovalsummary"></a>`approvalSummary` | [`DeploymentApprovalSummary`](#deploymentapprovalsummary) | Approval summary of the deployment. |
 | <a id="deploymentdetailscommit"></a>`commit` | [`Commit`](#commit) | Commit details of the deployment. |
 | <a id="deploymentdetailscreatedat"></a>`createdAt` | [`Time`](#time) | When the deployment record was created. |
 | <a id="deploymentdetailsfinishedat"></a>`finishedAt` | [`Time`](#time) | When the deployment finished. |
@@ -13373,6 +13427,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupscanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`. |
 | <a id="groupscanexecutionpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
 
+##### `Group.scanResultPolicies`
+
+Scan Result Policies of the project.
+
+Returns [`ScanResultPolicyConnection`](#scanresultpolicyconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupscanresultpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
+
 ##### `Group.timelogs`
 
 Time logged on issues and merge requests in the group and its subgroups.
@@ -14128,7 +14198,7 @@ Maven metadata.
 
 ### `MergeAccessLevel`
 
-Represents the merge access level of a branch protection.
+Defines which user roles, users, or groups can merge into a protected branch.
 
 #### Fields
 
@@ -14166,7 +14236,7 @@ Represents the merge access level of a branch protection.
 | <a id="mergerequestdefaultsquashcommitmessage"></a>`defaultSquashCommitMessage` | [`String`](#string) | Default squash commit message of the merge request. |
 | <a id="mergerequestdescription"></a>`description` | [`String`](#string) | Description of the merge request (Markdown rendered as HTML for caching). |
 | <a id="mergerequestdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
-| <a id="mergerequestdetailedmergestatus"></a>`detailedMergeStatus` **{warning-solid}** | [`DetailedMergeStatus`](#detailedmergestatus) | **Introduced** in 15.3. This feature is in Alpha. It can be changed or removed at any time. Detailed merge status of the merge request. |
+| <a id="mergerequestdetailedmergestatus"></a>`detailedMergeStatus` | [`DetailedMergeStatus`](#detailedmergestatus) | Detailed merge status of the merge request. |
 | <a id="mergerequestdiffheadsha"></a>`diffHeadSha` | [`String`](#string) | Diff head SHA of the merge request. |
 | <a id="mergerequestdiffrefs"></a>`diffRefs` | [`DiffRefs`](#diffrefs) | References of the base SHA, the head SHA, and the start SHA for this merge request. |
 | <a id="mergerequestdiffstatssummary"></a>`diffStatsSummary` | [`DiffStatsSummary`](#diffstatssummary) | Summary of which files were changed in this merge request. |
@@ -15469,6 +15539,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="namespacescanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`. |
 | <a id="namespacescanexecutionpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
 
+##### `Namespace.scanResultPolicies`
+
+Scan Result Policies of the project.
+
+Returns [`ScanResultPolicyConnection`](#scanresultpolicyconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="namespacescanresultpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
+
 ### `NamespaceBan`
 
 #### Fields
@@ -15612,6 +15698,7 @@ Represents a package with pipelines in the Package Registry.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="package_links"></a>`_links` | [`PackageLinks!`](#packagelinks) | Map of links to perform actions on the package. |
 | <a id="packagecandestroy"></a>`canDestroy` | [`Boolean!`](#boolean) | Whether the user can destroy the package. |
 | <a id="packagecreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
 | <a id="packageid"></a>`id` | [`PackagesPackageID!`](#packagespackageid) | ID of the package. |
@@ -15633,6 +15720,7 @@ Represents a package in the Package Registry.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="packagebase_links"></a>`_links` | [`PackageLinks!`](#packagelinks) | Map of links to perform actions on the package. |
 | <a id="packagebasecandestroy"></a>`canDestroy` | [`Boolean!`](#boolean) | Whether the user can destroy the package. |
 | <a id="packagebasecreatedat"></a>`createdAt` | [`Time!`](#time) | Date of creation. |
 | <a id="packagebaseid"></a>`id` | [`PackagesPackageID!`](#packagespackageid) | ID of the package. |
@@ -15691,6 +15779,7 @@ Represents a package details in the Package Registry.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="packagedetailstype_links"></a>`_links` | [`PackageLinks!`](#packagelinks) | Map of links to perform actions on the package. |
 | <a id="packagedetailstypecandestroy"></a>`canDestroy` | [`Boolean!`](#boolean) | Whether the user can destroy the package. |
 | <a id="packagedetailstypecomposerconfigrepositoryurl"></a>`composerConfigRepositoryUrl` | [`String`](#string) | Url of the Composer setup endpoint. |
 | <a id="packagedetailstypecomposerurl"></a>`composerUrl` | [`String`](#string) | Url of the Composer endpoint. |
@@ -15808,6 +15897,16 @@ Represents the contents of a Helm Chart.yml file.
 | <a id="packagehelmmetadatatypetags"></a>`tags` | [`String`](#string) | Tags for the chart. |
 | <a id="packagehelmmetadatatypetype"></a>`type` | [`String`](#string) | Type of the chart. |
 | <a id="packagehelmmetadatatypeversion"></a>`version` | [`String!`](#string) | Version of the chart. |
+
+### `PackageLinks`
+
+Represents links to perform actions on the package.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="packagelinkswebpath"></a>`webPath` | [`String`](#string) | Path to the package details page. |
 
 ### `PackageSettings`
 
@@ -16133,6 +16232,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="pipelinesecurityreportfindingconfidence"></a>`confidence` **{warning-solid}** | [`String`](#string) | **Deprecated** in 15.4. This field will be removed from the Finding domain model. |
 | <a id="pipelinesecurityreportfindingdescription"></a>`description` | [`String`](#string) | Description of the vulnerability finding. |
 | <a id="pipelinesecurityreportfindingdescriptionhtml"></a>`descriptionHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `description`. |
+| <a id="pipelinesecurityreportfindingdetails"></a>`details` | [`[VulnerabilityDetail!]!`](#vulnerabilitydetail) | Details of the security finding. |
 | <a id="pipelinesecurityreportfindingevidence"></a>`evidence` | [`VulnerabilityEvidence`](#vulnerabilityevidence) | Evidence for the vulnerability. |
 | <a id="pipelinesecurityreportfindingfalsepositive"></a>`falsePositive` | [`Boolean`](#boolean) | Indicates whether the vulnerability is a false positive. |
 | <a id="pipelinesecurityreportfindingidentifiers"></a>`identifiers` | [`[VulnerabilityIdentifier!]!`](#vulnerabilityidentifier) | Identifiers of the vulnerability finding. |
@@ -16200,6 +16300,7 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectjiraimportstatus"></a>`jiraImportStatus` | [`String`](#string) | Status of Jira import background job of the project. |
 | <a id="projectjiraimports"></a>`jiraImports` | [`JiraImportConnection`](#jiraimportconnection) | Jira imports into the project. (see [Connections](#connections)) |
 | <a id="projectjobsenabled"></a>`jobsEnabled` | [`Boolean`](#boolean) | Indicates if CI/CD pipeline jobs are enabled for the current user. |
+| <a id="projectlanguages"></a>`languages` | [`[RepositoryLanguage!]`](#repositorylanguage) | Programming languages used in the project. |
 | <a id="projectlastactivityat"></a>`lastActivityAt` | [`Time`](#time) | Timestamp of the project last activity. |
 | <a id="projectlfsenabled"></a>`lfsEnabled` | [`Boolean`](#boolean) | Indicates if the project has Large File Storage (LFS) enabled. |
 | <a id="projectmergecommittemplate"></a>`mergeCommitTemplate` | [`String`](#string) | Template used to create merge commit message in merge requests. |
@@ -16226,7 +16327,6 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="projectrequestaccessenabled"></a>`requestAccessEnabled` | [`Boolean`](#boolean) | Indicates if users can request member access to the project. |
 | <a id="projectrequirementstatescount"></a>`requirementStatesCount` | [`RequirementStatesCount`](#requirementstatescount) | Number of requirements for the project by their state. |
 | <a id="projectsastciconfiguration"></a>`sastCiConfiguration` | [`SastCiConfiguration`](#sastciconfiguration) | SAST CI configuration for the project. |
-| <a id="projectscanresultpolicies"></a>`scanResultPolicies` | [`ScanResultPolicyConnection`](#scanresultpolicyconnection) | Scan Result Policies of the project. (see [Connections](#connections)) |
 | <a id="projectsecuritydashboardpath"></a>`securityDashboardPath` | [`String`](#string) | Path to project's security dashboard. |
 | <a id="projectsecurityscanners"></a>`securityScanners` | [`SecurityScanners`](#securityscanners) | Information about security analyzers used in the project. |
 | <a id="projectsentryerrors"></a>`sentryErrors` | [`SentryErrorCollection`](#sentryerrorcollection) | Paginated collection of Sentry errors on the project. |
@@ -17171,6 +17271,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectscanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`. |
 | <a id="projectscanexecutionpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
 
+##### `Project.scanResultPolicies`
+
+Scan Result Policies of the project.
+
+Returns [`ScanResultPolicyConnection`](#scanresultpolicyconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectscanresultpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
+
 ##### `Project.securityTrainingProviders`
 
 List of security training providers for the project.
@@ -17381,6 +17497,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectworkitemssearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="projectworkitemssort"></a>`sort` | [`WorkItemSort`](#workitemsort) | Sort work items by this criteria. |
 | <a id="projectworkitemsstate"></a>`state` | [`IssuableState`](#issuablestate) | Current state of this work item. |
+| <a id="projectworkitemsstatuswidget"></a>`statusWidget` | [`StatusFilterInput`](#statusfilterinput) | Input for status widget filter. |
 | <a id="projectworkitemstypes"></a>`types` | [`[IssueType!]`](#issuetype) | Filter work items by the given work item types. |
 
 ### `ProjectCiCdSetting`
@@ -17558,6 +17675,23 @@ Which group, user or role is allowed to approve deployments to the environment.
 | <a id="protectedenvironmentapprovalrulerequiredapprovals"></a>`requiredApprovals` | [`Int`](#int) | Number of required approvals. |
 | <a id="protectedenvironmentapprovalruleuser"></a>`user` | [`UserCore`](#usercore) | User details. Present if it's user specific access control. |
 
+### `ProtectedEnvironmentApprovalRuleForSummary`
+
+Which group, user or role is allowed to approve deployments to the environment.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="protectedenvironmentapprovalruleforsummaryaccesslevel"></a>`accessLevel` | [`AccessLevel`](#accesslevel) | Role details. Present if it's role specific access control. |
+| <a id="protectedenvironmentapprovalruleforsummaryapprovals"></a>`approvals` | [`[DeploymentApproval!]`](#deploymentapproval) | Current approvals of the deployment. |
+| <a id="protectedenvironmentapprovalruleforsummaryapprovedcount"></a>`approvedCount` | [`Int`](#int) | Approved count. |
+| <a id="protectedenvironmentapprovalruleforsummarygroup"></a>`group` | [`Group`](#group) | Group details. Present if it's group specific access control. |
+| <a id="protectedenvironmentapprovalruleforsummarypendingapprovalcount"></a>`pendingApprovalCount` | [`Int`](#int) | Pending approval count. |
+| <a id="protectedenvironmentapprovalruleforsummaryrequiredapprovals"></a>`requiredApprovals` | [`Int`](#int) | Number of required approvals. |
+| <a id="protectedenvironmentapprovalruleforsummarystatus"></a>`status` | [`DeploymentApprovalSummaryStatus`](#deploymentapprovalsummarystatus) | Status of the approval summary. |
+| <a id="protectedenvironmentapprovalruleforsummaryuser"></a>`user` | [`UserCore`](#usercore) | User details. Present if it's user specific access control. |
+
 ### `ProtectedEnvironmentDeployAccessLevel`
 
 Which group, user or role is allowed to execute deployments to the environment.
@@ -17572,7 +17706,7 @@ Which group, user or role is allowed to execute deployments to the environment.
 
 ### `PushAccessLevel`
 
-Represents the push access level of a branch protection.
+Defines which user roles, users, or groups can push to a protected branch.
 
 #### Fields
 
@@ -17838,6 +17972,16 @@ Returns [`Tree`](#tree).
 | <a id="repositoryblobstoredexternally"></a>`storedExternally` | [`Boolean`](#boolean) | Whether the blob's content is stored externally (for instance, in LFS). |
 | <a id="repositoryblobwebpath"></a>`webPath` | [`String`](#string) | Web path of the blob. |
 
+### `RepositoryLanguage`
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="repositorylanguagecolor"></a>`color` | [`Color`](#color) | Color to visualize the repository language. |
+| <a id="repositorylanguagename"></a>`name` | [`String!`](#string) | Name of the repository language. |
+| <a id="repositorylanguageshare"></a>`share` | [`Float`](#float) | Percentage of the repository's languages. |
+
 ### `Requirement`
 
 Represents a requirement.
@@ -17937,6 +18081,7 @@ Counts of requirements by their state.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
+| <a id="runnerpermissionsassignrunner"></a>`assignRunner` | [`Boolean!`](#boolean) | Indicates the user can perform `assign_runner` on this resource. |
 | <a id="runnerpermissionsdeleterunner"></a>`deleteRunner` | [`Boolean!`](#boolean) | Indicates the user can perform `delete_runner` on this resource. |
 | <a id="runnerpermissionsreadrunner"></a>`readRunner` | [`Boolean!`](#boolean) | Indicates the user can perform `read_runner` on this resource. |
 | <a id="runnerpermissionsupdaterunner"></a>`updateRunner` | [`Boolean!`](#boolean) | Indicates the user can perform `update_runner` on this resource. |
@@ -18064,6 +18209,7 @@ Represents the scan result policy.
 | <a id="scanresultpolicyenabled"></a>`enabled` | [`Boolean!`](#boolean) | Indicates whether this policy is enabled. |
 | <a id="scanresultpolicygroupapprovers"></a>`groupApprovers` | [`[Group!]`](#group) | Approvers of the group type. |
 | <a id="scanresultpolicyname"></a>`name` | [`String!`](#string) | Name of the policy. |
+| <a id="scanresultpolicysource"></a>`source` | [`SecurityPolicySource!`](#securitypolicysource) | Source of the policy. Its fields depend on the source type. |
 | <a id="scanresultpolicyupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the policy YAML was last updated. |
 | <a id="scanresultpolicyuserapprovers"></a>`userApprovers` | [`[UserCore!]`](#usercore) | Approvers of the user type. |
 | <a id="scanresultpolicyyaml"></a>`yaml` | [`String!`](#string) | YAML definition of the policy. |
@@ -18800,6 +18946,19 @@ Represents a directory.
 | <a id="treeentrytype"></a>`type` | [`EntryType!`](#entrytype) | Type of tree entry. |
 | <a id="treeentrywebpath"></a>`webPath` | [`String`](#string) | Web path for the tree entry (directory). |
 | <a id="treeentryweburl"></a>`webUrl` | [`String`](#string) | Web URL for the tree entry (directory). |
+
+### `UnprotectAccessLevel`
+
+Defines which user roles, users, or groups can unprotect a protected branch.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="unprotectaccesslevelaccesslevel"></a>`accessLevel` | [`Int!`](#int) | GitLab::Access level. |
+| <a id="unprotectaccesslevelaccessleveldescription"></a>`accessLevelDescription` | [`String!`](#string) | Human readable representation for this access level. |
+| <a id="unprotectaccesslevelgroup"></a>`group` | [`Group`](#group) | Group associated with this access level. |
+| <a id="unprotectaccessleveluser"></a>`user` | [`UserCore`](#usercore) | User associated with this access level. |
 
 ### `UploadRegistry`
 
@@ -19812,6 +19971,17 @@ Represents the labels widget.
 | <a id="workitemwidgetlabelslabels"></a>`labels` | [`LabelConnection`](#labelconnection) | Labels assigned to the work item. (see [Connections](#connections)) |
 | <a id="workitemwidgetlabelstype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 
+### `WorkItemWidgetMilestone`
+
+Represents a milestone widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetmilestonemilestone"></a>`milestone` | [`Milestone`](#milestone) | Milestone of the work item. |
+| <a id="workitemwidgetmilestonetype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
+
 ### `WorkItemWidgetStartAndDueDate`
 
 Represents a start and due date widget.
@@ -20431,6 +20601,16 @@ Weight of the data visualization palette.
 | <a id="dependencyproxymanifeststatuspending_destruction"></a>`PENDING_DESTRUCTION` | Dependency proxy manifest has a status of pending_destruction. |
 | <a id="dependencyproxymanifeststatusprocessing"></a>`PROCESSING` | Dependency proxy manifest has a status of processing. |
 
+### `DeploymentApprovalSummaryStatus`
+
+Status of the deployment approval summary.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="deploymentapprovalsummarystatusapproved"></a>`APPROVED` | Summarized deployment approval status that is approved. |
+| <a id="deploymentapprovalsummarystatuspending_approval"></a>`PENDING_APPROVAL` | Summarized deployment approval status that is pending approval. |
+| <a id="deploymentapprovalsummarystatusrejected"></a>`REJECTED` | Summarized deployment approval status that is rejected. |
+
 ### `DeploymentStatus`
 
 All deployment statuses.
@@ -20456,6 +20636,15 @@ All environment deployment tiers.
 | <a id="deploymenttierproduction"></a>`PRODUCTION` | Production. |
 | <a id="deploymenttierstaging"></a>`STAGING` | Staging. |
 | <a id="deploymenttiertesting"></a>`TESTING` | Testing. |
+
+### `DeploymentsApprovalStatus`
+
+Status of the deployment approval.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="deploymentsapprovalstatusapproved"></a>`APPROVED` | A deployment approval that is approved. |
+| <a id="deploymentsapprovalstatusrejected"></a>`REJECTED` | A deployment approval that is rejected. |
 
 ### `DesignCollectionCopyState`
 
@@ -21869,6 +22058,7 @@ Type of a work item widget.
 | <a id="workitemwidgettypehierarchy"></a>`HIERARCHY` | Hierarchy widget. |
 | <a id="workitemwidgettypeiteration"></a>`ITERATION` | Iteration widget. |
 | <a id="workitemwidgettypelabels"></a>`LABELS` | Labels widget. |
+| <a id="workitemwidgettypemilestone"></a>`MILESTONE` | Milestone widget. |
 | <a id="workitemwidgettypestart_and_due_date"></a>`START_AND_DUE_DATE` | Start And Due Date widget. |
 | <a id="workitemwidgettypestatus"></a>`STATUS` | Status widget. |
 | <a id="workitemwidgettypeweight"></a>`WEIGHT` | Weight widget. |
@@ -23139,6 +23329,7 @@ Implementations:
 - [`WorkItemWidgetHierarchy`](#workitemwidgethierarchy)
 - [`WorkItemWidgetIteration`](#workitemwidgetiteration)
 - [`WorkItemWidgetLabels`](#workitemwidgetlabels)
+- [`WorkItemWidgetMilestone`](#workitemwidgetmilestone)
 - [`WorkItemWidgetStartAndDueDate`](#workitemwidgetstartandduedate)
 - [`WorkItemWidgetStatus`](#workitemwidgetstatus)
 - [`WorkItemWidgetWeight`](#workitemwidgetweight)
@@ -23569,6 +23760,14 @@ Represents an action to perform over a snippet file.
 | <a id="snippetblobactioninputtypefilepath"></a>`filePath` | [`String!`](#string) | Path of the snippet file. |
 | <a id="snippetblobactioninputtypepreviouspath"></a>`previousPath` | [`String`](#string) | Previous path of the snippet file. |
 
+### `StatusFilterInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="statusfilterinputstatus"></a>`status` | [`RequirementStatusFilter!`](#requirementstatusfilter) | Status of the work item. |
+
 ### `StatusInput`
 
 #### Arguments
@@ -23664,6 +23863,7 @@ A time-frame defined as a closed inclusive range of two dates.
 | <a id="workitemupdatedtaskinputhierarchywidget"></a>`hierarchyWidget` | [`WorkItemWidgetHierarchyUpdateInput`](#workitemwidgethierarchyupdateinput) | Input for hierarchy widget. |
 | <a id="workitemupdatedtaskinputid"></a>`id` | [`WorkItemID!`](#workitemid) | Global ID of the work item. |
 | <a id="workitemupdatedtaskinputlabelswidget"></a>`labelsWidget` | [`WorkItemWidgetLabelsUpdateInput`](#workitemwidgetlabelsupdateinput) | Input for labels widget. |
+| <a id="workitemupdatedtaskinputmilestonewidget"></a>`milestoneWidget` | [`WorkItemWidgetMilestoneInput`](#workitemwidgetmilestoneinput) | Input for milestone widget. |
 | <a id="workitemupdatedtaskinputstartandduedatewidget"></a>`startAndDueDateWidget` | [`WorkItemWidgetStartAndDueDateUpdateInput`](#workitemwidgetstartandduedateupdateinput) | Input for start and due date widget. |
 | <a id="workitemupdatedtaskinputstateevent"></a>`stateEvent` | [`WorkItemStateEvent`](#workitemstateevent) | Close or reopen a work item. |
 | <a id="workitemupdatedtaskinputtitle"></a>`title` | [`String`](#string) | Title of the work item. |
@@ -23717,6 +23917,14 @@ A time-frame defined as a closed inclusive range of two dates.
 | ---- | ---- | ----------- |
 | <a id="workitemwidgetlabelsupdateinputaddlabelids"></a>`addLabelIds` | [`[LabelID!]`](#labelid) | Global IDs of labels to be added to the work item. |
 | <a id="workitemwidgetlabelsupdateinputremovelabelids"></a>`removeLabelIds` | [`[LabelID!]`](#labelid) | Global IDs of labels to be removed from the work item. |
+
+### `WorkItemWidgetMilestoneInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="workitemwidgetmilestoneinputmilestoneid"></a>`milestoneId` | [`MilestoneID`](#milestoneid) | Milestone to assign to the work item. |
 
 ### `WorkItemWidgetStartAndDueDateUpdateInput`
 

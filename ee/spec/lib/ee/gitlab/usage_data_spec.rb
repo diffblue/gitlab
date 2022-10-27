@@ -603,7 +603,7 @@ RSpec.describe Gitlab::UsageData do
         secret_detection_build = create(:ci_build, name: 'secret', user: user, commit_id: ds_build.pipeline.id, status: 'success')
         cs_build = create(:ci_build, name: 'container-scanning', user: user, status: 'success')
         sast_build = create(:ci_build, name: 'sast', user: user, status: 'success', retried: true)
-        create(:security_scan, build: ds_build, scan_type: 'dependency_scanning' )
+        create(:security_scan, build: ds_build, scan_type: 'dependency_scanning')
         create(:security_scan, build: ds_java_build, scan_type: 'dependency_scanning')
         create(:security_scan, build: secret_detection_build, scan_type: 'secret_detection')
         create(:security_scan, build: cs_build, scan_type: 'container_scanning')

@@ -6,10 +6,12 @@ RSpec.describe Audit::ProjectChangesAuditor do
   using RSpec::Parameterized::TableSyntax
   describe '.audit_changes' do
     let_it_be(:user) { create(:user) }
+    let_it_be(:group) { create(:group) }
 
     let(:project) do
       create(
         :project,
+        group: group,
         visibility_level: 0,
         name: 'interesting name',
         path: 'interesting-path',
@@ -23,7 +25,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
       )
     end
 
-    subject(:foo_instance) { described_class.new(user, project) }
+    subject(:auditor_instance) { described_class.new(user, project) }
 
     before do
       project.reload
@@ -34,7 +36,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
       it 'does not call the audit event service' do
         project.update!(description: 'new description')
 
-        expect { foo_instance.execute }.not_to change(AuditEvent, :count)
+        expect { auditor_instance.execute }.not_to change(AuditEvent, :count)
       end
     end
 
@@ -42,22 +44,40 @@ RSpec.describe Audit::ProjectChangesAuditor do
       it 'creates an event when the visibility change' do
         project.update!(visibility_level: 20)
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
         expect(AuditEvent.last.details[:change]).to eq 'visibility'
       end
 
       it 'creates an event when the name change' do
         project.update!(name: 'new name')
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
         expect(AuditEvent.last.details[:change]).to eq 'name'
       end
 
-      it 'creates an event when the path change' do
-        project.update!(path: 'newpath')
+      context 'when project path is updated' do
+        it "logs project_path_updated event" do
+          project.update!(path: 'newpath')
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
-        expect(AuditEvent.last.details[:change]).to eq 'path'
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+            {
+              name: 'project_path_updated',
+              author: user,
+              scope: project,
+              target: project,
+              message: "Changed path to #{project.full_path}",
+              additional_details: {
+                change: "path",
+                from: "",
+                target_details: project.full_path.to_s,
+                to: project.full_path.to_s
+              },
+              target_details: project.full_path.to_s
+            }
+          ).and_call_original
+
+          auditor_instance.execute
+        end
       end
 
       it 'creates an event when the namespace change' do
@@ -65,21 +85,21 @@ RSpec.describe Audit::ProjectChangesAuditor do
 
         project.update!(namespace: new_namespace)
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
         expect(AuditEvent.last.details[:change]).to eq 'namespace'
       end
 
       it 'creates an event when the repository size limit changes' do
         project.update!(repository_size_limit: 100)
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
         expect(AuditEvent.last.details[:change]).to eq 'repository_size_limit'
       end
 
       it 'creates an event when the packages enabled setting changes' do
         project.update!(packages_enabled: false)
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(2)
+        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(2)
         expect(AuditEvent.last(2).map { |e| e.details[:change] })
           .to eq %w[packages_enabled package_registry_access_level]
       end
@@ -87,7 +107,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
       it 'creates an event when the merge requests template changes' do
         project.update!(merge_requests_template: 'I am a merge request template')
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
         expect(AuditEvent.last.details[:change]).to eq 'merge_requests_template'
         expect(AuditEvent.last.details).to include({
                                                      change: 'merge_requests_template',
@@ -100,7 +120,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
         project.update!(merge_requests_author_approval: true)
 
         aggregate_failures do
-          expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include(
             change: 'prevent merge request approval from authors',
             from: true,
@@ -113,7 +133,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
         project.update!(merge_requests_disable_committers_approval: false)
 
         aggregate_failures do
-          expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include(
             change: 'prevent merge request approval from committers',
             from: true,
@@ -126,7 +146,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
         project.update!(reset_approvals_on_push: true)
 
         aggregate_failures do
-          expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include(
             change: 'require new approvals when new commits are added to an MR',
             from: false,
@@ -139,7 +159,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
         project.update!(require_password_to_approve: true)
 
         aggregate_failures do
-          expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include(
             change: 'require user password for approvals',
             from: false,
@@ -152,7 +172,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
         project.update!(disable_overriding_approvers_per_merge_request: true)
 
         aggregate_failures do
-          expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+          expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
           expect(AuditEvent.last.details).to include(
             change: 'prevent users from modifying MR approval rules in merge requests',
             from: false,
@@ -179,7 +199,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
             it 'creates an audit event' do
               project.update_attribute(column, new_value)
 
-              expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+              expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
               expect(AuditEvent.last.details).to include({
                                                            change: column,
                                                            from: prev_value,
@@ -195,7 +215,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
         new_value = "I'm a suggested commit message"
         project.update!(suggestion_commit_message: new_value)
 
-        expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
         expect(AuditEvent.last.details).to include({
                                                      change: 'suggestion_commit_message',
                                                      from: previous_value,
@@ -206,7 +226,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
       it 'does not create an event when suggestion_commit_message change from nil to empty string' do
         project.update!(suggestion_commit_message: "")
 
-        expect { foo_instance.execute }.not_to change(AuditEvent, :count)
+        expect { auditor_instance.execute }.not_to change(AuditEvent, :count)
       end
 
       context 'when merge method is changed from Merge' do
@@ -224,7 +244,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
           it 'creates an audit event' do
             project.update!(merge_requests_ff_only_enabled: ff, merge_requests_rebase_enabled: rebase)
 
-            expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+            expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
             expect(AuditEvent.last.details).to include({
                                                          custom_message: "Changed merge method to #{method}"
                                                        })
@@ -247,7 +267,7 @@ RSpec.describe Audit::ProjectChangesAuditor do
           it 'creates an Merge method audit event' do
             project.update!(merge_requests_ff_only_enabled: false, merge_requests_rebase_enabled: false)
 
-            expect { foo_instance.execute }.to change(AuditEvent, :count).by(1)
+            expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
             expect(AuditEvent.last.details).to include({
                                                          custom_message: "Changed merge method to Merge"
                                                        })

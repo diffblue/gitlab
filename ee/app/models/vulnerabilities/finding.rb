@@ -113,6 +113,7 @@ module Vulnerabilities
     end
 
     alias_method :declarative_policy_subject, :project
+    alias_attribute :finding_details, :details
 
     def self.counted_by_severity
       group(:severity).count.transform_keys do |severity|
@@ -300,7 +301,7 @@ module Vulnerabilities
     end
 
     def cve_value
-      cve || identifiers.find(&:cve?)&.name
+      identifiers.find(&:cve?)&.name
     end
 
     def cwe_value

@@ -154,6 +154,26 @@ RSpec.describe Project do
       end
     end
 
+    describe '#product_analytics_enabled?' do
+      subject { project.product_analytics_enabled? }
+
+      where(:licensed, :flag, :outcome) do
+        false | false | false
+        true | false | false
+        false | true | false
+        true | true | true
+      end
+
+      with_them do
+        before do
+          stub_feature_flags(cube_api_proxy: flag)
+          stub_licensed_features(product_analytics: licensed)
+        end
+
+        it { is_expected.to eq(outcome) }
+      end
+    end
+
     describe '#jira_issue_association_required_to_merge_enabled?' do
       before do
         stub_licensed_features(
@@ -2280,6 +2300,14 @@ RSpec.describe Project do
       expect(project.repository).to receive(:log_geo_updated_event)
 
       subject
+    end
+  end
+
+  describe '#elastic_namespace_ancestry' do
+    let_it_be(:project) { create(:project) }
+
+    it 'is a combination of the namespace and project id' do
+      expect(project.elastic_namespace_ancestry).to eq("#{project.namespace.id}-p#{project.id}-")
     end
   end
 

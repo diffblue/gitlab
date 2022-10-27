@@ -862,6 +862,7 @@ RSpec.describe Project, factory_default: :keep do
     it { is_expected.to delegate_method(:environments_access_level).to(:project_feature) }
     it { is_expected.to delegate_method(:feature_flags_access_level).to(:project_feature) }
     it { is_expected.to delegate_method(:releases_access_level).to(:project_feature) }
+    it { is_expected.to delegate_method(:infrastructure_access_level).to(:project_feature) }
     it { is_expected.to delegate_method(:maven_package_requests_forwarding).to(:namespace) }
     it { is_expected.to delegate_method(:pypi_package_requests_forwarding).to(:namespace) }
     it { is_expected.to delegate_method(:npm_package_requests_forwarding).to(:namespace) }
@@ -4507,7 +4508,7 @@ RSpec.describe Project, factory_default: :keep do
       project_2 = create(:project, :public, :merge_requests_disabled)
       project_3 = create(:project, :public, :issues_disabled)
       project_4 = create(:project, :public)
-      project_4.project_feature.update!(issues_access_level: ProjectFeature::PRIVATE, merge_requests_access_level: ProjectFeature::PRIVATE )
+      project_4.project_feature.update!(issues_access_level: ProjectFeature::PRIVATE, merge_requests_access_level: ProjectFeature::PRIVATE)
 
       project_ids = described_class.ids_with_issuables_available_for(user).pluck(:id)
 
@@ -7074,7 +7075,7 @@ RSpec.describe Project, factory_default: :keep do
 
     subject { project.self_monitoring? }
 
-    context 'when the project is instance self monitoring' do
+    context 'when the project is instance self-monitoring' do
       before do
         stub_application_setting(self_monitoring_project_id: project.id)
       end
@@ -7082,7 +7083,7 @@ RSpec.describe Project, factory_default: :keep do
       it { is_expected.to be true }
     end
 
-    context 'when the project is not self monitoring' do
+    context 'when the project is not self-monitoring' do
       it { is_expected.to be false }
     end
   end
@@ -7124,7 +7125,7 @@ RSpec.describe Project, factory_default: :keep do
 
   describe '#export_in_progress?' do
     let(:project) { build(:project) }
-    let!(:project_export_job ) { create(:project_export_job, project: project) }
+    let!(:project_export_job) { create(:project_export_job, project: project) }
 
     context 'when project export is enqueued' do
       it { expect(project.export_in_progress?).to be false }
@@ -7149,7 +7150,7 @@ RSpec.describe Project, factory_default: :keep do
 
   describe '#export_status' do
     let(:project) { build(:project) }
-    let!(:project_export_job ) { create(:project_export_job, project: project) }
+    let!(:project_export_job) { create(:project_export_job, project: project) }
 
     context 'when project export is enqueued' do
       it { expect(project.export_status).to eq :queued }
@@ -7173,7 +7174,7 @@ RSpec.describe Project, factory_default: :keep do
     end
 
     context 'when project export is being regenerated' do
-      let!(:new_project_export_job ) { create(:project_export_job, project: project) }
+      let!(:new_project_export_job) { create(:project_export_job, project: project) }
 
       before do
         finish_job(project_export_job)

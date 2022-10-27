@@ -11488,9 +11488,12 @@ CREATE TABLE application_settings (
     lock_maven_package_requests_forwarding boolean DEFAULT false NOT NULL,
     lock_pypi_package_requests_forwarding boolean DEFAULT false NOT NULL,
     lock_npm_package_requests_forwarding boolean DEFAULT false NOT NULL,
+    jira_connect_proxy_url text,
     password_expiration_enabled boolean DEFAULT false NOT NULL,
     password_expires_in_days integer DEFAULT 90 NOT NULL,
     password_expires_notice_before_days integer DEFAULT 7 NOT NULL,
+    product_analytics_enabled boolean DEFAULT false NOT NULL,
+    email_confirmation_setting smallint DEFAULT 2,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
@@ -11509,6 +11512,7 @@ CREATE TABLE application_settings (
     CONSTRAINT check_3455368420 CHECK ((char_length(database_grafana_api_url) <= 255)),
     CONSTRAINT check_3559645ae5 CHECK ((char_length(container_registry_import_target_plan) <= 255)),
     CONSTRAINT check_3def0f1829 CHECK ((char_length(sentry_clientside_dsn) <= 255)),
+    CONSTRAINT check_4847426287 CHECK ((char_length(jira_connect_proxy_url) <= 255)),
     CONSTRAINT check_492cc1354d CHECK ((char_length(error_tracking_api_url) <= 255)),
     CONSTRAINT check_4f8b811780 CHECK ((char_length(sentry_dsn) <= 255)),
     CONSTRAINT check_51700b31b5 CHECK ((char_length(default_branch_name) <= 255)),
@@ -12646,7 +12650,7 @@ CREATE SEQUENCE ci_builds_id_seq
 
 ALTER SEQUENCE ci_builds_id_seq OWNED BY ci_builds.id;
 
-CREATE TABLE ci_builds_metadata (
+CREATE TABLE p_ci_builds_metadata (
     project_id integer NOT NULL,
     timeout integer,
     timeout_source integer DEFAULT 1 NOT NULL,
@@ -12662,7 +12666,8 @@ CREATE TABLE ci_builds_metadata (
     runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
     id_tokens jsonb DEFAULT '{}'::jsonb NOT NULL,
     partition_id bigint DEFAULT 100 NOT NULL
-);
+)
+PARTITION BY LIST (partition_id);
 
 CREATE SEQUENCE ci_builds_metadata_id_seq
     START WITH 1
@@ -12671,7 +12676,26 @@ CREATE SEQUENCE ci_builds_metadata_id_seq
     NO MAXVALUE
     CACHE 1;
 
-ALTER SEQUENCE ci_builds_metadata_id_seq OWNED BY ci_builds_metadata.id;
+ALTER SEQUENCE ci_builds_metadata_id_seq OWNED BY p_ci_builds_metadata.id;
+
+CREATE TABLE ci_builds_metadata (
+    project_id integer NOT NULL,
+    timeout integer,
+    timeout_source integer DEFAULT 1 NOT NULL,
+    interruptible boolean,
+    config_options jsonb,
+    config_variables jsonb,
+    has_exposed_artifacts boolean,
+    environment_auto_stop_in character varying(255),
+    expanded_environment_name character varying(255),
+    secrets jsonb DEFAULT '{}'::jsonb NOT NULL,
+    build_id bigint NOT NULL,
+    id bigint DEFAULT nextval('ci_builds_metadata_id_seq'::regclass) NOT NULL,
+    runtime_runner_features jsonb DEFAULT '{}'::jsonb NOT NULL,
+    id_tokens jsonb DEFAULT '{}'::jsonb NOT NULL,
+    partition_id bigint DEFAULT 100 NOT NULL
+);
+ALTER TABLE ONLY p_ci_builds_metadata ATTACH PARTITION ci_builds_metadata FOR VALUES IN ('100');
 
 CREATE TABLE ci_builds_runner_session (
     id bigint NOT NULL,
@@ -13040,8 +13064,9 @@ ALTER SEQUENCE ci_pipeline_messages_id_seq OWNED BY ci_pipeline_messages.id;
 CREATE TABLE ci_pipeline_metadata (
     project_id bigint NOT NULL,
     pipeline_id bigint NOT NULL,
-    title text NOT NULL,
-    CONSTRAINT check_e6a636a3f3 CHECK ((char_length(title) <= 255))
+    name text,
+    CONSTRAINT check_25d23931f1 CHECK ((name IS NOT NULL)),
+    CONSTRAINT check_9d3665463c CHECK ((char_length(name) <= 255))
 );
 
 CREATE TABLE ci_pipeline_schedule_variables (
@@ -20450,12 +20475,14 @@ ALTER SEQUENCE protected_branch_unprotect_access_levels_id_seq OWNED BY protecte
 
 CREATE TABLE protected_branches (
     id integer NOT NULL,
-    project_id integer NOT NULL,
+    project_id integer,
     name character varying NOT NULL,
     created_at timestamp without time zone,
     updated_at timestamp without time zone,
     code_owner_approval_required boolean DEFAULT false NOT NULL,
-    allow_force_push boolean DEFAULT false NOT NULL
+    allow_force_push boolean DEFAULT false NOT NULL,
+    namespace_id bigint,
+    CONSTRAINT protected_branches_project_id_namespace_id_any_not_null CHECK (((project_id IS NULL) <> (namespace_id IS NULL)))
 );
 
 CREATE SEQUENCE protected_branches_id_seq
@@ -21072,8 +21099,7 @@ CREATE TABLE sbom_sources (
     created_at timestamp with time zone NOT NULL,
     updated_at timestamp with time zone NOT NULL,
     source_type smallint NOT NULL,
-    source jsonb DEFAULT '{}'::jsonb NOT NULL,
-    fingerprint bytea
+    source jsonb DEFAULT '{}'::jsonb NOT NULL
 );
 
 CREATE SEQUENCE sbom_sources_id_seq
@@ -23441,8 +23467,6 @@ ALTER TABLE ONLY ci_build_trace_chunks ALTER COLUMN id SET DEFAULT nextval('ci_b
 
 ALTER TABLE ONLY ci_builds ALTER COLUMN id SET DEFAULT nextval('ci_builds_id_seq'::regclass);
 
-ALTER TABLE ONLY ci_builds_metadata ALTER COLUMN id SET DEFAULT nextval('ci_builds_metadata_id_seq'::regclass);
-
 ALTER TABLE ONLY ci_builds_runner_session ALTER COLUMN id SET DEFAULT nextval('ci_builds_runner_session_id_seq'::regclass);
 
 ALTER TABLE ONLY ci_daily_build_group_report_results ALTER COLUMN id SET DEFAULT nextval('ci_daily_build_group_report_results_id_seq'::regclass);
@@ -23946,6 +23970,8 @@ ALTER TABLE ONLY operations_strategies ALTER COLUMN id SET DEFAULT nextval('oper
 ALTER TABLE ONLY operations_strategies_user_lists ALTER COLUMN id SET DEFAULT nextval('operations_strategies_user_lists_id_seq'::regclass);
 
 ALTER TABLE ONLY operations_user_lists ALTER COLUMN id SET DEFAULT nextval('operations_user_lists_id_seq'::regclass);
+
+ALTER TABLE ONLY p_ci_builds_metadata ALTER COLUMN id SET DEFAULT nextval('ci_builds_metadata_id_seq'::regclass);
 
 ALTER TABLE ONLY packages_build_infos ALTER COLUMN id SET DEFAULT nextval('packages_build_infos_id_seq'::regclass);
 
@@ -25168,6 +25194,9 @@ ALTER TABLE ONLY ci_build_trace_chunks
 
 ALTER TABLE ONLY ci_build_trace_metadata
     ADD CONSTRAINT ci_build_trace_metadata_pkey PRIMARY KEY (build_id);
+
+ALTER TABLE ONLY p_ci_builds_metadata
+    ADD CONSTRAINT p_ci_builds_metadata_pkey PRIMARY KEY (id, partition_id);
 
 ALTER TABLE ONLY ci_builds_metadata
     ADD CONSTRAINT ci_builds_metadata_pkey PRIMARY KEY (id, partition_id);
@@ -28181,13 +28210,23 @@ CREATE UNIQUE INDEX index_ci_build_trace_chunks_on_build_id_and_chunk_index ON c
 
 CREATE INDEX index_ci_build_trace_metadata_on_trace_artifact_id ON ci_build_trace_metadata USING btree (trace_artifact_id);
 
+CREATE INDEX p_ci_builds_metadata_build_id_idx ON ONLY p_ci_builds_metadata USING btree (build_id) WHERE (has_exposed_artifacts IS TRUE);
+
 CREATE INDEX index_ci_builds_metadata_on_build_id_and_has_exposed_artifacts ON ci_builds_metadata USING btree (build_id) WHERE (has_exposed_artifacts IS TRUE);
+
+CREATE INDEX p_ci_builds_metadata_build_id_id_idx ON ONLY p_ci_builds_metadata USING btree (build_id) INCLUDE (id) WHERE (interruptible = true);
 
 CREATE INDEX index_ci_builds_metadata_on_build_id_and_id_and_interruptible ON ci_builds_metadata USING btree (build_id) INCLUDE (id) WHERE (interruptible = true);
 
+CREATE UNIQUE INDEX p_ci_builds_metadata_build_id_partition_id_idx ON ONLY p_ci_builds_metadata USING btree (build_id, partition_id);
+
 CREATE UNIQUE INDEX index_ci_builds_metadata_on_build_id_partition_id_unique ON ci_builds_metadata USING btree (build_id, partition_id);
 
+CREATE UNIQUE INDEX p_ci_builds_metadata_id_partition_id_idx ON ONLY p_ci_builds_metadata USING btree (id, partition_id);
+
 CREATE UNIQUE INDEX index_ci_builds_metadata_on_id_partition_id_unique ON ci_builds_metadata USING btree (id, partition_id);
+
+CREATE INDEX p_ci_builds_metadata_project_id_idx ON ONLY p_ci_builds_metadata USING btree (project_id);
 
 CREATE INDEX index_ci_builds_metadata_on_project_id ON ci_builds_metadata USING btree (project_id);
 
@@ -28319,7 +28358,7 @@ CREATE UNIQUE INDEX index_ci_pipeline_chat_data_on_pipeline_id ON ci_pipeline_ch
 
 CREATE INDEX index_ci_pipeline_messages_on_pipeline_id ON ci_pipeline_messages USING btree (pipeline_id);
 
-CREATE INDEX index_ci_pipeline_metadata_on_pipeline_id_title ON ci_pipeline_metadata USING btree (pipeline_id, title);
+CREATE INDEX index_ci_pipeline_metadata_on_pipeline_id_name ON ci_pipeline_metadata USING btree (pipeline_id, name);
 
 CREATE INDEX index_ci_pipeline_metadata_on_project_id ON ci_pipeline_metadata USING btree (project_id);
 
@@ -28420,10 +28459,6 @@ CREATE INDEX index_ci_runners_on_description_trigram ON ci_runners USING gin (de
 CREATE INDEX index_ci_runners_on_locked ON ci_runners USING btree (locked);
 
 CREATE INDEX index_ci_runners_on_runner_type ON ci_runners USING btree (runner_type);
-
-CREATE INDEX index_ci_runners_on_token ON ci_runners USING btree (token);
-
-CREATE INDEX index_ci_runners_on_token_encrypted ON ci_runners USING btree (token_encrypted);
 
 CREATE INDEX index_ci_runners_on_token_expires_at_and_id_desc ON ci_runners USING btree (token_expires_at, id DESC);
 
@@ -29079,6 +29114,8 @@ CREATE INDEX index_group_stages_on_stage_event_hash_id ON analytics_cycle_analyt
 
 CREATE UNIQUE INDEX index_group_user_callouts_feature ON user_group_callouts USING btree (user_id, feature_name, group_id);
 
+CREATE INDEX index_group_vulnerability_reads_common_finder_query_desc ON vulnerability_reads USING btree (namespace_id, state, report_type, severity DESC, vulnerability_id DESC);
+
 CREATE UNIQUE INDEX index_group_wiki_repositories_on_disk_path ON group_wiki_repositories USING btree (disk_path);
 
 CREATE INDEX index_group_wiki_repositories_on_shard_id ON group_wiki_repositories USING btree (shard_id);
@@ -29235,7 +29272,7 @@ CREATE INDEX index_issues_on_closed_by_id ON issues USING btree (closed_by_id);
 
 CREATE INDEX index_issues_on_confidential ON issues USING btree (confidential);
 
-CREATE INDEX index_issues_on_description_trigram ON issues USING gin (description gin_trgm_ops);
+CREATE INDEX index_issues_on_description_trigram ON issues USING gin (description gin_trgm_ops) WITH (fastupdate='false');
 
 CREATE INDEX index_issues_on_duplicated_to_id ON issues USING btree (duplicated_to_id) WHERE (duplicated_to_id IS NOT NULL);
 
@@ -29271,7 +29308,7 @@ CREATE INDEX index_issues_on_promoted_to_epic_id ON issues USING btree (promoted
 
 CREATE INDEX index_issues_on_sprint_id ON issues USING btree (sprint_id);
 
-CREATE INDEX index_issues_on_title_trigram ON issues USING gin (title gin_trgm_ops);
+CREATE INDEX index_issues_on_title_trigram ON issues USING gin (title gin_trgm_ops) WITH (fastupdate='false');
 
 CREATE INDEX index_issues_on_updated_at ON issues USING btree (updated_at);
 
@@ -29481,9 +29518,13 @@ CREATE INDEX index_merge_requests_on_assignee_id ON merge_requests USING btree (
 
 CREATE INDEX index_merge_requests_on_author_id ON merge_requests USING btree (author_id);
 
+CREATE INDEX index_merge_requests_on_author_id_and_id ON merge_requests USING btree (author_id, id);
+
+CREATE INDEX index_merge_requests_on_author_id_and_target_project_id ON merge_requests USING btree (author_id, target_project_id);
+
 CREATE INDEX index_merge_requests_on_created_at ON merge_requests USING btree (created_at);
 
-CREATE INDEX index_merge_requests_on_description_trigram ON merge_requests USING gin (description gin_trgm_ops);
+CREATE INDEX index_merge_requests_on_description_trigram ON merge_requests USING gin (description gin_trgm_ops) WITH (fastupdate='false');
 
 CREATE INDEX index_merge_requests_on_head_pipeline_id ON merge_requests USING btree (head_pipeline_id);
 
@@ -29519,7 +29560,7 @@ CREATE INDEX index_merge_requests_on_target_project_id_and_updated_at_and_id ON 
 
 CREATE INDEX index_merge_requests_on_target_project_id_iid_jira_description ON merge_requests USING btree (target_project_id, iid) WHERE (description ~ '[A-Z][A-Z_0-9]+-\d+'::text);
 
-CREATE INDEX index_merge_requests_on_title_trigram ON merge_requests USING gin (title gin_trgm_ops);
+CREATE INDEX index_merge_requests_on_title_trigram ON merge_requests USING gin (title gin_trgm_ops) WITH (fastupdate='false');
 
 CREATE INDEX index_merge_requests_on_tp_id_and_merge_commit_sha_and_id ON merge_requests USING btree (target_project_id, merge_commit_sha, id);
 
@@ -30189,6 +30230,8 @@ CREATE INDEX index_protected_branch_unprotect_access_levels_on_group_id ON prote
 
 CREATE INDEX index_protected_branch_unprotect_access_levels_on_user_id ON protected_branch_unprotect_access_levels USING btree (user_id);
 
+CREATE INDEX index_protected_branches_namespace_id ON protected_branches USING btree (namespace_id) WHERE (namespace_id IS NOT NULL);
+
 CREATE INDEX index_protected_branches_on_project_id ON protected_branches USING btree (project_id);
 
 CREATE INDEX index_protected_environment_approval_rules_on_group_id ON protected_environment_approval_rules USING btree (group_id);
@@ -30622,6 +30665,10 @@ CREATE UNIQUE INDEX index_trending_projects_on_project_id ON trending_projects U
 CREATE INDEX index_u2f_registrations_on_key_handle ON u2f_registrations USING btree (key_handle);
 
 CREATE INDEX index_u2f_registrations_on_user_id ON u2f_registrations USING btree (user_id);
+
+CREATE UNIQUE INDEX index_uniq_ci_runners_on_token ON ci_runners USING btree (token);
+
+CREATE UNIQUE INDEX index_uniq_ci_runners_on_token_encrypted ON ci_runners USING btree (token_encrypted);
 
 CREATE UNIQUE INDEX index_uniq_im_issuable_escalation_statuses_on_issue_id ON incident_management_issuable_escalation_statuses USING btree (issue_id);
 
@@ -31063,8 +31110,6 @@ CREATE INDEX tmp_idx_project_features_on_releases_al_and_repo_al_partial ON proj
 
 CREATE INDEX tmp_idx_vulnerabilities_on_id_where_report_type_7_99 ON vulnerabilities USING btree (id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
-CREATE INDEX tmp_index_approval_merge_request_rules_on_report_type_equal_one ON approval_merge_request_rules USING btree (id, report_type) WHERE (report_type = 1);
-
 CREATE INDEX tmp_index_ci_job_artifacts_on_expire_at_where_locked_unknown ON ci_job_artifacts USING btree (expire_at, job_id) WHERE ((locked = 2) AND (expire_at IS NOT NULL));
 
 CREATE INDEX tmp_index_ci_job_artifacts_on_id_expire_at_file_type_trace ON ci_job_artifacts USING btree (id) WHERE (((date_part('day'::text, timezone('UTC'::text, expire_at)) = ANY (ARRAY[(21)::double precision, (22)::double precision, (23)::double precision])) AND (date_part('minute'::text, timezone('UTC'::text, expire_at)) = ANY (ARRAY[(0)::double precision, (30)::double precision, (45)::double precision])) AND (date_part('second'::text, timezone('UTC'::text, expire_at)) = (0)::double precision)) OR (file_type = 3));
@@ -31092,8 +31137,6 @@ CREATE UNIQUE INDEX tmp_index_on_tmp_project_id_on_namespaces ON namespaces USIN
 CREATE INDEX tmp_index_on_vulnerabilities_non_dismissed ON vulnerabilities USING btree (id) WHERE (state <> 2);
 
 CREATE INDEX tmp_index_project_statistics_cont_registry_size ON project_statistics USING btree (project_id) WHERE (container_registry_size = 0);
-
-CREATE INDEX tmp_index_system_note_metadata_on_id_where_task ON system_note_metadata USING btree (id, action) WHERE ((action)::text = 'task'::text);
 
 CREATE INDEX tmp_index_vulnerability_occurrences_on_id_and_scanner_id ON vulnerability_occurrences USING btree (id, scanner_id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
@@ -32409,6 +32452,18 @@ ALTER INDEX product_analytics_events_experimental_pkey ATTACH PARTITION gitlab_p
 
 ALTER INDEX product_analytics_events_experimental_pkey ATTACH PARTITION gitlab_partitions_static.product_analytics_events_experimental_63_pkey;
 
+ALTER INDEX p_ci_builds_metadata_pkey ATTACH PARTITION ci_builds_metadata_pkey;
+
+ALTER INDEX p_ci_builds_metadata_build_id_idx ATTACH PARTITION index_ci_builds_metadata_on_build_id_and_has_exposed_artifacts;
+
+ALTER INDEX p_ci_builds_metadata_build_id_id_idx ATTACH PARTITION index_ci_builds_metadata_on_build_id_and_id_and_interruptible;
+
+ALTER INDEX p_ci_builds_metadata_build_id_partition_id_idx ATTACH PARTITION index_ci_builds_metadata_on_build_id_partition_id_unique;
+
+ALTER INDEX p_ci_builds_metadata_id_partition_id_idx ATTACH PARTITION index_ci_builds_metadata_on_id_partition_id_unique;
+
+ALTER INDEX p_ci_builds_metadata_project_id_idx ATTACH PARTITION index_ci_builds_metadata_on_project_id;
+
 CREATE TRIGGER chat_names_loose_fk_trigger AFTER DELETE ON chat_names REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 CREATE TRIGGER ci_builds_loose_fk_trigger AFTER DELETE ON ci_builds REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
@@ -33284,6 +33339,9 @@ ALTER TABLE ONLY security_scans
 ALTER TABLE ONLY epics
     ADD CONSTRAINT fk_dccd3f98fc FOREIGN KEY (assignee_id) REFERENCES users(id) ON DELETE SET NULL;
 
+ALTER TABLE ONLY protected_branches
+    ADD CONSTRAINT fk_de9216e774 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
+
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_df75a7c8b8 FOREIGN KEY (promoted_to_epic_id) REFERENCES epics(id) ON DELETE SET NULL;
 
@@ -33296,7 +33354,7 @@ ALTER TABLE ONLY ci_resources
 ALTER TABLE ONLY ci_sources_pipelines
     ADD CONSTRAINT fk_e1bad85861 FOREIGN KEY (pipeline_id) REFERENCES ci_pipelines(id) ON DELETE CASCADE;
 
-ALTER TABLE ONLY ci_builds_metadata
+ALTER TABLE p_ci_builds_metadata
     ADD CONSTRAINT fk_e20479742e FOREIGN KEY (build_id) REFERENCES ci_builds(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY gitlab_subscriptions

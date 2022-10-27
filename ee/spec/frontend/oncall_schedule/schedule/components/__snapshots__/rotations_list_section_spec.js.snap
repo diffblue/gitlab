@@ -90,7 +90,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
               class="gl-h-6 gl-display-flex gl-justify-content-center gl-align-items-center"
               data-testid="rotation-assignee"
               id="rotation-assignee-2"
-              style="background-color: rgb(87, 114, 255);"
+              style="background-color: rgb(97, 122, 226);"
             >
               <div
                 class="gl-text-white gl-display-flex gl-justify-content-center gl-align-items-center"
@@ -131,7 +131,7 @@ exports[`RotationsListSectionComponent when the timeframe includes today renders
               class="gl-h-6 gl-display-flex gl-justify-content-center gl-align-items-center"
               data-testid="rotation-assignee"
               id="rotation-assignee-3"
-              style="background-color: rgb(209, 78, 0);"
+              style="background-color: rgb(201, 93, 46);"
             >
               <div
                 class="gl-text-white gl-display-flex gl-justify-content-center gl-align-items-center"

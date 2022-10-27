@@ -1,6 +1,6 @@
 ---
 stage: Package
-group: Package
+group: Container Registry
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
@@ -1156,7 +1156,7 @@ blobs start being deleted is anything permanent done.
 ## Configuring GitLab and Registry to run on separate nodes (Omnibus GitLab)
 
 By default, package assumes that both services are running on the same node.
-In order to get GitLab and Registry to run on a separate nodes, separate configuration
+To get GitLab and Registry to run on a separate nodes, separate configuration
 is necessary for Registry and GitLab.
 
 ### Configuring Registry

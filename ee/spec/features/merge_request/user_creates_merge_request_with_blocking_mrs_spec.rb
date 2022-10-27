@@ -17,7 +17,7 @@ RSpec.describe 'User creates a merge request with blocking MRs', :js do
       stub_licensed_features(blocking_merge_requests: true)
     end
 
-    it 'creates a merge request with a blocking MR' do
+    it 'creates a merge request with a blocking MR', :sidekiq_inline do
       other_mr = create(:merge_request)
       other_mr.target_project.team.add_maintainer(user)
 

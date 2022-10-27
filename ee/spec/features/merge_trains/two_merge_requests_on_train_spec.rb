@@ -44,7 +44,7 @@ RSpec.describe 'Two merge requests on a merge train' do
     AutoMergeService.new(project, maintainer_1, { sha: merge_request_1.diff_head_sha })
       .execute(merge_request_1, AutoMergeService::STRATEGY_MERGE_TRAIN)
     AutoMergeService.new(project, maintainer_2, { sha: merge_request_2.diff_head_sha })
-      .execute(merge_request_2, AutoMergeService::STRATEGY_MERGE_TRAIN )
+      .execute(merge_request_2, AutoMergeService::STRATEGY_MERGE_TRAIN)
 
     merge_request_1.reload
     merge_request_2.reload

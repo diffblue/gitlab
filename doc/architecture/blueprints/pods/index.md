@@ -111,8 +111,8 @@ Users are available globally and not restricted to a single Pod. Users can be me
 - Users can create multiple top-level namespaces
 - Users can be a member of multiple top-level namespaces
 - Users can be a member of multiple organizations
-- Users can administrate organizations
-- User activity is aggregated within an organization
+- Users can administer organizations
+- User activity is aggregated in an organization
 - Every user has one personal namespace
 
 ## Goals
@@ -251,7 +251,14 @@ Based on user research, we may want to change certain features to work across or
 
 - Specific features allow for cross-organization interactions, for example forking, search.
 
-### Links
+## Technical Proposals
+
+The Pods architecture do have long lasting implications to data processing, location, scalability and the GitLab architecture.
+This section links all different technical proposals that are being evaluated.
+
+- [Stateless Router That Uses a Cache to Pick Pods and Is Redirected When Wrong Pod Is Reached](proposal-stateless-router.md)
+
+## Links
 
 - [Internal Pods presentation](https://docs.google.com/presentation/d/1x1uIiN8FR9fhL7pzFh9juHOVcSxEY7d2_q4uiKKGD44/edit#slide=id.ge7acbdc97a_0_155)
 - [Pods Epic](https://gitlab.com/groups/gitlab-org/-/epics/7582)

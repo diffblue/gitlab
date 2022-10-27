@@ -14,12 +14,24 @@ module Security
 
         private
 
+        # In order to optimise remediation ingestion and permit concurrent execution of remediation ingestion.
+        # The remediations are ingested via a Bulk Insert. This requires a new class to avoid implementing the
+        # Carrierwave file upload instrumentation, as this doesn't work with the BulkInsertSafe module.
+        # Context: https://gitlab.com/gitlab-org/gitlab/-/issues/362169
+        class RemediationBulkInsertProxy < ApplicationRecord
+          include BulkInsertSafe
+          include ShaAttribute
+
+          self.table_name = 'vulnerability_remediations'
+
+          sha_attribute :checksum
+        end
+
         delegate :project, to: :pipeline
 
         def after_ingest
-          Vulnerabilities::FindingRemediation.by_finding_id(finding_maps.map(&:finding_id))
-                                             .id_not_in(return_data.flatten)
-                                             .delete_all
+          upload_remediations
+          dissassociate_unfound_remediations
         end
 
         def attributes
@@ -46,9 +58,40 @@ module Security
         end
 
         def new_remediations
-          new_report_remediations.map do |remediation|
-            project.vulnerability_remediations.create(summary: remediation.summary, file: remediation.diff_file, checksum: remediation.checksum)
+          @new_remediations ||= begin
+            new_remediations = new_report_remediations.map do |remediation|
+              RemediationBulkInsertProxy.new(
+                summary: remediation.summary,
+                checksum: remediation.checksum,
+                file: remediation.diff_file.original_filename,
+                project_id: project.id,
+                created_at: Time.zone.now,
+                updated_at: Time.zone.now
+              )
+            end
+
+            new_remediation_ids = RemediationBulkInsertProxy.bulk_insert!(new_remediations, skip_duplicates: true, returns: :ids)
+
+            Vulnerabilities::Remediation.id_in(new_remediation_ids)
           end
+        end
+
+        def upload_remediations
+          new_remediations.each do |remediation|
+            upload_remediation(remediation)
+          end
+        end
+
+        def upload_remediation(remediation)
+          new_report_remediations.find { _1.checksum == remediation.checksum }.then do |report_remediation|
+            remediation.update(file: report_remediation.diff_file)
+          end
+        end
+
+        def dissassociate_unfound_remediations
+          Vulnerabilities::FindingRemediation.by_finding_id(finding_maps.map(&:finding_id))
+                                             .id_not_in(return_data.flatten)
+                                             .delete_all
         end
 
         def new_report_remediations

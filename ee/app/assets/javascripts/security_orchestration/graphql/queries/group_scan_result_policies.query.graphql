@@ -1,0 +1,31 @@
+#import "../fragments/scan_policy_source.fragment.graphql"
+
+query groupScanResultPolicies(
+  $fullPath: ID!
+  $relationship: SecurityPolicyRelationType = INHERITED
+) {
+  namespace: group(fullPath: $fullPath) {
+    id
+    scanResultPolicies(relationship: $relationship) {
+      nodes {
+        name
+        yaml
+        enabled
+        updatedAt
+        userApprovers {
+          id
+          name
+          webUrl
+        }
+        groupApprovers {
+          id
+          fullPath
+          webUrl
+        }
+        source {
+          ...SecurityPolicySource
+        }
+      }
+    }
+  }
+}

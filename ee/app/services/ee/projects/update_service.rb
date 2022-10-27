@@ -29,7 +29,7 @@ module EE
 
         if params[:project_setting_attributes].present?
           suggested_reviewers_already_enabled = project.suggested_reviewers_enabled
-          unless project.suggested_reviewers_available?
+          unless can_update_suggested_reviewers_setting?
             params[:project_setting_attributes].delete(:suggested_reviewers_enabled)
           end
         end
@@ -59,9 +59,13 @@ module EE
         return unless params[:project_setting_attributes].present? &&
           params[:project_setting_attributes][:suggested_reviewers_enabled] == '1'
 
-        return unless project.suggested_reviewers_available?
+        return unless can_update_suggested_reviewers_setting?
 
         ::Projects::RegisterSuggestedReviewersProjectWorker.perform_async(project.id, current_user.id)
+      end
+
+      def can_update_suggested_reviewers_setting?
+        project.suggested_reviewers_available? && current_user.can?(:create_resource_access_tokens, project)
       end
 
       override :remove_unallowed_params

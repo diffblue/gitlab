@@ -287,7 +287,7 @@ export default {
 };
 </script>
 <template>
-  <div v-if="isLoaded" class="mr-state-widget gl-mt-3">
+  <div v-if="isLoaded" class="mr-state-widget gl-mt-4">
     <header
       v-if="shouldRenderCollaborationStatus"
       class="gl-rounded-base gl-border-solid gl-border-1 gl-border-gray-100 gl-overflow-hidden mr-widget-workflow gl-mt-0!"

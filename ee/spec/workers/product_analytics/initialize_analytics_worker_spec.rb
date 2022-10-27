@@ -9,6 +9,7 @@ RSpec.describe ProductAnalytics::InitializeAnalyticsWorker do
   subject(:worker) { described_class.new }
 
   before do
+    stub_licensed_features(product_analytics: true)
     allow(worker).to receive(:jid).and_return(jid)
   end
 
@@ -57,12 +58,18 @@ RSpec.describe ProductAnalytics::InitializeAnalyticsWorker do
         subject
       end
 
+      context 'when project does not have analytics enabled?' do
+        before do
+          stub_licensed_features(product_analytics: false)
+        end
+
+        it_behaves_like 'a worker that did not make any HTTP calls'
+      end
+
       context 'when project does not exist' do
         subject { worker.perform(non_existing_record_id) }
 
-        it 'raises a RecordNotFound error' do
-          expect { subject }.to raise_error(ActiveRecord::RecordNotFound)
-        end
+        it_behaves_like 'a worker that did not make any HTTP calls'
       end
     end
   end

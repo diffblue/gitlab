@@ -1,6 +1,6 @@
 ---
 stage: Package
-group: Package
+group: Container Registry
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
@@ -81,9 +81,9 @@ Images follow this naming convention:
 ```
 
 If your project is `gitlab.example.com/mynamespace/myproject`, for example,
-then your image must be named `gitlab.example.com/mynamespace/myproject/my-app` at a minimum.
+then your image must be named `gitlab.example.com/mynamespace/myproject` at a minimum.
 
-You can append additional names to the end of an image name, up to three levels deep.
+You can append additional names to the end of an image name, up to two levels deep.
 
 For example, these are all valid image names for images within the project named `myproject`:
 
@@ -523,7 +523,7 @@ for more details about the permissions that this setting grants to users.
 
 1. Go to your project's **Settings > General** page.
 1. Expand the section **Visibility, project features, permissions**.
-1. Under **Container Registry**, select an option from the dropdown:
+1. Under **Container Registry**, select an option from the dropdown list:
 
    - **Everyone With Access** (Default): The Container Registry is visible to everyone with access
    to the project. If the project is public, the Container Registry is also public. If the project

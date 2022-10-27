@@ -1006,88 +1006,6 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
     end
   end
 
-  describe '#disable_statement_timeout' do
-    it 'disables statement timeouts to current transaction only' do
-      expect(model).to receive(:execute).with('SET LOCAL statement_timeout TO 0')
-
-      model.disable_statement_timeout
-    end
-
-    # this specs runs without an enclosing transaction (:delete truncation method for db_cleaner)
-    context 'with real environment', :delete do
-      before do
-        model.execute("SET statement_timeout TO '20000'")
-      end
-
-      after do
-        model.execute('RESET statement_timeout')
-      end
-
-      it 'defines statement to 0 only for current transaction' do
-        expect(model.execute('SHOW statement_timeout').first['statement_timeout']).to eq('20s')
-
-        model.connection.transaction do
-          model.disable_statement_timeout
-          expect(model.execute('SHOW statement_timeout').first['statement_timeout']).to eq('0')
-        end
-
-        expect(model.execute('SHOW statement_timeout').first['statement_timeout']).to eq('20s')
-      end
-
-      context 'when passing a blocks' do
-        it 'disables statement timeouts on session level and executes the block' do
-          expect(model).to receive(:execute).with('SET statement_timeout TO 0')
-          expect(model).to receive(:execute).with('RESET statement_timeout').at_least(:once)
-
-          expect { |block| model.disable_statement_timeout(&block) }.to yield_control
-        end
-
-        # this specs runs without an enclosing transaction (:delete truncation method for db_cleaner)
-        context 'with real environment', :delete do
-          before do
-            model.execute("SET statement_timeout TO '20000'")
-          end
-
-          after do
-            model.execute('RESET statement_timeout')
-          end
-
-          it 'defines statement to 0 for any code run inside the block' do
-            expect(model.execute('SHOW statement_timeout').first['statement_timeout']).to eq('20s')
-
-            model.disable_statement_timeout do
-              model.connection.transaction do
-                expect(model.execute('SHOW statement_timeout').first['statement_timeout']).to eq('0')
-              end
-
-              expect(model.execute('SHOW statement_timeout').first['statement_timeout']).to eq('0')
-            end
-          end
-        end
-      end
-    end
-
-    # This spec runs without an enclosing transaction (:delete truncation method for db_cleaner)
-    context 'when the statement_timeout is already disabled', :delete do
-      before do
-        ActiveRecord::Migration.connection.execute('SET statement_timeout TO 0')
-      end
-
-      after do
-        # Use ActiveRecord::Migration.connection instead of model.execute
-        # so that this call is not counted below
-        ActiveRecord::Migration.connection.execute('RESET statement_timeout')
-      end
-
-      it 'yields control without disabling the timeout or resetting' do
-        expect(model).not_to receive(:execute).with('SET statement_timeout TO 0')
-        expect(model).not_to receive(:execute).with('RESET statement_timeout')
-
-        expect { |block| model.disable_statement_timeout(&block) }.to yield_control
-      end
-    end
-  end
-
   describe '#true_value' do
     it 'returns the appropriate value' do
       expect(model.true_value).to eq("'t'")
@@ -2006,8 +1924,116 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
       end
     end
 
+    let(:same_queue_different_worker) do
+      Class.new do
+        include Sidekiq::Worker
+
+        sidekiq_options queue: 'test'
+
+        def self.name
+          'SameQueueDifferentWorkerClass'
+        end
+      end
+    end
+
+    let(:unrelated_worker) do
+      Class.new do
+        include Sidekiq::Worker
+
+        sidekiq_options queue: 'unrelated'
+
+        def self.name
+          'UnrelatedWorkerClass'
+        end
+      end
+    end
+
     before do
       stub_const(worker.name, worker)
+      stub_const(unrelated_worker.name, unrelated_worker)
+      stub_const(same_queue_different_worker.name, same_queue_different_worker)
+    end
+
+    describe '#sidekiq_remove_jobs', :clean_gitlab_redis_queues do
+      def clear_queues
+        Sidekiq::Queue.new('test').clear
+        Sidekiq::Queue.new('unrelated').clear
+        Sidekiq::RetrySet.new.clear
+        Sidekiq::ScheduledSet.new.clear
+      end
+
+      around do |example|
+        clear_queues
+        Sidekiq::Testing.disable!(&example)
+        clear_queues
+      end
+
+      it "removes all related job instances from the job class's queue" do
+        worker.perform_async
+        same_queue_different_worker.perform_async
+        unrelated_worker.perform_async
+
+        queue_we_care_about = Sidekiq::Queue.new(worker.queue)
+        unrelated_queue = Sidekiq::Queue.new(unrelated_worker.queue)
+
+        expect(queue_we_care_about.size).to eq(2)
+        expect(unrelated_queue.size).to eq(1)
+
+        model.sidekiq_remove_jobs(job_klass: worker)
+
+        expect(queue_we_care_about.size).to eq(1)
+        expect(queue_we_care_about.map(&:klass)).not_to include(worker.name)
+        expect(queue_we_care_about.map(&:klass)).to include(
+          same_queue_different_worker.name
+        )
+        expect(unrelated_queue.size).to eq(1)
+      end
+
+      context 'when job instances are in the scheduled set' do
+        it 'removes all related job instances from the scheduled set' do
+          worker.perform_in(1.hour)
+          unrelated_worker.perform_in(1.hour)
+
+          scheduled = Sidekiq::ScheduledSet.new
+
+          expect(scheduled.size).to eq(2)
+          expect(scheduled.map(&:klass)).to include(
+            worker.name,
+            unrelated_worker.name
+          )
+
+          model.sidekiq_remove_jobs(job_klass: worker)
+
+          expect(scheduled.size).to eq(1)
+          expect(scheduled.map(&:klass)).not_to include(worker.name)
+          expect(scheduled.map(&:klass)).to include(unrelated_worker.name)
+        end
+      end
+
+      context 'when job instances are in the retry set' do
+        include_context 'when handling retried jobs'
+
+        it 'removes all related job instances from the retry set' do
+          retry_in(worker, 1.hour)
+          retry_in(worker, 2.hours)
+          retry_in(worker, 3.hours)
+          retry_in(unrelated_worker, 4.hours)
+
+          retries = Sidekiq::RetrySet.new
+
+          expect(retries.size).to eq(4)
+          expect(retries.map(&:klass)).to include(
+            worker.name,
+            unrelated_worker.name
+          )
+
+          model.sidekiq_remove_jobs(job_klass: worker)
+
+          expect(retries.size).to eq(1)
+          expect(retries.map(&:klass)).not_to include(worker.name)
+          expect(retries.map(&:klass)).to include(unrelated_worker.name)
+        end
+      end
     end
 
     describe '#sidekiq_queue_length' do
@@ -2031,7 +2057,7 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
       end
     end
 
-    describe '#migrate_sidekiq_queue' do
+    describe '#sidekiq_queue_migrate' do
       it 'migrates jobs from one sidekiq queue to another' do
         Sidekiq::Testing.disable! do
           worker.perform_async('Something', [1])
@@ -2420,101 +2446,6 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
     end
   end
 
-  describe '#ensure_batched_background_migration_is_finished' do
-    let(:job_class_name) { 'CopyColumnUsingBackgroundMigrationJob' }
-    let(:table) { :events }
-    let(:column_name) { :id }
-    let(:job_arguments) { [["id"], ["id_convert_to_bigint"], nil] }
-
-    let(:configuration) do
-      {
-        job_class_name: job_class_name,
-        table_name: table,
-        column_name: column_name,
-        job_arguments: job_arguments
-      }
-    end
-
-    let(:migration_attributes) do
-      configuration.merge(gitlab_schema: Gitlab::Database.gitlab_schemas_for_connection(model.connection).first)
-    end
-
-    before do
-      allow(model).to receive(:transaction_open?).and_return(false)
-    end
-
-    subject(:ensure_batched_background_migration_is_finished) { model.ensure_batched_background_migration_is_finished(**configuration) }
-
-    it 'raises an error when migration exists and is not marked as finished' do
-      expect(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas).to receive(:require_dml_mode!).twice
-
-      create(:batched_background_migration, :active, migration_attributes)
-
-      allow_next_instance_of(Gitlab::Database::BackgroundMigration::BatchedMigrationRunner) do |runner|
-        allow(runner).to receive(:finalize).with(job_class_name, table, column_name, job_arguments).and_return(false)
-      end
-
-      expect { ensure_batched_background_migration_is_finished }
-        .to raise_error "Expected batched background migration for the given configuration to be marked as 'finished', but it is 'active':" \
-            "\t#{configuration}" \
-            "\n\n" \
-            "Finalize it manually by running the following command in a `bash` or `sh` shell:" \
-            "\n\n" \
-            "\tsudo gitlab-rake gitlab:background_migrations:finalize[CopyColumnUsingBackgroundMigrationJob,events,id,'[[\"id\"]\\,[\"id_convert_to_bigint\"]\\,null]']" \
-            "\n\n" \
-            "For more information, check the documentation" \
-            "\n\n" \
-            "\thttps://docs.gitlab.com/ee/user/admin_area/monitoring/background_migrations.html#database-migrations-failing-because-of-batched-background-migration-not-finished"
-    end
-
-    it 'does not raise error when migration exists and is marked as finished' do
-      expect(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas).to receive(:require_dml_mode!)
-
-      create(:batched_background_migration, :finished, migration_attributes)
-
-      expect { ensure_batched_background_migration_is_finished }
-        .not_to raise_error
-    end
-
-    it 'logs a warning when migration does not exist' do
-      expect(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas).to receive(:require_dml_mode!)
-
-      create(:batched_background_migration, :active, migration_attributes.merge(gitlab_schema: :gitlab_something_else))
-
-      expect(Gitlab::AppLogger).to receive(:warn)
-        .with("Could not find batched background migration for the given configuration: #{configuration}")
-
-      expect { ensure_batched_background_migration_is_finished }
-        .not_to raise_error
-    end
-
-    it 'finalizes the migration' do
-      expect(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas).to receive(:require_dml_mode!).twice
-
-      migration = create(:batched_background_migration, :active, configuration)
-
-      allow_next_instance_of(Gitlab::Database::BackgroundMigration::BatchedMigrationRunner) do |runner|
-        expect(runner).to receive(:finalize).with(job_class_name, table, column_name, job_arguments).and_return(migration.finish!)
-      end
-
-      ensure_batched_background_migration_is_finished
-    end
-
-    context 'when the flag finalize is false' do
-      it 'does not finalize the migration' do
-        expect(Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas).to receive(:require_dml_mode!)
-
-        create(:batched_background_migration, :active, configuration)
-
-        allow_next_instance_of(Gitlab::Database::BackgroundMigration::BatchedMigrationRunner) do |runner|
-          expect(runner).not_to receive(:finalize).with(job_class_name, table, column_name, job_arguments)
-        end
-
-        expect { model.ensure_batched_background_migration_is_finished(**configuration.merge(finalize: false)) }.to raise_error(RuntimeError)
-      end
-    end
-  end
-
   describe '#index_exists_by_name?' do
     it 'returns true if an index exists' do
       ActiveRecord::Migration.connection.execute(
@@ -2618,48 +2549,6 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
           expect(plan_limit.reload.project_hooks).to eq(999)
         end
       end
-    end
-  end
-
-  describe '#with_lock_retries' do
-    let(:buffer) { StringIO.new }
-    let(:in_memory_logger) { Gitlab::JsonLogger.new(buffer) }
-    let(:env) { { 'DISABLE_LOCK_RETRIES' => 'true' } }
-
-    it 'sets the migration class name in the logs' do
-      model.with_lock_retries(env: env, logger: in_memory_logger) {}
-
-      buffer.rewind
-      expect(buffer.read).to include("\"class\":\"#{model.class}\"")
-    end
-
-    where(raise_on_exhaustion: [true, false])
-
-    with_them do
-      it 'sets raise_on_exhaustion as requested' do
-        with_lock_retries = double
-        expect(Gitlab::Database::WithLockRetries).to receive(:new).and_return(with_lock_retries)
-        expect(with_lock_retries).to receive(:run).with(raise_on_exhaustion: raise_on_exhaustion)
-
-        model.with_lock_retries(env: env, logger: in_memory_logger, raise_on_exhaustion: raise_on_exhaustion) {}
-      end
-    end
-
-    it 'does not raise on exhaustion by default' do
-      with_lock_retries = double
-      expect(Gitlab::Database::WithLockRetries).to receive(:new).and_return(with_lock_retries)
-      expect(with_lock_retries).to receive(:run).with(raise_on_exhaustion: false)
-
-      model.with_lock_retries(env: env, logger: in_memory_logger) {}
-    end
-
-    it 'defaults to allowing subtransactions' do
-      with_lock_retries = double
-
-      expect(Gitlab::Database::WithLockRetries).to receive(:new).with(hash_including(allow_savepoints: true)).and_return(with_lock_retries)
-      expect(with_lock_retries).to receive(:run).with(raise_on_exhaustion: false)
-
-      model.with_lock_retries(env: env, logger: in_memory_logger) {}
     end
   end
 

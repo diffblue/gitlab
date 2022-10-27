@@ -73,7 +73,7 @@ RSpec.describe Registrations::CompanyController, :saas do
     context 'on success' do
       where(:trial_onboarding_flow, :redirect_query) do
         'true'  | { trial_onboarding_flow: true }
-        'false' | { skip_trial: true }
+        'false' | {}
       end
 
       with_them do

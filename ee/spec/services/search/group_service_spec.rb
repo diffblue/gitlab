@@ -149,9 +149,14 @@ RSpec.describe Search::GroupService do
       context 'on issues' do
         let!(:note) { create :note_on_issue, project: project }
         let!(:note2) { create :note_on_issue, project: project2, note: note.note }
+        let!(:confidential_note) do
+          note_author_and_assignee = user || project.creator
+          issue = create(:issue, project: project, assignees: [note_author_and_assignee])
+          create(:note, confidential: true, project: project, noteable: issue, author: note_author_and_assignee )
+        end
 
         where(:project_level, :feature_access_level, :membership, :admin_mode, :expected_count) do
-          permission_table_for_guest_feature_access
+          permission_table_for_notes_feature_access
         end
 
         with_them do

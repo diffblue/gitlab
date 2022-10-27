@@ -5,6 +5,7 @@ module EE
     module BackgroundMigration
       module BackfillEpicCacheCounts
         extend ::Gitlab::Utils::Override
+        extend ActiveSupport::Concern
 
         MAX_DEPTH = 7
 
@@ -69,11 +70,14 @@ module EE
           end
         end
 
+        prepended do
+          operation_name :update
+        end
+
         override :perform
         def perform
           not_parent = 'NOT EXISTS (SELECT 1 FROM epics e WHERE e.parent_id = epics.id)'
           each_sub_batch(
-            operation_name: :update,
             batching_scope: -> (relation) { relation.where(not_parent) }
           ) do |batch|
             update_epics(batch, level: 1)

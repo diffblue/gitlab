@@ -81,7 +81,7 @@ RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js d
     end
 
     describe 'resending the code' do
-      it 'rate limits resending' do
+      it 'rate limits resending', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375306' do
         (Gitlab::ApplicationRateLimiter.rate_limits[:email_verification_code_send][:threshold] + 1).times do
           click_link s_('IdentityVerification|Send a new code')
         end

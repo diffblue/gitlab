@@ -260,7 +260,7 @@ pipelines.
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/24851) in GitLab 12.7.
 
 Users with the Owner role for a project can delete a pipeline
-by clicking on the pipeline in the **CI/CD > Pipelines** to get to the **Pipeline Details**
+by selecting the pipeline in the **CI/CD > Pipelines** to get to the **Pipeline Details**
 page, then selecting **Delete**.
 
 ![Pipeline Delete](img/pipeline-delete.png)
@@ -300,6 +300,9 @@ branches, preventing untrusted code from executing on the protected runner and
 preserving deployment keys and other credentials from being unintentionally
 accessed. To ensure that jobs intended to be executed on protected
 runners do not use regular runners, they must be tagged accordingly.
+
+Review the [deployment safety](../environments/deployment_safety.md)
+page for additional security recommendations for securing your pipelines.
 
 ## Trigger a pipeline when an upstream project is rebuilt **(PREMIUM)**
 

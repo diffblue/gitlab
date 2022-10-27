@@ -6,7 +6,7 @@ RSpec.describe 'Group Boards', :js do
   let(:group) { create(:group) }
   let!(:board_ux) { create(:board, group: group, name: 'UX') }
   let!(:board_dev) { create(:board, group: group, name: 'Dev') }
-  let(:user) { create(:group_member, user: create(:user), group: group ).user }
+  let(:user) { create(:group_member, user: create(:user), group: group).user }
 
   before do
     stub_licensed_features(multiple_group_issue_boards: true)

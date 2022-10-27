@@ -7,6 +7,8 @@ class Groups::Analytics::ApplicationController < ApplicationController
   feature_category :planning_analytics
   urgency :low
 
+  before_action :load_group
+
   private
 
   def self.increment_usage_counter(counter_klass, counter, *args)

@@ -88,26 +88,38 @@ RSpec.describe Groups::GroupMembersController do
       put unban_group_group_member_path(group_id: group, id: banned_member)
     end
 
-    context 'when user is an owner' do
+    context 'when current user is an owner' do
       let(:banned_member) { create(:group_member, group: group) }
       let!(:namespace_ban) { create(:namespace_ban, namespace: group, user: banned_member.user) }
 
-      it 'unbans the user' do
-        expect_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
-          expect(service).to receive(:execute) { instance_double(ServiceResponse, "success?" => true) }
-        end
+      shared_examples 'unbans the user' do
+        it 'unbans the user' do
+          expect_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
+            expect(service).to receive(:execute) { instance_double(ServiceResponse, "success?" => true) }
+          end
 
-        request
+          request
+        end
       end
 
-      it 'redirects back to group members page' do
+      it_behaves_like 'unbans the user'
+
+      it 'redirects back to banned group members page' do
         request
 
-        expect(response).to redirect_to(group_group_members_path(group))
+        expect(response).to redirect_to(group_group_members_path(group, tab: 'banned'))
         expect(flash[:notice]).to eq "User was successfully unbanned."
       end
 
-      context 'when user members is not banned' do
+      context 'when unbanning a subgroup member' do
+        let(:subgroup) { create(:group, parent: group) }
+        let(:banned_member) { create(:group_member, group: subgroup) }
+        let!(:namespace_ban) { create(:namespace_ban, namespace: group, user: banned_member.user) }
+
+        it_behaves_like 'unbans the user'
+      end
+
+      context 'when member is not banned' do
         before do
           namespace_ban.destroy!
         end
@@ -122,7 +134,7 @@ RSpec.describe Groups::GroupMembersController do
       context 'when unban fails' do
         let(:error_message) { 'Unban failed' }
 
-        it 'redirects back to group members page with the error message as alert' do
+        it 'redirects back to banned group members page with the error message as alert' do
           allow_next_instance_of(::Users::Abuse::NamespaceBans::DestroyService, namespace_ban, user) do |service|
             service_result =  instance_double(ServiceResponse, "success?" => false, message: error_message)
             allow(service).to receive(:execute) { service_result }
@@ -130,7 +142,7 @@ RSpec.describe Groups::GroupMembersController do
 
           request
 
-          expect(response).to redirect_to(group_group_members_path(group))
+          expect(response).to redirect_to(group_group_members_path(group, tab: 'banned'))
           expect(flash[:alert]).to eq error_message
         end
       end

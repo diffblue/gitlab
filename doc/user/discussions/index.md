@@ -44,8 +44,9 @@ You can quickly see which comments involve you, because
 mentions for yourself (the user currently signed in) are highlighted
 in a different color.
 
-Avoid mentioning `@all` in issues and merge requests, because it sends an email notification
-to all the members of that project's group. This might be interpreted as spam.
+Avoid mentioning `@all` in issues and merge requests. It sends an email notification
+to all members of that project's parent group, not only the participants of the project, 
+and may be interpreted as spam.
 Notifications and mentions can be disabled in
 [a group's settings](../group/manage.md#disable-email-notifications).
 
@@ -167,12 +168,9 @@ If an issue or merge request is locked and closed, you cannot reopen it.
 > - [Renamed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87403) from "confidential comments" to "internal notes" in GitLab 15.0.
 > - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/87383) in GitLab 15.0.
 > - [Feature flag `confidential_notes`](https://gitlab.com/gitlab-org/gitlab/-/issues/362712) removed in GitLab 15.2.
+> - [Changed] permissions in GitLab 15.5 to at least the Reporter role. In GitLab 15.4 and earlier, issue or epic authors and assignees could also read and create internal notes.
 
-You can add an internal note **to an issue or an epic**. It's then visible only to the following people:
-
-- Project members who have at least the Reporter role
-- Issue or epic author
-- Users assigned to the issue or epic
+You can add an internal note **to an issue or an epic**. It's then visible only to project members who have at least the Reporter role.
 
 Keep in mind:
 
@@ -181,10 +179,7 @@ Keep in mind:
 
 Prerequisites:
 
-- You must either:
-  - Have at least the Reporter role for the project.
-  - Be the issue or epic assignee.
-  - Be the issue or epic author.
+- You must have at least the Reporter role for the project.
 
 To add an internal note:
 
@@ -207,7 +202,7 @@ For issues and merge requests with many comments, you can filter the page to sho
    - **Show comments only**: Display only user comments.
    - **Show history only**: Display only activity notes.
 
-![Notes filters dropdown options](img/index_notes_filters.png)
+![Notes filters dropdown list options](img/index_notes_filters.png)
 
 GitLab saves your preference, so it persists when you visit the same page again
 from any device you're logged into.

@@ -26,6 +26,11 @@ export default {
       required: false,
       default: 'md',
     },
+    actionable: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -44,6 +49,9 @@ export default {
 
       return null;
     },
+    badgeUrl() {
+      return this.actionable ? UPGRADE_DOCS_URL : null;
+    },
   },
   created() {
     this.checkGitlabVersion();
@@ -56,8 +64,9 @@ export default {
           if (res.data) {
             this.status = res.data.severity;
 
-            this.track('rendered_version_badge', {
-              label: this.title,
+            this.track('render', {
+              label: 'version_badge',
+              property: this.title,
             });
           }
         })
@@ -67,7 +76,12 @@ export default {
         });
     },
     onClick() {
-      this.track('click_version_badge', { label: this.title });
+      if (!this.actionable) return;
+
+      this.track('click_link', {
+        label: 'version_badge',
+        property: this.title,
+      });
     },
   },
   UPGRADE_DOCS_URL,
@@ -78,12 +92,8 @@ export default {
   <!-- TODO: remove the span element once bootstrap-vue is updated to version 2.21.1 -->
   <!-- TODO: https://github.com/bootstrap-vue/bootstrap-vue/issues/6219 -->
   <span v-if="status" data-testid="badge-click-wrapper" @click="onClick">
-    <gl-badge
-      :href="$options.UPGRADE_DOCS_URL"
-      class="version-check-badge"
-      :variant="status"
-      :size="size"
-      >{{ title }}</gl-badge
-    >
+    <gl-badge :href="badgeUrl" class="version-check-badge" :variant="status" :size="size">{{
+      title
+    }}</gl-badge>
   </span>
 </template>

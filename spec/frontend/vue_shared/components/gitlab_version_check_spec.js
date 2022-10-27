@@ -18,7 +18,7 @@ describe('GitlabVersionCheck', () => {
     res: { severity: 'success' },
   };
 
-  const createComponent = (mockResponse) => {
+  const createComponent = (mockResponse, propsData = {}) => {
     const response = {
       ...defaultResponse,
       ...mockResponse,
@@ -27,7 +27,9 @@ describe('GitlabVersionCheck', () => {
     mock = new MockAdapter(axios);
     mock.onGet().replyOnce(response.code, response.res);
 
-    wrapper = shallowMountExtended(GitlabVersionCheck);
+    wrapper = shallowMountExtended(GitlabVersionCheck, {
+      propsData,
+    });
   };
 
   const dummyGon = {
@@ -99,7 +101,7 @@ describe('GitlabVersionCheck', () => {
         let trackingSpy;
 
         beforeEach(async () => {
-          createComponent(mockResponse);
+          createComponent(mockResponse, { actionable: true });
           trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
           await waitForPromises(); // Ensure we wrap up the axios call
         });
@@ -113,8 +115,9 @@ describe('GitlabVersionCheck', () => {
         });
 
         it(`tracks rendered_version_badge with label ${expectedUI.title}`, () => {
-          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'rendered_version_badge', {
-            label: expectedUI.title,
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render', {
+            label: 'version_badge',
+            property: expectedUI.title,
           });
         });
 
@@ -125,9 +128,40 @@ describe('GitlabVersionCheck', () => {
         it(`tracks click_version_badge with label ${expectedUI.title} when badge is clicked`, async () => {
           await findGlBadgeClickWrapper().trigger('click');
 
-          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_version_badge', {
-            label: expectedUI.title,
+          expect(trackingSpy).toHaveBeenCalledWith(undefined, 'click_link', {
+            label: 'version_badge',
+            property: expectedUI.title,
           });
+        });
+      });
+    });
+
+    describe('when actionable is false', () => {
+      let trackingSpy;
+
+      beforeEach(async () => {
+        createComponent(defaultResponse, { actionable: false });
+        trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
+        await waitForPromises(); // Ensure we wrap up the axios call
+      });
+
+      it('tracks rendered_version_badge correctly', () => {
+        expect(trackingSpy).toHaveBeenCalledWith(undefined, 'render', {
+          label: 'version_badge',
+          property: 'Up to date',
+        });
+      });
+
+      it('does not provide a link to GlBadge', () => {
+        expect(findGlBadge().attributes('href')).toBe(undefined);
+      });
+
+      it('does not track click_version_badge', async () => {
+        await findGlBadgeClickWrapper().trigger('click');
+
+        expect(trackingSpy).not.toHaveBeenCalledWith(undefined, 'click_link', {
+          label: 'version_badge',
+          property: 'Up to date',
         });
       });
     });

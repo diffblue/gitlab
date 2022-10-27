@@ -7,7 +7,7 @@ class UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker # rubocop:disable Scalab
 
   include CronjobQueue # rubocop:disable Scalability/CronWorkerContext
 
-  feature_category :utilization
+  feature_category :subscription_usage_reports
   worker_resource_boundary :cpu
 
   # rubocop: disable CodeReuse/ActiveRecord

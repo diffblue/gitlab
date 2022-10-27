@@ -69,24 +69,53 @@ module Elastic
         }
 
         if current_user
+          project_ids = authorized_project_ids(current_user, options)
+
           filter[:bool][:should] << {
             bool: {
               must: [
                 {
                   bool: {
+                    _name: context.name(:issue, :confidential),
+                    should: { term: { "issue.confidential" => true } }
+                  }
+                },
+                {
+                  bool: {
+                    _name: context.name(:not_confidential),
                     should: [
-                      { term: { "issue.confidential" => { _name: context.name(:issue, :confidential), value: true } } },
-                      { term: { confidential: { _name: context.name(:confidential), value: true } } }
+                      { bool: { must_not: [{ exists: { field: :confidential } }] } },
+                      { term: { confidential: false } }
                     ]
                   }
                 },
                 {
                   bool: {
+                    _name: context.name(:user, :issue_author, :issue_assignee, :project_membership),
                     should: [
-                      { term: { "issue.author_id" => { _name: context.name(:as_author), value: current_user.id } } },
-                      { term: { "issue.assignee_id" => { _name: context.name(:as_assignee), value: current_user.id } } },
-                      { terms: { _name: context.name(:project, :membership, :id), project_id: authorized_project_ids(current_user, options) } }
+                      { term: { "issue.author_id" => current_user.id } },
+                      { term: { "issue.assignee_id" => current_user.id } },
+                      { terms: { project_id: project_ids } }
                     ]
+                  }
+                }
+              ]
+            }
+          }
+
+          filter[:bool][:should] << {
+            bool: {
+              must: [
+                {
+                  bool: {
+                    _name: context.name(:confidential),
+                    should: { term: { confidential: true } }
+                  }
+                },
+                {
+                  bool: {
+                    _name: context.name(:user, :project_membership),
+                    should: { terms: { _name: context.name(:project, :membership, :id), project_id: project_ids } }
                   }
                 }
               ]

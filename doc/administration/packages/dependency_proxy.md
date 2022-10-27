@@ -1,6 +1,6 @@
 ---
 stage: Package
-group: Package
+group: Container Registry
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
@@ -215,7 +215,7 @@ For installations from source:
 RAILS_ENV=production sudo -u git -H bundle exec rake gitlab:dependency_proxy:migrate
 ```
 
-You can optionally track progress and verify that all packages migrated successfully using the
+You can optionally track progress and verify that all Dependency Proxy blobs and manifests migrated successfully using the
 [PostgreSQL console](https://docs.gitlab.com/omnibus/settings/database.html#connecting-to-the-bundled-postgresql-database):
 
 - For Omnibus GitLab instances: `sudo gitlab-rails dbconsole`

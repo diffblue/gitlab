@@ -6,7 +6,7 @@ RSpec.describe 'Protected Environments' do
   include Spec::Support::Helpers::ModalHelpers
 
   let(:group) { create(:group) }
-  let(:project) { create(:project, :repository, group: group ) }
+  let(:project) { create(:project, :repository, group: group) }
   let(:user) { create(:user) }
   let(:environments) { %w(production development staging test) }
 

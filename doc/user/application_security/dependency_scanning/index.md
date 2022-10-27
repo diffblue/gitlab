@@ -501,11 +501,11 @@ From GitLab 14.8 the `gemnasium` analyzer scans supported JavaScript projects fo
 
 #### Go
 
-When scanning a Go project, gemnasium invokes a builder and attempts to generate a [build list](https://go.dev/ref/mod#glos-build-list) using
-[Minimal Version Selection](https://go.dev/ref/mod#glos-minimal-version-selection). If a non-fatal error is encountered, the build process signals
-that the execution should proceed and falls back to parsing the available `go.sum` file.
+Multiple files are supported. When a `go.mod` file is detected, the analyzer attempts to generate a [build list](https://go.dev/ref/mod#glos-build-list) using
+[Minimal Version Selection](https://go.dev/ref/mod#glos-minimal-version-selection). If a non-fatal error is encountered, the analyzer falls back to parsing the
+available `go.sum` file. The process is repeated for every detected `go.mod` and `go.sum` file.
 
-#### PHP, Go, C, C++, .NET, C&#35;, Ruby, JavaScript
+#### PHP, C, C++, .NET, C&#35;, Ruby, JavaScript
 
 The analyzer for these languages supports multiple lockfiles.
 
@@ -525,7 +525,7 @@ The [Security Scanner Integration](../../../development/integrations/secure.md) 
 
 To enable dependency scanning for GitLab 11.9 and later, you must
 [include](../../../ci/yaml/index.md#includetemplate) the
-[`Dependency-Scanning.gitlab-ci.yml` template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Security/Dependency-Scanning.gitlab-ci.yml)
+[`Dependency-Scanning.gitlab-ci.yml` template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/Dependency-Scanning.gitlab-ci.yml)
 that is provided as a part of your GitLab installation.
 For GitLab versions earlier than 11.9, you can copy and use the job as defined
 that template.
@@ -534,7 +534,7 @@ Add the following to your `.gitlab-ci.yml` file:
 
 ```yaml
 include:
-  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Jobs/Dependency-Scanning.gitlab-ci.yml
 ```
 
 The included template creates dependency scanning jobs in your CI/CD

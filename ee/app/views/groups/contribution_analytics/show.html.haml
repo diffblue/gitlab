@@ -8,52 +8,18 @@
       = range[:label]
 %p= s_('ContributionAnalytics|Contribution analytics for issues, merge requests and push events since %{start_date}') % { start_date: @start_date }
 
-%div{ data: { qa_selector: 'push_content' } }
-  %h3= _('Pushes')
-  - code_push_count = @data_collector.total_push_count
-  - commits_count = @data_collector.total_commit_count
-  - person_count = @data_collector.total_push_author_count
-  - pushes = n_('%d push', '%d pushes', code_push_count) % code_push_count
-  - commits = n_('%d commit', '%d commits', commits_count) % commits_count
-  - contributor_count = n_('%d contributor', '%d contributors', person_count) % person_count
-  - pushes_string = html_escape(s_('ContributionAnalytics|%{pushes}, more than %{commits} by %{contributors}.')) % { pushes: tag.strong(pushes), commits: tag.strong(commits), contributors: tag.strong(contributor_count) }
-  - if code_push_count > 0 || commits_count > 0 || person_count > 0
-    = pushes_string
-  - else
-    = s_('ContributionAnalytics|No pushes for the selected time period.')
-
-.row
-  .col-md-12
-    #js_pushes_chart_vue
-
-%div{ data: { qa_selector: 'merge_request_content' } }
-  %h3= s_('ContributionAnalytics|Merge requests')
-  - mr_closed_count = @data_collector.total_merge_requests_closed_count
-  - mr_created_count = @data_collector.total_merge_requests_created_count
-  - mr_merged_count = @data_collector.total_merge_requests_merged_count
-  - if mr_closed_count > 0 || mr_created_count > 0 || mr_merged_count > 0
-    = html_escape(s_('ContributionAnalytics|%{created_count} created, %{merged_count} merged, %{closed_count} closed.')) % { closed_count: tag.strong(mr_closed_count), created_count: tag.strong(mr_created_count), merged_count: tag.strong(mr_merged_count) }
-  - else
-    = s_('ContributionAnalytics|No merge requests for the selected time period.')
-
-.row
-  .col-md-12
-    #js_merge_requests_chart_vue
-
-%div{ data: { qa_selector: 'issue_content' } }
-  %h3= s_('ContributionAnalytics|Issues')
-  - issues_created_count = @data_collector.total_issues_created_count
-  - issues_closed_count = @data_collector.total_issues_closed_count
-  - if issues_created_count > 0 && issues_closed_count > 0
-    = html_escape(s_('ContributionAnalytics|%{created_count} created, %{closed_count} closed.')) % { created_count: tag.strong(issues_created_count), closed_count: tag.strong(issues_closed_count) }
-  - else
-    = s_('ContributionAnalytics|No issues for the selected time period.')
-
-.row
-  .col-md-12
-    #js_issues_chart_vue
+#js-contribution-analytics{
+  data: {
+    analytics_data: @data_collector.group_member_contributions_table_data.to_json.html_safe,
+    total_push_count: @data_collector.total_push_count,
+    total_commit_count: @data_collector.total_commit_count,
+    total_push_author_count: @data_collector.total_push_author_count,
+    total_merge_requests_closed_count: @data_collector.total_merge_requests_closed_count,
+    total_merge_requests_created_count: @data_collector.total_merge_requests_created_count,
+    total_merge_requests_merged_count: @data_collector.total_merge_requests_merged_count,
+    total_issues_created_count: @data_collector.total_issues_created_count,
+    total_issues_closed_count: @data_collector.total_issues_closed_count
+  }
+}
 
 #js-group-member-contributions{ data: { member_contributions_path: group_contribution_analytics_path(@group, { start_date: @start_date, format: :json }) } }
--# haml-lint:disable InlineJavaScript
-%script#js-analytics-data{ type: "application/json" }
-  = @data_collector.group_member_contributions_table_data.to_json.html_safe

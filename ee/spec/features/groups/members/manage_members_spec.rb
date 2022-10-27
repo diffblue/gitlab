@@ -140,16 +140,23 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
   end
 
   describe 'banned members' do
+    let_it_be(:sub_group) { create(:group, parent: group) }
+
     let(:licensed_feature_available) { true }
+    let(:owner) { user1 }
+    let(:group_member) { user2 }
+    let(:subgroup_member) { user3 }
 
     before do
       stub_licensed_features(unique_project_download_limit: licensed_feature_available)
 
       create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan)
-      create(:namespace_ban, namespace: group, user: user2)
+      create(:namespace_ban, namespace: group, user: group_member)
+      create(:namespace_ban, namespace: group, user: subgroup_member)
 
-      group.add_owner(user1)
-      group.add_developer(user2)
+      group.add_owner(owner)
+      group.add_developer(group_member)
+      sub_group.add_developer(subgroup_member)
     end
 
     it 'owner can unban banned users' do
@@ -157,14 +164,19 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
       click_on 'Banned'
 
-      page.within(first_row) do
-        expect(page).to have_content(user2.name)
-      end
+      expect(all_rows.count).to eq 2
 
-      click_button 'Unban'
+      page.within find_member_row(group_member) do
+        click_button 'Unban'
+      end
+      expect(page).to have_content('User was successfully unbanned.')
+
+      page.within find_member_row(subgroup_member) do
+        click_button 'Unban'
+      end
+      expect(page).to have_content('User was successfully unbanned.')
 
       expect(page).not_to have_content('Banned')
-      expect(page).to have_content('User was successfully unbanned.')
     end
 
     context 'when feature flag is disabled' do

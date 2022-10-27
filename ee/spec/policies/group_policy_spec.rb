@@ -23,6 +23,7 @@ RSpec.describe GroupPolicy do
       read_cluster
       read_group_runners
       read_billing
+      read_container_image
     ]
   end
 
@@ -224,6 +225,12 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_allowed(:read_dora4_analytics) }
     end
 
+    context 'when the user is an auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_dora4_analytics) }
+    end
+
     context 'when the user is an admin', :enable_admin_mode do
       let(:current_user) { admin }
 
@@ -297,6 +304,12 @@ RSpec.describe GroupPolicy do
         let(:current_user) { guest }
 
         it { is_expected.not_to be_allowed(:view_group_ci_cd_analytics) }
+      end
+
+      context 'when the user has auditor permissions' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_allowed(:view_group_ci_cd_analytics) }
       end
     end
 
@@ -1265,7 +1278,7 @@ RSpec.describe GroupPolicy do
 
       specify do
         expect_allowed(*auditor_permissions)
-        expect_disallowed(*reporter_permissions)
+        expect_disallowed(*(reporter_permissions - auditor_permissions))
         expect_disallowed(*(developer_permissions - auditor_permissions))
         expect_disallowed(*maintainer_permissions)
         expect_disallowed(*(owner_permissions - auditor_permissions))
@@ -2305,6 +2318,15 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_allowed(:read_group_all_available_runners) }
       it { is_expected.to be_disallowed(:admin_group_runners) }
       it { is_expected.to be_disallowed(:register_group_runners) }
+    end
+  end
+
+  describe 'group container registry' do
+    context 'auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_container_image) }
+      it { is_expected.to be_disallowed(:admin_container_image) }
     end
   end
 end

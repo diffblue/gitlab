@@ -56,8 +56,8 @@ We make the following assumption with regards to automatically being considered 
 - Team members working in a specific stage/group (for example, create: source code) are considered domain experts for that area of the app they work on.
 - Team members working on a specific feature (for example, search) are considered domain experts for that feature.
 
-We default to assigning reviews to team members with domain expertise.
-When a suitable [domain expert](#domain-experts) isn't available, you can choose any team member to review the MR, or follow the [Reviewer roulette](#reviewer-roulette) recommendation.
+We default to assigning reviews to team members with domain expertise for code reviews. For UX reviews we default to the recommended designer from the Reviewer roulette.
+When a suitable [domain expert](#domain-experts) isn't available, you can choose any team member to review the MR, or follow the [Reviewer roulette](#reviewer-roulette) recommendation (see above for UX reviews).
 
 To find a domain expert:
 
@@ -517,6 +517,9 @@ settings to ensure MRs get an approval from a top-level CODEOWNERS maintainer:
 - [Prevent approvals by users who add commits](../user/project/merge_requests/approvals/settings.md#prevent-approvals-by-users-who-add-commits).
 - [Prevent editing approval rules in merge requests](../user/project/merge_requests/approvals/settings.md#prevent-editing-approval-rules-in-merge-requests).
 - [Remove all approvals when commits are added to the source branch](../user/project/merge_requests/approvals/settings.md#remove-all-approvals-when-commits-are-added-to-the-source-branch)
+
+To update the code owners in the `CODEOWNERS` file for `gitlab-org/gitlab`, follow
+the process explained in the [code owners approvals handbook section](https://about.gitlab.com/handbook/engineering/workflow/code-review/#code-owner-approvals).
 
   There are scenarios such as rebasing locally or applying suggestions that are considered
   the same as adding a commit and could reset existing approvals. Approvals are not removed

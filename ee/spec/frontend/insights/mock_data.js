@@ -103,10 +103,10 @@ export const doraSeries = [
       ['February', 2],
     ],
     itemStyle: {
-      color: '#5772ff',
+      color: '#617ae2',
     },
     lineStyle: {
-      color: '#5772ff',
+      color: '#617ae2',
     },
     name: 'Issues',
     showAllSymbol: true,

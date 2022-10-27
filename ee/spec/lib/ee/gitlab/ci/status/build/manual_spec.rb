@@ -48,7 +48,7 @@ RSpec.describe Gitlab::Ci::Status::Build::Manual do
 
     context 'when build prevents rollback deployment' do
       before do
-        allow(job).to receive(:prevent_rollback_deployment?).and_return(true)
+        allow(job).to receive(:outdated_deployment?).and_return(true)
       end
 
       it { expect(illustration[:content]).to match /This deployment job does not run automatically and must be started manually, but it's older than the latest deployment, and therefore can't run./ }

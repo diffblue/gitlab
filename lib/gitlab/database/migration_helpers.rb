@@ -6,6 +6,8 @@ module Gitlab
       include Migrations::ReestablishedConnectionStack
       include Migrations::BackgroundMigrationHelpers
       include Migrations::BatchedBackgroundMigrationHelpers
+      include Migrations::LockRetriesHelpers
+      include Migrations::TimeoutHelpers
       include DynamicModelHelpers
       include RenameTableHelpers
       include AsyncIndexes::MigrationHelpers
@@ -358,97 +360,6 @@ module Gitlab
         hashed_identifier = Digest::SHA256.hexdigest(identifier).first(10)
 
         "#{prefix}#{hashed_identifier}"
-      end
-
-      # Long-running migrations may take more than the timeout allowed by
-      # the database. Disable the session's statement timeout to ensure
-      # migrations don't get killed prematurely.
-      #
-      # There are two possible ways to disable the statement timeout:
-      #
-      # - Per transaction (this is the preferred and default mode)
-      # - Per connection (requires a cleanup after the execution)
-      #
-      # When using a per connection disable statement, code must be inside
-      # a block so we can automatically execute `RESET statement_timeout` after block finishes
-      # otherwise the statement will still be disabled until connection is dropped
-      # or `RESET statement_timeout` is executed
-      def disable_statement_timeout
-        if block_given?
-          if statement_timeout_disabled?
-            # Don't do anything if the statement_timeout is already disabled
-            # Allows for nested calls of disable_statement_timeout without
-            # resetting the timeout too early (before the outer call ends)
-            yield
-          else
-            begin
-              execute('SET statement_timeout TO 0')
-
-              yield
-            ensure
-              execute('RESET statement_timeout')
-            end
-          end
-        else
-          unless transaction_open?
-            raise <<~ERROR
-              Cannot call disable_statement_timeout() without a transaction open or outside of a transaction block.
-              If you don't want to use a transaction wrap your code in a block call:
-
-              disable_statement_timeout { # code that requires disabled statement here }
-
-              This will make sure statement_timeout is disabled before and reset after the block execution is finished.
-            ERROR
-          end
-
-          execute('SET LOCAL statement_timeout TO 0')
-        end
-      end
-
-      # Executes the block with a retry mechanism that alters the +lock_timeout+ and +sleep_time+ between attempts.
-      # The timings can be controlled via the +timing_configuration+ parameter.
-      # If the lock was not acquired within the retry period, a last attempt is made without using +lock_timeout+.
-      #
-      # Note this helper uses subtransactions when run inside an already open transaction.
-      #
-      # ==== Examples
-      #   # Invoking without parameters
-      #   with_lock_retries do
-      #     drop_table :my_table
-      #   end
-      #
-      #   # Invoking with custom +timing_configuration+
-      #   t = [
-      #     [1.second, 1.second],
-      #     [2.seconds, 2.seconds]
-      #   ]
-      #
-      #   with_lock_retries(timing_configuration: t) do
-      #     drop_table :my_table # this will be retried twice
-      #   end
-      #
-      #   # Disabling the retries using an environment variable
-      #   > export DISABLE_LOCK_RETRIES=true
-      #
-      #   with_lock_retries do
-      #     drop_table :my_table # one invocation, it will not retry at all
-      #   end
-      #
-      # ==== Parameters
-      # * +timing_configuration+ - [[ActiveSupport::Duration, ActiveSupport::Duration], ...] lock timeout for the block, sleep time before the next iteration, defaults to `Gitlab::Database::WithLockRetries::DEFAULT_TIMING_CONFIGURATION`
-      # * +logger+ - [Gitlab::JsonLogger]
-      # * +env+ - [Hash] custom environment hash, see the example with `DISABLE_LOCK_RETRIES`
-      def with_lock_retries(*args, **kwargs, &block)
-        raise_on_exhaustion = !!kwargs.delete(:raise_on_exhaustion)
-        merged_args = {
-          connection: connection,
-          klass: self.class,
-          logger: Gitlab::BackgroundMigration::Logger,
-          allow_savepoints: true
-        }.merge(kwargs)
-
-        Gitlab::Database::WithLockRetries.new(**merged_args)
-          .run(raise_on_exhaustion: raise_on_exhaustion, &block)
       end
 
       def true_value
@@ -947,43 +858,6 @@ module Gitlab
         execute("DELETE FROM batched_background_migrations WHERE #{conditions}")
       end
 
-      def ensure_batched_background_migration_is_finished(job_class_name:, table_name:, column_name:, job_arguments:, finalize: true)
-        Gitlab::Database::QueryAnalyzers::RestrictAllowedSchemas.require_dml_mode!
-
-        Gitlab::Database::BackgroundMigration::BatchedMigration.reset_column_information
-        migration = Gitlab::Database::BackgroundMigration::BatchedMigration.find_for_configuration(
-          Gitlab::Database.gitlab_schemas_for_connection(connection),
-          job_class_name, table_name, column_name, job_arguments
-        )
-
-        configuration = {
-          job_class_name: job_class_name,
-          table_name: table_name,
-          column_name: column_name,
-          job_arguments: job_arguments
-        }
-
-        return Gitlab::AppLogger.warn "Could not find batched background migration for the given configuration: #{configuration}" if migration.nil?
-
-        return if migration.finished?
-
-        finalize_batched_background_migration(job_class_name: job_class_name, table_name: table_name, column_name: column_name, job_arguments: job_arguments) if finalize
-
-        unless migration.reload.finished? # rubocop:disable Cop/ActiveRecordAssociationReload
-          raise "Expected batched background migration for the given configuration to be marked as 'finished', " \
-            "but it is '#{migration.status_name}':" \
-            "\t#{configuration}" \
-            "\n\n" \
-            "Finalize it manually by running the following command in a `bash` or `sh` shell:" \
-            "\n\n" \
-            "\tsudo gitlab-rake gitlab:background_migrations:finalize[#{job_class_name},#{table_name},#{column_name},'#{job_arguments.to_json.gsub(',', '\,')}']" \
-            "\n\n" \
-            "For more information, check the documentation" \
-            "\n\n" \
-            "\thttps://docs.gitlab.com/ee/user/admin_area/monitoring/background_migrations.html#database-migrations-failing-because-of-batched-background-migration-not-finished"
-        end
-      end
-
       # Returns an Array containing the indexes for the given column
       def indexes_for(table, column)
         column = column.to_s
@@ -1101,6 +975,24 @@ module Gitlab
         remove_foreign_key(*args, **kwargs)
       rescue ArgumentError
       end
+
+      # Remove any instances of deprecated job classes lingering in queues.
+      #
+      # rubocop:disable Cop/SidekiqApiUsage
+      def sidekiq_remove_jobs(job_klass:)
+        Sidekiq::Queue.new(job_klass.queue).each do |job|
+          job.delete if job.klass == job_klass.to_s
+        end
+
+        Sidekiq::RetrySet.new.each do |retri|
+          retri.delete if retri.klass == job_klass.to_s
+        end
+
+        Sidekiq::ScheduledSet.new.each do |scheduled|
+          scheduled.delete if scheduled.klass == job_klass.to_s
+        end
+      end
+      # rubocop:enable Cop/SidekiqApiUsage
 
       def sidekiq_queue_migrate(queue_from, to:)
         while sidekiq_queue_length(queue_from) > 0
@@ -1620,11 +1512,6 @@ into similar problems in the future (e.g. when new tables are created).
         SQL
 
         connection.exec_query(check_sql)
-      end
-
-      def statement_timeout_disabled?
-        # This is a string of the form "100ms" or "0" when disabled
-        connection.select_value('SHOW statement_timeout') == "0"
       end
 
       def column_is_nullable?(table, column)

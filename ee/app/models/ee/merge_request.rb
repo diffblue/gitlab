@@ -74,6 +74,15 @@ module EE
 
       scope :with_head_pipeline, -> { where.not(head_pipeline_id: nil) }
 
+      scope :for_projects_with_security_policy_project, -> do
+        joins('INNER JOIN security_orchestration_policy_configurations ' \
+              'ON merge_requests.target_project_id = security_orchestration_policy_configurations.project_id')
+      end
+
+      scope :with_applied_scan_result_policies, -> do
+        joins(:approval_rules).merge(ApprovalMergeRequestRule.scan_finding)
+      end
+
       def merge_requests_author_approval?
         !!target_project&.merge_requests_author_approval?
       end

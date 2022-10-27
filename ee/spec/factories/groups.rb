@@ -5,15 +5,6 @@ FactoryBot.modify do
     after(:create) do |group, evaluator|
       create(:namespace_settings, namespace: group) unless group.namespace_settings
       create(:namespace_ci_cd_settings, namespace: group) unless group.ci_cd_settings
-
-      # assign the delegated `#ci_cd_settings` attributes after create
-      group.ci_cd_settings.allow_stale_runner_pruning = evaluator.allow_stale_runner_pruning
-    end
-
-    transient do
-      # we can't assign the delegated `#ci_cd_settings` attributes directly, as the
-      # `#ci_cd_settings` relation needs to be created first
-      allow_stale_runner_pruning { false }
     end
 
     trait :wiki_repo do
@@ -67,7 +58,7 @@ FactoryBot.define do
   factory :group_with_deletion_schedule, parent: :group do
     transient do
       deleting_user { association(:user) }
-      marked_for_deletion_on { nil }
+      marked_for_deletion_on { Date.current }
     end
 
     after(:create) do |group, evaluator|

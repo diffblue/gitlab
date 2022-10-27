@@ -41,12 +41,12 @@ module EE
 
     def approval_summary
       strong_memoize(:approval_summary) do
-        ::ProtectedEnvironments::ApprovalSummary.new(deployment: self)
+        ::Deployments::ApprovalSummary.new(deployment: self)
       end
     end
 
     def approved?
-      approval_summary.all_rules_approved?
+      approval_summary.status == ::Deployments::ApprovalSummary::STATUS_APPROVED
     end
   end
 end

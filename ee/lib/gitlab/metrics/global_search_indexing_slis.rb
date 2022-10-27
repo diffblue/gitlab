@@ -5,13 +5,13 @@ module Gitlab
     module GlobalSearchIndexingSlis
       class << self
         # The following targets are the 99.95th percentile of indexing
-        # gathered on 12-09-2022
+        # gathered on 20-10-2022
         # Code/Wikis
         # from https://log.gprd.gitlab.net/goto/8cbc1920-3432-11ed-8656-f5f2137823ba (internal only)
         #
         # Other
         # (TODO) https://log.gprd.gitlab.net/goto/a6f274b0-3432-11ed-8656-f5f2137823ba (internal only)
-        CODE_INDEXING_TARGET_S    = 9.692
+        CODE_INDEXING_TARGET_S    = 120.0
         CONTENT_INDEXING_TARGET_S = 4.878
 
         def initialize_slis!

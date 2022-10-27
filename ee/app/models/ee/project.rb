@@ -661,6 +661,13 @@ module EE
       end
     end
 
+    def product_analytics_enabled?
+      return false unless licensed_feature_available?(:product_analytics)
+      return false unless ::Feature.enabled?(:cube_api_proxy, self)
+
+      true
+    end
+
     def repository_size_excess
       return 0 unless actual_size_limit.to_i > 0
 
@@ -729,6 +736,10 @@ module EE
       # Index the wiki repository after import of non-forked projects only, the project repository is indexed
       # in ProjectImportState so ElasticSearch will get project repository changes when mirrors are updated
       ElasticCommitIndexerWorker.perform_async(id, true) if use_elasticsearch? && !forked?
+    end
+
+    def elastic_namespace_ancestry
+      namespace.elastic_namespace_ancestry + "p#{id}-"
     end
 
     def log_geo_updated_events

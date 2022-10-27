@@ -3,7 +3,7 @@
 require 'airborne'
 
 module QA
-  RSpec.describe 'Data Stores' do
+  RSpec.describe 'Data Stores', product_group: :global_search do
     describe(
       'Elasticsearch advanced global search with advanced syntax',
       :orchestrated,

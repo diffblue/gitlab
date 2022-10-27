@@ -134,7 +134,7 @@ module EE
 
     def check_user_confirmation
       user = ::User.find_by_login(user_params[:login])
-      return if !user || !user.valid_password?(user_params[:password]) || user.access_locked? || user.confirmed?
+      return if !user || !user.valid_password?(user_params[:password]) || user.access_locked? || user.identity_verified?
 
       email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(user.email)
       return unless ::Feature.enabled?(:identity_verification, email_wrapper)

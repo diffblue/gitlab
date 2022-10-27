@@ -64,6 +64,23 @@ When you create a user, you choose an access level: **Regular**, **Auditor**, or
 
 Capitalize these words when you refer to the UI. Otherwise use lowercase.
 
+## active voice
+
+Use active voice instead of passive.
+
+Use:
+
+- The contributor writes the documentation.
+
+Instead of:
+
+- The documentation is written by contributors.
+
+NOTE:
+If you can add the phrase "by zombies" to the phrase,
+the construction is passive. For example, `The button is selected by zombies`
+is passive. `Zombies select the button` is active.
+
 ## administrator
 
 Use **administrator access** instead of **admin** when talking about a user's access level.
@@ -570,6 +587,15 @@ Do not use Latin abbreviations. Use **that is** instead. ([Vale](../testing.md#v
 
 Do not use **in order to**. Use **to** instead. ([Vale](../testing.md#vale) rule: [`Wordy.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/Wordy.yml))
 
+## -ing words
+
+Remove **-ing** words whenever possible. They can be difficult to translate,
+and more precise terms are usually available. For example:
+
+- Instead of **The files using storage are deleted**, use **The files that use storage are deleted**.
+- Instead of **Delete files using the Edit button**, use **Delete files by using the Edit button**.
+- Instead of **Replicating your server is required**, use **You must replicate your server**.
+
 ## issue
 
 Use lowercase for **issue**.
@@ -731,6 +757,7 @@ Use:
 Instead of:
 
 - You need to set the variable.
+- We recommend that you set the variable.
 
 ## note that
 

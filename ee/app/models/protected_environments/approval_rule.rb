@@ -3,6 +3,7 @@
 module ProtectedEnvironments
   class ApprovalRule < ApplicationRecord
     include Authorizable
+    include ApprovalRules::Summarizable
 
     self.table_name = 'protected_environment_approval_rules'
 

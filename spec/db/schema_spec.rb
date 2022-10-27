@@ -15,7 +15,7 @@ RSpec.describe 'Database schema' do
   }.with_indifferent_access.freeze
 
   # List of columns historically missing a FK, don't add more columns
-  # See: https://docs.gitlab.com/ee/development/foreign_keys.html#naming-foreign-keys
+  # See: https://docs.gitlab.com/ee/development/database/foreign_keys.html#naming-foreign-keys
   IGNORED_FK_COLUMNS = {
     abuse_reports: %w[reporter_id user_id],
     application_settings: %w[performance_bar_allowed_group_id slack_app_id snowplow_app_id eks_account_id eks_access_key_id],
@@ -33,6 +33,7 @@ RSpec.describe 'Database schema' do
     chat_teams: %w[team_id],
     ci_builds: %w[erased_by_id trigger_request_id partition_id],
     ci_builds_metadata: %w[partition_id],
+    p_ci_builds_metadata: %w[partition_id],
     ci_job_artifacts: %w[partition_id],
     ci_namespace_monthly_usages: %w[namespace_id],
     ci_pipeline_variables: %w[partition_id],

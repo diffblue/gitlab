@@ -17,6 +17,7 @@ module API
         end
 
         def check_application_settings!
+          not_found! unless Gitlab::CurrentSettings.product_analytics_enabled?
           not_found! unless Gitlab::CurrentSettings.cube_api_base_url.present?
           not_found! unless Gitlab::CurrentSettings.cube_api_key.present?
         end
@@ -25,7 +26,7 @@ module API
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         desc 'Proxy request to cube installation'
         get ':project_id/product_analytics/request/load' do
-          not_found! unless ::Feature.enabled?(:cube_api_proxy, project)
+          not_found! unless project.product_analytics_enabled?
           unauthorized! unless can?(current_user, :developer_access, project)
 
           payload = {

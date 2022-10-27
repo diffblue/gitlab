@@ -1,0 +1,15 @@
+fragment SecurityPolicySource on SecurityPolicySource {
+  ... on GroupSecurityPolicySource {
+    inherited
+    namespace {
+      id
+      fullPath
+      name
+    }
+  }
+  ... on ProjectSecurityPolicySource {
+    project {
+      fullPath
+    }
+  }
+}

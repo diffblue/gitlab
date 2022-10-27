@@ -1,5 +1,4 @@
-import { GlButton } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
+import { GlButton, GlPopover, GlLink } from '@gitlab/ui';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import GroupedSecurityReportsApp from 'ee/vue_shared/security_reports/grouped_security_reports_app.vue';
@@ -11,13 +10,12 @@ import * as secretDetectionTypes from 'ee/vue_shared/security_reports/store/modu
 import * as types from 'ee/vue_shared/security_reports/store/mutation_types';
 import { trimText } from 'helpers/text_helper';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
-import { waitForMutation } from 'helpers/vue_test_utils_helper';
+import { waitForMutation, mountExtended } from 'helpers/vue_test_utils_helper';
 import axios from '~/lib/utils/axios_utils';
 import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/reports/components/grouped_issues_list.vue';
 import ReportSection from '~/reports/components/report_section.vue';
 import MergeRequestArtifactDownload from '~/vue_shared/security_reports/components/artifact_downloads/merge_request_artifact_download.vue';
-
 import {
   sastDiffSuccessMock,
   dastDiffSuccessMock,
@@ -85,7 +83,7 @@ describe('Grouped security reports app', () => {
   const glModalDirective = jest.fn();
 
   const createWrapper = (propsData, options, provide) => {
-    wrapper = mount(GroupedSecurityReportsApp, {
+    wrapper = mountExtended(GroupedSecurityReportsApp, {
       propsData,
       stubs: {
         VulnerabilityTraining: true,
@@ -126,7 +124,6 @@ describe('Grouped security reports app', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    wrapper = null;
     mock.restore();
   });
 
@@ -143,6 +140,29 @@ describe('Grouped security reports app', () => {
         apiFuzzing: true,
       },
     };
+
+    describe('info button and popover', () => {
+      beforeEach(() => {
+        createWrapper(allReportProps);
+      });
+
+      it('shows the info button', () => {
+        expect(wrapper.findByTestId('info-button').props()).toMatchObject({
+          variant: 'link',
+          icon: 'information-o',
+        });
+      });
+
+      it('shows the info popover', () => {
+        const popover = wrapper.findComponent(GlPopover);
+
+        expect(popover.text()).toContain(GroupedSecurityReportsApp.i18n.infoPopover.title);
+        expect(popover.text()).toContain(GroupedSecurityReportsApp.i18n.infoPopover.description);
+        expect(popover.findComponent(GlLink).attributes('href')).toBe(
+          GroupedSecurityReportsApp.infoPopoverHelpPagePath,
+        );
+      });
+    });
 
     describe('with error', () => {
       beforeEach(() => {

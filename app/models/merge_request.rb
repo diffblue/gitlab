@@ -136,7 +136,7 @@ class MergeRequest < ApplicationRecord
 
   before_validation :set_draft_status
 
-  after_create :ensure_merge_request_diff
+  after_create :ensure_merge_request_diff, unless: :skip_ensure_merge_request_diff
   after_update :clear_memoized_shas
   after_update :reload_diff_if_branch_changed
   after_commit :ensure_metrics, on: [:create, :update], unless: :importing?
@@ -145,6 +145,10 @@ class MergeRequest < ApplicationRecord
   # When this attribute is true some MR validation is ignored
   # It allows us to close or modify broken merge requests
   attr_accessor :allow_broken
+
+  # Temporary flag to skip merge_request_diff creation on create.
+  # See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/100390
+  attr_accessor :skip_ensure_merge_request_diff
 
   # Temporary fields to store compare vars
   # when creating new merge request
@@ -1673,7 +1677,7 @@ class MergeRequest < ApplicationRecord
   # TODO: consider renaming this as with exposed artifacts we generate reports,
   # not always compare
   # issue: https://gitlab.com/gitlab-org/gitlab/issues/34224
-  def compare_reports(service_class, current_user = nil, report_type = nil, additional_params = {} )
+  def compare_reports(service_class, current_user = nil, report_type = nil, additional_params = {})
     with_reactive_cache(service_class.name, current_user&.id, report_type) do |data|
       unless service_class.new(project, current_user, id: id, report_type: report_type, additional_params: additional_params)
         .latest?(comparison_base_pipeline(service_class.name), actual_head_pipeline, data)

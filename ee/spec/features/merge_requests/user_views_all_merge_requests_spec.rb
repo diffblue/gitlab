@@ -13,7 +13,7 @@ RSpec.describe 'User views all merge requests' do
   end
 
   describe 'more approvals are required' do
-    let!(:approval_rule) { create( :approval_merge_request_rule, merge_request: merge_request, users: [user, another_user], approvals_required: 2, name: "test rule" ) }
+    let!(:approval_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: [user, another_user], approvals_required: 2, name: "test rule") }
 
     it 'shows generic approvals tooltip' do
       visit(project_merge_requests_path(project, state: :all))

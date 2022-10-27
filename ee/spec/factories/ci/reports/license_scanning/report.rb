@@ -5,9 +5,11 @@ FactoryBot.define do
     trait :version_1 do
       version { '1.0' }
     end
+
     trait :version_2 do
       version { '2.0' }
     end
+
     trait :report_1 do
       after(:build) do |report, evaluator|
         report.add_license(id: 'MIT', name: 'MIT', url: 'https://opensource.org/licenses/mit').add_dependency(name: 'Library1')
@@ -27,5 +29,7 @@ FactoryBot.define do
         report.add_license(id: 'MIT', name: 'MIT', url: 'https://opensource.org/licenses/mit').add_dependency(name: 'rails')
       end
     end
+
+    skip_create
   end
 end

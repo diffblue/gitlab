@@ -66,6 +66,7 @@ This action removes the group. It also adds a background job to delete all proje
 Specifically:
 
 - In [GitLab 12.8 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/33257), on [GitLab Premium](https://about.gitlab.com/pricing/premium/) or higher tiers, this action adds a background job to mark a group for deletion. By default, the job schedules the deletion 7 days in the future. You can modify this waiting period through the [instance settings](../admin_area/settings/visibility_and_access_controls.md#deletion-protection).
+
 - In [GitLab 13.6 and later](https://gitlab.com/gitlab-org/gitlab/-/issues/39504), if the user who sets up the deletion is removed from the group before the
 deletion happens, the job is cancelled, and the group is no longer scheduled for deletion.
 
@@ -201,6 +202,13 @@ To remove a member from a group:
    - To unassign the user from linked issues and merge requests, select the **Also unassign this user from linked issues and merge requests** checkbox.
 1. Select **Remove member**.
 
+## Ensure removed users cannot invite themselves back
+
+Malicious users with the Maintainer or Owner role could exploit a race condition that allows
+them to invite themselves back to a group or project that a GitLab administrator has removed them from.
+
+To avoid this problem, GitLab administrators can [ensure removed users cannot invite themselves back](../project/members/index.md#ensure-removed-users-cannot-invite-themselves-back).
+
 ## Add projects to a group
 
 There are two different ways to add a new project to a group:
@@ -255,6 +263,12 @@ If you are changing the path so it can be claimed by another group or user,
 you must rename the group too. Both names and paths must
 be unique.
 
+After you change the group path, the new group path is a new namespace and you must update the existing project URL in the following resources:
+
+- [Include statements](../../ci/yaml/includes.md#include-a-single-configuration-file).
+- Docker image references in CI files.
+- Variables that specify a project or namespace.
+
 To retain ownership of the original namespace and protect the URL redirects,
 create a new group and transfer projects to it instead.
 
@@ -303,9 +317,7 @@ for the group's projects to meet your group's needs.
     [Feature flag `invite_members_group_modal`](https://gitlab.com/gitlab-org/gitlab/-/issues/352526) removed.
 
 Similar to how you [share a project with a group](../project/members/share_project_with_groups.md),
-you can share a group with another group. To invite a group, you must be a member of it. Members get direct access
-to the shared group. This includes members who inherited group membership from a parent group.
-
+you can share a group with another group. To invite a group, you must be a member of it.
 To share a given group, for example, `Frontend` with another group, for example,
 `Engineering`:
 
@@ -320,7 +332,7 @@ After sharing the `Frontend` group with the `Engineering` group:
 
 - The **Groups** tab lists the `Engineering` group.
 - The **Groups** tab lists a group regardless of whether it is a public or private group.
-- All members of the `Engineering` group have access to the `Frontend` group. The same access levels of the members apply up to the maximum access level selected when sharing the group.
+- All direct members of the `Engineering` group have access to the `Frontend` group. Direct members of `Engineering` that gain access to the `Frontend` group keep their same access level as in `Engineering`, but up to the maximum access level selected when sharing the group. Inherited members of the `Engineering` group do not gain access to the `Frontend` group.
 
 ## Transfer a group
 
@@ -526,7 +538,7 @@ To get the correct context, use `$CI_MERGE_REQUEST_SOURCE_PROJECT_PATH` instead 
 This variable is only availabe in
 [merge request pipelines](../../ci/pipelines/merge_request_pipelines.md).
 
-For example, for a configuration that supports both branch pipelines, as well as merge request pipelines originating in project forks,
+For example, for a configuration that supports both merge request pipelines originating in project forks and branch pipelines,
 you need to [combine both `include` directives with `rules:if`](../../ci/yaml/includes.md#use-rules-with-include):
 
 ```yaml
@@ -811,7 +823,7 @@ Group.find_by_sql("SELECT * FROM namespaces WHERE name LIKE '%oup'")
 If transferring a group doesn't work through the UI or API, you may want to attempt the transfer in a [Rails console session](../../administration/operations/rails_console.md#starting-a-rails-console-session):
 
 WARNING:
-Any command that changes data directly could be damaging if not run correctly, or under the right conditions. We highly recommend running them in a test environment with a backup of the instance ready to be restored, just in case.
+Commands that change data can cause damage if not run correctly or under the right conditions. Always run commands in a test environment first and have a backup instance ready to restore.
 
 ```ruby
 user = User.find_by_username('<username>')
@@ -842,7 +854,7 @@ At times, a group deletion may get stuck. If needed, in a [Rails console session
 you can attempt to delete a group using the following command:
 
 WARNING:
-Any command that changes data directly could be damaging if not run correctly, or under the right conditions. We highly recommend running them in a test environment with a backup of the instance ready to be restored, just in case.
+Commands that change data can cause damage if not run correctly or under the right conditions. Always run commands in a test environment first and have a backup instance ready to restore.
 
 ```ruby
 GroupDestroyWorker.new.perform(group_id, user_id)

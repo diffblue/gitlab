@@ -92,8 +92,8 @@ RSpec.describe NotePolicy do
           expect(permissions(guest)).to be_disallowed(:read_note, :admin_note)
         end
 
-        it 'allows noteable author to read all notes' do
-          expect(permissions(author)).to be_allowed(:read_note)
+        it 'does not allow noteable author to read note' do
+          expect(permissions(author)).to be_disallowed(:read_note)
           expect(permissions(author)).to be_disallowed(:admin_note)
         end
       end

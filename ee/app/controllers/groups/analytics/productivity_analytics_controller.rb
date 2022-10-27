@@ -6,7 +6,6 @@ class Groups::Analytics::ProductivityAnalyticsController < Groups::Analytics::Ap
 
   layout 'group'
 
-  before_action :load_group
   before_action :load_project
   before_action :build_request_params
   before_action -> {

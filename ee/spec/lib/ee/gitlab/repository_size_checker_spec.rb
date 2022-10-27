@@ -9,7 +9,7 @@ RSpec.describe Gitlab::RepositorySizeChecker do
   let(:total_repository_size_excess) { 0 }
   let(:additional_purchased_storage) { 0 }
   let(:enabled) { true }
-  let(:additional_repo_storage_by_namespace_enabled) { true }
+  let(:automatic_purchased_storage_allocation) { true }
 
   subject do
     described_class.new(
@@ -21,9 +21,9 @@ RSpec.describe Gitlab::RepositorySizeChecker do
   end
 
   before do
+    stub_application_setting(automatic_purchased_storage_allocation: automatic_purchased_storage_allocation)
+
     if namespace
-      allow(namespace).to receive(:additional_repo_storage_by_namespace_enabled?)
-        .and_return(additional_repo_storage_by_namespace_enabled)
       allow(namespace).to receive(:total_repository_size_excess)
         .and_return(total_repository_size_excess.megabytes)
     end
@@ -62,8 +62,8 @@ RSpec.describe Gitlab::RepositorySizeChecker do
       end
     end
 
-    context 'when additional_repo_storage_by_namespace_enabled is false' do
-      let(:additional_repo_storage_by_namespace_enabled) { false }
+    context 'when automatic_purchased_storage_allocation is false' do
+      let(:automatic_purchased_storage_allocation) { false }
 
       include_examples 'original logic (additional storage not considered)'
     end
@@ -106,8 +106,8 @@ RSpec.describe Gitlab::RepositorySizeChecker do
   describe '#exceeded_size' do
     include_examples 'checker size exceeded'
 
-    context 'when additional_repo_storage_by_namespace_enabled is false' do
-      let(:additional_repo_storage_by_namespace_enabled) { false }
+    context 'when automatic_purchased_storage_allocation is false' do
+      let(:automatic_purchased_storage_allocation) { false }
 
       include_examples 'checker size exceeded'
     end
@@ -195,18 +195,14 @@ RSpec.describe Gitlab::RepositorySizeChecker do
   end
 
   describe '#additional_repo_storage_available?' do
-    context 'when additional_repo_storage_by_namespace_enabled is true' do
-      it 'returns true' do
-        expect(subject.additional_repo_storage_available?).to eq(true)
-      end
+    it 'returns true when automatic_purchased_storage_allocation is true' do
+      expect(subject.additional_repo_storage_available?).to eq(true)
     end
 
-    context 'when additional_repo_storage_by_namespace_enabled is false' do
-      let(:additional_repo_storage_by_namespace_enabled) { false }
+    it 'returns false when automatic_purchased_storage_allocation is false' do
+      stub_application_setting(automatic_purchased_storage_allocation: false)
 
-      it 'returns false' do
-        expect(subject.additional_repo_storage_available?).to eq(false)
-      end
+      expect(subject.additional_repo_storage_available?).to eq(false)
     end
   end
 end

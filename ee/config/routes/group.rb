@@ -22,6 +22,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
     end
 
     resources :compliance_frameworks, only: [:new, :edit]
+    resource :two_factor_auth, only: [:destroy]
 
     get '/analytics', to: redirect('groups/%{group_id}/-/analytics/value_stream_analytics')
     resource :contribution_analytics, only: [:show]

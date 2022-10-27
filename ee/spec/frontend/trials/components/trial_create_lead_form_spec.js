@@ -21,7 +21,6 @@ describe('TrialCreateLeadForm', () => {
       provide: {
         submitPath: SUBMIT_PATH,
         user: FORM_DATA,
-        onboarding: false,
       },
     });
   };

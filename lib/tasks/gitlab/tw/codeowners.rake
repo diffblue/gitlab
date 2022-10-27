@@ -48,10 +48,10 @@ namespace :tw do
       CodeOwnerRule.new('Infrastructure', '@sselhorn'),
       CodeOwnerRule.new('Integrations', '@ashrafkhamis'),
       CodeOwnerRule.new('Knowledge', '@aqualls'),
-      CodeOwnerRule.new('Application Performance', '@sselhorn'),
+      CodeOwnerRule.new('Application Performance', '@jglassman1'),
       CodeOwnerRule.new('Monitor', '@msedlakjakubowski'),
       CodeOwnerRule.new('Observability', 'msedlakjakubowski'),
-      CodeOwnerRule.new('Optimize', '@fneill'),
+      CodeOwnerRule.new('Optimize', '@lciutacu'),
       CodeOwnerRule.new('Package', '@claytoncornell'),
       CodeOwnerRule.new('Pipeline Authoring', '@marcel.amirault'),
       CodeOwnerRule.new('Pipeline Execution', '@marcel.amirault'),
@@ -66,17 +66,18 @@ namespace :tw do
       CodeOwnerRule.new('Redirect', 'Redirect'),
       CodeOwnerRule.new('Release', '@rdickenson'),
       CodeOwnerRule.new('Respond', '@msedlakjakubowski'),
-      CodeOwnerRule.new('Runner', '@sselhorn'),
-      CodeOwnerRule.new('Pods', '@sselhorn'),
+      CodeOwnerRule.new('Runner', '@fneill'),
+      CodeOwnerRule.new('Pods', '@jglassman1'),
       CodeOwnerRule.new('Security Policies', '@claytoncornell'),
       CodeOwnerRule.new('Source Code', '@aqualls'),
       CodeOwnerRule.new('Static Analysis', '@rdickenson'),
       CodeOwnerRule.new('Style Guide', '@sselhorn'),
       CodeOwnerRule.new('Testing', '@eread'),
       CodeOwnerRule.new('Threat Insights', '@claytoncornell'),
+      CodeOwnerRule.new('Tutorials', '@kpaizee'),
       CodeOwnerRule.new('Utilization', '@fneill'),
       CodeOwnerRule.new('Vulnerability Research', '@claytoncornell'),
-      CodeOwnerRule.new('Workspace', '@fneill')
+      CodeOwnerRule.new('Workspace', '@lciutacu')
     ].freeze
 
     Document = Struct.new(:group, :redirect) do

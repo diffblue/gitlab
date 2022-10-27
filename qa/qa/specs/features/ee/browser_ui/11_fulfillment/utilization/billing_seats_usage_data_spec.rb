@@ -5,11 +5,11 @@ require 'active_support/testing/time_helpers'
 module QA
   include QA::Support::Helpers::Plan
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :utilization do
     describe 'Utilization' do
       let(:admin_api_client) { Runtime::API::Client.as_admin }
       let(:start_date) { Time.now.utc.strftime("%B %-d, %Y") }
-      let(:end_date) { (Time.now.utc.advance(years: 1)).strftime("%B %-d, %Y") }
+      let(:end_date) { Time.now.utc.advance(years: 1).strftime("%B %-d, %Y") }
       let(:hash) { SecureRandom.hex(8) }
 
       let(:user) do

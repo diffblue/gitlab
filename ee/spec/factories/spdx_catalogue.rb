@@ -6,5 +6,7 @@ FactoryBot.define do
       content = IO.read(Rails.root.join('spec', 'fixtures', 'spdx.json'))
       ::Gitlab::SPDX::Catalogue.new(Gitlab::Json.parse(content, symbolize_names: true))
     end
+
+    skip_create
   end
 end

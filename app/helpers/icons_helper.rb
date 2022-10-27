@@ -42,7 +42,7 @@ module IconsHelper
 
       content_tag(
         :svg,
-        content_tag(:use, '', { 'href' => "#{sprite_icon_path}##{icon_name}" } ),
+        content_tag(:use, '', { 'href' => "#{sprite_icon_path}##{icon_name}" }),
         class: css_classes.empty? ? nil : css_classes.join(' '),
         data: { testid: "#{icon_name}-icon" }
       )
@@ -70,10 +70,11 @@ module IconsHelper
   #   gl_loading_icon(css_class: "foo-bar")
   #
   # See also https://gitlab-org.gitlab.io/gitlab-ui/?path=/story/base-loading-icon--default
-  def gl_loading_icon(inline: false, color: 'dark', size: 'sm', css_class: nil)
+  def gl_loading_icon(inline: false, color: 'dark', size: 'sm', css_class: nil, data: nil)
     spinner = content_tag(:span, "", {
       class: %[gl-spinner gl-spinner-#{color} gl-spinner-#{size} gl-vertical-align-text-bottom!],
-      aria: { label: _('Loading') }
+      aria: { label: _('Loading') },
+      data: data
     })
 
     container_classes = ['gl-spinner-container']

@@ -133,6 +133,7 @@ RSpec.describe ProjectsHelper do
 
     before do
       allow(helper).to receive(:current_user).and_return(user)
+      allow(helper).to receive(:can?).and_return(true)
     end
 
     specify do
@@ -146,6 +147,57 @@ RSpec.describe ProjectsHelper do
 
       specify do
         expect(helper.group_project_templates_count(parent_group.id)).to eq 0
+      end
+    end
+
+    context 'when project is not visible to user' do
+      before do
+        allow(helper).to receive(:can?).with(user, :download_code, template_project).and_return(false)
+      end
+
+      specify do
+        expect(helper.group_project_templates_count(parent_group.id)).to eq 0
+      end
+    end
+  end
+
+  describe '#group_project_templates_select' do
+    let_it_be(:user) { create(:user) }
+    let_it_be(:parent_group) { create(:group, name: 'parent-group') }
+    let_it_be(:template_group) { create(:group, parent: parent_group, name: 'template-group') }
+    let_it_be(:template_project) { create(:project, group: template_group, name: 'template-project') }
+
+    before_all do
+      parent_group.update!(custom_project_templates_group_id: template_group.id)
+      parent_group.add_owner(user)
+    end
+
+    before do
+      allow(helper).to receive(:current_user).and_return(user)
+      allow(helper).to receive(:can?).and_return(true)
+    end
+
+    specify do
+      expect(helper.group_project_templates_select(parent_group)).to match_array([template_project])
+    end
+
+    context 'when template project is pending deletion' do
+      before do
+        template_project.update!(marked_for_deletion_at: Date.current)
+      end
+
+      specify do
+        expect(helper.group_project_templates_select(parent_group)).to be_empty
+      end
+    end
+
+    context 'when project is not visible to user' do
+      before do
+        allow(helper).to receive(:can?).and_return(false)
+      end
+
+      specify do
+        expect(helper.group_project_templates_select(parent_group)).to be_empty
       end
     end
   end
@@ -471,7 +523,6 @@ RSpec.describe ProjectsHelper do
         coverage_check_help_page_path: help_page_path('ci/pipelines/settings', anchor: 'coverage-check-approval-rule'),
         group_name: project.root_ancestor.name,
         full_path: project.full_path,
-        security_policies_path: expose_path(project_security_policies_path(project)),
         new_policy_path: expose_path(new_project_security_policy_path(project))
       )
     end

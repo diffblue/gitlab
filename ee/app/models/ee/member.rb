@@ -24,10 +24,11 @@ module EE
       scope :awaiting, -> { where(state: ::Member::STATE_AWAITING) }
       scope :non_awaiting, -> { where.not(state: ::Member::STATE_AWAITING) }
 
-      scope :banned, -> do
-        joins("INNER JOIN namespace_bans
+      scope :banned_from, -> (namespace) do
+        sql = "INNER JOIN namespace_bans
                ON namespace_bans.user_id = members.user_id
-               AND namespace_bans.namespace_id = members.member_namespace_id")
+               AND namespace_bans.namespace_id = ?"
+        joins(sanitize_sql_array([sql, namespace.id]))
       end
 
       before_create :set_membership_activation

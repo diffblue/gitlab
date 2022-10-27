@@ -76,19 +76,13 @@ module Registrations
     def redirect_successful_namespace_creation(project_id)
       redirect_path = continuous_onboarding_getting_started_users_sign_up_welcome_path(project_id: project_id)
 
-      if helpers.registration_verification_enabled?
-        store_location_for(:user, redirect_path)
-        redirect_to new_users_sign_up_verification_path(project_id: project_id, offer_trial: offer_trial?)
-      elsif offer_trial?
-        store_location_for(:user, redirect_path)
-        redirect_to new_trial_path
-      else
-        redirect_to redirect_path
+      experiment(:registration_verification, user: current_user) do |e|
+        e.control { redirect_to redirect_path }
+        e.candidate do
+          store_location_for(:user, redirect_path)
+          redirect_to new_users_sign_up_verification_path(project_id: project_id)
+        end
       end
-    end
-
-    def offer_trial?
-      current_user.setup_for_company && !helpers.in_trial_onboarding_flow? && !params[:skip_trial].present?
     end
   end
 end

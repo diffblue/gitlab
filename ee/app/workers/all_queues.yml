@@ -14,7 +14,7 @@
   :tags: []
 - :name: cronjob:active_user_count_threshold
   :worker_name: ActiveUserCountThresholdWorker
-  :feature_category: :provision
+  :feature_category: :sm_provisioning
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -302,7 +302,7 @@
   :tags: []
 - :name: cronjob:historical_data
   :worker_name: HistoricalDataWorker
-  :feature_category: :utilization
+  :feature_category: :subscription_usage_reports
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -392,7 +392,7 @@
   :tags: []
 - :name: cronjob:licenses_reset_submit_license_usage_data_banner
   :worker_name: Licenses::ResetSubmitLicenseUsageDataBannerWorker
-  :feature_category: :provision
+  :feature_category: :sm_provisioning
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -437,7 +437,7 @@
   :tags: []
 - :name: cronjob:sync_seat_link
   :worker_name: SyncSeatLinkWorker
-  :feature_category: :provision
+  :feature_category: :sm_provisioning
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :unknown
@@ -455,7 +455,7 @@
   :tags: []
 - :name: cronjob:update_max_seats_used_for_gitlab_com_subscriptions
   :worker_name: UpdateMaxSeatsUsedForGitlabComSubscriptionsWorker
-  :feature_category: :utilization
+  :feature_category: :subscription_usage_reports
   :has_external_dependencies: false
   :urgency: :low
   :resource_boundary: :cpu
@@ -1319,7 +1319,7 @@
   :tags: []
 - :name: namespaces_sync_namespace_name
   :worker_name: Namespaces::SyncNamespaceNameWorker
-  :feature_category: :provision
+  :feature_category: :saas_provisioning
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown
@@ -1481,7 +1481,7 @@
   :tags: []
 - :name: sync_seat_link_request
   :worker_name: SyncSeatLinkRequestWorker
-  :feature_category: :provision
+  :feature_category: :sm_provisioning
   :has_external_dependencies: true
   :urgency: :low
   :resource_boundary: :unknown

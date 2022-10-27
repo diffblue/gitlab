@@ -356,7 +356,7 @@ RSpec.describe Projects::MergeRequestsController do
     context 'default templates' do
       let(:selected_field) { 'data-default="Default"' }
       let(:files) { { '.gitlab/merge_request_templates/Default.md' => '' } }
-      let(:project) { create(:project, :custom_repo, files: files ) }
+      let(:project) { create(:project, :custom_repo, files: files) }
 
       context 'when a merge request description has content' do
         let(:merge_request) { create(:merge_request_with_diffs, source_project: project, author: author, description: 'An existing description') }
@@ -372,7 +372,7 @@ RSpec.describe Projects::MergeRequestsController do
         let(:merge_request) { create(:merge_request_with_diffs, source_project: project, author: author, description: '') }
 
         context 'when a default template does not exist in the repository' do
-          let(:project) { create(:project ) }
+          let(:project) { create(:project) }
 
           it 'does not select a default template' do
             subject

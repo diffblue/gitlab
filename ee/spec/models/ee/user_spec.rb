@@ -473,30 +473,48 @@ RSpec.describe User do
     end
 
     context 'with Groups with custom project templates' do
-      let!(:group_1) { create(:group, name: 'group-1') }
-      let!(:group_2) { create(:group, name: 'group-2') }
-      let!(:group_3) { create(:group, name: 'group-3') }
+      let_it_be(:group_1) { create(:group, name: 'group-1') }
+      let_it_be(:group_2) { create(:group, :private, name: 'group-2') }
+      let_it_be(:group_3) { create(:group, name: 'group-3') }
 
-      let!(:subgroup_1) { create(:group, parent: group_1, name: 'subgroup-1') }
-      let!(:subgroup_2) { create(:group, parent: group_2, name: 'subgroup-2') }
-      let!(:subgroup_3) { create(:group, parent: group_3, name: 'subgroup-3') }
+      let_it_be(:subgroup_1) { create(:group, parent: group_1, name: 'subgroup-1') }
+      let_it_be(:subgroup_2) { create(:group, :private, parent: group_2, name: 'subgroup-2') }
+      let_it_be(:subgroup_3) { create(:group, parent: group_3, name: 'subgroup-3') }
 
-      before do
+      let_it_be(:public_project) { create(:project, namespace: subgroup_1) }
+      let_it_be(:private_project) { create(:project, :private, namespace: subgroup_2) }
+
+      before_all do
         group_1.update!(custom_project_templates_group_id: subgroup_1.id)
         group_2.update!(custom_project_templates_group_id: subgroup_2.id)
         group_3.update!(custom_project_templates_group_id: subgroup_3.id)
-
-        create(:project, namespace: subgroup_1)
-        create(:project, namespace: subgroup_2)
       end
 
-      context 'when the access level of the user is below the required one' do
-        before do
-          group_1.add_reporter(user)
+      context 'when a user is not a member of the groups' do
+        subject(:available_subgroups) { user.available_subgroups_with_custom_project_templates }
+
+        it 'only templates in publicly visible groups with projects are available' do
+          expect(available_subgroups).to match_array([subgroup_1])
+        end
+      end
+
+      context 'when a user is a member of the groups' do
+        subject(:available_subgroups) { user.available_subgroups_with_custom_project_templates }
+
+        where(:access_level) do
+          [:guest, :reporter, :developer, :maintainer, :owner]
         end
 
-        it 'returns an empty collection' do
-          expect(user.available_subgroups_with_custom_project_templates).to be_empty
+        with_them do
+          before do
+            group_1.add_member(user, access_level)
+            group_2.add_member(user, access_level)
+            group_3.add_member(user, access_level)
+          end
+
+          it 'the templates in groups with projects are available' do
+            expect(available_subgroups).to match_array([subgroup_1, subgroup_2])
+          end
         end
       end
 
@@ -1945,6 +1963,41 @@ RSpec.describe User do
     end
   end
 
+  describe '#download_code_for?', :request_store do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:user) { create(:user) }
+
+    before_all do
+      project_member = create(:project_member, :guest, user: user, source: project)
+      create(
+        :member_role,
+        :guest,
+        download_code: true,
+        members: [project_member]
+      )
+    end
+
+    context 'when download_code present in preloaded custom roles' do
+      before do
+        user.download_code_for?(project)
+      end
+
+      it 'returns true' do
+        expect(user.download_code_for?(project)).to be true
+      end
+
+      it 'does not perform extra queries when asked for projects have already been preloaded' do
+        expect { user.download_code_for?(project) }.not_to exceed_query_limit(0)
+      end
+    end
+
+    context 'when project not present in preloaded custom roles' do
+      it 'loads the custom role' do
+        expect(user.download_code_for?(project)).to be true
+      end
+    end
+  end
+
   describe '#has_valid_credit_card?' do
     it 'returns true when a credit card validation is present' do
       credit_card_validation = build(:credit_card_validation, credit_card_validated_at: Time.current)
@@ -2120,5 +2173,61 @@ RSpec.describe User do
 
   it 'includes IdentityVerifiable' do
     expect(described_class).to include_module(IdentityVerifiable)
+  end
+
+  it 'includes Elastic::ApplicationVersionedSearch' do
+    expect(described_class).to include_module(Elastic::ApplicationVersionedSearch)
+  end
+
+  context 'when elasticsearch_indexing is true' do
+    let_it_be(:user) { create(:user) }
+
+    before do
+      allow(Gitlab::CurrentSettings).to receive(:elasticsearch_indexing?).and_return(true)
+    end
+
+    it 'invokes maintain_elasticsearch_update callback' do
+      expect(user).to receive(:maintain_elasticsearch_update).once
+
+      user.update!(name: 'New Name')
+    end
+
+    context 'when feature index_user_callback is disabled' do
+      before do
+        stub_feature_flags(index_user_callback: false)
+      end
+
+      it 'does not invoke maintain_elasticsearch_update callback' do
+        expect(user).not_to receive(:maintain_elasticsearch_update)
+
+        user.update!(name: 'New Name')
+      end
+    end
+  end
+
+  it 'overrides .use_separate_indices? to true' do
+    expect(described_class.use_separate_indices?).to eq(true)
+  end
+
+  [true, false].each do |matcher|
+    describe '#use_elasticsearch?' do
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:elasticsearch_search?).and_return(matcher)
+      end
+
+      it 'is equal to elasticsearch_search setting' do
+        expect(subject.use_elasticsearch?).to eq(matcher)
+      end
+    end
+
+    describe '#maintaining_elasticsearch?' do
+      before do
+        allow(Gitlab::CurrentSettings).to receive(:elasticsearch_indexing?).and_return(matcher)
+      end
+
+      it 'is equal to elasticsearch_indexing setting' do
+        expect(subject.maintaining_elasticsearch?).to eq(matcher)
+      end
+    end
   end
 end

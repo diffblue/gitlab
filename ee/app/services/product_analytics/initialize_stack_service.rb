@@ -3,7 +3,8 @@
 module ProductAnalytics
   class InitializeStackService < BaseContainerService
     def execute
-      return unless ::Feature.enabled?(:cube_api_proxy, container.group)
+      return unless Gitlab::CurrentSettings.product_analytics_enabled?
+      return unless container.product_analytics_enabled?
 
       ::ProductAnalytics::InitializeAnalyticsWorker.perform_async(container.id)
     end

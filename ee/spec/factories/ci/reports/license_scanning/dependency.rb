@@ -2,11 +2,16 @@
 
 FactoryBot.define do
   factory :license_scanning_dependency, class: '::Gitlab::Ci::Reports::LicenseScanning::Dependency' do
-    initialize_with { new(name, path: path) }
+    name { 'name' }
+    path { '.' }
 
     trait :rails do
       name { 'rails' }
       path { '.' }
     end
+
+    initialize_with { new(name: name, path: path) }
+
+    skip_create
   end
 end

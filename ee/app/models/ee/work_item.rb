@@ -4,6 +4,10 @@ module EE
   module WorkItem
     extend ActiveSupport::Concern
 
+    prepended do
+      include FilterableByTestReports
+    end
+
     LICENSED_WIDGETS = {
       iterations: ::WorkItems::Widgets::Iteration,
       issue_weights: ::WorkItems::Widgets::Weight,

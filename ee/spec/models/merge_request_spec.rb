@@ -1435,5 +1435,29 @@ RSpec.describe MergeRequest do
         expect(described_class.with_head_pipeline).to eq([merge_request_with_head_pipeline])
       end
     end
+
+    describe '.with_applied_scan_result_policies' do
+      let_it_be(:scan_finding_approval_rule) { create(:report_approver_rule, :code_coverage) }
+      let_it_be(:code_coverage_approval_rule) { create(:report_approver_rule, :scan_finding) }
+
+      it 'returns MRs that have applied scan result policies' do
+        expect(described_class.with_applied_scan_result_policies).to eq([code_coverage_approval_rule.merge_request])
+      end
+    end
+
+    describe '.for_projects_with_security_policy_project' do
+      let_it_be(:security_orchestration_policy_configuration) { create(:security_orchestration_policy_configuration) }
+
+      let_it_be(:merge_request_with_security_policy_project) do
+        create(:ee_merge_request, source_project: security_orchestration_policy_configuration.project)
+      end
+
+      let_it_be(:merge_request_without_security_policy_project) { create(:ee_merge_request) }
+
+      it 'returns MRs for projects with security policy project on target project' do
+        expect(described_class.for_projects_with_security_policy_project).to eq(
+          [merge_request_with_security_policy_project])
+      end
+    end
   end
 end

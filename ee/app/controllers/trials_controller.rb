@@ -6,6 +6,7 @@ class TrialsController < ApplicationController
   include ActionView::Helpers::SanitizeHelper
   include OneTrustCSP
   include GoogleAnalyticsCSP
+  include RegistrationsTracking
 
   layout 'minimal'
 
@@ -29,18 +30,17 @@ class TrialsController < ApplicationController
   end
 
   def create_lead
-    url_params = { glm_source: params[:glm_source], glm_content: params[:glm_content] }
     @result = GitlabSubscriptions::CreateLeadService.new.execute({ trial_user: company_params })
 
     render(:new) && return unless @result.success?
 
-    if params[:onboarding] == 'true'
-      redirect_to(new_users_sign_up_groups_project_path(url_params.merge(trial_onboarding_flow: true)))
-    elsif @namespace = helpers.only_trialable_group_namespace
+    @namespace = helpers.only_trialable_group_namespace
+
+    if @namespace.present?
       params[:namespace_id] = @namespace.id
       apply_trial_and_redirect
     else
-      redirect_to select_trials_url(url_params)
+      redirect_to select_trials_path(glm_tracking_params)
     end
   end
 
@@ -71,11 +71,7 @@ class TrialsController < ApplicationController
   end
 
   def skip
-    if params[:onboarding] == 'true'
-      redirect_to new_users_sign_up_groups_project_path(skip_trial: true)
-    else
-      redirect_to stored_location_or_provided_path(dashboard_projects_path)
-    end
+    redirect_to stored_location_or_provided_path(dashboard_projects_path)
   end
 
   protected

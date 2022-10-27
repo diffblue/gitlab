@@ -5,7 +5,7 @@ require "spec_helper"
 RSpec.describe MergeRequests::Mergeability::CheckApprovedService do
   subject(:check_approved) { described_class.new(merge_request: merge_request, params: {}) }
 
-  let(:merge_request) { build(:merge_request) }
+  let_it_be(:merge_request) { build(:merge_request) }
 
   describe "#execute" do
     let(:result) { check_approved.execute }

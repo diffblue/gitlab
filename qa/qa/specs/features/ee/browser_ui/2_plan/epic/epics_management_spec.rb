@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable do
+  RSpec.describe 'Plan', :reliable, product_group: :product_planning do
     describe 'Epics Management' do
       before do
         Flow::Login.sign_in

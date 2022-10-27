@@ -113,23 +113,80 @@ RSpec.describe WebHook do
     end
 
     describe 'push_events_branch_filter' do
-      it { is_expected.to allow_values("good_branch_name", "another/good-branch_name").for(:push_events_branch_filter) }
-      it { is_expected.to allow_values("").for(:push_events_branch_filter) }
-      it { is_expected.not_to allow_values("bad branch name", "bad~branchname").for(:push_events_branch_filter) }
-
-      it 'gets rid of whitespace' do
-        hook.push_events_branch_filter = ' branch '
-        hook.save!
-
-        expect(hook.push_events_branch_filter).to eq('branch')
+      before do
+        subject.branch_filter_strategy = strategy
       end
 
-      it 'stores whitespace only as empty' do
-        hook.push_events_branch_filter = ' '
-        hook.save!
+      context 'with "all branches" strategy' do
+        let(:strategy) { 'all_branches' }
 
-        expect(hook.push_events_branch_filter).to eq('')
+        it {
+          is_expected.to allow_values(
+            "good_branch_name",
+            "another/good-branch_name",
+            "good branch name",
+            "good~branchname",
+            "good_branchname(",
+            "good_branchname[",
+            ""
+          ).for(:push_events_branch_filter)
+        }
       end
+
+      context 'with "wildcard" strategy' do
+        let(:strategy) { 'wildcard' }
+
+        it {
+          is_expected.to allow_values(
+            "good_branch_name",
+            "another/good-branch_name",
+            "good_branch_name(",
+            ""
+          ).for(:push_events_branch_filter)
+        }
+
+        it {
+          is_expected.not_to allow_values(
+            "bad branch name",
+            "bad~branchname",
+            "bad_branch_name["
+          ).for(:push_events_branch_filter)
+        }
+
+        it 'gets rid of whitespace' do
+          hook.push_events_branch_filter = ' branch '
+          hook.save!
+
+          expect(hook.push_events_branch_filter).to eq('branch')
+        end
+
+        it 'stores whitespace only as empty' do
+          hook.push_events_branch_filter = ' '
+          hook.save!
+          expect(hook.push_events_branch_filter).to eq('')
+        end
+      end
+
+      context 'with "regex" strategy' do
+        let(:strategy) { 'regex' }
+
+        it {
+          is_expected.to allow_values(
+            "good_branch_name",
+            "another/good-branch_name",
+            "good branch name",
+            "good~branch~name",
+            ""
+          ).for(:push_events_branch_filter)
+        }
+
+        it { is_expected.not_to allow_values("bad_branch_name(", "bad_branch_name[").for(:push_events_branch_filter) }
+      end
+    end
+
+    it "only consider these branch filter strategies are valid" do
+      expected_valid_types = %w[all_branches regex wildcard]
+      expect(described_class.branch_filter_strategies.keys).to contain_exactly(*expected_valid_types)
     end
   end
 
@@ -389,7 +446,7 @@ RSpec.describe WebHook do
     end
   end
 
-  describe 'backoff!' do
+  describe '#backoff!' do
     context 'when we have not backed off before' do
       it 'does not disable the hook' do
         expect { hook.backoff! }.not_to change(hook, :executable?).from(true)
@@ -397,6 +454,26 @@ RSpec.describe WebHook do
 
       it 'increments the recent_failures count' do
         expect { hook.backoff! }.to change(hook, :recent_failures).by(1)
+      end
+    end
+
+    context 'when the recent failure value is the max value of a smallint' do
+      before do
+        hook.update!(recent_failures: 32767, disabled_until: 1.hour.ago)
+      end
+
+      it 'reduces to MAX_FAILURES' do
+        expect { hook.backoff! }.to change(hook, :recent_failures).to(described_class::MAX_FAILURES)
+      end
+    end
+
+    context 'when the recent failure value is MAX_FAILURES' do
+      before do
+        hook.update!(recent_failures: described_class::MAX_FAILURES, disabled_until: 1.hour.ago)
+      end
+
+      it 'does not change recent_failures' do
+        expect { hook.backoff! }.not_to change(hook, :recent_failures)
       end
     end
 
@@ -459,9 +536,19 @@ RSpec.describe WebHook do
     end
   end
 
-  describe 'failed!' do
+  describe '#failed!' do
     it 'increments the failure count' do
       expect { hook.failed! }.to change(hook, :recent_failures).by(1)
+    end
+
+    context 'when the recent failure value is the max value of a smallint' do
+      before do
+        hook.update!(recent_failures: 32767)
+      end
+
+      it 'does not change recent_failures' do
+        expect { hook.failed! }.not_to change(hook, :recent_failures)
+      end
     end
 
     it 'does not update the hook if the the failure count exceeds the maximum value' do

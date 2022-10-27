@@ -13,13 +13,14 @@ module API
     USER_REQUIREMENTS = { user_id: NO_SLASH_URL_PART_REGEX }.freeze
     LOG_FILTERS = ::Rails.application.config.filter_parameters + [/^output$/]
     LOG_FORMATTER = Gitlab::GrapeLogging::Formatters::LogrageWithTimestamp.new
+    LOGGER = Logger.new(LOG_FILENAME)
 
     insert_before Grape::Middleware::Error,
                   GrapeLogging::Middleware::RequestLogger,
-                  logger: Logger.new(LOG_FILENAME),
+                  logger: LOGGER,
                   formatter: LOG_FORMATTER,
                   include: [
-                    GrapeLogging::Loggers::FilterParameters.new(LOG_FILTERS),
+                    Gitlab::GrapeLogging::Loggers::FilterParameters.new(LOG_FILTERS),
                     Gitlab::GrapeLogging::Loggers::ClientEnvLogger.new,
                     Gitlab::GrapeLogging::Loggers::RouteLogger.new,
                     Gitlab::GrapeLogging::Loggers::UserLogger.new,
@@ -168,13 +169,13 @@ module API
 
       # Mount endpoints to include in the OpenAPI V2 documentation here
       namespace do
+        mount ::API::AccessRequests
         mount ::API::Metadata
 
         add_open_api_documentation!
       end
 
       # Keep in alphabetical order
-      mount ::API::AccessRequests
       mount ::API::Admin::BatchedBackgroundMigrations
       mount ::API::Admin::Ci::Variables
       mount ::API::Admin::InstanceClusters

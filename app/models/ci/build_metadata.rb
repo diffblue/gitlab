@@ -13,6 +13,7 @@ module Ci
 
     self.table_name = 'ci_builds_metadata'
     self.primary_key = 'id'
+    self.sequence_name = 'ci_builds_metadata_id_seq'
     partitionable scope: :build
 
     belongs_to :build, class_name: 'CommitStatus'
@@ -50,7 +51,7 @@ module Ci
     end
 
     def set_cancel_gracefully
-      runtime_runner_features.merge!( { cancel_gracefully: true } )
+      runtime_runner_features.merge!({ cancel_gracefully: true })
     end
 
     def cancel_gracefully?

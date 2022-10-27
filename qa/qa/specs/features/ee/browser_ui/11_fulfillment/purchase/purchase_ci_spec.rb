@@ -3,7 +3,7 @@
 module QA
   include QA::Support::Helpers::Plan
 
-  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging } do
+  RSpec.describe 'Fulfillment', :requires_admin, only: { subdomain: :staging }, product_group: :purchase do
     context 'Purchase CI minutes' do
       # the quantity of products to purchase
       let(:purchase_quantity) { 5 }

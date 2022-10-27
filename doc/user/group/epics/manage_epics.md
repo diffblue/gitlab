@@ -257,7 +257,7 @@ To filter:
 1. On the top bar, select **Main menu > Groups** and find your group.
 1. On the left sidebar, select **Epics**.
 1. Select the field **Search or filter results**.
-1. From the dropdown menu, select the scope or enter plain text to search by epic title or description.
+1. From the dropdown list, select the scope or enter plain text to search by epic title or description.
 1. Press <kbd>Enter</kbd> on your keyboard. The list is filtered.
 
 ## Sort the list of epics
@@ -282,10 +282,10 @@ You can reverse the default order and interact with the activity feed sorted by 
 at the top. Your preference is saved via local storage and automatically applied to every epic and issue
 you view.
 
-To change the activity sort order, select the **Oldest first** dropdown menu and select either oldest
+To change the activity sort order, select the **Oldest first** dropdown list and select either oldest
 or newest items to be shown first.
 
-![Issue activity sort order dropdown button](img/epic_activity_sort_order_v13_2.png)
+![Issue activity sort order dropdown list](img/epic_activity_sort_order_v13_2.png)
 
 ## Make an epic confidential
 
@@ -339,9 +339,8 @@ automatically added to the epic.
 
 #### Add an existing issue to an epic
 
-You can add existing issues to an epic, including issues in a project in an epic's group, or any of
-the epic's subgroups. Newly added issues appear at the top of the list of
-issues in the **Epics and Issues** tab.
+You can add existing issues to an epic, including issues in a project from a [different group hierarchy](index.md#child-issues-from-different-group-hierarchies).
+Newly added issues appear at the top of the list of issues in the **Epics and Issues** tab.
 
 An epic contains a list of issues and an issue can be associated with at most one epic.
 When you add a new issue that's already linked to an epic, the issue is automatically unlinked from its
@@ -359,7 +358,8 @@ To add an existing issue to an epic:
 1. Identify the issue to be added, using either of the following methods:
    - Paste the link of the issue.
    - Search for the desired issue by entering part of the issue's title, then selecting the desired
-     match ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/9126) in GitLab 12.5).
+     match ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/9126) in GitLab 12.5). Issues
+     from different group hierarchies do not appear in search results. To add such an issue, enter its full URL.
 
    If there are multiple issues to be added, press <kbd>Space</kbd> and repeat this step.
 1. Select **Add**.

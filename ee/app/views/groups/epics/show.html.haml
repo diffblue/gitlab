@@ -38,7 +38,7 @@
     'data-roadmap-element-selector' => "##{roadmapElementID}",
     'data-container-element-selector' => ".#{containerClass}" }
 
-  .gl-display-flex.justify-content-between.content-block.content-block-small.emoji-list-container.js-noteable-awards
+  .gl-display-flex.justify-content-between.emoji-list-container.js-noteable-awards
     = render 'award_emoji/awards_block', awardable: @epic, inline: true, api_awards_path: award_emoji_epics_api_path(@epic)
   %div{ id: treeElementID, class: ['tab-pane', 'show', 'active'] }
     .row

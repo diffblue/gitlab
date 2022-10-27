@@ -90,4 +90,19 @@ RSpec.describe WorkItem do
       end
     end
   end
+
+  it_behaves_like 'a collection filtered by test reports state' do
+    let_it_be(:requirement1) { create(:work_item, :requirement) }
+    let_it_be(:requirement2) { create(:work_item, :requirement) }
+    let_it_be(:requirement3) { create(:work_item, :requirement) }
+    let_it_be(:requirement4) { create(:work_item, :requirement) }
+
+    before do
+      create(:test_report, requirement_issue: requirement1, state: :passed)
+      create(:test_report, requirement_issue: requirement1, state: :failed)
+      create(:test_report, requirement_issue: requirement2, state: :failed)
+      create(:test_report, requirement_issue: requirement2, state: :passed)
+      create(:test_report, requirement_issue: requirement3, state: :passed)
+    end
+  end
 end

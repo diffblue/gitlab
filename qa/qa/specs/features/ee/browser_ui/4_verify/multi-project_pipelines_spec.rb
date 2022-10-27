@@ -3,7 +3,7 @@
 module QA
   # This test uses `needs:project` premium feature,
   # it can only be run against an EE instance with an active license
-  RSpec.describe 'Verify' do
+  RSpec.describe 'Verify', product_group: :pipeline_authoring do
     describe 'Multi-project pipelines' do
       let(:downstream_job_name) { 'downstream_job' }
       let(:executor) { "qa-runner-#{SecureRandom.hex(4)}" }
