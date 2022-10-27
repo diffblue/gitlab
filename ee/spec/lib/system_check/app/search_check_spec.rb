@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
+require 'rspec-parameterized'
 
 RSpec.describe SystemCheck::App::SearchCheck do
   before do
@@ -72,8 +73,7 @@ RSpec.describe SystemCheck::App::SearchCheck do
       'opensearch' | '0.1.0' | false
       'opensearch' | '1.0.0' | true
       'opensearch' | '1.2.4' | true
-      'opensearch' | '5.6.0' | false
-      'opensearch' | '6.0.0' | false
+      'opensearch' | '2.3.0' | true
     end
 
     with_them do

@@ -11,7 +11,8 @@ module API
     resource :group_repository_storage_moves do
       desc 'Get a list of all group repository storage moves' do
         detail 'This feature was introduced in GitLab 13.9.'
-        success Entities::Groups::RepositoryStorageMove
+        is_array true
+        success code: 200, model: Entities::Groups::RepositoryStorageMove
       end
       params do
         use :pagination
@@ -24,7 +25,7 @@ module API
 
       desc 'Get a group repository storage move' do
         detail 'This feature was introduced in GitLab 13.9.'
-        success Entities::Groups::RepositoryStorageMove
+        success code: 200, model: Entities::Groups::RepositoryStorageMove
       end
       params do
         requires :repository_storage_move_id, type: Integer, desc: 'The ID of a group repository storage move'
@@ -37,6 +38,7 @@ module API
 
       desc 'Schedule bulk group repository storage moves' do
         detail 'This feature was introduced in GitLab 13.9.'
+        success code: 202
       end
       params do
         requires :source_storage_name, type: String, desc: 'The source storage shard', values: -> { Gitlab.config.repositories.storages.keys }
@@ -58,7 +60,8 @@ module API
     resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       desc 'Get a list of all group repository storage moves' do
         detail 'This feature was introduced in GitLab 13.9.'
-        success Entities::Groups::RepositoryStorageMove
+        is_array true
+        success code: 200, model: Entities::Groups::RepositoryStorageMove
       end
       params do
         use :pagination
@@ -71,7 +74,7 @@ module API
 
       desc 'Get a group repository storage move' do
         detail 'This feature was introduced in GitLab 13.9.'
-        success Entities::Groups::RepositoryStorageMove
+        success code: 200, model: Entities::Groups::RepositoryStorageMove
       end
       params do
         requires :repository_storage_move_id, type: Integer, desc: 'The ID of a group repository storage move'
@@ -84,7 +87,7 @@ module API
 
       desc 'Schedule a group repository storage move' do
         detail 'This feature was introduced in GitLab 13.9.'
-        success Entities::Groups::RepositoryStorageMove
+        success code: 201, model: Entities::Groups::RepositoryStorageMove
       end
       params do
         optional :destination_storage_name, type: String, desc: 'The destination storage shard'
