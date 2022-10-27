@@ -23,7 +23,7 @@ RSpec.describe 'Coverage-Fuzzing.latest.gitlab-ci.yml' do
 
     let(:default_branch) { 'master' }
     let(:user) { project.first_owner }
-    let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master' ) }
+    let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master') }
     let(:pipeline) { service.execute!(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
 
