@@ -5,6 +5,7 @@ import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
 import { OPENED, REOPENED } from '~/notes/constants';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
+import IssueHealthStatus from 'ee/related_items_tree/components/issue_health_status.vue';
 import Tracking from '~/tracking';
 import {
   HEALTH_STATUS_I18N_FETCH_ERROR,
@@ -28,6 +29,7 @@ export default {
     GlLoadingIcon,
     HealthStatusDropdown,
     SidebarEditableItem,
+    IssueHealthStatus,
   },
   directives: {
     GlTooltip,
@@ -150,7 +152,8 @@ export default {
         </p>
       </div>
       <div class="hide-collapsed" :class="{ 'gl-text-secondary': !healthStatus }">
-        {{ healthStatusText }}
+        <issue-health-status v-if="healthStatus" :health-status="healthStatus" />
+        <span v-else>{{ $options.HEALTH_STATUS_I18N_NONE }}</span>
       </div>
     </template>
     <template #default>
