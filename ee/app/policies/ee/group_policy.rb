@@ -501,6 +501,10 @@ module EE
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
         enable :update_security_orchestration_policy_project
       end
+
+      rule { can?(:admin_group) }.policy do
+        enable :read_usage_quotas
+      end
     end
 
     override :lookup_access_level!

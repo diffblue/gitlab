@@ -5,7 +5,7 @@ class Groups::UsageQuotasController < Groups::ApplicationController
   include GoogleAnalyticsCSP
   include GitlabSubscriptions::SeatCountAlert
 
-  before_action :authorize_admin_group!
+  before_action :authorize_read_usage_quotas!
   before_action :verify_usage_quotas_enabled!
   before_action :push_usage_quotas_pipelines_vue, only: :index
 

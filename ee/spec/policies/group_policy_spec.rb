@@ -2169,6 +2169,34 @@ RSpec.describe GroupPolicy do
     end
   end
 
+  describe 'read_usage_quotas policy' do
+    context 'reading usage quotas' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:policy) { :read_usage_quotas }
+
+      where(:role, :admin_mode, :allowed) do
+        :owner      | nil   | true
+        :admin      | true  | true
+        :admin      | false | false
+        :maintainer | nil   | false
+        :developer  | nil   | false
+        :reporter   | nil   | false
+        :guest      | nil   | false
+      end
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        before do
+          enable_admin_mode!(current_user) if admin_mode
+        end
+
+        it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+      end
+    end
+  end
+
   describe 'dependency proxy' do
     context 'feature enabled' do
       before do
