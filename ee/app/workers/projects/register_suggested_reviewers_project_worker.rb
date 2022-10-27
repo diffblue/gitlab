@@ -21,12 +21,27 @@ module Projects
       user = User.find_by_id(user_id)
       return unless user
 
-      result = ::Projects::RegisterSuggestedReviewersProjectService.new(project: project, current_user: user).execute
+      response = ::Projects::RegisterSuggestedReviewersProjectService.new(project: project, current_user: user).execute
+      if response.error?
+        handle_error(response, project_id)
+      else
+        handle_success(response)
+      end
+    end
 
-      return unless result && result[:status] == :success
+    private
 
-      log_extra_metadata_on_done(:project_id, result[:project_id])
-      log_extra_metadata_on_done(:registered_at, result[:registered_at])
+    def handle_error(response, project_id)
+      if response.reason == :client_request_failed
+        response.track_and_raise_exception(project_id: project_id)
+      else
+        response.track_exception(project_id: project_id)
+      end
+    end
+
+    def handle_success(response)
+      log_extra_metadata_on_done(:project_id, response.payload[:project_id])
+      log_extra_metadata_on_done(:registered_at, response.payload[:registered_at])
     end
   end
 end

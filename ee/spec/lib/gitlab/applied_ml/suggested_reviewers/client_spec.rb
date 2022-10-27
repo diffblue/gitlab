@@ -230,6 +230,18 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       it_behaves_like 'respecting channel credentials'
     end
 
+    context 'when a grpc already exists is received' do
+      before do
+        allow_next_instance_of(stub_class) do |stub|
+          allow(stub).to receive(:register_project).and_raise(GRPC::AlreadyExists)
+        end
+      end
+
+      it 'raises a new error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ProjectAlreadyExists)
+      end
+    end
+
     context 'when a grpc bad status is received' do
       before do
         allow_next_instance_of(stub_class) do |stub|
