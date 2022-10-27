@@ -38,24 +38,25 @@ RSpec.describe Ci::PipelineSchedules::TakeOwnershipService do
         expect(result.success?).to be(true)
         expect(result.payload).to eq(pipeline_schedule)
       end
-    end
 
-    context 'when schedule update fails' do
-      subject(:service) { described_class.new(pipeline_schedule, user) }
+      context 'when schedule update fails' do
+        subject(:service) { described_class.new(pipeline_schedule, owner) }
 
-      before do
-        allow_next_instance_of(described_class) do |service|
-          allow(service).to receive(:execute)
-            .and_return(ServiceResponse.error(message: 'An error occurred'))
+        before do
+          allow(pipeline_schedule).to receive(:update).and_return(false)
+
+          errors = ActiveModel::Errors.new(pipeline_schedule)
+          errors.add(:base, 'An error occurred')
+          allow(pipeline_schedule).to receive(:errors).and_return(errors)
         end
-      end
 
-      it 'returns ServiceResponse.error' do
-        result = service.execute
+        it 'returns ServiceResponse.error' do
+          result = service.execute
 
-        expect(result).to be_a(ServiceResponse)
-        expect(result.error?).to be(true)
-        expect(result.message).to eq('An error occurred')
+          expect(result).to be_a(ServiceResponse)
+          expect(result.error?).to be(true)
+          expect(result.message).to eq(['An error occurred'])
+        end
       end
     end
   end
