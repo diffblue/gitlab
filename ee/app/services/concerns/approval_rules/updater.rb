@@ -42,12 +42,7 @@ module ApprovalRules
     def filter_eligible_groups!
       return unless params.key?(:group_ids)
 
-      params[:groups] =
-        if Feature.enabled?(:approval_rules_eligible_filter, project)
-          Group.id_in(params.delete(:group_ids)).accessible_to_user(current_user)
-        else
-          Group.id_in(params.delete(:group_ids)).public_or_visible_to_user(current_user)
-        end
+      params[:groups] = Group.id_in(params.delete(:group_ids)).accessible_to_user(current_user)
     end
 
     def filter_eligible_protected_branches!
