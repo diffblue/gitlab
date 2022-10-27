@@ -20,6 +20,11 @@ module Types
                required: false,
                description: 'New color representation of the compliance framework in hex format. e.g. #FCA121.'
 
+      argument :default,
+               GraphQL::Types::Boolean,
+               required: false,
+               description: 'Set this compliance framework as the default framework for the group.'
+
       argument :pipeline_configuration_full_path,
                GraphQL::Types::String,
                required: false,
