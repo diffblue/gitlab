@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab Geo attachment replication' do
       let(:file_to_attach) { File.absolute_path(File.join('qa', 'fixtures', 'designs', 'banana_sample.gif')) }
       let(:project) do
