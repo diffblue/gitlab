@@ -180,6 +180,7 @@ module API
         mount ::API::Release::Links
         mount ::API::SnippetRepositoryStorageMoves
         mount ::API::Statistics
+        mount ::API::Tags
 
         add_open_api_documentation!
       end
