@@ -172,6 +172,8 @@ module API
         mount ::API::AccessRequests
         mount ::API::Metadata
         mount ::API::UserCounts
+        mount ::API::ProjectRepositoryStorageMoves
+        mount ::API::SnippetRepositoryStorageMoves
 
         add_open_api_documentation!
       end
@@ -283,7 +285,6 @@ module API
       mount ::API::ProjectImport
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
-      mount ::API::ProjectRepositoryStorageMoves
       mount ::API::ProjectSnapshots
       mount ::API::ProjectSnippets
       mount ::API::ProjectStatistics
@@ -305,7 +306,6 @@ module API
       mount ::API::Search
       mount ::API::Settings
       mount ::API::SidekiqMetrics
-      mount ::API::SnippetRepositoryStorageMoves
       mount ::API::Snippets
       mount ::API::Statistics
       mount ::API::Submodules
