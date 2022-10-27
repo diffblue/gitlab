@@ -152,6 +152,11 @@ RSpec.describe 'Epic show', :js do
           expect(find('h3.card-title')).to have_content('Issues')
         end
       end
+
+      it 'does not show buttons `Tree view` and `Roadmap view`' do
+        expect(find('.related-items-tree-container')).not_to have_content('Tree view')
+        expect(find('.related-items-tree-container')).not_to have_content('Roadmap view')
+      end
     end
 
     describe 'Issues tab' do

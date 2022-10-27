@@ -46,6 +46,15 @@ RSpec.describe ComplianceManagement::Frameworks::DestroyService do
       it 'audits the destruction' do
         expect { subject.execute }.to change { AuditEvent.count }.by(1)
       end
+
+      it 'does not destroy the default compliance framework' do
+        namespace.namespace_settings.update!(default_compliance_framework_id: framework.id)
+
+        response = subject.execute
+
+        expect(response.success?).to be false
+        expect(response.errors).to match_array(["Cannot delete the default framework"])
+      end
     end
 
     context 'when current user is not the namespace owner' do
