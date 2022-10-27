@@ -36111,6 +36111,9 @@ msgstr ""
 msgid "SecurityOrchestration| or "
 msgstr ""
 
+msgid "SecurityOrchestration|%{agent} for %{namespaces}"
+msgstr ""
+
 msgid "SecurityOrchestration|%{branches} %{plural}"
 msgstr ""
 
@@ -36336,10 +36339,10 @@ msgstr ""
 msgid "SecurityOrchestration|Scan result policy"
 msgstr ""
 
-msgid "SecurityOrchestration|Scan to be performed %{cadence}"
+msgid "SecurityOrchestration|Scan to be performed %{cadence} on the %{branches}"
 msgstr ""
 
-msgid "SecurityOrchestration|Scan to be performed %{cadence} on the %{branches}"
+msgid "SecurityOrchestration|Scan to be performed by the agent named %{agents} %{cadence}"
 msgstr ""
 
 msgid "SecurityOrchestration|Scan to be performed on every pipeline on the %{branches}"
@@ -36447,6 +36450,9 @@ msgstr ""
 msgid "SecurityOrchestration|all branches"
 msgstr ""
 
+msgid "SecurityOrchestration|all namespaces"
+msgstr ""
+
 msgid "SecurityOrchestration|an"
 msgstr ""
 
@@ -36463,6 +36469,12 @@ msgid "SecurityOrchestration|scanners find"
 msgstr ""
 
 msgid "SecurityOrchestration|the %{branches}"
+msgstr ""
+
+msgid "SecurityOrchestration|the %{namespaces} %{plural}"
+msgstr ""
+
+msgid "SecurityOrchestration|the %{namespaces} and %{lastNamespace} %{plural}"
 msgstr ""
 
 msgid "SecurityOrchestration|vulnerabilities"
@@ -48727,6 +48739,11 @@ msgstr ""
 
 msgid "my-topic"
 msgstr ""
+
+msgid "namespace"
+msgid_plural "namespaces"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "needs to be between 10 minutes and 1 month"
 msgstr ""
