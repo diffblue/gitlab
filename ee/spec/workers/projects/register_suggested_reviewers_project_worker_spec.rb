@@ -58,38 +58,74 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectWorker do
           end
 
           context 'when suggested reviews is enabled for the project' do
-            let(:logger) { subject.send(:logger) }
-            let(:example_registration_result) do
-              {
-                project_id: project.id,
-                registered_at: '2022-01-01 09:00'
-              }
-            end
-
-            let(:example_success_result) do
-              example_registration_result.merge({ status: :success })
-            end
-
-            let(:example_error_result) do
-              example_registration_result.merge({ status: :error })
-            end
-
             before do
               allow_any_instance_of(::Project).to receive(:suggested_reviewers_enabled).and_return(true)
             end
 
             context 'when service returns success' do
+              let(:registration_result) do
+                {
+                  project_id: project.id,
+                  registered_at: '2022-01-01 09:00'
+                }
+              end
+
+              let(:response) do
+                ServiceResponse.success(payload: registration_result)
+              end
+
               it 'calls project register service and logs an info with payload', :aggregate_failures do
                 allow_next_instance_of(::Projects::RegisterSuggestedReviewersProjectService) do |instance|
-                  allow(instance).to receive(:execute).and_return(example_success_result)
+                  allow(instance).to receive(:execute).and_return(response)
                 end
 
-                expect(subject).to receive(:log_extra_metadata_on_done).with(:project_id,
-example_error_result[:project_id])
-                expect(subject).to receive(:log_extra_metadata_on_done).with(:registered_at,
-example_error_result[:registered_at])
+                expect(subject).to receive(:log_extra_metadata_on_done)
+                  .with(:project_id, response.payload[:project_id])
+                expect(subject).to receive(:log_extra_metadata_on_done)
+                  .with(:registered_at, response.payload[:registered_at])
 
                 subject.perform(project.id, user.id)
+              end
+            end
+
+            context 'when service returns error' do
+              context 'when error is trackable' do
+                let(:response) do
+                  ServiceResponse.error(message: 'Failed to create access token', reason: :token_creation_failed)
+                end
+
+                it 'tracks the error', :aggregate_failures do
+                  allow_next_instance_of(::Projects::RegisterSuggestedReviewersProjectService) do |instance|
+                    allow(instance).to receive(:execute).and_return(response)
+                  end
+
+                  expect(Gitlab::ErrorTracking)
+                    .to receive(:track_exception)
+                          .with(an_instance_of(StandardError), { project_id: project.id })
+                          .and_call_original
+
+                  subject.perform(project.id, user.id)
+                end
+              end
+
+              context 'when error is trackable and raisable' do
+                let(:response) do
+                  ServiceResponse.error(message: 'Failed to register project', reason: :client_request_failed)
+                end
+
+                it 'tracks and raises the error', :aggregate_failures do
+                  allow_next_instance_of(::Projects::RegisterSuggestedReviewersProjectService) do |instance|
+                    allow(instance).to receive(:execute).and_return(response)
+                  end
+
+                  expect(Gitlab::ErrorTracking)
+                    .to receive(:track_and_raise_exception)
+                          .with(an_instance_of(StandardError), { project_id: project.id })
+                          .and_call_original
+
+                  expect { subject.perform(project.id, user.id) }
+                    .to raise_error(StandardError, 'Failed to register project')
+                end
               end
             end
           end

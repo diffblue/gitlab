@@ -53,7 +53,7 @@ describe('MR Widget Security Reports', () => {
     it('should mount the widget component', () => {
       expect(findWidget().props()).toMatchObject({
         statusIconName: 'success',
-        widgetName: 'MRSecurityWidget',
+        widgetName: 'WidgetSecurityReports',
         errorText: 'Security reports failed loading results',
         loadingText: 'Loading',
         fetchCollapsedData: wrapper.vm.fetchCollapsedData,

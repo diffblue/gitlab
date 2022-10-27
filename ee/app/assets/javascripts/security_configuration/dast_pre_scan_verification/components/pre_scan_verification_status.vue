@@ -1,18 +1,17 @@
 <script>
-import { GlButton, GlLink } from '@gitlab/ui';
-import { s__, sprintf } from '~/locale';
-import timeagoMixin from '~/vue_shared/mixins/timeago';
+import { GlButton } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
 import PreScanVerificationIcon from './pre_scan_verification_icon.vue';
+import PipelineDetails from './pipeline_details.vue';
 
 export default {
   name: 'PreScanVerificationStatus',
   components: {
     GlButton,
-    GlLink,
     PreScanVerificationIcon,
+    PipelineDetails,
   },
-  mixins: [timeagoMixin],
   props: {
     status: {
       type: String,
@@ -36,32 +35,13 @@ export default {
     },
   },
   computed: {
-    verificationUsedBefore() {
-      return Boolean(this.pipelineCreatedAt);
+    isDefaultStatus() {
+      return this.status === PRE_SCAN_VERIFICATION_STATUS.DEFAULT;
     },
     verificationButtonText() {
       return this.isDefaultStatus
         ? this.$options.i18n.verifyConfigurationButton
         : this.$options.i18n.viewResultsButton;
-    },
-    isDefaultStatus() {
-      return this.status === PRE_SCAN_VERIFICATION_STATUS.DEFAULT;
-    },
-    pipelineIdFormatted() {
-      return `#${this.pipelineId}`;
-    },
-    preScanVerificationPipelineInfo() {
-      return sprintf(this.statusInfoMessage, {
-        timeAgo: this.timeAgo,
-      });
-    },
-    statusInfoMessage() {
-      return this.status === PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS
-        ? this.$options.i18n.preScanVerificationInProgressText
-        : this.$options.i18n.preScanVerificationText;
-    },
-    timeAgo() {
-      return this.timeFormatted(this.pipelineCreatedAt);
     },
   },
   i18n: {
@@ -70,8 +50,6 @@ export default {
     preScanVerificationDefaultText: s__(
       'PreScanVerification|Test your configuration and identify potential errors before running a full scan.',
     ),
-    preScanVerificationInProgressText: s__('PreScanVerification|Started %{timeAgo} in pipeline'),
-    preScanVerificationText: s__('PreScanVerification|Last run %{timeAgo} in pipeline'),
     verifyConfigurationButton: s__('PreScanVerification|Verify configuration'),
     viewResultsButton: s__('PreScanVerification|View results'),
   },
@@ -95,12 +73,14 @@ export default {
         <span v-if="isDefaultStatus" class="gl-text-gray-500">{{
           $options.i18n.preScanVerificationDefaultText
         }}</span>
-        <span v-else class="gl-text-gray-500">
-          <span data-testid="dast-header-text">{{ preScanVerificationPipelineInfo }}</span>
-          <gl-link v-if="verificationUsedBefore" :href="pipelinePath" data-testid="help-page-link">
-            {{ pipelineIdFormatted }}
-          </gl-link>
-        </span>
+        <pipeline-details
+          v-else
+          class="gl-text-gray-500"
+          :status="status"
+          :pipeline-id="pipelineId"
+          :pipeline-path="pipelinePath"
+          :pipeline-created-at="pipelineCreatedAt"
+        />
       </div>
     </div>
 

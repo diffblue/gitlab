@@ -3,6 +3,8 @@ import { GlDrawer } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
+import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
+import PreScanVerificationSummary from './pre_scan_verification_summary.vue';
 
 export default {
   DRAWER_Z_INDEX,
@@ -15,6 +17,7 @@ export default {
   name: 'PreScanVerificationSidebar',
   components: {
     GlDrawer,
+    PreScanVerificationSummary,
   },
   props: {
     isOpen: {
@@ -22,8 +25,16 @@ export default {
       required: false,
       default: false,
     },
+    status: {
+      type: String,
+      required: false,
+      default: PRE_SCAN_VERIFICATION_STATUS.DEFAULT,
+    },
   },
   computed: {
+    isDefaultStatus() {
+      return this.status === PRE_SCAN_VERIFICATION_STATUS.DEFAULT;
+    },
     getDrawerHeaderHeight() {
       return getContentWrapperHeight('.nav-sidebar');
     },
@@ -45,9 +56,13 @@ export default {
       </h4>
     </template>
     <template #default>
-      <p class="gl-text-gray-500 gl-line-height-20">
-        {{ $options.i18n.preScanVerificationSidebarInfo }}
-      </p>
+      <div class="gl-px-4!">
+        <p class="gl-text-gray-500 gl-line-height-20">
+          {{ $options.i18n.preScanVerificationSidebarInfo }}
+        </p>
+
+        <pre-scan-verification-summary v-if="!isDefaultStatus" :status="status" />
+      </div>
     </template>
   </gl-drawer>
 </template>

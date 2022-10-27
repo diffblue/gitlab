@@ -13,7 +13,7 @@ import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
 import i18n from './i18n';
 
 export default {
-  name: 'MRSecurityWidget',
+  name: 'WidgetSecurityReports',
   components: {
     MrWidget,
     MrWidgetRow,

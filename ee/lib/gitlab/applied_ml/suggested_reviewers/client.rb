@@ -65,6 +65,8 @@ module Gitlab
             project_id: response.project_id,
             registered_at: response.registered_at
           }
+        rescue GRPC::AlreadyExists => e
+          raise Errors::ProjectAlreadyExists, e
         rescue GRPC::BadStatus => e
           raise Errors::ResourceNotAvailable, e
         end

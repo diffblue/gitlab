@@ -21,15 +21,41 @@ const mockActions = [
 ];
 
 const mockRules = [
+  { type: 'pipeline' },
   { type: 'schedule', cadence: '*/10 * * * *', branches: ['main'] },
   { type: 'pipeline', branches: ['release/*', 'staging'] },
   { type: 'pipeline', branches: ['release/1.*', 'canary', 'staging'] },
   {
     type: 'schedule',
     cadence: '* */20 4 * *',
-    agents: { protect: { namespaces: ['default-cluster'] } },
+    agents: { 'default-agent': null },
   },
-  { type: 'pipeline' },
+  {
+    type: 'schedule',
+    cadence: '* */20 4 * *',
+    agents: { 'default-agent': { namespaces: [] } },
+  },
+  {
+    type: 'schedule',
+    cadence: '* */20 4 * *',
+    agents: {
+      'default-agent': { namespaces: ['production'] },
+    },
+  },
+  {
+    type: 'schedule',
+    cadence: '* */20 4 * *',
+    agents: {
+      'default-agent': { namespaces: ['staging', 'releases'] },
+    },
+  },
+  {
+    type: 'schedule',
+    cadence: '* */20 4 * *',
+    agents: {
+      'default-agent': { namespaces: ['staging', 'releases', 'dev'] },
+    },
+  },
 ];
 
 describe('humanizeActions', () => {
@@ -38,7 +64,7 @@ describe('humanizeActions', () => {
   });
 
   it('returns a single action as human-readable string', () => {
-    expect(humanizeActions([mockActions[0]])).toStrictEqual(['Dast']);
+    expect(humanizeActions([mockActions[1]])).toStrictEqual(['Dast']);
   });
 
   it('returns multiple actions as human-readable strings', () => {
@@ -55,12 +81,12 @@ describe('humanizeRules', () => {
     expect(humanizeRules([])).toStrictEqual([NO_RULE_MESSAGE]);
   });
 
-  it('returns the empty rules message in an Array if a single rule is passed in without a branch or cluster', () => {
-    expect(humanizeRules([mockRules[4]])).toStrictEqual([NO_RULE_MESSAGE]);
+  it('returns the empty rules message in an Array if a single rule is passed in without a branch or agent', () => {
+    expect(humanizeRules([mockRules[0]])).toStrictEqual([NO_RULE_MESSAGE]);
   });
 
   it('returns a single rule as a human-readable string', () => {
-    expect(humanizeRules([mockRules[0]])).toStrictEqual([
+    expect(humanizeRules([mockRules[1]])).toStrictEqual([
       'Scan to be performed every 10 minutes, every hour, every day on the main branch',
     ]);
   });
@@ -70,7 +96,11 @@ describe('humanizeRules', () => {
       'Scan to be performed every 10 minutes, every hour, every day on the main branch',
       'Scan to be performed on every pipeline on the release/* and staging branches',
       'Scan to be performed on every pipeline on the release/1.*, canary and staging branches',
-      'Scan to be performed every minute, every 20 hours, on day 4 of the month',
+      'Scan to be performed by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
+      'Scan to be performed by the agent named default-agent for all namespaces every minute, every 20 hours, on day 4 of the month',
+      'Scan to be performed by the agent named default-agent for the production namespace every minute, every 20 hours, on day 4 of the month',
+      'Scan to be performed by the agent named default-agent for the staging and releases namespaces every minute, every 20 hours, on day 4 of the month',
+      'Scan to be performed by the agent named default-agent for the staging, releases and dev namespaces every minute, every 20 hours, on day 4 of the month',
     ]);
   });
 });
