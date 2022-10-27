@@ -527,4 +527,4 @@ See the dedicated [CI configuration performance page](performance.md).
 
 ---
 
-[Return to Development documentation](index.md)
+[Return to Development documentation](../index.md)
