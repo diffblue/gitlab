@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
-  include Select2Helper
+  include ListboxInputHelper
 
   let_it_be(:group) { create(:group, path: 'group-test') }
   let_it_be(:new_group_name) { 'GitLab' }
@@ -41,11 +41,11 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
 
     context 'selects create a new group' do
       before do
-        select2 '0', from: '#namespace_id'
+        listbox_input "Create group", from: '[data-testid="namespace-selector"]'
       end
 
       it 'shows the new group name input' do
-        expect(page).to have_field('New Group Name')
+        expect(page).to have_selector('fieldset', text: 'New Group Name')
         expect(page).to have_content('Who will be using GitLab?')
       end
 
@@ -55,7 +55,7 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
             service = instance_double(GitlabSubscriptions::Trials::ApplyTrialService, execute: ServiceResponse.success)
             expect(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service)
 
-            fill_in 'New Group Name', with: new_group_name
+            fill_in 'new_group_name', with: new_group_name
 
             click_button 'Start your free trial'
 
@@ -72,7 +72,7 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
           end
 
           it 'returns 404' do
-            fill_in 'New Group Name', with: new_group_name
+            fill_in 'new_group_name', with: new_group_name
 
             click_button 'Start your free trial'
 
@@ -88,7 +88,7 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
           service = instance_double(GitlabSubscriptions::Trials::ApplyTrialService, execute: ServiceResponse.success)
           expect(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service)
 
-          fill_in 'New Group Name', with: namespace.path
+          fill_in 'new_group_name', with: namespace.path
 
           click_button 'Start your free trial'
 
@@ -103,7 +103,7 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
         it 'shows validation error' do
           click_button 'Start your free trial'
 
-          message = page.find('#new_group_name').native.attribute('validationMessage')
+          message = page.find_field('new_group_name').native.attribute('validationMessage')
 
           expect(message).to eq('Please fill out this field.')
           expect(page).to have_current_path(select_trials_path, ignore_query: true)
@@ -113,12 +113,12 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
 
     context 'selects an existing group' do
       before do
-        select2 group.id, from: '#namespace_id'
+        listbox_input group.name, from: '[data-testid="namespace-selector"]'
       end
 
       context 'without trial plan' do
         it 'does not show the new group name input' do
-          expect(page).not_to have_field('New Group Name')
+          expect(page).not_to have_field('new_group_name')
           expect(page).to have_content('Who will be using GitLab?')
         end
 
@@ -146,12 +146,12 @@ RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
 
           expect(find('[data-testid="alert-danger"]')).to have_text(error_message)
           expect(page).to have_current_path(apply_trials_path, ignore_query: true)
-          expect(find('#namespace_id', visible: false).value).to eq(group.id.to_s)
+          expect(find_field('namespace_id', type: :hidden).value).to eq(group.id.to_s)
 
           # new group name should be functional
-          select2 '0', from: '#namespace_id'
+          listbox_input 'Create group', from: '[data-testid="namespace-selector"]'
 
-          expect(page).to have_field('New Group Name')
+          expect(page).to have_field('new_group_name')
           expect(find('#trial_entity_individual').checked?).to be(false)
           expect(find('#trial_entity_company').checked?).to be(true)
         end

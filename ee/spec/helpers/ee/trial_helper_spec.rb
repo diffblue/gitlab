@@ -157,25 +157,40 @@ RSpec.describe EE::TrialHelper do
     end
   end
 
-  describe '#namespace_options_for_select' do
+  describe '#namespace_options_for_listbox' do
     let_it_be(:group1) { create :group }
     let_it_be(:group2) { create :group }
 
     let(:trialable_group_namespaces) { [] }
 
-    let(:new_optgroup_regex) { /<optgroup label="New"><option/ }
-    let(:groups_optgroup_regex) { /<optgroup label="Groups"><option/ }
+    let(:new_optgroup) do
+      {
+        text: _('New'),
+        options: [
+          {
+            text: _('Create group'),
+            value: '0'
+          }
+        ]
+      }
+    end
+
+    let(:groups_optgroup) do
+      {
+        text: _('Groups'),
+        options: trialable_group_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
+      }
+    end
 
     before do
       allow(helper).to receive(:trialable_group_namespaces).and_return(trialable_group_namespaces)
     end
 
-    subject { helper.namespace_options_for_select }
+    subject { helper.namespace_options_for_listbox }
 
     context 'when there is no eligible group' do
       it 'returns just the "New" option group', :aggregate_failures do
-        is_expected.to match(new_optgroup_regex)
-        is_expected.not_to match(groups_optgroup_regex)
+        is_expected.to match_array([new_optgroup])
       end
     end
 
@@ -183,17 +198,17 @@ RSpec.describe EE::TrialHelper do
       let(:trialable_group_namespaces) { [group1, group2] }
 
       it 'returns the "New" and "Groups" option groups', :aggregate_failures do
-        is_expected.to match(new_optgroup_regex)
-        is_expected.to match(groups_optgroup_regex)
+        is_expected.to match_array([new_optgroup, groups_optgroup])
+        expect(subject[1][:options].length).to be(2)
       end
     end
 
     context 'when some group namespaces are eligible' do
-      let(:trialable_group_namespaces) { [group1, group2] }
+      let(:trialable_group_namespaces) { [group2] }
 
       it 'returns the "New", "Groups" option groups', :aggregate_failures do
-        is_expected.to match(new_optgroup_regex)
-        is_expected.to match(groups_optgroup_regex)
+        is_expected.to match_array([new_optgroup, groups_optgroup])
+        expect(subject[1][:options].length).to be(1)
       end
     end
   end

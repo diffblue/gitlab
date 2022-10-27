@@ -16,12 +16,11 @@
 
     = form_tag apply_trials_path(glm_params), method: :post, class: 'js-saas-trial-group' do
       - if show_trial_namespace_select?
-        .form-group.gl-select2-html5-required-fix
-          = label_tag :namespace_id, _('This subscription is for'), for: :namespace_id, class: 'col-form-label'
-          = select_tag :namespace_id, namespace_options_for_select(params[:namespace_id]), class: 'select2', required: true, data: { qa_selector: 'subscription_for' }
-      #group_name.form-group{ class: ("hidden" if show_trial_namespace_select?) }
-        = label_tag :new_group_name, _('New Group Name'), for: :new_group_name, class: 'col-form-label'
-        = text_field_tag :new_group_name, nil, class: 'form-control', required: !show_trial_namespace_select?, data: { qa_selector: 'new_group_name' }
+        .js-namespace-selector{ data: { items: namespace_options_for_listbox.to_json, initial_value: params[:namespace_id] } }
+      - else
+        #group_name.form-group
+          = label_tag :new_group_name, _('New Group Name'), for: :new_group_name, class: 'col-form-label'
+          = text_field_tag :new_group_name, nil, class: 'form-control', required: !show_trial_namespace_select?, data: { qa_selector: 'new_group_name' }
       - if should_ask_company_question?
         .form-group
           = label_tag :trial_entity, _('Who will be using GitLab?')

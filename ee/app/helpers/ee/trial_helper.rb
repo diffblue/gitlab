@@ -58,13 +58,28 @@ module EE
       any_trialable_group_namespaces?
     end
 
-    def namespace_options_for_select(selected = nil)
-      grouped_options = {
-        'New' => [[_('Create group'), 0]],
-        'Groups' => trialable_group_namespaces.map { |n| [n.name, n.id] }
-      }
+    def namespace_options_for_listbox
+      group_options = trialable_group_namespaces.map { |n| { text: n.name, value: n.id.to_s } }
+      options = [
+        {
+          text: _('New'),
+          options: [
+            {
+              text: _('Create group'),
+              value: '0'
+            }
+          ]
+        }
+      ]
 
-      grouped_options_for_select(grouped_options, selected, prompt: _('Please select a group'))
+      unless group_options.empty?
+        options.push({
+                       text: _('Groups'),
+                       options: group_options
+                     })
+      end
+
+      options
     end
 
     def trial_errors(namespace, service_result)
