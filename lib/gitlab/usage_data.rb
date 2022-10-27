@@ -621,10 +621,7 @@ module Gitlab
       end
 
       def action_monthly_active_users(time_period)
-        date_range = { date_from: time_period[:created_at].first, date_to: time_period[:created_at].last }
-
-        event_monthly_active_users(date_range)
-          .merge!(ide_monthly_active_users(date_range))
+        ide_monthly_active_users(date_from: time_period[:created_at].first, date_to: time_period[:created_at].last)
       end
 
       def with_duration
@@ -679,19 +676,6 @@ module Gitlab
           break FALLBACK unless result
 
           result['value'].last.to_f
-        end
-      end
-
-      def event_monthly_active_users(date_range)
-        data = {
-          action_monthly_active_users_project_repo: Gitlab::UsageDataCounters::TrackUniqueEvents::PUSH_ACTION,
-          action_monthly_active_users_design_management: Gitlab::UsageDataCounters::TrackUniqueEvents::DESIGN_ACTION,
-          action_monthly_active_users_wiki_repo: Gitlab::UsageDataCounters::TrackUniqueEvents::WIKI_ACTION,
-          action_monthly_active_users_git_write: Gitlab::UsageDataCounters::TrackUniqueEvents::GIT_WRITE_ACTION
-        }
-
-        data.each do |key, event|
-          data[key] = redis_usage_data { Gitlab::UsageDataCounters::TrackUniqueEvents.count_unique_events(event_action: event, **date_range) }
         end
       end
 
