@@ -20,16 +20,24 @@ export default {
   },
   computed: {
     ...mapState(['allowSubEpics']),
+    additionalHeaderClasses() {
+      return this.allowSubEpics ? 'gl-pt-4' : 'gl-pt-3 gl-pb-0';
+    },
   },
 };
 </script>
 
 <template>
   <div
-    class="card-header d-flex gl-px-5 gl-pt-4 gl-pt-3 flex-column flex-sm-row border-bottom-0 gl-bg-gray-10"
+    class="card-header gl-display-flex gl-px-5 gl-flex-direction-column gl-sm-flex-direction-row gl-border-bottom-0 gl-bg-gray-10"
+    :class="additionalHeaderClasses"
   >
     <div>
-      <gl-button-group data-testid="buttons" class="gl-flex-grow-1 gl-display-flex">
+      <gl-button-group
+        v-if="allowSubEpics"
+        data-testid="buttons"
+        class="gl-flex-grow-1 gl-display-flex"
+      >
         <gl-button
           class="js-epic-tree-tab"
           data-testid="tree-view-button"
@@ -39,7 +47,6 @@ export default {
           {{ __('Tree view') }}
         </gl-button>
         <gl-button
-          v-if="allowSubEpics"
           class="js-epic-roadmap-tab"
           data-testid="roadmap-view-button"
           :selected="activeTab === $options.ITEM_TABS.ROADMAP"
