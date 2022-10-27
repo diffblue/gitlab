@@ -207,6 +207,7 @@ module Trigger
       end
     end
 
+    # We're doing the same operation in `scripts/utils.sh` in the `assets_image_tag` function.
     def assets_image_tag
       if ENV['CI_COMMIT_TAG']
         ENV['CI_COMMIT_REF_NAME']
