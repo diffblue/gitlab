@@ -3,11 +3,13 @@
 module Geo
   class ContainerRepositoryReplicator < Gitlab::Geo::Replicator
     include Gitlab::Geo::LogHelpers
+    extend ::Gitlab::Utils::Override
 
     extend ActiveSupport::Concern
 
     event :created
     event :updated
+    event :deleted
 
     class << self
       extend ::Gitlab::Utils::Override
@@ -49,19 +51,36 @@ module Geo
     end
 
     # Called by Gitlab::Geo::Replicator#consume
-    def consume_event_created(**params)
-      consume_event_updated(params)
-    end
-
-    # Called by Gitlab::Geo::Replicator#consume
     def consume_event_updated(**params)
       return unless in_replicables_for_current_secondary?
 
       sync_repository
     end
 
+    # Called by Gitlab::Geo::Replicator#consume
+    def consume_event_created(**params)
+      consume_event_updated(params)
+    end
+
+    # Called by Gitlab::Geo::Replicator#consume
+    def consume_event_deleted(**params)
+      replicate_destroy(params)
+    end
+
     def sync_repository
       Geo::ContainerRepositorySyncService.new(model_record).execute
+    end
+
+    override :deleted_params
+    def deleted_params
+      event_params.merge(path: model_record.path)
+    end
+
+    def replicate_destroy(event_data)
+      ::Geo::ContainerRepositoryRegistryRemovalService.new(
+        model_record_id,
+        event_data[:path]
+      ).execute
     end
   end
 end
