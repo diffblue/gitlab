@@ -108,31 +108,6 @@ RSpec.describe MergeRequestPresenter do
     end
   end
 
-  describe '#missing_security_scan_types' do
-    let(:presenter) { described_class.new(merge_request, current_user: user) }
-    let(:pipeline) { instance_double(Ci::Pipeline) }
-
-    subject(:missing_security_scan_types) { presenter.missing_security_scan_types }
-
-    where(:feature_flag_enabled?, :can_read_pipeline?, :attribute_value) do
-      false | false | nil
-      false | true  | nil
-      true  | false | nil
-      true  | true  | %w(sast)
-    end
-
-    with_them do
-      before do
-        stub_feature_flags(missing_mr_security_scan_types: feature_flag_enabled?)
-        allow(merge_request).to receive(:actual_head_pipeline).and_return(pipeline)
-        allow(presenter).to receive(:can?).with(user, :read_pipeline, pipeline).and_return(can_read_pipeline?)
-        allow(merge_request).to receive(:missing_security_scan_types).and_return(%w(sast))
-      end
-
-      it { is_expected.to eq(attribute_value) }
-    end
-  end
-
   describe '#discover_project_security_path' do
     let(:presenter) { described_class.new(merge_request, current_user: user) }
     let(:can_discover_project_security) { true }
