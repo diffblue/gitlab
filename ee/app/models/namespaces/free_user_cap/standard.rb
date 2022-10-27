@@ -16,7 +16,21 @@ module Namespaces
         !reached_limit?
       end
 
+      def close_to_dashboard_limit?
+        return false unless enforce_cap?
+        return false unless new_namespace_enforcement?
+        return false if reached_limit?
+
+        users_count >= (limit - CLOSE_TO_LIMIT_COUNT_DIFFERENCE)
+      end
+
+      def remaining_seats
+        [limit - users_count, 0].max
+      end
+
       private
+
+      CLOSE_TO_LIMIT_COUNT_DIFFERENCE = 2
 
       def limit
         if new_namespace_enforcement?

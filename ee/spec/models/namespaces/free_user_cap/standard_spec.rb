@@ -644,4 +644,110 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
       end
     end
   end
+
+  describe '#close_to_dashboard_limit?' do
+    let(:free_plan_members_count) { 1 }
+
+    subject(:close_to_dashboard_limit?) { described_class.new(namespace).close_to_dashboard_limit? }
+
+    before do
+      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      stub_ee_application_setting(dashboard_limit: 3)
+    end
+
+    it { is_expected.to be false }
+
+    context 'with a net new namespace' do
+      include_context 'with net new namespace'
+
+      context 'when enforcement date is not populated' do
+        it { is_expected.to be false }
+      end
+
+      context 'when enforcement date is populated' do
+        before do
+          stub_ee_application_setting(dashboard_limit_new_namespace_creation_enforcement_date: enforcement_date)
+        end
+
+        context 'when :free_user_cap_new_namespaces is enabled' do
+          before do
+            stub_feature_flags(free_user_cap_new_namespaces: true)
+          end
+
+          context 'when far below the dashboard limit' do
+            let(:free_plan_members_count) { 0 }
+
+            it { is_expected.to be false }
+          end
+
+          context 'when close to the dashboard limit' do
+            let(:free_plan_members_count) { 1 }
+
+            it { is_expected.to be true }
+          end
+
+          context 'when at dashboard_limit' do
+            let(:free_plan_members_count) { 3 }
+
+            it { is_expected.to be false }
+          end
+
+          context 'when over the dashboard_limit' do
+            let(:free_plan_members_count) { 4 }
+
+            it { is_expected.to be false }
+          end
+        end
+
+        context 'when :free_user_cap_new_namespaces is disabled' do
+          let(:free_plan_members_count) { 1 }
+
+          before do
+            stub_feature_flags(free_user_cap_new_namespaces: false)
+          end
+
+          it { is_expected.to be false }
+        end
+      end
+    end
+  end
+
+  describe '#remaining_seats' do
+    subject(:remaining_seats) { described_class.new(namespace).remaining_seats }
+
+    before do
+      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      stub_ee_application_setting(dashboard_enforcement_limit: 2)
+    end
+
+    context 'when under the number of free users limit' do
+      let(:free_plan_members_count) { 1 }
+
+      it { is_expected.to eq(1) }
+    end
+
+    context 'when at the number of free users limit' do
+      let(:free_plan_members_count) { 2 }
+
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when over the number of free users limit' do
+      let(:free_plan_members_count) { 3 }
+
+      it { is_expected.to eq(0) }
+    end
+
+    context 'when on a new net namespace' do
+      include_context 'with net new namespace'
+
+      let(:free_plan_members_count) { 1 }
+
+      before do
+        stub_ee_application_setting(dashboard_limit: 2)
+      end
+
+      it { is_expected.to eq(1) }
+    end
+  end
 end
