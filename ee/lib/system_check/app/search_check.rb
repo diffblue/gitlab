@@ -41,7 +41,7 @@ module SystemCheck
       end
 
       def valid_opensearch_version?
-        opensearch? && current_version.major == 1
+        opensearch? && current_version.major >= 1
       end
 
       def current_version
