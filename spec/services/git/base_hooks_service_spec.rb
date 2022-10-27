@@ -4,7 +4,6 @@ require 'spec_helper'
 
 RSpec.describe Git::BaseHooksService do
   include RepoHelpers
-  include GitHelpers
 
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository) }
