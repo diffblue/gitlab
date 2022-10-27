@@ -4,7 +4,7 @@ require "spec_helper"
 
 RSpec.describe Gitlab::Geo::LogCursor::Events::Event, :clean_gitlab_redis_shared_state do
   let(:logger) { Gitlab::Geo::LogCursor::Logger.new(described_class, Logger::INFO) }
-  let(:event) { create(:geo_event, :package_file, event_name: "created" ) }
+  let(:event) { create(:geo_event, :package_file, event_name: "created") }
   let(:event_log) { create(:geo_event_log, geo_event: event) }
   let(:replicable) { Packages::PackageFile.find(event.payload["model_record_id"]) }
   let!(:event_log_state) { create(:geo_event_log_state, event_id: event_log.id - 1) }
