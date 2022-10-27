@@ -18,7 +18,7 @@ module Pajamas
 
     # Use a light spinner on dark backgrounds.
     #
-    # @display bg_color "#222"
+    # @display bg_dark true
     def light
       render(Pajamas::SpinnerComponent.new(color: :light))
     end

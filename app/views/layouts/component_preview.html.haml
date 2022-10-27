@@ -6,4 +6,9 @@
     = stylesheet_link_tag "application_dark"
     = stylesheet_link_tag "application_utilities_dark"
 %body
-  .container.gl-mt-6= yield
+  .container.gl-mt-6
+    - if params[:lookbook][:display][:bg_dark]
+      .bg-dark.rounded.shadow.p-4
+        = yield
+    - else
+      = yield
