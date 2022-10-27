@@ -9,10 +9,6 @@ module EE
         presenter(merge_request).has_denied_policies?
       end
 
-      expose :missing_security_scan_types do |merge_request|
-        presenter(merge_request).missing_security_scan_types
-      end
-
       expose :api_status_checks_path do |merge_request|
         presenter(merge_request).api_status_checks_path
       end
