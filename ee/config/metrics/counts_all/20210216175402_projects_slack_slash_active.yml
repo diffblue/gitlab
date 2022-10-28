@@ -3,7 +3,7 @@ data_category: optional
 key_path: usage_activity_by_stage.configure.projects_slack_slash_active
 description: Unique projects with Slack ‘/’ commands enabled
 product_section: dev
-product_stage: ecosystem
+product_stage: manage
 product_group: integrations
 product_category: chatops
 value_type: number
