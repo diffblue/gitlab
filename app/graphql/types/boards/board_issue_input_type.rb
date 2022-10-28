@@ -11,7 +11,7 @@ module Types
 
       argument :or, Types::Issues::UnionedIssueFilterInputType,
                required: false,
-               description: 'List of unioned arguments.'
+               description: 'List of arguments with inclusive OR.'
 
       argument :search, GraphQL::Types::String,
                required: false,

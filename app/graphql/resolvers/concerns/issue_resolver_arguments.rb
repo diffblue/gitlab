@@ -68,7 +68,7 @@ module IssueResolverArguments
              description: 'Negated arguments.',
              required: false
     argument :or, Types::Issues::UnionedIssueFilterInputType,
-             description: 'Unioned arguments.',
+             description: 'List of arguments with inclusive OR.',
              required: false
     argument :crm_contact_id, GraphQL::Types::String,
              required: false,
