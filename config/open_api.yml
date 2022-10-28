@@ -22,3 +22,5 @@ metadata:
     description: Operations related to merge requests
   - name: deployments
     description: Operations related to deployments
+  - name: release_links
+    description: Operations related to release assets (links)
