@@ -272,7 +272,7 @@ class Issue < ApplicationRecord
     end
 
     override :pg_full_text_search
-    def pg_full_text_search(search_term)
+    def pg_full_text_search(query, matched_columns: [])
       super.where('issue_search_data.project_id = issues.project_id')
     end
   end
