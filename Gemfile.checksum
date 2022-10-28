@@ -260,7 +260,6 @@
 {"name":"hangouts-chat","version":"0.0.5","platform":"ruby","checksum":"bdbeb6c6e4abc98f395cb273f53b39911b3aa9e248fbbf063242b021ced8b6b6"},
 {"name":"hashdiff","version":"1.0.1","platform":"ruby","checksum":"2cd4d04f5080314ecc8403c4e2e00dbaa282dff395e2d031bc16c8d501bdd6db"},
 {"name":"hashie","version":"5.0.0","platform":"ruby","checksum":"9d6c4e51f2a36d4616cbc8a322d619a162d8f42815a792596039fc95595603da"},
-{"name":"hashie-forbidden_attributes","version":"0.1.1","platform":"ruby","checksum":"3a6ed37f3a314e4fb1dd1e2df6eb7721bcadd023a30bc0b951b2b5285a790fb2"},
 {"name":"health_check","version":"3.1.0","platform":"ruby","checksum":"10146508237dc54ed7e24c292d8ba7fb8f9590cf26c66e325b947438c4103b57"},
 {"name":"heapy","version":"0.2.0","platform":"ruby","checksum":"74141e845d61ffc7c1e8bf8b127c8cf94544ec7a1181aec613288682543585ea"},
 {"name":"html-pipeline","version":"2.14.3","platform":"ruby","checksum":"8a1d4d7128b2141913387cac0f8ba898bb6812557001acc0c2b46910f59413a0"},
