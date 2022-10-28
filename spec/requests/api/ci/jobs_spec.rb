@@ -627,7 +627,7 @@ RSpec.describe API::Ci::Jobs do
           get api("/projects/#{project.id}/jobs/#{job.id}/trace", api_user)
         end
 
-        it 'renders trace to authorized users' do
+        it 'renders successfully to authorized users' do
           expect(response).to have_gitlab_http_status(expected_status)
         end
       end
