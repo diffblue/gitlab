@@ -176,6 +176,7 @@ module API
         mount ::API::MergeRequestDiffs
         mount ::API::UserCounts
         mount ::API::ProjectRepositoryStorageMoves
+        mount ::API::Release::Links
         mount ::API::SnippetRepositoryStorageMoves
 
         add_open_api_documentation!
@@ -293,7 +294,6 @@ module API
       mount ::API::ProtectedBranches
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
-      mount ::API::Release::Links
       mount ::API::Releases
       mount ::API::RemoteMirrors
       mount ::API::Repositories
