@@ -69,6 +69,9 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
     before do
       stub_licensed_features(suggested_reviewers: true)
       stub_feature_flags(suggested_reviewers_control: merge_request.project)
+
+      target_project.project_setting.update!(suggested_reviewers_enabled: true)
+
       merge_request.project.add_developer(suggested_user)
       merge_request.build_predictions
       merge_request.predictions.update!(suggested_reviewers: { reviewers: [suggested_user.username] })
