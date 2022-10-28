@@ -1,12 +1,12 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlModal } from '@gitlab/ui';
-import TakeOwnershipModal from '~/pipeline_schedules/components/take_ownership_modal.vue';
+import DeletePipelineScheduleModal from '~/pipeline_schedules/components/delete_pipeline_schedule_modal.vue';
 
-describe('Take ownership modal', () => {
+describe('Delete pipeline schedule modal', () => {
   let wrapper;
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(TakeOwnershipModal, {
+    wrapper = shallowMount(DeletePipelineScheduleModal, {
       propsData: {
         visible: true,
         ...props,
@@ -24,16 +24,14 @@ describe('Take ownership modal', () => {
     wrapper.destroy();
   });
 
-  it('shows a take ownership message', () => {
-    expect(findModal().text()).toBe(
-      'Only the owner of a pipeline schedule can make changes to it. Do you want to take ownership of this schedule?',
-    );
+  it('shows delete confirmation message', () => {
+    expect(findModal().text()).toBe('Are you sure you want to delete this pipeline schedule?');
   });
 
-  it('emits the takeOwnership event', async () => {
+  it('emits the deleteSchedule event', async () => {
     findModal().vm.$emit('primary');
 
-    expect(wrapper.emitted()).toEqual({ takeOwnership: [[]] });
+    expect(wrapper.emitted()).toEqual({ deleteSchedule: [[]] });
   });
 
   it('emits the hideModal event', async () => {

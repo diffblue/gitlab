@@ -1,4 +1,4 @@
-import { GlAlert, GlLoadingIcon, GlModal, GlTabs } from '@gitlab/ui';
+import { GlAlert, GlLoadingIcon, GlTabs } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { trimText } from 'helpers/text_helper';
@@ -6,13 +6,17 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PipelineSchedules from '~/pipeline_schedules/components/pipeline_schedules.vue';
+import DeletePipelineScheduleModal from '~/pipeline_schedules/components/delete_pipeline_schedule_modal.vue';
+import TakeOwnershipModal from '~/pipeline_schedules/components/take_ownership_modal.vue';
 import PipelineSchedulesTable from '~/pipeline_schedules/components/table/pipeline_schedules_table.vue';
 import deletePipelineScheduleMutation from '~/pipeline_schedules/graphql/mutations/delete_pipeline_schedule.mutation.graphql';
+import takeOwnershipMutation from '~/pipeline_schedules/graphql/mutations/take_ownership.mutation.graphql';
 import getPipelineSchedulesQuery from '~/pipeline_schedules/graphql/queries/get_pipeline_schedules.query.graphql';
 import {
   mockGetPipelineSchedulesGraphQLResponse,
   mockPipelineScheduleNodes,
   deleteMutationResponse,
+  takeOwnershipMutationResponse,
 } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -25,6 +29,12 @@ describe('Pipeline schedules app', () => {
 
   const deleteMutationHandlerSuccess = jest.fn().mockResolvedValue(deleteMutationResponse);
   const deleteMutationHandlerFailed = jest.fn().mockRejectedValue(new Error('GraphQL error'));
+  const takeOwnershipMutationHandlerSuccess = jest
+    .fn()
+    .mockResolvedValue(takeOwnershipMutationResponse);
+  const takeOwnershipMutationHandlerFailed = jest
+    .fn()
+    .mockRejectedValue(new Error('GraphQL error'));
 
   const createMockApolloProvider = (
     requestHandlers = [[getPipelineSchedulesQuery, successHandler]],
@@ -44,7 +54,8 @@ describe('Pipeline schedules app', () => {
   const findTable = () => wrapper.findComponent(PipelineSchedulesTable);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
-  const findModal = () => wrapper.findComponent(GlModal);
+  const findDeleteModal = () => wrapper.findComponent(DeletePipelineScheduleModal);
+  const findTakeOwnershipModal = () => wrapper.findComponent(TakeOwnershipModal);
   const findTabs = () => wrapper.findComponent(GlTabs);
   const findNewButton = () => wrapper.findByTestId('new-schedule-button');
   const findAllTab = () => wrapper.findByTestId('pipeline-schedules-all-tab');
@@ -102,7 +113,7 @@ describe('Pipeline schedules app', () => {
 
     await waitForPromises();
 
-    findModal().vm.$emit('primary');
+    findDeleteModal().vm.$emit('deleteSchedule');
 
     await waitForPromises();
 
@@ -125,7 +136,7 @@ describe('Pipeline schedules app', () => {
 
     expect(wrapper.vm.$apollo.queries.schedules.refetch).not.toHaveBeenCalled();
 
-    findModal().vm.$emit('primary');
+    findDeleteModal().vm.$emit('deleteSchedule');
 
     await waitForPromises();
 
@@ -135,21 +146,21 @@ describe('Pipeline schedules app', () => {
     expect(wrapper.vm.$apollo.queries.schedules.refetch).toHaveBeenCalled();
   });
 
-  it('modal should be visible after event', async () => {
+  it('delete modal should be visible after event', async () => {
     createComponent();
 
     await waitForPromises();
 
-    expect(findModal().props('visible')).toBe(false);
+    expect(findDeleteModal().props('visible')).toBe(false);
 
     findTable().vm.$emit('showDeleteModal', mockPipelineScheduleNodes[0].id);
 
     await nextTick();
 
-    expect(findModal().props('visible')).toBe(true);
+    expect(findDeleteModal().props('visible')).toBe(true);
   });
 
-  it('modal should be hidden', async () => {
+  it('delete modal should be hidden', async () => {
     createComponent();
 
     await waitForPromises();
@@ -158,13 +169,56 @@ describe('Pipeline schedules app', () => {
 
     await nextTick();
 
-    expect(findModal().props('visible')).toBe(true);
+    expect(findDeleteModal().props('visible')).toBe(true);
 
-    findModal().vm.$emit('hide');
+    findDeleteModal().vm.$emit('hideModal');
 
     await nextTick();
 
-    expect(findModal().props('visible')).toBe(false);
+    expect(findDeleteModal().props('visible')).toBe(false);
+  });
+
+  it('shows take ownership mutation error alert', async () => {
+    createComponent([
+      [getPipelineSchedulesQuery, successHandler],
+      [takeOwnershipMutation, takeOwnershipMutationHandlerFailed],
+    ]);
+
+    await waitForPromises();
+
+    findTakeOwnershipModal().vm.$emit('takeOwnership');
+
+    await waitForPromises();
+
+    expect(findAlert().text()).toBe(
+      'There was a problem taking ownership of the pipeline schedule.',
+    );
+  });
+
+  it('takes ownership of pipeline schedule and refetches query', async () => {
+    createComponent([
+      [getPipelineSchedulesQuery, successHandler],
+      [takeOwnershipMutation, takeOwnershipMutationHandlerSuccess],
+    ]);
+
+    jest.spyOn(wrapper.vm.$apollo.queries.schedules, 'refetch');
+
+    await waitForPromises();
+
+    const scheduleId = mockPipelineScheduleNodes[1].id;
+
+    findTable().vm.$emit('showTakeOwnershipModal', scheduleId);
+
+    expect(wrapper.vm.$apollo.queries.schedules.refetch).not.toHaveBeenCalled();
+
+    findTakeOwnershipModal().vm.$emit('takeOwnership');
+
+    await waitForPromises();
+
+    expect(takeOwnershipMutationHandlerSuccess).toHaveBeenCalledWith({
+      id: scheduleId,
+    });
+    expect(wrapper.vm.$apollo.queries.schedules.refetch).toHaveBeenCalled();
   });
 
   describe('tabs', () => {
