@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Security Reports in a Merge Request' do
       let(:sast_vuln_count) { 6 }
       let(:dependency_scan_vuln_count) { 4 }
       let(:container_scan_vuln_count) { 8 }
       let(:vuln_name) { "Regular Expression Denial of Service in debug" }
-      let(:remediable_vuln_name) { "Authentication bypass via incorrect DOM traversal and canonicalization in saml2-js" }
+      let(:remediable_vuln_name) { "Authentication bypass via incorrect DOM traversal and canonicalization in saml2-js" } # rubocop:disable Layout/LineLength
 
+      # rubocop:disable RSpec/InstanceVariable
       after do
         @runner.remove_via_api! if @runner
       end
@@ -71,5 +72,6 @@ module QA
         end
       end
     end
+    # rubocop:enable RSpec/InstanceVariable
   end
 end

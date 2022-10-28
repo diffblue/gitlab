@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Scan result policy' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |resource|
@@ -126,8 +126,8 @@ module QA
 
       def report_file(report_name, report_path)
         {
-          file_path: "#{report_name}",
-          content: File.read("#{report_path}")
+          file_path: report_name.to_s,
+          content: File.read(report_path.to_s)
         }
       end
 
