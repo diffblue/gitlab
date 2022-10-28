@@ -189,6 +189,7 @@ module API
         mount ::API::Release::Links
         mount ::API::SnippetRepositoryStorageMoves
         mount ::API::Statistics
+        mount ::API::Submodules
         mount ::API::Suggestions
         mount ::API::Tags
         mount ::API::UserCounts
@@ -311,7 +312,6 @@ module API
       mount ::API::Settings
       mount ::API::SidekiqMetrics
       mount ::API::Snippets
-      mount ::API::Submodules
       mount ::API::Subscriptions
       mount ::API::SystemHooks
       mount ::API::Tags
