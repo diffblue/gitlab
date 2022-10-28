@@ -1,0 +1,15 @@
+{
+  "title": "Audience",
+  "widgets": [
+    {
+      "component": "CubeLineChart",
+      "title": "Audience",
+      "gridAttributes": {
+        "size": {
+          "width": 3,
+          "height": 3
+        }
+      }
+    }
+  ]
+}

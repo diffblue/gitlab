@@ -9,7 +9,7 @@ import {
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import { widgets } from './mock_data';
+import { dashboard } from './mock_data';
 
 jest.mock('gridstack', () => ({
   GridStack: {
@@ -44,7 +44,7 @@ describe('CustomizableDashboard', () => {
       loadCSSFile.mockRejectedValue(sentryError);
 
       createWrapper({
-        widgets,
+        widgets: dashboard.widgets,
       });
     });
 
@@ -59,7 +59,7 @@ describe('CustomizableDashboard', () => {
       loadCSSFile.mockResolvedValue();
 
       createWrapper({
-        widgets,
+        widgets: dashboard.widgets,
       });
     });
 
@@ -72,7 +72,7 @@ describe('CustomizableDashboard', () => {
     });
 
     it.each(
-      widgets.map((widget, index) => [
+      dashboard.widgets.map((widget, index) => [
         widget.component,
         widget.title,
         widget.gridAttributes,
