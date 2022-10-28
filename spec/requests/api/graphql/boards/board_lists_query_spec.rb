@@ -165,7 +165,7 @@ RSpec.describe 'get board lists' do
             )
 
             expect_graphql_errors_to_include(
-              'or arguments are only allowed when the or_issuable_queries feature flag is enabled.'
+              "'or' arguments are only allowed when the `or_issuable_queries` feature flag is enabled."
             )
           end
         end

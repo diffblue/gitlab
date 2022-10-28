@@ -88,11 +88,11 @@ module IssueResolverArguments
 
   def ready?(**args)
     if args[:or].present? && ::Feature.disabled?(:or_issuable_queries, resource_parent)
-      raise ::Gitlab::Graphql::Errors::ArgumentError, "or arguments are only allowed when the or_issuable_queries feature flag is enabled."
+      raise ::Gitlab::Graphql::Errors::ArgumentError, "'or' arguments are only allowed when the `or_issuable_queries` feature flag is enabled."
     end
 
-    args[:not] = args[:not].to_h if args[:not].present?
-    args[:or] = args[:or].to_h if args[:or].present?
+    args[:not] = args[:not].to_h if args[:not]
+    args[:or] = args[:or].to_h if args[:or]
 
     params_not_mutually_exclusive(args, mutually_exclusive_assignee_username_args)
     params_not_mutually_exclusive(args, mutually_exclusive_milestone_args)
@@ -124,8 +124,8 @@ module IssueResolverArguments
 
   def prepare_finder_params(args)
     params = super(args)
-    params[:not] = params[:not].to_h if params[:not].present?
-    params[:or] = params[:or].to_h if params[:or].present?
+    params[:not] = params[:not].to_h if params[:not]
+    params[:or] = params[:or].to_h if params[:or]
     params[:iids] ||= [params.delete(:iid)].compact if params[:iid]
     params[:attempt_project_search_optimizations] = true if params[:search].present?
 
