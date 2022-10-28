@@ -6,7 +6,7 @@ module EE
       module Analytics
         module GroupActivity
           class IssuesCount < Grape::Entity
-            expose :issues_count
+            expose :issues_count, documentation: { type: "Integer", desc: "Number of issues", example: '3' }
           end
         end
       end
