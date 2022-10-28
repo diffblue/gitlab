@@ -6,8 +6,8 @@ RSpec.describe Groups::AutocompleteService do
   let_it_be(:group, refind: true) { create(:group, :nested, :private, avatar: fixture_file_upload('spec/fixtures/dk.png')) }
   let_it_be(:sub_group) { create(:group, :private, parent: group) }
 
-  let(:user) { create(:user) }
-  let!(:epic) { create(:epic, group: group, author: user) }
+  let_it_be(:user) { create(:user) }
+  let_it_be_with_reload(:epic) { create(:epic, group: group, author: user) }
 
   subject { described_class.new(group, user) }
 
@@ -126,8 +126,8 @@ RSpec.describe Groups::AutocompleteService do
 
   describe '#commands' do
     context 'when target is an epic' do
-      let(:parent_epic) { create(:epic, group: group, author: user) }
-      let(:epic)        { create(:epic, group: group, author: user, parent: parent_epic) }
+      let_it_be(:parent_epic) { create(:epic, group: group, author: user) }
+      let_it_be(:epic)        { create(:epic, group: group, author: user, parent: parent_epic) }
 
       context 'with subepics feature enabled' do
         before do
@@ -137,7 +137,7 @@ RSpec.describe Groups::AutocompleteService do
         it 'returns available commands' do
           available_commands = [
             :todo, :unsubscribe, :award, :shrug, :tableflip, :cc, :title, :close,
-            :child_epic, :remove_child_epic, :parent_epic, :remove_parent_epic
+            :child_epic, :remove_child_epic, :parent_epic, :remove_parent_epic, :confidential
           ]
 
           expect(subject.commands(epic).map { |c| c[:name] }).to match_array(available_commands)
@@ -151,7 +151,7 @@ RSpec.describe Groups::AutocompleteService do
 
         it 'returns available commands' do
           available_commands = [
-            :todo, :unsubscribe, :award, :shrug, :tableflip, :cc, :title, :close
+            :todo, :unsubscribe, :award, :shrug, :tableflip, :cc, :title, :close, :confidential
           ]
 
           expect(subject.commands(epic).map { |c| c[:name] }).to match_array(available_commands)
