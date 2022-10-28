@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Security Reports' do
       let(:number_of_dependencies_in_fixture) { 13 }
       let(:dependency_scan_example_vuln) { 'Prototype pollution attack in mixin-deep' }
@@ -32,20 +32,24 @@ module QA
         project.visit!
       end
 
-      it 'dependency list has empty state', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
-        Page::Project::Menu.perform(&:click_on_dependency_list)
-
-        EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
-          expect(dependency_list).to have_empty_state_description('The dependency list details information about the components used within your project.')
-          expect(dependency_list).to have_link('More Information', href: %r{\/help\/user\/application_security\/dependency_list\/index})
-        end
-      end
-
       after do
         runner&.remove_via_api! if runner
       end
 
-      it 'displays security reports in the pipeline', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348036' do
+      it 'dependency list has empty state',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348004' do
+        Page::Project::Menu.perform(&:click_on_dependency_list)
+
+        EE::Page::Project::Secure::DependencyList.perform do |dependency_list|
+          expect(dependency_list)
+            .to have_empty_state_description('The dependency list details information about the components used within your project.') # rubocop:disable Layout/LineLength
+          expect(dependency_list)
+            .to have_link('More Information', href: %r{/help/user/application_security/dependency_list/index})
+        end
+      end
+
+      it 'displays security reports in the pipeline',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348036' do
         push_security_reports
         Flow::Pipeline.visit_latest_pipeline
         Page::Project::Pipeline::Show.perform do |pipeline|
@@ -70,7 +74,8 @@ module QA
         end
       end
 
-      it 'displays security reports in the project security dashboard', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
+      it 'displays security reports in the project security dashboard',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348037' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
@@ -96,7 +101,8 @@ module QA
         end
       end
 
-      it 'displays security reports in the group security dashboard', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
+      it 'displays security reports in the group security dashboard',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348038' do
         push_security_reports
         Page::Main::Menu.perform(&:go_to_groups)
         Page::Dashboard::Groups.perform do |groups|
@@ -131,7 +137,8 @@ module QA
         end
       end
 
-      it 'displays false positives for the vulnerabilities', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
+      it 'displays false positives for the vulnerabilities',
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/350412' do
         push_security_reports
         Page::Project::Menu.perform(&:click_project)
         Support::Waiter.wait_until(sleep_interval: 3) do
@@ -147,7 +154,8 @@ module QA
         end
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
-          Support::Retrier.retry_on_exception(max_attempts: 2, sleep_interval: 3, reload_page: page, message: 'False positive vuln retry') do
+          Support::Retrier.retry_on_exception(max_attempts: 2, sleep_interval: 3, reload_page: page,
+                                              message: 'False positive vuln retry') do
             security_dashboard.click_vulnerability(description: sast_scan_fp_example_vuln)
           end
         end

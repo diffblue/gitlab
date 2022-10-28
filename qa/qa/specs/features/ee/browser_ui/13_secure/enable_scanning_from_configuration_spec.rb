@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :aggregate_failures do
+  RSpec.describe 'Secure', :aggregate_failures, product_group: :static_analysis do
     context 'Enable Scanning from UI' do
       let(:test_data_sast_string_fields_array) do
         [

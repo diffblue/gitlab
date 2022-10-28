@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :jira, :orchestrated, :requires_admin do
+  RSpec.describe 'Govern', :jira, :orchestrated, :requires_admin, product_group: :threat_insights do
     describe 'vulnerability report with jira integration',
 testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
       let(:jira_project_key) { 'JITP' }
