@@ -51,10 +51,6 @@ module WorkItems
           params[:children] && params[:parent]
         end
 
-        def feature_flag_error
-          error(_('`work_items_hierarchy` feature flag disabled for this project'))
-        end
-
         def incompatible_args_error
           error(_('A Work Item can be a parent or a child, but not both.'))
         end
