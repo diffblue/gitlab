@@ -40,7 +40,7 @@ RSpec.describe MigrateSidekiqJobs, :clean_gitlab_redis_queues do
       it 'logs an error' do
         allow(::Gitlab::BackgroundMigration::Logger).to receive(:build).and_return(Logger.new($stdout))
         migrate!
-        expect($stdout.string).to include("Unmarshal JSON payload from MigrateSidekiqJobs failed. Job: #{job}")
+        expect($stdout.string).to include("Unmarshal JSON payload from SidekiqMigrateJobs failed. Job: #{job}")
       end
     end
 
