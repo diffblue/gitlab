@@ -6,6 +6,7 @@ exports[`False positive badge component should render the alert badge 1`] = `
 >
   <gl-badge-stub
     icon="false-positive"
+    iconsize="md"
     size="md"
     variant="warning"
   />
