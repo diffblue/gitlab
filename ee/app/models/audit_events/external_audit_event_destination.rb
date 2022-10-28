@@ -14,6 +14,8 @@ module AuditEvents
     belongs_to :group, class_name: '::Group', foreign_key: 'namespace_id'
     has_many :headers,
              class_name: 'AuditEvents::Streaming::Header'
+    has_many :event_type_filters,
+             class_name: 'AuditEvents::Streaming::EventTypeFilter'
 
     validates :destination_url, public_url: true, presence: true
     validates :destination_url, uniqueness: { scope: :namespace_id }, length: { maximum: 255 }
