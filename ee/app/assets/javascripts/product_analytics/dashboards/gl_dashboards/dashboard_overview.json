@@ -1,0 +1,26 @@
+{
+  "title": "Analytics Overview",
+  "widgets": [
+    {
+      "component": "CubeLineChart",
+      "title": "Audience",
+      "gridAttributes": {
+        "size": {
+          "width": 12,
+          "height": 2
+        }
+      }
+    },
+    {
+      "component": "CubeLineChart",
+      "title": "Sources",
+      "gridAttributes": {
+        "size": {
+          "yPos": 4,
+          "width": 12,
+          "height": 2
+        }
+      }
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 import Vue from 'vue';
-import AnalyticsDashboard from './components/analytics_dashboard.vue';
+import AnalyticsApp from './components/analytics_app.vue';
+import createRouter from './router';
 
 export default () => {
   const el = document.getElementById('js-analytics-dashboard');
@@ -10,8 +11,9 @@ export default () => {
 
   return new Vue({
     el,
+    router: createRouter(),
     render(h) {
-      return h(AnalyticsDashboard);
+      return h(AnalyticsApp);
     },
   });
 };
