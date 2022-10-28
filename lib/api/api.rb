@@ -176,6 +176,7 @@ module API
         mount ::API::Appearance
         mount ::API::Applications
         mount ::API::Badges
+        mount ::API::Branches
         mount ::API::BroadcastMessages
         mount ::API::BulkImports
         mount ::API::Ci::Jobs
@@ -248,7 +249,6 @@ module API
       mount ::API::Avatar
       mount ::API::AwardEmoji
       mount ::API::Boards
-      mount ::API::Branches
       mount ::API::Ci::JobArtifacts
       mount ::API::Ci::PipelineSchedules
       mount ::API::Ci::Pipelines
