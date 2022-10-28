@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Secure', :runner do
+  RSpec.describe 'Govern', :runner, product_group: :threat_insights do
     describe 'Security Dashboard in a Project' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|
