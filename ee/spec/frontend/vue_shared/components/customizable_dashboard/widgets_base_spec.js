@@ -1,10 +1,10 @@
 import CubeLineChart from 'ee/product_analytics/dashboards/components/widgets/cube_line_chart.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import WidgetsBase from 'ee/vue_shared/components/customizable_dashboard/widgets_base.vue';
-import { widgets } from './mock_data';
+import { dashboard } from './mock_data';
 
 describe('WidgetsBase', () => {
-  const widgetConfig = widgets[0];
+  const widgetConfig = dashboard.widgets[0];
 
   let wrapper;
 
