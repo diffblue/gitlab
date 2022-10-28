@@ -186,6 +186,7 @@ module API
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::Release::Links
         mount ::API::SnippetRepositoryStorageMoves
+        mount ::API::ProtectedBranches
         mount ::API::Statistics
 
         add_open_api_documentation!
@@ -292,7 +293,6 @@ module API
       mount ::API::ProjectStatistics
       mount ::API::ProjectTemplates
       mount ::API::Projects
-      mount ::API::ProtectedBranches
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
       mount ::API::Releases
