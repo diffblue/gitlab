@@ -1216,70 +1216,51 @@ RSpec.describe Projects::JobsController, :clean_gitlab_redis_shared_state do
         expect(response.header[Gitlab::Workhorse::DETECT_HEADER]).to eq "true"
       end
 
-      context 'when CI_DEBUG_TRACE enabled' do
-        before do
-          create(:ci_instance_variable, key: 'CI_DEBUG_TRACE', value: 'true')
+      context 'when CI_DEBUG_TRACE and/or CI_DEBUG_SERVICES are enabled' do
+        using RSpec::Parameterized::TableSyntax
+        where(:ci_debug_trace, :ci_debug_services) do
+          'true'  | 'true'
+          'true'  | 'false'
+          'false' | 'true'
+          'false' | 'false'
         end
 
-        context 'with proper permissions for debug logging on a project' do
-          let(:user) { developer }
-
+        with_them do
           before do
-            sign_in(user)
+            create(:ci_instance_variable, key: 'CI_DEBUG_TRACE', value: ci_debug_trace)
+            create(:ci_instance_variable, key: 'CI_DEBUG_SERVICES', value: ci_debug_services)
           end
 
-          it 'returns response ok' do
-            response = subject
+          context 'with proper permissions for debug logging on a project' do
+            let(:user) { developer }
 
-            expect(response).to have_gitlab_http_status(:ok)
-          end
-        end
+            before do
+              sign_in(user)
+            end
 
-        context 'without proper permissions for debug logging on a project' do
-          let(:user) { reporter }
+            it 'returns response ok' do
+              response = subject
 
-          before do
-            sign_in(user)
-          end
-
-          it 'returns response forbidden' do
-            response = subject
-
-            expect(response).to have_gitlab_http_status(:forbidden)
-          end
-        end
-      end
-
-      context 'when CI_DEBUG_SERVICES enabled' do
-        before do
-          create(:ci_instance_variable, key: 'CI_DEBUG_SERVICES', value: 'true')
-        end
-
-        context 'with proper permissions for debug logging on a project' do
-          let(:user) { developer }
-
-          before do
-            sign_in(user)
+              expect(response).to have_gitlab_http_status(:ok)
+            end
           end
 
-          it 'returns response ok' do
-            response = subject
+          context 'without proper permissions for debug logging on a project' do
+            let(:user) { reporter }
 
-            expect(response).to have_gitlab_http_status(:ok)
-          end
-        end
+            before do
+              sign_in(user)
+            end
 
-        context 'without proper permissions for debug logging on a project' do
-          let(:user) { reporter }
+            it 'returns response forbidden if dev mode enabled' do
+              response = subject
 
-          before do
-            sign_in(user)
-          end
-
-          it 'returns response forbidden' do
-            response = subject
-
-            expect(response).to have_gitlab_http_status(:forbidden)
+              if ci_debug_trace == 'true' || ci_debug_services == 'true'
+                expect(response).to have_gitlab_http_status(:forbidden)
+              else
+                expect(response).to have_gitlab_http_status(:ok)
+              end
+            end
           end
         end
       end
