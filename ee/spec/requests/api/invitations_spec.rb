@@ -99,7 +99,7 @@ RSpec.describe API::Invitations, 'EE Invitations' do
              params: { email: invite_email, access_level: Member::MAINTAINER }
       end
 
-      context 'when there are no seats left' do
+      context 'when there are at the size limit' do
         it 'does not add the member' do
           expect do
             post_invitations
@@ -110,6 +110,22 @@ RSpec.describe API::Invitations, 'EE Invitations' do
           expect(response).to have_gitlab_http_status(:created)
           expect(json_response['status']).to eq('error')
           expect(json_response['message'][invite_email]).to eq(msg)
+        end
+      end
+
+      context 'when there are over the size limit' do
+        before do
+          stub_ee_application_setting(dashboard_enforcement_limit: 3) # allow us to add a user/member
+          group.add_developer(create(:user))
+          stub_ee_application_setting(dashboard_enforcement_limit: 0) # set us up to now be over
+        end
+
+        it 'is forbidden to add the member due to read only state of namespace' do
+          expect do
+            post_invitations
+          end.not_to change { group.members.count }
+
+          expect(response).to have_gitlab_http_status(:forbidden)
         end
       end
 
