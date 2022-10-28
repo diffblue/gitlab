@@ -169,6 +169,52 @@ describe('SignInArkoseApp', () => {
       });
     });
 
+    // Regression test for a bug where a user cannot login when a password
+    // manager auto-fill-then-submit feature is used
+    // See https://gitlab.com/gitlab-com/www-gitlab-com/-/issues/13927
+    describe('when username input loses focus (blur) and the form is submitted in quick succession', () => {
+      it('waits for all checks to determine if challenge needs to be shown to finish before submitting the form', async () => {
+        axiosMock.onPost().reply(200, { result: true });
+
+        initArkoseLabs();
+
+        // Mock HTMLFormElement.submit so it returns the token embedded in the
+        // form at the time of execution. If the call to .submit returns a token
+        // then we know that the form was submitted after all calls to
+        // checkIfNeedsChallenge completed
+        const formSubmitMock = jest.fn(() => findArkoseLabsVerificationTokenInput().element?.value);
+        jest.spyOn(findSignInForm(), 'submit').mockImplementation(formSubmitMock);
+
+        //
+        // Simulate behavior of password manager auto-fill-then-submit
+        //
+
+        // Update the username and trigger blur event on the username input.
+        // This triggers a call to checkIfNeedsChallenge
+        setUsername(`auto-fill-submit-${MOCK_USERNAME}`);
+
+        // Before first call to checkIfNeedsChallenge is done, submit the form.
+        // This triggers another call to checkIfNeedsChallenge but returns early
+        // since the username didn't change
+        submitForm();
+
+        // Allow the first call (triggered by username input blur) to
+        // checkIfNeedsChallenge to finish. This initializes ArkoseLabs
+        // challenge
+        await waitForPromises();
+        // ArkoseLabs returns a response (suppressed: true) and the token is
+        // embedded in the form
+        await onSuppress();
+
+        // Assert that the form is submitted after ArkoseLabs returns a response
+        // (supressed: true) and a token is embedded in the form (happens after
+        // blur-triggered checkIfNeedsChallenge finishes)
+        const callResults = formSubmitMock.mock.results;
+        expect(callResults).toHaveLength(1);
+        expect(callResults[0].value).toEqual(MOCK_ARKOSE_RESPONSE.token);
+      });
+    });
+
     describe('when the form is submitted without the username field losing the focus', () => {
       beforeEach(() => {
         initArkoseLabs();
