@@ -15,17 +15,37 @@ RSpec.describe MigrateSidekiqJobs, :clean_gitlab_redis_queues do
       EmailReceiverWorker.perform_async('bar')
     end
 
-    it 'migrates the jobs to the correct destination queue' do
-      allow(Gitlab::SidekiqConfig).to receive(:worker_queue_mappings).and_return({ "EmailReceiverWorker" => "default" })
-      expect(queue_length('email_receiver')).to eq(2)
-      expect(queue_length('default')).to eq(0)
-      migrate!
-      expect(queue_length('email_receiver')).to eq(0)
-      expect(queue_length('default')).to eq(2)
+    context 'with worker_queue_mappings mocked' do
+      it 'migrates the jobs to the correct destination queue' do
+        allow(Gitlab::SidekiqConfig).to receive(:worker_queue_mappings)
+                                          .and_return({ "EmailReceiverWorker" => "default" })
+        expect(queue_length('email_receiver')).to eq(2)
+        expect(queue_length('default')).to eq(0)
+        migrate!
+        expect(queue_length('email_receiver')).to eq(0)
+        expect(queue_length('default')).to eq(2)
 
-      jobs = list_jobs('default')
-      expect(jobs[0]).to include("class" => "EmailReceiverWorker", "args" => ["bar"])
-      expect(jobs[1]).to include("class" => "EmailReceiverWorker", "args" => ["foo"])
+        jobs = list_jobs('default')
+        expect(jobs[0]).to include("class" => "EmailReceiverWorker", "args" => ["bar"])
+        expect(jobs[1]).to include("class" => "EmailReceiverWorker", "args" => ["foo"])
+      end
+    end
+
+    context 'without worker_queue_mappings mocked' do
+      it 'migration still works' do
+        # Assuming Settings.sidekiq.routing_rules is [['*', 'default']]
+        # If routing_rules or Gitlab::SidekiqConfig.worker_queue_mappings changed,
+        # this spec might be failing. We'll have to adjust the migration or this spec.
+        expect(queue_length('email_receiver')).to eq(2)
+        expect(queue_length('default')).to eq(0)
+        migrate!
+        expect(queue_length('email_receiver')).to eq(0)
+        expect(queue_length('default')).to eq(2)
+
+        jobs = list_jobs('default')
+        expect(jobs[0]).to include("class" => "EmailReceiverWorker", "args" => ["bar"])
+        expect(jobs[1]).to include("class" => "EmailReceiverWorker", "args" => ["foo"])
+      end
     end
 
     context 'with illegal JSON payload' do
