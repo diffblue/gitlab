@@ -22,7 +22,10 @@ class ElasticDeleteProjectWorker
   def indices
     helper = Gitlab::Elastic::Helper.default
 
-    [helper.target_name] + helper.standalone_indices_proxies.map(&:index_name)
+    target_classes = Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.dup
+    target_classes.delete(User) unless ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index)
+
+    [helper.target_name] + helper.standalone_indices_proxies(target_classes: target_classes).map(&:index_name)
   end
 
   def remove_project_and_children_documents(project_id, es_id)
