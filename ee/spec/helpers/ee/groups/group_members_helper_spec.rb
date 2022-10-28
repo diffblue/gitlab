@@ -32,6 +32,7 @@ RSpec.describe Groups::GroupMembersHelper do
       allow(helper).to receive(:override_group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id/override')
       allow(helper).to receive(:group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id')
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(true)
+      allow(helper).to receive(:can?).with(current_user, :admin_member_access_request, group).and_return(true)
       allow(helper).to receive(:can?).with(current_user, :export_group_memberships, group).and_return(true)
     end
 
