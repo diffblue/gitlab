@@ -550,13 +550,18 @@ module EE
     def validate_confidential_issues_and_subepics
       return unless confidential?
 
-      if issues.public_only.any?
-        errors.add :confidential, _('Cannot make the epic confidential if it contains non-confidential issues')
-      end
+      confidentiality_errors.each { |error| errors.add(:confidential, error) }
+    end
+
+    def confidentiality_errors
+      errors = []
+      errors << _('Cannot make the epic confidential if it contains non-confidential issues') if issues.public_only.any?
 
       if children.public_only.any?
-        errors.add :confidential, _('Cannot make the epic confidential if it contains non-confidential child epics')
+        errors << _('Cannot make the epic confidential if it contains non-confidential child epics')
       end
+
+      errors
     end
 
     def validate_confidential_parent
@@ -676,6 +681,10 @@ module EE
       return unless ::Epic.in_parents(parent_id).count >= MAX_CHILDREN_COUNT
 
       errors.add(:parent, _('You cannot add any more epics. This epic already has maximum number of child epics.'))
+    end
+
+    def supports_confidentiality?
+      true
     end
 
     private

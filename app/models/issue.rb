@@ -654,6 +654,10 @@ class Issue < ApplicationRecord
     Gitlab::EtagCaching::Store.new.touch(key)
   end
 
+  def supports_confidentiality?
+    true
+  end
+
   private
 
   def due_date_after_start_date
