@@ -71,6 +71,9 @@ module Geo
     end
 
     # Called by Gitlab::Geo::Replicator#consume
+    # Keep in mind that in_replicables_for_current_secondary? is not called here
+    # This is because delete event should be handled by all the nodes
+    # even if they're out of scope
     def consume_event_deleted(**params)
       replicate_destroy(params)
     end

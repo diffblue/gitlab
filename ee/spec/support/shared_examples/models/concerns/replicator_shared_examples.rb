@@ -65,4 +65,11 @@ RSpec.shared_examples 'a replicator' do
       end
     end
   end
+
+  context 'when replicator is Geo::RegistrySyncWorker compatible' do
+    it 'has "created" and "deleted" events' do
+      expect(described_class).to be_event_supported(:created)
+      expect(described_class).to be_event_supported(:deleted)
+    end
+  end
 end

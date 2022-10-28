@@ -57,12 +57,6 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
       super.order(arel_table[:last_synced_at].asc.nulls_first)
     end
 
-    def delete_for_model_ids(container_repository_ids)
-      where(container_repository_id: container_repository_ids).delete_all
-
-      container_repository_ids
-    end
-
     def pluck_container_repository_key
       where(nil).pluck(:container_repository_id)
     end
