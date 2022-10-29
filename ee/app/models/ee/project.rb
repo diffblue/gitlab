@@ -16,6 +16,16 @@ module EE
     GIT_LFS_DOWNLOAD_OPERATION = 'download'
     ISSUE_BATCH_SIZE = 500
 
+    module FilterByBranch
+      def applicable_to_branch(branch)
+        includes(:protected_branches).select { |rule| rule.applies_to_branch?(branch) }
+      end
+
+      def inapplicable_to_branch(branch)
+        includes(:protected_branches).reject { |rule| rule.applies_to_branch?(branch) }
+      end
+    end
+
     prepended do
       include Elastic::ProjectsSearch
       include EachBatch
@@ -53,15 +63,9 @@ module EE
       has_many :approvers, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
       has_many :approver_users, through: :approvers, source: :user
       has_many :approver_groups, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
-      has_many :approval_rules, class_name: 'ApprovalProjectRule' do
-        def applicable_to_branch(branch)
-          includes(:protected_branches).select { |rule| rule.applies_to_branch?(branch) }
-        end
-
-        def inapplicable_to_branch(branch)
-          includes(:protected_branches).reject { |rule| rule.applies_to_branch?(branch) }
-        end
-      end
+      has_many :approval_rules, class_name: 'ApprovalProjectRule', extend: FilterByBranch
+      # NOTE: This was added to avoid N+1 queries when we load list of MergeRequests
+      has_many :regular_or_any_approver_approval_rules, -> { regular_or_any_approver.order(rule_type: :desc, id: :asc) }, class_name: 'ApprovalProjectRule', extend: FilterByBranch
       has_many :external_status_checks, class_name: 'MergeRequests::ExternalStatusCheck'
       has_many :approval_merge_request_rules, through: :merge_requests, source: :approval_rules
       has_many :audit_events, as: :entity
@@ -1015,7 +1019,7 @@ module EE
     def user_defined_rules
       strong_memoize(:user_defined_rules) do
         # Loading the relation in order to memoize it loaded
-        approval_rules.regular_or_any_approver.order(rule_type: :desc, id: :asc).load
+        regular_or_any_approver_approval_rules.load
       end
     end
 
