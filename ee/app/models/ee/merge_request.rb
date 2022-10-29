@@ -95,7 +95,8 @@ module EE
     class_methods do
       # This is an ActiveRecord scope in CE
       def with_api_entity_associations
-        super.preload(:blocking_merge_requests, target_project: [group: :saml_provider])
+        super.preload(:blocking_merge_requests, :approval_rules,
+                      target_project: [:regular_or_any_approver_approval_rules, group: :saml_provider])
       end
 
       def sort_by_attribute(method, *args, **kwargs)
