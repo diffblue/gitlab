@@ -184,8 +184,9 @@ module API
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
         mount ::API::FreezePeriods
-        mount ::API::MergeRequestDiffs
+        mount ::API::Keys
         mount ::API::Metadata
+        mount ::API::MergeRequestDiffs
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::Release::Links
         mount ::API::ResourceAccessTokens
@@ -262,7 +263,6 @@ module API
       mount ::API::Invitations
       mount ::API::IssueLinks
       mount ::API::Issues
-      mount ::API::Keys
       mount ::API::Labels
       mount ::API::Lint
       mount ::API::Markdown
