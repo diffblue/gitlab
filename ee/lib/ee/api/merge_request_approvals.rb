@@ -31,7 +31,7 @@ module EE
         end
 
         params do
-          requires :id, type: String, desc: 'The ID of a project'
+          requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
           requires :merge_request_iid, type: Integer, desc: 'The IID of a merge request'
         end
         resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do

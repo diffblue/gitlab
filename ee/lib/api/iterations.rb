@@ -56,7 +56,10 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a project', documentation: { example: 5 }
+      requires :id,
+        types: [String, Integer],
+        desc: 'The ID or URL-encoded path of the project',
+        documentation: { example: 5 }
     end
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       desc 'Get a list of project iterations' do
