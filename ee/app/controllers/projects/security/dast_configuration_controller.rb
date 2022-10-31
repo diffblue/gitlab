@@ -9,7 +9,6 @@ module Projects
       alias_method :vulnerable, :project
 
       before_action do
-        push_frontend_feature_flag(:dast_ui_redesign, @project)
         push_frontend_feature_flag(:dast_pre_scan_verification, @project)
       end
 
