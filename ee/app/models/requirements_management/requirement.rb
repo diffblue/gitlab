@@ -53,6 +53,7 @@ module RequirementsManagement
     has_internal_id :iid, scope: :project
 
     validate :only_requirement_type_issue
+    validate :same_project_of_work_item
 
     after_validation :invalidate_if_sync_error, on: [:update, :create]
 
@@ -138,6 +139,12 @@ module RequirementsManagement
 
     def only_requirement_type_issue
       errors.add(:requirement_issue, "must be a `requirement`. You cannot associate a Requirement with an issue of type #{requirement_issue.issue_type}.") if requirement_issue && !requirement_issue.requirement? && will_save_change_to_issue_id?
+    end
+
+    def same_project_of_work_item
+      return if requirement_issue&.project_id.nil? || project_id.nil?
+
+      errors.add(:project_id, _('must belong to same project of the work item.')) if requirement_issue.project_id != project_id
     end
 
     def requirement_issue_sync_error!(invalid_issue:)
