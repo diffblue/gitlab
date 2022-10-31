@@ -81,11 +81,11 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
       find('.js-reviewer-search').click
       wait_for_requests
 
-      help_page_path = help_page_path('user/project/merge_requests/reviews/', anchor: 'suggested-reviewers')
+      help_page_path = help_page_path('user/project/merge_requests/reviews/index', anchor: 'suggested-reviewers')
 
       page.within '.dropdown-menu-reviewer' do
         expect(page).to have_content('Suggestion(s)')
-        expect(page).to have_link(href: %r{#{help_page_path}})
+        expect(page).to have_link(title: 'Learn about suggested reviewers', href: %r{#{help_page_path}})
         expect(page).to have_content(suggested_user.name)
         expect(page).to have_content(suggested_user.username)
         expect(page).to have_css("[data-user-suggested='true']")
