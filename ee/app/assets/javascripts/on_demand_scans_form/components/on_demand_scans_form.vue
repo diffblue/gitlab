@@ -47,8 +47,6 @@ import {
   SITE_PROFILES_QUERY,
 } from '../settings';
 import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue';
-import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
-import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
 import ScanSchedule from './scan_schedule.vue';
 
 export const ON_DEMAND_SCANS_STORAGE_KEY = 'on-demand-scans-new-form';
@@ -130,12 +128,11 @@ export default {
     saveAndRunScanButton: s__('OnDemandScans|Save and run scan'),
     saveScanButton: s__('OnDemandScans|Save scan'),
     cancelButton: s__('OnDemandScans|Cancel'),
+    defaultErrorMsg: __('Something went wrong. Please try again.'),
   },
   components: {
     RefSelector,
     ProfileConflictAlert,
-    ScannerProfileSelector,
-    SiteProfileSelector,
     ScanSchedule,
     GlAlert,
     GlButton,
@@ -246,9 +243,8 @@ export default {
         : null;
     },
     errorMessage() {
-      return this.glFeatures.dastUiRedesign
-        ? this.errorType
-        : ERROR_MESSAGES[this.errorType] || null;
+      const { errorType } = this;
+      return errorType ? ERROR_MESSAGES[errorType] : this.$options.i18n.defaultErrorMsg;
     },
     isLoadingProfiles() {
       return ['scannerProfiles', 'siteProfiles'].some((name) => this.$apollo.queries[name].loading);
@@ -289,16 +285,9 @@ export default {
       return isFormInvalid || (loading && loading !== saveScanBtnId);
     },
     formFieldValues() {
-      const {
-        selectedScannerProfileId,
-        selectedSiteProfileId,
-        selectedBranch,
-        profileSchedule,
-      } = this;
+      const { selectedBranch, profileSchedule } = this;
       return {
         ...serializeFormObject(this.form.fields),
-        selectedScannerProfileId,
-        selectedSiteProfileId,
         selectedBranch,
         profileSchedule,
       };
@@ -368,6 +357,9 @@ export default {
     onCancelClicked() {
       this.clearStorage = true;
       redirectTo(this.onDemandScansPath);
+    },
+    showConfiguratorErrors(message) {
+      this.showErrors(null, [message]);
     },
     showErrors(errorType, errors = []) {
       this.errorType = errorType;
@@ -509,49 +501,13 @@ export default {
       </section-layout>
 
       <dast-profiles-configurator
-        v-if="glFeatures.dastUiRedesign"
         :saved-profiles="dastScan"
         :full-path="projectPath"
         :scanner-profiles-library-path="scannerProfilesLibraryPath"
         :site-profiles-library-path="siteProfilesLibraryPath"
-        @error="showErrors"
+        @error="showConfiguratorErrors"
         @profiles-selected="selectProfiles"
       />
-
-      <section-layout
-        v-if="!failedToLoadProfiles && !glFeatures.dastUiRedesign"
-        :heading="$options.i18n.dastConfigurationHeader"
-        :is-loading="isLoadingProfiles"
-      >
-        <template #description>
-          <p>
-            <gl-sprintf :message="$options.i18n.dastConfigurationDescription">
-              <template #link="{ content }">
-                <gl-link :href="$options.dastConfigurationHelpPath">{{ content }}</gl-link>
-              </template>
-            </gl-sprintf>
-          </p>
-        </template>
-        <template #features>
-          <scanner-profile-selector
-            v-model="selectedScannerProfileId"
-            class="gl-mb-6"
-            :profiles="scannerProfiles"
-            :selected-profile="selectedScannerProfile"
-            :has-conflict="hasProfilesConflict"
-            :dast-scan-id="dastScanId"
-          />
-
-          <site-profile-selector
-            v-model="selectedSiteProfileId"
-            class="gl-mb-2"
-            :profiles="siteProfiles"
-            :selected-profile="selectedSiteProfile"
-            :has-conflict="hasProfilesConflict"
-            :dast-scan-id="dastScanId"
-          />
-        </template>
-      </section-layout>
 
       <section-layout
         v-if="!failedToLoadProfiles"
