@@ -7,10 +7,11 @@ RSpec.describe API::Analytics::ProductAnalytics do
 
   let(:current_user) { project.owner }
   let(:cube_api_url) { "http://cube.dev/cubejs-api/v1/load" }
+  let(:query) { { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi' }.to_query }
 
   shared_examples 'a not found error' do
     it 'returns a 404' do
-      get api("/projects/#{project.id}/product_analytics/request/load", current_user)
+      get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
 
       expect(response).to have_gitlab_http_status(:not_found)
     end
@@ -31,7 +32,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns a 404' do
-        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -53,7 +54,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns an unauthorized error' do
-        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
 
         expect(response).to have_gitlab_http_status(:unauthorized)
       end
@@ -67,18 +68,28 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns a 200' do
-        get api("/projects/#{project.id}/product_analytics/request/load", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
 
         expect(response).to have_gitlab_http_status(:ok)
       end
 
-      it 'only passes on predefined parameters' do
-        params = {
+      context 'when query param is missing' do
+        let(:query) { { 'queryType': 'multi' }.to_query }
+
+        it 'returns a 400' do
+          get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
+
+          expect(response).to have_gitlab_http_status(:bad_request)
+        end
+      end
+
+      it 'returns bad request when invalid parameters are passed' do
+        query = {
           query: { measures: ['Jitsu.count'] }.to_json,
           'queryType': 'multi',
           'badParam': 1
         }.to_query
-        get api("/projects/#{project.id}/product_analytics/request/load?#{params}", current_user)
+        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
 
         expect(WebMock).to have_requested(:post, cube_api_url).with(
           body: { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' }.to_json

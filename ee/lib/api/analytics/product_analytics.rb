@@ -24,7 +24,16 @@ module API
       end
 
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-        desc 'Proxy request to cube installation'
+        desc 'Proxy analytics request to cube installation. Requires :cube_api_proxy flag to be enabled.'
+        params do
+          requires :project_id, type: Integer, desc: 'ID of the project to query'
+          requires :query,
+                   type: String,
+                   desc: "A valid Cube query. See reference documentation: https://cube.dev/docs/query-format"
+          optional :queryType, type: 'String',
+                               default: 'multi',
+                               desc: 'The query type. Currently only "multi" is supported.'
+        end
         get ':project_id/product_analytics/request/load' do
           not_found! unless project.product_analytics_enabled?
           unauthorized! unless can?(current_user, :developer_access, project)
