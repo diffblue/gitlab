@@ -190,6 +190,7 @@ module API
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
         mount ::API::FreezePeriods
+        mount ::API::GroupExport
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
         mount ::API::Keys
@@ -262,7 +263,6 @@ module API
       mount ::API::GroupClusters
       mount ::API::GroupContainerRepositories
       mount ::API::GroupDebianDistributions
-      mount ::API::GroupExport
       mount ::API::GroupImport
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
