@@ -37,7 +37,7 @@ module Geo
     end
 
     def ensure_repository
-      project.wiki.ensure_repository
+      project.wiki.create_wiki_repository
     end
 
     def expire_repository_caches
