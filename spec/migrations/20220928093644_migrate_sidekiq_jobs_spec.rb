@@ -64,6 +64,15 @@ RSpec.describe MigrateSidekiqJobs, :clean_gitlab_redis_queues do
       end
     end
 
+    context 'when run in GitLab.com' do
+      it 'skips the migration' do
+        allow(::Gitlab::BackgroundMigration::Logger).to receive(:build).and_return(Logger.new($stdout))
+        allow(Gitlab.config.gitlab).to receive(:url).and_return(Gitlab::Saas.com_url)
+        migrate!
+        expect($stdout.string).not_to include("List of queues based on routing rules:")
+      end
+    end
+
     def queue_length(queue_name)
       Sidekiq.redis do |conn|
         conn.llen("queue:#{queue_name}")

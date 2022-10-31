@@ -60,6 +60,8 @@ class MigrateSidekiqJobs < Gitlab::Database::Migration[2.0]
   end
 
   def up
+    return if Gitlab.com?
+
     mappings = Gitlab::SidekiqConfig.worker_queue_mappings
     logger = ::Gitlab::BackgroundMigration::Logger.build
     Gitlab::SidekiqMigrateJobs.new(mappings, logger: logger).migrate_queues
