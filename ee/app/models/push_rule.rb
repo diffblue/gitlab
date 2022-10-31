@@ -94,6 +94,7 @@ class PushRule < ApplicationRecord
   end
 
   def commit_message_blocked?(message)
+    message = message.chomp
     commit_message_negative_regex.present? && data_match?(message, commit_message_negative_regex, multiline: true)
   end
 
