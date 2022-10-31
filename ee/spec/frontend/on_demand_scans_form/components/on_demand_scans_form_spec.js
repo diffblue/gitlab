@@ -6,8 +6,6 @@ import { nextTick } from 'vue';
 import siteProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql.basic.json';
 import scannerProfilesFixtures from 'test_fixtures/graphql/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql.basic.json';
 import OnDemandScansForm from 'ee/on_demand_scans_form/components/on_demand_scans_form.vue';
-import ScannerProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/scanner_profile_selector.vue';
-import SiteProfileSelector from 'ee/on_demand_scans_form/components/profile_selector/site_profile_selector.vue';
 import ScanSchedule from 'ee/on_demand_scans_form/components/scan_schedule.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
@@ -18,12 +16,10 @@ import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/gr
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
 import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
-import setWindowLocation from 'helpers/set_window_location_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import {
@@ -32,7 +28,6 @@ import {
   nonValidatedSiteProfile,
   validatedSiteProfile,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
-import { itSelectsOnlyAvailableProfile } from './shared_assertions';
 
 const dastSiteValidationDocsPath = '/application_security/dast/index#dast-site-validation';
 const projectPath = 'group/project';
@@ -83,29 +78,26 @@ describe('OnDemandScansForm', () => {
   const findNameInput = () => findByTestId('dast-scan-name-input');
   const findBranchInput = () => findByTestId('dast-scan-branch-input');
   const findDescriptionInput = () => findByTestId('dast-scan-description-input');
-  const findScannerProfilesSelector = () => wrapper.findComponent(ScannerProfileSelector);
-  const findSiteProfilesSelector = () => wrapper.findComponent(SiteProfileSelector);
   const findAlert = () => findByTestId('on-demand-scan-error');
   const findProfilesConflictAlert = () => findByTestId('on-demand-scans-profiles-conflict-alert');
   const findSubmitButton = () => findByTestId('on-demand-scan-submit-button');
   const findSaveButton = () => findByTestId('on-demand-scan-save-button');
   const findCancelButton = () => findByTestId('on-demand-scan-cancel-button');
-  const findProfileSummary = () => findByTestId('selected-profile-summary');
   const findDastProfilesConfigurator = () => wrapper.findComponent(DastProfilesConfigurator);
   const findPreScanVerificationConfigurator = () =>
     wrapper.findComponent(PreScanVerificationConfigurator);
 
   const hasSiteProfileAttributes = () => {
-    expect(findScannerProfilesSelector().attributes('value')).toBe(dastScan.dastScannerProfile.id);
-    expect(findSiteProfilesSelector().attributes('value')).toBe(dastScan.dastSiteProfile.id);
+    expect(findDastProfilesConfigurator().props('savedProfiles')).toEqual(dastScan);
   };
 
   const setValidFormData = async () => {
     findNameInput().vm.$emit('input', 'My daily scan');
     findBranchInput().vm.$emit('input', selectedBranch);
-    findScannerProfilesSelector().vm.$emit('input', passiveScannerProfile.id);
-    findSiteProfilesSelector().vm.$emit('input', nonValidatedSiteProfile.id);
-
+    await findDastProfilesConfigurator().vm.$emit('profiles-selected', {
+      scannerProfile: passiveScannerProfile,
+      siteProfile: nonValidatedSiteProfile,
+    });
     await nextTick();
   };
   const setupSuccess = ({ edit = false } = {}) => {
@@ -120,12 +112,6 @@ describe('OnDemandScansForm', () => {
     });
     return setValidFormData();
   };
-  const selectProfile = (component) => async (profile) => {
-    wrapper.findComponent(component).vm.$emit('input', profile.id);
-    await nextTick();
-  };
-  const selectScannerProfile = selectProfile(ScannerProfileSelector);
-  const selectSiteProfile = selectProfile(SiteProfileSelector);
 
   const submitForm = () => findForm().vm.$emit('submit', { preventDefault: () => {} });
   const saveScan = () => findSaveButton().vm.$emit('click');
@@ -224,7 +210,10 @@ describe('OnDemandScansForm', () => {
     localStorage.clear();
   });
 
-  itSelectsOnlyAvailableProfile(createShallowComponent);
+  it('should have correct component rendered', () => {
+    createShallowComponent();
+    expect(findDastProfilesConfigurator().exists()).toBe(true);
+  });
 
   describe('when creating a new scan', () => {
     it('renders properly', () => {
@@ -328,8 +317,6 @@ describe('OnDemandScansForm', () => {
           LOCAL_STORAGE_KEY,
           JSON.stringify({
             name: 'My daily scan',
-            selectedScannerProfileId: passiveScannerProfile.id,
-            selectedSiteProfileId: nonValidatedSiteProfile.id,
             selectedBranch,
           }),
         ],
@@ -342,8 +329,6 @@ describe('OnDemandScansForm', () => {
         JSON.stringify({
           name: dastScan.name,
           description: dastScan.description,
-          selectedScannerProfileId: dastScan.dastScannerProfile.id,
-          selectedSiteProfileId: dastScan.dastSiteProfile.id,
         }),
       );
 
@@ -352,7 +337,6 @@ describe('OnDemandScansForm', () => {
 
       expect(findNameInput().attributes('value')).toBe(dastScan.name);
       expect(findDescriptionInput().attributes('value')).toBe(dastScan.description);
-      hasSiteProfileAttributes();
     });
   });
 
@@ -443,10 +427,7 @@ describe('OnDemandScansForm', () => {
           });
 
           it('passes the scan ID to the profile selectors', () => {
-            const dastScanId = String(dastScan.id);
-
-            expect(findScannerProfilesSelector().attributes('dast-scan-id')).toBe(dastScanId);
-            expect(findSiteProfilesSelector().attributes('dast-scan-id')).toBe(dastScanId);
+            hasSiteProfileAttributes();
           });
 
           it(`triggers dastProfileUpdateMutation mutation with runAfterUpdate set to ${runAfter}`, async () => {
@@ -560,8 +541,10 @@ describe('OnDemandScansForm', () => {
     'profiles conflict prevention',
     ({ description, selectedScannerProfile, selectedSiteProfile, hasConflict }) => {
       const setFormData = async () => {
-        findScannerProfilesSelector().vm.$emit('input', selectedScannerProfile.id);
-        findSiteProfilesSelector().vm.$emit('input', selectedSiteProfile.id);
+        await findDastProfilesConfigurator().vm.$emit('profiles-selected', {
+          scannerProfile: selectedScannerProfile,
+          siteProfile: selectedSiteProfile,
+        });
         await nextTick();
       };
 
@@ -577,92 +560,6 @@ describe('OnDemandScansForm', () => {
       });
     },
   );
-
-  describe('scanner profile summary', () => {
-    const [{ id }] = scannerProfiles;
-
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('renders profile summary when a valid profile is selected', async () => {
-      await selectScannerProfile({ id });
-
-      expect(findProfileSummary().exists()).toBe(true);
-    });
-
-    it('does not render the summary provided an invalid profile ID', async () => {
-      await selectScannerProfile({ id: 'gid://gitlab/DastScannerProfile/123' });
-
-      expect(findProfileSummary().exists()).toBe(false);
-    });
-  });
-
-  describe('site profile summary', () => {
-    const [{ id }] = siteProfiles;
-
-    beforeEach(() => {
-      createComponent();
-    });
-
-    it('renders profile summary when a valid profile is selected', async () => {
-      await selectSiteProfile({ id });
-
-      expect(findProfileSummary().exists()).toBe(true);
-    });
-
-    it('does not render the summary provided an invalid profile ID', async () => {
-      await selectSiteProfile({ id: 'gid://gitlab/DastSiteProfile/123' });
-
-      expect(findProfileSummary().exists()).toBe(false);
-    });
-  });
-
-  describe('populate profiles from query params', () => {
-    const [siteProfile] = siteProfiles;
-    const [scannerProfile] = scannerProfiles;
-
-    it('scanner profile', () => {
-      setWindowLocation(`?scanner_profile_id=${getIdFromGraphQLId(scannerProfile.id)}`);
-      createShallowComponent();
-
-      expect(findScannerProfilesSelector().attributes('value')).toBe(scannerProfile.id);
-    });
-
-    it('site profile', () => {
-      setWindowLocation(`?site_profile_id=${getIdFromGraphQLId(siteProfile.id)}`);
-      createShallowComponent();
-
-      expect(findSiteProfilesSelector().attributes('value')).toBe(siteProfile.id);
-    });
-
-    it('both scanner & site profile', () => {
-      setWindowLocation(
-        `?site_profile_id=${getIdFromGraphQLId(
-          siteProfile.id,
-        )}&scanner_profile_id=${getIdFromGraphQLId(scannerProfile.id)}`,
-      );
-      createShallowComponent();
-
-      expect(findSiteProfilesSelector().attributes('value')).toBe(siteProfile.id);
-      expect(findScannerProfilesSelector().attributes('value')).toBe(scannerProfile.id);
-    });
-
-    it('when local storage data is available', async () => {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY,
-        JSON.stringify({
-          selectedScannerProfileId: dastScan.dastScannerProfile.id,
-          selectedSiteProfileId: dastScan.dastSiteProfile.id,
-        }),
-      );
-
-      createShallowComponent();
-      await nextTick();
-
-      hasSiteProfileAttributes();
-    });
-  });
 
   describe('when no repository exists', () => {
     beforeEach(() => {
@@ -681,38 +578,6 @@ describe('OnDemandScansForm', () => {
       expect(wrapper.text()).toContain(
         'You must create a repository within your project to run an on-demand scan.',
       );
-    });
-  });
-
-  describe('With `dastUiRedesign` feature flag on', () => {
-    beforeEach(() => {
-      createShallowComponent({}, false, {
-        glFeatures: {
-          dastUiRedesign: true,
-        },
-      });
-    });
-
-    it('should have correct component rendered', async () => {
-      expect(findDastProfilesConfigurator().exists()).toBe(true);
-      expect(findScannerProfilesSelector().exists()).toBe(false);
-      expect(findSiteProfilesSelector().exists()).toBe(false);
-    });
-  });
-
-  describe('With `dastUiRedesign` feature flag off', () => {
-    beforeEach(() => {
-      createShallowComponent({}, false, {
-        glFeatures: {
-          dastUiRedesign: false,
-        },
-      });
-    });
-
-    it('should have correct component rendered', async () => {
-      expect(findDastProfilesConfigurator().exists()).toBe(false);
-      expect(findScannerProfilesSelector().exists()).toBe(true);
-      expect(findSiteProfilesSelector().exists()).toBe(true);
     });
   });
 

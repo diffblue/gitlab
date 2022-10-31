@@ -1,8 +1,0 @@
----
-name: dast_ui_redesign
-introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/86165
-rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/360820
-milestone: '15.0'
-type: development
-group: group::dynamic analysis
-default_enabled: true
