@@ -54,6 +54,14 @@ RSpec.describe RequirementsManagement::Requirement do
 
       expect(subject).not_to be_valid
     end
+
+    it 'must belong to same project of the work item' do
+      requirement = create(:work_item, :requirement).requirement
+      requirement.project = create(:project)
+
+      expect(requirement).not_to be_valid
+      expect(requirement.errors[:project_id]).to include(/must belong to same project/)
+    end
   end
 
   describe 'scopes' do

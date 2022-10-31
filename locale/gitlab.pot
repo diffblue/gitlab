@@ -48755,6 +48755,9 @@ msgstr ""
 msgid "must be unique by status and elapsed time within a policy"
 msgstr ""
 
+msgid "must belong to same project of the work item."
+msgstr ""
+
 msgid "must have a repository"
 msgstr ""
 
