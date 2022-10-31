@@ -90,7 +90,7 @@ export default {
           is-check-item
           :is-checked="isAttributeChecked(iteration.id)"
           :data-testid="`${$options.issuableAttribute}-items`"
-          @click="updateAttribute(iteration.id)"
+          @click="updateAttribute(iteration)"
         >
           {{ iteration.period }}
           <iteration-title v-if="iteration.title" :title="iteration.title" />

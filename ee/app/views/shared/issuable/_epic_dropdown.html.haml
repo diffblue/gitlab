@@ -6,5 +6,5 @@
   .title
     = _('Epic')
   .filter-item.epic-bulk-edit
-    #js-epic-select-root{ data: { group_id: parent.id, show_header: "true", show_only_opened_epics: 'true' } }
+    #js-epic-dropdown-root{ data: { group_path: parent.full_path } }
   %input{ id: 'issue_epic_id', type: 'hidden', name: 'update[epic_id]' }

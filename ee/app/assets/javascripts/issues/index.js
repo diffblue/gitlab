@@ -1,11 +1,11 @@
 import Vue from 'vue';
-import initEpicsSelect from 'ee/vue_shared/components/sidebar/epics_select/epics_select_bundle';
+import { mountEpicDropdown } from 'ee/sidebar/mount_sidebar';
 import { initForm as initFormCE } from '~/issues';
 import RelatedFeatureFlags from './components/related_feature_flags.vue';
 import UnableToLinkVulnerabilityError from './components/unable_to_link_vulnerability_error.vue';
 
 export function initForm() {
-  initEpicsSelect();
+  mountEpicDropdown();
   initFormCE();
 }
 

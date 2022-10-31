@@ -113,7 +113,7 @@ describe('IterationDropdown', () => {
 
     wrapper = mountFn(IterationDropdown, {
       apolloProvider: fakeApollo,
-      propsData: {
+      provide: {
         fullPath: TEST_FULL_PATH,
       },
       stubs: {

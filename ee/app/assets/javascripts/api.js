@@ -11,8 +11,6 @@ export default {
   ldapGroupsPath: '/api/:version/ldap/:provider/groups.json',
   subscriptionPath: '/api/:version/namespaces/:id/gitlab_subscription',
   childEpicPath: '/api/:version/groups/:id/epics',
-  groupEpicsPath: '/api/:version/groups/:id/epics',
-  epicIssuePath: '/api/:version/groups/:id/epics/:epic_iid/issues/:issue_id',
   cycleAnalyticsTasksByTypePath: '/groups/:id/-/analytics/type_of_work/tasks_by_type',
   cycleAnalyticsTopLabelsPath: '/groups/:id/-/analytics/type_of_work/tasks_by_type/top_labels',
   cycleAnalyticsGroupStagesAndEventsPath:
@@ -89,50 +87,6 @@ export default {
         search,
       },
     });
-  },
-
-  groupEpics({
-    groupId,
-    includeAncestorGroups = false,
-    includeDescendantGroups = true,
-    search = '',
-    state,
-  }) {
-    const url = Api.buildUrl(this.groupEpicsPath).replace(':id', groupId);
-    const params = {
-      include_ancestor_groups: includeAncestorGroups,
-      include_descendant_groups: includeDescendantGroups,
-    };
-
-    if (search) {
-      params.search = search;
-    }
-
-    if (state) {
-      params.state = state;
-    }
-
-    return axios.get(url, {
-      params,
-    });
-  },
-
-  addEpicIssue({ groupId, epicIid, issueId }) {
-    const url = Api.buildUrl(this.epicIssuePath)
-      .replace(':id', groupId)
-      .replace(':epic_iid', epicIid)
-      .replace(':issue_id', issueId);
-
-    return axios.post(url);
-  },
-
-  removeEpicIssue({ groupId, epicIid, epicIssueId }) {
-    const url = Api.buildUrl(this.epicIssuePath)
-      .replace(':id', groupId)
-      .replace(':epic_iid', epicIid)
-      .replace(':issue_id', epicIssueId);
-
-    return axios.delete(url);
   },
 
   cycleAnalyticsTasksByType(groupId, params = {}) {

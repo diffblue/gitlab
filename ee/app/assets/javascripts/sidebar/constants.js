@@ -85,6 +85,16 @@ export const iterationSelectTextMap = {
 
 export const noAttributeId = null;
 
+export const noEpic = {
+  id: 0,
+  title: __('No Epic'),
+};
+
+export const placeholderEpic = {
+  id: -1,
+  title: __('Select epic'),
+};
+
 export const iterationDisplayState = 'opened';
 
 export const SIDEBAR_ESCALATION_POLICY_TITLE = __('Escalation policy');
