@@ -55,6 +55,8 @@ RSpec.describe Issues::UpdateService do
     end
 
     context 'refresh epic dates' do
+      let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+
       before do
         issue.update!(epic: epic)
       end
@@ -71,7 +73,7 @@ RSpec.describe Issues::UpdateService do
       end
 
       context 'updating iteration' do
-        let_it_be(:iteration) { create(:iteration, group: group) }
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
 
         context 'when issue does not already have an iteration' do
           it 'calls NotificationService#changed_iteration_issue' do
@@ -90,7 +92,7 @@ RSpec.describe Issues::UpdateService do
         end
 
         context 'when issue already has an iteration' do
-          let_it_be(:old_iteration) { create(:iteration, group: group) }
+          let_it_be(:old_iteration) { create(:iteration, iterations_cadence: cadence) }
 
           before do
             update_issue(iteration: old_iteration)
@@ -187,6 +189,8 @@ RSpec.describe Issues::UpdateService do
     end
 
     context 'assigning iteration' do
+      let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+
       before do
         stub_licensed_features(iterations: true)
         group.add_maintainer(user)
@@ -207,7 +211,7 @@ RSpec.describe Issues::UpdateService do
       end
 
       context 'group iterations' do
-        let_it_be(:iteration) { create(:iteration, group: group) }
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
 
         it_behaves_like 'creates iteration resource event'
       end

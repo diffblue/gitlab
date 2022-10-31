@@ -8,7 +8,7 @@ RSpec.describe 'Updating an Iteration' do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:cadence) { build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) } }
-  let_it_be(:iteration) { create(:iteration, group: group, iterations_cadence: cadence) }
+  let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
 
   let(:subject_iteration) { iteration }
   let(:start_date) { 1.day.from_now.strftime('%F') }
@@ -86,7 +86,7 @@ RSpec.describe 'Updating an Iteration' do
 
       context 'when updating attributes on an automatic cadence' do
         let_it_be(:automatic_cadence) { create(:iterations_cadence, group: group) }
-        let_it_be(:legacy_iteration) { create(:iteration, group: group, iterations_cadence: automatic_cadence) }
+        let_it_be(:legacy_iteration) { create(:iteration, iterations_cadence: automatic_cadence) }
 
         let(:subject_iteration) { legacy_iteration }
 
@@ -129,7 +129,7 @@ RSpec.describe 'Updating an Iteration' do
         end
 
         with_them do
-          let(:iteration) { create(:iteration, title: title_before, group: group, iterations_cadence: cadence) }
+          let(:iteration) { create(:iteration, title: title_before, iterations_cadence: cadence) }
           let(:attributes) { { title: title_after } }
 
           it 'updates an iteration', :aggregate_failures do
@@ -159,7 +159,7 @@ RSpec.describe 'Updating an Iteration' do
         end
 
         context 'when another iteration with given dates overlap' do
-          let_it_be(:another_iteration) { create(:iteration, group: group, iterations_cadence: cadence, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F') ) }
+          let_it_be(:another_iteration) { create(:iteration, iterations_cadence: cadence, start_date: start_date.strftime('%F'), due_date: end_date.strftime('%F') ) }
 
           it_behaves_like 'a mutation that returns errors in the response',
                           errors: ["Dates cannot overlap with other existing Iterations within this iterations cadence"]

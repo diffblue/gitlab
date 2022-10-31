@@ -53,7 +53,7 @@ RSpec.describe Boards::Lists::CreateService do
     end
 
     context 'when iteration_id param is sent' do
-      let_it_be(:iteration) { create(:iteration, group: group) }
+      let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
       before_all do
         group.add_developer(user)

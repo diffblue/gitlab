@@ -11,7 +11,7 @@ RSpec.describe Boards::UpdateService, services: true do
 
     let_it_be(:assignee) { create(:user) }
     let_it_be(:milestone) { create(:milestone, group: group) }
-    let_it_be(:iteration) { create(:iteration, group: group) }
+    let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
     let_it_be(:parent_label) { create(:group_label, group: parent_group) }
     let_it_be(:other_label) { create(:group_label) }
     let_it_be(:label) { create(:group_label, group: group) }

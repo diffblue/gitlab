@@ -25,7 +25,7 @@ RSpec.describe API::Boards do
     it_behaves_like 'milestone board list'
     it_behaves_like 'assignee board list'
     it_behaves_like 'iteration board list' do
-      let_it_be(:iteration) { create(:iteration, group: group) }
+      let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
     end
   end
 

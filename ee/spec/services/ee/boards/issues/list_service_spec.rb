@@ -22,7 +22,7 @@ RSpec.describe Boards::Issues::ListService, services: true do
     let_it_be(:p3) { create(:group_label, title: 'P3', group: group) }
 
     let_it_be(:milestone) { create(:milestone, group: group) }
-    let_it_be(:iteration) { create(:iteration, group: group) }
+    let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
     let_it_be(:opened_issue1) { create(:labeled_issue, project: project, milestone: m1, weight: 9, title: 'Issue 1', labels: [bug]) }
     let_it_be(:opened_issue2) { create(:labeled_issue, project: project, milestone: m2, weight: 1, title: 'Issue 2', labels: [p2]) }

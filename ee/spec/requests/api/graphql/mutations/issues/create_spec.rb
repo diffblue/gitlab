@@ -8,7 +8,8 @@ RSpec.describe 'Create an issue' do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
-  let_it_be(:current_iteration) { create(:iteration, group: group, start_date: 2.days.ago, due_date: 10.days.from_now) }
+  let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+  let_it_be(:current_iteration) { create(:iteration, iterations_cadence: cadence, start_date: 2.days.ago, due_date: 10.days.from_now) }
 
   let(:input) do
     {
