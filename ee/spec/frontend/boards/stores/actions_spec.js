@@ -2,13 +2,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Vue from 'vue';
 import Vuex from 'vuex';
-import {
-  BoardType,
-  GroupByParamType,
-  listsQuery,
-  issuableTypes,
-  IterationIDs,
-} from 'ee/boards/constants';
+import { BoardType, GroupByParamType, issuableTypes, IterationIDs } from 'ee/boards/constants';
 import epicCreateMutation from 'ee/boards/graphql/epic_create.mutation.graphql';
 import searchIterationCadencesQuery from 'ee/issues/list/queries/search_iteration_cadences.query.graphql';
 import actions, { gqlClient } from 'ee/boards/stores/actions';
@@ -237,21 +231,18 @@ describe('fetchLists', () => {
       };
 
       const variables = {
-        query: listsQuery[issuableType].query,
-        variables: {
-          fullPath: 'gitlab-org',
-          boardId: fullBoardId,
-          filters: {},
-          isGroup,
-          isProject,
-        },
+        fullPath: 'gitlab-org',
+        boardId: fullBoardId,
+        filters: {},
+        isGroup,
+        isProject,
       };
 
       jest.spyOn(gqlClient, 'query').mockResolvedValue(queryResponse);
 
       await actions.fetchLists({ commit, state, dispatch });
 
-      expect(gqlClient.query).toHaveBeenCalledWith(variables);
+      expect(gqlClient.query).toHaveBeenCalledWith(expect.objectContaining({ variables }));
     },
   );
 });

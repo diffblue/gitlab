@@ -175,6 +175,7 @@ module API
         mount ::API::DeployTokens
         mount ::API::Deployments
         mount ::API::Features
+        mount ::API::FreezePeriods
         mount ::API::Metadata
         mount ::API::MergeRequestDiffs
         mount ::API::UserCounts
@@ -232,7 +233,6 @@ module API
       mount ::API::FeatureFlags
       mount ::API::FeatureFlagsUserLists
       mount ::API::Files
-      mount ::API::FreezePeriods
       mount ::API::GenericPackages
       mount ::API::Geo
       mount ::API::GoProxy

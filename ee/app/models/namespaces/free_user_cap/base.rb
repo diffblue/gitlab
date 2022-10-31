@@ -49,3 +49,5 @@ module Namespaces
     end
   end
 end
+
+Namespaces::FreeUserCap::Base.prepend_mod
