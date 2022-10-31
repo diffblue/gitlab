@@ -6,7 +6,6 @@ import { fullEpicBoardId } from 'ee_component/boards/boards_util';
 import BoardApp from '~/boards/components/board_app.vue';
 import { issuableTypes } from '~/boards/constants';
 import store from '~/boards/stores';
-import { gqlClient } from '~/boards/graphql';
 
 import '~/boards/filters/due_date_filters';
 import {
@@ -15,12 +14,13 @@ import {
   parseBoolean,
   convertObjectPropsToCamelCase,
 } from '~/lib/utils/common_utils';
+import { defaultClient } from '~/graphql_shared/issuable_client';
 import { queryToObject } from '~/lib/utils/url_utility';
 
 Vue.use(VueApollo);
 
 const apolloProvider = new VueApollo({
-  defaultClient: gqlClient,
+  defaultClient,
 });
 
 function mountBoardApp(el) {
