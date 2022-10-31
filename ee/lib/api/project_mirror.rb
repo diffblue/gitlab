@@ -73,7 +73,14 @@ module API
       requires :id, type: String, desc: 'The ID of a project'
     end
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-      desc 'Triggers a pull mirror operation'
+      desc 'Triggers a pull mirror operation' do
+        success code: 200
+        failure [
+          { code: 400, message: 'The project is not mirrored' },
+          { code: 403, message: 'Mirroring for the project is on pause' },
+          { code: 422, message: 'The pull request event is not processable' }
+        ]
+      end
       params do
         optional :action, type: String, desc: 'Pull Request action'
         optional 'pull_request.number', type: Integer, desc: 'Pull request IID'
@@ -99,7 +106,10 @@ module API
       end
 
       desc 'Get a pull mirror' do
-        success Entities::PullMirror
+        success code: 200, model: Entities::PullMirror
+        failure [
+          { code: 400, message: 'The project is not mirrored' }
+        ]
       end
       get ':id/mirror/pull' do
         authenticate!
