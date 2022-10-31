@@ -190,7 +190,7 @@ Combined with [protected branches](../../../user/project/protected_branches.md),
 
 [`bound_claims_type`](https://www.vaultproject.io/api-docs/auth/jwt#bound_claims_type) configures the interpretation of the `bound_claims` values. If set to `glob`, the values are interpreted as globs, with `*` matching any number of characters.
 
-The claim fields listed in [the table above](#how-it-works) can also be accessed for [Vault's policy path templating](https://learn.hashicorp.com/tutorials/vault/policy-templating?in=vault/policies) purposes by using the accessor name of the JWT auth within Vault. The [mount accessor name](https://learn.hashicorp.com/tutorials/vault/identity#step-1-create-an-entity-with-alias) (`ACCESSOR_NAME` in the example below) can be retrieved by running `vault auth list`.
+The claim fields listed in [the table above](#how-it-works) can also be accessed for [Vault's policy path templating](https://developer.hashicorp.com/vault/tutorials/policies/policy-templating?in=vault%2Fpolicies) purposes by using the accessor name of the JWT auth within Vault. The [mount accessor name](https://developer.hashicorp.com/vault/tutorials/auth-methods/identity#step-1-create-an-entity-with-alias) (`ACCESSOR_NAME` in the example below) can be retrieved by running `vault auth list`.
 
 Policy template example making use of a named metadata field named `project_path`:
 

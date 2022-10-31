@@ -33,8 +33,8 @@ _\* Default value present for frontend events only_
 
 ## Default Schema
 
-Frontend events include a [web-specific schema](https://docs.snowplowanalytics.com/docs/understanding-your-pipeline/canonical-event/#Web-specific_fields) provided by Snowplow.
-All URLs are pseudonymized. The entity identifier [replaces](https://docs.snowplowanalytics.com/docs/collecting-data/collecting-from-own-applications/javascript-trackers/javascript-tracker/javascript-tracker-v2/tracker-setup/other-parameters-2/#Setting_a_custom_page_URL_and_referrer_URL) personally identifiable
+Frontend events include a [web-specific schema](https://docs.snowplow.io/docs/understanding-your-pipeline/canonical-event/#web-specific-fields) provided by Snowplow.
+All URLs are pseudonymized. The entity identifier [replaces](https://docs.snowplow.io/docs/collecting-data/collecting-from-own-applications/javascript-trackers/javascript-tracker/javascript-tracker-v2/tracker-setup/other-parameters-2/#setting-a-custom-page-url-and-referrer-url) personally identifiable
 information (PII). PII includes usernames, group, and project names.
 Page titles are hardcoded as `GitLab` for the same reason.
 

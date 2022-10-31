@@ -8,7 +8,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 Snowplow is an enterprise-grade marketing and Product Intelligence platform that tracks how users engage with our website and application.
 
-[Snowplow](https://snowplowanalytics.com) consists of several loosely-coupled sub-systems:
+[Snowplow](https://snowplow.io/) consists of several loosely-coupled sub-systems:
 
 - **Trackers** fire Snowplow events. Snowplow has twelve trackers that cover web, mobile, desktop, server, and IoT.
 - **Collectors** receive Snowplow events from trackers. We use different event collectors that synchronize events to Amazon S3, Apache Kafka, or Amazon Kinesis.
@@ -189,7 +189,7 @@ Snowplow JavaScript adds [web-specific parameters](https://docs.snowplowanalytic
 
 ## Related topics
 
-- [Snowplow data structure](https://docs.snowplowanalytics.com/docs/understanding-your-pipeline/canonical-event/)
+- [Snowplow data structure](https://docs.snowplow.io/docs/understanding-your-pipeline/canonical-event/)
 - [Our Iglu schema registry](https://gitlab.com/gitlab-org/iglu)
 - [List of events used in our codebase (Event Dictionary)](https://metrics.gitlab.com/snowplow/)
 - [Product Intelligence Guide](https://about.gitlab.com/handbook/product/product-intelligence-guide/)
