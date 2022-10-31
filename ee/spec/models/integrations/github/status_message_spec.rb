@@ -51,7 +51,10 @@ RSpec.describe Integrations::Github::StatusMessage do
   end
 
   describe '#status_options' do
-    let(:subject) { described_class.new(project, integration, id: 1) }
+    let_it_be(:project) { create(:project) }
+    let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+
+    let(:subject) { described_class.new(project, integration, id: pipeline.id) }
 
     it 'includes context' do
       expect(subject.status_options[:context]).to be_a String
@@ -67,8 +70,33 @@ RSpec.describe Integrations::Github::StatusMessage do
   end
 
   describe '#context' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:other_project) { create(:project) }
+    let_it_be(:pipeline) { create(:ci_pipeline, project: project) }
+    let_it_be(:child_pipeline) { create(:ci_pipeline, project: project) }
+    let_it_be(:grandchild_pipeline) { create(:ci_pipeline, project: project) }
+    let_it_be(:other_pipeline) { create(:ci_pipeline, project: other_project) }
+
+    before_all do
+      create(:ci_sources_pipeline,
+        source_job: create(:ci_build, pipeline: pipeline, name: 'child'),
+        source_project: project,
+        pipeline: child_pipeline,
+        project: project)
+      create(:ci_sources_pipeline,
+        source_job: create(:ci_build, pipeline: child_pipeline, name: 'grandchild'),
+        source_project: project,
+        pipeline: grandchild_pipeline,
+        project: project)
+      create(:ci_sources_pipeline,
+        source_job: create(:ci_build, pipeline: child_pipeline, name: 'other'),
+        source_project: project,
+        pipeline: other_pipeline,
+        project: other_project)
+    end
+
     subject do
-      described_class.new(project, integration, ref: 'some-ref')
+      described_class.new(project, integration, ref: 'some-ref', id: pipeline_id)
     end
 
     context 'when status context is supposed to be dynamic' do
@@ -76,8 +104,20 @@ RSpec.describe Integrations::Github::StatusMessage do
         allow(integration).to receive(:static_context?).and_return(false)
       end
 
-      it 'appends pipeline reference to the status context' do
-        expect(subject.context).to eq 'ci/gitlab/some-ref'
+      context 'when parent pipeline is used' do
+        let(:pipeline_id) { pipeline.id }
+
+        it 'appends pipeline reference to the status context' do
+          expect(subject.context).to eq 'ci/gitlab/some-ref'
+        end
+
+        context 'when child pipeline is used' do
+          let(:pipeline_id) { child_pipeline.id }
+
+          it 'appends job name to status context' do
+            expect(subject.context).to eq 'ci/gitlab/some-ref/child'
+          end
+        end
       end
     end
 
@@ -86,15 +126,43 @@ RSpec.describe Integrations::Github::StatusMessage do
         allow(integration).to receive(:static_context?).and_return(true)
       end
 
-      it 'appends instance hostname to the status context' do
-        expect(subject.context).to eq 'ci/gitlab/instance-host'
+      context 'when parent pipeline is used' do
+        let(:pipeline_id) { pipeline.id }
+
+        it 'appends instance hostname to the status context' do
+          expect(subject.context).to eq 'ci/gitlab/instance-host'
+        end
+      end
+
+      context 'when child pipeline is used' do
+        let(:pipeline_id) { child_pipeline.id }
+
+        it 'appends job name to status context' do
+          expect(subject.context).to eq 'ci/gitlab/instance-host/child'
+        end
+      end
+
+      context 'when grandchild pipeline is used' do
+        let(:pipeline_id) { grandchild_pipeline.id }
+
+        it 'appends all ancestor job names to status context' do
+          expect(subject.context).to eq 'ci/gitlab/instance-host/child/grandchild'
+        end
+      end
+
+      context 'when child pipeline in another project is used' do
+        let(:pipeline_id) { other_pipeline.id }
+
+        it 'does not append job name to the status context' do
+          expect(subject.context).to eq 'ci/gitlab/instance-host'
+        end
       end
     end
   end
 
   describe '.from_pipeline_data' do
-    let(:project) { create(:project) }
-    let(:pipeline) { create(:ci_pipeline, ref: 'some-ref', project: project) }
+    let_it_be(:project) { create(:project) }
+    let_it_be(:pipeline) { create(:ci_pipeline, ref: 'some-ref', project: project) }
     let(:sample_data) { Gitlab::DataBuilder::Pipeline.build(pipeline) }
 
     subject do
@@ -131,7 +199,7 @@ RSpec.describe Integrations::Github::StatusMessage do
       end
 
       context 'when pipeline is blocked' do
-        let(:pipeline) { create(:ci_pipeline, :blocked) }
+        let_it_be(:pipeline) { create(:ci_pipeline, :blocked) }
 
         it 'uses human readable status which can be used in a sentence' do
           expect(subject.description).to eq 'Pipeline waiting for manual action on GitLab'
@@ -148,7 +216,36 @@ RSpec.describe Integrations::Github::StatusMessage do
         end
 
         it 'appends instance name to the context name' do
-          expect(subject.context).to eq 'ci/gitlab/instance-host'
+          expect(subject.context).to eq "ci/gitlab/instance-host"
+        end
+      end
+
+      context 'with child pipelines' do
+        let_it_be(:child_pipeline_1) { create(:ci_pipeline, ref: 'some-ref', project: project) }
+        let_it_be(:child_pipeline_2) { create(:ci_pipeline, ref: 'some-ref', project: project) }
+        let(:child_data_1) { Gitlab::DataBuilder::Pipeline.build(child_pipeline_1) }
+        let(:child_data_2) { Gitlab::DataBuilder::Pipeline.build(child_pipeline_2) }
+        let(:parent_status) { subject }
+        let(:child_status_1) { described_class.from_pipeline_data(project, integration, child_data_1) }
+        let(:child_status_2) { described_class.from_pipeline_data(project, integration, child_data_2) }
+
+        before_all do
+          create(:ci_sources_pipeline,
+            source_job: create(:ci_build, pipeline: pipeline, name: 'child_1'),
+            source_project: project,
+            pipeline: child_pipeline_1,
+            project: project)
+          create(:ci_sources_pipeline,
+            source_job: create(:ci_build, pipeline: pipeline, name: 'child_2'),
+            source_project: project,
+            pipeline: child_pipeline_2,
+            project: project)
+        end
+
+        it 'assigns a unique context to each pipeline' do
+          expect(parent_status.context).not_to eq child_status_1.context
+          expect(parent_status.context).not_to eq child_status_2.context
+          expect(child_status_1.context).not_to eq child_status_2.context
         end
       end
     end

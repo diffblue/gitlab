@@ -62,10 +62,22 @@ module Integrations
 
       def context_name
         if @service.static_context?
-          "ci/gitlab/#{::Gitlab.config.gitlab.host}"
+          "ci/gitlab/#{::Gitlab.config.gitlab.host}#{context_suffix}"
         else
-          "ci/gitlab/#{@ref_name}"
+          "ci/gitlab/#{@ref_name}#{context_suffix}"
         end
+      end
+
+      def context_suffix
+        pipeline = Ci::Pipeline.find(@pipeline_id)
+        suffix = ""
+
+        while pipeline.source_pipeline && pipeline.source_pipeline.source_project_id == pipeline.project_id
+          suffix = "/#{pipeline.source_pipeline.source_job.name}#{suffix}"
+          pipeline = pipeline.source_pipeline.source_pipeline
+        end
+
+        suffix
       end
     end
   end
