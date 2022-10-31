@@ -9,7 +9,7 @@ module API
     before { authorize_change_param(user_group, :commit_committer_check, :reject_unsigned_commits) }
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
+      requires :id, type: String, desc: 'The ID or URL-encoded path of a group'
     end
 
     resource :groups do
@@ -38,12 +38,12 @@ module API
           optional :deny_delete_tag, type: Boolean, desc: 'Deny deleting a tag'
           optional :member_check, type: Boolean, desc: 'Restrict commits by author (email) to existing GitLab users'
           optional :prevent_secrets, type: Boolean, desc: 'GitLab will reject any files that are likely to contain secrets'
-          optional :commit_message_regex, type: String, desc: 'All commit messages must match this'
-          optional :commit_message_negative_regex, type: String, desc: 'No commit message is allowed to match this'
-          optional :branch_name_regex, type: String, desc: 'All branches names must match this'
-          optional :author_email_regex, type: String, desc: 'All commit author emails must match this'
-          optional :file_name_regex, type: String, desc: 'All committed filenames must not match this'
-          optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)'
+          optional :commit_message_regex, type: String, desc: 'All commit messages must match this', documentation: { example: 'Fixed \d+\..*' }
+          optional :commit_message_negative_regex, type: String, desc: 'No commit message is allowed to match this', documentation: { example: 'ssh\:\/\/' }
+          optional :branch_name_regex, type: String, desc: 'All branches names must match this', documentation: { example: '(feature|hotfix)\/*' }
+          optional :author_email_regex, type: String, desc: 'All commit author emails must match this', documentation: { example: '@my-company.com$' }
+          optional :file_name_regex, type: String, desc: 'All committed filenames must not match this', documentation: { example: '(jar|exe)$' }
+          optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)', documentation: { example: 20 }
           optional :commit_committer_check, type: Boolean, desc: 'Users may only push their own commits'
           optional :reject_unsigned_commits, type: Boolean, desc: 'Only GPG signed commits can be pushed to this repository'
           at_least_one_of :deny_delete_tag, :member_check, :prevent_secrets,
@@ -57,7 +57,11 @@ module API
 
       desc 'Get group push rule' do
         detail 'This feature was introduced in GitLab 13.4.'
-        success EE::API::Entities::GroupPushRule
+        success code: 200, model: EE::API::Entities::GroupPushRule
+        failure [
+          { code: 404, message: 'Not found' }
+        ]
+        tags %w[push_rules]
       end
       get ":id/push_rule" do
         push_rule = user_group.push_rule
@@ -69,7 +73,13 @@ module API
 
       desc 'Add a push rule to a group' do
         detail 'This feature was introduced in GitLab 13.4.'
-        success EE::API::Entities::GroupPushRule
+        success code: 201, model: EE::API::Entities::GroupPushRule
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' },
+          { code: 422, message: 'Unprocessable entity' }
+        ]
+        tags %w[push_rules]
       end
       params do
         use :push_rule_params
@@ -81,7 +91,13 @@ module API
 
       desc 'Edit push rule of a group' do
         detail 'This feature was introduced in GitLab 13.4.'
-        success EE::API::Entities::GroupPushRule
+        success code: 200, model: EE::API::Entities::GroupPushRule
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' },
+          { code: 422, message: 'Unprocessable entity' }
+        ]
+        tags %w[push_rules]
       end
       params do
         use :push_rule_params
@@ -93,6 +109,12 @@ module API
 
       desc 'Deletes group push rule' do
         detail 'This feature was introduced in GitLab 13.4.'
+        success code: 204
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' }
+        ]
+        tags %w[push_rules]
       end
       delete ":id/push_rule" do
         push_rule = user_group.push_rule
