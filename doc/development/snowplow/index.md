@@ -82,10 +82,10 @@ For more details about the architecture, see [Snowplow infrastructure](infrastru
 
 ## Event schema
 
-Click events must be consistent. If each feature captures events differently, it can be difficult
+All the events must be consistent. If each feature captures events differently, it can be difficult
 to perform analysis.
 
-Each click event provides attributes that describe the event.
+Each event provides attributes that describe the event.
 
 | Attribute | Type    | Required | Description |
 | --------- | ------- | -------- | ----------- |
@@ -94,6 +94,7 @@ Each click event provides attributes that describe the event.
 | label     | text    | false    | The specific element or object to act on. This can be one of the following: the label of the element, for example, a tab labeled 'Create from template' for `create_from_template`; a unique identifier if no text is available, for example, `groups_dropdown_close` for closing the Groups dropdown list in the top bar; or the name or title attribute of a record being created. For Service Ping metrics adapted to Snowplow events, this should be the full metric [key path](../service_ping/metrics_dictionary.md#metric-key_path) taken from its definition file. |
 | property  | text    | false    | Any additional property of the element, or object being acted on. For Service Ping metrics adapted to Snowplow events, this should be additional information or context that can help analyze the event. For example, in the case of `usage_activity_by_stage_monthly.create.merge_requests_users`, there are four different possible merge request actions: "create", "merge", "comment", and "close". Each of these would be a possible property value. |
 | value     | decimal | false    | Describes a numeric value (decimal) directly related to the event. This could be the value of an input. For example, `10` when clicking `internal` visibility. |
+| context   | vector  | false    | Additional data in the form of a [self-describing JSON](https://docs.snowplow.io/docs/pipeline-components-and-applications/iglu/common-architecture/self-describing-json-schemas/) to describe the event if the attributes are not sufficient. Each context must have its schema defined to assure data integrity. Refer to the list of GitLab-defined contexts for more details. |
 
 ### Examples
 
