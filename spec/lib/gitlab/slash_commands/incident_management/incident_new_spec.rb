@@ -30,9 +30,7 @@ RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
       end
 
       it 'returns true' do
-        # rubocop: disable RSpec/PredicateMatcher
-        expect(described_class.allowed?(project, user)).to be_truthy
-        # rubocop: enable RSpec/PredicateMatcher
+        expect(described_class).to be_allowed(project, user)
       end
     end
 
@@ -42,11 +40,9 @@ RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
         stub_feature_flags(incident_declare_slash_command: false)
       end
 
-      # rubocop: disable RSpec/PredicateMatcher
       it 'returns false in allowed?' do
-        expect(described_class.allowed?(project, user)).to be_falsey
+        expect(described_class).not_to be_allowed(project, user)
       end
-      # rubocop: enable RSpec/PredicateMatcher
     end
   end
 
