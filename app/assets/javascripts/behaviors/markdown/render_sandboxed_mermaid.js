@@ -202,7 +202,7 @@ export default function renderMermaid(els) {
   renderMermaids(visibleMermaids);
 
   hiddenMermaids.forEach((el) => {
-    el.closest('details').addEventListener(
+    el.closest('details')?.addEventListener(
       'toggle',
       ({ target: details }) => {
         if (details.open) {
