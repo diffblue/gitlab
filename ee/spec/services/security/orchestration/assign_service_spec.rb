@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe Security::Orchestration::AssignService do
   let_it_be(:project, reload: true) { create(:project) }
   let_it_be(:another_project) { create(:project) }
+  let_it_be(:current_user) { create(:user) }
 
   let_it_be(:namespace, reload: true) { create(:group) }
   let_it_be(:another_namespace) { create(:group) }
@@ -17,71 +18,138 @@ RSpec.describe Security::Orchestration::AssignService do
 
   describe '#execute' do
     subject(:service) do
-      described_class.new(container: container, current_user: nil, params: { policy_project_id: policy_project.id }).execute
+      described_class.new(container: container, current_user: current_user, params: { policy_project_id: policy_project.id }).execute
     end
 
-    before do
-      service
-    end
+    shared_examples 'executes assign service' do
+      context 'when policy project is assigned' do
+        it 'assigns policy project to container and logs audit event' do
+          audit_context = {
+            name: "policy_project_updated",
+            author: current_user,
+            scope: container,
+            target: policy_project,
+            message: "Linked #{policy_project.name} as the security policy project"
+          }
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
-    shared_examples 'assigns policy project' do
-      it 'assigns policy project to container' do
-        expect(service).to be_success
-        expect(
-          container.security_orchestration_policy_configuration.security_policy_management_project_id
-        ).to eq(policy_project.id)
-      end
+          expect(service).to be_success
 
-      it 'updates container with new policy project' do
-        repeated_service =
-          described_class.new(container: container, current_user: nil, params: { policy_project_id: new_policy_project.id }).execute
-
-        expect(repeated_service).to be_success
-        expect(
-          container.security_orchestration_policy_configuration.security_policy_management_project_id
-        ).to eq(new_policy_project.id)
-      end
-
-      it 'assigns same policy to different container' do
-        repeated_service =
-          described_class.new(container: another_container, current_user: nil, params: { policy_project_id: policy_project.id }).execute
-        expect(repeated_service).to be_success
-      end
-
-      it 'unassigns project' do
-        expect { described_class.new(container: container, current_user: nil, params: { policy_project_id: nil }).execute }.to change {
-          container.reload.security_orchestration_policy_configuration
-        }.to(nil)
-      end
-
-      it 'returns error when db has problem' do
-        dbl_error = double('ActiveRecord')
-        dbl =
-          double(
-            'Security::OrchestrationPolicyConfiguration',
-            security_orchestration_policy_configuration: dbl_error
-          )
-
-        allow(dbl_error).to receive(:update!).and_raise(ActiveRecord::RecordInvalid)
-
-        allow_next_instance_of(described_class) do |instance|
-          allow(instance).to receive(:has_existing_policy?).and_return(true)
-          allow(instance).to receive(:container).and_return(dbl)
+          expect(
+            container.security_orchestration_policy_configuration.security_policy_management_project_id
+          ).to eq(policy_project.id)
         end
 
-        repeated_service =
-          described_class.new(container: container, current_user: nil, params: { policy_project_id: new_policy_project.id }).execute
+        it 'assigns same policy to different container' do
+          repeated_service =
+            described_class.new(container: another_container, current_user: current_user, params: { policy_project_id: policy_project.id }).execute
+          expect(repeated_service).to be_success
+        end
+      end
 
-        expect(repeated_service).to be_error
+      context 'when policy project is unassigned' do
+        before do
+          service
+        end
+
+        let(:repeated_service) { described_class.new(container: container, current_user: current_user, params: { policy_project_id: nil }).execute }
+
+        it 'unassigns project' do
+          expect { repeated_service }.to change {
+            container.reload.security_orchestration_policy_configuration
+          }.to(nil)
+        end
+
+        it 'logs audit event' do
+          old_policy_project = container.security_orchestration_policy_configuration.security_policy_management_project
+          audit_context = {
+            name: "policy_project_updated",
+            author: current_user,
+            scope: container,
+            target: old_policy_project,
+            message: "Unlinked #{old_policy_project.name} as the security policy project"
+          }
+
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+
+          repeated_service
+        end
+      end
+
+      context 'when policy project is reassigned' do
+        before do
+          service
+        end
+
+        let(:repeated_service) { described_class.new(container: container, current_user: current_user, params: { policy_project_id: new_policy_project.id }).execute }
+
+        it 'updates container with new policy project' do
+          expect(repeated_service).to be_success
+          expect(
+            container.security_orchestration_policy_configuration.security_policy_management_project_id
+          ).to eq(new_policy_project.id)
+        end
+
+        it 'logs audit event' do
+          old_policy_project = container.security_orchestration_policy_configuration.security_policy_management_project
+          audit_context = {
+            name: "policy_project_updated",
+            author: current_user,
+            scope: container,
+            target: new_policy_project,
+            message: "Changed the linked security policy project from #{old_policy_project.name} to #{new_policy_project.name}"
+          }
+
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+
+          repeated_service
+        end
+      end
+
+      context 'when failure in db' do
+        let(:repeated_service) { described_class.new(container: container, current_user: current_user, params: { policy_project_id: new_policy_project.id }).execute }
+
+        before do
+          dbl_error = double('ActiveRecord')
+          dbl =
+            double(
+              'Security::OrchestrationPolicyConfiguration',
+              security_orchestration_policy_configuration: dbl_error
+            )
+
+          allow(dbl_error).to receive(:security_policy_management_project).and_return(policy_project)
+          allow(dbl_error).to receive(:update!).and_raise(ActiveRecord::RecordInvalid)
+
+          allow_next_instance_of(described_class) do |instance|
+            allow(instance).to receive(:has_existing_policy?).and_return(true)
+            allow(instance).to receive(:container).and_return(dbl)
+          end
+        end
+
+        it 'returns error when db has problem' do
+          expect(repeated_service).to be_error
+        end
+
+        it 'does not log audit event' do
+          expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+          repeated_service
+        end
       end
 
       describe 'with invalid project id' do
-        subject(:service) { described_class.new(container: container, current_user: nil, params: { policy_project_id: 345 }).execute }
+        subject(:service) { described_class.new(container: container, current_user: current_user, params: { policy_project_id: non_existing_record_id }).execute }
 
         it 'does not change policy project' do
           expect(service).to be_error
 
           expect { service }.not_to change { container.security_orchestration_policy_configuration }
+        end
+
+        it 'does not log audit event' do
+          expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+          service
         end
       end
     end
@@ -90,14 +158,14 @@ RSpec.describe Security::Orchestration::AssignService do
       let(:container) { project }
       let(:another_container) { another_project }
 
-      it_behaves_like 'assigns policy project'
+      it_behaves_like 'executes assign service'
     end
 
     context 'for namespace' do
       let(:container) { namespace }
       let(:another_container) { another_namespace }
 
-      it_behaves_like 'assigns policy project'
+      it_behaves_like 'executes assign service'
     end
   end
 end
