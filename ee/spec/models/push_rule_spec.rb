@@ -107,6 +107,24 @@ RSpec.describe PushRule, :saas do
 
       expect(subject.commit_message_blocked?(commit_message)).to be true
     end
+
+    context 'when commit message with break line in the last' do
+      subject(:push_rule) { create(:push_rule, commit_message_negative_regex: '^[0-9]*$') }
+
+      it 'uses multiline regex' do
+        commit_message = "Some git commit feature\n"
+        expect(subject.commit_message_blocked?(commit_message)).to be false
+      end
+    end
+
+    context 'when commit message without break line in the last' do
+      subject(:push_rule) { create(:push_rule, commit_message_negative_regex: '^[0-9]*$') }
+
+      it 'uses multiline regex' do
+        commit_message = "1234"
+        expect(subject.commit_message_blocked?(commit_message)).to be true
+      end
+    end
   end
 
   describe '#commit_validation?' do
