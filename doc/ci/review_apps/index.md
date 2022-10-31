@@ -6,9 +6,6 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 # Review Apps **(FREE)**
 
-WARNING:
-This feature is currently unavailable on SaaS due to the ongoing security incident. The fix is expected to be released in 15.6 update.
-
 Review Apps is a collaboration tool that assists with providing an environment to showcase product changes.
 
 NOTE:
@@ -197,6 +194,9 @@ After you have the route mapping set up, it takes effect in the following locati
   ![View on environment button in file view](img/view_on_env_blob.png)
 
 ## Visual Reviews **(PREMIUM)**
+
+WARNING:
+This feature is currently unavailable on SaaS due to the ongoing security incident. The fix is expected to be released in 15.6 update.
 
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/10761) in GitLab 12.0.
 > - [Moved](https://about.gitlab.com/blog/2021/01/26/new-gitlab-product-subscription-model/) to GitLab Premium in 13.9.
