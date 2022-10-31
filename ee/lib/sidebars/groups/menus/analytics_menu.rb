@@ -11,7 +11,6 @@ module Sidebars
           add_item(cycle_analytics_menu_item)
           add_item(ci_cd_analytics_menu_item)
           add_item(contribution_analytics_menu_item)
-          add_item(analytics_dashboards)
           add_item(devops_adoption_menu_item)
           add_item(insights_analytics_menu_item)
           add_item(issues_analytics_menu_item)
@@ -47,19 +46,6 @@ module Sidebars
         end
 
         private
-
-        def analytics_dashboards
-          unless can?(context.current_user, :read_group_analytics_dashboards, context.group)
-            return ::Sidebars::NilMenuItem.new(item_id: :analytics_dashboards)
-          end
-
-          ::Sidebars::MenuItem.new(
-            title: s_('AnalyticsDashboards|Dashboards'),
-            link: group_analytics_dashboards_path(context.group),
-            active_routes: { path: 'groups/analytics/dashboards#index' },
-            item_id: :analytics_dashboards
-          )
-        end
 
         def ci_cd_analytics_menu_item
           unless show_ci_cd_analytics?
