@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::ImportExport::RepoRestorer do
-  include GitHelpers
-
   describe 'restores group wiki bundles' do
     let(:group) { create(:group) }
     let(:shared) { Gitlab::ImportExport::Shared.new(group) }
