@@ -116,6 +116,9 @@ module EE
 
       override :send_git_archive
       def send_git_archive(repository, **kwargs)
+        result = ::Users::Abuse::ProjectsDownloadBanCheckService.execute(current_user, repository.project)
+        forbidden!(_('You are not allowed to download code from this project.')) if result.error?
+
         ::AuditEvents::RepositoryDownloadStartedAuditEventService.new(
           current_user,
           repository.project,

@@ -4,9 +4,11 @@ module EE
   module Projects
     module RepositoriesController
       extend ActiveSupport::Concern
+      extend ::Gitlab::Utils::Override
 
       prepended do
         before_action :log_audit_event, only: [:archive]
+        before_action :check_projects_download_throttling!, only: [:archive]
       end
 
       private
@@ -23,6 +25,12 @@ module EE
         }
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
+      end
+
+      def check_projects_download_throttling!
+        result = ::Users::Abuse::ProjectsDownloadBanCheckService.execute(current_user, project)
+        error_message = _('You are not allowed to download code from this project.')
+        render(plain: error_message, status: :forbidden) if result.error?
       end
     end
   end
