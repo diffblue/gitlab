@@ -6,9 +6,11 @@ RSpec.describe Security::Orchestration::UnassignService do
   describe '#execute' do
     subject(:result) { service.execute }
 
+    let_it_be(:current_user) { create(:user) }
+
     shared_examples 'unassigns policy project' do
       context 'when policy project is assigned to a project or namespace' do
-        let(:service) { described_class.new(container: container, current_user: nil) }
+        let(:service) { described_class.new(container: container, current_user: current_user) }
 
         let_it_be(:rule_schedule) do
           create(:security_orchestration_policy_rule_schedule,
@@ -24,6 +26,21 @@ RSpec.describe Security::Orchestration::UnassignService do
           expect { result }.to change(Security::OrchestrationPolicyRuleSchedule, :count).from(1).to(0)
         end
 
+        it 'logs audit event' do
+          old_policy_project = container.security_orchestration_policy_configuration.security_policy_management_project
+          audit_context = {
+            name: "policy_project_updated",
+            author: current_user,
+            scope: container,
+            target: old_policy_project,
+            message: "Unlinked #{old_policy_project.name} as the security policy project"
+          }
+
+          expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+
+          result
+        end
+
         context 'when destroy fails' do
           before do
             allow(container.security_orchestration_policy_configuration).to receive(:delete).and_return(false)
@@ -34,11 +51,17 @@ RSpec.describe Security::Orchestration::UnassignService do
           it 'does not delete rule schedules related to the project' do
             expect { result }.not_to change(Security::OrchestrationPolicyRuleSchedule, :count)
           end
+
+          it 'does not log audit event' do
+            expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+            result
+          end
         end
       end
 
       context 'when policy project is not assigned to a project or namespace' do
-        let(:service) { described_class.new(container: container_without_policy_project, current_user: nil) }
+        let(:service) { described_class.new(container: container_without_policy_project, current_user: current_user) }
 
         it 'respond with an error', :aggregate_failures do
           expect(result).not_to be_success
@@ -52,7 +75,7 @@ RSpec.describe Security::Orchestration::UnassignService do
       let_it_be(:container_without_policy_project, reload: true) { create(:project) }
 
       context 'with approval rules' do
-        let(:service) { described_class.new(container: container, current_user: nil) }
+        let(:service) { described_class.new(container: container, current_user: current_user) }
 
         context 'with scan_finding rule' do
           let_it_be(:scan_finding_rule) { create(:approval_project_rule, :scan_finding, project: container) }
