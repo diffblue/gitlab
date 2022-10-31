@@ -88,10 +88,10 @@ export const doraSeries = [
       ['February', null],
     ],
     itemStyle: {
-      color: '#999',
+      color: '#a4a3a8',
     },
     lineStyle: {
-      color: '#999',
+      color: '#a4a3a8',
       type: 'dashed',
     },
     name: 'No data available',
