@@ -125,6 +125,7 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
         @coverage_path = coverage_reports_project_merge_request_path(@project, @merge_request, format: :json) if @merge_request.has_coverage_reports?
         @update_current_user_path = expose_path(api_v4_user_preferences_path)
         @endpoint_metadata_url = endpoint_metadata_url(@project, @merge_request)
+        @endpoint_diff_batch_url = endpoint_diff_batch_url(@project, @merge_request)
 
         set_pipeline_variables
 
@@ -553,6 +554,14 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     params = request.query_parameters.merge(view: 'inline', diff_head: true, w: current_user&.show_whitespace_in_diffs ? '0' : '1')
 
     diffs_metadata_project_json_merge_request_path(project, merge_request, 'json', params)
+  end
+
+  def endpoint_diff_batch_url(project, merge_request)
+    per_page = current_user&.view_diffs_file_by_file ? '1' : '5'
+    w = current_user&.show_whitespace_in_diffs ? '0' : '1'
+    params = request.query_parameters.merge(view: 'inline', diff_head: true, w: w, page: '0', per_page: per_page)
+
+    diffs_batch_project_json_merge_request_path(project, merge_request, 'json', params)
   end
 
   def convert_date_to_epoch(date)
