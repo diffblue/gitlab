@@ -46227,6 +46227,9 @@ msgstr ""
 msgid "You are not allowed to create this tag as it is protected."
 msgstr ""
 
+msgid "You are not allowed to download code from this project."
+msgstr ""
+
 msgid "You are not allowed to log in using password"
 msgstr ""
 
