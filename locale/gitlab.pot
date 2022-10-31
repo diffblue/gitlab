@@ -35479,6 +35479,9 @@ msgstr ""
 msgid "Runner|Owner"
 msgstr ""
 
+msgid "Runner|Runner %{runnerName} failed to delete"
+msgstr ""
+
 msgid "Running"
 msgstr ""
 
