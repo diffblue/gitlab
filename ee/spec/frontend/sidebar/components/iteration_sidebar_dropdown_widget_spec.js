@@ -94,6 +94,8 @@ describe('IterationSidebarDropdownWidget', () => {
     it('renders iterations with cadence names', async () => {
       await createComponentWithApollo({ iterationCadences: true });
       await clickEdit(wrapper);
+      jest.runOnlyPendingTimers();
+      await waitForPromises();
 
       // mockIteration1 has no title
       expect(findIterationCadenceTitleAt(0)).toContain(mockIteration1.iterationCadence.title);

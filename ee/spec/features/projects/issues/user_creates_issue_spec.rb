@@ -43,12 +43,11 @@ RSpec.describe "User creates issue", :js do
   context 'with epics' do
     before do
       fill_in("Title", with: issue_title)
-      scroll_to(page.find('.epic-dropdown-container', visible: false))
     end
 
     it 'creates an issue with no epic' do
       click_button 'Select epic'
-      find('.gl-new-dropdown-item', text: 'No Epic').click
+      click_on 'No epic'
       click_button 'Create issue'
 
       wait_for_all_requests
@@ -60,9 +59,9 @@ RSpec.describe "User creates issue", :js do
       expect(page).to have_content(issue_title)
     end
 
-    it 'credates an issue with an epic' do
+    it 'creates an issue with an epic' do
       click_button 'Select epic'
-      find('.gl-new-dropdown-item', text: epic.title).click
+      click_on epic.title
       click_button 'Create issue'
 
       wait_for_all_requests

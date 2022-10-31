@@ -13,20 +13,6 @@ describe('Api', () => {
     api_version: dummyApiVersion,
     relative_url_root: dummyUrlRoot,
   };
-  const mockEpics = [
-    {
-      id: 1,
-      iid: 10,
-      group_id: 2,
-      title: 'foo',
-    },
-    {
-      id: 2,
-      iid: 11,
-      group_id: 2,
-      title: 'bar',
-    },
-  ];
 
   let originalGon;
   let mock;
@@ -78,106 +64,6 @@ describe('Api', () => {
       expect(data.title).toBe(expectedRes.title);
       expect(data.id).toBe(expectedRes.id);
       expect(data.parentId).toBe(expectedRes.parentId);
-    });
-  });
-
-  describe('groupEpics', () => {
-    it('calls `axios.get` using param `groupId`', async () => {
-      const groupId = 2;
-      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${groupId}/epics`;
-
-      mock
-        .onGet(expectedUrl, {
-          params: {
-            include_ancestor_groups: false,
-            include_descendant_groups: true,
-          },
-        })
-        .reply(httpStatus.OK, mockEpics);
-
-      const { data } = await Api.groupEpics({ groupId });
-      data.forEach((epic, index) => {
-        expect(epic.id).toBe(mockEpics[index].id);
-        expect(epic.iid).toBe(mockEpics[index].iid);
-        expect(epic.group_id).toBe(mockEpics[index].group_id);
-        expect(epic.title).toBe(mockEpics[index].title);
-      });
-    });
-
-    it('calls `axios.get` using param `search` when it is provided', async () => {
-      const groupId = 2;
-      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${groupId}/epics`;
-
-      mock
-        .onGet(expectedUrl, {
-          params: {
-            include_ancestor_groups: false,
-            include_descendant_groups: true,
-            search: 'foo',
-          },
-        })
-        .reply(httpStatus.OK, mockEpics);
-
-      const { data } = await Api.groupEpics({ groupId, search: 'foo' });
-      data.forEach((epic, index) => {
-        expect(epic.id).toBe(mockEpics[index].id);
-        expect(epic.iid).toBe(mockEpics[index].iid);
-        expect(epic.group_id).toBe(mockEpics[index].group_id);
-        expect(epic.title).toBe(mockEpics[index].title);
-      });
-    });
-  });
-
-  describe('addEpicIssue', () => {
-    it('calls `axios.post` using params `groupId`, `epicIid` and `issueId`', async () => {
-      const groupId = 2;
-      const mockIssue = {
-        id: 20,
-      };
-      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${groupId}/epics/${mockEpics[0].iid}/issues/${mockIssue.id}`;
-      const expectedRes = {
-        id: 30,
-        epic: mockEpics[0],
-        issue: mockIssue,
-      };
-
-      mock.onPost(expectedUrl).reply(httpStatus.OK, expectedRes);
-
-      const { data } = await Api.addEpicIssue({
-        groupId,
-        epicIid: mockEpics[0].iid,
-        issueId: mockIssue.id,
-      });
-      expect(data.id).toBe(expectedRes.id);
-      expect(data.epic).toEqual(expect.objectContaining({ ...expectedRes.epic }));
-      expect(data.issue).toEqual(expect.objectContaining({ ...expectedRes.issue }));
-    });
-  });
-
-  describe('removeEpicIssue', () => {
-    it('calls `axios.delete` using params `groupId`, `epicIid` and `epicIssueId`', async () => {
-      const groupId = 2;
-      const mockIssue = {
-        id: 20,
-        epic_issue_id: 40,
-      };
-      const expectedUrl = `${dummyUrlRoot}/api/${dummyApiVersion}/groups/${groupId}/epics/${mockEpics[0].iid}/issues/${mockIssue.epic_issue_id}`;
-      const expectedRes = {
-        id: 30,
-        epic: mockEpics[0],
-        issue: mockIssue,
-      };
-
-      mock.onDelete(expectedUrl).reply(httpStatus.OK, expectedRes);
-
-      const { data } = await Api.removeEpicIssue({
-        groupId,
-        epicIid: mockEpics[0].iid,
-        epicIssueId: mockIssue.epic_issue_id,
-      });
-      expect(data.id).toBe(expectedRes.id);
-      expect(data.epic).toEqual(expect.objectContaining({ ...expectedRes.epic }));
-      expect(data.issue).toEqual(expect.objectContaining({ ...expectedRes.issue }));
     });
   });
 

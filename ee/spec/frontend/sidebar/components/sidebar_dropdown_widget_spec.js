@@ -1,8 +1,9 @@
-import { GlDropdown, GlDropdownItem, GlFormInput } from '@gitlab/ui';
+import { GlDropdown, GlFormInput } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import { mount } from '@vue/test-utils';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
+import SidebarDropdown from '~/sidebar/components/sidebar_dropdown.vue';
 import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
 import { IssuableAttributeType, issuableAttributesQueries } from 'ee/sidebar/constants';
 import groupEpicsQuery from 'ee/sidebar/queries/group_epics.query.graphql';
@@ -32,12 +33,9 @@ describe('SidebarDropdownWidget', () => {
   let mockApollo;
 
   const findDropdown = () => wrapper.findComponent(GlDropdown);
-  const findAllDropdownItems = () => wrapper.findAllComponents(GlDropdownItem);
+  const findSidebarDropdown = () => wrapper.findComponent(SidebarDropdown);
   const findPopoverCta = () => wrapper.findByTestId('confirm-edit-cta');
   const findPopoverCancel = () => wrapper.findByTestId('confirm-edit-cancel');
-  const findDropdownItemWithText = (text) =>
-    findAllDropdownItems().wrappers.find((x) => x.text() === text);
-  const findSelectedAttribute = () => wrapper.findByTestId('select-epic');
 
   const waitForDropdown = async () => {
     /** This sequence is important to wait for
@@ -119,7 +117,7 @@ describe('SidebarDropdownWidget', () => {
         describe('when currentAttribute is not equal to attribute id', () => {
           describe('when update is successful', () => {
             beforeEach(() => {
-              findDropdownItemWithText(mockEpic2.title).vm.$emit('click');
+              findSidebarDropdown().vm.$emit('change', { id: mockEpic2.id });
             });
 
             it('calls setIssueAttribute mutation', () => {
@@ -129,44 +127,11 @@ describe('SidebarDropdownWidget', () => {
                 fullPath: mockIssue.projectPath,
               });
             });
-
-            it('sets the value returned from the mutation to currentAttribute', async () => {
-              expect(findSelectedAttribute().text()).toBe(mockEpic2.title);
-            });
           });
         });
 
         describe('epics', () => {
           let groupEpicsSpy;
-
-          it('should call createAlert if epics query fails', async () => {
-            await createComponentWithApollo({
-              groupEpicsSpy: jest.fn().mockRejectedValue(error),
-            });
-
-            await clickEdit(wrapper);
-
-            expect(createAlert).toHaveBeenCalledWith({
-              message: 'Failed to fetch the epic for this issue. Please try again.',
-              captureError: true,
-              error: expect.any(Error),
-            });
-          });
-
-          it('only fetches attributes when dropdown is opened', async () => {
-            groupEpicsSpy = jest.fn().mockResolvedValueOnce(emptyGroupEpicsResponse);
-            await createComponentWithApollo({ groupEpicsSpy });
-
-            expect(groupEpicsSpy).not.toHaveBeenCalled();
-
-            await clickEdit(wrapper);
-
-            expect(groupEpicsSpy).toHaveBeenNthCalledWith(1, {
-              fullPath: mockIssue.groupPath,
-              sort: 'TITLE_ASC',
-              state: 'opened',
-            });
-          });
 
           describe('when a user is searching epics', () => {
             const mockSearchTerm = 'foobar';
@@ -181,7 +146,7 @@ describe('SidebarDropdownWidget', () => {
             it('sends a groupEpics query with the entered search term "foo" and in TITLE param', async () => {
               await search(wrapper, mockSearchTerm);
 
-              expect(groupEpicsSpy).toHaveBeenNthCalledWith(2, {
+              expect(groupEpicsSpy).toHaveBeenCalledWith({
                 fullPath: mockIssue.groupPath,
                 sort: 'TITLE_ASC',
                 state: 'opened',
@@ -205,7 +170,7 @@ describe('SidebarDropdownWidget', () => {
               // Account for debouncing
               jest.runAllTimers();
 
-              expect(groupEpicsSpy).toHaveBeenNthCalledWith(1, {
+              expect(groupEpicsSpy).toHaveBeenCalledWith({
                 fullPath: mockIssue.groupPath,
                 sort: 'TITLE_ASC',
                 state: 'opened',
@@ -215,7 +180,7 @@ describe('SidebarDropdownWidget', () => {
             it('sends a groupEpics query for an IID with the entered search term "&1"', async () => {
               await search(wrapper, '&1');
 
-              expect(groupEpicsSpy).toHaveBeenNthCalledWith(2, {
+              expect(groupEpicsSpy).toHaveBeenCalledWith({
                 fullPath: mockIssue.groupPath,
                 iidStartsWith: '1',
                 sort: 'TITLE_ASC',

@@ -49,12 +49,7 @@ export default {
       },
     },
   },
-  props: {
-    fullPath: {
-      required: true,
-      type: String,
-    },
-  },
+  inject: ['fullPath'],
   data() {
     return {
       searchTerm: '',
