@@ -1,4 +1,4 @@
-import { GlForm, GlFormInput, GlSkeletonLoader } from '@gitlab/ui';
+import { GlForm, GlFormInput } from '@gitlab/ui';
 import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
@@ -14,12 +14,10 @@ import dastProfileCreateMutation from 'ee/on_demand_scans_form/graphql/dast_prof
 import dastProfileUpdateMutation from 'ee/on_demand_scans_form/graphql/dast_profile_update.mutation.graphql';
 import dastScannerProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_scanner_profiles.query.graphql';
 import dastSiteProfilesQuery from 'ee/security_configuration/dast_profiles/graphql/dast_site_profiles.query.graphql';
-import { useLocalStorageSpy } from 'helpers/local_storage_helper';
 import createApolloProvider from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
-import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import {
@@ -50,15 +48,12 @@ const dastScan = {
   dastSiteProfile: { id: validatedSiteProfile.id },
 };
 
-useLocalStorageSpy();
 jest.mock('~/lib/utils/url_utility', () => {
   return {
     ...jest.requireActual('~/lib/utils/url_utility'),
     redirectTo: jest.fn(),
   };
 });
-
-const LOCAL_STORAGE_KEY = 'group/project/on-demand-scans-new-form';
 
 describe('OnDemandScansForm', () => {
   let localVue;
@@ -174,7 +169,6 @@ describe('OnDemandScansForm', () => {
           stubs: {
             GlFormInput: GlFormInputStub,
             RefSelector: RefSelectorStub,
-            LocalStorageSync,
             ScanSchedule: true,
             SectionLayout,
             SectionLoader,
@@ -198,16 +192,9 @@ describe('OnDemandScansForm', () => {
   const createComponent = createComponentFactory(mount);
   const createShallowComponent = createComponentFactory();
 
-  const itClearsLocalStorage = () => {
-    it('clears local storage', () => {
-      expect(localStorage.removeItem.mock.calls).toEqual([[LOCAL_STORAGE_KEY]]);
-    });
-  };
-
   afterEach(() => {
     wrapper.destroy();
     wrapper = null;
-    localStorage.clear();
   });
 
   it('should have correct component rendered', () => {
@@ -238,30 +225,6 @@ describe('OnDemandScansForm', () => {
 
       expect(findBranchInput().props('value')).toBe(defaultBranch);
     });
-
-    it.each`
-      scannerProfilesLoading | siteProfilesLoading | isLoading
-      ${true}                | ${true}             | ${true}
-      ${false}               | ${true}             | ${true}
-      ${true}                | ${false}            | ${true}
-      ${false}               | ${false}            | ${false}
-    `(
-      'sets loading state to $isLoading if scanner profiles loading is $scannerProfilesLoading and site profiles loading is $siteProfilesLoading',
-      ({ scannerProfilesLoading, siteProfilesLoading, isLoading }) => {
-        createShallowComponent({
-          mocks: {
-            $apollo: {
-              queries: {
-                scannerProfiles: { loading: scannerProfilesLoading },
-                siteProfiles: { loading: siteProfilesLoading },
-              },
-            },
-          },
-        });
-
-        expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(isLoading);
-      },
-    );
   });
 
   describe('when editing an existing scan', () => {
@@ -303,40 +266,6 @@ describe('OnDemandScansForm', () => {
         expect(findDescriptionInput().attributes('value')).toBe(dastScan.description);
         hasSiteProfileAttributes();
       });
-    });
-  });
-
-  describe('local storage', () => {
-    it('get updated when form is modified', async () => {
-      createShallowComponent();
-
-      await setValidFormData();
-
-      expect(localStorage.setItem.mock.calls).toEqual([
-        [
-          LOCAL_STORAGE_KEY,
-          JSON.stringify({
-            name: 'My daily scan',
-            selectedBranch,
-          }),
-        ],
-      ]);
-    });
-
-    it('reload the form data when available', async () => {
-      localStorage.setItem(
-        LOCAL_STORAGE_KEY,
-        JSON.stringify({
-          name: dastScan.name,
-          description: dastScan.description,
-        }),
-      );
-
-      createShallowComponent();
-      await nextTick();
-
-      expect(findNameInput().attributes('value')).toBe(dastScan.name);
-      expect(findDescriptionInput().attributes('value')).toBe(dastScan.description);
     });
   });
 
@@ -411,8 +340,6 @@ describe('OnDemandScansForm', () => {
           it('does not show an alert', async () => {
             expect(findAlert().exists()).toBe(false);
           });
-
-          itClearsLocalStorage();
         });
 
         describe('when editing an existing scan', () => {
@@ -523,8 +450,6 @@ describe('OnDemandScansForm', () => {
       createShallowComponent();
       findCancelButton().vm.$emit('click');
     });
-
-    itClearsLocalStorage();
 
     it('redirects to profiles library', () => {
       expect(redirectTo).toHaveBeenCalledWith(onDemandScansPath);
