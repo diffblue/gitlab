@@ -91,10 +91,8 @@ export const SUPPORTING_MESSAGE_TYPES = {
   RECORDED: 'Recorded',
 };
 
-export const SUPPORTED_IDENTIFIER_TYPES = {
-  cwe: 'cwe',
-  owasp: 'owasp',
-};
+export const SUPPORTED_IDENTIFIER_TYPE_CWE = 'cwe';
+export const SUPPORTED_IDENTIFIER_TYPE_OWASP = 'owasp';
 
 export const VULNERABILITY_TRAINING_HEADING = {
   title: s__('Vulnerability|Training'),
