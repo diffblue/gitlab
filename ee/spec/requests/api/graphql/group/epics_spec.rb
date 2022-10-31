@@ -442,6 +442,29 @@ RSpec.describe 'Epics through GroupQuery' do
     end
   end
 
+  context 'when requesting epic issues and respective labels' do
+    let_it_be(:issue) { create(:issue, project: project, labels: [label]) }
+    let_it_be(:epic_a) { create(:epic, group: group, issues: [issue]) }
+    let_it_be(:child_epic) { create(:epic, group: group, parent: epic_a, labels: [label]) }
+
+    let(:requested_fields) { ['children { nodes { labels { nodes { id } } } } issues { nodes { id labels { nodes { id } } } }'] }
+    let(:search_params) { { iids: [epic_a.iid.to_s] } }
+
+    before do
+      stub_licensed_features(epics: true)
+    end
+
+    it "expect to load issue labels" do
+      execute_query
+
+      epic_1 = graphql_data_at(:group, :epics, :nodes)[0]
+      issue = epic_1['issues']['nodes'][0]
+      issue_labels = issue['labels']['nodes']
+
+      expect(issue_labels).to match(a_hash_including('id' => label.to_global_id.to_s))
+    end
+  end
+
   describe 'Get related epic links fields' do
     let_it_be(:epic_a) { create(:epic, group: group) }
     let_it_be(:epic_b) { create(:epic, group: group, created_at: 1.hour.ago) }
