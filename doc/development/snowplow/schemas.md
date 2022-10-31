@@ -172,3 +172,18 @@ Page titles are hardcoded as `GitLab` for the same reason.
 | `v_collector`              | **{dotted-circle}** | string    | Collector version                                                                                                                |
 | `v_etl`                    | **{dotted-circle}** | string    | ETL version                                                                                                                      |
 | `v_tracker`                | **{dotted-circle}** | string    | Identifier for Snowplow tracker                                                                                                  |
+
+## `gitlab_service_ping`
+
+Backend events converted from ServicePing (`redis` and `redis_hll`) must include [ServicePing context](https://gitlab.com/gitlab-org/iglu/-/tree/master/public/schemas/com.gitlab/gitlab_service_ping/jsonschema)
+using the [helper class](https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/tracking/service_ping_context.rb).
+
+An example of converted `redis_hll` [event with context](https://gitlab.com/gitlab-org/gitlab/-/edit/master/app/controllers/concerns/product_analytics_tracking.rb#L58).
+
+| Field Name    |      Required       | Type                   | Description                                                                                                                                                        |
+|---------------|:-------------------:|------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `data_source` | **{check-circle}**  | string (max 64 chars)  | The `data_source` attribute from the metrics YAML definition. |
+| `event_name`* | **{dotted-circle}** | string (max 128 chars) | When there is a many-to-many relationship between events and metrics, this field contains the name of a Redis event that can be used for aggregations in downstream systems |
+| `key_path`*   | **{dotted-circle}** | string (max 256 chars) | The `key_path` attribute from the metrics YAML definition |
+
+_\* Either `event_name` or `key_path` is required_
