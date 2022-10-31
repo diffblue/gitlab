@@ -35,6 +35,7 @@ RSpec.describe Epics::WithAccessCheck do
       def epics_collection
         Epic.in_parents(base_epic)
       end
+      alias_method :epics_collection_for_groups, :epics_collection
 
       def base_epic
         params[:parent]
