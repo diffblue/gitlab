@@ -50,34 +50,27 @@ module EE
     end
 
     override :custom_confirmation_enabled?
-    def custom_confirmation_enabled?(resource)
-      # Since we don't have a persisted user yet, we cannot scope the feature flag on the user, but
-      # we do have an email, so use this wrapper that implements `flipper_id` for email addresses.
-      email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(resource.email)
-
-      ::Feature.enabled?(:identity_verification, email_wrapper)
+    def custom_confirmation_enabled?
+      custom_confirmation_instructions_service.enabled?
     end
 
     override :set_custom_confirmation_token
     def set_custom_confirmation_token
-      return unless custom_confirmation_enabled?(resource)
-
-      resource.skip_confirmation_notification! # Don't send Devise notification, we send our own custom notification
-
-      service = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token)
-      token, digest = service.execute
-      resource.confirmation_token = digest
-      resource.confirmation_sent_at = Time.current
-      token
+      custom_confirmation_instructions_service.set_token(save: false)
     end
 
     override :send_custom_confirmation_instructions
-    def send_custom_confirmation_instructions(user, token)
-      return unless user.persisted? && token
+    def send_custom_confirmation_instructions
+      return unless custom_confirmation_enabled?
 
-      session[:verification_user_id] = user.id # This is needed to find the user on the identity verification page
-      ::Notify.confirmation_instructions_email(user.email, token: token).deliver_later
+      custom_confirmation_instructions_service.send_instructions
+      session[:verification_user_id] = resource.id # This is needed to find the user on the identity verification page
     end
+
+    def custom_confirmation_instructions_service
+      ::Users::EmailVerification::SendCustomConfirmationInstructionsService.new(resource)
+    end
+    strong_memoize_attr :custom_confirmation_instructions_service
 
     def ensure_can_remove_self
       unless current_user&.can_remove_self?
