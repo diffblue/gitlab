@@ -194,7 +194,7 @@ Snowplow JavaScript adds [web-specific parameters](https://docs.snowplowanalytic
 - [List of events used in our codebase (Event Dictionary)](https://metrics.gitlab.com/snowplow/)
 - [Product Intelligence Guide](https://about.gitlab.com/handbook/product/product-intelligence-guide/)
 - [Service Ping Guide](../service_ping/index.md)
-- [Product Intelligence Direction](https://about.gitlab.com/direction/product-intelligence/)
+- [Product Intelligence Direction](https://about.gitlab.com/direction/analytics/product-intelligence/)
 - [Data Analysis Process](https://about.gitlab.com/handbook/business-technology/data-team/#data-analysis-process/)
 - [Data for Product Managers](https://about.gitlab.com/handbook/business-technology/data-team/programs/data-for-product-managers/)
 - [Data Infrastructure](https://about.gitlab.com/handbook/business-technology/data-team/platform/infrastructure/)
