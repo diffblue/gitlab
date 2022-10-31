@@ -7,43 +7,12 @@
       align-items: center;
     }
   }
-
-  &.epic {
-    .title {
-      display: flex;
-    }
-
-    .dropdown-contents-loading {
-      position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 9;
-      padding-top: 45px;
-      background-color: $dropdown-loading-bg;
-    }
-
-    .sidebar-dropdown-toggle:hover {
-      text-decoration: underline;
-      color: $blue-800;
-    }
-  }
 }
 
 .limit-container-width {
   .epic-page-container .issuable-details,
   .emoji-list-container {
     @include fixed-width-container;
-  }
-}
-
-// This override is needed because `display: flex`
-// on `.epic` above causes hiding logic in global
-// stylesheet is of lower specificity.
-.right-sidebar.right-sidebar-collapsed {
-  .block.epic .hide-collapsed {
-    display: none;
   }
 }
 
