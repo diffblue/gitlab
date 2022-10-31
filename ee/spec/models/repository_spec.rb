@@ -5,7 +5,6 @@ require 'spec_helper'
 RSpec.describe Repository do
   include RepoHelpers
   include ::EE::GeoHelpers
-  include GitHelpers
 
   before do
     stub_const('TestBlob', Struct.new(:path))
