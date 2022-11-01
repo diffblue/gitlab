@@ -16,6 +16,7 @@ RSpec.describe 'gitlab:rake tasks', :silence_stdout do
     context 'with successful download of the catalogue' do
       before do
         stub_request(:get, Gitlab::SPDX::CatalogueGateway::URL).to_return(status: 200, body: data.to_json)
+        allow(IO).to receive(:write)
         expect(IO).to receive(:write).with(path, anything, mode: 'w')
       end
 
