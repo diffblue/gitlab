@@ -130,6 +130,26 @@ describe('MR Widget Security Reports', () => {
       });
     };
 
+    it('should mount the widget component', async () => {
+      mockWithData();
+
+      createComponent({
+        propsData: { mr: { ...reportEndpoints, securityConfigurationPath, sourceProjectFullPath } },
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      expect(findWidget().props()).toMatchObject({
+        statusIconName: 'warning',
+        widgetName: 'WidgetSecurityReports',
+        errorText: 'Security reports failed loading results',
+        loadingText: 'Loading',
+        fetchCollapsedData: wrapper.vm.fetchCollapsedData,
+        multiPolling: true,
+      });
+    });
+
     it('computes the total number of new potential vulnerabilities correctly', async () => {
       mockWithData();
 

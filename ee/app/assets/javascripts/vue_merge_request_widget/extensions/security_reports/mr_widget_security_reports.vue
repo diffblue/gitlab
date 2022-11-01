@@ -124,7 +124,7 @@ export default {
     },
 
     statusIconName() {
-      if (this.totalVulnerabilities > 0) {
+      if (this.totalNewVulnerabilities > 0) {
         return 'warning';
       }
 
