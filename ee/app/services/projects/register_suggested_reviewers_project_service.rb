@@ -16,7 +16,7 @@ module Projects
                                      reason: :token_creation_failed)
       end
 
-      access_token = token_response.payload[:access_token]
+      access_token = token_response.payload[:access_token].token
       registration_input = {
         project_id: project.id,
         project_name: project.name,
