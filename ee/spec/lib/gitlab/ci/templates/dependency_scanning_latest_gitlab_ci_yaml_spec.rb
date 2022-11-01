@@ -68,7 +68,8 @@ RSpec.shared_examples 'language detection' do
       let(:files_at_depth_x) { files.transform_keys { |k| "foo/bar/baz/#{k}" } }
 
       it 'includes no job' do
-        expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+        expect(build_names).to be_empty
+        expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
       end
     end
 
@@ -154,7 +155,7 @@ RSpec.describe 'Dependency-Scanning.latest.gitlab-ci.yml' do
     let(:project) { create(:project, :custom_repo, files: files) }
     let(:user) { project.first_owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master') }
-    let(:pipeline) { service.execute!(:push).payload }
+    let(:pipeline) { service.execute(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
 
     before do
@@ -167,7 +168,8 @@ RSpec.describe 'Dependency-Scanning.latest.gitlab-ci.yml' do
 
     context 'when project has no license' do
       it 'includes no jobs' do
-        expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+        expect(build_names).to be_empty
+        expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
       end
     end
 
@@ -184,7 +186,8 @@ RSpec.describe 'Dependency-Scanning.latest.gitlab-ci.yml' do
         end
 
         it 'includes no jobs' do
-          expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
         end
       end
 
@@ -220,9 +223,8 @@ RSpec.describe 'Dependency-Scanning.latest.gitlab-ci.yml' do
             end
 
             it 'creates a pipeline excluding jobs from specified analyzers' do
-              expect { build_names }.to raise_error(
-                Ci::CreatePipelineService::CreateError, %r{No stages / jobs for this pipeline.}
-              )
+              expect(build_names).to be_empty
+              expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
             end
           end
         end
