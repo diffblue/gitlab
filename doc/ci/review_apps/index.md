@@ -195,13 +195,10 @@ After you have the route mapping set up, it takes effect in the following locati
 
 ## Visual Reviews **(PREMIUM)**
 
-WARNING:
-This feature is currently unavailable on SaaS due to the ongoing security incident. The fix is expected to be released in 15.6 update.
-
 > - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/10761) in GitLab 12.0.
 > - [Moved](https://about.gitlab.com/blog/2021/01/26/new-gitlab-product-subscription-model/) to GitLab Premium in 13.9.
 > - It's [deployed behind a feature flag](../../user/feature_flags.md), `anonymous_visual_review_feedback`, disabled by default.
-> - It's enabled on GitLab.com.
+> - It's disable on GitLab.com.
 
 FLAG:
 On self-managed GitLab, by default this feature is not available. To make it available,
