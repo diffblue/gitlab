@@ -176,6 +176,7 @@ module API
         mount ::API::DeployKeys
         mount ::API::DeployTokens
         mount ::API::Deployments
+        mount ::API::Environments
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
         mount ::API::FreezePeriods
@@ -226,7 +227,6 @@ module API
       mount ::API::DebianProjectPackages
       mount ::API::DependencyProxy
       mount ::API::Discussions
-      mount ::API::Environments
       mount ::API::ErrorTracking::ClientKeys
       mount ::API::ErrorTracking::Collector
       mount ::API::ErrorTracking::ProjectSettings
