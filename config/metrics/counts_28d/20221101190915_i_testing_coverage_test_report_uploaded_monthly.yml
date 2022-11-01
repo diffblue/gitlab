@@ -1,0 +1,24 @@
+---
+key_path: redis_hll_counters.testing.i_testing_coverage_test_report_uploaded_monthly
+name: ""
+description:
+product_section:
+product_stage:
+product_group:
+product_category:
+value_type: number
+status: active
+milestone: "15.6"
+introduced_by_url:
+time_frame: 28d
+data_source:
+data_category: optional
+instrumentation_class: RedisHLLMetric
+performance_indicator_type:
+distribution:
+- ce
+- ee
+tier:
+- free
+- premium
+- ultimate
