@@ -1,16 +1,17 @@
 <script>
-import { GlSprintf } from '@gitlab/ui';
+import { GlLink, GlSprintf } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
+import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
 import SummaryText from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
 import SecurityTrainingPromoWidget from './security_training_promo_widget.vue';
-import i18n from './i18n';
+import { i18n, reportTypes, popovers } from './i18n';
 
 export default {
   name: 'WidgetSecurityReports',
@@ -21,6 +22,8 @@ export default {
     SummaryHighlights,
     SecurityTrainingPromoWidget,
     GlSprintf,
+    GlLink,
+    HelpPopover,
   },
   i18n,
   props: {
@@ -39,6 +42,39 @@ export default {
     };
   },
   computed: {
+    helpPopovers() {
+      return {
+        SAST: {
+          props: { title: popovers.SAST_TITLE },
+          text: popovers.SAST_TEXT,
+          helpPath: this.mr.sastHelp,
+        },
+        DAST: {
+          props: { title: popovers.DAST_TITLE },
+          text: popovers.DAST_TEXT,
+          helpPath: this.mr.dastHelp,
+        },
+        SECRET_DETECTION: {
+          props: { title: popovers.SECRET_DETECTION_TITLE },
+          text: popovers.SECRET_DETECTION_TEXT,
+          helpPath: this.mr.secretDetectionHelp,
+        },
+        DEPENDENCY_SCANNING: {
+          props: { title: popovers.DEPENDENCY_SCANNING_TITLE },
+          text: popovers.DEPENDENCY_SCANNING_TEXT,
+          helpPath: this.mr.dependencyScanningHelp,
+        },
+        API_FUZZING: {
+          props: { title: popovers.API_FUZZING_TITLE },
+          helpPath: this.mr.apiFuzzingHelp,
+        },
+        COVERAGE_FUZZING: {
+          props: { title: popovers.COVERAGE_FUZZING_TITLE },
+          helpPath: this.mr.coverageFuzzingHelp,
+        },
+      };
+    },
+
     isCollapsible() {
       if (!this.vulnerabilities.collapsed) {
         return false;
@@ -108,16 +144,23 @@ export default {
       // TODO: check if gl.mrWidgetData can be safely removed after we migrate to the
       // widget extension.
       const endpoints = [
-        [this.mr.sastComparisonPath, this.$options.i18n.sastScanner],
-        [this.mr.dastComparisonPath, this.$options.i18n.dastScanner],
-        [this.mr.secretDetectionComparisonPath, this.$options.i18n.secretDetectionScanner],
-        [this.mr.apiFuzzingComparisonPath, this.$options.i18n.apiFuzzing],
-        [this.mr.coverageFuzzingComparisonPath, this.$options.i18n.coverageFuzzing],
-        [this.mr.dependencyScanningComparisonPath, this.$options.i18n.dependencyScanner],
+        [this.mr.sastComparisonPath, 'SAST'],
+        [this.mr.dastComparisonPath, 'DAST'],
+        [this.mr.secretDetectionComparisonPath, 'SECRET_DETECTION'],
+        [this.mr.apiFuzzingComparisonPath, 'API_FUZZING'],
+        [this.mr.coverageFuzzingComparisonPath, 'COVERAGE_FUZZING'],
+        [this.mr.dependencyScanningComparisonPath, 'DEPENDENCY_SCANNING'],
       ].filter(([endpoint, reportType]) => Boolean(endpoint) && Boolean(reportType));
 
       return endpoints.map(([path, reportType]) => () =>
-        axios.get(path).then((r) => ({ ...r, data: { ...r.data, reportType } })),
+        axios.get(path).then((r) => ({
+          ...r,
+          data: {
+            ...r.data,
+            reportType,
+            reportTypeDescription: reportTypes[reportType],
+          },
+        })),
       );
     },
 
@@ -187,18 +230,31 @@ export default {
         :status-icon-name="statusIconNameReportType(report)"
       >
         <template #header>
-          <div :data-testid="`${report.reportType}-report-header`">
-            <gl-sprintf :message="$options.i18n.newVulnerabilities">
-              <template #scanner>{{ report.reportType }}</template>
-              <template #number
-                ><strong>{{ report.added.length }}</strong></template
-              >
-              <template #vulnStr>{{
-                n__('vulnerability', 'vulnerabilities', report.added.length)
-              }}</template>
-            </gl-sprintf>
+          <div>
+            <div :data-testid="`${report.reportType}-report-header`">
+              <gl-sprintf :message="$options.i18n.newVulnerabilities">
+                <template #scanner>{{ report.reportTypeDescription }}</template>
+                <template #number
+                  ><strong>{{ report.added.length }}</strong></template
+                >
+                <template #vulnStr>{{
+                  n__('vulnerability', 'vulnerabilities', report.added.length)
+                }}</template>
+              </gl-sprintf>
+            </div>
+            <summary-highlights :highlights="highlightsFromReport(report)" />
           </div>
-          <summary-highlights :highlights="highlightsFromReport(report)" />
+        </template>
+        <template #header-actions>
+          <help-popover :options="helpPopovers[report.reportType].props">
+            {{ helpPopovers[report.reportType].text }}
+            <gl-link
+              :href="helpPopovers[report.reportType].helpPath"
+              class="gl-font-sm"
+              :data-testid="`${report.reportType}-learn-more`"
+              >{{ $options.i18n.learnMore }}</gl-link
+            >
+          </help-popover>
         </template>
         <template #body>
           <div class="gl-mt-2">
