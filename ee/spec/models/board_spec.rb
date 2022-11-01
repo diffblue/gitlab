@@ -90,7 +90,7 @@ RSpec.describe Board do
 
     it 'returns nil when the feature is not available' do
       stub_licensed_features(scoped_issue_board: false)
-      iteration = create(:iteration, group: group)
+      iteration = create(:iteration, iterations_cadence: create(:iterations_cadence, group: group))
       board.iteration_id = iteration.id
 
       expect(board.iteration).to be_nil

@@ -6,7 +6,10 @@ RSpec.describe 'Issues > Bulk edit issues' do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:epic) { create(:epic, group: group) }
-  let_it_be(:iteration) { create(:iteration, group: group, title: "Iteration 1") }
+  let_it_be(:iteration) do
+    create(:iteration, iterations_cadence: create(:iterations_cadence, group: group), title: "Iteration 1")
+  end
+
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:project_without_group) { create(:project, :public) }
 

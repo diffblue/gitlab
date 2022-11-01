@@ -10,7 +10,7 @@ RSpec.describe 'Issue board filters', :js do
   let_it_be(:user) { create(:user) }
   let_it_be(:board) { create(:board, project: project) }
   let_it_be(:epic) { create(:epic, group: group) }
-  let_it_be(:iteration) { create(:iteration, group: group) }
+  let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
   let_it_be(:issue) { create(:issue, project: project, weight: 2, health_status: :on_track, title: "Some title") }
   let_it_be(:issue_2) { create(:issue, project: project, iteration: iteration, weight: 3, title: "Other title") }
   let_it_be(:epic_issue1) { create(:epic_issue, epic: epic, issue: issue, relative_position: 1) }

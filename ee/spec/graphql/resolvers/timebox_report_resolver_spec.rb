@@ -160,7 +160,7 @@ RSpec.describe Resolvers::TimeboxReportResolver do
   end
 
   context 'when timebox is an iteration' do
-    let_it_be(:timebox) { create(:iteration, group: group, start_date: start_date, due_date: due_date) }
+    let_it_be(:timebox) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group), start_date: start_date, due_date: due_date) }
 
     before_all do
       create(:resource_iteration_event, issue: issues[0], iteration: timebox, action: :add, created_at: start_date + 4.days)

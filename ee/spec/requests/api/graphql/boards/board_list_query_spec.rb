@@ -14,8 +14,8 @@ RSpec.describe 'Querying a Board list' do
   let_it_be(:list) { create(:list, board: board, label: label) }
   let_it_be(:iteration_cadence1) { create(:iterations_cadence, group: group) }
   let_it_be(:iteration_cadence2) { create(:iterations_cadence, group: group) }
-  let_it_be(:current_iteration1) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence1) }
-  let_it_be(:current_iteration2) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence2) }
+  let_it_be(:current_iteration1) { create(:iteration, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence1) }
+  let_it_be(:current_iteration2) { create(:iteration, start_date: Date.yesterday, due_date: 1.day.from_now, iterations_cadence: iteration_cadence2) }
   let_it_be(:issue1) { create(:issue, project: project, labels: [label], iteration: current_iteration1, health_status: :at_risk) }
   let_it_be(:issue2) { create(:issue, project: project, labels: [label], iteration: current_iteration2) }
 

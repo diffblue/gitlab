@@ -55,8 +55,9 @@ RSpec.shared_examples 'issue boards sidebar EE' do
 
     context 'iterations' do
       context 'when iterations feature available' do
-        let_it_be(:iteration) { create(:iteration, group: group, start_date: 1.day.from_now, due_date: 2.days.from_now, title: 'Iteration 1') }
-        let_it_be(:iteration2) { create(:iteration, group: group, start_date: 2.days.ago, due_date: 1.day.ago, title: 'Iteration 2', state: 'closed', skip_future_date_validation: true) }
+        let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence, start_date: 1.day.from_now, due_date: 2.days.from_now, title: 'Iteration 1') }
+        let_it_be(:iteration2) { create(:iteration, iterations_cadence: cadence, start_date: 2.days.ago, due_date: 1.day.ago, title: 'Iteration 2', state: 'closed', skip_future_date_validation: true) }
 
         before do
           iteration

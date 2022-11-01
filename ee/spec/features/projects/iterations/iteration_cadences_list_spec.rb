@@ -8,9 +8,9 @@ RSpec.describe 'User views project iteration cadences', :js do
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:cadence) { create(:iterations_cadence, group: group) }
   let_it_be(:other_cadence) { create(:iterations_cadence, group: group) }
-  let_it_be(:iteration_in_cadence) { create(:iteration, group: group, iterations_cadence: cadence) }
-  let_it_be(:closed_iteration_in_cadence) { create(:iteration, group: group, iterations_cadence: cadence, start_date: 2.weeks.ago, due_date: 1.week.ago) }
-  let_it_be(:iteration_in_other_cadence) { create(:iteration, group: group, iterations_cadence: other_cadence) }
+  let_it_be(:iteration_in_cadence) { create(:iteration, iterations_cadence: cadence) }
+  let_it_be(:closed_iteration_in_cadence) { create(:iteration, iterations_cadence: cadence, start_date: 2.weeks.ago, due_date: 1.week.ago) }
+  let_it_be(:iteration_in_other_cadence) { create(:iteration, iterations_cadence: other_cadence) }
 
   before do
     stub_licensed_features(iterations: true)

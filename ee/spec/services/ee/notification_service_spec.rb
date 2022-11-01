@@ -418,7 +418,7 @@ RSpec.describe EE::NotificationService, :mailer do
       let(:mailer_method) { :removed_iteration_issue_email }
 
       context do
-        let(:iteration) { create(:iteration, group: group, issues: [issue]) }
+        let(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group), issues: [issue]) }
         let!(:subscriber_to_new_iteration) { create(:user) { |u| issue.toggle_subscription(u, project) } }
 
         it_behaves_like 'altered iteration notification on issue' do

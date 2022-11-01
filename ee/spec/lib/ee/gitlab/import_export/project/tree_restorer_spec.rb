@@ -172,7 +172,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
       end
 
       it 'restores iteration events' do
-        iteration = create(:iteration, group: group, iid: 5, start_date: '2022-08-15', due_date: '2022-08-21', iterations_cadence: cadence)
+        iteration = create(:iteration, iid: 5, start_date: '2022-08-15', due_date: '2022-08-21', iterations_cadence: cadence)
 
         expect { restored_project_json }.to change { ResourceIterationEvent.count }.from(0).to(1)
 
@@ -186,7 +186,7 @@ RSpec.describe Gitlab::ImportExport::Project::TreeRestorer do
         let(:cadence) { create(:iterations_cadence, group: group, title: 'non matching cadence') }
 
         it 'does not restore iteration events' do
-          create(:iteration, group: group, iid: 5, start_date: '2022-08-15', due_date: '2022-08-21', iterations_cadence: cadence)
+          create(:iteration, iid: 5, start_date: '2022-08-15', due_date: '2022-08-21', iterations_cadence: cadence)
 
           expect { restored_project_json }.not_to change { ResourceIterationEvent.count }
         end

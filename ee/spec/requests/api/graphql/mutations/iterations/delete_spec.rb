@@ -11,7 +11,7 @@ RSpec.describe 'Deleting an iteration' do
     build(:iterations_cadence, group: group, automatic: false).tap { |cadence| cadence.save!(validate: false) }
   end
 
-  let_it_be(:manual_iteration, refind: true) { create(:iteration, group: group, iterations_cadence: cadence) }
+  let_it_be(:manual_iteration, refind: true) { create(:iteration, iterations_cadence: cadence) }
 
   let(:iteration) { manual_iteration }
 
@@ -68,7 +68,7 @@ RSpec.describe 'Deleting an iteration' do
 
       context 'when iteration belongs to an automatic cadence' do
         let(:automatic_cadence) { create(:iterations_cadence, group: group) }
-        let(:iteration) { create(:iteration, group: group, iterations_cadence: automatic_cadence) }
+        let(:iteration) { create(:iteration, iterations_cadence: automatic_cadence) }
 
         it_behaves_like 'a mutation that returns top-level errors', errors: [
           'Deleting iterations from automatic iteration cadences is not allowed.'

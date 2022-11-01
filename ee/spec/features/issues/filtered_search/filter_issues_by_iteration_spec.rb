@@ -11,9 +11,9 @@ RSpec.describe 'Filter issues by iteration', :js do
   let_it_be(:cadence_1) { create(:iterations_cadence, group: group) }
   let_it_be(:cadence_2) { create(:iterations_cadence, group: group) }
 
-  let_it_be(:iteration_1) { create(:iteration, group: group, iterations_cadence: cadence_1, start_date: Date.today) }
-  let_it_be(:iteration_2) { create(:iteration, group: group, iterations_cadence: cadence_2) }
-  let_it_be(:iteration_3) { create(:iteration, group: group, iterations_cadence: cadence_1) }
+  let_it_be(:iteration_1) { create(:iteration, iterations_cadence: cadence_1, start_date: Date.today) }
+  let_it_be(:iteration_2) { create(:iteration, iterations_cadence: cadence_2) }
+  let_it_be(:iteration_3) { create(:iteration, iterations_cadence: cadence_1) }
 
   let_it_be(:iteration_1_issue) { create(:issue, project: project, iteration: iteration_1) }
   let_it_be(:iteration_2_issue) { create(:issue, project: project, iteration: iteration_2) }
