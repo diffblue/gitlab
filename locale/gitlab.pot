@@ -34913,6 +34913,9 @@ msgstr ""
 msgid "Runners|An error has occurred fetching instructions"
 msgstr ""
 
+msgid "Runners|An error occurred while deleting. Some runners may not have been deleted."
+msgstr ""
+
 msgid "Runners|An upgrade is available for this runner"
 msgstr ""
 
