@@ -82,7 +82,7 @@ RSpec.describe BoardsHelper do
       end
 
       context 'when board is scoped to an iteration' do
-        let_it_be(:iteration) { create(:iteration, group: group) }
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
         before do
           project_board.update!(iteration: iteration)

@@ -103,7 +103,7 @@ RSpec.describe Mutations::Boards::Lists::Create do
       end
 
       describe 'iteration list' do
-        let(:iteration) { create(:iteration, group: group) }
+        let(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
         let(:list_create_params) { { iteration_id: iteration.to_global_id.to_s } }
 
         context 'when feature unavailable' do

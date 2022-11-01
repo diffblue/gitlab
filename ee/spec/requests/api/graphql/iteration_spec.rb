@@ -7,7 +7,8 @@ RSpec.describe 'Querying an Iteration' do
 
   let_it_be(:group_member) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
-  let_it_be(:iteration) { create(:iteration, group: group) }
+  let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+  let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence ) }
 
   let(:current_user) { group_member }
   let(:fields) { 'title' }
@@ -59,8 +60,8 @@ RSpec.describe 'Querying an Iteration' do
         create(:resource_iteration_event, issue: subgroup_issue1, iteration: iteration, action: :add, created_at: 2.days.ago)
 
         # These are created to check the report only counts the iteration events for the "iteration".
-        other_iteration = create(:iteration, group: group)
-        subgroup_iteration = create(:iteration, group: group)
+        other_iteration = create(:iteration, iterations_cadence: cadence)
+        subgroup_iteration = create(:iteration, iterations_cadence: cadence)
         issue4 = create(:issue, project: project2)
         subgroup_issue2 = create(:issue, project: subgroup_project)
         create(:resource_iteration_event, issue: issue4, iteration: other_iteration, action: :add, created_at: 2.days.ago)

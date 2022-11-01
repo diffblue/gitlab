@@ -6,7 +6,7 @@ RSpec.describe API::ResourceIterationEvents do
   let!(:user) { create(:user) }
   let!(:group) { create(:group) }
   let!(:project) { create(:project, :public, namespace: group) }
-  let!(:iteration) { create(:iteration, group: group) }
+  let!(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
   before do
     project.add_developer(user)

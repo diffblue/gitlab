@@ -445,8 +445,9 @@ RSpec.describe TimeboxReportService, :aggregate_failures do
   end
 
   context 'iteration charts' do
-    let_it_be(:timebox, reload: true) { create(:iteration, group: group, start_date: timebox_start_date, due_date: timebox_end_date) }
-    let_it_be(:another_timebox) { create(:iteration, group: group, start_date: timebox_end_date + 1.day, due_date: timebox_end_date + 15.days) }
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:timebox, reload: true) { create(:iteration, iterations_cadence: cadence, start_date: timebox_start_date, due_date: timebox_end_date) }
+    let_it_be(:another_timebox) { create(:iteration, iterations_cadence: cadence, start_date: timebox_end_date + 1.day, due_date: timebox_end_date + 15.days) }
 
     let(:timebox_without_dates) { build(:iteration, group: group, start_date: nil, due_date: nil) }
 

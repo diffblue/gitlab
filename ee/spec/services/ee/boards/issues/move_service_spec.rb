@@ -263,6 +263,12 @@ RSpec.describe Boards::Issues::MoveService, services: true do
   end
 
   describe '#execute' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:iteration1) { create(:iteration, iterations_cadence: cadence) }
+    let_it_be(:iteration2) { create(:iteration, iterations_cadence: cadence) }
+
     let(:user) { create(:user) }
 
     let!(:board1) { create(:board, **parent_attr) }
@@ -280,19 +286,15 @@ RSpec.describe Boards::Issues::MoveService, services: true do
     let(:backlog) { create(:backlog_list, board: board1) }
 
     context 'when parent is a project' do
-      let(:group) { create(:group) }
-      let(:project) { create(:project, namespace: group) }
+      let_it_be(:milestone1) { create(:milestone, project: project) }
+      let_it_be(:milestone2) { create(:milestone, project: project) }
+      let_it_be(:bug) { create(:label, project: project, name: 'Bug') }
+      let_it_be(:development) { create(:label, project: project, name: 'Development') }
+      let_it_be(:testing) { create(:label, project: project, name: 'Testing') }
+      let_it_be(:regression) { create(:label, project: project, name: 'Regression') }
+
       let(:parent_attr) { { project: project } }
       let(:parent) { project }
-      let(:milestone1) { create(:milestone, project: project) }
-      let(:milestone2) { create(:milestone, project: project) }
-      let(:iteration1) { create(:iteration, group: group) }
-      let(:iteration2) { create(:iteration, group: group) }
-
-      let(:bug) { create(:label, project: project, name: 'Bug') }
-      let(:development) { create(:label, project: project, name: 'Development') }
-      let(:testing) { create(:label, project: project, name: 'Testing') }
-      let(:regression) { create(:label, project: project, name: 'Regression') }
 
       before do
         stub_licensed_features(board_assignee_lists: true, board_milestone_lists: true, board_iteration_lists: true)
@@ -306,19 +308,15 @@ RSpec.describe Boards::Issues::MoveService, services: true do
     end
 
     context 'when parent is a group' do
-      let(:group) { create(:group) }
-      let(:project) { create(:project, namespace: group) }
+      let_it_be(:milestone1) { create(:milestone, group: group) }
+      let_it_be(:milestone2) { create(:milestone, group: group) }
+      let_it_be(:bug) { create(:group_label, group: group, name: 'Bug') }
+      let_it_be(:development) { create(:group_label, group: group, name: 'Development') }
+      let_it_be(:testing) { create(:group_label, group: group, name: 'Testing') }
+      let_it_be(:regression) { create(:group_label, group: group, name: 'Regression') }
+
       let(:parent_attr) { { group: group } }
       let(:parent) { group }
-      let(:milestone1) { create(:milestone, group: group) }
-      let(:milestone2) { create(:milestone, group: group) }
-      let(:iteration1) { create(:iteration, group: group) }
-      let(:iteration2) { create(:iteration, group: group) }
-
-      let(:bug) { create(:group_label, group: group, name: 'Bug') }
-      let(:development) { create(:group_label, group: group, name: 'Development') }
-      let(:testing) { create(:group_label, group: group, name: 'Testing') }
-      let(:regression) { create(:group_label, group: group, name: 'Regression') }
 
       before do
         stub_licensed_features(board_assignee_lists: true, board_milestone_lists: true)

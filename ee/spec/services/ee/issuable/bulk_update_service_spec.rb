@@ -141,7 +141,7 @@ RSpec.describe Issuable::BulkUpdateService do
 
       context 'at group level' do
         let_it_be(:group) { create(:group) }
-        let_it_be(:iteration) { create(:iteration, group: group) }
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
         let_it_be(:project)   { create(:project, :repository, group: group) }
 
         let(:parent) { group }
@@ -159,7 +159,7 @@ RSpec.describe Issuable::BulkUpdateService do
         let_it_be(:group) { create(:group) }
         let_it_be(:project) { create(:project, group: group) }
         let_it_be(:issuables) { [create(:issue, project: project)] }
-        let_it_be(:iteration) { create(:iteration, group: group) }
+        let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
         let(:parent) { project }
 

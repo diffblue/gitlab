@@ -451,7 +451,7 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     context 'iteration command' do
-      let_it_be(:iteration) { create(:iteration, group: group) }
+      let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
       let(:content) { "/iteration #{iteration.to_reference(project)}" }
 
@@ -538,7 +538,7 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     context 'remove_iteration command' do
-      let_it_be(:iteration) { create(:iteration, group: group) }
+      let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
       let(:content) { '/remove_iteration' }
 

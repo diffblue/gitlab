@@ -14,8 +14,9 @@ RSpec.describe Resolvers::IssuesResolver do
       let_it_be(:epic1) { create :epic, group: group }
       let_it_be(:epic2) { create :epic, group: group, parent: epic1 }
 
-      let_it_be(:iteration1) { create(:iteration, group: group, start_date: 2.weeks.ago, due_date: 1.week.ago) }
-      let_it_be(:current_iteration) { create(:iteration, group: group, start_date: Date.yesterday, due_date: 1.day.from_now) }
+      let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+      let_it_be(:iteration1) { create(:iteration, iterations_cadence: cadence, start_date: 2.weeks.ago, due_date: 1.week.ago) }
+      let_it_be(:current_iteration) { create(:iteration, iterations_cadence: cadence, start_date: Date.yesterday, due_date: 1.day.from_now) }
 
       let_it_be(:issue1) { create :issue, project: project, epic: epic1, iteration: iteration1, blocking_issues_count: 2, health_status: 'at_risk' }
       let_it_be(:issue2) { create :issue, project: project, epic: epic2, weight: 1, blocking_issues_count: 2 }
@@ -77,8 +78,8 @@ RSpec.describe Resolvers::IssuesResolver do
       end
 
       describe 'filtering by iteration' do
-        let_it_be(:iteration1) { create(:iteration, group: group, start_date: 4.weeks.ago, due_date: 3.weeks.ago) }
-        let_it_be(:iteration2) { create(:iteration, group: group, start_date: 6.weeks.ago, due_date: 5.weeks.ago) }
+        let_it_be(:iteration1) { create(:iteration, iterations_cadence: cadence, start_date: 4.weeks.ago, due_date: 3.weeks.ago) }
+        let_it_be(:iteration2) { create(:iteration, iterations_cadence: cadence, start_date: 6.weeks.ago, due_date: 5.weeks.ago) }
         let_it_be(:issue_with_iteration1) { create(:issue, project: project, iteration: iteration1) }
         let_it_be(:issue_with_iteration2) { create(:issue, project: project, iteration: iteration2) }
         let_it_be(:issue_without_iteration) { create(:issue, project: project) }

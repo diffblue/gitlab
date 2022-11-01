@@ -7,8 +7,11 @@ RSpec.describe Groups::IterationsController do
 
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:other_group) { create(:group, :private) }
-  let_it_be(:iteration) { create(:iteration, group: group) }
-  let_it_be(:other_iteration) { create(:iteration, group: other_group) }
+  let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
+  let_it_be(:other_iteration) do
+    create(:iteration, iterations_cadence: create(:iterations_cadence, group: other_group))
+  end
+
   let_it_be(:user) { create(:user) }
 
   before do
