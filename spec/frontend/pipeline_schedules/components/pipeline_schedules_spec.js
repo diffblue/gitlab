@@ -21,6 +21,10 @@ import {
 
 Vue.use(VueApollo);
 
+const $toast = {
+  show: jest.fn(),
+};
+
 describe('Pipeline schedules app', () => {
   let wrapper;
 
@@ -46,6 +50,9 @@ describe('Pipeline schedules app', () => {
     wrapper = mountExtended(PipelineSchedules, {
       provide: {
         fullPath: 'gitlab-org/gitlab',
+      },
+      mocks: {
+        $toast,
       },
       apolloProvider: createMockApolloProvider(requestHandlers),
     });
@@ -144,38 +151,49 @@ describe('Pipeline schedules app', () => {
       id: scheduleId,
     });
     expect(wrapper.vm.$apollo.queries.schedules.refetch).toHaveBeenCalled();
+    expect($toast.show).toHaveBeenCalledWith('Pipeline schedule successfully deleted.');
   });
 
-  it('delete modal should be visible after event', async () => {
-    createComponent();
+  describe('modals', () => {
+    beforeEach(async () => {
+      createComponent();
 
-    await waitForPromises();
+      await waitForPromises();
+    });
 
-    expect(findDeleteModal().props('visible')).toBe(false);
+    it('delete modal visibility', async () => {
+      expect(findDeleteModal().props('visible')).toBe(false);
 
-    findTable().vm.$emit('showDeleteModal', mockPipelineScheduleNodes[0].id);
+      findTable().vm.$emit('showDeleteModal', mockPipelineScheduleNodes[0].id);
 
-    await nextTick();
+      await nextTick();
 
-    expect(findDeleteModal().props('visible')).toBe(true);
-  });
+      expect(findDeleteModal().props('visible')).toBe(true);
+      expect(findTakeOwnershipModal().props('visible')).toBe(false);
 
-  it('delete modal should be hidden', async () => {
-    createComponent();
+      findDeleteModal().vm.$emit('hideModal');
 
-    await waitForPromises();
+      await nextTick();
 
-    findTable().vm.$emit('showDeleteModal', mockPipelineScheduleNodes[0].id);
+      expect(findDeleteModal().props('visible')).toBe(false);
+    });
 
-    await nextTick();
+    it('take ownership modal visibility', async () => {
+      expect(findTakeOwnershipModal().props('visible')).toBe(false);
 
-    expect(findDeleteModal().props('visible')).toBe(true);
+      findTable().vm.$emit('showTakeOwnershipModal', mockPipelineScheduleNodes[0].id);
 
-    findDeleteModal().vm.$emit('hideModal');
+      await nextTick();
 
-    await nextTick();
+      expect(findTakeOwnershipModal().props('visible')).toBe(true);
+      expect(findDeleteModal().props('visible')).toBe(false);
 
-    expect(findDeleteModal().props('visible')).toBe(false);
+      findTakeOwnershipModal().vm.$emit('hideModal');
+
+      await nextTick();
+
+      expect(findTakeOwnershipModal().props('visible')).toBe(false);
+    });
   });
 
   it('shows take ownership mutation error alert', async () => {
@@ -219,6 +237,7 @@ describe('Pipeline schedules app', () => {
       id: scheduleId,
     });
     expect(wrapper.vm.$apollo.queries.schedules.refetch).toHaveBeenCalled();
+    expect($toast.show).toHaveBeenCalledWith('Successfully taken ownership from Admin.');
   });
 
   describe('tabs', () => {
