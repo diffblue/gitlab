@@ -30,9 +30,7 @@ module EE
         def project_setting_attributes
           attributes = %i[prevent_merge_without_jira_issue suggested_reviewers_enabled]
 
-          if project&.licensed_feature_available?(:external_status_checks)
-            attributes << :only_allow_merge_if_all_status_checks_passed
-          end
+          attributes << :only_allow_merge_if_all_status_checks_passed if allow_external_status_checks?
 
           super + attributes
         end
@@ -52,6 +50,7 @@ module EE
 
           attrs << %i[merge_pipelines_enabled] if allow_merge_pipelines_params?
           attrs << %i[merge_trains_enabled] if allow_merge_trains_params?
+          attrs << %i[only_allow_merge_if_all_status_checks_passed] if allow_external_status_checks?
 
           attrs += merge_request_rules_params
 
@@ -89,6 +88,10 @@ module EE
 
         def allow_merge_trains_params?
           project&.feature_available?(:merge_trains)
+        end
+
+        def allow_external_status_checks?
+          project&.licensed_feature_available?(:external_status_checks)
         end
       end
     end
