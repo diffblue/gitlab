@@ -35,7 +35,7 @@ RSpec.describe 'API-Fuzzing.latest.gitlab-ci.yml' do
     let(:pipeline_branch) { default_branch }
     let(:user) { project.first_owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_branch) }
-    let(:pipeline) { service.execute!(:push).payload }
+    let(:pipeline) { service.execute(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
 
     context 'when no stages' do
@@ -130,7 +130,8 @@ RSpec.describe 'API-Fuzzing.latest.gitlab-ci.yml' do
           end
 
           it 'includes no jobs' do
-            expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+            expect(build_names).to be_empty
+            expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
           end
         end
 
