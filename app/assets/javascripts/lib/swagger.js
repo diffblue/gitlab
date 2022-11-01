@@ -1,12 +1,16 @@
 import { SwaggerUIBundle } from 'swagger-ui-dist';
 import { safeLoad } from 'js-yaml';
+import { isObject } from '~/lib/utils/type_utility';
 
-const renderSwaggerUI = (yamlSpec) => {
+const renderSwaggerUI = (value) => {
   /* SwaggerUIBundle accepts openapi definition
    * in only JSON format, so we convert the YAML
-   * config to JSON. It also keeps JSON input intact.
+   * config to JSON if it's not JSON value
    */
-  const spec = safeLoad(yamlSpec, { json: true });
+  let spec = value;
+  if (!isObject(spec)) {
+    spec = safeLoad(spec, { json: true });
+  }
 
   Promise.all([import(/* webpackChunkName: 'openapi' */ 'swagger-ui-dist/swagger-ui.css')])
     .then(() => {
