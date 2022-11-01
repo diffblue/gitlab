@@ -383,7 +383,7 @@ RSpec.describe Gitlab::SidekiqMigrateJobs, :clean_gitlab_redis_queues do
       it_behaves_like 'migrating queues'
     end
 
-    context 'when multiple workers in the same queue' do
+    context 'when multiple workers are in the same queue' do
       before do
         ExportCsvWorker.sidekiq_options(queue: 'email_receiver') # follows EmailReceiverWorker's queue
         ExportCsvWorker.perform_async('fizz')
@@ -396,7 +396,7 @@ RSpec.describe Gitlab::SidekiqMigrateJobs, :clean_gitlab_redis_queues do
       context 'when the queue exists in mappings' do
         let(:mappings) do
           { 'EmailReceiverWorker' => 'email_receiver', 'AuthorizedProjectUpdate::ProjectRecalculateWorker' => 'default',
-            'ExportFCsvWorker' => 'default' }
+            'ExportCsvWorker' => 'default' }
         end
 
         let(:queues_included_pre_migrate) do
