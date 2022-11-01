@@ -1,13 +1,12 @@
 <script>
 import { GlModal } from '@gitlab/ui';
-import { __, s__, sprintf } from '~/locale';
 
-const I18N_TITLE = s__('Artifacts|Delete %{name}?');
-const I18N_BODY = s__(
-  'Artifacts|This artifact will be permanently deleted. Any reports generated from this artifact will be empty.',
-);
-const I18N_PRIMARY = s__('Artifacts|Delete artifact');
-const I18N_CANCEL = __('Cancel');
+import {
+  I18N_MODAL_TITLE,
+  I18N_MODAL_BODY,
+  I18N_MODAL_PRIMARY,
+  I18N_MODAL_CANCEL,
+} from '../constants';
 
 export default {
   components: {
@@ -24,15 +23,18 @@ export default {
     },
   },
   computed: {
-    title() {
-      return sprintf(I18N_TITLE, { name: this.artifactName });
-    },
     actionPrimary() {
-      return { text: I18N_PRIMARY, attributes: { variant: 'danger', loading: this.deleting } };
+      return {
+        text: I18N_MODAL_PRIMARY,
+        attributes: { variant: 'danger', loading: this.deleting },
+      };
     },
   },
-  actionCancel: { text: I18N_CANCEL },
-  I18N_BODY,
+  actionCancel: { text: I18N_MODAL_CANCEL },
+  i18n: {
+    title: I18N_MODAL_TITLE,
+    body: I18N_MODAL_BODY,
+  },
 };
 </script>
 
@@ -41,12 +43,12 @@ export default {
     ref="modal"
     modal-id="artifact-delete-modal"
     size="sm"
-    :title="title"
+    :title="$options.i18n.title(artifactName)"
     :action-primary="actionPrimary"
     :action-cancel="$options.actionCancel"
     v-bind="$attrs"
     v-on="$listeners"
   >
-    {{ $options.I18N_BODY }}
+    {{ $options.i18n.body }}
   </gl-modal>
 </template>
