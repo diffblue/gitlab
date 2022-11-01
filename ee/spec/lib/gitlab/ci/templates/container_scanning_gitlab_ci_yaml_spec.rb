@@ -11,7 +11,7 @@ RSpec.describe 'Container-Scanning.gitlab-ci.yml' do
     let(:default_branch) { 'master' }
     let(:user) { project.first_owner }
     let(:service) { Ci::CreatePipelineService.new(project, user, ref: 'master') }
-    let(:pipeline) { service.execute!(:push).payload }
+    let(:pipeline) { service.execute(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
 
     before do
@@ -45,7 +45,8 @@ RSpec.describe 'Container-Scanning.gitlab-ci.yml' do
         end
 
         it 'includes no jobs' do
-          expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError)
+          expect(build_names).to be_empty
+          expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
         end
       end
     end
