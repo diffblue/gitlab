@@ -47,12 +47,32 @@ module Gitlab
             end
 
             def validate!
-              context.logger.instrument(:config_file_validation) do
-                validate_execution_time!
-                validate_location!
-                validate_content! if errors.none?
-                validate_hash! if errors.none?
+              validate_execution_time!
+              validate_location!
+
+              return if errors.any?
+
+              context.logger.instrument(:config_file_fetch_content) do
+                content # calling the method does the first fetch and memoizes the result
               end
+
+              return if errors.any?
+
+              context.logger.instrument(:config_file_validate_content) do
+                validate_content!
+              end
+
+              return if errors.any?
+
+              context.logger.instrument(:config_file_fetch_content_hash) do
+                content_hash # calling the method does the first fetch and memoizes the result
+              end
+
+              context.logger.instrument(:config_file_expand_content_includes) do
+                expanded_content_hash # calling the method does the first fetch and memoizes the result
+              end
+
+              validate_hash!
             end
 
             def metadata
