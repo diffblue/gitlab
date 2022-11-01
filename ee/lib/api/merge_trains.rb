@@ -72,6 +72,25 @@ module API
             present paginate(merge_train), with: EE::API::Entities::MergeTrain
           end
         end
+
+        resource 'merge_requests/:merge_request_iid', requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
+          desc 'Get the status of a merge request on a merge train' do
+            detail 'This feature was introduced in Gitlab 15.6'
+            success code: 200, model: EE::API::Entities::MergeTrain
+            failure [
+              { code: 401, message: 'Unauthorized' },
+              { code: 403, message: 'Forbidden' },
+              { code: 404, message: 'Not found' }
+            ]
+          end
+          get do
+            merge_train = find_project_merge_request(params[:merge_request_iid]).merge_train
+
+            not_found!('Merge Train') unless merge_train
+
+            present merge_train, with: EE::API::Entities::MergeTrain
+          end
+        end
       end
     end
 
