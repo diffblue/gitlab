@@ -45,6 +45,26 @@ sole discretion of GitLab Inc.
 
 <div class="announcement-milestone">
 
+## Announced in 15.6
+
+<div class="deprecation removal-160 breaking-change">
+
+### `POST /api/v4/runners`
+
+End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-04-22)<br />
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-04-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The `POST` method operation on the `/api/v4/runners` endpoint is deprecated. With this endpoint and method, a user can [register](https://docs.gitlab.com/ee/api/runners.html#register-a-new-runner) a Runner with a GitLab instance at the instance, group, or project level via the API. Suppose you have developed and relied on automation for registering runners using this endpoint. In that case, you will need to adopt the new Runner registration method, as the current automation that you have developed will stop functioning with the endpoint removal in GitLab 16.0.
+
+</div>
+</div>
+
+<div class="announcement-milestone">
+
 ## Announced in 15.5
 
 <div class="deprecation removal-157 breaking-change">
