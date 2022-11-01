@@ -27,7 +27,7 @@ namespace :ci do
     end
 
     tests = qa_changes.qa_tests
-    run_all_label_present = mr_labels.include("pipeline:run-all-e2e")
+    run_all_label_present = mr_labels.include?("pipeline:run-all-e2e")
     if run_all_label_present
       logger.info(" merge request has pipeline:run-all-e2e label, full test suite will be executed")
       append_to_file(env_file, "QA_RUN_ALL_TESTS=true\n")
