@@ -57,7 +57,8 @@ module Gitlab
 
         def self.user_authorized?(user, group, for_project)
           return false if for_project
-          return true if !group.has_parent? && group.owned_by?(user)
+
+          !group.has_parent? && group.owned_by?(user)
         end
       end
     end
