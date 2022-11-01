@@ -42302,9 +42302,6 @@ msgstr ""
 msgid "To add a custom suffix, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
 msgstr ""
 
-msgid "To add display name, set up a Service Desk email address. %{linkStart}Learn more.%{linkEnd}"
-msgstr ""
-
 msgid "To add the entry manually, provide the following details to the application on your phone."
 msgstr ""
 
