@@ -18236,9 +18236,6 @@ msgstr ""
 msgid "GitLab will create a branch in your fork and start a merge request."
 msgstr ""
 
-msgid "GitLab.com"
-msgstr ""
-
 msgid "GitLab.com (SaaS)"
 msgstr ""
 
@@ -24747,6 +24744,9 @@ msgstr ""
 msgid "Manifest"
 msgstr ""
 
+msgid "Manifest file"
+msgstr ""
+
 msgid "Manifest file import"
 msgstr ""
 
@@ -29453,7 +29453,7 @@ msgstr ""
 msgid "Phabricator Server URL"
 msgstr ""
 
-msgid "Phabricator Tasks"
+msgid "Phabricator tasks"
 msgstr ""
 
 msgid "Phone"
