@@ -20,7 +20,8 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas do
       {
         project_id: project.project_id,
         project_name: project.name,
-        project_namespace: project.namespace.full_path
+        project_namespace: project.namespace.full_path,
+        access_token: a_kind_of(String)
       }
     end
 
@@ -94,16 +95,16 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas do
                 expires_at: 95.days.from_now
               }
 
-              allow_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
-                allow(client).to receive(:register_project)
-                                   .with(hash_including(registration_input))
-                                   .and_return(registration_result)
-              end
-
               expect_next_instance_of(
                 ResourceAccessTokens::CreateService, user, project, token_params
               ) do |token_service|
                 expect(token_service).to receive(:execute).and_call_original
+              end
+
+              expect_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
+                expect(client).to receive(:register_project)
+                                    .with(registration_input)
+                                    .and_return(registration_result)
               end
 
               result
@@ -111,7 +112,9 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas do
           end
 
           context 'when token creation succeeds', :aggregate_failures do
-            let(:token_response) { ServiceResponse.success(payload: { access_token: '123abc' }) }
+            let(:token_response) do
+              ServiceResponse.success(payload: { access_token: build(:personal_access_token) })
+            end
 
             context 'when suggested reviewers client succeeds' do
               it 'returns a success response', :aggregate_failures do
@@ -131,7 +134,7 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas do
               it 'returns an error response', :aggregate_failures do
                 allow_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
                   allow(client).to receive(:register_project)
-                                     .with(hash_including(registration_input))
+                                     .with(registration_input)
                                      .and_raise(Gitlab::AppliedMl::Errors::ResourceNotAvailable)
                 end
 
@@ -146,7 +149,7 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectService, :saas do
               it 'returns an error response', :aggregate_failures do
                 allow_next_instance_of(Gitlab::AppliedMl::SuggestedReviewers::Client) do |client|
                   allow(client).to receive(:register_project)
-                                     .with(hash_including(registration_input))
+                                     .with(registration_input)
                                      .and_raise(Gitlab::AppliedMl::Errors::ProjectAlreadyExists)
                 end
 
