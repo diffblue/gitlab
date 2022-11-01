@@ -188,6 +188,7 @@ module API
         mount ::API::Keys
         mount ::API::Metadata
         mount ::API::MergeRequestDiffs
+        mount ::API::ProjectHooks
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::Releases
         mount ::API::Release::Links
@@ -291,7 +292,6 @@ module API
       mount ::API::ProjectDebianDistributions
       mount ::API::ProjectEvents
       mount ::API::ProjectExport
-      mount ::API::ProjectHooks
       mount ::API::ProjectImport
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
