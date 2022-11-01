@@ -82,7 +82,7 @@ module SaasRegistrationHelpers
     # we set email opted in at the controller layer if setup for company is true
     expect(user).to be_email_opted_in # minor item that isn't important to see in the example itself
 
-    expect(page).to have_content 'This user doesn\'t have any personal projects'
+    expect(page).to have_content 'There are no projects available to be displayed here.'
   end
 
   def expect_to_be_on_projects_dashboard_with_zero_authorized_projects
