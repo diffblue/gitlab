@@ -4,7 +4,7 @@ import { sprintf } from '~/locale';
 import { TYPE_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
-import getCiMinutesUsageProfile from 'ee/ci_minutes_usage/graphql/queries/ci_minutes.query.graphql';
+import getCiMinutesUsageProfile from 'ee/ci/ci_minutes_usage/graphql/queries/ci_minutes.query.graphql';
 import getCiMinutesUsageNamespace from '../../ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import getNamespaceProjectsInfo from '../queries/namespace_projects_info.query.graphql';
 import { getProjectMinutesUsage } from '../utils';
