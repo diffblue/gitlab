@@ -26,8 +26,10 @@ namespace :ci do
       next
     end
 
-    tests = qa_changes.qa_tests
     run_all_label_present = mr_labels.include?("pipeline:run-all-e2e")
+    # on run-all label of framework changes do not infer specific tests
+    tests = run_all_label_present || qa_changes.framework_changes? ? nil : qa_changes.qa_tests
+
     if run_all_label_present
       logger.info(" merge request has pipeline:run-all-e2e label, full test suite will be executed")
       append_to_file(env_file, "QA_RUN_ALL_TESTS=true\n")
@@ -42,8 +44,10 @@ namespace :ci do
 
     # always check all test suites in case a suite is defined but doesn't have any runnable specs
     suites = QA::Tools::Ci::NonEmptySuites.new(tests).fetch
-    append_to_file(env_file, "QA_SUITES='#{suites}'\n")
-    append_to_file(env_file, "QA_TESTS='#{tests}'\n") unless run_all_label_present || qa_changes.framework_changes?
+    append_to_file(env_file, <<~TXT)
+      QA_SUITES='#{suites}'
+      QA_TESTS='#{tests}'
+    TXT
 
     # check if mr contains feature flag changes
     feature_flags = QA::Tools::Ci::FfChanges.new(diff).fetch
