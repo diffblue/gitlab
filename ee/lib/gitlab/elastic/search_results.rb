@@ -9,6 +9,7 @@ module Gitlab
       ELASTIC_COUNT_LIMIT = 10000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
 
+      delegate :admin?, to: :current_user
       attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters
 
       # Limit search results by passed projects
@@ -45,6 +46,8 @@ module Gitlab
           wiki_blobs(page: page, per_page: per_page)
         when 'commits'
           commits(page: page, per_page: per_page, preload_method: preload_method)
+        when 'users'
+          users(page: page, per_page: per_page, preload_method: preload_method)
         else
           Kaminari.paginate_array([])
         end
@@ -87,6 +90,8 @@ module Gitlab
           elastic_search_limited_counter_with_delimiter(merge_requests_count)
         when 'milestones'
           elastic_search_limited_counter_with_delimiter(milestones_count)
+        when 'users'
+          elastic_search_limited_counter_with_delimiter(users_count)
         end
       end
 
@@ -103,6 +108,14 @@ module Gitlab
                            notes.total_count
                          else
                            notes(count_only: true).total_count
+                         end
+      end
+
+      def users_count
+        @users_count ||= if strong_memoized?(:users)
+                           users.total_count
+                         else
+                           users(count_only: true).total_count
                          end
       end
 
@@ -265,6 +278,8 @@ module Gitlab
           # Otherwise it will ignore project_ids and return milestones
           # from projects with milestones disabled.
           base_options.merge(features: [:issues, :merge_requests])
+        when :users
+          base_options.merge(admin: admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
         else
           base_options
         end
@@ -300,6 +315,15 @@ module Gitlab
 
       def notes(count_only: false)
         scope_results :notes, Note, count_only: count_only
+      end
+
+      def users(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
+        return Kaminari.paginate_array([]) unless allowed_to_read_users?
+
+        strong_memoize(memoize_key(:users, count_only: count_only)) do
+          users = scope_results(:users, User, count_only: count_only)
+          eager_load(users, page, per_page, preload_method, [:status])
+        end
       end
 
       def blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
@@ -373,6 +397,10 @@ module Gitlab
         strong_memoize(:issue_aggregations) do
           Issue.__elasticsearch__.issue_aggregations(query, base_options)
         end
+      end
+
+      def allowed_to_read_users?
+        Ability.allowed?(current_user, :read_users_list)
       end
     end
   end

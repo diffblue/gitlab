@@ -6,6 +6,8 @@ module Gitlab
     # superclass inside a module, because autoloading can occur in a
     # different order between execution environments.
     class ProjectSearchResults < Gitlab::Elastic::SearchResults
+      extend Gitlab::Utils::Override
+
       attr_reader :project, :repository_ref, :filters
 
       def initialize(current_user, query, project:, repository_ref: nil, order_by: nil, sort: nil, filters: {})
@@ -73,6 +75,16 @@ module Gitlab
 
         strong_memoize(:blob_aggregations) do
           project.repository.__elasticsearch__.blob_aggregations(query, base_options)
+        end
+      end
+
+      override :scope_options
+      def scope_options(scope)
+        case scope
+        when :users
+          super.merge(projects: [project])
+        else
+          super
         end
       end
     end
