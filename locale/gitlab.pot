@@ -47667,10 +47667,25 @@ msgstr ""
 msgid "ciReport|Dependency scanning"
 msgstr ""
 
+msgid "ciReport|Detects known vulnerabilities in your source code's dependencies."
+msgstr ""
+
+msgid "ciReport|Detects known vulnerabilities in your source code."
+msgstr ""
+
+msgid "ciReport|Detects known vulnerabilities in your web application."
+msgstr ""
+
+msgid "ciReport|Detects secrets and credentials vulnerabilities in your source code."
+msgstr ""
+
 msgid "ciReport|Download patch to resolve"
 msgstr ""
 
 msgid "ciReport|Download the patch to apply it manually"
+msgstr ""
+
+msgid "ciReport|Dynamic Application Security Testing (DAST)"
 msgstr ""
 
 msgid "ciReport|Dynamic Application Security Testing (DAST) detects known vulnerabilities in your web application."
@@ -47790,6 +47805,9 @@ msgid "ciReport|Showing %{fetchedItems} of %{totalItems} items"
 msgstr ""
 
 msgid "ciReport|Solution"
+msgstr ""
+
+msgid "ciReport|Static Application Security Testing (SAST)"
 msgstr ""
 
 msgid "ciReport|Static Application Security Testing (SAST) detects known vulnerabilities in your source code."
