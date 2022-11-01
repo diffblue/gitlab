@@ -64,38 +64,6 @@ RSpec.describe Sidebars::Groups::Menus::AnalyticsMenu do
       end
     end
 
-    describe 'Analytics dashboards' do
-      let(:item_id) { :analytics_dashboards }
-
-      before do
-        stub_licensed_features(group_level_analytics_dashboard: true)
-      end
-
-      specify { is_expected.not_to be_nil }
-
-      context 'when the licensed feature is not available' do
-        before do
-          stub_licensed_features(group_level_analytics_dashboard: false)
-        end
-
-        specify { is_expected.to be_nil }
-      end
-
-      context 'when the feature flag is disabled' do
-        before do
-          stub_feature_flags(group_analytics_dashboards_page: false)
-        end
-
-        specify { is_expected.to be_nil }
-      end
-
-      describe 'when the user does not have access' do
-        let(:user) { create(:user) }
-
-        specify { is_expected.to be_nil }
-      end
-    end
-
     describe 'Devops adoptions' do
       let(:item_id) { :devops_adoption }
 
