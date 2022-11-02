@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlIcon } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import Zuora from 'ee/billings/components/zuora_simple.vue';
-import { I18N_CC_VERIFICATION } from '../constants';
 
 export default {
   components: {
@@ -28,7 +28,12 @@ export default {
       this.$refs.zuora.submit();
     },
   },
-  i18n: I18N_CC_VERIFICATION,
+  i18n: {
+    formInfo: s__(
+      'IdentityVerification|GitLab will not charge or store your payment information, it will only be used for verification.',
+    ),
+    formSubmit: s__('IdentityVerification|Verify payment method'),
+  },
 };
 </script>
 <template>
@@ -43,7 +48,7 @@ export default {
     />
     <div class="gl-display-flex gl-mt-4 gl-mx-4 gl-text-secondary">
       <gl-icon class="gl-flex-shrink-0 gl-mt-2" name="information-o" :size="14" />
-      <span class="gl-ml-2">{{ $options.i18n.form_info }}</span>
+      <span class="gl-ml-2">{{ $options.i18n.formInfo }}</span>
     </div>
     <gl-button
       class="gl-mt-6"
@@ -52,7 +57,7 @@ export default {
       :disabled="isLoading"
       @click="submit"
     >
-      {{ $options.i18n.form_submit }}
+      {{ $options.i18n.formSubmit }}
     </gl-button>
   </div>
 </template>

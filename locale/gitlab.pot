@@ -20290,9 +20290,6 @@ msgstr ""
 msgid "IdentityVerification|Step %{stepNumber}: Verify phone number"
 msgstr ""
 
-msgid "IdentityVerification|Step 1: Verify phone number"
-msgstr ""
-
 msgid "IdentityVerification|The code has expired. Send a new code and try again."
 msgstr ""
 
