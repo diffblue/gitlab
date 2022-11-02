@@ -135,22 +135,22 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
       it 'tracks all pipelines using HLLRedisCounter by multiple users for test reports' do
         allow(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
-          .with(test_event_name, values: user1.id)
+          .with(test_event_name_1, values: user1.id)
           .and_call_original
 
         allow(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
-          .with(test_event_name, values: user1.id)
+          .with(test_event_name_1, values: user1.id)
           .and_call_original
 
         allow(Gitlab::UsageDataCounters::HLLRedisCounter)
                  .to receive(:track_event)
-                 .with(test_event_name, values: user2.id)
+                 .with(test_event_name_1, values: user2.id)
                  .and_call_original
 
         allow(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
-          .with(test_event_name, values: user2.id)
+          .with(test_event_name_1, values: user2.id)
           .and_call_original
 
         expect do
@@ -158,7 +158,7 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
           described_class.new.execute(pipeline2)
         end
           .to change {
-                counter.unique_events(event_names: test_event_name,
+                counter.unique_events(event_names: test_event_name_1,
                                       start_date: start_time,
                                       end_date: end_time)
               }
