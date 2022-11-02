@@ -25,17 +25,29 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportWorker do
 
       it_behaves_like 'an idempotent worker' do
         let(:job_args) { pipeline_id }
-        let(:test_event_name) { 'i_testing_test_report_uploaded' }
+        let(:test_event_name_1) { 'i_testing_test_report_uploaded' }
+        let(:test_event_name_2) { 'i_testing_coverage_report_uploaded' }
         let(:start_time) { 1.week.ago }
         let(:end_time) { 1.week.from_now }
 
         subject(:idempotent_perform) { perform_multiple(pipeline_id, exec_times: 2) }
 
-        it 'does not try to increment again' do
+        it 'does not try to increment again for the test event' do
           idempotent_perform
 
           unique_pipeline_pass = Gitlab::UsageDataCounters::HLLRedisCounter.unique_events(
-            event_names: test_event_name,
+            event_names: test_event_name_1,
+            start_date: start_time,
+            end_date: end_time
+          )
+          expect(unique_pipeline_pass).to eq(1)
+        end
+
+        it 'does not try to increment again for the coverage event' do
+          idempotent_perform
+
+          unique_pipeline_pass = Gitlab::UsageDataCounters::HLLRedisCounter.unique_events(
+            event_names: test_event_name_2,
             start_date: start_time,
             end_date: end_time
           )
