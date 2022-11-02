@@ -17,6 +17,8 @@ metadata:
     # Keep in alphabetical order
   - name: access_requests
     description: Operations related to access requests
+  - name: ci_variables
+    description: Operations related to CI/CD variables
   - name: cluster_agents
     description: Operations related to the GitLab agent for Kubernetes
   - name: deploy_keys
