@@ -58,6 +58,7 @@ module Users
         ip: request.ip,
         reason: reason.to_s
       )
+      ::Gitlab::Tracking.event('IdentityVerification::Email', event.to_s, property: reason.to_s, user: @user)
     end
 
     def verify_token
@@ -72,14 +73,14 @@ module Users
       @user.confirm
       accept_pending_invitations(user: @user)
       sign_in(@user)
-      log_identity_verification(:successful)
+      log_identity_verification(:success)
     end
 
     def reset_confirmation_token
       token, encrypted_token = ::Users::EmailVerification::GenerateTokenService.new(attr: :confirmation_token).execute
       @user.update!(confirmation_token: encrypted_token, confirmation_sent_at: Time.current)
       Notify.confirmation_instructions_email(@user.email, token: token).deliver_later
-      log_identity_verification(:instructions_sent)
+      log_identity_verification(:sent_instructions)
     end
 
     def send_rate_limited?
