@@ -5,7 +5,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { captureException } from '~/ci/runner/sentry_utils';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
-import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
+import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import getNamespaceStorageQuery from 'ee/usage_quotas/storage/queries/namespace_storage.query.graphql';
 import getDependencyProxyTotalSizeQuery from 'ee/usage_quotas/storage/queries/dependency_proxy_usage.query.graphql';
@@ -123,7 +123,7 @@ describe('NamespaceStorageApp', () => {
     });
 
     it('renders the 2 projects', () => {
-      expect(wrapper.findAllComponents(CollapsibleProjectStorageDetail)).toHaveLength(2);
+      expect(wrapper.findComponent(ProjectList).props('projects').length).toBe(2);
     });
   });
 

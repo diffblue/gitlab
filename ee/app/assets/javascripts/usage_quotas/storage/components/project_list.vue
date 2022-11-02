@@ -1,64 +1,100 @@
 <script>
-import { PROJECT_TABLE_LABEL_PROJECT, PROJECT_TABLE_LABEL_USAGE } from '../constants';
-import CollapsibleProjectStorageDetail from './collapsible_project_storage_detail.vue';
-import ProjectsSkeletonLoader from './projects_skeleton_loader.vue';
+import { GlTable, GlLink } from '@gitlab/ui';
+import { s__ } from '~/locale';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
+import NumberToHumanSize from './number_to_human_size.vue';
 
 export default {
   name: 'ProjectList',
   components: {
-    CollapsibleProjectStorageDetail,
-    ProjectsSkeletonLoader,
+    GlTable,
+    GlLink,
+    ProjectAvatar,
+    NumberToHumanSize,
   },
   props: {
     projects: {
       type: Array,
       required: true,
     },
-    additionalPurchasedStorageSize: {
-      type: Number,
-      required: true,
-    },
     isLoading: {
       type: Boolean,
-      required: false,
-      default: false,
-    },
-    usageLabel: {
-      type: String,
-      required: false,
-      default: PROJECT_TABLE_LABEL_USAGE,
+      required: true,
     },
   },
-  i18n: {
-    PROJECT_TABLE_LABEL_PROJECT,
-  },
+  fields: [
+    { key: 'name', label: s__('UsageQuota|Project') },
+    { key: 'storageSize', label: s__('UsageQuota|Total') },
+    { key: 'repositorySize', label: s__('UsageQuota|Repository') },
+    { key: 'uploadsSize', label: s__('UsageQuota|Uploads') },
+    { key: 'snippetsSize', label: s__('UsageQuota|Snippets') },
+    { key: 'buildArtifactsSize', label: s__('UsageQuota|Artifacts') },
+    { key: 'containerRegistrySize', label: s__('UsageQuota|Container Registry') },
+    { key: 'lfsObjectsSize', label: s__('UsageQuota|LFS') },
+    { key: 'packagesSize', label: s__('UsageQuota|Packages') },
+    { key: 'wikiSize', label: s__('UsageQuota|Wiki') },
+  ],
 };
 </script>
 
 <template>
-  <div>
-    <div
-      class="gl-responsive-table-row table-row-header gl-border-t-solid gl-border-t-1 gl-border-gray-100 gl-line-height-normal gl-text-black-normal gl-font-base"
-      role="row"
-    >
-      <div class="table-section section-70 gl-font-weight-bold" role="columnheader">
-        {{ $options.i18n.PROJECT_TABLE_LABEL_PROJECT }}
-      </div>
-      <div
-        class="table-section section-30 gl-font-weight-bold"
-        role="columnheader"
-        data-testid="usage-label"
-      >
-        {{ usageLabel }}
-      </div>
-    </div>
-    <projects-skeleton-loader v-if="isLoading" />
-    <collapsible-project-storage-detail
-      v-for="project in projects"
-      v-else
-      :key="project.id"
-      :project="project"
-      :additional-purchased-storage-size="additionalPurchasedStorageSize"
-    />
-  </div>
+  <gl-table
+    :fields="$options.fields"
+    :items="projects"
+    :busy="isLoading"
+    :show-empty="true"
+    :empty-text="s__('UsageQuota|No projects to display.')"
+    small
+    stacked="lg"
+  >
+    <template #cell(name)="{ item: project }">
+      <project-avatar
+        :project-id="project.id"
+        :project-name="project.name"
+        :project-avatar-url="project.avatarUrl"
+        :size="16"
+        :alt="project.name"
+        class="gl-display-inline-block gl-mr-2 gl-text-center!"
+      />
+
+      <gl-link :href="project.webUrl" class="gl-text-gray-900! js-project-link">{{
+        project.nameWithNamespace
+      }}</gl-link>
+    </template>
+
+    <template #cell(storageSize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.storageSize" />
+    </template>
+
+    <template #cell(repositorySize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.repositorySize" />
+    </template>
+    <template #cell(lfsObjectsSize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.lfsObjectsSize" />
+    </template>
+
+    <template #cell(containerRegistrySize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.containerRegistrySize" />
+    </template>
+
+    <template #cell(buildArtifactsSize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.buildArtifactsSize" />
+    </template>
+
+    <template #cell(packagesSize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.packagesSize" />
+    </template>
+
+    <template #cell(wikiSize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.wikiSize" />
+    </template>
+
+    <template #cell(snippetsSize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.snippetsSize" />
+    </template>
+
+    <template #cell(uploadsSize)="{ item: project }">
+      <number-to-human-size :value="project.statistics.uploadsSize" />
+    </template>
+  </gl-table>
 </template>

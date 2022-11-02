@@ -1,66 +1,62 @@
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
+import { GlTable } from '@gitlab/ui';
+import { mount } from '@vue/test-utils';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
-import {
-  PROJECT_TABLE_LABEL_STORAGE_USAGE,
-  PROJECT_TABLE_LABEL_USAGE,
-} from 'ee/usage_quotas/storage/constants';
+import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { projects } from '../mock_data';
 
 let wrapper;
 
-const createComponent = ({ props = {}, additionalRepoStorageByNamespace = false } = {}) => {
-  wrapper = shallowMountExtended(ProjectList, {
+const createComponent = ({ props = {} } = {}) => {
+  wrapper = mount(ProjectList, {
     propsData: {
       projects,
-      additionalPurchasedStorageSize: 0,
+      isLoading: false,
       ...props,
-    },
-    provide: {
-      glFeatures: {
-        additionalRepoStorageByNamespace,
-      },
     },
   });
 };
 
-const findTableRows = () => wrapper.findAllComponents(CollapsibleProjectStorageDetail);
-const findUsageLabel = () => wrapper.findByTestId('usage-label');
+const findTable = () => wrapper.findComponent(GlTable);
 
 describe('ProjectList', () => {
-  beforeEach(() => {
-    createComponent();
-  });
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
-  it('renders regular project rows by default', () => {
-    expect(findTableRows()).toHaveLength(3);
-  });
-
-  describe('usage column', () => {
-    it('renders passed `usageLabel` as column label', () => {
-      createComponent({ props: { usageLabel: PROJECT_TABLE_LABEL_STORAGE_USAGE } });
-
-      expect(findUsageLabel().text()).toBe(PROJECT_TABLE_LABEL_STORAGE_USAGE);
-    });
-
-    it('renders `Usage` as column label by default', () => {
-      createComponent();
-
-      expect(findUsageLabel().text()).toBe(PROJECT_TABLE_LABEL_USAGE);
-    });
-  });
-
-  describe('with additional repo storage feature flag', () => {
+  describe('Normal state', () => {
     beforeEach(() => {
-      createComponent({ additionalRepoStorageByNamespace: true });
+      createComponent();
     });
 
-    it('renders regular project rows by default', () => {
-      expect(findTableRows()).toHaveLength(3);
+    describe('Project items are rendered', () => {
+      let tableText;
+      beforeEach(() => {
+        tableText = findTable().text();
+      });
+
+      describe.each(projects)('$name', (project) => {
+        it('renders project name with namespace', () => {
+          expect(tableText).toContain(project.nameWithNamespace);
+        });
+
+        it.each([
+          'storageSize',
+          'repositorySize',
+          'uploadsSize',
+          'snippetsSize',
+          'buildArtifactsSize',
+          'containerRegistrySize',
+          'lfsObjectsSize',
+          'packagesSize',
+          'wikiSize',
+        ])('%s', (storageType) => {
+          const expectedText = numberToHumanSize(project.statistics[storageType], 1);
+          expect(tableText).toContain(expectedText);
+        });
+      });
+    });
+
+    describe('Empty state', () => {
+      it('displays empty state message', () => {
+        createComponent({ props: { projects: [] } });
+        expect(findTable().findAll('tr').at(1).text()).toBe('No projects to display.');
+      });
     });
   });
 });

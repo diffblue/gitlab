@@ -12,10 +12,7 @@ import { isEmpty } from 'lodash';
 import { s__ } from '~/locale';
 import { captureException } from '~/ci/runner/sentry_utils';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import {
-  PROJECT_TABLE_LABEL_STORAGE_USAGE,
-  namespaceContainerRegistryPopoverContent,
-} from '../constants';
+import { namespaceContainerRegistryPopoverContent } from '../constants';
 import query from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { formatUsageSize, parseGetStorageResults } from '../utils';
@@ -120,7 +117,6 @@ export default {
     },
   },
   i18n: {
-    PROJECT_TABLE_LABEL_STORAGE_USAGE,
     errorMessageText: s__('UsageQuota|Something went wrong while loading usage details'),
   },
   data() {
@@ -328,23 +324,7 @@ export default {
         />
       </div>
 
-      <project-list
-        :projects="namespaceProjects"
-        :is-loading="isQueryLoading"
-        :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize || 0"
-        :usage-label="$options.i18n.PROJECT_TABLE_LABEL_STORAGE_USAGE"
-      />
-
-      <div
-        v-if="!namespaceProjects.length"
-        role="alert"
-        aria-live="polite"
-        class="gl-border-t gl-border-b"
-      >
-        <div class="gl-text-center gl-my-5 gl-text-gray-700">
-          {{ s__('UsageQuota|No projects to display.') }}
-        </div>
-      </div>
+      <project-list :projects="namespaceProjects" :is-loading="isQueryLoading" />
 
       <div class="gl-display-flex gl-justify-content-center gl-mt-5">
         <gl-keyset-pagination
