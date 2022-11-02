@@ -56,6 +56,13 @@ RSpec.describe Audit::GroupMergeRequestApprovalSettingChangesAuditor do
           expect(AuditEvent.last.details).to include({ change: desc, from: true, to: false })
         end
       end
+
+      it 'passes correct event type to auditor' do
+        expect(::Gitlab::Audit::Auditor)
+          .to receive(:audit).with(hash_including({ name: "#{column}_updated" })).and_call_original
+
+        subject.execute
+      end
     end
   end
 end

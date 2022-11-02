@@ -1,0 +1,8 @@
+name: retain_approvals_on_push_updated
+description: Event triggered on updating require new approvals when new commits are added to an MR from group merge request setting
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/373949
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/102256
+group: "group::compliance"
+milestone: "15.6"
+saved_to_database: true
+streamed: true

@@ -21,8 +21,12 @@ module Audit
       if model.previously_new_record?
         audit_new_record(column, description)
       else
-        audit_changes(column, as: description, entity: @group, model: model)
+        audit_changes(column, as: description, entity: @group, model: model, event_type: event_name(column))
       end
+    end
+
+    def event_name(column)
+      "#{column}_updated"
     end
 
     def audit_new_record(column, description)
