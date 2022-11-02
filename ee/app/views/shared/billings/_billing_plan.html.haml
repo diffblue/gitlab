@@ -67,9 +67,10 @@
                         track_property: plan.code,
                         track_experiment: :promote_premium_billing_page }
 
-    .card-footer
-      - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type)
-      .gl-min-h-7.gl-display-flex.gl-flex-wrap.gl-justify-content-end
-        = render "shared/billings/billing_plan_actions", namespace: namespace, plan: plan,
-                                                         purchase_link: purchase_link, show_upgrade_button: show_upgrade_button,
-                                                         plan_offer_type: plan_offer_type, is_current: is_current
+    - unless read_only
+      .card-footer
+        - show_upgrade_button = show_upgrade_button?(purchase_link.action, plan_offer_type)
+        .gl-min-h-7.gl-display-flex.gl-flex-wrap.gl-justify-content-end
+          = render "shared/billings/billing_plan_actions", namespace: namespace, plan: plan,
+                                                           purchase_link: purchase_link, show_upgrade_button: show_upgrade_button,
+                                                           plan_offer_type: plan_offer_type, is_current: is_current

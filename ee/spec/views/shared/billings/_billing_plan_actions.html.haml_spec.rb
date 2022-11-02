@@ -15,6 +15,7 @@ RSpec.describe 'shared/billings/_billing_plan_actions.html.haml', :saas do
     allow(view).to receive(:plan_offer_type)
     allow(view).to receive(:show_upgrade_button)
     allow(view).to receive(:namespace)
+    allow(view).to receive(:read_only)
   end
 
   it 'contains the hand raise lead selector and tracking' do
