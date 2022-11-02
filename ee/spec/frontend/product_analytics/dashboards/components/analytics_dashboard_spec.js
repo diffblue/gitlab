@@ -1,3 +1,4 @@
+import { GlLoadingIcon } from '@gitlab/ui';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import AnalyticsDashboard from 'ee/product_analytics/dashboards/components/analytics_dashboard.vue';
@@ -8,6 +9,7 @@ describe('AnalyticsDashboard', () => {
   let wrapper;
 
   const findDashboard = () => wrapper.findComponent(CustomizableDashboard);
+  const findLoader = () => wrapper.findComponent(GlLoadingIcon);
 
   const createWrapper = (data = {}, routeId) => {
     const mocks = {
@@ -44,6 +46,16 @@ describe('AnalyticsDashboard', () => {
         widgets: dashboard.widgets,
         editable: false,
       });
+    });
+
+    it('should render skeleton while fetching data', async () => {
+      createWrapper({}, 'dashboard_overview');
+
+      expect(findLoader().exists()).toBe(true);
+
+      await waitForPromises();
+
+      expect(findLoader().exists()).toBe(false);
     });
 
     it('should render overview dashboard by id', async () => {

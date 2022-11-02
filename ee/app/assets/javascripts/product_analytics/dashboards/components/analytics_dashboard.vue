@@ -1,4 +1,5 @@
 <script>
+import { GlLoadingIcon } from '@gitlab/ui';
 import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboard/customizable_dashboard.vue';
 
 // TODO: Replace the hardcoded values with API calls in https://gitlab.com/gitlab-org/gitlab/-/issues/382551
@@ -15,6 +16,7 @@ const DASHBOARD_JSONS = {
 export default {
   name: 'AnalyticsDashboard',
   components: {
+    GlLoadingIcon,
     CustomizableDashboard,
   },
   data() {
@@ -51,19 +53,22 @@ export default {
 </script>
 
 <template>
-  <div v-if="dashboard">
-    <section>
-      <div
-        class="gl-display-flex gl-align-items-center gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
-      >
-        <h3 class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
-        <div class="gl-display-flex">
-          <router-link to="/" class="gl-button btn btn-default btn-md">
-            {{ __('Go back') }}
-          </router-link>
+  <div>
+    <template v-if="dashboard">
+      <section>
+        <div
+          class="gl-display-flex gl-align-items-center gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
+        >
+          <h3 class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
+          <div class="gl-display-flex">
+            <router-link to="/" class="gl-button btn btn-default btn-md">
+              {{ __('Go back') }}
+            </router-link>
+          </div>
         </div>
-      </div>
-    </section>
-    <customizable-dashboard :widgets="dashboard.widgets" />
+      </section>
+      <customizable-dashboard :widgets="dashboard.widgets" />
+    </template>
+    <gl-loading-icon v-else size="lg" class="gl-my-7" />
   </div>
 </template>
