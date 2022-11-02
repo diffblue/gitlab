@@ -43,7 +43,7 @@ testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/377406' do
       end
 
       it 'can successfully create a JIRA issue from vulnerability details page',
-         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/361048' do
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/381386' do
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
