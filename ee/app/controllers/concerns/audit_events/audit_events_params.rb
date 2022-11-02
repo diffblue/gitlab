@@ -2,8 +2,10 @@
 
 module AuditEvents
   module AuditEventsParams
+    SAFE_PARAMS = [:created_before, :created_after, :sort].freeze
+
     def audit_events_params
-      params.permit(:entity_type, :entity_id, :created_before, :created_after, :sort, :author_id, :entity_username, :author_username)
+      params.permit(*SAFE_PARAMS, :entity_type, :entity_id, :entity_username, :author_id, :author_username)
     end
 
     def audit_params
@@ -18,7 +20,16 @@ module AuditEvents
 
       params[:author_id] = params[:entity_id]
 
-      params.except(:entity_type, :entity_id)
+      params.slice(*SAFE_PARAMS, :author_id, :author_username)
+    end
+
+    def filter_by_author(params)
+      return params if can_view_events_from_all_members?(current_user)
+
+      # User can only view own events
+      params
+        .slice(*SAFE_PARAMS)
+        .merge(author_id: current_user.id)
     end
   end
 end

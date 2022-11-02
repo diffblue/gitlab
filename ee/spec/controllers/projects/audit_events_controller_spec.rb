@@ -212,39 +212,6 @@ RSpec.describe Projects::AuditEventsController do
       end
     end
 
-    context 'authorized as user without admin project permission' do
-      let_it_be(:developer) { create(:user) }
-
-      let(:audit_events_params) do
-        {
-          namespace_id: project.namespace.to_param, project_id: project.to_param,
-          sort: sort, entity_type: entity_type, entity_id: entity_id,
-          author_id: maintainer.id
-        }
-      end
-
-      let(:request) do
-        get :index, params: audit_events_params
-      end
-
-      before do
-        stub_licensed_features(audit_events: true)
-
-        project.add_developer(developer)
-        sign_in(developer)
-      end
-
-      it 'returns only events by current user' do
-        developer_event = create(:project_audit_event, entity_id: project.id, author_id: developer.id)
-        create(:project_audit_event, entity_id: project.id, author_id: maintainer.id)
-
-        request
-
-        actual_event_ids = assigns(:events).map { |event| event[:id] }
-        expect(actual_event_ids).to contain_exactly(developer_event.id)
-      end
-    end
-
     context 'unauthorized' do
       before do
         stub_licensed_features(audit_events: true)

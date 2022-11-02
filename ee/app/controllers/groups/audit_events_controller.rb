@@ -43,9 +43,7 @@ class Groups::AuditEventsController < Groups::ApplicationController
     end
   end
 
-  def filter_by_author(params)
-    return params if can?(current_user, :admin_group, group) || current_user.auditor?
-
-    params.merge(author_id: current_user.id)
+  def can_view_events_from_all_members?(user)
+    can?(user, :admin_group, group) || user.auditor?
   end
 end
