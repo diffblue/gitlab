@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::JobToken::Scope do
+RSpec.describe Ci::JobToken::OutboundScope do
   let_it_be(:source_project) { create(:project, ci_outbound_job_token_scope_enabled: true).tap(&:save!) }
 
   let(:scope) { described_class.new(source_project) }

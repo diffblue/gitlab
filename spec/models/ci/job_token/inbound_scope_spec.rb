@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::JobToken::Scope do
-  let_it_be(:source_project) { create(:project, ci_outbound_job_token_scope_enabled: true).tap(&:save!) }
+RSpec.describe Ci::JobToken::InboundScope do
+  let_it_be(:source_project) { create(:project, ci_inbound_job_token_scope_enabled: true).tap(&:save!) }
 
   let(:scope) { described_class.new(source_project) }
 
@@ -29,7 +29,7 @@ RSpec.describe Ci::JobToken::Scope do
       include_context 'with scoped projects'
 
       it 'returns all projects that can be accessed from a given scope' do
-        expect(subject).to contain_exactly(source_project, outbound_scoped_project)
+        expect(subject).to contain_exactly(source_project, inbound_scoped_project)
       end
     end
   end
@@ -37,8 +37,8 @@ RSpec.describe Ci::JobToken::Scope do
   describe '#includes?' do
     subject { scope.includes?(includes_project) }
 
-    context 'without scoped projects' do
-      context 'when self referential' do
+    context 'without projects' do
+      context 'when param is in scope' do
         let(:includes_project) { source_project }
 
         it { is_expected.to be_truthy }
@@ -48,14 +48,20 @@ RSpec.describe Ci::JobToken::Scope do
     context 'with scoped projects' do
       include_context 'with scoped projects'
 
-      context 'when project is in outbound scope' do
-        let(:includes_project) { outbound_scoped_project }
+      context 'when project is self refrential' do
+        let(:includes_project) { source_project }
 
         it { is_expected.to be_truthy }
       end
 
       context 'when project is in inbound scope' do
         let(:includes_project) { inbound_scoped_project }
+
+        it { is_expected.to be_truthy }
+      end
+
+      context 'when project is in outbound scope' do
+        let(:includes_project) { outbound_scoped_project }
 
         it { is_expected.to be_falsey }
       end
@@ -66,7 +72,7 @@ RSpec.describe Ci::JobToken::Scope do
         it { is_expected.to be_falsey }
       end
 
-      context 'when param is a project unlinked to any project' do
+      context 'when project is unlinked to any project' do
         let(:includes_project) { unscoped_project2 }
 
         it { is_expected.to be_falsey }
@@ -76,7 +82,19 @@ RSpec.describe Ci::JobToken::Scope do
         let(:includes_project) { unscoped_project1 }
 
         before do
-          source_project.ci_outbound_job_token_scope_enabled = false
+          source_project.ci_inbound_job_token_scope_enabled = false
+        end
+
+        it 'considers any project to be part of the scope' do
+          expect(subject).to be_truthy
+        end
+      end
+
+      context 'when feature flag is disabled' do
+        let(:includes_project) { unscoped_project1 }
+
+        before do
+          stub_feature_flags(ci_inbound_job_token_scope: false)
         end
 
         it 'considers any project to be part of the scope' do
