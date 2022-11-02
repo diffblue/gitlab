@@ -220,6 +220,7 @@ module API
         mount ::API::Tags
         mount ::API::Unleash
         mount ::API::UserCounts
+        mount ::API::VulnerabilityFindings
 
         add_open_api_documentation!
       end
