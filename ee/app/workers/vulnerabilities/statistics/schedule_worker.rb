@@ -17,11 +17,14 @@ module Vulnerabilities
       BATCH_SIZE = 500
       DELAY_INTERVAL = 30.seconds.to_i
 
+      # rubocop: disable CodeReuse/ActiveRecord
       def perform
-        Project.without_deleted.has_vulnerabilities.each_batch(of: BATCH_SIZE) do |relation, index|
-          AdjustmentWorker.perform_in(index * DELAY_INTERVAL, relation.pluck(:id)) # rubocop: disable CodeReuse/ActiveRecord
+        ProjectSetting.has_vulnerabilities.each_batch(of: BATCH_SIZE) do |relation, index|
+          project_ids = relation.left_outer_joins(:project).merge(::Project.without_deleted).pluck(:project_id)
+          AdjustmentWorker.perform_in(index * DELAY_INTERVAL, project_ids)
         end
       end
+      # rubocop: enable CodeReuse/ActiveRecord
     end
   end
 end
