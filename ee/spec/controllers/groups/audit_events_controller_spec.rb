@@ -201,39 +201,6 @@ RSpec.describe Groups::AuditEventsController do
       end
     end
 
-    context 'authorized as user without admin group permission' do
-      let_it_be(:developer) { create(:user) }
-
-      let(:audit_events_params) do
-        {
-          group_id: group.to_param, sort: sort,
-          entity_type: entity_type, entity_id: entity_id,
-          author_id: owner.id
-        }
-      end
-
-      let(:request) do
-        get :index, params: audit_events_params
-      end
-
-      before do
-        stub_licensed_features(audit_events: true)
-
-        group.add_developer(developer)
-        sign_in(developer)
-      end
-
-      it 'returns only events by current user' do
-        developer_event = create(:group_audit_event, entity_id: group.id, author_id: developer.id)
-        create(:group_audit_event, entity_id: group.id, author_id: owner.id)
-
-        request
-
-        actual_event_ids = assigns(:events).map { |event| event[:id] }
-        expect(actual_event_ids).to contain_exactly(developer_event.id)
-      end
-    end
-
     context 'unauthorized' do
       let(:request) do
         get :index, params: { group_id: group.to_param, sort: sort, entity_type: entity_type, entity_id: entity_id }

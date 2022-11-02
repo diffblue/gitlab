@@ -233,12 +233,11 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
       let(:key) { 'TEST-123' }
       let(:response_key) { key }
       let(:issue_json) { { 'from' => 'backend' } }
+      let(:rendered_fields) { { description: 'A description' } }
       let(:jira_response_body) do
         {
           key: response_key,
-          renderedFields: {
-            description: 'A description'
-          },
+          renderedFields: rendered_fields,
           fields: {
             resolutiondate: nil,
             created: '2022-06-30T11:34:39.236+0200',
@@ -285,6 +284,36 @@ RSpec.describe Projects::Integrations::Jira::IssuesController do
         get :show, params: { namespace_id: project.namespace, project_id: project, id: key, format: :json }
 
         expect(json_response).to eq(issue_json.as_json)
+      end
+
+      context 'when the description needs redaction' do
+        let(:confidential_issue) { create(:issue, title: generate(:title)) }
+        let(:public_issue) { create(:issue, title: generate(:title), project: create(:project, :public)) }
+        let(:accessible_issue) { create(:issue, title: generate(:title)) }
+
+        let(:rendered_fields) do
+          {
+            description: <<~MD
+              See: #{confidential_issue.to_reference(full: true)}
+              See: #{public_issue.to_reference(full: true)}
+              See: #{accessible_issue.to_reference(full: true)}
+            MD
+          }
+        end
+
+        before do
+          accessible_issue.project.add_guest(user)
+        end
+
+        it 'redacts confidential information from the issue JSON response' do
+          get :show, params: { namespace_id: project.namespace, project_id: project, id: key, format: :json }
+
+          html = json_response['description_html']
+
+          expect(html).to include(public_issue.title)
+          expect(html).to include(accessible_issue.title)
+          expect(html).not_to include(confidential_issue.title)
+        end
       end
 
       context 'when the JSON fetched from Jira contains HTML' do
