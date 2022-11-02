@@ -30,7 +30,7 @@ module Resolvers
 
       def preloads
         {
-          timelineEventTags: [:name]
+          timeline_event_tags: [:timeline_event_tags]
         }
       end
     end

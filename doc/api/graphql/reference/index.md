@@ -4882,6 +4882,10 @@ Input type: `TerraformStateUnlockInput`
 
 ### `Mutation.timelineEventCreate`
 
+WARNING:
+**Introduced** in 15.6.
+This feature is in Alpha. It can be changed or removed at any time.
+
 Input type: `TimelineEventCreateInput`
 
 #### Arguments
@@ -4892,7 +4896,7 @@ Input type: `TimelineEventCreateInput`
 | <a id="mutationtimelineeventcreateincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | Incident ID of the timeline event. |
 | <a id="mutationtimelineeventcreatenote"></a>`note` | [`String!`](#string) | Text note of the timeline event. |
 | <a id="mutationtimelineeventcreateoccurredat"></a>`occurredAt` | [`Time!`](#time) | Timestamp of when the event occurred. |
-| <a id="mutationtimelineeventcreatetimelineeventtagnames"></a>`timelineEventTagNames` | [`[String!]`](#string) | Tags for the incident timeline event. Introduced in 15.6: This feature is in Alpha. It can be changed or removed at any time. |
+| <a id="mutationtimelineeventcreatetimelineeventtagnames"></a>`timelineEventTagNames` | [`[String!]`](#string) | Tags for the incident timeline event. |
 
 #### Fields
 
@@ -18973,7 +18977,7 @@ Describes an incident management timeline event.
 | <a id="timelineeventtypenotehtml"></a>`noteHtml` | [`String`](#string) | HTML note of the timeline event. |
 | <a id="timelineeventtypeoccurredat"></a>`occurredAt` | [`Time!`](#time) | Timestamp when the event occurred. |
 | <a id="timelineeventtypepromotedfromnote"></a>`promotedFromNote` | [`Note`](#note) | Note from which the timeline event was created. |
-| <a id="timelineeventtypetimelineeventtags"></a>`timelineEventTags` **{warning-solid}** | [`TimelineEventTagTypeConnection`](#timelineeventtagtypeconnection) | **Introduced** in 15.6. This feature is in Alpha. It can be changed or removed at any time. Tags for the incident timeline event. |
+| <a id="timelineeventtypetimelineeventtags"></a>`timelineEventTags` | [`TimelineEventTagTypeConnection`](#timelineeventtagtypeconnection) | Tags for the incident timeline event. (see [Connections](#connections)) |
 | <a id="timelineeventtypeupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp when the event updated. |
 | <a id="timelineeventtypeupdatedbyuser"></a>`updatedByUser` | [`UserCore`](#usercore) | User that updated the timeline event. |
 

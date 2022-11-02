@@ -118,18 +118,33 @@ RSpec.describe 'getting incident timeline events' do
         timeline_event_tag: tag1)
     end
 
+    let_it_be(:timeline_event_tag_link2) do
+      create(:incident_management_timeline_event_tag_link,
+        timeline_event: another_timeline_event,
+        timeline_event_tag: tag1)
+    end
+
     it_behaves_like 'a working graphql query'
 
     it 'returns the set tags' do
       expect(timeline_events.first['timelineEventTags']['nodes'].first['name']).to eq(tag1.name)
     end
 
-    it 'avoids N+1 queries' do
-      control = ActiveRecord::QueryRecorder.new do
-        post_graphql(query, current_user: current_user)
-      end
+    context 'when different timeline events are loaded' do
+      it 'avoids N+1 queries' do
+        control = ActiveRecord::QueryRecorder.new do
+          post_graphql(graphql_query_for('project',
+            { 'fullPath' => project.full_path },
+            query_graphql_field('incidentManagementTimelineEvents', params, timeline_event_fields)
+          ), current_user: current_user)
+        end
 
-      expect(post_graphql(query, current_user: current_user)).not_to exceed_query_limit(control)
+        another_incident_params = { incident_id: another_incident.to_global_id.to_s }
+        expect(post_graphql(graphql_query_for('project',
+          { 'fullPath' => project.full_path },
+          query_graphql_field('incidentManagementTimelineEvents', another_incident_params, timeline_event_fields)
+        ), current_user: current_user)).not_to exceed_query_limit(control)
+      end
     end
   end
 
