@@ -17,7 +17,6 @@ module Ci
       scope :added_project, ->(source_project, target_project) do
         where(source_project: source_project, target_project: target_project)
       end
-      scope :outbound, ->(project) { where(direction: :outbound) }
 
       validates :source_project, presence: true
       validates :target_project, presence: true
