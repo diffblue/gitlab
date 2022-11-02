@@ -1,4 +1,8 @@
-import { getUsageDataByYear, formatYearMonthData, getSortedYears } from 'ee/ci_minutes_usage/utils';
+import {
+  getUsageDataByYear,
+  formatYearMonthData,
+  getSortedYears,
+} from 'ee/ci/ci_minutes_usage/utils';
 import { ciMinutesUsageMockData } from './mock_data';
 
 const {
