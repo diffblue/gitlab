@@ -38,11 +38,6 @@ module Ci
       def outbound_scope
         Ci::JobToken::OutboundScope.new(source_project)
       end
-
-      # TODO(https://gitlab.com/gitlab-org/gitlab/-/issues/346298): Use in this class
-      def inbound_scope
-        Ci::JobToken::InboundScope.new(source_project)
-      end
     end
   end
 end
