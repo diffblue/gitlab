@@ -112,15 +112,10 @@ RSpec.describe 'getting incident timeline events' do
 
   context 'when timelineEvent tags are linked' do
     let_it_be(:tag1) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 1') }
+    let_it_be(:tag2) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 2') }
     let_it_be(:timeline_event_tag_link) do
       create(:incident_management_timeline_event_tag_link,
         timeline_event: timeline_event,
-        timeline_event_tag: tag1)
-    end
-
-    let_it_be(:timeline_event_tag_link2) do
-      create(:incident_management_timeline_event_tag_link,
-        timeline_event: another_timeline_event,
         timeline_event_tag: tag1)
     end
 
@@ -133,17 +128,25 @@ RSpec.describe 'getting incident timeline events' do
     context 'when different timeline events are loaded' do
       it 'avoids N+1 queries' do
         control = ActiveRecord::QueryRecorder.new do
-          post_graphql(graphql_query_for('project',
-            { 'fullPath' => project.full_path },
-            query_graphql_field('incidentManagementTimelineEvents', params, timeline_event_fields)
-          ), current_user: current_user)
+          post_graphql(query, current_user: current_user)
         end
 
-        another_incident_params = { incident_id: another_incident.to_global_id.to_s }
-        expect(post_graphql(graphql_query_for('project',
-          { 'fullPath' => project.full_path },
-          query_graphql_field('incidentManagementTimelineEvents', another_incident_params, timeline_event_fields)
-        ), current_user: current_user)).not_to exceed_query_limit(control)
+        new_event = create(:incident_management_timeline_event,
+          incident: incident,
+          project: project,
+          updated_by_user: updated_by_user,
+          promoted_from_note: promoted_from_note,
+          note: "Referencing #{issue.to_reference(full: true)} - Full URL #{issue_url}"
+        )
+
+        create(:incident_management_timeline_event_tag_link,
+          timeline_event: new_event,
+          timeline_event_tag: tag2
+        )
+
+        expect(incident.incident_management_timeline_events.length).to eq(3)
+        expect(post_graphql(query, current_user: current_user)).not_to exceed_query_limit(control)
+        expect(timeline_events.count).to eq(3)
       end
     end
   end
