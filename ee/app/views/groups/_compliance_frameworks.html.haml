@@ -1,5 +1,5 @@
 - expanded = expanded_by_default?
-- compliance_framework_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/group/manage.md', anchor: 'compliance-frameworks') }
+- compliance_framework_doc_link = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: help_page_path('user/group/compliance_frameworks.md') }
 
 - if show_compliance_frameworks?(@group)
   %section.settings.no-animate#js-compliance-frameworks-settings{ class: ('expanded' if expanded) }
