@@ -488,9 +488,9 @@ New child epics appear at the top of the list of epics in the **Epics and Issues
 
 When you add an epic that's already linked to a parent epic, the link to its current parent is removed.
 
-Epics can contain multiple nested child epics, up to a total of seven levels deep.
+Epics can contain multiple nested child epics, up to a total of 7 levels deep.
 
-Maximum number of direct child epics is 100.
+The maximum number of direct child epics is 100.
 
 ### Add a child epic to an epic
 
