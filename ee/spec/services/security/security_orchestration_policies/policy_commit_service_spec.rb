@@ -55,7 +55,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
           response = service.execute
 
           expect(response[:status]).to eq(:error)
-          expect(response[:message]).to eq('Policy cannot be enabled without branch information')
+          expect(response[:message]).to eq("Invalid policy")
+          expect(response[:details]).to match_array(['Policy cannot be enabled without branch information'])
         end
       end
 

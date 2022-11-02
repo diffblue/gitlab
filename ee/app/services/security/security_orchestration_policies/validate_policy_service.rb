@@ -6,18 +6,22 @@ module Security
       include ::Gitlab::Utils::StrongMemoize
 
       def execute
-        return error(s_('SecurityOrchestration|Empty policy name')) if blank_name?
+        return error_with_title(s_('SecurityOrchestration|Empty policy name')) if blank_name?
 
         return success if policy_disabled?
 
-        return error(s_('SecurityOrchestration|Invalid policy type')) if invalid_policy_type?
-        return error(s_('SecurityOrchestration|Policy cannot be enabled without branch information')) if blank_branch_for_rule?
-        return error(s_('SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})') % { branches: missing_branch_names.join(', ') }) if missing_branch_for_rule?
+        return error_with_title(s_('SecurityOrchestration|Invalid policy type')) if invalid_policy_type?
+        return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled without branch information')) if blank_branch_for_rule?
+        return error_with_title(s_('SecurityOrchestration|Policy cannot be enabled for non-existing branches (%{branches})') % { branches: missing_branch_names.join(', ') }) if missing_branch_for_rule?
 
         success
       end
 
       private
+
+      def error_with_title(message)
+        error(s_('SecurityOrchestration|Invalid policy'), :bad_request, pass_back: { details: [message] })
+      end
 
       def policy_disabled?
         !policy&.[](:enabled)
