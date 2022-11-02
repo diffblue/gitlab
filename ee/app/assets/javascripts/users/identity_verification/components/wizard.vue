@@ -1,12 +1,7 @@
 <script>
 import { kebabCase } from 'lodash';
-import { sprintf } from '~/locale';
-import {
-  PAGE_TITLE,
-  I18N_CC_VERIFICATION,
-  I18N_EMAIL_VERIFICATION,
-  I18N_PHONE_VERIFICATION,
-} from '../constants';
+import { s__, sprintf } from '~/locale';
+import { PAGE_TITLE } from '../constants';
 import EmailVerification from './email_verification.vue';
 import CreditCardVerification from './credit_card_verification.vue';
 import PhoneVerification from './phone_verification.vue';
@@ -41,16 +36,20 @@ export default {
       return `${kebabCase(method)}-verification`;
     },
     stepTitle(step, number) {
+      const { ccStep, phoneStep, emailStep } = this.$options.i18n;
       const templates = {
-        creditCard: I18N_CC_VERIFICATION.title,
-        phone: I18N_PHONE_VERIFICATION.title,
-        email: I18N_EMAIL_VERIFICATION.title,
+        creditCard: ccStep,
+        phone: phoneStep,
+        email: emailStep,
       };
       return sprintf(templates[step], { stepNumber: number });
     },
   },
   i18n: {
-    PAGE_TITLE,
+    pageTitle: PAGE_TITLE,
+    ccStep: s__('IdentityVerification|Step %{stepNumber}: Verify a payment method'),
+    phoneStep: s__('IdentityVerification|Step %{stepNumber}: Verify phone number'),
+    emailStep: s__('IdentityVerification|Step %{stepNumber}: Verify email address'),
   },
 };
 </script>
@@ -58,7 +57,7 @@ export default {
   <div class="gl--flex-center">
     <div class="gl-flex-grow-1 gl-max-w-62">
       <header class="gl-text-center">
-        <h2>{{ $options.i18n.PAGE_TITLE }}</h2>
+        <h2>{{ $options.i18n.pageTitle }}</h2>
       </header>
       <component
         :is="methodComponent(verificationSteps[0])"

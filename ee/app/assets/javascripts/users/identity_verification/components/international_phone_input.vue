@@ -1,16 +1,9 @@
 <script>
 import { GlFormGroup, GlFormInput, GlFormSelect, GlIcon } from '@gitlab/ui';
-
+import { s__ } from '~/locale';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import { validatePhoneNumber } from '../validations';
-
-import {
-  STEP_1_TITLE,
-  PHONE_NUMBER_LABEL,
-  COUNTRY_LABEL,
-  INFO_TEXT,
-  SEND_CODE,
-} from '../constants';
+import { PHONE_NUMBER_LABEL, COUNTRY_LABEL } from '../constants';
 
 export default {
   name: 'InternationalPhoneInput',
@@ -21,11 +14,11 @@ export default {
     GlIcon,
   },
   i18n: {
-    STEP_1_TITLE,
     PHONE_NUMBER_LABEL,
     COUNTRY_LABEL,
-    INFO_TEXT,
-    SEND_CODE,
+    infoText: s__(
+      'IdentityVerification|You will receive a text containing a code. Standard charges may apply.',
+    ),
   },
   data() {
     return {
@@ -104,7 +97,7 @@ export default {
 
     <div class="gl-mt-3 gl-text-secondary gl-font-sm">
       <gl-icon name="information-o" :size="12" class="gl-mt-2" />
-      <span>{{ $options.i18n.INFO_TEXT }}</span>
+      <span>{{ $options.i18n.infoText }}</span>
     </div>
   </div>
 </template>
