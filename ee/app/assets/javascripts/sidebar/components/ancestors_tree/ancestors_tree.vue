@@ -1,6 +1,7 @@
 <script>
-import { GlLoadingIcon, GlLink, GlTooltip, GlIcon, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlLoadingIcon, GlLink, GlTooltip, GlIcon } from '@gitlab/ui';
 import { escape } from 'lodash';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 
 import { __ } from '~/locale';
 
@@ -13,7 +14,7 @@ export default {
     GlTooltip,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   props: {
     ancestors: {

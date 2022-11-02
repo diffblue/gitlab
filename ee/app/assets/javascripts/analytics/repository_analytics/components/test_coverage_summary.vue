@@ -1,13 +1,8 @@
 <script>
 import chartEmptyStateIllustration from '@gitlab/svgs/dist/illustrations/chart-empty-state.svg';
-import {
-  GlCard,
-  GlSprintf,
-  GlSkeletonLoader,
-  GlSafeHtmlDirective as SafeHtml,
-  GlPopover,
-} from '@gitlab/ui';
+import { GlCard, GlSprintf, GlSkeletonLoader, GlPopover } from '@gitlab/ui';
 import { GlSingleStat, GlAreaChart } from '@gitlab/ui/dist/charts';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import {
   formatDate,
   getTimeago,

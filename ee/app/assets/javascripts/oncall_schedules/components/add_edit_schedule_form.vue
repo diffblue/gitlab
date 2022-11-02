@@ -7,9 +7,9 @@ import {
   GlDropdown,
   GlDropdownItem,
   GlSearchBoxByType,
-  GlSafeHtmlDirective as SafeHtml,
 } from '@gitlab/ui';
 import { isEqual, isEmpty } from 'lodash';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __ } from '~/locale';
 import { getFormattedTimezone } from '../utils/common_utils';
 

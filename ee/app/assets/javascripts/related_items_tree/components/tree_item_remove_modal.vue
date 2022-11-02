@@ -1,7 +1,8 @@
 <script>
-import { GlModal, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlModal } from '@gitlab/ui';
 import { escape } from 'lodash';
 import { mapState, mapActions } from 'vuex';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 
 import { sprintf, __ } from '~/locale';
 
@@ -13,7 +14,7 @@ export default {
     GlModal,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   computed: {
     ...mapState(['childrenFlags', 'parentItem', 'removeItemModalProps']),

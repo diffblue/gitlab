@@ -1,10 +1,10 @@
 <script>
-import { GlSafeHtmlDirective } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__ } from '~/locale';
 
 export default {
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   props: {
     solution: {

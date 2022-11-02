@@ -1,5 +1,6 @@
 <script>
-import { GlSprintf, GlLink, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlSprintf, GlLink } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import { s__, __, sprintf } from '~/locale';
@@ -32,7 +33,7 @@ export default {
       import('ee/vue_shared/metrics_reports/grouped_metrics_reports_app.vue'),
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   extends: CEWidgetOptions,
   mixins: [reportsMixin],

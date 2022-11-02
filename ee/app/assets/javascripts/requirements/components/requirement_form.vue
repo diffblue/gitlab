@@ -1,12 +1,6 @@
 <script>
 import '~/behaviors/markdown/render_gfm';
-import {
-  GlDrawer,
-  GlButton,
-  GlFormCheckbox,
-  GlTooltipDirective,
-  GlSafeHtmlDirective as SafeHtml,
-} from '@gitlab/ui';
+import { GlDrawer, GlButton, GlFormCheckbox, GlTooltipDirective } from '@gitlab/ui';
 import $ from 'jquery';
 import { isEmpty } from 'lodash';
 import IssuableBody from '~/vue_shared/issuable/show/components/issuable_body.vue';
@@ -37,7 +31,6 @@ export default {
   },
   directives: {
     GlTooltip: GlTooltipDirective,
-    SafeHtml,
   },
   mixins: [RequirementMeta],
   inject: ['descriptionPreviewPath', 'descriptionHelpPath'],

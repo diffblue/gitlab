@@ -1,6 +1,7 @@
 <script>
-import { GlSafeHtmlDirective, GlAccordion, GlAccordionItem, GlSprintf, GlLink } from '@gitlab/ui';
+import { GlAccordion, GlAccordionItem, GlSprintf, GlLink } from '@gitlab/ui';
 import { mapState } from 'vuex';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { __, n__, sprintf, s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -19,7 +20,7 @@ export default {
     MrRulesHiddenInputs,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   mixins: [glFeatureFlagsMixin()],
   computed: {

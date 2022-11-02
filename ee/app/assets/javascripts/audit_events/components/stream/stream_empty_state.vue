@@ -1,14 +1,11 @@
 <script>
-import { GlButton, GlSafeHtmlDirective as SafeHtml, GlEmptyState } from '@gitlab/ui';
+import { GlButton, GlEmptyState } from '@gitlab/ui';
 import { ADD_STREAM, AUDIT_STREAMS_EMPTY_STATE_I18N } from '../../constants';
 
 export default {
   components: {
     GlButton,
     GlEmptyState,
-  },
-  directives: {
-    SafeHtml,
   },
   inject: ['emptyStateSvgPath'],
   i18n: {

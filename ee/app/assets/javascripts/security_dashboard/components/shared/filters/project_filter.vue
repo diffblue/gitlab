@@ -3,10 +3,10 @@ import {
   GlDropdownDivider,
   GlDropdownText,
   GlLoadingIcon,
-  GlSafeHtmlDirective as SafeHtml,
   GlIntersectionObserver,
 } from '@gitlab/ui';
 import { escapeRegExp, has, xorBy } from 'lodash';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import createFlash from '~/flash';
 import { convertToGraphQLIds, getIdFromGraphQLId } from '~/graphql_shared/utils';

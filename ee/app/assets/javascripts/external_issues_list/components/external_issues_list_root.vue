@@ -1,13 +1,7 @@
 <script>
-import {
-  GlButton,
-  GlIcon,
-  GlLink,
-  GlSprintf,
-  GlSafeHtmlDirective as SafeHtml,
-  GlAlert,
-} from '@gitlab/ui';
+import { GlButton, GlIcon, GlLink, GlSprintf, GlAlert } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import {

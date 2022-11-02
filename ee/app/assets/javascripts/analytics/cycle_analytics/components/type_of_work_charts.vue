@@ -1,6 +1,7 @@
 <script>
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { GlAlert, GlIcon, GlTooltip, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlAlert, GlIcon, GlTooltip } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { __ } from '~/locale';
 import ChartSkeletonLoader from '~/vue_shared/components/resizable_chart/skeleton_loader.vue';
 import { uniqById, generateFilterTextDescription } from '../utils';
@@ -20,7 +21,7 @@ export default {
     TasksByTypeFilters,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   computed: {
     ...mapState('typeOfWork', [

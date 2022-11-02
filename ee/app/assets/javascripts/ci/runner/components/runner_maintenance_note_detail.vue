@@ -1,5 +1,5 @@
 <script>
-import { GlSafeHtmlDirective } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import RunnerDetail from '~/ci/runner/components/runner_detail.vue';
 
@@ -8,7 +8,7 @@ export default {
     RunnerDetail,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   mixins: [glFeatureFlagMixin()],
   props: {

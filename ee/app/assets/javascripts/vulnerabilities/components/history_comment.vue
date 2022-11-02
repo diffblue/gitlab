@@ -1,5 +1,6 @@
 <script>
-import { GlButton, GlSafeHtmlDirective as SafeHtml, GlLoadingIcon } from '@gitlab/ui';
+import { GlButton, GlLoadingIcon } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import createNoteMutation from 'ee/security_dashboard/graphql/mutations/note_create.mutation.graphql';
 import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_destroy.mutation.graphql';
 import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_update.mutation.graphql';

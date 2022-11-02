@@ -1,11 +1,5 @@
 <script>
-import {
-  GlAlert,
-  GlButton,
-  GlLoadingIcon,
-  GlIcon,
-  GlSafeHtmlDirective as SafeHtml,
-} from '@gitlab/ui';
+import { GlAlert, GlButton, GlLoadingIcon, GlIcon } from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import {
   ADD_STREAM,
@@ -30,9 +24,6 @@ export default {
     StreamDestinationEditor,
     StreamEmptyState,
     StreamItem,
-  },
-  directives: {
-    SafeHtml,
   },
   inject: ['groupPath'],
   data() {

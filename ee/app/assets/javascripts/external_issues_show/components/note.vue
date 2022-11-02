@@ -1,5 +1,6 @@
 <script>
-import { GlAvatarLink, GlAvatar, GlLink, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { GlAvatarLink, GlAvatar, GlLink } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import TimelineEntryItem from '~/vue_shared/components/notes/timeline_entry_item.vue';
 import TimelineIcon from '~/vue_shared/components/notes/timeline_icon.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
