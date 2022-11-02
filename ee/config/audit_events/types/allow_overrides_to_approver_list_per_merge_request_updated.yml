@@ -1,0 +1,8 @@
+name: allow_overrides_to_approver_list_per_merge_request_updated
+description: Event triggered on updating prevent users from modifying MR approval rules in merge requests from group merge request setting
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/373949
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/102256
+group: "group::compliance"
+milestone: "15.6"
+saved_to_database: true
+streamed: true
