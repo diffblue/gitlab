@@ -164,8 +164,7 @@ RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
       issues_weight_sum: issues_weight_sum,
       parent_id: epic.parent_id,
       issues_state_id: issues_state,
-      epic_state_id: Epic.available_states[epic.state_id],
-      color: ::EE::Epic::DEFAULT_COLOR
+      epic_state_id: Epic.available_states[epic.state_id]
     }.stringify_keys
   end
 end
