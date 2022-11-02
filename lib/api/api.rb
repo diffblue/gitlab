@@ -181,6 +181,7 @@ module API
         mount ::API::Ci::Runners
         mount ::API::Clusters::AgentTokens
         mount ::API::Clusters::Agents
+        mount ::API::Commits
         mount ::API::CommitStatuses
         mount ::API::DeployKeys
         mount ::API::DeployTokens
@@ -240,7 +241,6 @@ module API
       mount ::API::Ci::Triggers
       mount ::API::Ci::Variables
       mount ::API::CommitStatuses
-      mount ::API::Commits
       mount ::API::ComposerPackages
       mount ::API::ConanInstancePackages
       mount ::API::ConanProjectPackages
