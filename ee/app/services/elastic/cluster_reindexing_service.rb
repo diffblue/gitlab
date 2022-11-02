@@ -74,21 +74,23 @@ module Elastic
     def indexing_paused!
       target_classes = current_task.target_classes
 
-      # Create indices with custom settings
-      items_to_reindex = elastic_helper.create_standalone_indices(
-        with_alias: false,
-        options: { settings: INITIAL_INDEX_OPTIONS },
-        target_classes: target_classes
-      )
+      items_to_reindex = []
 
-      # Repository is a marker class for the main index
-      if target_classes.include?(Repository)
-        items_to_reindex.merge!(
-          elastic_helper.create_empty_index(
-            with_alias: false,
-            options: { settings: INITIAL_INDEX_OPTIONS }
-          )
-        )
+      target_classes.each do |klass|
+        alias_name = elastic_helper.klass_to_alias_name(klass: klass)
+        index_names = elastic_helper.target_index_names(target: alias_name).keys
+
+        index_names.each_with_index do |index_name, index|
+          name_suffix = "-reindex-#{current_task.id}-#{index}"
+
+          alias_info = load_alias_info(klass: klass, name_suffix: name_suffix)
+
+          items_to_reindex << {
+            alias_name: alias_info.each_value.first,
+            index_name_from: index_name,
+            index_name_to: alias_info.each_key.first
+          }
+        end
       end
 
       launch_subtasks(items_to_reindex)
@@ -98,20 +100,29 @@ module Elastic
       true
     end
 
-    def launch_subtasks(items_to_reindex)
-      items_to_reindex.each do |new_index_name, alias_name|
-        old_index_name = elastic_helper.target_index_name(target: alias_name)
-        # Record documents count
-        documents_count = elastic_helper.documents_count(index_name: old_index_name)
-        # Create all subtasks
-        subtask = current_task.subtasks.create!(
-          alias_name: alias_name,
-          index_name_from: old_index_name,
-          index_name_to: new_index_name,
-          documents_count: documents_count
+    def load_alias_info(klass:, name_suffix:)
+      if klass == Repository # Repository is a marker class for the main index
+        elastic_helper.create_empty_index(
+          with_alias: false,
+          options: { settings: INITIAL_INDEX_OPTIONS, name_suffix: name_suffix }
         )
+      else
+        elastic_helper.create_standalone_indices(
+          with_alias: false,
+          options: { settings: INITIAL_INDEX_OPTIONS, name_suffix: name_suffix },
+          target_classes: [klass]
+        )
+      end
+    end
 
-        max_slice = elastic_helper.get_settings(index_name: old_index_name).dig('number_of_shards').to_i * current_task.slice_multiplier
+    def launch_subtasks(items_to_reindex)
+      items_to_reindex.each do |item|
+        # Record documents count
+        documents_count = elastic_helper.documents_count(index_name: item[:index_name_from])
+        # Create all subtasks
+        subtask = current_task.subtasks.create!(item.merge(documents_count: documents_count))
+
+        max_slice = elastic_helper.get_settings(index_name: item[:index_name_from]).dig('number_of_shards').to_i * current_task.slice_multiplier
         0.upto(max_slice - 1).to_a.each do |slice|
           subtask.slices.create!(
             elastic_max_slice: max_slice,
@@ -248,9 +259,24 @@ module Elastic
     end
 
     def switch_alias_to_new_index
-      current_task.subtasks.each do |subtask|
-        elastic_helper.switch_alias(from: subtask.index_name_from, to: subtask.index_name_to, alias_name: subtask.alias_name)
+      actions = []
+
+      current_task.subtasks.group_by(&:alias_name).each do |alias_name, subtasks|
+        subtasks.each_with_index do |subtask, index|
+          # Pick the last index as the write one
+          is_write_index = index == subtasks.length - 1
+          actions += [
+            {
+              remove: { index: subtask.index_name_from, alias: subtask.alias_name }
+            },
+            {
+              add: { index: subtask.index_name_to, alias: subtask.alias_name, is_write_index: is_write_index }
+            }
+          ]
+        end
       end
+
+      elastic_helper.multi_switch_alias(actions: actions)
     end
 
     def finalize_reindexing

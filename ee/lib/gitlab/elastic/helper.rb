@@ -88,8 +88,8 @@ module Gitlab
         "#{target_name}-migrations"
       end
 
-      def index_name_with_timestamp(alias_name)
-        "#{alias_name}-#{Time.now.utc.strftime('%Y%m%d-%H%M')}"
+      def index_name_with_timestamp(alias_name, suffix: nil)
+        "#{alias_name}-#{Time.now.utc.strftime('%Y%m%d-%H%M')}#{suffix}"
       end
 
       def create_migrations_index
@@ -149,7 +149,7 @@ module Gitlab
         proxies = standalone_indices_proxies(target_classes: target_classes)
         proxies.each_with_object({}) do |proxy, indices|
           alias_name = proxy.index_name
-          new_index_name = index_name_with_timestamp(alias_name)
+          new_index_name = index_name_with_timestamp(alias_name, suffix: options[:name_suffix])
 
           create_index(new_index_name, alias_name, with_alias, proxy.settings.to_hash, proxy.mappings.to_hash, options)
           indices[new_index_name] = alias_name
@@ -174,7 +174,7 @@ module Gitlab
       end
 
       def create_empty_index(with_alias: true, options: {})
-        new_index_name = options[:index_name] || "#{target_name}-#{Time.now.strftime("%Y%m%d-%H%M")}"
+        new_index_name = options[:index_name] || index_name_with_timestamp(target_name, suffix: options[:name_suffix])
 
         create_index(new_index_name, target_name, with_alias, default_settings, default_mappings, options)
 
@@ -302,19 +302,37 @@ module Gitlab
           }
         ]
 
-        body = { actions: actions }
-        client.indices.update_aliases(body: body)
+        multi_switch_alias(actions: actions)
+      end
+
+      def multi_switch_alias(actions:)
+        client.indices.update_aliases(body: { actions: actions })
       end
 
       # This method is used when we need to get an actual index name (if it's used through an alias)
       def target_index_name(target: nil)
+        index_names = target_index_names(target: target)
+        index_names.find { |_, write_index| write_index }.first
+      end
+
+      # @return [Hash<String, Boolean>] index_name => is_write_index
+      def target_index_names(target:)
         target ||= target_name
 
         if alias_exists?(name: target)
-          client.indices.get_alias(name: target).each_key.first
+          client.indices.get_alias(name: target).transform_values do |options|
+            # If it's not set, that means that this is the write index
+            options.dig('aliases', target, 'is_write_index') || true
+          end
         else
-          target
+          { target => true }
         end
+      end
+
+      def klass_to_alias_name(klass:)
+        return target_name if klass == Repository
+
+        ::Elastic::Latest::ApplicationClassProxy.new(klass, use_separate_indices: true).index_name
       end
 
       # handles unreachable hosts and any other exceptions that may be raised

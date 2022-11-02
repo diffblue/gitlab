@@ -46,51 +46,85 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
   end
 
   context 'state: indexing_paused' do
-    it 'creates subtasks and slices' do
-      task = create(:elastic_reindexing_task, state: :indexing_paused)
+    let(:issues_alias) { Issue.__elasticsearch__.index_name }
+    let(:issues_old_index_name) { "#{issues_alias}-1" }
+    let(:issues_new_index_name) { "#{issues_alias}-reindex" }
 
-      allow(helper).to receive(:create_empty_index).and_return('new_index_name' => 'new_index')
-      allow(helper).to receive(:create_standalone_indices).and_return('new_issues_name' => 'new_issues')
-      allow(helper).to receive(:reindex).with(from: anything, to: 'new_index_name', slice: anything, max_slice: anything).and_return('task_id_1')
-      allow(helper).to receive(:reindex).with(from: anything, to: 'new_issues_name', slice: anything, max_slice: anything).and_return('task_id_2')
-      allow(helper).to receive(:get_settings).with(index_name: 'new_index').and_return({ 'number_of_shards' => '10' })
-      allow(helper).to receive(:get_settings).with(index_name: 'new_issues').and_return({ 'number_of_shards' => '3' })
+    let(:main_alias) { Repository.__elasticsearch__.index_name }
+    let(:main_old_index_name) { "#{main_alias}-1" }
+    let(:main_new_index_name) { "#{main_alias}-reindex" }
 
-      expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('indexing_paused').to('reindexing')
+    context 'when targets are empty' do
+      let!(:task) { create(:elastic_reindexing_task, state: :indexing_paused, targets: nil) }
 
-      subtasks = task.subtasks.order(:index_name_to)
-      expect(subtasks.count).to eq(2)
+      before do
+        allow(helper).to receive(:create_standalone_indices).and_return(issues_new_index_name => issues_alias)
+        allow(helper).to receive(:target_index_names) { |options| { "#{options[:target]}-1" => true } }
+        allow(helper).to receive(:create_empty_index).and_return(main_new_index_name => main_alias)
+        allow(helper).to receive(:reindex) { |options| "#{options[:to]}_task_id" }
+        allow(helper).to receive(:documents_count)
+        allow(helper).to receive(:get_settings) do |options|
+          number_of_shards = case options[:index_name]
+                             when main_old_index_name then 10
+                             when issues_old_index_name then 3
+                             else
+                               1
+                             end
+          { 'number_of_shards' => number_of_shards.to_s }
+        end
+      end
 
-      slice_1 = subtasks.first.slices.first
-      expect(subtasks.first.index_name_to).to eq('new_index_name')
-      expect(subtasks.first.slices.count).to eq(20)
-      expect(slice_1.elastic_max_slice).to eq(20)
-      expect(slice_1.elastic_task).to eq('task_id_1')
-      expect(slice_1.elastic_slice).to eq(0)
+      it 'creates subtasks and slices' do
+        expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('indexing_paused').to('reindexing')
 
-      slice_2 = subtasks.last.slices.last
-      expect(subtasks.last.index_name_to).to eq('new_issues_name')
-      expect(subtasks.last.slices.count).to eq(6)
-      expect(slice_2.elastic_max_slice).to eq(6)
-      expect(slice_2.elastic_task).to eq('task_id_2')
-      expect(slice_2.elastic_slice).to eq(5)
+        subtasks = task.subtasks
+        expect(subtasks.count).to eq(6)
+
+        subtask_1 = subtasks.find { |subtask| subtask.alias_name == main_alias }
+        slice_1 = subtask_1.slices.first
+        expect(subtask_1.index_name_to).to eq(main_new_index_name)
+        expect(subtask_1.slices.count).to eq(20)
+        expect(slice_1.elastic_max_slice).to eq(20)
+        expect(slice_1.elastic_task).to eq("#{main_new_index_name}_task_id")
+        expect(slice_1.elastic_slice).to eq(0)
+
+        subtask_2 = subtasks.find { |subtask| subtask.alias_name == issues_alias }
+        slice_2 = subtask_2.slices.last
+        expect(subtask_2.index_name_to).to eq(issues_new_index_name)
+        expect(subtask_2.slices.count).to eq(6)
+        expect(slice_2.elastic_max_slice).to eq(6)
+        expect(slice_2.elastic_task).to eq("#{issues_new_index_name}_task_id")
+        expect(slice_2.elastic_slice).to eq(5)
+      end
     end
 
     context 'when targets are provided' do
-      let(:task) { create(:elastic_reindexing_task, state: :indexing_paused, targets: targets) }
+      let!(:task) { create(:elastic_reindexing_task, state: :indexing_paused, targets: targets) }
 
       before do
-        allow(helper).to receive(:create_standalone_indices)
-                          .with(with_alias: false, options: { settings: described_class::INITIAL_INDEX_OPTIONS }, target_classes: task.target_classes)
-                          .and_return('new_issues_name' => 'new_issues')
+        allow(helper).to receive(:target_index_names) { |options| { "#{options[:target]}-1" => true } }
       end
 
       context 'targets set to issue and repository' do
         let(:targets) { %w[Issue Repository] }
 
         it 'creates multiple indices' do
-          expect(helper).to receive(:create_empty_index).and_return('new_index_name' => 'new_index')
-          is_expected.to receive(:launch_subtasks).with({ 'new_index_name' => 'new_index', 'new_issues_name' => 'new_issues' })
+          expect(helper).to receive(:create_empty_index).and_return(main_new_index_name => main_alias)
+
+          is_expected.to receive(:launch_subtasks).with(
+            array_including(
+              {
+                alias_name: issues_alias,
+                index_name_from: issues_old_index_name,
+                index_name_to: anything
+              },
+              {
+                alias_name: main_alias,
+                index_name_from: main_old_index_name,
+                index_name_to: anything
+              }
+            )
+          )
 
           cluster_reindexing_service.execute
         end
@@ -101,7 +135,14 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
 
         it 'does not create the main index' do
           expect(helper).not_to receive(:create_empty_index)
-          is_expected.to receive(:launch_subtasks).with({ 'new_issues_name' => 'new_issues' })
+          is_expected.to receive(:launch_subtasks).with(
+            array_including(
+              hash_including(
+                alias_name: issues_alias,
+                index_name_from: issues_old_index_name,
+                index_name_to: anything
+              )
+            ))
 
           cluster_reindexing_service.execute
         end
@@ -242,7 +283,11 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
 
         it 'launches all state steps' do
           expect(helper).to receive(:update_settings).with(index_name: subtask.index_name_to, settings: expected_default_settings)
-          expect(helper).to receive(:switch_alias).with(to: subtask.index_name_to, from: subtask.index_name_from, alias_name: subtask.alias_name)
+          actions = [
+            { remove: { index: subtask.index_name_from, alias: subtask.alias_name } },
+            { add: { index: subtask.index_name_to, alias: subtask.alias_name, is_write_index: true } }
+          ]
+          expect(helper).to receive(:multi_switch_alias).with(actions: actions)
           expect(Gitlab::CurrentSettings).to receive(:update!).with(elasticsearch_pause_indexing: false)
 
           # kick off reindexing for each slice
