@@ -9,6 +9,10 @@ namespace :gitlab do
       # to use this configuration during a full re-index anyways.
       ENV['UPDATE_INDEX'] = nil
 
+      if Gitlab::CurrentSettings.elasticsearch_pause_indexing
+        puts "WARNING: `elasticsearch_pause_indexing` is enabled. Disable this setting by running `rake gitlab:elastic:resume_indexing` to complete indexing.".color(:yellow)
+      end
+
       Rake::Task["gitlab:elastic:recreate_index"].invoke
       Rake::Task["gitlab:elastic:clear_index_status"].invoke
 
