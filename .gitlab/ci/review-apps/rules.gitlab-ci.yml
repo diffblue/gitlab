@@ -28,13 +28,13 @@
   variables:
     QA_TESTS: ""
 
-.never-when-qa-framework-changes-or-no-specific-specs:
+.never-when-qa-run-all-tests-or-no-specific-specs:
   - <<: *qa-run-all-tests
     when: never
   - <<: *all-specs
     when: never
 
-.never-when-specific-specs-always-when-qa-framework-changes:
+.never-when-specific-specs-always-when-qa-run-all-tests:
   - *qa-run-all-tests
   - <<: *specific-specs
     when: manual
@@ -70,7 +70,7 @@
   rules:
     - <<: *app-changes
       when: never
-    - !reference [.never-when-qa-framework-changes-or-no-specific-specs]
+    - !reference [.never-when-qa-run-all-tests-or-no-specific-specs]
     - if: $QA_SUITES =~ /Test::Instance::ReviewBlocking/
 .rules:qa-blocking-parallel:
   rules:
@@ -78,16 +78,16 @@
     - <<: *app-changes
       variables:
         QA_TESTS: "" # unset QA_TESTS even if specific tests were inferred from stage label
-    - !reference [.never-when-specific-specs-always-when-qa-framework-changes]
+    - !reference [.never-when-specific-specs-always-when-qa-run-all-tests]
     - if: $QA_SUITES =~ /Test::Instance::ReviewBlocking/
 
 .rules:qa-non-blocking:
   rules:
-    - !reference [.never-when-qa-framework-changes-or-no-specific-specs]
+    - !reference [.never-when-qa-run-all-tests-or-no-specific-specs]
     - if: $QA_SUITES =~ /Test::Instance::ReviewNonBlocking/
 .rules:qa-non-blocking-parallel:
   rules:
-    - !reference [.never-when-specific-specs-always-when-qa-framework-changes]
+    - !reference [.never-when-specific-specs-always-when-qa-run-all-tests]
     - *all-specs-mr # set full suite to manual when no specific specs passed in mr
     - if: $QA_SUITES =~ /Test::Instance::ReviewNonBlocking/
 
