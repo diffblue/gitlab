@@ -2,7 +2,7 @@ import timezoneMock from 'timezone-mock';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageMonthChart from 'ee/ci_minutes_usage/components/minutes_usage_month_chart.vue';
+import MinutesUsageMonthChart from 'ee/ci/ci_minutes_usage/components/minutes_usage_month_chart.vue';
 import { ciMinutesUsageMockData } from '../mock_data';
 
 const {
