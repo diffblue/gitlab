@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::GitalyClient::ObjectPoolService do
   let(:pool_repository) { create(:pool_repository) }
-  let(:project) { create(:project, :repository) }
+  let(:project) { pool_repository.source_project }
   let(:raw_repository) { project.repository.raw }
   let(:object_pool) { pool_repository.object_pool }
 
