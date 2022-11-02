@@ -54,7 +54,13 @@ export default {
       if (this.graphql) {
         this.$apollo.mutate({
           mutation: setEnvironmentToRollback,
-          variables: { environment: this.environment },
+          variables: {
+            environment: {
+              ...this.environment,
+              retryUrl: this.retryUrl,
+              isLastDeployment: this.isLastDeployment,
+            },
+          },
         });
       } else {
         eventHub.$emit('requestRollbackEnvironment', {
