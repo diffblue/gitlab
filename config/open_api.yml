@@ -55,5 +55,7 @@ metadata:
     description: Operations related to releases
   - name: suggestions
     description: Operations related to suggestions
+  - name: system_hooks
+    description: Operations related to system hooks
   - name: unleash_api
     description: Operations related to Unleash API
