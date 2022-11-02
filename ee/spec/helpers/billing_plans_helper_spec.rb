@@ -12,6 +12,7 @@ RSpec.describe BillingPlansHelper, :saas do
     let(:plan_renew_href) { "#{EE::SUBSCRIPTIONS_URL}/gitlab/namespaces/#{group.id}/renew" }
     let(:billable_seats_href) { helper.group_usage_quotas_path(group, anchor: 'seats-quota-tab') }
     let(:refresh_seats_href) { helper.refresh_seats_group_billings_url(group) }
+    let(:read_only) { true }
 
     let(:plan) do
       double('plan', id: 'external-paid-plan-hash-code', name: 'Bronze Plan')
@@ -26,12 +27,13 @@ RSpec.describe BillingPlansHelper, :saas do
           plan_renew_href: plan_renew_href,
           customer_portal_url: customer_portal_url,
           billable_seats_href: billable_seats_href,
-          plan_name: plan.name
+          plan_name: plan.name,
+          read_only: read_only.to_s
         }
       end
 
       it 'returns data attributes' do
-        expect(helper.subscription_plan_data_attributes(group, plan))
+        expect(helper.subscription_plan_data_attributes(group, plan, read_only: read_only))
           .to eq(base_attrs.merge(refresh_seats_href: refresh_seats_href))
       end
 
@@ -41,7 +43,7 @@ RSpec.describe BillingPlansHelper, :saas do
         end
 
         it 'returns data attributes' do
-          expect(helper.subscription_plan_data_attributes(group, plan))
+          expect(helper.subscription_plan_data_attributes(group, plan, read_only: read_only))
             .to eq(base_attrs)
         end
       end
@@ -51,7 +53,7 @@ RSpec.describe BillingPlansHelper, :saas do
       let(:group) { nil }
 
       it 'returns empty data attributes' do
-        expect(helper.subscription_plan_data_attributes(group, plan)).to eq({})
+        expect(helper.subscription_plan_data_attributes(group, plan, read_only: read_only)).to eq({})
       end
     end
 
@@ -66,12 +68,13 @@ RSpec.describe BillingPlansHelper, :saas do
           namespace_id: nil,
           namespace_name: group.name,
           plan_renew_href: plan_renew_href,
-          plan_name: nil
+          plan_name: nil,
+          read_only: read_only.to_s
         }
       end
 
       it 'returns attributes' do
-        expect(helper.subscription_plan_data_attributes(group, plan))
+        expect(helper.subscription_plan_data_attributes(group, plan, read_only: read_only))
           .to eq(base_attrs.merge(refresh_seats_href: refresh_seats_href))
       end
 
@@ -81,7 +84,7 @@ RSpec.describe BillingPlansHelper, :saas do
         end
 
         it 'returns data attributes' do
-          expect(helper.subscription_plan_data_attributes(group, plan))
+          expect(helper.subscription_plan_data_attributes(group, plan, read_only: read_only))
             .to eq(base_attrs)
         end
       end
@@ -98,12 +101,13 @@ RSpec.describe BillingPlansHelper, :saas do
           billable_seats_href: billable_seats_href,
           add_seats_href: add_seats_href,
           plan_renew_href: plan_renew_href,
-          plan_name: plan.name
+          plan_name: plan.name,
+          read_only: read_only.to_s
         }
       end
 
       it 'returns data attributes without upgrade href' do
-        expect(helper.subscription_plan_data_attributes(group, plan))
+        expect(helper.subscription_plan_data_attributes(group, plan, read_only: read_only))
           .to eq(base_attrs.merge(refresh_seats_href: refresh_seats_href))
       end
 
@@ -113,7 +117,7 @@ RSpec.describe BillingPlansHelper, :saas do
         end
 
         it 'returns data attributes' do
-          expect(helper.subscription_plan_data_attributes(group, plan))
+          expect(helper.subscription_plan_data_attributes(group, plan, read_only: read_only))
             .to eq(base_attrs)
         end
       end
@@ -195,32 +199,32 @@ RSpec.describe BillingPlansHelper, :saas do
 
     context 'when plan has a valid property' do
       where(:plan_name, :for_free, :plan_id, :result) do
-        Plan::BRONZE  | true  | '123456789'  | :upgrade_for_free
-        Plan::BRONZE  | true  | '987654321'  | :no_offer
-        Plan::BRONZE  | true  | nil          | :no_offer
-        Plan::BRONZE  | false | '123456789'  | :upgrade_for_offer
-        Plan::BRONZE  | false | nil          | :no_offer
-        Plan::BRONZE  | nil   | nil          | :no_offer
-        Plan::PREMIUM | nil   | nil          | :no_offer
-        nil           | true  | nil          | :no_offer
+        Plan::BRONZE | true | '123456789' | :upgrade_for_free
+        Plan::BRONZE | true | '987654321' | :no_offer
+        Plan::BRONZE | true | nil | :no_offer
+        Plan::BRONZE | false | '123456789' | :upgrade_for_offer
+        Plan::BRONZE | false | nil | :no_offer
+        Plan::BRONZE | nil | nil | :no_offer
+        Plan::PREMIUM | nil | nil | :no_offer
+        nil | true | nil | :no_offer
       end
 
       with_them do
         let(:namespace) do
           double('plan',
-            {
-              actual_plan_name: plan_name,
-              id: '000000000'
-            }
+                 {
+                   actual_plan_name: plan_name,
+                   id: '000000000'
+                 }
           )
         end
 
         before do
           allow_next_instance_of(GitlabSubscriptions::PlanUpgradeService) do |instance|
             expect(instance).to receive(:execute).once.and_return({
-             upgrade_for_free: for_free,
-             upgrade_plan_id: plan_id
-            })
+                                                                    upgrade_for_free: for_free,
+                                                                    upgrade_plan_id: plan_id
+                                                                  })
           end
         end
 
@@ -235,8 +239,8 @@ RSpec.describe BillingPlansHelper, :saas do
     using RSpec::Parameterized::TableSyntax
 
     where(:offer_type, :result) do
-      :no_offer          | false
-      :upgrade_for_free  | true
+      :no_offer | false
+      :upgrade_for_free | true
       :upgrade_for_offer | true
     end
 
@@ -251,12 +255,12 @@ RSpec.describe BillingPlansHelper, :saas do
     using RSpec::Parameterized::TableSyntax
 
     where(:link_action, :upgrade_offer, :result) do
-      'upgrade'     | :no_offer           | true
-      'upgrade'     | :upgrade_for_free   | false
-      'upgrade'     | :upgrade_for_offer  | true
-      'no_upgrade'  | :no_offer           | false
-      'no_upgrade'  | :upgrade_for_free   | false
-      'no_upgrade'  | :upgrade_for_offer  | false
+      'upgrade' | :no_offer | true
+      'upgrade' | :upgrade_for_free | false
+      'upgrade' | :upgrade_for_offer | true
+      'no_upgrade' | :no_offer | false
+      'no_upgrade' | :upgrade_for_free | false
+      'no_upgrade' | :upgrade_for_offer | false
     end
 
     with_them do
@@ -270,12 +274,12 @@ RSpec.describe BillingPlansHelper, :saas do
     using RSpec::Parameterized::TableSyntax
 
     where(:link_action, :upgrade_offer, :result) do
-      'upgrade'     | :no_offer          | true
-      'upgrade'     | :upgrade_for_free  | true
-      'upgrade'     | :upgrade_for_offer | false
-      'no_upgrade'  | :no_offer          | false
-      'no_upgrade'  | :upgrade_for_free  | false
-      'no_upgrade'  | :upgrade_for_offer | false
+      'upgrade' | :no_offer | true
+      'upgrade' | :upgrade_for_free | true
+      'upgrade' | :upgrade_for_offer | false
+      'no_upgrade' | :no_offer | false
+      'no_upgrade' | :upgrade_for_free | false
+      'no_upgrade' | :upgrade_for_offer | false
     end
 
     with_them do
@@ -409,9 +413,9 @@ RSpec.describe BillingPlansHelper, :saas do
     subject { helper.upgrade_button_text(plan_offer_type) }
 
     where(:plan_offer_type, :result) do
-      :no_offer           | 'Upgrade'
-      :upgrade_for_free   | 'Upgrade for free'
-      :upgrade_for_offer  | 'Upgrade'
+      :no_offer | 'Upgrade'
+      :upgrade_for_free | 'Upgrade for free'
+      :upgrade_for_offer | 'Upgrade'
     end
 
     with_them do
@@ -539,15 +543,15 @@ RSpec.describe BillingPlansHelper, :saas do
 
     where(:free_personal, :trial_active, :gold_plan, :ultimate_plan, :opensource_plan, :expectations) do
       false | false | false | false | false | true
-      false | true  | false | false | false | true
-      false | false | true  | false | false | false
-      false | true  | true  | false | false | true
-      false | false | false | true  | false | false
-      false | true  | false | true  | false | true
-      false | false | true  | true  | false | false
-      false | true  | true  | true  | false | true
-      true  | true  | true  | true  | false | false
-      false | false | false | false | true  | false
+      false | true | false | false | false | true
+      false | false | true | false | false | false
+      false | true | true | false | false | true
+      false | false | false | true | false | false
+      false | true | false | true | false | true
+      false | false | true | true | false | false
+      false | true | true | true | false | true
+      true | true | true | true | false | false
+      false | false | false | false | true | false
     end
 
     with_them do
@@ -571,9 +575,9 @@ RSpec.describe BillingPlansHelper, :saas do
     let(:namespace) { build(:namespace) }
 
     where(:free_personal, :eligible_for_trial, :expected) do
-      false  | true   | true
-      true   | true   | false
-      false  | false  | false
+      false | true | true
+      true | true | false
+      false | false | false
     end
 
     with_them do

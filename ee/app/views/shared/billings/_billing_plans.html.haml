@@ -7,7 +7,7 @@
       - is_current = plan.code == current_plan&.code || is_default_plan
 
       = render 'shared/billings/billing_plan', namespace: namespace, plan: plan, is_current: is_current,
-                                               plan_offer_type: upgrade_offer_type(namespace, plan)
+                                               plan_offer_type: upgrade_offer_type(namespace, plan), read_only: read_only
 
 - if namespace.gitlab_subscription&.has_a_paid_hosted_plan?
   - support_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: EE::CUSTOMER_SUPPORT_URL }
