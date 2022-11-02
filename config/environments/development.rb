@@ -53,7 +53,7 @@ Rails.application.configure do
   config.lookbook.page_paths = ["#{config.root}/spec/components/docs"]
   config.lookbook.preview_params_options_eval = true
   config.lookbook.preview_display_options = {
-    theme: %w[light dark]
+    theme: ["light", "dark (alpha)"]
   }
 
   # Adds additional error checking when serving assets at runtime.
