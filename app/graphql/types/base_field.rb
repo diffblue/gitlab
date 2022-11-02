@@ -132,7 +132,7 @@ module Types
       proc do |ctx, args, child_complexity|
         # Resolvers may add extra complexity depending on used arguments
         complexity = child_complexity + resolver&.try(
-          :resolver_complexity, args, child_complexity: child_complexity
+          :resolver_complexity, args, child_complexity: child_complexity, context: ctx
         ).to_i
         complexity += 1 if calls_gitaly?
         complexity += complexity * connection_complexity_multiplier(ctx, args)

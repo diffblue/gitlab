@@ -7,9 +7,9 @@ RSpec.describe Resolvers::BlobsResolver do
 
   describe '.resolver_complexity' do
     it 'adds one per path being resolved' do
-      control = described_class.resolver_complexity({}, child_complexity: 1)
+      control = described_class.resolver_complexity({}, child_complexity: 1, context: nil)
 
-      expect(described_class.resolver_complexity({ paths: %w[a b c] }, child_complexity: 1))
+      expect(described_class.resolver_complexity({ paths: %w[a b c] }, child_complexity: 1, context: nil))
         .to eq(control + 3)
     end
   end

@@ -48,7 +48,7 @@ module Resolvers
       ]
     end
 
-    def self.resolver_complexity(args, child_complexity:)
+    def self.resolver_complexity(args, child_complexity:, context:)
       complexity = super
       complexity - 10
     end

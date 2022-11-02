@@ -168,7 +168,7 @@ module Resolvers
     # https://gitlab.com/gitlab-org/gitlab/issues/11841
     # Until we do that, add in child_complexity for each iid requested
     # (minus one for the automatically added child_complexity in the BaseField)
-    def self.resolver_complexity(args, child_complexity:)
+    def self.resolver_complexity(args, child_complexity:, context:)
       complexity  = super
       complexity += (args[:iids].count - 1) * child_complexity if args[:iids]
 

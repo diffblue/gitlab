@@ -2335,7 +2335,7 @@ for objects that are expensive (such as requiring Gitaly calls).
 For example, a conditional complexity method in a resolver:
 
 ```ruby
-def self.resolver_complexity(args, child_complexity:)
+def self.resolver_complexity(args, **kwargs)
   complexity = super
   complexity += 2 if args[:labelName]
 

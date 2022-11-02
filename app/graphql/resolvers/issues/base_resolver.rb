@@ -79,7 +79,7 @@ module Resolvers
                description: 'Issues updated before this date.'
 
       class << self
-        def resolver_complexity(args, child_complexity:)
+        def resolver_complexity(args, child_complexity:, context:)
           complexity = super
           complexity += 2 if args[:labelName]
 
