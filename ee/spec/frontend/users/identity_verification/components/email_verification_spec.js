@@ -6,7 +6,12 @@ import { s__ } from '~/locale';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import { visitUrl } from '~/lib/utils/url_utility';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
-import { I18N_EMAIL_VERIFICATION } from 'ee/users/identity_verification/constants';
+import {
+  I18N_EMAIL_EMPTY_CODE,
+  I18N_EMAIL_INVALID_CODE,
+  I18N_EMAIL_REQUEST_ERROR,
+  I18N_EMAIL_RESEND_SUCCESS,
+} from 'ee/users/identity_verification/constants';
 
 jest.mock('~/flash');
 jest.mock('~/lib/utils/url_utility', () => ({
@@ -84,8 +89,8 @@ describe('EmailVerification', () => {
         ${'shows no error messages before submitting the form'}          | ${''}       | ${false} | ${false}  | ${false}   | ${''}
         ${'shows no error messages before submitting the form'}          | ${'xxx'}    | ${false} | ${false}  | ${false}   | ${''}
         ${'shows no error messages before submitting the form'}          | ${'123456'} | ${false} | ${true}   | ${false}   | ${''}
-        ${'shows empty code error message when submitting the form'}     | ${''}       | ${true}  | ${false}  | ${true}    | ${I18N_EMAIL_VERIFICATION.emptyCode}
-        ${'shows invalid error message when submitting the form'}        | ${'xxx'}    | ${true}  | ${false}  | ${true}    | ${I18N_EMAIL_VERIFICATION.invalidCode}
+        ${'shows empty code error message when submitting the form'}     | ${''}       | ${true}  | ${false}  | ${true}    | ${I18N_EMAIL_EMPTY_CODE}
+        ${'shows invalid error message when submitting the form'}        | ${'xxx'}    | ${true}  | ${false}  | ${true}    | ${I18N_EMAIL_INVALID_CODE}
         ${'shows incorrect code error message returned from the server'} | ${'123456'} | ${true}  | ${true}   | ${true}    | ${s__('IdentityVerification|The code is incorrect. Enter it again, or send a new code.')}
       `(`$scenario with code $code`, async ({ code, submit, codeValid, errorShown, message }) => {
         enterCode(code);
@@ -118,10 +123,10 @@ describe('EmailVerification', () => {
         expect(findErrorMessage().text()).toBe('error message');
 
         await enterCode('');
-        expect(findErrorMessage().text()).toBe(I18N_EMAIL_VERIFICATION.emptyCode);
+        expect(findErrorMessage().text()).toBe(I18N_EMAIL_EMPTY_CODE);
 
         await enterCode('xxx');
-        expect(findErrorMessage().text()).toBe(I18N_EMAIL_VERIFICATION.invalidCode);
+        expect(findErrorMessage().text()).toBe(I18N_EMAIL_INVALID_CODE);
 
         await enterCode('123456');
         expect(findErrorMessage().exists()).toBe(false);
@@ -136,7 +141,7 @@ describe('EmailVerification', () => {
         await axios.waitForAll();
 
         expect(createAlert).toHaveBeenCalledWith({
-          message: I18N_EMAIL_VERIFICATION.requestError,
+          message: I18N_EMAIL_REQUEST_ERROR,
           captureError: true,
           error: expect.any(Error),
         });
@@ -164,14 +169,14 @@ describe('EmailVerification', () => {
       let alertObject;
       if (statusCode === 200 && response.status === 'success') {
         alertObject = {
-          message: I18N_EMAIL_VERIFICATION.resendSuccess,
+          message: I18N_EMAIL_RESEND_SUCCESS,
           variant: VARIANT_SUCCESS,
         };
       } else if (statusCode === 200) {
         alertObject = { message: response.message };
       } else {
         alertObject = {
-          message: I18N_EMAIL_VERIFICATION.requestError,
+          message: I18N_EMAIL_REQUEST_ERROR,
           captureError: true,
           error: expect.any(Error),
         };

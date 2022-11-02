@@ -1,9 +1,18 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput, GlIcon, GlLink, GlSprintf, GlButton } from '@gitlab/ui';
+import { s__ } from '~/locale';
 import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
-import { I18N_EMAIL_VERIFICATION, SUCCESS_RESPONSE, FAILURE_RESPONSE } from '../constants';
+import {
+  I18N_EMAIL_EMPTY_CODE,
+  I18N_EMAIL_INVALID_CODE,
+  I18N_EMAIL_REQUEST_ERROR,
+  I18N_EMAIL_RESEND_SUCCESS,
+} from '../constants';
+
+const SUCCESS_RESPONSE = 'success';
+const FAILURE_RESPONSE = 'failure';
 
 export default {
   components: {
@@ -33,11 +42,11 @@ export default {
       }
 
       if (!this.verificationCode) {
-        return this.$options.i18n.emptyCode;
+        return I18N_EMAIL_EMPTY_CODE;
       }
 
       if (!this.verificationCode.match(/\d{6}/)) {
-        return this.$options.i18n.invalidCode;
+        return I18N_EMAIL_INVALID_CODE;
       }
 
       return this.verifyError;
@@ -78,7 +87,7 @@ export default {
     handleResendResponse(response) {
       if (response.data.status === SUCCESS_RESPONSE) {
         createAlert({
-          message: this.$options.i18n.resendSuccess,
+          message: I18N_EMAIL_RESEND_SUCCESS,
           variant: VARIANT_SUCCESS,
         });
       } else if (response.data.status === FAILURE_RESPONSE) {
@@ -87,7 +96,7 @@ export default {
     },
     handleError(error) {
       createAlert({
-        message: this.$options.i18n.requestError,
+        message: I18N_EMAIL_REQUEST_ERROR,
         captureError: true,
         error,
       });
@@ -97,7 +106,15 @@ export default {
       this.submitted = false;
     },
   },
-  i18n: I18N_EMAIL_VERIFICATION,
+  i18n: {
+    header: s__(
+      "IdentityVerification|For added security, you'll need to verify your identity. We've sent a verification code to %{email}",
+    ),
+    code: s__('IdentityVerification|Verification code'),
+    noCode: s__("IdentityVerification|Didn't receive a code?"),
+    resend: s__('IdentityVerification|Send a new code'),
+    verify: s__('IdentityVerification|Verify email address'),
+  },
 };
 </script>
 <template>
@@ -112,7 +129,7 @@ export default {
     <div class="gl-p-5 gl-border gl-rounded-base">
       <gl-form @submit.prevent="verify">
         <gl-form-group
-          :label="$options.i18n.verificationCode"
+          :label="$options.i18n.code"
           label-for="verification_code"
           :state="isValidInput"
           :invalid-feedback="invalidFeedback"
