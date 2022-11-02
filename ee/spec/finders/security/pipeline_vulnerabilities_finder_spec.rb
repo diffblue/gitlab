@@ -483,6 +483,7 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
         it 'filters by all params' do
           expect(subject.findings.count).to eq(cs_count + dast_count + ds_count + sast_count)
           expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium-maven trivy zaproxy]
+          expect(subject.findings.map(&:scanner).map(&:project).uniq).to match_array([project])
           expect(subject.findings.map(&:confidence).uniq).to match_array(%w[unknown low medium high])
           expect(subject.findings.map(&:severity).uniq).to match_array(%w[unknown low medium high critical info])
           expect(subject.findings.map(&:details).find(&:present?)).to eq(expected_details)
