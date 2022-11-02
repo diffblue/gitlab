@@ -28,9 +28,10 @@ module Security
       end
 
       def determine_mapping_list
-        if external_type == "cwe"
+        case external_type
+        when "cwe"
           "cwe"
-        elsif external_type == "owasp"
+        when "owasp"
           if external_id.in? OWASP_WEB_2017
             "owasp-web-2017"
           elsif external_id.in? OWASP_API_2019
@@ -40,9 +41,10 @@ module Security
       end
 
       def determine_mapping_key
-        if external_type == "cwe"
+        case external_type
+        when "cwe"
           identifier.split('-').last
-        elsif external_type == "owasp"
+        when "owasp"
           external_id
         end
       end
