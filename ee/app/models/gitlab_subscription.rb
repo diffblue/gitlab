@@ -8,7 +8,7 @@ class GitlabSubscription < ApplicationRecord
 
   enum trial_extension_type: { extended: 1, reactivated: 2 }
 
-  default_value_for(:start_date) { Date.today }
+  attribute :start_date, default: -> { Date.today }
 
   before_update :set_max_seats_used_changed_at
   before_update :log_previous_state_for_update
