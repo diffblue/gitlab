@@ -42,9 +42,9 @@ RSpec.describe Ci::Build, :saas do
     end
   end
 
-  describe 'extra_accessors' do
+  describe 'clone_accessors' do
     it 'includes the cloneable extra accessors' do
-      expect(::Ci::Build.extra_accessors).to eq([:secrets])
+      expect(::Ci::Build.clone_accessors).to include(:secrets)
     end
   end
 
