@@ -169,6 +169,7 @@ module API
 
       # Mount endpoints to include in the OpenAPI V2 documentation here
       namespace do
+        # Keep in alphabetical order
         mount ::API::AccessRequests
         mount ::API::Appearance
         mount ::API::Ci::Runner
@@ -181,14 +182,15 @@ module API
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
         mount ::API::FreezePeriods
-        mount ::API::Metadata
         mount ::API::MergeRequestDiffs
-        mount ::API::UserCounts
+        mount ::API::Metadata
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::Release::Links
         mount ::API::SnippetRepositoryStorageMoves
         mount ::API::Statistics
+        mount ::API::Suggestions
         mount ::API::Tags
+        mount ::API::UserCounts
 
         add_open_api_documentation!
       end
@@ -311,7 +313,6 @@ module API
       mount ::API::Snippets
       mount ::API::Submodules
       mount ::API::Subscriptions
-      mount ::API::Suggestions
       mount ::API::SystemHooks
       mount ::API::Tags
       mount ::API::Templates
