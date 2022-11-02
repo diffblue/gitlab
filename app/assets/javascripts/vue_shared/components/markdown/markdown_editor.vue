@@ -87,16 +87,16 @@ export default {
     return {
       editingMode: EDITING_MODE_MARKDOWN_FIELD,
       switchEditingControlEnabled: true,
-      autofocusExecuted: false,
+      autofocused: false,
     };
   },
   computed: {
     isContentEditorActive() {
       return this.enableContentEditor && this.editingMode === EDITING_MODE_CONTENT_EDITOR;
     },
-    contentEditorAutofocus() {
+    contentEditorAutofocused() {
       // Match textarea focus behavior
-      return this.autofocus && !this.autofocusExecuted ? 'end' : false;
+      return this.autofocus && !this.autofocused ? 'end' : false;
     },
   },
   mounted() {
@@ -130,11 +130,11 @@ export default {
     autofocusTextarea() {
       if (this.autofocus && this.editingMode === EDITING_MODE_MARKDOWN_FIELD) {
         this.$refs.textarea.focus();
-        this.autofocusExecuted = true;
+        this.setEditorAsAutofocused();
       }
     },
-    autofocusContentEditor() {
-      this.autofocusExecuted = true;
+    setEditorAsAutofocused() {
+      this.autofocused = true;
     },
   },
   switchEditingControlOptions: [
@@ -196,8 +196,8 @@ export default {
         :render-markdown="renderMarkdown"
         :uploads-path="uploadsPath"
         :markdown="value"
-        :autofocus="contentEditorAutofocus"
-        @initialized="autofocusContentEditor"
+        :autofocus="contentEditorAutofocused"
+        @initialized="setEditorAsAutofocused"
         @change="updateMarkdownFromContentEditor"
         @loading="disableSwitchEditingControl"
         @loadingSuccess="enableSwitchEditingControl"
