@@ -118,6 +118,7 @@ export default {
           id="company_name"
           :value="companyName"
           name="company_name"
+          data-qa-selector="company_name_field"
           data-testid="company_name"
           required
         />
@@ -135,12 +136,19 @@ export default {
           :options="companySizeOptionsWithDefault"
           value-field="id"
           text-field="name"
+          data-qa-selector="company_size_field"
           data-testid="company_size"
           required
         />
       </gl-form-group>
     </div>
-    <country-or-region-selector :country="country" :state="state" data-testid="country" required />
+    <country-or-region-selector
+      :country="country"
+      :state="state"
+      data-qa-selector="country_option"
+      data-testid="country"
+      required
+    />
     <gl-form-group
       :label="$options.i18n.phoneNumberLabel"
       :optional-text="$options.i18n.optional"
@@ -154,6 +162,7 @@ export default {
         :value="phoneNumber"
         name="phone_number"
         type="tel"
+        data-qa-selector="phone_number_field"
         data-testid="phone_number"
         pattern="^(\+)*[0-9-\s]+$"
       />
@@ -169,6 +178,7 @@ export default {
         id="website_url"
         :value="websiteUrl"
         name="website_url"
+        data-qa-selector="website_url_field"
         data-testid="website_url"
       />
     </gl-form-group>
@@ -185,11 +195,12 @@ export default {
         name="trial_onboarding_flow"
         :label="$options.i18n.trialLabel"
         label-position="hidden"
+        data-qa-selector="trial_onboarding_flow_toggle"
         data-testid="trial_onboarding_flow"
         @change="toggleTrial"
       />
     </gl-form-group>
-    <gl-button type="submit" variant="confirm" class="gl-w-20">
+    <gl-button type="submit" variant="confirm" class="gl-w-20" data-qa-selector="confirm_button">
       {{ $options.i18n.formSubmitText }}
     </gl-button>
   </gl-form>
