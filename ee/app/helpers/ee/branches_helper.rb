@@ -17,7 +17,8 @@ module EE
       return [] unless access_levels
 
       access_levels.map do |level|
-        if level.type == :user
+        case level.type
+        when :user
           {
             id: level.id,
             type: level.type,
@@ -26,9 +27,9 @@ module EE
             name: level.user.name,
             avatar_url: level.user.avatar_url
           }
-        elsif level.type == :deploy_key
+        when :deploy_key
           { id: level.id, type: level.type, deploy_key_id: level.deploy_key_id }
-        elsif level.type == :group
+        when :group
           { id: level.id, type: level.type, group_id: level.group_id }
         else
           { id: level.id, type: level.type, access_level: level.access_level }

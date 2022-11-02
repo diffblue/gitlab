@@ -159,9 +159,10 @@ RSpec.describe 'Project' do
   end
 
   def create_from_template(type, template_name)
-    tab = if type == :instance
+    tab = case type
+          when :instance
             '.custom-instance-project-templates-tab'
-          elsif type == :group
+          when :group
             '.custom-group-project-templates-tab'
           else
             raise ArgumentError, "#{type} is not a valid template type"
