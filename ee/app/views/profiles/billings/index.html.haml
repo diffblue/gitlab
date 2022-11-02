@@ -10,6 +10,6 @@
 - if current_plan
   = render 'billing_plan_header', namespace: namespace, current_plan: current_plan
 
-= render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: namespace, current_plan: current_plan
+= render 'shared/billings/billing_plans', plans_data: @plans_data, namespace: namespace, current_plan: current_plan, read_only: false
 
 #js-billing-plans{ data: data_attributes }

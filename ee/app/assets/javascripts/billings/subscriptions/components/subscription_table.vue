@@ -52,6 +52,10 @@ export default {
     trialPlanName: {
       default: '',
     },
+    readOnly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -170,7 +174,7 @@ export default {
         <strong data-testid="subscription-header" data-qa-selector="subscription_header">{{
           subscriptionHeader
         }}</strong>
-        <div class="gl-display-flex">
+        <div v-if="!readOnly" class="gl-display-flex">
           <extend-reactivate-trial-button
             v-if="availableTrialAction"
             :namespace-id="namespaceId"
