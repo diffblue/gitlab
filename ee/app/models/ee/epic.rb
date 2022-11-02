@@ -26,8 +26,7 @@ module EE
       MAX_HIERARCHY_DEPTH = 7
       MAX_CHILDREN_COUNT = 100
 
-      attribute :color, ::Gitlab::Database::Type::Color.new
-      default_value_for :color, allows_nil: false, value: DEFAULT_COLOR
+      attribute :color, ::Gitlab::Database::Type::Color.new, default: DEFAULT_COLOR
 
       enum state_id: {
         opened: ::Epic.available_states[:opened],
