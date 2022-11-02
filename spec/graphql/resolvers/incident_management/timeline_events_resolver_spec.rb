@@ -35,6 +35,16 @@ RSpec.describe 'Resolvers::IncidentManagement::TimelineEventsResolver' do
     expect(resolved_timeline_events.first).to be_a(::IncidentManagement::TimelineEvent)
   end
 
+  it 'avoids N+1 queries' do
+    control_count = ActiveRecord::QueryRecorder.new do
+      sync(resolve_timeline_events(args, current_user: current_user).to_a)
+    end.count
+
+    expect do
+      subject
+    end.not_to exceed_query_limit(control_count)
+  end
+
   context 'when user does not have permissions' do
     let(:non_member) { create(:user) }
 

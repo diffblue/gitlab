@@ -123,6 +123,14 @@ RSpec.describe 'getting incident timeline events' do
     it 'returns the set tags' do
       expect(timeline_events.first['timelineEventTags']['nodes'].first['name']).to eq(tag1.name)
     end
+
+    it 'avoids N+1 queries' do
+      control = ActiveRecord::QueryRecorder.new do
+        post_graphql(query, current_user: current_user)
+      end
+
+      expect(post_graphql(query, current_user: current_user)).not_to exceed_query_limit(control)
+    end
   end
 
   context 'when filtering by id' do

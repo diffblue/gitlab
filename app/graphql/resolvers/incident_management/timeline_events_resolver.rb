@@ -22,10 +22,16 @@ module Resolvers
                  prepare: ->(id, ctx) { id.model_id }
       end
 
-      def resolve(**args)
+      def resolve_with_lookahead(**args)
         incident = args[:incident_id].find
 
         apply_lookahead(::IncidentManagement::TimelineEventsFinder.new(current_user, incident, args).execute)
+      end
+
+      def preloads
+        {
+          timelineEventTags: [:name]
+        }
       end
     end
   end

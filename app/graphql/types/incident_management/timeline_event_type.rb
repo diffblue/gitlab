@@ -58,6 +58,7 @@ module Types
             null: true,
             description: 'Tags for the incident timeline event.',
             extras: [:lookahead],
+            alpha: { milestone: '15.6' }
             resolver: Resolvers::IncidentManagement::TimelineEventTagsResolver
 
       field :created_at,
