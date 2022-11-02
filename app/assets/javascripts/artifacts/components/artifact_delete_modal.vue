@@ -17,7 +17,7 @@ export default {
       type: String,
       required: true,
     },
-    deleting: {
+    deleteInProgress: {
       type: Boolean,
       required: true,
     },
@@ -26,7 +26,7 @@ export default {
     actionPrimary() {
       return {
         text: I18N_MODAL_PRIMARY,
-        attributes: { variant: 'danger', loading: this.deleting },
+        attributes: { variant: 'danger', loading: this.deleteInProgress },
       };
     },
   },

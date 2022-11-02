@@ -33,7 +33,7 @@ export default {
   data() {
     return {
       isModalVisible: false,
-      deleting: false,
+      deleteInProgress: false,
       deletingArtifactId: null,
       deletingArtifactName: '',
     };
@@ -64,7 +64,7 @@ export default {
     },
     destroyArtifact() {
       const id = this.deletingArtifactId;
-      this.deleting = true;
+      this.deleteInProgress = true;
 
       this.$apollo
         .mutate({
@@ -81,7 +81,7 @@ export default {
           this.$emit('refetch');
         })
         .finally(() => {
-          this.deleting = false;
+          this.deleteInProgress = false;
           this.clearModal();
         });
     },
@@ -105,7 +105,7 @@ export default {
     <artifact-delete-modal
       :artifact-name="deletingArtifactName"
       :visible="isModalVisible"
-      :deleting="deleting"
+      :delete-in-progress="deleteInProgress"
       @primary="destroyArtifact"
       @cancel="clearModal"
       @close="clearModal"

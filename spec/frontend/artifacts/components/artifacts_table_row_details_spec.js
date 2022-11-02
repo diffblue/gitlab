@@ -1,3 +1,4 @@
+import { GlModal } from '@gitlab/ui';
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import getJobArtifactsResponse from 'test_fixtures/graphql/artifacts/graphql/queries/get_job_artifacts.query.graphql.json';
@@ -8,7 +9,7 @@ import ArtifactDeleteModal from '~/artifacts/components/artifact_delete_modal.vu
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import destroyArtifactMutation from '~/artifacts/graphql/mutations/destroy_artifact.mutation.graphql';
-import { I18N_DESTROY_ERROR } from '~/artifacts/constants';
+import { I18N_DESTROY_ERROR, I18N_MODAL_TITLE } from '~/artifacts/constants';
 import { createAlert } from '~/flash';
 
 jest.mock('~/flash');
@@ -21,6 +22,8 @@ Vue.use(VueApollo);
 describe('ArtifactsTableRowDetails component', () => {
   let wrapper;
   let requestHandlers;
+
+  const findModal = () => wrapper.findComponent(GlModal);
 
   const createComponent = (
     handlers = {
@@ -66,13 +69,13 @@ describe('ArtifactsTableRowDetails component', () => {
       createComponent();
       await waitForPromises();
 
-      expect(wrapper.vm.isModalVisible).toBe(false);
+      expect(findModal().props('visible')).toBe(false);
 
-      wrapper.findComponent(ArtifactRow).vm.$emit('delete');
+      await wrapper.findComponent(ArtifactRow).vm.$emit('delete');
 
-      expect(wrapper.vm.isModalVisible).toBe(true);
+      expect(findModal().props('visible')).toBe(true);
       expect(wrapper.vm.deletingArtifactId).toBe(artifacts.nodes[0].id);
-      expect(wrapper.vm.deletingArtifactName).toBe(artifacts.nodes[0].name);
+      expect(findModal().props('title')).toBe(I18N_MODAL_TITLE(artifacts.nodes[0].name));
     });
   });
 
