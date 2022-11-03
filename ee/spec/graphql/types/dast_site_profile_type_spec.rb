@@ -9,7 +9,7 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user, developer_projects: [project]) }
   let_it_be(:object, reload: true) { create(:dast_site_profile, project: project) }
-  let_it_be(:fields) { %i[id profileName targetUrl targetType editPath excludedUrls requestHeaders validationStatus userPermissions normalizedTargetUrl auth referencedInSecurityPolicies scanMethod scanFilePath] }
+  let_it_be(:fields) { %i[id profileName targetUrl targetType editPath excludedUrls requestHeaders validationStatus userPermissions normalizedTargetUrl auth referencedInSecurityPolicies scanMethod scanFilePath validationStartedAt] }
 
   before do
     stub_licensed_features(security_on_demand_scans: true)
@@ -197,6 +197,28 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
 
       it 'only calls Gitaly twice when multiple profiles are present', :request_store do
         expect { response }.to change { Gitlab::GitalyClient.get_request_count }.by(2)
+      end
+    end
+  end
+
+  describe 'validation_started_at field' do
+    context 'when dast_site_validation association does not exist' do
+      it 'is the validation_started_at' do
+        expect(resolve_field(:validation_started_at, object, current_user: user)).to be_nil
+      end
+    end
+
+    context 'when dast_site_validation association does exist' do
+      let(:validation_started_at) { Time.new(2022).utc }
+      let(:dast_site_token) { create(:dast_site_token, project: project) }
+      let(:dast_site_validation) { create(:dast_site_validation, validation_started_at: validation_started_at, dast_site_token: dast_site_token) }
+
+      before do
+        object.dast_site.update!(dast_site_validation_id: dast_site_validation.id)
+      end
+
+      it 'is the validation_started_at' do
+        expect(resolve_field(:validation_started_at, object, current_user: user)).to eq(dast_site_validation.validation_started_at)
       end
     end
   end

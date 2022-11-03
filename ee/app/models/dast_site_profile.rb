@@ -106,6 +106,12 @@ class DastSiteProfile < ApplicationRecord
     scan_file_path
   end
 
+  def validation_started_at
+    return unless dast_site_validation
+
+    dast_site_validation.validation_started_at
+  end
+
   private
 
   def cleanup_dast_site
