@@ -14,10 +14,6 @@ RSpec.describe Gitlab::BackgroundMigration::MigrateApproverToApprovalRulesCheckP
   end
 
   context 'when there is no more MigrateApproverToApprovalRulesInBatch jobs' do
-    before do
-      stub_feature_flags(approval_rule: false)
-    end
-
     it 'enables feature' do
       allow(Gitlab::BackgroundMigration).to receive(:exists?).with('MigrateApproverToApprovalRulesInBatch').and_return(false)
 
