@@ -151,7 +151,14 @@ module Gitlab
           alias_name = proxy.index_name
           new_index_name = index_name_with_timestamp(alias_name, suffix: options[:name_suffix])
 
-          create_index(new_index_name, alias_name, with_alias, proxy.settings.to_hash, proxy.mappings.to_hash, options)
+          create_index(
+            index_name: new_index_name,
+            alias_name: alias_name,
+            with_alias: with_alias,
+            settings: proxy.settings.to_hash,
+            mappings: proxy.mappings.to_hash,
+            options: options
+          )
           indices[new_index_name] = alias_name
         end
       end
@@ -176,7 +183,14 @@ module Gitlab
       def create_empty_index(with_alias: true, options: {})
         new_index_name = options[:index_name] || index_name_with_timestamp(target_name, suffix: options[:name_suffix])
 
-        create_index(new_index_name, target_name, with_alias, default_settings, default_mappings, options)
+        create_index(
+          index_name: new_index_name,
+          alias_name: target_name,
+          with_alias: with_alias,
+          settings: default_settings,
+          mappings: default_mappings,
+          options: options
+        )
 
         {
           new_index_name => target_name
@@ -377,7 +391,7 @@ module Gitlab
 
       private
 
-      def create_index(index_name, alias_name, with_alias, settings, mappings, options)
+      def create_index(index_name:, alias_name:, with_alias:, settings:, mappings:, options: {})
         if index_exists?(index_name: index_name)
           return if options[:skip_if_exists]
 
