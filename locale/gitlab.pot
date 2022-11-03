@@ -43571,6 +43571,9 @@ msgstr ""
 msgid "UsageQuota|No CI minutes usage data available."
 msgstr ""
 
+msgid "UsageQuota|No projects to display."
+msgstr ""
+
 msgid "UsageQuota|Packages"
 msgstr ""
 
@@ -43599,6 +43602,9 @@ msgid "UsageQuota|Recalculate repository usage"
 msgstr ""
 
 msgid "UsageQuota|Repository"
+msgstr ""
+
+msgid "UsageQuota|Search"
 msgstr ""
 
 msgid "UsageQuota|Seats"

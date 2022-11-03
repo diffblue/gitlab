@@ -85,6 +85,7 @@ module EE
       buy_addon_target_attr = buy_addon_target_attr(group) if purchase_storage_link_enabled?(group)
 
       {
+        namespace_id: group.id,
         namespace_path: group.full_path,
         purchase_storage_url: url_to_purchase_storage,
         buy_addon_target_attr: buy_addon_target_attr,
