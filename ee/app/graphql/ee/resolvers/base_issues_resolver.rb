@@ -33,7 +33,7 @@ module EE
 
       override :resolve_with_lookahead
       def resolve_with_lookahead(**args)
-        args[:not] = args[:not].to_h if args[:not].present?
+        args[:not] = args[:not].to_h if args[:not]
         args[:iteration_id] = iteration_ids_from_args(args) if args[:iteration_id].present?
         args[:not][:iteration_id] = iteration_ids_from_args(args[:not]) if args.dig(:not, :iteration_id).present?
         prepare_iteration_wildcard_params(args)
@@ -43,7 +43,7 @@ module EE
       end
 
       def ready?(**args)
-        args[:not] = args[:not].to_h if args[:not].present?
+        args[:not] = args[:not].to_h if args[:not]
 
         if iteration_params_not_mutually_exclusive?(args) || iteration_params_not_mutually_exclusive?(args.fetch(:not, {}))
           arg_str = mutually_exclusive_iteration_args.map { |x| x.to_s.camelize(:lower) }.join(', ')
