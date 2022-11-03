@@ -41,5 +41,7 @@ metadata:
     description: Operations related to metadata of the GitLab instance
   - name: release_links
     description: Operations related to release assets (links)
+  - name: releases
+    description: Operations related to releases
   - name: suggestions
     description: Operations related to suggestions

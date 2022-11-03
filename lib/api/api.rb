@@ -189,6 +189,7 @@ module API
         mount ::API::Metadata
         mount ::API::MergeRequestDiffs
         mount ::API::ProjectRepositoryStorageMoves
+        mount ::API::Releases
         mount ::API::Release::Links
         mount ::API::ResourceAccessTokens
         mount ::API::ProtectedTags
@@ -301,7 +302,6 @@ module API
       mount ::API::Projects
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
-      mount ::API::Releases
       mount ::API::RemoteMirrors
       mount ::API::Repositories
       mount ::API::ResourceLabelEvents

@@ -7,12 +7,17 @@ module EE
 
       prepended do
         resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-          desc 'Create Evidence for a Release' do
-            detail 'This feature was introduced in GitLab 12.10.'
+          desc 'Collect release evidence' do
+            detail 'Creates an evidence for an existing Release. This feature was introduced in GitLab 12.10.'
             success ::API::Entities::Release
+            failure [
+              { code: 401, message: 'Unauthorized' },
+              { code: 404, message: 'Not found' }
+            ]
+            tags %w[releases]
           end
           params do
-            requires :tag_name, type: String, desc: 'The name of the tag', as: :tag
+            requires :tag_name, type: String, desc: 'The Git tag the release is associated with', as: :tag
           end
           route_setting :authentication, job_token_allowed: true
           post ':id/releases/:tag_name/evidence', requirements: ::API::Releases::RELEASE_ENDPOINT_REQUIREMENTS do
