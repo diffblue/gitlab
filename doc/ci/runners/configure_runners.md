@@ -312,6 +312,7 @@ globally or for individual jobs:
 - [`GIT_SUBMODULE_PATHS`](#git-submodule-paths)
 - [`GIT_SUBMODULE_UPDATE_FLAGS`](#git-submodule-update-flags)
 - [`GIT_DEPTH`](#shallow-cloning) (shallow cloning)
+- [`GIT_SUBMODULE_DEPTH`](#git-submodule-depth)
 - [`GIT_CLONE_PATH`](#custom-build-directories) (custom build directories)
 - [`TRANSFER_METER_FREQUENCY`](#artifact-and-cache-settings) (artifact/cache meter update frequency)
 - [`ARTIFACT_COMPRESSION_LEVEL`](#artifact-and-cache-settings) (artifact archiver compression level)
@@ -596,6 +597,24 @@ variables:
 ```
 
 You can set it globally or per-job in the [`variables`](../yaml/index.md#variables) section.
+
+### Git submodule depth
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab-runner/-/merge_requests/3651) in GitLab Runner 15.5.
+
+Use the `GIT_SUBMODULE_DEPTH` variable to specify the depth of fetching and cloning submodules
+when [`GIT_SUBMODULE_STRATEGY`](#git-submodule-strategy) is set to either `normal` or `recursive`.
+You can set it globally or for a specific job in the [`variables`](../yaml/index.md#variables) section.
+
+When you set the `GIT_SUBMODULE_DEPTH` variable, it overwrites the [`GIT_DEPTH`](#shallow-cloning) setting
+for the submodules only.
+
+To fetch or clone only the last 3 commits:
+
+```yaml
+variables:
+  GIT_SUBMODULE_DEPTH: 3
+```
 
 ### Custom build directories
 
