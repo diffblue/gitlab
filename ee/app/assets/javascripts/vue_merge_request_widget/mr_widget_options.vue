@@ -345,13 +345,6 @@ export default {
       </div>
       <widget-container v-if="mr" :mr="mr" />
       <blocking-merge-requests-report :mr="mr" />
-      <grouped-codequality-reports-app
-        v-if="shouldRenderCodeQuality && !shouldShowCodeQualityExtension"
-        :head-blob-path="mr.headBlobPath"
-        :base-blob-path="mr.baseBlobPath"
-        :codequality-reports-path="mr.codequalityReportsPath"
-        :codequality-help-path="mr.codequalityHelpPath"
-      />
 
       <security-reports-app
         v-if="shouldRenderBaseSecurityReport && !shouldShowSecurityExtension"
