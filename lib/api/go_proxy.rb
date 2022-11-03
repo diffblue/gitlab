@@ -62,7 +62,7 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a project'
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
       requires :module_name, type: String, desc: 'Module name', coerce_with: ->(val) { CGI.unescape(val) }
     end
     route_setting :authentication, job_token_allowed: true, basic_auth_personal_access_token: true, authenticate_non_public: true
