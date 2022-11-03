@@ -29732,10 +29732,16 @@ msgstr ""
 msgid "PipelineSchedules|Owner"
 msgstr ""
 
+msgid "PipelineSchedules|Pipeline schedule successfully deleted."
+msgstr ""
+
 msgid "PipelineSchedules|Provide a short description for this pipeline"
 msgstr ""
 
 msgid "PipelineSchedules|Run pipeline schedule"
+msgstr ""
+
+msgid "PipelineSchedules|Successfully taken ownership from %{owner}."
 msgstr ""
 
 msgid "PipelineSchedules|Take ownership"
@@ -29751,6 +29757,9 @@ msgid "PipelineSchedules|There was a problem deleting the pipeline schedule."
 msgstr ""
 
 msgid "PipelineSchedules|There was a problem fetching pipeline schedules."
+msgstr ""
+
+msgid "PipelineSchedules|There was a problem taking ownership of the pipeline schedule."
 msgstr ""
 
 msgid "PipelineSchedules|Variables"
