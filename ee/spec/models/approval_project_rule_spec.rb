@@ -21,6 +21,20 @@ RSpec.describe ApprovalProjectRule do
         expect(described_class::APPROVAL_VULNERABILITY_STATES).to include(*::Enums::Vulnerability.vulnerability_states.keys)
       end
     end
+
+    context 'scanner validations' do
+      it 'does not allow nil values' do
+        expect(build(:approval_project_rule, scanners: nil)).not_to be_valid
+      end
+    end
+  end
+
+  describe 'default values' do
+    subject(:rule) { described_class.new }
+
+    it { expect(rule.scanners).to eq([]) }
+    it { expect(rule.vulnerabilities_allowed).to eq(0) }
+    it { expect(rule.severity_levels).to eq(described_class::DEFAULT_SEVERITIES) }
   end
 
   describe 'associations' do
