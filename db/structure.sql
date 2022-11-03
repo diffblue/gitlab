@@ -434,6 +434,7 @@ CREATE TABLE security_findings (
     uuid uuid,
     overridden_uuid uuid,
     partition_number integer DEFAULT 1 NOT NULL,
+    finding_data jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT check_6c2851a8c9 CHECK ((uuid IS NOT NULL)),
     CONSTRAINT check_b9508c6df8 CHECK ((char_length(project_fingerprint) <= 40))
 )
