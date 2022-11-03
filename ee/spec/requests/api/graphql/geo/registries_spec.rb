@@ -79,4 +79,11 @@ RSpec.describe 'Gets registries' do
     registry_factory: :geo_dependency_proxy_blob_registry,
     registry_foreign_key_field_name: 'dependencyProxyBlobId'
   }
+
+  it_behaves_like 'gets registries for', {
+    field_name: 'dependencyProxyManifestRegistries',
+    registry_class_name: 'DependencyProxyManifestRegistry',
+    registry_factory: :geo_dependency_proxy_manifest_registry,
+    registry_foreign_key_field_name: 'dependencyProxyManifestId'
+  }
 end
