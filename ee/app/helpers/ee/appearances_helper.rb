@@ -6,7 +6,7 @@ module EE
 
     override :default_brand_title
     def default_brand_title
-      'GitLab Enterprise Edition'
+      _('GitLab Enterprise Edition')
     end
   end
 end
