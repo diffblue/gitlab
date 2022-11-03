@@ -47302,9 +47302,6 @@ msgstr ""
 msgid "`start_time` should precede `end_time`"
 msgstr ""
 
-msgid "`work_items_hierarchy` feature flag disabled for this project"
-msgstr ""
-
 msgid "a deleted user"
 msgstr ""
 
