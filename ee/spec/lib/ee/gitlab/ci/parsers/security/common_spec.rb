@@ -78,10 +78,29 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
             vulnerability2 = report.findings.find { |x| x.compare_key == "CVE-2140" }
 
             remediation = {
-              'fixes' => [{ 'cve' => 'CVE-2139' }, { 'cve' => 'CVE-2140' }],
+              'fixes' => [
+                {
+                  'cve' => 'CVE-2139',
+                  __oj_introspection: {
+                    start_byte: 12215,
+                    end_byte: 12253
+                  }
+                },
+                {
+                  'cve' => 'CVE-2140',
+                  __oj_introspection: {
+                    start_byte: 12264,
+                    end_byte: 12302
+                  }
+                }
+              ],
               'summary' => 'this remediates CVE-2139 and CVE-2140',
-              'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5'
-            }
+              'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
+              __oj_introspection: {
+                start_byte: 12188,
+                end_byte: 12448
+              }
+            }.deep_stringify_keys
 
             expect(Gitlab::Json.parse(vulnerability1.raw_metadata).dig('remediations').first).to include remediation
             expect(Gitlab::Json.parse(vulnerability2.raw_metadata).dig('remediations').first).to include remediation
@@ -93,12 +112,20 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
           remediation = {
             'fixes' => [
               {
-                'cve' => 'CVE-1020'
+                'cve' => 'CVE-1020',
+                __oj_introspection: {
+                  start_byte: 12482,
+                  end_byte: 12520
+                }
               }
             ],
             'summary' => 'this fixes CVE-1020',
-            'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5'
-          }
+            'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
+            __oj_introspection: {
+              start_byte: 12455,
+              end_byte: 12648
+            }
+          }.deep_stringify_keys
 
           expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to include remediation
           expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
@@ -110,12 +137,20 @@ RSpec.describe Gitlab::Ci::Parsers::Security::Common do
             'fixes' => [
               {
                 'cve' => 'CVE',
-                'id' => 'bb2fbeb1b71ea360ce3f86f001d4e84823c3ffe1a1f7d41ba7466b14cfa953d3'
+                'id' => 'bb2fbeb1b71ea360ce3f86f001d4e84823c3ffe1a1f7d41ba7466b14cfa953d3',
+                __oj_introspection: {
+                  start_byte: 12956,
+                  end_byte: 13073
+                }
               }
             ],
             'summary' => 'this fixed CVE',
-            'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5'
-          }
+            'diff' => 'dG90YWxseSBsZWdpdGltYXRlIGRpZmYsIDEwLzEwIHdvdWxkIGFwcGx5',
+            __oj_introspection: {
+              start_byte: 12929,
+              end_byte: 13196
+            }
+          }.deep_stringify_keys
 
           expect(Gitlab::Json.parse(finding.raw_metadata).dig('remediations').first).to include remediation
           expect(finding.remediations.first.checksum).to eq(expected_remediation.checksum)
