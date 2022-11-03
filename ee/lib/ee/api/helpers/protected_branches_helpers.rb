@@ -10,6 +10,8 @@ module EE
           params :shared_params do
             optional :user_id, type: Integer, documentation: { example: 1 }
             optional :group_id, type: Integer, documentation: { example: 1 }
+            optional :id, type: Integer, documentation: { example: 1 }
+            optional :_destroy, type: Grape::API::Boolean, desc: 'Delete the object when true'
           end
 
           params :optional_params_ee do

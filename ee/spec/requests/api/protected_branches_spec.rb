@@ -89,6 +89,81 @@ RSpec.describe API::ProtectedBranches do
     context 'when authenticated as a maintainer' do
       before do
         project.add_maintainer(user)
+        protected_branch.unprotect_access_levels << create(:protected_branch_unprotect_access_level)
+      end
+
+      let(:push_access_level) { protected_branch.push_access_levels.first }
+      let(:merge_access_level) { protected_branch.merge_access_levels.first }
+      let(:unprotect_access_level) { protected_branch.unprotect_access_levels.first }
+
+      where(:key, :access_level_record, :access_level_param, :new_access_level) do
+        [
+          ['push_access_levels', ref(:push_access_level), 'allowed_to_push', 30],
+          ['merge_access_levels', ref(:merge_access_level), 'allowed_to_merge', 30],
+          ['unprotect_access_levels', ref(:unprotect_access_level), 'allowed_to_unprotect', 40]
+        ]
+      end
+
+      with_them do
+        it 'creates an access level' do
+          params = {}
+          params[access_level_param] =
+            [
+              {
+                access_level: new_access_level,
+                user_id: user.id
+              }
+            ]
+          patch api(route, user), params: params
+          expect(response).to have_gitlab_http_status(:ok)
+          access_levels = json_response[key].map do |access_level|
+            access_level['access_level']
+          end
+
+          expect(access_levels).to match_array [30, 40]
+          expect(json_response[key].last['user_id']).to eq(user.id)
+        end
+
+        it 'updates an existing access level' do
+          params = {}
+          params[access_level_param] =
+            [
+              {
+                id: access_level_record.id,
+                access_level: new_access_level,
+                user_id: user.id
+              }
+            ]
+          patch api(route, user), params: params
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response[key].length).to eq(1)
+          expect(json_response[key].last['access_level']).to eq(new_access_level)
+          expect(json_response[key].last['user_id']).to eq(user.id)
+        end
+
+        it 'deletes an existing access level' do
+          params = {}
+          params[access_level_param] =
+            [
+              {
+                id: access_level_record.id,
+                _destroy: true
+              }
+            ]
+          patch api(route, user), params: params
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response[key].length).to eq(0)
+        end
+
+        context 'when no access levels are sent' do
+          it 'does not update with default access levels' do
+            patch api(route, user)
+            expect(json_response[key].length).to eq(1)
+            expect(json_response[key].last['access_level']).to eq(access_level_record.access_level)
+          end
+        end
       end
 
       context "when the feature is enabled" do
