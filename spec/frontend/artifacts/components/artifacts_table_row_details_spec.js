@@ -74,7 +74,6 @@ describe('ArtifactsTableRowDetails component', () => {
       await wrapper.findComponent(ArtifactRow).vm.$emit('delete');
 
       expect(findModal().props('visible')).toBe(true);
-      expect(wrapper.vm.deletingArtifactId).toBe(artifacts.nodes[0].id);
       expect(findModal().props('title')).toBe(I18N_MODAL_TITLE(artifacts.nodes[0].name));
     });
   });

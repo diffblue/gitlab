@@ -57,10 +57,12 @@ export default {
       this.deletingArtifactName = item.name;
       this.isModalVisible = true;
     },
+    hideModal() {
+      this.isModalVisible = false;
+    },
     clearModal() {
       this.deletingArtifactId = null;
       this.deletingArtifactName = '';
-      this.isModalVisible = false;
     },
     destroyArtifact() {
       const id = this.deletingArtifactId;
@@ -107,9 +109,10 @@ export default {
       :visible="isModalVisible"
       :delete-in-progress="deleteInProgress"
       @primary="destroyArtifact"
-      @cancel="clearModal"
-      @close="clearModal"
-      @hide="clearModal"
+      @cancel="hideModal"
+      @close="hideModal"
+      @hide="hideModal"
+      @hidden="clearModal"
     />
   </div>
 </template>
