@@ -83,6 +83,10 @@ module EE
         def reached_free_user_limit_email
           ::Notify.reached_free_user_limit_email(user, group).message
         end
+
+        def confirmation_instructions_email
+          ::Notify.confirmation_instructions_email(user.email, token: '123456').message
+        end
       end
 
       private

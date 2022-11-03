@@ -6,12 +6,12 @@ RSpec.describe Emails::IdentityVerification do
   include EmailSpec::Matchers
   include_context 'gitlab email notification'
 
-  describe 'confirmation_instructions_email' do
+  describe 'verification_instructions_email' do
     let_it_be(:user) { build_stubbed(:user) }
     let_it_be(:token) { '123456' }
 
     subject do
-      Notify.confirmation_instructions_email(user.email, token: token)
+      Notify.verification_instructions_email(user.email, token: token)
     end
 
     it_behaves_like 'an email sent from GitLab'
@@ -21,7 +21,7 @@ RSpec.describe Emails::IdentityVerification do
     end
 
     it 'has the correct subject' do
-      is_expected.to have_subject s_('IdentityVerification|Confirm your email address')
+      is_expected.to have_subject s_('IdentityVerification|Verify your identity')
     end
 
     it 'has the mailgun suppression bypass header' do
