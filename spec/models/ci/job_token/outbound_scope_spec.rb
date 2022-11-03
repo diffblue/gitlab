@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Ci::JobToken::OutboundScope do
-  let_it_be(:source_project) { create(:project, ci_outbound_job_token_scope_enabled: true).tap(&:save!) }
+  let_it_be(:source_project) { create(:project, ci_outbound_job_token_scope_enabled: true) }
 
   let(:scope) { described_class.new(source_project) }
 
@@ -66,7 +66,7 @@ RSpec.describe Ci::JobToken::OutboundScope do
         it { is_expected.to be_falsey }
       end
 
-      context 'when param is a project unlinked to any project' do
+      context 'when project is unlinked to any project' do
         let(:includes_project) { unscoped_project2 }
 
         it { is_expected.to be_falsey }

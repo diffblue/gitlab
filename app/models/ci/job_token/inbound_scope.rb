@@ -15,38 +15,17 @@ module Ci
         # if the setting is disabled any project is considered to be in scope.
         return true unless source_project.ci_inbound_job_token_scope_enabled?
 
-        self_referential?(target_project) || added?(target_project)
+        allowlist.includes?(target_project)
       end
 
       def all_projects
-        Project.from_union(target_projects, remove_duplicates: false)
+        allowlist.all_projects
       end
 
       private
 
-      def self_referential?(target_project)
-        target_project.id == source_project.id
-      end
-
-      def added?(target_project)
-        Ci::JobToken::ProjectScopeLink
-          .added_project(source_project, target_project)
-          .inbound
-          .exists?
-      end
-
-      def target_project_ids
-        Ci::JobToken::ProjectScopeLink
-          .from_project(source_project)
-          .inbound
-          .pluck(:target_project_id)
-      end
-
-      def target_projects
-        [
-          Project.id_in(source_project),
-          Project.id_in(target_project_ids)
-        ]
+      def allowlist
+        Ci::JobToken::Allowlist.new(source_project, direction: :inbound)
       end
     end
   end

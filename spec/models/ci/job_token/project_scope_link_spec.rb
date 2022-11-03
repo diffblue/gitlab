@@ -50,8 +50,8 @@ RSpec.describe Ci::JobToken::ProjectScopeLink do
     end
   end
 
-  describe '.from_project' do
-    subject { described_class.from_project(project) }
+  describe '.with_source' do
+    subject { described_class.with_source(project) }
 
     let!(:source_link) { create(:ci_job_token_project_scope_link, source_project: project) }
     let!(:target_link) { create(:ci_job_token_project_scope_link, target_project: project) }
@@ -61,30 +61,14 @@ RSpec.describe Ci::JobToken::ProjectScopeLink do
     end
   end
 
-  describe '.to_project' do
-    subject { described_class.to_project(project) }
+  describe '.with_target' do
+    subject { described_class.with_target(project) }
 
     let!(:source_link) { create(:ci_job_token_project_scope_link, source_project: project) }
     let!(:target_link) { create(:ci_job_token_project_scope_link, target_project: project) }
 
     it 'returns only the links having the given target project' do
       expect(subject).to contain_exactly(target_link)
-    end
-  end
-
-  describe '.added_project' do
-    subject { described_class.added_project(project, target_project) }
-
-    let!(:target_project) { create(:project) }
-    let!(:added) { create(:ci_job_token_project_scope_link, source_project: project, target_project: target_project) }
-    let!(:not_added_1) { create(:ci_job_token_project_scope_link, target_project: project) }
-    let!(:not_added_2) { create(:ci_job_token_project_scope_link, source_project: project) }
-    let!(:not_added_3) do
-      create(:ci_job_token_project_scope_link, source_project: target_project, target_project: project)
-    end
-
-    it 'returns only the links added to the source' do
-      expect(subject).to contain_exactly(added)
     end
   end
 
