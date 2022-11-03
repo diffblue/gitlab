@@ -150,7 +150,7 @@ module BillingPlansHelper
     end
   end
 
-  def hand_raise_props(namespace, glm_content: )
+  def hand_raise_props(namespace, glm_content:)
     {
       namespace_id: namespace.id,
       user_name: current_user.username,

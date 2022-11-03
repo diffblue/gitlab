@@ -17,7 +17,7 @@ module Sitemap
     def success_response(file)
       Gitlab::AppLogger.info("Sitemap generated successfully")
 
-      ServiceResponse.success(payload: { sitemap: file.render } )
+      ServiceResponse.success(payload: { sitemap: file.render })
     end
 
     def error_response(message)

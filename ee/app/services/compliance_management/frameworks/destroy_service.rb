@@ -29,7 +29,7 @@ module ComplianceManagement
       end
 
       def error
-        ServiceResponse.error(message: _('Failed to create framework'), payload: framework.errors )
+        ServiceResponse.error(message: _('Failed to create framework'), payload: framework.errors)
       end
 
       def audit_destroy

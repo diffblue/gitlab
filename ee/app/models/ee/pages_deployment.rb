@@ -17,8 +17,8 @@ module EE
       after_save :save_verification_details
 
       scope :with_verification_state, ->(state) { joins(:pages_deployment_state).where(pages_deployment_states: { verification_state: verification_state_value(state) }) }
-      scope :checksummed, -> { joins(:pages_deployment_state).where.not(pages_deployment_states: { verification_checksum: nil } ) }
-      scope :not_checksummed, -> { joins(:pages_deployment_state).where(pages_deployment_states: { verification_checksum: nil } ) }
+      scope :checksummed, -> { joins(:pages_deployment_state).where.not(pages_deployment_states: { verification_checksum: nil }) }
+      scope :not_checksummed, -> { joins(:pages_deployment_state).where(pages_deployment_states: { verification_checksum: nil }) }
 
       scope :available_verifiables, -> { joins(:pages_deployment_state) }
 

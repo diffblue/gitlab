@@ -279,7 +279,7 @@ module EE
           ::GroupGroupLink
             .where(shared_group_id: groups_hierarchy.select(:id))
             .where('group_access >= ?', access_level)
-            .where(shared_with_group_id: ::GroupMember.where(user: user).authorizable.select(:source_id) )
+            .where(shared_with_group_id: ::GroupMember.where(user: user).authorizable.select(:source_id))
             .select(:shared_group_id)
         ).select(:id)
       end

@@ -193,7 +193,7 @@ module Elastic
 
     def retry_or_abort_after_limit(subtask, slice, message, additional_logs)
       if slice.retry_attempt < REINDEX_MAX_RETRY_LIMIT
-        retry_slice(subtask, slice, "#{message} Retrying." )
+        retry_slice(subtask, slice, "#{message} Retrying.")
       else
         abort_reindexing!("#{message}. Retry limit reached. Aborting reindexing.", additional_logs: additional_logs)
       end

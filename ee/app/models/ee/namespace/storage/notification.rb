@@ -96,7 +96,7 @@ module EE
 
         def below_size_limit_message
           s_("NamespaceStorageSize|If you reach 100%% storage capacity, you will not be able " \
-            "to: %{base_message}" % { base_message: base_message } )
+            "to: %{base_message}" % { base_message: base_message })
         end
 
         def above_size_limit_message
