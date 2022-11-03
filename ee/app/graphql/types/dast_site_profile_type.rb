@@ -62,6 +62,10 @@ module Types
       description: 'Scan File Path used as input for the scanner. Will always return `null` ' \
                    'if `dast_api_scanner` feature flag is disabled.'
 
+    field :validation_started_at, Types::TimeType,
+          null: true,
+          description: 'Site profile validation start time.'
+
     def target_url
       object.dast_site.url
     end
