@@ -43,12 +43,15 @@ module Mutations
         def validate_tags(project, tag_names)
           return unless tag_names&.any?
 
+          start_time_tag = ::IncidentManagement::TimelineEventTag::START_TIME_TAG_NAME.downcase
+          end_time_tag = ::IncidentManagement::TimelineEventTag::END_TIME_TAG_NAME.downcase
+
           tag_names_downcased = tag_names.map(&:downcase)
 
           tags = project.incident_management_timeline_event_tags.by_names(tag_names).pluck_names.map(&:downcase)
 
           # remove tags from given tag_names and also remove predefined tags which can be auto created
-          non_existing_tags = tag_names_downcased - tags - ['start time', 'end time']
+          non_existing_tags = tag_names_downcased - tags - [start_time_tag, end_time_tag]
 
           return if non_existing_tags.empty?
 

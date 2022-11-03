@@ -172,8 +172,8 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
           result = execute.payload[:timeline_event]
 
           expect(result.timeline_event_tags.count).to eq(2)
-          expect(result.timeline_event_tags.first.name).to eq('Start time')
-          expect(result.timeline_event_tags.last.name).to eq('End time')
+          expect(result.timeline_event_tags.by_names(['Start time', 'End time']).pluck_names)
+            .to match_array(['Start time', 'End time'])
           expect(project.incident_management_timeline_event_tags.pluck_names)
             .to include('Start time', 'End time')
         end

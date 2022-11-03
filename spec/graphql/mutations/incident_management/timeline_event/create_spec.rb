@@ -67,11 +67,9 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
         it_behaves_like 'creating an incident timeline event'
 
         it 'creates and sets the tag on the event' do
-          resolve
+          timeline_event = resolve[:timeline_event]
 
-          timeline_event = IncidentManagement::TimelineEvent.last!
-
-          expect(timeline_event.timeline_event_tags.last.name).to eq('Start time')
+          expect(timeline_event.timeline_event_tags.by_names(['Start time']).count).to eq 1
         end
       end
 
@@ -85,11 +83,9 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
         end
 
         it 'sets the tag on the event' do
-          resolve
+          timeline_event = resolve[:timeline_event]
 
-          timeline_event = IncidentManagement::TimelineEvent.last!
-
-          expect(timeline_event.timeline_event_tags.last.name).to eq(timeline_event_tag.name)
+          expect(timeline_event.timeline_event_tags.by_names(['Test tag 1']).count).to eq(1)
         end
       end
 
@@ -103,7 +99,13 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
         end
 
         it 'raises an error' do
+          old_count = incident.incident_management_timeline_events
+
           expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ArgumentError)
+
+          new_count = incident.incident_management_timeline_events
+
+          expect(new_count).to eq(old_count)
         end
       end
     end
