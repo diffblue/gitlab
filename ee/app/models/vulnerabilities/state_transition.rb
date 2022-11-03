@@ -9,8 +9,15 @@ module Vulnerabilities
     belongs_to :author, class_name: 'User', inverse_of: :vulnerability_state_transitions
     belongs_to :vulnerability
     validates :vulnerability_id, :from_state, :to_state, presence: true
+    validate :to_state_and_from_state_differ
 
     enum from_state: ::Enums::Vulnerability.vulnerability_states, _prefix: true
     enum to_state: ::Enums::Vulnerability.vulnerability_states, _prefix: true
+
+    private
+
+    def to_state_and_from_state_differ
+      errors.add(:to_state, "must not be the same as from_state") if to_state == from_state
+    end
   end
 end
