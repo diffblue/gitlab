@@ -45,10 +45,4 @@ describe('Take ownership modal', () => {
       'Only the owner of a pipeline schedule can make changes to it. Do you want to take ownership of this schedule?',
     );
   });
-
-  it('emits the cancel event when clicking on cancel', async () => {
-    findModal().vm.$emit('cancel');
-
-    expect(findModal().emitted('cancel')).toHaveLength(1);
-  });
 });

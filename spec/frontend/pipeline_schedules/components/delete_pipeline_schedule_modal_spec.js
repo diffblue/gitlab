@@ -24,10 +24,6 @@ describe('Delete pipeline schedule modal', () => {
     wrapper.destroy();
   });
 
-  it('shows delete confirmation message', () => {
-    expect(findModal().text()).toBe('Are you sure you want to delete this pipeline schedule?');
-  });
-
   it('emits the deleteSchedule event', async () => {
     findModal().vm.$emit('primary');
 
