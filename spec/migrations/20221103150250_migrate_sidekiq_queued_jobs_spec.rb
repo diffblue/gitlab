@@ -3,7 +3,7 @@
 require 'spec_helper'
 require_migration!
 
-RSpec.describe MigrateSidekiqJobs, :clean_gitlab_redis_queues do
+RSpec.describe MigrateSidekiqQueuedJobs, :clean_gitlab_redis_queues do
   around do |example|
     Sidekiq::Testing.disable!(&example)
   end
@@ -66,10 +66,9 @@ RSpec.describe MigrateSidekiqJobs, :clean_gitlab_redis_queues do
 
     context 'when run in GitLab.com' do
       it 'skips the migration' do
-        allow(::Gitlab::BackgroundMigration::Logger).to receive(:build).and_return(Logger.new($stdout))
-        allow(Gitlab.config.gitlab).to receive(:url).and_return(Gitlab::Saas.com_url)
+        allow(Gitlab).to receive(:com?).and_return(true)
+        expect(described_class::SidekiqMigrateJobs).not_to receive(:new)
         migrate!
-        expect($stdout.string).not_to include("List of queues based on routing rules:")
       end
     end
 

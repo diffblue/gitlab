@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class MigrateSidekiqJobs < Gitlab::Database::Migration[2.0]
+class MigrateSidekiqQueuedJobs < Gitlab::Database::Migration[2.0]
   class SidekiqMigrateJobs
     LOG_FREQUENCY_QUEUES = 10
 
