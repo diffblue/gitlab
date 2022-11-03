@@ -2,9 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe LooseForeignKeys::CleanupWorker do
+RSpec.describe LooseForeignKeys::ProcessDeletedRecordsService do
   include MigrationsHelpers
-  using RSpec::Parameterized::TableSyntax
 
   def create_table_structure
     migration = ActiveRecord::Migration.new.extend(Gitlab::Database::MigrationHelpers::LooseForeignKeyHelpers)
@@ -64,6 +63,8 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
     }
   end
 
+  let(:connection) { ::ApplicationRecord.connection }
+
   let(:loose_fk_parent_table_1) { table(:_test_loose_fk_parent_table_1) }
   let(:loose_fk_parent_table_2) { table(:_test_loose_fk_parent_table_2) }
   let(:loose_fk_child_table_1_1) { table(:_test_loose_fk_child_table_1_1) }
@@ -85,7 +86,8 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
   end
 
   before do
-    allow(Gitlab::Database::LooseForeignKeys).to receive(:definitions_by_table).and_return(all_loose_foreign_key_definitions)
+    allow(Gitlab::Database::LooseForeignKeys).to receive(:definitions_by_table)
+      .and_return(all_loose_foreign_key_definitions)
 
     parent_record_1 = loose_fk_parent_table_1.create!
     loose_fk_child_table_1_1.create!(parent_id: parent_record_1.id)
@@ -102,67 +104,94 @@ RSpec.describe LooseForeignKeys::CleanupWorker do
     loose_fk_parent_table_2.delete_all
   end
 
-  def perform_for(db:)
-    time = Time.current.midnight
-
-    case db
-    when :main
-      time += 2.minutes
-    when :ci
-      time += 3.minutes
+  describe '#execute' do
+    def execute
+      ::Gitlab::Database::SharedModel.using_connection(connection) do
+        described_class.new(connection: connection).execute
+      end
     end
 
-    travel_to(time) do
-      described_class.new.perform
-    end
-  end
+    it 'cleans up all rows' do
+      execute
 
-  it 'cleans up all rows' do
-    perform_for(db: :main)
-
-    expect(loose_fk_child_table_1_1.count).to eq(0)
-    expect(loose_fk_child_table_1_2.where(parent_id_with_different_column: nil).count).to eq(4)
-    expect(loose_fk_child_table_2_1.count).to eq(0)
-  end
-
-  describe 'multi-database support' do
-    where(:current_minute, :configured_base_models, :expected_connection_model) do
-      2 | { main: 'ActiveRecord::Base', ci: 'Ci::ApplicationRecord' } | 'ActiveRecord::Base'
-      3 | { main: 'ActiveRecord::Base', ci: 'Ci::ApplicationRecord' } | 'Ci::ApplicationRecord'
-      2 | { main: 'ActiveRecord::Base' } | 'ActiveRecord::Base'
-      3 | { main: 'ActiveRecord::Base' } | 'ActiveRecord::Base'
+      expect(loose_fk_child_table_1_1.count).to eq(0)
+      expect(loose_fk_child_table_1_2.where(parent_id_with_different_column: nil).count).to eq(4)
+      expect(loose_fk_child_table_2_1.count).to eq(0)
     end
 
-    with_them do
-      let(:database_base_models) { configured_base_models.transform_values(&:constantize) }
+    it 'returns stats for records cleaned up' do
+      stats = execute
 
-      let(:expected_connection) { expected_connection_model.constantize.connection }
+      expect(stats[:delete_count]).to eq(8)
+      expect(stats[:update_count]).to eq(4)
+    end
+
+    it 'records the Apdex as success: true' do
+      expect(::Gitlab::Metrics::LooseForeignKeysSlis).to receive(:record_apdex)
+        .with(success: true, db_config_name: 'main')
+
+      execute
+    end
+
+    it 'records the error rate as error: false' do
+      expect(::Gitlab::Metrics::LooseForeignKeysSlis).to receive(:record_error_rate)
+        .with(error: false, db_config_name: 'main')
+
+      execute
+    end
+
+    context 'when the amount of records to clean up exceeds BATCH_SIZE' do
+      before do
+        stub_const('LooseForeignKeys::CleanupWorker::BATCH_SIZE', 2)
+      end
+
+      it 'cleans up everything over multiple batches' do
+        expect(LooseForeignKeys::BatchCleanerService).to receive(:new).exactly(:twice).and_call_original
+
+        execute
+
+        expect(loose_fk_child_table_1_1.count).to eq(0)
+        expect(loose_fk_child_table_1_2.where(parent_id_with_different_column: nil).count).to eq(4)
+        expect(loose_fk_child_table_2_1.count).to eq(0)
+      end
+    end
+
+    context 'when the amount of records to clean up exceeds the total MAX_DELETES' do
+      def count_deletable_rows
+        loose_fk_child_table_1_1.count + loose_fk_child_table_2_1.count
+      end
 
       before do
-        allow(Gitlab::Database).to receive(:database_base_models_with_gitlab_shared).and_return(database_base_models)
+        stub_const('LooseForeignKeys::ModificationTracker::MAX_DELETES', 2)
+        stub_const('LooseForeignKeys::CleanerService::DELETE_LIMIT', 1)
+      end
 
-        if database_base_models.has_key?(:ci)
-          Gitlab::Database::SharedModel.using_connection(database_base_models[:ci].connection) do
-            LooseForeignKeys::DeletedRecord.create!(fully_qualified_table_name: 'public._test_loose_fk_parent_table_1', primary_key_value: 999)
-            LooseForeignKeys::DeletedRecord.create!(fully_qualified_table_name: 'public._test_loose_fk_parent_table_1', primary_key_value: 9991)
-          end
+      it 'cleans up MAX_DELETES and leaves the rest for the next run' do
+        expect { execute }.to change { count_deletable_rows }.by(-2)
+        expect(count_deletable_rows).to be > 0
+      end
+
+      it 'records the Apdex as success: false' do
+        expect(::Gitlab::Metrics::LooseForeignKeysSlis).to receive(:record_apdex)
+          .with(success: false, db_config_name: 'main')
+
+        execute
+      end
+    end
+
+    context 'when cleanup raises an error' do
+      before do
+        expect_next_instance_of(::LooseForeignKeys::BatchCleanerService) do |service|
+          allow(service).to receive(:execute).and_raise("Something broke")
         end
       end
 
-      it 'uses the correct connection' do
-        record_count = Gitlab::Database::SharedModel.using_connection(expected_connection) do
-          LooseForeignKeys::DeletedRecord.count
-        end
+      it 'records the error rate as error: true and does not increment apdex' do
+        expect(::Gitlab::Metrics::LooseForeignKeysSlis).to receive(:record_error_rate)
+          .with(error: true, db_config_name: 'main')
+        expect(::Gitlab::Metrics::LooseForeignKeysSlis).not_to receive(:record_apdex)
 
-        record_count.times do
-          expect_next_found_instance_of(LooseForeignKeys::DeletedRecord) do |instance|
-            expect(instance.class.connection).to eq(expected_connection)
-          end
-        end
-
-        travel_to DateTime.new(2019, 1, 1, 10, current_minute) do
-          described_class.new.perform
-        end
+        expect { execute }.to raise_error("Something broke")
       end
     end
   end
