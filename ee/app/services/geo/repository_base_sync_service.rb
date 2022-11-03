@@ -17,6 +17,7 @@ module Geo
 
     LEASE_TIMEOUT    = 8.hours
     LEASE_KEY_PREFIX = 'geo_sync_service'
+    RETRIES_BEFORE_REDOWNLOAD = 10
 
     def initialize(project)
       @project = project
@@ -57,7 +58,7 @@ module Geo
       # secondaries after migrating repos to a different storage.
       repository.expire_exists_cache
 
-      if redownload?
+      if should_be_redownloaded?
         redownload_repository
         @new_repository = true
       elsif repository.exists?
@@ -79,10 +80,6 @@ module Geo
       end
 
       update_root_ref
-    end
-
-    def redownload?
-      registry.should_be_redownloaded?(type)
     end
 
     def redownload_repository
@@ -164,30 +161,18 @@ module Geo
       false
     end
 
-    # rubocop: disable CodeReuse/ActiveRecord
-    def registry
-      @registry ||= Geo::ProjectRegistry.find_or_initialize_by(project_id: project.id)
-    end
-    # rubocop: enable CodeReuse/ActiveRecord
-
-    def mark_sync_as_successful(missing_on_primary: false)
-      log_info("Marking #{type} sync as successful")
-
-      persisted = registry.finish_sync!(type, missing_on_primary, primary_checksummed?)
-
-      reschedule_sync unless persisted
-
-      log_info("Finished #{type} sync",
-              update_delay_s: update_delay_in_seconds,
-              download_time_s: download_time_in_seconds)
-    end
-
     def primary_checksummed?
       primary_checksum.present?
     end
 
     def primary_checksum
-      project.repository_state&.public_send("#{type}_verification_checksum") # rubocop:disable GitlabSecurity/PublicSend
+      # Must be overridden in the children classes
+    end
+
+    def should_be_redownloaded?
+      return true if force_to_redownload
+
+      retries.present? && retries > RETRIES_BEFORE_REDOWNLOAD && retries.odd?
     end
 
     def reschedule_sync
@@ -200,39 +185,8 @@ module Geo
       )
     end
 
-    def start_registry_sync!
-      log_info("Marking #{type} sync as started")
-      registry.start_sync!(type)
-    end
-
-    def fail_registry_sync!(message, error, attrs = {})
-      log_error(message, error)
-
-      registry.fail_sync!(type, message, error, attrs)
-    end
-
     def type
       @type ||= self.class.type.to_s.inquiry
-    end
-
-    def update_delay_in_seconds
-      # We don't track the last update time of repositories and Wiki
-      # separately in the main database
-      return unless project.last_repository_updated_at
-
-      (last_successful_sync_at.to_f - project.last_repository_updated_at.to_f).round(3)
-    end
-
-    def download_time_in_seconds
-      (last_successful_sync_at.to_f - last_synced_at.to_f).round(3)
-    end
-
-    def last_successful_sync_at
-      registry.public_send("last_#{type}_successful_sync_at") # rubocop:disable GitlabSecurity/PublicSend
-    end
-
-    def last_synced_at
-      registry.public_send("last_#{type}_synced_at") # rubocop:disable GitlabSecurity/PublicSend
     end
 
     def disk_path_temp
