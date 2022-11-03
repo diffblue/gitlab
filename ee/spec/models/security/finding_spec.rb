@@ -23,6 +23,30 @@ RSpec.describe Security::Finding do
 
   describe 'validations' do
     it { is_expected.to validate_presence_of(:uuid) }
+
+    describe 'finding_data attribute' do
+      let(:finding) { build(:security_finding, finding_data: finding_data) }
+
+      before do
+        finding.validate
+      end
+
+      context 'when the finding_data has invalid fields' do
+        let(:finding_data) { { remediation_byte_offsets: [{ start_byte: :foo, end_byte: 20 }] } }
+
+        it 'adds errors' do
+          expect(finding.errors.details.keys).to include(:finding_data)
+        end
+      end
+
+      context 'when the finding_data has valid fields' do
+        let(:finding_data) { { remediation_byte_offsets: [{ start_byte: 0, end_byte: 20 }] } }
+
+        it 'does not add errors' do
+          expect(finding.errors.details.keys).not_to include(:finding_data)
+        end
+      end
+    end
   end
 
   describe 'delegations' do
