@@ -15,6 +15,7 @@ export default () => {
   }
 
   const {
+    namespaceId,
     namespacePath,
     purchaseStorageUrl,
     buyAddonTargetAttr,
@@ -35,6 +36,7 @@ export default () => {
     apolloProvider,
     name: 'NamespaceStorageApp',
     provide: {
+      namespaceId,
       namespacePath,
       purchaseStorageUrl,
       buyAddonTargetAttr,

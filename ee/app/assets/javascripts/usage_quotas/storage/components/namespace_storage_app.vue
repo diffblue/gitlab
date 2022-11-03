@@ -19,6 +19,7 @@ import {
 import query from '../queries/namespace_storage.query.graphql';
 import GetDependencyProxyTotalSizeQuery from '../queries/dependency_proxy_usage.query.graphql';
 import { formatUsageSize, parseGetStorageResults } from '../utils';
+import SearchAndSortBar from '../../components/search_and_sort_bar/search_and_sort_bar.vue';
 import ProjectList from './project_list.vue';
 import StorageInlineAlert from './storage_inline_alert.vue';
 import TemporaryStorageIncreaseModal from './temporary_storage_increase_modal.vue';
@@ -45,11 +46,13 @@ export default {
     TemporaryStorageIncreaseModal,
     DependencyProxyUsage,
     ContainerRegistryUsage,
+    SearchAndSortBar,
   },
   directives: {
     GlModalDirective,
   },
   inject: [
+    'namespaceId',
     'namespacePath',
     'purchaseStorageUrl',
     'isTemporaryStorageIncreaseVisible',
@@ -185,10 +188,15 @@ export default {
     },
   },
   methods: {
-    handleSearch(input) {
-      // if length === 0 clear the search, if length > 2 update the search term
-      if (input.length === 0 || input.length > 2) {
-        this.searchTerm = input;
+    onSearch(searchTerm) {
+      if (searchTerm?.length < 3) {
+        // NOTE: currently the API doesn't handle strings of length < 3,
+        // returning an empty list as a result of such searches. So here we
+        // substitute short search terms with empty string to simulate default
+        // "fetch all" behaviour.
+        this.searchTerm = '';
+      } else {
+        this.searchTerm = searchTerm;
       }
     },
     fetchMoreProjects(vars) {
@@ -310,16 +318,44 @@ export default {
         :container-registry-size="namespace.rootStorageStatistics.containerRegistrySize"
       />
     </template>
-    <project-list
-      :projects="namespaceProjects"
-      :is-loading="isQueryLoading"
-      :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize || 0"
-      :usage-label="$options.i18n.PROJECT_TABLE_LABEL_STORAGE_USAGE"
-      @search="handleSearch"
-    />
-    <div class="gl-display-flex gl-justify-content-center gl-mt-5">
-      <gl-keyset-pagination v-if="showPagination" v-bind="pageInfo" @prev="onPrev" @next="onNext" />
-    </div>
+
+    <section class="gl-mt-5">
+      <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
+        <search-and-sort-bar
+          :namespace="namespaceId"
+          :search-input-placeholder="s__('UsageQuota|Search')"
+          @onFilter="onSearch"
+        />
+      </div>
+
+      <project-list
+        :projects="namespaceProjects"
+        :is-loading="isQueryLoading"
+        :additional-purchased-storage-size="namespace.additionalPurchasedStorageSize || 0"
+        :usage-label="$options.i18n.PROJECT_TABLE_LABEL_STORAGE_USAGE"
+      />
+
+      <div
+        v-if="!namespaceProjects.length"
+        role="alert"
+        aria-live="polite"
+        class="gl-border-t gl-border-b"
+      >
+        <div class="gl-text-center gl-my-5 gl-text-gray-700">
+          {{ s__('UsageQuota|No projects to display.') }}
+        </div>
+      </div>
+
+      <div class="gl-display-flex gl-justify-content-center gl-mt-5">
+        <gl-keyset-pagination
+          v-if="showPagination"
+          v-bind="pageInfo"
+          @prev="onPrev"
+          @next="onNext"
+        />
+      </div>
+    </section>
+
     <temporary-storage-increase-modal
       v-if="isStorageIncreaseModalVisible"
       :limit="formattedNamespaceLimit"
