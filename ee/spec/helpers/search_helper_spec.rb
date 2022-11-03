@@ -355,6 +355,24 @@ RSpec.describe SearchHelper do
     end
   end
 
+  describe '.search_navigation_json with .search_navigation' do
+    before do
+      allow(self).to receive(:current_user).and_return(build(:user))
+      allow(self).to receive(:can?).and_return(true)
+      allow(self).to receive(:project_search_tabs?).and_return(true)
+      allow(self).to receive(:feature_flag_tab_enabled?).and_return(true)
+      allow(search_service).to receive(:show_elasticsearch_tabs?).and_return(true)
+      allow(self).to receive(:feature_flag_tab_enabled?).and_return(true)
+      allow(search_service).to receive(:show_epics?).and_return(true)
+      @show_snippets = true
+      @project = nil
+    end
+
+    it 'test search navigation item order for CE all options enabled' do
+      expect(Gitlab::Json.parse(search_navigation_json).keys).to eq(%w[projects blobs epics issues merge_requests wiki_blobs commits notes milestones users snippet_titles])
+    end
+  end
+
   describe '.search_filter_link_json' do
     using RSpec::Parameterized::TableSyntax
 
