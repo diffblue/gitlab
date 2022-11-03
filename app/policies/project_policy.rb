@@ -846,6 +846,10 @@ class ProjectPolicy < BasePolicy
     enable :view_package_registry_project_settings
   end
 
+  rule { can?(:read_project) }.policy do
+    enable :read_incident_management_timeline_event_tag
+  end
+
   private
 
   def user_is_user?
