@@ -221,7 +221,7 @@ table.supported-languages ul {
       <td>N</td>
     </tr>
     <tr>
-      <td rowspan="2">JavaScript</td>
+      <td rowspan="2">JavaScript and TypeScript</td>
       <td>All versions</td>
       <td><a href="https://www.npmjs.com/">npm</a></td>
       <td>
