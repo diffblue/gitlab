@@ -193,9 +193,10 @@ module API
         mount ::API::Releases
         mount ::API::Release::Links
         mount ::API::ResourceAccessTokens
+        mount ::API::ProjectSnapshots
         mount ::API::ProtectedTags
-        mount ::API::SnippetRepositoryStorageMoves
         mount ::API::ProtectedBranches
+        mount ::API::SnippetRepositoryStorageMoves
         mount ::API::Statistics
         mount ::API::Submodules
         mount ::API::Suggestions
@@ -295,7 +296,6 @@ module API
       mount ::API::ProjectImport
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
-      mount ::API::ProjectSnapshots
       mount ::API::ProjectSnippets
       mount ::API::ProjectStatistics
       mount ::API::ProjectTemplates
