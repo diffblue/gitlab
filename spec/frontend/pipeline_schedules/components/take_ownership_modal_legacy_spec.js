@@ -21,10 +21,6 @@ describe('Take ownership modal', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('has a primary action set to a url and a post data-method', () => {
     const actionPrimary = findModal().props('actionPrimary');
 

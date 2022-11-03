@@ -20,10 +20,6 @@ describe('Take ownership modal', () => {
     createComponent();
   });
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   it('shows a take ownership message', () => {
     expect(findModal().text()).toBe(
       'Only the owner of a pipeline schedule can make changes to it. Do you want to take ownership of this schedule?',

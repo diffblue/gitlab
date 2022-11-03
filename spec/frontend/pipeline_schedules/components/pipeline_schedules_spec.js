@@ -159,7 +159,7 @@ describe('Pipeline schedules app', () => {
       expect($toast.show).toHaveBeenCalledWith('Pipeline schedule successfully deleted.');
     });
 
-    it('delete modal visibility', async () => {
+    it('handles delete modal visibility correctly', async () => {
       createComponent();
 
       await waitForPromises();
@@ -226,7 +226,7 @@ describe('Pipeline schedules app', () => {
       expect($toast.show).toHaveBeenCalledWith('Successfully taken ownership from Admin.');
     });
 
-    it('take ownership modal visibility', async () => {
+    it('handles take ownership modal visibility correctly', async () => {
       createComponent();
 
       await waitForPromises();
