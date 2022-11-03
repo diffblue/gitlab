@@ -1,13 +1,13 @@
 import { testProviderName, testTrainingUrls } from 'jest/security_configuration/mock_data';
 import {
-  SUPPORTED_IDENTIFIER_TYPES,
   SECURITY_TRAINING_URL_STATUS_COMPLETED,
+  SUPPORTED_IDENTIFIER_TYPE_CWE,
 } from 'ee/vulnerabilities/constants';
 
 export const testIdentifierName = 'cwe-1';
 
 export const testIdentifiers = [
-  { externalType: SUPPORTED_IDENTIFIER_TYPES.cwe, externalId: testIdentifierName },
+  { externalType: SUPPORTED_IDENTIFIER_TYPE_CWE, externalId: testIdentifierName },
   { externalType: 'cve', externalId: 'cve-1' },
 ];
 
