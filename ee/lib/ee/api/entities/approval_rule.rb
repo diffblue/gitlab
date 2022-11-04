@@ -9,11 +9,12 @@ module EE
           super(presenter, options)
         end
 
-        expose :approvers, as: :eligible_approvers, using: ::API::Entities::UserBasic
+        expose :approvers, as: :eligible_approvers,
+                           using: ::API::Entities::UserBasic, documentation: { is_array: true }
         expose :approvals_required, documentation: { type: 'integer', example: 2 }
-        expose :users, using: ::API::Entities::UserBasic
-        expose :groups, using: ::API::Entities::Group
-        expose :contains_hidden_groups?, documentation: { type: 'boolean' }, as: :contains_hidden_groups
+        expose :users, using: ::API::Entities::UserBasic, documentation: { is_array: true }
+        expose :groups, using: ::API::Entities::Group, documentation: { is_array: true }
+        expose :contains_hidden_groups?, as: :contains_hidden_groups, documentation: { type: 'boolean' }
       end
     end
   end

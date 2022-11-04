@@ -200,6 +200,7 @@ module API
         mount ::API::ImportGithub
         mount ::API::Keys
         mount ::API::Lint
+        mount ::API::MergeRequestApprovals
         mount ::API::MergeRequestDiffs
         mount ::API::Metadata
         mount ::API::PersonalAccessTokens::SelfInformation
@@ -285,7 +286,6 @@ module API
       mount ::API::Markdown
       mount ::API::MavenPackages
       mount ::API::Members
-      mount ::API::MergeRequestApprovals
       mount ::API::MergeRequests
       mount ::API::Metrics::Dashboard::Annotations
       mount ::API::Metrics::UserStarredDashboards

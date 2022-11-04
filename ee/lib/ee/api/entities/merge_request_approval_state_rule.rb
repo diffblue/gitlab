@@ -4,9 +4,10 @@ module EE
   module API
     module Entities
       class MergeRequestApprovalStateRule < MergeRequestApprovalRule
-        expose :code_owner
-        expose :approved_approvers, as: :approved_by, using: ::API::Entities::UserBasic
-        expose :approved?, as: :approved
+        expose :code_owner, documentation: { type: 'boolean' }
+        expose :approved_approvers, as: :approved_by,
+                                    using: ::API::Entities::UserBasic, documentation: { is_array: true }
+        expose :approved?, as: :approved, documentation: { type: 'boolean' }
       end
     end
   end
