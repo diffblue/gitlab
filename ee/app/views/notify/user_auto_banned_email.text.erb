@@ -1,7 +1,13 @@
 <%= _("We've detected some unusual activity") %>
 
-<%= _('We want to let you know %{username} has been banned from %{scope} due to them downloading more than %{max_project_downloads} project repositories within %{within_minutes} minutes.') % { username: sanitize_name(@user.name), max_project_downloads: @max_project_downloads, within_minutes: @within_minutes, scope: @ban_scope } %>
+<% repositories_text = n_('repository', 'repositories', @max_project_downloads) -%>
+<% within_seconds_text = n_('%d second', '%d seconds', @within_seconds) % @within_seconds -%>
+<% within_minutes_text = n_('%d minute', '%d minutes', @within_minutes) % @within_minutes -%>
+<% within_text = @within_minutes > 0 ? within_minutes_text : within_seconds_text -%>
+<%=  _('We want to let you know %{username} has exceeded the Git rate limit due to them downloading more than %{max_project_downloads} project %{repositories_text} within %{within_text}.') % { username: sanitize_name(@user.name), max_project_downloads: @max_project_downloads, repositories_text: repositories_text, within_text: within_text } %>
 
-<%= _('If this is a mistake, you can unban them: %{url}.') % { url: @banned_page_url } %>
+<% if @auto_ban_enabled -%>
+<%= _('Because you enabled auto-banning, we have also automatically banned this user from %{scope}. If this is a mistake, you can unban them: %{url}.') % { scope: @ban_scope, url: @banned_page_url } %>
 
+<% end -%>
 <%= _('You can adjust rules on auto-banning here: %{url}.') % { url: @settings_page_url } %>

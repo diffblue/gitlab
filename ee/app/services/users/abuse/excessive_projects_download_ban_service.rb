@@ -79,7 +79,8 @@ module Users
             admin.id,
             current_user.id,
             max_project_downloads: max_project_downloads,
-            within_seconds: time_period
+            within_seconds: time_period,
+            auto_ban_enabled: auto_ban_users
           ).deliver_later
         end
       end
