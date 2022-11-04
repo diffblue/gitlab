@@ -44,4 +44,21 @@ RSpec.describe Feature, stub_feature_flags: false, query_analyzers: false do
       end
     end
   end
+
+  describe Feature::Target do
+    describe '#targets' do
+      context 'when repository target works with group wiki' do
+        let_it_be(:group) { create(:group) }
+
+        subject do
+          described_class.new(repository: group.wiki.repository.full_path)
+        end
+
+        it 'returns all found targets' do
+          expect(subject.targets).to be_an(Array)
+          expect(subject.targets).to eq([group.wiki.repository])
+        end
+      end
+    end
+  end
 end
