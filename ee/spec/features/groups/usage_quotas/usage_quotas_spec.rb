@@ -8,7 +8,10 @@ RSpec.describe 'Groups > Usage Quotas' do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }
-  let!(:project) { create(:project, :with_ci_minutes, amount_used: 100, namespace: group, shared_runners_enabled: true) }
+  let!(:project) do
+    create(:project, :with_ci_minutes, amount_used: 100, namespace: group, shared_runners_enabled: true)
+  end
+
   let(:gitlab_dot_com) { true }
 
   before do
@@ -99,7 +102,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'minutes under quota' do
+  context 'with minutes under quota' do
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
     include_examples 'linked in group settings dropdown'
@@ -115,10 +118,12 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'minutes over quota' do
+  context 'with minutes over quota' do
     let(:group) { create(:group, :with_used_build_minutes_limit) }
     let!(:other_project) { create(:project, namespace: group, shared_runners_enabled: false) }
-    let!(:no_minutes_project) { create(:project, :with_ci_minutes, amount_used: 0, namespace: group, shared_runners_enabled: true) }
+    let!(:no_minutes_project) do
+      create(:project, :with_ci_minutes, amount_used: 0, namespace: group, shared_runners_enabled: true)
+    end
 
     include_examples 'linked in group settings dropdown'
 
@@ -153,7 +158,7 @@ RSpec.describe 'Groups > Usage Quotas' do
       expect(link['data-track-property']).to eq('pipeline_quota_page')
     end
 
-    context 'usage by project' do
+    context 'in usage by project' do
       let(:per_page) { 20 }
 
       before do
@@ -171,7 +176,9 @@ RSpec.describe 'Groups > Usage Quotas' do
 
       context 'when group has projects in subgroups' do
         let!(:subgroup) { create(:group, parent: group) }
-        let!(:subproject) { create(:project, :with_ci_minutes, amount_used: 300, namespace: subgroup, shared_runners_enabled: true) }
+        let!(:subproject) do
+          create(:project, :with_ci_minutes, amount_used: 300, namespace: subgroup, shared_runners_enabled: true)
+        end
 
         it 'shows projects inside the subgroup' do
           visit_usage_quotas_page
@@ -192,28 +199,46 @@ RSpec.describe 'Groups > Usage Quotas' do
 
     context 'when successfully purchasing CI Minutes' do
       let(:group) { create(:group, :with_ci_minutes) }
-      let!(:project) { create(:project, :with_ci_minutes, amount_used: 200, namespace: group, shared_runners_enabled: true) }
+      let!(:project) do
+        create(:project, :with_ci_minutes, amount_used: 200, namespace: group, shared_runners_enabled: true)
+      end
 
       it 'does show a banner' do
         visit group_usage_quotas_path(group, purchased_product: 'CI minutes')
 
         page.within('#content-body') do
           expect(page).to have_content('Thanks for your purchase!')
-          expect(page).to have_content('You have successfully purchased CI minutes. You\'ll receive a receipt by email.')
+          expect(page).to have_content(
+            'You have successfully purchased CI minutes. You\'ll receive a receipt by email.'
+          )
         end
       end
     end
   end
 
-  context 'Projects usage table' do
-    let!(:project) { create(:project, :with_ci_minutes, amount_used: 100, shared_runners_duration: 1000, namespace: group, shared_runners_enabled: true) }
+  context 'in projects usage table' do
+    let!(:project) do
+      create(:project, :with_ci_minutes, amount_used: 100, shared_runners_duration: 1000, namespace: group,
+                                         shared_runners_enabled: true)
+    end
 
     let(:per_page) { 20 }
     let!(:subgroup) { create(:group, parent: group) }
-    let!(:project2) { create(:project, :with_ci_minutes, amount_used: 5, shared_runners_duration: 50, namespace: group) }
-    let!(:project3) { create(:project, :with_ci_minutes, amount_used: 3, shared_runners_duration: 30, namespace: subgroup) }
-    let!(:project4) { create(:project, :with_ci_minutes, amount_used: 1, shared_runners_duration: 10, namespace: group) }
-    let!(:project5) { create(:project, :with_ci_minutes, amount_used: 8, shared_runners_duration: 80, namespace: subgroup) }
+    let!(:project2) do
+      create(:project, :with_ci_minutes, amount_used: 5, shared_runners_duration: 50, namespace: group)
+    end
+
+    let!(:project3) do
+      create(:project, :with_ci_minutes, amount_used: 3, shared_runners_duration: 30, namespace: subgroup)
+    end
+
+    let!(:project4) do
+      create(:project, :with_ci_minutes, amount_used: 1, shared_runners_duration: 10, namespace: group)
+    end
+
+    let!(:project5) do
+      create(:project, :with_ci_minutes, amount_used: 8, shared_runners_duration: 80, namespace: subgroup)
+    end
 
     before do
       allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
@@ -251,7 +276,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'pagination', :js do
+  context 'with pagination', :js do
     let(:per_page) { 1 }
     let(:item_selector) { '.js-project-link' }
     let(:prev_button_selector) { '[data-testid="prevButton"]' }
@@ -263,14 +288,15 @@ RSpec.describe 'Groups > Usage Quotas' do
       stub_ee_application_setting(should_check_namespace_plan: true)
     end
 
-    context 'storage tab' do
+    context 'on the storage tab' do
       before do
         visit_usage_quotas_page('storage-quota-tab')
       end
+
       it_behaves_like 'correct pagination'
     end
 
-    context 'pipelines tab: with usage_quotas_pipelines_vue disabled' do
+    context 'on the pipelines tab: with usage_quotas_pipelines_vue disabled' do
       let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
       let(:prev_button_selector) { '.page-item.js-previous-button a' }
       let(:next_button_selector) { '.page-item.js-next-button a' }
@@ -278,21 +304,23 @@ RSpec.describe 'Groups > Usage Quotas' do
       before do
         visit_usage_quotas_page('pipelines-quota-tab')
       end
+
       it_behaves_like 'correct pagination'
     end
 
-    context 'pipelines tab: with usage_quotas_pipelines_vue enabled' do
+    context 'on the pipelines tab: with usage_quotas_pipelines_vue enabled' do
       let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
 
       before do
         stub_feature_flags(usage_quotas_pipelines_vue: true)
         visit_usage_quotas_page('pipelines-quota-tab')
       end
+
       it_behaves_like 'correct pagination'
     end
   end
 
-  context 'pending members', :js do
+  context 'with pending members', :js do
     let!(:awaiting_member) { create(:group_member, :awaiting, group: group) }
 
     it 'lists awaiting members and approves them' do
@@ -308,7 +336,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'storage limit', :js do
+  context 'with storage limit', :js do
     let_it_be(:group) { create(:group, :private) }
     let_it_be(:active_members) { create_list(:group_member, 3, source: group) }
 
@@ -334,7 +362,7 @@ RSpec.describe 'Groups > Usage Quotas' do
     end
   end
 
-  context 'free user limit', :js, :saas do
+  context 'with free user limit', :js, :saas do
     let(:preview_free_user_cap) { false }
     let(:free_user_cap) { false }
     let(:awaiting_user_names) { awaiting_members.map { |m| m.user.name } }
@@ -406,7 +434,9 @@ RSpec.describe 'Groups > Usage Quotas' do
       end
 
       context 'when on a trial' do
-        let_it_be(:gitlab_subscription) { create(:gitlab_subscription, :active_trial, seats_in_use: 4, seats: 10, namespace: group) }
+        let_it_be(:gitlab_subscription) do
+          create(:gitlab_subscription, :active_trial, seats_in_use: 4, seats: 10, namespace: group)
+        end
 
         it 'shows active users' do
           expect(page.text).not_to include(*awaiting_user_names)
