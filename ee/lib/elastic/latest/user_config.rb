@@ -20,7 +20,7 @@ module Elastic
         indexes :type, type: :keyword
         indexes :id, type: :integer
 
-        indexes :username, type: :text
+        indexes :username, type: :text, fields: { raw: { type: :keyword } }
         indexes :email, type: :text
         indexes :public_email, type: :text
         indexes :name, type: :text
