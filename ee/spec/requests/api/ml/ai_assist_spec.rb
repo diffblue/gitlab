@@ -2,13 +2,15 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Ml::AiAssist do
+RSpec.describe API::Ml::AiAssist, :saas do
   let_it_be(:user) { create(:user) }
   let_it_be(:group_user) { create(:user) }
   let(:current_user) { nil }
+  let(:plan) { nil }
+  let(:api_feature_flag) { true }
 
-  let_it_be(:allowed_group) do
-    group = create(:group)
+  let(:allowed_group) do
+    group = create(:group_with_plan, plan: plan)
     group.add_owner(group_user)
     group
   end
@@ -19,6 +21,7 @@ RSpec.describe API::Ml::AiAssist do
     before do
       stub_licensed_features(ai_assist: license_flag)
       stub_feature_flags(ai_assist_flag: feature_flag)
+      stub_feature_flags(ai_assist_api: api_feature_flag)
     end
 
     subject { get api('/ml/ai-assist', current_user) }
@@ -62,17 +65,55 @@ RSpec.describe API::Ml::AiAssist do
     context 'when user is logged in and in group' do
       let(:current_user) { group_user }
 
-      where(:feature_flag, :license_flag, :result) do
-        false | false | :not_found
-        true | false | :not_found
-        false | true | :not_found
-        true | true | :ok
+      where(:feature_flag, :license_flag, :plan, :result, :body) do
+        false | true | nil | :not_found | { "message" => "404 Not Found" }
+        false | false | nil | :not_found | { "message" => "404 Not Found" }
+        true  | true | nil | :ok | { "user_is_allowed" => false }
+        true  | false | nil | :ok | { "user_is_allowed" => false }
+        false | true | :premium_plan | :not_found | { "message" => "404 Not Found" }
+        false | false | :premium_plan | :not_found | { "message" => "404 Not Found" }
+        true  | true | :premium_plan | :ok | { "user_is_allowed" => false }
+        true  | false | :premium_plan | :ok | { "user_is_allowed" => false }
+        false | true | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
+        false | false | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
+        true  | true | :ultimate_plan | :ok | { "user_is_allowed" => true }
+        true  | false | :ultimate_plan | :ok | { "user_is_allowed" => true }
       end
 
       with_them do
         it 'returns not found except when both flags true' do
+          allowed_group
           subject
           expect(response).to have_gitlab_http_status(result)
+          expect(json_response).to eq(body)
+        end
+      end
+    end
+
+    context 'when API feature flag is disabled' do
+      let(:current_user) { group_user }
+      let(:api_feature_flag) { false }
+
+      where(:feature_flag, :license_flag, :plan, :result, :body) do
+        false | true | nil | :not_found | { "message" => "404 Not Found" }
+        false | false | nil | :not_found | { "message" => "404 Not Found" }
+        true  | true | nil | :not_found | { "message" => "404 Not Found" }
+        true  | false | nil | :not_found | { "message" => "404 Not Found" }
+        false | true | :premium_plan | :not_found | { "message" => "404 Not Found" }
+        false | false | :premium_plan | :not_found | { "message" => "404 Not Found" }
+        true  | true | :premium_plan | :not_found | { "message" => "404 Not Found" }
+        true  | false | :premium_plan | :not_found | { "message" => "404 Not Found" }
+        false | true | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
+        false | false | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
+        true  | true | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
+        true  | false | :ultimate_plan | :not_found | { "message" => "404 Not Found" }
+      end
+      with_them do
+        it 'returns not found' do
+          allowed_group
+          subject
+          expect(response).to have_gitlab_http_status(result)
+          expect(json_response).to eq(body)
         end
       end
     end
