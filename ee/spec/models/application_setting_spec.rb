@@ -259,6 +259,63 @@ RSpec.describe ApplicationSetting do
         end
       end
     end
+
+    describe 'when validating product analytics settings' do
+      context 'when product analytics is enabled' do
+        before do
+          setting.product_analytics_enabled = true
+        end
+
+        it { is_expected.to allow_value(false).for(:product_analytics_enabled) }
+        it { is_expected.to allow_value("").for(:product_analytics_enabled) }
+
+        it { is_expected.to allow_value("https://jitsu.gitlab.com").for(:jitsu_host) }
+        it { is_expected.to allow_value("http://localhost:8000").for(:jitsu_host) }
+        it { is_expected.not_to allow_value("invalid.host").for(:jitsu_host) }
+        it { is_expected.not_to allow_value(nil).for(:jitsu_host) }
+        it { is_expected.not_to allow_value("").for(:jitsu_host) }
+
+        it { is_expected.to allow_value('g0maofw84gx5sjxgse2k').for(:jitsu_project_xid) }
+        it { is_expected.not_to allow_value(nil).for(:jitsu_project_xid) }
+        it { is_expected.not_to allow_value("").for(:jitsu_project_xid) }
+
+        it { is_expected.to allow_value('jitsu.admin@gitlab.com').for(:jitsu_administrator_email) }
+        it { is_expected.not_to allow_value('invalid_admin_email.com').for(:jitsu_administrator_email) }
+        it { is_expected.not_to allow_value(nil).for(:jitsu_administrator_email) }
+        it { is_expected.not_to allow_value("").for(:jitsu_administrator_email) }
+
+        it { is_expected.to allow_value('xxxxxxxx').for(:jitsu_administrator_password) }
+        it { is_expected.not_to allow_value(nil).for(:jitsu_administrator_password) }
+        it { is_expected.not_to allow_value("").for(:jitsu_administrator_password) }
+
+        it { is_expected.to allow_value('https://user:pass@clickhouse.gitlab.com:8123').for(:clickhouse_connection_string) }
+        it { is_expected.not_to allow_value(nil).for(:clickhouse_connection_string) }
+        it { is_expected.not_to allow_value("").for(:clickhouse_connection_string) }
+
+        it { is_expected.to allow_value('https://cube.gitlab.com').for(:cube_api_base_url) }
+        it { is_expected.to allow_value('https://localhost:4000').for(:cube_api_base_url) }
+        it { is_expected.not_to allow_value(nil).for(:cube_api_base_url) }
+        it { is_expected.not_to allow_value("").for(:cube_api_base_url) }
+
+        it { is_expected.to allow_value('420d0e1b73b2ad4acd21c92e533be327').for(:cube_api_key) }
+        it { is_expected.not_to allow_value(nil).for(:cube_api_key) }
+        it { is_expected.not_to allow_value("").for(:cube_api_key) }
+      end
+
+      context 'when product analytics is disabled' do
+        before do
+          setting.product_analytics_enabled = false
+        end
+
+        it { is_expected.to allow_value(nil).for(:jitsu_host) }
+        it { is_expected.to allow_value(nil).for(:jitsu_project_xid) }
+        it { is_expected.to allow_value(nil).for(:jitsu_administrator_email) }
+        it { is_expected.to allow_value(nil).for(:jitsu_administrator_password) }
+        it { is_expected.to allow_value(nil).for(:clickhouse_connection_string) }
+        it { is_expected.to allow_value(nil).for(:cube_api_base_url) }
+        it { is_expected.to allow_value(nil).for(:cube_api_key) }
+      end
+    end
   end
 
   describe '#should_check_namespace_plan?' do
@@ -1005,6 +1062,15 @@ RSpec.describe ApplicationSetting do
 
     context 'when personal access tokens are enabled' do
       it { is_expected.to eq(false) }
+    end
+  end
+
+  describe '#jitsu_administrator_password' do
+    it 'does not modify password if it is unchanged in the form' do
+      setting.jitsu_administrator_password = 'foo'
+      setting.jitsu_administrator_password = ApplicationSetting::MASK_PASSWORD
+
+      expect(setting.jitsu_administrator_password).to eq('foo')
     end
   end
 end

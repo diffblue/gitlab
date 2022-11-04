@@ -58,7 +58,15 @@ module EE
         :slack_app_verification_token,
         :throttle_incident_management_notification_enabled,
         :throttle_incident_management_notification_per_period,
-        :throttle_incident_management_notification_period_in_seconds
+        :throttle_incident_management_notification_period_in_seconds,
+        :product_analytics_enabled,
+        :jitsu_host,
+        :jitsu_project_xid,
+        :jitsu_administrator_email,
+        :jitsu_administrator_password,
+        :clickhouse_connection_string,
+        :cube_api_base_url,
+        :cube_api_key
       ].tap do |settings|
         next unless ::Gitlab.com?
 
