@@ -204,6 +204,7 @@ module API
         mount ::API::Submodules
         mount ::API::Suggestions
         mount ::API::Tags
+        mount ::API::Unleash
         mount ::API::UserCounts
 
         add_open_api_documentation!
@@ -322,7 +323,6 @@ module API
       mount ::API::Terraform::StateVersion
       mount ::API::Todos
       mount ::API::Topics
-      mount ::API::Unleash
       mount ::API::UsageData
       mount ::API::UsageDataNonSqlMetrics
       mount ::API::UsageDataQueries
