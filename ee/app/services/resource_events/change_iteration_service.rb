@@ -13,15 +13,13 @@ module ResourceEvents
       @old_iteration_id = old_iteration_id
     end
 
-    def execute
-      super
+    private
 
+    def track_event
       return unless resource.is_a?(WorkItem)
 
       Gitlab::UsageDataCounters::WorkItemActivityUniqueCounter.track_work_item_iteration_changed_action(author: user)
     end
-
-    private
 
     def create_event
       ResourceIterationEvent.create(build_resource_args)
