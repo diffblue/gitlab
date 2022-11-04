@@ -36144,10 +36144,10 @@ msgstr ""
 msgid "SecurityOrchestration|%{agent} for %{namespaces}"
 msgstr ""
 
-msgid "SecurityOrchestration|%{branches} %{plural}"
+msgid "SecurityOrchestration|%{branches} and %{lastBranch} branches"
 msgstr ""
 
-msgid "SecurityOrchestration|%{branches} and %{lastBranch} %{plural}"
+msgid "SecurityOrchestration|%{branches} branch"
 msgstr ""
 
 msgid "SecurityOrchestration|%{scanners}"
@@ -36504,10 +36504,10 @@ msgstr ""
 msgid "SecurityOrchestration|the %{branches}"
 msgstr ""
 
-msgid "SecurityOrchestration|the %{namespaces} %{plural}"
+msgid "SecurityOrchestration|the %{namespaces} and %{lastNamespace} namespaces"
 msgstr ""
 
-msgid "SecurityOrchestration|the %{namespaces} and %{lastNamespace} %{plural}"
+msgid "SecurityOrchestration|the %{namespaces} namespace"
 msgstr ""
 
 msgid "SecurityOrchestration|vulnerabilities"
@@ -48841,11 +48841,6 @@ msgstr ""
 
 msgid "my-topic"
 msgstr ""
-
-msgid "namespace"
-msgid_plural "namespaces"
-msgstr[0] ""
-msgstr[1] ""
 
 msgid "needs to be between 10 minutes and 1 month"
 msgstr ""
