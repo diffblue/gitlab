@@ -5,6 +5,7 @@ module IncidentManagement
     DEFAULT_ACTION = 'comment'
     DEFAULT_EDITABLE = false
     DEFAULT_AUTO_CREATED = false
+    AUTOCREATE_TAGS = [TimelineEventTag::START_TIME_TAG_NAME, TimelineEventTag::END_TIME_TAG_NAME].freeze
 
     class CreateService < TimelineEvents::BaseService
       def initialize(incident, user, params)
@@ -132,10 +133,7 @@ module IncidentManagement
       def create_timeline_event_tag_links(timeline_event, tag_names)
         return unless tag_names&.any?
 
-        # Just fetches names for comparison and auto create
-        defined_tag_names = project.incident_management_timeline_event_tags.pluck_names
-
-        auto_create_predefined_tags(tag_names, defined_tag_names)
+        auto_create_predefined_tags(tag_names)
 
         # Refetches the tag objects to consider predefined tags as well
         tags = project.incident_management_timeline_event_tags.by_names(tag_names)
@@ -151,24 +149,13 @@ module IncidentManagement
         IncidentManagement::TimelineEventTagLink.insert_all(tag_links) if tag_links.any?
       end
 
-      def auto_create_predefined_tags(new_tags, existing_tags)
+      def auto_create_predefined_tags(new_tags)
         new_tags = new_tags.map(&:downcase)
-        existing_tags = existing_tags.map(&:downcase)
 
-        start_time_tag = TimelineEventTag::START_TIME_TAG_NAME
-        end_time_tag = TimelineEventTag::END_TIME_TAG_NAME
+        tags_to_create = AUTOCREATE_TAGS.select { |tag| tag.downcase.in?(new_tags) }
 
-        tags = []
-        if new_tags.include?(start_time_tag.downcase) && existing_tags.exclude?(start_time_tag.downcase)
-          tags << start_time_tag
-        end
-
-        if new_tags.include?(end_time_tag.downcase) && existing_tags.exclude?(end_time_tag.downcase)
-          tags << end_time_tag
-        end
-
-        tags.each do |name|
-          project.incident_management_timeline_event_tags.create!(name: name)
+        tags_to_create.each do |name|
+          project.incident_management_timeline_event_tags.create(name: name)
         end
       end
     end
