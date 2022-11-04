@@ -16,6 +16,7 @@ RSpec.describe 'Project issue boards', :js do
     let(:project) { create(:project, :public, namespace: group) }
 
     before do
+      stub_feature_flags(apollo_boards: false)
       project.add_maintainer(user)
       group.add_reporter(user)
       login_as(user)
@@ -38,6 +39,7 @@ RSpec.describe 'Project issue boards', :js do
   context 'swimlanes dropdown' do
     context 'license feature on' do
       before do
+        stub_feature_flags(apollo_boards: false)
         stub_licensed_features(swimlanes: true)
       end
 
@@ -85,6 +87,7 @@ RSpec.describe 'Project issue boards', :js do
     let!(:issue_2) { create(:issue, project: project, weight: 2, relative_position: 1) }
 
     before do
+      stub_feature_flags(apollo_boards: false)
       project.add_developer(user)
       login_as(user)
       visit_board_page
@@ -135,6 +138,7 @@ RSpec.describe 'Project issue boards', :js do
     let!(:issue) { create(:issue, project: project, labels: [label]) }
 
     before do
+      stub_feature_flags(apollo_boards: false)
       project.add_developer(user)
       login_as(user)
       visit_board_page
@@ -156,6 +160,7 @@ RSpec.describe 'Project issue boards', :js do
 
   context 'list settings' do
     before do
+      stub_feature_flags(apollo_boards: false)
       project.add_developer(user)
       login_as(user)
     end
