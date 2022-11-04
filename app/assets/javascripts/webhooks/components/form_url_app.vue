@@ -93,6 +93,10 @@ export default {
         return this.$options.i18n.inputRequired;
       }
 
+      if (!isEmpty(value) && !this.url?.includes(value)) {
+        return this.$options.i18n.valuePartOfUrl;
+      }
+
       return null;
     },
     isValid() {
@@ -145,6 +149,7 @@ export default {
     urlLabel: __('URL'),
     urlPlaceholder: 'http://example.com/trigger-ci.json',
     urlPreview: s__('Webhooks|URL preview'),
+    valuePartOfUrl: s__('Webhooks|Must match part of URL'),
   },
 };
 </script>
