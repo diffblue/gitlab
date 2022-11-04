@@ -124,6 +124,14 @@ module Gitlab
         migrations_index_name
       end
 
+      def pending_migrations?
+        ::Elastic::DataMigrationService.pending_migrations.present?
+      end
+
+      def indexing_paused?
+        ::Gitlab::CurrentSettings.elasticsearch_pause_indexing?
+      end
+
       def delete_migration_record(migration)
         result = client.delete(index: migrations_index_name, type: '_doc', id: migration.version)
         result['result'] == 'deleted'
@@ -389,8 +397,6 @@ module Gitlab
         end
       end
 
-      private
-
       def create_index(index_name:, alias_name:, with_alias:, settings:, mappings:, options: {})
         if index_exists?(index_name: index_name)
           return if options[:skip_if_exists]
@@ -423,6 +429,10 @@ module Gitlab
 
         client.indices.create create_index_options
         client.indices.put_alias(name: alias_name, index: index_name) if with_alias
+      end
+
+      def get_alias_info(pattern)
+        client.indices.get_alias(index: pattern)
       end
     end
   end
