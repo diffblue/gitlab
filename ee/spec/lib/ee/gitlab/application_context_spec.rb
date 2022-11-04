@@ -43,10 +43,10 @@ RSpec.describe Gitlab::ApplicationContext do
     using RSpec::Parameterized::TableSyntax
 
     where(:provided_options, :expected_context_keys) do
-      [:user, :namespace, :project] | [:user, :project, :root_namespace, :client_id, :subscription_plan]
-      [:user, :project]             | [:user, :project, :root_namespace, :client_id, :subscription_plan]
-      [:user, :namespace]           | [:user, :root_namespace, :client_id, :subscription_plan]
-      [:user]                       | [:user, :client_id]
+      [:user, :namespace, :project] | [:user, :project, :root_namespace, :client_id, :subscription_plan, :user_id]
+      [:user, :project]             | [:user, :project, :root_namespace, :client_id, :subscription_plan, :user_id]
+      [:user, :namespace]           | [:user, :root_namespace, :client_id, :subscription_plan, :user_id]
+      [:user]                       | [:user, :client_id, :user_id]
       [:remote_ip]                  | [:remote_ip, :client_id]
       [:runner]                     | [:project, :root_namespace, :client_id, :subscription_plan]
       [:caller_id]                  | [:caller_id]
