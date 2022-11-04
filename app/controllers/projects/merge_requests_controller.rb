@@ -550,16 +550,19 @@ class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationCo
     return render_404 unless can?(current_user, :read_build, merge_request.actual_head_pipeline)
   end
 
+  def show_whitespace
+    current_user&.show_whitespace_in_diffs ? '0' : '1'
+  end
+
   def endpoint_metadata_url(project, merge_request)
-    params = request.query_parameters.merge(view: 'inline', diff_head: true, w: current_user&.show_whitespace_in_diffs ? '0' : '1')
+    params = request.query_parameters.merge(view: 'inline', diff_head: true, w: show_whitespace)
 
     diffs_metadata_project_json_merge_request_path(project, merge_request, 'json', params)
   end
 
   def endpoint_diff_batch_url(project, merge_request)
     per_page = current_user&.view_diffs_file_by_file ? '1' : '5'
-    w = current_user&.show_whitespace_in_diffs ? '0' : '1'
-    params = request.query_parameters.merge(view: 'inline', diff_head: true, w: w, page: '0', per_page: per_page)
+    params = request.query_parameters.merge(view: 'inline', diff_head: true, w: show_whitespace, page: '0', per_page: per_page)
 
     diffs_batch_project_json_merge_request_path(project, merge_request, 'json', params)
   end
