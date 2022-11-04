@@ -10,6 +10,16 @@ RSpec.describe EE::NotificationService, :mailer do
 
   let(:mailer) { double(deliver_later: true) }
 
+  describe '.permitted_actions' do
+    it 'includes public methods' do
+      expect(NotificationService.permitted_actions).to include(:add_merge_request_approvers)
+    end
+
+    it 'excludes protected and private methods' do
+      expect(NotificationService.permitted_actions).not_to include(:oncall_user_removed_recipients)
+    end
+  end
+
   context 'new review' do
     let(:project) { create(:project, :repository) }
     let(:user) { create(:user) }
