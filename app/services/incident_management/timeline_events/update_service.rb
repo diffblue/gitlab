@@ -24,7 +24,7 @@ module IncidentManagement
         return error_no_permissions unless allowed?
 
         timeline_event.assign_attributes(update_params)
-        update_timeline_event_tags(timeline_event, timeline_event_tags) if timeline_event_tags
+        update_timeline_event_tags(timeline_event, timeline_event_tags) unless timeline_event_tags.nil?
 
         if timeline_event.save(context: validation_context)
           add_system_note(timeline_event)
@@ -64,8 +64,6 @@ module IncidentManagement
       end
 
       def update_timeline_event_tags(timeline_event, tag_updates)
-        return unless tag_updates.any?
-
         tag_updates = tag_updates.map(&:downcase)
         already_assigned_tags = timeline_event.timeline_event_tags.pluck_names.map(&:downcase)
         tags_defined_on_project = timeline_event.project.incident_management_timeline_event_tags.pluck_names.map(&:downcase)
@@ -90,7 +88,7 @@ module IncidentManagement
 
         tag_links = tags_to_add_ids.map do |tag_id|
           {
-            timeline_even_id: timeline_event.id,
+            timeline_event_id: timeline_event.id,
             timeline_event_tag_id: tag_id,
             created_at: DateTime.current
           }
