@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
+RSpec.describe 'Groups > Usage Quotas > Seats tab', :js do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: group) }
@@ -31,14 +31,14 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
     wait_for_requests
   end
 
-  context 'seat usage table' do
+  context 'in seat usage table' do
     it 'displays correct number of users' do
       within '[data-testid="table"]' do
         expect(all('tbody tr').count).to eq(4)
       end
     end
 
-    context 'seat usage details table' do
+    context 'in seat usage details table' do
       it 'expands the details on click' do
         first('[data-testid="toggle-seat-usage-details"]').click
 
@@ -104,7 +104,7 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
       end
     end
 
-    context 'removing the user' do
+    context 'when removing the user' do
       before do
         within user_to_remove_row do
           click_button 'Remove user'
@@ -128,7 +128,7 @@ RSpec.describe 'Groups > Usage Quotas > Seat Usage', :js do
         expect(page.find('.flash-container')).to have_content('User was successfully removed')
       end
 
-      context 'removing the user from a sub-group' do
+      context 'when removing a user from a sub-group' do
         it 'updates the seat table of the parent group' do
           within '[data-testid="table"]' do
             expect(all('tbody tr').count).to eq(4)
