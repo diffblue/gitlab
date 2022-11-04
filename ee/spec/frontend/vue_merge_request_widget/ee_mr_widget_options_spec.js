@@ -29,7 +29,6 @@ import {
   coverageFuzzingDiffSuccessMock,
   apiFuzzingDiffSuccessMock,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
-import { stubExperiments } from 'helpers/experimentation_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { TEST_HOST } from 'helpers/test_constants';
 import { trimText } from 'helpers/text_helper';
@@ -183,24 +182,6 @@ describe('ee merge request widget options', () => {
         expect(trimText(findExtendedSecurityWidget().find(SAST_SELECTOR).text())).toContain(
           'SAST: Loading resulted in an error',
         );
-      });
-    });
-
-    describe('when not enabled', () => {
-      it("doesn't show anything SAST related", () => {
-        createComponent({ propsData: { mrData: mockData } });
-        expect(wrapper.text()).not.toContain('SAST');
-      });
-
-      describe('security_reports_mr_widget_prompt experiment', () => {
-        beforeEach(() => {
-          stubExperiments({ security_reports_mr_widget_prompt: 'candidate' });
-        });
-
-        it('prompts to enable the feature', () => {
-          createComponent({ propsData: { mrData: mockData } });
-          expect(wrapper.text()).toContain('SAST and Secret Detection is not enabled.');
-        });
       });
     });
   });
@@ -612,11 +593,13 @@ describe('ee merge request widget options', () => {
     });
 
     describe('when it is loading', () => {
-      it('should render loading indicator', () => {
+      it('should render loading indicator', async () => {
         mock.onGet(API_FUZZING_ENDPOINT).reply(200, apiFuzzingDiffSuccessMock);
         mock.onGet(VULNERABILITY_FEEDBACK_ENDPOINT).reply(200, []);
 
         createComponent({ propsData: { mrData: gl.mrWidgetData } });
+
+        await nextTick();
 
         expect(trimText(findExtendedSecurityWidget().find(API_FUZZING_SELECTOR).text())).toContain(
           'API fuzzing is loading',

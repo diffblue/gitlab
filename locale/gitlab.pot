@@ -48511,9 +48511,6 @@ msgstr ""
 msgid "mrWidget|%{boldHeaderStart}Looks like there's no pipeline here.%{boldHeaderEnd}"
 msgstr ""
 
-msgid "mrWidget|%{linkStart}Set up now%{linkEnd} to analyze your source code for known security vulnerabilities."
-msgstr ""
-
 msgid "mrWidget|%{mergeError}."
 msgstr ""
 
@@ -48756,9 +48753,6 @@ msgid "mrWidget|Revert this merge request in a new merge request"
 msgstr ""
 
 msgid "mrWidget|Revoke approval"
-msgstr ""
-
-msgid "mrWidget|SAST and Secret Detection is not enabled."
 msgstr ""
 
 msgid "mrWidget|Set by %{merge_author} to be added to the merge train when the pipeline succeeds"
