@@ -191,6 +191,7 @@ module API
         mount ::API::ImportGithub
         mount ::API::Metadata
         mount ::API::MergeRequestDiffs
+        mount ::API::PersonalAccessTokens::SelfInformation
         mount ::API::ProjectHooks
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::Releases
@@ -286,7 +287,6 @@ module API
       mount ::API::PackageFiles
       mount ::API::Pages
       mount ::API::PagesDomains
-      mount ::API::PersonalAccessTokens::SelfInformation
       mount ::API::PersonalAccessTokens
       mount ::API::ProjectClusters
       mount ::API::ProjectContainerRepositories
