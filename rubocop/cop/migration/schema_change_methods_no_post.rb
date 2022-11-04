@@ -10,12 +10,10 @@ module RuboCop
         include MigrationHelpers
 
         MSG = "This method may not be used in post migrations."
-        PATH_TIMESTAMP_MATCHER = /\d{14}/.freeze
 
         FORBIDDEN_METHODS = %w[
           add_column
           create_table
-          add_concurrent_foreign_key
         ].freeze
 
         SYMBOLIZED_MATCHER = FORBIDDEN_METHODS.map { |w| ":#{w}" }.join(' | ')

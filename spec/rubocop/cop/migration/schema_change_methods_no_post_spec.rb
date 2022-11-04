@@ -21,11 +21,4 @@ RSpec.describe RuboCop::Cop::Migration::SchemaChangeMethodsNoPost do
       ^^^^^^^^^^^^ This method may not be used in post migrations.
     CODE
   end
-
-  it "does not allow 'delete_batched_background_migration' to be called" do
-    expect_offense(<<~CODE)
-      add_concurrent_foreign_key
-      ^^^^^^^^^^^^^^^^^^^^^^^^^^ This method may not be used in post migrations.
-    CODE
-  end
 end
