@@ -26,7 +26,7 @@ import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
-import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
+import { getWorkItemQuery } from '~/work_items/utils';
 
 const noIterationId = 'no-iteration-id';
 
@@ -67,6 +67,15 @@ export default {
     },
     workItemType: {
       type: String,
+      required: true,
+    },
+    fetchByIid: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
+    queryVariables: {
+      type: Object,
       required: true,
     },
   },
@@ -125,11 +134,14 @@ export default {
   },
   apollo: {
     workItem: {
-      query: workItemQuery,
+      query() {
+        return getWorkItemQuery(this.fetchByIid);
+      },
       variables() {
-        return {
-          id: this.workItemId,
-        };
+        return this.queryVariables;
+      },
+      update(data) {
+        return this.fetchByIid ? data.workspace.workItems.nodes[0] : data.workItem;
       },
       skip() {
         return !this.workItemId;

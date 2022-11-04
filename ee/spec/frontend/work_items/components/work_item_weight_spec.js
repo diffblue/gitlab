@@ -11,10 +11,12 @@ import { __ } from '~/locale';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
+import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import {
   updateWorkItemMutationResponse,
   workItemResponseFactory,
   workItemWeightSubscriptionResponse,
+  projectWorkItemResponse,
 } from 'jest/work_items/mock_data';
 
 describe('WorkItemWeight component', () => {
@@ -26,6 +28,7 @@ describe('WorkItemWeight component', () => {
   const workItemType = 'Task';
   const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
+  const workItemByIidResponseHandler = jest.fn().mockResolvedValue(projectWorkItemResponse);
   const weightSubscriptionHandler = jest.fn().mockResolvedValue(workItemWeightSubscriptionResponse);
 
   const findForm = () => wrapper.findComponent(GlForm);
@@ -37,18 +40,24 @@ describe('WorkItemWeight component', () => {
     isEditing = false,
     weight,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
+    fetchByIid = false,
   } = {}) => {
     wrapper = mountExtended(WorkItemWeight, {
       apolloProvider: createMockApollo([
         [workItemQuery, workItemQueryHandler],
         [workItemWeightSubscription, weightSubscriptionHandler],
         [updateWorkItemMutation, mutationHandler],
+        [workItemByIidQuery, workItemByIidResponseHandler],
       ]),
       propsData: {
         canUpdate,
         weight,
         workItemId,
         workItemType,
+        queryVariables: {
+          id: workItemId,
+        },
+        fetchByIid,
       },
       provide: {
         hasIssueWeightsFeature,
@@ -235,5 +244,21 @@ describe('WorkItemWeight component', () => {
         });
       });
     });
+  });
+
+  it('calls the global ID work item query when `fetchByIid` prop is false', async () => {
+    createComponent({ fetchByIid: false });
+    await waitForPromises();
+
+    expect(workItemQueryHandler).toHaveBeenCalled();
+    expect(workItemByIidResponseHandler).not.toHaveBeenCalled();
+  });
+
+  it('calls the IID work item query when when `fetchByIid` prop is true', async () => {
+    createComponent({ fetchByIid: true });
+    await waitForPromises();
+
+    expect(workItemQueryHandler).not.toHaveBeenCalled();
+    expect(workItemByIidResponseHandler).toHaveBeenCalled();
   });
 });
