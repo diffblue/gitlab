@@ -17,6 +17,7 @@ module IncidentManagement
         @note = params[:note]
         @occurred_at = params[:occurred_at]
         @validation_context = VALIDATION_CONTEXT
+        @timeline_event_tags = params[:timeline_event_tag_names]
       end
 
       def execute
@@ -59,6 +60,51 @@ module IncidentManagement
         return :note if note_changed
 
         :none
+      end
+
+      def update_timeline_event_tags(timeline_event, tag_updates)
+        return unless tag_updates.any?
+
+        tag_updates = tag_updates.map(&:downcase)
+        already_assigned_tags = timeline_event.timeline_event_tags.pluck_names.map(&:downcase)
+        tags_defined_on_project = timeline_event.project.incident_management_timeline_event_tags.pluck_names.map(&:downcase)
+
+        tags_to_remove = already_assigned_tags - tag_updates
+        tags_to_add = tag_updates - already_assigned_tags
+
+        validate_tags(tags_to_add, tags_defined_on_project)
+
+        remove_tag_links(timeline_event, tags_to_remove)
+        create_tag_links(timeline_event, tags_to_add)
+      end
+
+      def remove_tag_links(timeline_event, tags_to_remove_names)
+        tags_to_remove_ids = timeline_event.timeline_event_tags.by_names(tags_to_remove_names).ids
+
+        timeline_event.timeline_event_tag_links.where(timeline_event_tag_id: tag_to_remove_ids).delete_all
+      end
+
+      def create_tag_links(timeline_event, tags_to_add_names)
+        tags_to_add_ids = timeline_event.project.incident_management_timeline_event_tags.by_names(tags_to_add_names).ids
+
+        tag_links = tags_to_add_ids.map do |tag_id|
+          {
+            timeline_even_id: timeline_event.id
+            timeline_event_tag_id: tag_id
+            created_at: DateTime.current
+          }
+        end
+
+        IncidentManagement::TimelineEventTagLink.insert_all(tag_links) if tag_links.any?
+      end
+
+      def validate_tags(tags_to_add, defined_tags)
+        non_existing_tags = tags_to_add - defined_tags
+
+        return if non_existing_tags.empty?
+
+        raise Gitlab::Graphql::Errors::ArgumentError,
+          "Following tags don't exist: #{non_existing_tags}"
       end
 
       def allowed?
