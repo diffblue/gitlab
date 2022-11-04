@@ -24,6 +24,7 @@ module IncidentManagement
         return error_no_permissions unless allowed?
 
         timeline_event.assign_attributes(update_params)
+        update_timeline_event_tags(timeline_event, timeline_event_tags) if timeline_event_tags
 
         if timeline_event.save(context: validation_context)
           add_system_note(timeline_event)
@@ -37,7 +38,7 @@ module IncidentManagement
 
       private
 
-      attr_reader :timeline_event, :incident, :user, :note, :occurred_at, :validation_context
+      attr_reader :timeline_event, :incident, :user, :note, :occurred_at, :validation_context, :timeline_event_tags
 
       def update_params
         { updated_by_user: user, note: note, occurred_at: occurred_at }.compact
@@ -74,14 +75,14 @@ module IncidentManagement
 
         validate_tags(tags_to_add, tags_defined_on_project)
 
-        remove_tag_links(timeline_event, tags_to_remove)
-        create_tag_links(timeline_event, tags_to_add)
+        remove_tag_links(timeline_event, tags_to_remove) if tags_to_remove.any?
+        create_tag_links(timeline_event, tags_to_add) if tags_to_add.any?
       end
 
       def remove_tag_links(timeline_event, tags_to_remove_names)
         tags_to_remove_ids = timeline_event.timeline_event_tags.by_names(tags_to_remove_names).ids
 
-        timeline_event.timeline_event_tag_links.where(timeline_event_tag_id: tag_to_remove_ids).delete_all
+        timeline_event.timeline_event_tag_links.where(timeline_event_tag_id: tags_to_remove_ids).delete_all
       end
 
       def create_tag_links(timeline_event, tags_to_add_names)
