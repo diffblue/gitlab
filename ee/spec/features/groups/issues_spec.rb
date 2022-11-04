@@ -28,10 +28,9 @@ RSpec.describe 'Group issues page' do
       click_button 'Edit issues'
 
       click_button 'Select milestone'
-      wait_for_requests
 
-      page.within('.dropdown-menu-milestone .dropdown-content') do
-        expect(page).to have_content(milestone.title)
+      page.within('.dropdown-menu') do
+        expect(page).to have_button(milestone.title)
       end
     end
   end

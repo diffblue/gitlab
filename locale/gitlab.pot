@@ -5332,9 +5332,6 @@ msgstr ""
 msgid "Assign labels"
 msgstr ""
 
-msgid "Assign milestone"
-msgstr ""
-
 msgid "Assign myself"
 msgstr ""
 
