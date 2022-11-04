@@ -52,7 +52,7 @@ sole discretion of GitLab Inc.
 ### `POST /api/v4/runners` method to register runners
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
-Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-04-22)
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
 
 WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
