@@ -89,8 +89,8 @@ module IncidentManagement
 
         tag_links = tags_to_add_ids.map do |tag_id|
           {
-            timeline_even_id: timeline_event.id
-            timeline_event_tag_id: tag_id
+            timeline_even_id: timeline_event.id,
+            timeline_event_tag_id: tag_id,
             created_at: DateTime.current
           }
         end
