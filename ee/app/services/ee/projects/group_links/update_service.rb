@@ -16,6 +16,8 @@ module EE
         private
 
         def project_stream_audit_event(group_link)
+          return unless saved_changes_present?
+
           audit_context = {
             name: 'project_group_link_update',
             stream_only: true,
@@ -26,6 +28,10 @@ module EE
           }
 
           ::Gitlab::Audit::Auditor.audit(audit_context)
+        end
+
+        def saved_changes_present?
+          group_link.saved_changes['group_access'].present? || group_link.saved_changes['expires_at'].present?
         end
 
         def audit_message(group_link)
