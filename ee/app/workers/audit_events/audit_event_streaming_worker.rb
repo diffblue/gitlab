@@ -65,6 +65,9 @@ module AuditEvents
     def request_body(audit_event, audit_operation)
       body = audit_event.as_json
       body[:event_type] = audit_operation
+      # We want to have uuid for stream only audit events also and in this case audit_event's id is blank.
+      # so we override it with `SecureRandom.uuid`
+      body["id"] = SecureRandom.uuid if audit_event.id.blank?
       Gitlab::Json::LimitedEncoder.encode(body, limit: REQUEST_BODY_SIZE_LIMIT)
     end
 
@@ -78,10 +81,7 @@ module AuditEvents
 
     def parse_audit_event_json(audit_event_json)
       audit_event_json = Gitlab::Json.parse(audit_event_json).with_indifferent_access
-      audit_event = AuditEvent.new(audit_event_json)
-      # We want to have created_at as unique id for deduplication if audit_event id is not present
-      audit_event.id = audit_event.created_at.to_i if audit_event.id.blank?
-      audit_event
+      AuditEvent.new(audit_event_json)
     end
   end
 end
