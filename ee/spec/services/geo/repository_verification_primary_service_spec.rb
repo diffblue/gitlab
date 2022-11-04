@@ -32,11 +32,12 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
       )
 
       expect(project.wiki_repository_state).to have_attributes(
+        verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_succeeded),
         verification_checksum: 'e321',
         verification_started_at: be_present,
         verification_failure: nil,
         verification_retry_at: nil,
-        verification_retry_count: nil,
+        verification_retry_count: 0,
         verified_at: be_present
       )
     end
@@ -55,6 +56,7 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
       wiki_repository_state =
         create(:geo_project_wiki_repository_state,
           project: project,
+          verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_pending),
           verification_checksum: nil,
           verification_started_at: 1.day.ago,
           verified_at: 1.day.ago,
@@ -76,11 +78,12 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
       )
 
       expect(wiki_repository_state.reload).to have_attributes(
+        verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_succeeded),
         verification_checksum: 'e321',
         verification_started_at: be_present,
         verification_failure: nil,
         verification_retry_at: nil,
-        verification_retry_count: nil,
+        verification_retry_count: 0,
         verified_at: be_present
       )
     end
@@ -98,6 +101,7 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
 
       create(:geo_project_wiki_repository_state,
         project: project,
+        verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_succeeded),
         verification_checksum: 'f079a831cab27bcda7d81cd9b48296d0c3dd92ee',
         verification_started_at: 1.day.ago,
         verified_at: 1.day.ago)
@@ -140,11 +144,12 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
       )
 
       expect(project.wiki_repository_state).to have_attributes(
+        verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_succeeded),
         verification_checksum: 'e321',
         verification_started_at: be_present,
         verification_failure: nil,
         verification_retry_at: nil,
-        verification_retry_count: nil,
+        verification_retry_count: 0,
         verified_at: be_present
       )
     end
@@ -166,11 +171,12 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
       )
 
       expect(project.wiki_repository_state).to have_attributes(
+        verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_succeeded),
         verification_checksum: '0000000000000000000000000000000000000000',
         verification_started_at: be_present,
         verification_failure: nil,
         verification_retry_at: nil,
-        verification_retry_count: nil,
+        verification_retry_count: 0,
         verified_at: be_present
       )
     end
@@ -198,11 +204,12 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
       )
 
       expect(project.wiki_repository_state).to have_attributes(
+        verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_succeeded),
         verification_checksum: '0000000000000000000000000000000000000000',
         verification_started_at: be_present,
         verification_failure: nil,
         verification_retry_at: nil,
-        verification_retry_count: nil,
+        verification_retry_count: 0,
         verified_at: be_present
       )
     end
@@ -251,6 +258,7 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
         )
 
         expect(project.wiki_repository_state).to have_attributes(
+          verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_failed),
           verification_checksum: nil,
           verification_started_at: be_present,
           verification_failure: 'Something went wrong with wiki',
@@ -288,6 +296,7 @@ RSpec.describe Geo::RepositoryVerificationPrimaryService do
         )
 
         expect(wiki_repository_state.reload).to have_attributes(
+          verification_state: Geo::ProjectWikiRepositoryState.verification_state_value(:verification_failed),
           verification_checksum: nil,
           verification_started_at: be_present,
           verification_failure: 'Something went wrong with wiki',

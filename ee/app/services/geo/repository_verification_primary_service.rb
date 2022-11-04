@@ -48,21 +48,17 @@ module Geo
     end
 
     def update_wiki_repository_state!(checksum: nil, failure: nil)
-      verified_at = Time.current
+      wiki_repository_state.verification_started! unless wiki_repository_state.verification_started?
 
-      retry_at, retry_count =
-        if failure.present?
-          calculate_next_retry_attempt(wiki_repository_state.verification_retry_count)
-        end
-
-      wiki_repository_state.update!(
-        verification_checksum: checksum,
-        verification_started_at: verified_at,
-        verification_failure: failure,
-        verification_retry_at: retry_at,
-        verification_retry_count: retry_count,
-        verified_at: verified_at
-      )
+      if failure
+        wiki_repository_state.verification_failure = failure
+        wiki_repository_state.verification_failure.truncate(255)
+        wiki_repository_state.verification_checksum = nil
+        wiki_repository_state.verification_failed!
+      else
+        wiki_repository_state.verification_checksum = checksum
+        wiki_repository_state.verification_succeeded!
+      end
     end
 
     def project_repository_state

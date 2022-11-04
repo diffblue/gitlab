@@ -11,5 +11,9 @@ module Geo
 
     validates :verification_failure, length: { maximum: 255 }
     validates :verification_state, :project, presence: true
+
+    def self.verification_state_value(state_string)
+      ::Geo::VerificationState::VERIFICATION_STATE_VALUES[state_string]
+    end
   end
 end
