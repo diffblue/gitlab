@@ -86,7 +86,9 @@ RSpec.describe EE::Gitlab::Ci::Pipeline::Quota::Size, :saas do
 
       it 'returns info about pipeline size limit exceeded' do
         expect(subject.message)
-          .to eq "Pipeline has too many jobs! Requested 2, but the limit is 1."
+          .to eq "The number of jobs has exceeded the limit of 1."\
+          " Try splitting the configuration with parent-child-pipelines"\
+          " https://docs.gitlab.com/ee/ci/troubleshooting.html#pipeline-with-many-jobs-fails-to-start"
       end
     end
   end
