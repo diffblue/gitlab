@@ -41,6 +41,11 @@ export default {
       required: false,
       default: 0,
     },
+    statusCheckUrl: {
+      type: String,
+      required: false,
+      default: null,
+    },
   },
   computed: {
     avatarBadgeSrOnlyText() {
@@ -93,6 +98,8 @@ export default {
           </gl-avatar-link>
         </template>
       </gl-avatars-inline>
+
+      <div v-if="statusCheckUrl" class="gl-ml-7 gl-w-quarter">{{ statusCheckUrl }}</div>
 
       <div
         v-for="(item, index) in accessLevels"
