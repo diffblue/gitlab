@@ -15,6 +15,10 @@ RSpec.describe MigrateSidekiqQueuedJobs, :clean_gitlab_redis_queues do
       EmailReceiverWorker.perform_async('bar')
     end
 
+    after do
+      EmailReceiverWorker.set_queue
+    end
+
     context 'with worker_queue_mappings mocked' do
       it 'migrates the jobs to the correct destination queue' do
         allow(Gitlab::SidekiqConfig).to receive(:worker_queue_mappings)
