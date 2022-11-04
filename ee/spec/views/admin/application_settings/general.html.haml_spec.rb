@@ -94,4 +94,39 @@ RSpec.describe 'admin/application_settings/general.html.haml' do
       end
     end
   end
+
+  describe 'product analytics settings' do
+    it 'does not render settings' do
+      render
+
+      expect(rendered).not_to have_css '#js-product-analytics-settings'
+    end
+
+    context 'when license is available' do
+      before do
+        stub_licensed_features(product_analytics: true)
+      end
+
+      it 'renders settings' do
+        render
+
+        expect(rendered).to have_css '#js-product-analytics-settings'
+        expect(rendered).to have_field s_('AdminSettings|Jitsu host')
+        expect(rendered).to have_field s_('AdminSettings|Jitsu project ID')
+        expect(rendered).to have_field s_('AdminSettings|Jitsu administrator email')
+        expect(rendered).to have_field s_('AdminSettings|Jitsu administrator password')
+        expect(rendered).to have_field s_('AdminSettings|Clickhouse URL')
+        expect(rendered).to have_field s_('AdminSettings|Cube API URL')
+        expect(rendered).to have_field s_('AdminSettings|Cube API key')
+      end
+
+      it 'masks Jitsu administrator password' do
+        stub_application_setting(jitsu_administrator_password: 'foo')
+
+        render
+
+        expect(rendered).to have_field s_('AdminSettings|Jitsu administrator password'), with: ApplicationSetting::MASK_PASSWORD
+      end
+    end
+  end
 end
