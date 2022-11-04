@@ -66,6 +66,7 @@ describe('WorkItemDetail component', () => {
         hasIssueWeightsFeature: true,
         hasIterationsFeature: true,
         projectNamespace: 'namespace',
+        fullPath: 'group/project',
       },
       propsData: {
         workItemId: workItemQueryResponse.data.workItem.id,
