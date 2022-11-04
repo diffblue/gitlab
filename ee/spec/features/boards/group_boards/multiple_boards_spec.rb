@@ -14,6 +14,7 @@ RSpec.describe 'Multiple Issue Boards', :js do
 
   context 'with multiple group issue boards disabled' do
     before do
+      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(multiple_group_issue_boards: false)
 
       parent.add_maintainer(user)
@@ -54,6 +55,7 @@ RSpec.describe 'Multiple Issue Boards', :js do
 
   context 'with multiple group issue boards enabled' do
     before do
+      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(multiple_group_issue_boards: true)
     end
 
