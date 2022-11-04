@@ -3,11 +3,15 @@
 module EE
   module Emails
     module AdminNotification
-      def user_auto_banned_email(admin_id, user_id, max_project_downloads:, within_seconds:, group: nil)
+      def user_auto_banned_email(
+        admin_id, user_id, max_project_downloads:, within_seconds:, auto_ban_enabled:, group: nil
+      )
         admin = ::User.find(admin_id)
         @user = ::User.find(user_id)
         @max_project_downloads = max_project_downloads
+        @within_seconds = within_seconds
         @within_minutes = within_seconds / 60
+        @auto_ban_enabled = auto_ban_enabled
 
         if group.present?
           @ban_scope = _('your group (%{group_name})' % { group_name: group.name })
