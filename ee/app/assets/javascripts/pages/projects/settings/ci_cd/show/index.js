@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import ProtectedEnvironmentCreate from 'ee/protected_environments/protected_environment_create';
+import { initProtectedEnvironmentCreate } from 'ee/protected_environments/protected_environment_create';
 import { initProtectedEnvironmentEditList } from 'ee/protected_environments/protected_environment_edit_list';
 import { initGroupProtectedEnvironmentList } from 'ee/protected_environments/group_protected_environment_list';
 import LicenseManagement from 'ee/vue_shared/license_compliance/license_management.vue';
@@ -30,8 +30,6 @@ if (el?.dataset?.apiUrl) {
 
 toasts.forEach((toast) => showToast(toast.dataset.message));
 
-// eslint-disable-next-line no-new
-new ProtectedEnvironmentCreate();
-
 initProtectedEnvironmentEditList();
 initGroupProtectedEnvironmentList();
+initProtectedEnvironmentCreate();

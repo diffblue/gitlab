@@ -32846,9 +32846,6 @@ msgstr ""
 msgid "Protected Branches"
 msgstr ""
 
-msgid "Protected Environment"
-msgstr ""
-
 msgid "Protected Paths: requests"
 msgstr ""
 
