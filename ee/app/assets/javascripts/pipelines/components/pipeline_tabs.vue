@@ -2,18 +2,12 @@
 import { GlTab, GlBadge } from '@gitlab/ui';
 import BasePipelineTabs from '~/pipelines/components/pipeline_tabs.vue';
 import { codeQualityTabName, licensesTabName, securityTabName } from '~/pipelines/constants';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { __ } from '~/locale';
-import CodequalityReportApp from 'ee/codequality_report/codequality_report.vue';
-import CodequalityReportAppGraphql from 'ee/codequality_report/codequality_report_graphql.vue';
-import LicenseReportApp from 'ee/vue_shared/license_compliance/mr_widget_license_report.vue';
-import PipelineSecurityDashboard from 'ee/security_dashboard/components/pipeline/pipeline_security_dashboard.vue';
 
 export default {
   i18n: {
     tabs: {
       securityTitle: __('Security'),
-      licenseTitle: __('Licenses'),
       codeQualityTitle: __('Code Quality'),
       licensesTitle: __('Licenses'),
     },
@@ -25,20 +19,13 @@ export default {
   },
   components: {
     BasePipelineTabs,
-    CodequalityReportApp,
-    CodequalityReportAppGraphql,
     GlTab,
     GlBadge,
-    LicenseReportApp,
-    PipelineSecurityDashboard,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: [
     'canGenerateCodequalityReports',
     'canManageLicenses',
-    'codequalityBlobPath',
     'codequalityReportDownloadPath',
-    'codequalityProjectPath',
     'defaultTabValue',
     'exposeSecurityDashboard',
     'exposeLicenseScanningData',
@@ -49,12 +36,13 @@ export default {
     'pipelineIid',
   ],
   data() {
-    return { licenseCount: 0, codeQualityCount: 0 };
+    return {
+      activeTab: this.defaultTabValue,
+      codeQualityCount: 0,
+      licenseCount: 0,
+    };
   },
   computed: {
-    isGraphqlCodeQuality() {
-      return this.glFeatures.graphqlCodeQualityFullReport;
-    },
     showCodeQualityTab() {
       return Boolean(
         this.isFullCodequalityReportAvailable &&
@@ -68,15 +56,23 @@ export default {
       return Boolean(this.exposeSecurityDashboard);
     },
   },
+  watch: {
+    $route(to) {
+      this.activeTab = to.name;
+    },
+  },
   methods: {
     isActive(tabName) {
-      return tabName === this.defaultTabValue;
+      return tabName === this.activeTab;
     },
-    updateLicenseCount(count) {
-      this.licenseCount = count;
+    navigateTo(tabName) {
+      this.$router.push({ name: tabName });
     },
     updateCodeQualityCount(count) {
       this.codeQualityCount = count;
+    },
+    updateLicenseCount(count) {
+      this.licenseCount = count;
     },
   },
 };
@@ -89,14 +85,16 @@ export default {
       :title="$options.i18n.tabs.securityTitle"
       :active="isActive($options.tabNames.security)"
       data-testid="security-tab"
+      @click="navigateTo($options.tabNames.security)"
     >
-      <pipeline-security-dashboard />
+      <router-view />
     </gl-tab>
     <gl-tab
       v-if="showLicenseTab"
-      :title="$options.i18n.tabs.licenseTitle"
+      :title="$options.i18n.tabs.licensesTitle"
       :active="isActive($options.tabNames.licenses)"
       data-testid="license-tab"
+      @click="navigateTo($options.tabNames.licenses)"
     >
       <template #title>
         <span class="gl-mr-2">{{ $options.i18n.tabs.licensesTitle }}</span>
@@ -105,7 +103,8 @@ export default {
         }}</gl-badge>
       </template>
 
-      <license-report-app
+      <router-view
+        ref="router-view-licenses"
         :api-url="licenseManagementApiUrl"
         :licenses-api-path="licensesApiPath"
         :license-management-settings-path="licenseManagementSettingsPath"
@@ -122,24 +121,14 @@ export default {
       data-testid="code-quality-tab"
       data-track-action="click_button"
       data-track-label="get_codequality_report"
+      @click="navigateTo($options.tabNames.codeQuality)"
     >
       <template #title>
         <span class="gl-mr-2">{{ $options.i18n.tabs.codeQualityTitle }}</span>
         <gl-badge size="sm" data-testid="codequality-counter">{{ codeQualityCount }}</gl-badge>
       </template>
 
-      <codequality-report-app-graphql
-        v-if="isGraphqlCodeQuality"
-        @updateBadgeCount="updateCodeQualityCount"
-      />
-      <codequality-report-app
-        v-else
-        :endpoint="codequalityReportDownloadPath"
-        :blob-path="codequalityBlobPath"
-        :project-path="codequalityProjectPath"
-        :pipeline-iid="pipelineIid"
-        @updateBadgeCount="updateCodeQualityCount"
-      />
+      <router-view ref="router-view-codequality" @updateBadgeCount="updateCodeQualityCount" />
     </gl-tab>
   </base-pipeline-tabs>
 </template>
