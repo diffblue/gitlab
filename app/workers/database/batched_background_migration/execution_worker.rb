@@ -8,7 +8,7 @@ module Database
       INTERVAL_VARIANCE = 5.seconds.freeze
 
       def perform(database_name, migration_id)
-        setup_base_model(database_name)
+        self.database_name = database_name
 
         Gitlab::Database::SharedModel.using_connection(base_model.connection) do
           migration = find_migration(migration_id)
@@ -21,9 +21,9 @@ module Database
 
       private
 
-      attr_reader :base_model
+      attr_accessor :database_name
 
-      def setup_base_model(database_name)
+      def base_model
         strong_memoize(:base_model) do
           Gitlab::Database.database_base_models[database_name]
         end
