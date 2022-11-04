@@ -42,19 +42,27 @@ RSpec.describe MergeRequests::ResetApprovalsService do
       project.add_developer(owner)
     end
 
-    it 'resets all approvals' do
-      perform_enqueued_jobs do
-        merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
+    context 'as default' do
+      before do
+        perform_enqueued_jobs do
+          merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
+        end
+
+        create(:approval, merge_request: merge_request, user: approver)
+        create(:approval, merge_request: merge_request, user: owner)
       end
 
-      create(:approval, merge_request: merge_request, user: approver)
-      create(:approval, merge_request: merge_request, user: owner)
+      it 'resets all approvals' do
+        service.execute("refs/heads/master", newrev)
+        merge_request.reload
 
-      service.execute("refs/heads/master", newrev)
-      merge_request.reload
+        expect(merge_request.approvals).to be_empty
+        expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver, owner)
+      end
 
-      expect(merge_request.approvals).to be_empty
-      expect(approval_todos(merge_request).map(&:user)).to contain_exactly(approver, owner)
+      it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+        let(:action) { service.execute('refs/heads/master', newrev) }
+      end
     end
 
     context 'when skip_reset_checks: true' do
@@ -122,7 +130,7 @@ RSpec.describe MergeRequests::ResetApprovalsService do
         )
       end
 
-      it 'resets code owner approvals with changes' do
+      before do
         ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
         perform_enqueued_jobs do
           merge_request.update!(approver_ids: [approver.id, owner.id, current_user.id])
@@ -133,14 +141,21 @@ RSpec.describe MergeRequests::ResetApprovalsService do
         create(:approval, merge_request: merge_request, user: approver)
         create(:approval, merge_request: merge_request, user: owner)
 
-        merge_request.wrapped_approval_rules.select { |rule| rule.rule_type == "regular" }.each do |rule|
-          rule.approval_rule.users = [security]
+        merge_request.approval_rules.regular.each do |rule|
+          rule.users = [security]
         end
+      end
+
+      it 'resets code owner approvals with changes' do
         service.execute("feature", feature_sha3)
         merge_request.reload
 
         expect(merge_request.approvals.count).to be(2)
         expect(merge_request.approvals.map(&:user_id)).to contain_exactly(approver.id, security.id)
+      end
+
+      it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+        let(:action) { service.execute('feature', feature_sha3) }
       end
     end
   end
