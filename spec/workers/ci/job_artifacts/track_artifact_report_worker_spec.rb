@@ -8,8 +8,10 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportWorker do
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:user) { create(:user) }
 
-    let_it_be(:pipeline) { create(:ci_pipeline, :with_test_reports, :with_coverage_reports,
-    project: project, user: user) }
+    let_it_be(:pipeline) do
+      create(:ci_pipeline, :with_test_reports, :with_coverage_reports,
+              project: project, user: user)
+    end
 
     subject(:perform) { described_class.new.perform(pipeline_id) }
 
