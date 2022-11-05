@@ -219,6 +219,5 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
           .by 2
       end
     end
-
   end
 end
