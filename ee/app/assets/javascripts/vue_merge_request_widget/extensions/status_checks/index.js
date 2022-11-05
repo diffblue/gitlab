@@ -31,7 +31,7 @@ export default {
         reports.push(
           `%{same_start}${sprintf(s__('StatusCheck|%{pending} pending'), {
             pending: pending.length,
-          })}%{same_start}`,
+          })}%{same_end}`,
         );
       }
 

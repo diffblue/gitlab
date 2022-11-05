@@ -100,6 +100,7 @@ export default class MergeRequestStore extends CEMergeRequestStore {
     }
 
     if (this.detailedMergeStatus === DETAILED_MERGE_STATUS.BLOCKED_STATUS) return true;
+    if (this.detailedMergeStatus === DETAILED_MERGE_STATUS.EXTERNAL_STATUS_CHECKS) return true;
 
     return super.hasMergeChecksFailed;
   }
