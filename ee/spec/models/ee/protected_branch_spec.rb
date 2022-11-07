@@ -10,6 +10,13 @@ RSpec.describe ProtectedBranch do
 
   describe 'associations' do
     it { is_expected.to have_many(:required_code_owners_sections).class_name('ProtectedBranch::RequiredCodeOwnersSection') }
+    it { is_expected.to have_and_belong_to_many(:approval_project_rules) }
+
+    it do
+      is_expected
+        .to have_and_belong_to_many(:external_status_checks)
+        .class_name('::MergeRequests::ExternalStatusCheck')
+    end
   end
 
   shared_examples 'uniqueness validation' do |access_level_class|
