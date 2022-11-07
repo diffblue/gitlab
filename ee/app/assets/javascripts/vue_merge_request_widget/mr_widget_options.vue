@@ -423,14 +423,6 @@ export default {
         </gl-sprintf>
       </mr-widget-enable-feature-prompt>
 
-      <grouped-test-reports-app
-        v-if="shouldRenderTestReport && !shouldRenderRefactoredTestReport"
-        class="js-reports-container"
-        :endpoint="mr.testResultsPath"
-        :head-blob-path="mr.headBlobPath"
-        :pipeline-path="mr.pipeline.path"
-      />
-
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />
         <ready-to-merge
