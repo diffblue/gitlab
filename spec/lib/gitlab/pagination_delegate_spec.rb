@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::PaginationDelegate do
-  context 'no data' do
+  context 'when there is no data' do
     let(:delegate) do
       described_class.new(page: 1,
                           per_page: 10,
@@ -91,7 +91,7 @@ RSpec.describe Gitlab::PaginationDelegate do
     end
   end
 
-  context 'last page' do
+  context 'for last page' do
     let(:delegate) do
       described_class.new(page: 10,
                           per_page: 100,
@@ -135,7 +135,7 @@ RSpec.describe Gitlab::PaginationDelegate do
     end
   end
 
-  context 'limits and defaults' do
+  context 'with limits and defaults' do
     it 'has a maximum limit per page' do
       expect(described_class.new(page: nil,
                                  per_page: 1000,
