@@ -206,6 +206,7 @@ module API
         mount ::API::ProtectedTags
         mount ::API::Releases
         mount ::API::Release::Links
+        mount ::API::Repositories
         mount ::API::ResourceAccessTokens
         mount ::API::Snippets
         mount ::API::SnippetRepositoryStorageMoves
@@ -307,7 +308,6 @@ module API
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
       mount ::API::RemoteMirrors
-      mount ::API::Repositories
       mount ::API::ResourceLabelEvents
       mount ::API::ResourceMilestoneEvents
       mount ::API::ResourceStateEvents
