@@ -5,16 +5,15 @@ import issueBoardFilter from '~/boards/issue_board_filters';
 import { TYPE_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
-import { OPERATOR_IS_AND_IS_NOT } from '~/vue_shared/components/filtered_search_bar/constants';
+import {
+  OPERATOR_IS_AND_IS_NOT,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_LABEL,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
 export default {
-  i18n: {
-    search: __('Search'),
-    label: __('Label'),
-    author: __('Author'),
-  },
   components: { BoardFilteredSearch },
   inject: ['fullPath', 'boardType'],
   computed: {
@@ -25,11 +24,10 @@ export default {
         this.boardType,
       );
 
-      const { label, author } = this.$options.i18n;
       const tokens = [
         {
           icon: 'labels',
-          title: label,
+          title: TOKEN_TITLE_LABEL,
           type: 'label',
           operators: OPERATOR_IS_AND_IS_NOT,
           token: LabelToken,
@@ -40,7 +38,7 @@ export default {
         },
         {
           icon: 'pencil',
-          title: author,
+          title: TOKEN_TITLE_AUTHOR,
           type: 'author',
           operators: OPERATOR_IS_AND_IS_NOT,
           symbol: '@',

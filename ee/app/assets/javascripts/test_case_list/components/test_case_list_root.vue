@@ -7,8 +7,12 @@ import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_ro
 import axios from '~/lib/utils/axios_utils';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
 
-import { s__, __ } from '~/locale';
-import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
+import { s__ } from '~/locale';
+import {
+  OPERATOR_IS_ONLY,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_LABEL,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
@@ -194,7 +198,7 @@ export default {
         {
           type: 'author_username',
           icon: 'user',
-          title: __('Author'),
+          title: TOKEN_TITLE_AUTHOR,
           unique: true,
           symbol: '@',
           token: AuthorToken,
@@ -205,7 +209,7 @@ export default {
         {
           type: 'label_name',
           icon: 'labels',
-          title: __('Label'),
+          title: TOKEN_TITLE_LABEL,
           unique: false,
           symbol: '~',
           token: LabelToken,
