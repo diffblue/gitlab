@@ -206,6 +206,7 @@ module API
         mount ::API::Statistics
         mount ::API::Submodules
         mount ::API::Suggestions
+        mount ::API::SystemHooks
         mount ::API::Tags
         mount ::API::Unleash
         mount ::API::UserCounts
@@ -315,7 +316,6 @@ module API
       mount ::API::SidekiqMetrics
       mount ::API::Snippets
       mount ::API::Subscriptions
-      mount ::API::SystemHooks
       mount ::API::Tags
       mount ::API::Templates
       mount ::API::Terraform::Modules::V1::Packages
