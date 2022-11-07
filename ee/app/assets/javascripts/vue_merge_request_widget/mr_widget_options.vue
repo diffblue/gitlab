@@ -317,35 +317,8 @@ export default {
       :mr="mr"
       :service="service"
     />
-    <extensions-container :mr="mr" />
-    <div class="mr-section-container mr-widget-workflow">
-      <div v-if="hasAlerts" class="gl-overflow-hidden mr-widget-alert-container">
-        <mr-widget-alert-message
-          v-if="hasMergeError"
-          type="danger"
-          dismissible
-          data-testid="merge_error"
-        >
-          <span v-safe-html="mergeError"></span>
-        </mr-widget-alert-message>
-        <mr-widget-alert-message
-          v-if="showMergePipelineForkWarning"
-          type="warning"
-          :help-path="mr.mergeRequestPipelinesHelpPath"
-        >
-          {{
-            s__(
-              'mrWidget|If the last pipeline ran in the fork project, it may be inaccurate. Before merge, we advise running a pipeline in this project.',
-            )
-          }}
-          <template #link-content>
-            {{ __('Learn more') }}
-          </template>
-        </mr-widget-alert-message>
-      </div>
-      <widget-container v-if="mr" :mr="mr" />
-      <blocking-merge-requests-report :mr="mr" />
-
+    <report-widget-container>
+      <extensions-container v-if="hasExtensions" :mr="mr" />
       <security-reports-app
         v-if="shouldRenderBaseSecurityReport && !shouldShowSecurityExtension"
         :pipeline-id="mr.pipeline.id"
@@ -398,30 +371,34 @@ export default {
         :mr-iid="mr.iid"
         class="js-security-widget"
       />
-      <mr-widget-enable-feature-prompt
-        v-else-if="mr.canReadVulnerabilities"
-        feature="security_reports_mr_widget_prompt"
-      >
-        {{ s__('mrWidget|SAST and Secret Detection is not enabled.') }}
-        <gl-sprintf
-          :message="
-            s__(
-              'mrWidget|%{linkStart}Set up now%{linkEnd} to analyze your source code for known security vulnerabilities.',
-            )
-          "
+    </report-widget-container>
+    <div class="mr-section-container mr-widget-workflow">
+      <div v-if="hasAlerts" class="gl-overflow-hidden mr-widget-alert-container">
+        <mr-widget-alert-message
+          v-if="hasMergeError"
+          type="danger"
+          dismissible
+          data-testid="merge_error"
         >
-          <template #link="{ content }">
-            <gl-link
-              href="../security/configuration"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-track-action="followed"
-              data-track-experiment="security_reports_mr_widget_prompt"
-              >{{ content }}</gl-link
-            >
+          <span v-safe-html="mergeError"></span>
+        </mr-widget-alert-message>
+        <mr-widget-alert-message
+          v-if="showMergePipelineForkWarning"
+          type="warning"
+          :help-path="mr.mergeRequestPipelinesHelpPath"
+        >
+          {{
+            s__(
+              'mrWidget|If the last pipeline ran in the fork project, it may be inaccurate. Before merge, we advise running a pipeline in this project.',
+            )
+          }}
+          <template #link-content>
+            {{ __('Learn more') }}
           </template>
-        </gl-sprintf>
-      </mr-widget-enable-feature-prompt>
+        </mr-widget-alert-message>
+      </div>
+      <widget-container v-if="mr" :mr="mr" />
+      <blocking-merge-requests-report :mr="mr" />
 
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />
