@@ -69,20 +69,6 @@ RSpec.describe Users::DestroyService do
             operation
           end
 
-          context 'when user_destroy_with_limited_execution_time_worker is disabled' do
-            before do
-              stub_feature_flags(user_destroy_with_limited_execution_time_worker: false)
-            end
-
-            it 'deletes the participant from the rotation' do
-              expect(rotation.participants.reload).to include(participant)
-
-              operation
-
-              expect(rotation.participants.reload).not_to include(participant)
-            end
-          end
-
           it 'sends an email about the user being removed from the rotation' do
             expect { operation }.to change(ActionMailer::Base.deliveries, :size).by(1)
           end
@@ -112,58 +98,6 @@ RSpec.describe Users::DestroyService do
           expect { project.reload }.to raise_error(ActiveRecord::RecordNotFound)
           expect { project_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
           expect { group_rule.reload }.to raise_error(ActiveRecord::RecordNotFound)
-        end
-      end
-    end
-
-    context 'when user_destroy_with_limited_execution_time_worker is disabled' do
-      before do
-        stub_feature_flags(user_destroy_with_limited_execution_time_worker: false)
-      end
-
-      context 'when admin mode is enabled', :enable_admin_mode do
-        it 'returns result' do
-          allow(user).to receive(:destroy).and_return(user)
-
-          expect(operation).to eq(user)
-        end
-
-        context 'migrating associated records' do
-          context 'when hard_delete option is given' do
-            let!(:resource_iteration_event) { create(:resource_iteration_event, user: user) }
-
-            it 'will ghost certain records' do
-              expect_any_instance_of(Users::MigrateToGhostUserService).to receive(:execute).once.and_call_original
-
-              service.execute(user, hard_delete: true)
-
-              expect(resource_iteration_event.reload.user).to be_ghost
-            end
-          end
-        end
-
-        describe 'audit events' do
-          include_examples 'audit event logging' do
-            let(:fail_condition!) do
-              expect_any_instance_of(User)
-                .to receive(:destroy).and_return(false)
-            end
-
-            let(:attributes) do
-              {
-                author_id: current_user.id,
-                entity_id: @resource.id,
-                entity_type: 'User',
-                details: {
-                  remove: 'user',
-                  author_name: current_user.name,
-                  target_id: @resource.id,
-                  target_type: 'User',
-                  target_details: @resource.full_path
-                }
-              }
-            end
-          end
         end
       end
     end
