@@ -30,6 +30,7 @@ module EE
 
             desc 'Get a list of audit events in this project.' do
               success EE::API::Entities::AuditEvent
+              is_array true
             end
             params do
               optional :created_after, type: DateTime, desc: 'Return audit events created after the specified time'

@@ -17,6 +17,7 @@ module API
     resources :audit_events do
       desc 'Get the list of audit events' do
         success EE::API::Entities::AuditEvent
+        is_array true
       end
       params do
         optional :entity_type, type: String, desc: 'Return list of audit events for the specified entity type', values: AuditEventFinder::VALID_ENTITY_TYPES
