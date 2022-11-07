@@ -1451,7 +1451,7 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     it_behaves_like 'estimate command' do
-      let(:content) { '/time_estimate 1h' }
+      let(:content) { '/estimate_time 1h' }
       let(:issuable) { issue }
     end
 
@@ -1476,12 +1476,7 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     it_behaves_like 'spend command' do
-      let(:content) { '/time_spend 1h' }
-      let(:issuable) { issue }
-    end
-
-    it_behaves_like 'spend command' do
-      let(:content) { '/time_spent 1h' }
+      let(:content) { '/spend_time 1h' }
       let(:issuable) { issue }
     end
 

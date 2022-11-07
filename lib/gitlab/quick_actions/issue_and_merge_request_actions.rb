@@ -161,7 +161,7 @@ module Gitlab
         parse_params do |raw_duration|
           Gitlab::TimeTrackingFormatter.parse(raw_duration)
         end
-        command :estimate, :time_estimate do |time_estimate|
+        command :estimate, :estimate_time do |time_estimate|
           if time_estimate
             @updates[:time_estimate] = time_estimate
           end
@@ -184,7 +184,7 @@ module Gitlab
         parse_params do |raw_time_date|
           Gitlab::QuickActions::SpendTimeAndDateSeparator.new(raw_time_date).execute
         end
-        command :spend, :spent, :time_spend, :time_spent do |time_spent, time_spent_date|
+        command :spend, :spent, :spend_time do |time_spent, time_spent_date|
           if time_spent
             @updates[:spend_time] = {
               duration: time_spent,
