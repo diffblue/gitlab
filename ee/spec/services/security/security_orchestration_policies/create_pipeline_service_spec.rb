@@ -11,72 +11,271 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
     let_it_be(:branch) { project.default_branch }
     let_it_be(:license) { create(:license, plan: License::ULTIMATE_PLAN) }
 
-    let(:action) { { scan: 'secret_detection' } }
-    let(:scan_type) { action[:scan] }
-
     let(:service) do
       described_class.new(project: project, current_user: current_user, params: {
-        action: action, branch: branch
-      })
+                            actions: actions, branch: branch
+                          })
     end
 
-    subject { service.execute }
+    describe "#pipeline_scan_config" do
+      subject { service.pipeline_scan_config }
 
-    before do
-      allow(License).to receive(:current).and_return(license)
-      stub_licensed_features(cluster_image_scanning: true, container_scanning: true)
-    end
-
-    shared_examples 'valid security orchestration policy action' do
-      it 'returns a success status' do
-        expect(status).to eq(:success)
-      end
-
-      it 'returns a pipeline' do
-        expect(pipeline).to be_a(Ci::Pipeline)
-      end
-
-      it 'creates a pipeline' do
-        expect { subject }.to change(Ci::Pipeline, :count).by(1)
-      end
-
-      it 'sets the pipeline ref to the branch' do
-        expect(pipeline.ref).to eq(branch)
-      end
-
-      it 'sets the source to security_orchestration_policy' do
-        expect(pipeline.source).to eq('security_orchestration_policy')
-      end
-
-      it 'creates a stage' do
-        expect { subject }.to change(Ci::Stage, :count).by(1)
-      end
-
-      it 'creates a build' do
-        expect { subject }.to change(Ci::Build, :count).by(1)
-      end
-    end
-
-    context 'when scan type is valid' do
-      let(:status) { subject[:status] }
-      let(:pipeline) { subject[:payload] }
-      let(:message) { subject[:message] }
-
-      context 'when action is valid' do
-        it_behaves_like 'valid security orchestration policy action'
-
-        it 'sets the build name to secret_detection' do
-          build = pipeline.builds.first
-          expect(build.name).to eq('secret_detection')
+      context "with pipeline scan types" do
+        let(:actions) do
+          [{ scan: "secret_detection" },
+           { scan: "container_scanning" }]
         end
 
-        it 'creates a build with appropriate variables' do
-          build = pipeline.builds.first
+        specify do
+          expect(subject.keys).to eq(%i[secret-detection-0 container-scanning-1])
+        end
+      end
+
+      context "without pipeline scan types" do
+        let(:actions) do
+          [{ scan: "dast" }]
+        end
+
+        specify do
+          expect(subject.keys).to be_empty
+        end
+      end
+    end
+
+    describe "#on_demand_scan_config" do
+      subject { service.on_demand_config }
+
+      context "with pipeline scan types" do
+        let(:actions) do
+          [{ scan: "secret_detection" },
+           { scan: "container_scanning" }]
+        end
+
+        specify do
+          expect(subject.keys).to be_empty
+        end
+      end
+
+      context "without pipeline scan types" do
+        let(:actions) do
+          [{ scan: "dast" }]
+        end
+
+        specify do
+          expect(subject.keys).to eq(%i[dast-on-demand-0])
+        end
+      end
+    end
+
+    describe "#execute" do
+      subject { service.execute }
+
+      let(:error_message) { "foobar" }
+
+      let(:status) { subject[:status] }
+      let(:payload) { subject[:payload] }
+      let(:message) { subject[:message] }
+
+      let(:pipeline_scan_pipeline) { payload[:pipeline_scan] }
+      let(:on_demand_pipeline) { payload[:on_demand] }
+
+      before do
+        allow(License).to receive(:current).and_return(license)
+        stub_licensed_features(cluster_image_scanning: true, container_scanning: true)
+      end
+
+      context "without actions" do
+        let(:actions) { [] }
+
+        it "errors" do
+          expect(status).to be(:error)
+        end
+
+        it "does not create pipelines" do
+          expect { subject }.not_to change(project.all_pipelines, :count)
+        end
+      end
+
+      context "with scan pipeline actions" do
+        let(:actions) do
+          [{ scan: "secret_detection" },
+           { scan: "container_scanning" }]
+        end
+
+        it "succeeds" do
+          expect(status).to be(:success)
+        end
+
+        it "creates a single pipeline" do
+          expect { subject }.to change(project.all_pipelines, :count).by(1)
+        end
+
+        it "creates a stage" do
+          expect { subject }.to change(project.stages, :count).by(1)
+        end
+
+        it "returns the pipeline" do
+          expect(payload).to eq(pipeline_scan: project.all_pipelines.last)
+        end
+
+        it "sets the pipeline ref to the branch" do
+          expect(pipeline_scan_pipeline.ref).to eq(branch)
+        end
+
+        it "sets the pipeline source" do
+          expect(pipeline_scan_pipeline.source).to eq("security_orchestration_policy")
+        end
+      end
+
+      context "with on-demand action" do
+        let(:actions) do
+          [{ scan: "dast" }]
+        end
+
+        it "succeeds" do
+          expect(status).to be(:success)
+        end
+
+        it "creates a single pipeline" do
+          expect { subject }.to change(project.all_pipelines, :count).by(1)
+        end
+
+        it "creates a stage" do
+          expect { subject }.to change(project.stages, :count).by(1)
+        end
+
+        it "returns the pipeline" do
+          expect(payload).to eq(on_demand: project.all_pipelines.last)
+        end
+
+        it "sets the pipeline ref to the branch" do
+          expect(on_demand_pipeline.ref).to eq(branch)
+        end
+
+        it "sets the pipeline source" do
+          expect(on_demand_pipeline.source).to eq("ondemand_dast_scan")
+        end
+      end
+
+      context "with scan pipeline and on-demand actions" do
+        let(:actions) do
+          [{ scan: "secret_detection" },
+           { scan: "container_scanning" },
+           { scan: "dast" }]
+        end
+
+        it "succeeds" do
+          expect(status).to be(:success)
+        end
+
+        it "creates two pipelines" do
+          expect { subject }.to change(project.all_pipelines, :count).by(2)
+        end
+
+        it "creates two stages" do
+          expect { subject }.to change(project.stages, :count).by(2)
+        end
+
+        it "returns the pipelines" do
+          expect(payload).to eq(pipeline_scan: project.all_pipelines.find_by!(source: Enums::Ci::Pipeline.sources[:security_orchestration_policy]),
+                                on_demand: project.all_pipelines.find_by!(source: Enums::Ci::Pipeline.sources[:ondemand_dast_scan]))
+        end
+
+        it "sets the pipeline refs to the branch" do
+          expect(payload.values.map(&:ref)).to all(eq(branch))
+        end
+
+        it "separates scan pipeline actions" do
+          expect(pipeline_scan_pipeline.builds.pluck(:name)).to eq(%w[secret-detection-0 container-scanning-1])
+        end
+
+        it "separates on-demand actions" do
+          expect(on_demand_pipeline.builds.pluck(:name)).to eq(%w[dast-on-demand-0])
+        end
+
+        context "when scan pipeline creation fails" do
+          let(:invalid_pipeline) { create(:ci_pipeline, :invalid) }
+          let(:on_demand_pipeline) { project.all_pipelines.find_by!(source: "ondemand_dast_scan") }
+
+          before do
+            response = ServiceResponse.error(message: "", payload: invalid_pipeline)
+            allow(invalid_pipeline).to receive(:full_error_messages).and_return(error_message)
+            allow(service).to receive(:execute_pipeline_scans).and_return(response)
+          end
+
+          it "errors" do
+            expect(status).to be(:error)
+          end
+
+          it "sets the pipeline error message" do
+            expect(message).to eq(error_message)
+          end
+
+          it "creates the on-demand pipeline" do
+            subject
+            expect(project.all_pipelines).to contain_exactly(on_demand_pipeline)
+          end
+        end
+
+        context "when on-demand pipeline creation fails" do
+          before do
+            response = ServiceResponse.error(message: error_message)
+            allow(service).to receive(:execute_on_demand_scans).and_return(response)
+          end
+
+          let(:pipeline_scan_pipeline) { project.all_pipelines.find_by!(source: "security_orchestration_policy") }
+
+          it "errors" do
+            expect(status).to be(:error)
+          end
+
+          it "sets the error message" do
+            expect(message).to eq(error_message)
+          end
+
+          it "creates the scan pipeline" do
+            subject
+            expect(project.all_pipelines).to contain_exactly(pipeline_scan_pipeline)
+          end
+        end
+
+        context "when created on-demand pipeline is in error state" do
+          let(:invalid_pipeline) { create(:ci_pipeline, :invalid) }
+          let(:pipeline_scan_pipeline) { project.all_pipelines.find_by!(source: "security_orchestration_policy") }
+
+          before do
+            response = ServiceResponse.success(payload: invalid_pipeline)
+            allow(invalid_pipeline).to receive(:full_error_messages).and_return(error_message)
+            allow(service).to receive(:execute_on_demand_scans).and_return(response)
+          end
+
+          it "errors" do
+            expect(status).to be(:error)
+          end
+
+          it "sets the error message" do
+            expect(message).to eq(error_message)
+          end
+
+          it "creates the scan pipeline" do
+            subject
+            expect(project.all_pipelines).to contain_exactly(pipeline_scan_pipeline)
+          end
+        end
+      end
+
+      describe "secret_detection scan action" do
+        let(:actions) do
+          [{ scan: "secret_detection" }]
+        end
+
+        it "creates a build with appropriate variables" do
+          build = pipeline_scan_pipeline.builds.first
 
           expected_variables = [
             {
               key: 'SECRET_DETECTION_HISTORIC_SCAN',
-              value: 'true',
+              value: 'false',
               public: true,
               masked: false
             }
@@ -84,39 +283,22 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
 
           expect(build.variables.to_runner_variables).to include(*expected_variables)
         end
+      end
 
-        context 'for container_scanning scan' do
-          let(:action) { { scan: 'container_scanning' } }
-
-          it_behaves_like 'valid security orchestration policy action'
-
-          it 'sets the build name to container_scanning' do
-            build = pipeline.builds.first
-
-            expect(build.name).to eq('container_scanning')
-          end
+      describe "sast scan action" do
+        let(:actions) do
+          [{ scan: 'sast',
+             variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } }]
         end
 
-        context 'for sast scan' do
-          let(:action) { { scan: 'sast' } }
-
-          it 'sets the build name to sast' do
-            build = pipeline.bridges.first
-
-            expect(build.name).to eq('sast')
-          end
-
-          context 'when action contains variables' do
-            let(:action) { { scan: 'sast', variables: { SAST_EXCLUDED_ANALYZERS: 'semgrep' } } }
-
-            it 'parses variables from the action and applies them in configuration service' do
-              expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
-                expect(ci_configuration_service).to receive(:execute).once
-                  .with(action, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }).and_call_original
-              end
-
-              subject
+        context "when action contains variables" do
+          it 'parses variables from the action and applies them in configuration service' do
+            expect_next_instance_of(::Security::SecurityOrchestrationPolicies::CiConfigurationService) do |ci_configuration_service|
+              expect(ci_configuration_service).to receive(:execute).once
+                                                    .with(actions.first, { 'SAST_DISABLED' => nil, 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' }).and_call_original
             end
+
+            subject
           end
         end
       end
@@ -128,17 +310,21 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
         let!(:framework_project_setting) { create(:compliance_framework_project_setting, project: project, framework_id: framework.id) }
         let!(:ref_sha) { compliance_project.commit('HEAD').sha }
 
+        let(:actions) do
+          [{ scan: "container_scanning" }]
+        end
+
         let(:compliance_config) do
           <<~EOY
-          ---
-          compliance_build:
-            stage: build
-            script:
-              - echo 'hello from compliance build'
-          compliance_test:
-            stage: test
-            script:
-              - echo 'hello from compliance test'
+            ---
+            compliance_build:
+              stage: build
+              script:
+                - echo 'hello from compliance build'
+            compliance_test:
+              stage: test
+              script:
+                - echo 'hello from compliance test'
           EOY
         end
 
@@ -152,7 +338,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
         it 'does not include the compliance definition' do
           subject
 
-          yaml = YAML.safe_load(pipeline.pipeline_config.content, [Symbol])
+          yaml = YAML.safe_load(pipeline_scan_pipeline.pipeline_config.content, [Symbol])
           expect(yaml).not_to eq("include" => [{ "file" => ".compliance-gitlab-ci.yml", "project" => "compliance/hippa" }])
         end
       end

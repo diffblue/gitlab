@@ -77,5 +77,24 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
 
       expect(pipeline_configuration).to eq(expected_configuration)
     end
+
+    describe "variable injection and precedence" do
+      let(:actions) do
+        [
+          {
+            scan: 'dast',
+            site_profile: site_profile.name,
+            scanner_profile: scanner_profile.name,
+            variables: { "DAST_VERSION" => "42" }
+          }
+        ]
+      end
+
+      subject(:variables) { pipeline_configuration.dig(:"dast-on-demand-0", :variables) }
+
+      it "overrides template variables with action variables" do
+        expect(variables).to include(DAST_VERSION: "42")
+      end
+    end
   end
 end

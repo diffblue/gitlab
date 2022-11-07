@@ -413,59 +413,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
     end
   end
 
-  describe '#on_demand_scan_actions' do
-    let(:policy1) { build(:scan_execution_policy) }
-    let(:policy2) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['release/*'] }], actions: [{ scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }]) }
-    let(:policy3) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['*'] }], actions: [{ scan: 'dast', site_profile: 'Site Profile 3', scanner_profile: 'Scanner Profile 3' }]) }
-    let(:policy4) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['release/*'] }], actions: [{ scan: 'sast' }]) }
-    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2, policy3, policy4]) }
-
-    let(:expected_actions) do
-      [
-        { scan: 'dast', scanner_profile: 'Scanner Profile 2', site_profile: 'Site Profile 2' },
-        { scan: 'dast', scanner_profile: 'Scanner Profile 3', site_profile: 'Site Profile 3' }
-      ]
-    end
-
-    subject(:on_demand_scan_actions) do
-      security_orchestration_policy_configuration.on_demand_scan_actions(ref)
-    end
-
-    context 'when ref is branch' do
-      let(:ref) { 'refs/heads/release/123' }
-
-      it 'returns only actions for on-demand scans applicable for branch' do
-        expect(on_demand_scan_actions).to eq(expected_actions)
-      end
-    end
-
-    context 'when ref is a tag' do
-      let(:ref) { 'refs/tags/v1.0.0' }
-
-      it { is_expected.to be_empty }
-    end
-  end
-
-  describe '#pipeline_scan_actions' do
-    let(:policy1) { build(:scan_execution_policy) }
-    let(:policy2) { build(:scan_execution_policy, actions: [{ scan: 'dast', site_profile: 'Site Profile 2', scanner_profile: 'Scanner Profile 2' }, { scan: 'secret_detection' }]) }
-    let(:policy3) { build(:scan_execution_policy, rules: [{ type: 'pipeline', branches: ['*'] }], actions: [{ scan: 'secret_detection' }]) }
-    let(:policy4) { build(:scan_execution_policy, :with_schedule, actions: [{ scan: 'secret_detection' }]) }
-    let(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy1, policy2, policy3, policy4]) }
-
-    let(:expected_actions) do
-      [{ scan: 'secret_detection' }, { scan: 'secret_detection' }]
-    end
-
-    subject(:pipeline_scan_actions) do
-      security_orchestration_policy_configuration.pipeline_scan_actions('refs/heads/master')
-    end
-
-    it 'returns only actions for pipeline scans applicable for branch' do
-      expect(pipeline_scan_actions).to eq(expected_actions)
-    end
-  end
-
   describe '#active_policy_names_with_dast_site_profile' do
     let(:policy_yaml) do
       build(:orchestration_policy_yaml, scan_execution_policy: [
@@ -745,6 +692,63 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
       it 'does not delete unrelated merge request approval rules' do
         expect { delete_scan_finding_rules_for_project }.to change(ApprovalMergeRequestRule, :count).from(2).to(1)
+      end
+    end
+  end
+
+  describe "#active_policies_scan_actions" do
+    before do
+      allow(Gitlab::Git).to receive(:branch_ref?).with(default_branch).and_return(true)
+      allow(Gitlab::Git).to receive(:ref_name).with(default_branch).and_return(default_branch)
+    end
+
+    let(:policy_yaml) do
+      build(:orchestration_policy_yaml, scan_execution_policy: scan_execution_policies, scan_result_policy: scan_result_policies)
+    end
+
+    let(:scan_execution_policies) do
+      [dast_policy, container_scanning_policy]
+    end
+
+    let(:dast_policy) do
+      build(:scan_execution_policy, actions: [{ scan: 'dast',
+                                                site_profile: 'Site Profile',
+                                                scanner_profile: 'Scanner Profile' }])
+    end
+
+    let(:container_scanning_policy) do
+      build(:scan_execution_policy, actions: [{ scan: 'container_scanning' }])
+    end
+
+    let(:scan_result_policies) do
+      [build(:scan_result_policy)]
+    end
+
+    subject { security_orchestration_policy_configuration.active_policies_scan_actions(default_branch) }
+
+    it "returns active scan policies" do
+      expect(subject).to match_array([*dast_policy[:actions], *container_scanning_policy[:actions]])
+    end
+
+    context "with disabled scan policies" do
+      let(:container_scanning_policy) do
+        build(:scan_execution_policy, actions: [{ scan: 'container_scanning' }], enabled: false)
+      end
+
+      it "filters" do
+        expect(subject).to match_array(dast_policy[:actions])
+      end
+    end
+
+    context "with scan policies targeting other branch" do
+      let(:container_scanning_policy) do
+        build(:scan_execution_policy,
+              actions: [{ scan: 'container_scanning' }],
+              rules: [{ type: 'pipeline', branches: [default_branch.reverse] }])
+      end
+
+      it "filters" do
+        expect(subject).to match_array(dast_policy[:actions])
       end
     end
   end
