@@ -1,42 +1,37 @@
 <script>
-import { GlTable } from '@gitlab/ui';
+import { GlTableLite } from '@gitlab/ui';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import { DASHBOARD_TABLE_FIELDS } from '../constants';
-import TimePeriodHeader from './time_period_header.vue';
 
 export default {
   name: 'DoraComparisonTable',
   components: {
-    GlTable,
-    TimePeriodHeader,
+    GlTableLite,
   },
   props: {
-    dateRanges: {
-      type: Object,
-      required: true,
-    },
     data: {
       type: Array,
       required: true,
     },
   },
   fields: DASHBOARD_TABLE_FIELDS,
+  methods: {
+    formatDate(date) {
+      return formatDate(date, 'mmm d');
+    },
+  },
 };
 </script>
 <template>
-  <gl-table :fields="$options.fields" :items="data">
-    <template #head(current)="{ label }">
-      <time-period-header
-        :name="label"
-        :start-date="dateRanges.current.startDate"
-        :end-date="dateRanges.current.endDate"
-      />
+  <gl-table-lite :fields="$options.fields" :items="data">
+    <template #head()="{ field: { label, start, end } }">
+      <template v-if="!start || !end">
+        {{ label }}
+      </template>
+      <template v-else>
+        <div class="gl-mb-2">{{ label }}</div>
+        <div class="gl-font-weight-normal">{{ formatDate(start) }} - {{ formatDate(end) }}</div>
+      </template>
     </template>
-    <template #head(previous)="{ label }">
-      <time-period-header
-        :name="label"
-        :start-date="dateRanges.previous.startDate"
-        :end-date="dateRanges.previous.endDate"
-      />
-    </template>
-  </gl-table>
+  </gl-table-lite>
 </template>

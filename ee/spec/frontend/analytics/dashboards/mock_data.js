@@ -1,85 +1,78 @@
-const mockLeadTimeForChanges = {
-  value: '0.2',
-  unit: 'days',
-  label: 'Lead Time for Changes',
-  identifier: 'lead_time_for_changes',
-};
+import { THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO } from 'ee/analytics/dashboards/constants';
 
-const mockTimeToRestore = {
-  value: '0.4',
-  unit: 'days',
-  label: 'Time to Restore Service',
-  identifier: 'time_to_restore_service',
-};
+const mockDoraMetrics = ([
+  leadTimeForChanges,
+  timeToRestoreService,
+  changeFailureRate,
+  deploymentFrequency,
+]) => ({
+  lead_time_for_changes: {
+    value: leadTimeForChanges,
+    unit: 'days',
+    label: 'Lead Time for Changes',
+    identifier: 'lead_time_for_changes',
+  },
+  time_to_restore_service: {
+    value: timeToRestoreService,
+    unit: 'days',
+    label: 'Time to Restore Service',
+    identifier: 'time_to_restore_service',
+  },
+  change_failure_rate: {
+    value: changeFailureRate,
+    unit: '%',
+    label: 'Change Failure Rate',
+    identifier: 'change_failure_rate',
+  },
+  deployment_frequency: {
+    value: deploymentFrequency,
+    unit: '/day',
+    label: 'Deployment Frequency',
+    identifier: 'deployment_frequency',
+  },
+});
 
-const mockChangeFailureRate = {
-  value: '8.54',
-  unit: '%',
-  label: 'Change Failure Rate',
-  identifier: 'change_failure_rate',
-};
+export const mockMonthToDate = mockDoraMetrics([0.2, 0.4, 8.54, 19.9]);
+export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
+export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
-const mockDeploymentFrequency = {
-  value: '19.9',
-  unit: '/day',
-  label: 'Deployment Frequency',
-  identifier: 'deployment_frequency',
-};
+export const mockPreviousMonth = mockDoraMetrics([2.5, 22.32, 5.2, 1.7]);
+export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
+export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
 
-export const mockCurrentTimePeriod = {
-  lead_time_for_changes: mockLeadTimeForChanges,
-  time_to_restore_service: mockTimeToRestore,
-  change_failure_rate: mockChangeFailureRate,
-  deployment_frequency: mockDeploymentFrequency,
-};
-
-const mockPreviousValues = [2.5, 22.32, 5.2, 1.7];
-export const mockPreviousTimePeriod = Object.entries(mockCurrentTimePeriod).reduce(
-  (acc, [key, data], index) => ({
-    ...acc,
-    [key]: {
-      ...data,
-      value: mockPreviousValues[index],
-    },
-  }),
-  {},
-);
-
-export const mockCurrentApiResponse = Object.values(mockCurrentTimePeriod);
-export const mockPreviousApiResponse = Object.values(mockPreviousTimePeriod);
+export const mockTwoMonthsAgo = mockDoraMetrics([3.5, 25.32, 8.2, 0.7]);
+export const mockTwoMonthsAgoTimePeriod = { ...TWO_MONTHS_AGO, ...mockTwoMonthsAgo };
+export const mockTwoMonthsAgoApiResponse = Object.values(mockTwoMonthsAgo);
 
 export const mockComparativeTableData = [
   {
-    change: '1070.59%',
-    current: '19.9/d',
     metric: 'Deployment Frequency',
-    previous: '1.7/d',
+    thisMonth: '19.9/d',
+    lastMonth: '1.7/d',
+    twoMonthsAgo: '0.7/d',
   },
   {
-    change: '-92%',
-    current: '0.2 d',
     metric: 'Lead Time for Changes',
-    previous: '2.5 d',
+    thisMonth: '0.2 d',
+    lastMonth: '2.5 d',
+    twoMonthsAgo: '3.5 d',
   },
   {
-    change: '-98.21%',
-    current: '0.4 d',
     metric: 'Time to Restore Service',
-    previous: '22.32 d',
+    thisMonth: '0.4 d',
+    lastMonth: '22.32 d',
+    twoMonthsAgo: '25.32 d',
   },
   {
-    change: '64.23%',
-    current: '8.54%',
     metric: 'Change Failure Rate',
-    previous: '5.2%',
+    thisMonth: '8.54%',
+    lastMonth: '5.2%',
+    twoMonthsAgo: '8.2%',
   },
 ];
 
 export const mockMetricsResponse = [
-  mockLeadTimeForChanges,
-  mockChangeFailureRate,
-  mockTimeToRestore,
-  mockDeploymentFrequency,
+  ...Object.values(mockMonthToDate),
   {
     value: '-',
     unit: 'days',

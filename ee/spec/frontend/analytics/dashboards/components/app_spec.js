@@ -1,8 +1,13 @@
 import { shallowMount } from '@vue/test-utils';
+import { THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO } from 'ee/analytics/dashboards/constants';
 import Component from 'ee/analytics/dashboards/components/app.vue';
 import DoraComparisonTable from 'ee/analytics/dashboards/components/dora_comparison_table.vue';
 import * as utils from '~/analytics/shared/utils';
-import { mockCurrentApiResponse, mockPreviousApiResponse } from '../mock_data';
+import {
+  mockMonthToDateApiResponse,
+  mockPreviousMonthApiResponse,
+  mockTwoMonthsAgoApiResponse,
+} from '../mock_data';
 
 const mockProps = { groupName: 'Exec group', groupFullPath: 'exec-group' };
 
@@ -49,11 +54,15 @@ describe('Executive dashboard app', () => {
       );
     };
 
-    it('will request the summary and time summary metrics for both time periods', () => {
-      expect(utils.fetchMetricsData).toHaveBeenCalledTimes(2);
+    it('will request the summary and time summary metrics for all time periods', () => {
+      expect(utils.fetchMetricsData).toHaveBeenCalledTimes(3);
 
-      expectDataRequests({ created_after: '2020-06-07', created_before: '2020-07-06' });
-      expectDataRequests({ created_after: '2020-05-09', created_before: '2020-06-07' });
+      [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO].forEach((timePeriod) =>
+        expectDataRequests({
+          created_after: timePeriod.start.toISOString(),
+          created_before: timePeriod.end.toISOString(),
+        }),
+      );
     });
   });
 
@@ -69,25 +78,12 @@ describe('Executive dashboard app', () => {
     });
   });
 
-  describe('no previous data', () => {
-    beforeEach(async () => {
-      utils.fetchMetricsData.mockReturnValueOnce(mockCurrentApiResponse).mockReturnValueOnce([]);
-
-      wrapper = await createComponent();
-    });
-
-    it('calculates no % change for each DORA metric', async () => {
-      const momChange = getTableData().map(({ change }) => change);
-
-      expect(momChange).toEqual(['-', '-', '-', '-']);
-    });
-  });
-
-  describe('with current and previous data to compare', () => {
+  describe('with data', () => {
     beforeEach(async () => {
       utils.fetchMetricsData
-        .mockReturnValueOnce(mockCurrentApiResponse)
-        .mockReturnValueOnce(mockPreviousApiResponse);
+        .mockReturnValueOnce(mockMonthToDateApiResponse)
+        .mockReturnValueOnce(mockPreviousMonthApiResponse)
+        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse);
 
       wrapper = await createComponent();
     });
@@ -101,12 +97,6 @@ describe('Executive dashboard app', () => {
         'Time to Restore Service',
         'Change Failure Rate',
       ]);
-    });
-
-    it('calculates % change for each DORA metric', () => {
-      const momChange = getTableData().map(({ change }) => change);
-
-      expect(momChange).toEqual(['1070.59%', '-92%', '-98.21%', '64.23%']);
     });
   });
 });

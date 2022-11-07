@@ -1,5 +1,7 @@
+import { isNumeric } from '~/lib/utils/number_utils';
 import { roundOffFloat } from '~/lib/utils/common_utils';
-import dateformat from '~/lib/dateformat';
+import { fetchMetricsData } from '~/analytics/shared/utils';
+import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
 import { CHANGE_FAILURE_RATE, DEPLOYMENT_FREQUENCY_METRIC_TYPE } from 'ee/api/dora_api';
 import { DORA_METRIC_IDENTIFIERS } from './constants';
 
@@ -24,9 +26,6 @@ export const formatMetricString = ({ identifier, value }) => {
   return `${value}${unit}`;
 };
 
-export const toUtcYMD = (d) => dateformat(d, 'UTC:yyyy-mm-dd');
-export const toMonthDay = (d) => dateformat(d, 'mmm dd');
-
 /**
  * Takes a flat array of metrics and extracts only the DORA metrics,
  * returning and key value object of the resulting metrics
@@ -49,27 +48,60 @@ export const extractDoraMetrics = (metrics = []) =>
     }, {});
 
 /**
- * Takes 2 time periods of DORA metrics and generates the data rows
+ * Fetches and merges DORA metrics into the given timePeriod objects.
+ *
+ * @param {Array} timePeriods - array of objects containing DORA metric values
+ * @param {String} requestPath - URL path to use for the DORA metric API requests
+ * @returns {Array} The original timePeriods array, with DORA metrics included
+ */
+export const fetchDoraMetrics = async ({ timePeriods, requestPath }) => {
+  const promises = timePeriods.map((period) =>
+    fetchMetricsData(METRICS_REQUESTS, requestPath, {
+      created_after: period.start.toISOString(),
+      created_before: period.end.toISOString(),
+    }),
+  );
+
+  const results = await Promise.all(promises);
+  return timePeriods.map((period, index) => ({
+    ...period,
+    ...extractDoraMetrics(results[index]),
+  }));
+};
+
+/**
+ * Takes an array of timePeriod objects containing DORA metrics, and returns
+ * true if any of the timePeriods contain metric values > 0.
+ *
+ * @param {Array} timePeriods - array of objects containing DORA metric values
+ * @returns {Boolean} true if there is any metric data, otherwise false.
+ */
+export const hasDoraMetricValues = (timePeriods) =>
+  timePeriods.some((timePeriod) => {
+    // timePeriod may contain more attributes than just the DORA metrics,
+    // so filter out non-metrics before making a list of the raw values
+    const metricValues = Object.entries(timePeriod)
+      .filter(([k]) => DORA_METRIC_IDENTIFIERS.includes(k))
+      .map(([, v]) => v.value);
+
+    return metricValues.some((value) => isNumeric(value) && Number(value) > 0);
+  });
+
+/**
+ * Takes N time periods of DORA metrics and generates the data rows
  * for the comparison table.
  *
- * @param {Object} obj
- * @param {Array} obj.current - DORA metrics data for the current time period
- * @param {Array} obj.previous - DORA metrics data for the previous time period
- * @returns {Array} array comparing each DORA metric between the 2 time periods
+ * @param {Array} timePeriods - Array of the DORA metrics for different time periods
+ * @returns {Array} array comparing each DORA metric between the different time periods
  */
-export const generateDoraTimePeriodComparisonTable = ({ current, previous }) => {
+export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
   return DORA_METRIC_IDENTIFIERS.map((identifier) => {
-    const c = current[identifier];
-    const p = previous[identifier];
-
-    const pValue = p ? p.value : '-';
-    const cValue = c ? c.value : '-';
-
-    return {
-      metric: c.label,
-      current: c?.identifier ? formatMetricString(c) : '-',
-      previous: p?.identifier ? formatMetricString(p) : '-',
-      change: formatPercentChange({ current: cValue, previous: pValue }),
-    };
+    const data = {};
+    timePeriods.forEach((timePeriod) => {
+      const doraMetric = timePeriod[identifier];
+      data.metric = doraMetric.label;
+      data[timePeriod.key] = doraMetric?.identifier ? formatMetricString(doraMetric) : '-';
+    });
+    return data;
   });
 };
