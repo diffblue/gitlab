@@ -6,10 +6,10 @@ module RuboCop
   module Cop
     module Migration
       # Cop that checks that no background batched migration helpers are called by regular migrations.
-      class SchemaChangeMethodsNoPost < RuboCop::Cop::Base
+      class SchemaAdditionMethodsNoPost < RuboCop::Cop::Base
         include MigrationHelpers
 
-        MSG = "This method may not be used in post migrations."
+        MSG = "This method may not be used in post migrations. Please see documentation here: https://docs.gitlab.com/ee/development/migration_style_guide.html#choose-an-appropriate-migration-type"
 
         FORBIDDEN_METHODS = %w[
           add_column

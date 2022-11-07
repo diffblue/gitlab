@@ -728,7 +728,7 @@ Migration/PreventIndexCreation:
     - !ruby/regexp /\Adb\/(post_)?migrate\/2020.*\.rb\z/
     - !ruby/regexp /\Adb\/(post_)?migrate\/20210[1-6].*\.rb\z/
 
-Migration/SchemaChangeMethodsNoPost:
+Migration/SchemaAdditionMethodsNoPost:
   Enabled: true
   Include:
     - db/post_migrate/*.rb
