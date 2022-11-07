@@ -652,7 +652,7 @@ application-wide outage.
    1. Make it possible to create partitions in an automatic way.
    1. Deliver the new architecture to self-managed instances.
 
-The diagram below visualizes this plan on Gantt chart. Please note that dates
+The diagram below visualizes this plan on Gantt chart. The dates
 on the chart below are just estimates to visualize the plan better, these are
 not deadlines and can change at any time.
 
