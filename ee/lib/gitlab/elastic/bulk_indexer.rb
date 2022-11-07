@@ -61,23 +61,24 @@ module Gitlab
       def index(ref)
         proxy = ref.database_record.__elasticsearch__
         op = build_op(ref, proxy)
-
         submit(ref, { index: op }, proxy.as_indexed_json)
+
+        delete_from_rolled_over_indices(alias_name: proxy.index_name, ref: ref)
       rescue ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError => error
         logger.warn(message: error.message, record_id: error.record_id, class_name: error.class_name)
         delete(ref)
       end
 
-      def delete(ref)
+      def delete(ref, index_name: nil)
         proxy = ref.klass.__elasticsearch__
-        op = build_op(ref, proxy)
+        op = build_op(ref, proxy, index_name: index_name)
 
         submit(ref, delete: op)
       end
 
-      def build_op(ref, proxy)
+      def build_op(ref, proxy, index_name: nil)
         op = {
-          _index: proxy.index_name,
+          _index: index_name || proxy.index_name,
           _type: proxy.document_type,
           _id: ref.es_id
         }
@@ -163,6 +164,24 @@ module Gitlab
         end
 
         out
+      end
+
+      def delete_from_rolled_over_indices(alias_name:, ref:)
+        return unless Feature.enabled?(:search_index_curation)
+
+        # Because there is only one write index, we need to iterate over
+        # all other indices and remove the document if it exists.
+        alias_index_targets = client.indices.get_alias(index: alias_name)
+
+        return if alias_index_targets.length <= 1 # SearchCurator hasn't done any rollovers yet
+
+        alias_index_targets.each do |index_name, alias_info|
+          next if alias_info.dig('aliases', alias_name, 'is_write_index')
+
+          delete(ref, index_name: index_name)
+        end
+      rescue StandardError => err
+        logger.error(message: 'delete_from_rollover_failure', error_class: err.class.to_s, error_message: err.message)
       end
     end
   end

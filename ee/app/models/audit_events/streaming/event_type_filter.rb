@@ -11,6 +11,8 @@ module AuditEvents
                 presence: true,
                 length: { maximum: 255 },
                 uniqueness: { scope: :external_audit_event_destination_id }
+
+      scope :audit_event_type_in, ->(audit_event_types) { where(audit_event_type: audit_event_types) }
     end
   end
 end

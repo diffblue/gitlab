@@ -29,7 +29,7 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a project'
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
     end
     resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       before do
@@ -37,7 +37,11 @@ module API
       end
       segment ':id/merge_request_approval_setting' do
         desc 'Get project-level MR approval settings' do
-          success ::API::Entities::MergeRequestApprovalSetting
+          success code: 200, model: ::API::Entities::MergeRequestApprovalSetting
+          failure [
+            { code: 403, message: 'Forbidden' }
+          ]
+          tags %w[merge_request_approval_setting]
         end
         get '/', urgency: :medium do
           group = user_project.group.present? ? user_project.root_ancestor : nil
@@ -46,7 +50,12 @@ module API
           present setting, with: ::API::Entities::MergeRequestApprovalSetting
         end
         desc 'Update existing merge request approval setting' do
-          success ::API::Entities::MergeRequestApprovalSetting
+          success code: 200, model: ::API::Entities::MergeRequestApprovalSetting
+          failure [
+            { code: 400, message: 'Validation error' },
+            { code: 403, message: 'Forbidden' }
+          ]
+          tags %w[merge_request_approval_setting]
         end
         params do
           use :merge_request_approval_settings
@@ -71,7 +80,7 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
+      requires :id, type: String, desc: 'The ID or URL-encoded path of a group'
     end
     resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       before do
@@ -79,7 +88,11 @@ module API
       end
       segment ':id/merge_request_approval_setting' do
         desc 'Get group merge request approval setting' do
-          success ::API::Entities::MergeRequestApprovalSetting
+          success code: 200, model: ::API::Entities::MergeRequestApprovalSetting
+          failure [
+            { code: 403, message: 'Forbidden' }
+          ]
+          tags %w[merge_request_approval_setting]
         end
         get do
           setting = ComplianceManagement::MergeRequestApprovalSettings::Resolver.new(user_group).execute
@@ -88,7 +101,12 @@ module API
         end
 
         desc 'Update existing merge request approval setting' do
-          success ::API::Entities::MergeRequestApprovalSetting
+          success code: 200, model: ::API::Entities::MergeRequestApprovalSetting
+          failure [
+            { code: 400, message: 'Validation error' },
+            { code: 403, message: 'Forbidden' }
+          ]
+          tags %w[merge_request_approval_setting]
         end
         params do
           use :merge_request_approval_settings

@@ -16,5 +16,18 @@ RSpec.describe EventsHelper do
         expect(subject).to match("#{group.to_param}/-/epics/#{event.note_target.iid}#note_#{event.target.id}")
       end
     end
+
+    context 'for vulnerability events' do
+      let_it_be(:project) { create(:project) }
+      let_it_be(:note) { create(:note_on_vulnerability, note: 'comment') }
+      let_it_be(:event) { create(:event, project: project, target: note) }
+
+      it 'returns an appropriate URL' do
+        path = "#{project.full_path}/-/security/vulnerabilities/#{event.note_target_id}"
+        fragment = "note_#{event.target.id}"
+
+        expect(subject).to match("#{path}##{fragment}")
+      end
+    end
   end
 end

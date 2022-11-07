@@ -228,8 +228,9 @@ RSpec.describe Projects::ArtifactsController do
           expect(response).to have_gitlab_http_status(:forbidden)
           expect(response.body).to include(
             'You must have developer or higher permissions in the associated project to view job logs when debug trace is enabled. ' \
-            'To disable debug trace, set the &#39;CI_DEBUG_TRACE&#39; variable to &#39;false&#39; in your pipeline configuration or CI/CD settings. ' \
-            'If you need to view this job log, a project maintainer or owner must add you to the project with developer permissions or higher.'
+            'To disable debug trace, set the &#39;CI_DEBUG_TRACE&#39; and &#39;CI_DEBUG_SERVICES&#39; variables to &#39;false&#39; ' \
+            'in your pipeline configuration or CI/CD settings. If you must view this job log, a project maintainer or owner must ' \
+            'add you to the project with developer permissions or higher.'
           )
         end
       end
@@ -262,6 +263,31 @@ RSpec.describe Projects::ArtifactsController do
     end
   end
 
+  describe 'GET external_file' do
+    before do
+      allow(Gitlab.config.pages).to receive(:enabled).and_return(true)
+      allow(Gitlab.config.pages).to receive(:artifacts_server).and_return(true)
+    end
+
+    context 'when the file exists' do
+      it 'renders the file view' do
+        path = 'ci_artifacts.txt'
+
+        get :external_file, params: { namespace_id: project.namespace, project_id: project, job_id: job, path: path }
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'when the file does not exist' do
+      it 'responds Not Found' do
+        get :external_file, params: { namespace_id: project.namespace, project_id: project, job_id: job, path: 'unknown' }
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
   describe 'GET file' do
     before do
       allow(Gitlab.config.pages).to receive(:enabled).and_return(true)
@@ -274,17 +300,11 @@ RSpec.describe Projects::ArtifactsController do
 
       context 'when the file exists' do
         it 'renders the file view' do
-          get :file, params: { namespace_id: project.namespace, project_id: project, job_id: job, path: 'ci_artifacts.txt' }
+          path = 'ci_artifacts.txt'
 
-          expect(response).to have_gitlab_http_status(:found)
-        end
-      end
+          get :file, params: { namespace_id: project.namespace, project_id: project, job_id: job, path: path }
 
-      context 'when the file does not exist' do
-        it 'responds Not Found' do
-          get :file, params: { namespace_id: project.namespace, project_id: project, job_id: job, path: 'unknown' }
-
-          expect(response).to be_not_found
+          expect(response).to redirect_to(external_file_project_job_artifacts_path(project, job, path: path))
         end
       end
     end

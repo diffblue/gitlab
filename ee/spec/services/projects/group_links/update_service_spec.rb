@@ -15,7 +15,7 @@ RSpec.describe Projects::GroupLinks::UpdateService do
       expires_at: expiry_date }
   end
 
-  subject { described_class.new(link, user).execute(group_link_params) }
+  subject(:execute_update_service) { described_class.new(link, user).execute(group_link_params) }
 
   before do
     group.add_maintainer(user)
@@ -34,7 +34,79 @@ profile expires_at from nil to #{expiry_date}"
       }
       expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
 
-      subject
+      execute_update_service
+    end
+
+    context 'when only expires_at is updated' do
+      let(:group_link_params) do
+        { expires_at: expiry_date }
+      end
+
+      it 'sends the audit streaming event' do
+        audit_context = {
+          name: 'project_group_link_update',
+          stream_only: true,
+          author: user,
+          scope: project,
+          target: group,
+          message: "Changed project group link profile expires_at from nil to #{expiry_date}"
+        }
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+
+        execute_update_service
+      end
+
+      context 'when expires_at is already same' do
+        let(:group_link_params) do
+          { expires_at: expiry_date }
+        end
+
+        before do
+          link.update!(expires_at: expiry_date)
+        end
+
+        it 'does not send audit streaming event' do
+          expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+          execute_update_service
+        end
+      end
+    end
+
+    context 'when only access_level is updated' do
+      let(:group_link_params) do
+        { group_access: Gitlab::Access::GUEST }
+      end
+
+      it 'sends the audit streaming event' do
+        audit_context = {
+          name: 'project_group_link_update',
+          stream_only: true,
+          author: user,
+          scope: project,
+          target: group,
+          message: "Changed project group link profile group_access from Developer to Guest"
+        }
+        expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+
+        execute_update_service
+      end
+
+      context 'when access_level is already same' do
+        let(:group_link_params) do
+          { group_access: Gitlab::Access::GUEST }
+        end
+
+        before do
+          link.update!(group_access: Gitlab::Access::GUEST)
+        end
+
+        it 'does not send audit streaming event' do
+          expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+          execute_update_service
+        end
+      end
     end
   end
 end

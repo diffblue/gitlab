@@ -108,8 +108,9 @@ export const defaultProjectProvideValues = {
 };
 
 export const defaultNamespaceProvideValues = {
-  defaultPerPage: 20,
+  namespaceId: '42',
   namespacePath: 'h5bp',
+  defaultPerPage: 20,
   purchaseStorageUrl: '',
   buyAddonTargetAttr: '_blank',
   isTemporaryStorageIncreaseVisible: false,

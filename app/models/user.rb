@@ -261,6 +261,8 @@ class User < ApplicationRecord
   has_many :resource_state_events, dependent: :nullify # rubocop:disable Cop/ActiveRecordDependent
   has_many :authored_events, class_name: 'Event', dependent: :destroy, foreign_key: :author_id # rubocop:disable Cop/ActiveRecordDependent
 
+  has_many :namespace_commit_emails
+
   #
   # Validations
   #
@@ -696,6 +698,8 @@ class User < ApplicationRecord
     #
     # Returns an ActiveRecord::Relation.
     def search(query, **options)
+      return none unless query.is_a?(String)
+
       query = query&.delete_prefix('@')
       return none if query.blank?
 

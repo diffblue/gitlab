@@ -2,7 +2,6 @@
 import {
   GlAlert,
   GlButton,
-  GlButtonGroup,
   GlFormGroup,
   GlFormInput,
   GlFormRadioGroup,
@@ -12,6 +11,7 @@ import {
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { __, s__, sprintf } from '~/locale';
+import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import { DELETE_MODAL_CONFIG, EDITOR_MODES, EDITOR_MODE_RULE, EDITOR_MODE_YAML } from './constants';
 
 export default {
@@ -29,12 +29,12 @@ export default {
   components: {
     GlAlert,
     GlButton,
-    GlButtonGroup,
     GlFormGroup,
     GlFormInput,
     GlFormTextarea,
     GlFormRadioGroup,
     GlModal,
+    SegmentedControlButtonGroup,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
   },
@@ -144,16 +144,17 @@ export default {
       return this.selectedEditorMode === EDITOR_MODE_YAML;
     },
   },
+  watch: {
+    selectedEditorMode(val) {
+      this.$emit('update-editor-mode', val);
+    },
+  },
   methods: {
     removePolicy() {
       this.$emit('remove-policy');
     },
     savePolicy() {
       this.$emit('save-policy', this.selectedEditorMode);
-    },
-    updateEditorMode(mode) {
-      this.selectedEditorMode = mode;
-      this.$emit('update-editor-mode', mode);
     },
     updateYaml(manifest) {
       this.$emit('update-yaml', manifest);
@@ -166,18 +167,7 @@ export default {
   <section class="gl-mt-6">
     <div class="gl-mb-5">
       <div class="gl-border-b-solid gl-border-b-1 gl-border-gray-100 gl-mb-6 gl-pb-6">
-        <gl-button-group :vertical="false">
-          <gl-button
-            v-for="{ text, value } in editorModes"
-            :key="value"
-            :data-testid="`button-${value}`"
-            :selected="selectedEditorMode === value"
-            type="button"
-            @click="updateEditorMode(value)"
-          >
-            {{ text }}
-          </gl-button>
-        </gl-button-group>
+        <segmented-control-button-group v-model="selectedEditorMode" :options="editorModes" />
       </div>
       <div class="gl-display-flex gl-flex-direction-column gl-lg-flex-direction-row">
         <section class="gl-w-full gl-mr-7">

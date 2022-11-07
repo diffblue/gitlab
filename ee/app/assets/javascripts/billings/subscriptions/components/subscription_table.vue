@@ -53,7 +53,6 @@ export default {
       default: '',
     },
     readOnly: {
-      type: Boolean,
       default: false,
     },
   },

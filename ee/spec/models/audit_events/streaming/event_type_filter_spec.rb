@@ -17,4 +17,15 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilter do
     it { is_expected.to belong_to(:external_audit_event_destination) }
     it { is_expected.to validate_uniqueness_of(:audit_event_type).scoped_to(:external_audit_event_destination_id) }
   end
+
+  describe '.audit_event_type_in' do
+    let_it_be(:filter1) { create(:audit_events_streaming_event_type_filter) }
+    let_it_be(:filter2) { create(:audit_events_streaming_event_type_filter) }
+
+    subject { described_class.audit_event_type_in(filter1.audit_event_type) }
+
+    it 'returns the correct audit events' do
+      expect(subject).to contain_exactly(filter1)
+    end
+  end
 end

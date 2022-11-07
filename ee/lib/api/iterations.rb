@@ -13,10 +13,17 @@ module API
           type: String, values: %w[opened upcoming started current closed all],
           default: 'all',
           desc: 'Return "opened", "upcoming", "current (previously started)", "closed", or "all" iterations. ' \
-                'Filtering by `started` state is deprecated starting with 14.1, please use `current` instead.'
-        optional :search, type: String, desc: 'The search criteria for the title of the iteration'
+                'Filtering by `started` state is deprecated starting with 14.1, please use `current` instead.',
+          documentation: { example: 'opened' }
+        optional :search,
+          type: String,
+          desc: 'The search criteria for the title of the iteration',
+          documentation: { example: 'version' }
         optional :include_ancestors,
-          type: Grape::API::Boolean, default: true, desc: 'Include iterations from parent and its ancestors'
+          type: Grape::API::Boolean,
+          default: true,
+          desc: 'Include iterations from parent and its ancestors',
+          documentation: { example: false }
         use :pagination
       end
 
@@ -49,12 +56,16 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a project'
+      requires :id,
+        types: [String, Integer],
+        desc: 'The ID or URL-encoded path of the project',
+        documentation: { example: 5 }
     end
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       desc 'Get a list of project iterations' do
         detail 'This feature was introduced in GitLab 13.5'
         success Entities::Iteration
+        is_array true
       end
       params do
         use :list_params
@@ -67,12 +78,13 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
+      requires :id, type: String, desc: 'The ID of a group', documentation: { example: 5 }
     end
     resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       desc 'Get a list of group iterations' do
         detail 'This feature was introduced in GitLab 13.5'
         success Entities::Iteration
+        is_array true
       end
       params do
         use :list_params

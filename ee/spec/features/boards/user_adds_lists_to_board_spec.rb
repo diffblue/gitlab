@@ -29,6 +29,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
 
   with_them do
     before do
+      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(
         board_milestone_lists: true,
         board_assignee_lists: true,
@@ -72,6 +73,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
 
   describe 'without a license' do
     before do
+      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(
         board_milestone_lists: false,
         board_assignee_lists: false,

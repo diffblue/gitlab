@@ -1,7 +1,12 @@
 <script>
 import { GlButton, GlIcon } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import Tracking from '~/tracking';
 import Zuora from 'ee/billings/components/zuora_simple.vue';
+
+export const EVENT_CATEGORY = 'IdentityVerification::CreditCard';
+export const EVENT_FAILED = 'failed_attempt';
+export const EVENT_SUCCESS = 'success';
 
 export default {
   components: {
@@ -9,6 +14,7 @@ export default {
     GlIcon,
     Zuora,
   },
+  mixins: [Tracking.mixin({ category: EVENT_CATEGORY })],
   inject: ['creditCard'],
   data() {
     return {
@@ -23,6 +29,10 @@ export default {
     },
     onComplete() {
       this.$emit('completed');
+      this.track(EVENT_SUCCESS);
+    },
+    onError({ message }) {
+      this.track(EVENT_FAILED, { property: message });
     },
     submit() {
       this.$refs.zuora.submit();
@@ -44,6 +54,8 @@ export default {
       :initial-height="328"
       :payment-form-id="formId"
       @success="onComplete"
+      @server-validation-error="onError"
+      @client-validation-error="onError"
       @loading="updateIsLoading"
     />
     <div class="gl-display-flex gl-mt-4 gl-mx-4 gl-text-secondary">

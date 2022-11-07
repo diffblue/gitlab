@@ -69,11 +69,11 @@ module EE
         end
 
         def user_auto_banned_instance_email
-          ::Notify.user_auto_banned_email(user.id, user.id, max_project_downloads: 5, within_seconds: 600).message
+          ::Notify.user_auto_banned_email(user.id, user.id, max_project_downloads: 5, within_seconds: 600, auto_ban_enabled: true).message
         end
 
         def user_auto_banned_namespace_email
-          ::Notify.user_auto_banned_email(user.id, user.id, max_project_downloads: 5, within_seconds: 600, group: group).message
+          ::Notify.user_auto_banned_email(user.id, user.id, max_project_downloads: 5, within_seconds: 600, auto_ban_enabled: true, group: group).message
         end
 
         def user_cap_reached
@@ -82,6 +82,10 @@ module EE
 
         def reached_free_user_limit_email
           ::Notify.reached_free_user_limit_email(user, group).message
+        end
+
+        def confirmation_instructions_email
+          ::Notify.confirmation_instructions_email(user.email, token: '123456').message
         end
       end
 

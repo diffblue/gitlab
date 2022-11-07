@@ -133,6 +133,12 @@ module EE
               complexity: 100,
               description: 'Preview Billable User Changes',
               resolver: ::Resolvers::GitlabSubscriptions::PreviewBillableUserChangeResolver
+        field :contributions,
+            ::Types::Analytics::ContributionAnalytics::ContributionMetadataType.connection_type,
+            null: true,
+            resolver: ::Resolvers::Analytics::ContributionAnalytics::ContributionsResolver,
+            description: 'Provides the aggregated contributions by users within the group and its subgroups',
+            authorize: :read_group_contribution_analytics
 
         def billable_members_count(requested_hosted_plan: nil)
           object.billable_members_count(requested_hosted_plan)

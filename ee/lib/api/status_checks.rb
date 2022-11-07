@@ -102,7 +102,7 @@ module API
           success Entities::MergeRequests::StatusCheckResponse
         end
         params do
-          requires :id, type: String, desc: 'The ID of a project'
+          requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
           requires :merge_request_iid, type: Integer, desc: 'The IID of a merge request'
           requires :external_status_check_id, type: Integer, desc: 'The ID of a external status check'
           requires :sha, type: String, desc: 'The current SHA at HEAD of the merge request.'

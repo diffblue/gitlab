@@ -9,5 +9,9 @@ module EE
     def visual_review_bot?
       false
     end
+
+    def group_sso?(_)
+      false
+    end
   end
 end

@@ -52,6 +52,9 @@ describe('WorkItemLabels component', () => {
         workItemId,
         canUpdate,
         fullPath: 'test-project-path',
+        queryVariables: {
+          id: workItemId,
+        },
       },
       apolloProvider,
     });

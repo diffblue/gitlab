@@ -22,7 +22,7 @@
             %a#blank-project-tab.nav-link.active{ href: '#blank-project-pane', data: { toggle: 'tab', track_label: 'blank_project', track_action: 'click_tab', track_value: '' }, role: 'tab' }
               %span= s_('ProjectsNew|Create')
           %li.nav-item{ role: 'presentation' }
-            %a#import-project-tab.nav-link{ href: '#import-project-pane', data: { toggle: 'tab', track_label: 'import_project', track_action: 'click_tab', track_value: '' }, role: 'tab' }
+            %a#import-project-tab.nav-link{ href: '#import-project-pane', data: { toggle: 'tab', track_label: 'import_project', track_action: 'click_tab', track_value: '' }, role: 'tab', qa_selector: 'import_project_tab' }
               %span= s_('ProjectsNew|Import')
 
         .tab-content.gitlab-tab-content.gl-bg-white.js-group-project-tab-contents
@@ -45,7 +45,7 @@
                       = gf.text_field :name, class: 'form-control js-validate-group-path js-autofill-group-name js-group-name-tooltip js-group-name-field',
                         required: true,
                         autofocus: true,
-                        data: { title: _('Projects are organized into groups'), placement: 'right', show: true }
+                        data: { title: _('Projects are organized into groups'), placement: 'right', show: true, qa_selector: 'group_name_field'}
                       = gf.hidden_field :path, class: 'form-control js-autofill-group-path js-group-path-source'
                       = gf.hidden_field :parent_id, id: 'group_parent_id'
 
@@ -54,7 +54,8 @@
                   .form-group.project-name.col-sm-12
                     = pf.label :name, class: 'gl-font-weight-bold' do
                       %span= _('Project name')
-                    = pf.text_field :name, id: 'blank_project_name', class: 'form-control js-project-path-source', required: true, data: { track_label: 'blank_project', track_action: 'activate_form_input', track_property: 'project_name', track_value: '' }
+                    = pf.text_field :name, id: 'blank_project_name', class: 'form-control js-project-path-source',
+                     required: true, data: { track_label: 'blank_project', track_action: 'activate_form_input', track_property: 'project_name', track_value: '', qa_selector: 'project_name_field' }
               %p.form-text.gl-text-center
                 = _('Your project will be created at:')
 
@@ -74,7 +75,7 @@
                   .form-text.text-muted
                     = s_('ProjectsNew|Recommended if you\'re new to GitLab')
 
-              = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '' }
+              = submit_tag _('Create project'), class: 'btn gl-button btn-confirm btn-block', data: { track_label: 'blank_project', track_action: 'click_button', track_property: 'create_project', track_value: '', qa_selector: 'submit_button' }
 
           #import-project-pane.tab-pane.import-project-pane.js-toggle-container{ role: 'tabpanel' }
             - if import_sources_enabled?
@@ -90,7 +91,7 @@
 
                       = gf.text_field :name, id: 'import_group_name', class: 'form-control js-validate-group-path js-autofill-group-name js-group-name-field has-tooltip',
                         required: true,
-                        data: { title: _('Projects are organized into groups'), placement: 'right' }
+                        data: { title: _('Projects are organized into groups'), placement: 'right', qa_selector: 'import_group_name_field' }
                       = gf.hidden_field :path, id: 'import_group_path', class: 'form-control js-autofill-group-path js-import-group-path-source'
 
                 = hidden_field_tag :import_url, nil, class: 'js-import-url'

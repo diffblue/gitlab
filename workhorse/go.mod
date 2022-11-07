@@ -20,7 +20,7 @@ require (
 	github.com/johannesboyne/gofakes3 v0.0.0-20220627085814-c3ac35da23b2
 	github.com/jpillora/backoff v1.0.0
 	github.com/mitchellh/copystructure v1.2.0
-	github.com/prometheus/client_golang v1.13.0
+	github.com/prometheus/client_golang v1.13.1
 	github.com/rafaeljusto/redigomock/v3 v3.1.1
 	github.com/sebest/xff v0.0.0-20210106013422-671bd2870b3a
 	github.com/sirupsen/logrus v1.9.0
@@ -28,7 +28,7 @@ require (
 	github.com/stretchr/testify v1.8.1
 	gitlab.com/gitlab-org/gitaly/v15 v15.5.1
 	gitlab.com/gitlab-org/golang-archive-zip v0.1.1
-	gitlab.com/gitlab-org/labkit v1.16.0
+	gitlab.com/gitlab-org/labkit v1.16.1
 	gocloud.dev v0.26.0
 	golang.org/x/image v0.0.0-20220722155232-062f8c9fd539
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616

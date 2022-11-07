@@ -256,12 +256,13 @@ RSpec.describe GroupsHelper do
   describe '#usage_quotas_storage_app_data' do
     it 'returns the needed data in correct format' do
       expect(helper.usage_quotas_storage_app_data(group)).to eq({
+        namespace_id: group.id,
+        namespace_path: group.path,
         additional_repo_storage_by_namespace: "false",
         buy_addon_target_attr: nil,
         default_per_page: 20,
         is_free_namespace: "true",
         is_temporary_storage_increase_visible: "false",
-        namespace_path: group.path,
         purchase_storage_url: nil,
         storage_limit_enforced: "false"
       })

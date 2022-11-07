@@ -23,11 +23,7 @@ module EE
 
       def security
         if pipeline.expose_security_dashboard?
-          if ::Feature.enabled?(:pipeline_tabs_vue, project)
-            redirect_to pipeline_path(pipeline, tab: 'security')
-          else
-            render_show
-          end
+          render_show
         else
           redirect_to pipeline_path(pipeline)
         end
@@ -39,11 +35,7 @@ module EE
 
         respond_to do |format|
           format.html do
-            if ::Feature.enabled?(:pipeline_tabs_vue, project)
-              redirect_to pipeline_path(pipeline, tab: 'licenses')
-            else
-              render_show
-            end
+            render_show
           end
           format.json do
             render status: :ok, json: LicenseScanningReportsSerializer.new.represent(
@@ -54,11 +46,7 @@ module EE
       end
 
       def codequality_report
-        if ::Feature.enabled?(:pipeline_tabs_vue, project)
-          redirect_to pipeline_path(pipeline, tab: 'codequality_report')
-        else
-          render_show
-        end
+        render_show
       end
 
       private

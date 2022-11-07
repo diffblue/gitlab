@@ -1,5 +1,5 @@
 import cronstrue from 'cronstrue/i18n';
-import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
+import { getPreferredLocales, sprintf, s__ } from '~/locale';
 import { NO_RULE_MESSAGE } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
 
@@ -15,20 +15,16 @@ const humanizeNamespaces = (originalNamespaces) => {
     return s__('SecurityOrchestration|all namespaces');
   }
 
-  const plural = n__('namespace', 'namespaces', namespaces.length);
-
   if (namespaces.length === 1) {
-    return sprintf(s__('SecurityOrchestration|the %{namespaces} %{plural}'), {
+    return sprintf(s__('SecurityOrchestration|the %{namespaces} namespace'), {
       namespaces,
-      plural,
     });
   }
 
   const lastNamespace = namespaces.pop();
-  return sprintf(s__('SecurityOrchestration|the %{namespaces} and %{lastNamespace} %{plural}'), {
+  return sprintf(s__('SecurityOrchestration|the %{namespaces} and %{lastNamespace} namespaces'), {
     namespaces: namespaces.join(', '),
     lastNamespace,
-    plural,
   });
 };
 
@@ -54,20 +50,16 @@ const humanizeAgent = (agents) => {
 const humanizeBranches = (originalBranches) => {
   const branches = [...originalBranches];
 
-  const plural = n__('branch', 'branches', branches.length);
-
   if (branches.length === 1) {
-    return sprintf(s__('SecurityOrchestration|%{branches} %{plural}'), {
-      branches: branches.join(','),
-      plural,
+    return sprintf(s__('SecurityOrchestration|%{branches} branch'), {
+      branches: branches[0],
     });
   }
 
   const lastBranch = branches.pop();
-  return sprintf(s__('SecurityOrchestration|%{branches} and %{lastBranch} %{plural}'), {
+  return sprintf(s__('SecurityOrchestration|%{branches} and %{lastBranch} branches'), {
     branches: branches.join(', '),
     lastBranch,
-    plural,
   });
 };
 

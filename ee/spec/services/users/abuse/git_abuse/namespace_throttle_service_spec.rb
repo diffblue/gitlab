@@ -90,13 +90,18 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       end
 
       it 'sends an email to active namespace admins', :mailer do
+        opts = {
+          max_project_downloads: limit,
+          within_seconds: time_period_in_seconds,
+          auto_ban_enabled: true,
+          group: namespace
+        }
+
         expect(Notify).to receive(:user_auto_banned_email)
           .with(
             namespace_admin.id,
             user.id,
-            max_project_downloads: limit,
-            within_seconds: time_period_in_seconds,
-            group: namespace
+            opts
           )
           .once
           .and_return(mail_instance)
@@ -105,9 +110,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
           .with(
             inactive_namespace_admin.id,
             user.id,
-            max_project_downloads: limit,
-            within_seconds: time_period_in_seconds,
-            group: namespace
+            opts
           )
 
         expect(mail_instance).to receive(:deliver_later)
@@ -176,6 +179,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
             user.id,
             max_project_downloads: limit,
             within_seconds: time_period_in_seconds,
+            auto_ban_enabled: true,
             group: namespace
           )
           .once
@@ -307,6 +311,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
             user.id,
             max_project_downloads: limit,
             within_seconds: time_period_in_seconds,
+            auto_ban_enabled: false,
             group: namespace
           )
           .once

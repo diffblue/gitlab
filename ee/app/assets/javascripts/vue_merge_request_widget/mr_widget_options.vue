@@ -345,13 +345,6 @@ export default {
       </div>
       <widget-container v-if="mr" :mr="mr" />
       <blocking-merge-requests-report :mr="mr" />
-      <grouped-codequality-reports-app
-        v-if="shouldRenderCodeQuality && !shouldShowCodeQualityExtension"
-        :head-blob-path="mr.headBlobPath"
-        :base-blob-path="mr.baseBlobPath"
-        :codequality-reports-path="mr.codequalityReportsPath"
-        :codequality-help-path="mr.codequalityHelpPath"
-      />
 
       <security-reports-app
         v-if="shouldRenderBaseSecurityReport && !shouldShowSecurityExtension"
@@ -429,14 +422,6 @@ export default {
           </template>
         </gl-sprintf>
       </mr-widget-enable-feature-prompt>
-
-      <grouped-test-reports-app
-        v-if="shouldRenderTestReport && !shouldRenderRefactoredTestReport"
-        class="js-reports-container"
-        :endpoint="mr.testResultsPath"
-        :head-blob-path="mr.headBlobPath"
-        :pipeline-path="mr.pipeline.path"
-      />
 
       <div class="mr-widget-section">
         <component :is="componentName" :mr="mr" :service="service" />

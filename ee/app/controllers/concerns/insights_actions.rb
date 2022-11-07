@@ -11,6 +11,16 @@ module InsightsActions
       Gitlab::Insights::Finders::IssuableFinder::IssuableFinderError,
       Gitlab::Insights::Executors::DoraExecutor::DoraExecutorError,
       Gitlab::Insights::Reducers::BaseReducer::BaseReducerError, with: :render_insights_chart_error
+
+    rescue_from ActiveRecord::QueryCanceled do |exception|
+      raise exception unless request.format.json?
+
+      log_exception(exception)
+
+      message = s_('ContributionAnalytics|There is too much data to calculate. ' \
+                  'Try lowering the period_limit setting in the insights configuration file.')
+      render json: { message: message }, status: :unprocessable_entity
+    end
   end
 
   def show

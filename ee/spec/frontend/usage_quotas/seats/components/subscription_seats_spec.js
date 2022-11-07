@@ -19,7 +19,7 @@ import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/usage_quotas/sea
 
 import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 
 Vue.use(Vuex);
 
@@ -86,7 +86,7 @@ describe('Subscription Seats', () => {
 
   const findExportButton = () => wrapper.findByTestId('export-button');
 
-  const findSearchBox = () => wrapper.findComponent(FilterSortContainerRoot);
+  const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
   const findPagination = () => wrapper.findComponent(GlPagination);
 
   const findAllRemoveUserItems = () => wrapper.findAllByTestId('remove-user');
@@ -522,13 +522,9 @@ describe('Subscription Seats', () => {
     it('input event triggers the setSearchQuery action', async () => {
       const SEARCH_STRING = 'search string';
 
-      // fetchBillableMembersList is called once on created()
-      expect(actionSpies.fetchBillableMembersList).toHaveBeenCalledTimes(1);
+      findSearchAndSortBar().vm.$emit('onFilter', SEARCH_STRING);
 
-      await findSearchBox().vm.$emit('onFilter', [
-        { type: 'filtered-search-term', value: { data: SEARCH_STRING } },
-      ]);
-
+      expect(actionSpies.setSearchQuery).toHaveBeenCalledTimes(1);
       expect(actionSpies.setSearchQuery).toHaveBeenCalledWith(expect.any(Object), SEARCH_STRING);
     });
   });

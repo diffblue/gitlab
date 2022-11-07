@@ -7,8 +7,8 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          expose :unprotect_access_levels, using: ::API::Entities::ProtectedRefAccess
-          expose :code_owner_approval_required
+          expose :unprotect_access_levels, using: ::API::Entities::ProtectedRefAccess, documentation: { is_array: true }
+          expose :code_owner_approval_required, documentation: { type: 'boolean' }
         end
       end
     end

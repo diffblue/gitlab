@@ -6,9 +6,13 @@ module EE
 
     override :event_note_target_url
     def event_note_target_url(event)
-      return group_epic_url(event.group, event.note_target, anchor: dom_id(event.target)) if event.epic_note?
-
-      super
+      if event.epic_note?
+        group_epic_url(event.group, event.note_target, anchor: dom_id(event.target))
+      elsif event.vulnerability_note?
+        project_security_vulnerability_url(event.project, event.note_target, anchor: dom_id(event.target))
+      else
+        super
+      end
     end
   end
 end

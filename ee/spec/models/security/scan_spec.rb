@@ -287,20 +287,25 @@ RSpec.describe Security::Scan do
   describe '.stale' do
     let!(:stale_succeeded_scan) { create(:security_scan, status: :succeeded, created_at: 91.days.ago) }
     let!(:stale_failed_scan) { create(:security_scan, status: :preparation_failed, created_at: 91.days.ago) }
+    let!(:stale_created_scan) { create(:security_scan, status: :created, created_at: 91.days.ago) }
+    let!(:stale_job_failed_scan) { create(:security_scan, status: :job_failed, created_at: 91.days.ago) }
+    let!(:stale_report_errored_scan) { create(:security_scan, status: :report_error, created_at: 91.days.ago) }
+    let!(:stale_preparing_scan) { create(:security_scan, status: :preparing, created_at: 91.days.ago) }
+
+    let(:expected_scans) do
+      [stale_succeeded_scan, stale_failed_scan, stale_created_scan,
+       stale_job_failed_scan, stale_report_errored_scan, stale_preparing_scan]
+    end
 
     subject { described_class.stale }
 
     before do
       create(:security_scan, status: :succeeded)
       create(:security_scan, status: :preparation_failed)
-      create(:security_scan, status: :created, created_at: 91.days.ago)
-      create(:security_scan, status: :job_failed, created_at: 91.days.ago)
-      create(:security_scan, status: :report_error, created_at: 91.days.ago)
-      create(:security_scan, status: :preparing, created_at: 91.days.ago)
       create(:security_scan, status: :purged, created_at: 91.days.ago)
     end
 
-    it { is_expected.to match_array([stale_succeeded_scan, stale_failed_scan]) }
+    it { is_expected.to match_array(expected_scans) }
   end
 
   describe '.with_warnings' do

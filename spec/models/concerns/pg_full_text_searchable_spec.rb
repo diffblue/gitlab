@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe PgFullTextSearchable do
-  let(:project) { create(:project) }
+  let(:project) { build(:project) }
 
   let(:model_class) do
     Class.new(ActiveRecord::Base) do
@@ -122,6 +122,17 @@ RSpec.describe PgFullTextSearchable do
 
         expect(model_class.pg_full_text_search('https://gitlab.com/gitlab-org/gitlab')).to contain_exactly(with_url)
         expect(model_class.pg_full_text_search('gopher://gitlab.com/gitlab-org/gitlab')).to contain_exactly(with_url)
+      end
+    end
+
+    context 'when search term is a path with underscores' do
+      let(:path) { 'browser_ui/5_package/package_registry/maven/maven_group_level_spec.rb' }
+      let(:with_underscore) { model_class.create!(project: project, title: 'issue with path', description: "some #{path} other text") }
+
+      it 'allows searching by the path' do
+        with_underscore.update_search_data!
+
+        expect(model_class.pg_full_text_search(path)).to contain_exactly(with_underscore)
       end
     end
 

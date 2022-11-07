@@ -54,6 +54,8 @@ function mountBoardApp(el) {
     store,
     apolloProvider,
     provide: {
+      isApolloBoard: window.gon?.features?.apolloBoards,
+      fullBoardId: fullEpicBoardId(boardId),
       disabled: parseBoolean(el.dataset.disabled),
       boardId,
       groupId: parseInt(groupId, 10),

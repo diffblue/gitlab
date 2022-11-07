@@ -32,8 +32,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
     end
 
     context 'when scan type is dast' do
-      it 'invokes AppSec::Dast::Scans::CreateService' do
-        expect(::AppSec::Dast::Scans::CreateService).to receive(:new).twice.and_call_original
+      it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService' do
+        expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to receive(:new).twice.and_call_original
 
         service.execute(schedule)
       end
@@ -60,12 +60,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
         it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for both branches' do
           expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
             receive(:new)
-            .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'master' })
+            .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'master' })
             .and_call_original)
 
           expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
             receive(:new)
-            .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'production' })
+            .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'production' })
             .and_call_original)
 
           service.execute(schedule)
@@ -87,12 +87,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::RuleScheduleService do
       it 'invokes Security::SecurityOrchestrationPolicies::CreatePipelineService for both branches' do
         expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
           receive(:new)
-          .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'master' })
+          .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'master' })
           .and_call_original)
 
         expect(::Security::SecurityOrchestrationPolicies::CreatePipelineService).to(
           receive(:new)
-          .with(project: project, current_user: current_user, params: { action: policy[:actions].first, branch: 'production' })
+          .with(project: project, current_user: current_user, params: { actions: policy[:actions], branch: 'production' })
           .and_call_original)
 
         service.execute(schedule)

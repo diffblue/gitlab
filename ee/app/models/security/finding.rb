@@ -38,6 +38,7 @@ module Security
     enum severity: ::Enums::Vulnerability.severity_levels, _prefix: :severity
 
     validates :uuid, presence: true
+    validates :finding_data, json_schema: { filename: "security_finding_data" }
 
     scope :by_uuid, -> (uuids) { where(uuid: uuids) }
     scope :by_build_ids, -> (build_ids) { joins(:scan).merge(Security::Scan.by_build_ids(build_ids)) }

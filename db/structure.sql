@@ -225,6 +225,15 @@ RETURN NULL;
 END
 $$;
 
+CREATE FUNCTION trigger_1a857e8db6cd() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."uuid_convert_string_to_uuid" := NEW."uuid";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION unset_has_issues_on_vulnerability_reads() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -434,6 +443,7 @@ CREATE TABLE security_findings (
     uuid uuid,
     overridden_uuid uuid,
     partition_number integer DEFAULT 1 NOT NULL,
+    finding_data jsonb DEFAULT '{}'::jsonb NOT NULL,
     CONSTRAINT check_6c2851a8c9 CHECK ((uuid IS NOT NULL)),
     CONSTRAINT check_b9508c6df8 CHECK ((char_length(project_fingerprint) <= 40))
 )
@@ -11495,6 +11505,7 @@ CREATE TABLE application_settings (
     product_analytics_enabled boolean DEFAULT false NOT NULL,
     email_confirmation_setting smallint DEFAULT 2,
     disable_admin_oauth_scopes boolean DEFAULT false NOT NULL,
+    default_preferred_language text DEFAULT 'en'::text NOT NULL,
     CONSTRAINT app_settings_container_reg_cleanup_tags_max_list_size_positive CHECK ((container_registry_cleanup_tags_service_max_list_size >= 0)),
     CONSTRAINT app_settings_container_registry_pre_import_tags_rate_positive CHECK ((container_registry_pre_import_tags_rate >= (0)::numeric)),
     CONSTRAINT app_settings_dep_proxy_ttl_policies_worker_capacity_positive CHECK ((dependency_proxy_ttl_group_policy_worker_capacity >= 0)),
@@ -11535,6 +11546,7 @@ CREATE TABLE application_settings (
     CONSTRAINT check_d4865d70f3 CHECK ((char_length(clickhouse_connection_string) <= 1024)),
     CONSTRAINT check_d820146492 CHECK ((char_length(spam_check_endpoint_url) <= 255)),
     CONSTRAINT check_dea8792229 CHECK ((char_length(jitsu_host) <= 255)),
+    CONSTRAINT check_e2692d7523 CHECK ((char_length(default_preferred_language) <= 32)),
     CONSTRAINT check_e2dd6e290a CHECK ((char_length(jira_connect_application_key) <= 255)),
     CONSTRAINT check_e5024c8801 CHECK ((char_length(elasticsearch_username) <= 255)),
     CONSTRAINT check_e5aba18f02 CHECK ((char_length(container_registry_version) <= 255)),
@@ -14128,6 +14140,7 @@ CREATE TABLE container_repositories (
     migration_aborted_in_state text,
     migration_plan text,
     last_cleanup_deleted_tags_count integer,
+    delete_started_at timestamp with time zone,
     CONSTRAINT check_05e9012f36 CHECK ((char_length(migration_plan) <= 255)),
     CONSTRAINT check_13c58fe73a CHECK ((char_length(migration_state) <= 255)),
     CONSTRAINT check_97f0249439 CHECK ((char_length(migration_aborted_in_state) <= 255))
@@ -17939,6 +17952,24 @@ CREATE TABLE namespace_ci_cd_settings (
     allow_stale_runner_pruning boolean DEFAULT false NOT NULL
 );
 
+CREATE TABLE namespace_commit_emails (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    namespace_id bigint NOT NULL,
+    email_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    updated_at timestamp with time zone NOT NULL
+);
+
+CREATE SEQUENCE namespace_commit_emails_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE namespace_commit_emails_id_seq OWNED BY namespace_commit_emails.id;
+
 CREATE TABLE namespace_details (
     namespace_id bigint NOT NULL,
     created_at timestamp with time zone,
@@ -20650,7 +20681,8 @@ CREATE TABLE push_rules (
     commit_committer_check boolean,
     regexp_uses_re2 boolean DEFAULT true,
     commit_message_negative_regex character varying,
-    reject_non_dco_commits boolean
+    reject_non_dco_commits boolean,
+    commit_committer_name_check boolean DEFAULT false NOT NULL
 );
 
 CREATE SEQUENCE push_rules_id_seq
@@ -22176,13 +22208,13 @@ CREATE TABLE user_details (
     registration_objective smallint,
     phone text,
     requires_credit_card_verification boolean DEFAULT false NOT NULL,
-    password_last_changed_at timestamp with time zone,
     linkedin text DEFAULT ''::text NOT NULL,
     twitter text DEFAULT ''::text NOT NULL,
     skype text DEFAULT ''::text NOT NULL,
     website_url text DEFAULT ''::text NOT NULL,
     location text DEFAULT ''::text NOT NULL,
     organization text DEFAULT ''::text NOT NULL,
+    password_last_changed_at timestamp with time zone DEFAULT now() NOT NULL,
     CONSTRAINT check_245664af82 CHECK ((char_length(webauthn_xid) <= 100)),
     CONSTRAINT check_444573ee52 CHECK ((char_length(skype) <= 500)),
     CONSTRAINT check_466a25be35 CHECK ((char_length(twitter) <= 500)),
@@ -22943,6 +22975,7 @@ CREATE TABLE vulnerability_occurrences (
     cve text,
     location jsonb,
     detection_method smallint DEFAULT 0 NOT NULL,
+    uuid_convert_string_to_uuid uuid DEFAULT '00000000-0000-0000-0000-000000000000'::uuid NOT NULL,
     CONSTRAINT check_4a3a60f2ba CHECK ((char_length(solution) <= 7000)),
     CONSTRAINT check_ade261da6b CHECK ((char_length(description) <= 15000)),
     CONSTRAINT check_df6dd20219 CHECK ((char_length(message) <= 3000)),
@@ -23039,6 +23072,7 @@ CREATE TABLE vulnerability_state_transitions (
     author_id bigint,
     comment text,
     dismissal_reason smallint,
+    CONSTRAINT check_d1ca8ec043 CHECK ((from_state <> to_state)),
     CONSTRAINT check_fca4a7ca39 CHECK ((char_length(comment) <= 255))
 );
 
@@ -23958,6 +23992,8 @@ ALTER TABLE ONLY ml_experiments ALTER COLUMN id SET DEFAULT nextval('ml_experime
 ALTER TABLE ONLY namespace_admin_notes ALTER COLUMN id SET DEFAULT nextval('namespace_admin_notes_id_seq'::regclass);
 
 ALTER TABLE ONLY namespace_bans ALTER COLUMN id SET DEFAULT nextval('namespace_bans_id_seq'::regclass);
+
+ALTER TABLE ONLY namespace_commit_emails ALTER COLUMN id SET DEFAULT nextval('namespace_commit_emails_id_seq'::regclass);
 
 ALTER TABLE ONLY namespace_statistics ALTER COLUMN id SET DEFAULT nextval('namespace_statistics_id_seq'::regclass);
 
@@ -26022,6 +26058,9 @@ ALTER TABLE ONLY namespace_bans
 ALTER TABLE ONLY namespace_ci_cd_settings
     ADD CONSTRAINT namespace_ci_cd_settings_pkey PRIMARY KEY (namespace_id);
 
+ALTER TABLE ONLY namespace_commit_emails
+    ADD CONSTRAINT namespace_commit_emails_pkey PRIMARY KEY (id);
+
 ALTER TABLE ONLY namespace_details
     ADD CONSTRAINT namespace_details_pkey PRIMARY KEY (namespace_id);
 
@@ -27922,6 +27961,8 @@ CREATE UNIQUE INDEX idx_serverless_domain_cluster_on_clusters_applications_knati
 
 CREATE INDEX idx_streaming_headers_on_external_audit_event_destination_id ON audit_events_streaming_headers USING btree (external_audit_event_destination_id);
 
+CREATE INDEX idx_test_reports_on_issue_id_created_at_and_id ON requirements_management_test_reports USING btree (issue_id, created_at, id);
+
 CREATE INDEX idx_user_details_on_provisioned_by_group_id_user_id ON user_details USING btree (provisioned_by_group_id, user_id);
 
 CREATE UNIQUE INDEX idx_vuln_signatures_on_occurrences_id_and_signature_sha ON vulnerability_finding_signatures USING btree (finding_id, signature_sha);
@@ -28647,6 +28688,8 @@ CREATE INDEX index_container_repositories_on_project_id ON container_repositorie
 CREATE INDEX index_container_repositories_on_project_id_and_id ON container_repositories USING btree (project_id, id);
 
 CREATE UNIQUE INDEX index_container_repositories_on_project_id_and_name ON container_repositories USING btree (project_id, name);
+
+CREATE INDEX index_container_repositories_on_status_and_id ON container_repositories USING btree (status, id) WHERE (status IS NOT NULL);
 
 CREATE INDEX index_container_repository_on_name_trigram ON container_repositories USING gin (name gin_trgm_ops);
 
@@ -29662,6 +29705,12 @@ CREATE UNIQUE INDEX index_namespace_bans_on_namespace_id_and_user_id ON namespac
 
 CREATE INDEX index_namespace_bans_on_user_id ON namespace_bans USING btree (user_id);
 
+CREATE INDEX index_namespace_commit_emails_on_email_id ON namespace_commit_emails USING btree (email_id);
+
+CREATE INDEX index_namespace_commit_emails_on_namespace_id ON namespace_commit_emails USING btree (namespace_id);
+
+CREATE UNIQUE INDEX index_namespace_commit_emails_on_user_id_and_namespace_id ON namespace_commit_emails USING btree (user_id, namespace_id);
+
 CREATE UNIQUE INDEX index_namespace_root_storage_statistics_on_namespace_id ON namespace_root_storage_statistics USING btree (namespace_id);
 
 CREATE UNIQUE INDEX index_namespace_statistics_on_namespace_id ON namespace_statistics USING btree (namespace_id);
@@ -29926,7 +29975,7 @@ CREATE INDEX index_packages_project_id_name_partial_for_nuget ON packages_packag
 
 CREATE INDEX index_packages_rpm_metadata_on_package_id ON packages_rpm_metadata USING btree (package_id);
 
-CREATE INDEX index_packages_rpm_repository_files_on_project_id ON packages_rpm_repository_files USING btree (project_id);
+CREATE INDEX index_packages_rpm_repository_files_on_project_id_and_file_name ON packages_rpm_repository_files USING btree (project_id, file_name);
 
 CREATE INDEX index_packages_tags_on_package_id ON packages_tags USING btree (package_id);
 
@@ -30462,6 +30511,8 @@ CREATE INDEX index_security_scans_on_created_at ON security_scans USING btree (c
 
 CREATE INDEX index_security_scans_on_date_created_at_and_id ON security_scans USING btree (date(timezone('UTC'::text, created_at)), id);
 
+CREATE INDEX index_security_scans_on_id_for_non_purged_records ON security_scans USING btree (id) WHERE (status <> 6);
+
 CREATE INDEX index_security_scans_on_length_of_errors ON security_scans USING btree (pipeline_id, jsonb_array_length(COALESCE((info -> 'errors'::text), '[]'::jsonb)));
 
 CREATE INDEX index_security_scans_on_length_of_warnings ON security_scans USING btree (pipeline_id, jsonb_array_length(COALESCE((info -> 'warnings'::text), '[]'::jsonb)));
@@ -30753,6 +30804,10 @@ CREATE INDEX index_user_credit_card_validations_meta_data_partial_match ON user_
 CREATE INDEX index_user_custom_attributes_on_key_and_value ON user_custom_attributes USING btree (key, value);
 
 CREATE UNIQUE INDEX index_user_custom_attributes_on_user_id_and_key ON user_custom_attributes USING btree (user_id, key);
+
+CREATE INDEX index_user_details_on_password_last_changed_at ON user_details USING btree (password_last_changed_at);
+
+COMMENT ON INDEX index_user_details_on_password_last_changed_at IS 'JiHu-specific index';
 
 CREATE UNIQUE INDEX index_user_details_on_phone ON user_details USING btree (phone) WHERE (phone IS NOT NULL);
 
@@ -31156,8 +31211,6 @@ CREATE INDEX tmp_index_for_project_namespace_id_migration_on_routes ON routes US
 
 CREATE INDEX tmp_index_issues_on_issue_type_and_id ON issues USING btree (issue_type, id);
 
-CREATE INDEX tmp_index_members_on_id_where_namespace_id_null ON members USING btree (id) WHERE (member_namespace_id IS NULL);
-
 CREATE INDEX tmp_index_members_on_state ON members USING btree (state) WHERE (state = 2);
 
 CREATE INDEX tmp_index_migrated_container_registries ON container_repositories USING btree (project_id) WHERE ((migration_state = 'import_done'::text) OR (created_at >= '2022-01-23 00:00:00'::timestamp without time zone));
@@ -31167,6 +31220,8 @@ CREATE UNIQUE INDEX tmp_index_on_tmp_project_id_on_namespaces ON namespaces USIN
 CREATE INDEX tmp_index_on_vulnerabilities_non_dismissed ON vulnerabilities USING btree (id) WHERE (state <> 2);
 
 CREATE INDEX tmp_index_project_statistics_cont_registry_size ON project_statistics USING btree (project_id) WHERE (container_registry_size = 0);
+
+CREATE INDEX tmp_index_project_statistics_uploads_size ON project_statistics USING btree (project_id) WHERE (uploads_size <> 0);
 
 CREATE INDEX tmp_index_vulnerability_occurrences_on_id_and_scanner_id ON vulnerability_occurrences USING btree (id, scanner_id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
@@ -32514,6 +32569,8 @@ CREATE TRIGGER nullify_merge_request_metrics_build_data_on_update BEFORE UPDATE 
 
 CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
+CREATE TRIGGER trigger_1a857e8db6cd BEFORE INSERT OR UPDATE ON vulnerability_occurrences FOR EACH ROW EXECUTE FUNCTION trigger_1a857e8db6cd();
+
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
 
 CREATE TRIGGER trigger_has_external_issue_tracker_on_delete AFTER DELETE ON integrations FOR EACH ROW WHEN ((((old.category)::text = 'issue_tracker'::text) AND (old.active = true) AND (old.project_id IS NOT NULL))) EXECUTE FUNCTION set_has_external_issue_tracker();
@@ -32575,9 +32632,6 @@ ALTER TABLE ONLY service_desk_settings
 
 ALTER TABLE ONLY design_management_designs_versions
     ADD CONSTRAINT fk_03c671965c FOREIGN KEY (design_id) REFERENCES design_management_designs(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY projects
-    ADD CONSTRAINT fk_03ec10b0d3 FOREIGN KEY (creator_id) REFERENCES users(id) ON DELETE SET NULL NOT VALID;
 
 ALTER TABLE ONLY issues
     ADD CONSTRAINT fk_05f1e72feb FOREIGN KEY (author_id) REFERENCES users(id) ON DELETE SET NULL;
@@ -32827,6 +32881,9 @@ ALTER TABLE ONLY user_namespace_callouts
 
 ALTER TABLE ONLY sbom_occurrences
     ADD CONSTRAINT fk_4b88e5b255 FOREIGN KEY (component_version_id) REFERENCES sbom_component_versions(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY namespace_commit_emails
+    ADD CONSTRAINT fk_4d6ba63ba5 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY vulnerability_reads
     ADD CONSTRAINT fk_4f593f6c62 FOREIGN KEY (namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
@@ -33211,6 +33268,9 @@ ALTER TABLE ONLY issue_assignees
 
 ALTER TABLE ONLY agent_project_authorizations
     ADD CONSTRAINT fk_b7fe9b4777 FOREIGN KEY (agent_id) REFERENCES cluster_agents(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY namespace_commit_emails
+    ADD CONSTRAINT fk_b8d89d555e FOREIGN KEY (email_id) REFERENCES emails(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY ci_trigger_requests
     ADD CONSTRAINT fk_b8ec8b7245 FOREIGN KEY (trigger_id) REFERENCES ci_triggers(id) ON DELETE CASCADE;
@@ -34915,6 +34975,9 @@ ALTER TABLE ONLY packages_debian_project_distributions
 
 ALTER TABLE ONLY incident_management_oncall_shifts
     ADD CONSTRAINT fk_rails_df4feb286a FOREIGN KEY (rotation_id) REFERENCES incident_management_oncall_rotations(id) ON DELETE CASCADE;
+
+ALTER TABLE ONLY namespace_commit_emails
+    ADD CONSTRAINT fk_rails_dfa4c104f5 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY analytics_cycle_analytics_group_stages
     ADD CONSTRAINT fk_rails_dfb37c880d FOREIGN KEY (end_event_label_id) REFERENCES labels(id) ON DELETE CASCADE;

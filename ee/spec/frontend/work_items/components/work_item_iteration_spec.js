@@ -17,6 +17,7 @@ import { getIterationPeriod } from 'ee/iterations/utils';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
+import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
 import {
   groupIterationsResponse,
@@ -26,6 +27,7 @@ import {
   workItemResponseFactory,
   workItemIterationSubscriptionResponse,
   updateWorkItemMutationErrorResponse,
+  projectWorkItemResponse,
 } from 'jest/work_items/mock_data';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 
@@ -51,6 +53,7 @@ describe('WorkItemIteration component', () => {
 
   const workItemQueryResponse = workItemResponseFactory({ canUpdate: true, canDelete: true });
   const workItemQueryHandler = jest.fn().mockResolvedValue(workItemQueryResponse);
+  const workItemByIidResponseHandler = jest.fn().mockResolvedValue(projectWorkItemResponse);
 
   const networkResolvedValue = new Error();
 
@@ -79,6 +82,7 @@ describe('WorkItemIteration component', () => {
     iteration = mockIterationWidgetResponse,
     searchQueryHandler = successSearchQueryHandler,
     mutationHandler = successUpdateWorkItemMutationHandler,
+    fetchByIid = false,
   } = {}) => {
     wrapper = shallowMountExtended(WorkItemIteration, {
       apolloProvider: createMockApollo([
@@ -86,12 +90,17 @@ describe('WorkItemIteration component', () => {
         [workItemIterationSubscription, iterationSubscriptionHandler],
         [groupIterationsQuery, searchQueryHandler],
         [updateWorkItemMutation, mutationHandler],
+        [workItemByIidQuery, workItemByIidResponseHandler],
       ]),
       propsData: {
         canUpdate,
         iteration,
         workItemId,
         workItemType,
+        queryVariables: {
+          id: workItemId,
+        },
+        fetchByIid,
       },
       provide: {
         projectNamespace: 'namespace',
@@ -249,5 +258,21 @@ describe('WorkItemIteration component', () => {
         property: 'type_Task',
       });
     });
+  });
+
+  it('calls the global ID work item query when `fetchByIid` prop is false', async () => {
+    createComponent({ fetchByIid: false });
+    await waitForPromises();
+
+    expect(workItemQueryHandler).toHaveBeenCalled();
+    expect(workItemByIidResponseHandler).not.toHaveBeenCalled();
+  });
+
+  it('calls the IID work item query when when `fetchByIid` prop is true', async () => {
+    createComponent({ fetchByIid: true });
+    await waitForPromises();
+
+    expect(workItemQueryHandler).not.toHaveBeenCalled();
+    expect(workItemByIidResponseHandler).toHaveBeenCalled();
   });
 });

@@ -4882,6 +4882,10 @@ Input type: `TerraformStateUnlockInput`
 
 ### `Mutation.timelineEventCreate`
 
+WARNING:
+**Introduced** in 15.6.
+This feature is in Alpha. It can be changed or removed at any time.
+
 Input type: `TimelineEventCreateInput`
 
 #### Arguments
@@ -4892,6 +4896,7 @@ Input type: `TimelineEventCreateInput`
 | <a id="mutationtimelineeventcreateincidentid"></a>`incidentId` | [`IssueID!`](#issueid) | Incident ID of the timeline event. |
 | <a id="mutationtimelineeventcreatenote"></a>`note` | [`String!`](#string) | Text note of the timeline event. |
 | <a id="mutationtimelineeventcreateoccurredat"></a>`occurredAt` | [`Time!`](#time) | Timestamp of when the event occurred. |
+| <a id="mutationtimelineeventcreatetimelineeventtagnames"></a>`timelineEventTagNames` | [`[String!]`](#string) | Tags for the incident timeline event. |
 
 #### Fields
 
@@ -4938,6 +4943,26 @@ Input type: `TimelineEventPromoteFromNoteInput`
 | <a id="mutationtimelineeventpromotefromnoteclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationtimelineeventpromotefromnoteerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 | <a id="mutationtimelineeventpromotefromnotetimelineevent"></a>`timelineEvent` | [`TimelineEventType`](#timelineeventtype) | Timeline event. |
+
+### `Mutation.timelineEventTagCreate`
+
+Input type: `TimelineEventTagCreateInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelineeventtagcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelineeventtagcreatename"></a>`name` | [`String!`](#string) | Name of the tag. |
+| <a id="mutationtimelineeventtagcreateprojectpath"></a>`projectPath` | [`ID!`](#id) | Project to create the timeline event tag in. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationtimelineeventtagcreateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationtimelineeventtagcreateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationtimelineeventtagcreatetimelineeventtag"></a>`timelineEventTag` | [`TimelineEventTagType`](#timelineeventtagtype) | Timeline event tag. |
 
 ### `Mutation.timelineEventUpdate`
 
@@ -6954,6 +6979,29 @@ The edge type for [`ContainerRepositoryTag`](#containerrepositorytag).
 | ---- | ---- | ----------- |
 | <a id="containerrepositorytagedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="containerrepositorytagedgenode"></a>`node` | [`ContainerRepositoryTag`](#containerrepositorytag) | The item at the end of the edge. |
+
+#### `ContributionAnalyticsContributionConnection`
+
+The connection type for [`ContributionAnalyticsContribution`](#contributionanalyticscontribution).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="contributionanalyticscontributionconnectionedges"></a>`edges` | [`[ContributionAnalyticsContributionEdge]`](#contributionanalyticscontributionedge) | A list of edges. |
+| <a id="contributionanalyticscontributionconnectionnodes"></a>`nodes` | [`[ContributionAnalyticsContribution]`](#contributionanalyticscontribution) | A list of nodes. |
+| <a id="contributionanalyticscontributionconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ContributionAnalyticsContributionEdge`
+
+The edge type for [`ContributionAnalyticsContribution`](#contributionanalyticscontribution).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="contributionanalyticscontributionedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="contributionanalyticscontributionedgenode"></a>`node` | [`ContributionAnalyticsContribution`](#contributionanalyticscontribution) | The item at the end of the edge. |
 
 #### `CoverageFuzzingCorpusConnection`
 
@@ -9320,6 +9368,29 @@ The edge type for [`TimeTrackingTimelogCategory`](#timetrackingtimelogcategory).
 | <a id="timetrackingtimelogcategoryedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="timetrackingtimelogcategoryedgenode"></a>`node` | [`TimeTrackingTimelogCategory`](#timetrackingtimelogcategory) | The item at the end of the edge. |
 
+#### `TimelineEventTagTypeConnection`
+
+The connection type for [`TimelineEventTagType`](#timelineeventtagtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtagtypeconnectionedges"></a>`edges` | [`[TimelineEventTagTypeEdge]`](#timelineeventtagtypeedge) | A list of edges. |
+| <a id="timelineeventtagtypeconnectionnodes"></a>`nodes` | [`[TimelineEventTagType]`](#timelineeventtagtype) | A list of nodes. |
+| <a id="timelineeventtagtypeconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `TimelineEventTagTypeEdge`
+
+The edge type for [`TimelineEventTagType`](#timelineeventtagtype).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtagtypeedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="timelineeventtagtypeedgenode"></a>`node` | [`TimelineEventTagType`](#timelineeventtagtype) | The item at the end of the edge. |
+
 #### `TimelineEventTypeConnection`
 
 The connection type for [`TimelineEventType`](#timelineeventtype).
@@ -10939,6 +11010,7 @@ Represents a code quality degradation on the pipeline.
 | <a id="commitmessage"></a>`message` | [`String`](#string) | Raw commit message. |
 | <a id="commitsha"></a>`sha` | [`String!`](#string) | SHA1 ID of the commit. |
 | <a id="commitshortid"></a>`shortId` | [`String!`](#string) | Short SHA1 ID of the commit. |
+| <a id="commitsignature"></a>`signature` | [`CommitSignature`](#commitsignature) | Signature of the commit. |
 | <a id="commitsignaturehtml"></a>`signatureHtml` | [`String`](#string) | Rendered HTML of the commit signature. |
 | <a id="committitle"></a>`title` | [`String`](#string) | Title of the commit message. |
 | <a id="committitlehtml"></a>`titleHtml` | [`String`](#string) | The GitLab Flavored Markdown rendering of `title`. |
@@ -11187,6 +11259,24 @@ A tag from a container repository.
 | <a id="containerrepositorytagshortrevision"></a>`shortRevision` | [`String`](#string) | Short revision of the tag. |
 | <a id="containerrepositorytagtotalsize"></a>`totalSize` | [`BigInt`](#bigint) | Size of the tag. |
 
+### `ContributionAnalyticsContribution`
+
+Represents the contributions of a user.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="contributionanalyticscontributionissuesclosed"></a>`issuesClosed` | [`Int`](#int) | Number of issues closed by the user. |
+| <a id="contributionanalyticscontributionissuescreated"></a>`issuesCreated` | [`Int`](#int) | Number of issues created by the user. |
+| <a id="contributionanalyticscontributionmergerequestsapproved"></a>`mergeRequestsApproved` | [`Int`](#int) | Number of merge requests approved by the user. |
+| <a id="contributionanalyticscontributionmergerequestsclosed"></a>`mergeRequestsClosed` | [`Int`](#int) | Number of merge requests closed by the user. |
+| <a id="contributionanalyticscontributionmergerequestscreated"></a>`mergeRequestsCreated` | [`Int`](#int) | Number of merge requests created by the user. |
+| <a id="contributionanalyticscontributionmergerequestsmerged"></a>`mergeRequestsMerged` | [`Int`](#int) | Number of merge requests merged by the user. |
+| <a id="contributionanalyticscontributionrepopushed"></a>`repoPushed` | [`Int`](#int) | Number of repository pushes the user made. |
+| <a id="contributionanalyticscontributiontotalevents"></a>`totalEvents` | [`Int`](#int) | Total number of events contributed by the user. |
+| <a id="contributionanalyticscontributionuser"></a>`user` | [`UserCore`](#usercore) | Contributor User object. |
+
 ### `CoverageFuzzingCorpus`
 
 Corpus for a coverage fuzzing job.
@@ -11361,6 +11451,7 @@ Represents a DAST Site Profile.
 | <a id="dastsiteprofiletargettype"></a>`targetType` | [`DastTargetTypeEnum`](#dasttargettypeenum) | Type of target to be scanned. |
 | <a id="dastsiteprofiletargeturl"></a>`targetUrl` | [`String`](#string) | URL of the target to be scanned. |
 | <a id="dastsiteprofileuserpermissions"></a>`userPermissions` | [`DastSiteProfilePermissions!`](#dastsiteprofilepermissions) | Permissions for the current user on the resource. |
+| <a id="dastsiteprofilevalidationstartedat"></a>`validationStartedAt` | [`Time`](#time) | Site profile validation start time. |
 | <a id="dastsiteprofilevalidationstatus"></a>`validationStatus` | [`DastSiteProfileValidationStatusEnum`](#dastsiteprofilevalidationstatusenum) | Current validation status of the site profile. |
 
 ### `DastSiteProfileAuth`
@@ -12799,6 +12890,22 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="geonodeuploadregistriesreplicationstate"></a>`replicationState` | [`ReplicationStateEnum`](#replicationstateenum) | Filters registries by their replication state. |
 | <a id="geonodeuploadregistriesverificationstate"></a>`verificationState` | [`VerificationStateEnum`](#verificationstateenum) | Filters registries by their verification state. |
 
+### `GpgSignature`
+
+GPG signature for a signed commit.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="gpgsignaturecommitsha"></a>`commitSha` | [`String`](#string) | SHA of the associated commit. |
+| <a id="gpgsignaturegpgkeyprimarykeyid"></a>`gpgKeyPrimaryKeyid` | [`String`](#string) | ID of the GPG key. |
+| <a id="gpgsignaturegpgkeyuseremail"></a>`gpgKeyUserEmail` | [`String`](#string) | User email associated with the GPG key. |
+| <a id="gpgsignaturegpgkeyusername"></a>`gpgKeyUserName` | [`String`](#string) | User name associated with the GPG key. |
+| <a id="gpgsignatureproject"></a>`project` | [`Project`](#project) | Project of the associated commit. |
+| <a id="gpgsignatureuser"></a>`user` | [`UserCore`](#usercore) | User associated with the key. |
+| <a id="gpgsignatureverificationstatus"></a>`verificationStatus` | [`VerificationStatus`](#verificationstatus) | Indicates verification status of the associated key or certificate. |
+
 ### `GrafanaIntegration`
 
 #### Fields
@@ -13013,6 +13120,23 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupcontainerrepositoriesname"></a>`name` | [`String`](#string) | Filter the container repositories by their name. |
 | <a id="groupcontainerrepositoriessort"></a>`sort` | [`ContainerRepositorySort`](#containerrepositorysort) | Sort container repositories by this criteria. |
 
+##### `Group.contributions`
+
+Provides the aggregated contributions by users within the group and its subgroups.
+
+Returns [`ContributionAnalyticsContributionConnection`](#contributionanalyticscontributionconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="groupcontributionsfrom"></a>`from` | [`ISO8601Date!`](#iso8601date) | Start date of the reporting time range. |
+| <a id="groupcontributionsto"></a>`to` | [`ISO8601Date!`](#iso8601date) | End date of the reporting time range. The end date must be within 31 days after the start date. |
+
 ##### `Group.descendantGroups`
 
 List of descendant groups of this group.
@@ -13190,6 +13314,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="groupissuesmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
 | <a id="groupissuesmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="groupissuesnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
+| <a id="groupissuesor"></a>`or` | [`UnionedIssueFilterInput`](#unionedissuefilterinput) | List of arguments with inclusive OR. |
 | <a id="groupissuessearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="groupissuessort"></a>`sort` | [`IssueSort`](#issuesort) | Sort issues by this criteria. |
 | <a id="groupissuesstate"></a>`state` | [`IssuableState`](#issuablestate) | Current state of this issue. |
@@ -16854,6 +16979,7 @@ Returns [`Issue`](#issue).
 | <a id="projectissuemilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
 | <a id="projectissuemyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuenot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
+| <a id="projectissueor"></a>`or` | [`UnionedIssueFilterInput`](#unionedissuefilterinput) | List of arguments with inclusive OR. |
 | <a id="projectissuereleasetag"></a>`releaseTag` | [`[String!]`](#string) | Release tag associated with the issue's milestone. |
 | <a id="projectissuereleasetagwildcardid"></a>`releaseTagWildcardId` | [`ReleaseTagWildcardId`](#releasetagwildcardid) | Filter issues by release tag ID wildcard. |
 | <a id="projectissuesearch"></a>`search` | [`String`](#string) | Search query for title or description. |
@@ -16885,20 +17011,27 @@ Returns [`IssueStatusCountsType`](#issuestatuscountstype).
 | <a id="projectissuestatuscountscreatedbefore"></a>`createdBefore` | [`Time`](#time) | Issues created before this date. |
 | <a id="projectissuestatuscountscrmcontactid"></a>`crmContactId` | [`String`](#string) | ID of a contact assigned to the issues. |
 | <a id="projectissuestatuscountscrmorganizationid"></a>`crmOrganizationId` | [`String`](#string) | ID of an organization assigned to the issues. |
+| <a id="projectissuestatuscountsepicid"></a>`epicId` | [`String`](#string) | ID of an epic associated with the issues, "none" and "any" values are supported. |
+| <a id="projectissuestatuscountshealthstatusfilter"></a>`healthStatusFilter` | [`HealthStatusFilter`](#healthstatusfilter) | Health status of the issue, "none" and "any" values are supported. |
 | <a id="projectissuestatuscountsiid"></a>`iid` | [`String`](#string) | IID of the issue. For example, "1". |
 | <a id="projectissuestatuscountsiids"></a>`iids` | [`[String!]`](#string) | List of IIDs of issues. For example, `["1", "2"]`. |
 | <a id="projectissuestatuscountsin"></a>`in` | [`[IssuableSearchableField!]`](#issuablesearchablefield) | Specify the fields to perform the search in. Defaults to `[TITLE, DESCRIPTION]`. Requires the `search` argument.'. |
+| <a id="projectissuestatuscountsincludesubepics"></a>`includeSubepics` | [`Boolean`](#boolean) | Whether to include subepics when filtering issues by epicId. |
+| <a id="projectissuestatuscountsiterationid"></a>`iterationId` | [`[ID]`](#id) | List of iteration Global IDs applied to the issue. |
+| <a id="projectissuestatuscountsiterationwildcardid"></a>`iterationWildcardId` | [`IterationWildcardId`](#iterationwildcardid) | Filter by iteration ID wildcard. |
 | <a id="projectissuestatuscountslabelname"></a>`labelName` | [`[String]`](#string) | Labels applied to this issue. |
 | <a id="projectissuestatuscountsmilestonetitle"></a>`milestoneTitle` | [`[String]`](#string) | Milestone applied to this issue. |
 | <a id="projectissuestatuscountsmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
 | <a id="projectissuestatuscountsmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuestatuscountsnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
+| <a id="projectissuestatuscountsor"></a>`or` | [`UnionedIssueFilterInput`](#unionedissuefilterinput) | List of arguments with inclusive OR. |
 | <a id="projectissuestatuscountsreleasetag"></a>`releaseTag` | [`[String!]`](#string) | Release tag associated with the issue's milestone. |
 | <a id="projectissuestatuscountsreleasetagwildcardid"></a>`releaseTagWildcardId` | [`ReleaseTagWildcardId`](#releasetagwildcardid) | Filter issues by release tag ID wildcard. |
 | <a id="projectissuestatuscountssearch"></a>`search` | [`String`](#string) | Search query for title or description. |
 | <a id="projectissuestatuscountstypes"></a>`types` | [`[IssueType!]`](#issuetype) | Filter issues by the given issue types. |
 | <a id="projectissuestatuscountsupdatedafter"></a>`updatedAfter` | [`Time`](#time) | Issues updated after this date. |
 | <a id="projectissuestatuscountsupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Issues updated before this date. |
+| <a id="projectissuestatuscountsweight"></a>`weight` | [`String`](#string) | Weight applied to the issue, "none" and "any" values are supported. |
 
 ##### `Project.issues`
 
@@ -16939,6 +17072,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectissuesmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter issues by milestone ID wildcard. |
 | <a id="projectissuesmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="projectissuesnot"></a>`not` | [`NegatedIssueFilterInput`](#negatedissuefilterinput) | Negated arguments. |
+| <a id="projectissuesor"></a>`or` | [`UnionedIssueFilterInput`](#unionedissuefilterinput) | List of arguments with inclusive OR. |
 | <a id="projectissuesreleasetag"></a>`releaseTag` | [`[String!]`](#string) | Release tag associated with the issue's milestone. |
 | <a id="projectissuesreleasetagwildcardid"></a>`releaseTagWildcardId` | [`ReleaseTagWildcardId`](#releasetagwildcardid) | Filter issues by release tag ID wildcard. |
 | <a id="projectissuessearch"></a>`search` | [`String`](#string) | Search query for title or description. |
@@ -18903,6 +19037,17 @@ Explains why we could not generate a timebox report.
 | <a id="timeboxreporterrorcode"></a>`code` | [`TimeboxReportErrorReason`](#timeboxreporterrorreason) | Machine readable code, categorizing the error. |
 | <a id="timeboxreporterrormessage"></a>`message` | [`String`](#string) | Human readable message explaining what happened. |
 
+### `TimelineEventTagType`
+
+Describes a tag on an incident management timeline event.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="timelineeventtagtypeid"></a>`id` | [`IncidentManagementTimelineEventTagID!`](#incidentmanagementtimelineeventtagid) | ID of the timeline event tag. |
+| <a id="timelineeventtagtypename"></a>`name` | [`String!`](#string) | Name of the timeline event tag. |
+
 ### `TimelineEventType`
 
 Describes an incident management timeline event.
@@ -18921,6 +19066,7 @@ Describes an incident management timeline event.
 | <a id="timelineeventtypenotehtml"></a>`noteHtml` | [`String`](#string) | HTML note of the timeline event. |
 | <a id="timelineeventtypeoccurredat"></a>`occurredAt` | [`Time!`](#time) | Timestamp when the event occurred. |
 | <a id="timelineeventtypepromotedfromnote"></a>`promotedFromNote` | [`Note`](#note) | Note from which the timeline event was created. |
+| <a id="timelineeventtypetimelineeventtags"></a>`timelineEventTags` | [`TimelineEventTagTypeConnection`](#timelineeventtagtypeconnection) | Tags for the incident timeline event. (see [Connections](#connections)) |
 | <a id="timelineeventtypeupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp when the event updated. |
 | <a id="timelineeventtypeupdatedbyuser"></a>`updatedByUser` | [`UserCore`](#usercore) | User that updated the timeline event. |
 
@@ -20078,6 +20224,53 @@ Represents a weight widget.
 | <a id="workitemwidgetweighttype"></a>`type` | [`WorkItemWidgetType`](#workitemwidgettype) | Widget type. |
 | <a id="workitemwidgetweightweight"></a>`weight` | [`Int`](#int) | Weight of the work item. |
 
+### `X509Certificate`
+
+Represents an X.509 certificate.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="x509certificatecertificatestatus"></a>`certificateStatus` | [`String!`](#string) | Indicates if the certificate is good or revoked. |
+| <a id="x509certificatecreatedat"></a>`createdAt` | [`Time!`](#time) | Timestamp of when the certificate was saved. |
+| <a id="x509certificateemail"></a>`email` | [`String!`](#string) | Email associated with the cerificate. |
+| <a id="x509certificateid"></a>`id` | [`ID!`](#id) | ID of the certificate. |
+| <a id="x509certificateserialnumber"></a>`serialNumber` | [`String!`](#string) | Serial number of the certificate. |
+| <a id="x509certificatesubject"></a>`subject` | [`String!`](#string) | Subject of the certificate. |
+| <a id="x509certificatesubjectkeyidentifier"></a>`subjectKeyIdentifier` | [`String!`](#string) | Subject key identifier of the certificate. |
+| <a id="x509certificateupdatedat"></a>`updatedAt` | [`Time!`](#time) | Timestamp of when the certificate was last updated. |
+| <a id="x509certificatex509issuer"></a>`x509Issuer` | [`X509Issuer!`](#x509issuer) | Issuer of the certificate. |
+
+### `X509Issuer`
+
+Issuer of an X.509 certificate.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="x509issuercreatedat"></a>`createdAt` | [`Time`](#time) | Timestamp of when the issuer was created. |
+| <a id="x509issuercrlurl"></a>`crlUrl` | [`String`](#string) | Certificate revokation list of the issuer. |
+| <a id="x509issuerid"></a>`id` | [`ID`](#id) | ID of the issuer. |
+| <a id="x509issuersubject"></a>`subject` | [`String`](#string) | Subject of the issuer. |
+| <a id="x509issuersubjectkeyidentifier"></a>`subjectKeyIdentifier` | [`String`](#string) | Subject key identifier of the issuer. |
+| <a id="x509issuerupdatedat"></a>`updatedAt` | [`Time`](#time) | Timestamp of when the issuer was last updated. |
+
+### `X509Signature`
+
+X.509 signature for a signed commit.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="x509signaturecommitsha"></a>`commitSha` | [`String`](#string) | SHA of the associated commit. |
+| <a id="x509signatureproject"></a>`project` | [`Project`](#project) | Project of the associated commit. |
+| <a id="x509signatureuser"></a>`user` | [`UserCore`](#usercore) | User associated with the key. |
+| <a id="x509signatureverificationstatus"></a>`verificationStatus` | [`VerificationStatus`](#verificationstatus) | Indicates verification status of the associated key or certificate. |
+| <a id="x509signaturex509certificate"></a>`x509Certificate` | [`X509Certificate`](#x509certificate) | Certificate used for the signature. |
+
 ## Enumeration types
 
 Also called _Enums_, enumeration types are a special kind of scalar that
@@ -20534,6 +20727,7 @@ Status of a container repository.
 | Value | Description |
 | ----- | ----------- |
 | <a id="containerrepositorystatusdelete_failed"></a>`DELETE_FAILED` | Delete Failed status. |
+| <a id="containerrepositorystatusdelete_ongoing"></a>`DELETE_ONGOING` | Delete Ongoing status. |
 | <a id="containerrepositorystatusdelete_scheduled"></a>`DELETE_SCHEDULED` | Delete Scheduled status. |
 
 ### `ContainerRepositoryTagSort`
@@ -21935,6 +22129,20 @@ Possible states of a user.
 | <a id="verificationstateenumstarted"></a>`STARTED` | Verification process is in progress. |
 | <a id="verificationstateenumsucceeded"></a>`SUCCEEDED` | Verification process finished successfully. |
 
+### `VerificationStatus`
+
+Verification status of a GPG or X.509 signature for a commit.
+
+| Value | Description |
+| ----- | ----------- |
+| <a id="verificationstatusmultiple_signatures"></a>`MULTIPLE_SIGNATURES` | multiple_signatures verification status. |
+| <a id="verificationstatusother_user"></a>`OTHER_USER` | other_user verification status. |
+| <a id="verificationstatussame_user_different_email"></a>`SAME_USER_DIFFERENT_EMAIL` | same_user_different_email verification status. |
+| <a id="verificationstatusunknown_key"></a>`UNKNOWN_KEY` | unknown_key verification status. |
+| <a id="verificationstatusunverified"></a>`UNVERIFIED` | unverified verification status. |
+| <a id="verificationstatusunverified_key"></a>`UNVERIFIED_KEY` | unverified_key verification status. |
+| <a id="verificationstatusverified"></a>`VERIFIED` | verified verification status. |
+
 ### `VisibilityLevelsEnum`
 
 | Value | Description |
@@ -22451,6 +22659,12 @@ A `IncidentManagementTimelineEventID` is a global ID. It is encoded as a string.
 
 An example `IncidentManagementTimelineEventID` is: `"gid://gitlab/IncidentManagement::TimelineEvent/1"`.
 
+### `IncidentManagementTimelineEventTagID`
+
+A `IncidentManagementTimelineEventTagID` is a global ID. It is encoded as a string.
+
+An example `IncidentManagementTimelineEventTagID` is: `"gid://gitlab/IncidentManagement::TimelineEventTag/1"`.
+
 ### `Int`
 
 Represents non-fractional signed whole numeric values. Int can represent values between -(2^31) and 2^31 - 1.
@@ -22902,6 +23116,23 @@ Implementations:
 | <a id="civariableraw"></a>`raw` | [`Boolean`](#boolean) | Indicates whether the variable is raw. |
 | <a id="civariablevalue"></a>`value` | [`String`](#string) | Value of the variable. |
 | <a id="civariablevariabletype"></a>`variableType` | [`CiVariableType`](#civariabletype) | Type of the variable. |
+
+#### `CommitSignature`
+
+Represents signing information for a commit.
+
+Implementations:
+
+- [`GpgSignature`](#gpgsignature)
+- [`X509Signature`](#x509signature)
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="commitsignaturecommitsha"></a>`commitSha` | [`String`](#string) | SHA of the associated commit. |
+| <a id="commitsignatureproject"></a>`project` | [`Project`](#project) | Project of the associated commit. |
+| <a id="commitsignatureverificationstatus"></a>`verificationStatus` | [`VerificationStatus`](#verificationstatus) | Indicates verification status of the associated key or certificate. |
 
 #### `CurrentUserTodos`
 
@@ -23446,6 +23677,7 @@ Field that are available while modifying the custom mapping attributes for an HT
 | <a id="boardissueinputmilestonewildcardid"></a>`milestoneWildcardId` | [`MilestoneWildcardId`](#milestonewildcardid) | Filter by milestone ID wildcard. |
 | <a id="boardissueinputmyreactionemoji"></a>`myReactionEmoji` | [`String`](#string) | Filter by reaction emoji applied by the current user. Wildcard values "NONE" and "ANY" are supported. |
 | <a id="boardissueinputnot"></a>`not` | [`NegatedBoardIssueInput`](#negatedboardissueinput) | List of negated arguments. |
+| <a id="boardissueinputor"></a>`or` | [`UnionedIssueFilterInput`](#unionedissuefilterinput) | List of arguments with inclusive OR. |
 | <a id="boardissueinputreleasetag"></a>`releaseTag` | [`String`](#string) | Filter by release tag. |
 | <a id="boardissueinputsearch"></a>`search` | [`String`](#string) | Search query for issue title or description. |
 | <a id="boardissueinputtypes"></a>`types` | [`[IssueType!]`](#issuetype) | Filter by the given issue types. |
@@ -23849,6 +24081,15 @@ A time-frame defined as a closed inclusive range of two dates.
 | ---- | ---- | ----------- |
 | <a id="timeframeend"></a>`end` | [`Date!`](#date) | End of the range. |
 | <a id="timeframestart"></a>`start` | [`Date!`](#date) | Start of the range. |
+
+### `UnionedIssueFilterInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="unionedissuefilterinputassigneeusernames"></a>`assigneeUsernames` | [`[String!]`](#string) | Filters issues that are assigned to at least one of the given users. |
+| <a id="unionedissuefilterinputauthorusernames"></a>`authorUsernames` | [`[String!]`](#string) | Filters issues that are authored by one of the given users. |
 
 ### `UpdateDiffImagePositionInput`
 

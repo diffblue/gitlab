@@ -379,7 +379,7 @@ start. Jobs in the current stage are not stopped and continue to run.
 
 - If a job does not specify a [`stage`](#stage), the job is assigned the `test` stage.
 - If a stage is defined but no jobs use it, the stage is not visible in the pipeline,
-  which can help [compliance pipeline configurations](../../user/group/manage.md#configure-a-compliance-pipeline):
+  which can help [compliance pipeline configurations](../../user/group/compliance_frameworks.md#configure-a-compliance-pipeline):
   - Stages can be defined in the compliance configuration but remain hidden if not used.
   - The defined stages become visible when developers use them in job definitions.
 
@@ -1003,7 +1003,7 @@ rspec:
 
 - Combining reports in parent pipelines using [artifacts from child pipelines](#needspipelinejob) is
   not supported. Track progress on adding support in [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/215725).
-- To be able to browse the report output files, include the [`artifacts:paths`](#artifactspaths) keyword. Please note that this will upload and store the artifact twice.
+- To be able to browse the report output files, include the [`artifacts:paths`](#artifactspaths) keyword. This will upload and store the artifact twice.
 - The test reports are collected regardless of the job results (success or failure).
   You can use [`artifacts:expire_in`](#artifactsexpire_in) to set up an expiration
   date for artifacts reports.

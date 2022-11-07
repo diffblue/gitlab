@@ -78,15 +78,16 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'sends an email to active admins', :mailer do
-        expect(Notify).to receive(:user_auto_banned_email)
-          .with(admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
-          .once
-          .and_return(mail_instance)
+        opts = {
+          max_project_downloads: limit,
+          within_seconds: time_period_in_seconds,
+          auto_ban_enabled: true
+        }
 
+        expect(Notify).to receive(:user_auto_banned_email).with(admin.id, user.id, opts).once.and_return(mail_instance)
         expect(mail_instance).to receive(:deliver_later)
 
-        expect(Notify).not_to receive(:user_auto_banned_email)
-          .with(inactive_admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
+        expect(Notify).not_to receive(:user_auto_banned_email).with(inactive_admin.id, user.id, opts)
 
         execute
       end
@@ -144,11 +145,12 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'sends an email to admins', :mailer do
-        expect(Notify).to receive(:user_auto_banned_email)
-          .with(admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
-          .once
-          .and_return(mail_instance)
-
+        opts = {
+          max_project_downloads: limit,
+          within_seconds: time_period_in_seconds,
+          auto_ban_enabled: false
+        }
+        expect(Notify).to receive(:user_auto_banned_email).with(admin.id, user.id, opts).once.and_return(mail_instance)
         expect(mail_instance).to receive(:deliver_later)
 
         execute
@@ -188,11 +190,12 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'sends an email to admins', :mailer do
-        expect(Notify).to receive(:user_auto_banned_email)
-          .with(admin.id, user.id, max_project_downloads: limit, within_seconds: time_period_in_seconds)
-          .once
-          .and_return(mail_instance)
-
+        opts = {
+          max_project_downloads: limit,
+          within_seconds: time_period_in_seconds,
+          auto_ban_enabled: true
+        }
+        expect(Notify).to receive(:user_auto_banned_email).with(admin.id, user.id, opts).once.and_return(mail_instance)
         expect(mail_instance).to receive(:deliver_later)
 
         execute

@@ -30,6 +30,7 @@ RSpec.describe 'Issue Boards', :js do
   let(:card2) { find('.board:nth-child(2)').find('.board-card:nth-child(1)') }
 
   before do
+    stub_feature_flags(apollo_boards: false)
     stub_licensed_features(multiple_issue_assignees: true)
 
     project.add_maintainer(user)

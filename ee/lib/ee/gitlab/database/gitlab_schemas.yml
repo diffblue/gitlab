@@ -11,6 +11,7 @@ package_file_registry: :gitlab_geo
 pages_deployment_registry: :gitlab_geo
 pipeline_artifact_registry: :gitlab_geo
 project_registry: :gitlab_geo
+project_wiki_repository_registry: :gitlab_geo
 secondary_usage_data: :gitlab_geo
 snippet_repository_registry: :gitlab_geo
 terraform_state_version_registry: :gitlab_geo

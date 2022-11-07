@@ -35,7 +35,7 @@ Don't use backticks.
 
 ## 2FA, two-factor authentication
 
-Spell out **two-factor authentication** in sentence case for the first use and in section headings, and **2FA**
+Spell out **two-factor authentication** in sentence case for the first use and in topic titles, and **2FA**
 thereafter. If the first word in a sentence, do not capitalize `factor` or `authentication`. For example:
 
 - Two-factor authentication (2FA) helps secure your account. Set up 2FA when you first log in.
@@ -1154,6 +1154,14 @@ For example:
 - For a list of quick actions, type `/`.
 
 See also [**enter**](#enter).
+
+## units of measurement
+
+Use a space between the number and the unit of measurement. For example, **128 GB**.
+([Vale](../testing.md#vale) rule: [`Units.yml`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/doc/.vale/gitlab/Units.yml))
+
+For other guidance, follow
+[the Microsoft style guidelines](https://learn.microsoft.com/en-us/style-guide/a-z-word-list-term-collections/term-collections/bits-bytes-terms).
 
 ## update
 

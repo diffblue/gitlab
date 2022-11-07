@@ -42,7 +42,7 @@ module GroupSaml
       def error
         ServiceResponse.error(message: 'Failed to create SamlGroupLink',
                               payload: { error: saml_group_link.errors.full_messages.join(",") },
-                              http_status: 400 )
+                              http_status: 400)
       end
 
       def create_audit_event

@@ -82,10 +82,6 @@ export default {
     MrWidgetAutoMergeFailed: AutoMergeFailed,
     MrWidgetRebase: RebaseState,
     SourceBranchRemovalStatus,
-    GroupedCodequalityReportsApp: () =>
-      import('../reports/codequality_report/grouped_codequality_reports_app.vue'),
-    GroupedTestReportsApp: () =>
-      import('../reports/grouped_test_report/grouped_test_reports_app.vue'),
     MrWidgetApprovals,
     SecurityReportsApp: () => import('~/vue_shared/security_reports/security_reports_app.vue'),
     MergeChecksFailed: () => import('./components/states/merge_checks_failed.vue'),
@@ -185,9 +181,6 @@ export default {
     shouldRenderTestReport() {
       return Boolean(this.mr?.testResultsPath);
     },
-    shouldRenderRefactoredTestReport() {
-      return window.gon?.features?.refactorMrWidgetTestSummary;
-    },
     mergeError() {
       let { mergeError } = this.mr;
 
@@ -217,9 +210,6 @@ export default {
     },
     shouldShowSecurityExtension() {
       return window.gon?.features?.refactorSecurityExtension;
-    },
-    shouldShowCodeQualityExtension() {
-      return window.gon?.features?.refactorCodeQualityExtension;
     },
     shouldShowMergeDetails() {
       if (this.mr.state === 'readyToMerge') return true;
@@ -519,12 +509,12 @@ export default {
       }
     },
     registerCodeQualityExtension() {
-      if (this.shouldRenderCodeQuality && this.shouldShowCodeQualityExtension) {
+      if (this.shouldRenderCodeQuality) {
         registerExtension(codeQualityExtension);
       }
     },
     registerTestReportExtension() {
-      if (this.shouldRenderTestReport && this.shouldRenderRefactoredTestReport) {
+      if (this.shouldRenderTestReport) {
         registerExtension(testReportExtension);
       }
     },
@@ -592,14 +582,6 @@ export default {
 
       <widget-container v-if="mr" :mr="mr" />
 
-      <grouped-codequality-reports-app
-        v-if="shouldRenderCodeQuality && !shouldShowCodeQualityExtension"
-        :head-blob-path="mr.headBlobPath"
-        :base-blob-path="mr.baseBlobPath"
-        :codequality-reports-path="mr.codequalityReportsPath"
-        :codequality-help-path="mr.codequalityHelpPath"
-      />
-
       <security-reports-app
         v-if="shouldRenderSecurityReport && !shouldShowSecurityExtension"
         :pipeline-id="mr.pipeline.id"
@@ -607,14 +589,6 @@ export default {
         :security-reports-docs-path="mr.securityReportsDocsPath"
         :target-project-full-path="mr.targetProjectFullPath"
         :mr-iid="mr.iid"
-      />
-
-      <grouped-test-reports-app
-        v-if="shouldRenderTestReport && !shouldRenderRefactoredTestReport"
-        class="js-reports-container"
-        :endpoint="mr.testResultsPath"
-        :head-blob-path="mr.headBlobPath"
-        :pipeline-path="mr.pipeline.path"
       />
 
       <div class="mr-widget-section" data-qa-selector="mr_widget_content">

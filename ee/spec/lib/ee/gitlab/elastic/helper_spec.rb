@@ -630,4 +630,23 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
       expect(helper.klass_to_alias_name(klass: Repository)).to eq(Repository.__elasticsearch__.index_name)
     end
   end
+
+  describe '#pending_migrations?' do
+    it 'returns true when there are pending migrations' do
+      allow(::Elastic::DataMigrationService).to receive(:pending_migrations).and_return([:foo, :bar])
+      expect(helper).to be_pending_migrations
+    end
+
+    it 'returns false when there are no pending migrations' do
+      allow(::Elastic::DataMigrationService).to receive(:pending_migrations).and_return([])
+      expect(helper).not_to be_pending_migrations
+    end
+  end
+
+  describe '#indexing_paused?' do
+    it 'delegates to Gitlab::CurrentSettings.elasticsearch_pause_indexing?' do
+      allow(::Gitlab::CurrentSettings).to receive(:elasticsearch_pause_indexing?).and_return(:stubbed_value)
+      expect(helper.indexing_paused?).to eq(::Gitlab::CurrentSettings.elasticsearch_pause_indexing?)
+    end
+  end
 end

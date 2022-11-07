@@ -8,6 +8,9 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
   let_it_be(:project) { create(:project) }
   let_it_be_with_refind(:incident) { create(:incident, project: project) }
   let_it_be(:comment) { create(:note, project: project, noteable: incident) }
+  let_it_be(:timeline_event_tag) do
+    create(:incident_management_timeline_event_tag, name: 'Test tag 1', project: project)
+  end
 
   let(:args) do
     {
@@ -134,6 +137,25 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
       end
     end
 
+    context 'when timeline event tag names are passed' do
+      let(:args) do
+        {
+          note: 'note',
+          occurred_at: Time.current,
+          action: 'new comment',
+          promoted_from_note: comment,
+          timeline_event_tag_names: ['Test tag 1']
+        }
+      end
+
+      it_behaves_like 'success response'
+
+      it 'matches the tag name' do
+        result = execute.payload[:timeline_event]
+        expect(result.timeline_event_tags.first).to eq(timeline_event_tag)
+      end
+    end
+
     context 'with editable param' do
       let(:args) do
         {
@@ -160,6 +182,38 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
 
     it 'successfully creates a database record', :aggregate_failures do
       expect { execute }.to change { ::IncidentManagement::TimelineEvent.count }.by(1)
+    end
+
+    context 'when note is more than 280 characters long' do
+      let(:args) do
+        {
+          note: 'a' * 281,
+          occurred_at: Time.current,
+          action: 'new comment',
+          promoted_from_note: comment,
+          auto_created: auto_created
+        }
+      end
+
+      let(:auto_created) { false }
+
+      context 'when was not promoted from note' do
+        let(:comment) { nil }
+
+        context 'when auto_created is true' do
+          let(:auto_created) { true }
+
+          it_behaves_like 'success response'
+        end
+
+        context 'when auto_created is false' do
+          it_behaves_like 'error response', 'Timeline text is too long (maximum is 280 characters)'
+        end
+      end
+
+      context 'when promoted from note' do
+        it_behaves_like 'success response'
+      end
     end
   end
 
@@ -234,7 +288,7 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
 
       let_it_be(:severity) { create(:issuable_severity, severity: :critical, issue: incident) }
 
-      let(:expected_note) { "@#{current_user.username} changed the incident severity to **Critical**" }
+      let(:expected_note) { "@#{current_user.username} changed the incident severity to **Critical - S1**" }
       let(:expected_action) { 'severity' }
 
       it_behaves_like 'successfully created timeline event'

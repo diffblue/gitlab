@@ -14,6 +14,7 @@ RSpec.describe 'create epic in board', :js do
 
   context 'new epics in board list' do
     before do
+      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(epics: true)
       group.add_maintainer(user)
       sign_in(user)

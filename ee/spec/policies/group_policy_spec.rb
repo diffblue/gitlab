@@ -631,6 +631,14 @@ RSpec.describe GroupPolicy do
           it "allows access because we haven't yet restricted all use cases" do
             is_expected.to be_allowed(:read_group)
           end
+
+          context 'when the current user is a deploy token' do
+            let(:current_user) { create(:deploy_token, :group, groups: [group], read_package_registry: true) }
+
+            it 'allows access without a SAML session' do
+              is_expected.to allow_action(:read_group)
+            end
+          end
         end
       end
 
@@ -639,35 +647,47 @@ RSpec.describe GroupPolicy do
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
 
-        around do |example|
-          Gitlab::Session.with_session({}) do
-            example.run
-          end
-        end
-
-        it 'allows access when the user has no Group SAML identity' do
-          is_expected.to be_allowed(:read_group)
-        end
-
-        context 'when the user has a Group SAML identity' do
-          before do
-            create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+        context 'when the session has been set globally' do
+          around do |example|
+            Gitlab::Session.with_session({}) do
+              example.run
+            end
           end
 
-          it 'prevents access without a SAML session' do
-            is_expected.not_to be_allowed(:read_group)
-          end
-
-          it 'allows access with a SAML session' do
-            Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
+          it 'allows access when the user has no Group SAML identity' do
             is_expected.to be_allowed(:read_group)
           end
 
-          it 'allows access when the feature flag is disabled' do
-            stub_feature_flags(transparent_sso_enforcement: false)
+          context 'when the user has a Group SAML identity' do
+            before do
+              create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+            end
 
-            is_expected.to be_allowed(:read_group)
+            it 'prevents access without a SAML session' do
+              is_expected.not_to be_allowed(:read_group)
+            end
+
+            it 'allows access with a SAML session' do
+              Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+              is_expected.to be_allowed(:read_group)
+            end
+
+            it 'allows access when the feature flag is disabled' do
+              stub_feature_flags(transparent_sso_enforcement: false)
+
+              is_expected.to be_allowed(:read_group)
+            end
+          end
+        end
+
+        context 'when there is no global session or sso state' do
+          context 'when the current user is a deploy token' do
+            let(:current_user) { create(:deploy_token, :group, groups: [group], read_package_registry: true) }
+
+            it 'allows access without a SAML session' do
+              is_expected.to allow_action(:read_group)
+            end
           end
         end
       end

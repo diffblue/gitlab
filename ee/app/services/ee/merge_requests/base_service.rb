@@ -65,10 +65,12 @@ module EE
         end.compact
 
         merge_request.approvals.where(user_id: match_ids).delete_all # rubocop:disable CodeReuse/ActiveRecord
+        trigger_merge_request_merge_status_updated(merge_request)
       end
 
       def delete_approvals(merge_request)
         merge_request.approvals.delete_all
+        trigger_merge_request_merge_status_updated(merge_request)
       end
 
       def all_approvers(merge_request)

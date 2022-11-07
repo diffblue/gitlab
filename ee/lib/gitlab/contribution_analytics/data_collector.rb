@@ -7,11 +7,12 @@ module Gitlab
     class DataCollector
       EVENT_TYPES = %i[push issues_created issues_closed merge_requests_closed merge_requests_created merge_requests_merged merge_requests_approved total_events].freeze
 
-      attr_reader :group, :from
+      attr_reader :group, :from, :to
 
-      def initialize(group:, from: 1.week.ago.to_date)
+      def initialize(group:, from: 1.week.ago.to_date, to: Date.current)
         @group = group
-        @from = from
+        @from = from.beginning_of_day
+        @to = to.end_of_day
       end
 
       def push_by_author_count
@@ -138,7 +139,10 @@ module Gitlab
             .select('source_id AS id'))
         cte_condition = 'project_id IN (SELECT id FROM project_ids)'
 
-        events_from_date = ::Event.where(cte_condition).where(Event.arel_table[:created_at].gteq(from))
+        events_from_date = ::Event
+          .where(cte_condition)
+          .where(Event.arel_table[:created_at].gteq(from))
+          .where(Event.arel_table[:created_at].lteq(to))
 
         ::Event.with(cte.to_arel).from_union(
           [
@@ -176,7 +180,7 @@ module Gitlab
       end
 
       def cache_key
-        [group, from]
+        [group, from, to]
       end
     end
   end

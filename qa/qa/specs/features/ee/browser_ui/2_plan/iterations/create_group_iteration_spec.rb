@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', feature_flag: { name: 'iteration_cadences', scope: :group } do
+  RSpec.describe 'Plan' do
     describe 'Group Iterations', product_group: :project_management do
       include Support::Dates
 
@@ -18,14 +18,6 @@ module QA
       end
 
       before do
-        Runtime::Feature.enable(:iteration_cadences, group: iteration_group)
-        # TODO: this sleep can be removed when the `Runtime::Feature.enable` method call is removed
-        # Wait for the application settings cache to update with iteration_cadences feature flag setting
-        # as per this issue https://gitlab.com/gitlab-org/gitlab/-/issues/36663
-        # We cannot check the UI for the changes because they are sporadically available at first
-        # as described in this issue https://gitlab.com/gitlab-org/quality/testcases/-/issues/113#note_300647725
-        sleep(60)
-
         Flow::Login.sign_in
       end
 

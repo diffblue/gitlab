@@ -38,7 +38,7 @@ All identified secrets are reported in the:
 
 - Merge request widget
 - Pipelines' **Security** tab
-- [Security Dashboard](../security_dashboard/index.md)
+- [Vulnerability Report](../vulnerability_report/index.md)
 
 ![Secret Detection in merge request widget](img/secret_detection_v13_2.png)
 
@@ -61,7 +61,7 @@ Different features are available in different [GitLab tiers](https://about.gitla
 | Download [JSON Report](../sast/index.md#reports-json-format)     | **{check-circle}** Yes | **{check-circle}** Yes |
 | See new findings in the merge request widget                     | **{dotted-circle}** No | **{check-circle}** Yes |
 | View identified secrets in the pipelines' **Security** tab       | **{dotted-circle}** No | **{check-circle}** Yes |
-| [Manage vulnerabilities](../vulnerabilities/index.md)            | **{dotted-circle}** No | **{check-circle}** Yes |
+| [Manage vulnerabilities](../vulnerability_report/index.md)       | **{dotted-circle}** No | **{check-circle}** Yes |
 | [Access the Security Dashboard](../security_dashboard/index.md)  | **{dotted-circle}** No | **{check-circle}** Yes |
 | [Customize Secret Detection rulesets](#custom-rulesets)          | **{dotted-circle}** No | **{check-circle}** Yes |
 
@@ -381,7 +381,7 @@ Prerequisites:
    [local Docker container registry](../../packages/container_registry/index.md):
 
    ```plaintext
-   registry.gitlab.com/security-products/secret-detection:3
+   registry.gitlab.com/security-products/secrets:4
    ```
 
    The Secret Detection analyzer's image is [periodically updated](../index.md#vulnerability-scanner-maintenance)

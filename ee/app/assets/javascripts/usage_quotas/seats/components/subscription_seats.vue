@@ -26,7 +26,7 @@ import {
   SORT_OPTIONS,
 } from 'ee/usage_quotas/seats/constants';
 import { s__, __, sprintf, n__ } from '~/locale';
-import FilterSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
+import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
 import SubscriptionUpgradeInfoCard from './subscription_upgrade_info_card.vue';
@@ -50,7 +50,7 @@ export default {
     GlTable,
     RemoveBillableMemberModal,
     SubscriptionSeatDetails,
-    FilterSortContainerRoot,
+    SearchAndSortBar,
     StatisticsCard,
     StatisticsSeatsCard,
     SubscriptionUpgradeInfoCard,
@@ -180,15 +180,8 @@ export default {
       'setCurrentPage',
       'setSortOption',
     ]),
-    applyFilter(searchTerms) {
-      const searchQuery = searchTerms.reduce((terms, searchTerm) => {
-        if (searchTerm.type !== 'filtered-search-term') {
-          return '';
-        }
-
-        return `${terms} ${searchTerm.value.data}`;
-      }, '');
-      this.setSearchQuery(searchQuery.trim() || null);
+    applyFilter(searchTerm) {
+      this.setSearchQuery(searchTerm);
     },
     displayRemoveMemberModal(user) {
       if (user.removable) {
@@ -305,13 +298,11 @@ export default {
     </div>
 
     <div class="gl-bg-gray-10 gl-p-5 gl-display-flex">
-      <filter-sort-container-root
+      <search-and-sort-bar
         :namespace="namespaceId"
-        :tokens="[] /* eslint-disable-line @gitlab/vue-no-new-non-primitive-in-template */"
         :search-input-placeholder="$options.i18n.filterUsersPlaceholder"
         :sort-options="$options.sortOptions"
         initial-sort-by="last_activity_on_desc"
-        class="gl-flex-grow-1"
         @onFilter="applyFilter"
         @onSort="setSortOption"
       />

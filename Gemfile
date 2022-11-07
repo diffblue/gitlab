@@ -175,8 +175,7 @@ gem 'typhoeus', '~> 1.4.0' # Used with Elasticsearch to support http keep-alive 
 # Markdown and HTML processing
 gem 'html-pipeline', '~> 2.14.3'
 gem 'deckar01-task_list', '2.3.2'
-gem 'gitlab-markup', '~> 1.8.0'
-gem 'github-markup', '~> 1.7.0', require: 'github/markup'
+gem 'gitlab-markup', '~> 1.8.0', require: 'github/markup'
 gem 'commonmarker', '~> 0.23.6'
 gem 'kramdown', '~> 2.3.1'
 gem 'RedCloth', '~> 4.3.2'
@@ -333,7 +332,7 @@ gem 'sentry-sidekiq', '~> 5.1.1'
 
 # PostgreSQL query parsing
 #
-gem 'pg_query', '~> 2.1.4'
+gem 'pg_query', '~> 2.2'
 
 gem 'premailer-rails', '~> 1.10.3'
 
@@ -363,7 +362,7 @@ gem 'prometheus-client-mmap', '~> 0.16', require: 'prometheus/client'
 gem 'warning', '~> 1.3.0'
 
 group :development do
-  gem 'lefthook', '~> 1.1.3', require: false
+  gem 'lefthook', '~> 1.1.4', require: false
   gem 'rubocop'
   gem 'solargraph', '~> 0.47.2', require: false
 

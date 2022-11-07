@@ -318,6 +318,7 @@ class ApplicationSetting < ApplicationRecord
                             less_than_or_equal_to: Commit::MAX_DIFF_LINES_SETTING_UPPER_BOUND }
 
   validates :user_default_internal_regex, js_regex: true, allow_nil: true
+  validates :default_preferred_language, presence: true, inclusion: { in: Gitlab::I18n.available_locales }
 
   validates :personal_access_token_prefix,
             format: { with: %r{\A[a-zA-Z0-9_+=/@:.-]+\z},
@@ -637,14 +638,6 @@ class ApplicationSetting < ApplicationRecord
 
   validates :inactive_projects_send_warning_email_after_months,
             numericality: { only_integer: true, greater_than: 0, less_than: :inactive_projects_delete_after_months }
-
-  validates :cube_api_base_url,
-            addressable_url: { allow_localhost: true, allow_local_network: false },
-            allow_blank: true
-
-  validates :product_analytics_enabled,
-            presence: true,
-            allow_blank: true
 
   attr_encrypted :asset_proxy_secret_key,
                  mode: :per_attribute_iv,

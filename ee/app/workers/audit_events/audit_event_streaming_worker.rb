@@ -24,7 +24,13 @@ module AuditEvents
       return if group.nil? # Do nothing if the event can't be resolved to a single group.
       return unless group.licensed_feature_available?(:external_audit_events)
 
+      filter_audit_event_enabled = Feature.enabled?('allow_audit_event_type_filtering', group)
+
       group.external_audit_event_destinations.each do |destination|
+        if filter_audit_event_enabled && !allowed_to_stream?(destination, audit_operation)
+          next
+        end
+
         headers = destination.headers_hash
         headers[EVENT_TYPE_HEADER_KEY] = audit_operation if audit_operation.present?
 
@@ -38,6 +44,15 @@ module AuditEvents
     end
 
     private
+
+    # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.
+    # Epic: https://gitlab.com/groups/gitlab-org/-/epics/8497
+    def allowed_to_stream?(destination, audit_operation)
+      return true unless audit_operation.present?
+      return true unless destination.event_type_filters.exists?
+
+      destination.event_type_filters.audit_event_type_in(audit_operation).exists?
+    end
 
     def request_body(audit_event, audit_operation)
       body = audit_event.as_json

@@ -145,6 +145,17 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer do
           end
         end
       end
+
+      context 'when user is a deploy token' do
+        it 'allows access' do
+          deploy_token = create(:deploy_token)
+
+          # Deploy Tokens are considered sessionless
+          Gitlab::Session.with_session(nil) do
+            expect(described_class).not_to be_group_access_restricted(root_group, user: deploy_token)
+          end
+        end
+      end
     end
 
     context 'when SSO is enabled but not enforced' do

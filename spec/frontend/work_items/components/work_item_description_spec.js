@@ -9,13 +9,16 @@ import { updateDraft } from '~/lib/utils/autosave';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import MarkdownField from '~/vue_shared/components/markdown/field.vue';
 import WorkItemDescription from '~/work_items/components/work_item_description.vue';
+import WorkItemDescriptionRendered from '~/work_items/components/work_item_description_rendered.vue';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
 import workItemQuery from '~/work_items/graphql/work_item.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
+import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import {
   updateWorkItemMutationResponse,
   workItemResponseFactory,
   workItemQueryResponse,
+  projectWorkItemResponse,
 } from '../mock_data';
 
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
@@ -29,9 +32,11 @@ describe('WorkItemDescription', () => {
   Vue.use(VueApollo);
 
   const mutationSuccessHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse);
+  const workItemByIidResponseHandler = jest.fn().mockResolvedValue(projectWorkItemResponse);
+  let workItemResponseHandler;
 
-  const findEditButton = () => wrapper.find('[data-testid="edit-description"]');
   const findMarkdownField = () => wrapper.findComponent(MarkdownField);
+  const findRenderedDescription = () => wrapper.findComponent(WorkItemDescriptionRendered);
   const findEditedAt = () => wrapper.findComponent(EditedAt);
 
   const editDescription = (newText) => wrapper.find('textarea').setValue(newText);
@@ -44,18 +49,24 @@ describe('WorkItemDescription', () => {
     canUpdate = true,
     workItemResponse = workItemResponseFactory({ canUpdate }),
     isEditing = false,
+    fetchByIid = false,
   } = {}) => {
-    const workItemResponseHandler = jest.fn().mockResolvedValue(workItemResponse);
+    workItemResponseHandler = jest.fn().mockResolvedValue(workItemResponse);
 
     const { id } = workItemQueryResponse.data.workItem;
     wrapper = shallowMount(WorkItemDescription, {
       apolloProvider: createMockApollo([
         [workItemQuery, workItemResponseHandler],
         [updateWorkItemMutation, mutationHandler],
+        [workItemByIidQuery, workItemByIidResponseHandler],
       ]),
       propsData: {
         workItemId: id,
         fullPath: 'test-project-path',
+        queryVariables: {
+          id: workItemId,
+        },
+        fetchByIid,
       },
       stubs: {
         MarkdownField,
@@ -65,7 +76,7 @@ describe('WorkItemDescription', () => {
     await waitForPromises();
 
     if (isEditing) {
-      findEditButton().vm.$emit('click');
+      findRenderedDescription().vm.$emit('startEditing');
 
       await nextTick();
     }
@@ -73,28 +84,6 @@ describe('WorkItemDescription', () => {
 
   afterEach(() => {
     wrapper.destroy();
-  });
-
-  describe('Edit button', () => {
-    it('is not visible when canUpdate = false', async () => {
-      await createComponent({
-        canUpdate: false,
-      });
-
-      expect(findEditButton().exists()).toBe(false);
-    });
-
-    it('toggles edit mode', async () => {
-      await createComponent({
-        canUpdate: true,
-      });
-
-      findEditButton().vm.$emit('click');
-
-      await nextTick();
-
-      expect(findMarkdownField().exists()).toBe(true);
-    });
   });
 
   describe('editing description', () => {
@@ -241,5 +230,21 @@ describe('WorkItemDescription', () => {
 
       expect(updateDraft).toHaveBeenCalled();
     });
+  });
+
+  it('calls the global ID work item query when `fetchByIid` prop is false', async () => {
+    createComponent({ fetchByIid: false });
+    await waitForPromises();
+
+    expect(workItemResponseHandler).toHaveBeenCalled();
+    expect(workItemByIidResponseHandler).not.toHaveBeenCalled();
+  });
+
+  it('calls the IID work item query when when `fetchByIid` prop is true', async () => {
+    createComponent({ fetchByIid: true });
+    await waitForPromises();
+
+    expect(workItemResponseHandler).not.toHaveBeenCalled();
+    expect(workItemByIidResponseHandler).toHaveBeenCalled();
   });
 });

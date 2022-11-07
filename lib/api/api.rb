@@ -173,26 +173,44 @@ module API
         mount ::API::AccessRequests
         mount ::API::Admin::Ci::Variables
         mount ::API::Appearance
+        mount ::API::Applications
+        mount ::API::BroadcastMessages
         mount ::API::BulkImports
+        mount ::API::Ci::ResourceGroups
         mount ::API::Ci::Runner
-        mount ::API::Clusters::Agents
+        mount ::API::Ci::Runners
         mount ::API::Clusters::AgentTokens
+        mount ::API::Clusters::Agents
         mount ::API::DeployKeys
         mount ::API::DeployTokens
         mount ::API::Deployments
         mount ::API::Environments
+        mount ::API::FeatureFlags
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
         mount ::API::FreezePeriods
+        mount ::API::ImportBitbucketServer
+        mount ::API::ImportGithub
+        mount ::API::Keys
         mount ::API::MergeRequestDiffs
         mount ::API::Metadata
+        mount ::API::PersonalAccessTokens::SelfInformation
+        mount ::API::ProjectExport
+        mount ::API::ProjectHooks
         mount ::API::ProjectRepositoryStorageMoves
+        mount ::API::ProjectSnapshots
+        mount ::API::ProtectedBranches
+        mount ::API::ProtectedTags
         mount ::API::Release::Links
+        mount ::API::Releases
         mount ::API::ResourceAccessTokens
         mount ::API::SnippetRepositoryStorageMoves
         mount ::API::Statistics
+        mount ::API::Submodules
         mount ::API::Suggestions
+        mount ::API::SystemHooks
         mount ::API::Tags
+        mount ::API::Unleash
         mount ::API::UserCounts
 
         add_open_api_documentation!
@@ -204,19 +222,15 @@ module API
       mount ::API::Admin::PlanLimits
       mount ::API::Admin::Sidekiq
       mount ::API::AlertManagementAlerts
-      mount ::API::Applications
       mount ::API::Avatar
       mount ::API::AwardEmoji
       mount ::API::Badges
       mount ::API::Boards
       mount ::API::Branches
-      mount ::API::BroadcastMessages
       mount ::API::Ci::JobArtifacts
       mount ::API::Ci::Jobs
       mount ::API::Ci::PipelineSchedules
       mount ::API::Ci::Pipelines
-      mount ::API::Ci::ResourceGroups
-      mount ::API::Ci::Runners
       mount ::API::Ci::SecureFiles
       mount ::API::Ci::Triggers
       mount ::API::Ci::Variables
@@ -235,7 +249,6 @@ module API
       mount ::API::ErrorTracking::Collector
       mount ::API::ErrorTracking::ProjectSettings
       mount ::API::Events
-      mount ::API::FeatureFlags
       mount ::API::Files
       mount ::API::GenericPackages
       mount ::API::Geo
@@ -253,14 +266,11 @@ module API
       mount ::API::GroupVariables
       mount ::API::Groups
       mount ::API::HelmPackages
-      mount ::API::ImportBitbucketServer
-      mount ::API::ImportGithub
       mount ::API::Integrations
       mount ::API::Integrations::JiraConnect::Subscriptions
       mount ::API::Invitations
       mount ::API::IssueLinks
       mount ::API::Issues
-      mount ::API::Keys
       mount ::API::Labels
       mount ::API::Lint
       mount ::API::Markdown
@@ -280,26 +290,20 @@ module API
       mount ::API::PackageFiles
       mount ::API::Pages
       mount ::API::PagesDomains
-      mount ::API::PersonalAccessTokens::SelfInformation
       mount ::API::PersonalAccessTokens
       mount ::API::ProjectClusters
       mount ::API::ProjectContainerRepositories
       mount ::API::ProjectDebianDistributions
       mount ::API::ProjectEvents
-      mount ::API::ProjectExport
-      mount ::API::ProjectHooks
       mount ::API::ProjectImport
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
-      mount ::API::ProjectSnapshots
       mount ::API::ProjectSnippets
       mount ::API::ProjectStatistics
       mount ::API::ProjectTemplates
       mount ::API::Projects
-      mount ::API::ProtectedBranches
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
-      mount ::API::Releases
       mount ::API::RemoteMirrors
       mount ::API::Repositories
       mount ::API::ResourceLabelEvents
@@ -311,9 +315,7 @@ module API
       mount ::API::Settings
       mount ::API::SidekiqMetrics
       mount ::API::Snippets
-      mount ::API::Submodules
       mount ::API::Subscriptions
-      mount ::API::SystemHooks
       mount ::API::Tags
       mount ::API::Templates
       mount ::API::Terraform::Modules::V1::Packages
@@ -321,7 +323,6 @@ module API
       mount ::API::Terraform::StateVersion
       mount ::API::Todos
       mount ::API::Topics
-      mount ::API::Unleash
       mount ::API::UsageData
       mount ::API::UsageDataNonSqlMetrics
       mount ::API::UsageDataQueries

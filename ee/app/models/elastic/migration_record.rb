@@ -4,7 +4,7 @@ module Elastic
   class MigrationRecord
     attr_reader :version, :name, :filename
 
-    ELASTICSEARCH_SIZE = 25
+    ELASTICSEARCH_SIZE = 1000
 
     def initialize(version:, name:, filename:)
       @version = version
