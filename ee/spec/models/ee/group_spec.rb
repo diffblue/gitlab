@@ -779,7 +779,7 @@ RSpec.describe Group do
         let(:group) { create(:group, push_rule: push_rule) }
         let(:push_rule) { create(:push_rule) }
         let(:subgroup_1) { create(:group, parent: group) }
-        let!(:subgroup_1_1) { create(:group, parent: subgroup_1) }
+        let(:subgroup_1_1) { create(:group, parent: subgroup_1) }
 
         it 'returns push rule from closest ancestor' do
           expect(subgroup_1_1.predefined_push_rule).to eq(push_rule)

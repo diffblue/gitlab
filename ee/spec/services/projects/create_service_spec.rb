@@ -251,6 +251,7 @@ RSpec.describe Projects::CreateService, '#execute' do
 
     context 'project created within a group' do
       let(:group) { create(:group) }
+      let(:sub_group) { create(:group, parent: group) }
       let(:opts) do
         {
           name: "GitLab",
@@ -291,6 +292,20 @@ RSpec.describe Projects::CreateService, '#execute' do
           )
           expect(project.project_setting.push_rule_id).to eq(project_push_rule.id)
         end
+
+        it 'within sub_group creates push rule from group push rule' do
+          project = create_project(user, opts.merge(namespace_id: sub_group.id))
+          project_push_rule = project.push_rule
+
+          expect(project_push_rule).to have_attributes(
+            force_push_regex: group_push_rule.force_push_regex,
+            deny_delete_tag: group_push_rule.deny_delete_tag,
+            delete_branch_regex: group_push_rule.delete_branch_regex,
+            commit_message_regex: group_push_rule.commit_message_regex,
+            is_sample: false
+          )
+          expect(project.project_setting.push_rule_id).to eq(project_push_rule.id)
+        end
       end
 
       context 'when group does not have push rule defined' do
@@ -298,6 +313,15 @@ RSpec.describe Projects::CreateService, '#execute' do
 
         it 'creates push rule from sample' do
           expect(create_project(user, opts).push_rule).to have_attributes(
+            force_push_regex: sample.force_push_regex,
+            deny_delete_tag: sample.deny_delete_tag,
+            delete_branch_regex: sample.delete_branch_regex,
+            commit_message_regex: sample.commit_message_regex
+          )
+        end
+
+        it 'creates push rule from sample in sub-group' do
+          expect(create_project(user, opts.merge(namespace_id: sub_group.id)).push_rule).to have_attributes(
             force_push_regex: sample.force_push_regex,
             deny_delete_tag: sample.deny_delete_tag,
             delete_branch_regex: sample.delete_branch_regex,

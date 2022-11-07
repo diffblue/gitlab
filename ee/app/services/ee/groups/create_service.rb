@@ -11,7 +11,6 @@ module EE
           next unless group&.persisted?
 
           log_audit_event
-          create_push_rule_for_group
         end
       end
 
@@ -52,18 +51,6 @@ module EE
           group,
           action: :create
         ).for_group.security_event
-      end
-
-      def create_push_rule_for_group
-        return unless group.licensed_feature_available?(:push_rules)
-
-        push_rule = group.predefined_push_rule
-        return unless push_rule
-
-        attributes = push_rule.attributes.symbolize_keys.except(:is_sample, :id)
-        PushRule.create(attributes.compact).tap do |push_rule|
-          group.update(push_rule: push_rule)
-        end
       end
 
       def track_verification_experiment_conversion
