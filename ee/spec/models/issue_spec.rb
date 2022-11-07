@@ -369,6 +369,19 @@ RSpec.describe Issue do
         end
       end
     end
+
+    context 'when associated to a requirement object' do
+      context 'when requirement belongs to another project' do
+        it 'issue is invalid' do
+          issue = create(:work_item, :requirement)
+
+          issue.project = create(:project)
+
+          expect(issue).not_to be_valid
+          expect(issue.errors[:project_id]).to include(/must belong to same project of its requirement object/)
+        end
+      end
+    end
   end
 
   describe 'relations' do

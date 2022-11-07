@@ -7,6 +7,8 @@ module IssueWidgets
     included do
       attr_accessor :requirement_sync_error
 
+      validate :same_project_of_requirement
+
       after_validation :invalidate_if_sync_error, on: [:update, :create]
 
       has_many :test_reports, foreign_key: :issue_id, inverse_of: :requirement_issue, class_name: 'RequirementsManagement::TestReport'
@@ -33,6 +35,13 @@ module IssueWidgets
       errors = requirement.errors.full_messages.to_sentence
       errors = errors.presence || "Associated requirement was invalid and changes could not be applied."
       self.errors.add(:base, errors)
+    end
+
+    def same_project_of_requirement
+      return if requirement&.project_id.nil? || project_id.nil?
+      return if project_id == requirement.project_id
+
+      errors.add(:project_id, _('must belong to same project of its requirement object.'))
     end
   end
 end
