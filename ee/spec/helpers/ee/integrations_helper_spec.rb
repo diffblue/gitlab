@@ -25,6 +25,8 @@ RSpec.describe EE::IntegrationsHelper do
   subject { controller_class.new }
 
   describe '#integration_form_data' do
+    let(:integration) { build(:jenkins_integration) }
+
     let(:jira_fields) do
       {
         show_jira_issues_integration: 'false',
@@ -36,17 +38,17 @@ RSpec.describe EE::IntegrationsHelper do
       }
     end
 
-    subject { helper.integration_form_data(integration, project: project) }
+    subject(:form_data) { helper.integration_form_data(integration, project: project) }
 
-    context 'with Slack integration' do
-      let(:integration) { build(:integrations_slack) }
-
-      it 'does not include Jira specific fields' do
-        is_expected.not_to include(*jira_fields.keys)
-      end
+    it 'does not include Jira-specific fields' do
+      is_expected.not_to include(*jira_fields.keys)
     end
 
-    context 'Jira service' do
+    it 'does not include Slack-specific fields' do
+      is_expected.not_to include(:upgrade_slack_url)
+    end
+
+    context 'with a Jira integration' do
       let_it_be_with_refind(:integration) { create(:jira_integration, project: project, issues_enabled: true, project_key: 'FE', vulnerabilities_enabled: true, vulnerabilities_issuetype: '10001') }
 
       context 'when there is no license for jira_vulnerabilities_integration' do
@@ -73,6 +75,23 @@ RSpec.describe EE::IntegrationsHelper do
             )
           )
         end
+      end
+    end
+
+    context 'with a GitLab Slack App integration' do
+      let(:integration) { build(:gitlab_slack_application_integration, project: project) }
+
+      it 'includes Slack app upgrade URL' do
+        stub_ee_application_setting(slack_app_id: 'MOCK_APP_ID')
+        redirect_url = "http://test.host/#{project.full_path}/-/settings/slack/slack_auth"
+
+        expect(form_data[:upgrade_slack_url]).to start_with(
+          [
+            Projects::SlackApplicationInstallService::SLACK_AUTHORIZE_URL,
+            '?client_id=MOCK_APP_ID',
+            "&redirect_uri=#{CGI.escape(redirect_url)}"
+          ].join
+        )
       end
     end
   end
