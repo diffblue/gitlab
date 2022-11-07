@@ -180,6 +180,7 @@ module API
         mount ::API::Ci::Runners
         mount ::API::Clusters::AgentTokens
         mount ::API::Clusters::Agents
+        mount ::API::CommitStatuses
         mount ::API::DeployKeys
         mount ::API::DeployTokens
         mount ::API::Deployments
