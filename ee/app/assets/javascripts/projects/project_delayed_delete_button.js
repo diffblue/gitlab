@@ -1,14 +1,14 @@
 import Vue from 'vue';
 import { parseBoolean } from '~/lib/utils/common_utils';
-import ProjectAdjournedDeleteButton from './components/project_adjourned_delete_button.vue';
+import ProjectDelayedDeleteButton from './components/project_delayed_delete_button.vue';
 
-export default (selector = '#js-project-adjourned-delete-button') => {
+export default (selector = '#js-project-delayed-delete-button') => {
   const el = document.querySelector(selector);
 
   if (!el) return;
 
   const {
-    adjournedRemovalDate,
+    delayedDeletionDate,
     confirmPhrase,
     formPath,
     restoreHelpPath,
@@ -23,9 +23,9 @@ export default (selector = '#js-project-adjourned-delete-button') => {
   new Vue({
     el,
     render(createElement) {
-      return createElement(ProjectAdjournedDeleteButton, {
+      return createElement(ProjectDelayedDeleteButton, {
         props: {
-          adjournedRemovalDate,
+          delayedDeletionDate,
           confirmPhrase,
           formPath,
           restoreHelpPath,
