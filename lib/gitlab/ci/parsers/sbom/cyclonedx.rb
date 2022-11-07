@@ -70,7 +70,7 @@ module Gitlab
               )
 
               report.add_component(component) if component.ingestible?
-            rescue ::PackageURL::InvalidPackageURL
+            rescue ::Sbom::PackageUrl::InvalidPackageURL
               report.add_error("/components/#{index}/purl is invalid")
             end
           end

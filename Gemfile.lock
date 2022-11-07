@@ -1002,7 +1002,6 @@ GEM
       rubypants (~> 0.2)
     orm_adapter (0.5.0)
     os (1.1.1)
-    packageurl-ruby (0.1.0)
     pact (1.63.0)
       pact-mock_service (~> 3.0, >= 3.3.1)
       pact-support (~> 1.16, >= 1.16.9)
@@ -1726,7 +1725,6 @@ DEPENDENCIES
   omniauth_crowd (~> 2.4.0)!
   openssl (= 2.2.1)
   org-ruby (~> 0.9.12)
-  packageurl-ruby (~> 0.1.0)
   pact (~> 1.63)
   parallel (~> 1.19)
   parslet (~> 1.8)

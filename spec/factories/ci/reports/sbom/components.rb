@@ -12,7 +12,7 @@ FactoryBot.define do
     end
 
     purl do
-      PackageURL.new(
+      ::Sbom::PackageUrl.new(
         type: purl_type,
         name: name,
         version: version

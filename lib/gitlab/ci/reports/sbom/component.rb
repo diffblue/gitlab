@@ -21,7 +21,7 @@ module Gitlab
           def purl
             return unless @purl
 
-            PackageURL.parse(@purl)
+            ::Sbom::PackageUrl.parse(@purl)
           end
 
           private

@@ -6,7 +6,7 @@ RSpec.describe Gitlab::Ci::Reports::Sbom::Component do
   let(:component_type) { 'library' }
   let(:name) { 'component-name' }
   let(:purl_type) { 'npm' }
-  let(:purl) { PackageURL.new(type: purl_type, name: name, version: version).to_s }
+  let(:purl) { Sbom::PackageUrl.new(type: purl_type, name: name, version: version).to_s }
   let(:version) { 'v0.0.1' }
 
   subject(:component) do

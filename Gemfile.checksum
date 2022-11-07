@@ -398,7 +398,6 @@
 {"name":"org-ruby","version":"0.9.12","platform":"ruby","checksum":"93cbec3a4470cb9dca6a4a98dc276a6434ea9d9e7bc2d42ea33c3aedd5d1c974"},
 {"name":"orm_adapter","version":"0.5.0","platform":"ruby","checksum":"aa5d0be5d540cbb46d3a93e88061f4ece6a25f6e97d6a47122beb84fe595e9b9"},
 {"name":"os","version":"1.1.1","platform":"ruby","checksum":"3db1fbc14ab8ea99b69ed8e353c894613e1b35e665fffb90414996cf8989d489"},
-{"name":"packageurl-ruby","version":"0.1.0","platform":"ruby","checksum":"3edfa1ce355200fde2a1d2cf625dafdf28d0cc9472eb99493325bf3d88e9daa3"},
 {"name":"pact","version":"1.63.0","platform":"ruby","checksum":"cc2991ed242bf182c6a4abadfd492b2923d09a9b3ed24578126cc056921cb151"},
 {"name":"pact-mock_service","version":"3.10.0","platform":"ruby","checksum":"898ec3b8d96f1934d15941c701ca7d5fef5ccff32022d9a196fb82073cd95e27"},
 {"name":"pact-support","version":"1.18.1","platform":"ruby","checksum":"4a25961c8b1c4132e433a8eaa838b1e6914c6d3aae48eee705b9860a5e8b0476"},

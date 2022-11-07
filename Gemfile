@@ -571,7 +571,6 @@ gem 'error_tracking_open_api', path: 'vendor/gems/error_tracking_open_api'
 
 # Vulnerability advisories
 gem 'cvss-suite', '~> 3.0.1', require: 'cvss_suite'
-gem 'packageurl-ruby', '~> 0.1.0', require: 'package_url'
 
 # Work with RPM packages
 gem 'arr-pm', '~> 0.0.12'
