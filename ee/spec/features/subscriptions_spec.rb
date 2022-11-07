@@ -18,7 +18,7 @@ RSpec.describe 'Subscriptions Content Security Policy' do
   before do
     stub_request(:get, /.*gitlab_plans.*/).to_return(status: 200, body: "{}")
 
-    setup_existing_csp_for_controller(SubscriptionsController, csp, 4)
+    setup_csp_for_controller(SubscriptionsController, csp, times: 4)
 
     sign_in(create(:user))
 
