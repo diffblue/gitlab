@@ -2,10 +2,10 @@
 require 'spec_helper'
 
 RSpec.describe Ci::BuildPresenter do
-  subject(:presenter) { described_class.new(build) }
+  subject(:presenter) { described_class.new(ci_build) }
 
   describe '#callout_failure_message' do
-    let(:build) { create(:ee_ci_build, :protected_environment_failure) }
+    let(:ci_build) { build(:ee_ci_build, :protected_environment_failure) }
 
     it 'returns a verbose failure reason' do
       description = presenter.callout_failure_message
@@ -18,11 +18,11 @@ RSpec.describe Ci::BuildPresenter do
   describe '#retryable?' do
     subject { presenter.retryable? }
 
-    let_it_be(:build) { create(:ci_build, :canceled) }
+    let_it_be(:ci_build) { build(:ci_build, :canceled) }
 
     context 'when the build exists in a pipeline for merge train' do
       before do
-        allow(build).to receive(:merge_train_pipeline?) { true }
+        allow(ci_build).to receive(:merge_train_pipeline?) { true }
       end
 
       it { is_expected.to be false }
@@ -30,7 +30,7 @@ RSpec.describe Ci::BuildPresenter do
 
     context 'when the build does not exist in a pipeline for merge train' do
       before do
-        allow(build).to receive(:merge_train_pipeline?) { false }
+        allow(ci_build).to receive(:merge_train_pipeline?) { false }
       end
 
       it { is_expected.to be true }
