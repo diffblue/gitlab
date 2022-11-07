@@ -7,7 +7,7 @@ module Users
     include ZuoraCSP
 
     skip_before_action :authenticate_user!
-    before_action :require_unconfirmed_user
+    before_action :require_unconfirmed_user!
 
     feature_category :authentication_and_authorization
 
@@ -45,9 +45,9 @@ module Users
 
     private
 
-    def require_unconfirmed_user
+    def require_unconfirmed_user!
       @user = User.find_by_id(session[:verification_user_id])
-      access_denied! if !@user || @user.confirmed?
+      access_denied! if !@user || @user.identity_verified?
     end
 
     def log_identity_verification(event, reason = nil)
