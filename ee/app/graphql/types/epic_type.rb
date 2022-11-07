@@ -101,7 +101,8 @@ module Types
         null: true, description: 'Timestamp of when the epic was updated.'
 
     field :children, ::Types::EpicType.connection_type,
-      null: true, resolver: ::Resolvers::EpicsResolver,
+      null: true,
+      resolver: ::Resolvers::Epics::ChildrenResolver,
       description: 'Children (sub-epics) of the epic.'
 
     field :labels, Types::LabelType.connection_type,
