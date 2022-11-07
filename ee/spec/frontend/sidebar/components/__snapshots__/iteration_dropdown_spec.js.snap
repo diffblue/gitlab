@@ -1,46 +1,67 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`IterationDropdown default shows gl-dropdown 1`] = `
-<gl-dropdown-stub
+<b-dropdown-stub
   block="true"
-  category="primary"
-  class="gl-w-full"
-  clearalltext="Clear all"
-  clearalltextclass="gl-px-5"
-  headertext=""
-  hideheaderborder="true"
-  highlighteditemstitle="Selected"
-  highlighteditemstitleclass="gl-px-5"
-  size="medium"
-  text="Select iteration"
+  boundary="scrollParent"
+  class="gl-new-dropdown gl-w-full"
+  offset="0"
+  popperopts="[object Object]"
+  role="menu"
+  size="md"
+  splitbuttontype="button"
+  splitclass=",[object Object]"
+  toggleclass=",[object Object]"
+  toggletag="button"
+  toggletext="Toggle dropdown"
   variant="default"
 >
-  <gl-dropdown-section-header-stub
-    class="gl-display-flex! gl-justify-content-center"
+  <div
+    class="gl-new-dropdown-inner"
   >
-    Assign Iteration
-  </gl-dropdown-section-header-stub>
-   
-  <gl-search-box-by-type-stub
-    clearbuttontitle="Clear"
-    value=""
-  />
-   
-  <gl-dropdown-item-stub
-    avatarurl=""
-    iconcolor=""
-    iconname=""
-    iconrightarialabel=""
-    iconrightname=""
-    ischeckitem="true"
-    secondarytext=""
-  >
-    
+    <div
+      class="gl-new-dropdown-header gl-border-b-0!"
+    >
+      <p
+        class="gl-new-dropdown-header-top"
+      >
+        
+        Assign Iteration
+      
+      </p>
+       
+      <gl-search-box-by-type-stub
+        clearbuttontitle="Clear"
+        value=""
+      />
+    </div>
+     
+    <!---->
+     
+    <div
+      class="gl-new-dropdown-contents"
+    >
+      <!---->
+        
+      <gl-dropdown-item-stub
+        avatarurl=""
+        iconcolor=""
+        iconname=""
+        iconrightarialabel=""
+        iconrightname=""
+        ischeckitem="true"
+        secondarytext=""
+      >
+        
     No iteration
   
-  </gl-dropdown-item-stub>
-   
-  <gl-dropdown-divider-stub />
-   
-</gl-dropdown-stub>
+      </gl-dropdown-item-stub>
+       
+      <gl-dropdown-divider-stub />
+       
+    </div>
+     
+    <!---->
+  </div>
+</b-dropdown-stub>
 `;

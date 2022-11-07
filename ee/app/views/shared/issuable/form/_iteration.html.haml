@@ -1,0 +1,12 @@
+- group = local_assigns.fetch(:group)
+
+- return unless group&.feature_available?(:iterations)
+- form = local_assigns.fetch(:form)
+
+.form-group.row
+  = form.label :label_ids, class: "col-12" do
+    = _('Iteration')
+  .col-12
+    .issuable-form-select-holder
+      %input{ id: 'issue_iteration_id', type: 'hidden', name: 'issue[sprint_id]' }
+      #js-iteration-dropdown{ data: { full_path: group.full_path, show_header: 'true' } }
