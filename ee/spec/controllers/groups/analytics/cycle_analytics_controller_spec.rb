@@ -67,18 +67,20 @@ RSpec.describe Groups::Analytics::CycleAnalyticsController do
           get(:show, params: { group_id: group })
         end
 
-        it 'tracks snowplow event' do
-          get(:show, params: { group_id: group })
+        it_behaves_like 'Snowplow event tracking' do
+          subject(:show_request) { get(:show, params: { group_id: group }) }
 
-          context = Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: event).to_context.to_json
+          let(:feature_flag_name) { :route_hll_to_snowplow }
+          let(:category) { 'Groups::Analytics::CycleAnalyticsController' }
+          let(:action) { 'perform_analytics_usage_action' }
+          let(:project) { nil }
+          let(:namespace) { group }
+          let(:property) { event }
+          let(:context) do
+            [Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: event).to_context.to_json]
+          end
 
-          expect_snowplow_event(
-            category: 'Groups::Analytics::CycleAnalyticsController',
-            action: event,
-            namespace: group,
-            user: user,
-            context: [context]
-          )
+          let(:label) { 'redis_hll_counters.analytics.g_analytics_valuestream_monthly' }
         end
       end
     end
