@@ -3646,4 +3646,28 @@ RSpec.describe Project do
       expect(project.okrs_mvc_feature_flag_enabled?).to be_falsey
     end
   end
+
+  describe '#member_usernames_among' do
+    let_it_be(:users) { create_list(:user, 3) }
+
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+
+    before_all do
+      project.add_guest(users.first)
+      project.group.add_maintainer(users.last)
+    end
+
+    it "returns project members' usernames among the users" do
+      result = project.member_usernames_among(User.where(id: users.map(&:id)))
+
+      expect(result).to eq([users.first.username, users.last.username])
+    end
+
+    it 'returns empty array if users is empty' do
+      result = project.member_usernames_among(User.none)
+
+      expect(result).to be_empty
+    end
+  end
 end

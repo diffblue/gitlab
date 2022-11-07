@@ -321,5 +321,33 @@ RSpec.describe MergeRequests::UpdateService, :mailer do
         update_merge_request(reviewer_ids: [user.id, user2.id])
       end
     end
+
+    describe 'capture suggested_reviewer_ids' do
+      let(:service) { instance_spy(::MergeRequests::CaptureSuggestedReviewersAcceptedService) }
+
+      before do
+        allow(::MergeRequests::CaptureSuggestedReviewersAcceptedService).to receive(:new).and_return(service)
+      end
+
+      context 'when suggested_reviewer_ids is present' do
+        let(:opts) { { reviewer_ids: [user.id, user2.id], suggested_reviewer_ids: [user.id] } }
+
+        it 'captures the suggested_reviewer_ids' do
+          expect(service).to receive(:execute).with(merge_request, [user.id])
+
+          update_merge_request(opts)
+        end
+      end
+
+      context 'when suggested_reviewer_ids is blank' do
+        let(:opts) { { reviewer_ids: [user.id, user2.id] } }
+
+        it 'does not capture the suggested_reviewer_ids' do
+          expect(service).not_to receive(:execute)
+
+          update_merge_request(opts)
+        end
+      end
+    end
   end
 end

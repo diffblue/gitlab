@@ -30,7 +30,8 @@ module EE
             :approvals_before_merge,
             :approver_group_ids,
             :approver_ids,
-            :reset_approval_rules_to_defaults
+            :reset_approval_rules_to_defaults,
+            { suggested_reviewer_ids: [] }
           )
         end
 
