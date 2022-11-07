@@ -306,17 +306,8 @@ export default {
       :user-callout-feature-id="mr.suggestPipelineFeatureId"
       @dismiss="dismissSuggestPipelines"
     />
-    <mr-widget-pipeline-container
-      v-if="shouldRenderPipelines"
-      class="mr-widget-workflow"
-      :mr="mr"
-    />
-    <mr-widget-approvals
-      v-if="shouldRenderApprovals"
-      class="mr-widget-workflow"
-      :mr="mr"
-      :service="service"
-    />
+    <mr-widget-pipeline-container v-if="shouldRenderPipelines" :mr="mr" />
+    <mr-widget-approvals v-if="shouldRenderApprovals" :mr="mr" :service="service" />
     <report-widget-container>
       <extensions-container v-if="hasExtensions" :mr="mr" />
       <security-reports-app
@@ -372,6 +363,34 @@ export default {
         class="js-security-widget"
       />
     </report-widget-container>
+    <div v-if="hasAlerts" class="mr-section-container mr-widget-workflow">
+      <div class="gl-overflow-hidden mr-widget-alert-container">
+        <mr-widget-alert-message
+          v-if="hasMergeError"
+          type="danger"
+          dismissible
+          data-testid="merge_error"
+        >
+          <span v-safe-html="mergeError"></span>
+        </mr-widget-alert-message>
+        <mr-widget-alert-message
+          v-if="showMergePipelineForkWarning"
+          type="warning"
+          :help-path="mr.mergeRequestPipelinesHelpPath"
+        >
+          {{
+            s__(
+              'mrWidget|If the last pipeline ran in the fork project, it may be inaccurate. Before merge, we advise running a pipeline in this project.',
+            )
+          }}
+          <template #link-content>
+            {{ __('Learn more') }}
+          </template>
+        </mr-widget-alert-message>
+      </div>
+      <widget-container v-if="mr" :mr="mr" />
+      <blocking-merge-requests-report :mr="mr" />
+    </div>
     <div class="mr-section-container mr-widget-workflow">
       <div v-if="hasAlerts" class="gl-overflow-hidden mr-widget-alert-container">
         <mr-widget-alert-message
