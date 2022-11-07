@@ -7,15 +7,6 @@ RSpec.describe Ci::JobToken::Scope do
 
   let(:scope) { described_class.new(source_project) }
 
-  shared_context 'with scoped projects' do
-    let!(:inbound_scoped_project) { create_scoped_project(source_project, direction: :inbound) }
-    let!(:outbound_scoped_project) { create_scoped_project(source_project, direction: :outbound) }
-    let!(:unscoped_project1) { create(:project) }
-    let!(:unscoped_project2) { create(:project) }
-
-    let!(:link_out_of_scope) { create(:ci_job_token_project_scope_link, target_project: unscoped_project1) }
-  end
-
   describe '#all_projects' do
     subject(:all_projects) { scope.all_projects }
 
@@ -66,7 +57,7 @@ RSpec.describe Ci::JobToken::Scope do
         it { is_expected.to be_falsey }
       end
 
-      context 'when param is a project unlinked to any project' do
+      context 'when project is unlinked to a project' do
         let(:includes_project) { unscoped_project2 }
 
         it { is_expected.to be_falsey }
@@ -83,19 +74,6 @@ RSpec.describe Ci::JobToken::Scope do
           expect(subject).to be_truthy
         end
       end
-    end
-  end
-
-  private
-
-  def create_scoped_project(source_project, direction: 0)
-    create(:project).tap do |scoped_project|
-      create(
-        :ci_job_token_project_scope_link,
-        source_project: source_project,
-        target_project: scoped_project,
-        direction: direction
-      )
     end
   end
 end

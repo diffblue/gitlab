@@ -18,9 +18,7 @@ module Ci
         allowlist.includes?(target_project)
       end
 
-      def all_projects
-        allowlist.all_projects
-      end
+      delegate :all_projects, to: :allowlist
 
       private
 

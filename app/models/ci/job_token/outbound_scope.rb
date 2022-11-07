@@ -17,9 +17,6 @@ module Ci
       end
 
       delegate :all_projects, to: :allowlist
-      # def all_projects
-      #   allowlist.all_projects
-      # end
 
       private
 

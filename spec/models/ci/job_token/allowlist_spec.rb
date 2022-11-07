@@ -11,15 +11,6 @@ RSpec.describe Ci::JobToken::Allowlist do
 
   let(:direction) { :outbound }
 
-  shared_context 'with scoped projects' do
-    let!(:inbound_scoped_project) { create_scoped_project(source_project, direction: :inbound) }
-    let!(:outbound_scoped_project) { create_scoped_project(source_project, direction: :outbound) }
-    let!(:unscoped_project1) { create(:project) }
-    let!(:unscoped_project2) { create(:project) }
-
-    let!(:link_out_of_scope) { create(:ci_job_token_project_scope_link, target_project: unscoped_project1) }
-  end
-
   describe '#projects' do
     subject(:all_projects) { scope.all_projects }
 
@@ -147,19 +138,6 @@ RSpec.describe Ci::JobToken::Allowlist do
           it { is_expected.to be result }
         end
       end
-    end
-  end
-
-  private
-
-  def create_scoped_project(source_project, direction: 0)
-    create(:project).tap do |scoped_project|
-      create(
-        :ci_job_token_project_scope_link,
-        source_project: source_project,
-        target_project: scoped_project,
-        direction: direction
-      )
     end
   end
 end
