@@ -3,12 +3,29 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project1) { create(:project, group: group) }
+  let_it_be(:project2) { create(:project, group: group) }
+
+  describe 'date range filters' do
+    it 'filters the date range' do
+      # before the range
+      create(:event, :pushed, project: project1, target: nil, created_at: 2.years.ago)
+      # after the range
+      create(:event, :pushed, project: project1, target: nil, created_at: Date.today)
+      # in the range
+      create(:event, :pushed, project: project1, target: nil, created_at: 1.year.ago)
+
+      data_collector = described_class.new(group: group, from: 14.months.ago, to: 5.months.ago)
+
+      all_event_count = data_collector.totals[:total_events].values.sum
+      expect(all_event_count).to eq(1)
+    end
+  end
+
   describe '#totals' do
     it 'collects event counts grouped by users by calling #base_query' do
-      group = create(:group)
       user = create(:user)
-      project1 = create(:project, group: group)
-      project2 = create(:project, group: group)
 
       issue = create(:closed_issue, project: project1)
       mr = create(:merge_request, source_project: project2)
@@ -34,10 +51,7 @@ RSpec.describe Gitlab::ContributionAnalytics::DataCollector do
 
   describe '#total_commit_count' do
     it 'computes the total number of commits' do
-      group = create(:group)
       other_group = create(:group)
-      project1 = create(:project, group: group)
-      project2 = create(:project, group: group)
       other_project = create(:project, group: other_group)
 
       event1 = create(:event, :pushed, project: project1, target: nil)
