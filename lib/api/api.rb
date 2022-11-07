@@ -171,6 +171,7 @@ module API
       namespace do
         # Keep in alphabetical order
         mount ::API::AccessRequests
+        mount ::API::Admin::Ci::Variables
         mount ::API::Appearance
         mount ::API::Applications
         mount ::API::BroadcastMessages
@@ -218,7 +219,6 @@ module API
 
       # Keep in alphabetical order
       mount ::API::Admin::BatchedBackgroundMigrations
-      mount ::API::Admin::Ci::Variables
       mount ::API::Admin::InstanceClusters
       mount ::API::Admin::PlanLimits
       mount ::API::Admin::Sidekiq
