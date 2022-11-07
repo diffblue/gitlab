@@ -28,6 +28,8 @@ module Banzai
       end
 
       def highlight_node(node)
+        return if node.parent&.parent.nil?
+
         lang, lang_params = parse_lang_params(node)
         retried = false
 

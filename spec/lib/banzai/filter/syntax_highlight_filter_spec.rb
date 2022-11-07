@@ -45,6 +45,27 @@ RSpec.describe Banzai::Filter::SyntaxHighlightFilter do
     end
   end
 
+  # This can happen with the following markdown
+  #
+  # <div>
+  # <pre><code>
+  # something
+  #
+  #     else
+  # </code></pre>
+  # </div>
+  #
+  # The blank line causes markdown to process `    else` as a code block.
+  # Which could lead to an orphaned node being replaced and failing
+  context "when <pre><code> is a child of <pre><code> which is a child of a div " do
+    it "captures all text and doesn't fail trying to replace a node with no parent" do
+      text = "<div>\n<pre><code>\nsomething\n<pre><code>else\n</code></pre></code></pre>\n</div>"
+      result = filter(text)
+
+      expect(result.to_html.delete("\n")).to eq('<div><div class="gl-relative markdown-code-block js-markdown-code"><pre lang="plaintext" class="code highlight js-syntax-highlight language-plaintext" data-canonical-lang="" v-pre="true"><code><span id="LC1" class="line" lang="plaintext"></span><span id="LC2" class="line" lang="plaintext">something</span><span id="LC3" class="line" lang="plaintext">else</span></code></pre><copy-code></copy-code></div></div>')
+    end
+  end
+
   context "when a valid language is specified" do
     it "highlights as that language" do
       result = filter('<pre lang="ruby"><code>def fun end</code></pre>')
