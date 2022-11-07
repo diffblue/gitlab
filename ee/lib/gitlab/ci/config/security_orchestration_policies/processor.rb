@@ -41,14 +41,15 @@ module Gitlab
           end
 
           def prepare_on_demand_scans_template
-            ::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService
-              .new(project)
-              .execute(on_demand_scan_actions)
+            scan_templates[:on_demand]
           end
 
           def prepare_pipeline_scans_template
-            ::Security::SecurityOrchestrationPolicies::ScanPipelineService
-              .new.execute(pipeline_scan_actions)
+            scan_templates[:pipeline_scan]
+          end
+
+          def scan_templates
+            @scan_templates ||= ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(project).execute(active_scan_actions)
           end
 
           ## Add `dast` to the end of stages if `dast` is not in stages already
@@ -100,15 +101,9 @@ module Gitlab
             defined_stages
           end
 
-          def on_demand_scan_actions
-            scan_actions do |security_orchestration_policy_configuration|
-              security_orchestration_policy_configuration.on_demand_scan_actions(@ref)
-            end
-          end
-
-          def pipeline_scan_actions
-            scan_actions do |security_orchestration_policy_configuration|
-              security_orchestration_policy_configuration.pipeline_scan_actions(@ref)
+          def active_scan_actions
+            scan_actions do |configuration|
+              configuration.active_policies_scan_actions(@ref)
             end
           end
 
