@@ -220,7 +220,6 @@ module API
         mount ::API::Tags
         mount ::API::Unleash
         mount ::API::UserCounts
-        mount ::API::VulnerabilityFindings if Gitlab.ee?
 
         add_open_api_documentation!
       end
