@@ -2,6 +2,7 @@ import {
   formatPercentChange,
   formatMetricString,
   extractDoraMetrics,
+  hasDoraMetricValues,
   generateDoraTimePeriodComparisonTable,
 } from 'ee/analytics/dashboards/utils';
 import {
@@ -11,8 +12,10 @@ import {
   TIME_TO_RESTORE_SERVICE,
 } from 'ee/api/dora_api';
 import {
-  mockCurrentTimePeriod,
-  mockPreviousTimePeriod,
+  mockMonthToDate,
+  mockMonthToDateTimePeriod,
+  mockPreviousMonthTimePeriod,
+  mockTwoMonthsAgoTimePeriod,
   mockComparativeTableData,
   mockMetricsResponse,
 } from './mock_data';
@@ -60,15 +63,16 @@ describe('Analytics Dashboards utils', () => {
     let res = {};
 
     beforeEach(() => {
-      res = generateDoraTimePeriodComparisonTable({
-        current: mockCurrentTimePeriod,
-        previous: mockPreviousTimePeriod,
-      });
+      res = generateDoraTimePeriodComparisonTable([
+        mockMonthToDateTimePeriod,
+        mockPreviousMonthTimePeriod,
+        mockTwoMonthsAgoTimePeriod,
+      ]);
     });
 
     it('returns the comparison table fields for each row', () => {
       res.forEach((row) => {
-        expect(Object.keys(row)).toEqual(['metric', 'current', 'previous', 'change']);
+        expect(Object.keys(row)).toEqual(['metric', 'thisMonth', 'lastMonth', 'twoMonthsAgo']);
       });
     });
 
@@ -85,16 +89,43 @@ describe('Analytics Dashboards utils', () => {
 
     it('returns an object with each of the four DORA metrics', () => {
       expect(Object.keys(res)).toEqual([
-        'lead_time_for_changes',
-        'change_failure_rate',
-        'time_to_restore_service',
-        'deployment_frequency',
+        LEAD_TIME_FOR_CHANGES,
+        TIME_TO_RESTORE_SERVICE,
+        CHANGE_FAILURE_RATE,
+        DEPLOYMENT_FREQUENCY_METRIC_TYPE,
       ]);
     });
 
     it('returns the data for each DORA metric', () => {
-      expect(res).toEqual(mockCurrentTimePeriod);
+      expect(res).toEqual(mockMonthToDate);
       expect(extractDoraMetrics([])).toEqual({});
+    });
+  });
+
+  describe('hasDoraMetricValues', () => {
+    it('returns false if only non-DORA metrics contain a value > 0', () => {
+      const timePeriods = [{ nonDoraMetric: { value: 100 } }];
+      expect(hasDoraMetricValues(timePeriods)).toBe(false);
+    });
+
+    it('returns false if all DORA metrics contain a non-numerical value', () => {
+      const timePeriods = [{ [LEAD_TIME_FOR_CHANGES]: { value: 'YEET' } }];
+      expect(hasDoraMetricValues(timePeriods)).toBe(false);
+    });
+
+    it('returns false if all DORA metrics contain a value == 0', () => {
+      const timePeriods = [{ [LEAD_TIME_FOR_CHANGES]: { value: 0 } }];
+      expect(hasDoraMetricValues(timePeriods)).toBe(false);
+    });
+
+    it('returns true if any DORA metrics contain a value > 0', () => {
+      const timePeriods = [
+        {
+          [LEAD_TIME_FOR_CHANGES]: { value: 0 },
+          [CHANGE_FAILURE_RATE]: { value: 100 },
+        },
+      ];
+      expect(hasDoraMetricValues(timePeriods)).toBe(true);
     });
   });
 });
