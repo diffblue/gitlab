@@ -6,6 +6,7 @@ module EE
 
     prepended do
       has_and_belongs_to_many :approval_project_rules
+      has_and_belongs_to_many :external_status_checks, class_name: '::MergeRequests::ExternalStatusCheck'
 
       has_many :required_code_owners_sections, class_name: "ProtectedBranch::RequiredCodeOwnersSection"
 
