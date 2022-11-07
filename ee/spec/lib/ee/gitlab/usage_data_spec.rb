@@ -100,10 +100,6 @@ RSpec.describe Gitlab::UsageData do
       expect(count_data.keys).to include(
         *%i(
           confidential_epics
-          container_scanning_jobs
-          coverage_fuzzing_jobs
-          dast_jobs
-          dependency_scanning_jobs
           epics
           epic_issues
           geo_nodes
@@ -112,14 +108,11 @@ RSpec.describe Gitlab::UsageData do
           ldap_group_links
           ldap_keys
           ldap_users
-          license_management_jobs
           operations_dashboard_default_dashboard
           operations_dashboard_users_with_projects_added
           projects_jira_issuelist_active
           projects_mirrored_with_pipelines_enabled
           projects_reporting_ci_cd_back_to_github
-          sast_jobs
-          secret_detection_jobs
           status_page_issues
           status_page_projects
           user_preferences_group_overview_details
@@ -134,16 +127,7 @@ RSpec.describe Gitlab::UsageData do
       expect(count_data[:epic_issues]).to eq(2)
     end
 
-    it 'gathers security products usage data', :aggregate_failures do
-      expect(count_data[:container_scanning_jobs]).to eq(1)
-      expect(count_data[:dast_jobs]).to eq(1)
-      expect(count_data[:dependency_scanning_jobs]).to eq(1)
-      expect(count_data[:license_management_jobs]).to eq(2)
-      expect(count_data[:sast_jobs]).to eq(1)
-      expect(count_data[:secret_detection_jobs]).to eq(1)
-      expect(count_data[:coverage_fuzzing_jobs]).to eq(1)
-      expect(count_data[:api_fuzzing_jobs]).to eq(1)
-      expect(count_data[:api_fuzzing_dnd_jobs]).to eq(1)
+    it 'gathers security products usage data' do
       expect(count_data[:dast_on_demand_pipelines]).to eq(1)
     end
 

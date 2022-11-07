@@ -10,6 +10,9 @@ value_type: number
 status: active
 time_frame: all
 data_source: database
+instrumentation_class: CountCiBuildsMetric
+options:
+  secure_type: container_scanning
 distribution:
 - ee
 tier:
