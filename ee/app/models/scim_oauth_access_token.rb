@@ -3,11 +3,10 @@
 class ScimOauthAccessToken < ApplicationRecord
   include TokenAuthenticatable
 
-  belongs_to :group
+  belongs_to :group, optional: true
 
   add_authentication_token_field :token, encrypted: :required
 
-  validates :group, presence: true
   before_save :ensure_token
 
   def self.token_matches_for_group?(token, group)

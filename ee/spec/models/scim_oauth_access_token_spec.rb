@@ -7,10 +7,6 @@ RSpec.describe ScimOauthAccessToken do
     it { is_expected.to belong_to :group }
   end
 
-  describe 'Validations' do
-    it { is_expected.to validate_presence_of(:group) }
-  end
-
   describe '.token_matches_for_group?' do
     it 'finds the token' do
       group = create(:group)
