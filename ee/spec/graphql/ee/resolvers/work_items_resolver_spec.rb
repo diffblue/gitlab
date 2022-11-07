@@ -23,6 +23,17 @@ RSpec.describe Resolvers::WorkItemsResolver do
         expect(resolve_items(status_widget: { status: 'failed' })).to contain_exactly(work_item2)
         expect(resolve_items(status_widget: { status: 'missing' })).to contain_exactly(work_item3)
       end
+
+      context 'when work_items_mvc_2 flag is disabled' do
+        before do
+          stub_feature_flags(work_items_mvc_2: false)
+        end
+
+        it 'ignores status_widget argument' do
+          expect(resolve_items(status_widget: { status: 'passed' }))
+            .to contain_exactly(work_item1, work_item2, work_item3)
+        end
+      end
     end
   end
 

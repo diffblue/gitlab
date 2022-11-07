@@ -9,7 +9,14 @@ module EE
       prepended do
         argument :status_widget, ::Types::WorkItems::Widgets::StatusFilterInputType,
                  required: false,
-                 description: 'Input for status widget filter.'
+                 description: 'Input for status widget filter. Ignored if `work_items_mvc_2` is disabled.'
+      end
+
+      override :resolve_with_lookahead
+      def resolve_with_lookahead(**args)
+        args.delete(:status_widget) unless resource_parent&.work_items_mvc_2_feature_flag_enabled?
+
+        super
       end
 
       private
