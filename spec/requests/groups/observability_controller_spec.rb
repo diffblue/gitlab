@@ -22,16 +22,6 @@ RSpec.describe Groups::ObservabilityController do
       end
     end
 
-    context 'when observability url is missing' do
-      before do
-        allow(described_class).to receive(:observability_url).and_return("")
-      end
-
-      it 'returns 404' do
-        expect(subject).to have_gitlab_http_status(:not_found)
-      end
-    end
-
     context 'when user is not a developer' do
       before do
         sign_in(user)
@@ -46,6 +36,16 @@ RSpec.describe Groups::ObservabilityController do
       before do
         sign_in(user)
         group.add_developer(user)
+      end
+
+      context 'when observability url is missing' do
+        before do
+          allow(Gitlab::Observability).to receive(:observability_url).and_return("")
+        end
+
+        it 'returns 404' do
+          expect(subject).to have_gitlab_http_status(:not_found)
+        end
       end
 
       it 'returns 200' do
