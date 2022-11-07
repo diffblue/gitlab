@@ -137,42 +137,54 @@ RSpec.describe Issues::CreateService do
           stub_licensed_features(iterations: true)
         end
 
-        context 'when sprint_id is provided' do
-          let(:additional_params) { { sprint_id: future_iteration.id } }
+        RSpec.shared_examples 'create with specify column' do |column|
+          context 'when user can read the given iteration' do
+            let(:additional_params) { { column => future_iteration.id } }
 
-          it 'is successful, and assigns the specified iteration to the issue' do
-            expect(created_issue).to be_persisted
-            expect(created_issue).to have_attributes(iteration: future_iteration)
-          end
-        end
-
-        context 'when iteration_id is provided' do
-          let(:additional_params) { { iteration_id: future_iteration.id } }
-
-          it 'is successful, and assigns the specified iteration to the issue' do
-            expect(created_issue).to be_persisted
-            expect(created_issue).to have_attributes(iteration: future_iteration)
-          end
-
-          context 'when iteration_wildcard_id is provided' do
-            let(:additional_params) { { iteration_id: future_iteration.id, iteration_wildcard_id: 'CURRENT', iteration_cadence_id: iteration_cadence2.id } }
-
-            it 'raises a mutually exclusive argument error' do
-              expect { service.execute }.to raise_error(
-                ::Issues::BaseService::IterationAssignmentError,
-                'Incompatible arguments: iteration_id, iteration_wildcard_id.'
-              )
+            it 'is successful, and assigns the specified iteration to the issue' do
+              expect(created_issue).to be_persisted
+              expect(created_issue).to have_attributes(iteration: future_iteration)
             end
           end
 
           context "when user can't read the given iteration" do
             let(:private_group) { create(:group, :private) }
-            let(:additional_params) { { iteration_id: create(:iteration, iterations_cadence: create(:iterations_cadence, group: private_group)).id } }
+            let(:additional_params) { { column => create(:iteration, iterations_cadence: create(:iterations_cadence, group: private_group)).id } }
 
             it 'is successful but does not assign the iteration' do
               expect(created_issue).to be_persisted
               expect(created_issue).to have_attributes(iteration: nil)
             end
+          end
+
+          context 'when iteration_wildcard_id is provided' do
+            let(:additional_params) { { column => future_iteration.id, iteration_wildcard_id: 'CURRENT', iteration_cadence_id: iteration_cadence2.id } }
+
+            it 'raises a mutually exclusive argument error' do
+              expect { service.execute }.to raise_error(
+                ::Issues::BaseService::IterationAssignmentError,
+                "Incompatible arguments: #{column}, iteration_wildcard_id."
+              )
+            end
+          end
+        end
+
+        context 'when sprint_id is provided' do
+          it_behaves_like 'create with specify column', :sprint_id
+        end
+
+        context 'when iteration_id is provided' do
+          it_behaves_like 'create with specify column', :iteration_id
+        end
+
+        context 'when both sprint_id and iteration_id is provided' do
+          let(:additional_params) { { sprint_id: future_iteration.id, iteration_id: future_iteration.id } }
+
+          it 'raises a mutually exclusive argument error' do
+            expect { service.execute }.to raise_error(
+              ::Issues::BaseService::IterationAssignmentError,
+              'Incompatible arguments: iteration_id, sprint_id.'
+            )
           end
         end
 

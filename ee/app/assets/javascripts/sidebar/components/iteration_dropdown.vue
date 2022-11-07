@@ -12,7 +12,7 @@ import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
 import { __ } from '~/locale';
 import { iterationSelectTextMap, iterationDisplayState } from '../constants';
-import groupIterationsQuery from '../queries/iterations.query.graphql';
+import groupIterationsQuery from '../queries/group_iterations.query.graphql';
 
 export default {
   noIteration: { text: iterationSelectTextMap.noIteration, id: null },
@@ -42,7 +42,7 @@ export default {
         };
       },
       update(data) {
-        return data.group?.iterations?.nodes || [];
+        return data.workspace?.attributes?.nodes || [];
       },
       skip() {
         return !this.shouldFetch;
@@ -66,9 +66,10 @@ export default {
       return groupByIterationCadences(this.iterations);
     },
     dropdownSelectedText() {
-      return this.currentIteration?.startDate || this.currentIteration?.period
-        ? this.getIterationPeriod(this.currentIteration)
-        : __('Select iteration');
+      return this.currentIteration?.period || __('Select iteration');
+    },
+    dropdownHeaderText() {
+      return __('Assign Iteration');
     },
   },
   methods: {
@@ -87,17 +88,26 @@ export default {
     onDropdownShow() {
       this.shouldFetch = true;
     },
+    setFocus() {
+      this.$refs.search.focusInput();
+    },
     getIterationPeriod,
   },
 };
 </script>
 
 <template>
-  <gl-dropdown :text="dropdownSelectedText" class="gl-w-full" block @show="onDropdownShow">
-    <gl-dropdown-section-header class="gl-display-flex! gl-justify-content-center">{{
-      __('Assign Iteration')
-    }}</gl-dropdown-section-header>
-    <gl-search-box-by-type v-model="searchTerm" />
+  <gl-dropdown
+    :text="dropdownSelectedText"
+    :header-text="dropdownHeaderText"
+    class="gl-w-full"
+    block
+    @show="onDropdownShow"
+    @shown="setFocus"
+  >
+    <template #header>
+      <gl-search-box-by-type ref="search" v-model="searchTerm" />
+    </template>
     <gl-dropdown-item
       is-check-item
       :is-checked="isIterationChecked($options.noIteration.id)"
