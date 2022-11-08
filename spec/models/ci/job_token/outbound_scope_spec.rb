@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Ci::JobToken::OutboundScope do
+  using RSpec::Parameterized::TableSyntax
+
   let_it_be(:source_project) { create(:project, ci_outbound_job_token_scope_enabled: true) }
 
   let(:scope) { described_class.new(source_project) }
@@ -39,39 +41,35 @@ RSpec.describe Ci::JobToken::OutboundScope do
     context 'with scoped projects' do
       include_context 'with scoped projects'
 
-      context 'when project is in outbound scope' do
-        let(:includes_project) { outbound_scoped_project }
-
-        it { is_expected.to be_truthy }
+      where(:includes_project, :result) do
+        ref(:source_project)            | true
+        ref(:inbound_scoped_project)    | false
+        ref(:outbound_scoped_project)   | true
+        ref(:unscoped_project1)         | false
+        ref(:unscoped_project2)         | false
       end
 
-      context 'when project is in inbound scope' do
-        let(:includes_project) { inbound_scoped_project }
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'when project is linked to a different project' do
-        let(:includes_project) { unscoped_project1 }
-
-        it { is_expected.to be_falsey }
-      end
-
-      context 'when project is unlinked to any project' do
-        let(:includes_project) { unscoped_project2 }
-
-        it { is_expected.to be_falsey }
+      with_them do
+        it { is_expected.to eq(result) }
       end
 
       context 'when project scope setting is disabled' do
-        let(:includes_project) { unscoped_project1 }
-
         before do
           source_project.ci_outbound_job_token_scope_enabled = false
         end
 
-        it 'considers any project to be part of the scope' do
-          expect(subject).to be_truthy
+        where(:includes_project, :result) do
+          ref(:source_project)            | true
+          ref(:inbound_scoped_project)    | true
+          ref(:outbound_scoped_project)   | true
+          ref(:unscoped_project1)         | true
+          ref(:unscoped_project2)         | true
+        end
+
+        with_them do
+          it 'considers any project as part of the scope' do
+            is_expected.to eq(result)
+          end
         end
       end
     end

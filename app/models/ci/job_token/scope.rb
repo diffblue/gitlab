@@ -29,9 +29,7 @@ module Ci
         outbound_scope.includes?(target_project)
       end
 
-      def all_projects
-        outbound_scope.all_projects
-      end
+      delegate :all_projects, to: :outbound_scope
 
       private
 
