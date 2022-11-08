@@ -27,13 +27,22 @@ module API
         end
 
         params :negatable_params do
-          optional :label_name, type: Array[String], coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce, desc: 'Array of label names to filter by'
-          optional :milestone_title, type: String, desc: 'Milestone title to filter by'
+          optional :label_name,
+                   type: Array[String],
+                   coerce_with: ::API::Validations::Types::CommaSeparatedToArray.coerce,
+                   desc: 'Array of label names to filter by',
+                   documentation: { example: %w[feature bug] }
+          optional :milestone_title,
+                   type: String,
+                   desc: 'Milestone title to filter by',
+                   documentation: { example: %w[1.6 1.7] }
         end
       end
 
       resource :analytics do
-        desc 'List code review information about project'
+        desc 'List code review information about project' do
+          success code: 200, model: EE::API::Entities::Analytics::CodeReview::MergeRequest
+        end
         params do
           requires :project_id, type: Integer, desc: 'Project ID'
           use :negatable_params
