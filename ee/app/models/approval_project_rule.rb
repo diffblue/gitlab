@@ -23,12 +23,6 @@ class ApprovalProjectRule < ApplicationRecord
     any_approver: 3
   }
 
-  # No scanners specified in a vulnerability approval rule means all scanners will be used.
-  # scan result policy approval rules require at least one scanner.
-  attribute :scanners, default: -> { [] }
-  attribute :vulnerabilities_allowed, default: 0
-  attribute :severity_levels, default: DEFAULT_SEVERITIES
-
   scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: :scan_finding) }
 
   alias_method :code_owner, :code_owner?
@@ -37,9 +31,18 @@ class ApprovalProjectRule < ApplicationRecord
   validate :validate_security_report_approver_name
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
 
-  validates :scanners, if: :should_validate_scanners?, inclusion: { in: SUPPORTED_SCANNERS }
+  validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
+
+  # No scanners specified in a vulnerability approval rule means all scanners will be used.
+  # scan result policy approval rules require at least one scanner.
+  default_value_for :scanners, allows_nil: false, value: []
+
   validates :vulnerabilities_allowed, numericality: { only_integer: true }
+  default_value_for :vulnerabilities_allowed, allows_nil: false, value: 0
+
   validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
+  default_value_for :severity_levels, allows_nil: false, value: DEFAULT_SEVERITIES
+
   validates :vulnerability_states, inclusion: { in: APPROVAL_VULNERABILITY_STATES.keys }
 
   def applies_to_branch?(branch)
@@ -138,9 +141,5 @@ class ApprovalProjectRule < ApplicationRecord
     elsif name == name_type[:name] && report_type != name_type[:type]
       errors.add(:name, _("%{name} is reserved for %{type} report type") % name_type)
     end
-  end
-
-  def should_validate_scanners?
-    scanners.nil? || scanners_changed?
   end
 end
