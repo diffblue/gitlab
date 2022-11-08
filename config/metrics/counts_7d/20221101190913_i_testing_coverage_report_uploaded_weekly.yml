@@ -16,7 +16,7 @@ instrumentation_class: RedisHLLMetric
 options:
   events:
     - i_testing_coverage_report_uploaded
-performance_indicator_type:
+performance_indicator_type: []
 distribution:
 - ce
 - ee
