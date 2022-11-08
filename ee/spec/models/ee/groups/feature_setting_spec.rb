@@ -4,6 +4,10 @@ require 'spec_helper'
 
 RSpec.describe Groups::FeatureSetting do
   # rubocop:disable Gitlab/FeatureAvailableUsage
+  describe 'default values' do
+    it { expect(subject.wiki_access_level).to eq(20) }
+  end
+
   describe '#feature_available?' do
     let_it_be_with_reload(:other_user) { create(:user) }
     let_it_be(:user) { create(:user) }

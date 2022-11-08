@@ -10,7 +10,7 @@ module EE
       prepended do
         set_available_features(EE_FEATURES)
 
-        default_value_for :wiki_access_level, value: Featurable::ENABLED, allows_nil: false
+        attribute :wiki_access_level, default: -> { Featurable::ENABLED }
       end
     end
   end
