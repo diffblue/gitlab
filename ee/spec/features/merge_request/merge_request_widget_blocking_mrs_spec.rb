@@ -27,7 +27,7 @@ RSpec.describe "User views merge request with blocking merge requests", :js do
     let(:other_mr) { create(:merge_request, state: :merged) }
 
     it 'enables merge button when blocking merge request is merged' do
-      page.within('.mr-widget-section') do
+      page.within('.mr-state-widget') do
         expect(page).not_to have_content('Merge blocked: all merge request dependencies must be merged.')
       end
     end

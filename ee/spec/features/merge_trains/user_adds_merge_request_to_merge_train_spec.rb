@@ -55,7 +55,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js do
     end
 
     it 'informs merge request that auto merge is enabled' do
-      within('.mr-widget-section') do
+      page.within('.mr-state-widget') do
         expect(page).to have_content("Added to the merge train by #{user.name}")
         expect(page).to have_content('Source branch will not be deleted.')
         expect(page).to have_button('Remove from merge train')
@@ -87,7 +87,7 @@ RSpec.describe 'User adds a merge request to a merge train', :js do
       end
 
       it 'cancels automatic merge' do
-        within('.mr-widget-section') do
+        page.within('.mr-state-widget') do
           expect(page).not_to have_content("Added to the merge train by #{user.name}")
           expect(page).to have_button('Start merge train')
         end

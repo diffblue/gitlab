@@ -70,8 +70,8 @@ export default {
 </script>
 
 <template>
-  <div>
-    <div class="mr-widget-extension d-flex align-items-center pl-3 gl-py-3">
+  <div class="mr-widget-extension">
+    <div class="d-flex align-items-center pl-3 gl-py-3">
       <gl-button
         class="gl-mr-3"
         size="small"

@@ -56,7 +56,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js do
     end
 
     it 'informs merge request that auto merge is enabled' do
-      within('.mr-widget-section') do
+      page.within('.mr-state-widget') do
         expect(page).to have_content("Set by #{user.name} to start a merge train when the pipeline succeeds")
         expect(page).to have_content('Source branch will not be deleted.')
         expect(page).to have_button('Cancel auto-merge')
@@ -69,7 +69,7 @@ RSpec.describe 'User adds to merge train when pipeline succeeds', :js do
       end
 
       it 'cancels automatic merge' do
-        within('.mr-widget-section') do
+        page.within('.mr-state-widget') do
           expect(page).not_to have_content("Set by #{user.name} to start a merge train when the pipeline succeeds")
           expect(page).to have_button('Start merge train when pipeline succeeds')
         end
