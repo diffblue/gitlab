@@ -65,6 +65,7 @@ describe('Incident Tabs component', () => {
   };
 
   const findSummaryTab = () => wrapper.findByTestId('summary-tab');
+  const findTimelineTab = () => wrapper.findByTestId('timeline-tab');
   const findAlertDetailsTab = () => wrapper.findByTestId('alert-details-tab');
   const findAlertDetailsComponent = () => wrapper.findComponent(AlertDetailsTable);
   const findDescriptionComponent = () => wrapper.findComponent(DescriptionComponent);
@@ -74,12 +75,12 @@ describe('Incident Tabs component', () => {
     findTabButtonByFilter((inner) => inner.text() === incidentTabsI18n.timelineTitle).at(0);
   const findActiveTabs = () => findTabButtonByFilter((inner) => inner.classes('active'));
 
-  describe('empty state', () => {
+  describe('with no alerts', () => {
     beforeEach(() => {
       mountComponent({ data: { alert: null } });
     });
 
-    it('does not show the alert details tab', () => {
+    it('does not show the alert details tab option', () => {
       expect(findAlertDetailsComponent().exists()).toBe(false);
     });
   });
@@ -91,7 +92,12 @@ describe('Incident Tabs component', () => {
 
     it('renders the summary tab', () => {
       expect(findSummaryTab().exists()).toBe(true);
-      expect(findSummaryTab().attributes('title')).toBe('Summary');
+      expect(findSummaryTab().attributes('title')).toBe(incidentTabsI18n.summaryTitle);
+    });
+
+    it('renders the timeline tab', () => {
+      expect(findTimelineTab().exists()).toBe(true);
+      expect(findTimelineTab().attributes('title')).toBe(incidentTabsI18n.timelineTitle);
     });
 
     it('renders the alert details tab', () => {

@@ -12,5 +12,5 @@ export default {
 </script>
 
 <template>
-  <metric-images-tab data-testid="metrics-tab" />
+  <metric-images-tab />
 </template>
