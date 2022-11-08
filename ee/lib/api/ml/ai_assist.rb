@@ -4,6 +4,7 @@ module API
   module Ml
     class AiAssist < ::API::Base
       include APIGuard
+      feature_category :editor_extension
       accessible_root_groups = nil
 
       before do
