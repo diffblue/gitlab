@@ -5,18 +5,27 @@ require 'spec_helper'
 RSpec.describe Database::BatchedBackgroundMigration::ExecutionWorker, :clean_gitlab_redis_shared_state do
   describe '#perform' do
     let(:database_name) { Gitlab::Database::MAIN_DATABASE_NAME.to_sym }
+    let(:base_model) { Gitlab::Database.database_base_models[database_name] }
+    let(:table_name) { :events }
+    let(:job_interval) { 5.minutes }
+    let(:interval_variance) { described_class::INTERVAL_VARIANCE }
 
     subject(:worker) { described_class.new }
 
     context 'when the feature flag is disabled' do
+      let(:migration) do
+        create(:batched_background_migration, :active, interval: job_interval, table_name: table_name)
+      end
+
       before do
         stub_feature_flags(execute_batched_migrations_on_schedule: false)
       end
 
       it 'does nothing' do
+        expect(Gitlab::Database::BackgroundMigration::BatchedMigration).not_to receive(:find_executable)
         expect(worker).not_to receive(:run)
 
-        worker.perform(database_name, 123)
+        worker.perform(database_name, migration.id)
       end
     end
 
@@ -34,10 +43,6 @@ RSpec.describe Database::BatchedBackgroundMigration::ExecutionWorker, :clean_git
       end
 
       context 'when migration exist' do
-        let(:base_model) { Gitlab::Database.database_base_models[database_name] }
-        let(:table_name) { :events }
-        let(:job_interval) { 5.minutes }
-        let(:interval_variance) { described_class::INTERVAL_VARIANCE }
         let(:migration) do
           create(:batched_background_migration, :active, interval: job_interval, table_name: table_name)
         end

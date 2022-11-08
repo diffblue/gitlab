@@ -8,6 +8,8 @@ module Database
       INTERVAL_VARIANCE = 5.seconds.freeze
 
       def perform(database_name, migration_id)
+        return unless enabled?
+
         self.database_name = database_name
 
         Gitlab::Database::SharedModel.using_connection(base_model.connection) do
@@ -22,6 +24,10 @@ module Database
       private
 
       attr_accessor :database_name
+
+      def enabled?
+        Feature.enabled?(:execute_batched_migrations_on_schedule, type: :ops)
+      end
 
       def base_model
         strong_memoize(:base_model) do
