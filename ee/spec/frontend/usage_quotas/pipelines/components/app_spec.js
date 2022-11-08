@@ -24,7 +24,7 @@ import {
   CI_MINUTES_HELP_LINK_LABEL,
 } from 'ee/usage_quotas/pipelines/constants';
 import getNamespaceProjectsInfo from 'ee/usage_quotas/pipelines/queries/namespace_projects_info.query.graphql';
-import getCiMinutesUsageNamespace from 'ee/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
+import getCiMinutesUsageNamespace from 'ee/ci/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import {
   defaultProvide,
   mockGetNamespaceProjectsInfo,
