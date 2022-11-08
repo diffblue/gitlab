@@ -68,7 +68,7 @@ are regular backend changes.
     Read the [stages file](https://gitlab.com/gitlab-com/www-gitlab-com/blob/master/data/stages.yml).
   - Check the file location. Consider the time frame, and if the file should be under `ee`.
   - Check the tiers.
-- If a metric was changed or removed: Make sure that the Data, Customer Success and Product Data insights team were notified about the change by @ mention in the MR.
+- If a metric was changed or removed: Notify the Customer Success (`@csops-team`) and Product Analysts (`@gitlab-data/product-analysts`) teams by `@` mentioning those groups in a comment on the MR.
 - Metrics instrumentations
   - Recommend using metrics instrumentation for new metrics, [if possible](metrics_instrumentation.md#support-for-instrumentation-classes).
 - Approve the MR, and relabel the MR with `~"product intelligence::approved"`.
