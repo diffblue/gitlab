@@ -61,6 +61,19 @@ describe('The Pipeline Tabs', () => {
     wrapper.destroy();
   });
 
+  it('lazy loads all tabs', () => {
+    createComponent({
+      stubs: {
+        GlTab,
+      },
+    });
+    const tabs = wrapper.findAllComponents(GlTab);
+
+    tabs.wrappers.forEach((tab) => {
+      expect(tab.attributes('lazy')).toBe('true');
+    });
+  });
+
   describe('CE Tabs', () => {
     it.each`
       tabName          | tabComponent
