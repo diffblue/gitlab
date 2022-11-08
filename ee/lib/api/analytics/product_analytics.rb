@@ -34,7 +34,7 @@ module API
                                default: 'multi',
                                desc: 'The query type. Currently only "multi" is supported.'
         end
-        get ':project_id/product_analytics/request/load' do
+        post ':project_id/product_analytics/request/load' do
           not_found! unless project.product_analytics_enabled?
           unauthorized! unless can?(current_user, :developer_access, project)
 
@@ -52,7 +52,7 @@ module API
               "Content-Type": 'application/json',
               Authorization: JWT.encode(payload, Gitlab::CurrentSettings.cube_api_key, 'HS256')
             },
-            body: { query: Gitlab::Json.parse(params["query"]), "queryType": params["queryType"] }.to_json
+            body: { query: params["query"], "queryType": params["queryType"] }.to_json
           )
 
           Gitlab::Json.parse(response.body)
