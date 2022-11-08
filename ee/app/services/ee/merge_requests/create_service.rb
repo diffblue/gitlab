@@ -7,27 +7,26 @@ module EE
 
       override :after_create
       def after_create(issuable)
+        issuable.run_after_commit do
+          ::MergeRequests::SyncCodeOwnerApprovalRulesWorker.perform_async(issuable.id)
+
+          if project.can_suggest_reviewers? && issuable.can_suggest_reviewers?
+            ::MergeRequests::FetchSuggestedReviewersWorker.perform_async(issuable.id)
+          end
+        end
+
         super
 
-        ::MergeRequests::SyncCodeOwnerApprovalRulesWorker.perform_async(issuable.id)
         ::MergeRequests::SyncReportApproverApprovalRules.new(issuable, current_user).execute
 
         ::MergeRequests::UpdateBlocksService
           .new(issuable, current_user, blocking_merge_requests_params)
           .execute
 
-        trigger_suggested_reviewers_fetch(issuable)
         stream_audit_event(issuable)
       end
 
       private
-
-      def trigger_suggested_reviewers_fetch(issuable)
-        return unless project.can_suggest_reviewers?
-        return unless issuable.can_suggest_reviewers?
-
-        ::MergeRequests::FetchSuggestedReviewersWorker.perform_async(issuable.id)
-      end
 
       def stream_audit_event(merge_request)
         audit_context = {
