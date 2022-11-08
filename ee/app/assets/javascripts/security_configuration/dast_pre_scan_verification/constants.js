@@ -1,4 +1,4 @@
-import { __ } from '~/locale';
+import { s__, __ } from '~/locale';
 /**
  * TODO replace with actual statuses from backend
  * when backend is ready
@@ -24,28 +24,23 @@ export const PRE_SCAN_VERIFICATION_STATUS_LABEL_MAP = {
 export const STATUS_STYLE_MAP = {
   [PRE_SCAN_VERIFICATION_STATUS.DEFAULT]: {
     icon: 'review-checkmark',
-    bgColor: 'gl-bg-gray-100',
-    iconColor: 'gl-text-gray-500',
+    variant: 'neutral',
   },
   [PRE_SCAN_VERIFICATION_STATUS.COMPLETE]: {
     icon: 'check-sm',
-    bgColor: 'gl-bg-green-100',
-    iconColor: 'gl-text-green-500',
+    variant: 'success',
   },
   [PRE_SCAN_VERIFICATION_STATUS.COMPLETE_WITH_ERRORS]: {
     icon: 'status_warning_borderless',
-    bgColor: 'gl-bg-orange-100',
-    iconColor: 'gl-text-orange-500',
+    variant: 'warning',
   },
   [PRE_SCAN_VERIFICATION_STATUS.FAILED]: {
     icon: 'status_failed',
-    bgColor: 'gl-bg-red-100',
-    iconColor: 'gl-text-red-500',
+    variant: 'danger',
   },
   [PRE_SCAN_VERIFICATION_STATUS.INVALIDATED]: {
     icon: 'status_failed',
-    bgColor: 'gl-bg-red-100',
-    iconColor: 'gl-text-red-500',
+    variant: 'danger',
   },
 };
 
@@ -90,3 +85,38 @@ export const STATUS_LABEL_MAP = {
 
 export const DEFAULT_STYLING_SUMMARY_STYLING =
   SUMMARY_STATUS_STYLE_MAP[PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS];
+
+export const PRE_SCAN_VERIFICATION_STEPS = [
+  {
+    header: s__('PreScanVerification|Connection'),
+    text: s__('PreScanVerification|Attempts to find and connect to the scan target'),
+  },
+  {
+    header: s__('PreScanVerification|Authentication'),
+    text: s__('PreScanVerification|Attempts to authenticate with the scan target'),
+  },
+  {
+    header: s__('PreScanVerification|Target exploration'),
+    text: s__(
+      'PreScanVerification|Attempts to follow internal links and crawl 3 pages without errors',
+    ),
+  },
+];
+
+export const PRE_SCAN_VERIFICATION_STEPS_LAST_INDEX = PRE_SCAN_VERIFICATION_STEPS.length - 1;
+
+/**
+ * Translations
+ */
+
+export const PRE_SCAN_VERIFICATION_LIST_TRANSLATIONS = {
+  preScanVerificationListHeader: s__('PreScanVerification|Verification checks'),
+  preScanVerificationListTooltip: s__(
+    'PreScanVerification|Verification checks are determined by a scan’s configuration details. Changing configuration details may alter or reset the verification checks and their status.',
+  ),
+  preScanVerificationButtonDefault: s__('PreScanVerification|Save and run verification'),
+  preScanVerificationButtonInProgress: s__('PreScanVerification|Cancel pre-scan verification'),
+  preScanVerificationButtonTooltip: s__(
+    'PreScanVerification|You must complete the scan configuration form before running pre-scan verification',
+  ),
+};

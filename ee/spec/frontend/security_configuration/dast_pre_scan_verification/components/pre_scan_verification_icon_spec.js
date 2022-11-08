@@ -1,5 +1,5 @@
-import { GlLoadingIcon } from '@gitlab/ui';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
+import { GlLoadingIcon, GlBadge } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import PreScanVerificationIcon from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_icon.vue';
 import {
   DEFAULT_STYLING,
@@ -11,15 +11,14 @@ describe('PreScanVerificationIcon', () => {
   let wrapper;
 
   const createComponent = (options = {}) => {
-    wrapper = mountExtended(PreScanVerificationIcon, {
+    wrapper = shallowMount(PreScanVerificationIcon, {
       propsData: {
         ...options,
       },
     });
   };
 
-  const findBasicIconWrapper = () => wrapper.findByTestId('pre-scan-verification-icon-wrapper');
-  const findBasicIcon = () => wrapper.findByTestId('pre-scan-verification-icon');
+  const findBasicIcon = () => wrapper.findComponent(GlBadge);
   const findLoadingIcon = () => wrapper.findComponent(GlLoadingIcon);
 
   it.each`
@@ -32,10 +31,8 @@ describe('PreScanVerificationIcon', () => {
   `('should render correct icon and style based on status', ({ status, output }) => {
     createComponent({ status });
 
-    expect(findBasicIcon().attributes('class')).toContain(output.iconColor);
-    expect(findBasicIcon().props('name')).toEqual(output.icon);
-    expect(findBasicIcon().attributes('aria-label')).toEqual(output.icon);
-    expect(findBasicIconWrapper().attributes('class')).toContain(output.bgColor);
+    expect(findBasicIcon().props('icon')).toContain(output.icon);
+    expect(findBasicIcon().props('variant')).toEqual(output.variant);
     expect(findLoadingIcon().exists()).toBe(false);
   });
 
@@ -49,8 +46,7 @@ describe('PreScanVerificationIcon', () => {
   it('should fall back to a default styling if status is invalid', () => {
     createComponent({ status: 'Invalid status ' });
 
-    expect(findBasicIcon().attributes('class')).toContain(DEFAULT_STYLING.iconColor);
-    expect(findBasicIcon().attributes('aria-label')).toEqual(DEFAULT_STYLING.icon);
-    expect(findBasicIconWrapper().attributes('class')).toContain(DEFAULT_STYLING.bgColor);
+    expect(findBasicIcon().props('icon')).toContain(DEFAULT_STYLING.icon);
+    expect(findBasicIcon().props('variant')).toContain(DEFAULT_STYLING.variant);
   });
 });
