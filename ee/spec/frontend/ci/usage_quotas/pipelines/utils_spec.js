@@ -1,5 +1,5 @@
 import { formatDate } from '~/lib/utils/datetime_utility';
-import { getProjectMinutesUsage } from 'ee/usage_quotas/pipelines/utils';
+import { getProjectMinutesUsage } from 'ee/ci/usage_quotas/pipelines/utils';
 import { mockGetNamespaceProjectsInfo, mockGetCiMinutesUsageNamespace } from './mock_data';
 
 describe('getProjectMinutesUsage', () => {
