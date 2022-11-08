@@ -53,12 +53,10 @@ describe('Cluster Filter component', () => {
     expect(filterItems.at(0).props()).toStrictEqual({
       isChecked: true,
       text: 'All clusters',
-      truncate: false,
     });
     expect(filterItems.at(1).props()).toStrictEqual({
       isChecked: false,
       text: 'primary-agent',
-      truncate: false,
     });
   });
 

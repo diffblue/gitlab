@@ -1,4 +1,5 @@
 <script>
+import { GlTruncate, GlTooltipDirective as GlTooltip } from '@gitlab/ui';
 import { createAlert } from '~/flash';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
 import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
@@ -9,7 +10,8 @@ import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
 
 export default {
-  components: { FilterBody, FilterItem },
+  components: { FilterBody, FilterItem, GlTruncate },
+  directives: { GlTooltip },
   extends: SimpleFilter,
   apollo: {
     images: {
@@ -89,10 +91,11 @@ export default {
     <filter-item
       v-for="option in images"
       :key="option.id"
+      v-gl-tooltip.left.viewport="option.id"
       :is-checked="isSelected(option)"
-      :text="option.id"
-      truncate
       @click="toggleOption(option)"
-    />
+    >
+      <gl-truncate position="middle" :text="option.id" title="" />
+    </filter-item>
   </filter-body>
 </template>

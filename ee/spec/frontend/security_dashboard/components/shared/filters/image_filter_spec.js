@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
+import { GlTruncate } from '@gitlab/ui';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -10,6 +11,7 @@ import { imageFilter } from 'ee/security_dashboard/helpers';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
 import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { agentVulnerabilityImages, projectVulnerabilityImages } from '../../mock_data';
 
 jest.mock('~/flash');
@@ -39,10 +41,24 @@ describe('Image Filter component', () => {
       apolloProvider: createMockApolloProvider({ agentQueryResolver, projectQueryResolver }),
       propsData: { filter: imageFilter },
       provide: { projectFullPath, ...provide },
+      directives: { GlTooltip: createMockDirective() },
     });
   };
 
   const findFilterItems = () => wrapper.findAllComponents(FilterItem);
+
+  const expectFilterItem = (item, name) => {
+    const tooltip = getBinding(item.element, 'gl-tooltip');
+    const truncate = item.findComponent(GlTruncate);
+
+    expect(item.props('isChecked')).toBe(false);
+
+    expect(truncate.attributes('title')).toBe('');
+    expect(truncate.props()).toMatchObject({ text: name, position: 'middle' });
+
+    expect(tooltip.modifiers).toStrictEqual({ left: true, viewport: true });
+    expect(tooltip.value).toBe(name);
+  };
 
   afterEach(() => {
     createAlert.mockClear();
@@ -68,17 +84,12 @@ describe('Image Filter component', () => {
       expect(findFilterItems().at(0).props()).toStrictEqual({
         isChecked: true,
         text: 'All images',
-        truncate: false,
       });
     });
 
     it('populates the filter options from the query response', () => {
       mockImages.forEach(({ name }, index) => {
-        expect(
-          findFilterItems()
-            .at(index + 1)
-            .props(),
-        ).toStrictEqual({ isChecked: false, text: name, truncate: true });
+        expectFilterItem(findFilterItems().at(index + 1), name);
       });
     });
   });
@@ -101,11 +112,7 @@ describe('Image Filter component', () => {
 
     it('populates the filter options from the query response', () => {
       mockImages.forEach(({ name }, index) => {
-        expect(
-          findFilterItems()
-            .at(index + 1)
-            .props(),
-        ).toStrictEqual({ isChecked: false, text: name, truncate: true });
+        expectFilterItem(findFilterItems().at(index + 1), name);
       });
     });
   });
