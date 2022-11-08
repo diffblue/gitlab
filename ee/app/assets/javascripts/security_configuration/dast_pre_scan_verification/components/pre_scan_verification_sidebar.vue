@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
 import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
+import PreScanVerificationList from './pre_scan_verification_list.vue';
 import PreScanVerificationSummary from './pre_scan_verification_summary.vue';
 
 export default {
@@ -17,6 +18,7 @@ export default {
   name: 'PreScanVerificationSidebar',
   components: {
     GlDrawer,
+    PreScanVerificationList,
     PreScanVerificationSummary,
   },
   props: {
@@ -62,6 +64,8 @@ export default {
         </p>
 
         <pre-scan-verification-summary v-if="!isDefaultStatus" :status="status" />
+
+        <pre-scan-verification-list class="gl-mt-6" :status="status" />
       </div>
     </template>
   </gl-drawer>

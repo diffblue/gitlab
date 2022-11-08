@@ -1,6 +1,6 @@
 import { GlDrawer } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
-import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PreScanVerificationSidebar from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_sidebar.vue';
 import PreScanVerificationSummary from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_summary.vue';
 import { PRE_SCAN_VERIFICATION_STATUS } from 'ee/security_configuration/dast_pre_scan_verification/constants';
@@ -9,7 +9,7 @@ describe('PreScanVerificationSidebar', () => {
   let wrapper;
 
   const createComponent = (propsData = {}) => {
-    wrapper = mountExtended(PreScanVerificationSidebar, {
+    wrapper = shallowMount(PreScanVerificationSidebar, {
       propsData: {
         ...propsData,
       },
