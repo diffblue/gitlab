@@ -3,6 +3,7 @@ import createComponent from 'jest/boards/board_list_helper';
 
 import BoardCard from '~/boards/components/board_card.vue';
 import BoardCardInner from '~/boards/components/board_card_inner.vue';
+import BoardCardMoveToPosition from '~/boards/components/board_card_move_to_position.vue';
 import { issuableTypes } from '~/boards/constants';
 
 jest.mock('~/flash');
@@ -60,5 +61,9 @@ describe('BoardList Component', () => {
     expect(wrapper.find('.board-card .board-card-title a').attributes('href')).not.toContain(
       ':project_path',
     );
+  });
+
+  it('renders the move to position icon', () => {
+    expect(wrapper.findComponent(BoardCardMoveToPosition).exists()).toBe(false);
   });
 });
