@@ -51,6 +51,8 @@ metadata:
     description: Operations related to merge requests
   - name: metadata
     description: Operations related to metadata of the GitLab instance
+  - name: project_events
+    description: Operations related to project events
   - name: project_export
     description: Operations related to export projects
   - name: project_hooks
