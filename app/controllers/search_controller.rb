@@ -33,6 +33,8 @@ class SearchController < ApplicationController
     push_frontend_feature_flag(:search_page_vertical_nav, current_user)
   end
 
+  before_action :set_elasticsearch_in_use, only: :show
+
   rescue_from ActiveRecord::QueryCanceled, with: :render_timeout
 
   layout 'search'
@@ -116,6 +118,12 @@ class SearchController < ApplicationController
   end
 
   def opensearch
+  end
+
+  def set_elasticsearch_in_use
+    strong_memoize(:elasticsearch_in_use) do
+      search_service.respond_to?(:use_elasticsearch?) && search_service.use_elasticsearch?
+    end
   end
 
   private
