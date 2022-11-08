@@ -139,7 +139,7 @@ module EE
 
     override :search_navigation
     def search_navigation
-      super.merge(epics: { label: _("Epics"), condition: @project.nil? && search_service.show_epics? })
+      super.merge(epics: { sort: 3, label: _("Epics"), condition: @project.nil? && search_service.show_epics? })
     end
 
     override :search_scope
