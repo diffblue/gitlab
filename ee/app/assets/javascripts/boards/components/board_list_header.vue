@@ -1,5 +1,4 @@
 <script>
-import { mapGetters } from 'vuex';
 // This is a false violation of @gitlab/no-runtime-template-compiler, since it
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
@@ -10,7 +9,7 @@ import epicListQuery from 'ee/boards/graphql/epic_board_lists_deferred.query.gra
 
 export default {
   extends: BoardListHeaderFoss,
-  inject: ['weightFeatureAvailable'],
+  inject: ['weightFeatureAvailable', 'isEpicBoard'],
   apollo: {
     boardList: {
       query: listQuery,
@@ -38,7 +37,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['isEpicBoard']),
     countIcon() {
       return this.isEpicBoard ? 'epic' : 'issues';
     },

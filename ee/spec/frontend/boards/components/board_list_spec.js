@@ -30,7 +30,6 @@ const componentConfig = {
   getters: {
     isGroupBoard: () => true,
     isProjectBoard: () => false,
-    isEpicBoard: () => true,
   },
   state: {
     issuableType: issuableTypes.epic,
@@ -43,6 +42,7 @@ const componentConfig = {
   },
   provide: {
     scopedLabelsAvailable: true,
+    isEpicBoard: true,
   },
 };
 
@@ -63,7 +63,7 @@ describe('BoardList Component', () => {
     );
   });
 
-  it('renders the move to position icon', () => {
+  it('does not render the move to position icon', () => {
     expect(wrapper.findComponent(BoardCardMoveToPosition).exists()).toBe(false);
   });
 });

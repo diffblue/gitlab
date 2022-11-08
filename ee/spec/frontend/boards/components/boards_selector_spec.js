@@ -31,11 +31,7 @@ describe('BoardsSelector', () => {
   let fakeApollo;
   let store;
 
-  const createStore = ({
-    isGroupBoard = false,
-    isProjectBoard = false,
-    isEpicBoard = false,
-  } = {}) => {
+  const createStore = ({ isGroupBoard = false, isProjectBoard = false } = {}) => {
     store = new Vuex.Store({
       ...defaultStore,
       actions: {
@@ -43,7 +39,6 @@ describe('BoardsSelector', () => {
         setBoardConfig: jest.fn(),
       },
       getters: {
-        isEpicBoard: () => isEpicBoard,
         isGroupBoard: () => isGroupBoard,
         isProjectBoard: () => isProjectBoard,
       },
@@ -69,7 +64,7 @@ describe('BoardsSelector', () => {
     .fn()
     .mockResolvedValue(mockGroupRecentBoardsResponse);
 
-  const createComponent = () => {
+  const createComponent = ({ isEpicBoard = false }) => {
     fakeApollo = createMockApollo([
       [projectBoardsQuery, projectBoardsQueryHandlerSuccess],
       [groupBoardsQuery, groupBoardsQueryHandlerSuccess],
@@ -93,6 +88,7 @@ describe('BoardsSelector', () => {
         multipleIssueBoardsAvailable: true,
         scopedIssueBoardFeatureEnabled: true,
         weights: [],
+        isEpicBoard,
       },
     });
   };
@@ -115,9 +111,8 @@ describe('BoardsSelector', () => {
         createStore({
           isProjectBoard: boardType === BoardType.project,
           isGroupBoard: boardType === BoardType.group,
-          isEpicBoard,
         });
-        createComponent();
+        createComponent({ isEpicBoard });
 
         await nextTick();
 

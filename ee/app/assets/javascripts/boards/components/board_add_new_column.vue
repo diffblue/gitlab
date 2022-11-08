@@ -75,6 +75,7 @@ export default {
     'milestoneListsAvailable',
     'assigneeListsAvailable',
     'iterationListsAvailable',
+    'isEpicBoard',
   ],
   data() {
     return {
@@ -94,7 +95,7 @@ export default {
       'assignees',
       'assigneesLoading',
     ]),
-    ...mapGetters(['getListByTypeId', 'isEpicBoard']),
+    ...mapGetters(['getListByTypeId']),
 
     info() {
       return listTypeInfo[this.columnType] || {};

@@ -35,6 +35,7 @@ describe('ee/BoardSettingsSidebar', () => {
         },
         canAdminList: false,
         scopedLabelsAvailable: true,
+        isIssueBoard: true,
       },
       stubs: {
         'board-settings-sidebar-wip-limit': BoardSettingsWipLimit,

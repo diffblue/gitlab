@@ -23,7 +23,6 @@ describe('Board card component', () => {
       },
       getters: {
         isGroupBoard: () => true,
-        isEpicBoard: () => false,
         isProjectBoard: () => false,
       },
     });
@@ -42,6 +41,7 @@ describe('Board card component', () => {
         groupId: null,
         rootPath: '/',
         scopedLabelsAvailable: false,
+        isEpicBoard: false,
       },
     });
   };
