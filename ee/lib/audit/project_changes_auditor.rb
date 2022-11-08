@@ -5,7 +5,7 @@ module Audit
     def execute
       audit_changes(:visibility_level, as: 'visibility', model: model)
       audit_changes(:path, as: 'path', model: model, event_type: 'project_path_updated')
-      audit_changes(:name, as: 'name', model: model)
+      audit_changes(:name, as: 'name', model: model, event_type: 'project_name_updated')
       audit_changes(:namespace_id, as: 'namespace', model: model)
       audit_changes(:repository_size_limit, as: 'repository_size_limit', model: model)
       audit_changes(:packages_enabled, as: 'packages_enabled', model: model)

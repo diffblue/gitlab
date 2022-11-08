@@ -48,11 +48,38 @@ RSpec.describe Audit::ProjectChangesAuditor do
         expect(AuditEvent.last.details[:change]).to eq 'visibility'
       end
 
-      it 'creates an event when the name change' do
-        project.update!(name: 'new name')
+      # it 'creates an event when the name change' do
+      #   project.update!(name: 'new name')
 
-        expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-        expect(AuditEvent.last.details[:change]).to eq 'name'
+      #   expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
+      #   expect(AuditEvent.last.details[:change]).to eq 'name'
+      # end
+
+      context 'when project name is updated' do
+        it "logs project_name_updated event" do
+          old_project_name = project.full_name.to_s
+
+          project.update!(name: 'newname')
+
+          expect(Gitlab::Audit::Auditor).to receive(:audit).with(
+            {
+              name: 'project_name_updated',
+              author: user,
+              scope: project,
+              target: project,
+              message: "Changed name from #{old_project_name} to #{project.full_name}",
+              additional_details: {
+                change: "name",
+                from: old_project_name,
+                target_details: project.full_path.to_s,
+                to: project.full_name.to_s
+              },
+              target_details: project.full_path.to_s
+            }
+          ).and_call_original
+
+          auditor_instance.execute
+        end
       end
 
       context 'when project path is updated' do
