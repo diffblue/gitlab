@@ -34,6 +34,17 @@ RSpec.describe Database::BatchedBackgroundMigration::ExecutionWorker, :clean_git
         stub_feature_flags(execute_batched_migrations_on_schedule: true)
       end
 
+      it 'does nothing if provided database is sharing config' do
+        ci_model = Gitlab::Database.database_base_models['ci']
+        expect(Gitlab::Database).to receive(:db_config_share_with)
+          .with(ci_model.connection_db_config).and_return('main')
+
+        expect(Gitlab::Database::BackgroundMigration::BatchedMigration).not_to receive(:find_executable)
+        expect(worker).not_to receive(:run)
+
+        worker.perform(:ci, 123)
+      end
+
       context 'when migration does not exist' do
         it 'does nothing' do
           expect(worker).not_to receive(:run)
