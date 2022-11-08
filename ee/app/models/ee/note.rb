@@ -91,6 +91,10 @@ module EE
       )
     end
 
+    def updated_by_or_author
+      last_edited_by || author
+    end
+
     private
 
     def system_note_for_epic?
