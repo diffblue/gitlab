@@ -11,7 +11,7 @@ milestone: "14.6"
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/issues/344670
 time_frame: "28d"
 data_source: database
-data_category: optional
+data_category: operational
 instrumentation_class: CountEventStreamingDestinationsMetric
 distribution:
 - ee
