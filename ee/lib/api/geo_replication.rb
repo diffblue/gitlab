@@ -25,8 +25,15 @@ module API
           success ::GeoDesignRegistryEntity
         end
         params do
-          optional :search, type: String, desc: 'Query term that will search over :path, :name and :description'
-          optional :sync_status, type: String, values: %w[failed synced pending], desc: 'The state of sync'
+          optional :search,
+            type: String,
+            desc: 'Query term that will search over :path, :name and :description',
+            documentation: { example: 'name LIKE foo%' }
+          optional :sync_status,
+            type: String,
+            values: %w[failed synced pending],
+            desc: 'The state of sync',
+            documentation: { example: 'failed' }
           use :pagination
         end
         get do
@@ -43,7 +50,7 @@ module API
           success ::GeoDesignRegistryEntity
         end
         params do
-          optional :id, type: Integer, desc: 'ID of project'
+          optional :id, type: Integer, desc: 'ID of project', documentation: { example: 42 }
         end
         put ':id/resync' do
           ::Geo::DesignRegistry.find_by!(project_id: params[:id]).repository_updated! # rubocop: disable CodeReuse/ActiveRecord
