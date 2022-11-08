@@ -21,7 +21,7 @@ namespace :admin do
   resources :audit_logs, controller: 'audit_logs', only: [:index]
   resources :audit_log_reports, only: [:index], constraints: { format: :csv }
   resources :credentials, only: [:index, :destroy] do
-    resources :projects, only: [] do
+    resources :resources, only: [] do
       put :revoke, controller: :credentials
     end
     member do
