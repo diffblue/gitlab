@@ -195,6 +195,7 @@ module API
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
         mount ::API::Keys
+        mount ::API::Lint
         mount ::API::MergeRequestDiffs
         mount ::API::Metadata
         mount ::API::PersonalAccessTokens::SelfInformation
@@ -277,7 +278,6 @@ module API
       mount ::API::IssueLinks
       mount ::API::Issues
       mount ::API::Labels
-      mount ::API::Lint
       mount ::API::Markdown
       mount ::API::MavenPackages
       mount ::API::Members
