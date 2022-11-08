@@ -37,7 +37,7 @@ RSpec.describe 'Pipelines Content Security' do
         p.script_src :self, 'https://some-cdn.test'
       end
 
-      setup_existing_csp_for_controller(::Projects::PipelinesController, csp)
+      setup_csp_for_controller(::Projects::PipelinesController, csp)
 
       visit project_pipeline_path(project, pipeline)
     end
