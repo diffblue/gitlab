@@ -2422,6 +2422,42 @@ RSpec.describe ProjectPolicy do
     end
   end
 
+  describe 'create_objective' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:policy) { :create_objective }
+
+    where(:role, :allowed) do
+      :guest      | true
+      :reporter   | true
+      :developer  | true
+      :maintainer | true
+      :auditor    | false
+      :owner      | true
+      :admin      | true
+    end
+
+    with_them do
+      let(:current_user) { public_send(role) }
+
+      before do
+        enable_admin_mode!(current_user) if role == :admin
+      end
+
+      context 'when okrs_mvc feature flag is enabled' do
+        it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+      end
+
+      context 'when okrs_mvc feature flag is disabled' do
+        before do
+          stub_feature_flags(okrs_mvc: false)
+        end
+
+        it { is_expected.to(be_disallowed(policy)) }
+      end
+    end
+  end
+
   context 'hidden projects' do
     let(:project) { create(:project, :repository, hidden: true) }
     let(:current_user) { create(:user) }

@@ -184,6 +184,8 @@ module EE
         @user.download_code_for?(project)
       end
 
+      condition(:okrs_enabled, scope: :subject) { project&.okrs_mvc_feature_flag_enabled? }
+
       # Owners can be banned from their own project except for top-level group
       # owners. This exception is made at the service layer
       # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
@@ -532,6 +534,8 @@ module EE
       end
 
       rule { custom_roles_allowed & role_enables_download_code }.enable :download_code
+
+      rule { can?(:create_issue) & okrs_enabled }.enable :create_objective
     end
 
     override :lookup_access_level!
