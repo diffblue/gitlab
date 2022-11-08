@@ -50,6 +50,34 @@ RSpec.describe Geo::ContainerRepositoryReplicator do
       end
     end
 
+    describe '#handle_after_destroy' do
+      it 'creates a Geo::Event' do
+        expect do
+          replicator.handle_after_destroy
+        end.to change(::Geo::Event, :count).by(1)
+
+        expect(::Geo::Event.last.attributes).to include(
+          "replicable_name" => replicator.replicable_name,
+          "event_name" => "deleted",
+          "payload" => {
+            "model_record_id" => replicator.model_record.id,
+            "path" => replicator.model_record.path
+          })
+      end
+
+      context 'when replication feature flag is disabled' do
+        before do
+          stub_feature_flags(replicator.replication_enabled_feature_key => false)
+        end
+
+        it 'does not publish' do
+          expect(replicator).not_to receive(:publish)
+
+          replicator.handle_after_destroy
+        end
+      end
+    end
+
     describe 'updated event consumption' do
       before do
         model_record.save!
@@ -85,7 +113,24 @@ RSpec.describe Geo::ContainerRepositoryReplicator do
       it 'calls update event consumer' do
         expect(replicator).to receive(:consume_event_updated)
 
-        replicator.consume(:created)
+        replicator.consume_event_created
+      end
+    end
+
+    describe 'deleted event consumption' do
+      before do
+        model_record.save!
+      end
+
+      it 'runs Geo::ContainerRepositoryRegistryRemovalService service' do
+        removal_service = double
+
+        expect(removal_service).to receive(:execute)
+        expect(::Geo::ContainerRepositoryRegistryRemovalService)
+          .to receive(:new).with(model_record.id, model_record.path)
+                .and_return(removal_service)
+
+        replicator.consume(:deleted, model_record_id: model_record, path: model_record.path)
       end
     end
 

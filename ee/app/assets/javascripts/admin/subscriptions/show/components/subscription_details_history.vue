@@ -5,13 +5,8 @@ import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { detailsLabels, subscriptionTable } from '../constants';
 import { getLicenseTypeLabel } from '../utils';
 
-const DEFAULT_BORDER_CLASSES = 'gl-border-b-1! gl-border-b-gray-100! gl-border-b-solid!';
-const DEFAULT_TH_CLASSES = 'gl-bg-white! gl-border-t-0! gl-pb-5! gl-px-5! gl-text-gray-700!';
-const DEFAULT_TD_CLASSES = 'gl-py-5!';
 const tdAttr = (_, key) => ({ 'data-testid': `subscription-cell-${kebabCase(key)}` });
-const tdClassBase = [DEFAULT_BORDER_CLASSES, DEFAULT_TD_CLASSES];
-const tdClassHighlight = [...tdClassBase, 'gl-bg-blue-50!'];
-const thClass = [DEFAULT_BORDER_CLASSES, DEFAULT_TH_CLASSES];
+const tdClassHighlight = 'gl-bg-blue-50!';
 
 export default {
   i18n: {
@@ -47,7 +42,6 @@ export default {
           label: detailsLabels.name,
           tdAttr,
           tdClass: this.cellClass,
-          thClass,
         },
         {
           key: 'plan',
@@ -55,7 +49,6 @@ export default {
           label: detailsLabels.plan,
           tdAttr,
           tdClass: this.cellClass,
-          thClass,
         },
         {
           key: 'activatedAt',
@@ -69,28 +62,24 @@ export default {
           label: subscriptionTable.activatedAt,
           tdAttr,
           tdClass: this.cellClass,
-          thClass,
         },
         {
           key: 'startsAt',
           label: subscriptionTable.startsAt,
           tdAttr,
           tdClass: this.cellClass,
-          thClass,
         },
         {
           key: 'expiresAt',
           label: subscriptionTable.expiresOn,
           tdAttr,
           tdClass: this.cellClass,
-          thClass,
         },
         {
           key: 'usersInLicenseCount',
           label: subscriptionTable.seats,
           tdAttr,
           tdClass: this.cellClass,
-          thClass,
         },
         {
           key: 'type',
@@ -98,14 +87,13 @@ export default {
           label: subscriptionTable.type,
           tdAttr,
           tdClass: this.cellClass,
-          thClass,
         },
       ],
     };
   },
   methods: {
     cellClass(_, x, item) {
-      return this.isCurrentSubscription(item) ? tdClassHighlight : tdClassBase;
+      return this.isCurrentSubscription(item) ? tdClassHighlight : '';
     },
     isCurrentSubscription({ id }) {
       return id === this.currentSubscriptionId;

@@ -71,7 +71,57 @@ RSpec.describe Integrations::JiraSerializers::IssueDetailEntity do
     )
   end
 
-  subject { described_class.new(jira_issue, project: project).as_json }
+  let(:request_context) do
+    { project: project }
+  end
+
+  subject { described_class.new(jira_issue, **request_context).as_json }
+
+  context 'when the description needs redaction' do
+    let_it_be(:public_project) { create(:project, :public) }
+    let_it_be(:issue_1) { create(:issue, project: project, title: 'private-issue') }
+    let_it_be(:issue_2) { create(:issue, project: public_project, title: 'public-issue') }
+
+    before do
+      jira_issue.renderedFields['description'] = <<~MD
+        #{issue_1.to_reference(full: true)}
+        #{issue_2.to_reference(full: true)}
+      MD
+    end
+
+    context 'when the user is anonymous' do
+      it "redacts the first issue" do
+        expect(subject).to include(description_html: include("public-issue"))
+        expect(subject).not_to include(description_html: include("private-issue"))
+      end
+    end
+
+    context 'when the user is logged in' do
+      let(:current_user) { create(:user) }
+
+      before do
+        request_context[:current_user] = current_user
+      end
+
+      context 'when the user does not have access to the first issue' do
+        it "redacts the first issue" do
+          expect(subject).to include(description_html: include("public-issue"))
+          expect(subject).not_to include(description_html: include("private-issue"))
+        end
+      end
+
+      context 'when the user does have access to the first issue' do
+        before do
+          issue_1.project.add_guest(current_user)
+        end
+
+        it "renders the first issue" do
+          expect(subject).to include(description_html: include("public-issue"))
+          expect(subject).to include(description_html: include("private-issue"))
+        end
+      end
+    end
+  end
 
   it 'returns the Jira issues attributes' do
     expect(subject).to include(

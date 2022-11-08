@@ -24,8 +24,8 @@ To create an epic in the group you're in:
 
 1. Get to the New Epic form:
    - Go to your group and from the left sidebar select **Epics**. Then select **New epic**.
-   - From an epic in your group, select **New epic**.
-   - From anywhere, in the top menu, select **New...** (**{plus-square}**) **> New epic**.
+   - From an epic in your group, select the vertical ellipsis (**{ellipsis_v}**). Then select **New epic**.
+   - From anywhere, in the top menu, select **New...** (**{plus-square}**). Then select **New epic**.
    - In an empty [roadmap](../roadmap/index.md), select **New epic**.
 
 1. Enter a title.
@@ -257,7 +257,7 @@ To filter:
 1. On the top bar, select **Main menu > Groups** and find your group.
 1. On the left sidebar, select **Epics**.
 1. Select the field **Search or filter results**.
-1. From the dropdown menu, select the scope or enter plain text to search by epic title or description.
+1. From the dropdown list, select the scope or enter plain text to search by epic title or description.
 1. Press <kbd>Enter</kbd> on your keyboard. The list is filtered.
 
 ## Sort the list of epics
@@ -282,10 +282,10 @@ You can reverse the default order and interact with the activity feed sorted by 
 at the top. Your preference is saved via local storage and automatically applied to every epic and issue
 you view.
 
-To change the activity sort order, select the **Oldest first** dropdown menu and select either oldest
+To change the activity sort order, select the **Oldest first** dropdown list and select either oldest
 or newest items to be shown first.
 
-![Issue activity sort order dropdown button](img/epic_activity_sort_order_v13_2.png)
+![Issue activity sort order dropdown list](img/epic_activity_sort_order_v13_2.png)
 
 ## Make an epic confidential
 
@@ -310,6 +310,8 @@ To make an epic confidential:
 - **When creating an epic:** select the checkbox under **Confidentiality**.
 - **In an existing epic:** on the right sidebar, select **Edit** next to **Confidentiality**, and then
   select **Turn on**.
+
+In GitLab 15.6 and later, you can also use the `/confidential` [quick action](../../../user/project/quick_actions.md).
 
 ## Manage issues assigned to an epic
 
@@ -339,9 +341,8 @@ automatically added to the epic.
 
 #### Add an existing issue to an epic
 
-You can add existing issues to an epic, including issues in a project in an epic's group, or any of
-the epic's subgroups. Newly added issues appear at the top of the list of
-issues in the **Epics and Issues** tab.
+You can add existing issues to an epic, including issues in a project from a [different group hierarchy](index.md#child-issues-from-different-group-hierarchies).
+Newly added issues appear at the top of the list of issues in the **Epics and Issues** tab.
 
 An epic contains a list of issues and an issue can be associated with at most one epic.
 When you add a new issue that's already linked to an epic, the issue is automatically unlinked from its
@@ -359,7 +360,8 @@ To add an existing issue to an epic:
 1. Identify the issue to be added, using either of the following methods:
    - Paste the link of the issue.
    - Search for the desired issue by entering part of the issue's title, then selecting the desired
-     match ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/9126) in GitLab 12.5).
+     match ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/9126) in GitLab 12.5). Issues
+     from different group hierarchies do not appear in search results. To add such an issue, enter its full URL.
 
    If there are multiple issues to be added, press <kbd>Space</kbd> and repeat this step.
 1. Select **Add**.
@@ -486,9 +488,9 @@ New child epics appear at the top of the list of epics in the **Epics and Issues
 
 When you add an epic that's already linked to a parent epic, the link to its current parent is removed.
 
-Epics can contain multiple nested child epics, up to a total of seven levels deep.
+Epics can contain multiple nested child epics, up to a total of 7 levels deep.
 
-Maximum number of direct child epics is 100.
+The maximum number of direct child epics is 100.
 
 ### Add a child epic to an epic
 

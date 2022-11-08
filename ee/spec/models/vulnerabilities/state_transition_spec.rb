@@ -31,6 +31,15 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model do
     it { is_expected.to validate_presence_of(:vulnerability_id) }
     it { is_expected.to validate_presence_of(:from_state) }
     it { is_expected.to validate_presence_of(:to_state) }
+
+    it "is expected to validate that :to_state differs from :from_state" do
+      subject.from_state = subject.to_state
+
+      expect(subject).to be_invalid
+      expect do
+        subject.save!
+      end.to raise_error ActiveRecord::RecordInvalid, "Validation failed: To state must not be the same as from_state"
+    end
   end
 
   describe 'enums' do

@@ -7,7 +7,7 @@ RSpec.describe 'Group issues page' do
   let(:project) { create(:project, :public, group: group) }
 
   context 'bulk editing', :js do
-    let(:user_in_group) { create(:group_member, :maintainer, user: create(:user), group: group ).user }
+    let(:user_in_group) { create(:group_member, :maintainer, user: create(:user), group: group).user }
     let!(:milestone) { create(:milestone, group: group) }
     let!(:issue) { create(:issue, project: project) }
 
@@ -28,10 +28,9 @@ RSpec.describe 'Group issues page' do
       click_button 'Edit issues'
 
       click_button 'Select milestone'
-      wait_for_requests
 
-      page.within('.dropdown-menu-milestone .dropdown-content') do
-        expect(page).to have_content(milestone.title)
+      page.within('.dropdown-menu') do
+        expect(page).to have_button(milestone.title)
       end
     end
   end

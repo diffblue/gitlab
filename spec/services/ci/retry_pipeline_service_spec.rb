@@ -5,13 +5,15 @@ require 'spec_helper'
 RSpec.describe Ci::RetryPipelineService, '#execute' do
   include ProjectForksHelper
 
-  let(:user) { create(:user) }
-  let(:project) { create(:project) }
+  let_it_be_with_refind(:user) { create(:user) }
+  let_it_be_with_refind(:project) { create(:project) }
+
   let(:pipeline) { create(:ci_pipeline, project: project) }
-  let(:service) { described_class.new(project, user) }
   let(:build_stage) { create(:ci_stage, name: 'build', position: 0, pipeline: pipeline) }
   let(:test_stage) { create(:ci_stage, name: 'test', position: 1, pipeline: pipeline) }
   let(:deploy_stage) { create(:ci_stage, name: 'deploy', position: 2, pipeline: pipeline) }
+
+  subject(:service) { described_class.new(project, user) }
 
   context 'when user has full ability to modify pipeline' do
     before do
@@ -272,6 +274,21 @@ RSpec.describe Ci::RetryPipelineService, '#execute' do
           expect(pipeline.reload).to be_running
         end
       end
+
+      context 'when there is a failed manual action' do
+        before do
+          create_build('rspec', :success, build_stage)
+          create_build('manual-rspec', :failed, build_stage, when: :manual, allow_failure: true)
+        end
+
+        it 'processes the manual action' do
+          service.execute(pipeline)
+
+          expect(build('rspec')).to be_success
+          expect(build('manual-rspec')).to be_manual
+          expect(pipeline.reload).to be_success
+        end
+      end
     end
 
     it 'closes all todos about failed jobs for pipeline' do
@@ -313,10 +330,27 @@ RSpec.describe Ci::RetryPipelineService, '#execute' do
         create(:ci_sources_pipeline, pipeline: pipeline, source_job: bridge)
       end
 
-      it 'marks source bridge as pending' do
-        service.execute(pipeline)
+      context 'without permission' do
+        it 'does nothing to the bridge' do
+          expect { service.execute(pipeline) }.to not_change { bridge.reload.status }
+           .and not_change { bridge.reload.user }
+        end
+      end
 
-        expect(bridge.reload).to be_pending
+      context 'with permission' do
+        let!(:bridge_pipeline) { create(:ci_pipeline, project: create(:project)) }
+        let!(:bridge) do
+          create(:ci_bridge, :strategy_depend, status: 'success', pipeline: bridge_pipeline)
+        end
+
+        before do
+          bridge_pipeline.project.add_maintainer(user)
+        end
+
+        it 'marks source bridge as pending' do
+          expect { service.execute(pipeline) }.to change { bridge.reload.status }.to('pending')
+            .and not_change { bridge.reload.user }
+        end
       end
     end
 

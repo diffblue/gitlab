@@ -89,11 +89,11 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
         expect(request.env['warden']).to be_authenticated
       end
 
-      it 'logs the successful attempt' do
+      it 'logs and tracks the successful attempt' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
             message: 'Identity Verification',
-            event: 'Successful',
+            event: 'Success',
             username: unconfirmed_user.username
           )
         )
@@ -101,6 +101,13 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
         stub_session(verification_user_id: unconfirmed_user.id)
 
         do_request
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Email',
+          action: 'success',
+          property: '',
+          user: unconfirmed_user
+        )
       end
 
       it 'renders the result as json including a redirect URL' do
@@ -115,7 +122,7 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
     context 'when failing to validate' do
       let_it_be(:service_response) { { status: :failure, reason: 'reason', message: 'message' } }
 
-      it 'logs the failed attempt' do
+      it 'logs and tracks the failed attempt' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
             message: 'Identity Verification',
@@ -127,6 +134,13 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
 
         stub_session(verification_user_id: unconfirmed_user.id)
         do_request
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Email',
+          action: 'failed_attempt',
+          property: service_response[:reason],
+          user: unconfirmed_user
+        )
       end
 
       it 'renders the result as json' do
@@ -189,16 +203,23 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
         do_request
       end
 
-      it 'logs the successful attempt' do
+      it 'logs and tracks resending the instructions' do
         expect(Gitlab::AppLogger).to receive(:info).with(
           hash_including(
             message: 'Identity Verification',
-            event: 'Instructions Sent',
+            event: 'Sent Instructions',
             username: unconfirmed_user.username
           )
         )
 
         do_request
+
+        expect_snowplow_event(
+          category: 'IdentityVerification::Email',
+          action: 'sent_instructions',
+          property: '',
+          user: unconfirmed_user
+        )
       end
 
       it 'renders the result as json' do

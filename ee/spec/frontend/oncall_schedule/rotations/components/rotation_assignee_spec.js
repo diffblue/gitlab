@@ -79,7 +79,7 @@ describe('RotationAssignee', () => {
 
     it('should render an assignee color based on the chevron skipping color palette', () => {
       const token = findToken();
-      expect(token.attributes('style')).toBe('background-color: rgb(87, 114, 255);');
+      expect(token.attributes('style')).toBe('background-color: rgb(97, 122, 226);');
     });
 
     it('should render an assignee schedule and rotation information in a popover', () => {

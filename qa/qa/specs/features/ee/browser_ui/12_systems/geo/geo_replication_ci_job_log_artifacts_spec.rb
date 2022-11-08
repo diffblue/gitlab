@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :runner, :requires_admin, :geo,
-    quarantine: {
-      only: { subdomain: 'staging-ref' },
-      type: :test_environment,
-      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
-    } do
+  RSpec.describe 'Systems', :orchestrated, :runner, :requires_admin, :geo, product_group: :geo, quarantine: {
+    only: { subdomain: 'staging-ref' },
+    type: :test_environment,
+    issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/374550'
+  } do
     describe 'CI job' do
       let(:file_name) { 'geo_artifact.txt' }
       let(:directory_name) { 'geo_artifacts' }

@@ -11,13 +11,15 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration 
   let(:updated_at) { 2.days.ago.round }
 
   let!(:root_group) do
-    namespaces.create!(id: 1, name: 'root-group', path: 'root-group',
-                       type: 'Group', traversal_ids: [1])
+    namespaces.create!(name: 'root-group', path: 'root-group', type: 'Group').tap do |new_group|
+      new_group.update!(traversal_ids: [new_group.id])
+    end
   end
 
   let!(:group) do
-    namespaces.create!(id: 2, name: 'group', path: 'group', parent_id: root_group.id,
-                       type: 'Group', traversal_ids: [1, 2])
+    namespaces.create!(name: 'group', path: 'group', parent_id: root_group.id, type: 'Group') do |new_group|
+      new_group.update!(traversal_ids: [root_group.id, new_group.id])
+    end
   end
 
   let!(:project_root) do

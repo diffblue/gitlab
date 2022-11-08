@@ -7,7 +7,7 @@ import {
 } from '~/boards/boards_util';
 import { BoardType } from '~/boards/constants';
 import eventHub from '~/boards/eventhub';
-import { gqlClient } from '~/boards/graphql';
+import { defaultClient as gqlClient } from '~/graphql_shared/issuable_client';
 import groupBoardMembersQuery from '~/boards/graphql/group_board_members.query.graphql';
 import listsIssuesQuery from '~/boards/graphql/lists_issues.query.graphql';
 import projectBoardMembersQuery from '~/boards/graphql/project_board_members.query.graphql';

@@ -16,15 +16,12 @@ import * as Sentry from '@sentry/browser';
 import { SCAN_TYPE } from 'ee/security_configuration/dast_profiles/dast_scanner_profiles/constants';
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { initFormField } from 'ee/security_configuration/utils';
-import { TYPE_SCANNER_PROFILE, TYPE_SITE_PROFILE } from '~/graphql_shared/constants';
-import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { serializeFormObject } from '~/lib/utils/forms';
-import { redirectTo, queryToObject } from '~/lib/utils/url_utility';
+import { redirectTo } from '~/lib/utils/url_utility';
 import { s__, __ } from '~/locale';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import LocalStorageSync from '~/vue_shared/components/local_storage_sync.vue';
 import validation from '~/vue_shared/directives/validation';
 import {
   HELP_PAGE_PATH,
@@ -34,7 +31,7 @@ import {
 } from 'ee/on_demand_scans/constants';
 import SectionLayout from '~/vue_shared/security_configuration/components/section_layout.vue';
 import ConfigurationPageLayout from 'ee/security_configuration/components/configuration_page_layout.vue';
-import PreScanVerificationStatus from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_status.vue';
+import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import dastProfileCreateMutation from '../graphql/dast_profile_create.mutation.graphql';
 import dastProfileUpdateMutation from '../graphql/dast_profile_update.mutation.graphql';
@@ -43,40 +40,9 @@ import {
   ERROR_FETCH_SCANNER_PROFILES,
   ERROR_FETCH_SITE_PROFILES,
   ERROR_MESSAGES,
-  SCANNER_PROFILES_QUERY,
-  SITE_PROFILES_QUERY,
 } from '../settings';
 import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue';
-import ScannerProfileSelector from './profile_selector/scanner_profile_selector.vue';
-import SiteProfileSelector from './profile_selector/site_profile_selector.vue';
 import ScanSchedule from './scan_schedule.vue';
-
-export const ON_DEMAND_SCANS_STORAGE_KEY = 'on-demand-scans-new-form';
-
-/**
- * TODO Can be removed after rolling out
- * dastUiRedesign feature flag
- * Content was transferred to DastProfilesConfigurator
- */
-const createProfilesApolloOptions = (name, field, { fetchQuery, fetchError }) => ({
-  query: fetchQuery,
-  variables() {
-    return {
-      fullPath: this.projectPath,
-    };
-  },
-  update(data) {
-    const nodes = data?.project?.[name]?.nodes ?? [];
-    if (nodes.length === 1) {
-      this[field] = nodes[0].id;
-    }
-    return nodes;
-  },
-  error(e) {
-    Sentry.captureException(e);
-    this.showErrors(fetchError);
-  },
-});
 
 export default {
   enabledRefTypes: [REF_TYPE_BRANCHES],
@@ -130,12 +96,11 @@ export default {
     saveAndRunScanButton: s__('OnDemandScans|Save and run scan'),
     saveScanButton: s__('OnDemandScans|Save scan'),
     cancelButton: s__('OnDemandScans|Cancel'),
+    defaultErrorMsg: __('Something went wrong. Please try again.'),
   },
   components: {
     RefSelector,
     ProfileConflictAlert,
-    ScannerProfileSelector,
-    SiteProfileSelector,
     ScanSchedule,
     GlAlert,
     GlButton,
@@ -146,11 +111,10 @@ export default {
     GlFormTextarea,
     GlLink,
     GlSprintf,
-    LocalStorageSync,
     SectionLayout,
     ConfigurationPageLayout,
     DastProfilesConfigurator,
-    PreScanVerificationStatus,
+    PreScanVerificationConfigurator,
     GlPopover,
   },
   directives: {
@@ -158,23 +122,6 @@ export default {
     validation: validation(),
   },
   mixins: [glFeatureFlagMixin()],
-  /**
-   * TODO Can be removed after rolling out
-   * dastUiRedesign feature flag
-   * Content was transferred to DastProfilesConfigurator
-   */
-  apollo: {
-    scannerProfiles: createProfilesApolloOptions(
-      'scannerProfiles',
-      'selectedScannerProfileId',
-      SCANNER_PROFILES_QUERY,
-    ),
-    siteProfiles: createProfilesApolloOptions(
-      'siteProfiles',
-      'selectedSiteProfileId',
-      SITE_PROFILES_QUERY,
-    ),
-  },
   inject: [
     'projectPath',
     'onDemandScansPath',
@@ -217,13 +164,9 @@ export default {
       errorType: null,
       errors: [],
       showAlert: false,
-      clearStorage: false,
     };
   },
   computed: {
-    /**
-     *  TODO remove after dastUiRedesign flag roll out
-     */
     dastScanId() {
       return this.dastScan?.id ?? null;
     },
@@ -246,19 +189,15 @@ export default {
         : null;
     },
     errorMessage() {
-      return this.glFeatures.dastUiRedesign
-        ? this.errorType
-        : ERROR_MESSAGES[this.errorType] || null;
-    },
-    isLoadingProfiles() {
-      return ['scannerProfiles', 'siteProfiles'].some((name) => this.$apollo.queries[name].loading);
+      const { errorType } = this;
+      return errorType ? ERROR_MESSAGES[errorType] : this.$options.i18n.defaultErrorMsg;
     },
     failedToLoadProfiles() {
       return [ERROR_FETCH_SCANNER_PROFILES, ERROR_FETCH_SITE_PROFILES].includes(this.errorType);
     },
     someFieldEmpty() {
-      const { selectedScannerProfile, selectedSiteProfile } = this;
-      return !selectedScannerProfile || !selectedSiteProfile;
+      const { selectedScannerProfileId, selectedSiteProfileId } = this;
+      return !selectedScannerProfileId || !selectedSiteProfileId;
     },
     isActiveScannerProfile() {
       return this.selectedScannerProfile?.scanType === SCAN_TYPE.ACTIVE;
@@ -289,33 +228,13 @@ export default {
       return isFormInvalid || (loading && loading !== saveScanBtnId);
     },
     formFieldValues() {
-      const {
-        selectedScannerProfileId,
-        selectedSiteProfileId,
-        selectedBranch,
-        profileSchedule,
-      } = this;
+      const { selectedBranch, profileSchedule } = this;
       return {
         ...serializeFormObject(this.form.fields),
-        selectedScannerProfileId,
-        selectedSiteProfileId,
         selectedBranch,
         profileSchedule,
       };
     },
-    storageKey() {
-      return `${this.projectPath}/${ON_DEMAND_SCANS_STORAGE_KEY}`;
-    },
-  },
-  created() {
-    const params = queryToObject(window.location.search, { legacySpacesDecode: true });
-
-    this.selectedSiteProfileId = params.site_profile_id
-      ? convertToGraphQLId(TYPE_SITE_PROFILE, params.site_profile_id)
-      : this.selectedSiteProfileId;
-    this.selectedScannerProfileId = params.scanner_profile_id
-      ? convertToGraphQLId(TYPE_SCANNER_PROFILE, params.scanner_profile_id)
-      : this.selectedScannerProfileId;
   },
   methods: {
     onSubmit({ runAfter = true, button = this.$options.saveAndRunScanBtnId } = {}) {
@@ -329,8 +248,8 @@ export default {
       const mutation = this.isEdit ? dastProfileUpdateMutation : dastProfileCreateMutation;
       const responseType = this.isEdit ? 'dastProfileUpdate' : 'dastProfileCreate';
       const input = {
-        dastScannerProfileId: this.selectedScannerProfile.id,
-        dastSiteProfileId: this.selectedSiteProfile.id,
+        dastScannerProfileId: this.selectedScannerProfileId,
+        dastSiteProfileId: this.selectedSiteProfileId,
         branchName: this.selectedBranch,
         dastProfileSchedule: this.profileSchedule,
         ...(this.isEdit ? { id: this.dastScan.id } : { fullPath: this.projectPath }),
@@ -353,9 +272,7 @@ export default {
             this.loading = false;
           } else if (!runAfter) {
             redirectTo(this.onDemandScansPath);
-            this.clearStorage = true;
           } else {
-            this.clearStorage = true;
             redirectTo(response.pipelineUrl);
           }
         })
@@ -366,8 +283,10 @@ export default {
         });
     },
     onCancelClicked() {
-      this.clearStorage = true;
       redirectTo(this.onDemandScansPath);
+    },
+    showConfiguratorErrors(message) {
+      this.showErrors(null, [message]);
     },
     showErrors(errorType, errors = []) {
       this.errorType = errorType;
@@ -382,24 +301,6 @@ export default {
     selectProfiles({ scannerProfile, siteProfile }) {
       this.selectedSiteProfileId = siteProfile?.id;
       this.selectedScannerProfileId = scannerProfile?.id;
-    },
-    updateFromStorage(val) {
-      const {
-        selectedSiteProfileId,
-        selectedScannerProfileId,
-        profileSchedule,
-        name,
-        description,
-        selectedBranch,
-      } = val;
-
-      this.form.fields.name.value = name ?? this.form.fields.name.value;
-      this.form.fields.description.value = description ?? this.form.fields.description.value;
-      this.selectedBranch = selectedBranch;
-      this.profileSchedule = profileSchedule ?? this.profileSchedule;
-      // precedence is given to profile IDs passed from the query params
-      this.selectedSiteProfileId = this.selectedSiteProfileId ?? selectedSiteProfileId;
-      this.selectedScannerProfileId = this.selectedScannerProfileId ?? selectedScannerProfileId;
     },
   },
 };
@@ -420,14 +321,6 @@ export default {
       </gl-sprintf>
     </template>
     <gl-form novalidate @submit.prevent="onSubmit()">
-      <local-storage-sync
-        v-if="!isEdit"
-        :storage-key="storageKey"
-        :clear="clearStorage"
-        :value="formFieldValues"
-        @input="updateFromStorage"
-      />
-
       <gl-alert
         v-if="showAlert"
         variant="danger"
@@ -441,11 +334,7 @@ export default {
           <li v-for="error in errors" :key="error" v-safe-html="error"></li>
         </ul>
       </gl-alert>
-      <section-layout
-        v-if="!failedToLoadProfiles"
-        :heading="$options.i18n.scanConfigurationHeader"
-        :is-loading="isLoadingProfiles"
-      >
+      <section-layout v-if="!failedToLoadProfiles" :heading="$options.i18n.scanConfigurationHeader">
         <template #description>
           <p>{{ $options.i18n.scanConfigurationDescription }}</p>
         </template>
@@ -509,55 +398,15 @@ export default {
       </section-layout>
 
       <dast-profiles-configurator
-        v-if="glFeatures.dastUiRedesign"
         :saved-profiles="dastScan"
         :full-path="projectPath"
         :scanner-profiles-library-path="scannerProfilesLibraryPath"
         :site-profiles-library-path="siteProfilesLibraryPath"
-        @error="showErrors"
+        @error="showConfiguratorErrors"
         @profiles-selected="selectProfiles"
       />
 
-      <section-layout
-        v-if="!failedToLoadProfiles && !glFeatures.dastUiRedesign"
-        :heading="$options.i18n.dastConfigurationHeader"
-        :is-loading="isLoadingProfiles"
-      >
-        <template #description>
-          <p>
-            <gl-sprintf :message="$options.i18n.dastConfigurationDescription">
-              <template #link="{ content }">
-                <gl-link :href="$options.dastConfigurationHelpPath">{{ content }}</gl-link>
-              </template>
-            </gl-sprintf>
-          </p>
-        </template>
-        <template #features>
-          <scanner-profile-selector
-            v-model="selectedScannerProfileId"
-            class="gl-mb-6"
-            :profiles="scannerProfiles"
-            :selected-profile="selectedScannerProfile"
-            :has-conflict="hasProfilesConflict"
-            :dast-scan-id="dastScanId"
-          />
-
-          <site-profile-selector
-            v-model="selectedSiteProfileId"
-            class="gl-mb-2"
-            :profiles="siteProfiles"
-            :selected-profile="selectedSiteProfile"
-            :has-conflict="hasProfilesConflict"
-            :dast-scan-id="dastScanId"
-          />
-        </template>
-      </section-layout>
-
-      <section-layout
-        v-if="!failedToLoadProfiles"
-        :heading="$options.i18n.scanScheduleHeader"
-        :is-loading="isLoadingProfiles"
-      >
+      <section-layout v-if="!failedToLoadProfiles" :heading="$options.i18n.scanScheduleHeader">
         <template #description>
           <p>{{ $options.i18n.scanScheduleDescription }}</p>
         </template>
@@ -566,14 +415,10 @@ export default {
         </template>
       </section-layout>
 
-      <div v-if="!failedToLoadProfiles && glFeatures.dastPreScanVerification">
-        <pre-scan-verification-status
-          class="gl-mt-6"
-          pipeline-id="2343434"
-          pipeline-created-at="2022-09-23 11:19:49 UTC"
-          pipeline-path="test-path"
-        />
-      </div>
+      <pre-scan-verification-configurator
+        v-if="!failedToLoadProfiles && glFeatures.dastPreScanVerification"
+        class="gl-my-6"
+      />
 
       <div v-if="!failedToLoadProfiles">
         <profile-conflict-alert

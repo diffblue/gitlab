@@ -58,7 +58,8 @@ module CredentialsInventoryActions
   end
 
   def notify_deleted_or_revoked_credential(credential)
-    if credential.is_a?(Key)
+    case credential
+    when Key
       CredentialsInventoryMailer.ssh_key_deleted_email(
         params: {
           notification_email: credential.user.notification_email_or_default,
@@ -67,7 +68,7 @@ module CredentialsInventoryActions
           created_at: credential.created_at
         }, deleted_by: current_user
       ).deliver_later
-    elsif credential.is_a?(PersonalAccessToken)
+    when PersonalAccessToken
       CredentialsInventoryMailer.personal_access_token_revoked_email(token: credential, revoked_by: current_user).deliver_later
     end
   end

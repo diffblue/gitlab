@@ -27,6 +27,8 @@ RSpec.describe Ci::Bridge do
 
   it_behaves_like 'has ID tokens', :ci_bridge
 
+  it_behaves_like 'a retryable job'
+
   it 'has one downstream pipeline' do
     expect(bridge).to have_one(:sourced_pipeline)
     expect(bridge).to have_one(:downstream_pipeline)
@@ -309,7 +311,7 @@ RSpec.describe Ci::Bridge do
       end
 
       context 'when the pipeline runs from a pipeline schedule' do
-        let(:pipeline_schedule) { create(:ci_pipeline_schedule, :nightly, project: project ) }
+        let(:pipeline_schedule) { create(:ci_pipeline_schedule, :nightly, project: project) }
         let(:pipeline) { create(:ci_pipeline, pipeline_schedule: pipeline_schedule) }
 
         let(:options) do

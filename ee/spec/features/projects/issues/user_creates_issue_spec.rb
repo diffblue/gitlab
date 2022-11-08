@@ -7,6 +7,7 @@ RSpec.describe "User creates issue", :js do
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project_empty_repo, :public, namespace: group) }
   let_it_be(:epic) { create(:epic, group: group, title: 'Sample epic', author: user) }
+  let_it_be(:iteration) { create(:iteration, group: group, title: 'Sample iteration') }
 
   let(:issue_title) { '500 error on profile' }
 
@@ -43,12 +44,11 @@ RSpec.describe "User creates issue", :js do
   context 'with epics' do
     before do
       fill_in("Title", with: issue_title)
-      scroll_to(page.find('.epic-dropdown-container', visible: false))
     end
 
     it 'creates an issue with no epic' do
       click_button 'Select epic'
-      find('.gl-new-dropdown-item', text: 'No Epic').click
+      click_on 'No epic'
       click_button 'Create issue'
 
       wait_for_all_requests
@@ -60,15 +60,55 @@ RSpec.describe "User creates issue", :js do
       expect(page).to have_content(issue_title)
     end
 
-    it 'credates an issue with an epic' do
+    it 'creates an issue with an epic' do
       click_button 'Select epic'
-      find('.gl-new-dropdown-item', text: epic.title).click
+      click_on epic.title
       click_button 'Create issue'
 
       wait_for_all_requests
 
       page.within('[data-testid="select-epic"]') do
         expect(page).to have_content(epic.title)
+      end
+
+      expect(page).to have_content(issue_title)
+    end
+  end
+
+  context 'with iterations' do
+    before do
+      fill_in("Title", with: issue_title)
+    end
+
+    it 'creates an issue with no iteration' do
+      click_button 'Select iteration'
+      click_button 'No iteration'
+
+      expect(page).to have_button('Select iteration')
+
+      click_button 'Create issue'
+
+      wait_for_all_requests
+
+      page.within('[data-testid="select-iteration"]') do
+        expect(page).to have_content('None')
+      end
+
+      expect(page).to have_content(issue_title)
+    end
+
+    it 'creates an issue with an iteration' do
+      click_button 'Select iteration'
+      click_button iteration.title
+
+      expect(page).to have_button(iteration.period)
+
+      click_button 'Create issue'
+
+      wait_for_all_requests
+
+      page.within('[data-testid="select-iteration"]') do
+        expect(page).to have_content(iteration.title)
       end
 
       expect(page).to have_content(issue_title)

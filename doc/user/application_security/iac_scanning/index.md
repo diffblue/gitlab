@@ -10,7 +10,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 Infrastructure as Code (IaC) Scanning scans your IaC configuration files for known vulnerabilities.
 
-Currently, IaC scanning supports configuration files for Terraform, Ansible, AWS CloudFormation, and Kubernetes.
+IaC Scanning supports configuration files for Terraform, Ansible, AWS CloudFormation, and Kubernetes.
 
 ## Requirements
 
@@ -18,13 +18,13 @@ IaC Scanning runs in the `test` stage, which is available by default. If you red
 
 We recommend a minimum of 4GB RAM to ensure consistent performance.
 
-To run IaC scanning jobs, by default, you need GitLab Runner with the
+To run IaC Scanning jobs, by default, you need GitLab Runner with the
 [`docker`](https://docs.gitlab.com/runner/executors/docker.html) or
 [`kubernetes`](https://docs.gitlab.com/runner/install/kubernetes.html) executor.
 If you're using the shared runners on GitLab.com, this is enabled by default.
 
 WARNING:
-Our IaC scanning jobs require a Linux/amd64 container type. Windows containers are not yet supported.
+Our IaC Scanning jobs require a Linux/amd64 container type. Windows containers are not supported.
 
 WARNING:
 If you use your own runners, make sure the Docker version installed
@@ -32,9 +32,9 @@ is **not** `19.03.0`. See [troubleshooting information](../sast/index.md#error-r
 
 ## Supported languages and frameworks
 
-GitLab IaC scanning supports a variety of IaC configuration files. Our IaC security scanners also feature automatic language detection which works even for mixed-language projects. If any supported configuration files are detected in project source code we automatically run the appropriate IaC analyzers.
+GitLab IaC Scanning supports a variety of IaC configuration files. Our IaC security scanners also feature automatic language detection which works even for mixed-language projects. If any supported configuration files are detected in project source code we automatically run the appropriate IaC analyzers.
 
-| Configuration File Type             | Scan tool                | Introduced in GitLab Version |
+| Configuration file type             | Scan tool                | Introduced in GitLab version |
 | ----------------------------------- | ------------------------ | ---------------------------- |
 | Ansible                             | [KICS](https://kics.io/) | 14.5                         |
 | AWS CloudFormation                  | [KICS](https://kics.io/) | 14.5                         |
@@ -45,7 +45,7 @@ GitLab IaC scanning supports a variety of IaC configuration files. Our IaC secur
 | OpenAPI                             | [KICS](https://kics.io/) | 14.5                         |
 | Terraform <sup>2</sup>              | [KICS](https://kics.io/) | 14.5                         |
 
-1. IaC scanning can analyze Azure Resource Manager templates in JSON format. If you write templates in the [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) language, you must use [the bicep CLI](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-cli) to convert your Bicep files into JSON before GitLab IaC scanning can analyze them.
+1. IaC Scanning can analyze Azure Resource Manager templates in JSON format. If you write templates in the [Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/overview) language, you must use [the bicep CLI](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-cli) to convert your Bicep files into JSON before GitLab IaC Scanning can analyze them.
 1. Terraform modules in a custom registry are not scanned for vulnerabilities. You can follow [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/357004) for the proposed feature.
 
 ### Supported distributions
@@ -100,14 +100,14 @@ To configure IaC Scanning for a project you can:
 ### Configure IaC Scanning manually
 
 To enable IaC Scanning you must [include](../../../ci/yaml/index.md#includetemplate) the
-[`SAST-IaC.gitlab-ci.yml template`](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml) provided as part of your GitLab installation. Here is an example of how to include it:
+[`SAST-IaC.gitlab-ci.yml` template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml) provided as part of your GitLab installation. Here is an example of how to include it:
 
 ```yaml
 include:
   - template: Jobs/SAST-IaC.gitlab-ci.yml
 ```
 
-The included template creates IaC scanning jobs in your CI/CD pipeline and scans
+The included template creates IaC Scanning jobs in your CI/CD pipeline and scans
 your project's configuration files for possible vulnerabilities.
 
 The results are saved as a
@@ -124,6 +124,36 @@ To enable IaC Scanning in a project, you can create a merge request:
 1. Review and merge the merge request to enable IaC Scanning.
 
 Pipelines now include an IaC job.
+
+## Pinning to specific analyzer version
+
+The GitLab-managed CI/CD template specifies a major version and automatically pulls the latest analyzer release within that major version.
+
+In some cases, you may need to use a specific version.
+For example, you might need to avoid a regression in a later release.
+
+To override the automatic update behavior, set the `SAST_ANALYZER_IMAGE_TAG` CI/CD variable
+in your CI/CD configuration file after you include the [`SAST-IaC.gitlab-ci.yml` template](https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/SAST-IaC.gitlab-ci.yml).
+
+Only set this variable within a specific job.
+If you set it [at the top level](../../../ci/variables/index.md#create-a-custom-cicd-variable-in-the-gitlab-ciyml-file), the version you set will be used for other SAST analyzers.
+
+You can set the tag to:
+
+- A major version, like `3`. Your pipelines will use any minor or patch updates that are released within this major version.
+- A minor version, like `3.7`. Your pipelines will use any patch updates that are released within this minor version.
+- A patch version, like `3.7.0`. Your pipelines won't receive any updates.
+
+This example uses a specific minor version of the `KICS` analyzer:
+
+```yaml
+include:
+  - template: Security/SAST-IaC.gitlab-ci.yml
+
+kics-iac-sast:
+  variables:
+    SAST_ANALYZER_IMAGE_TAG: "3.1"
+```
 
 ## Reports JSON format
 

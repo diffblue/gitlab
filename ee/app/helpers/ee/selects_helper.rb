@@ -26,17 +26,5 @@ module EE
         title: s_('AdminEmail|Recipient group or project is required.')
       )
     end
-
-    override :users_select_data_attributes
-    def users_select_data_attributes(opts)
-      super.merge(saml_provider_id: opts[:saml_provider_id] || nil)
-    end
-
-    override :users_select_tag
-    def users_select_tag(id, opts = {})
-      root_group = @group&.root_ancestor || @project&.group&.root_ancestor
-      opts[:saml_provider_id] = root_group&.enforced_sso? && root_group.saml_provider&.id
-      super(id, opts)
-    end
   end
 end

@@ -241,7 +241,6 @@ module Types
           Types::IssueStatusCountsType,
           null: true,
           description: 'Counts of issues by status for the project.',
-          extras: [:lookahead],
           resolver: Resolvers::IssueStatusCountsResolver
 
     field :milestones, Types::MilestoneType.connection_type,
@@ -513,9 +512,7 @@ module Types
 
     field :work_item_types, Types::WorkItems::TypeType.connection_type,
           resolver: Resolvers::WorkItems::TypesResolver,
-          description: 'Work item types available to the project.' \
-                       ' Returns `null` if `work_items` feature flag is disabled.' \
-                       ' This flag is disabled by default, because the feature is experimental and is subject to change without notice.'
+          description: 'Work item types available to the project.'
 
     field :timelog_categories, Types::TimeTracking::TimelogCategoryType.connection_type,
           null: true,
@@ -531,6 +528,11 @@ module Types
           null: true,
           description: "Branch rules configured for the project.",
           resolver: Resolvers::Projects::BranchRulesResolver
+
+    field :languages, [Types::Projects::RepositoryLanguageType],
+          null: true,
+          description: "Programming languages used in the project.",
+          calls_gitaly: true
 
     def timelog_categories
       object.project_namespace.timelog_categories if Feature.enabled?(:timelog_categories)
@@ -607,6 +609,10 @@ module Types
       return unless Ability.allowed?(current_user, :admin_issue, project)
 
       object.service_desk_address
+    end
+
+    def languages
+      ::Projects::RepositoryLanguagesService.new(project, current_user).execute
     end
 
     private

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Verify', :runner, :transient do
+  RSpec.describe 'Verify', :runner, :transient, product_group: :pipeline_execution do
     describe 'Merge trains transient bugs' do
       let(:group) { Resource::Group.fabricate_via_api! }
 

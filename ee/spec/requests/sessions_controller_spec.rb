@@ -12,7 +12,8 @@ RSpec.describe SessionsController do
 
     context 'when identity verification is turned off' do
       before do
-        stub_feature_flags(identity_verification: false)
+        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
+          .to receive(:enabled?).with(user.email).and_return(false)
       end
 
       it { is_expected.to redirect_to(root_path) }
@@ -26,7 +27,8 @@ RSpec.describe SessionsController do
 
     context 'when identity verification is turned on' do
       before do
-        stub_feature_flags(identity_verification: true)
+        allow(::Users::EmailVerification::SendCustomConfirmationInstructionsService)
+          .to receive(:enabled?).with(user.email).and_return(true)
       end
 
       it { is_expected.to redirect_to(identity_verification_path) }
@@ -37,8 +39,12 @@ RSpec.describe SessionsController do
         expect(request.session[:verification_user_id]).to eq(user.id)
       end
 
-      context 'when the user is confirmed' do
-        let_it_be(:user) { create(:user) }
+      context 'when the user is verified' do
+        before do
+          allow_next_found_instance_of(User) do |user|
+            allow(user).to receive(:identity_verified?).and_return(true)
+          end
+        end
 
         it { is_expected.to redirect_to(root_path) }
       end

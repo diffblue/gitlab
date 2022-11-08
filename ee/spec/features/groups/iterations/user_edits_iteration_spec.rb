@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe 'User edits iteration' do
   let_it_be(:now) { Time.zone.now }
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group ).user }
-  let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group ).user }
+  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group).user }
+  let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group).user }
   let_it_be(:cadence) { create(:iterations_cadence, group: group) }
   let_it_be(:iteration) { create(:iteration, :skip_future_date_validation, description: 'Iteration description', start_date: now - 1.day, due_date: now, iterations_cadence: cadence) }
   let_it_be(:new_start_date) { now + 4.days }

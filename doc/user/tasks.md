@@ -18,7 +18,7 @@ For the latest updates, check the [Tasks Roadmap](https://gitlab.com/groups/gitl
 
 FLAG:
 On self-managed GitLab, by default this feature is available. To hide the feature,
-ask an administrator to [disable the feature flags](../administration/feature_flags.md) named `work_items` and `work_items_hierarchy`.
+ask an administrator to [disable the feature flags](../administration/feature_flags.md) named `work_items`.
 On GitLab.com, this feature is available.
 
 Use tasks to track steps needed for the [issue](project/issues/index.md) to be closed.
@@ -179,7 +179,10 @@ To set issue weight of a task:
 
 ## Add a task to an iteration **(PREMIUM)**
 
-> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/362550) in GitLab 15.5.
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/367456) in GitLab 15.5 [with a flag](../administration/feature_flags.md) named `work_items_mvc_2`. Disabled by default.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available. To make it available per group, ask an administrator to [enable the feature flag](../administration/feature_flags.md) named `work_items_mvc_2`. On GitLab.com, this feature is not available. The feature is not ready for production use.
 
 You can add a task to an [iteration](group/iterations/index.md).
 You can see the iteration title and period only when you view a task.

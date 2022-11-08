@@ -15,5 +15,7 @@ FactoryBot.define do
         report.add_metric('extra_metric_name', 'metric_value')
       end
     end
+
+    skip_create
   end
 end

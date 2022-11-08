@@ -70,11 +70,12 @@ review-build-cng:
     FORCE_RAILS_IMAGE_BUILDS: "${FORCE_RAILS_IMAGE_BUILDS}"
     CE_PIPELINE: "${CE_PIPELINE}"  # Based on https://docs.gitlab.com/ee/ci/jobs/job_control.html#check-if-a-variable-exists, `if: '$CE_PIPELINE'` will evaluate to `false` when this variable is empty
     EE_PIPELINE: "${EE_PIPELINE}"  # Based on https://docs.gitlab.com/ee/ci/jobs/job_control.html#check-if-a-variable-exists, `if: '$EE_PIPELINE'` will evaluate to `false` when this variable is empty
-    GITLAB_SHELL_VERSION: "${GITLAB_SHELL_VERSION}"
     GITLAB_ELASTICSEARCH_INDEXER_VERSION: "${GITLAB_ELASTICSEARCH_INDEXER_VERSION}"
     GITLAB_KAS_VERSION: "${GITLAB_KAS_VERSION}"
-    GITLAB_WORKHORSE_VERSION: "${GITLAB_WORKHORSE_VERSION}"
+    GITLAB_METRICS_EXPORTER_VERSION: "${GITLAB_METRICS_EXPORTER_VERSION}"
     GITLAB_PAGES_VERSION: "${GITLAB_PAGES_VERSION}"
+    GITLAB_SHELL_VERSION: "${GITLAB_SHELL_VERSION}"
+    GITLAB_WORKHORSE_VERSION: "${GITLAB_WORKHORSE_VERSION}"
     GITALY_SERVER_VERSION: "${GITALY_SERVER_VERSION}"
   trigger:
     project: gitlab-org/build/CNG-mirror
@@ -113,11 +114,11 @@ review-deploy:
     - echo "QA_GITLAB_URL=${CI_ENVIRONMENT_URL}" > environment.env
     - *base-before_script
   script:
-    - check_kube_domain
-    - download_chart
-    - deploy || (display_deployment_debug && exit 1)
-    - verify_deploy || exit 1
-    - disable_sign_ups || (delete_release && exit 1)
+    - run_timed_command "check_kube_domain"
+    - run_timed_command "download_chart"
+    - run_timed_command "deploy" || (display_deployment_debug && exit 1)
+    - run_timed_command "verify_deploy" || exit 1
+    - run_timed_command "disable_sign_ups" || (delete_release && exit 1)
   after_script:
     # Run seed-dast-test-data.sh only when DAST_RUN is set to true. This is to pupulate review app with data for DAST scan.
     # Set DAST_RUN to true when jobs are manually scheduled.

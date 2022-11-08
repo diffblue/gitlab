@@ -26,8 +26,9 @@ RSpec.describe Projects::PipelinesController do
           get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
         end
 
-        it 'redirects to the pipeline page with the security tab query param' do
-          expect(response).to redirect_to(pipeline_path(pipeline, tab: 'security'))
+        it 'responds with a 200 and show the template' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to render_template :show
         end
       end
 
@@ -36,7 +37,7 @@ RSpec.describe Projects::PipelinesController do
           get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
         end
 
-        it do
+        it 'redirects to the pipeline page' do
           expect(response).to redirect_to(pipeline_path(pipeline))
         end
       end
@@ -50,7 +51,7 @@ RSpec.describe Projects::PipelinesController do
           get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
         end
 
-        it do
+        it 'redirects to the pipeline page' do
           expect(response).to redirect_to(pipeline_path(pipeline))
         end
       end
@@ -60,7 +61,7 @@ RSpec.describe Projects::PipelinesController do
           get :security, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
         end
 
-        it do
+        it 'redirects to the pipeline page' do
           expect(response).to redirect_to(pipeline_path(pipeline))
         end
       end
@@ -70,10 +71,11 @@ RSpec.describe Projects::PipelinesController do
   describe 'GET codequality_report' do
     let(:pipeline) { create(:ci_pipeline, project: project) }
 
-    it 'redirects to pipeline path with dag tab query param' do
+    it 'renders the show template' do
       get :codequality_report, params: { namespace_id: project.namespace, project_id: project, id: pipeline }
 
-      expect(response).to redirect_to(pipeline_path(pipeline, tab: 'codequality_report'))
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to render_template :show
     end
   end
 
@@ -97,8 +99,9 @@ RSpec.describe Projects::PipelinesController do
           licenses_with_html
         end
 
-        it 'redirects to the pipeline page with the licenses tab query param' do
-          expect(response).to redirect_to(pipeline_path(pipeline, tab: 'licenses'))
+        it 'responds with a 200 and show the template' do
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(response).to render_template :show
         end
       end
 
@@ -164,7 +167,7 @@ RSpec.describe Projects::PipelinesController do
           licenses_with_html
         end
 
-        it do
+        it 'redirects to the pipeline page' do
           expect(response).to redirect_to(pipeline_path(pipeline))
         end
       end
@@ -187,7 +190,7 @@ RSpec.describe Projects::PipelinesController do
           licenses_with_html
         end
 
-        it do
+        it 'redirects to the pipeline page' do
           expect(response).to redirect_to(pipeline_path(pipeline))
         end
       end
@@ -208,7 +211,7 @@ RSpec.describe Projects::PipelinesController do
           licenses_with_html
         end
 
-        it do
+        it 'redirects to the pipeline page' do
           expect(response).to redirect_to(pipeline_path(pipeline))
         end
       end

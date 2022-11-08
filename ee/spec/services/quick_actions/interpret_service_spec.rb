@@ -451,7 +451,7 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     context 'iteration command' do
-      let_it_be(:iteration) { create(:iteration, group: group) }
+      let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
       let(:content) { "/iteration #{iteration.to_reference(project)}" }
 
@@ -538,7 +538,7 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     context 'remove_iteration command' do
-      let_it_be(:iteration) { create(:iteration, group: group) }
+      let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
       let(:content) { '/remove_iteration' }
 
@@ -594,7 +594,7 @@ RSpec.describe QuickActions::InterpretService do
     end
 
     context 'epic command' do
-      let(:epic) { create(:epic, group: group) }
+      let_it_be_with_reload(:epic) { create(:epic, group: group) }
       let(:content) { "/epic #{epic.to_reference(project)}" }
 
       context 'when epics are enabled' do
@@ -1339,9 +1339,93 @@ RSpec.describe QuickActions::InterpretService do
         it 'does mark to update confidential attribute' do
           issuable = create(:quality_test_case, project: project)
 
-          _, updates, _ = service.execute('/confidential', issuable)
+          _, updates, message = service.execute('/confidential', issuable)
 
+          expect(message).to eq('Made this issue confidential.')
           expect(updates[:confidential]).to eq(true)
+        end
+      end
+
+      context 'for requirements' do
+        it 'fails supports confidentiality condition' do
+          issuable = create(:issue, issue_type: :requirement, project: project)
+
+          _, updates, message = service.execute('/confidential', issuable)
+
+          expect(message).to eq('Could not apply confidential command.')
+          expect(updates[:confidential]).to be_nil
+        end
+      end
+
+      context 'for epics' do
+        let_it_be(:target_epic) { create(:epic, group: group) }
+        let(:content) { '/confidential' }
+
+        before do
+          stub_licensed_features(epics: true)
+          group.add_developer(current_user)
+        end
+
+        shared_examples 'command not applied' do
+          it 'returns unsuccessful execution message' do
+            _, updates, message = service.execute(content, target_epic)
+
+            expect(message).to eq(execution_message)
+            expect(updates[:confidential]).to eq(true)
+          end
+        end
+
+        it 'returns correct explain message' do
+          _, explanations = service.explain(content, target_epic)
+
+          expect(explanations).to match_array(['Makes this epic confidential.'])
+        end
+
+        it 'returns successful execution message' do
+          _, updates, message = service.execute(content, target_epic)
+
+          expect(message).to eq('Made this epic confidential.')
+          expect(updates[:confidential]).to eq(true)
+        end
+
+        context 'when epic has non-confidential issues' do
+          before do
+            target_epic.update!(confidential: false)
+            issue.update!(confidential: false)
+            create(:epic_issue, epic: target_epic, issue: issue)
+          end
+
+          it_behaves_like 'command not applied' do
+            let_it_be(:execution_message) do
+              'Cannot make the epic confidential if it contains non-confidential issues'
+            end
+          end
+        end
+
+        context 'when epic has non-confidential epics' do
+          before do
+            target_epic.update!(confidential: false)
+            create(:epic, group: group, parent: target_epic, confidential: false)
+          end
+
+          it_behaves_like 'command not applied' do
+            let_it_be(:execution_message) do
+              'Cannot make the epic confidential if it contains non-confidential child epics'
+            end
+          end
+        end
+
+        context 'when a user has no permissions to set confidentiality' do
+          before do
+            group.add_guest(current_user)
+          end
+
+          it 'does not update epic confidentiality' do
+            _, updates, message = service.execute(content, target_epic)
+
+            expect(message).to eq('Could not apply confidential command.')
+            expect(updates[:confidential]).to be_nil
+          end
         end
       end
     end

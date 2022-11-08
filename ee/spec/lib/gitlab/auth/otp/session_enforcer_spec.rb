@@ -49,7 +49,7 @@ RSpec.describe Gitlab::Auth::Otp::SessionEnforcer, :clean_gitlab_redis_sessions 
     context 'with existing session' do
       before do
         Gitlab::Redis::Sessions.with do |redis|
-          redis.set("#{::Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}", true )
+          redis.set("#{::Gitlab::Redis::Sessions::OTP_SESSIONS_NAMESPACE}:#{key.id}", true)
         end
       end
 

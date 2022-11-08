@@ -1179,10 +1179,26 @@ RSpec.describe Namespace do
   end
 
   describe '#read_only?' do
-    it 'is an alias for over storage limit' do
-      namespace = build(:namespace)
+    let(:namespace) { build(:namespace) }
 
-      expect(namespace.method(:read_only?).original_name).to eq(:over_storage_limit?)
+    where(:over_storage_limit, :over_free_user_limit, :result) do
+      false           | false              | false
+      false           | true               | true
+      true            | false              | true
+      true            | true               | true
+    end
+
+    subject { namespace.read_only? }
+
+    with_them do
+      before do
+        allow(namespace).to receive(:over_storage_limit?).and_return(over_storage_limit)
+        allow_next_instance_of(::Namespaces::FreeUserCap::Standard, namespace) do |instance|
+          allow(instance).to receive(:over_limit?).with(cache: true).and_return(over_free_user_limit)
+        end
+      end
+
+      it { is_expected.to eq(result) }
     end
   end
 

@@ -6,6 +6,8 @@ module Vulnerabilities
     include ::Gitlab::Utils::StrongMemoize
     include Presentable
     include ::VulnerabilityFindingHelpers
+    include IgnorableColumns
+    ignore_column :uuid_convert_string_to_uuid, remove_with: '15.6', remove_after: '2022-11-22'
 
     # https://gitlab.com/groups/gitlab-org/-/epics/3148
     # https://gitlab.com/gitlab-org/gitlab/-/issues/214563#note_370782508 is why the table names are not renamed
@@ -113,6 +115,7 @@ module Vulnerabilities
     end
 
     alias_method :declarative_policy_subject, :project
+    alias_attribute :finding_details, :details
 
     def self.counted_by_severity
       group(:severity).count.transform_keys do |severity|
@@ -300,7 +303,7 @@ module Vulnerabilities
     end
 
     def cve_value
-      cve || identifiers.find(&:cve?)&.name
+      identifiers.find(&:cve?)&.name
     end
 
     def cwe_value

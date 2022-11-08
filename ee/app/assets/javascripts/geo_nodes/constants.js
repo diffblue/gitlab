@@ -5,7 +5,7 @@ export const GEO_INFO_URL = helpPagePath('administration/geo/index.md');
 
 export const HELP_NODE_HEALTH_URL = helpPagePath(
   'administration/geo/replication/troubleshooting.html',
-  { anchor: 'check-the-health-of-the-secondary-node' },
+  { anchor: 'check-the-health-of-the-secondary-site' },
 );
 
 export const GEO_TROUBLESHOOTING_URL = helpPagePath(

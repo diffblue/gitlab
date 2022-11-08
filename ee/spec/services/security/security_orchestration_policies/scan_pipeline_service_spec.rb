@@ -4,15 +4,26 @@ require 'spec_helper'
 
 RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService do
   describe '#execute' do
-    let_it_be(:service) { described_class.new }
+    let_it_be(:project) { create(:project) }
+    let(:pipeline_scan_config) { subject[:pipeline_scan] }
+    let(:on_demand_config) { subject[:on_demand] }
+    let_it_be(:service) { described_class.new(project) }
 
     subject { service.execute(actions) }
 
-    shared_examples 'creates scan jobs' do |times, job_names|
+    shared_examples 'creates scan jobs' do |pipeline_scan_jobs: [], on_demand_jobs: []|
       it 'returns created jobs' do
-        expect(::Security::SecurityOrchestrationPolicies::CiConfigurationService).to receive(:new).exactly(times).times.and_call_original
+        expect(::Security::SecurityOrchestrationPolicies::CiConfigurationService).to receive(:new)
+                                                                                       .exactly(pipeline_scan_jobs.count)
+                                                                                       .times
+                                                                                       .and_call_original
+        expect(::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService).to receive(:new)
+                                                                                                         .exactly(on_demand_jobs.count)
+                                                                                                         .times
+                                                                                                         .and_call_original
 
-        expect(subject.keys).to eq(job_names)
+        expect(pipeline_scan_config.keys).to eq(pipeline_scan_jobs)
+        expect(on_demand_config.keys).to eq(on_demand_jobs)
       end
     end
 
@@ -21,15 +32,18 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService do
 
       it 'does not create scan job' do
         expect(::Security::SecurityOrchestrationPolicies::CiConfigurationService).not_to receive(:new)
+        expect(::Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConfigurationService).not_to receive(:new)
 
-        expect(subject.keys).to eq([])
+        [pipeline_scan_config, on_demand_config].each do |config|
+          expect(config.keys).to eq([])
+        end
       end
     end
 
     context 'when there is only one action' do
       let(:actions) { [{ scan: 'secret_detection' }] }
 
-      it_behaves_like 'creates scan jobs', 1, [:'secret-detection-0']
+      it_behaves_like 'creates scan jobs', pipeline_scan_jobs: %i[secret-detection-0]
     end
 
     context 'when action contains variables' do
@@ -56,7 +70,9 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService do
         ]
       end
 
-      it_behaves_like 'creates scan jobs', 5, [:'secret-detection-0', :'dast-1', :'cluster-image-scanning-2', :'container-scanning-3', :'sast-4']
+      it_behaves_like 'creates scan jobs',
+                      pipeline_scan_jobs: %i[secret-detection-0 container-scanning-1 sast-2],
+                      on_demand_jobs: %i[dast-on-demand-0]
     end
 
     context 'when there are valid and invalid actions' do
@@ -67,7 +83,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ScanPipelineService do
         ]
       end
 
-      it_behaves_like 'creates scan jobs', 1, [:'secret-detection-0']
+      it_behaves_like 'creates scan jobs', pipeline_scan_jobs: %i[secret-detection-0]
     end
   end
 end

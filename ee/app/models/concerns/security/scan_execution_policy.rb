@@ -12,6 +12,7 @@ module Security
     }.freeze
 
     SCAN_TYPES = %w[dast secret_detection cluster_image_scanning container_scanning sast].freeze
+    PIPELINE_SCAN_TYPES = SCAN_TYPES.excluding("cluster_image_scanning").freeze
     ON_DEMAND_SCANS = %w[dast].freeze
 
     included do
@@ -29,14 +30,6 @@ module Security
       scan_execution_policy.select { |config| config[:enabled] }.first(POLICY_LIMIT)
     end
 
-    def on_demand_scan_actions(ref)
-      active_policies_scan_actions(ref).select { |action| action[:scan].in?(ON_DEMAND_SCANS) }
-    end
-
-    def pipeline_scan_actions(ref)
-      active_policies_scan_actions(ref).reject { |action| action[:scan].in?(ON_DEMAND_SCANS) }
-    end
-
     def active_policy_names_with_dast_site_profile(profile_name)
       active_policy_names_with_dast_profiles.dig(:site_profiles, profile_name)
     end
@@ -51,6 +44,12 @@ module Security
 
     def scan_execution_policy
       policy_by_type(:scan_execution_policy)
+    end
+
+    def active_policies_scan_actions(ref)
+      active_scan_execution_policies
+        .select { |policy| applicable_for_ref?(policy, ref) }
+        .flat_map { |policy| policy[:actions] }
     end
 
     private
@@ -70,12 +69,6 @@ module Security
 
         profiles
       end
-    end
-
-    def active_policies_scan_actions(ref)
-      active_scan_execution_policies
-        .select { |policy| applicable_for_ref?(policy, ref) }
-        .flat_map { |policy| policy[:actions] }
     end
 
     def applicable_for_ref?(policy, ref)

@@ -4,7 +4,8 @@ require 'spec_helper'
 
 RSpec.shared_examples 'includes no jobs' do
   it 'includes no jobs' do
-    expect { pipeline }.to raise_error(Ci::CreatePipelineService::CreateError, 'No stages / jobs for this pipeline.')
+    expect(build_names).to be_empty
+    expect(pipeline.errors.full_messages).to match_array(["No stages / jobs for this pipeline."])
   end
 end
 
@@ -16,8 +17,8 @@ RSpec.describe 'DAST.latest.gitlab-ci.yml' do
     let(:pipeline_branch) { default_branch }
     let(:project) { create(:project, :custom_repo, files: { 'README.txt' => '' }) }
     let(:user) { project.first_owner }
-    let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_branch ) }
-    let(:pipeline) { service.execute!(:push).payload }
+    let(:service) { Ci::CreatePipelineService.new(project, user, ref: pipeline_branch) }
+    let(:pipeline) { service.execute(:push).payload }
     let(:build_names) { pipeline.builds.pluck(:name) }
     let(:ci_pipeline_yaml) { "stages: [\"dast\"]\n" }
 

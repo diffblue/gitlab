@@ -65,6 +65,20 @@ RSpec.describe Security::StoreScanService do
       expect { store_scan }.to change { Security::Scan.succeeded.count }.by(1)
     end
 
+    describe 'setting the `created_at` attribute of security scan' do
+      let(:pipeline) { artifact.job.pipeline }
+
+      before do
+        pipeline.update_column(:created_at, 3.days.ago)
+      end
+
+      it 'sets the same `created_at` for security_scans as pipeline' do
+        store_scan
+
+        expect(pipeline.security_scans.first.created_at).to eq(pipeline.reload.created_at)
+      end
+    end
+
     describe 'setting the findings_partition_number' do
       let(:partition_number) { 222 }
       let(:pipeline) { artifact.job.pipeline }

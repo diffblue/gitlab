@@ -14,5 +14,54 @@ metadata:
       name: private_token
       in: query
   tags:
+    # Keep in alphabetical order
+  - name: access_requests
+    description: Operations related to access requests
+  - name: ci_variables
+    description: Operations related to CI/CD variables
+  - name: cluster_agents
+    description: Operations related to the GitLab agent for Kubernetes
+  - name: ci_resource_groups
+    description: Operations to manage job concurrency with resource groups
+  - name: deploy_keys
+    description: Operations related to deploy keys
+  - name: deploy_tokens
+    description: Operations related to deploy tokens
+  - name: deployments
+    description: Operations related to deployments
+  - name: dora_metrics
+    description: Operations related to DevOps Research and Assessment (DORA) key metrics
+  - name: environments
+    description: Operations related to environments
+  - name: feature_flags_user_lists
+    description: Operations related to accessing GitLab feature flag user lists
+  - name: feature_flags
+    description: Operations related to feature flags
+  - name: features
+    description: Operations related to managing Flipper-based feature flags
+  - name: freeze_periods
+    description: Operations related to deploy freeze periods
+  - name: merge_requests
+    description: Operations related to merge requests
   - name: metadata
     description: Operations related to metadata of the GitLab instance
+  - name: project_export
+    description: Operations related to export projects
+  - name: project_hooks
+    description: Operations related to project hooks
+  - name: project_import_bitbucket
+    description: Operations related to import BitBucket projects
+  - name: project_import_github
+    description: Operations related to import GitHub projects
+  - name: protected environments
+    description: Operations related to protected environments
+  - name: release_links
+    description: Operations related to release assets (links)
+  - name: releases
+    description: Operations related to releases
+  - name: suggestions
+    description: Operations related to suggestions
+  - name: system_hooks
+    description: Operations related to system hooks
+  - name: unleash_api
+    description: Operations related to Unleash API

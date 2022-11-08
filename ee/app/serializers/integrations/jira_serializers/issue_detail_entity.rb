@@ -29,8 +29,13 @@ module Integrations
 
       private
 
-      def jira_gfm_pipeline(html)
-        Banzai::Pipeline::JiraGfmPipeline.call(html, project: project)[:output].to_html
+      def jira_gfm_pipeline(raw)
+        rendered = Banzai::Pipeline::JiraGfmPipeline.call(raw, project: project)[:output].to_html
+        Banzai.post_process(rendered, project: project, current_user: current_user)
+      end
+
+      def current_user
+        @current_user ||= options[:current_user]
       end
     end
   end

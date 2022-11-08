@@ -25,10 +25,6 @@ RSpec.describe ProjectsController do
 
       before do
         stub_ee_application_setting(should_check_namespace_plan: true)
-        allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage|
-          allow(root_storage).to receive(:usage_ratio).and_return(0.5)
-          allow(root_storage).to receive(:above_size_limit?).and_return(true)
-        end
         stub_feature_flags(namespace_storage_limit: false)
 
         namespace.add_owner(user)
@@ -39,10 +35,34 @@ RSpec.describe ProjectsController do
           stub_ee_application_setting(automatic_purchased_storage_allocation: true)
         end
 
-        it 'includes the CTA for additional purchased storage' do
-          subject
+        context 'when usage_ratio < 0.75' do
+          before do
+            allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage|
+              allow(root_storage).to receive(:usage_ratio).and_return(0.5)
+              allow(root_storage).to receive(:above_size_limit?).and_return(true)
+            end
+          end
 
-          expect(response.body).to match(/Please purchase additional storage/)
+          it 'does not include the CTA for additional purchased storage' do
+            subject
+
+            expect(response.body).not_to match(/Please purchase additional storage/)
+          end
+        end
+
+        context 'when usage_ratio >= 0.75' do
+          before do
+            allow_next_instance_of(Namespaces::Storage::RootExcessSize) do |root_storage|
+              allow(root_storage).to receive(:usage_ratio).and_return(0.75)
+              allow(root_storage).to receive(:above_size_limit?).and_return(true)
+            end
+          end
+
+          it 'includes the CTA for additional purchased storage' do
+            subject
+
+            expect(response.body).to match(/Please purchase additional storage/)
+          end
         end
       end
 

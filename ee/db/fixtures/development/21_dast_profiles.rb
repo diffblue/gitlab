@@ -5,8 +5,6 @@ class Gitlab::Seeder::DastProfiles
 
   def initialize(project)
     @project = project
-    FactoryBot.definition_file_paths << Rails.root.join('ee', 'spec', 'factories')
-    FactoryBot.reload # rubocop:disable Cop/ActiveRecordAssociationReload
   end
 
   def seed!

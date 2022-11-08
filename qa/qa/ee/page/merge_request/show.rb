@@ -126,8 +126,12 @@ module QA
           def dismiss_vulnerability_with_reason(name, reason)
             expand_vulnerability_report
             click_vulnerability(name)
+            add_comment_and_dismiss(reason)
+          end
+
+          def add_comment_and_dismiss(comment)
             click_element :dismiss_with_comment_button
-            find_element(:dismiss_comment_field).fill_in with: reason, fill_options: { automatic_label_click: true }
+            find_element(:dismiss_comment_field).fill_in with: comment, fill_options: { automatic_label_click: true }
             click_element :add_and_dismiss_button
 
             wait_until(reload: false) do
@@ -191,13 +195,17 @@ module QA
             find_element(:dast_scan_report).has_content?(/DAST detected \d*( new)?( potential)? vulnerabilit/)
           end
 
-          def has_opened_dismissed_vulnerability?(reason = nil)
+          def has_security_finding_dismissed_on_mr_widget?(reason)
             within_element(:vulnerability_modal_content) do
-              dismissal_found = has_element?(:event_item_content, text: /Dismissed on pipeline #\d+/)
+              has_element?(:event_item_content, text: /Dismissed on pipeline #\d+/) &&
+                has_element?(:event_item_content, text: reason)
+            end
+          end
 
-              dismissal_found = has_element?(:event_item_content, text: reason) if dismissal_found && reason
-
-              dismissal_found
+          def has_security_finding_dismissed?(reason, project_path)
+            within_element(:vulnerability_modal_content) do
+              has_element?(:event_item_content, text: "Dismissed at #{project_path.gsub('/', ' / ')}") &&
+                has_element?(:event_item_content, text: reason)
             end
           end
 

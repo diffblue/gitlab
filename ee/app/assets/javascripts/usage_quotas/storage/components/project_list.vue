@@ -38,7 +38,7 @@ export default {
 <template>
   <div>
     <div
-      class="gl-responsive-table-row table-row-header gl-border-t-solid gl-border-t-1 gl-border-gray-100 gl-mt-5 gl-line-height-normal gl-text-black-normal gl-font-base"
+      class="gl-responsive-table-row table-row-header gl-border-t-solid gl-border-t-1 gl-border-gray-100 gl-line-height-normal gl-text-black-normal gl-font-base"
       role="row"
     >
       <div class="table-section section-70 gl-font-weight-bold" role="columnheader">

@@ -8,7 +8,7 @@ RSpec.describe Mutations::Issues::Create do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:cadence1) { create(:iterations_cadence, group: group) }
-  let_it_be(:current_iteration) { create(:iteration, group: group, iterations_cadence: cadence1, start_date: 2.days.ago, due_date: 5.days.from_now) }
+  let_it_be(:current_iteration) { create(:iteration, iterations_cadence: cadence1, start_date: 2.days.ago, due_date: 5.days.from_now) }
   let_it_be(:user) { create(:user) }
   let_it_be(:assignee1) { create(:user) }
   let_it_be(:assignee2) { create(:user) }
@@ -61,8 +61,8 @@ RSpec.describe Mutations::Issues::Create do
       end
 
       context 'when iterations are available' do
-        let_it_be(:past_iteration) { create(:iteration, group: group, iterations_cadence: cadence1, start_date: 9.days.ago, due_date: 3.days.ago) }
-        let_it_be(:future_iteration) { create(:iteration, group: group, iterations_cadence: cadence1, start_date: 6.days.from_now, due_date: 9.days.from_now) }
+        let_it_be(:past_iteration) { create(:iteration, iterations_cadence: cadence1, start_date: 9.days.ago, due_date: 3.days.ago) }
+        let_it_be(:future_iteration) { create(:iteration, iterations_cadence: cadence1, start_date: 6.days.from_now, due_date: 9.days.from_now) }
 
         before do
           stub_licensed_features(iterations: true)

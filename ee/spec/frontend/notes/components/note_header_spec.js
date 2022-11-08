@@ -56,7 +56,7 @@ describe('NoteHeader component', () => {
   it('shows internal note badge tooltip for group context when isInternalNote is true for epics', () => {
     createComponent({ isInternalNote: true, noteableType: 'epic' });
 
-    expect(wrapper.findByTestId('internalNoteIndicator').attributes('title')).toBe(
+    expect(wrapper.findByTestId('internal-note-indicator').attributes('title')).toBe(
       'This internal note will always remain confidential',
     );
   });

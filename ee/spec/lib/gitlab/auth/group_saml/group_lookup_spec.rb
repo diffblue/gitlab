@@ -21,13 +21,13 @@ RSpec.describe Gitlab::Auth::GroupSaml::GroupLookup do
     let(:path_info) { '/users/auth/group_saml' }
 
     it 'can detect group_path from rack.input body params' do
-      subject( 'REQUEST_METHOD' => 'POST', 'rack.input' => StringIO.new(query_string), 'CONTENT_TYPE' => 'multipart/form-data' )
+      subject('REQUEST_METHOD' => 'POST', 'rack.input' => StringIO.new(query_string), 'CONTENT_TYPE' => 'multipart/form-data')
 
       expect(subject.path).to eq 'the-group'
     end
 
     it 'can detect group_path from query params' do
-      subject( "QUERY_STRING" => query_string )
+      subject("QUERY_STRING" => query_string)
 
       expect(subject.path).to eq 'the-group'
     end
@@ -41,7 +41,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::GroupLookup do
     end
 
     it 'does not allow params to take precedence' do
-      subject( "QUERY_STRING" => query_string )
+      subject("QUERY_STRING" => query_string)
 
       expect(subject.path).to eq 'callback-group'
     end

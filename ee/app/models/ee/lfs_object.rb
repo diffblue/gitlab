@@ -25,8 +25,8 @@ module EE
       after_save :save_verification_details
 
       scope :with_verification_state, ->(state) { joins(:lfs_object_state).where(lfs_object_states: { verification_state: verification_state_value(state) }) }
-      scope :checksummed, -> { joins(:lfs_object_state).where.not(lfs_object_states: { verification_checksum: nil } ) }
-      scope :not_checksummed, -> { joins(:lfs_object_state).where(lfs_object_states: { verification_checksum: nil } ) }
+      scope :checksummed, -> { joins(:lfs_object_state).where.not(lfs_object_states: { verification_checksum: nil }) }
+      scope :not_checksummed, -> { joins(:lfs_object_state).where(lfs_object_states: { verification_checksum: nil }) }
 
       scope :available_verifiables, -> { joins(:lfs_object_state) }
 

@@ -6,12 +6,12 @@
 
 - return unless import_state
 
-%tr{ data: { qa_selector: 'mirrored_repository_row' } }
-  %td.mirror-url{ data: { qa_selector: 'mirror_repository_url_cell' } }= @project.safe_import_url
+%tr{ data: { qa_selector: 'mirrored_repository_row_container' } }
+  %td.mirror-url{ data: { qa_selector: 'mirror_repository_url_content' } }= @project.safe_import_url
   %td= _('Pull')
   %td
     = import_state.last_update_started_at.present? ? time_ago_with_tooltip(import_state.last_update_started_at) : _('Never')
-  %td{ data: { qa_selector: 'mirror_last_update_at_cell' } }= import_state.last_successful_update_at.present? ? time_ago_with_tooltip(import_state.last_successful_update_at) : _('Never')
+  %td{ data: { qa_selector: 'mirror_last_update_at_content' } }= import_state.last_successful_update_at.present? ? time_ago_with_tooltip(import_state.last_successful_update_at) : _('Never')
   %td
     - if import_state&.last_error.present?
       = gl_badge_tag _('Error'), { variant: :danger }, { data: { toggle: 'tooltip', html: 'true' }, title: html_escape(import_state.last_error.try(:strip)) }

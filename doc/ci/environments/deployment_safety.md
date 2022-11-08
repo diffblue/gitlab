@@ -13,9 +13,10 @@ that help maintain deployment security and stability.
 
 You can:
 
+- Set appropriate roles to your project. See [Project members permissions](../../user/permissions.md#project-members-permissions)
+  for the different user roles GitLab supports and the permissions of each.
 - [Restrict write-access to a critical environment](#restrict-write-access-to-a-critical-environment)
 - [Prevent deployments during deploy freeze windows](#prevent-deployments-during-deploy-freeze-windows)
-- [Set appropriate roles to your project](#setting-appropriate-roles-to-your-project)
 - [Protect production secrets](#protect-production-secrets)
 - [Separate project for deployments](#separate-project-for-deployments)
 
@@ -23,6 +24,9 @@ If you are using a continuous deployment workflow and want to ensure that concur
 
 - [Ensure only one deployment job runs at a time](#ensure-only-one-deployment-job-runs-at-a-time)
 - [Prevent outdated deployment jobs](#prevent-outdated-deployment-jobs)
+
+<i class="fa fa-youtube-play youtube" aria-hidden="true"></i>
+For an overview, see [How to secure your CD pipelines/workflow](https://www.youtube.com/watch?v=Mq3C1KveDc0).
 
 ## Restrict write access to a critical environment
 
@@ -91,12 +95,13 @@ can be prevented in some circumstances.
 
 ### How to rollback to an outdated deployment
 
-In some cases, you need to rollback to an outdated deployment. Current workarounds are:
+> In GitLab 15.6, [rollback via job retry was introduced back](https://gitlab.com/gitlab-org/gitlab/-/issues/378359).
 
-- Temporarily disable this feature, rollback and re-enable.
-- Run a new pipeline with previous commit. It contains newer deployment jobs than the latest deployment.
+In some cases, you need to rollback to an outdated deployment.
+This feature explicitly allows rollback via [Environment Rollback](index.md#environment-rollback),
+so that you can quickly rollback in an urgent case.
 
-Please see [this issue](https://gitlab.com/gitlab-org/gitlab/-/issues/378359) for more information about improving the usability.
+Alternatively, you can run a new pipeline with a previous commit. It contains newer deployment jobs than the latest deployment.
 
 ### Example
 
@@ -120,19 +125,6 @@ If you want to prevent deployments for a particular period, for example during a
 vacation period when most employees are out, you can set up a [Deploy Freeze](../../user/project/releases/index.md#prevent-unintentional-releases-by-setting-a-deploy-freeze).
 During a deploy freeze period, no deployment can be executed. This is helpful to
 ensure that deployments do not happen unexpectedly.
-
-## Setting appropriate roles to your project
-
-GitLab supports several different roles that can be assigned to your project members. See
-[Project members permissions](../../user/permissions.md#project-members-permissions)
-for an explanation of these roles and the permissions of each.
-
-<div class="video-fallback">
-  See the video: <a href="https://www.youtube.com/watch?v=Mq3C1KveDc0">How to secure your CD pipelines</a>.
-</div>
-<figure class="video-container">
-  <iframe src="https://www.youtube.com/embed/Mq3C1KveDc0" frameborder="0" allowfullscreen="true"> </iframe>
-</figure>
 
 ## Protect production secrets
 

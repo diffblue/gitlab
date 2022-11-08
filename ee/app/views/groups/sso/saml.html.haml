@@ -12,7 +12,9 @@
       - if @group_saml_identity || !user_signed_in?
         %h4.gl-mt-0= _('Sign in to %{group_name}') % { group_name: @group_name }
         %p= s_('SAML|To access %{strongOpen}%{group_name}%{strongClose}, you must sign in using single sign-on through an external sign-in page.').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe }
-        = saml_link _('Sign in'), @group_path, html_class: 'btn btn-confirm btn-md gl-button btn-block', data: { qa_selector: 'saml_sso_signin_button' }, redirect: @redirect_path
+        - button_text = _('Sign in')
+        = saml_link button_text, @group_path, html_class: 'btn btn-confirm btn-md gl-button btn-block', data: { qa_selector: 'saml_sso_signin_button' }, redirect: @redirect_path
+        = render 'devise/shared/terms_of_service_notice', button_text: button_text
       - else
         %h4.gl-mt-0= s_('Allow %{strongOpen}%{group_name}%{strongClose} to sign you in?').html_safe % { strongOpen: '<strong>'.html_safe, group_name: @group_name, strongClose: '</strong>'.html_safe }
         %p= s_('SAML|The %{strongOpen}%{group_path}%{strongClose} group allows you to sign in using single sign-on.').html_safe % { strongOpen: '<strong>'.html_safe, group_path: @group_path, strongClose: '</strong>'.html_safe }

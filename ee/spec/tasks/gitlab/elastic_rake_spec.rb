@@ -2,7 +2,7 @@
 
 require 'rake_helper'
 
-RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout do
+RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_stdout do
   before do
     Rake.application.rake_require 'tasks/gitlab/elastic'
   end
@@ -152,6 +152,8 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout 
   end
 
   context "with elasticsearch_indexing enabled" do
+    subject { run_rake_task('gitlab:elastic:index') }
+
     before do
       stub_ee_application_setting(elasticsearch_indexing: true)
     end
@@ -163,7 +165,13 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic, :silence_stdout 
         expect(Rake::Task['gitlab:elastic:index_projects']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_snippets']).to receive(:invoke).ordered
 
-        run_rake_task 'gitlab:elastic:index'
+        subject
+      end
+
+      it 'outputs warning if indexing is paused' do
+        stub_ee_application_setting(elasticsearch_pause_indexing: true)
+
+        expect { subject }.to output(/WARNING: `elasticsearch_pause_indexing` is enabled/).to_stdout
       end
     end
 

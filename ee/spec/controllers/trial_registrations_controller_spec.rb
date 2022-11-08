@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe TrialRegistrationsController do
+  include FullNameHelper
+
   let(:com) { true }
 
   before do
@@ -106,7 +108,7 @@ RSpec.describe TrialRegistrationsController do
       it 'sets name from first and last name' do
         post_create
 
-        expect(User.last.name).to eq("#{user_params[:first_name]} #{user_params[:last_name]}")
+        expect(User.last.name).to eq full_name(user_params[:first_name], user_params[:last_name])
       end
     end
   end

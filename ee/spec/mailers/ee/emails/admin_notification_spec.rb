@@ -12,6 +12,7 @@ RSpec.describe Emails::AdminNotification do
 
     let(:max_project_downloads) { 5 }
     let(:time_period) { 600 }
+    let(:auto_ban_enabled) { true }
     let(:group) { nil }
 
     subject do
@@ -19,6 +20,7 @@ RSpec.describe Emails::AdminNotification do
         admin.id, user.id,
         max_project_downloads: max_project_downloads,
         within_seconds: time_period,
+        auto_ban_enabled: auto_ban_enabled,
         group: group
       )
     end
@@ -37,16 +39,31 @@ RSpec.describe Emails::AdminNotification do
       is_expected.to have_subject "We've detected unusual activity"
     end
 
-    it 'includes the name of the user' do
-      is_expected.to have_body_text user.name
+    it 'includes the reason' do
+      is_expected.to have_body_text "We want to let you know #{user.name} has exceeded the Git rate limit due to them \
+        downloading more than 5 project repositories within 10 minutes."
+    end
+
+    context 'when threshold is 1 and interval is 1 minute' do
+      let(:max_project_downloads) { 1 }
+      let(:time_period) { 60 }
+
+      it 'uses singular form' do
+        is_expected.to have_body_text "1 project repository within 1 minute."
+      end
+    end
+
+    context 'when interval is less than a minute' do
+      let(:time_period) { 30 }
+
+      it 'uses the correct unit' do
+        is_expected.to have_body_text "5 project repositories within 30 seconds."
+      end
     end
 
     it 'includes the scope of the ban' do
-      is_expected.to have_body_text "banned from your GitLab instance"
-    end
-
-    it 'includes the reason' do
-      is_expected.to have_body_text "due to them downloading more than 5 project repositories within 10 minutes"
+      is_expected.to have_body_text "Because you enabled auto-banning, we have also automatically banned this user \
+        from your GitLab instance"
     end
 
     it 'includes a link to unban the user' do
@@ -61,11 +78,25 @@ RSpec.describe Emails::AdminNotification do
       is_expected.to have_body_text %r{You're receiving this email because of your account on <a .*>localhost<\/a>}
     end
 
+    context 'when auto-ban is disabled' do
+      let(:auto_ban_enabled) { false }
+
+      it 'does not include the scope of the ban' do
+        is_expected.not_to have_body_text "Because you enabled auto-banning, we have also automatically banned this \
+          user from your GitLab instance"
+      end
+
+      it 'does not include a link to unban the user' do
+        is_expected.not_to have_body_text admin_users_url(filter: 'banned')
+      end
+    end
+
     context 'when scoped to a group' do
       let(:group) { create(:group) }
 
       it 'includes the scope of the ban' do
-        is_expected.to have_body_text "banned from your group (#{group.name})"
+        is_expected.to have_body_text "Because you enabled auto-banning, we have also automatically banned this user \
+          from your group (#{group.name})"
       end
 
       it 'includes a link to unban the user' do

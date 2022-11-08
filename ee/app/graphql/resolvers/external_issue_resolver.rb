@@ -36,7 +36,7 @@ module Resolvers
       when 'jira'
         ::Integrations::JiraSerializers::IssueSerializer
           .new
-          .represent(external_issue, project: object.vulnerability.project, only: %i[title references status external_tracker web_url created_at updated_at] )
+          .represent(external_issue, project: object.vulnerability.project, only: %i[title references status external_tracker web_url created_at updated_at])
       end
     end
   end

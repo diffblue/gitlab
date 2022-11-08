@@ -79,6 +79,10 @@ module EE
               'ON merge_requests.target_project_id = security_orchestration_policy_configurations.project_id')
       end
 
+      scope :with_applied_scan_result_policies, -> do
+        joins(:approval_rules).merge(ApprovalMergeRequestRule.scan_finding)
+      end
+
       def merge_requests_author_approval?
         !!target_project&.merge_requests_author_approval?
       end
@@ -91,7 +95,8 @@ module EE
     class_methods do
       # This is an ActiveRecord scope in CE
       def with_api_entity_associations
-        super.preload(:blocking_merge_requests, target_project: [group: :saml_provider])
+        super.preload(:blocking_merge_requests, :approval_rules,
+                      target_project: [:regular_or_any_approver_approval_rules, group: :saml_provider])
       end
 
       def sort_by_attribute(method, *args, **kwargs)
@@ -299,12 +304,6 @@ module EE
       project_rules.find_each do |project_rule|
         project_rule.apply_report_approver_rules_to(self)
       end
-    end
-
-    def missing_security_scan_types
-      return [] unless actual_head_pipeline && base_pipeline
-
-      (base_pipeline.security_scans.pluck(:scan_type) - actual_head_pipeline.security_scans.pluck(:scan_type)).uniq
     end
 
     def applicable_approval_rules_for_user(user_id)

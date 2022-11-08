@@ -21,7 +21,7 @@ RSpec.describe 'User visits issue boards', :js do
 
   let_it_be(:label) { create(:group_label, group: group, name: label_name) }
   let_it_be(:scoped_label) { create(:group_label, group: group, name: scoped_label_name) }
-  let_it_be(:assignee) { create_default(:group_member, :maintainer, user: create(:user, username: assignee_username), group: group ).user }
+  let_it_be(:assignee) { create_default(:group_member, :maintainer, user: create(:user, username: assignee_username), group: group).user }
 
   before_all do
     create_default(:issue, project: project, title: issue_with_label, labels: [label])
@@ -32,6 +32,7 @@ RSpec.describe 'User visits issue boards', :js do
 
   shared_examples "visiting board path" do
     before do
+      stub_feature_flags(apollo_boards: false)
       visit board_path
 
       wait_for_requests
@@ -53,6 +54,7 @@ RSpec.describe 'User visits issue boards', :js do
   shared_examples "scoped to labels" do
     context "when board is scoped to labels" do
       before_all do
+        stub_feature_flags(apollo_boards: false)
         clear_board_scope(board)
         board.update!(label_ids: [label.id, scoped_label.id])
       end

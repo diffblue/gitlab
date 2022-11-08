@@ -8,9 +8,12 @@ module Users
           new(project, user).execute
         end
 
-        def execute
-          check_admins_alerted
+        def initialize(project, user)
+          super
+          @admins_alerted = rate_limited?(peek: true)
+        end
 
+        def execute
           return { banned: false } unless rate_limited?
 
           log_info(
@@ -28,7 +31,7 @@ module Users
 
         private
 
-        attr_accessor :admins_alerted
+        attr_reader :admins_alerted
 
         def rate_limited?(peek: false)
           ::Gitlab::ApplicationRateLimiter.throttled?(
@@ -46,37 +49,38 @@ module Users
           namespace&.owned_by?(current_user)
         end
 
-        def check_admins_alerted
-          # If user was rate limited before then we know that admins have already been alerted
-          @admins_alerted = rate_limited?(peek: true)
-        end
-
         def ban_user!
           return false unless auto_ban_users
           return false if user_owns_namespace?
 
           result = ::Users::Abuse::NamespaceBans::CreateService.new(namespace: namespace, user: current_user).execute
+          banned = result[:status] == :success
 
-          log_info(
-            message: "Namespace-level user ban",
-            username: current_user.username,
-            email: "#{current_user.email}",
-            namespace_id: namespace.id,
-            ban_by: "#{self.class.name}"
-          )
+          if banned
+            log_info(
+              message: "Namespace-level user ban",
+              username: current_user.username,
+              email: current_user.email,
+              namespace_id: namespace.id,
+              ban_by: self.class.name
+            )
+          end
 
-          result[:status] == :success || current_user.banned_from_namespace?(namespace)
+          banned || current_user.banned_from_namespace?(namespace)
         end
 
         def alert_admins
           return if admins_alerted
 
           admins.each do |admin|
+            next unless admin.active?
+
             Notify.user_auto_banned_email(
               admin.id,
               current_user.id,
               max_project_downloads: max_project_downloads,
               within_seconds: time_period,
+              auto_ban_enabled: auto_ban_users,
               group: namespace
             ).deliver_later
           end

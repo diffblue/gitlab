@@ -19,7 +19,7 @@ module EE
                         :trial_onboarding_board
                       ]
 
-        before_action only: [:trial_getting_started] do
+        before_action only: [:trial_getting_started, :continuous_onboarding_getting_started, :show] do
           push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
         end
       end

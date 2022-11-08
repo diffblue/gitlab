@@ -13,16 +13,6 @@ RSpec.describe Groups::GroupMembersHelper do
     allow(helper).to receive(:current_user).and_return(current_user)
   end
 
-  describe '.group_member_select_options' do
-    before do
-      helper.instance_variable_set(:@group, group)
-    end
-
-    it 'returns an options hash with skip_ldap' do
-      expect(helper.group_member_select_options).to include(skip_ldap: false)
-    end
-  end
-
   describe '#group_members_app_data' do
     let(:banned) { [] }
 
@@ -42,6 +32,7 @@ RSpec.describe Groups::GroupMembersHelper do
       allow(helper).to receive(:override_group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id/override')
       allow(helper).to receive(:group_group_member_path).with(group, ':id').and_return('/groups/foo-bar/-/group_members/:id')
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(true)
+      allow(helper).to receive(:can?).with(current_user, :admin_member_access_request, group).and_return(true)
       allow(helper).to receive(:can?).with(current_user, :export_group_memberships, group).and_return(true)
     end
 

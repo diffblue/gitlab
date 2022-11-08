@@ -102,7 +102,7 @@ module API
       end
       params do
         optional :type, type: String, values: %w[wiki repository], desc: 'Type of failure (repository/wiki)'
-        optional :failure_type, type: String, default: 'sync', desc: 'Show verification failures'
+        optional :failure_type, type: String, values: %w[sync checksum_mismatch verification], default: 'sync', desc: 'Show verification failures'
         use :pagination
       end
       get '/current/failures' do

@@ -134,10 +134,8 @@ module EE
 
     def check_user_confirmation
       user = ::User.find_by_login(user_params[:login])
-      return if !user || !user.valid_password?(user_params[:password]) || user.access_locked? || user.confirmed?
-
-      email_wrapper = ::Gitlab::Email::FeatureFlagWrapper.new(user.email)
-      return unless ::Feature.enabled?(:identity_verification, email_wrapper)
+      return if !user || !user.valid_password?(user_params[:password]) || user.access_locked? || user.identity_verified?
+      return unless ::Users::EmailVerification::SendCustomConfirmationInstructionsService.enabled?(user.email)
 
       # When identity verification is enabled, store the user id in the session and redirect to the
       # identity verification page instead of displaying a Devise flash alert on the sign in page.

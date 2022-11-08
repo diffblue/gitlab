@@ -148,6 +148,8 @@ The following metrics are available:
 | `gitlab_ci_build_trace_errors_total`                             | Counter     | 14.4    | Total amount of different error types on a build trace                                                                | `error_reason`                                            |
 | `gitlab_presentable_object_cacheless_render_real_duration_seconds`              | Histogram   | 15.3     | Duration of real time spent caching and representing specific web request objects                                                    | `controller`, `action`                                    |
 | `cached_object_operations_total`                                      | Counter     | 15.3    | Total number of objects cached for specific web requests                                                                                                      | `controller`, `action`                                    |
+| `redis_hit_miss_operations_total`                                | Counter     | 15.6    | Total number of Redis cache hits and misses                                                                           | `cache_hit`, `caller_id`, `cache_identifier`, `feature_category`, `backing_resource` |
+| `redis_cache_generation_duration_seconds`                        | Histogram   | 15.6    | Time to generate Redis cache                                                                                          | `cache_hit`, `caller_id`, `cache_identifier`, `feature_category`, `backing_resource` |
 
 ## Metrics controlled by a feature flag
 
@@ -374,6 +376,8 @@ Some basic Ruby runtime metrics are available:
 | `ruby_process_cpu_seconds_total`         | Gauge     | 12.0  | Total amount of CPU time per process |
 | `ruby_process_max_fds`                   | Gauge     | 12.0  | Maximum number of open file descriptors per process |
 | `ruby_process_resident_memory_bytes`     | Gauge     | 12.0  | Memory usage by process (RSS/Resident Set Size) |
+| `ruby_process_resident_anon_memory_bytes`| Gauge     | 15.6  | Anonymous memory usage by process (RSS/Resident Set Size) |
+| `ruby_process_resident_file_memory_bytes`| Gauge     | 15.6  | File-backed memory usage by process (RSS/Resident Set Size) |
 | `ruby_process_unique_memory_bytes`       | Gauge     | 13.0  | Memory usage by process (USS/Unique Set Size) |
 | `ruby_process_proportional_memory_bytes` | Gauge     | 13.0  | Memory usage by process (PSS/Proportional Set Size) |
 | `ruby_process_start_time_seconds`        | Gauge     | 12.0  | UNIX timestamp of process start time |
@@ -399,7 +403,7 @@ These client metrics are meant to complement Redis server metrics.
 These metrics are broken down per
 [Redis instance](https://docs.gitlab.com/omnibus/settings/redis.html#running-with-multiple-redis-instances).
 These metrics all have a `storage` label which indicates the Redis
-instance (`cache`, `shared_state`, and so on).
+instance. For example, `cache` or `shared_state`.
 
 | Metric                            | Type    | Since | Description |
 |:--------------------------------- |:------- |:----- |:----------- |

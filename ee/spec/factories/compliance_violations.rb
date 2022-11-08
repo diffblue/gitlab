@@ -3,6 +3,7 @@
 FactoryBot.define do
   factory :compliance_violation, class: 'MergeRequests::ComplianceViolation' do
     violating_user factory: :user
+    reason { :approved_by_merge_request_author }
     merge_request
 
     trait :approved_by_merge_request_author do

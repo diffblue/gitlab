@@ -24,7 +24,7 @@ module Gitlab
           'frame_src' => ContentSecurityPolicy::Directives.frame_src,
           'img_src' => "'self' data: blob: http: https:",
           'manifest_src' => "'self'",
-          'media_src' => "'self' data:",
+          'media_src' => "'self' data: http: https:",
           'script_src' => ContentSecurityPolicy::Directives.script_src,
           'style_src' => "'self' 'unsafe-inline'",
           'worker_src' => "#{Gitlab::Utils.append_path(Gitlab.config.gitlab.url, 'assets/')} blob: data:",
@@ -154,7 +154,7 @@ module Gitlab
       # Using 'self' in the CSP introduces several CSP bypass opportunities
       # for this reason we list the URLs where GitLab frames itself instead
       def self.allow_framed_gitlab_paths(directives)
-        ['/admin/', '/assets/', '/-/speedscope/index.html', '/-/sandbox/mermaid'].map do |path|
+        ['/admin/', '/assets/', '/-/speedscope/index.html', '/-/sandbox/'].map do |path|
           append_to_directive(directives, 'frame_src', Gitlab::Utils.append_path(Gitlab.config.gitlab.url, path))
         end
       end

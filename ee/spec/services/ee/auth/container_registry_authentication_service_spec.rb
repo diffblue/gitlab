@@ -121,7 +121,12 @@ RSpec.describe Auth::ContainerRegistryAuthenticationService do
         it 'returns an appropriate response' do
           expect(subject[:errors].first).to include(
             code: 'DENIED',
-            message: 'You are above your storage quota! Visit https://docs.gitlab.com/ee/user/usage_quotas.html to learn more.'
+            message: format(
+              _("Your action has been rejected because the namespace storage limit has been reached. " \
+              "For more information, " \
+              "visit %{doc_url}."),
+              doc_url: Rails.application.routes.url_helpers.help_page_url('user/usage_quotas')
+            )
           )
         end
       end

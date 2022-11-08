@@ -13,7 +13,7 @@ module Elastic
     end
 
     def document_type_plural
-      document_type.pluralize
+      document_type.to_s.pluralize
     end
 
     def get_number_of_shards(index_name: new_index_name)

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Data Stores' do
+  RSpec.describe 'Data Stores', product_group: :global_search do
     describe(
       'Search using Elasticsearch',
       :orchestrated,

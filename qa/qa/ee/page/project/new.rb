@@ -13,9 +13,9 @@ module QA
             base.class_eval do
               view 'ee/app/views/projects/_project_templates.html.haml' do
                 element :group_templates_tab
-                element :group_template_tab_badge
+                element :group_template_tab_badge_content
                 element :instance_templates_tab
-                element :instance_template_tab_badge
+                element :instance_template_tab_badge_content
               end
 
               view 'ee/app/views/users/available_group_templates.html.haml' do
@@ -43,11 +43,11 @@ module QA
           end
 
           def group_template_tab_badge_text
-            find_element(:group_template_tab_badge).text
+            find_element(:group_template_tab_badge_content).text
           end
 
           def instance_template_tab_badge_text
-            find_element(:instance_template_tab_badge).text
+            find_element(:instance_template_tab_badge_content).text
           end
 
           def click_cicd_for_external_repo

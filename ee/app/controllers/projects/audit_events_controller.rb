@@ -42,9 +42,7 @@ class Projects::AuditEventsController < Projects::ApplicationController
     end
   end
 
-  def filter_by_author(params)
-    return params if can?(current_user, :admin_project, project) || current_user.auditor?
-
-    params.merge(author_id: current_user.id)
+  def can_view_events_from_all_members?(user)
+    can?(user, :admin_project, project) || user.auditor?
   end
 end

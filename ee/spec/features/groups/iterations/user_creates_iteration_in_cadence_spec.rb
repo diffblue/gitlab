@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe 'User creates iteration in a cadence', :js do
   let_it_be(:now) { Time.zone.now }
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group ).user }
+  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group).user }
   let_it_be(:cadence) { build(:iterations_cadence, group: group, automatic: false, duration_in_weeks: 0).tap { |cadence| cadence.save!(validate: false) } }
 
   before do

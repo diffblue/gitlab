@@ -23,7 +23,7 @@ RSpec.describe MigrateCommitsToSeparateIndex do
     end
   end
 
-  describe '.migrate', :elastic, :clean_gitlab_redis_shared_state do
+  describe '.migrate', :elastic_clean, :clean_gitlab_redis_shared_state do
     before do
       set_elasticsearch_migration_to :migrate_commits_to_separate_index, including: false
     end

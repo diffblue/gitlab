@@ -1,8 +1,0 @@
-#import "~/runner/graphql/edit/runner_fields_shared.fragment.graphql"
-
-fragment RunnerFields on CiRunner {
-  ...RunnerFieldsShared
-  maintenanceNote
-  publicProjectsMinutesCostFactor
-  privateProjectsMinutesCostFactor
-}

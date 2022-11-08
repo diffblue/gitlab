@@ -54,6 +54,10 @@ RSpec.describe PushRule, :saas do
       subject.branch_name_allowed?('123-feature')
     end
 
+    it 'tolerates nil messages' do
+      expect(subject.branch_name_allowed?(nil)).to be false
+    end
+
     context 'with legacy regex' do
       before do
         push_rule.update_column(:regexp_uses_re2, nil)
@@ -97,6 +101,10 @@ RSpec.describe PushRule, :saas do
 
       expect(subject.commit_message_allowed?(commit_message)).to be true
     end
+
+    it 'tolerates nil messages' do
+      expect(subject.commit_message_allowed?(nil)).to be false
+    end
   end
 
   describe '#commit_message_blocked?' do
@@ -106,6 +114,28 @@ RSpec.describe PushRule, :saas do
       commit_message = "Some git commit feature\n\nSigned-off-by: Someone"
 
       expect(subject.commit_message_blocked?(commit_message)).to be true
+    end
+
+    it 'tolerates nil messages' do
+      expect(subject.commit_message_blocked?(nil)).to be false
+    end
+
+    context 'when commit message with break line in the last' do
+      subject(:push_rule) { create(:push_rule, commit_message_negative_regex: '^[0-9]*$') }
+
+      it 'uses multiline regex' do
+        commit_message = "Some git commit feature\n"
+        expect(subject.commit_message_blocked?(commit_message)).to be false
+      end
+    end
+
+    context 'when commit message without break line in the last' do
+      subject(:push_rule) { create(:push_rule, commit_message_negative_regex: '^[0-9]*$') }
+
+      it 'uses multiline regex' do
+        commit_message = "1234"
+        expect(subject.commit_message_blocked?(commit_message)).to be true
+      end
     end
   end
 

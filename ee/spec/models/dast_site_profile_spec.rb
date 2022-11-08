@@ -246,6 +246,23 @@ RSpec.describe DastSiteProfile, type: :model do
       end
     end
 
+    describe '#validation_started_at' do
+      context 'when dast_site_validation association does not exist' do
+        it 'is none', :aggregate_failures do
+          subject.dast_site.update!(dast_site_validation_id: nil)
+
+          expect(subject.dast_site_validation).to be_nil
+          expect(subject.validation_started_at).to be_nil
+        end
+      end
+
+      context 'when dast_site_validation association does exist' do
+        it 'is dast_site_validation#validation_started_at' do
+          expect(subject.validation_started_at).to eq(subject.dast_site_validation.validation_started_at)
+        end
+      end
+    end
+
     describe '#referenced_in_security_policies' do
       context 'there is no security_orchestration_policy_configuration assigned to project' do
         it 'returns empty array' do
@@ -356,7 +373,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
           let(:included) do
             [
-              { key: 'DAST_API_OPENAPI', value: scan_file_path, public: true }
+              { key: 'DAST_API_OPENAPI', value: scan_file_path, public: true },
+              { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
             ]
           end
 
@@ -369,7 +387,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
             let(:included) do
               [
-                { key: 'DAST_API_OPENAPI', value: subject.dast_site.url, public: true }
+                { key: 'DAST_API_OPENAPI', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
 
@@ -386,7 +405,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
           let(:included) do
             [
-              { key: 'DAST_API_HAR', value: scan_file_path, public: true }
+              { key: 'DAST_API_HAR', value: scan_file_path, public: true },
+              { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
             ]
           end
 
@@ -399,7 +419,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
             let(:included) do
               [
-                { key: 'DAST_API_HAR', value: subject.dast_site.url, public: true }
+                { key: 'DAST_API_HAR', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
 
@@ -416,7 +437,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
           let(:included) do
             [
-              { key: 'DAST_API_POSTMAN_COLLECTION', value: scan_file_path, public: true }
+              { key: 'DAST_API_POSTMAN_COLLECTION', value: scan_file_path, public: true },
+              { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
             ]
           end
 
@@ -429,7 +451,8 @@ RSpec.describe DastSiteProfile, type: :model do
 
             let(:included) do
               [
-                { key: 'DAST_API_POSTMAN_COLLECTION', value: subject.dast_site.url, public: true }
+                { key: 'DAST_API_POSTMAN_COLLECTION', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
 

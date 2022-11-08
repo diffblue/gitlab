@@ -8,7 +8,7 @@ info: To determine the technical writer assigned to the Stage/Group associated w
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/3090) in GitLab 12.2 for subgroups.
 
-With Contribution Analytics, you can get an overview of the [contribution events](../../profile/index.md#user-contribution-events) in your
+With Contribution Analytics, you can get an overview of the [contribution events](../../profile/contributions_calendar.md#user-contribution-events) in your
 group.
 
 - Analyze your team's contributions over a period of time.
@@ -43,7 +43,7 @@ You can choose from the following three periods:
 - Last month
 - Last three months
 
-Select the desired period from the calendar dropdown.
+Select the desired period from the calendar dropdown list.
 
 ![Contribution analytics choose period](img/group_stats_cal.png)
 

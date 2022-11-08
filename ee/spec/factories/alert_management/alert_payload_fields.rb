@@ -6,5 +6,7 @@ FactoryBot.define do
     path { ['title'] }
     label { 'Title' }
     type { 'string' }
+
+    skip_create
   end
 end

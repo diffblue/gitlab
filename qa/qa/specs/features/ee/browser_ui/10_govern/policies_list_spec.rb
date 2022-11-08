@@ -1,7 +1,15 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Govern' do
+  RSpec.describe(
+    'Govern',
+    product_group: :security_policies,
+    quarantine: {
+      type: :test_environment,
+      issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/378529',
+      only: :production
+    }
+  ) do
     describe 'Policies List page' do
       let!(:project) do
         Resource::Project.fabricate_via_api! do |project|

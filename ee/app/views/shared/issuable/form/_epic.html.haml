@@ -10,4 +10,4 @@
   .col-12
     .issuable-form-select-holder
       %input{ id: 'issue_epic_id', type: 'hidden', name: 'issue[epic_id]' }
-      #js-epic-select-root{ data: { group_id: project.group.id, show_header: 'true' } }
+      #js-epic-dropdown-root{ data: { group_path: project.group.full_path } }

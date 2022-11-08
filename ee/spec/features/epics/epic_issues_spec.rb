@@ -43,6 +43,13 @@ RSpec.describe 'Epic Issues', :js do
     wait_for_requests
   end
 
+  def visit_epic_no_subepic
+    sign_in(user)
+    visit group_epic_path(group, epic)
+
+    wait_for_requests
+  end
+
   context 'when user is not a group member of a public group' do
     before do
       visit_epic
@@ -210,7 +217,7 @@ RSpec.describe 'Epic Issues', :js do
         it 'user can not add new epics to the epic' do
           stub_licensed_features(epics: true, subepics: false)
 
-          visit_epic
+          visit_epic_no_subepic
           find('.related-items-tree-container .js-add-epics-issues-button').click
 
           expect(page).not_to have_selector('.related-items-tree-container .js-add-epics-issues-button .dropdown-item', text: 'Add an existing epic')

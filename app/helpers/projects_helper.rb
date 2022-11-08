@@ -69,7 +69,7 @@ module ProjectsHelper
     if opts[:name]
       inject_classes.concat(["js-user-link", opts[:mobile_classes]])
     else
-      inject_classes.append( "has-tooltip" )
+      inject_classes.append("has-tooltip")
     end
 
     inject_classes = inject_classes.compact.join(" ")
@@ -300,13 +300,15 @@ module ProjectsHelper
     return if setting.blank? || setting.project_slug.blank? ||
         setting.organization_slug.blank?
 
-    {
+    data = {
       sentry_project_id: setting.sentry_project_id,
       name: setting.project_name,
       organization_name: setting.organization_name,
       organization_slug: setting.organization_slug,
       slug: setting.project_slug
-    }.to_json
+    }
+
+    Gitlab::Json.dump(data)
   end
 
   def directory?
@@ -393,7 +395,8 @@ module ProjectsHelper
       membersPagePath: project_project_members_path(project),
       environmentsHelpPath: help_page_path('ci/environments/index'),
       featureFlagsHelpPath: help_page_path('operations/feature_flags'),
-      releasesHelpPath: help_page_path('user/project/releases/index')
+      releasesHelpPath: help_page_path('user/project/releases/index'),
+      infrastructureHelpPath: help_page_path('user/infrastructure/index')
     }
   end
 
@@ -662,7 +665,8 @@ module ProjectsHelper
       containerRegistryAccessLevel: feature.container_registry_access_level,
       environmentsAccessLevel: feature.environments_access_level,
       featureFlagsAccessLevel: feature.feature_flags_access_level,
-      releasesAccessLevel: feature.releases_access_level
+      releasesAccessLevel: feature.releases_access_level,
+      infrastructureAccessLevel: feature.infrastructure_access_level
     }
   end
 

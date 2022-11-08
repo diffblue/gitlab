@@ -4,9 +4,9 @@ module Geo
   class RepositoryVerificationSecondaryService < BaseRepositoryVerificationService
     include ::Gitlab::Utils::StrongMemoize
 
-    def initialize(registry, type)
-      @registry = registry
-      @type     = type.to_sym
+    def initialize(project_repository_registry, type)
+      @project_repository_registry = project_repository_registry
+      @type = type.to_sym
     end
 
     def execute
@@ -14,14 +14,16 @@ module Geo
       return unless Gitlab::Geo.secondary?
       return unless should_verify_checksum?
 
+      verification_started!
       verify_checksum
     end
 
     private
 
-    attr_reader :registry, :type
+    attr_reader :project_repository_registry, :type
 
-    delegate :project, to: :registry
+    delegate :project, to: :project_repository_registry
+    delegate :repository_state, :wiki_repository_state, to: :project, allow_nil: true
 
     def should_verify_checksum?
       return false if resync?
@@ -31,7 +33,10 @@ module Geo
     end
 
     def resync?
-      registry.public_send("resync_#{type}") # rubocop:disable GitlabSecurity/PublicSend
+      case type
+      when :repository then project_repository_registry.resync_repository
+      when :wiki then wiki_repository_registry&.failed? || project_repository_registry.resync_wiki
+      end
     end
 
     def primary_checksummed?
@@ -39,24 +44,35 @@ module Geo
     end
 
     def primary_checksum
-      strong_memoize(:primary_checksum) do
-        case type
-        when :repository then primary_project_repository_checksum
-        when :wiki then primary_wiki_repository_checksum
-        end
+      case type
+      when :repository then primary_project_repository_checksum
+      when :wiki then primary_wiki_repository_checksum
       end
     end
+    strong_memoize_attr :primary_checksum
 
     def primary_wiki_repository_checksum
-      project.wiki_repository_state&.verification_checksum || project.repository_state.wiki_verification_checksum
+      wiki_repository_state&.verification_checksum || repository_state&.wiki_verification_checksum
     end
 
     def primary_project_repository_checksum
-      project.repository_state.repository_verification_checksum
+      repository_state&.repository_verification_checksum
     end
 
     def secondary_checksum
-      registry.public_send("#{type}_verification_checksum_sha") # rubocop:disable GitlabSecurity/PublicSend
+      case type
+      when :repository then secondary_project_repository_checksum
+      when :wiki then secondary_wiki_repository_checksum
+      end
+    end
+    strong_memoize_attr :secondary_checksum
+
+    def secondary_wiki_repository_checksum
+      wiki_repository_registry.verification_checksum || project_repository_registry.wiki_verification_checksum_sha
+    end
+
+    def secondary_project_repository_checksum
+      project_repository_registry.repository_verification_checksum_sha
     end
 
     def mismatch?(checksum)
@@ -65,32 +81,53 @@ module Geo
 
     def verify_checksum
       checksum = calculate_checksum(repository)
+      mismatched = mismatch?(checksum)
 
-      if mismatch?(checksum)
-        update_registry!(mismatch: checksum, failure: "#{type.to_s.capitalize} checksum mismatch")
-      else
-        update_registry!(checksum: checksum)
+      Geo::ProjectRegistry.transaction do
+        if mismatched
+          update_project_repository_registry!(mismatch: checksum, failure: "#{type.to_s.capitalize} checksum mismatch")
+        else
+          update_project_repository_registry!(checksum: checksum)
+        end
+
+        # Update new table
+        next unless wiki_repository_registry_synced?
+
+        if mismatched
+          wiki_repository_registry.verification_failed_due_to_mismatch!(checksum, primary_checksum)
+        else
+          wiki_repository_registry.verification_checksum = checksum
+          wiki_repository_registry.verification_succeeded!
+        end
       end
     rescue StandardError => e
-      update_registry!(failure: "Error calculating #{type} checksum", exception: e)
+      Geo::ProjectRegistry.transaction do
+        message = "Error calculating #{type} checksum"
+        update_project_repository_registry!(failure: message, exception: e)
+
+        # Update new table
+        next unless wiki_repository_registry_synced?
+
+        wiki_repository_registry.verification_failed_with_message!(message, e)
+      end
     end
 
-    def update_registry!(checksum: nil, mismatch: nil, failure: nil, exception: nil)
+    def update_project_repository_registry!(checksum: nil, mismatch: nil, failure: nil, exception: nil)
       reverify, verification_retry_count =
         if mismatch || failure.present?
           log_error(failure, exception, type: type)
-          [true, registry.verification_retry_count(type) + 1]
+          [true, registry_verification_retry_count + 1]
         else
           [false, nil]
         end
 
       resync_retry_at, resync_retry_count =
         if reverify
-          retry_count = registry.public_send("#{type}_retry_count") # rubocop:disable GitlabSecurity/PublicSend
+          retry_count = registry_retry_count
           calculate_next_retry_attempt(retry_count)
         end
 
-      registry.update!(
+      project_repository_registry.update!(
         "primary_#{type}_checksummed" => primary_checksummed?,
         "#{type}_verification_checksum_sha" => checksum,
         "#{type}_verification_checksum_mismatched" => mismatch,
@@ -102,6 +139,61 @@ module Geo
         "#{type}_retry_at" => resync_retry_at,
         "#{type}_retry_count" => resync_retry_count
       )
+    end
+
+    def registry_retry_count
+      case type
+      when :repository then repository_retry_count
+      when :wiki then wiki_retry_count
+      end
+    end
+
+    def repository_retry_count
+      project_repository_registry.repository_retry_count.to_i
+    end
+
+    def wiki_retry_count
+      [
+        wiki_repository_registry&.retry_count,
+        project_repository_registry.wiki_retry_count.to_i
+      ].max
+    end
+
+    def registry_verification_retry_count
+      case type
+      when :repository then repository_verification_retry_count
+      when :wiki then wiki_verification_retry_count
+      end
+    end
+
+    def repository_verification_retry_count
+      project_repository_registry.repository_verification_retry_count.to_i
+    end
+
+    def wiki_verification_retry_count
+      [
+        wiki_repository_registry&.verification_retry_count,
+        project_repository_registry.wiki_verification_retry_count.to_i
+      ].max
+    end
+
+    def verification_started!
+      return unless wiki_repository_registry_synced?
+      return if wiki_repository_registry.verification_started?
+
+      wiki_repository_registry.verification_started!
+    end
+
+    # Keep track of successfully synced registries with a correspondent
+    # entry in the `project_wiki_repository_registry` table.
+    def wiki_repository_registry_synced?
+      type == :wiki && wiki_repository_registry.synced?
+    end
+    strong_memoize_attr :wiki_repository_registry_synced?, :wiki_repository_registry_synced
+
+    def wiki_repository_registry
+      @wiki_repository_registry ||=
+        Geo::ProjectWikiRepositoryRegistry.find_or_initialize_by(project_id: project.id) # rubocop: disable CodeReuse/ActiveRecord
     end
 
     def repository

@@ -76,7 +76,7 @@ module EE
       # We use Elasticsearch highlighting for results from Elasticsearch. Sanitize the description, replace the
       # pre/post tags from Elasticsearch with highlighting, truncate, and mark as html_safe. HTML tags are not
       # counted towards the character limit.
-      text = sanitize(search_highlight[issuable.id].description.first)
+      text = search_sanitize(search_highlight[issuable.id].description.first)
       text.gsub!(::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG, '<span class="gl-text-gray-900 gl-font-weight-bold">')
       text.gsub!(::Elastic::Latest::GitClassProxy::HIGHLIGHT_END_TAG, '</span>')
       search_truncate(text).html_safe
@@ -140,6 +140,15 @@ module EE
     override :search_navigation
     def search_navigation
       super.merge(epics: { label: _("Epics"), condition: @project.nil? && search_service.show_epics? })
+    end
+
+    override :search_scope
+    def search_scope
+      if current_controller?(:epics)
+        'epics'
+      else
+        super
+      end
     end
 
     private

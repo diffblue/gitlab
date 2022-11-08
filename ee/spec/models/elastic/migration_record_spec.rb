@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Elastic::MigrationRecord, :elastic do
+RSpec.describe Elastic::MigrationRecord, :elastic_clean do
   using RSpec::Parameterized::TableSyntax
 
   let(:record) { described_class.new(version: Time.now.to_i, name: 'ExampleMigration', filename: nil) }
@@ -117,6 +117,15 @@ RSpec.describe Elastic::MigrationRecord, :elastic do
 
       expect { described_class.load_versions(completed: true) }.to raise_exception(StandardError)
       expect { described_class.load_versions(completed: false) }.to raise_exception(StandardError)
+    end
+
+    it 'has a size constant bigger than the number of migrations' do
+      # if this spec fails, bump the constant's value:
+      # https://gitlab.com/gitlab-org/gitlab/-/blob/master/ee/app/models/elastic/migration_record.rb#L7
+
+      elastic_migration_path = 'ee/elastic/migrate/*.rb'
+      number_of_migrations = Dir[Rails.root.join(elastic_migration_path)].length
+      expect(described_class::ELASTICSEARCH_SIZE).to be > number_of_migrations
     end
   end
 

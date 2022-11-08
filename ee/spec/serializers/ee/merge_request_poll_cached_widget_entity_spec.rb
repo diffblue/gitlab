@@ -15,10 +15,6 @@ RSpec.describe MergeRequestPollCachedWidgetEntity do
     is_expected.to include(:policy_violation)
   end
 
-  it 'includes missing security scan types' do
-    is_expected.to include(:missing_security_scan_types)
-  end
-
   context 'jira_associations' do
     context 'when feature is available' do
       let_it_be(:jira_integration) { create(:jira_integration, project: project, active: true) }

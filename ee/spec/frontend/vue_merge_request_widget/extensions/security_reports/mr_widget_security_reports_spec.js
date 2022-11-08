@@ -18,14 +18,38 @@ describe('MR Widget Security Reports', () => {
   const securityConfigurationPath = '/help/user/application_security/index.md';
   const sourceProjectFullPath = 'namespace/project';
 
+  const sastHelp = '/help/user/application_security/sast/index';
+  const dastHelp = '/help/user/application_security/dast/index';
+  const coverageFuzzingHelp = '/help/user/application_security/coverage-fuzzing/index';
+  const secretDetectionHelp = '/help/user/application_security/secret-detection/index';
+  const apiFuzzingHelp = '/help/user/application_security/api-fuzzing/index';
+  const dependencyScanningHelp = '/help/user/application_security/api-fuzzing/index';
+
+  const reportEndpoints = {
+    sastComparisonPath: '/my/sast/endpoint',
+    dastComparisonPath: '/my/dast/endpoint',
+    dependencyScanningComparisonPath: '/my/dependency-scanning/endpoint',
+    coverageFuzzingComparisonPath: '/my/coverage-fuzzing/endpoint',
+    apiFuzzingComparisonPath: '/my/api-fuzzing/endpoint',
+    secretDetectionComparisonPath: '/my/secret-detection/endpoint',
+  };
+
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
     wrapper = mountFn(MRSecurityWidget, {
       propsData: {
+        ...propsData,
         mr: {
+          ...propsData?.mr,
+          ...reportEndpoints,
           securityConfigurationPath,
           sourceProjectFullPath,
+          sastHelp,
+          dastHelp,
+          dependencyScanningHelp,
+          coverageFuzzingHelp,
+          secretDetectionHelp,
+          apiFuzzingHelp,
         },
-        ...propsData,
       },
       stubs: {
         MrWidgetRow,
@@ -53,16 +77,12 @@ describe('MR Widget Security Reports', () => {
     it('should mount the widget component', () => {
       expect(findWidget().props()).toMatchObject({
         statusIconName: 'success',
-        widgetName: 'MRSecurityWidget',
+        widgetName: 'WidgetSecurityReports',
         errorText: 'Security reports failed loading results',
         loadingText: 'Loading',
         fetchCollapsedData: wrapper.vm.fetchCollapsedData,
         multiPolling: true,
       });
-    });
-
-    it('fetchCollapsedData - returns an empty list of endpoints', () => {
-      expect(wrapper.vm.fetchCollapsedData().length).toBe(0);
     });
 
     it('handles loading state', async () => {
@@ -83,11 +103,6 @@ describe('MR Widget Security Reports', () => {
   });
 
   describe('with MR data', () => {
-    const reportEndpoints = {
-      sastComparisonPath: '/my/sast/endpoint',
-      dastComparisonPath: '/my/dast/endpoint',
-    };
-
     const mockWithData = () => {
       mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(200, {
         added: [
@@ -102,13 +117,43 @@ describe('MR Widget Security Reports', () => {
           { id: 3, severity: 'unknown', name: 'Weak password' },
         ],
       });
+
+      [
+        reportEndpoints.dependencyScanningComparisonPath,
+        reportEndpoints.coverageFuzzingComparisonPath,
+        reportEndpoints.apiFuzzingComparisonPath,
+        reportEndpoints.secretDetectionComparisonPath,
+      ].forEach((path) => {
+        mockAxios.onGet(path).replyOnce(200, {
+          added: [],
+        });
+      });
     };
+
+    it('should mount the widget component', async () => {
+      mockWithData();
+
+      createComponent({
+        propsData: { mr: { ...reportEndpoints, securityConfigurationPath, sourceProjectFullPath } },
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      expect(findWidget().props()).toMatchObject({
+        statusIconName: 'warning',
+        widgetName: 'WidgetSecurityReports',
+        errorText: 'Security reports failed loading results',
+        loadingText: 'Loading',
+        fetchCollapsedData: wrapper.vm.fetchCollapsedData,
+        multiPolling: true,
+      });
+    });
 
     it('computes the total number of new potential vulnerabilities correctly', async () => {
       mockWithData();
 
       createComponent({
-        propsData: { mr: { ...reportEndpoints } },
         mountFn: mountExtended,
       });
 
@@ -123,7 +168,6 @@ describe('MR Widget Security Reports', () => {
       mockWithData();
 
       createComponent({
-        propsData: { mr: { ...reportEndpoints } },
         mountFn: mountExtended,
       });
 
@@ -136,7 +180,6 @@ describe('MR Widget Security Reports', () => {
       mockWithData();
 
       createComponent({
-        propsData: { mr: { ...reportEndpoints, securityConfigurationPath, sourceProjectFullPath } },
         mountFn: mountExtended,
       });
 
@@ -152,5 +195,49 @@ describe('MR Widget Security Reports', () => {
         'SAST detected 2 new potential vulnerabilities',
       );
     });
+  });
+
+  describe('help popovers', () => {
+    const mockWithData = () => {
+      Object.keys(reportEndpoints).forEach((key, i) => {
+        mockAxios.onGet(reportEndpoints[key]).replyOnce(200, {
+          added: [{ id: i, severity: 'critical', name: 'Password leak' }],
+        });
+      });
+    };
+
+    it.each`
+      reportType               | reportDescription                                | helpPath
+      ${'SAST'}                | ${'Static Application Security Testing (SAST)'}  | ${sastHelp}
+      ${'DAST'}                | ${'Dynamic Application Security Testing (DAST)'} | ${dastHelp}
+      ${'DEPENDENCY_SCANNING'} | ${'Dependency scanning'}                         | ${dependencyScanningHelp}
+      ${'COVERAGE_FUZZING'}    | ${'Coverage fuzzing'}                            | ${coverageFuzzingHelp}
+      ${'API_FUZZING'}         | ${'API fuzzing'}                                 | ${apiFuzzingHelp}
+      ${'SECRET_DETECTION'}    | ${'Secret detection'}                            | ${secretDetectionHelp}
+    `(
+      'shows the correct help popover for $reportType',
+      async ({ reportType, reportDescription, helpPath }) => {
+        mockWithData();
+
+        createComponent({
+          mountFn: mountExtended,
+        });
+
+        await waitForPromises();
+
+        // Click on the toggle button to expand data
+        wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+        await nextTick();
+
+        const helpButtons = wrapper.findAllByRole('button', { name: 'Help' });
+
+        expect(helpButtons).toHaveLength(Object.keys(reportEndpoints).length);
+        helpButtons.at(0).trigger('click');
+        await nextTick();
+
+        expect(wrapper.findByText(reportDescription).exists()).toBe(true);
+        expect(wrapper.findByTestId(`${reportType}-learn-more`).attributes('href')).toBe(helpPath);
+      },
+    );
   });
 });

@@ -16,7 +16,7 @@ const importButtonsSubmit = () => {
 
   const clickHandler = (e) => {
     e.preventDefault();
-    importUrlField.value = e.target.getAttribute('href');
+    importUrlField.value = e.currentTarget.getAttribute('href');
     submit.click();
   };
 

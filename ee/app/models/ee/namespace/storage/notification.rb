@@ -39,14 +39,18 @@ module EE
 
         USAGE_THRESHOLDS = {
           none: 0.0,
-          info: 0.5,
           warning: 0.75,
           alert: 0.95,
           error: 1.0
         }.freeze
 
         def enforcement_type
-          @enforcement_type ||= ::Feature.enabled?(:namespace_storage_limit, root_namespace) ? :namespace : :repository
+          @enforcement_type ||=
+            if ::EE::Gitlab::Namespaces::Storage::Enforcement.enforce_limit?(root_namespace)
+              :namespace
+            else
+              :repository
+            end
         end
 
         def alert_level
@@ -92,7 +96,7 @@ module EE
 
         def below_size_limit_message
           s_("NamespaceStorageSize|If you reach 100%% storage capacity, you will not be able " \
-            "to: %{base_message}" % { base_message: base_message } )
+            "to: %{base_message}" % { base_message: base_message })
         end
 
         def above_size_limit_message

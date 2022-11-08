@@ -10,7 +10,7 @@ module Namespaces
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
 
-      def over_limit?
+      def over_limit?(*args)
         return false unless enforce_cap?
 
         users_count > limit
@@ -49,3 +49,5 @@ module Namespaces
     end
   end
 end
+
+Namespaces::FreeUserCap::Base.prepend_mod

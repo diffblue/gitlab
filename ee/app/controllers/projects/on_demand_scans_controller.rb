@@ -8,7 +8,6 @@ module Projects
     before_action :authorize_read_on_demand_dast_scan!, only: :index
     before_action :authorize_create_on_demand_dast_scan!, only: [:new, :edit]
     before_action do
-      push_frontend_feature_flag(:dast_ui_redesign, @project)
       push_frontend_feature_flag(:dast_api_scanner, @project)
       push_frontend_feature_flag(:dast_pre_scan_verification, @project)
     end

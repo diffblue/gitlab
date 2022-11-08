@@ -90,7 +90,7 @@ module Security
         finding.vulnerability = vulnerabilities[finding.project_fingerprint]
         finding.project = pipeline.project
         finding.sha = pipeline.sha
-        finding.build_scanner(report_finding.scanner&.to_hash)
+        finding.build_scanner(report_finding.scanner&.to_hash&.merge(project: finding.project))
         finding.finding_links = report_finding.links.map do |link|
           Vulnerabilities::FindingLink.new(link.to_hash)
         end
@@ -101,6 +101,7 @@ module Security
           Vulnerabilities::FindingSignature.new(signature.to_hash)
         end
         finding.finding_evidence = Vulnerabilities::Finding::Evidence.new(data: report_finding.evidence.data) if report_finding.evidence
+        finding.details = report_finding.details
 
         if calculate_false_positive?
           finding.vulnerability_flags = report_finding.flags.map do |flag|

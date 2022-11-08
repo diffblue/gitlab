@@ -7,8 +7,8 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          expose :user_id
-          expose :group_id
+          expose :user_id, documentation: { type: 'integer', example: 1 }
+          expose :group_id, documentation: { type: 'integer', example: 1 }
         end
       end
     end

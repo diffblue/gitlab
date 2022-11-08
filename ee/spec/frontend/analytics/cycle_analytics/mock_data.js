@@ -330,7 +330,7 @@ export const durationDataSeries = {
   },
   data: durationChartPlottableData,
   name: DURATION_CHART_Y_AXIS_TITLE,
-  itemStyle: { color: '#5772ff' },
+  itemStyle: { color: '#617ae2' },
   lineStyle: {
     color: dataVizBlue500,
   },

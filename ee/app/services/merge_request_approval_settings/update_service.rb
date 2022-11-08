@@ -5,7 +5,8 @@ module MergeRequestApprovalSettings
     def execute
       return ServiceResponse.error(message: 'Insufficient permissions') unless allowed?
 
-      if container.is_a?(Group)
+      case container
+      when Group
         setting = GroupMergeRequestApprovalSetting.find_or_initialize_by_group(container)
         setting.assign_attributes(params.except(:selective_code_owner_removals))
 
@@ -15,7 +16,7 @@ module MergeRequestApprovalSettings
         else
           ServiceResponse.error(message: setting.errors.messages)
         end
-      elsif container.is_a?(Project)
+      when Project
         resolved_params = {
           merge_requests_author_approval: params[:allow_author_approval],
           merge_requests_disable_committers_approval: !params[:allow_committer_approval],

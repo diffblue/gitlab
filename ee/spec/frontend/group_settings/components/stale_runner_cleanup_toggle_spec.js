@@ -7,7 +7,7 @@ import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_m
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
-import { staleTimeoutSecs } from 'jest/runner/mock_data';
+import { staleTimeoutSecs } from 'jest/ci/runner/mock_data';
 
 import groupStaleRunnerPruningQuery from 'ee/group_settings/graphql/group_stale_runner_pruning.query.graphql';
 import setGroupStaleRunnerPruningMutation from 'ee/group_settings/graphql/set_group_stale_runner_pruning.mutation.graphql';
@@ -17,7 +17,7 @@ Vue.use(VueApollo);
 
 jest.mock('@sentry/browser');
 jest.mock('~/flash');
-jest.mock('~/runner/sentry_utils');
+jest.mock('~/ci/runner/sentry_utils');
 jest.mock('~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal');
 
 const mockGroupFullPath = 'group1';

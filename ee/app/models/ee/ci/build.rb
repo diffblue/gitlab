@@ -63,10 +63,6 @@ module EE
 
         override :clone_accessors
         def clone_accessors
-          (super + extra_accessors).freeze
-        end
-
-        def extra_accessors
           (super + %i[secrets]).freeze
         end
       end

@@ -46,7 +46,7 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate do
       { iid: 6, issues_count: 4, issues_weight_sum: 9, parent_id: nil, issues_state_id: OPENED_ISSUE_STATE, epic_state_id: OPENED_EPIC_STATE }
     end
 
-    let(:epic_info_node) { Gitlab::Graphql::Aggregations::Epics::EpicNode.new(epic_id, [single_record] ) }
+    let(:epic_info_node) { Gitlab::Graphql::Aggregations::Epics::EpicNode.new(epic_id, [single_record]) }
 
     subject { described_class.new(query_ctx, epic_id, COUNT) }
 
@@ -137,6 +137,59 @@ RSpec.describe Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate do
           expect(tree[other_epic_id]).to have_aggregate(ISSUE_TYPE, WEIGHT_SUM, OPENED_ISSUE_STATE, 0)
           expect(tree[other_epic_id]).to have_aggregate(ISSUE_TYPE, WEIGHT_SUM, CLOSED_ISSUE_STATE, 0)
           expect(tree[other_epic_id]).to have_aggregate(EPIC_TYPE, COUNT, CLOSED_EPIC_STATE, 0)
+        end
+      end
+
+      context 'when checking cached counts' do
+        let_it_be(:epic) { create(:epic) }
+
+        let(:aggregate_count) { 0 }
+
+        let(:fake_data) do
+          {
+            epic.id => [{ epic_state_id: OPENED_EPIC_STATE, issues_count: aggregate_count,
+                          issues_weight_sum: 0, parent_id: nil, issues_state_id: OPENED_ISSUE_STATE }]
+          }
+        end
+
+        subject { described_class.new(query_ctx, epic.id, COUNT, epic: epic) }
+
+        shared_examples 'no logged mismatch' do
+          it 'does not log an error if cached counts match' do
+            expect(Gitlab::AppJsonLogger).not_to receive(:error)
+
+            subject.epic_aggregate
+          end
+        end
+
+        it_behaves_like 'no logged mismatch'
+
+        context 'when cached count does not match aggregate count' do
+          let(:aggregate_count) { 1 }
+
+          it 'does log an error if cached counts do not match' do
+            expect(Gitlab::AppJsonLogger).to receive(:error).with(
+              message: 'epic cached count mismatch',
+              aggregation: :count,
+              epic_id: epic.id
+            )
+
+            subject.epic_aggregate
+          end
+
+          context 'when check_epic_cached_values is disabled' do
+            before do
+              stub_feature_flags(check_epic_cached_values: false)
+            end
+
+            it_behaves_like 'no logged mismatch'
+          end
+
+          context 'when epic is not set' do
+            subject { described_class.new(query_ctx, epic.id, COUNT) }
+
+            it_behaves_like 'no logged mismatch'
+          end
         end
       end
     end

@@ -77,8 +77,12 @@ module Geo
       (Time.current.to_f - registry.last_synced_at.to_f).round(3)
     end
 
-    def redownload?
-      registry.should_be_redownloaded?
+    def force_to_redownload
+      registry.force_to_redownload
+    end
+
+    def retries
+      registry.retry_count
     end
   end
 end

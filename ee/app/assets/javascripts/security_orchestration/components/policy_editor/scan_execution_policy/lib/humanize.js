@@ -1,7 +1,46 @@
 import cronstrue from 'cronstrue/i18n';
-import { getPreferredLocales, sprintf, s__, n__ } from '~/locale';
+import { getPreferredLocales, sprintf, s__ } from '~/locale';
 import { NO_RULE_MESSAGE } from '../../constants';
 import { convertScannersToTitleCase } from '../../utils';
+
+/**
+ * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
+ * @param {Array} originalNamespaces strings representing namespaces
+ * @returns {String}
+ */
+const humanizeNamespaces = (originalNamespaces) => {
+  const namespaces = originalNamespaces ? [...originalNamespaces] : [];
+
+  if (namespaces.length === 0) {
+    return s__('SecurityOrchestration|all namespaces');
+  }
+
+  if (namespaces.length === 1) {
+    return sprintf(s__('SecurityOrchestration|the %{namespaces} namespace'), {
+      namespaces,
+    });
+  }
+
+  const lastNamespace = namespaces.pop();
+  return sprintf(s__('SecurityOrchestration|the %{namespaces} and %{lastNamespace} namespaces'), {
+    namespaces: namespaces.join(', '),
+    lastNamespace,
+  });
+};
+
+/**
+ * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
+ * @param {Object} agents object representing the agents and their namespaces
+ * @returns {String}
+ */
+const humanizeAgent = (agents) => {
+  const agentsEntries = Object.entries(agents);
+
+  return sprintf(s__('SecurityOrchestration|%{agent} for %{namespaces}'), {
+    agent: agentsEntries[0][0],
+    namespaces: humanizeNamespaces(agentsEntries[0][1]?.namespaces),
+  });
+};
 
 /**
  * Create a human-readable list of strings, adding the necessary punctuation and conjunctions
@@ -11,20 +50,16 @@ import { convertScannersToTitleCase } from '../../utils';
 const humanizeBranches = (originalBranches) => {
   const branches = [...originalBranches];
 
-  const plural = n__('branch', 'branches', branches.length);
-
   if (branches.length === 1) {
-    return sprintf(s__('SecurityOrchestration|%{branches} %{plural}'), {
-      branches: branches.join(','),
-      plural,
+    return sprintf(s__('SecurityOrchestration|%{branches} branch'), {
+      branches: branches[0],
     });
   }
 
   const lastBranch = branches.pop();
-  return sprintf(s__('SecurityOrchestration|%{branches} and %{lastBranch} %{plural}'), {
+  return sprintf(s__('SecurityOrchestration|%{branches} and %{lastBranch} branches'), {
     branches: branches.join(', '),
     lastBranch,
-    plural,
   });
 };
 
@@ -43,9 +78,13 @@ const humanizePipelineRule = (rule) => {
 
 const humanizeScheduleRule = (rule) => {
   if (rule.agents) {
-    return sprintf(s__('SecurityOrchestration|Scan to be performed %{cadence}'), {
-      cadence: humanizeCadence(rule.cadence),
-    });
+    return sprintf(
+      s__('SecurityOrchestration|Scan to be performed by the agent named %{agents} %{cadence}'),
+      {
+        agents: humanizeAgent(rule.agents),
+        cadence: humanizeCadence(rule.cadence),
+      },
+    );
   }
 
   return sprintf(s__('SecurityOrchestration|Scan to be performed %{cadence} on the %{branches}'), {

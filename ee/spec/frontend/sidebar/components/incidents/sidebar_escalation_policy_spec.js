@@ -130,6 +130,8 @@ describe('Sidebar Escalation Policy Widget', () => {
     it('renders list of escalation policies in the dropdown', async () => {
       await createComponent();
       await clickEdit(wrapper);
+      jest.runOnlyPendingTimers();
+      await waitForPromises();
 
       const dropdownItems = wrapper.findAllByTestId('escalation-policy-items');
 
@@ -141,8 +143,9 @@ describe('Sidebar Escalation Policy Widget', () => {
       beforeEach(async () => {
         await createComponent();
         await clickEdit(wrapper);
-        await wrapper.findByTestId('escalation-policy-items').trigger('click');
+        jest.runOnlyPendingTimers();
         await waitForPromises();
+        await wrapper.findByTestId('escalation-policy-items').trigger('click');
       });
 
       verifyPopulatedPolicyContent();

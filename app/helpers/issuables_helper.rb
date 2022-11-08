@@ -73,10 +73,9 @@ module IssuablesHelper
                          MergeRequestSerializer
                        end
 
-    serializer_klass
+    Gitlab::Json.dump(serializer_klass
       .new(current_user: current_user, project: issuable.project)
-      .represent(issuable, opts)
-      .to_json
+      .represent(issuable, opts))
   end
 
   def users_dropdown_label(selected_users)
@@ -157,9 +156,9 @@ module IssuablesHelper
 
     if issuable.respond_to?(:work_item_type) && WorkItems::Type::WI_TYPES_WITH_CREATED_HEADER.include?(issuable.work_item_type.base_type)
       output << content_tag(:span, sprite_icon("#{issuable.work_item_type.icon_name}", css_class: 'gl-icon gl-vertical-align-middle gl-text-gray-500'), class: 'gl-mr-2', aria: { hidden: 'true' })
-      output << content_tag(:span, s_('IssuableStatus|%{wi_type} created %{created_at} by ').html_safe % { wi_type: issuable.issue_type.capitalize, created_at: time_ago_with_tooltip(issuable.created_at) }, class: 'gl-mr-2' )
+      output << content_tag(:span, s_('IssuableStatus|%{wi_type} created %{created_at} by ').html_safe % { wi_type: issuable.issue_type.capitalize, created_at: time_ago_with_tooltip(issuable.created_at) }, class: 'gl-mr-2')
     else
-      output << content_tag(:span, s_('IssuableStatus|Created %{created_at} by').html_safe % { created_at: time_ago_with_tooltip(issuable.created_at) }, class: 'gl-mr-2' )
+      output << content_tag(:span, s_('IssuableStatus|Created %{created_at} by').html_safe % { created_at: time_ago_with_tooltip(issuable.created_at) }, class: 'gl-mr-2')
     end
 
     if issuable.is_a?(Issue) && issuable.service_desk_reply_to
@@ -441,7 +440,7 @@ module IssuablesHelper
       labels_manage_path: project_labels_path(project),
       project_issues_path: issuable_sidebar[:project_issuables_path],
       project_path: project.full_path,
-      selected_labels: issuable_sidebar[:labels].to_json
+      selected_labels: Gitlab::Json.dump(issuable_sidebar[:labels])
     }
   end
 

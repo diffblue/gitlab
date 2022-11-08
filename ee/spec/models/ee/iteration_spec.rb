@@ -185,7 +185,7 @@ RSpec.describe Iteration do
     end
 
     describe '#dates_do_not_overlap' do
-      let_it_be(:existing_iteration) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 4.days.from_now, due_date: 1.week.from_now) }
+      let_it_be(:existing_iteration) { create(:iteration, iterations_cadence: iteration_cadence, start_date: 4.days.from_now, due_date: 1.week.from_now) }
 
       context 'when no Iteration dates overlap' do
         let(:start_date) { 2.weeks.from_now }
@@ -509,8 +509,8 @@ RSpec.describe Iteration do
     end
 
     describe 'before_destroy :check_if_can_be_destroyed' do
-      let!(:iteration1) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 1.week.ago, due_date: 1.week.ago + 4.days) }
-      let!(:iteration2) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: Date.today, due_date: Date.today + 4.days) }
+      let!(:iteration1) { create(:iteration, iterations_cadence: iteration_cadence, start_date: 1.week.ago, due_date: 1.week.ago + 4.days) }
+      let!(:iteration2) { create(:iteration, iterations_cadence: iteration_cadence, start_date: Date.today, due_date: Date.today + 4.days) }
 
       context 'current iteration is the last iteration in a cadence' do
         it 'destroys the current iteration' do
@@ -519,7 +519,7 @@ RSpec.describe Iteration do
       end
 
       context 'current iteration is not the last iteration in a cadence' do
-        let_it_be(:iteration3) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 1.week.from_now, due_date: 1.week.from_now + 4.days) }
+        let_it_be(:iteration3) { create(:iteration, iterations_cadence: iteration_cadence, start_date: 1.week.from_now, due_date: 1.week.from_now + 4.days) }
 
         it 'throws an error when attempting to destroy the current iteration' do
           expect { iteration2.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
@@ -527,8 +527,8 @@ RSpec.describe Iteration do
       end
 
       context 'upcoming iteration' do
-        let_it_be(:iteration3) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 1.week.from_now, due_date: 1.week.from_now + 4.days) }
-        let_it_be(:iteration4) { create(:iteration, group: group, iterations_cadence: iteration_cadence, start_date: 2.weeks.from_now, due_date: 2.weeks.from_now + 4.days) }
+        let_it_be(:iteration3) { create(:iteration, iterations_cadence: iteration_cadence, start_date: 1.week.from_now, due_date: 1.week.from_now + 4.days) }
+        let_it_be(:iteration4) { create(:iteration, iterations_cadence: iteration_cadence, start_date: 2.weeks.from_now, due_date: 2.weeks.from_now + 4.days) }
 
         it 'throws an error when attempting to destroy an upcoming iteration that is not the last iteration in a cadence' do
           expect { iteration3.destroy! }.to raise_error(ActiveRecord::RecordNotDestroyed)
@@ -759,7 +759,7 @@ RSpec.describe Iteration do
 
     context 'when dates for an existing iteration change' do
       context 'when iteration dates go from future to past' do
-        let(:iteration) { create(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: 2.weeks.from_now.utc.to_date, due_date: 3.weeks.from_now.utc.to_date) }
+        let(:iteration) { create(:iteration, iterations_cadence: iterations_cadence, start_date: 2.weeks.from_now.utc.to_date, due_date: 3.weeks.from_now.utc.to_date) }
 
         it 'sets state to closed' do
           expect(iteration.state).to eq('upcoming')
@@ -773,7 +773,7 @@ RSpec.describe Iteration do
       end
 
       context 'when iteration dates go from past to future' do
-        let(:iteration) { create(:iteration, group: iterations_cadence.group, iterations_cadence: iterations_cadence, start_date: 2.weeks.ago.utc.to_date, due_date: 1.week.ago.utc.to_date) }
+        let(:iteration) { create(:iteration, iterations_cadence: iterations_cadence, start_date: 2.weeks.ago.utc.to_date, due_date: 1.week.ago.utc.to_date) }
 
         it 'sets state to upcoming' do
           expect(iteration.state).to eq('closed')
@@ -817,7 +817,7 @@ RSpec.describe Iteration do
   context 'when closing iteration' do
     let_it_be(:group) { create(:group) }
     let_it_be(:iteration_cadence) { create(:iterations_cadence, group: group) }
-    let_it_be_with_reload(:iteration) { create(:iteration, group: group, start_date: 4.days.from_now, due_date: 1.week.from_now) }
+    let_it_be_with_reload(:iteration) { create(:iteration, iterations_cadence: iteration_cadence, start_date: 4.days.from_now, due_date: 1.week.from_now) }
 
     context 'when cadence roll-over flag enabled' do
       before do

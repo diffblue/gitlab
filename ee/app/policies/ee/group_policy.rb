@@ -20,7 +20,7 @@ module EE
       end
 
       condition(:group_analytics_dashboards_available, scope: :subject) do
-        ::Feature.enabled?(:group_analytics_dashboards_page) &&
+        ::Feature.enabled?(:group_analytics_dashboards_page, @subject) &&
           @subject.feature_available?(:group_level_analytics_dashboard)
       end
 
@@ -224,6 +224,11 @@ module EE
         enable :read_group_runners
       end
 
+      rule { auditor & group_ci_cd_analytics_available }.policy do
+        enable :view_group_ci_cd_analytics
+        enable :read_group_release_stats
+      end
+
       rule { group_level_compliance_dashboard_enabled & auditor }.policy do
         enable :read_group_compliance_dashboard
       end
@@ -250,7 +255,7 @@ module EE
       rule { has_access & group_activity_analytics_available }
         .enable :read_group_activity_analytics
 
-      rule { (admin | reporter) & dora4_analytics_available }
+      rule { (admin | reporter | auditor) & dora4_analytics_available }
         .enable :read_dora4_analytics
 
       rule { reporter & group_repository_analytics_available }
@@ -341,6 +346,7 @@ module EE
         enable :read_group_security_dashboard
         enable :read_group_audit_events
         enable :read_billing
+        enable :read_container_image
       end
 
       rule { group_saml_globally_enabled & group_saml_available & (admin | owner) }.enable :admin_group_saml
@@ -494,6 +500,10 @@ module EE
 
       rule { security_orchestration_policies_enabled & can?(:owner_access) }.policy do
         enable :update_security_orchestration_policy_project
+      end
+
+      rule { can?(:admin_group) }.policy do
+        enable :read_usage_quotas
       end
     end
 

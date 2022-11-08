@@ -24,6 +24,10 @@ RSpec.describe Epic do
     it { is_expected.to have_many(:epic_board_positions).class_name('Boards::EpicBoardPosition').inverse_of(:epic_board) }
   end
 
+  describe 'default values' do
+    it { expect(subject.color).to eq(Epic::DEFAULT_COLOR) }
+  end
+
   describe 'scopes' do
     let_it_be(:confidential_epic) { create(:epic, confidential: true, group: group, title: 'Foo 1') }
     let_it_be(:public_epic) { create(:epic, group: group, title: 'Foo 2') }
@@ -905,8 +909,7 @@ RSpec.describe Epic do
           "issues_count" => 2,
           "issues_state_id" => 1,
           "issues_weight_sum" => 5,
-          "parent_id" => epic1.id,
-          "color" => ::EE::Epic::DEFAULT_COLOR
+          "parent_id" => epic1.id
         }, {
           "epic_state_id" => 2,
           "id" => epic3.id,
@@ -914,8 +917,7 @@ RSpec.describe Epic do
           "issues_count" => 1,
           "issues_state_id" => 2,
           "issues_weight_sum" => 0,
-          "parent_id" => epic2.id,
-          "color" => ::EE::Epic::DEFAULT_COLOR
+          "parent_id" => epic2.id
         }]
         expect(result).to match_array(expected)
       end
@@ -1289,6 +1291,36 @@ RSpec.describe Epic do
 
         subepic.destroy!
       end
+    end
+  end
+
+  describe '#confidentiality_errors' do
+    let_it_be(:epic) { create(:epic, group: group) }
+
+    it 'returns correct message if epic has non-confidential issues' do
+      create(:issue, project: project, epic: epic)
+
+      expect(epic.confidentiality_errors)
+        .to contain_exactly('Cannot make the epic confidential if it contains non-confidential issues')
+    end
+
+    it 'returns correct message if epic has non-confidential subepics' do
+      create(:epic, parent: epic, group: group)
+
+      expect(epic.confidentiality_errors)
+        .to contain_exactly('Cannot make the epic confidential if it contains non-confidential child epics')
+    end
+
+    it 'is empty if epic has only confidential subepics' do
+      create(:epic, :confidential, parent: epic, group: group)
+
+      expect(epic.confidentiality_errors).to be_empty
+    end
+
+    it 'is empty if epic has only confidential issues' do
+      create(:issue, :confidential, project: project, epic: epic)
+
+      expect(epic.confidentiality_errors).to be_empty
     end
   end
 end

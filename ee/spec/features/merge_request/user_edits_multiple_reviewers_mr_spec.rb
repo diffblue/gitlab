@@ -13,7 +13,7 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
 
   context 'user approval rules', :js do
     let(:rule_name) { 'some-custom-rule' }
-    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: [user], name: rule_name, approvals_required: 1 ) }
+    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: [user], name: rule_name, approvals_required: 1) }
 
     it 'is not shown in assignee dropdown' do
       find('.js-assignee-search').click
@@ -50,7 +50,7 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
   context 'code owner approval rules', :js do
     let(:code_owner_pattern) { '*' }
     let!(:code_owner_rule) { create(:code_owner_rule, name: code_owner_pattern, merge_request: merge_request, users: [user]) }
-    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request ) }
+    let!(:mr_rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
 
     it 'displays "Code Owner" text in reviewer dropdown' do
       find('.js-reviewer-search').click
@@ -69,6 +69,9 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
     before do
       stub_licensed_features(suggested_reviewers: true)
       stub_feature_flags(suggested_reviewers_control: merge_request.project)
+
+      target_project.project_setting.update!(suggested_reviewers_enabled: true)
+
       merge_request.project.add_developer(suggested_user)
       merge_request.build_predictions
       merge_request.predictions.update!(suggested_reviewers: { reviewers: [suggested_user.username] })
@@ -78,15 +81,18 @@ RSpec.describe 'Merge request > User edits MR with multiple reviewers' do
       find('.js-reviewer-search').click
       wait_for_requests
 
+      help_page_path = help_page_path('user/project/merge_requests/reviews/index', anchor: 'suggested-reviewers')
+
       page.within '.dropdown-menu-reviewer' do
         expect(page).to have_content('Suggestion(s)')
+        expect(page).to have_link(title: 'Learn about suggested reviewers', href: %r{#{help_page_path}})
         expect(page).to have_content(suggested_user.name)
         expect(page).to have_content(suggested_user.username)
         expect(page).to have_css("[data-user-suggested='true']")
       end
     end
 
-    it 'removes headers in reviewer dropdown', :aggregate_failures do
+    it 'removes headers in reviewer dropdown' do
       find('.js-reviewer-search').click
       wait_for_requests
 

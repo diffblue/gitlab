@@ -86,6 +86,8 @@ RSpec.describe Ci::Build do
 
   it_behaves_like 'has ID tokens', :ci_build
 
+  it_behaves_like 'a retryable job'
+
   describe '.manual_actions' do
     let!(:manual_but_created) { create(:ci_build, :manual, status: :created, pipeline: pipeline) }
     let!(:manual_but_succeeded) { create(:ci_build, :manual, status: :success, pipeline: pipeline) }
@@ -605,8 +607,8 @@ RSpec.describe Ci::Build do
     end
   end
 
-  describe '#prevent_rollback_deployment?' do
-    subject { build.prevent_rollback_deployment? }
+  describe '#outdated_deployment?' do
+    subject { build.outdated_deployment? }
 
     let(:build) { create(:ci_build, :created, :with_deployment, project: project, environment: 'production') }
 
@@ -624,20 +626,32 @@ RSpec.describe Ci::Build do
       it { expect(subject).to be_falsey }
     end
 
-    context 'when deployment cannot rollback' do
+    context 'when build is not an outdated deployment' do
       before do
-        expect(build.deployment).to receive(:older_than_last_successful_deployment?).and_return(false)
+        allow(build.deployment).to receive(:older_than_last_successful_deployment?).and_return(false)
       end
 
       it { expect(subject).to be_falsey }
     end
 
-    context 'when build can prevent rollback deployment' do
+    context 'when build is older than the latest deployment and still pending status' do
       before do
-        expect(build.deployment).to receive(:older_than_last_successful_deployment?).and_return(true)
+        allow(build.deployment).to receive(:older_than_last_successful_deployment?).and_return(true)
       end
 
       it { expect(subject).to be_truthy }
+    end
+
+    context 'when build is older than the latest deployment but succeeded once' do
+      let(:build) { create(:ci_build, :success, :with_deployment, project: project, environment: 'production') }
+
+      before do
+        allow(build.deployment).to receive(:older_than_last_successful_deployment?).and_return(true)
+      end
+
+      it 'returns false for allowing rollback' do
+        expect(subject).to be_falsey
+      end
     end
   end
 
@@ -1751,7 +1765,7 @@ RSpec.describe Ci::Build do
 
         context 'and start action is defined' do
           before do
-            build.update!(options: { environment: { action: 'start' } } )
+            build.update!(options: { environment: { action: 'start' } })
           end
 
           it { is_expected.to be_truthy }
@@ -1781,7 +1795,7 @@ RSpec.describe Ci::Build do
 
         context 'and stop action is defined' do
           before do
-            build.update!(options: { environment: { action: 'stop' } } )
+            build.update!(options: { environment: { action: 'stop' } })
           end
 
           it { is_expected.to be_truthy }
@@ -5081,6 +5095,60 @@ RSpec.describe Ci::Build do
     end
 
     context 'when CI_DEBUG_TRACE is not in variables' do
+      it { is_expected.to eq false }
+    end
+
+    context 'when CI_DEBUG_SERVICES=true is in variables' do
+      context 'when in instance variables' do
+        before do
+          create(:ci_instance_variable, key: 'CI_DEBUG_SERVICES', value: 'true')
+        end
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when in group variables' do
+        before do
+          create(:ci_group_variable, key: 'CI_DEBUG_SERVICES', value: 'true', group: project.group)
+        end
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when in pipeline variables' do
+        before do
+          create(:ci_pipeline_variable, key: 'CI_DEBUG_SERVICES', value: 'true', pipeline: pipeline)
+        end
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when in project variables' do
+        before do
+          create(:ci_variable, key: 'CI_DEBUG_SERVICES', value: 'true', project: project)
+        end
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when in job variables' do
+        before do
+          create(:ci_job_variable, key: 'CI_DEBUG_SERVICES', value: 'true', job: build)
+        end
+
+        it { is_expected.to eq true }
+      end
+
+      context 'when in yaml variables' do
+        before do
+          build.update!(yaml_variables: [{ key: :CI_DEBUG_SERVICES, value: 'true' }])
+        end
+
+        it { is_expected.to eq true }
+      end
+    end
+
+    context 'when CI_DEBUG_SERVICES is not in variables' do
       it { is_expected.to eq false }
     end
   end

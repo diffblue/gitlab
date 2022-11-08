@@ -10,7 +10,7 @@ import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationDropdown from 'ee/sidebar/components/iteration_dropdown.vue';
-import groupIterationsQuery from 'ee/sidebar/queries/iterations.query.graphql';
+import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
@@ -69,10 +69,10 @@ describe('IterationDropdown', () => {
   beforeEach(() => {
     groupIterationsSpy = jest.fn().mockResolvedValue({
       data: {
-        group: {
+        workspace: {
           __typename: 'Group',
           id: '1',
-          iterations: {
+          attributes: {
             nodes: TEST_ITERATIONS.map((iteration) => ({ ...iteration, __typename: 'Iteration' })),
           },
         },
@@ -113,11 +113,12 @@ describe('IterationDropdown', () => {
 
     wrapper = mountFn(IterationDropdown, {
       apolloProvider: fakeApollo,
-      propsData: {
+      provide: {
         fullPath: TEST_FULL_PATH,
       },
       stubs: {
         IterationTitle,
+        GlDropdown,
       },
     });
   };
@@ -180,20 +181,19 @@ describe('IterationDropdown', () => {
     it('shows dropdown items grouped by iteration cadence', () => {
       const dropdownItems = wrapper.findAll('li');
 
-      expect(dropdownItems.at(0).text()).toBe('Assign Iteration');
-      expect(dropdownItems.at(1).text()).toContain('No iteration');
+      expect(dropdownItems.at(0).text()).toContain('No iteration');
 
-      expect(dropdownItems.at(2).findComponent(GlDropdownDivider).exists()).toBe(true);
-      expect(dropdownItems.at(3).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
-      expect(dropdownItems.at(4).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
-      expect(dropdownItems.at(4).text()).toContain('Test Title');
-      expect(dropdownItems.at(5).text()).toContain(getIterationPeriod(TEST_ITERATIONS[2]));
+      expect(dropdownItems.at(1).findComponent(GlDropdownDivider).exists()).toBe(true);
+      expect(dropdownItems.at(2).findComponent(GlDropdownSectionHeader).text()).toBe('My Cadence');
+      expect(dropdownItems.at(3).text()).toContain(getIterationPeriod(TEST_ITERATIONS[0]));
+      expect(dropdownItems.at(3).text()).toContain('Test Title');
+      expect(dropdownItems.at(4).text()).toContain(getIterationPeriod(TEST_ITERATIONS[2]));
 
-      expect(dropdownItems.at(6).findComponent(GlDropdownDivider).exists()).toBe(true);
-      expect(dropdownItems.at(7).findComponent(GlDropdownSectionHeader).text()).toBe(
+      expect(dropdownItems.at(5).findComponent(GlDropdownDivider).exists()).toBe(true);
+      expect(dropdownItems.at(6).findComponent(GlDropdownSectionHeader).text()).toBe(
         'My Second Cadence',
       );
-      expect(dropdownItems.at(8).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
+      expect(dropdownItems.at(7).text()).toContain(getIterationPeriod(TEST_ITERATIONS[1]));
     });
 
     it('does not re-query if opened again', async () => {

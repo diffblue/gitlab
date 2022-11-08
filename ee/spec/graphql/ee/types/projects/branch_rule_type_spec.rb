@@ -7,11 +7,7 @@ RSpec.describe GitlabSchema.types['BranchRule'] do
 
   subject { described_class }
 
-  let_it_be(:fields) do
-    %i[
-      approval_rules
-    ]
-  end
+  let_it_be(:fields) { %i[approval_rules external_status_checks] }
 
   it { is_expected.to have_graphql_fields(fields).at_least }
 end

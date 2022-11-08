@@ -1241,115 +1241,6 @@ RSpec.describe MergeRequest do
     end
   end
 
-  describe '#missing_security_scan_types' do
-    let(:merge_request) { create(:ee_merge_request, source_project: project) }
-
-    subject { merge_request.missing_security_scan_types }
-
-    context 'when there is no head pipeline' do
-      context 'when there is no base pipeline' do
-        it { is_expected.to be_empty }
-      end
-
-      context 'when there is a base pipeline' do
-        let(:base_pipeline) do
-          create(:ee_ci_pipeline,
-                 project: project,
-                 ref: merge_request.target_branch,
-                 sha: merge_request.diff_base_sha)
-        end
-
-        context 'when there is no security scan for the base pipeline' do
-          it { is_expected.to be_empty }
-        end
-
-        context 'when there are security scans for the base_pipeline' do
-          before do
-            build = create(:ci_build, :success, pipeline: base_pipeline, project: project)
-            create(:security_scan, build: build)
-          end
-
-          it { is_expected.to be_empty }
-        end
-      end
-    end
-
-    context 'when there is a head pipeline' do
-      let!(:head_pipeline) { create(:ee_ci_pipeline, project: project, sha: merge_request.diff_head_sha) }
-
-      before do
-        merge_request.update_head_pipeline
-      end
-
-      context 'when there is no base pipeline' do
-        it { is_expected.to be_empty }
-      end
-
-      context 'when there is a base pipeline' do
-        let!(:base_pipeline) do
-          create(:ee_ci_pipeline,
-                 project: project,
-                 ref: merge_request.target_branch,
-                 sha: merge_request.diff_base_sha)
-        end
-
-        let!(:base_pipeline_build) { create(:ci_build, :success, pipeline: base_pipeline, project: project) }
-        let!(:head_pipeline_build) { create(:ci_build, :success, pipeline: head_pipeline, project: project) }
-
-        context 'when the head pipeline does not have security scans' do
-          context 'when the base pipeline does not have security scans' do
-            it { is_expected.to be_empty }
-          end
-
-          context 'when the base pipeline has security scans' do
-            before do
-              create(:security_scan, build: base_pipeline_build, scan_type: 'sast')
-            end
-
-            it { is_expected.to eq(['sast']) }
-          end
-        end
-
-        context 'when the head pipeline has security scans' do
-          before do
-            create(:security_scan, build: head_pipeline_build, scan_type: 'dast')
-          end
-
-          context 'when the base pipeline does not have security scans' do
-            it { is_expected.to be_empty }
-          end
-
-          context 'when the base pipeline has security scans' do
-            before do
-              create(:security_scan, build: base_pipeline_build, scan_type: 'dast')
-            end
-
-            context 'when there are no missing security scans for the head pipeline' do
-              it { is_expected.to be_empty }
-            end
-
-            context 'when there are missing security scans for the head pipeline' do
-              before do
-                create(:security_scan, build: base_pipeline_build, scan_type: 'sast')
-              end
-
-              it { is_expected.to eq(['sast']) }
-
-              context 'when there are multiple scans for the same type for base pipeline' do
-                before do
-                  build = create(:ci_build, :success, pipeline: base_pipeline, project: project)
-                  create(:security_scan, build: build, scan_type: 'sast')
-                end
-
-                it { is_expected.to eq(['sast']) }
-              end
-            end
-          end
-        end
-      end
-    end
-  end
-
   describe '#security_reports_up_to_date?' do
     let(:merge_request) do
       create(:ee_merge_request,
@@ -1433,6 +1324,15 @@ RSpec.describe MergeRequest do
     describe '.with_head_pipeline' do
       it 'returns MRs that have a head pipeline' do
         expect(described_class.with_head_pipeline).to eq([merge_request_with_head_pipeline])
+      end
+    end
+
+    describe '.with_applied_scan_result_policies' do
+      let_it_be(:scan_finding_approval_rule) { create(:report_approver_rule, :code_coverage) }
+      let_it_be(:code_coverage_approval_rule) { create(:report_approver_rule, :scan_finding) }
+
+      it 'returns MRs that have applied scan result policies' do
+        expect(described_class.with_applied_scan_result_policies).to eq([code_coverage_approval_rule.merge_request])
       end
     end
 

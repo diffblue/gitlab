@@ -81,10 +81,10 @@ Array [
       ],
     ],
     "itemStyle": Object {
-      "color": "#5772ff",
+      "color": "#617ae2",
     },
     "lineStyle": Object {
-      "color": "#5772ff",
+      "color": "#617ae2",
     },
     "name": "Lead time",
     "showAllSymbol": true,

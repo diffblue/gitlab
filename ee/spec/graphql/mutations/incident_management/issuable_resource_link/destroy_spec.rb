@@ -7,7 +7,7 @@ RSpec.describe Mutations::IncidentManagement::IssuableResourceLink::Destroy do
   let_it_be(:project) { create(:project) }
   let_it_be(:incident) { create(:incident, project: project) }
 
-  let(:issuable_resource_link) { create(:issuable_resource_link, issue: incident ) }
+  let(:issuable_resource_link) { create(:issuable_resource_link, issue: incident) }
   let(:args) { { id: issuable_resource_link.to_global_id } }
 
   specify { expect(described_class).to require_graphql_authorizations(:admin_issuable_resource_link) }

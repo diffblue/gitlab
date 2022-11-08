@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Plan', :reliable do
+  RSpec.describe 'Plan', :reliable, product_group: :product_planning do
     describe 'promote issue to epic' do
       let(:project) do
         Resource::Project.fabricate_via_api! do |project|

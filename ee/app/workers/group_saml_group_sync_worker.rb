@@ -51,7 +51,6 @@ class GroupSamlGroupSyncWorker
   # Reverts to the top-level default membership role if the user doesn't belong to any linked groups at the top level.
   # This ensures user has at least default membership role and doesn't lose access to the hierarchy.
   def update_default_membership
-    return false unless Feature.enabled?(:saml_group_sync_retain_default_membership)
     return false unless top_level_group_contains_any_group_links?
     return false if top_level_group_in_group_links?
     return false if top_level_group.last_owner?(user)
@@ -91,7 +90,6 @@ class GroupSamlGroupSyncWorker
   # Only manage the top level group if there is a matching group link for the user.
   # Otherwise, the SyncService would remove the user completely.
   def manage_group_ids
-    return group_ids_with_any_links unless Feature.enabled?(:saml_group_sync_retain_default_membership)
     return group_ids_with_any_links if top_level_group_in_group_links?
 
     group_ids_with_any_links.reject { |id| id == top_level_group.id }

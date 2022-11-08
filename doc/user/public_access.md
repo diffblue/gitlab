@@ -18,6 +18,11 @@ for your GitLab instance). For example, <https://gitlab.com/public>.
 You can control the visibility of individual features with
 [project feature settings](permissions.md#project-features).
 
+The visibility setting of a project must be the same as or less restrictive
+than the visibility of its parent group.
+For example, a private group can include only private projects,
+while a public group can include private, internal, and public projects.
+
 ## Public projects and groups
 
 Public projects can be cloned **without any** authentication over HTTPS.
@@ -73,11 +78,12 @@ Prerequisite:
 
 ## Change group visibility
 
-Prerequisite:
+Prerequisites:
 
 - You must have the Owner role for a group.
 - Subgroups and projects must already have visibility settings that are at least as
-  restrictive as the new setting of the parent group.
+  restrictive as the new setting of the parent group. For example, you cannot set a group
+  to private if a subgroup or project in that group is public.
 
 1. On the top bar, select **Main menu > Groups** and find your project.
 1. On the left sidebar, select **Settings > General**.

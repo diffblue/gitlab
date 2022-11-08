@@ -1,7 +1,7 @@
 .row
   .form-group.col-sm-12
     = label_tag :user_registration_objective, _("I'm signing up for GitLab because:")
-    = f.select :registration_objective, shuffled_registration_objective_options, { include_blank: _('Please select...') }, class: 'form-control js-jobs-to-be-done-dropdown'
+    = f.select :registration_objective, shuffled_registration_objective_options, { include_blank: _('Please select...') }, class: 'form-control js-jobs-to-be-done-dropdown', data: { qa_selector: 'registration_reason_dropdown' }
 .row
   .form-group.col-sm-12.js-jobs-to-be-done-other-group.hidden
     = label_tag :jobs_to_be_done_other, _('Why are you signing up? (optional)')

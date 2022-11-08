@@ -75,7 +75,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
 
     it 'fails documents that elasticsearch refuses to accept' do
       # Indexes with uppercase characters are invalid
-      expect(other_issue_as_ref.database_record.__elasticsearch__)
+      allow(other_issue_as_ref.database_record.__elasticsearch__)
         .to receive(:index_name)
         .and_return('Invalid')
 
@@ -158,6 +158,58 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_share
         refresh_index!
 
         expect(search(Issue, '*').size).to eq(0)
+      end
+
+      context 'when aliases are being used' do
+        let(:alias_name) { "gitlab-test-issues" }
+        let(:read_index) { "gitlab-test-issues-20220915-0822" }
+        let(:write_index) { "gitlab-test-issues-20220915-0823" }
+
+        before do
+          allow(es_client).to receive_message_chain(:indices, :get_alias)
+            .with(index: alias_name).and_return(
+              {
+                read_index => { "aliases" => { alias_name => {} } },
+                write_index => { "aliases" => { alias_name => { "is_write_index" => true } } }
+              }
+            )
+        end
+
+        it 'adds a delete op for each read index' do
+          expect(indexer).to receive(:delete).with(issue_as_ref, index_name: read_index)
+          expect(indexer).not_to receive(:delete).with(issue_as_ref, index_name: write_index)
+
+          expect(indexer.process(issue_as_ref).flush).to be_empty
+        end
+      end
+
+      context 'when there has not been a alias rollover yet' do
+        let(:alias_name) { "gitlab-test-issues" }
+        let(:single_index) { "gitlab-test-issues-20220915-0822" }
+
+        before do
+          allow(es_client).to receive_message_chain(:indices, :get_alias)
+            .with(index: alias_name).and_return(
+              { single_index => { "aliases" => { alias_name => {} } } }
+            )
+        end
+
+        it 'does not do any delete ops' do
+          expect(indexer).not_to receive(:delete)
+          expect(indexer.process(issue_as_ref).flush).to be_empty
+        end
+      end
+
+      context 'when feature flag `search_index_curation` is disabled' do
+        before do
+          stub_feature_flags(search_index_curation: false)
+        end
+
+        it 'does not check for alias info or add any delete ops' do
+          expect(es_client).not_to receive(:indices)
+          expect(indexer).not_to receive(:delete)
+          expect(indexer.process(issue_as_ref).flush).to be_empty
+        end
       end
     end
 

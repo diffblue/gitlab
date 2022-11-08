@@ -11,7 +11,7 @@ class ElasticCommitIndexerWorker
   sidekiq_options retry: 2
   urgency :throttled
   idempotent!
-  loggable_arguments 1, 2, 3
+  loggable_arguments 1, 2
 
   # Performs the commits and blobs indexation
   #

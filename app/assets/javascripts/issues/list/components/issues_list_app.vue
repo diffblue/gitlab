@@ -42,8 +42,6 @@ import {
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { IssuableListTabs, IssuableStates } from '~/vue_shared/issuable/list/constants';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import { WORK_ITEM_TYPE_ENUM_TASK } from '~/work_items/constants';
 import {
   CREATED_DESC,
   defaultTypeTokenOptions,
@@ -125,7 +123,6 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: [
     'autocompleteAwardEmojisPath',
     'calendarPath',
@@ -239,21 +236,14 @@ export default {
         state: this.state,
         ...this.pageParams,
         ...this.apiFilterParams,
-        types: this.apiFilterParams.types || this.defaultWorkItemTypes,
+        types: this.apiFilterParams.types || defaultWorkItemTypes,
       };
     },
     namespace() {
       return this.isProject ? ITEM_TYPE.PROJECT : ITEM_TYPE.GROUP;
     },
-    defaultWorkItemTypes() {
-      return this.isWorkItemsEnabled
-        ? defaultWorkItemTypes
-        : defaultWorkItemTypes.filter((type) => type !== WORK_ITEM_TYPE_ENUM_TASK);
-    },
     typeTokenOptions() {
-      return this.isWorkItemsEnabled
-        ? defaultTypeTokenOptions.concat(TYPE_TOKEN_TASK_OPTION)
-        : defaultTypeTokenOptions;
+      return defaultTypeTokenOptions.concat(TYPE_TOKEN_TASK_OPTION);
     },
     hasSearch() {
       return (
@@ -271,9 +261,6 @@ export default {
     },
     isOpenTab() {
       return this.state === IssuableStates.Opened;
-    },
-    isWorkItemsEnabled() {
-      return this.glFeatures.workItems;
     },
     showCsvButtons() {
       return this.isProject && this.isSignedIn;
@@ -960,12 +947,17 @@ export default {
 
     <gl-empty-state
       v-else
-      :description="$options.i18n.noIssuesSignedOutDescription"
       :title="$options.i18n.noIssuesSignedOutTitle"
       :svg-path="emptyStateSvgPath"
       :primary-button-text="$options.i18n.noIssuesSignedOutButtonText"
       :primary-button-link="signInPath"
-    />
+    >
+      <template #description>
+        <gl-link :href="issuesHelpPagePath" target="_blank">{{
+          $options.i18n.noIssuesSignedOutDescription
+        }}</gl-link>
+      </template>
+    </gl-empty-state>
 
     <issuable-by-email v-if="showIssuableByEmail" class="gl-text-center gl-pt-5 gl-pb-7" />
   </div>

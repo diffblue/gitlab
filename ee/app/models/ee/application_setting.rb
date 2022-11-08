@@ -140,6 +140,41 @@ module EE
       validates :dashboard_limit_enabled,
                 inclusion: { in: [true, false], message: 'must be a boolean value' }
 
+      validates :cube_api_base_url,
+                addressable_url: { allow_localhost: true },
+                presence: true,
+                if: :product_analytics_enabled
+
+      validates :product_analytics_enabled,
+                presence: true,
+                allow_blank: true
+
+      validates :jitsu_host,
+                addressable_url: { allow_localhost: true },
+                presence: true,
+                if: :product_analytics_enabled
+
+      validates :jitsu_project_xid,
+                presence: true,
+                if: :product_analytics_enabled
+
+      validates :jitsu_administrator_email,
+                presence: true,
+                devise_email: true,
+                if: :product_analytics_enabled
+
+      validates :jitsu_administrator_password,
+                presence: true,
+                if: :product_analytics_enabled
+
+      validates :clickhouse_connection_string,
+                presence: true,
+                if: :product_analytics_enabled
+
+      validates :cube_api_key,
+                presence: true,
+                if: :product_analytics_enabled
+
       alias_attribute :delayed_project_deletion, :delayed_project_removal
 
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
@@ -207,11 +242,14 @@ module EE
           max_number_of_repository_downloads_within_time_period: 0,
           git_rate_limit_users_allowlist: [],
           auto_ban_user_on_excessive_projects_download: false,
+          product_analytics_enabled: false,
           jitsu_host: nil,
           jitsu_project_xid: nil,
           clickhouse_connection_string: nil,
           jitsu_administrator_email: nil,
-          jitsu_administrator_password: nil
+          jitsu_administrator_password: nil,
+          cube_api_base_url: nil,
+          cube_api_key: nil
         )
       end
     end
@@ -422,6 +460,12 @@ module EE
       personal_access_tokens_disabled? || read_attribute(:disable_feed_token)
     end
     alias_method :disable_feed_token?, :disable_feed_token
+
+    def jitsu_administrator_password=(value)
+      return if value == MASK_PASSWORD
+
+      super
+    end
 
     private
 

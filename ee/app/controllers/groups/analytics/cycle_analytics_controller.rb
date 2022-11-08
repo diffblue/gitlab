@@ -17,7 +17,11 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
 
   layout 'group'
 
-  track_event :show, name: 'g_analytics_valuestream', destinations: [:redis_hll, :snowplow]
+  track_custom_event :show,
+                     name: 'g_analytics_valuestream',
+                     action: 'perform_analytics_usage_action',
+                     label: 'redis_hll_counters.analytics.g_analytics_valuestream_monthly',
+                     destinations: [:redis_hll, :snowplow]
 
   def show
   end
@@ -50,4 +54,5 @@ class Groups::Analytics::CycleAnalyticsController < Groups::Analytics::Applicati
   end
 
   alias_method :tracking_namespace_source, :load_group
+  alias_method :tracking_project_source, :load_project
 end

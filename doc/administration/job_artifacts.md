@@ -200,7 +200,8 @@ sudo -u git -H bundle exec rake gitlab:artifacts:migrate RAILS_ENV=production
 You can optionally track progress and verify that all job artifacts migrated successfully using the
 [PostgreSQL console](https://docs.gitlab.com/omnibus/settings/database.html#connecting-to-the-bundled-postgresql-database):
 
-- `sudo gitlab-rails dbconsole` for Omnibus GitLab instances.
+- `sudo gitlab-rails dbconsole` for Omnibus GitLab 14.1 and earlier.
+- `sudo gitlab-rails dbconsole --database main` for Omnibus GitLab 14.2 and later.
 - `sudo -u git -H psql -d gitlabhq_production` for source-installed instances.
 
 Verify `objectstg` below (where `store=2`) has count of all job artifacts:
@@ -301,7 +302,7 @@ I/O. It instead inspects the metadata file which contains all the relevant
 information. This is especially important when there is a lot of artifacts, or
 an archive is a very large file.
 
-When clicking on a specific file, [GitLab Workhorse](https://gitlab.com/gitlab-org/gitlab-workhorse) extracts it
+When selecting a specific file, [GitLab Workhorse](https://gitlab.com/gitlab-org/gitlab-workhorse) extracts it
 from the archive and the download begins. This implementation saves space,
 memory and disk I/O.
 

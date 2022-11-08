@@ -3,7 +3,7 @@ import VueApollo from 'vue-apollo';
 import Vue from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { captureException } from '~/runner/sentry_utils';
+import { captureException } from '~/ci/runner/sentry_utils';
 import NamespaceStorageApp from 'ee/usage_quotas/storage/components/namespace_storage_app.vue';
 import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
@@ -12,13 +12,13 @@ import getDependencyProxyTotalSizeQuery from 'ee/usage_quotas/storage/queries/de
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { formatUsageSize } from 'ee/usage_quotas/storage/utils';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
+import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
 import UsageGraph from 'ee/usage_quotas/storage/components/usage_graph.vue';
 import UsageStatistics from 'ee/usage_quotas/storage/components/usage_statistics.vue';
 import StorageUsageStatistics from 'ee/usage_quotas/storage/components/storage_usage_statistics.vue';
 import StorageInlineAlert from 'ee/usage_quotas/storage/components/storage_inline_alert.vue';
 import DependencyProxyUsage from 'ee/usage_quotas/storage/components/dependency_proxy_usage.vue';
 import ContainerRegistryUsage from 'ee/usage_quotas/storage/components/container_registry_usage.vue';
-import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
 import TemporaryStorageIncreaseModal from 'ee/usage_quotas/storage/components/temporary_storage_increase_modal.vue';
 import {
   defaultNamespaceProvideValues,
@@ -29,7 +29,7 @@ import {
 const TEST_LIMIT = 1000;
 
 jest.mock('~/flash');
-jest.mock('~/runner/sentry_utils');
+jest.mock('~/ci/runner/sentry_utils');
 
 Vue.use(VueApollo);
 
@@ -75,7 +75,7 @@ describe('NamespaceStorageApp', () => {
   const findStorageUsageStatistics = () => wrapper.findComponent(StorageUsageStatistics);
   const findTemporaryStorageIncreaseButton = () =>
     wrapper.find("[data-testid='temporary-storage-increase-button']");
-  const findProjectList = () => wrapper.findComponent(ProjectList);
+  const findSearchAndSortBar = () => wrapper.findComponent(SearchAndSortBar);
   const findPrevButton = () => wrapper.find('[data-testid="prevButton"]');
   const findNextButton = () => wrapper.find('[data-testid="nextButton"]');
   const findContainerRegistry = () => wrapper.findComponent(ContainerRegistryUsage);
@@ -114,10 +114,6 @@ describe('NamespaceStorageApp', () => {
   };
 
   let mockApollo;
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   describe('project list', () => {
     beforeEach(async () => {
@@ -274,44 +270,40 @@ describe('NamespaceStorageApp', () => {
   });
 
   describe('filtering projects', () => {
+    let searchAndSortBar;
+    const sampleSearchTerm = 'GitLab';
+
     beforeEach(() => {
       mockApollo = createMockApolloProvider();
       createComponent({
         mockApollo,
         additionalRepoStorageByNamespace: true,
       });
+      searchAndSortBar = findSearchAndSortBar();
     });
-
-    const sampleSearchTerm = 'GitLab';
-    const sampleShortSearchTerm = '12';
 
     it('triggers search if user enters search input', () => {
       expect(wrapper.vm.searchTerm).toBe('');
 
-      findProjectList().vm.$emit('search', sampleSearchTerm);
+      findSearchAndSortBar().vm.$emit('onFilter', sampleSearchTerm);
 
       expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
     });
 
     it('triggers search if user clears the entered search input', () => {
-      const projectList = findProjectList();
-
-      expect(wrapper.vm.searchTerm).toBe('');
-
-      projectList.vm.$emit('search', sampleSearchTerm);
-
+      searchAndSortBar.vm.$emit('onFilter', sampleSearchTerm);
       expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
 
-      projectList.vm.$emit('search', '');
-
+      searchAndSortBar.vm.$emit('onFilter', '');
       expect(wrapper.vm.searchTerm).toBe('');
     });
 
-    it('does not trigger search if user enters short search input', () => {
-      expect(wrapper.vm.searchTerm).toBe('');
+    it('triggers search with empty string if user enters short search input', () => {
+      searchAndSortBar.vm.$emit('onFilter', sampleSearchTerm);
+      expect(wrapper.vm.searchTerm).toBe(sampleSearchTerm);
 
-      findProjectList().vm.$emit('search', sampleShortSearchTerm);
-
+      const sampleShortSearchTerm = 'Gi';
+      findSearchAndSortBar().vm.$emit('onFilter', sampleShortSearchTerm);
       expect(wrapper.vm.searchTerm).toBe('');
     });
   });

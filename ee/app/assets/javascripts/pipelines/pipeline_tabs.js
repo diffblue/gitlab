@@ -9,12 +9,12 @@ import { __ } from '~/locale';
 
 Vue.use(VueRouter);
 
-export const createAppOptions = (selector, apolloProvider) => {
+export const createAppOptions = (selector, apolloProvider, router) => {
   const el = document.querySelector(selector);
 
   if (!el) return null;
 
-  const appOptionsCE = createAppOptionsCE(selector, apolloProvider);
+  const appOptionsCE = createAppOptionsCE(selector, apolloProvider, router);
 
   const { dataset } = el;
 
@@ -33,7 +33,6 @@ export const createAppOptions = (selector, apolloProvider) => {
   }
 
   return merge({}, appOptionsCE, {
-    router: new VueRouter(),
     provide: vulnerabilityReportProvides,
   });
 };

@@ -3,6 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Epics::UpdateCachedMetadataWorker do
+  include ExclusiveLeaseHelpers
+
   describe '#perform', :sidekiq_inline do
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
@@ -49,6 +51,22 @@ RSpec.describe Epics::UpdateCachedMetadataWorker do
 
     it_behaves_like 'successful metadata update'
 
+    it 'logs extra params' do
+      expect(worker).to receive(:log_extra_metadata_on_done).with(:changed, true)
+      expect(worker).to receive(:log_extra_metadata_on_done).with(:epic_id, epic.id)
+      expect(worker).to receive(:log_extra_metadata_on_done).with(:epic_iid, epic.iid)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_opened_issue_weight, 20)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_closed_issue_weight, 10)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_opened_issue_count, 1)
+      expect(worker).to receive(:log_extra_metadata_on_done)
+        .with(:total_closed_issue_count, 1)
+
+      perform
+    end
+
     include_examples 'an idempotent worker' do
       let(:job_args) { epic_ids }
 
@@ -71,6 +89,22 @@ RSpec.describe Epics::UpdateCachedMetadataWorker do
       it 'updates epic issue cached metadata for each epic' do
         expect(worker).to receive(:update_epic).with(epic)
         expect(worker).to receive(:update_epic).with(other_epic)
+
+        perform
+      end
+
+      it 'obtains exclusive lock for each epic' do
+        uuid = 'uuid'
+
+        expect_to_obtain_exclusive_lease("#{described_class.name.underscore}-#{epic.id}", uuid,
+                                         timeout: described_class::LEASE_TIMEOUT)
+        expect_to_obtain_exclusive_lease("#{described_class.name.underscore}-#{parent_epic.id}", uuid,
+                                         timeout: described_class::LEASE_TIMEOUT)
+        expect_to_obtain_exclusive_lease("#{described_class.name.underscore}-#{other_epic.id}", uuid,
+                                         timeout: described_class::LEASE_TIMEOUT)
+        expect_to_cancel_exclusive_lease("#{described_class.name.underscore}-#{epic.id}", uuid)
+        expect_to_cancel_exclusive_lease("#{described_class.name.underscore}-#{parent_epic.id}", uuid)
+        expect_to_cancel_exclusive_lease("#{described_class.name.underscore}-#{other_epic.id}", uuid)
 
         perform
       end

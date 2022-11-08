@@ -8,7 +8,7 @@ export const i18n = {
   content: s__(
     'SecurityTraining|Enable security training to learn how to fix vulnerabilities. View security training from selected educational providers relevant to the detected vulnerability.',
   ),
-  buttonCancel: __('Do not show again'),
+  buttonCancel: __("Don't show again"),
 };
 
 export default {

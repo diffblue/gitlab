@@ -171,7 +171,7 @@ graphql-schema-dump:
 graphql-schema-dump as-if-foss:
   extends:
     - graphql-schema-dump
-    - .frontend:rules:eslint-as-if-foss
+    - .frontend:rules:default-frontend-jobs-as-if-foss
     - .as-if-foss
 
 .frontend-test-base:
@@ -399,5 +399,5 @@ compile-storybook as-if-foss:
     - .as-if-foss
     - .frontend:rules:default-frontend-jobs-as-if-foss
   needs:
-    - !reference [.compile-storybook-base, needs]
+    - job: "graphql-schema-dump as-if-foss"
     - job: "rspec-all frontend_fixture as-if-foss"

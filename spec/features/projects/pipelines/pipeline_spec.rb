@@ -363,7 +363,7 @@ RSpec.describe 'Pipeline', :js do
           project: downstream_project,
           ref: 'master',
           sha: downstream_project.commit.id,
-          child_of: pipeline )
+          child_of: pipeline)
         end
 
         let!(:build) { create(:ci_build, status, pipeline: downstream_pipeline, user: user) }
@@ -851,12 +851,7 @@ RSpec.describe 'Pipeline', :js do
 
         before do
           schedule.owner.block!
-
-          begin
-            PipelineScheduleWorker.new.perform
-          rescue Ci::CreatePipelineService::CreateError
-            # Do nothing, assert view code after the Pipeline failed to create.
-          end
+          PipelineScheduleWorker.new.perform
         end
 
         it 'displays the PipelineSchedule in an inactive state' do

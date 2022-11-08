@@ -3,57 +3,74 @@
 module Security
   module SecurityOrchestrationPolicies
     class CreatePipelineService < ::BaseProjectService
-      SCAN_VARIABLES = {
-        'secret_detection' => {
-          'SECRET_DETECTION_HISTORIC_SCAN' => 'true',
-          'SECRET_DETECTION_DISABLED' => nil
-        },
-        'container_scanning' => {
-          'CONTAINER_SCANNING_DISABLED' => nil
-        },
-        'sast' => {
-          'SAST_DISABLED' => nil
-        }
-      }.freeze
-
       def execute
-        service = Ci::CreatePipelineService.new(project, current_user, ref: params[:branch])
-        ci_content, ci_hidden_variables = ci_configuration
-        result = service.execute(:security_orchestration_policy, content: ci_content.to_yaml, variables_attributes: ci_hidden_variables)
+        return error(_('SecurityPolicies|Invalid or empty policy')) if ci_configs.values.all?(&:blank?)
 
-        pipeline = result.payload
-        if pipeline.created_successfully?
-          success(payload: pipeline)
-        else
-          error(pipeline.full_error_messages)
+        pipelines = {}
+        error_messages = []
+
+        if pipeline_scan_config.present?
+          result = execute_pipeline_scans(pipeline_scan_config)
+          pipeline_scan_pipeline = result.payload
+
+          if pipeline_scan_pipeline.created_successfully?
+            pipelines[:pipeline_scan] = pipeline_scan_pipeline
+          else
+            error_messages.push(pipeline_scan_pipeline.full_error_messages)
+          end
         end
+
+        if on_demand_config.present?
+          result = execute_on_demand_scans(on_demand_config)
+
+          if result.status == :success
+            on_demand_pipeline = result.payload
+
+            if on_demand_pipeline.created_successfully?
+              pipelines[:on_demand] = on_demand_pipeline
+            else
+              error_messages.push(on_demand_pipeline.full_error_messages)
+            end
+          else
+            error_messages.push(result.message)
+          end
+        end
+
+        return error(error_messages.join(" ")) if error_messages.any?
+
+        success(payload: pipelines)
+      end
+
+      def pipeline_scan_config
+        ci_configs[:pipeline_scan]
+      end
+
+      def on_demand_config
+        ci_configs[:on_demand]
       end
 
       private
 
-      def ci_configuration
-        action_variables = action[:variables].to_h.stringify_keys
-        ci_variables, ci_hidden_variables = scan_variables
-        ci_content = ::Security::SecurityOrchestrationPolicies::CiConfigurationService.new.execute(action, action_variables.merge(ci_variables))
-
-        [{ "#{scan_type}" => ci_content }, ci_hidden_variables]
+      def ci_configs
+        @ci_configs ||= prepare_ci_configurations(params[:actions])
       end
 
-      def scan_variables
-        case scan_type.to_sym
-        when :cluster_image_scanning
-          ClusterImageScanningCiVariablesService.new(project: project).execute(action)
-        else
-          [SCAN_VARIABLES[scan_type].to_h, []]
-        end
+      def prepare_ci_configurations(actions)
+        ::Security::SecurityOrchestrationPolicies::ScanPipelineService.new(project).execute(actions)
       end
 
-      def action
-        params[:action]
+      def execute_pipeline_scans(ci_config)
+        return if ci_config.blank?
+
+        service = Ci::CreatePipelineService.new(project, current_user, ref: params[:branch])
+        service.execute(:security_orchestration_policy, content: ci_config.to_yaml, variables_attributes: [])
       end
 
-      def scan_type
-        action[:scan]
+      def execute_on_demand_scans(ci_config)
+        return if ci_config.blank?
+
+        service = ::AppSec::Dast::Scans::RunService.new(project, current_user)
+        service.execute(branch: params[:branch], ci_configuration: ci_config.to_yaml)
       end
     end
   end

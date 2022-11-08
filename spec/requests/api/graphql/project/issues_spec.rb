@@ -56,6 +56,62 @@ RSpec.describe 'getting an issue list for a project' do
     end
   end
 
+  context 'when filtering by a negated argument' do
+    let(:issue_filter_params) { { not: { assignee_usernames: current_user.username } } }
+
+    it 'returns correctly filtered issues' do
+      issue_a.assignee_ids = current_user.id
+
+      post_graphql(query, current_user: current_user)
+
+      expect(issues_ids).to contain_exactly(issue_b_gid)
+    end
+
+    context 'when argument is blank' do
+      let(:issue_filter_params) { { not: {} } }
+
+      it 'does not raise an error' do
+        post_graphql(query, current_user: current_user)
+
+        expect_graphql_errors_to_be_empty
+      end
+    end
+  end
+
+  context 'when filtering by a unioned argument' do
+    let(:another_user) { create(:user) }
+    let(:issue_filter_params) { { or: { assignee_usernames: [current_user.username, another_user.username] } } }
+
+    it 'returns correctly filtered issues' do
+      issue_a.assignee_ids = current_user.id
+      issue_b.assignee_ids = another_user.id
+
+      post_graphql(query, current_user: current_user)
+
+      expect(issues_ids).to contain_exactly(issue_a_gid, issue_b_gid)
+    end
+
+    context 'when argument is blank' do
+      let(:issue_filter_params) { { or: {} } }
+
+      it 'does not raise an error' do
+        post_graphql(query, current_user: current_user)
+
+        expect_graphql_errors_to_be_empty
+      end
+    end
+
+    context 'when feature flag is disabled' do
+      it 'returns an error' do
+        stub_feature_flags(or_issuable_queries: false)
+
+        post_graphql(query, current_user: current_user)
+
+        expect_graphql_errors_to_include("'or' arguments are only allowed when the `or_issuable_queries` feature flag is enabled.")
+      end
+    end
+  end
+
   context 'filtering by my_reaction_emoji' do
     using RSpec::Parameterized::TableSyntax
 
@@ -409,6 +465,11 @@ RSpec.describe 'getting an issue list for a project' do
           alertManagementAlert {
             title
           }
+          alertManagementAlerts {
+            nodes {
+              title
+            }
+          }
         }
       }
       QUERY
@@ -432,6 +493,17 @@ RSpec.describe 'getting an issue list for a project' do
 
       alert_titles = issues_data.map { |issue| issue.dig('node', 'alertManagementAlert', 'title') }
       expected_titles = issues.map { |issue| issue.alert_management_alert&.title }
+
+      expect(alert_titles).to contain_exactly(*expected_titles)
+    end
+
+    it 'returns the alerts data' do
+      post_graphql(query, current_user: current_user)
+
+      alert_titles = issues_data.map { |issue| issue.dig('node', 'alertManagementAlerts', 'nodes') }
+      expected_titles = issues.map do |issue|
+        issue.alert_management_alerts.map { |alert| { 'title' => alert.title } }
+      end
 
       expect(alert_titles).to contain_exactly(*expected_titles)
     end

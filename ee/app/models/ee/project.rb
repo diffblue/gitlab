@@ -16,6 +16,16 @@ module EE
     GIT_LFS_DOWNLOAD_OPERATION = 'download'
     ISSUE_BATCH_SIZE = 500
 
+    module FilterByBranch
+      def applicable_to_branch(branch)
+        includes(:protected_branches).select { |rule| rule.applies_to_branch?(branch) }
+      end
+
+      def inapplicable_to_branch(branch)
+        includes(:protected_branches).reject { |rule| rule.applies_to_branch?(branch) }
+      end
+    end
+
     prepended do
       include Elastic::ProjectsSearch
       include EachBatch
@@ -53,15 +63,9 @@ module EE
       has_many :approvers, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
       has_many :approver_users, through: :approvers, source: :user
       has_many :approver_groups, as: :target, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
-      has_many :approval_rules, class_name: 'ApprovalProjectRule' do
-        def applicable_to_branch(branch)
-          includes(:protected_branches).select { |rule| rule.applies_to_branch?(branch) }
-        end
-
-        def inapplicable_to_branch(branch)
-          includes(:protected_branches).reject { |rule| rule.applies_to_branch?(branch) }
-        end
-      end
+      has_many :approval_rules, class_name: 'ApprovalProjectRule', extend: FilterByBranch
+      # NOTE: This was added to avoid N+1 queries when we load list of MergeRequests
+      has_many :regular_or_any_approver_approval_rules, -> { regular_or_any_approver.order(rule_type: :desc, id: :asc) }, class_name: 'ApprovalProjectRule', extend: FilterByBranch
       has_many :external_status_checks, class_name: 'MergeRequests::ExternalStatusCheck'
       has_many :approval_merge_request_rules, through: :merge_requests, source: :approval_rules
       has_many :audit_events, as: :entity
@@ -661,6 +665,13 @@ module EE
       end
     end
 
+    def product_analytics_enabled?
+      return false unless licensed_feature_available?(:product_analytics)
+      return false unless ::Feature.enabled?(:cube_api_proxy, self)
+
+      true
+    end
+
     def repository_size_excess
       return 0 unless actual_size_limit.to_i > 0
 
@@ -729,6 +740,10 @@ module EE
       # Index the wiki repository after import of non-forked projects only, the project repository is indexed
       # in ProjectImportState so ElasticSearch will get project repository changes when mirrors are updated
       ElasticCommitIndexerWorker.perform_async(id, true) if use_elasticsearch? && !forked?
+    end
+
+    def elastic_namespace_ancestry
+      namespace.elastic_namespace_ancestry + "p#{id}-"
     end
 
     def log_geo_updated_events
@@ -1004,7 +1019,7 @@ module EE
     def user_defined_rules
       strong_memoize(:user_defined_rules) do
         # Loading the relation in order to memoize it loaded
-        approval_rules.regular_or_any_approver.order(rule_type: :desc, id: :asc).load
+        regular_or_any_approver_approval_rules.load
       end
     end
 

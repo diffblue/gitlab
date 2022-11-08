@@ -80,7 +80,8 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
   end
 
   shared_examples 'exposes iteration' do
-    let_it_be(:iteration) { create(:iteration, group: group) }
+    let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+    let_it_be(:iteration) { create(:iteration, iterations_cadence: cadence) }
     let_it_be(:issue_with_iteration) { create(:issue, project: group_project, iteration: iteration) }
 
     context 'with iteration feature' do
@@ -266,8 +267,8 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
       end
 
       context 'filtering by iteration' do
-        let_it_be(:iteration_1) { create(:iteration, :with_title, group: group, start_date: Date.current) }
-        let_it_be(:iteration_2) { create(:iteration, group: group) }
+        let_it_be(:iteration_1) { create(:iteration, :with_title, iterations_cadence: create(:iterations_cadence, group: group), start_date: Date.current) }
+        let_it_be(:iteration_2) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
         let_it_be(:iteration_1_issue) { create(:issue, project: group_project, iteration: iteration_1) }
         let_it_be(:iteration_2_issue) { create(:issue, project: group_project, iteration: iteration_2) }
         let_it_be(:no_iteration_issue) { create(:issue, project: group_project) }
@@ -337,8 +338,9 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
     it_behaves_like 'exposes iteration'
 
     context 'filtering by iteration' do
-      let_it_be(:iteration_1) { create(:iteration, group: group, start_date: Date.today) }
-      let_it_be(:iteration_2) { create(:iteration, group: group) }
+      let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+      let_it_be(:iteration_1) { create(:iteration, iterations_cadence: cadence, start_date: Date.today) }
+      let_it_be(:iteration_2) { create(:iteration, iterations_cadence: cadence) }
       let_it_be(:iteration_1_issue) { create(:issue, project: group_project, iteration: iteration_1) }
       let_it_be(:iteration_2_issue) { create(:issue, project: group_project, iteration: iteration_2) }
       let_it_be(:no_iteration_issue) { create(:issue, project: group_project) }
@@ -380,7 +382,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
       subgroup_1 = create(:group, parent: group)
       subgroup_1_project = create(:project, group: subgroup_1)
 
-      create(:issue, project: subgroup_1_project, iteration: create(:iteration, group: subgroup_1))
+      create(:issue, project: subgroup_1_project, iteration: create(:iteration, iterations_cadence: create(:iterations_cadence, group: subgroup_1)))
 
       get api("/groups/#{group.id}/issues", user)
 
@@ -389,7 +391,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
       subgroup_2 = create(:group, parent: group)
       subgroup_2_project = create(:project, group: subgroup_2)
 
-      create(:issue, project: subgroup_2_project, iteration: create(:iteration, group: subgroup_2))
+      create(:issue, project: subgroup_2_project, iteration: create(:iteration, iterations_cadence: create(:iterations_cadence, group: subgroup_2)))
 
       expect { get api("/groups/#{group.id}/issues", user) }.not_to exceed_query_limit(control_count)
     end
@@ -445,8 +447,9 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
     end
 
     context 'filtering by iteration' do
-      let_it_be(:iteration_1) { create(:iteration, group: group, start_date: Date.today) }
-      let_it_be(:iteration_2) { create(:iteration, group: group) }
+      let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+      let_it_be(:iteration_1) { create(:iteration, iterations_cadence: cadence, start_date: Date.today) }
+      let_it_be(:iteration_2) { create(:iteration, iterations_cadence: cadence) }
       let_it_be(:iteration_1_issue) { create(:issue, project: group_project, iteration: iteration_1) }
       let_it_be(:iteration_2_issue) { create(:issue, project: group_project, iteration: iteration_2) }
       let_it_be(:no_iteration_issue) { create(:issue, project: group_project) }

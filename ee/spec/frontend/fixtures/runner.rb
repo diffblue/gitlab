@@ -12,8 +12,8 @@ RSpec.describe 'Runner EE (JavaScript fixtures)' do
 
   let_it_be(:admin) { create(:admin) }
 
-  query_path = 'runner/graphql/'
-  fixtures_path = 'graphql/runner/'
+  query_path = 'ci/runner/graphql/'
+  fixtures_path = 'graphql/ci/runner/'
 
   describe 'as admin', GraphQL::Query do
     before do

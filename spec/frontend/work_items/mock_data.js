@@ -41,6 +41,7 @@ export const workItemQueryResponse = {
     workItem: {
       __typename: 'WorkItem',
       id: 'gid://gitlab/WorkItem/1',
+      iid: '1',
       title: 'Test',
       state: 'OPEN',
       description: 'description',
@@ -113,6 +114,7 @@ export const updateWorkItemMutationResponse = {
       workItem: {
         __typename: 'WorkItem',
         id: 'gid://gitlab/WorkItem/1',
+        iid: '1',
         title: 'Updated title',
         state: 'OPEN',
         description: 'description',
@@ -178,6 +180,19 @@ export const mockParent = {
   },
 };
 
+export const descriptionTextWithCheckboxes = `- [ ] todo 1\n- [ ] todo 2`;
+
+export const descriptionHtmlWithCheckboxes = `
+  <ul dir="auto" class="task-list" data-sourcepos"1:1-2:12">
+    <li class="task-list-item" data-sourcepos="1:1-1:11">
+      <input class="task-list-item-checkbox" type="checkbox"> todo 1
+    </li>
+    <li class="task-list-item" data-sourcepos="2:1-2:12">
+      <input class="task-list-item-checkbox" type="checkbox"> todo 2
+    </li>
+  </ul>
+`;
+
 export const workItemResponseFactory = ({
   canUpdate = false,
   canDelete = false,
@@ -193,12 +208,14 @@ export const workItemResponseFactory = ({
   allowsScopedLabels = false,
   lastEditedAt = null,
   lastEditedBy = null,
+  withCheckboxes = false,
   parent = mockParent.parent,
 } = {}) => ({
   data: {
     workItem: {
       __typename: 'WorkItem',
       id: 'gid://gitlab/WorkItem/1',
+      iid: 1,
       title: 'Updated title',
       state: 'OPEN',
       description: 'description',
@@ -224,9 +241,10 @@ export const workItemResponseFactory = ({
         {
           __typename: 'WorkItemWidgetDescription',
           type: 'DESCRIPTION',
-          description: 'some **great** text',
-          descriptionHtml:
-            '<p data-sourcepos="1:1-1:19" dir="auto">some <strong>great</strong> text</p>',
+          description: withCheckboxes ? descriptionTextWithCheckboxes : 'some **great** text',
+          descriptionHtml: withCheckboxes
+            ? descriptionHtmlWithCheckboxes
+            : '<p data-sourcepos="1:1-1:19" dir="auto">some <strong>great</strong> text</p>',
           lastEditedAt,
           lastEditedBy,
         },
@@ -331,6 +349,7 @@ export const createWorkItemMutationResponse = {
       workItem: {
         __typename: 'WorkItem',
         id: 'gid://gitlab/WorkItem/1',
+        iid: '1',
         title: 'Updated title',
         state: 'OPEN',
         description: 'description',
@@ -368,6 +387,7 @@ export const createWorkItemFromTaskMutationResponse = {
         __typename: 'WorkItem',
         description: 'New description',
         id: 'gid://gitlab/WorkItem/1',
+        iid: '1',
         title: 'Updated title',
         state: 'OPEN',
         confidential: false,
@@ -405,6 +425,7 @@ export const createWorkItemFromTaskMutationResponse = {
       newWorkItem: {
         __typename: 'WorkItem',
         id: 'gid://gitlab/WorkItem/1000000',
+        iid: '100',
         title: 'Updated title',
         state: 'OPEN',
         createdAt: '2022-08-03T12:41:54Z',
@@ -776,6 +797,7 @@ export const changeWorkItemParentMutationResponse = {
         },
         description: null,
         id: 'gid://gitlab/WorkItem/2',
+        iid: '2',
         state: 'OPEN',
         title: 'Foo',
         confidential: false,
@@ -1119,6 +1141,17 @@ export const projectMilestonesResponseWithNoMilestones = {
         __typename: 'MilestoneConnection',
       },
       __typename: 'Project',
+    },
+  },
+};
+
+export const projectWorkItemResponse = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Project/1',
+      workItems: {
+        nodes: [workItemQueryResponse.data.workItem],
+      },
     },
   },
 };

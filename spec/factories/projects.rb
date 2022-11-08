@@ -41,6 +41,7 @@ FactoryBot.define do
       environments_access_level { ProjectFeature::ENABLED }
       feature_flags_access_level { ProjectFeature::ENABLED }
       releases_access_level { ProjectFeature::ENABLED }
+      infrastructure_access_level { ProjectFeature::ENABLED }
 
       # we can't assign the delegated `#ci_cd_settings` attributes directly, as the
       # `#ci_cd_settings` relation needs to be created first
@@ -465,6 +466,10 @@ FactoryBot.define do
       issue = create(:issue, project: project)
       create(:design, project: project, issue: issue)
     end
+  end
+
+  trait :in_group do
+    namespace factory: [:group]
   end
 
   trait :in_subgroup do

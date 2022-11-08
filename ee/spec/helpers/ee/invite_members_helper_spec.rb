@@ -7,15 +7,6 @@ RSpec.describe EE::InviteMembersHelper do
   describe '#common_invite_modal_dataset', :saas do
     let(:project) { build(:project) }
 
-    let(:notification_attributes) do
-      {
-        'free_users_limit' => ::Namespaces::FreeUserCap.dashboard_limit,
-        'members_count' => 0,
-        'new_trial_registration_path' => new_trial_path,
-        'purchase_path' => group_billings_path(project.root_ancestor)
-      }
-    end
-
     before do
       stub_ee_application_setting(dashboard_limit_enabled: true)
     end
@@ -36,8 +27,17 @@ RSpec.describe EE::InviteMembersHelper do
       end
 
       it 'includes users limit notification data' do
+        result = {
+          'free_users_limit' => ::Namespaces::FreeUserCap.dashboard_limit,
+          'reached_limit' => true,
+          'close_to_dashboard_limit' => false,
+          'remaining_seats' => 0,
+          'new_trial_registration_path' => new_trial_path,
+          'purchase_path' => group_billings_path(project.root_ancestor),
+          'members_path' => group_usage_quotas_path(project.root_ancestor)
+        }
+
         users_limit_dataset = Gitlab::Json.parse(helper.common_invite_modal_dataset(project)[:users_limit_dataset])
-        result = notification_attributes.merge('members_path' => group_usage_quotas_path(project.root_ancestor))
 
         expect(users_limit_dataset).to eq(result)
       end

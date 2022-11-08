@@ -82,7 +82,7 @@ go build -o analyzer
 
 Video walkthrough of how Dependency Scanning analyzers are using [downstream pipeline](../../ci/pipelines/downstream_pipelines.md) feature to test analyzers using test projects:
 
-[![How Sec leverages the downstream pipeline feature of GitLab to test analyzers end to end](http://img.youtube.com/vi/KauRBlfUbDE/0.jpg)](http://www.youtube.com/watch?v=KauRBlfUbDE)
+[![How Sec leverages the downstream pipeline feature of GitLab to test analyzers end to end](https://img.youtube.com/vi/KauRBlfUbDE/0.jpg)](https://www.youtube.com/watch?v=KauRBlfUbDE)
 
 ### Testing local changes
 
@@ -117,6 +117,12 @@ To use Docker with `replace` in the `go.mod` file:
 1. Add a copy statement in the analyzer's `Dockerfile`: `COPY command /command`.
 1. Update the `replace` statement to make sure it matches the destination of the `COPY` statement in the step above:
 `replace gitlab.com/gitlab-org/security-products/analyzers/command/v3 => /command`
+
+## Analyzer scripts
+
+The [analyzer-scripts](https://gitlab.com/gitlab-org/secure/tools/analyzer-scripts) repository contains scripts that can be used to interact with most analyzers. They enable you to build, run, and debug analyzers in a GitLab CI-like environment, and are particularly useful for locally validating changes to an analyzer.
+
+For more information, refer to the [project README](https://gitlab.com/gitlab-org/secure/tools/analyzer-scripts/-/blob/master/README.md).
 
 ## Versioning and release process
 

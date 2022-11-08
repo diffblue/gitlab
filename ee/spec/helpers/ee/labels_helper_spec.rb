@@ -19,6 +19,37 @@ RSpec.describe LabelsHelper do
     end
   end
 
+  describe '#wrap_label_html' do
+    context 'when label is scoped label' do
+      before do
+        stub_licensed_features(scoped_labels: true)
+      end
+
+      let(:xss_label) do
+        build_stubbed(:label, name: 'xss::label', project: project, color: '"><img src=x onerror=prompt(1)>')
+      end
+
+      it 'html-escapes the label color' do
+        expect(wrap_label_html('xss', label: xss_label, small: false)).to include(html_escape(xss_label.color))
+          .and include('color:')
+      end
+    end
+
+    context 'when label is not scoped label' do
+      before do
+        stub_licensed_features(scoped_labels: false)
+      end
+
+      let(:xss_label) do
+        build_stubbed(:label, name: 'xsslabel', project: project, color: '"><img src=x onerror=prompt(1)>')
+      end
+
+      it 'does not include the color' do
+        expect(wrap_label_html('xss', label: xss_label, small: false)).not_to include('color:')
+      end
+    end
+  end
+
   describe '#label_dropdown_data' do
     subject { label_dropdown_data(edit_context, opts) }
 

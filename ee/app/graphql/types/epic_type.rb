@@ -101,7 +101,8 @@ module Types
         null: true, description: 'Timestamp of when the epic was updated.'
 
     field :children, ::Types::EpicType.connection_type,
-      null: true, resolver: ::Resolvers::EpicsResolver,
+      null: true,
+      resolver: ::Resolvers::Epics::ChildrenResolver,
       description: 'Children (sub-epics) of the epic.'
 
     field :labels, Types::LabelType.connection_type,
@@ -217,11 +218,11 @@ module Types
     end
 
     def descendant_counts
-      Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, COUNT)
+      Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, COUNT, epic: object)
     end
 
     def descendant_weight_sum
-      Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, WEIGHT_SUM)
+      Gitlab::Graphql::Aggregations::Epics::LazyEpicAggregate.new(context, object.id, WEIGHT_SUM, epic: object)
     end
 
     def health_status

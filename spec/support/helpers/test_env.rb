@@ -11,6 +11,8 @@ module TestEnv
   # When developing the seed repository, comment out the branch you will modify.
   BRANCH_SHA = {
     'signed-commits' => 'c7794c1',
+    'gpg-signed' => '8a852d5',
+    'x509-signed' => 'a4df3c8',
     'not-merged-branch' => 'b83d6e3',
     'branch-merged' => '498214d',
     'empty-branch' => '7efb185',
@@ -43,7 +45,7 @@ module TestEnv
     'video' => '8879059',
     'crlf-diff' => '5938907',
     'conflict-start' => '824be60',
-    'conflict-resolvable' => '1450cd6',
+    'conflict-resolvable' => '1450cd639e0bc6721eb02800169e464f212cde06',
     'conflict-binary-file' => '259a6fb',
     'conflict-contains-conflict-markers' => '78a3086',
     'conflict-missing-side' => 'eb227b3',

@@ -3,7 +3,7 @@
 RSpec.shared_examples 'a model with a requirement issue association' do
   describe 'requirement issue association' do
     subject do
-      requirement = build(:work_item, :requirement).requirement
+      requirement = build(:work_item, :requirement, project: requirement_issue_arg.project).requirement
       requirement.requirement_issue = requirement_issue_arg
 
       requirement

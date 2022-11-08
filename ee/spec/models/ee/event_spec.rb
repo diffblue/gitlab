@@ -54,6 +54,8 @@ RSpec.describe Event do
       end
     end
 
+    RSpec::Matchers.define_negated_matcher :not_have_access_to, :have_access_to
+
     shared_examples 'visible to group members only' do
       it 'is not visible to other users', :aggregate_failures do
         expect(event).not_to be_visible_to(non_member)
@@ -79,6 +81,114 @@ RSpec.describe Event do
     shared_examples 'visible to everybody' do
       it 'is visible to other users', :aggregate_failures do
         expect(users).to all(have_access_to(event))
+      end
+    end
+
+    context 'vulnerability event' do
+      let(:authorized_users) { [author, member] }
+      let(:unauthorized_users) { [non_member, reporter, guest, admin] }
+
+      before do
+        project.add_owner(author)
+        project.add_developer(member)
+        project.add_reporter(reporter)
+        project.add_guest(guest)
+        stub_licensed_features(security_dashboard: true)
+      end
+
+      context 'on public project' do
+        let_it_be(:project) { create(:project) }
+        let_it_be(:target) { create(:vulnerability, project: project, author: author) }
+
+        let_it_be(:event) { described_class.new(project: project, target: target, author: author) }
+
+        context 'for standard users' do
+          it 'is visible only to authorized users' do
+            expect(authorized_users).to all(have_access_to(event))
+            expect(unauthorized_users).to all(not_have_access_to(event))
+          end
+        end
+
+        context 'for admin in admin mode', :enable_admin_mode do
+          it 'is visible to admin' do
+            expect(admin).to have_access_to(event)
+          end
+        end
+      end
+
+      context 'on private project' do
+        let_it_be(:project) { create(:project, :private) }
+        let_it_be(:target) { create(:vulnerability, project: project, author: author) }
+
+        let_it_be(:event) { described_class.new(project: project, target: target, author: author) }
+
+        context 'for standard users' do
+          it 'is visible only to authorized users' do
+            expect(authorized_users).to all(have_access_to(event))
+            expect(unauthorized_users).to all(not_have_access_to(event))
+          end
+        end
+
+        context 'for admin in admin mode', :enable_admin_mode do
+          it 'is visible to admin' do
+            expect(admin).to have_access_to(event)
+          end
+        end
+      end
+    end
+
+    context 'vulnerability note event' do
+      let(:authorized_users) { [author, member] }
+      let(:unauthorized_users) { [non_member, reporter, guest, admin] }
+
+      before do
+        project.add_owner(author)
+        project.add_developer(member)
+        project.add_reporter(reporter)
+        project.add_guest(guest)
+        stub_licensed_features(security_dashboard: true)
+      end
+
+      context 'on public project' do
+        let_it_be(:project) { create(:project) }
+        let_it_be(:vulnerability) { create(:vulnerability, project: project, author: author) }
+        let_it_be(:target) { create(:note, noteable: vulnerability, project: project) }
+
+        let_it_be(:event) { described_class.new(project: project, target: target, author: author) }
+
+        context 'for standard users' do
+          it 'is visible only to authorized users' do
+            expect(authorized_users).to all(have_access_to(event))
+            expect(unauthorized_users).to all(not_have_access_to(event))
+          end
+        end
+
+        context 'for admin in admin mode', :enable_admin_mode do
+          it 'is visible to admin' do
+            expect(admin).to have_access_to(event)
+          end
+        end
+      end
+
+      context 'on private project' do
+        let_it_be(:project) { create(:project, :private) }
+        let_it_be(:vulnerability) { create(:vulnerability, project: project, author: author) }
+        let_it_be(:target) { create(:note, noteable: vulnerability, project: project) }
+
+        let_it_be(:event) { described_class.new(project: project, target: target, author: author) }
+
+        context 'for standard users' do
+          it 'is visible only to authorized users' do
+            expect(authorized_users).to all(have_access_to(event))
+            expect(unauthorized_users).to all(not_have_access_to(event))
+          end
+        end
+
+        context 'for admin in admin mode', :enable_admin_mode do
+          it 'is visible to admin' do
+            expect(admin).to have_access_to(event)
+          end
+        end
       end
     end
 

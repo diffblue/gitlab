@@ -44,6 +44,7 @@ RSpec.describe 'epics swimlanes filtering', :js do
 
   context 'filtering' do
     before do
+      stub_feature_flags(apollo_boards: false)
       allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(200)
       stub_licensed_features(epics: true, swimlanes: true)
 

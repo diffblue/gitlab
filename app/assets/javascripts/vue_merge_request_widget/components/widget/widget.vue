@@ -6,12 +6,14 @@ import { sprintf, __ } from '~/locale';
 import Poll from '~/lib/utils/poll';
 import ActionButtons from '../action_buttons.vue';
 import { EXTENSION_ICONS } from '../../constants';
+import { createTelemetryHub } from '../extensions/telemetry';
 import ContentRow from './widget_content_row.vue';
 import DynamicContent from './dynamic_content.vue';
 import StatusIcon from './status_icon.vue';
 
 const FETCH_TYPE_COLLAPSED = 'collapsed';
 const FETCH_TYPE_EXPANDED = 'expanded';
+const WIDGET_PREFIX = 'Widget';
 
 export default {
   components: {
@@ -88,6 +90,13 @@ export default {
     widgetName: {
       type: String,
       required: true,
+      // see https://docs.gitlab.com/ee/development/fe_guide/merge_request_widget_extensions.html#add-new-widgets
+      validator: (val) => val.startsWith(WIDGET_PREFIX),
+    },
+    telemetry: {
+      type: Boolean,
+      required: false,
+      default: true,
     },
   },
   data() {
@@ -98,6 +107,7 @@ export default {
       isLoadingExpandedContent: false,
       summaryError: null,
       contentError: null,
+      telemetryHub: null,
     };
   },
   computed: {
@@ -113,8 +123,14 @@ export default {
       this.$emit('is-loading', newValue);
     },
   },
+  created() {
+    if (this.telemetry) {
+      this.telemetryHub = createTelemetryHub(this.widgetName);
+    }
+  },
   async mounted() {
     this.isLoading = true;
+    this.telemetryHub?.viewed();
 
     try {
       await this.fetch(this.fetchCollapsedData, FETCH_TYPE_COLLAPSED);
@@ -125,12 +141,21 @@ export default {
     this.isLoading = false;
   },
   methods: {
+    onActionClick(action) {
+      if (action.fullReport) {
+        this.telemetryHub?.fullReportClicked();
+      }
+    },
     toggleCollapsed() {
       this.isCollapsed = !this.isCollapsed;
 
-      if (this.isExpandedForTheFirstTime && typeof this.fetchExpandedData === 'function') {
-        this.isExpandedForTheFirstTime = false;
-        this.fetchExpandedContent();
+      if (this.isExpandedForTheFirstTime) {
+        this.telemetryHub?.expanded({ type: this.summaryStatusIcon });
+
+        if (typeof this.fetchExpandedData === 'function') {
+          this.isExpandedForTheFirstTime = false;
+          this.fetchExpandedContent();
+        }
       }
     },
     async fetchExpandedContent() {
@@ -208,6 +233,7 @@ export default {
           v-if="actionButtons.length > 0"
           :widget="widgetName"
           :tertiary-buttons="actionButtons"
+          @clickedAction="onActionClick"
         />
         <div
           v-if="isCollapsible"

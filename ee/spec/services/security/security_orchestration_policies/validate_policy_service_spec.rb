@@ -31,14 +31,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
         let(:policy_type) { nil }
 
         it { expect(result[:status]).to eq(:error) }
-        it { expect(result[:message]).to eq('Invalid policy type') }
+        it { expect(result[:message]).to eq('Invalid policy') }
+        it { expect(result[:details]).to match_array(['Invalid policy type']) }
       end
 
       context 'when policy type is invalid' do
         let(:policy_type) { 'invalid_policy_type' }
 
         it { expect(result[:status]).to eq(:error) }
-        it { expect(result[:message]).to eq('Invalid policy type') }
+        it { expect(result[:message]).to eq('Invalid policy') }
+        it { expect(result[:details]).to match_array(['Invalid policy type']) }
       end
 
       context 'when policy type is valid' do
@@ -51,14 +53,16 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
         let(:name) { nil }
 
         it { expect(result[:status]).to eq(:error) }
-        it { expect(result[:message]).to eq('Empty policy name') }
+        it { expect(result[:message]).to eq('Invalid policy') }
+        it { expect(result[:details]).to match_array(['Empty policy name']) }
       end
 
       context 'when policy name is invalid' do
         let(:name) { '' }
 
         it { expect(result[:status]).to eq(:error) }
-        it { expect(result[:message]).to eq('Empty policy name') }
+        it { expect(result[:message]).to eq('Invalid policy') }
+        it { expect(result[:details]).to match_array(['Empty policy name']) }
       end
 
       context 'when policy name is valid' do
@@ -102,14 +106,14 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
 
           let(:branches) { nil }
 
-          where(:policy_type, :status, :message) do
+          where(:policy_type, :status, :details) do
             'scan_result_policy'    | :success | nil
-            'scan_execution_policy' | :error   | 'Policy cannot be enabled without branch information'
+            'scan_execution_policy' | :error   | ['Policy cannot be enabled without branch information']
           end
 
           with_them do
             it { expect(result[:status]).to eq(status) }
-            it { expect(result[:message]).to eq(message) }
+            it { expect(result[:details]).to eq(details) }
 
             it_behaves_like 'checks only if policy is enabled'
           end
@@ -170,7 +174,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
           let(:branches) { ['non-exising-branch'] }
 
           it { expect(result[:status]).to eq(:error) }
-          it { expect(result[:message]).to eq('Policy cannot be enabled for non-existing branches (non-exising-branch)') }
+          it { expect(result[:message]).to eq('Invalid policy') }
+          it { expect(result[:details]).to match_array(['Policy cannot be enabled for non-existing branches (non-exising-branch)']) }
 
           it_behaves_like 'checks only if policy is enabled'
         end
@@ -186,7 +191,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ValidatePolicyService do
             let(:branches) { ['master', 'production-*', 'test-*'] }
 
             it { expect(result[:status]).to eq(:error) }
-            it { expect(result[:message]).to eq('Policy cannot be enabled for non-existing branches (production-*, test-*)') }
+            it { expect(result[:message]).to eq('Invalid policy') }
+            it { expect(result[:details]).to match_array(['Policy cannot be enabled for non-existing branches (production-*, test-*)']) }
 
             it_behaves_like 'checks only if policy is enabled'
           end

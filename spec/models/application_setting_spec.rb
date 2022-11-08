@@ -17,6 +17,14 @@ RSpec.describe ApplicationSetting do
   it { expect(setting.uuid).to be_present }
   it { expect(setting).to have_db_column(:auto_devops_enabled) }
 
+  describe 'default values' do
+    subject(:setting) { described_class.new }
+
+    it { expect(setting.id).to eq(1) }
+    it { expect(setting.repository_storages_weighted).to eq({}) }
+    it { expect(setting.kroki_formats).to eq({}) }
+  end
+
   describe 'validations' do
     let(:http)  { 'http://example.com' }
     let(:https) { 'https://example.com' }
@@ -1120,6 +1128,11 @@ RSpec.describe ApplicationSetting do
         it { is_expected.not_to allow_value(ftp).for(:error_tracking_api_url) }
         it { is_expected.to validate_presence_of(:error_tracking_api_url) }
       end
+    end
+
+    context 'for default_preferred_language' do
+      it { is_expected.to allow_value(*Gitlab::I18n.available_locales).for(:default_preferred_language) }
+      it { is_expected.not_to allow_value(nil, '', 'invalid_locale').for(:default_preferred_language) }
     end
   end
 

@@ -177,7 +177,7 @@ RSpec.describe Geo::DesignRepositorySyncService do
     context 'with geo_use_clone_on_first_sync flag disabled' do
       before do
         stub_feature_flags(geo_use_clone_on_first_sync: false)
-        allow(subject).to receive(:redownload?).and_return(true)
+        allow(subject).to receive(:should_be_redownloaded?).and_return(true)
       end
 
       it 'creates a new repository and fetches with JWT credentials' do
@@ -201,7 +201,7 @@ RSpec.describe Geo::DesignRepositorySyncService do
     context 'with geo_use_clone_on_first_sync flag enabled' do
       before do
         stub_feature_flags(geo_use_clone_on_first_sync: true)
-        allow(subject).to receive(:redownload?).and_return(true)
+        allow(subject).to receive(:should_be_redownloaded?).and_return(true)
       end
 
       it 'clones a new repository with JWT credentials' do

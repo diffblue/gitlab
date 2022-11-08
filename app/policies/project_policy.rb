@@ -195,8 +195,6 @@ class ProjectPolicy < BasePolicy
   with_scope :subject
   condition(:packages_disabled) { !@subject.packages_enabled }
 
-  condition(:work_items_enabled, scope: :subject) { project&.work_items_feature_flag_enabled? }
-
   features = %w[
     merge_requests
     issues
@@ -213,6 +211,7 @@ class ProjectPolicy < BasePolicy
     environments
     feature_flags
     releases
+    infrastructure
   ]
 
   features.each do |f|
@@ -255,7 +254,6 @@ class ProjectPolicy < BasePolicy
 
     enable :change_namespace
     enable :change_visibility_level
-    enable :rename_project
     enable :remove_project
     enable :archive_project
     enable :remove_fork_project
@@ -303,7 +301,7 @@ class ProjectPolicy < BasePolicy
 
   rule { can?(:create_issue) }.enable :create_work_item
 
-  rule { can?(:create_issue) & work_items_enabled }.enable :create_task
+  rule { can?(:create_issue) }.enable :create_task
 
   # These abilities are not allowed to admins that are not members of the project,
   # that's why they are defined separately.
@@ -409,6 +407,14 @@ class ProjectPolicy < BasePolicy
     prevent(*create_read_update_admin_destroy(:alert_management_alert))
   end
 
+  rule { split_operations_visibility_permissions & infrastructure_disabled }.policy do
+    prevent(*create_read_update_admin_destroy(:terraform_state))
+    prevent(*create_read_update_admin_destroy(:cluster))
+    prevent(:read_pod_logs)
+    prevent(:read_prometheus)
+    prevent(:admin_project_google_cloud)
+  end
+
   rule { can?(:metrics_dashboard) }.policy do
     enable :read_prometheus
     enable :read_deployment
@@ -490,6 +496,7 @@ class ProjectPolicy < BasePolicy
     enable :push_to_delete_protected_branch
     enable :update_snippet
     enable :admin_snippet
+    enable :rename_project
     enable :admin_project_member
     enable :admin_note
     enable :admin_wiki
@@ -530,6 +537,7 @@ class ProjectPolicy < BasePolicy
     enable :read_web_hooks
     enable :read_upload
     enable :destroy_upload
+    enable :admin_incident_management_timeline_event_tag
   end
 
   rule { public_project & metrics_dashboard_allowed }.policy do
@@ -827,6 +835,8 @@ class ProjectPolicy < BasePolicy
 
   rule { can?(:admin_project_member) }.policy do
     enable :import_project_members_from_another_project
+    # ability to read, approve or reject member access requests of other users
+    enable :admin_member_access_request
   end
 
   rule { registry_enabled & can?(:admin_container_image) }.policy do
@@ -835,6 +845,10 @@ class ProjectPolicy < BasePolicy
 
   rule { packages_enabled & can?(:admin_package) }.policy do
     enable :view_package_registry_project_settings
+  end
+
+  rule { can?(:read_project) }.policy do
+    enable :read_incident_management_timeline_event_tag
   end
 
   private

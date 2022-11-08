@@ -136,6 +136,25 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer do
             expect(described_class).to be_group_access_restricted(sub_group, user: user)
           end
         end
+
+        context 'for a project' do
+          it 'restricts access' do
+            create(:project, group: root_group)
+
+            expect(described_class).to be_group_access_restricted(root_group, user: user, for_project: true)
+          end
+        end
+      end
+
+      context 'when user is a deploy token' do
+        it 'allows access' do
+          deploy_token = create(:deploy_token)
+
+          # Deploy Tokens are considered sessionless
+          Gitlab::Session.with_session(nil) do
+            expect(described_class).not_to be_group_access_restricted(root_group, user: deploy_token)
+          end
+        end
       end
     end
 
@@ -143,22 +162,32 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer do
       let(:root_group) { create(:group, saml_provider: create(:saml_provider, enabled: true, enforced_sso: false)) }
       let(:user) { create(:user) }
 
-      context 'when the user has a SAML identity' do
-        before do
-          create(:group_saml_identity, user: user, saml_provider: root_group.saml_provider)
-        end
-
-        it 'access is restricted for a group' do
+      shared_examples 'restricted access for all groups in the hierarchy' do
+        it 'restricts access for a group' do
           expect(described_class).to be_group_access_restricted(root_group, user: user)
         end
 
-        it 'access is restricted for a subgroup' do
+        it 'restricts access for a subgroup' do
           sub_group = create(:group, parent: root_group)
 
           expect(described_class).to be_group_access_restricted(sub_group, user: user)
         end
 
-        context 'when the transparent_sso_enforcement feature flag is disabled' do
+        it 'restricts access for a project' do
+          create(:project, group: root_group)
+
+          expect(described_class).to be_group_access_restricted(root_group, user: user, for_project: true)
+        end
+      end
+
+      context 'when the user has a SAML identity' do
+        before do
+          create(:group_saml_identity, user: user, saml_provider: root_group.saml_provider)
+        end
+
+        it_behaves_like 'restricted access for all groups in the hierarchy'
+
+        context 'when the transparent_sso_enforcement feature flag is disabled globally' do
           before do
             stub_feature_flags(transparent_sso_enforcement: false)
           end
@@ -171,6 +200,14 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer do
             sub_group = create(:group, parent: root_group)
 
             expect(described_class).not_to be_group_access_restricted(sub_group, user: user)
+          end
+
+          context 'when the transparent_sso_enforcement feature flag is enabled for a top-level group' do
+            before do
+              stub_feature_flags(transparent_sso_enforcement: root_group)
+            end
+
+            it_behaves_like 'restricted access for all groups in the hierarchy'
           end
         end
       end

@@ -109,6 +109,14 @@ RSpec.describe EE::Issuable do
     end
   end
 
+  describe '#supports_confidentiality?' do
+    let(:issuable) { build_stubbed(:epic) }
+
+    subject { issuable.supports_confidentiality? }
+
+    it { is_expected.to be_truthy }
+  end
+
   describe '#escalation_policies_available?' do
     where(:issuable_type, :oncall_schedules_enabled, :escalation_policies_enabled, :available) do
       [

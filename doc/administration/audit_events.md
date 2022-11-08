@@ -115,7 +115,7 @@ From there, you can see the following actions:
 - Instance administrator started or stopped impersonation of a group member. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/300961) in GitLab 14.8.
 - Group deploy token was successfully created, revoked, or deleted. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/353452) in GitLab 14.9.
 - Failed attempt to create a group deploy token. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/353452) in GitLab 14.9.
-- [IP restrictions](../user/group/access_and_permissions.md#restrict-group-access-by-ip-address) changed. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/358986) in GitLab 15.0.
+- [IP restrictions](../user/group/access_and_permissions.md#restrict-access-to-groups-by-ip-address) changed. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/358986) in GitLab 15.0.
 - Changes to push rules. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/227629) in GitLab 15.0.
 - [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/356152) in GitLab 15.1, changes to the following merge request approvals settings:
   - Prevent approval by author.
@@ -124,6 +124,7 @@ From there, you can see the following actions:
   - Require user password to approve.
   - Remove all approvals when commits are added to the source branch.
 - Changes to streaming audit destination custom HTTP headers. [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/366350) in GitLab 15.3.
+- Group had a security policy project linked, changed, or unlinked. ([Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377877) in GitLab 15.6)
 
 Group events can also be accessed via the [Group Audit Events API](../api/audit_events.md#group-audit-events)
 
@@ -194,6 +195,7 @@ From there, you can see the following actions:
 - Squash commit message template is updated ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/355805) in GitLab 15.0)
 - Default description template for merge requests is updated ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/355805) in GitLab 15.0)
 - Project was scheduled for deletion due to inactivity ([introduced](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/85689) in GitLab 15.0)
+- Project had a security policy project linked, changed, or unlinked ([introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/377877) in GitLab 15.6)
 
 Project events can also be accessed via the [Project Audit Events API](../api/audit_events.md#project-audit-events).
 

@@ -5,12 +5,15 @@ require 'spec_helper'
 RSpec.describe Banzai::ReferenceParser::IterationParser do
   include ReferenceParserHelpers
 
-  let(:parent) { create(:group) }
-  let(:group) { create(:group, parent: parent) }
-  let(:project) { create(:project, :public, group: group) }
-  let(:user) { create(:user) }
-  let(:iteration1) { create(:iteration, group: group) }
-  let(:iteration2) { create(:iteration, group: parent) }
+  let_it_be(:parent) { create(:group) }
+  let_it_be(:group) { create(:group, parent: parent) }
+  let_it_be(:project) { create(:project, :public, group: group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:cadence1) { create(:iterations_cadence, group: group) }
+  let_it_be(:cadence2) { create(:iterations_cadence, group: parent) }
+  let_it_be(:iteration1) { create(:iteration, iterations_cadence: cadence1) }
+  let_it_be(:iteration2) { create(:iteration, iterations_cadence: cadence2) }
+
   let(:link) { empty_html_link }
 
   subject { described_class.new(context) }

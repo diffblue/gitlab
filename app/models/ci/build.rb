@@ -218,10 +218,6 @@ module Ci
         preload(:job_artifacts_archive, :job_artifacts, :tags, project: [:namespace])
       end
 
-      def extra_accessors
-        []
-      end
-
       def clone_accessors
         %i[pipeline project ref tag options name
            allow_failure stage stage_idx trigger_request
@@ -445,9 +441,10 @@ module Ci
       manual? && starts_environment? && deployment&.blocked?
     end
 
-    def prevent_rollback_deployment?
-      strong_memoize(:prevent_rollback_deployment) do
+    def outdated_deployment?
+      strong_memoize(:outdated_deployment) do
         starts_environment? &&
+          incomplete? &&
           project.ci_forward_deployment_enabled? &&
           deployment&.older_than_last_successful_deployment?
       end
@@ -1043,7 +1040,8 @@ module Ci
       # TODO: Have `debug_mode?` check against data on sent back from runner
       # to capture all the ways that variables can be set.
       # See (https://gitlab.com/gitlab-org/gitlab/-/issues/290955)
-      variables['CI_DEBUG_TRACE']&.value&.casecmp('true') == 0
+      variables['CI_DEBUG_TRACE']&.value&.casecmp('true') == 0 ||
+        variables['CI_DEBUG_SERVICES']&.value&.casecmp('true') == 0
     end
 
     def drop_with_exit_code!(failure_reason, exit_code)

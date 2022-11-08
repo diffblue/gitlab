@@ -36,6 +36,7 @@ module EE
         attrs = super
         attrs.unshift(:weight) if project.feature_available?(:issue_weights)
         attrs.unshift(:epic_id) if project.group&.feature_available?(:epics)
+        attrs.unshift(:sprint_id) if project.group&.feature_available?(:iterations)
 
         attrs
       end

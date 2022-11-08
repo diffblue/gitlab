@@ -13,26 +13,26 @@ RSpec.describe Gitlab::Geo::LogCursor::Logger, :geo do
   end
 
   it 'logs an info event' do
-    expect(::Gitlab::Logger).to receive(:info).with(data)
+    expect(::Gitlab::JsonLogger).to receive(:info).with(data)
 
     logger.info('Test')
   end
 
   it 'logs a warning event' do
-    expect(::Gitlab::Logger).to receive(:warn).with(data)
+    expect(::Gitlab::JsonLogger).to receive(:warn).with(data)
 
     logger.warn('Test')
   end
 
   it 'logs an error event' do
-    expect(::Gitlab::Logger).to receive(:error).with(data)
+    expect(::Gitlab::JsonLogger).to receive(:error).with(data)
 
     logger.error('Test')
   end
 
   describe '.event_info' do
     it 'logs an info event' do
-      expect(::Gitlab::Logger).to receive(:info).with(
+      expect(::Gitlab::JsonLogger).to receive(:info).with(
         {
           pid: 111,
           class: "LoggerSpec",

@@ -8,7 +8,6 @@ import JobArtifactsTable from '~/artifacts/components/job_artifacts_table.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import getJobArtifactsQuery from '~/artifacts/graphql/queries/get_job_artifacts.query.graphql';
-import destroyArtifactMutation from '~/artifacts/graphql/mutations/destroy_artifact.mutation.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { ARCHIVE_FILE_TYPE, JOBS_PER_PAGE, I18N_FETCH_ERROR } from '~/artifacts/constants';
 import { totalArtifactsSizeForJob } from '~/artifacts/utils';
@@ -60,10 +59,14 @@ describe('JobArtifactsTable component', () => {
     data: { project: { jobs: { nodes: enoughJobsToPaginate } } },
   };
 
+  const job = getJobArtifactsResponse.data.project.jobs.nodes[0];
+  const archiveArtifact = job.artifacts.nodes.find(
+    (artifact) => artifact.fileType === ARCHIVE_FILE_TYPE,
+  );
+
   const createComponent = (
     handlers = {
       getJobArtifactsQuery: jest.fn().mockResolvedValue(getJobArtifactsResponse),
-      destroyArtifactMutation: jest.fn(),
     },
     data = {},
   ) => {
@@ -71,7 +74,6 @@ describe('JobArtifactsTable component', () => {
     wrapper = mountExtended(JobArtifactsTable, {
       apolloProvider: createMockApollo([
         [getJobArtifactsQuery, requestHandlers.getJobArtifactsQuery],
-        [destroyArtifactMutation, requestHandlers.destroyArtifactMutation],
       ]),
       provide: { projectPath: 'project/path' },
       data() {
@@ -109,11 +111,6 @@ describe('JobArtifactsTable component', () => {
   });
 
   describe('job details', () => {
-    const job = getJobArtifactsResponse.data.project.jobs.nodes[0];
-    const archiveArtifact = job.artifacts.nodes.find(
-      (artifact) => artifact.fileType === ARCHIVE_FILE_TYPE,
-    );
-
     beforeEach(async () => {
       createComponent();
 
@@ -163,10 +160,66 @@ describe('JobArtifactsTable component', () => {
     it('shows the created time', () => {
       expect(findCreated().text()).toBe('5 years ago');
     });
+  });
 
-    it('shows the download, browse, and delete buttons', () => {
+  describe('download button', () => {
+    it('is a link to the download path for the archive artifact', async () => {
+      createComponent();
+
+      await waitForPromises();
+
       expect(findDownloadButton().attributes('href')).toBe(archiveArtifact.downloadPath);
+    });
+
+    it('is disabled when there is no download path', async () => {
+      const jobWithoutDownloadPath = {
+        ...job,
+        archive: { downloadPath: null },
+      };
+
+      createComponent(
+        { getJobArtifactsQuery: jest.fn() },
+        { jobArtifacts: { nodes: [jobWithoutDownloadPath] } },
+      );
+
+      await waitForPromises();
+
+      expect(findDownloadButton().attributes('disabled')).toBe('disabled');
+    });
+  });
+
+  describe('browse button', () => {
+    it('is a link to the browse path for the job', async () => {
+      createComponent();
+
+      await waitForPromises();
+
+      expect(findBrowseButton().attributes('href')).toBe(job.browseArtifactsPath);
+    });
+
+    it('is disabled when there is no browse path', async () => {
+      const jobWithoutBrowsePath = {
+        ...job,
+        browseArtifactsPath: null,
+      };
+
+      createComponent(
+        { getJobArtifactsQuery: jest.fn() },
+        { jobArtifacts: { nodes: [jobWithoutBrowsePath] } },
+      );
+
+      await waitForPromises();
+
       expect(findBrowseButton().attributes('disabled')).toBe('disabled');
+    });
+  });
+
+  describe('delete button', () => {
+    it('shows a disabled delete button for now (coming soon)', async () => {
+      createComponent();
+
+      await waitForPromises();
+
       expect(findDeleteButton().attributes('disabled')).toBe('disabled');
     });
   });

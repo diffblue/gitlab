@@ -579,7 +579,7 @@ Settings.cron_jobs['cleanup_dependency_proxy_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['cleanup_dependency_proxy_worker']['cron'] ||= '20 3,15 * * *'
 Settings.cron_jobs['cleanup_dependency_proxy_worker']['job_class'] = 'DependencyProxy::CleanupDependencyProxyWorker'
 Settings.cron_jobs['cleanup_package_registry_worker'] ||= Settingslogic.new({})
-Settings.cron_jobs['cleanup_package_registry_worker']['cron'] ||= '20 0,12 * * *'
+Settings.cron_jobs['cleanup_package_registry_worker']['cron'] ||= '20 * * * *'
 Settings.cron_jobs['cleanup_package_registry_worker']['job_class'] = 'Packages::CleanupPackageRegistryWorker'
 Settings.cron_jobs['x509_issuer_crl_check_worker'] ||= Settingslogic.new({})
 Settings.cron_jobs['x509_issuer_crl_check_worker']['cron'] ||= '30 1 * * *'
@@ -1023,6 +1023,7 @@ Settings.monitoring.sidekiq_health_checks['port'] ||= 8092
 
 Settings.monitoring['web_exporter'] ||= Settingslogic.new({})
 Settings.monitoring.web_exporter['enabled'] ||= false
+Settings.monitoring.web_exporter['log_enabled'] ||= true
 Settings.monitoring.web_exporter['address'] ||= 'localhost'
 Settings.monitoring.web_exporter['port'] ||= 8083
 Settings.monitoring.web_exporter['tls_enabled'] ||= false

@@ -3,8 +3,20 @@
 module Projects
   class RegisterSuggestedReviewersProjectService < BaseProjectService
     def execute
-      return unless project.suggested_reviewers_available? && project.suggested_reviewers_enabled
+      unless project_registration_available?
+        return ServiceResponse.error(
+          message: 'Suggested Reviewers feature is unavailable',
+          reason: :feature_unavailable
+        )
+      end
 
+      token_response = create_access_token
+      if token_response.error?
+        return ServiceResponse.error(message: 'Failed to create access token',
+                                     reason: :token_creation_failed)
+      end
+
+      access_token = token_response.payload[:access_token].token
       registration_input = {
         project_id: project.id,
         project_name: project.name,
@@ -12,20 +24,30 @@ module Projects
         access_token: access_token
       }
       result = ::Gitlab::AppliedMl::SuggestedReviewers::Client.new.register_project(**registration_input)
-      success(result)
+
+      ServiceResponse.success(payload: result)
+    rescue Gitlab::AppliedMl::Errors::ProjectAlreadyExists
+      ServiceResponse.error(message: 'Project is already registered', reason: :project_already_registered)
+    rescue Gitlab::AppliedMl::Errors::ResourceNotAvailable
+      ServiceResponse.error(message: 'Failed to register project', reason: :client_request_failed)
     end
 
     private
 
-    def access_token
+    def project_registration_available?
+      project.suggested_reviewers_available? &&
+        project.suggested_reviewers_enabled &&
+        current_user.can?(:create_resource_access_tokens, project)
+    end
+
+    def create_access_token
       token_params = {
         name: 'Suggested reviewers token',
         scopes: [Gitlab::Auth::READ_API_SCOPE],
         expires_at: 95.days.from_now
       }
 
-      token_response = ResourceAccessTokens::CreateService.new(current_user, project, token_params).execute
-      token_response.payload[:access_token].token
+      ResourceAccessTokens::CreateService.new(current_user, project, token_params).execute
     end
   end
 end

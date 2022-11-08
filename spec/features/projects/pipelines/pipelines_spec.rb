@@ -342,11 +342,18 @@ RSpec.describe 'Pipelines', :js do
         end
 
         context 'when user played a delayed job immediately' do
+          let(:manual_action_selector) { '[data-testid="pipelines-manual-actions-dropdown"]' }
+
           before do
-            find('[data-testid="pipelines-manual-actions-dropdown"]').click
+            find(manual_action_selector).click
             accept_gl_confirm do
               click_button 'delayed job 1'
             end
+
+            # Wait for UI to transition to ensure a request has been made
+            within(manual_action_selector) { find('.gl-spinner') }
+            within(manual_action_selector) { find('[data-testid="play-icon"]') }
+
             wait_for_requests
           end
 
@@ -673,7 +680,7 @@ RSpec.describe 'Pipelines', :js do
           end
 
           context 'when variables are specified' do
-            it 'creates a new pipeline with variables', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375552' do
+            it 'creates a new pipeline with variables' do
               page.within(find("[data-testid='ci-variable-row']")) do
                 find("[data-testid='pipeline-form-ci-variable-key']").set('key_name')
                 find("[data-testid='pipeline-form-ci-variable-value']").set('value')
@@ -701,7 +708,7 @@ RSpec.describe 'Pipelines', :js do
 
           it { expect(page).to have_content('Missing CI config file') }
 
-          it 'creates a pipeline after first request failed and a valid gitlab-ci.yml file is available when trying again', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375552' do
+          it 'creates a pipeline after first request failed and a valid gitlab-ci.yml file is available when trying again' do
             stub_ci_pipeline_to_return_yaml_file
 
             expect do
@@ -715,6 +722,7 @@ RSpec.describe 'Pipelines', :js do
 
       # Run Pipeline form with REST endpoints
       # TODO: Clean up tests when run_pipeline_graphql is enabled
+      # Issue https://gitlab.com/gitlab-org/gitlab/-/issues/372310
       context 'with feature flag disabled' do
         before do
           stub_feature_flags(run_pipeline_graphql: false)

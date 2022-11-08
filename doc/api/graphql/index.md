@@ -85,7 +85,7 @@ process would pose significant risk.
 ### Deprecation and removal process
 
 The deprecation and removal process for the GitLab GraphQL API aligns with the wider GitLab
-[deprecation process](https://about.gitlab.com/handbook/product/gitlab-the-product/#breaking-changes-deprecations-and-removing-features).
+[deprecation process](https://about.gitlab.com/handbook/product/gitlab-the-product/#deprecations-removals-and-breaking-changes).
 
 Parts of the schema marked for removal from the GitLab GraphQL API are first
 [deprecated](https://about.gitlab.com/handbook/product/gitlab-the-product/#deprecation)
@@ -102,6 +102,8 @@ Items are marked as deprecated in:
 NOTE:
 If you use the GraphQL API, we recommend you remove the deprecated schema from your GraphQL
 API calls as soon as possible to avoid experiencing breaking changes.
+To verify your API calls against the schema without the deprecated schema items, you can add a
+`?remove_deprecated=true` query parameter. You should only use this parameter for verification purposes.
 
 The deprecation message provides an alternative for the deprecated schema item,
 if applicable.

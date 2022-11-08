@@ -99,7 +99,7 @@ describe('SubscriptionTable component', () => {
 
   describe('with success', () => {
     beforeEach(async () => {
-      createComponentWithStore();
+      await createComponentWithStore();
       store.state.isLoadingSubscription = false;
       store.commit(types.RECEIVE_SUBSCRIPTION_SUCCESS, mockDataSubscription.gold);
       await nextTick();
@@ -168,6 +168,38 @@ describe('SubscriptionTable component', () => {
     });
   });
 
+  describe('Read only mode', () => {
+    beforeEach(async () => {
+      await createComponentWithStore({
+        provide: {
+          readOnly: true,
+          availableTrialAction: 'extend',
+        },
+        state: {
+          isLoadingSubscription: false,
+          plan: {
+            code: 'bronze',
+          },
+          billing: {
+            subscriptionEndDate: new Date(),
+          },
+        },
+      });
+    });
+
+    it('should not render manage button', () => {
+      expect(findManageButton().exists()).toBe(false);
+    });
+
+    it('should not render renew button', () => {
+      expect(findRenewButton().exists()).toBe(false);
+    });
+
+    it('should not render extend trial button', () => {
+      expect(wrapper.findComponent(ExtendReactivateTrialButton).exists()).toBe(false);
+    });
+  });
+
   describe('Manage button', () => {
     describe.each`
       planCode    | expected | testDescription
@@ -178,7 +210,7 @@ describe('SubscriptionTable component', () => {
       'given a plan with state: planCode = $planCode',
       ({ planCode, upgradable, expected, testDescription }) => {
         beforeEach(async () => {
-          createComponentWithStore({
+          await createComponentWithStore({
             state: {
               isLoadingSubscription: false,
               plan: {
@@ -187,8 +219,6 @@ describe('SubscriptionTable component', () => {
               },
             },
           });
-
-          await waitForPromises();
         });
 
         it(`${testDescription}`, () => {
@@ -209,7 +239,7 @@ describe('SubscriptionTable component', () => {
       'given a plan with state: planCode = $planCode, inRenewalPeriod = $inRenewalPeriod',
       ({ planCode, inRenewalPeriod, expected, testDescription }) => {
         beforeEach(async () => {
-          createComponentWithStore({
+          await createComponentWithStore({
             state: {
               isLoadingSubscription: false,
               plan: {
@@ -218,8 +248,6 @@ describe('SubscriptionTable component', () => {
             },
             apolloMock: { subscription: { canAddSeats: true, inRenewalPeriod } },
           });
-
-          await waitForPromises();
         });
 
         it(`${testDescription}`, () => {

@@ -45,7 +45,7 @@ If you're an instance administrator, you can administer all project topics from 
 
 ## Add a compliance framework to a project **(PREMIUM)**
 
-[Compliance frameworks](../../group/manage.md#compliance-frameworks) can be assigned to projects within group that has a
+[Compliance frameworks](../../group/compliance_frameworks.md) can be assigned to projects within group that has a
 compliance framework using either:
 
 - The GitLab UI:
@@ -277,7 +277,7 @@ To delete a project:
 1. In the "Delete project" section, select **Delete project**.
 1. Confirm the action when asked to.
 
-This action deletes a project including all associated resources (issues, merge requests, and so on).
+This action deletes a project including all associated resources (such as issues and merge requests).
 
 WARNING:
 The default deletion behavior for projects was changed to [delayed project deletion](https://gitlab.com/gitlab-org/gitlab/-/issues/32935)

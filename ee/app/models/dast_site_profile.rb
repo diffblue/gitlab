@@ -106,6 +106,12 @@ class DastSiteProfile < ApplicationRecord
     scan_file_path
   end
 
+  def validation_started_at
+    return unless dast_site_validation
+
+    dast_site_validation.validation_started_at
+  end
+
   private
 
   def cleanup_dast_site
@@ -169,6 +175,8 @@ class DastSiteProfile < ApplicationRecord
   def dast_api_config(url)
     [].tap do |dast_api_config|
       api_specification = scan_file_path.presence || url
+
+      dast_api_config.append(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
 
       if scan_method_openapi?
         dast_api_config.append(key: 'DAST_API_OPENAPI', value: api_specification)

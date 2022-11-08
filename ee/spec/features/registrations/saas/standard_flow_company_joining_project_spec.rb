@@ -4,11 +4,9 @@ require 'spec_helper'
 
 RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas, :saas_registration do
   context 'when project_list_filter_bar feature flag is enabled' do
-    before do
-      stub_feature_flags(project_list_filter_bar: true)
-    end
-
     it 'registers the user and sends them to a project listing page' do
+      stub_feature_flags(project_list_filter_bar: true)
+
       user_signs_up
 
       expect_to_see_account_confirmation_page
@@ -27,11 +25,9 @@ RSpec.describe 'Standard flow for user picking company and joining a project', :
   end
 
   context 'when project_list_filter_bar feature flag is disabled' do
-    before do
-      stub_feature_flags(project_list_filter_bar: false)
-    end
-
     it 'registers the user and sends them to a project listing page' do
+      stub_feature_flags(project_list_filter_bar: false)
+
       user_signs_up
 
       expect_to_see_account_confirmation_page

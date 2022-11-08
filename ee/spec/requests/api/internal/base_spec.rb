@@ -353,9 +353,7 @@ RSpec.describe API::Internal::Base do
             expect(response).to have_gitlab_http_status(:unauthorized)
             expect(json_response["status"]).to eq(false)
             expect(json_response["message"]).to eq(
-              'Your push to this repository has been rejected because ' \
-              'the namespace storage limit of 4 MB has been reached. ' \
-              'Reduce your namespace storage or purchase additional storage.'
+              EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
             )
           end
 
@@ -411,6 +409,46 @@ RSpec.describe API::Internal::Base do
           expect(response).to have_gitlab_http_status(:unauthorized)
           expect(json_response["status"]).to eq(false)
           expect(json_response["message"]).to eq("You are not allowed to write to this project's wiki.")
+        end
+      end
+    end
+
+    context 'when namespace storage size limits are enabled only for free namespaces', :saas do
+      let_it_be(:group, refind: true) { create(:group) }
+      let_it_be(:project) { create(:project, :repository, group: group) }
+
+      let(:sha_with_2_mb_file) { 'bf12d2567099e26f59692896f73ac819bae45b00' }
+
+      before_all do
+        project.add_developer(user)
+        create(:gitlab_subscription, :ultimate, namespace: group)
+      end
+
+      before do
+        stub_application_setting(enforce_namespace_storage_limit: true)
+        stub_application_setting(automatic_purchased_storage_allocation: true)
+        stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::EFFECTIVE_DATE', 2.years.ago.to_date)
+        stub_const('::EE::Gitlab::Namespaces::Storage::Enforcement::ENFORCEMENT_DATE', 1.year.ago.to_date)
+        stub_feature_flags(
+          namespace_storage_limit: true,
+          enforce_storage_limit_for_paid: false,
+          enforce_storage_limit_for_free: true,
+          namespace_storage_limit_bypass_date_check: false
+        )
+      end
+
+      context 'with a project in a paid namespace' do
+        context 'requests with changes' do
+          it 'accepts git push when the project repository size limit has been exceeded but is within the additional purchased storage size' do
+            group.update!(additional_purchased_storage_size: 3)
+            project.update!(repository_size_limit: 4.megabytes)
+            project.statistics.update!(repository_size: 6.megabytes)
+
+            push(key, project)
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response["status"]).to eq(true)
+          end
         end
       end
     end

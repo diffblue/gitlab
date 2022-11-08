@@ -4,6 +4,8 @@ module API
   class GroupHooks < ::API::Base
     include ::API::PaginationParams
 
+    group_hooks_tags = %w[group_hooks]
+
     feature_category :integrations
 
     before { authenticate! }
@@ -38,11 +40,14 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the group'
     end
     resource :groups, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-      desc 'Get group hooks' do
+      desc 'List group hooks' do
+        detail 'Get a list of group hooks'
         success EE::API::Entities::GroupHook
+        is_array true
+        tags group_hooks_tags
       end
       params do
         use :pagination
@@ -51,8 +56,13 @@ module API
         present paginate(user_group.hooks), with: EE::API::Entities::GroupHook
       end
 
-      desc 'Get a group hook' do
+      desc 'Get group hook' do
+        detail 'Get a specific hook for a group'
         success EE::API::Entities::GroupHook
+        failure [
+          { code: 404, message: 'Not found' }
+        ]
+        tags group_hooks_tags
       end
       params do
         requires :hook_id, type: Integer, desc: 'The ID of a group hook'
@@ -63,8 +73,15 @@ module API
         present hook, with: EE::API::Entities::GroupHook
       end
 
-      desc 'Add hook to group' do
+      desc 'Add group hook' do
+        detail 'Adds a hook to a specified group'
         success EE::API::Entities::GroupHook
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' },
+          { code: 422, message: 'Unprocessable entity' }
+        ]
+        tags group_hooks_tags
       end
       params do
         use :requires_url
@@ -77,11 +94,18 @@ module API
         save_hook(hook, EE::API::Entities::GroupHook)
       end
 
-      desc 'Update an existing group hook' do
+      desc 'Edit group hook' do
+        detail 'Edits a hook for a specified group'
         success EE::API::Entities::GroupHook
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' },
+          { code: 422, message: 'Unprocessable entity' }
+        ]
+        tags group_hooks_tags
       end
       params do
-        requires :hook_id, type: Integer, desc: "The ID of the hook to update"
+        requires :hook_id, type: Integer, desc: 'The ID of the group hook'
         use :optional_url
         use :group_hook_properties
       end
@@ -89,11 +113,16 @@ module API
         update_hook(entity: EE::API::Entities::GroupHook)
       end
 
-      desc 'Deletes group hook' do
+      desc 'Delete group hook' do
+        detail 'Removes a hook from a group. This is an idempotent method and can be called multiple times. Either the hook is available or not.'
         success EE::API::Entities::GroupHook
+        failure [
+          { code: 404, message: 'Not found' }
+        ]
+        tags group_hooks_tags
       end
       params do
-        requires :hook_id, type: Integer, desc: 'The ID of the hook to delete'
+        requires :hook_id, type: Integer, desc: 'The ID of the group hook'
       end
       delete ":id/hooks/:hook_id" do
         hook = find_hook

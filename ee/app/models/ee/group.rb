@@ -279,7 +279,7 @@ module EE
           ::GroupGroupLink
             .where(shared_group_id: groups_hierarchy.select(:id))
             .where('group_access >= ?', access_level)
-            .where(shared_with_group_id: ::GroupMember.where(user: user).authorizable.select(:source_id) )
+            .where(shared_with_group_id: ::GroupMember.where(user: user).authorizable.select(:source_id))
             .select(:shared_group_id)
         ).select(:id)
       end
@@ -641,7 +641,7 @@ module EE
 
     def shared_externally?
       strong_memoize(:shared_externally) do
-        internal_groups = ::Group.groups_including_descendants_by([self])
+        internal_groups = self.self_and_descendants
 
         group_links = invited_group_in_groups
           .where.not(group_group_links: { shared_with_group_id: internal_groups })
@@ -832,7 +832,7 @@ module EE
 
     def invited_group_in_groups
       ::Group.joins(:shared_group_links)
-        .where(group_group_links: { shared_group_id: ::Group.groups_including_descendants_by([self]) })
+        .where(group_group_links: { shared_group_id: self.self_and_descendants })
     end
 
     def invited_or_shared_group_members(groups)

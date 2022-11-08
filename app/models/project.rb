@@ -451,7 +451,7 @@ class Project < ApplicationRecord
            :metrics_dashboard_access_level, :analytics_access_level,
            :operations_access_level, :security_and_compliance_access_level,
            :container_registry_access_level, :environments_access_level, :feature_flags_access_level,
-           :monitor_access_level, :releases_access_level,
+           :monitor_access_level, :releases_access_level, :infrastructure_access_level,
            to: :project_feature, allow_nil: true
 
   delegate :show_default_award_emojis, :show_default_award_emojis=,
@@ -491,6 +491,7 @@ class Project < ApplicationRecord
     to: :project_setting
   delegate :merge_commit_template, :merge_commit_template=, to: :project_setting, allow_nil: true
   delegate :squash_commit_template, :squash_commit_template=, to: :project_setting, allow_nil: true
+  delegate :issue_branch_template, :issue_branch_template=, to: :project_setting, allow_nil: true
 
   delegate :log_jira_dvcs_integration_usage, :jira_dvcs_server_last_sync_at, :jira_dvcs_cloud_last_sync_at, to: :feature_usage
 
@@ -1616,7 +1617,7 @@ class Project < ApplicationRecord
   end
 
   def all_clusters
-    group_clusters = Clusters::Cluster.joins(:groups).where(cluster_groups: { group_id: ancestors_upto } )
+    group_clusters = Clusters::Cluster.joins(:groups).where(cluster_groups: { group_id: ancestors_upto })
     instance_clusters = Clusters::Cluster.instance_type
 
     Clusters::Cluster.from_union([clusters, group_clusters, instance_clusters])
@@ -1705,7 +1706,11 @@ class Project < ApplicationRecord
   end
 
   def has_active_integrations?(hooks_scope = :push_hooks)
-    integrations.public_send(hooks_scope).any? # rubocop:disable GitlabSecurity/PublicSend
+    @has_active_integrations ||= {} # rubocop: disable Gitlab/PredicateMemoization
+
+    return @has_active_integrations[hooks_scope] if @has_active_integrations.key?(hooks_scope)
+
+    @has_active_integrations[hooks_scope] = integrations.public_send(hooks_scope).any? # rubocop:disable GitlabSecurity/PublicSend
   end
 
   def feature_usage
@@ -2784,7 +2789,7 @@ class Project < ApplicationRecord
     return unless service_desk_enabled?
 
     config = Gitlab.config.incoming_email
-    wildcard = Gitlab::IncomingEmail::WILDCARD_PLACEHOLDER
+    wildcard = Gitlab::Email::Common::WILDCARD_PLACEHOLDER
 
     config.address&.gsub(wildcard, "#{full_path_slug}-#{default_service_desk_suffix}")
   end
@@ -3006,7 +3011,7 @@ class Project < ApplicationRecord
   end
 
   def work_items_create_from_markdown_feature_flag_enabled?
-    work_items_feature_flag_enabled? && (group&.work_items_create_from_markdown_feature_flag_enabled? || Feature.enabled?(:work_items_create_from_markdown))
+    group&.work_items_create_from_markdown_feature_flag_enabled? || Feature.enabled?(:work_items_create_from_markdown)
   end
 
   def enqueue_record_project_target_platforms

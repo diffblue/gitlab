@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Systems', :orchestrated, :geo do
+  RSpec.describe 'Systems', :orchestrated, :geo, product_group: :geo do
     describe 'GitLab Geo project rename replication' do
       let(:geo_project_renamed) { "geo-after-rename-#{SecureRandom.hex(8)}" }
 

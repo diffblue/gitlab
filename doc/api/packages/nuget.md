@@ -1,7 +1,7 @@
 ---
 stage: Package
-group: Package
-info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about..example/handbook/product/ux/technical-writing/#assignments
+group: Package Registry
+info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments
 ---
 
 # NuGet API **(FREE)**
@@ -99,7 +99,7 @@ PUT projects/:id/packages/nuget
 curl --request PUT \
      --form 'package=@path/to/mynugetpkg.1.3.0.17.nupkg' \
      --user <username>:<personal_access_token> \
-     "https://gitlab.example.com/api/v4/projects/1/packages/nuget"
+     "https://gitlab.example.com/api/v4/projects/1/packages/nuget/"
 ```
 
 ## Upload a symbol package file

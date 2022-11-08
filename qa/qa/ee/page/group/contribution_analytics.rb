@@ -5,9 +5,15 @@ module QA
     module Page
       module Group
         class ContributionAnalytics < QA::Page::Base
-          view 'ee/app/views/groups/contribution_analytics/show.html.haml' do
+          view 'ee/app/assets/javascripts/analytics/contribution_analytics/components/pushes_chart.vue' do
             element :push_content
+          end
+
+          view 'ee/app/assets/javascripts/analytics/contribution_analytics/components/merge_requests_chart.vue' do
             element :merge_request_content
+          end
+
+          view 'ee/app/assets/javascripts/analytics/contribution_analytics/components/issues_chart.vue' do
             element :issue_content
           end
 

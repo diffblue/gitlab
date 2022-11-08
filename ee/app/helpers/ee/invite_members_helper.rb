@@ -13,13 +13,17 @@ module EE
       return dataset unless free_user_cap.enforce_cap?
 
       dataset.merge(
-        users_limit_dataset: {
-          new_trial_registration_path: new_trial_path,
-          members_path: group_usage_quotas_path(source.root_ancestor),
-          purchase_path: group_billings_path(source.root_ancestor),
-          free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit,
-          members_count: free_user_cap.users_count
-        }.to_json
+        users_limit_dataset: ::Gitlab::Json.dump(
+          {
+            new_trial_registration_path: new_trial_path,
+            members_path: group_usage_quotas_path(source.root_ancestor),
+            purchase_path: group_billings_path(source.root_ancestor),
+            reached_limit: free_user_cap.reached_limit?,
+            close_to_dashboard_limit: free_user_cap.close_to_dashboard_limit?,
+            remaining_seats: free_user_cap.remaining_seats,
+            free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
+          }
+        )
       )
     end
 

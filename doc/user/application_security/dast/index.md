@@ -1070,9 +1070,9 @@ To run an on-demand scan either at a scheduled date or frequency, read
    sidebar.
 1. Select **New scan**.
 1. Complete the **Scan name** and **Description** fields.
-1. In GitLab 13.10 and later, select the desired branch from the **Branch** dropdown.
-1. In **Scanner profile**, select a scanner profile from the dropdown.
-1. In **Site profile**, select a site profile from the dropdown.
+1. In GitLab 13.10 and later, select the desired branch from the **Branch** dropdown list.
+1. In **Scanner profile**, select a scanner profile from the dropdown list.
+1. In **Site profile**, select a site profile from the dropdown list.
 1. To run the on-demand scan immediately, select **Save and run scan**. Otherwise, select
    **Save scan** to [run](#run-a-saved-on-demand-scan) it later.
 
@@ -1152,6 +1152,9 @@ To delete an on-demand scan:
 
 ## Site profile
 
+> - Scan method [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/345837) in GitLab 15.6.
+> - File URL [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab/-/issues/345837) in GitLab 15.6.
+
 A site profile defines the attributes and configuration details of the deployed application,
 website, or API to be scanned by DAST. A site profile can be referenced in `.gitlab-ci.yml` and
 on-demand scans.
@@ -1171,6 +1174,9 @@ A site profile contains:
   - **Username form field**: The name of username field at the sign-in HTML form.
   - **Password form field**: The name of password field at the sign-in HTML form.
   - **Submit form field**: The `id` or `name` of the element that when selected submits the sign-in HTML form.
+
+- **Scan method**: A type of method to perform API testing. The supported methods are OpenAPI, Postman Collections, and HTTP Archive (HAR) documents.
+- **File URL**: The URL of the OpenAPI, Postman Collection, or HTTP Archive file.
 
 When an API site type is selected, a [host override](#host-override) is used to ensure the API being scanned is on the same host as the target. This is done to reduce the risk of running an active scan against the wrong API.
 

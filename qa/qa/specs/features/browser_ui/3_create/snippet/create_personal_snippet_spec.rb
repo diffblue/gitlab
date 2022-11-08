@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create', :smoke do
+  RSpec.describe 'Create', :smoke, product_group: :editor do
     describe 'Personal snippet creation' do
       let(:snippet) do
         Resource::Snippet.fabricate_via_browser_ui! do |snippet|
@@ -15,10 +15,6 @@ module QA
 
       before do
         Flow::Login.sign_in
-      end
-
-      after do
-        snippet.remove_via_api!
       end
 
       it 'user creates a personal snippet', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347799' do

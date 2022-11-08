@@ -1,0 +1,8 @@
+---
+name: identity_verification_phone_number
+introduced_by_url: 'https://gitlab.com/gitlab-org/gitlab/-/merge_requests/99457'
+rollout_issue_url: 'https://gitlab.com/gitlab-org/gitlab/-/issues/375957'
+milestone: '15.6'
+type: development
+group: group::anti-abuse
+default_enabled: false

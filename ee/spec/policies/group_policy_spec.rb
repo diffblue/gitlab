@@ -23,6 +23,7 @@ RSpec.describe GroupPolicy do
       read_cluster
       read_group_runners
       read_billing
+      read_container_image
     ]
   end
 
@@ -224,6 +225,12 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_allowed(:read_dora4_analytics) }
     end
 
+    context 'when the user is an auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_dora4_analytics) }
+    end
+
     context 'when the user is an admin', :enable_admin_mode do
       let(:current_user) { admin }
 
@@ -297,6 +304,12 @@ RSpec.describe GroupPolicy do
         let(:current_user) { guest }
 
         it { is_expected.not_to be_allowed(:view_group_ci_cd_analytics) }
+      end
+
+      context 'when the user has auditor permissions' do
+        let(:current_user) { auditor }
+
+        it { is_expected.to be_allowed(:view_group_ci_cd_analytics) }
       end
     end
 
@@ -618,6 +631,14 @@ RSpec.describe GroupPolicy do
           it "allows access because we haven't yet restricted all use cases" do
             is_expected.to be_allowed(:read_group)
           end
+
+          context 'when the current user is a deploy token' do
+            let(:current_user) { create(:deploy_token, :group, groups: [group], read_package_registry: true) }
+
+            it 'allows access without a SAML session' do
+              is_expected.to allow_action(:read_group)
+            end
+          end
         end
       end
 
@@ -626,35 +647,47 @@ RSpec.describe GroupPolicy do
 
         let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
 
-        around do |example|
-          Gitlab::Session.with_session({}) do
-            example.run
-          end
-        end
-
-        it 'allows access when the user has no Group SAML identity' do
-          is_expected.to be_allowed(:read_group)
-        end
-
-        context 'when the user has a Group SAML identity' do
-          before do
-            create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+        context 'when the session has been set globally' do
+          around do |example|
+            Gitlab::Session.with_session({}) do
+              example.run
+            end
           end
 
-          it 'prevents access without a SAML session' do
-            is_expected.not_to be_allowed(:read_group)
-          end
-
-          it 'allows access with a SAML session' do
-            Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
+          it 'allows access when the user has no Group SAML identity' do
             is_expected.to be_allowed(:read_group)
           end
 
-          it 'allows access when the feature flag is disabled' do
-            stub_feature_flags(transparent_sso_enforcement: false)
+          context 'when the user has a Group SAML identity' do
+            before do
+              create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+            end
 
-            is_expected.to be_allowed(:read_group)
+            it 'prevents access without a SAML session' do
+              is_expected.not_to be_allowed(:read_group)
+            end
+
+            it 'allows access with a SAML session' do
+              Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+              is_expected.to be_allowed(:read_group)
+            end
+
+            it 'allows access when the feature flag is disabled' do
+              stub_feature_flags(transparent_sso_enforcement: false)
+
+              is_expected.to be_allowed(:read_group)
+            end
+          end
+        end
+
+        context 'when there is no global session or sso state' do
+          context 'when the current user is a deploy token' do
+            let(:current_user) { create(:deploy_token, :group, groups: [group], read_package_registry: true) }
+
+            it 'allows access without a SAML session' do
+              is_expected.to allow_action(:read_group)
+            end
           end
         end
       end
@@ -1265,7 +1298,7 @@ RSpec.describe GroupPolicy do
 
       specify do
         expect_allowed(*auditor_permissions)
-        expect_disallowed(*reporter_permissions)
+        expect_disallowed(*(reporter_permissions - auditor_permissions))
         expect_disallowed(*(developer_permissions - auditor_permissions))
         expect_disallowed(*maintainer_permissions)
         expect_disallowed(*(owner_permissions - auditor_permissions))
@@ -2156,6 +2189,34 @@ RSpec.describe GroupPolicy do
     end
   end
 
+  describe 'read_usage_quotas policy' do
+    context 'reading usage quotas' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:policy) { :read_usage_quotas }
+
+      where(:role, :admin_mode, :allowed) do
+        :owner      | nil   | true
+        :admin      | true  | true
+        :admin      | false | false
+        :maintainer | nil   | false
+        :developer  | nil   | false
+        :reporter   | nil   | false
+        :guest      | nil   | false
+      end
+
+      with_them do
+        let(:current_user) { public_send(role) }
+
+        before do
+          enable_admin_mode!(current_user) if admin_mode
+        end
+
+        it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+      end
+    end
+  end
+
   describe 'dependency proxy' do
     context 'feature enabled' do
       before do
@@ -2305,6 +2366,15 @@ RSpec.describe GroupPolicy do
       it { is_expected.to be_allowed(:read_group_all_available_runners) }
       it { is_expected.to be_disallowed(:admin_group_runners) }
       it { is_expected.to be_disallowed(:register_group_runners) }
+    end
+  end
+
+  describe 'group container registry' do
+    context 'auditor' do
+      let(:current_user) { auditor }
+
+      it { is_expected.to be_allowed(:read_container_image) }
+      it { is_expected.to be_disallowed(:admin_container_image) }
     end
   end
 end

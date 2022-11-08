@@ -143,6 +143,8 @@ GitLab 14.0 introduced [batched background migrations](../user/admin_area/monito
 
 Some installations [may need to run GitLab 14.0 for at least a day](#1400) to complete the database changes introduced by that upgrade.
 
+Batched background migrations are handled by Sidekiq and [run in isolation](../development/database/batched_background_migrations.md#isolation), so an instance can remain operational while the migrations are processed. However, there may be performance degradation on larger instances that are heavily used while batched background migrations are run, so it's a good idea to [actively monitor the Sidekiq status](../user/admin_area/index.md#background-jobs) until all migrations are completed.
+
 #### Check the status of batched background migrations
 
 To check the status of batched background migrations:
@@ -376,11 +378,13 @@ Upgrading across multiple GitLab versions in one go is *only possible by accepti
 The following examples assume downtime is acceptable while upgrading.
 If you don't want any downtime, read how to [upgrade with zero downtime](zero_downtime.md).
 
+For a dynamic view of examples of supported upgrade paths, try the [Upgrade Path tool](https://gitlab-com.gitlab.io/support/toolbox/upgrade-path/) maintained by the [GitLab Support team](https://about.gitlab.com/handbook/support/#about-the-support-team). To share feedback and help improve the tool, create an issue or MR in the [upgrade-path project](https://gitlab.com/gitlab-com/support/toolbox/upgrade-path).
+
 Find where your version sits in the upgrade path below, and upgrade GitLab
 accordingly, while also consulting the
 [version-specific upgrade instructions](#version-specific-upgrading-instructions):
 
-`8.11.Z` -> `8.12.0` -> `8.17.7` -> `9.5.10` -> `10.8.7` -> [`11.11.8`](#1200) -> `12.0.12` -> [`12.1.17`](#1210) -> [`12.10.14`](#12100) -> `13.0.14` -> [`13.1.11`](#1310) -> [`13.8.8`](#1388) -> [`13.12.15`](#13120) -> [`14.0.12`](#1400) -> [`14.3.6`](#1430) -> [`14.9.5`](#1490) -> [`14.10.Z`](#14100) -> [`15.0.Z`](#1500) -> [`15.4.0`](#1540) -> [latest `15.Y.Z`](https://gitlab.com/gitlab-org/gitlab/-/releases)
+`8.11.Z` -> `8.12.0` -> `8.17.7` -> `9.5.10` -> `10.8.7` -> [`11.11.8`](#1200) -> `12.0.12` -> [`12.1.17`](#1210) -> [`12.10.14`](#12100) -> `13.0.14` -> [`13.1.11`](#1310) -> [`13.8.8`](#1388) -> [`13.12.15`](#13120) -> [`14.0.12`](#1400) -> [`14.3.6`](#1430) -> [`14.9.5`](#1490) -> [`14.10.Z`](#14100) -> [`15.0.Z`](#1500) -> [`15.1.Z`](#1510)(for GitLab instances with multiple web nodes) -> [`15.4.0`](#1540) -> [latest `15.Y.Z`](https://gitlab.com/gitlab-org/gitlab/-/releases)
 
 NOTE:
 When not explicitly specified, upgrade GitLab to the latest available patch
@@ -391,8 +395,6 @@ be fixes for issues relating to the upgrade process.
 The following table, while not exhaustive, shows some examples of the supported
 upgrade paths.
 Additional steps between the mentioned versions are possible. We list the minimally necessary steps only.
-
-For a dynamic view of examples of supported upgrade paths, try the [Upgrade Path tool](https://gitlab-com.gitlab.io/support/toolbox/upgrade-path/). The Upgrade Path tool is maintained by the [GitLab Support team](https://about.gitlab.com/handbook/support/#about-the-support-team). Share feedback and help improve the tool by raising an issue or MR in the [upgrade-path project](https://gitlab.com/gitlab-com/support/toolbox/upgrade-path).
 
 | Target version | Your version | Supported upgrade path                                                                               | Note                                                                                                                              |
 | -------------- | ------------ | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -467,10 +469,15 @@ NOTE:
 Specific information that follow related to Ruby and Git versions do not apply to [Omnibus installations](https://docs.gitlab.com/omnibus/)
 and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with appropriate Ruby and Git versions and are not using system binaries for Ruby and Git. There is no need to install Ruby or Git when utilizing these two approaches.
 
+### 15.6.0
+
+- Git 2.37.0 and later is required by Gitaly. For installations from source, we recommend you use the [Git version provided by Gitaly](../install/installation.md#git).
+
 ### 15.4.0
 
 - GitLab 15.4.0 includes a [batched background migration](#batched-background-migrations) to [remove incorrect values from `expire_at` in `ci_job_artifacts` table](https://gitlab.com/gitlab-org/gitlab/-/merge_requests/89318).
   This migration might take hours or days to complete on larger GitLab instances.
+- By default, Gitaly and Praefect nodes use the time server at `pool.ntp.org`. If your instance can not connect to `pool.ntp.org`, [configure the `NTP_HOST` variable](../administration/gitaly/praefect.md#customize-time-server-setting). 
 
 ### 15.3.3
 

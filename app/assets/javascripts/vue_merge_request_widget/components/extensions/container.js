@@ -11,8 +11,6 @@ export default {
   render(h) {
     const { extensions } = registeredExtensions;
 
-    if (extensions.length === 0) return null;
-
     return h(
       'section',
       {

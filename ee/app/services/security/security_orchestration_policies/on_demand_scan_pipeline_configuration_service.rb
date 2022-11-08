@@ -10,9 +10,7 @@ module Security
       end
 
       def execute(actions)
-        actions
-          .map.with_index { |action, index| prepare_policy_configuration(action, index) }
-          .reduce({}, :merge)
+        ci_configs(actions).reduce({}, :merge)
       end
 
       private
@@ -20,6 +18,10 @@ module Security
       DAST_ON_DEMAND_TEMPLATE_NAME = 'DAST-On-Demand-Scan'
 
       attr_reader :project
+
+      def ci_configs(actions)
+        actions.map.with_index { |action, index| prepare_policy_configuration(action, index) }
+      end
 
       def prepare_policy_configuration(action, index)
         {
@@ -31,11 +33,12 @@ module Security
         result = prepare_base_configuration(action[:site_profile], action[:scanner_profile])
         return error_script(result.message) unless result.success?
 
+        action_variables = action[:variables].to_h.stringify_keys
         ci_configuration = YAML.safe_load(result.payload[:ci_configuration])
 
         dast_on_demand_template[:dast].deep_merge(
           'stage' => 'dast',
-          'variables' => dast_on_demand_template[:variables].merge(dast_on_demand_template[:dast][:variables]),
+          'variables' => dast_on_demand_variables(action_variables),
           'dast_configuration' => ci_configuration['dast']['dast_configuration']
         )
       end
@@ -54,6 +57,12 @@ module Security
           template = ::TemplateFinder.build(:gitlab_ci_ymls, nil, name: DAST_ON_DEMAND_TEMPLATE_NAME).execute
           Gitlab::Config::Loader::Yaml.new(template.content).load!
         end
+      end
+
+      def dast_on_demand_variables(action_variables)
+        dast_on_demand_template[:variables]
+          .merge(dast_on_demand_template[:dast][:variables])
+          .merge(action_variables)
       end
 
       def error_script(error_message)

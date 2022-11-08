@@ -2,6 +2,7 @@
 
 module BillingPlansHelper
   include Gitlab::Utils::StrongMemoize
+  include Gitlab::Allowable
 
   def subscription_plan_info(plans_data, current_plan_code)
     current_plan = plans_data.find { |plan| plan.code == current_plan_code && plan.current_subscription_plan? }
@@ -34,7 +35,15 @@ module BillingPlansHelper
     [:no_offer, :upgrade_for_free].include?(upgrade_offer)
   end
 
-  def subscription_plan_data_attributes(namespace, plan)
+  # [namespace] can be either a namespace or a group
+  def can_edit_billing?(namespace)
+    return true unless Feature.enabled?(:auditor_billing_page_access)
+
+    can?(current_user, :edit_billing, namespace)
+  end
+
+  # [namespace] can be either a namespace or a group
+  def subscription_plan_data_attributes(namespace, plan, read_only: false)
     return {} unless namespace
 
     {
@@ -44,7 +53,8 @@ module BillingPlansHelper
       plan_renew_href: plan_renew_url(namespace),
       customer_portal_url: EE::SUBSCRIPTIONS_MANAGE_URL,
       billable_seats_href: billable_seats_href(namespace),
-      plan_name: plan&.name
+      plan_name: plan&.name,
+      read_only: read_only.to_s
     }.tap do |attrs|
       if Feature.enabled?(:refresh_billings_seats, type: :ops)
         attrs[:refresh_seats_href] = refresh_seats_group_billings_url(namespace)
@@ -140,7 +150,7 @@ module BillingPlansHelper
     end
   end
 
-  def hand_raise_props(namespace, glm_content: )
+  def hand_raise_props(namespace, glm_content:)
     {
       namespace_id: namespace.id,
       user_name: current_user.username,

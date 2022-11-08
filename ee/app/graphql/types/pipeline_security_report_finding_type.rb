@@ -111,6 +111,11 @@ module Types
           null: true,
           description: "Finding status."
 
+    field :details, [::Types::VulnerabilityDetailType],
+          null: false,
+          resolver: Resolvers::Vulnerabilities::DetailsResolver,
+          description: 'Details of the security finding.'
+
     markdown_field :description_html, null: true
 
     def location

@@ -95,20 +95,21 @@ module API
       end
 
       params do
-        requires :id, type: String, desc: 'The ID of the project'
+        requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
       end
 
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         namespace ':id/analytics' do
-          desc 'List analytics for the project'
-
+          desc 'List deployment frequencies for the project' do
+            is_array true
+            success EE::API::Entities::Analytics::DeploymentFrequency
+          end
           params do
             requires :environment, type: String, desc: 'Name of the environment to filter by'
             requires :from, type: DateTime, desc: 'Datetime to start from, inclusive'
             optional :to, type: DateTime, desc: 'Datetime to end at, exclusive'
             optional :interval, type: String, desc: 'Interval to roll-up data by', values: VALID_INTERVALS
           end
-
           get 'deployment_frequency' do
             bad_request!("Parameter `to` is before the `from` date") if start_date > end_date
             bad_request!("Date range is greater than #{QUARTER_DAYS} days") if days_between > QUARTER_DAYS

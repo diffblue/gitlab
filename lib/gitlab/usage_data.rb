@@ -30,7 +30,6 @@ module Gitlab
       deployment_minimum_id
       deployment_maximum_id
       auth_providers
-      aggregated_metrics
       recorded_at
     ).freeze
 
@@ -157,7 +156,6 @@ module Gitlab
           }.merge(
             runners_usage,
             integrations_usage,
-            usage_counters,
             user_preferences_usage,
             container_expiration_policies_usage,
             service_desk_counts,
@@ -259,16 +257,6 @@ module Gitlab
           grafana_link_enabled: alt_usage_data(fallback: nil) { Gitlab::CurrentSettings.grafana_enabled? },
           gitpod_enabled: alt_usage_data(fallback: nil) { Gitlab::CurrentSettings.gitpod_enabled? }
         }
-      end
-
-      # @return [Hash<Symbol, Integer>]
-      def usage_counters
-        usage_data_counters.map { |counter| redis_usage_data(counter) }.reduce({}, :merge)
-      end
-
-      # @return [Array<#totals>] An array of objects that respond to `#totals`
-      def usage_data_counters
-        Gitlab::UsageDataCounters.unmigrated_counters
       end
 
       def components_usage_data
@@ -632,21 +620,16 @@ module Gitlab
         { redis_hll_counters: ::Gitlab::UsageDataCounters::HLLRedisCounter.unique_events_data }
       end
 
-      def aggregated_metrics_data
-        {
-          counts_weekly: { aggregated_metrics: aggregated_metrics.weekly_data },
-          counts_monthly: { aggregated_metrics: aggregated_metrics.monthly_data },
-          counts: aggregated_metrics
-                    .all_time_data
-                    .to_h { |key, value| ["aggregate_#{key}".to_sym, value.round] }
-        }
-      end
-
       def action_monthly_active_users(time_period)
+        counter = Gitlab::UsageDataCounters::EditorUniqueCounter
         date_range = { date_from: time_period[:created_at].first, date_to: time_period[:created_at].last }
 
-        event_monthly_active_users(date_range)
-          .merge!(ide_monthly_active_users(date_range))
+        {
+          action_monthly_active_users_web_ide_edit: redis_usage_data { counter.count_web_ide_edit_actions(**date_range) },
+          action_monthly_active_users_sfe_edit: redis_usage_data { counter.count_sfe_edit_actions(**date_range) },
+          action_monthly_active_users_snippet_editor_edit: redis_usage_data { counter.count_snippet_editor_edit_actions(**date_range) },
+          action_monthly_active_users_ide_edit: redis_usage_data { counter.count_edit_using_editor(**date_range) }
+        }
       end
 
       def with_duration
@@ -688,7 +671,6 @@ module Gitlab
           .merge(usage_activity_by_stage)
           .merge(usage_activity_by_stage(:usage_activity_by_stage_monthly, monthly_time_range_db_params))
           .merge(redis_hll_counters)
-          .deep_merge(aggregated_metrics_data)
       end
 
       def metric_time_period(time_period)
@@ -703,34 +685,6 @@ module Gitlab
 
           result['value'].last.to_f
         end
-      end
-
-      def aggregated_metrics
-        @aggregated_metrics ||= ::Gitlab::Usage::Metrics::Aggregates::Aggregate.new(recorded_at)
-      end
-
-      def event_monthly_active_users(date_range)
-        data = {
-          action_monthly_active_users_project_repo: Gitlab::UsageDataCounters::TrackUniqueEvents::PUSH_ACTION,
-          action_monthly_active_users_design_management: Gitlab::UsageDataCounters::TrackUniqueEvents::DESIGN_ACTION,
-          action_monthly_active_users_wiki_repo: Gitlab::UsageDataCounters::TrackUniqueEvents::WIKI_ACTION,
-          action_monthly_active_users_git_write: Gitlab::UsageDataCounters::TrackUniqueEvents::GIT_WRITE_ACTION
-        }
-
-        data.each do |key, event|
-          data[key] = redis_usage_data { Gitlab::UsageDataCounters::TrackUniqueEvents.count_unique_events(event_action: event, **date_range) }
-        end
-      end
-
-      def ide_monthly_active_users(date_range)
-        counter = Gitlab::UsageDataCounters::EditorUniqueCounter
-
-        {
-          action_monthly_active_users_web_ide_edit: redis_usage_data { counter.count_web_ide_edit_actions(**date_range) },
-          action_monthly_active_users_sfe_edit: redis_usage_data { counter.count_sfe_edit_actions(**date_range) },
-          action_monthly_active_users_snippet_editor_edit: redis_usage_data { counter.count_snippet_editor_edit_actions(**date_range) },
-          action_monthly_active_users_ide_edit: redis_usage_data { counter.count_edit_using_editor(**date_range) }
-        }
       end
 
       def distinct_count_service_desk_enabled_projects(time_period)

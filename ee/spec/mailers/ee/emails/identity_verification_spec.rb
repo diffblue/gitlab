@@ -7,7 +7,7 @@ RSpec.describe Emails::IdentityVerification do
   include_context 'gitlab email notification'
 
   describe 'confirmation_instructions_email' do
-    let_it_be(:user) { create(:user) }
+    let_it_be(:user) { build_stubbed(:user) }
     let_it_be(:token) { '123456' }
 
     subject do
@@ -24,13 +24,19 @@ RSpec.describe Emails::IdentityVerification do
       is_expected.to have_subject s_('IdentityVerification|Confirm your email address')
     end
 
+    it 'has the mailgun suppression bypass header' do
+      is_expected.to have_header 'X-Mailgun-Suppressions-Bypass', 'true'
+    end
+
     it 'includes the token' do
       is_expected.to have_body_text token
     end
 
     it 'includes the expiration time' do
+      expires_in_minutes = Users::EmailVerification::ValidateTokenService::TOKEN_VALID_FOR_MINUTES
+
       is_expected.to have_body_text format(s_('IdentityVerification|Your verification code expires after '\
-        '%{expires_in_minutes} minutes.'), expires_in_minutes: 60)
+        '%{expires_in_minutes} minutes.'), expires_in_minutes: expires_in_minutes)
     end
   end
 end

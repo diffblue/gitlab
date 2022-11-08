@@ -7,6 +7,14 @@ import ActionButtons from '~/vue_merge_request_widget/components/action_buttons.
 import Widget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import WidgetContentRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 
+jest.mock('~/vue_merge_request_widget/components/extensions/telemetry', () => ({
+  createTelemetryHub: jest.fn().mockReturnValue({
+    viewed: jest.fn(),
+    expanded: jest.fn(),
+    fullReportClicked: jest.fn(),
+  }),
+}));
+
 describe('~/vue_merge_request_widget/components/widget/widget.vue', () => {
   let wrapper;
 
@@ -20,7 +28,7 @@ describe('~/vue_merge_request_widget/components/widget/widget.vue', () => {
       propsData: {
         isCollapsible: false,
         loadingText: 'Loading widget',
-        widgetName: 'MyWidget',
+        widgetName: 'WidgetTest',
         value: {
           collapsed: null,
           expanded: null,
@@ -30,6 +38,7 @@ describe('~/vue_merge_request_widget/components/widget/widget.vue', () => {
       slots,
       stubs: {
         StatusIcon,
+        ActionButtons,
         ContentRow: WidgetContentRow,
       },
     });
@@ -84,6 +93,14 @@ describe('~/vue_merge_request_widget/components/widget/widget.vue', () => {
       expect(wrapper.text()).not.toContain('Loading');
       await nextTick();
       expect(wrapper.text()).toContain('Loading');
+    });
+
+    it('validates widget name', () => {
+      expect(() => {
+        createComponent({
+          propsData: { fetchCollapsedData: jest.fn(), widgetName: 'InvalidWidgetName' },
+        });
+      }).toThrow();
     });
   });
 
@@ -321,6 +338,60 @@ describe('~/vue_merge_request_widget/components/widget/widget.vue', () => {
       await nextTick();
 
       expect(wrapper.findByText('Failed to load').exists()).toBe(false);
+    });
+  });
+
+  describe('telemetry - enabled', () => {
+    beforeEach(() => {
+      createComponent({
+        propsData: {
+          isCollapsible: true,
+          fetchCollapsedData: jest.fn(),
+          fetchExpandedData: jest.fn(),
+          actionButtons: [
+            {
+              fullReport: true,
+              href: '#',
+              target: '_blank',
+              id: 'full-report-button',
+              text: 'Full Report',
+            },
+          ],
+        },
+      });
+    });
+
+    it('should call create a telemetry hub', () => {
+      expect(wrapper.vm.telemetryHub).not.toBe(null);
+    });
+
+    it('should call the viewed state', async () => {
+      await nextTick();
+      expect(wrapper.vm.telemetryHub.viewed).toHaveBeenCalledTimes(1);
+    });
+
+    it('when full report is clicked it should call the respective telemetry event', async () => {
+      expect(wrapper.vm.telemetryHub.fullReportClicked).not.toHaveBeenCalled();
+      wrapper.findByText('Full Report').vm.$emit('click');
+      await nextTick();
+      expect(wrapper.vm.telemetryHub.fullReportClicked).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('telemetry - disabled', () => {
+    beforeEach(() => {
+      createComponent({
+        propsData: {
+          isCollapsible: true,
+          telemetry: false,
+          fetchCollapsedData: jest.fn(),
+          fetchExpandedData: jest.fn(),
+        },
+      });
+    });
+
+    it('should not call create a telemetry hub', () => {
+      expect(wrapper.vm.telemetryHub).toBe(null);
     });
   });
 });

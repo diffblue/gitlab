@@ -71,6 +71,7 @@ module Projects
                 rendered_fields: true,
                 restrict_project_key: true
               ),
+              current_user: current_user,
               project: project
             )
         end

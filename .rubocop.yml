@@ -308,6 +308,10 @@ Rails/RakeEnvironment:
   # Context on why it's disabled: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/93419#note_1048223982
   Enabled: false
 
+# See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96675#note_1094403693
+Rails/WhereExists:
+  Enabled: false
+
 # GitLab ###################################################################
 
 Gitlab/ModuleWithInstanceVariables:
@@ -384,7 +388,13 @@ Database/MultipleDatabases:
     - 'spec/lib/gitlab/background_migration/**/*.rb'
     - 'spec/lib/gitlab/database/**/*.rb'
 
-Gitlab/DuplicateSpecLocation:
+# See https://gitlab.com/gitlab-org/gitlab/-/issues/373194
+Gitlab/RSpec/AvoidSetup:
+  Enabled: true
+  Include:
+    - 'ee/spec/features/registrations/saas/**/*'
+
+RSpec/DuplicateSpecLocation:
   Enabled: true
 
 Gitlab/PolicyRuleBoolean:
@@ -465,7 +475,9 @@ RSpec/FactoriesInMigrationSpecs:
 RSpec/FactoryBot/AvoidCreate:
   Enabled: true
   Include:
+    - 'spec/presenters/**/*.rb'
     - 'spec/serializers/**/*.rb'
+    - 'ee/spec/presenters/**/*.rb'
     - 'ee/spec/serializers/**/*.rb'
 
 Cop/IncludeSidekiqWorker:
@@ -578,6 +590,18 @@ Scalability/FileUploads:
 Graphql/Descriptions:
   Enabled: true
   AutoCorrect: true
+  Include:
+    - 'app/graphql/**/*'
+    - 'ee/app/graphql/**/*'
+
+Graphql/EnumNames:
+  Enabled: true
+  Include:
+    - 'app/graphql/**/*'
+    - 'ee/app/graphql/**/*'
+
+Graphql/EnumValues:
+  Enabled: true
   Include:
     - 'app/graphql/**/*'
     - 'ee/app/graphql/**/*'
@@ -709,7 +733,6 @@ Gitlab/RailsLogger:
     - 'spec/**/*.rb'
     - 'ee/spec/**/*.rb'
 
-# WIP See https://gitlab.com/gitlab-org/gitlab/-/issues/267606
 RSpec/FactoryBot/InlineAssociation:
   Include:
     - 'spec/factories/**/*.rb'
@@ -760,6 +783,10 @@ Style/RegexpLiteralMixedPreserve:
     - mixed
     - mixed_preserve
   EnforcedStyle: mixed_preserve
+
+# See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/94317#note_1139610896
+Style/Lambda:
+  EnforcedStyle: literal
 
 RSpec/TopLevelDescribePath:
   Exclude:
@@ -831,3 +858,8 @@ Cop/SidekiqApiUsage:
     - 'lib/gitlab/sidekiq_queue.rb'
     - 'config/initializers/sidekiq.rb'
     - 'config/initializers/forbid_sidekiq_in_transactions.rb'
+
+Rake/Require:
+  Include:
+    - '{,ee/,jh/}lib/**/*.rake'
+    - 'qa/tasks/**/*.rake'

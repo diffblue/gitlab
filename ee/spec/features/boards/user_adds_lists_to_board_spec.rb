@@ -10,7 +10,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
   let_it_be(:user) { create(:user) }
 
   let_it_be(:milestone) { create(:milestone, group: group) }
-  let_it_be(:iteration) { create(:iteration, group: group) }
+  let_it_be(:iteration) { create(:iteration, iterations_cadence: create(:iterations_cadence, group: group)) }
 
   let_it_be(:group_backlog_list) { create(:backlog_list, board: group_board) }
 
@@ -29,6 +29,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
 
   with_them do
     before do
+      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(
         board_milestone_lists: true,
         board_assignee_lists: true,
@@ -38,9 +39,10 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
 
       set_cookie('sidebar_collapsed', 'true')
 
-      if board_type == :project
+      case board_type
+      when :project
         visit project_board_path(project, project_board)
-      elsif board_type == :group
+      when :group
         visit group_board_path(group, group_board)
       end
 
@@ -71,6 +73,7 @@ RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures 
 
   describe 'without a license' do
     before do
+      stub_feature_flags(apollo_boards: false)
       stub_licensed_features(
         board_milestone_lists: false,
         board_assignee_lists: false,

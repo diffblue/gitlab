@@ -18,6 +18,7 @@ module EE
       include UsageStatistics
       include PasswordComplexity
       include IdentityVerifiable
+      include Elastic::ApplicationVersionedSearch
 
       EMAIL_OPT_IN_SOURCE_ID_GITLAB_COM = 1
 
@@ -180,6 +181,11 @@ module EE
           return password
         end
       end
+
+      # override
+      def use_separate_indices?
+        true
+      end
     end
 
     def cannot_be_admin_and_auditor
@@ -222,6 +228,20 @@ module EE
       CustomProjectTemplatesFinder
         .new(current_user: self, search: search, subgroup_id: subgroup_id, project_id: project_id)
         .execute
+    end
+
+    def use_elasticsearch?
+      ::Gitlab::CurrentSettings.elasticsearch_search?
+    end
+
+    def maintaining_elasticsearch?
+      ::Feature.enabled?(:index_user_callback) && ::Gitlab::CurrentSettings.elasticsearch_indexing?
+    end
+
+    def search_membership_ancestry
+      members.includes(:source).flat_map do |member|
+        member.source&.elastic_namespace_ancestry
+      end
     end
 
     def available_subgroups_with_custom_project_templates(group_id = nil)
@@ -443,6 +463,11 @@ module EE
       namespace_bans.find_by!(namespace: namespace)
     end
 
+    def download_code_for?(project)
+      roles = preloaded_member_roles_for_projects([project.id])[project.id]
+      roles.include?(:download_code)
+    end
+
     protected
 
     override :password_required?
@@ -453,6 +478,20 @@ module EE
     end
 
     private
+
+    def preloaded_member_roles_for_projects(project_ids)
+      resource_key = "member_roles_in_projects:#{self.class}:#{self.id}"
+
+      ::Gitlab::SafeRequestLoader.execute(
+        resource_key: resource_key,
+        resource_ids: project_ids
+      ) do |project_ids|
+        ::Preloaders::UserMemberRolesInProjectsPreloader.new(
+          project_ids: project_ids,
+          user: self
+        ).execute
+      end
+    end
 
     def block_auto_created_users?
       if ldap_user?

@@ -59,6 +59,7 @@ export default {
       arkoseToken: '',
       arkoseContainerClass: uniqueId(ARKOSE_CONTAINER_CLASS),
       arkoseChallengePassed: false,
+      needsChallengeChecks: [],
     };
   },
   computed: {
@@ -72,7 +73,7 @@ export default {
     },
   },
   mounted() {
-    this.checkIfNeedsChallenge();
+    this.needsChallengeChecks.push(this.checkIfNeedsChallenge());
   },
   methods: {
     onArkoseLabsIframeShown() {
@@ -84,6 +85,9 @@ export default {
     },
     getUsernameValue() {
       return document.querySelector(this.usernameSelector)?.value || '';
+    },
+    onBlur() {
+      this.needsChallengeChecks.push(this.checkIfNeedsChallenge());
     },
     onSubmit(e) {
       if (this.arkoseChallengePassed) {
@@ -104,7 +108,16 @@ export default {
       }
     },
     async checkAndSubmit(form) {
-      await this.checkIfNeedsChallenge();
+      this.needsChallengeChecks.push(this.checkIfNeedsChallenge());
+
+      // Wait for all calls to checkIfNeedsChallenge to finish before deciding
+      // that the user does not need to see the challenge then submitting the
+      // form. This prevents the form from being submitted before ArkoseLabs has
+      // been properly set up after a call to (API) needsArkoseLabsChallenge
+      // (e.g. when the user uses a password manager auto-fill-and-submit
+      // feature which triggers onBlur and onSubmit in quick succession).
+      await Promise.all(this.needsChallengeChecks);
+
       if (!this.arkoseInitialized) {
         // If the challenge still hasn't been initialized, the user definitely doesn't need one and
         // we can proceed with the form's submission.
@@ -201,7 +214,7 @@ export default {
 
 <template>
   <div>
-    <dom-element-listener :selector="usernameSelector" @blur="checkIfNeedsChallenge" />
+    <dom-element-listener :selector="usernameSelector" @blur="onBlur" />
     <dom-element-listener :selector="formSelector" @submit="onSubmit" />
     <input
       v-if="arkoseInitialized"

@@ -235,8 +235,9 @@ RSpec.describe IssuesFinder do
       end
 
       context 'filter by iteration' do
-        let_it_be(:iteration_1) { create(:iteration, :with_title, group: group, start_date: 2.days.from_now, due_date: 3.days.from_now) }
-        let_it_be(:iteration_2) { create(:iteration, group: group, start_date: 4.days.from_now, due_date: 5.days.from_now) }
+        let_it_be(:cadence) { create(:iterations_cadence, group: group) }
+        let_it_be(:iteration_1) { create(:iteration, :with_title, iterations_cadence: cadence, start_date: 2.days.from_now, due_date: 3.days.from_now) }
+        let_it_be(:iteration_2) { create(:iteration, iterations_cadence: cadence, start_date: 4.days.from_now, due_date: 5.days.from_now) }
 
         let_it_be(:iteration_1_issue) { create(:issue, project: project1, iteration: iteration_1) }
         let_it_be(:iteration_2_issue) { create(:issue, project: project1, iteration: iteration_2) }

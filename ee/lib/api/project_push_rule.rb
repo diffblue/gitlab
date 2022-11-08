@@ -27,22 +27,25 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a project'
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
     end
     resource :projects do
       helpers do
         params :push_rule_params do
-          optional :deny_delete_tag, type: Boolean, desc: 'Deny deleting a tag'
-          optional :member_check, type: Boolean, desc: 'Restrict commits by author (email) to existing GitLab users'
-          optional :prevent_secrets, type: Boolean, desc: 'GitLab will reject any files that are likely to contain secrets'
-          optional :commit_message_regex, type: String, desc: 'All commit messages must match this'
-          optional :commit_message_negative_regex, type: String, desc: 'No commit message is allowed to match this'
-          optional :branch_name_regex, type: String, desc: 'All branches names must match this'
-          optional :author_email_regex, type: String, desc: 'All commit author emails must match this'
-          optional :file_name_regex, type: String, desc: 'All committed filenames must not match this'
-          optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)'
-          optional :commit_committer_check, type: Boolean, desc: 'Users may only push their own commits'
-          optional :reject_unsigned_commits, type: Boolean, desc: 'Only GPG signed commits can be pushed to this project'
+          optional :deny_delete_tag, type: Boolean, desc: 'Deny deleting a tag', documentation: { example: true }
+          optional :member_check, type: Boolean, desc: 'Restrict commits by author (email) to existing GitLab users', documentation: { example: true }
+          optional :prevent_secrets, type: Boolean, desc: 'GitLab will reject any files that are likely to contain secrets', documentation: { example: true }
+          optional :commit_message_regex, type: String, desc: 'All commit messages must match this', documentation: { example: 'Fixed \d+\..*' }
+          optional :commit_message_negative_regex, type: String, desc: 'No commit message is allowed to match this', documentation: { example: 'ssh\:\/\/' }
+          optional :branch_name_regex, type: String, desc: 'All branches names must match this', documentation: { example: '(feature|hotfix)\/*' }
+          optional :author_email_regex, type: String, desc: 'All commit author emails must match this', documentation: { example: '@my-company.com$' }
+          optional :file_name_regex, type: String, desc: 'All committed filenames must not match this', documentation: { example: '(jar|exe)$' }
+          optional :max_file_size, type: Integer, desc: 'Maximum file size (MB)', documentation: { example: '1024' }
+          optional :commit_committer_check,
+                   type: Boolean,
+                   desc: 'Users can only push commits to this repository if the committer email is one of their own verified emails.',
+                   documentation: { example: true }
+          optional :reject_unsigned_commits, type: Boolean, desc: 'Reject commit when it’s not signed through GPG.', documentation: { example: true }
           at_least_one_of :deny_delete_tag, :member_check, :prevent_secrets,
                           :commit_message_regex, :commit_message_negative_regex, :branch_name_regex, :author_email_regex,
                           :file_name_regex, :max_file_size,
@@ -52,7 +55,9 @@ module API
       end
 
       desc 'Get project push rule' do
-        success EE::API::Entities::ProjectPushRule
+        success code: 200, model: EE::API::Entities::ProjectPushRule
+        failure [{ code: 404, message: 'Not found' }]
+        tags %w[projects push_rules]
       end
       get ":id/push_rule" do
         push_rule = user_project.push_rule
@@ -60,7 +65,13 @@ module API
       end
 
       desc 'Add a push rule to a project' do
-        success EE::API::Entities::ProjectPushRule
+        success code: 201, model: EE::API::Entities::ProjectPushRule
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' },
+          { code: 422, message: 'Unprocessable entity' }
+        ]
+        tags %w[projects push_rules]
       end
       params do
         use :push_rule_params
@@ -71,7 +82,13 @@ module API
       end
 
       desc 'Update an existing project push rule' do
-        success EE::API::Entities::ProjectPushRule
+        success code: 200, model: EE::API::Entities::ProjectPushRule
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' },
+          { code: 422, message: 'Unprocessable entity' }
+        ]
+        tags %w[projects push_rules]
       end
       params do
         use :push_rule_params
@@ -81,7 +98,11 @@ module API
         create_or_update_push_rule
       end
 
-      desc 'Deletes project push rule'
+      desc 'Deletes project push rule' do
+        success code: 204
+        failure [{ code: 404, message: 'Not found' }]
+        tags %w[projects push_rules]
+      end
       delete ":id/push_rule" do
         push_rule = user_project.push_rule
         not_found!('Push Rule') unless push_rule

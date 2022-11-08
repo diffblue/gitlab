@@ -45,7 +45,7 @@ module EE
     private
 
     def suggested_reviewers_available?
-      project.suggested_reviewers_available?
+      project.can_suggest_reviewers?
     end
 
     def presented_suggested_users

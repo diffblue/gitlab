@@ -6,7 +6,10 @@ RSpec.describe 'Issues > Bulk edit issues' do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:epic) { create(:epic, group: group) }
-  let_it_be(:iteration) { create(:iteration, group: group, title: "Iteration 1") }
+  let_it_be(:iteration) do
+    create(:iteration, iterations_cadence: create(:iterations_cadence, group: group), title: "Iteration 1")
+  end
+
   let_it_be(:project) { create(:project, :public, group: group) }
   let_it_be(:project_without_group) { create(:project, :public) }
 
@@ -219,9 +222,10 @@ RSpec.describe 'Issues > Bulk edit issues' do
   end
 
   def enable_bulk_update(context)
-    if context == :project
+    case context
+    when :project
       visit project_issues_path(project)
-    elsif context == :project_without_group
+    when :project_without_group
       visit project_issues_path(project_without_group)
     else
       visit issues_group_path(group)

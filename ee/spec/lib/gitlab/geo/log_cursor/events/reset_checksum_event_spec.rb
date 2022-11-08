@@ -29,7 +29,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::ResetChecksumEvent, :clean_gitlab
           skippable: true
         }
 
-        expect(::Gitlab::Logger)
+        expect(::Gitlab::JsonLogger)
           .to receive(:info)
           .with(hash_including(data))
 
@@ -59,7 +59,7 @@ RSpec.describe Gitlab::Geo::LogCursor::Events::ResetChecksumEvent, :clean_gitlab
           skippable: false
         }
 
-        expect(::Gitlab::Logger)
+        expect(::Gitlab::JsonLogger)
           .to receive(:info)
           .with(hash_including(data))
 

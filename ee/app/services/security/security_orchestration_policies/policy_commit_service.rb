@@ -9,7 +9,7 @@ module Security
         return error('Security Policy Project does not exist') unless policy_configuration.present?
 
         validation_result = validate_policy_yaml
-        return error(validation_result[:message], :bad_request) if validation_result[:status] != :success
+        return validation_result if validation_result[:status] != :success
 
         process_policy_result = process_policy
         return process_policy_result if process_policy_result[:status] != :success

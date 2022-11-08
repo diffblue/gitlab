@@ -1,10 +1,16 @@
 import { nextTick } from 'vue';
 import { GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import Zuora from 'ee/billings/components/zuora_simple.vue';
-import CreditCardVerification from 'ee/users/identity_verification/components/credit_card_verification.vue';
+import Zuora, { Event } from 'ee/billings/components/zuora_simple.vue';
+import CreditCardVerification, {
+  EVENT_CATEGORY,
+  EVENT_SUCCESS,
+  EVENT_FAILED,
+} from 'ee/users/identity_verification/components/credit_card_verification.vue';
+import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 
 describe('CreditCardVerification', () => {
+  let trackingSpy;
   let wrapper;
 
   const findZuora = () => wrapper.findComponent(Zuora);
@@ -15,10 +21,13 @@ describe('CreditCardVerification', () => {
       provide: { creditCard: { formId: 'form_id', userId: 927 } },
       propsData: { completed: false },
     });
+
+    trackingSpy = mockTracking(undefined, wrapper.element, jest.spyOn);
   };
 
   afterEach(() => {
     wrapper.destroy();
+    unmockTracking();
   });
 
   it('renders the form', () => {
@@ -37,6 +46,31 @@ describe('CreditCardVerification', () => {
 
     it('emits a completed event', () => {
       expect(wrapper.emitted('completed')).toHaveLength(1);
+    });
+
+    it('tracks the event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(1);
+      expect(trackingSpy).toHaveBeenLastCalledWith(EVENT_CATEGORY, EVENT_SUCCESS, {
+        category: EVENT_CATEGORY,
+      });
+    });
+  });
+
+  describe.each([
+    [Event.SERVER_VALIDATION_ERROR, { message: 'server error' }],
+    [Event.CLIENT_VALIDATION_ERROR, { message: 'client error' }],
+  ])('when zuora emits %s', (event, payload) => {
+    beforeEach(() => {
+      createComponent();
+      wrapper.findComponent(Zuora).vm.$emit(event, payload);
+    });
+
+    it('tracks the event', () => {
+      expect(trackingSpy).toHaveBeenCalledTimes(1);
+      expect(trackingSpy).toHaveBeenLastCalledWith(EVENT_CATEGORY, EVENT_FAILED, {
+        category: EVENT_CATEGORY,
+        property: payload.message,
+      });
     });
   });
 

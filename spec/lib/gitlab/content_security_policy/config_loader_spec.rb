@@ -53,6 +53,18 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
       expect(directives['child_src']).to eq("#{directives['frame_src']} #{directives['worker_src']}")
     end
 
+    describe 'the images-src directive' do
+      it 'can be loaded from anywhere' do
+        expect(directives['img_src']).to include('http: https:')
+      end
+    end
+
+    describe 'the media-src directive' do
+      it 'can be loaded from anywhere' do
+        expect(directives['media_src']).to include('http: https:')
+      end
+    end
+
     context 'adds all websocket origins to support Safari' do
       it 'with insecure domain' do
         stub_config_setting(host: 'example.com', https: false)
@@ -85,7 +97,7 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
         expect(directives['style_src']).to eq("'self' 'unsafe-inline' https://cdn.example.com")
         expect(directives['font_src']).to eq("'self' https://cdn.example.com")
         expect(directives['worker_src']).to eq('http://localhost/assets/ blob: data: https://cdn.example.com')
-        expect(directives['frame_src']).to eq(::Gitlab::ContentSecurityPolicy::Directives.frame_src + " https://cdn.example.com http://localhost/admin/ http://localhost/assets/ http://localhost/-/speedscope/index.html http://localhost/-/sandbox/mermaid")
+        expect(directives['frame_src']).to eq(::Gitlab::ContentSecurityPolicy::Directives.frame_src + " https://cdn.example.com http://localhost/admin/ http://localhost/assets/ http://localhost/-/speedscope/index.html http://localhost/-/sandbox/")
       end
     end
 
@@ -108,7 +120,7 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
       end
 
       it 'adds CUSTOMER_PORTAL_URL to CSP' do
-        expect(directives['frame_src']).to eq(::Gitlab::ContentSecurityPolicy::Directives.frame_src + " http://localhost/admin/ http://localhost/assets/ http://localhost/-/speedscope/index.html http://localhost/-/sandbox/mermaid #{customer_portal_url}")
+        expect(directives['frame_src']).to eq(::Gitlab::ContentSecurityPolicy::Directives.frame_src + " http://localhost/admin/ http://localhost/assets/ http://localhost/-/speedscope/index.html http://localhost/-/sandbox/ #{customer_portal_url}")
       end
     end
 

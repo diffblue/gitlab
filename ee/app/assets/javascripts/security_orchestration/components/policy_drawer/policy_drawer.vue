@@ -1,5 +1,14 @@
 <script>
-import { GlButton, GlDrawer, GlLink, GlSprintf, GlTabs, GlTab, GlTooltip } from '@gitlab/ui';
+import {
+  GlButton,
+  GlDrawer,
+  GlLink,
+  GlSprintf,
+  GlTabs,
+  GlTab,
+  GlTooltip,
+  GlTruncate,
+} from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight, removeUnnecessaryDashes } from '../../utils';
@@ -22,6 +31,7 @@ export default {
     GlTab,
     GlTabs,
     GlTooltip,
+    GlTruncate,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
     ScanExecutionPolicy,
@@ -83,7 +93,11 @@ export default {
     v-on="$listeners"
   >
     <template v-if="policy" #title>
-      <h4 class="gl-my-0 gl-mr-3">{{ policy.name }}</h4>
+      <gl-truncate
+        class="gl-font-size-h2 gl-font-weight-bold gl-line-height-24"
+        :text="policy.name"
+        with-tooltip
+      />
     </template>
     <template v-if="policy" #header>
       <span ref="editButton" class="gl-display-inline-block">

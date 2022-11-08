@@ -4,8 +4,8 @@ require 'spec_helper'
 
 RSpec.describe 'User edits iteration cadence', :js do
   let_it_be(:group) { create(:group) }
-  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group ).user }
-  let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group ).user }
+  let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group).user }
+  let_it_be(:guest_user) { create(:group_member, :guest, user: create(:user), group: group).user }
   let_it_be(:cadence) { create(:iterations_cadence, group: group, description: 'an example iteration cadence', duration_in_weeks: 3, iterations_in_advance: 2) }
 
   dropdown_selector = '[data-testid="actions-dropdown"]'

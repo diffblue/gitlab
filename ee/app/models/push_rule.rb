@@ -94,6 +94,7 @@ class PushRule < ApplicationRecord
   end
 
   def commit_message_blocked?(message)
+    message = message.to_s.chomp
     commit_message_negative_regex.present? && data_match?(message, commit_message_negative_regex, multiline: true)
   end
 
@@ -163,7 +164,7 @@ class PushRule < ApplicationRecord
                  Gitlab::UntrustedRegexp.new(regex, multiline: multiline)
                end
 
-      regexp === data
+      regexp === data.to_s
     else
       true
     end

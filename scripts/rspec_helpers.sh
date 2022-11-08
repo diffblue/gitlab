@@ -11,7 +11,6 @@ function retrieve_tests_metadata() {
 
     if [[ ! -f "${FLAKY_RSPEC_SUITE_REPORT_PATH}" ]]; then
       curl --location -o "${FLAKY_RSPEC_SUITE_REPORT_PATH}" "https://gitlab-org.gitlab.io/gitlab/${FLAKY_RSPEC_SUITE_REPORT_PATH}" ||
-        curl --location -o "${FLAKY_RSPEC_SUITE_REPORT_PATH}" "https://gitlab-org.gitlab.io/gitlab/rspec_flaky/report-suite.json" || # temporary back-compat
         echo "{}" > "${FLAKY_RSPEC_SUITE_REPORT_PATH}"
     fi
   else
@@ -35,13 +34,7 @@ function retrieve_tests_metadata() {
 
       if [[ ! -f "${FLAKY_RSPEC_SUITE_REPORT_PATH}" ]]; then
         scripts/api/download_job_artifact.rb --endpoint "https://gitlab.com/api/v4" --project "${project_path}" --job-id "${test_metadata_job_id}" --artifact-path "${FLAKY_RSPEC_SUITE_REPORT_PATH}" ||
-          scripts/api/download_job_artifact.rb --endpoint "https://gitlab.com/api/v4" --project "${project_path}" --job-id "${test_metadata_job_id}" --artifact-path "rspec_flaky/report-suite.json" || # temporary back-compat
           echo "{}" > "${FLAKY_RSPEC_SUITE_REPORT_PATH}"
-
-        # temporary back-compat
-        if [[ -f "rspec_flaky/report-suite.json" ]]; then
-          mv "rspec_flaky/report-suite.json" "${FLAKY_RSPEC_SUITE_REPORT_PATH}"
-        fi
       fi
     else
       echo "test_metadata_job_id couldn't be found!"
@@ -61,6 +54,9 @@ function update_tests_metadata() {
 
   export FLAKY_RSPEC_GENERATE_REPORT="true"
   scripts/merge-reports "${FLAKY_RSPEC_SUITE_REPORT_PATH}" ${rspec_flaky_folder_path}all_*.json
+
+  # Prune flaky tests that weren't flaky in the last 7 days, *after* updating the flaky tests detected
+  # in this pipeline, so that first_flaky_at for tests that are still flaky is maintained.
   scripts/flaky_examples/prune-old-flaky-examples "${FLAKY_RSPEC_SUITE_REPORT_PATH}"
 
   if [[ "$CI_PIPELINE_SOURCE" == "schedule" ]]; then

@@ -3,6 +3,12 @@
 module Namespaces
   module FreeUserCap
     class Standard < Base
+      def over_limit?(cache: false)
+        return preloaded_over_limit[root_namespace.id] if cache
+
+        super
+      end
+
       def reached_limit?
         return false unless enforce_cap?
 
@@ -16,7 +22,29 @@ module Namespaces
         !reached_limit?
       end
 
+      def close_to_dashboard_limit?
+        return false unless enforce_cap?
+        return false unless new_namespace_enforcement?
+        return false if reached_limit?
+
+        users_count >= (limit - CLOSE_TO_LIMIT_COUNT_DIFFERENCE)
+      end
+
+      def remaining_seats
+        [limit - users_count, 0].max
+      end
+
       private
+
+      CLOSE_TO_LIMIT_COUNT_DIFFERENCE = 2
+
+      def preloaded_over_limit
+        resource_key = 'free_user_cap_for_over_limit'
+
+        ::Gitlab::SafeRequestLoader.execute(resource_key: resource_key, resource_ids: [root_namespace.id]) do
+          { root_namespace.id => over_limit? }
+        end
+      end
 
       def limit
         if new_namespace_enforcement?

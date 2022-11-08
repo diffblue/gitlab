@@ -1,11 +1,37 @@
 {
   "type": "object",
-  "required": [ "access_level_description" ],
+  "required": [
+    "id",
+    "access_level_description"
+  ],
   "properties": {
-    "access_level": { "type": ["integer", "null"] },
-    "access_level_description": { "type": ["string", "null"] },
-    "user_id": { "type": ["integer", "null"] },
-    "group_id": { "type": ["integer", "null"] }
+    "id": {
+      "type": "integer"
+    },
+    "access_level": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "access_level_description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "user_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "group_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    }
   },
   "additionalProperties": false
 }

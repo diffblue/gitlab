@@ -149,17 +149,6 @@ module EE
         end
         # rubocop:enable CodeReuse/ActiveRecord, UsageData/LargeTable
 
-        def security_products_usage
-          results = SECURE_PRODUCT_TYPES.each_with_object({}) do |(secure_type, attribs), response|
-            next if secure_type.in?([:license_management, :license_scanning])
-
-            response[attribs[:name]] = add_metric('CountCiBuildsMetric', options: { secure_type: secure_type })
-          end
-
-          results[:license_management_jobs] = add_metric("LicenseManagementJobsMetric")
-          results
-        end
-
         def on_demand_pipelines_usage
           { dast_on_demand_pipelines: count(::Ci::Pipeline.ondemand_dast_scan) }
         end
@@ -217,7 +206,6 @@ module EE
                 template_repositories: add(count(::Project.with_repos_templates), count(::Project.with_groups_level_repos_templates))
               },
               requirements_counts,
-              security_products_usage,
               on_demand_pipelines_usage,
               operations_dashboard_usage)
           end

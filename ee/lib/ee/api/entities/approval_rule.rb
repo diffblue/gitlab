@@ -10,10 +10,10 @@ module EE
         end
 
         expose :approvers, as: :eligible_approvers, using: ::API::Entities::UserBasic
-        expose :approvals_required
+        expose :approvals_required, documentation: { type: 'integer', example: 2 }
         expose :users, using: ::API::Entities::UserBasic
         expose :groups, using: ::API::Entities::Group
-        expose :contains_hidden_groups?, as: :contains_hidden_groups
+        expose :contains_hidden_groups?, documentation: { type: 'boolean' }, as: :contains_hidden_groups
       end
     end
   end

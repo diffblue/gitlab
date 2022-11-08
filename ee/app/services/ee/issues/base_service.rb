@@ -117,7 +117,11 @@ module EE
       private
 
       def validate_iteration_params!(iteration_params)
-        return false if [iteration_params[:iteration_wildcard_id], iteration_params[:iteration_id]].all?(&:blank?)
+        if iteration_params.values_at(:iteration_id, :sprint_id).all?(&:present?)
+          raise IterationAssignmentError, 'Incompatible arguments: iteration_id, sprint_id.'
+        end
+
+        return false if iteration_params.values_at(:iteration_wildcard_id, :iteration_id, :sprint_id).all?(&:blank?)
 
         if iteration_params[:iteration_wildcard_id].present? && iteration_params[:iteration_cadence_id].blank?
           raise IterationAssignmentError, 'iteration_cadence_id is required when iteration_wildcard_id is provided.'
@@ -125,6 +129,10 @@ module EE
 
         if [iteration_params[:iteration_id], iteration_params[:iteration_wildcard_id]].all?(&:present?)
           raise IterationAssignmentError, 'Incompatible arguments: iteration_id, iteration_wildcard_id.'
+        end
+
+        if iteration_params.values_at(:sprint_id, :iteration_wildcard_id).all?(&:present?)
+          raise IterationAssignmentError, 'Incompatible arguments: sprint_id, iteration_wildcard_id.'
         end
 
         if iteration_params[:iteration_wildcard_id].present?
@@ -137,7 +145,7 @@ module EE
       def find_iteration!(iteration_params, group)
         # converts params to keys the finder understands
         finder_params = iteration_params.slice(:iteration_wildcard_id).merge(parent: group, include_ancestors: true)
-        finder_params[:id] = iteration_params[:iteration_id]
+        finder_params[:id] = iteration_params[:iteration_id].presence || iteration_params[:sprint_id]
         finder_params[:iteration_cadence_ids] = iteration_params[:iteration_cadence_id]
 
         iteration = IterationsFinder.new(current_user, finder_params.compact).execute.first
@@ -149,7 +157,7 @@ module EE
 
       def process_iteration_id
         # These iteration params need to be removed unconditionally from params as they do not exist on the model
-        iteration_params = params.extract!(:iteration_wildcard_id, :iteration_cadence_id, :iteration_id)
+        iteration_params = params.extract!(:iteration_wildcard_id, :iteration_cadence_id, :iteration_id, :sprint_id)
 
         return unless project_group&.licensed_feature_available?(:iterations)
         return unless validate_iteration_params!(iteration_params)

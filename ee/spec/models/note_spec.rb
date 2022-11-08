@@ -155,4 +155,25 @@ RSpec.describe Note do
       end
     end
   end
+
+  describe '#updated_by_or_author' do
+    subject(:updated_by_or_author) { note.updated_by_or_author }
+
+    context 'when updated_by is nil' do
+      let(:note) { create(:note, updated_by: nil) }
+
+      it 'returns the author' do
+        expect(updated_by_or_author).to be(note.author)
+      end
+    end
+
+    context 'when updated_by is present' do
+      let(:user) { create(:user) }
+      let(:note) { create(:note, updated_by: user) }
+
+      it 'returns the last user who updated the note' do
+        expect(updated_by_or_author).to be(user)
+      end
+    end
+  end
 end
