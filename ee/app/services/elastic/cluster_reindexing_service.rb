@@ -184,6 +184,9 @@ module Elastic
       # Kick off more reindexing slices
       slices_in_progress = trigger_reindexing_slices(slices_in_progress)
 
+      # Schedule another check in 1 minute
+      ::ElasticClusterReindexingCronWorker.perform_in(1.minute)
+
       slices_in_progress == 0 && slices_failed == 0 && totals_do_not_match == 0
     rescue Elasticsearch::Transport::Transport::Error
       abort_reindexing!("Couldn't load task status")

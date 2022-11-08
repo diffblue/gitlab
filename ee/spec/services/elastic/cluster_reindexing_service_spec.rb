@@ -252,6 +252,12 @@ RSpec.describe Elastic::ClusterReindexingService, :elastic, :clean_gitlab_redis_
         expect { cluster_reindexing_service.execute }.to change { task.reload.state }.from('reindexing').to('failure')
         expect(task.reload.error_message).to match(/couldn't load task status/i)
       end
+
+      it 'enqueues another job' do
+        expect { cluster_reindexing_service.execute }
+          .to change { ElasticClusterReindexingCronWorker.jobs.size }
+          .by(1)
+      end
     end
 
     context 'slice batching' do
