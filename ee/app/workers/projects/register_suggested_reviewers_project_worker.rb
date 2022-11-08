@@ -32,8 +32,12 @@ module Projects
     private
 
     def handle_error(response, project_id)
-      if response.reason == :client_request_failed
+      case response.reason
+      when :client_request_failed
         response.track_and_raise_exception(project_id: project_id)
+      when :project_already_registered
+        # ignore
+        response
       else
         response.track_exception(project_id: project_id)
       end
