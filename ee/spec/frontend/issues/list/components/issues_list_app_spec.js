@@ -9,7 +9,9 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { getIssuesCountsQueryResponse, getIssuesQueryResponse } from 'jest/issues/list/mock_data';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
-import { CREATED_DESC } from '~/issues/list/constants';
+import { CREATED_DESC, TYPE_TOKEN_OBJECTIVE_OPTION } from '~/issues/list/constants';
+import CEIssuesListApp from '~/issues/list/components/issues_list_app.vue';
+import { WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
 import {
   TOKEN_TYPE_ASSIGNEE,
   TOKEN_TYPE_AUTHOR,
@@ -52,6 +54,7 @@ describe('EE IssuesListApp component', () => {
     hasIssueWeightsFeature: true,
     hasIterationsFeature: true,
     hasScopedLabelsFeature: true,
+    hasOkrsFeature: true,
     initialEmail: 'email@example.com',
     initialSort: CREATED_DESC,
     isAnonymousSearchDisabled: false,
@@ -75,8 +78,11 @@ describe('EE IssuesListApp component', () => {
 
   const findIssuableList = () => wrapper.findComponent(IssuableList);
 
+  const findIssueListApp = () => wrapper.findComponent(CEIssuesListApp);
+
   const mountComponent = ({
     provide = {},
+    okrsMvc = false,
     issuesQueryResponse = jest.fn().mockResolvedValue(defaultQueryResponse),
     issuesCountsQueryResponse = jest.fn().mockResolvedValue(getIssuesCountsQueryResponse),
   } = {}) => {
@@ -89,6 +95,9 @@ describe('EE IssuesListApp component', () => {
     return mount(IssuesListApp, {
       apolloProvider,
       provide: {
+        glFeatures: {
+          okrsMvc,
+        },
         ...defaultProvide,
         ...provide,
       },
@@ -111,6 +120,58 @@ describe('EE IssuesListApp component', () => {
         defaultQueryResponse.data.project.issues.nodes[0].blockingCount,
       );
     });
+  });
+
+  describe('workItemTypes', () => {
+    describe.each`
+      hasOkrsFeature | okrsMvc  | eeWorkItemTypes                    | message
+      ${false}       | ${true}  | ${[]}                              | ${'NOT include'}
+      ${true}        | ${false} | ${[]}                              | ${'NOT include'}
+      ${true}        | ${true}  | ${[WORK_ITEM_TYPE_ENUM_OBJECTIVE]} | ${'include'}
+    `(
+      'when hasOkrsFeature is "$hasOkrsFeature" and okrsMvc is "$okrsMvc"',
+      ({ hasOkrsFeature, okrsMvc, eeWorkItemTypes, message }) => {
+        beforeEach(() => {
+          wrapper = mountComponent({
+            provide: {
+              hasOkrsFeature,
+            },
+            okrsMvc,
+          });
+        });
+
+        it(`should ${message} objective in work item types`, () => {
+          expect(findIssueListApp().props('eeWorkItemTypes')).toMatchObject(eeWorkItemTypes);
+        });
+      },
+    );
+  });
+
+  describe('typeTokenOptions', () => {
+    describe.each`
+      hasOkrsFeature | okrsMvc  | eeWorkItemTypeTokens             | message
+      ${false}       | ${true}  | ${[]}                            | ${'NOT include'}
+      ${true}        | ${false} | ${[]}                            | ${'NOT include'}
+      ${true}        | ${true}  | ${[TYPE_TOKEN_OBJECTIVE_OPTION]} | ${'include'}
+    `(
+      'when hasOkrsFeature is "$hasOkrsFeature" and okrsMvc is "$okrsMvc"',
+      ({ hasOkrsFeature, okrsMvc, eeWorkItemTypeTokens, message }) => {
+        beforeEach(() => {
+          wrapper = mountComponent({
+            provide: {
+              hasOkrsFeature,
+            },
+            okrsMvc,
+          });
+        });
+
+        it(`should ${message} objective in type tokens`, () => {
+          expect(findIssueListApp().props('eeTypeTokenOptions')).toMatchObject(
+            eeWorkItemTypeTokens,
+          );
+        });
+      },
+    );
   });
 
   describe('tokens', () => {
