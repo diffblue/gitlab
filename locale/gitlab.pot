@@ -36915,6 +36915,9 @@ msgstr ""
 msgid "See our website for help"
 msgstr ""
 
+msgid "See the Geo troubleshooting documentation to learn more: %{docs_url}"
+msgstr ""
+
 msgid "See the affected projects in the GitLab admin panel"
 msgstr ""
 
