@@ -4,7 +4,7 @@ module API
   class ManagedLicenses < ::API::Base
     include PaginationParams
 
-    feature_category :license_compliance
+    feature_category :security_policy_management
     urgency :low
 
     before { authenticate! unless route.settings[:skip_authentication] }
