@@ -68,22 +68,6 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
     end
   end
 
-  shared_context 'with recording a conversion event' do
-    let_it_be(:user_created_at) { RequireVerificationForNamespaceCreationExperiment::EXPERIMENT_START_DATE + 1.hour }
-    let_it_be(:user) { create(:user, created_at: user_created_at) }
-    let_it_be(:experiment) { create(:experiment, name: :require_verification_for_namespace_creation) }
-    let_it_be(:experiment_subject) { create(:experiment_subject, experiment: experiment, user: user) }
-
-    before do
-      stub_experiments(require_verification_for_namespace_creation: true)
-    end
-
-    it 'records a conversion event for the required verification experiment' do
-      expect { subject }.to change { experiment_subject.reload.converted_at }.from(nil)
-        .and change(experiment_subject, :context).to include('namespace_id')
-    end
-  end
-
   describe 'POST #create' do
     subject(:post_create) { post :create, params: params }
 
