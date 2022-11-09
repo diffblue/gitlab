@@ -8,15 +8,21 @@ RSpec.describe Admin::CredentialsController, type: :request do
   let_it_be(:admin) { create(:admin) }
   let_it_be(:user) { create(:user) }
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
+  let_it_be(:project) { create(:project, :in_group) }
+  let_it_be(:group) { project.group }
   let_it_be(:project_bot) { create(:user, :project_bot, created_by_id: user.id) }
-  let_it_be(:project_member) { create(:project_member, user: project_bot) }
-  let_it_be(:project_access_token) { create(:personal_access_token, user: project_member.user) }
+  let_it_be(:group_bot) { create(:user, :project_bot, created_by_id: user.id) }
+  let_it_be(:project_member) { create(:project_member, source: project, user: project_bot) }
+  let_it_be(:group_member) { create(:group_member, source: group, user: group_bot) }
+  let_it_be(:project_access_token) { create(:personal_access_token, user: project_bot) }
+  let_it_be(:group_access_token) { create(:personal_access_token, user: group_bot) }
 
   describe 'GET #index' do
     context 'admin user' do
       before do
         login_as(admin)
         enable_admin_mode!(admin)
+        group.add_maintainer(group_bot)
       end
 
       context 'when `credentials_inventory` feature is enabled' do
@@ -69,11 +75,13 @@ RSpec.describe Admin::CredentialsController, type: :request do
             end
           end
 
-          context 'credential type specified as `project_access_tokens`' do
-            it 'filters by project access tokens' do
-              get admin_credentials_path(filter: 'project_access_tokens')
+          context 'credential type specified as `resource_access_tokens`' do
+            it 'filters by project and group access tokens' do
+              get admin_credentials_path(filter: 'resource_access_tokens')
 
-              expect(assigns(:credentials)).to contain_exactly(project_access_token)
+              expect(assigns(:credentials)).to match_array(
+                [project_access_token, group_access_token]
+              )
             end
           end
 
@@ -145,11 +153,6 @@ RSpec.describe Admin::CredentialsController, type: :request do
   end
 
   describe 'PUT #revoke' do
-    let_it_be(:project_member) { create(:project_member) }
-    let_it_be(:project_access_token) { create(:personal_access_token, user: project_member.user) }
-
-    let(:project) { project_member.project }
-
     shared_examples_for 'responds with 404' do
       it do
         put revoke_admin_credential_path(id: token_id)
@@ -158,7 +161,7 @@ RSpec.describe Admin::CredentialsController, type: :request do
       end
 
       it do
-        put admin_credential_project_revoke_path(credential_id: token_id, project_id: project.id)
+        put admin_credential_resource_revoke_path(credential_id: token_id, resource_id: project.id, resource_type: 'Project')
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -173,10 +176,17 @@ RSpec.describe Admin::CredentialsController, type: :request do
       end
 
       it :aggregate_failures do
-        put admin_credential_project_revoke_path(credential_id: project_access_token.id, project_id: project.id)
+        put admin_credential_resource_revoke_path(credential_id: project_access_token.id, resource_id: project.id, resource_type: 'Project')
 
         expect(response).to redirect_to(admin_credentials_path)
         expect(flash[:notice]).to eq "Access token #{project_access_token.name} has been revoked and the bot user has been scheduled for deletion."
+      end
+
+      it :aggregate_failures do
+        put admin_credential_resource_revoke_path(credential_id: group_access_token.id, resource_id: group.id, resource_type: 'Group')
+
+        expect(response).to redirect_to(admin_credentials_path)
+        expect(flash[:notice]).to eq "Access token #{group_access_token.name} has been revoked and the bot user has been scheduled for deletion."
       end
     end
 

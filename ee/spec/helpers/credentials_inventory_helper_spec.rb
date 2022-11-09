@@ -29,6 +29,28 @@ RSpec.describe CredentialsInventoryHelper do
     end
   end
 
+  describe '#show_resource_access_tokens?' do
+    subject { show_resource_access_tokens? }
+
+    context 'when filter value equals resource_access_tokens' do
+      let(:filter) { 'resource_access_tokens' }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when filter value is a value other than resource_access_tokens' do
+      let(:filter) { 'other_access_tokens' }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when filter value is nil' do
+      let(:filter) { nil }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe '#show_ssh_keys?' do
     subject { show_ssh_keys? }
 
