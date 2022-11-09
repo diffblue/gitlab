@@ -6,7 +6,6 @@ module Projects
       include SecurityAndCompliancePermissions
       include SecurityDashboardsPermissions
       include IssuableActions
-      include RendersNotes
 
       before_action do
         push_frontend_feature_flag(:create_vulnerability_jira_issue_via_graphql, @project)

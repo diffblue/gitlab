@@ -3,7 +3,6 @@
 class Projects::MergeRequestsController < Projects::MergeRequests::ApplicationController
   include ToggleSubscriptionAction
   include IssuableActions
-  include RendersNotes
   include RendersCommits
   include RendersAssignees
   include ToggleAwardEmoji
