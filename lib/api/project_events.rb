@@ -12,7 +12,7 @@ module API
     urgency :low
 
     params do
-      requires :project_id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
       optional :action, type: String, desc: 'Include only events of a particular action type'
       optional :target_type, type: String, desc: 'Include only events of a particular target type'
       optional :before, type: DateTime, desc: 'Include only events created before a particular date'
@@ -29,7 +29,7 @@ module API
         use :sort_params
       end
 
-      get ":project_id/events" do
+      get ":id/events" do
         events = find_events(user_project)
 
         present_events(events)
