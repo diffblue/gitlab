@@ -436,7 +436,7 @@ curl --request PATCH --header "PRIVATE-TOKEN: <your_access_token>" "https://gitl
 ```
 
 | Attribute                                    | Type           | Required | Description                                                                                                                          |
-|----------------------------------------------|----------------|----------|--------------------------------------------------------------------------------------------------------------------------------------|
+| -------------------------------------------- | ---- | -------- | ----------- |
 | `id`                                         | integer/string | yes      | The ID or [URL-encoded path of the project](index.md#namespaced-path-encoding) owned by the authenticated user                       |
 | `name`                                       | string         | yes      | The name of the branch                                                                                                               |
 | `allow_force_push`                           | boolean        | no       | When enabled, members who can push to this branch can also force push.                                                               |
@@ -451,14 +451,16 @@ Elements in the `allowed_to_push`, `allowed_to_merge` and `allowed_to_unprotect`
 
 To update:
 
-- **`user_id`**: Ensure the updated user has access to the project. You must also pass the `id` of the `access_level` in the respective hash.
-- **`group_id`**: Ensure the updated group [have this project shared](../user/project/members/share_project_with_groups.md). You must also pass the `id` of the `access_level` in the respective hash.
+- `user_id`: Ensure the updated user has access to the project. You must also pass the
+  `id` of the `access_level` in the respective hash.
+- `group_id`: Ensure the updated group [has this project shared](../user/project/members/share_project_with_groups.md).
+  You must also pass the `id` of the `access_level` in the respective hash.
 
 To delete:
 
 - You must pass `_destroy` set to `true`. See the following examples.
 
-### Example: Create a `push_access_level` record
+### Example: create a `push_access_level` record
 
 ```shell
 curl --header 'Content-Type: application/json' --request PATCH \
@@ -484,7 +486,7 @@ Example response:
 }
 ```
 
-### Example: Update a `push_access_level` record
+### Example: update a `push_access_level` record
 
 ```shell
 curl --header 'Content-Type: application/json' --request PUT \
@@ -507,7 +509,7 @@ curl --header 'Content-Type: application/json' --request PUT \
 }
 ```
 
-### Example: Delete a `push_access_level` record
+### Example: delete a `push_access_level` record
 
 ```shell
 curl --header 'Content-Type: application/json' --request PUT \
