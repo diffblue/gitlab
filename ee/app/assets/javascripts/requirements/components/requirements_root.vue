@@ -10,6 +10,8 @@ import Tracking from '~/tracking';
 import {
   DEFAULT_LABEL_ANY,
   OPERATOR_IS_ONLY,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_STATUS,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
@@ -284,7 +286,7 @@ export default {
         {
           type: 'author_username',
           icon: 'user',
-          title: __('Author'),
+          title: TOKEN_TITLE_AUTHOR,
           unique: false,
           symbol: '@',
           token: AuthorToken,
@@ -295,7 +297,7 @@ export default {
         {
           type: 'status',
           icon: 'status',
-          title: __('Status'),
+          title: TOKEN_TITLE_STATUS,
           unique: true,
           token: StatusToken,
           operators: OPERATOR_IS_ONLY,

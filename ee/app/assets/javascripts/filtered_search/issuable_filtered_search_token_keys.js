@@ -5,9 +5,14 @@ import {
   conditions,
 } from '~/filtered_search/issuable_filtered_search_token_keys';
 import { __ } from '~/locale';
+import {
+  TOKEN_TITLE_EPIC,
+  TOKEN_TITLE_ITERATION,
+  TOKEN_TITLE_WEIGHT,
+} from 'ee/vue_shared/components/filtered_search_bar/constants';
 
 export const weightTokenKey = {
-  formattedKey: __('Weight'),
+  formattedKey: TOKEN_TITLE_WEIGHT,
   key: 'weight',
   type: 'string',
   param: '',
@@ -17,7 +22,7 @@ export const weightTokenKey = {
 };
 
 export const epicTokenKey = {
-  formattedKey: __('Epic'),
+  formattedKey: TOKEN_TITLE_EPIC,
   key: 'epic',
   type: 'string',
   param: 'id',
@@ -26,7 +31,7 @@ export const epicTokenKey = {
 };
 
 export const iterationTokenKey = {
-  formattedKey: __('Iteration'),
+  formattedKey: TOKEN_TITLE_ITERATION,
   key: 'iteration',
   type: 'string',
   param: 'title',

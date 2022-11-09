@@ -3,7 +3,10 @@ import { orderBy } from 'lodash';
 import EpicFilteredSearch from 'ee/boards/components/epic_filtered_search.vue';
 import BoardFilteredSearch from 'ee/boards/components/board_filtered_search.vue';
 import issueBoardFilters from '~/boards/issue_board_filters';
-import { __ } from '~/locale';
+import {
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_LABEL,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
@@ -41,7 +44,7 @@ describe('EpicFilteredSearch', () => {
       const tokens = [
         {
           icon: 'labels',
-          title: __('Label'),
+          title: TOKEN_TITLE_LABEL,
           type: 'label',
           operators: [
             { value: '=', description: 'is' },
@@ -54,7 +57,7 @@ describe('EpicFilteredSearch', () => {
         },
         {
           icon: 'pencil',
-          title: __('Author'),
+          title: TOKEN_TITLE_AUTHOR,
           type: 'author',
           operators: [
             { value: '=', description: 'is' },

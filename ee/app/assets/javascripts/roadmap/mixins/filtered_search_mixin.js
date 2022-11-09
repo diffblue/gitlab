@@ -9,11 +9,17 @@ import {
   OPERATOR_IS_NOT,
   OPERATOR_IS,
   OPERATOR_IS_AND_IS_NOT,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_CONFIDENTIAL,
+  TOKEN_TITLE_LABEL,
+  TOKEN_TITLE_MILESTONE,
+  TOKEN_TITLE_MY_REACTION,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
+import { TOKEN_TITLE_EPIC } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 
 export default {
@@ -77,7 +83,7 @@ export default {
         {
           type: 'author_username',
           icon: 'user',
-          title: __('Author'),
+          title: TOKEN_TITLE_AUTHOR,
           unique: true,
           symbol: '@',
           token: AuthorToken,
@@ -90,7 +96,7 @@ export default {
         {
           type: 'label_name',
           icon: 'labels',
-          title: __('Label'),
+          title: TOKEN_TITLE_LABEL,
           unique: false,
           symbol: '~',
           token: LabelToken,
@@ -115,7 +121,7 @@ export default {
         {
           type: 'milestone_title',
           icon: 'clock',
-          title: __('Milestone'),
+          title: TOKEN_TITLE_MILESTONE,
           unique: true,
           symbol: '%',
           token: MilestoneToken,
@@ -138,7 +144,7 @@ export default {
         {
           type: 'confidential',
           icon: 'eye-slash',
-          title: __('Confidential'),
+          title: TOKEN_TITLE_CONFIDENTIAL,
           unique: true,
           token: GlFilteredSearchToken,
           operators: OPERATOR_IS_ONLY,
@@ -153,7 +159,7 @@ export default {
         tokens.push({
           type: 'epic_iid',
           icon: 'epic',
-          title: __('Epic'),
+          title: TOKEN_TITLE_EPIC,
           unique: true,
           idProperty: 'iid',
           useIdValue: true,
@@ -170,7 +176,7 @@ export default {
         tokens.push({
           type: 'my_reaction_emoji',
           icon: 'thumb-up',
-          title: __('My-Reaction'),
+          title: TOKEN_TITLE_MY_REACTION,
           unique: true,
           token: EmojiToken,
           operators: OPERATOR_IS_AND_IS_NOT,

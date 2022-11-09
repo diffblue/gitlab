@@ -1,9 +1,14 @@
 import FilteredSearchTokenKeys from '~/filtered_search/filtered_search_token_keys';
 import { __ } from '~/locale';
+import {
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_LABEL,
+  TOKEN_TITLE_MY_REACTION,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 
 const tokenKeys = [
   {
-    formattedKey: __('Author'),
+    formattedKey: TOKEN_TITLE_AUTHOR,
     key: 'author',
     type: 'string',
     param: 'username',
@@ -12,7 +17,7 @@ const tokenKeys = [
     tag: '@author',
   },
   {
-    formattedKey: __('Label'),
+    formattedKey: TOKEN_TITLE_LABEL,
     key: 'label',
     type: 'array',
     param: 'name[]',
@@ -25,7 +30,7 @@ const tokenKeys = [
 if (gon.current_user_id) {
   // Appending tokenkeys only logged-in
   tokenKeys.push({
-    formattedKey: __('My-Reaction'),
+    formattedKey: TOKEN_TITLE_MY_REACTION,
     key: 'my-reaction',
     type: 'string',
     param: 'emoji',
@@ -37,7 +42,7 @@ if (gon.current_user_id) {
 
 const alternativeTokenKeys = [
   {
-    formattedKey: __('Label'),
+    formattedKey: TOKEN_TITLE_LABEL,
     key: 'label',
     type: 'string',
     param: 'name',
