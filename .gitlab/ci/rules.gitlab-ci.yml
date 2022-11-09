@@ -868,6 +868,7 @@
     - <<: *if-merge-request-targeting-stable-branch
     - <<: *if-merge-request-labels-run-review-app
     - <<: *if-auto-deploy-branches
+    - <<: *if-ruby3-branch
     - <<: *if-default-refs
       changes: *ci-build-images-patterns
     - <<: *if-default-refs
