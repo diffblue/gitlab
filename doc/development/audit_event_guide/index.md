@@ -210,6 +210,8 @@ To add a new audit event type:
 1. Add contents to the file that conform to the [schema](#schema) defined in `config/audit_events/types/type_schema.json`.
 1. Ensure that all calls to `Gitlab::Audit::Auditor` use the `name` defined in your file.
 
+You can also use the `bin/audit-event-type` CLI to create the YAML definition automatically. 
+
 ### Schema
 
 | Field | Required | Description |
