@@ -9,7 +9,6 @@ module Registrations
     skip_before_action :set_confirm_warning
     before_action :check_if_gl_com_or_dev
     before_action :authorize_create_group!, only: :new
-    before_action :set_requires_verification, only: :new, if: -> { helpers.require_verification_experiment.candidate? }
     before_action :require_verification,
                   only: [:create, :import],
                   if: -> { current_user.requires_credit_card_verification }
@@ -22,7 +21,9 @@ module Registrations
     feature_category :onboarding
 
     def new
-      helpers.require_verification_experiment.publish_to_database
+      experiment(:require_verification_for_namespace_creation, user: current_user) do |e|
+        e.candidate { set_requires_verification }
+      end
 
       @group = Group.new(visibility_level: Gitlab::CurrentSettings.default_group_visibility)
       @project = Project.new(namespace: @group)

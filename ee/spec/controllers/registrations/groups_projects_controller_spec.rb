@@ -44,10 +44,11 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment do
           expect_snowplow_event(category: described_class.name, action: 'view_new_group_action', user: user)
         end
 
-        it 'publishes the required verification experiment to the database' do
-          expect_next_instance_of(RequireVerificationForNamespaceCreationExperiment) do |experiment|
-            expect(experiment).to receive(:publish_to_database)
-          end
+        it 'assigns the required verification experiment to a variant' do
+          stub_experiments(require_verification_for_namespace_creation: :control)
+          expect(experiment(:require_verification_for_namespace_creation)).to track(:assignment)
+                                                               .with_context(user: user)
+                                                               .on_next_instance
 
           subject
         end

@@ -16,7 +16,6 @@ module Registrations
 
     def after_successful_group_creation(group_track_action:)
       Gitlab::Tracking.event(self.class.name, group_track_action, namespace: group, user: user)
-      require_verification_experiment.record_conversion(group)
 
       apply_trial if in_trial_onboarding_flow?
     end
@@ -25,10 +24,6 @@ module Registrations
       return group_params unless group_needs_path_added?
 
       group_params.compact_blank.with_defaults(path: Namespace.clean_path(group_name))
-    end
-
-    def require_verification_experiment
-      experiment(:require_verification_for_namespace_creation, user: user)
     end
 
     def in_trial_onboarding_flow?
