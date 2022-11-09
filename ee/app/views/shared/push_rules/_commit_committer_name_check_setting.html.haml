@@ -1,0 +1,13 @@
+- return unless Feature.enabled?(:commit_committer_name_check_ff)
+
+- context = local_assigns.fetch(:context)
+
+- return unless push_rule.available?(:commit_committer_name_check, object: context)
+
+- form = local_assigns.fetch(:form)
+- push_rule = local_assigns.fetch(:push_rule)
+
+= form.gitlab_ui_checkbox_component :commit_committer_name_check,
+     s_("PushRule|Reject inconsistent user name"),
+     checkbox_options: { data: { qa_selector: 'committer_name_restriction_checkbox' }, disabled: !can_change_push_rule?(form.object, :commit_committer_name_check, context) },
+     help_text: commit_committer_name_check_description(push_rule)

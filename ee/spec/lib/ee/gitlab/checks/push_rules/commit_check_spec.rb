@@ -331,5 +331,37 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
         end
       end
     end
+
+    context 'Check commit author name rules' do
+      let(:push_rule) { create(:push_rule, commit_committer_name_check: true) }
+
+      before do
+        stub_licensed_features(commit_committer_name_check: true)
+      end
+
+      context 'with consistent user name' do
+        before do
+          allow_any_instance_of(Commit).to receive(:committer_name).and_return(user.name)
+        end
+
+        it 'not raise error' do
+          expect { subject.validate! }.not_to raise_error
+        end
+      end
+
+      context 'with inconsistent user name' do
+        let(:user) { create(:user, name: 'Test') }
+
+        before do
+          allow_any_instance_of(Commit).to receive(:committer_name).and_return('Test1')
+        end
+
+        it 'raises error' do
+          expect { subject.validate! }
+            .to raise_error(Gitlab::GitAccess::ForbiddenError,
+              "Your git username is inconsistent with GitLab account name")
+        end
+      end
+    end
   end
 end

@@ -32257,6 +32257,9 @@ msgstr ""
 msgid "ProjectSettings|Users can only push commits to this repository if the committer email is one of their own verified emails."
 msgstr ""
 
+msgid "ProjectSettings|Users can only push commits to this repository if the committer name is consistent with their git config username."
+msgstr ""
+
 msgid "ProjectSettings|Users can request access"
 msgstr ""
 
@@ -33293,6 +33296,9 @@ msgid "PushRules|Users can still delete tags through the GitLab UI."
 msgstr ""
 
 msgid "PushRule|Push rules"
+msgstr ""
+
+msgid "PushRule|Reject inconsistent user name"
 msgstr ""
 
 msgid "PushRule|Reject unverified users"

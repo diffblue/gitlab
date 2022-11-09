@@ -128,6 +128,10 @@ module EE
         @subject.feature_available?(:commit_committer_check)
       end
 
+      condition(:commit_committer_name_check_available, scope: :subject) do
+        @subject.feature_available?(:commit_committer_name_check)
+      end
+
       condition(:reject_unsigned_commits_available, scope: :subject) do
         @subject.feature_available?(:reject_unsigned_commits)
       end
@@ -443,12 +447,22 @@ module EE
 
       rule { admin | maintainer }.enable :change_commit_committer_check
 
+      rule { admin | maintainer }.enable :change_commit_committer_name_check
+
       rule { commit_committer_check_available }.policy do
         enable :read_commit_committer_check
       end
 
       rule { ~commit_committer_check_available }.policy do
         prevent :change_commit_committer_check
+      end
+
+      rule { commit_committer_name_check_available }.policy do
+        enable :read_commit_committer_name_check
+      end
+
+      rule { ~commit_committer_name_check_available }.policy do
+        prevent :change_commit_committer_name_check
       end
 
       rule { admin | maintainer }.enable :change_reject_unsigned_commits

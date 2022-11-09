@@ -147,6 +147,114 @@ RSpec.describe Groups::PushRulesController do
           end
         end
       end
+
+      shared_examples 'updates push rule commit_committer_name_check of group' do |result|
+        it 'matches the given result' do
+          patch :update, params: { group_id: group, push_rule: { 'commit_committer_name_check' => true } }
+
+          expect(group.reload.push_rule.commit_committer_name_check).to eq(result)
+        end
+      end
+
+      context "Updating commit_committer_name_check rule" do
+        let(:push_rule_for_group) { create(:push_rule) }
+
+        before do
+          group.update!(push_rule_id: push_rule_for_group.id)
+        end
+
+        context 'when commit_committer_name_check is disabled' do
+          before do
+            stub_licensed_features(commit_committer_name_check: false)
+          end
+
+          context 'as an admin' do
+            let(:user) { create(:admin) }
+
+            context 'when admin mode enabled', :enable_admin_mode do
+              it_behaves_like 'updates push rule commit_committer_name_check of group', false
+            end
+          end
+
+          context 'as a maintainer user' do
+            before do
+              group.add_maintainer(user)
+            end
+
+            it_behaves_like 'updates push rule commit_committer_name_check of group', false
+          end
+
+          context 'as a developer user' do
+            before do
+              group.add_developer(user)
+            end
+
+            it_behaves_like 'updates push rule commit_committer_name_check of group', false
+          end
+        end
+
+        context 'when commit_committer_name_check is enabled' do
+          before do
+            stub_licensed_features(commit_committer_name_check: true)
+          end
+
+          context 'when commit_committer_name_check_ff is enabled' do
+            context 'as an admin' do
+              let(:user) { create(:admin) }
+
+              context 'when admin mode enabled', :enable_admin_mode do
+                it_behaves_like 'updates push rule commit_committer_name_check of group', true
+              end
+            end
+
+            context 'as a maintainer user' do
+              before do
+                group.add_maintainer(user)
+              end
+
+              it_behaves_like 'updates push rule commit_committer_name_check of group', true
+            end
+
+            context 'as a developer user' do
+              before do
+                group.add_developer(user)
+              end
+
+              it_behaves_like 'updates push rule commit_committer_name_check of group', false
+            end
+          end
+
+          context 'when commit_committer_name_check_ff is disabled' do
+            before do
+              stub_feature_flags(commit_committer_name_check_ff: false)
+            end
+
+            context 'as an admin' do
+              let(:user) { create(:admin) }
+
+              context 'when admin mode enabled', :enable_admin_mode do
+                it_behaves_like 'updates push rule commit_committer_name_check of group', false
+              end
+            end
+
+            context 'as a maintainer user' do
+              before do
+                group.add_maintainer(user)
+              end
+
+              it_behaves_like 'updates push rule commit_committer_name_check of group', false
+            end
+
+            context 'as a developer user' do
+              before do
+                group.add_developer(user)
+              end
+
+              it_behaves_like 'updates push rule commit_committer_name_check of group', false
+            end
+          end
+        end
+      end
     end
 
     context 'when user role is lower than maintainer' do
