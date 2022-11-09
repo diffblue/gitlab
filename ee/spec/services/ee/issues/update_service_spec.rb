@@ -545,7 +545,7 @@ RSpec.describe Issues::UpdateService do
         group.add_developer(user)
       end
 
-      # Requires `expoected_policy` and `expected_status` to be defined
+      # Requires `expected_policy` and `expected_status` to be defined
       shared_examples 'updates the escalation status record' do
         let(:service_double) { instance_double(escalation_update_class) }
 
@@ -557,10 +557,16 @@ RSpec.describe Issues::UpdateService do
         end
 
         it 'triggers side-effects' do
+          expected_full_payload = include(
+            expected_payload.merge(
+              event_type: 'issue',
+              object_kind: 'issue'
+            )
+          )
           expect(escalation_update_class).to receive(:new).with(issue, user).and_return(service_double)
           expect(service_double).to receive(:execute)
-          expect(project).to receive(:execute_hooks).with(an_instance_of(Hash), :issue_hooks)
-          expect(project).to receive(:execute_integrations).with(an_instance_of(Hash), :issue_hooks)
+          expect(project).to receive(:execute_hooks).with(expected_full_payload, :issue_hooks)
+          expect(project).to receive(:execute_integrations).with(expected_full_payload, :issue_hooks)
 
           update_issue(opts)
         end
@@ -589,6 +595,19 @@ RSpec.describe Issues::UpdateService do
             include_examples 'updates the escalation status record' do
               let(:expected_policy) { policy }
               let(:expected_status) { :triggered }
+
+              let(:expected_payload) do
+                {
+                  changes: {
+                    escalation_policy: { current: { id: expected_policy.id, name: expected_policy.name }, previous: nil }
+                  },
+                  object_attributes: include(
+                    escalation_policy: { id: expected_policy.id, name: expected_policy.name },
+                    escalation_status: expected_status,
+                    action: 'update'
+                  )
+                }
+              end
             end
 
             context 'with the policy value defined but unchanged' do
@@ -608,6 +627,22 @@ RSpec.describe Issues::UpdateService do
               include_examples 'updates the escalation status record' do
                 let(:expected_policy) { nil }
                 let(:expected_status) { :triggered }
+
+                let(:expected_payload) do
+                  {
+                    changes: {
+                      escalation_policy: {
+                        current: expected_policy,
+                        previous: { id: escalation_status.policy.id, name: escalation_status.policy.name }
+                      }
+                    },
+                    object_attributes: include(
+                      escalation_policy: expected_policy,
+                      escalation_status: expected_status,
+                      action: 'update'
+                    )
+                  }
+                end
               end
 
               context 'in addition to other attributes' do
@@ -616,6 +651,23 @@ RSpec.describe Issues::UpdateService do
                 include_examples 'updates the escalation status record' do
                   let(:expected_policy) { nil }
                   let(:expected_status) { :acknowledged }
+
+                  let(:expected_payload) do
+                    {
+                      changes: {
+                        escalation_policy: {
+                          current: expected_policy,
+                          previous: { id: escalation_status.policy.id, name: escalation_status.policy.name }
+                        },
+                        escalation_status: { current: expected_status, previous: :triggered }
+                      },
+                      object_attributes: include(
+                        escalation_policy: expected_policy,
+                        escalation_status: expected_status,
+                        action: 'update'
+                      )
+                    }
+                  end
                 end
               end
             end
@@ -637,6 +689,22 @@ RSpec.describe Issues::UpdateService do
         include_examples 'updates the escalation status record' do
           let(:expected_policy) { policy }
           let(:expected_status) { :triggered }
+
+          let(:expected_payload) do
+            {
+              changes: {
+                escalation_policy: {
+                  current: { id: expected_policy.id, name: expected_policy.name },
+                  previous: nil
+                }
+              },
+              object_attributes: include(
+                escalation_policy: { id: expected_policy.id, name: expected_policy.name },
+                escalation_status: expected_status,
+                action: 'update'
+              )
+            }
+          end
         end
       end
     end
