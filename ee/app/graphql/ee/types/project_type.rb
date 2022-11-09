@@ -227,6 +227,13 @@ module EE
               complexity: 100,
               description: 'Preview Billable User Changes',
               resolver: ::Resolvers::GitlabSubscriptions::PreviewBillableUserChangeResolver
+
+        field :product_analytics_dashboards, ::Types::ProductAnalytics::DashboardType.connection_type,
+              description: 'Product Analytics dashboards of the project.',
+              null: true,
+              calls_gitaly: true,
+              alpha: { milestone: '15.6' },
+              resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
       end
 
       def api_fuzzing_ci_configuration
