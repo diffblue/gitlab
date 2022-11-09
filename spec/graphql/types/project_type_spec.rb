@@ -37,7 +37,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       ci_template timelogs merge_commit_template squash_commit_template work_item_types
       recent_issue_boards ci_config_path_or_default packages_cleanup_policy ci_variables
       timelog_categories fork_targets branch_rules ci_config_variables pipeline_schedules languages
-      timeline_event_tags
+      incident_management_timeline_event_tags
     ]
 
     expect(described_class).to include_graphql_fields(*expected_fields)
@@ -509,8 +509,8 @@ RSpec.describe GitlabSchema.types['Project'] do
     it { is_expected.to have_graphql_resolver(Resolvers::Ci::JobTokenScopeResolver) }
   end
 
-  describe 'timeline_event_tags field' do
-    subject { described_class.fields['timelineEventTags'] }
+  describe 'incident_management_timeline_event_tags field' do
+    subject { described_class.fields['incidentManagementTimelineEventTags'] }
 
     it { is_expected.to have_graphql_type(Types::IncidentManagement::TimelineEventTagType) }
   end
@@ -748,11 +748,13 @@ RSpec.describe GitlabSchema.types['Project'] do
       creator_id: user.id,
       namespace: user.namespace)
     end
+
     let_it_be(:tag1) do
       create(:incident_management_timeline_event_tag,
       project: project,
       name: 'Tag 1')
     end
+
     let_it_be(:tag2) do
       create(:incident_management_timeline_event_tag,
       project: project,
@@ -763,7 +765,7 @@ RSpec.describe GitlabSchema.types['Project'] do
       %(
         query {
           project(fullPath: "#{project.full_path}") {
-            timelineEventTags {
+            incidentManagementTimelineEventTags {
               name
               id
             }
@@ -773,7 +775,7 @@ RSpec.describe GitlabSchema.types['Project'] do
     end
 
     let(:tags) do
-      subject.dig('data', 'project', 'timelineEventTags')
+      subject.dig('data', 'project', 'incidentManagementTimelineEventTags')
     end
 
     subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
