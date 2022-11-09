@@ -18775,6 +18775,9 @@ msgstr ""
 msgid "Go to your projects"
 msgstr ""
 
+msgid "Go to your review requests"
+msgstr ""
+
 msgid "Go to your snippets"
 msgstr ""
 
