@@ -4,14 +4,19 @@ module API
   class SamlGroupLinks < ::API::Base
     before { authenticate! }
 
+    SAML_GROUP_LINKS = %w[saml_group_links].freeze
+
     feature_category :authentication_and_authorization
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
+      requires :id, types: [String, Integer], desc: 'ID or URL-encoded path of the group'
     end
     resource :groups do
-      desc 'Get SAML group links for a group' do
+      desc 'Lists SAML group links' do
+        detail 'Get SAML group links for a group'
         success EE::API::Entities::SamlGroupLink
+        is_array true
+        tags SAML_GROUP_LINKS
       end
       get ":id/saml_group_links" do
         group = find_group(params[:id])
@@ -22,8 +27,15 @@ module API
         present saml_group_links, with: EE::API::Entities::SamlGroupLink
       end
 
-      desc 'Add a SAML group link for a group' do
+      desc 'Add SAML group link' do
+        detail 'Add a SAML group link for a group'
         success EE::API::Entities::SamlGroupLink
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 404, message: 'Not found' },
+          { code: 422, message: 'Unprocessable entity' }
+        ]
+        tags SAML_GROUP_LINKS
       end
       params do
         requires 'saml_group_name', type: String, desc: 'The name of a SAML group'
@@ -47,11 +59,16 @@ module API
         end
       end
 
-      desc 'Get an existing SAML Group Link for a group' do
+      desc 'Get SAML group link' do
+        detail 'Get a SAML group link for the group'
         success EE::API::Entities::SamlGroupLink
+        failure [
+          { code: 404, message: 'Not found' }
+        ]
+        tags SAML_GROUP_LINKS
       end
       params do
-        requires 'saml_group_name', type: String, desc: 'The Name of a SAML group link'
+        requires 'saml_group_name', type: String, desc: 'Name of an SAML group'
       end
       # rubocop: disable CodeReuse/ActiveRecord
       get ":id/saml_group_links/:saml_group_name" do
@@ -69,11 +86,16 @@ module API
       end
       # rubocop: enable CodeReuse/ActiveRecord
 
-      desc 'Delete an existing SAML Group Link for a group' do
+      desc 'Delete SAML group link' do
+        detail 'Deletes a SAML group link for the group'
         success EE::API::Entities::SamlGroupLink
+        failure [
+          { code: 404, message: 'Not found' }
+        ]
+        tags SAML_GROUP_LINKS
       end
       params do
-        requires 'saml_group_name', type: String, desc: 'The Name of a SAML group link'
+        requires 'saml_group_name', type: String, desc: 'Name of a SAML group'
       end
       # rubocop: disable CodeReuse/ActiveRecord
       delete ":id/saml_group_links/:saml_group_name" do
