@@ -48695,6 +48695,9 @@ msgstr ""
 msgid "mrWidget|Merge blocked: all required approvals must be given."
 msgstr ""
 
+msgid "mrWidget|Merge blocked: all status checks must pass."
+msgstr ""
+
 msgid "mrWidget|Merge blocked: all threads must be resolved."
 msgstr ""
 
