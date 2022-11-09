@@ -37,6 +37,10 @@ module Types
           null: false,
           description: 'Path of the project.'
 
+    field :timeline_event_tags, [Types::IncidentManagement::TimelineEventTagType],
+          null: true,
+          description: 'Timeline event tags for the project.'
+
     field :sast_ci_configuration, Types::CiConfiguration::Sast::Type,
           null: true,
           calls_gitaly: true,
@@ -612,6 +616,10 @@ module Types
 
     def languages
       ::Projects::RepositoryLanguagesService.new(project, current_user).execute
+    end
+
+    def timeline_event_tags
+      object.incident_management_timeline_event_tags
     end
 
     private
