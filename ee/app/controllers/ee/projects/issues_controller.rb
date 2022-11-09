@@ -104,6 +104,7 @@ module EE
           feedback_type: 'issue',
           category: vulnerability.report_type,
           project_fingerprint: vulnerability.finding.project_fingerprint,
+          finding_uuid: vulnerability.finding_uuid,
           vulnerability_data: vulnerability.as_json
         }
 
