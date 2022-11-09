@@ -3,18 +3,23 @@ image: registry.gitlab.com/gitlab-org/gitlab-development-kit/gitpod-workspace:st
 tasks:
 
   - name: GDK
+    # gitpod-start
+    before: |
+      START_UNIXTIME="$(date +%s)"
+      echo START_UNIXTIME="$(date +%s)" > /workspace/gitpod_start_time.sh
     command: |
-      echo START_TIME_IN_SECONDS="$(date +%s)" | tee /workspace/gitpod_start_time.sh
       gp sync-done gitpod-start
       gp sync-await gdk-copied && cd /workspace/gitlab-development-kit && gdk help
 
-  - init: |
+  - name: GitLab
+    # gdk-copied
+    init: |
       echo "$(date) – Copying GDK" | tee -a /workspace/startup.log
       cp -r $HOME/gitlab-development-kit /workspace/
       (
         set -e
         cd /workspace/gitlab-development-kit
-        # Ensure GitLab directory is symlinked under the GDK
+        # ensure GitLab directory is symlinked under the GDK
         ln -nfs "$GITPOD_REPO_ROOT" /workspace/gitlab-development-kit/gitlab
         mv /workspace/gitlab-development-kit/secrets.yml /workspace/gitlab-development-kit/gitlab/config
         # ensure gdk.yml has correct instance settings
@@ -33,12 +38,12 @@ tasks:
         echo "$(date) – Stopping GDK" | tee -a /workspace/startup.log
         gdk stop
         echo "$(date) – GDK stopped" | tee -a /workspace/startup.log
+        gp sync-done gdk-copied
       )
     command: |
       (
-        gp sync-await gitpod-start
         set -e
-        gp sync-done gdk-copied
+        gp sync-await gitpod-start
         [[ -f /workspace/gitpod_start_time.sh ]] && source /workspace/gitpod_start_time.sh
         SECONDS=0
         cd /workspace/gitlab-development-kit
