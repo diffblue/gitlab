@@ -15,9 +15,10 @@ RSpec.describe Geo::RepositoryVerification::Secondary::SingleWorker, :geo, :clea
   end
 
   it 'disables retrying of failed jobs' do
-    expect(subject.sidekiq_options_hash).to include(
+    expect(subject.sidekiq_options_hash).to match(
       'retry' => false,
       'version' => an_instance_of(Integer),
+      'queue' => 'geo:geo_repository_verification_secondary_single',
       'queue_namespace' => :geo
     )
   end

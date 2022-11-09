@@ -18,6 +18,7 @@ RSpec.describe Geo::VerificationStateBackfillWorker, :geo do
 
   it 'uses a geo queue' do
     expect(subject.sidekiq_options_hash).to include(
+      'queue' => 'geo:geo_verification_state_backfill',
       'queue_namespace' => :geo
     )
   end

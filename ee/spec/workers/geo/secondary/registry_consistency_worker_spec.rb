@@ -22,9 +22,9 @@ RSpec.describe Geo::Secondary::RegistryConsistencyWorker, :geo do
 
   it 'uses a cronjob queue' do
     expect(subject.sidekiq_options_hash).to include(
+      'queue' => 'cronjob:geo_secondary_registry_consistency',
       'queue_namespace' => :cronjob
     )
-    expect(subject.class.generated_queue_name).to include('cronjob:geo_secondary_registry_consistency')
   end
 
   describe '#perform' do

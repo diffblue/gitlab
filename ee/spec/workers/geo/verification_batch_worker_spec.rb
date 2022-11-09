@@ -17,6 +17,7 @@ RSpec.describe Geo::VerificationBatchWorker, :geo do
 
   it 'uses a Geo queue' do
     expect(job.sidekiq_options_hash).to include(
+      'queue' => 'geo:geo_verification_batch',
       'queue_namespace' => :geo
     )
   end
