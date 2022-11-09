@@ -36,7 +36,10 @@ module QA
         Flow::Saml.logout_from_idp(saml_idp_service)
       end
 
-      shared_examples 'group membership actions' do
+      shared_examples 'group membership actions', quarantine: {
+        type: :investigating,
+        issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/382024"
+      } do
         it 'creates a new account automatically and allows to leave group and join again' do
           # When the user signs in via IDP for the first time
 
