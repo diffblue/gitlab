@@ -25,6 +25,7 @@ RSpec.describe Ci::Build do
 
   it { is_expected.to have_many(:needs) }
   it { is_expected.to have_many(:sourced_pipelines) }
+  it { is_expected.to have_one(:sourced_pipeline) }
   it { is_expected.to have_many(:job_variables) }
   it { is_expected.to have_many(:report_results) }
   it { is_expected.to have_many(:pages_deployments) }
