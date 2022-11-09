@@ -15510,9 +15510,6 @@ msgstr ""
 msgid "Epics|Remove issue"
 msgstr ""
 
-msgid "Epics|Show more"
-msgstr ""
-
 msgid "Epics|Something went wrong while creating child epics."
 msgstr ""
 
@@ -37709,6 +37706,9 @@ msgid "Show latest version"
 msgstr ""
 
 msgid "Show list"
+msgstr ""
+
+msgid "Show more"
 msgstr ""
 
 msgid "Show one file at a time"
