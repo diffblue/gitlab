@@ -41001,9 +41001,6 @@ msgstr ""
 msgid "There are no abuse reports!"
 msgstr ""
 
-msgid "There are no archived projects yet"
-msgstr ""
-
 msgid "There are no archived requirements"
 msgstr ""
 
@@ -41059,9 +41056,6 @@ msgid "There are no open test cases"
 msgstr ""
 
 msgid "There are no packages yet"
-msgstr ""
-
-msgid "There are no projects shared with this group yet"
 msgstr ""
 
 msgid "There are no secure files yet."
