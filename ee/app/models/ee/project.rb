@@ -672,6 +672,18 @@ module EE
       true
     end
 
+    def product_analytics_dashboards
+      return [] unless product_analytics_enabled?
+
+      ::ProductAnalytics::Dashboard.for_project(self)
+    end
+
+    def product_analytics_dashboard(slug)
+      return [] unless product_analytics_enabled?
+
+      ::ProductAnalytics::Dashboard.for_project(self).find { |dashboard| dashboard.slug == slug }
+    end
+
     def repository_size_excess
       return 0 unless actual_size_limit.to_i > 0
 
