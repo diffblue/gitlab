@@ -59,8 +59,7 @@ export default () => {
         confidential: initialData.confidential,
         reference: `${initialData.fullPath}${initialData.issuableRef}`,
         userPermissions: {
-          adminEpic: initialData.canAdmin,
-          createEpic: initialData.canUpdate,
+          canAdmin: initialData.canAdmin,
         },
       });
 
