@@ -63,7 +63,6 @@ export default {
     <slot name="content">
       {{ $options.i18n.preScanVerificationDefaultText }}
       <span v-if="showPipelineDetails">
-        {{ $options.i18n.preScanVerificationPipelineDetailsLabel }}
         <pipeline-details
           class="gl-text-gray-50 gl-display-inline"
           :status="status"

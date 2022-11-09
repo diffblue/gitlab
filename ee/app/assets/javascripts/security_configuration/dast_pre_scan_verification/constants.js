@@ -128,7 +128,6 @@ export const PRE_SCAN_VERIFICATION_ALERT_TRANSLATIONS = {
   preScanVerificationDefaultText: s__(
     'PreScanVerification|The last pre-scan verification job is no longer valid because this scan’s configuration has changed.',
   ),
-  preScanVerificationPipelineDetailsLabel: s__('PreScanVerification|Verification was '),
 };
 
 export const ALERT_VARIANT_STATUS_MAP = {

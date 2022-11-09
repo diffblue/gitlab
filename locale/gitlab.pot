@@ -30748,9 +30748,6 @@ msgstr ""
 msgid "PreScanVerification|Verification checks are determined by a scan’s configuration details. Changing configuration details may alter or reset the verification checks and their status."
 msgstr ""
 
-msgid "PreScanVerification|Verification was "
-msgstr ""
-
 msgid "PreScanVerification|Verify configuration"
 msgstr ""
 
