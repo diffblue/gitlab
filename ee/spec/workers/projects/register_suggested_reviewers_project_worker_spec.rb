@@ -94,7 +94,7 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectWorker do
                   ServiceResponse.error(message: 'Failed to create access token', reason: :token_creation_failed)
                 end
 
-                it 'tracks the error', :aggregate_failures do
+                it 'tracks the error' do
                   allow_next_instance_of(::Projects::RegisterSuggestedReviewersProjectService) do |instance|
                     allow(instance).to receive(:execute).and_return(response)
                   end
@@ -103,6 +103,22 @@ RSpec.describe Projects::RegisterSuggestedReviewersProjectWorker do
                     .to receive(:track_exception)
                           .with(an_instance_of(StandardError), { project_id: project.id })
                           .and_call_original
+
+                  subject.perform(project.id, user.id)
+                end
+              end
+
+              context 'when error is swallowable' do
+                let(:response) do
+                  ServiceResponse.error(message: 'Project is already registered', reason: :project_already_registered)
+                end
+
+                it 'swallows the error' do
+                  allow_next_instance_of(::Projects::RegisterSuggestedReviewersProjectService) do |instance|
+                    allow(instance).to receive(:execute).and_return(response)
+                  end
+
+                  expect(Gitlab::ErrorTracking).not_to receive(:track_exception)
 
                   subject.perform(project.id, user.id)
                 end
