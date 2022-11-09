@@ -5,12 +5,12 @@ require 'spec_helper'
 RSpec.describe 'Registration group and project creation flow', :saas, :js do
   let_it_be(:user) { create(:user) }
 
-  let(:feature_flags) { {} }
+  let(:experiments) { {} }
 
   before do
     # https://gitlab.com/gitlab-org/gitlab/-/issues/340302
     allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(136)
-    stub_feature_flags(feature_flags)
+    stub_experiments(experiments)
     sign_in(user)
     visit users_sign_up_welcome_path
 
@@ -71,19 +71,20 @@ RSpec.describe 'Registration group and project creation flow', :saas, :js do
     expect(page).to have_content('To connect GitHub repositories, you first need to authorize GitLab to')
   end
 
-  describe 'exiting onboarding' do
+  context 'with exiting onboarding' do
     it 'does not show a link to exit the page' do
       expect(page).not_to have_link('Exit.')
     end
 
     context 'when require_verification_for_namespace_creation experiment is enabled' do
-      let(:feature_flags) do
+      let(:experiments) do
         {
-          require_verification_for_namespace_creation: true
+          require_verification_for_namespace_creation: :candidate
         }
       end
 
-      it 'shows a link to exit the page' do
+      it 'shows a link to exit the page and verification' do
+        expect(page).to have_button('Verify your identity')
         expect(page).to have_link('Exit.', href: exit_users_sign_up_groups_projects_path)
         expect(page).to have_content('You can always verify your account at a later time to create a group.')
       end

@@ -22,12 +22,6 @@ module EE
       { next_step_url: url }
     end
 
-    def require_verification_experiment
-      strong_memoize(:require_verification_experiment) do
-        experiment(:require_verification_for_namespace_creation, user: current_user)
-      end
-    end
-
     def credit_card_verification_data
       {
         completed: current_user.credit_card_validation.present?.to_s,
