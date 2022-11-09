@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Gitlab
-  class PaginationDelegate
+  class PaginationDelegate # rubocop:disable Gitlab/NamespacedClass
     DEFAULT_PER_PAGE = Kaminari.config.default_per_page
     MAX_PER_PAGE = Kaminari.config.max_per_page
 
