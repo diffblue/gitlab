@@ -6,17 +6,17 @@ module Sbom
       class IngestComponents < Base
         include Gitlab::Ingestion::BulkInsertableTask
 
-        COMPONENT_ATTRIBUTES = %i[component_type name].freeze
+        COMPONENT_ATTRIBUTES = %i[name purl_type component_type].freeze
 
         self.model = Sbom::Component
         self.unique_by = COMPONENT_ATTRIBUTES
-        self.uses = %i[component_type name id].freeze
+        self.uses = %i[id name purl_type component_type].freeze
 
         private
 
         def after_ingest
-          return_data.each do |component_type, name, id|
-            maps_with(component_type, name)&.each do |occurrence_map|
+          return_data.each do |id, name, purl_type, component_type|
+            maps_with(name, purl_type, component_type)&.each do |occurrence_map|
               occurrence_map.component_id = id
             end
           end
@@ -28,15 +28,13 @@ module Sbom
           end
         end
 
-        def maps_with(component_type, name)
-          grouped_maps[[component_type, name]]
+        def maps_with(name, purl_type, component_type)
+          grouped_maps[[name, purl_type, component_type]]
         end
 
         def grouped_maps
           @grouped_maps ||= occurrence_maps.group_by do |occurrence_map|
-            report_component = occurrence_map.report_component
-
-            [report_component.component_type, report_component.name]
+            occurrence_map.to_h.values_at(:name, :purl_type, :component_type)
           end
         end
       end

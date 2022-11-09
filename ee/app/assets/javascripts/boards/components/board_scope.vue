@@ -1,5 +1,4 @@
 <script>
-import { mapGetters } from 'vuex';
 import { __ } from '~/locale';
 import AssigneeSelect from './assignee_select.vue';
 import BoardLabelsSelect from './labels_select.vue';
@@ -15,6 +14,7 @@ export default {
     BoardMilestoneSelect,
     BoardWeightSelect,
   },
+  inject: ['isIssueBoard'],
   props: {
     collapseScope: {
       type: Boolean,
@@ -42,7 +42,6 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['isIssueBoard']),
     expandButtonText() {
       return this.expanded ? __('Collapse') : __('Expand');
     },

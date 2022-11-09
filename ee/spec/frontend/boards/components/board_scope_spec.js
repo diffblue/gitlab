@@ -12,19 +12,17 @@ describe('BoardScope', () => {
   let wrapper;
   let store;
 
-  const createStore = ({ isIssueBoard }) => {
-    return new Vuex.Store({
-      getters: {
-        isIssueBoard: () => isIssueBoard,
-        isEpicBoard: () => !isIssueBoard,
-      },
-    });
+  const createStore = () => {
+    return new Vuex.Store();
   };
 
   function mountComponent({ isIssueBoard = true } = []) {
-    store = createStore({ isIssueBoard });
+    store = createStore();
     wrapper = mount(BoardScope, {
       store,
+      provide: {
+        isIssueBoard,
+      },
       propsData: {
         collapseScope: false,
         canAdminBoard: true,

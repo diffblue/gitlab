@@ -4,7 +4,6 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import Vuex from 'vuex';
 import BoardListHeader from 'ee/boards/components/board_list_header.vue';
-import defaultGetters from 'ee/boards/stores/getters';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import {
@@ -40,7 +39,7 @@ describe('Board List Header Component', () => {
   let fakeApollo;
 
   beforeEach(() => {
-    store = new Vuex.Store({ state: { activeId: inactiveId }, defaultGetters });
+    store = new Vuex.Store({ state: { activeId: inactiveId } });
   });
 
   afterEach(() => {
@@ -61,7 +60,7 @@ describe('Board List Header Component', () => {
     glFeatures = { feEpicBoardTotalWeight: true },
     currentUserId = 1,
     state = { activeId: inactiveId },
-    getters = {},
+    isEpicBoard = false,
   } = {}) => {
     const boardId = '1';
 
@@ -85,10 +84,6 @@ describe('Board List Header Component', () => {
 
     store = new Vuex.Store({
       state,
-      getters: {
-        ...defaultGetters,
-        ...getters,
-      },
     });
 
     jest.spyOn(store, 'dispatch').mockImplementation();
@@ -107,6 +102,7 @@ describe('Board List Header Component', () => {
         currentUserId,
         canCreateEpic,
         glFeatures,
+        isEpicBoard,
       },
     });
   };
@@ -124,13 +120,7 @@ describe('Board List Header Component', () => {
 
     beforeEach(() => {
       jest.spyOn(boardsEventHub, '$emit');
-      createComponent({
-        getters: {
-          isIssueBoard: () => false,
-          isEpicBoard: () => true,
-          isGroupBoard: () => true,
-        },
-      });
+      createComponent({ isEpicBoard: true });
       newEpicButton = wrapper.findComponent(GlButtonGroup).findComponent(GlButton);
     });
 
@@ -145,11 +135,7 @@ describe('Board List Header Component', () => {
     it('does not render New epic button when canCreateEpic is false', () => {
       createComponent({
         canCreateEpic: false,
-        getters: {
-          isIssueBoard: () => false,
-          isEpicBoard: () => true,
-          isGroupBoard: () => true,
-        },
+        isEpicBoard: true,
       });
 
       expect(wrapper.findComponent(GlButtonGroup).exists()).toBe(false);
@@ -231,7 +217,7 @@ describe('Board List Header Component', () => {
       `('isEpicBoard is $isEpicBoard', async ({ isEpicBoard, totalWeight }) => {
         createComponent({
           weightFeatureAvailable: true,
-          getters: { isEpicBoard: () => isEpicBoard },
+          isEpicBoard,
         });
 
         await waitForPromises();

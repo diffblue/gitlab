@@ -7,17 +7,19 @@ RSpec.describe API::Analytics::ProductAnalytics do
 
   let(:current_user) { project.owner }
   let(:cube_api_url) { "http://cube.dev/cubejs-api/v1/load" }
-  let(:query) { { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi' }.to_query }
+  let(:query) { { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi' } }
+
+  subject(:request) { post api("/projects/#{project.id}/product_analytics/request/load", current_user), params: query }
 
   shared_examples 'a not found error' do
     it 'returns a 404' do
-      get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
+      request
 
       expect(response).to have_gitlab_http_status(:not_found)
     end
   end
 
-  describe 'GET projects/:id/product_analytics/request/load' do
+  describe 'POST projects/:id/product_analytics/request/load' do
     before do
       stub_cube_load
       stub_licensed_features(product_analytics: true)
@@ -32,7 +34,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns a 404' do
-        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
+        request
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
@@ -54,7 +56,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns an unauthorized error' do
-        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
+        request
 
         expect(response).to have_gitlab_http_status(:unauthorized)
       end
@@ -67,33 +69,34 @@ RSpec.describe API::Analytics::ProductAnalytics do
         project.add_developer(current_user)
       end
 
-      it 'returns a 200' do
-        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
+      it 'returns a 201' do
+        request
 
-        expect(response).to have_gitlab_http_status(:ok)
+        expect(response).to have_gitlab_http_status(:created)
       end
 
       context 'when query param is missing' do
-        let(:query) { { 'queryType': 'multi' }.to_query }
+        let(:query) { { 'queryType': 'multi' } }
 
         it 'returns a 400' do
-          get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
+          request
 
           expect(response).to have_gitlab_http_status(:bad_request)
         end
       end
 
-      it 'returns bad request when invalid parameters are passed' do
-        query = {
-          query: { measures: ['Jitsu.count'] }.to_json,
-          'queryType': 'multi',
-          'badParam': 1
-        }.to_query
-        get api("/projects/#{project.id}/product_analytics/request/load?#{query}", current_user)
+      context 'when a query param is unsupported' do
+        let(:query) { { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi', 'badParam': 1 } }
 
-        expect(WebMock).to have_requested(:post, cube_api_url).with(
-          body: { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' }.to_json
-        )
+        it 'ignores the unsupported param' do
+          request
+
+          expect(WebMock).to have_requested(:post, cube_api_url).with(
+            body: { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi' }
+          )
+
+          expect(response).to have_gitlab_http_status(:created)
+        end
       end
     end
 
@@ -119,7 +122,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       it 'returns a 404' do
-        post api("/projects/#{project.id}/product_analytics/request", current_user)
+        request
 
         expect(response).to have_gitlab_http_status(:not_found)
       end

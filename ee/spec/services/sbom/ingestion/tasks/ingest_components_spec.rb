@@ -31,12 +31,14 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponents do
           create(
             :ci_reports_sbom_component,
             name: "golang.org/x/sys",
-            version: "v0.0.0-20190422165155-953cdadca894"
+            version: "v0.0.0-20190422165155-953cdadca894",
+            purl_type: "golang"
           ),
           create(
             :ci_reports_sbom_component,
             name: "golang.org/x/sys",
-            version: "v0.0.0-20191026070338-33540a1f6037"
+            version: "v0.0.0-20191026070338-33540a1f6037",
+            purl_type: "golang"
           )
         ]
       end
@@ -50,6 +52,31 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponents do
 
         expect(ids).to all(be_present)
         expect(ids.first).to eq(ids.last)
+      end
+    end
+
+    context 'when components have the same name but different purl_types' do
+      let(:components) do
+        [
+          create(
+            :ci_reports_sbom_component,
+            name: "pg",
+            version: "v0.0.1",
+            purl_type: "gem"
+          ),
+          create(
+            :ci_reports_sbom_component,
+            name: "pg",
+            version: "v0.0.1",
+            purl_type: "pypi"
+          )
+        ]
+      end
+
+      let(:occurrence_maps) { components.map { |component| create(:sbom_occurrence_map, report_component: component) } }
+
+      it 'creates two distinct components' do
+        expect { ingest_components }.to change(Sbom::Component, :count).by(2)
       end
     end
   end

@@ -12,10 +12,11 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap do
       component_type: report_component.component_type,
       component_version_id: nil,
       name: report_component.name,
-      version: report_component.version,
+      purl_type: report_component.purl.type,
       source: report_source.data,
       source_id: nil,
-      source_type: report_source.source_type
+      source_type: report_source.source_type,
+      version: report_component.version
     }
   end
 
@@ -55,11 +56,32 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap do
             component_id: nil,
             component_type: report_component.component_type,
             component_version_id: nil,
+            purl_type: report_component.purl.type,
             name: report_component.name,
-            version: report_component.version,
             source: nil,
             source_id: nil,
-            source_type: nil
+            source_type: nil,
+            version: report_component.version
+          }
+        )
+      end
+    end
+
+    context 'when component has no purl' do
+      let_it_be(:report_component) { create(:ci_reports_sbom_component, purl: nil) }
+
+      it 'returns a hash with a nil purl_type' do
+        expect(occurrence_map.to_h).to eq(
+          {
+            component_id: nil,
+            component_type: report_component.component_type,
+            component_version_id: nil,
+            name: report_component.name,
+            purl_type: nil,
+            source: report_source.data,
+            source_id: nil,
+            source_type: report_source.source_type,
+            version: report_component.version
           }
         )
       end

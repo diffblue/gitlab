@@ -34,6 +34,7 @@ module API
         desc 'Get all project approvers and related configuration' do
           detail 'This feature was introduced in 10.6'
           success EE::API::Entities::ApprovalSettings
+          tags %w[project_approvals]
         end
         get '/', urgency: :low do
           # If the project is archived, the project admin should still be able to read the approvers
@@ -45,6 +46,7 @@ module API
         desc 'Change approval-related configuration' do
           detail 'This feature was introduced in 10.6'
           success EE::API::Entities::ApprovalSettings
+          tags %w[project_approvals]
         end
         params do
           optional :approvals_before_merge, type: Integer, desc: 'The amount of approvals required before an MR can be merged'

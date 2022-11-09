@@ -38,7 +38,7 @@ module Vulnerabilities
     validates :vulnerability_data, presence: true, unless: :for_dismissal?
     validates :feedback_type, presence: true
     validates :category, presence: true
-    validates :project_fingerprint, presence: true, uniqueness: { scope: [:project_id, :category, :feedback_type] }
+    validates :project_fingerprint, presence: true
     validates :pipeline, same_project_association: true, if: :pipeline_id?
 
     scope :with_associations, -> { includes(:pipeline, :issue, :merge_request, :author, :comment_author) }
@@ -53,12 +53,21 @@ module Vulnerabilities
 
     after_commit :touch_pipeline, if: :for_dismissal?, on: [:create, :update, :destroy]
 
+    # This method should lookup an existing feedback by only the `feedback_type` and `finding_uuid` but historically
+    # we were not always setting the `finding_uuid`, therefore, we need to keep using the old lookup mechanism by
+    # `category`, `feedback_type`, `project_fingerprint`, and `finding_uuid` as null.
+    #
+    # The old mechanism should be removed by https://gitlab.com/groups/gitlab-org/-/epics/2791.
     def self.find_or_init_for(feedback_params)
       validate_enums(feedback_params)
 
-      record = find_or_initialize_by(feedback_params.slice(:category, :feedback_type, :project_fingerprint))
-      record.assign_attributes(feedback_params)
-      record
+      feedback_by_uuid = find_by(feedback_params.slice(:feedback_type, :finding_uuid))
+      return feedback_by_uuid.tap { _1.assign_attributes(feedback_params) } if feedback_by_uuid
+
+      feedback_params.slice(:category, :feedback_type, :project_fingerprint)
+                     .merge(finding_uuid: nil)
+                     .then { find_or_initialize_by(_1) }
+                     .tap { _1.assign_attributes(feedback_params) }
     end
 
     # Rails does not validate enums in select queries such as `find_or_initialize_by`,

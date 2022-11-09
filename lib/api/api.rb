@@ -172,6 +172,7 @@ module API
         # Keep in alphabetical order
         mount ::API::AccessRequests
         mount ::API::Admin::Ci::Variables
+        mount ::API::Admin::InstanceClusters
         mount ::API::Appearance
         mount ::API::Applications
         mount ::API::BroadcastMessages
@@ -191,6 +192,7 @@ module API
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
         mount ::API::FreezePeriods
+        mount ::API::GroupClusters
         mount ::API::GroupExport
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
@@ -200,6 +202,7 @@ module API
         mount ::API::Metadata
         mount ::API::PersonalAccessTokens::SelfInformation
         mount ::API::PersonalAccessTokens
+        mount ::API::ProjectClusters
         mount ::API::ProjectExport
         mount ::API::ProjectHooks
         mount ::API::ProjectRepositoryStorageMoves
@@ -226,7 +229,6 @@ module API
 
       # Keep in alphabetical order
       mount ::API::Admin::BatchedBackgroundMigrations
-      mount ::API::Admin::InstanceClusters
       mount ::API::Admin::PlanLimits
       mount ::API::Admin::Sidekiq
       mount ::API::AlertManagementAlerts
@@ -262,7 +264,6 @@ module API
       mount ::API::GoProxy
       mount ::API::GroupAvatar
       mount ::API::GroupBoards
-      mount ::API::GroupClusters
       mount ::API::GroupContainerRepositories
       mount ::API::GroupDebianDistributions
       mount ::API::GroupImport
@@ -295,7 +296,6 @@ module API
       mount ::API::PackageFiles
       mount ::API::Pages
       mount ::API::PagesDomains
-      mount ::API::ProjectClusters
       mount ::API::ProjectContainerRepositories
       mount ::API::ProjectDebianDistributions
       mount ::API::ProjectEvents

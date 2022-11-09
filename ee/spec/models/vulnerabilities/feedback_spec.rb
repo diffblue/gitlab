@@ -233,15 +233,21 @@ RSpec.describe Vulnerabilities::Feedback do
     let(:project) { create(:project, :public, :repository, namespace: group) }
     let(:user) { create(:user) }
     let(:pipeline) { create(:ci_pipeline, project: project) }
+    let(:finding_uuid) { SecureRandom.uuid }
+    let(:project_fingerprint) { '418291a26024a1445b23fe64de9380cdcdfd1fa8' }
 
     let(:feedback_params) do
       {
-        feedback_type: 'dismissal', pipeline_id: pipeline.id, category: 'sast',
-        project_fingerprint: '418291a26024a1445b23fe64de9380cdcdfd1fa8',
+        finding_uuid: finding_uuid,
+        feedback_type: 'dismissal',
+        pipeline_id: pipeline.id,
+        category: 'sast',
+        project_fingerprint: project_fingerprint,
         author: user,
         vulnerability_data: {
           category: 'sast',
-          priority: 'Low', line: '41',
+          priority: 'Low',
+          line: '41',
           file: 'subdir/src/main/java/com/gitlab/security_products/tests/App.java',
           cve: '818bf5dacb291e15d9e6dc3c5ac32178:PREDICTABLE_RANDOM',
           name: 'Predictable pseudorandom number generator',
@@ -254,56 +260,23 @@ RSpec.describe Vulnerabilities::Feedback do
     context 'when params are valid' do
       subject(:feedback) { described_class.find_or_init_for(feedback_params) }
 
-      before do
-        feedback.project = project
-      end
-
-      it 'inits the feedback' do
-        is_expected.to be_new_record
-      end
-
-      it 'finds the existing feedback' do
-        feedback.save!
-
-        existing_feedback = described_class.find_or_init_for(feedback_params)
-
-        expect(existing_feedback).to eq(feedback)
-      end
-
-      context 'when a finding_uuid is provided' do
-        let(:finding) { create(:vulnerabilities_finding) }
-        let(:feedback_params_with_finding) { feedback_params.merge(finding_uuid: finding.uuid) }
-
-        subject(:feedback) { described_class.find_or_init_for(feedback_params_with_finding) }
-
-        it 'sets finding_uuid' do
-          feedback.save!
-
-          expect(feedback.finding_uuid).to eq(finding.uuid)
+      context 'when there is no record for the given params' do
+        it 'inits the feedback' do
+          is_expected.to have_attributes(id: nil, finding_uuid: finding_uuid, feedback_type: 'dismissal', category: 'sast', author: user)
         end
       end
 
-      context 'when the finding_uuid provided is nil' do
-        let(:finding) { create(:vulnerabilities_finding) }
-        let(:feedback_params_with_finding) { feedback_params.merge(finding_uuid: nil) }
+      context 'when there is a record for the given params' do
+        context 'when the existing record matches by finding_uuid' do
+          let!(:existing_feedback) { create(:vulnerability_feedback, :dismissal, finding_uuid: finding_uuid, project_fingerprint: 'foo') }
 
-        subject(:feedback) { described_class.find_or_init_for(feedback_params_with_finding) }
-
-        it 'sets finding_uuid as nil' do
-          feedback.save!
-
-          expect(feedback.finding_uuid).to be_nil
+          it { is_expected.to eq(existing_feedback) }
         end
-      end
 
-      context 'when attempting to save duplicate' do
-        it 'raises ActiveRecord::RecordInvalid' do
-          duplicate = described_class.find_or_init_for(feedback_params)
-          duplicate.project = project
+        context 'when the existing record does not match by finding uuid' do
+          let!(:existing_feedback) { create(:vulnerability_feedback, :dismissal, finding_uuid: nil, project_fingerprint: project_fingerprint) }
 
-          feedback.save!
-
-          expect { duplicate.save! }.to raise_error(ActiveRecord::RecordInvalid)
+          it { is_expected.to eq(existing_feedback) }
         end
       end
     end

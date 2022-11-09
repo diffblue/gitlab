@@ -18,18 +18,14 @@ describe('BoardTopBar', () => {
 
   Vue.use(Vuex);
 
-  const createStore = ({ mockGetters = {} } = {}) => {
+  const createStore = () => {
     return new Vuex.Store({
       state: {},
-      getters: {
-        isEpicBoard: () => false,
-        ...mockGetters,
-      },
     });
   };
 
-  const createComponent = ({ provide = {}, mockGetters = {} } = {}) => {
-    const store = createStore({ mockGetters });
+  const createComponent = ({ provide = {} } = {}) => {
+    const store = createStore();
     wrapper = shallowMount(BoardTopBar, {
       store,
       provide: {
@@ -42,6 +38,7 @@ describe('BoardTopBar', () => {
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
         healthStatusFeatureAvailable: true,
+        isIssueBoard: true,
         ...provide,
       },
       stubs: { IssueBoardFilteredSearch, EpicBoardFilteredSearch },
@@ -84,13 +81,13 @@ describe('BoardTopBar', () => {
 
   describe('filter bar', () => {
     it.each`
-      isEpicBoard | filterBarComponent          | filterBarName                 | otherFilterBar
-      ${false}    | ${IssueBoardFilteredSearch} | ${'IssueBoardFilteredSearch'} | ${EpicBoardFilteredSearch}
-      ${true}     | ${EpicBoardFilteredSearch}  | ${'EpicBoardFilteredSearch'}  | ${IssueBoardFilteredSearch}
+      isIssueBoard | filterBarComponent          | filterBarName                 | otherFilterBar
+      ${true}      | ${IssueBoardFilteredSearch} | ${'IssueBoardFilteredSearch'} | ${EpicBoardFilteredSearch}
+      ${false}     | ${EpicBoardFilteredSearch}  | ${'EpicBoardFilteredSearch'}  | ${IssueBoardFilteredSearch}
     `(
-      'renders $filterBarName when isEpicBoard is $isEpicBoard',
-      async ({ isEpicBoard, filterBarComponent, otherFilterBar }) => {
-        createComponent({ mockGetters: { isEpicBoard: () => isEpicBoard } });
+      'renders $filterBarName when isIssueBoard is $isIssueBoard',
+      async ({ isIssueBoard, filterBarComponent, otherFilterBar }) => {
+        createComponent({ provide: { isIssueBoard } });
 
         await nextTick();
 

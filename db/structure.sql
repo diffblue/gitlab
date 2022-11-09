@@ -21119,6 +21119,7 @@ CREATE TABLE sbom_components (
     updated_at timestamp with time zone NOT NULL,
     component_type smallint NOT NULL,
     name text NOT NULL,
+    purl_type smallint,
     CONSTRAINT check_91a8f6ad53 CHECK ((char_length(name) <= 255))
 );
 
@@ -30483,7 +30484,7 @@ CREATE INDEX index_sbom_component_versions_on_component_id ON sbom_component_ver
 
 CREATE UNIQUE INDEX index_sbom_component_versions_on_component_id_and_version ON sbom_component_versions USING btree (component_id, version);
 
-CREATE UNIQUE INDEX index_sbom_components_on_component_type_and_name ON sbom_components USING btree (component_type, name);
+CREATE UNIQUE INDEX index_sbom_components_on_component_type_name_and_purl_type ON sbom_components USING btree (name, purl_type, component_type);
 
 CREATE INDEX index_sbom_occurrences_on_component_id ON sbom_occurrences USING btree (component_id);
 
@@ -30969,6 +30970,10 @@ CREATE INDEX index_vulnerability_feedback_on_author_id ON vulnerability_feedback
 
 CREATE INDEX index_vulnerability_feedback_on_comment_author_id ON vulnerability_feedback USING btree (comment_author_id);
 
+CREATE INDEX index_vulnerability_feedback_on_common_attributes ON vulnerability_feedback USING btree (project_id, category, feedback_type, project_fingerprint);
+
+CREATE INDEX index_vulnerability_feedback_on_feedback_type_and_finding_uuid ON vulnerability_feedback USING btree (feedback_type, finding_uuid);
+
 CREATE INDEX index_vulnerability_feedback_on_issue_id ON vulnerability_feedback USING btree (issue_id);
 
 CREATE INDEX index_vulnerability_feedback_on_issue_id_not_null ON vulnerability_feedback USING btree (id) WHERE (issue_id IS NOT NULL);
@@ -31256,8 +31261,6 @@ CREATE UNIQUE INDEX unique_vuln_merge_request_link_vuln_id_and_mr_id ON vulnerab
 CREATE INDEX user_follow_users_followee_id_idx ON user_follow_users USING btree (followee_id);
 
 CREATE INDEX users_forbidden_state_idx ON users USING btree (id) WHERE ((confirmed_at IS NOT NULL) AND ((state)::text <> ALL (ARRAY['blocked'::text, 'banned'::text, 'ldap_blocked'::text])));
-
-CREATE UNIQUE INDEX vulnerability_feedback_unique_idx ON vulnerability_feedback USING btree (project_id, category, feedback_type, project_fingerprint);
 
 CREATE UNIQUE INDEX vulnerability_occurrence_pipelines_on_unique_keys ON vulnerability_occurrence_pipelines USING btree (occurrence_id, pipeline_id);
 

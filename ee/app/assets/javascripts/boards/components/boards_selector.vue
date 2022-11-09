@@ -2,7 +2,7 @@
 // This is a false violation of @gitlab/no-runtime-template-compiler, since it
 // extends a valid Vue single file component.
 /* eslint-disable @gitlab/no-runtime-template-compiler */
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import BoardsSelectorFoss from '~/boards/components/boards_selector.vue';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Tracking from '~/tracking';
@@ -12,8 +12,8 @@ import { fullBoardId, fullEpicBoardId } from '../boards_util';
 export default {
   extends: BoardsSelectorFoss,
   mixins: [Tracking.mixin()],
+  inject: ['isEpicBoard'],
   computed: {
-    ...mapGetters(['isEpicBoard']),
     showCreate() {
       return this.isEpicBoard || this.multipleIssueBoardsAvailable;
     },

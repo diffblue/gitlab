@@ -15,12 +15,13 @@ module Sbom
         {
           component_id: component_id,
           component_version_id: component_version_id,
-          source_id: source_id,
           component_type: report_component.component_type,
           name: report_component.name,
-          version: version,
+          purl_type: report_component.purl&.type,
+          source_id: source_id,
           source_type: report_source&.source_type,
-          source: report_source&.data
+          source: report_source&.data,
+          version: version
         }
       end
 
