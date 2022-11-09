@@ -8,15 +8,7 @@ module EE
       prepended do
         before { authenticate_non_get! }
 
-        helpers ::API::Helpers::MergeRequestsHelpers
-
         helpers do
-          params :ee_approval_params do
-            optional :approval_password, type: String,
-                                         desc: 'Current user\'s password if project is set to require explicit auth on approval',
-                                         documentation: { example: 'secret' }
-          end
-
           def present_approval(merge_request)
             present merge_request.approval_state, with: ::EE::API::Entities::ApprovalState, current_user: current_user
           end

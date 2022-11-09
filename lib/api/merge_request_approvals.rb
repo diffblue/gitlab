@@ -6,10 +6,9 @@ module API
 
     feature_category :source_code_management
 
-    helpers do
-      params :ee_approval_params do
-      end
+    helpers ::API::Helpers::MergeRequestsHelpers
 
+    helpers do
       def present_approval(merge_request)
         present merge_request, with: ::API::Entities::MergeRequestApprovals, current_user: current_user
       end
