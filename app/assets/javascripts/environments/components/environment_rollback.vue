@@ -51,23 +51,20 @@ export default {
 
   methods: {
     onClick() {
+      const rollbackEnvironmentData = {
+        ...this.environment,
+        retryUrl: this.retryUrl,
+        isLastDeployment: this.isLastDeployment,
+      };
       if (this.graphql) {
         this.$apollo.mutate({
           mutation: setEnvironmentToRollback,
           variables: {
-            environment: {
-              ...this.environment,
-              retryUrl: this.retryUrl,
-              isLastDeployment: this.isLastDeployment,
-            },
+            environment: rollbackEnvironmentData,
           },
         });
       } else {
-        eventHub.$emit('requestRollbackEnvironment', {
-          ...this.environment,
-          retryUrl: this.retryUrl,
-          isLastDeployment: this.isLastDeployment,
-        });
+        eventHub.$emit('requestRollbackEnvironment', rollbackEnvironmentData);
       }
     },
   },
