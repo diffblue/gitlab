@@ -33,6 +33,22 @@ RSpec.describe SlashCommands::GlobalSlackHandler do
   end
 
   context 'Valid token' do
+    context 'with incident declare command' do
+      it 'calls command handler with no project alias' do
+        expect_any_instance_of(Gitlab::SlashCommands::Command).to receive(:execute)
+        expect_any_instance_of(ChatNames::FindUserService).to receive(:execute).and_return(chat_name)
+
+        enable_slack_application(project)
+
+        slack_integration = create(:slack_integration, integration: project.gitlab_slack_application_integration)
+
+        handler_with_valid_token(
+          text: "incident declare",
+          team_id: slack_integration.team_id
+        ).trigger
+      end
+    end
+
     it 'calls command handler if project alias is valid' do
       expect_any_instance_of(Gitlab::SlashCommands::Command).to receive(:execute)
       expect_any_instance_of(ChatNames::FindUserService).to receive(:execute).and_return(chat_name)
@@ -79,9 +95,15 @@ RSpec.describe SlashCommands::GlobalSlackHandler do
 
     it 'calls help presenter' do
       expect_any_instance_of(Gitlab::SlashCommands::ApplicationHelp).to receive(:execute)
+      expect_any_instance_of(ChatNames::FindUserService).to receive(:execute).and_return(chat_name)
+
+      enable_slack_application(project)
+
+      slack_integration = create(:slack_integration, integration: project.gitlab_slack_application_integration)
 
       handler_with_valid_token(
-        text: "help"
+        text: "help",
+        team_id: slack_integration.team_id
       ).trigger
     end
   end
