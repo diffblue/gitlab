@@ -196,7 +196,16 @@ class ApprovalState
 
   def invalid_approvers_rules
     strong_memoize(:invalid_approvers_rules) do
-      report_approver_rules.select { |rule| rule.approvers.empty? }
+      wrapped_approval_rules.select do |rule|
+        next if rule.any_approver?
+        next unless rule.approvers.empty?
+
+        if rule.code_owner?
+          rule.branch_requires_code_owner_approval?
+        else
+          rule.approvals_required > 0
+        end
+      end
     end
   end
 

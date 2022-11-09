@@ -42,8 +42,6 @@ class ApprovalMergeRequestRule < ApplicationRecord
 
   before_update :compare_with_project_rule
 
-  after_save :track_approvers_for_report_approver, if: :report_approver?
-
   validate :validate_approval_project_rule
 
   enum rule_type: {
@@ -162,11 +160,5 @@ class ApprovalMergeRequestRule < ApplicationRecord
     else
       update!(approvals_required: 0)
     end
-  end
-
-  def track_approvers_for_report_approver
-    return if approvers.present?
-
-    Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter.track_invalid_approvers(merge_request: merge_request)
   end
 end
