@@ -32,7 +32,8 @@ module EE
             end
 
             def message
-              "Pipeline has too many jobs! Requested #{seeds_size}, but the limit is #{ci_pipeline_size_limit}."
+              "The number of jobs has exceeded the limit of #{ci_pipeline_size_limit}."\
+              " Try splitting the configuration with parent-child-pipelines https://docs.gitlab.com/ee/ci/troubleshooting.html#pipeline-with-many-jobs-fails-to-start"
             end
 
             private
