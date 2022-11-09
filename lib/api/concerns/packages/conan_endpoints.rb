@@ -29,7 +29,7 @@ module API
         CONAN_REVISION_REGEX = Gitlab::Regex.conan_revision_regex
         CONAN_REVISION_USER_CHANNEL_REGEX = Gitlab::Regex.conan_recipe_user_channel_regex
 
-        CONAN_FILES = (Gitlab::Regex::Packages::CONAN_RECIPE_FILES + Gitlab::Regex::Packages::CONAN_PACKAGE_FILES).freeze
+        CONAN_FILES = (Gitlab::Regex::Packages::CONAN_RECIPE_FILES + Gitlab::Regex::Packages::CONAN_PACKAGE_FILES).uniq.freeze
 
         included do
           feature_category :package_registry
