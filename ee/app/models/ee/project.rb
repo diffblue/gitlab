@@ -492,9 +492,11 @@ module EE
     end
 
     def has_group_hooks?(hooks_scope = :push_hooks)
-      return false unless group && feature_available?(:group_webhooks)
+      strong_memoize_with(:has_group_hooks, hooks_scope) do
+        break false unless group && feature_available?(:group_webhooks)
 
-      group_hooks.hooks_for(hooks_scope).any?
+        group_hooks.hooks_for(hooks_scope).any?
+      end
     end
 
     def execute_external_compliance_hooks(data)
