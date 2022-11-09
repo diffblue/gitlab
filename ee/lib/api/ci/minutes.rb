@@ -6,11 +6,21 @@ module API
       feature_category :purchase
       urgency :low
 
+      CI_MINUTES_TAGS = %w[ci_minutes].freeze
+
       before { authenticated_as_admin! }
 
       resource :namespaces, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         desc 'Create a CI Minutes purchase record for the namespace' do
+          detail 'Creates an additional pack'
           success ::EE::API::Entities::Ci::Minutes::AdditionalPack
+          failure [
+            { code: 400, message: 'Bad request' },
+            { code: 401, message: 'Unauthorized' },
+            { code: 404, message: 'Not found' }
+          ]
+          is_array true
+          tags CI_MINUTES_TAGS
         end
         params do
           requires :id, type: String, desc: 'The ID of a namespace'
@@ -33,7 +43,16 @@ module API
           end
         end
 
-        desc 'Transfer purchased CI minutes packs to another namespace'
+        desc 'Transfer purchased CI minutes packs to another namespace' do
+          detail 'Moves additional packs from one namespace to another'
+          success code: 202
+          failure [
+            { code: 400, message: 'Bad request' },
+            { code: 401, message: 'Unauthorized' },
+            { code: 404, message: 'Not found' }
+          ]
+          tags CI_MINUTES_TAGS
+        end
         params do
           requires :id, type: String, desc: 'The ID of the namespace to transfer from'
           requires :target_id, type: String, desc: 'The ID of the namespace for the packs to transfer to'
