@@ -13,6 +13,9 @@ module Security
         },
         sast: {
           'SAST_DISABLED' => nil
+        },
+        dependency_scanning: {
+          'DEPENDENCY_SCANNING_DISABLED' => nil
         }
       }.freeze
 
