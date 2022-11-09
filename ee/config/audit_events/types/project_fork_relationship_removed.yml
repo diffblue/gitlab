@@ -1,0 +1,8 @@
+name: project_fork_relationship_removed
+description: Event triggered on successful removal of project's fork relationship
+introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/272532
+introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/101017
+group: "group::compliance"
+milestone: "15.6"
+saved_to_database: true
+streamed: true
