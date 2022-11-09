@@ -25,4 +25,19 @@ RSpec.describe SystemNotes::VulnerabilitiesService do
       end
     end
   end
+
+  describe '#mark_dropped_as_resolved' do
+    subject { service.mark_dropped_as_resolved(comment) }
+
+    let(:noteable) { create(:vulnerability, project: project, state: 'detected') }
+    let(:comment) { 'This vulnerability type has been deprecated' }
+
+    it_behaves_like 'a system note', exclude_project: true do
+      let(:action) { "vulnerability_detected" }
+    end
+
+    it 'creates the note text correctly' do
+      expect(subject.note).to eq(comment)
+    end
+  end
 end

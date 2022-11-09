@@ -21,25 +21,28 @@ RSpec.describe Vulnerabilities::MarkDroppedAsResolvedWorker do
   end
 
   describe "#perform" do
-    let(:subject) { described_class.new.perform(pipeline.project_id, [dropped_identifier]) }
+    let(:subject) { described_class.new.perform(pipeline.project_id, [dropped_identifier.id]) }
 
     it 'changes state of Vulnerabilities to resolved' do
       expect { subject }.to change { dismissable_vulnerability.reload.state }
-        .from("detected")
-        .to("resolved")
+        .from('detected')
+        .to('resolved')
         .and change { dismissable_vulnerability.reload.resolved_by_id }
         .from(nil)
         .to(User.security_bot.id)
     end
 
-    it 'creates state transition entry for each vulnerability' do
+    it 'creates state transition entry with note for each vulnerability' do
       expect { subject }.to change(::Vulnerabilities::StateTransition, :count)
         .from(0)
         .to(1)
+        .and change(Note, :count)
+        .by(1)
 
       transition = ::Vulnerabilities::StateTransition.last
       expect(transition.vulnerability_id).to eq(dismissable_vulnerability.id)
       expect(transition.author_id).to eq(User.security_bot.id)
+      expect(transition.comment).to match(/automatically resolved/)
     end
   end
 end

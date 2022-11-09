@@ -21,10 +21,12 @@ module Vulnerabilities
     def resolve_batch(vulnerabilities)
       ::Vulnerability.transaction do
         create_state_transitions(vulnerabilities)
+        current_time = Time.zone.now
 
         vulnerabilities.update_all(
           resolved_by_id: User.security_bot.id,
-          resolved_at: Time.zone.now,
+          resolved_at: current_time,
+          updated_at: current_time,
           state: :resolved)
       end
     end
@@ -39,10 +41,20 @@ module Vulnerabilities
 
     def create_state_transitions(vulnerabilities)
       state_transitions = vulnerabilities.find_each.map do |vulnerability|
+        create_system_note(vulnerability)
         build_state_transition_for(vulnerability)
       end
 
       Vulnerabilities::StateTransition.bulk_insert!(state_transitions)
+    end
+
+    def create_system_note(vulnerability)
+      SystemNoteService.mark_dropped_vulnerability_as_resolved(
+        vulnerability,
+        vulnerability.project,
+        User.security_bot,
+        resolution_comment
+      )
     end
 
     def build_state_transition_for(vulnerability)
@@ -53,9 +65,14 @@ module Vulnerabilities
         from_state: vulnerability.state,
         to_state: :resolved,
         author_id: User.security_bot.id,
+        comment: resolution_comment,
         created_at: current_time,
         updated_at: current_time
       )
+    end
+
+    def resolution_comment
+      _("This vulnerability type has been deprecated from GitLab's default ruleset and automatically resolved.")
     end
   end
   # rubocop:enable Scalability/IdempotentWorker

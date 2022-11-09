@@ -8,11 +8,11 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService do
   let_it_be(:existing_identifier) { create(:vulnerabilities_identifier) }
 
   let_it_be(:dismissed_identifier) do
-    create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'OLD_PREDICTABLE_RANDOM')
+    create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'PREDICTABLE_RANDOM')
   end
 
   let_it_be(:dropped_identifier) do
-    create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'PREDICTABLE_RANDOM')
+    create(:vulnerabilities_identifier, external_type: 'find_sec_bugs_type', external_id: 'OLD_PREDICTABLE_RANDOM')
   end
 
   before_all do
@@ -33,13 +33,29 @@ RSpec.describe Security::Ingestion::ScheduleMarkDroppedAsResolvedService do
       dismissed_finding.update!(vulnerability_id: vuln.id)
     end
 
-    dropped_finding = create(
+    untriaged_finding = create(
+      :vulnerabilities_finding,
+      project_id: pipeline.project_id, primary_identifier_id: dismissed_identifier.id,
+      identifiers: [dismissed_identifier]
+    )
+    create(:vulnerability, :detected, project_id: pipeline.project_id).tap do |vuln|
+      untriaged_finding.update!(vulnerability_id: vuln.id)
+    end
+
+    dropped_finding1 = create(
       :vulnerabilities_finding,
       project_id: pipeline.project_id, primary_identifier_id: dropped_identifier.id, identifiers: [dropped_identifier]
     )
-
     create(:vulnerability, :detected, resolved_on_default_branch: true, project_id: pipeline.project_id).tap do |vuln|
-      dropped_finding.update!(vulnerability_id: vuln.id)
+      dropped_finding1.update!(vulnerability_id: vuln.id)
+    end
+
+    dropped_finding2 = create(
+      :vulnerabilities_finding,
+      project_id: pipeline.project_id, primary_identifier_id: dropped_identifier.id, identifiers: [dropped_identifier]
+    )
+    create(:vulnerability, :detected, resolved_on_default_branch: true, project_id: pipeline.project_id).tap do |vuln|
+      dropped_finding2.update!(vulnerability_id: vuln.id)
     end
   end
 
