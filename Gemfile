@@ -146,7 +146,7 @@ gem 'fog-aws', '~> 3.15'
 # Locked until fog-google resolves https://github.com/fog/fog-google/issues/421.
 # Also see config/initializers/fog_core_patch.rb.
 gem 'fog-core', '= 2.1.0'
-gem 'fog-google', '~> 1.15', require: 'fog/google'
+gem 'fog-google', '~> 1.19', require: 'fog/google'
 gem 'fog-local', '~> 0.8'
 gem 'fog-openstack', '~> 1.0'
 gem 'fog-rackspace', '~> 0.1.1'
