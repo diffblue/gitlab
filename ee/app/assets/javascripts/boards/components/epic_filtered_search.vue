@@ -9,6 +9,8 @@ import {
   OPERATOR_IS_AND_IS_NOT,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
@@ -28,7 +30,7 @@ export default {
         {
           icon: 'labels',
           title: TOKEN_TITLE_LABEL,
-          type: 'label',
+          type: TOKEN_TYPE_LABEL,
           operators: OPERATOR_IS_AND_IS_NOT,
           token: LabelToken,
           unique: false,
@@ -39,7 +41,7 @@ export default {
         {
           icon: 'pencil',
           title: TOKEN_TITLE_AUTHOR,
-          type: 'author',
+          type: TOKEN_TYPE_AUTHOR,
           operators: OPERATOR_IS_AND_IS_NOT,
           symbol: '@',
           token: AuthorToken,

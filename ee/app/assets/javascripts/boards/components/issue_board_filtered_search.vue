@@ -9,7 +9,10 @@ import { BoardType } from '~/boards/constants';
 import {
   OPERATOR_IS_AND_IS_NOT,
   OPERATOR_IS_ONLY,
+  TOKEN_TYPE_EPIC,
   TOKEN_TYPE_HEALTH,
+  TOKEN_TYPE_ITERATION,
+  TOKEN_TYPE_WEIGHT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
@@ -45,7 +48,7 @@ export default {
         ...(this.epicFeatureAvailable
           ? [
               {
-                type: 'epic',
+                type: TOKEN_TYPE_EPIC,
                 title: TOKEN_TITLE_EPIC,
                 icon: 'epic',
                 token: EpicToken,
@@ -62,7 +65,7 @@ export default {
               {
                 icon: 'iteration',
                 title: TOKEN_TITLE_ITERATION,
-                type: 'iteration',
+                type: TOKEN_TYPE_ITERATION,
                 operators: OPERATOR_IS_AND_IS_NOT,
                 token: IterationToken,
                 unique: true,
@@ -72,7 +75,7 @@ export default {
             ]
           : []),
         {
-          type: 'weight',
+          type: TOKEN_TYPE_WEIGHT,
           title: TOKEN_TITLE_WEIGHT,
           icon: 'weight',
           token: WeightToken,

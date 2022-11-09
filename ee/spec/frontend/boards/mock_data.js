@@ -10,6 +10,18 @@ import {
   TOKEN_TITLE_MY_REACTION,
   TOKEN_TITLE_RELEASE,
   TOKEN_TITLE_TYPE,
+  TOKEN_TYPE_ASSIGNEE,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_CONFIDENTIAL,
+  TOKEN_TYPE_EPIC,
+  TOKEN_TYPE_HEALTH,
+  TOKEN_TYPE_ITERATION,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+  TOKEN_TYPE_MY_REACTION,
+  TOKEN_TYPE_RELEASE,
+  TOKEN_TYPE_TYPE,
+  TOKEN_TYPE_WEIGHT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
@@ -488,7 +500,7 @@ export const mockTokens = (
   {
     icon: 'user',
     title: TOKEN_TITLE_ASSIGNEE,
-    type: 'assignee',
+    type: TOKEN_TYPE_ASSIGNEE,
     operators: OPERATOR_IS_AND_IS_NOT,
     token: AuthorToken,
     unique: true,
@@ -498,7 +510,7 @@ export const mockTokens = (
   {
     icon: 'pencil',
     title: TOKEN_TITLE_AUTHOR,
-    type: 'author',
+    type: TOKEN_TYPE_AUTHOR,
     operators: OPERATOR_IS_AND_IS_NOT,
     symbol: '@',
     token: AuthorToken,
@@ -509,7 +521,7 @@ export const mockTokens = (
   {
     icon: 'labels',
     title: TOKEN_TITLE_LABEL,
-    type: 'label',
+    type: TOKEN_TYPE_LABEL,
     operators: OPERATOR_IS_AND_IS_NOT,
     token: LabelToken,
     unique: false,
@@ -517,7 +529,7 @@ export const mockTokens = (
     fetchLabels,
   },
   {
-    type: 'my-reaction',
+    type: TOKEN_TYPE_MY_REACTION,
     icon: 'thumb-up',
     title: TOKEN_TITLE_MY_REACTION,
     unique: true,
@@ -525,7 +537,7 @@ export const mockTokens = (
     fetchEmojis: expect.any(Function),
   },
   {
-    type: 'confidential',
+    type: TOKEN_TYPE_CONFIDENTIAL,
     icon: 'eye-slash',
     title: TOKEN_TITLE_CONFIDENTIAL,
     unique: true,
@@ -540,7 +552,7 @@ export const mockTokens = (
     icon: 'clock',
     title: TOKEN_TITLE_MILESTONE,
     symbol: '%',
-    type: 'milestone',
+    type: TOKEN_TYPE_MILESTONE,
     token: MilestoneToken,
     shouldSkipSort: true,
     unique: true,
@@ -549,7 +561,7 @@ export const mockTokens = (
   {
     icon: 'issues',
     title: TOKEN_TITLE_TYPE,
-    type: 'type',
+    type: TOKEN_TYPE_TYPE,
     token: GlFilteredSearchToken,
     unique: true,
     options: [
@@ -558,14 +570,14 @@ export const mockTokens = (
     ],
   },
   {
-    type: 'release',
+    type: TOKEN_TYPE_RELEASE,
     title: TOKEN_TITLE_RELEASE,
     icon: 'rocket',
     token: ReleaseToken,
     fetchReleases: expect.any(Function),
   },
   {
-    type: 'epic',
+    type: TOKEN_TYPE_EPIC,
     icon: 'epic',
     title: TOKEN_TITLE_EPIC,
     unique: true,
@@ -576,7 +588,7 @@ export const mockTokens = (
     fullPath: 'gitlab-org',
   },
   {
-    type: 'iteration',
+    type: TOKEN_TYPE_ITERATION,
     icon: 'iteration',
     title: TOKEN_TITLE_ITERATION,
     operators: OPERATOR_IS_AND_IS_NOT,
@@ -586,14 +598,14 @@ export const mockTokens = (
     token: IterationToken,
   },
   {
-    type: 'weight',
+    type: TOKEN_TYPE_WEIGHT,
     icon: 'weight',
     title: TOKEN_TITLE_WEIGHT,
     token: WeightToken,
     unique: true,
   },
   {
-    type: 'health_status',
+    type: TOKEN_TYPE_HEALTH,
     icon: 'status-health',
     title: TOKEN_TITLE_HEALTH,
     token: HealthToken,

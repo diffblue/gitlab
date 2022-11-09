@@ -1,8 +1,12 @@
 <script>
 import { ITEM_TYPE } from '~/groups/constants';
 import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
-import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
-import { TOKEN_TYPE_EPIC, TOKEN_TYPE_ITERATION, TOKEN_TYPE_WEIGHT } from '~/issues/list/constants';
+import {
+  OPERATOR_IS_ONLY,
+  TOKEN_TYPE_EPIC,
+  TOKEN_TYPE_ITERATION,
+  TOKEN_TYPE_WEIGHT,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import {
   TOKEN_TITLE_EPIC,
   TOKEN_TITLE_ITERATION,
