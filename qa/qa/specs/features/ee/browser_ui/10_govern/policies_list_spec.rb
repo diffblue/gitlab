@@ -12,7 +12,7 @@ module QA
   ) do
     describe 'Policies List page' do
       let!(:project) do
-        Resource::Project.fabricate_via_api! do |project|
+        Resource::Project.fabricate_via_api_unless_fips! do |project|
           project.name = Runtime::Env.auto_devops_project_name || 'project-with-protect'
           project.description = 'Project with Protect'
           project.auto_devops_enabled = true
@@ -22,7 +22,12 @@ module QA
       end
 
       after do
-        project.remove_via_api!
+        if QA::Support::FIPS.enabled?
+          project.visit!
+          project.remove_via_browser_ui!
+        else
+          project.remove_via_api!
+        end
       end
 
       before do
