@@ -10,6 +10,7 @@ module Projects
     before_action do
       push_frontend_feature_flag(:dast_pre_scan_verification, @project)
       push_frontend_feature_flag(:dast_site_validation_drawer, @project)
+      push_frontend_feature_flag(:on_demand_scans_runner_tags, @project)
     end
 
     feature_category :dynamic_application_security_testing
@@ -31,6 +32,7 @@ module Projects
                 id
                 name
                 description
+                tagList
                 branch { name }
                 dastSiteProfile { id }
                 dastScannerProfile { id }

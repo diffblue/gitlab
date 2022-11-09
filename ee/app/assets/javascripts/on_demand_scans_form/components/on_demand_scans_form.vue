@@ -44,6 +44,7 @@ import {
   ERROR_MESSAGES,
 } from '../settings';
 import ProfileConflictAlert from './profile_selector/profile_conflict_alert.vue';
+import RunnerTags from './runner_tags.vue';
 import ScanSchedule from './scan_schedule.vue';
 
 export default {
@@ -119,6 +120,7 @@ export default {
     ConfigurationPageLayout,
     DastProfilesConfigurator,
     PreScanVerificationConfigurator,
+    RunnerTags,
     GlPopover,
   },
   directives: {
@@ -161,6 +163,7 @@ export default {
       scannerProfiles: [],
       siteProfiles: [],
       selectedBranch: this.dastScan?.branch?.name ?? this.defaultBranch,
+      selectedTags: this.dastScan?.tagList || [],
       selectedScannerProfileId: this.dastScan?.dastScannerProfile.id || null,
       selectedSiteProfileId: this.dastScan?.dastSiteProfile.id || null,
       profileSchedule: this.dastScan?.dastProfileSchedule,
@@ -232,14 +235,6 @@ export default {
       } = this;
       return isFormInvalid || (loading && loading !== saveScanBtnId);
     },
-    formFieldValues() {
-      const { selectedBranch, profileSchedule } = this;
-      return {
-        ...serializeFormObject(this.form.fields),
-        selectedBranch,
-        profileSchedule,
-      };
-    },
     isDastDrawerOpen() {
       return this.openedDrawer === DAST_PROFILES_DRAWER;
     },
@@ -265,6 +260,7 @@ export default {
         dastProfileSchedule: this.profileSchedule,
         ...(this.isEdit ? { id: this.dastScan.id } : { fullPath: this.projectPath }),
         ...serializeFormObject(this.form.fields),
+        tagList: this.selectedTags,
         [this.isEdit ? 'runAfterUpdate' : 'runAfterCreate']: runAfter,
       };
 
@@ -296,7 +292,7 @@ export default {
     onCancelClicked() {
       redirectTo(this.onDemandScansPath);
     },
-    showConfiguratorErrors(message) {
+    showGeneralErrors(message) {
       this.showErrors(null, [message]);
     },
     showErrors(errorType, errors = []) {
@@ -408,6 +404,17 @@ export default {
               {{ $options.i18n.scanConfigurationDefaultBranchLabel }}
             </div>
           </gl-form-group>
+          <gl-form-group
+            v-if="glFeatures.onDemandScansRunnerTags"
+            class="gl-mt-6 gl-mb-3"
+            :label="__('Runner tags (optional)')"
+          >
+            <runner-tags
+              v-model="selectedTags"
+              :project-path="projectPath"
+              @error="showGeneralErrors"
+            />
+          </gl-form-group>
         </template>
       </section-layout>
 
@@ -417,7 +424,7 @@ export default {
         :scanner-profiles-library-path="scannerProfilesLibraryPath"
         :site-profiles-library-path="siteProfilesLibraryPath"
         :open="isDastDrawerOpen"
-        @error="showConfiguratorErrors"
+        @error="showGeneralErrors"
         @profiles-selected="selectProfiles"
         @open-drawer="openDrawer($options.DAST_PROFILES_DRAWER)"
       />

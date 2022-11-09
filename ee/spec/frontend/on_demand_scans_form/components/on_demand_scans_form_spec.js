@@ -329,6 +329,7 @@ describe('OnDemandScansForm', () => {
                   dastSiteProfileId: nonValidatedSiteProfile.id,
                   fullPath: projectPath,
                   runAfterCreate: runAfter,
+                  tagList: [],
                 },
               },
             });
@@ -370,6 +371,7 @@ describe('OnDemandScansForm', () => {
                   dastScannerProfileId: passiveScannerProfile.id,
                   dastSiteProfileId: nonValidatedSiteProfile.id,
                   runAfterUpdate: runAfter,
+                  tagList: [],
                 },
               },
             });

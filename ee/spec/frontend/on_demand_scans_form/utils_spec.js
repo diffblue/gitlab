@@ -1,4 +1,9 @@
-import { toGraphQLCadence, fromGraphQLCadence } from 'ee/on_demand_scans_form/utils';
+import {
+  toGraphQLCadence,
+  fromGraphQLCadence,
+  getUniqueTagListFromEdges,
+} from 'ee/on_demand_scans_form/utils';
+import { RUNNER_TAG_LIST_MOCK } from '../on_demand_scans/mocks';
 
 describe('On-demand scans utils', () => {
   describe('toGraphQLCadence', () => {
@@ -29,6 +34,21 @@ describe('On-demand scans utils', () => {
       ${{ unit: 'MONTH', duration: 3 }} | ${'MONTH_3'}
     `('properly computes $input', ({ input, expectedOutput }) => {
       expect(fromGraphQLCadence(input)).toEqual(expectedOutput);
+    });
+  });
+
+  describe('getUniqueTagListFromEdges', () => {
+    it('should join tagLists on node and return unique list of tags', () => {
+      expect(getUniqueTagListFromEdges(RUNNER_TAG_LIST_MOCK.data.project.runners.nodes)).toEqual([
+        'macos',
+        'linux',
+        'docker',
+        'backup',
+        'development',
+        'east-c',
+        'mango',
+        'maven',
+      ]);
     });
   });
 });
