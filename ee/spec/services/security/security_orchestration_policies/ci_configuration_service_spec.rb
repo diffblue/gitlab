@@ -120,6 +120,36 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           end
         end
       end
+
+      context 'when scan type is dependency_scanning' do
+        let_it_be(:action) { { scan: 'dependency_scanning' } }
+        let_it_be(:ci_variables) do
+          { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python', 'DEPENDENCY_SCANNING_DISABLED' => nil }
+        end
+
+        it 'returns prepared CI configuration for Dependency Scanning' do
+          expected_configuration = {
+            inherit: { variables: false },
+            variables: { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python' },
+            trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
+          }
+
+          expect(subject).to eq(expected_configuration)
+        end
+
+        context 'when variables are empty' do
+          let_it_be(:ci_variables) { {} }
+
+          it 'returns prepared CI configuration for Dependency Scanning' do
+            expected_configuration = {
+              inherit: { variables: false },
+              trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
+            }
+
+            expect(subject).to eq(expected_configuration)
+          end
+        end
+      end
     end
 
     context 'when action is invalid' do

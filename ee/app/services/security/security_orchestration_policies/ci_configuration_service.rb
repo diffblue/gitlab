@@ -6,7 +6,8 @@ module Security
       SCAN_TEMPLATES = {
         'secret_detection' => 'Jobs/Secret-Detection',
         'container_scanning' => 'Security/Container-Scanning',
-        'sast' => 'Security/SAST'
+        'sast' => 'Security/SAST',
+        'dependency_scanning' => 'Jobs/Dependency-Scanning'
       }.freeze
 
       def execute(action, ci_variables)
@@ -16,6 +17,8 @@ module Security
         when 'container_scanning'
           scan_configuration(action[:scan], ci_variables)
         when 'sast'
+          child_pipeline_configuration(action[:scan], ci_variables)
+        when 'dependency_scanning'
           child_pipeline_configuration(action[:scan], ci_variables)
         else
           error_script('Invalid Scan type')
