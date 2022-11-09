@@ -9,7 +9,11 @@ describe('ee/BoardContent', () => {
   let store;
   window.gon = { licensed_features: {} };
 
-  const createComponent = ({ issuableType = 'issue' }) => {
+  const createComponent = ({
+    issuableType = 'issue',
+    isIssueBoard = true,
+    isEpicBoard = false,
+  }) => {
     wrapper = shallowMount(BoardContent, {
       store,
       provide: {
@@ -20,6 +24,8 @@ describe('ee/BoardContent', () => {
         boardType: 'group',
         fullPath: 'gitlab-org/gitlab',
         issuableType,
+        isIssueBoard,
+        isEpicBoard,
         isApolloBoard: false,
       },
       propsData: {
@@ -43,14 +49,14 @@ describe('ee/BoardContent', () => {
   });
 
   describe.each`
-    state                                 | issuableType | resultIssue | resultEpic
-    ${{ isShowingEpicsSwimlanes: true }}  | ${'issue'}   | ${true}     | ${false}
-    ${{ isShowingEpicsSwimlanes: false }} | ${'issue'}   | ${true}     | ${false}
-    ${{ isShowingEpicsSwimlanes: false }} | ${'epic'}    | ${false}    | ${true}
-  `('with state=$state', ({ state, issuableType, resultIssue, resultEpic }) => {
+    state                                 | isIssueBoard | isEpicBoard | resultIssue | resultEpic
+    ${{ isShowingEpicsSwimlanes: true }}  | ${true}      | ${false}    | ${true}     | ${false}
+    ${{ isShowingEpicsSwimlanes: false }} | ${true}      | ${false}    | ${true}     | ${false}
+    ${{ isShowingEpicsSwimlanes: false }} | ${false}     | ${true}     | ${false}    | ${true}
+  `('with state=$state', ({ state, isIssueBoard, isEpicBoard, resultIssue, resultEpic }) => {
     beforeEach(() => {
       Object.assign(store.state, state);
-      createComponent({ issuableType });
+      createComponent({ isIssueBoard, isEpicBoard });
     });
 
     it(`renders BoardContentSidebar = ${resultIssue}`, () => {

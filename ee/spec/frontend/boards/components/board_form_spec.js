@@ -63,8 +63,6 @@ describe('BoardForm', () => {
   const createStore = ({ getters = {} } = {}) => {
     store = new Vuex.Store({
       getters: {
-        isIssueBoard: () => false,
-        isEpicBoard: () => true,
         isGroupBoard: () => true,
         isProjectBoard: () => false,
         ...getters,
@@ -76,12 +74,19 @@ describe('BoardForm', () => {
     });
   };
 
-  const createComponent = ({ props, iterationCadences = false } = {}) => {
+  const createComponent = ({
+    props,
+    iterationCadences = false,
+    isIssueBoard = false,
+    isEpicBoard = true,
+  } = {}) => {
     wrapper = shallowMountExtended(BoardForm, {
       propsData: { ...defaultProps, ...props },
       provide: {
         boardBaseUrl: 'root',
         glFeatures: { iterationCadences },
+        isIssueBoard,
+        isEpicBoard,
       },
       mocks: {
         $apollo: {
@@ -195,12 +200,7 @@ describe('BoardForm', () => {
 
   describe('when editing a scoped issue board', () => {
     beforeEach(() => {
-      createStore({
-        getters: {
-          isIssueBoard: () => true,
-          isEpicBoard: () => false,
-        },
-      });
+      createStore();
     });
 
     it('should use global ids for assignee, milestone and iteration when calling GraphQL mutation', async () => {
@@ -228,6 +228,8 @@ describe('BoardForm', () => {
           currentPage: formType.edit,
           scopedIssueBoardFeatureEnabled: true,
         },
+        isIssueBoard: true,
+        isEpicBoard: false,
       });
 
       findInput().trigger('keyup.enter', { metaKey: true });
@@ -274,6 +276,8 @@ describe('BoardForm', () => {
           scopedIssueBoardFeatureEnabled: true,
         },
         iterationCadences: true,
+        isIssueBoard: true,
+        isEpicBoard: false,
       });
 
       findInput().trigger('keyup.enter', { metaKey: true });

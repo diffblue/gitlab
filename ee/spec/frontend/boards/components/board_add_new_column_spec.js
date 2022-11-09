@@ -62,7 +62,6 @@ describe('BoardAddNewColumn', () => {
           },
           getters: {
             getListByTypeId: () => getListByTypeId,
-            isEpicBoard: () => false,
           },
           state: {
             labels,
@@ -78,6 +77,7 @@ describe('BoardAddNewColumn', () => {
           milestoneListsAvailable: true,
           assigneeListsAvailable: true,
           iterationListsAvailable: true,
+          isEpicBoard: false,
         },
       }),
     );
