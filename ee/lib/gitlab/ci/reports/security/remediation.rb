@@ -7,9 +7,17 @@ module Gitlab
         class Remediation
           attr_reader :summary, :diff
 
-          def initialize(summary, diff)
+          def initialize(summary, diff, start_byte: nil, end_byte: nil)
             @summary = summary
             @diff = diff
+            @start_byte = start_byte
+            @end_byte = end_byte
+          end
+
+          def byte_offsets
+            return unless @start_byte && @end_byte
+
+            { start_byte: @start_byte, end_byte: @end_byte }
           end
 
           def diff_file

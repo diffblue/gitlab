@@ -1,0 +1,8 @@
+---
+name: use_introspect_parser
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/103013
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/381789
+milestone: '15.6'
+type: development
+group: group::threat insights
+default_enabled: false
