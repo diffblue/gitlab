@@ -58,6 +58,7 @@ module Security
         feedback_type: :merge_request,
         category: vulnerability.report_type,
         project_fingerprint: vulnerability.project_fingerprint,
+        finding_uuid: vulnerability.uuid,
         vulnerability_data: {
           severity: vulnerability.severity,
           confidence: vulnerability.confidence,
