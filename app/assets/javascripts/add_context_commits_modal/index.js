@@ -5,9 +5,7 @@ import AddContextCommitsModalWrapper from './components/add_context_commits_moda
 import createStore from './store';
 
 export default function initAddContextCommitsTriggers() {
-  const addContextCommitsModalTriggerEl = [
-    ...document.querySelectorAll('.add-review-item-modal-trigger'),
-  ].pop();
+  const addContextCommitsModalTriggerEl = document.querySelector('.add-review-item-modal-trigger');
   const addContextCommitsModalWrapperEl = document.querySelector('.add-review-item-modal-wrapper');
 
   if (addContextCommitsModalTriggerEl) {
