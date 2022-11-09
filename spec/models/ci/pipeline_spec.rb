@@ -1607,7 +1607,8 @@ RSpec.describe Ci::Pipeline, :mailer, factory_default: :keep do
     end
 
     describe 'track artifact report' do
-      let(:pipeline) { create(:ci_pipeline, :running, :with_test_reports, :with_coverage_reports, status: :running, user: create(:user)) }
+      let_it_be(:user) { create(:user) }
+      let_it_be_with_reload(:pipeline) { create(:ci_pipeline, :running, :with_test_reports, :with_coverage_reports, status: :running, user: user) }
 
       context 'when transitioning to completed status' do
         %i[drop! skip! succeed! cancel!].each do |command|
