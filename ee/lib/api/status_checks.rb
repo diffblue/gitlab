@@ -19,16 +19,19 @@ module API
 
     resource :projects, requirements: ::API::API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       segment ':id/external_status_checks' do
-        desc 'Create a new external status check' do
-          success ::API::Entities::ExternalStatusCheck
+        desc 'Create external status check' do
+          success code: 201, model: ::API::Entities::ExternalStatusCheck
         end
         params do
-          requires :name, type: String, desc: 'The name of the external status check'
-          requires :external_url, type: String, desc: 'The URL to notify when MR receives new commits'
+          requires :name, type: String, desc: 'Display name of external status check', documentation: { example: 'QA' }
+          requires :external_url,
+                   type: String,
+                   desc: 'URL of external status check resource',
+                   documentation: { example: 'https://www.example.com' }
           optional :protected_branch_ids,
                    type: Array[Integer],
                    coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce,
-                   desc: 'The protected branch ids for this check'
+                   desc: 'IDs of protected branches to scope the rule by', documentation: { is_array: true }
         end
         post do
           service = ::ExternalStatusChecks::CreateService.new(
@@ -43,7 +46,10 @@ module API
             render_api_error!(service.payload[:errors], service.http_status)
           end
         end
-        desc 'List project\'s external approval rules'
+        desc 'Get project external status checks' do
+          success ::API::Entities::ExternalStatusCheck
+          is_array true
+        end
         params do
           use :pagination
         end
@@ -54,17 +60,23 @@ module API
         end
 
         segment ':check_id' do
-          desc 'Update an external approval rule' do
+          desc 'Update external status check' do
             success ::API::Entities::ExternalStatusCheck
           end
           params do
-            requires :check_id, type: Integer, desc: 'The ID of the external status check'
-            optional :name, type: String, desc: 'The name of the status check'
-            optional :external_url, type: String, desc: 'The URL to notify when MR receives new commits'
+            requires :check_id,
+                     type: Integer,
+                     desc: 'ID of an external status check',
+                     documentation: { example: 1 }
+            optional :name, type: String, desc: 'Display name of external status check', documentation: { example: 'QA' }
+            optional :external_url,
+                     type: String,
+                     desc: 'URL of external status check resource',
+                     documentation: { example: 'https://www.example.com' }
             optional :protected_branch_ids,
                      type: Array[Integer],
                      coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce,
-                     desc: 'The protected branch ids for this check'
+                     desc: 'IDs of protected branches to scope the rule by', documentation: { is_array: true }
           end
           put do
             service = ::ExternalStatusChecks::UpdateService.new(
@@ -80,9 +92,11 @@ module API
             end
           end
 
-          desc 'Delete an external status check'
+          desc 'Delete external status check' do
+            success code: 204
+          end
           params do
-            requires :check_id, type: Integer, desc: 'The ID of the status check'
+            requires :check_id, type: Integer, desc: 'ID of an external status check'
           end
           delete do
             external_status_check = user_project.external_status_checks.find(params[:check_id])
@@ -98,15 +112,28 @@ module API
       end
 
       segment ':id/merge_requests/:merge_request_iid' do
-        desc 'Externally approve a merge request' do
+        desc 'Set status of an external status check' do
           success Entities::MergeRequests::StatusCheckResponse
         end
         params do
-          requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
-          requires :merge_request_iid, type: Integer, desc: 'The IID of a merge request'
-          requires :external_status_check_id, type: Integer, desc: 'The ID of a external status check'
-          requires :sha, type: String, desc: 'The current SHA at HEAD of the merge request.'
-          requires :status, type: String, desc: 'Status of the merge request status check', values: %w(passed failed)
+          requires :id, type: String, desc: 'ID of a project', documentation: { example: '1' }
+          requires :merge_request_iid,
+                   type: Integer,
+                   desc: 'IID of a merge request',
+                   documentation: { example: 1 }
+          requires :external_status_check_id,
+                   type: Integer,
+                   desc: 'ID of an external status check',
+                   documentation: { example: 1 }
+          requires :sha,
+                   type: String,
+                   desc: 'SHA at HEAD of the source branch',
+                   documentation: { example: '5957a570eee0ac4580ec027fb874ad7514d1e576' }
+          requires :status,
+                   type: String,
+                   desc: 'Set to passed to pass the check or failed to fail it',
+                   values: %w(passed failed),
+                   documentation: { example: 'passed' }
         end
         post 'status_check_responses' do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
@@ -122,7 +149,10 @@ module API
           present(approval, with: Entities::MergeRequests::StatusCheckResponse)
         end
 
-        desc 'List all status checks for a merge request and their state.'
+        desc 'List status checks for a merge request' do
+          success Entities::MergeRequests::StatusCheck
+          is_array true
+        end
         get 'status_checks' do
           merge_request = find_merge_request_with_access(params[:merge_request_iid], :approve_merge_request)
 
