@@ -126,19 +126,21 @@ module QA
         page.visit Runtime::Scenario.gitlab_address
         Page::Main::Menu.perform(&:sign_out_if_signed_in)
       end
+    end
 
-      def remove_user
-        user.reload!
-        user.remove_via_api!
-        Support::Waiter.wait_until(max_duration: 180, retry_on_exception: true, sleep_interval: 3) { !user.exists? }
-      end
+    private
 
-      def visit_group_sso_url
-        Runtime::Logger.debug(%(Visiting managed_group_url at "#{group_sso_url}"))
+    def remove_user
+      user.reload!
+      user.remove_via_api!
+      Support::Waiter.wait_until(max_duration: 180, retry_on_exception: true, sleep_interval: 3) { !user.exists? }
+    end
 
-        page.visit group_sso_url
-        Support::Waiter.wait_until { current_url == group_sso_url }
-      end
+    def visit_group_sso_url
+      Runtime::Logger.debug(%(Visiting managed_group_url at "#{group_sso_url}"))
+
+      page.visit group_sso_url
+      Support::Waiter.wait_until { current_url == group_sso_url }
     end
   end
 end
