@@ -1,12 +1,12 @@
 <script>
-import { GlLink, GlSprintf } from '@gitlab/ui';
+import { GlSprintf } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
-import HelpPopover from '~/vue_shared/components/help_popover.vue';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
 import SummaryText from './summary_text.vue';
 import SummaryHighlights from './summary_highlights.vue';
@@ -22,8 +22,6 @@ export default {
     SummaryHighlights,
     SecurityTrainingPromoWidget,
     GlSprintf,
-    GlLink,
-    HelpPopover,
   },
   i18n,
   props: {
@@ -45,32 +43,38 @@ export default {
     helpPopovers() {
       return {
         SAST: {
-          props: { title: popovers.SAST_TITLE },
-          text: popovers.SAST_TEXT,
-          helpPath: this.mr.sastHelp,
+          options: { title: popovers.SAST_TITLE },
+          content: { text: popovers.SAST_TEXT, learnMorePath: this.mr.sastHelp },
         },
         DAST: {
-          props: { title: popovers.DAST_TITLE },
-          text: popovers.DAST_TEXT,
-          helpPath: this.mr.dastHelp,
+          options: { title: popovers.DAST_TITLE },
+          content: { text: popovers.DAST_TEXT, learnMorePath: this.mr.dastHelp },
         },
         SECRET_DETECTION: {
-          props: { title: popovers.SECRET_DETECTION_TITLE },
-          text: popovers.SECRET_DETECTION_TEXT,
-          helpPath: this.mr.secretDetectionHelp,
+          options: { title: popovers.SECRET_DETECTION_TITLE },
+          content: {
+            text: popovers.SECRET_DETECTION_TEXT,
+            learnMorePath: this.mr.secretDetectionHelp,
+          },
         },
         DEPENDENCY_SCANNING: {
-          props: { title: popovers.DEPENDENCY_SCANNING_TITLE },
-          text: popovers.DEPENDENCY_SCANNING_TEXT,
-          helpPath: this.mr.dependencyScanningHelp,
+          options: { title: popovers.DEPENDENCY_SCANNING_TITLE },
+          content: {
+            text: popovers.DEPENDENCY_SCANNING_TEXT,
+            learnMorePath: this.mr.dependencyScanningHelp,
+          },
         },
         API_FUZZING: {
-          props: { title: popovers.API_FUZZING_TITLE },
-          helpPath: this.mr.apiFuzzingHelp,
+          options: { title: popovers.API_FUZZING_TITLE },
+          content: {
+            learnMorePath: this.mr.apiFuzzingHelp,
+          },
         },
         COVERAGE_FUZZING: {
-          props: { title: popovers.COVERAGE_FUZZING_TITLE },
-          helpPath: this.mr.coverageFuzzingHelp,
+          options: { title: popovers.COVERAGE_FUZZING_TITLE },
+          content: {
+            learnMorePath: this.mr.coverageFuzzingHelp,
+          },
         },
       };
     },
@@ -196,6 +200,15 @@ export default {
     },
   },
   SEVERITY_LEVELS,
+  widgetHelpPopover: {
+    options: { title: i18n.helpPopoverTitle },
+    content: {
+      text: i18n.helpPopoverContent,
+      learnMorePath: helpPagePath('user/application_security/index', {
+        anchor: 'ultimate',
+      }),
+    },
+  },
 };
 </script>
 
@@ -207,6 +220,7 @@ export default {
     :status-icon-name="statusIconName"
     :widget-name="$options.name"
     :is-collapsible="isCollapsible"
+    :help-popover="$options.widgetHelpPopover"
     multi-polling
     @is-loading="handleIsLoading"
   >
@@ -228,6 +242,8 @@ export default {
         :widget-name="$options.name"
         :level="2"
         :status-icon-name="statusIconNameReportType(report)"
+        :help-popover="helpPopovers[report.reportType]"
+        :data-testid="`report-${report.reportType}`"
       >
         <template #header>
           <div>
@@ -244,17 +260,6 @@ export default {
             </div>
             <summary-highlights :highlights="highlightsFromReport(report)" />
           </div>
-        </template>
-        <template #header-actions>
-          <help-popover :options="helpPopovers[report.reportType].props">
-            {{ helpPopovers[report.reportType].text }}
-            <gl-link
-              :href="helpPopovers[report.reportType].helpPath"
-              class="gl-font-sm"
-              :data-testid="`${report.reportType}-learn-more`"
-              >{{ $options.i18n.learnMore }}</gl-link
-            >
-          </help-popover>
         </template>
         <template #body>
           <div class="gl-mt-2">
