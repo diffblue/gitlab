@@ -23,7 +23,6 @@ module Gitlab
                 project_id: project.id,
                 plan: project.actual_plan_name,
                 project_path: project.path,
-                namespace_path: namespace.path,
                 jobs_in_alive_pipelines_count: count_jobs_in_alive_pipelines
               )
             end
