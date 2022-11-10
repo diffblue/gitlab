@@ -19,7 +19,7 @@ module Gitlab
 
         logger&.info "DRY RUN:" if dry_run
 
-        connection = Gitlab::Database.database_base_models[database_name].connection
+        @connection = Gitlab::Database.database_base_models[database_name].connection
 
         schemas_for_connection = Gitlab::Database.gitlab_schemas_for_connection(connection)
         tables_to_truncate = Gitlab::Database::GitlabSchema.tables_to_schema.reject do |_, schema_name|
@@ -30,13 +30,15 @@ module Gitlab
         # Checking if all the tables have the write-lock triggers
         # to make sure we are deleting the right tables on the right database.
         tables_sorted.flatten.each do |table_name|
-          query = <<~SQL
-            SELECT COUNT(*) from information_schema.triggers
-            WHERE event_object_table = '#{table_name}'
-            AND trigger_name = 'gitlab_schema_write_trigger_for_#{table_name}'
-          SQL
+          lock_writes_manager = Gitlab::Database::LockWritesManager.new(
+            table_name: table_name,
+            connection: connection,
+            database_name: database_name,
+            logger: logger,
+            dry_run: dry_run
+          )
 
-          if connection.select_value(query) == 0
+          unless lock_writes_manager.table_locked_for_writes?(table_name)
             raise "Table '#{table_name}' is not locked for writes. Run the rake task gitlab:db:lock_writes first"
           end
         end
@@ -51,14 +53,14 @@ module Gitlab
         # min_batch_size is the minimum number of new tables to truncate at each stage.
         # But in each stage we have also have to truncate the already truncated tables in the previous stages
         logger&.info "Truncating legacy tables for the database #{database_name}"
-        truncate_tables_in_batches(connection, tables_sorted, min_batch_size)
+        truncate_tables_in_batches(tables_sorted, min_batch_size)
       end
 
       private
 
-      attr_accessor :database_name, :min_batch_size, :logger, :dry_run, :until_table
+      attr_accessor :database_name, :min_batch_size, :logger, :dry_run, :until_table, :connection
 
-      def truncate_tables_in_batches(connection, tables_sorted, min_batch_size)
+      def truncate_tables_in_batches(tables_sorted, min_batch_size)
         truncated_tables = []
 
         tables_sorted.flatten.each do |table|
