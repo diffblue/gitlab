@@ -208,6 +208,7 @@ module API
         mount ::API::ProjectEvents
         mount ::API::ProjectExport
         mount ::API::ProjectHooks
+        mount ::API::ProjectImport
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::ProjectSnippets
         mount ::API::ProjectSnapshots
@@ -301,7 +302,7 @@ module API
       mount ::API::PagesDomains
       mount ::API::ProjectContainerRepositories
       mount ::API::ProjectDebianDistributions
-      mount ::API::ProjectImport
+      mount ::API::ProjectEvents
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
       mount ::API::ProjectStatistics
