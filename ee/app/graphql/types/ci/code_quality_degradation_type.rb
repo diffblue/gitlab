@@ -31,6 +31,10 @@ module Types
         null: false,
         description: 'Line on which the code quality degradation occurred.'
 
+      field :web_url, GraphQL::Types::String,
+        null: true,
+        description: 'URL to the file along with line number.'
+
       def path
         degradation.dig(:location, :path)
       end

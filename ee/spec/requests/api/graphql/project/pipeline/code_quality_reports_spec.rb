@@ -49,6 +49,7 @@ RSpec.describe 'Query.project(fullPath).pipeline(iid).codeQualityReports' do
           expect(degradation['severity']).not_to be_nil
           expect(degradation['path']).not_to be_nil
           expect(degradation['line']).not_to be_nil
+          expect(degradation['webUrl']).not_to be_nil
         end
       end
 
