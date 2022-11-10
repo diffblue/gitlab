@@ -1,0 +1,36 @@
+query deployment($fullPath: ID!, $iid: ID!) {
+  project(fullPath: $fullPath) {
+    id
+    deployment(iid: $iid) {
+      id
+      approvalSummary {
+        rules {
+          group {
+            id
+            name
+            webUrl
+          }
+          user {
+            id
+            name
+            webPath
+          }
+          accessLevel {
+            stringValue
+          }
+          approvedCount
+          requiredApprovals
+          approvals {
+            user {
+              id
+              avatarUrl
+              name
+              webPath
+            }
+            status
+          }
+        }
+      }
+    }
+  }
+}
