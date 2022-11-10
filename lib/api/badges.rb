@@ -28,7 +28,7 @@ module API
         desc "Gets a list of #{source_type} badges viewable by the authenticated user." do
           detail 'This feature was introduced in GitLab 10.6.'
           success Entities::Badge
-          is_array: true
+          is_array true
           tags %w[badges]
         end
         params do
