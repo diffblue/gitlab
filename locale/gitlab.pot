@@ -46561,6 +46561,9 @@ msgstr ""
 msgid "You can enable project access token creation in %{link_start}group settings%{link_end}."
 msgstr ""
 
+msgid "You can enter up to 280 characters"
+msgstr ""
+
 msgid "You can filter by 'days to merge' by clicking on the columns in the chart."
 msgstr ""
 
