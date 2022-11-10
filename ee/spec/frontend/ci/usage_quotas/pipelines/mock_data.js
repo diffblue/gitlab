@@ -1,13 +1,13 @@
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { sprintf } from '~/locale';
 import { TEST_HOST } from 'helpers/test_constants';
-import { getProjectMinutesUsage } from 'ee/usage_quotas/pipelines/utils';
+import { getProjectMinutesUsage } from 'ee/ci/usage_quotas/pipelines/utils';
 import {
   TITLE_USAGE_SINCE,
   MINUTES_USED,
   CI_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK_LABEL,
-} from 'ee/usage_quotas/pipelines/constants';
+} from 'ee/ci/usage_quotas/pipelines/constants';
 
 export const defaultProvide = {
   namespacePath: 'mygroup',

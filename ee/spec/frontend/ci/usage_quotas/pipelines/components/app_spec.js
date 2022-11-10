@@ -7,9 +7,9 @@ import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import PipelineUsageApp from 'ee/usage_quotas/pipelines/components/app.vue';
-import ProjectList from 'ee/usage_quotas/pipelines/components/project_list.vue';
-import UsageOverview from 'ee/usage_quotas/pipelines/components/usage_overview.vue';
+import PipelineUsageApp from 'ee/ci/usage_quotas/pipelines/components/app.vue';
+import ProjectList from 'ee/ci/usage_quotas/pipelines/components/project_list.vue';
+import UsageOverview from 'ee/ci/usage_quotas/pipelines/components/usage_overview.vue';
 import {
   LABEL_BUY_ADDITIONAL_MINUTES,
   ERROR_MESSAGE,
@@ -22,8 +22,8 @@ import {
   ADDITIONAL_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK_LABEL,
-} from 'ee/usage_quotas/pipelines/constants';
-import getNamespaceProjectsInfo from 'ee/usage_quotas/pipelines/queries/namespace_projects_info.query.graphql';
+} from 'ee/ci/usage_quotas/pipelines/constants';
+import getNamespaceProjectsInfo from 'ee/ci/usage_quotas/pipelines/queries/namespace_projects_info.query.graphql';
 import getCiMinutesUsageNamespace from 'ee/ci/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import {
   defaultProvide,
