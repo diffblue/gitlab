@@ -649,9 +649,6 @@ msgstr ""
 msgid "%{docs_link_start}What is two-factor authentication?%{docs_link_end}"
 msgstr ""
 
-msgid "%{due_date} (Past due)"
-msgstr ""
-
 msgid "%{duration}ms"
 msgstr ""
 
@@ -17049,9 +17046,6 @@ msgid "Filter by merge requests that are currently closed and unmerged."
 msgstr ""
 
 msgid "Filter by merge requests that are currently merged."
-msgstr ""
-
-msgid "Filter by milestone"
 msgstr ""
 
 msgid "Filter by milestone name"
