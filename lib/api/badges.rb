@@ -115,7 +115,6 @@ module API
           tags %w[badges]
         end
         params do
-          requires :badge_id, type: Integer, desc: 'The badge ID'
           optional :link_url, type: String, desc: 'URL of the badge link'
           optional :image_url, type: String, desc: 'URL of the badge image'
           optional :name, type: String, desc: 'Name for the badge'
