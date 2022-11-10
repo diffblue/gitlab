@@ -524,4 +524,51 @@ RSpec.describe Gitlab::Ci::Reports::Security::Finding do
       end
     end
   end
+
+  describe '#false_positive?' do
+    let(:flag) { instance_double(Gitlab::Ci::Reports::Security::Flag, false_positive?: flag_false_positive?) }
+    let(:finding) { build(:ci_reports_security_finding, flags: [flag]) }
+
+    subject { finding.false_positive? }
+
+    context 'when the finding does not have a false positive flag' do
+      let(:flag_false_positive?) { false }
+
+      it { is_expected.to be_falsey }
+    end
+
+    context 'when the finding has a false positive flag' do
+      let(:flag_false_positive?) { true }
+
+      it { is_expected.to be_truthy }
+    end
+  end
+
+  describe '#remediation_byte_offsets' do
+    let(:remediation) { build(:ci_reports_security_remediation, start_byte: 0, end_byte: 100) }
+    let(:finding) { build(:ci_reports_security_finding, remediations: [remediation]) }
+
+    subject { finding.remediation_byte_offsets }
+
+    it { is_expected.to match_array([{ start_byte: 0, end_byte: 100 }]) }
+  end
+
+  describe '#assets' do
+    let(:finding) { build(:ci_reports_security_finding, original_data: original_data) }
+
+    subject { finding.assets }
+
+    context 'when the original data does not have assets' do
+      let(:original_data) { {} }
+
+      it { is_expected.to be_empty }
+    end
+
+    context 'when the original data has assets' do
+      let(:assets) { [{ 'name' => 'Test asset', 'type' => 'type', 'url' => 'example.com' }] }
+      let(:original_data) { { 'assets' => assets } }
+
+      it { is_expected.to eq(assets) }
+    end
+  end
 end

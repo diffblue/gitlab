@@ -17,6 +17,7 @@ module API
     resources :audit_events do
       desc 'Get the list of audit events' do
         success EE::API::Entities::AuditEvent
+        is_array true
       end
       params do
         optional :entity_type, type: String, desc: 'Return list of audit events for the specified entity type', values: AuditEventFinder::VALID_ENTITY_TYPES
@@ -24,8 +25,14 @@ module API
         given :entity_id do
           requires :entity_type, type: String
         end
-        optional :created_after, type: DateTime, desc: 'Return audit events created after the specified time'
-        optional :created_before, type: DateTime, desc: 'Return audit events created before the specified time'
+        optional :created_after,
+                 type: DateTime,
+                 desc: 'Return audit events created after the specified time',
+                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
+        optional :created_before,
+                 type: DateTime,
+                 desc: 'Return audit events created before the specified time',
+                 documentation: { type: 'dateTime', example: '2016-01-19T09:05:50.355Z' }
 
         use :pagination
       end

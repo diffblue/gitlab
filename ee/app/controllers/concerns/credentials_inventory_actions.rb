@@ -33,7 +33,11 @@ module CredentialsInventoryActions
     personal_access_token = personal_access_token_finder.find_by_id(params[:id] || params[:credential_id])
     return render_404 unless personal_access_token
 
-    result = revoke_service(personal_access_token, params[:project_id]).execute
+    result = revoke_service(
+      personal_access_token,
+      resource_type: params[:resource_type],
+      resource_id: params[:resource_id]
+    ).execute
 
     if result.success?
       flash[:notice] = result.message
@@ -52,8 +56,8 @@ module CredentialsInventoryActions
       ::PersonalAccessTokensFinder.new({ users: users, impersonation: false, sort: 'id_desc', owner_type: 'human' }).execute
     elsif show_ssh_keys?
       ::KeysFinder.new({ users: users, key_type: 'ssh' }).execute
-    elsif show_project_access_tokens?
-      ::PersonalAccessTokensFinder.new({ users: users, impersonation: false, sort: 'id_desc' }).execute.project_access_token
+    elsif show_resource_access_tokens?
+      ::PersonalAccessTokensFinder.new(users: users, impersonation: false, sort: 'id_desc').execute.project_access_token
     end
   end
 
@@ -81,8 +85,8 @@ module CredentialsInventoryActions
     end
   end
 
-  def revoke_service(token, project_id)
-    return ::ResourceAccessTokens::RevokeService.new(current_user, ::Project.find_by_id(project_id), token) if project_id
+  def revoke_service(token, resource_id: nil, resource_type: nil)
+    return ::ResourceAccessTokens::RevokeService.new(current_user, resource_type.constantize.find_by_id(resource_id), token) if resource_id
 
     if revocable.instance_of?(Group)
       ::PersonalAccessTokens::RevokeService.new(current_user, token: token, group: revocable)

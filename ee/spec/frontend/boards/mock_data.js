@@ -1,9 +1,26 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
-import { __ } from '~/locale';
+import {
+  OPERATOR_IS_AND_IS_NOT,
+  OPERATOR_IS_ONLY,
+  TOKEN_TITLE_ASSIGNEE,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_CONFIDENTIAL,
+  TOKEN_TITLE_LABEL,
+  TOKEN_TITLE_MILESTONE,
+  TOKEN_TITLE_MY_REACTION,
+  TOKEN_TITLE_RELEASE,
+  TOKEN_TITLE_TYPE,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
+import {
+  TOKEN_TITLE_EPIC,
+  TOKEN_TITLE_HEALTH,
+  TOKEN_TITLE_ITERATION,
+  TOKEN_TITLE_WEIGHT,
+} from 'ee/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import ReleaseToken from '~/vue_shared/components/filtered_search_bar/tokens/release_token.vue';
@@ -470,12 +487,9 @@ export const mockTokens = (
 ) => [
   {
     icon: 'user',
-    title: __('Assignee'),
+    title: TOKEN_TITLE_ASSIGNEE,
     type: 'assignee',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    operators: OPERATOR_IS_AND_IS_NOT,
     token: AuthorToken,
     unique: true,
     fetchAuthors,
@@ -483,12 +497,9 @@ export const mockTokens = (
   },
   {
     icon: 'pencil',
-    title: __('Author'),
+    title: TOKEN_TITLE_AUTHOR,
     type: 'author',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    operators: OPERATOR_IS_AND_IS_NOT,
     symbol: '@',
     token: AuthorToken,
     unique: true,
@@ -497,12 +508,9 @@ export const mockTokens = (
   },
   {
     icon: 'labels',
-    title: __('Label'),
+    title: TOKEN_TITLE_LABEL,
     type: 'label',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    operators: OPERATOR_IS_AND_IS_NOT,
     token: LabelToken,
     unique: false,
     symbol: '~',
@@ -511,7 +519,7 @@ export const mockTokens = (
   {
     type: 'my-reaction',
     icon: 'thumb-up',
-    title: 'My-Reaction',
+    title: TOKEN_TITLE_MY_REACTION,
     unique: true,
     token: EmojiToken,
     fetchEmojis: expect.any(Function),
@@ -519,10 +527,10 @@ export const mockTokens = (
   {
     type: 'confidential',
     icon: 'eye-slash',
-    title: 'Confidential',
+    title: TOKEN_TITLE_CONFIDENTIAL,
     unique: true,
     token: GlFilteredSearchToken,
-    operators: [{ value: '=', description: 'is' }],
+    operators: OPERATOR_IS_ONLY,
     options: [
       { icon: 'eye-slash', value: 'yes', title: 'Yes' },
       { icon: 'eye', value: 'no', title: 'No' },
@@ -530,7 +538,7 @@ export const mockTokens = (
   },
   {
     icon: 'clock',
-    title: __('Milestone'),
+    title: TOKEN_TITLE_MILESTONE,
     symbol: '%',
     type: 'milestone',
     token: MilestoneToken,
@@ -540,7 +548,7 @@ export const mockTokens = (
   },
   {
     icon: 'issues',
-    title: __('Type'),
+    title: TOKEN_TITLE_TYPE,
     type: 'type',
     token: GlFilteredSearchToken,
     unique: true,
@@ -551,7 +559,7 @@ export const mockTokens = (
   },
   {
     type: 'release',
-    title: __('Release'),
+    title: TOKEN_TITLE_RELEASE,
     icon: 'rocket',
     token: ReleaseToken,
     fetchReleases: expect.any(Function),
@@ -559,7 +567,7 @@ export const mockTokens = (
   {
     type: 'epic',
     icon: 'epic',
-    title: 'Epic',
+    title: TOKEN_TITLE_EPIC,
     unique: true,
     symbol: '&',
     token: EpicToken,
@@ -570,11 +578,8 @@ export const mockTokens = (
   {
     type: 'iteration',
     icon: 'iteration',
-    title: 'Iteration',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    title: TOKEN_TITLE_ITERATION,
+    operators: OPERATOR_IS_AND_IS_NOT,
     unique: true,
     fetchIterations,
     fetchIterationCadences,
@@ -583,16 +588,16 @@ export const mockTokens = (
   {
     type: 'weight',
     icon: 'weight',
-    title: __('Weight'),
+    title: TOKEN_TITLE_WEIGHT,
     token: WeightToken,
     unique: true,
   },
   {
     type: 'health_status',
     icon: 'status-health',
-    title: __('Health'),
+    title: TOKEN_TITLE_HEALTH,
     token: HealthToken,
     unique: true,
-    operators: [{ value: '=', description: 'is' }],
+    operators: OPERATOR_IS_ONLY,
   },
 ];

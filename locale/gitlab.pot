@@ -560,6 +560,16 @@ msgstr[1] ""
 msgid "%{count} files touched"
 msgstr ""
 
+msgid "%{count} group"
+msgid_plural "%{count} groups"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%{count} issue"
+msgid_plural "%{count} issues"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{count} item"
 msgid_plural "%{count} items"
 msgstr[0] ""
@@ -567,6 +577,11 @@ msgstr[1] ""
 
 msgid "%{count} items per page"
 msgstr ""
+
+msgid "%{count} merge request"
+msgid_plural "%{count} merge requests"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "%{count} more"
 msgstr ""
@@ -587,6 +602,11 @@ msgstr ""
 
 msgid "%{count} participant"
 msgid_plural "%{count} participants"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "%{count} project"
+msgid_plural "%{count} projects"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -3124,6 +3144,9 @@ msgstr ""
 msgid "AdminUsers|Admins"
 msgstr ""
 
+msgid "AdminUsers|An error occurred while fetching this user's contributions, and the request cannot return the number of issues, merge requests, groups, and projects linked to this user. If you proceed with deleting the user, all their contributions will still be deleted."
+msgstr ""
+
 msgid "AdminUsers|Approve"
 msgstr ""
 
@@ -3361,7 +3384,7 @@ msgstr ""
 msgid "AdminUsers|To confirm, type %{projectName}"
 msgstr ""
 
-msgid "AdminUsers|To confirm, type %{username}"
+msgid "AdminUsers|To confirm, type %{username}."
 msgstr ""
 
 msgid "AdminUsers|Unban user"
@@ -3424,7 +3447,7 @@ msgstr ""
 msgid "AdminUsers|You are about to permanently delete the user %{username}. Issues, merge requests, and groups linked to them will be transferred to a system-wide \"Ghost-user\". To avoid data loss, consider using the %{strongStart}block user%{strongEnd} feature instead. Once you %{strongStart}Delete user%{strongEnd}, it cannot be undone or recovered."
 msgstr ""
 
-msgid "AdminUsers|You are about to permanently delete the user %{username}. This will delete all of the issues, merge requests, and groups linked to them. To avoid data loss, consider using the %{strongStart}block user%{strongEnd} feature instead. Once you %{strongStart}Delete user%{strongEnd}, it cannot be undone or recovered."
+msgid "AdminUsers|You are about to permanently delete the user %{username}. This will delete all issues, merge requests, groups, and projects linked to them. To avoid data loss, consider using the %{strongStart}Block user%{strongEnd} feature instead. After you %{strongStart}Delete user%{strongEnd}, you cannot undo this action or recover the data."
 msgstr ""
 
 msgid "AdminUsers|You can always block their account again if needed."
@@ -5237,6 +5260,9 @@ msgid "Are you sure you want to retry this migration?"
 msgstr ""
 
 msgid "Are you sure you want to revoke this %{accessTokenType}? This action cannot be undone."
+msgstr ""
+
+msgid "Are you sure you want to revoke this group access token? This action cannot be undone."
 msgstr ""
 
 msgid "Are you sure you want to revoke this personal access token? This action cannot be undone."
@@ -9763,16 +9789,16 @@ msgstr ""
 msgid "Comment/Reply (quoting selected text)"
 msgstr ""
 
-msgid "Commenting on files that are only moved or renamed is currently not supported"
+msgid "Commenting on files that are only moved or renamed is not supported"
 msgstr ""
 
-msgid "Commenting on files that replace or are replaced by symbolic links is currently not supported."
+msgid "Commenting on files that replace or are replaced by symbolic links is not supported"
 msgstr ""
 
-msgid "Commenting on symbolic links that replace or are replaced by files is currently not supported."
+msgid "Commenting on symbolic links that replace or are replaced by files is not supported"
 msgstr ""
 
-msgid "Commenting on this line is currently not supported"
+msgid "Commenting on this line is not supported"
 msgstr ""
 
 msgid "Comments"
@@ -11595,7 +11621,7 @@ msgstr ""
 msgid "CredentialsInventory|Personal Access Tokens"
 msgstr ""
 
-msgid "CredentialsInventory|Project Access Tokens"
+msgid "CredentialsInventory|Project and Group Access Tokens"
 msgstr ""
 
 msgid "CredentialsInventory|SSH Keys"
@@ -12571,6 +12597,9 @@ msgstr ""
 msgid "Data type"
 msgstr ""
 
+msgid "Database '%{database_name}' is using PostgreSQL %{pg_version_current}, but PostgreSQL %{pg_version_minimum} is required for this version of GitLab. Please upgrade your environment to a supported PostgreSQL version, see %{pg_requirements_url} for details."
+msgstr ""
+
 msgid "Database update failed"
 msgstr ""
 
@@ -13463,6 +13492,21 @@ msgid "Deployment Target|Select the deployment target"
 msgstr ""
 
 msgid "Deployment frequency"
+msgstr ""
+
+msgid "DeploymentApprovals|Approvals"
+msgstr ""
+
+msgid "DeploymentApprovals|Approved By"
+msgstr ""
+
+msgid "DeploymentApprovals|Approvers"
+msgstr ""
+
+msgid "DeploymentApprovals|Developers + Maintainers"
+msgstr ""
+
+msgid "DeploymentApprovals|Maintainers"
 msgstr ""
 
 msgid "DeploymentApproval| Current approvals: %{current}"
@@ -31544,6 +31588,9 @@ msgstr ""
 msgid "Project navigation"
 msgstr ""
 
+msgid "Project or Group"
+msgstr ""
+
 msgid "Project order will not be saved as local storage is not available."
 msgstr ""
 
@@ -32226,6 +32273,9 @@ msgid "ProjectSettings|Users can copy the repository to a new project."
 msgstr ""
 
 msgid "ProjectSettings|Users can only push commits to this repository if the committer email is one of their own verified emails."
+msgstr ""
+
+msgid "ProjectSettings|Users can only push commits to this repository if the committer name is consistent with their git config username."
 msgstr ""
 
 msgid "ProjectSettings|Users can request access"
@@ -33264,6 +33314,9 @@ msgid "PushRules|Users can still delete tags through the GitLab UI."
 msgstr ""
 
 msgid "PushRule|Push rules"
+msgstr ""
+
+msgid "PushRule|Reject inconsistent user name"
 msgstr ""
 
 msgid "PushRule|Reject unverified users"
@@ -41891,6 +41944,9 @@ msgstr ""
 msgid "This variable can not be masked."
 msgstr ""
 
+msgid "This vulnerability type has been deprecated from GitLab's default ruleset and automatically resolved."
+msgstr ""
+
 msgid "This will invalidate your registered applications and U2F / WebAuthn devices."
 msgstr ""
 
@@ -46404,9 +46460,6 @@ msgstr ""
 msgid "You are trying to upload something other than an image. Please upload a .png, .jpg, .jpeg, .gif, .bmp, .tiff or .ico."
 msgstr ""
 
-msgid "You are using PostgreSQL %{pg_version_current}, but PostgreSQL %{pg_version_minimum} is required for this version of GitLab. Please upgrade your environment to a supported PostgreSQL version, see %{pg_requirements_url} for details."
-msgstr ""
-
 msgid "You can %{gitlabLinkStart}resolve conflicts on GitLab%{gitlabLinkEnd} or %{resolveLocallyStart}resolve it locally%{resolveLocallyEnd}."
 msgstr ""
 
@@ -46506,6 +46559,9 @@ msgid "You can enable group access token creation in %{link_start}group settings
 msgstr ""
 
 msgid "You can enable project access token creation in %{link_start}group settings%{link_end}."
+msgstr ""
+
+msgid "You can enter up to 280 characters"
 msgstr ""
 
 msgid "You can filter by 'days to merge' by clicking on the columns in the chart."
@@ -48385,10 +48441,16 @@ msgstr ""
 msgid "is not in the member group"
 msgstr ""
 
+msgid "is not one of"
+msgstr ""
+
 msgid "is not the member project"
 msgstr ""
 
 msgid "is not valid. The iteration group has to match the iteration cadence group."
+msgstr ""
+
+msgid "is one of"
 msgstr ""
 
 msgid "is read-only"
@@ -48693,6 +48755,9 @@ msgid "mrWidget|Merge blocked: a Jira issue key must be mentioned in the title o
 msgstr ""
 
 msgid "mrWidget|Merge blocked: all required approvals must be given."
+msgstr ""
+
+msgid "mrWidget|Merge blocked: all status checks must pass."
 msgstr ""
 
 msgid "mrWidget|Merge blocked: all threads must be resolved."

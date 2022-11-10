@@ -65,12 +65,29 @@ module Security
         overridden_uuid: report_finding.overridden_uuid,
         project_fingerprint: report_finding.project_fingerprint,
         scanner_id: persisted_scanner_for(report_finding.scanner).id,
-        deduplicated: deduplicated?(report_finding)
+        deduplicated: deduplicated?(report_finding),
+        finding_data: finding_data_for(report_finding)
       }
     end
 
     def deduplicated?(report_finding)
       deduplicated_finding_uuids.include?(report_finding.uuid)
+    end
+
+    def finding_data_for(report_finding)
+      {
+        name: report_finding.name,
+        description: report_finding.description,
+        solution: report_finding.solution,
+        location: report_finding.location_data,
+        identifiers: report_finding.identifiers.map(&:to_hash),
+        links: report_finding.links.map(&:to_hash),
+        false_positive?: report_finding.false_positive?,
+        assets: report_finding.assets,
+        evidence: report_finding.evidence&.data,
+        details: report_finding.details,
+        remediation_byte_offsets: report_finding.remediation_byte_offsets
+      }
     end
 
     def persisted_scanner_for(report_scanner)

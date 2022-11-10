@@ -9,5 +9,9 @@ module SystemNotes
 
       create_note(NoteSummary.new(noteable, project, author, body, action: "vulnerability_#{noteable.state}"))
     end
+
+    def mark_dropped_as_resolved(body)
+      create_note(NoteSummary.new(noteable, project, author, body, action: "vulnerability_#{noteable.state}"))
+    end
   end
 end

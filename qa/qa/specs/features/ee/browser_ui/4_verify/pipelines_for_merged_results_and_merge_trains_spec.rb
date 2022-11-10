@@ -9,7 +9,7 @@ module QA
         end
       end
 
-      let!(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(8)}" }
+      let!(:executor) { "qa-runner-#{Faker::Alphanumeric.alphanumeric(number: 8)}" }
 
       let!(:runner) do
         Resource::Runner.fabricate_via_api! do |runner|

@@ -150,13 +150,14 @@
               "type": "object",
               "properties": {
                 "scan": {
-                  "description": "A type of the scan that should be enforced to run. Available: `dast`, `secret_detection`, `container_scanning`, `sast`.",
+                  "description": "A type of the scan that should be enforced to run. Available: `dast`, `secret_detection`, `container_scanning`, `sast`, `dependency_scanning`.",
                   "enum": [
                     "dast",
                     "secret_detection",
                     "container_scanning",
                     "cluster_image_scanning",
-                    "sast"
+                    "sast",
+                    "dependency_scanning"
                   ],
                   "type": "string"
                 },

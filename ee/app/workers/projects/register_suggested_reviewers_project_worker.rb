@@ -9,6 +9,8 @@ module Projects
     urgency :low
     deduplicate :until_executed
 
+    sidekiq_options retry: 3
+
     idempotent!
 
     # ::Projects::RegisterSuggestedReviewersProjectService makes an external RPC request

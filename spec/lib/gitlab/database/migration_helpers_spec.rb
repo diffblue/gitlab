@@ -469,6 +469,37 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
           model.remove_concurrent_index(:users, :foo)
         end
 
+        context 'when targeting a partition table' do
+          let(:schema) { 'public' }
+          let(:partition_table_name) { '_test_partition_01' }
+          let(:identifier) { "#{schema}.#{partition_table_name}" }
+          let(:index_name) { '_test_partitioned_index' }
+          let(:partition_index_name) { '_test_partition_01_partition_id_idx' }
+          let(:column_name) { 'partition_id' }
+
+          before do
+            model.execute(<<~SQL)
+              CREATE TABLE public._test_partitioned_table (
+                id serial NOT NULL,
+                partition_id serial NOT NULL,
+                PRIMARY KEY (id, partition_id)
+              ) PARTITION BY LIST(partition_id);
+
+              CREATE INDEX #{index_name} ON public._test_partitioned_table(#{column_name});
+
+              CREATE TABLE #{identifier} PARTITION OF public._test_partitioned_table
+              FOR VALUES IN (1);
+            SQL
+          end
+
+          context 'when dropping an index on the partition table' do
+            it 'raises ArgumentError' do
+              expect { model.remove_concurrent_index(partition_table_name, column_name) }
+                .to raise_error(ArgumentError, /use remove_concurrent_partitioned_index_by_name/)
+            end
+          end
+        end
+
         describe 'by index name' do
           before do
             allow(model).to receive(:index_exists_by_name?).with(:users, "index_x_by_y").and_return(true)
@@ -509,6 +540,36 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
               .with(:users, "index_x_by_y", { algorithm: :concurrently })
 
             model.remove_concurrent_index_by_name(:users, "index_x_by_y")
+          end
+
+          context 'when targeting a partition table' do
+            let(:schema) { 'public' }
+            let(:partition_table_name) { '_test_partition_01' }
+            let(:identifier) { "#{schema}.#{partition_table_name}" }
+            let(:index_name) { '_test_partitioned_index' }
+            let(:partition_index_name) { '_test_partition_01_partition_id_idx' }
+
+            before do
+              model.execute(<<~SQL)
+                CREATE TABLE public._test_partitioned_table (
+                  id serial NOT NULL,
+                  partition_id serial NOT NULL,
+                  PRIMARY KEY (id, partition_id)
+                ) PARTITION BY LIST(partition_id);
+
+                CREATE INDEX #{index_name} ON public._test_partitioned_table(partition_id);
+
+                CREATE TABLE #{identifier} PARTITION OF public._test_partitioned_table
+                FOR VALUES IN (1);
+              SQL
+            end
+
+            context 'when dropping an index on the partition table' do
+              it 'raises ArgumentError' do
+                expect { model.remove_concurrent_index_by_name(partition_table_name, partition_index_name) }
+                  .to raise_error(ArgumentError, /use remove_concurrent_partitioned_index_by_name/)
+              end
+            end
           end
         end
       end
@@ -2801,58 +2862,6 @@ RSpec.describe Gitlab::Database::MigrationHelpers do
         expect(issue_a.reload.iid).to eq(1)
         expect(issue_b.reload.iid).to eq(1)
         expect(issue_c.reload.iid).to eq(2)
-      end
-    end
-  end
-
-  describe '#create_extension' do
-    subject { model.create_extension(extension) }
-
-    let(:extension) { :btree_gist }
-
-    it 'executes CREATE EXTENSION statement' do
-      expect(model).to receive(:execute).with(/CREATE EXTENSION IF NOT EXISTS #{extension}/)
-
-      subject
-    end
-
-    context 'without proper permissions' do
-      before do
-        allow(model).to receive(:execute)
-          .with(/CREATE EXTENSION IF NOT EXISTS #{extension}/)
-          .and_raise(ActiveRecord::StatementInvalid, 'InsufficientPrivilege: permission denied')
-      end
-
-      it 'raises an exception and prints an error message' do
-        expect { subject }
-          .to output(/user is not allowed/).to_stderr
-          .and raise_error(ActiveRecord::StatementInvalid, /InsufficientPrivilege/)
-      end
-    end
-  end
-
-  describe '#drop_extension' do
-    subject { model.drop_extension(extension) }
-
-    let(:extension) { 'btree_gist' }
-
-    it 'executes CREATE EXTENSION statement' do
-      expect(model).to receive(:execute).with(/DROP EXTENSION IF EXISTS #{extension}/)
-
-      subject
-    end
-
-    context 'without proper permissions' do
-      before do
-        allow(model).to receive(:execute)
-          .with(/DROP EXTENSION IF EXISTS #{extension}/)
-          .and_raise(ActiveRecord::StatementInvalid, 'InsufficientPrivilege: permission denied')
-      end
-
-      it 'raises an exception and prints an error message' do
-        expect { subject }
-          .to output(/user is not allowed/).to_stderr
-          .and raise_error(ActiveRecord::StatementInvalid, /InsufficientPrivilege/)
       end
     end
   end

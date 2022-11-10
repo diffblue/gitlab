@@ -9,6 +9,7 @@ module Gitlab
       include Migrations::LockRetriesHelpers
       include Migrations::TimeoutHelpers
       include Migrations::ConstraintsHelpers
+      include Migrations::ExtensionHelpers
       include DynamicModelHelpers
       include RenameTableHelpers
       include AsyncIndexes::MigrationHelpers
@@ -209,6 +210,12 @@ module Gitlab
             'in the body of your migration class'
         end
 
+        if partition?(table_name)
+          raise ArgumentError, 'remove_concurrent_index can not be used on a partitioned '  \
+            'table. Please use remove_concurrent_partitioned_index_by_name on the partitioned table ' \
+            'as we need to remove the index on the parent table'
+        end
+
         options = options.merge({ algorithm: :concurrently })
 
         unless index_exists?(table_name, column_name, **options)
@@ -236,6 +243,12 @@ module Gitlab
           raise 'remove_concurrent_index_by_name can not be run inside a transaction, ' \
             'you can disable transactions by calling disable_ddl_transaction! ' \
             'in the body of your migration class'
+        end
+
+        if partition?(table_name)
+          raise ArgumentError, 'remove_concurrent_index_by_name can not be used on a partitioned '  \
+            'table. Please use remove_concurrent_partitioned_index_by_name on the partitioned table ' \
+            'as we need to remove the index on the parent table'
         end
 
         index_name = index_name[:name] if index_name.is_a?(Hash)
@@ -1122,63 +1135,6 @@ into similar problems in the future (e.g. when new tables are created).
         END
 
         execute(sql)
-      end
-
-      def create_extension(extension)
-        execute('CREATE EXTENSION IF NOT EXISTS %s' % extension)
-      rescue ActiveRecord::StatementInvalid => e
-        dbname = ApplicationRecord.database.database_name
-        user = ApplicationRecord.database.username
-
-        warn(<<~MSG) if e.to_s =~ /permission denied/
-          GitLab requires the PostgreSQL extension '#{extension}' installed in database '#{dbname}', but
-          the database user is not allowed to install the extension.
-
-          You can either install the extension manually using a database superuser:
-
-            CREATE EXTENSION IF NOT EXISTS #{extension}
-
-          Or, you can solve this by logging in to the GitLab
-          database (#{dbname}) using a superuser and running:
-
-              ALTER #{user} WITH SUPERUSER
-
-          This query will grant the user superuser permissions, ensuring any database extensions
-          can be installed through migrations.
-
-          For more information, refer to https://docs.gitlab.com/ee/install/postgresql_extensions.html.
-        MSG
-
-        raise
-      end
-
-      def drop_extension(extension)
-        execute('DROP EXTENSION IF EXISTS %s' % extension)
-      rescue ActiveRecord::StatementInvalid => e
-        dbname = ApplicationRecord.database.database_name
-        user = ApplicationRecord.database.username
-
-        warn(<<~MSG) if e.to_s =~ /permission denied/
-          This migration attempts to drop the PostgreSQL extension '#{extension}'
-          installed in database '#{dbname}', but the database user is not allowed
-          to drop the extension.
-
-          You can either drop the extension manually using a database superuser:
-
-            DROP EXTENSION IF EXISTS #{extension}
-
-          Or, you can solve this by logging in to the GitLab
-          database (#{dbname}) using a superuser and running:
-
-              ALTER #{user} WITH SUPERUSER
-
-          This query will grant the user superuser permissions, ensuring any database extensions
-          can be dropped through migrations.
-
-          For more information, refer to https://docs.gitlab.com/ee/install/postgresql_extensions.html.
-        MSG
-
-        raise
       end
 
       def add_primary_key_using_index(table_name, pk_name, index_to_use)

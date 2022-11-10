@@ -32,18 +32,25 @@ RSpec.describe SearchController, :elastic do
         end
 
         it 'emits all search events' do
+          action = 'executed'
           subject
 
-          expect_snowplow_event(category: category, action: 'i_search_total', namespace: namespace, user: user,
-                                context: context('i_search_total'))
-          expect_snowplow_event(category: category, action: 'i_search_paid', namespace: namespace, user: user,
-                                context: context('i_search_paid'))
-          expect_snowplow_event(category: category, action: 'i_search_advanced', namespace: namespace, user: user,
-                                context: context('i_search_advanced'))
+          expect_snowplow_event(category: category, action: action, namespace: namespace, user: user,
+                                context: context('i_search_total'),
+                                property: 'i_search_total',
+                                label: 'redis_hll_counters.search.search_total_unique_counts_monthly')
+          expect_snowplow_event(category: category, action: action, namespace: namespace, user: user,
+                                context: context('i_search_paid'),
+                                property: 'i_search_paid',
+                                label: 'redis_hll_counters.search.i_search_paid_monthly')
+          expect_snowplow_event(category: category, action: action, namespace: namespace, user: user,
+                                context: context('i_search_advanced'),
+                                property: 'i_search_advanced',
+                                label: 'redis_hll_counters.search.search_total_unique_counts_monthly')
         end
       end
 
-      context 'i_search_advanced', :snowplow do
+      context 'i_search_advanced' do
         let_it_be(:group) { create(:group) }
 
         let(:target_event) { 'i_search_advanced' }

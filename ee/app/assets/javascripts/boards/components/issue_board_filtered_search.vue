@@ -6,14 +6,18 @@ import { mapActions } from 'vuex';
 import { orderBy } from 'lodash';
 import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filtered_search.vue';
 import { BoardType } from '~/boards/constants';
-import { __ } from '~/locale';
 import {
   OPERATOR_IS_AND_IS_NOT,
   OPERATOR_IS_ONLY,
   TOKEN_TYPE_HEALTH,
 } from '~/vue_shared/components/filtered_search_bar/constants';
-import { TOKEN_TITLE_HEALTH } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import {
+  TOKEN_TITLE_EPIC,
+  TOKEN_TITLE_HEALTH,
+  TOKEN_TITLE_ITERATION,
+  TOKEN_TITLE_WEIGHT,
+} from 'ee/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
@@ -23,9 +27,6 @@ export default {
   extends: IssueBoardFilteredSearchFoss,
   i18n: {
     ...IssueBoardFilteredSearchFoss.i18n,
-    epic: __('Epic'),
-    iteration: __('Iteration'),
-    weight: __('Weight'),
   },
   mixins: [glFeatureFlagMixin()],
   inject: ['epicFeatureAvailable', 'iterationFeatureAvailable', 'healthStatusFeatureAvailable'],
@@ -39,15 +40,13 @@ export default {
         : this.fullPath.slice(0, this.fullPath.lastIndexOf('/'));
     },
     tokens() {
-      const { epic, iteration, weight } = this.$options.i18n;
-
       const tokens = [
         ...this.tokensCE,
         ...(this.epicFeatureAvailable
           ? [
               {
                 type: 'epic',
-                title: epic,
+                title: TOKEN_TITLE_EPIC,
                 icon: 'epic',
                 token: EpicToken,
                 unique: true,
@@ -62,7 +61,7 @@ export default {
           ? [
               {
                 icon: 'iteration',
-                title: iteration,
+                title: TOKEN_TITLE_ITERATION,
                 type: 'iteration',
                 operators: OPERATOR_IS_AND_IS_NOT,
                 token: IterationToken,
@@ -74,7 +73,7 @@ export default {
           : []),
         {
           type: 'weight',
-          title: weight,
+          title: TOKEN_TITLE_WEIGHT,
           icon: 'weight',
           token: WeightToken,
           unique: true,

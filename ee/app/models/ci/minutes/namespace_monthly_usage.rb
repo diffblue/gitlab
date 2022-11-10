@@ -7,8 +7,11 @@ module Ci
     class NamespaceMonthlyUsage < Ci::ApplicationRecord
       include Ci::NamespacedModelName
       include AfterCommitQueue
+      include IgnorableColumns
 
       belongs_to :namespace
+
+      ignore_column :new_amount_used, remove_with: '15.7', remove_after: '2022-11-22'
 
       scope :current_month, -> { where(date: beginning_of_month) }
       scope :for_namespace, -> (namespace) { where(namespace: namespace) }

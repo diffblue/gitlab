@@ -26,7 +26,7 @@ module Gitlab
         # @param record_id [Integer] the id of the record
         # @return [true, false]
         def fetch(type, record_id, &blk)
-          Gitlab::Redis::Cache.with do |redis|
+          with_redis do |redis|
             redis_key = redis_key(type)
             cached_result = redis.hget(redis_key, record_id)
 
@@ -55,7 +55,7 @@ module Gitlab
         #
         # @param type [Symbol] the type of resource, `:project` or `:namespace`
         def delete(type)
-          Gitlab::Redis::Cache.with { |redis| redis.unlink(redis_key(type)) }
+          with_redis { |redis| redis.unlink(redis_key(type)) }
         end
 
         # Deletes the specific record for this type. Only one key in the cache will
@@ -64,13 +64,17 @@ module Gitlab
         # @param type [Symbol] the type of resource, `:project` or `:namespace`
         # @param record_id [Integer] the id of the record
         def delete_record(type, record_id)
-          Gitlab::Redis::Cache.with { |redis| redis.hdel(redis_key(type), record_id) }
+          with_redis { |redis| redis.hdel(redis_key(type), record_id) }
         end
 
         private
 
         def redis_key(type)
           "elasticsearch_enabled_cache:#{type}"
+        end
+
+        def with_redis(&block)
+          Gitlab::Redis::Cache.with(&block) # rubocop:disable CodeReuse/ActiveRecord
         end
       end
     end

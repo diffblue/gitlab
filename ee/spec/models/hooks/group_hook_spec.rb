@@ -8,7 +8,7 @@ RSpec.describe GroupHook do
   end
 
   it_behaves_like 'includes Limitable concern' do
-    subject { build(:group_hook, group: create(:group)) }
+    subject { build(:group_hook) }
   end
 
   describe '#parent' do

@@ -673,6 +673,7 @@ Input type: `AdminSidekiqQueuesDeleteJobsInput`
 | <a id="mutationadminsidekiqqueuesdeletejobsrootnamespace"></a>`rootNamespace` | [`String`](#string) | Delete jobs matching root_namespace in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobssubscriptionplan"></a>`subscriptionPlan` | [`String`](#string) | Delete jobs matching subscription_plan in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsuser"></a>`user` | [`String`](#string) | Delete jobs matching user in the context metadata. |
+| <a id="mutationadminsidekiqqueuesdeletejobsuserid"></a>`userId` | [`String`](#string) | Delete jobs matching user_id in the context metadata. |
 | <a id="mutationadminsidekiqqueuesdeletejobsworkerclass"></a>`workerClass` | [`String`](#string) | Delete jobs with the given worker class. |
 
 #### Fields
@@ -8580,6 +8581,52 @@ The edge type for [`PipelineSecurityReportFinding`](#pipelinesecurityreportfindi
 | <a id="pipelinesecurityreportfindingedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
 | <a id="pipelinesecurityreportfindingedgenode"></a>`node` | [`PipelineSecurityReportFinding`](#pipelinesecurityreportfinding) | The item at the end of the edge. |
 
+#### `ProductAnalyticsDashboardConnection`
+
+The connection type for [`ProductAnalyticsDashboard`](#productanalyticsdashboard).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="productanalyticsdashboardconnectionedges"></a>`edges` | [`[ProductAnalyticsDashboardEdge]`](#productanalyticsdashboardedge) | A list of edges. |
+| <a id="productanalyticsdashboardconnectionnodes"></a>`nodes` | [`[ProductAnalyticsDashboard]`](#productanalyticsdashboard) | A list of nodes. |
+| <a id="productanalyticsdashboardconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ProductAnalyticsDashboardEdge`
+
+The edge type for [`ProductAnalyticsDashboard`](#productanalyticsdashboard).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="productanalyticsdashboardedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="productanalyticsdashboardedgenode"></a>`node` | [`ProductAnalyticsDashboard`](#productanalyticsdashboard) | The item at the end of the edge. |
+
+#### `ProductAnalyticsDashboardWidgetConnection`
+
+The connection type for [`ProductAnalyticsDashboardWidget`](#productanalyticsdashboardwidget).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="productanalyticsdashboardwidgetconnectionedges"></a>`edges` | [`[ProductAnalyticsDashboardWidgetEdge]`](#productanalyticsdashboardwidgetedge) | A list of edges. |
+| <a id="productanalyticsdashboardwidgetconnectionnodes"></a>`nodes` | [`[ProductAnalyticsDashboardWidget]`](#productanalyticsdashboardwidget) | A list of nodes. |
+| <a id="productanalyticsdashboardwidgetconnectionpageinfo"></a>`pageInfo` | [`PageInfo!`](#pageinfo) | Information to aid in pagination. |
+
+#### `ProductAnalyticsDashboardWidgetEdge`
+
+The edge type for [`ProductAnalyticsDashboardWidget`](#productanalyticsdashboardwidget).
+
+##### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="productanalyticsdashboardwidgetedgecursor"></a>`cursor` | [`String!`](#string) | A cursor for use in pagination. |
+| <a id="productanalyticsdashboardwidgetedgenode"></a>`node` | [`ProductAnalyticsDashboardWidget`](#productanalyticsdashboardwidget) | The item at the end of the edge. |
+
 #### `ProjectConnection`
 
 The connection type for [`Project`](#project).
@@ -13626,7 +13673,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="groupscanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`. |
+| <a id="groupscanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`, `dependency_scanning`. |
 | <a id="groupscanexecutionpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
 
 ##### `Group.scanResultPolicies`
@@ -15759,7 +15806,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="namespacescanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`. |
+| <a id="namespacescanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`, `dependency_scanning`. |
 | <a id="namespacescanexecutionpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
 
 ##### `Namespace.scanResultPolicies`
@@ -16481,6 +16528,29 @@ Represents vulnerability finding of a security report on the pipeline.
 | <a id="previewbillableuserchangehasoverage"></a>`hasOverage` | [`Boolean`](#boolean) | If the group has an overage after change. |
 | <a id="previewbillableuserchangenewbillableusercount"></a>`newBillableUserCount` | [`Int`](#int) | Total number of billable users after change. |
 | <a id="previewbillableuserchangeseatsinsubscription"></a>`seatsInSubscription` | [`Int`](#int) | Number of seats in subscription. |
+
+### `ProductAnalyticsDashboard`
+
+Represents a product analytics dashboard.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="productanalyticsdashboarddescription"></a>`description` | [`String`](#string) | Description of the dashboard. |
+| <a id="productanalyticsdashboardtitle"></a>`title` | [`String!`](#string) | Title of the dashboard. |
+| <a id="productanalyticsdashboardwidgets"></a>`widgets` | [`ProductAnalyticsDashboardWidgetConnection!`](#productanalyticsdashboardwidgetconnection) | Widgets shown on the dashboard. (see [Connections](#connections)) |
+
+### `ProductAnalyticsDashboardWidget`
+
+Represents a product analytics dashboard widget.
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="productanalyticsdashboardwidgetgridattributes"></a>`gridAttributes` | [`JSON`](#json) | Description of the position and size of the widget. |
+| <a id="productanalyticsdashboardwidgettitle"></a>`title` | [`String!`](#string) | Title of the widget. |
 
 ### `Project`
 
@@ -17400,6 +17470,26 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | <a id="projectpipelinesupdatedbefore"></a>`updatedBefore` | [`Time`](#time) | Pipelines updated before this date. |
 | <a id="projectpipelinesusername"></a>`username` | [`String`](#string) | Filter pipelines by the user that triggered the pipeline. |
 
+##### `Project.productAnalyticsDashboards`
+
+Product Analytics dashboards of the project.
+
+WARNING:
+**Introduced** in 15.6.
+This feature is in Alpha. It can be changed or removed at any time.
+
+Returns [`ProductAnalyticsDashboardConnection`](#productanalyticsdashboardconnection).
+
+This field returns a [connection](#connections). It accepts the
+four standard [pagination arguments](#connection-pagination-arguments):
+`before: String`, `after: String`, `first: Int`, `last: Int`.
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="projectproductanalyticsdashboardsslug"></a>`slug` | [`String`](#string) | Find by dashboard slug. |
+
 ##### `Project.projectMembers`
 
 Members of the project.
@@ -17500,7 +17590,7 @@ four standard [pagination arguments](#connection-pagination-arguments):
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="projectscanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`. |
+| <a id="projectscanexecutionpoliciesactionscantypes"></a>`actionScanTypes` | [`[SecurityReportTypeEnum!]`](#securityreporttypeenum) | Filters policies by the action scan type. Only these scan types are supported: `dast`, `secret_detection`, `cluster_image_scanning`, `container_scanning`, `sast`, `dependency_scanning`. |
 | <a id="projectscanexecutionpoliciesrelationship"></a>`relationship` | [`SecurityPolicyRelationType`](#securitypolicyrelationtype) | Filter policies by the given policy relationship. |
 
 ##### `Project.scanResultPolicies`

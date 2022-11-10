@@ -48,4 +48,23 @@ RSpec.describe DeploymentEntity do
       end
     end
   end
+
+  describe '#has_approval_rules' do
+    context 'when configured with unified rules' do
+      it 'returns false' do
+        expect(subject[:has_approval_rules]).to be(false)
+      end
+    end
+
+    context 'when configured with approval rules' do
+      let!(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
+      let!(:approval_maintainer) do
+        create(:protected_environment_approval_rule, :maintainer_access, protected_environment: protected_environment)
+      end
+
+      it 'returns true' do
+        expect(subject[:has_approval_rules]).to be(true)
+      end
+    end
+  end
 end

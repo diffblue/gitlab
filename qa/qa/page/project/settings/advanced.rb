@@ -6,7 +6,12 @@ module QA
       module Settings
         class Advanced < Page::Base
           include QA::Page::Component::ConfirmModal
+          include QA::Page::Component::DeleteModal
           include Component::NamespaceSelect
+
+          view 'app/assets/javascripts/projects/components/shared/delete_button.vue' do
+            element :delete_button
+          end
 
           view 'app/views/projects/edit.html.haml' do
             element :project_path_field
@@ -48,11 +53,7 @@ module QA
           def transfer_project!(project_name, namespace)
             QA::Runtime::Logger.info "Transferring project: #{project_name} to namespace: #{namespace}"
 
-            wait_for_transfer_project_content
-
-            # Scroll to bottom of page to prevent namespace dropdown from changing position mid-click
-            # See https://gitlab.com/gitlab-org/gitlab/-/issues/381376 for details
-            page.scroll_to(:bottom)
+            scroll_to_transfer_project_content
 
             # Workaround for a failure to search when there are no spaces around the /
             # https://gitlab.com/gitlab-org/gitlab/-/issues/218965
@@ -88,12 +89,21 @@ module QA
             click_confirmation_ok_button
           end
 
+          def delete_project!(project_name)
+            click_element :delete_button
+            fill_confirmation_path(project_name)
+            wait_for_delete_button_enabled
+            confirm_delete
+          end
+
           private
 
-          def wait_for_transfer_project_content
+          def scroll_to_transfer_project_content
             retry_until(sleep_interval: 1, message: 'Waiting for transfer project content to display') do
               has_element?(:transfer_project_content, wait: 3)
             end
+
+            scroll_to_element :transfer_project_content
           end
 
           def wait_for_enabled_transfer_project_button

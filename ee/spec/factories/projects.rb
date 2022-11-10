@@ -81,5 +81,19 @@ FactoryBot.modify do
         end
       end
     end
+
+    trait :with_product_analytics_dashboard do
+      repository
+
+      after(:create) do |project|
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/product_analytics/dashboards/dashboard_example_1/dashboard_example_1.yaml',
+          File.open(Rails.root.join('ee/spec/fixtures/product_analytics/dashboard_example_1.yaml')).read,
+          message: 'test',
+          branch_name: 'master'
+        )
+      end
+    end
   end
 end

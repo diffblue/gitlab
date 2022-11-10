@@ -225,6 +225,24 @@ RETURN NULL;
 END
 $$;
 
+CREATE FUNCTION sync_namespaces_amount_used_columns() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."new_amount_used" := NEW."amount_used";
+  RETURN NEW;
+END;
+$$;
+
+CREATE FUNCTION sync_projects_amount_used_columns() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+  NEW."new_amount_used" := NEW."amount_used";
+  RETURN NEW;
+END;
+$$;
+
 CREATE FUNCTION trigger_1a857e8db6cd() RETURNS trigger
     LANGUAGE plpgsql
     AS $$
@@ -12976,6 +12994,7 @@ CREATE TABLE ci_namespace_monthly_usages (
     notification_level smallint DEFAULT 100 NOT NULL,
     shared_runners_duration integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone,
+    new_amount_used numeric(18,4) DEFAULT 0.0 NOT NULL,
     CONSTRAINT ci_namespace_monthly_usages_year_month_constraint CHECK ((date = date_trunc('month'::text, (date)::timestamp with time zone)))
 );
 
@@ -13256,6 +13275,7 @@ CREATE TABLE ci_project_monthly_usages (
     amount_used numeric(18,2) DEFAULT 0.0 NOT NULL,
     shared_runners_duration integer DEFAULT 0 NOT NULL,
     created_at timestamp with time zone,
+    new_amount_used numeric(18,4) DEFAULT 0.0 NOT NULL,
     CONSTRAINT ci_project_monthly_usages_year_month_constraint CHECK ((date = date_trunc('month'::text, (date)::timestamp with time zone)))
 );
 
@@ -15345,26 +15365,6 @@ CREATE SEQUENCE experiment_subjects_id_seq
 
 ALTER SEQUENCE experiment_subjects_id_seq OWNED BY experiment_subjects.id;
 
-CREATE TABLE experiment_users (
-    id bigint NOT NULL,
-    experiment_id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    group_type smallint DEFAULT 0 NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL,
-    converted_at timestamp with time zone,
-    context jsonb DEFAULT '{}'::jsonb NOT NULL
-);
-
-CREATE SEQUENCE experiment_users_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE experiment_users_id_seq OWNED BY experiment_users.id;
-
 CREATE TABLE experiments (
     id bigint NOT NULL,
     name text NOT NULL,
@@ -17354,7 +17354,8 @@ CREATE TABLE members (
     state smallint DEFAULT 0,
     invite_email_success boolean DEFAULT true NOT NULL,
     member_namespace_id bigint,
-    member_role_id bigint
+    member_role_id bigint,
+    CONSTRAINT check_508774aac0 CHECK ((member_namespace_id IS NOT NULL))
 );
 
 CREATE SEQUENCE members_id_seq
@@ -23754,8 +23755,6 @@ ALTER TABLE ONLY evidences ALTER COLUMN id SET DEFAULT nextval('evidences_id_seq
 
 ALTER TABLE ONLY experiment_subjects ALTER COLUMN id SET DEFAULT nextval('experiment_subjects_id_seq'::regclass);
 
-ALTER TABLE ONLY experiment_users ALTER COLUMN id SET DEFAULT nextval('experiment_users_id_seq'::regclass);
-
 ALTER TABLE ONLY experiments ALTER COLUMN id SET DEFAULT nextval('experiments_id_seq'::regclass);
 
 ALTER TABLE ONLY external_approval_rules ALTER COLUMN id SET DEFAULT nextval('external_approval_rules_id_seq'::regclass);
@@ -25653,9 +25652,6 @@ ALTER TABLE ONLY evidences
 
 ALTER TABLE ONLY experiment_subjects
     ADD CONSTRAINT experiment_subjects_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY experiment_users
-    ADD CONSTRAINT experiment_users_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY experiments
     ADD CONSTRAINT experiments_pkey PRIMARY KEY (id);
@@ -29020,10 +29016,6 @@ CREATE INDEX index_experiment_subjects_on_project_id ON experiment_subjects USIN
 
 CREATE INDEX index_experiment_subjects_on_user_id ON experiment_subjects USING btree (user_id);
 
-CREATE INDEX index_experiment_users_on_experiment_id ON experiment_users USING btree (experiment_id);
-
-CREATE INDEX index_experiment_users_on_user_id ON experiment_users USING btree (user_id);
-
 CREATE UNIQUE INDEX index_experiments_on_name ON experiments USING btree (name);
 
 CREATE INDEX index_expired_and_not_notified_personal_access_tokens ON personal_access_tokens USING btree (id, expires_at) WHERE ((impersonation = false) AND (revoked = false) AND (expire_notification_delivered = false));
@@ -31198,8 +31190,6 @@ CREATE UNIQUE INDEX taggings_idx ON taggings USING btree (tag_id, taggable_id, t
 
 CREATE UNIQUE INDEX term_agreements_unique_index ON term_agreements USING btree (user_id, term_id);
 
-CREATE INDEX tmp_idx_project_features_on_releases_al_and_repo_al_partial ON project_features USING btree (releases_access_level, repository_access_level) WHERE (releases_access_level > repository_access_level);
-
 CREATE INDEX tmp_idx_vulnerabilities_on_id_where_report_type_7_99 ON vulnerabilities USING btree (id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
 CREATE INDEX tmp_idx_where_user_details_fields_filled ON users USING btree (id) WHERE (((COALESCE(linkedin, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(twitter, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(skype, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(website_url, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(location, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(organization, ''::character varying))::text IS DISTINCT FROM ''::text));
@@ -32576,6 +32566,10 @@ CREATE TRIGGER nullify_merge_request_metrics_build_data_on_update BEFORE UPDATE 
 
 CREATE TRIGGER projects_loose_fk_trigger AFTER DELETE ON projects REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
+CREATE TRIGGER sync_namespaces_amount_used_columns BEFORE INSERT OR UPDATE ON ci_namespace_monthly_usages FOR EACH ROW EXECUTE FUNCTION sync_namespaces_amount_used_columns();
+
+CREATE TRIGGER sync_projects_amount_used_columns BEFORE INSERT OR UPDATE ON ci_project_monthly_usages FOR EACH ROW EXECUTE FUNCTION sync_projects_amount_used_columns();
+
 CREATE TRIGGER trigger_1a857e8db6cd BEFORE INSERT OR UPDATE ON vulnerability_occurrences FOR EACH ROW EXECUTE FUNCTION trigger_1a857e8db6cd();
 
 CREATE TRIGGER trigger_delete_project_namespace_on_project_delete AFTER DELETE ON projects FOR EACH ROW WHEN ((old.project_namespace_id IS NOT NULL)) EXECUTE FUNCTION delete_associated_project_namespace();
@@ -32623,7 +32617,7 @@ CREATE TRIGGER trigger_update_vulnerability_reads_on_vulnerability_update AFTER 
 CREATE TRIGGER users_loose_fk_trigger AFTER DELETE ON users REFERENCING OLD TABLE AS old_table FOR EACH STATEMENT EXECUTE FUNCTION insert_into_loose_foreign_keys_deleted_records();
 
 ALTER TABLE ONLY deployments
-    ADD CONSTRAINT fk_009fd21147 FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT fk_009fd21147 FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY epics
     ADD CONSTRAINT fk_013c9f36ca FOREIGN KEY (due_date_sourcing_epic_id) REFERENCES epics(id) ON DELETE SET NULL;
@@ -32797,7 +32791,7 @@ ALTER TABLE ONLY vulnerability_merge_request_links
     ADD CONSTRAINT fk_2ef3954596 FOREIGN KEY (vulnerability_id) REFERENCES vulnerabilities(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY members
-    ADD CONSTRAINT fk_2f85abf8f1 FOREIGN KEY (member_namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE NOT VALID;
+    ADD CONSTRAINT fk_2f85abf8f1 FOREIGN KEY (member_namespace_id) REFERENCES namespaces(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY analytics_cycle_analytics_group_stages
     ADD CONSTRAINT fk_3078345d6d FOREIGN KEY (stage_event_hash_id) REFERENCES analytics_cycle_analytics_stage_event_hashes(id) ON DELETE CASCADE;
@@ -33209,9 +33203,6 @@ ALTER TABLE ONLY epics
 
 ALTER TABLE ONLY dast_profiles
     ADD CONSTRAINT fk_aa76ef30e9 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY members
-    ADD CONSTRAINT fk_aa82dcc1c6 FOREIGN KEY (member_namespace_id) REFERENCES namespaces(id) ON DELETE SET NULL;
 
 ALTER TABLE ONLY alert_management_alerts
     ADD CONSTRAINT fk_aad61aedca FOREIGN KEY (environment_id) REFERENCES environments(id) ON DELETE SET NULL;
@@ -34121,9 +34112,6 @@ ALTER TABLE ONLY issuable_metric_images
 
 ALTER TABLE ONLY group_deploy_keys
     ADD CONSTRAINT fk_rails_5682fc07f8 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT;
-
-ALTER TABLE ONLY experiment_users
-    ADD CONSTRAINT fk_rails_56d4708b4a FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY issue_user_mentions
     ADD CONSTRAINT fk_rails_57581fda73 FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE CASCADE;
@@ -35186,9 +35174,6 @@ ALTER TABLE ONLY customer_relations_contacts
 
 ALTER TABLE ONLY external_approval_rules
     ADD CONSTRAINT fk_rails_fd4f9ac573 FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE;
-
-ALTER TABLE ONLY experiment_users
-    ADD CONSTRAINT fk_rails_fd805f771a FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE;
 
 ALTER TABLE ONLY cluster_groups
     ADD CONSTRAINT fk_rails_fdb8648a96 FOREIGN KEY (cluster_id) REFERENCES clusters(id) ON DELETE CASCADE;

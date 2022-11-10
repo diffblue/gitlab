@@ -180,6 +180,7 @@ module API
         mount ::API::Ci::ResourceGroups
         mount ::API::Ci::Runner
         mount ::API::Ci::Runners
+        mount ::API::Ci::Variables
         mount ::API::Clusters::AgentTokens
         mount ::API::Clusters::Agents
         mount ::API::Commits
@@ -194,6 +195,7 @@ module API
         mount ::API::FreezePeriods
         mount ::API::GroupClusters
         mount ::API::GroupExport
+        mount ::API::GroupVariables
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
         mount ::API::Keys
@@ -203,15 +205,18 @@ module API
         mount ::API::PersonalAccessTokens::SelfInformation
         mount ::API::PersonalAccessTokens
         mount ::API::ProjectClusters
+        mount ::API::ProjectEvents
         mount ::API::ProjectExport
         mount ::API::ProjectHooks
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::ProjectSnippets
         mount ::API::ProjectSnapshots
+        mount ::API::ProjectTemplates
         mount ::API::ProtectedBranches
         mount ::API::ProtectedTags
         mount ::API::Releases
         mount ::API::Release::Links
+        mount ::API::RemoteMirrors
         mount ::API::Repositories
         mount ::API::ResourceAccessTokens
         mount ::API::Snippets
@@ -243,7 +248,6 @@ module API
       mount ::API::Ci::Pipelines
       mount ::API::Ci::SecureFiles
       mount ::API::Ci::Triggers
-      mount ::API::Ci::Variables
       mount ::API::CommitStatuses
       mount ::API::ComposerPackages
       mount ::API::ConanInstancePackages
@@ -270,7 +274,6 @@ module API
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
       mount ::API::GroupPackages
-      mount ::API::GroupVariables
       mount ::API::Groups
       mount ::API::HelmPackages
       mount ::API::Integrations
@@ -298,16 +301,13 @@ module API
       mount ::API::PagesDomains
       mount ::API::ProjectContainerRepositories
       mount ::API::ProjectDebianDistributions
-      mount ::API::ProjectEvents
       mount ::API::ProjectImport
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
       mount ::API::ProjectStatistics
-      mount ::API::ProjectTemplates
       mount ::API::Projects
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
-      mount ::API::RemoteMirrors
       mount ::API::ResourceLabelEvents
       mount ::API::ResourceMilestoneEvents
       mount ::API::ResourceStateEvents

@@ -19,4 +19,20 @@ RSpec.describe Gitlab::Ci::Reports::Security::Remediation do
 
     it { is_expected.to eq(expected_checksum) }
   end
+
+  describe '#byte_offsets' do
+    subject { remediation.byte_offsets }
+
+    context 'when the start and end bytes are missing' do
+      let(:remediation) { build(:ci_reports_security_remediation) }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when the start and end bytes are present' do
+      let(:remediation) { build(:ci_reports_security_remediation, start_byte: 0, end_byte: 100) }
+
+      it { is_expected.to eq({ start_byte: 0, end_byte: 100 }) }
+    end
+  end
 end

@@ -1,9 +1,14 @@
 <script>
 import { mapActions, mapState } from 'vuex';
-import { __ } from '~/locale';
 import {
   OPERATOR_IS_ONLY,
   DEFAULT_NONE_ANY,
+  TOKEN_TITLE_ASSIGNEE,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_LABEL,
+  TOKEN_TITLE_MILESTONE,
+  TOKEN_TITLE_SOURCE_BRANCH,
+  TOKEN_TITLE_TARGET_BRANCH,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import {
@@ -42,7 +47,7 @@ export default {
       return [
         {
           icon: 'branch',
-          title: __('Source Branch'),
+          title: TOKEN_TITLE_SOURCE_BRANCH,
           type: 'source_branch',
           token: BranchToken,
           initialBranches: this.branchesData,
@@ -52,7 +57,7 @@ export default {
         },
         {
           icon: 'branch',
-          title: __('Target Branch'),
+          title: TOKEN_TITLE_TARGET_BRANCH,
           type: 'target_branch',
           token: BranchToken,
           initialBranches: this.branchesData,
@@ -62,7 +67,7 @@ export default {
         },
         {
           icon: 'clock',
-          title: __('Milestone'),
+          title: TOKEN_TITLE_MILESTONE,
           type: 'milestone',
           token: MilestoneToken,
           initialMilestones: this.milestonesData,
@@ -72,7 +77,7 @@ export default {
         },
         {
           icon: 'labels',
-          title: __('Label'),
+          title: TOKEN_TITLE_LABEL,
           type: 'labels',
           token: LabelToken,
           defaultLabels: DEFAULT_NONE_ANY,
@@ -83,7 +88,7 @@ export default {
         },
         {
           icon: 'pencil',
-          title: __('Author'),
+          title: TOKEN_TITLE_AUTHOR,
           type: 'author',
           token: AuthorToken,
           initialAuthors: this.authorsData,
@@ -93,7 +98,7 @@ export default {
         },
         {
           icon: 'user',
-          title: __('Assignee'),
+          title: TOKEN_TITLE_ASSIGNEE,
           type: 'assignee',
           token: AuthorToken,
           initialAuthors: this.assigneesData,

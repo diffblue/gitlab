@@ -4,12 +4,12 @@ module MergeRequests
   class FetchSuggestedReviewersWorker
     include ApplicationWorker
 
-    FetchSuggestedReviewersError = Class.new(StandardError)
-
     data_consistency :always
     feature_category :workflow_automation
     urgency :low
     deduplicate :until_executed
+
+    sidekiq_options retry: 3
 
     idempotent!
 

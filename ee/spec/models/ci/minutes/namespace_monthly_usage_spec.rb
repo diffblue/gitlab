@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
-  let_it_be(:namespace) do
+  let_it_be_with_refind(:namespace) do
     create(:namespace,
       shared_runners_minutes_limit: 1_000,
       extra_shared_runners_minutes_limit: 500)

@@ -85,6 +85,7 @@ export default {
       :title="$options.i18n.tabs.securityTitle"
       :active="isActive($options.tabNames.security)"
       data-testid="security-tab"
+      lazy
       @click="navigateTo($options.tabNames.security)"
     >
       <router-view />
@@ -94,6 +95,7 @@ export default {
       :title="$options.i18n.tabs.licensesTitle"
       :active="isActive($options.tabNames.licenses)"
       data-testid="license-tab"
+      lazy
       @click="navigateTo($options.tabNames.licenses)"
     >
       <template #title>
@@ -121,6 +123,7 @@ export default {
       data-testid="code-quality-tab"
       data-track-action="click_button"
       data-track-label="get_codequality_report"
+      lazy
       @click="navigateTo($options.tabNames.codeQuality)"
     >
       <template #title>

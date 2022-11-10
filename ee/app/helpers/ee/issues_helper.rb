@@ -48,7 +48,6 @@ module EE
         has_issuable_health_status_feature: namespace.feature_available?(:issuable_health_status).to_s,
         has_issue_weights_feature: namespace.feature_available?(:issue_weights).to_s,
         has_iterations_feature: namespace.feature_available?(:iterations).to_s,
-        has_multiple_issue_assignees_feature: namespace.feature_available?(:multiple_issue_assignees).to_s,
         has_scoped_labels_feature: namespace.feature_available?(:scoped_labels).to_s
       )
     end

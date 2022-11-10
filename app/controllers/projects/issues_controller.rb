@@ -49,9 +49,12 @@ class Projects::IssuesController < Projects::ApplicationController
     push_force_frontend_feature_flag(:work_items, project&.work_items_feature_flag_enabled?)
   end
 
+  before_action only: :index do
+    push_frontend_feature_flag(:or_issuable_queries, project)
+  end
+
   before_action only: :show do
     push_frontend_feature_flag(:issue_assignees_widget, project)
-    push_frontend_feature_flag(:realtime_labels, project)
     push_frontend_feature_flag(:work_items_mvc, project&.group)
     push_force_frontend_feature_flag(:work_items_mvc_2, project&.work_items_mvc_2_feature_flag_enabled?)
     push_frontend_feature_flag(:epic_widget_edit_confirmation, project)

@@ -42,6 +42,11 @@ class Groups::PushRulesController < Groups::ApplicationController
       allowed_fields << :commit_committer_check
     end
 
+    if can?(current_user, :change_commit_committer_name_check, group) &&
+        Feature.enabled?(:commit_committer_name_check_ff)
+      allowed_fields << :commit_committer_name_check
+    end
+
     if can?(current_user, :change_reject_non_dco_commits, group)
       allowed_fields << :reject_non_dco_commits
     end

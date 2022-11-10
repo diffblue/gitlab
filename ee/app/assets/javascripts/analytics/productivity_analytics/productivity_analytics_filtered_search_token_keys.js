@@ -1,9 +1,13 @@
 import FilteredSearchTokenKeys from '~/filtered_search/filtered_search_token_keys';
-import { __ } from '~/locale';
+import {
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_LABEL,
+  TOKEN_TITLE_MILESTONE,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 
 const tokenKeys = [
   {
-    formattedKey: __('Author'),
+    formattedKey: TOKEN_TITLE_AUTHOR,
     key: 'author',
     type: 'string',
     param: 'username',
@@ -12,7 +16,7 @@ const tokenKeys = [
     tag: '@author',
   },
   {
-    formattedKey: __('Milestone'),
+    formattedKey: TOKEN_TITLE_MILESTONE,
     key: 'milestone',
     type: 'string',
     param: 'title',
@@ -21,7 +25,7 @@ const tokenKeys = [
     tag: '%milestone',
   },
   {
-    formattedKey: __('Label'),
+    formattedKey: TOKEN_TITLE_LABEL,
     key: 'label',
     type: 'array',
     param: 'name[]',
@@ -33,7 +37,7 @@ const tokenKeys = [
 
 const alternativeTokenKeys = [
   {
-    formattedKey: __('Label'),
+    formattedKey: TOKEN_TITLE_LABEL,
     key: 'label',
     type: 'string',
     param: 'name',

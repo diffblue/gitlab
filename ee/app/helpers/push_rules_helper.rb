@@ -24,6 +24,13 @@ module PushRulesHelper
     push_rule_update_description(message, push_rule, :commit_committer_check)
   end
 
+  def commit_committer_name_check_description(push_rule)
+    message = s_("ProjectSettings|Users can only push commits to this repository "\
+      "if the committer name is consistent with their git config username.")
+
+    push_rule_update_description(message, push_rule, :commit_committer_name_check)
+  end
+
   private
 
   def push_rule_update_description(message, push_rule, rule)

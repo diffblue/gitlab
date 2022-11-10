@@ -1012,6 +1012,20 @@ RSpec.describe Project do
 
           it { is_expected.to eq(false) }
         end
+
+        it 'caches matching integrations' do
+          create(:group_hook, group: group, push_events: true, merge_requests_events: false)
+
+          expect(project.has_group_hooks?(:merge_request_hooks)).to eq(false)
+          expect(project.has_group_hooks?).to eq(true)
+
+          count = ActiveRecord::QueryRecorder.new do
+            expect(project.has_group_hooks?(:merge_request_hooks)).to eq(false)
+            expect(project.has_group_hooks?).to eq(true)
+          end.count
+
+          expect(count).to eq(0)
+        end
       end
 
       context 'the group inherits a hook' do

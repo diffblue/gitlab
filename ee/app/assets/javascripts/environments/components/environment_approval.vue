@@ -15,6 +15,8 @@ import Api from 'ee/api';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { createAlert } from '~/flash';
 import { __, s__, sprintf } from '~/locale';
+import deploymentApprovalQuery from '../graphql/queries/deployment.query.graphql';
+import MultipleApprovalRulesTable from './multiple_approval_rules_table.vue';
 
 const MAX_CHARACTER_COUNT = 250;
 const WARNING_CHARACTERS_LEFT = 30;
@@ -30,12 +32,13 @@ export default {
     GlLink,
     GlModal,
     GlSprintf,
+    MultipleApprovalRulesTable,
     TimeAgoTooltip,
   },
   directives: {
     GlTooltip,
   },
-  inject: ['projectId'],
+  inject: ['projectId', 'projectPath'],
   props: {
     environment: {
       required: true,
@@ -54,7 +57,25 @@ export default {
       loading: false,
       show: false,
       comment: '',
+      deployment: { approvalSummary: { rules: [] } },
     };
+  },
+  apollo: {
+    deployment: {
+      query: deploymentApprovalQuery,
+      skip() {
+        return !this.upcomingDeployment?.hasApprovalRules;
+      },
+      variables() {
+        return {
+          fullPath: this.projectPath,
+          iid: this.upcomingDeployment.iid,
+        };
+      },
+      update(data) {
+        return data?.project?.deployment;
+      },
+    },
   },
   computed: {
     title() {
@@ -266,7 +287,12 @@ export default {
         </gl-sprintf>
       </div>
 
-      <div class="gl-mt-4 gl-pt-4 gl-mb-4">
+      <multiple-approval-rules-table
+        v-if="upcomingDeployment.hasApprovalRules"
+        :rules="deployment.approvalSummary.rules"
+        class="gl-mt-4 gl-pt-4 gl-mb-4"
+      />
+      <div v-else class="gl-my-4 gl-pt-4">
         <gl-sprintf :message="$options.i18n.current">
           <template #current>
             <span class="gl-font-weight-bold"> {{ currentApprovals }}/{{ totalApprovals }}</span>

@@ -23,6 +23,33 @@ RSpec.describe ApprovalProjectRule do
     end
   end
 
+  describe 'default values' do
+    subject(:rule) { described_class.new }
+
+    it { expect(rule.scanners).to eq([]) }
+    it { expect(rule.vulnerabilities_allowed).to eq(0) }
+  end
+
+  describe 'scanners' do
+    it 'transform existing NULL values into empty array' do
+      rule.update_column(:scanners, nil)
+
+      expect(rule.reload.scanners).to eq([])
+    end
+
+    it 'prevents assignment of NULL' do
+      rule.scanners = nil
+
+      expect(rule.scanners).to eq([])
+    end
+
+    it 'prevents assignment of NULL via assign_attributes' do
+      rule.assign_attributes(scanners: nil)
+
+      expect(rule.scanners).to eq([])
+    end
+  end
+
   describe 'associations' do
     subject { build_stubbed(:approval_project_rule) }
 

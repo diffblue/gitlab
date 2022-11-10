@@ -37,6 +37,10 @@ module QA
       end
 
       shared_examples 'group membership actions' do
+        before do
+          remove_user if user.exists?
+        end
+
         it 'creates a new account automatically and allows to leave group and join again' do
           # When the user signs in via IDP for the first time
 
@@ -78,7 +82,7 @@ module QA
 
           # When the user is removed and so their linked identity is also removed
 
-          user.remove_via_api!
+          remove_user
 
           visit_group_sso_url
 
@@ -115,20 +119,26 @@ module QA
 
         Runtime::Feature.remove(:group_administration_nav_item)
 
-        user.remove_via_api!
-
         group.remove_via_api!
+
+        remove_user
 
         page.visit Runtime::Scenario.gitlab_address
         Page::Main::Menu.perform(&:sign_out_if_signed_in)
       end
-    end
 
-    def visit_group_sso_url
-      Runtime::Logger.debug(%(Visiting managed_group_url at "#{group_sso_url}"))
+      def remove_user
+        user.reload!
+        user.remove_via_api!
+        Support::Waiter.wait_until(max_duration: 180, retry_on_exception: true, sleep_interval: 3) { !user.exists? }
+      end
 
-      page.visit group_sso_url
-      Support::Waiter.wait_until { current_url == group_sso_url }
+      def visit_group_sso_url
+        Runtime::Logger.debug(%(Visiting managed_group_url at "#{group_sso_url}"))
+
+        page.visit group_sso_url
+        Support::Waiter.wait_until { current_url == group_sso_url }
+      end
     end
   end
 end

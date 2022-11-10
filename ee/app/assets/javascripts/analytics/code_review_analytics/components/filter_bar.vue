@@ -1,7 +1,10 @@
 <script>
 import { mapState, mapActions } from 'vuex';
-import { __ } from '~/locale';
-import { DEFAULT_NONE_ANY } from '~/vue_shared/components/filtered_search_bar/constants';
+import {
+  DEFAULT_NONE_ANY,
+  TOKEN_TITLE_LABEL,
+  TOKEN_TITLE_MILESTONE,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import {
   prepareTokens,
@@ -34,7 +37,7 @@ export default {
       return [
         {
           icon: 'clock',
-          title: __('Milestone'),
+          title: TOKEN_TITLE_MILESTONE,
           type: 'milestone',
           token: MilestoneToken,
           initialMilestones: this.milestonesData,
@@ -44,7 +47,7 @@ export default {
         },
         {
           icon: 'labels',
-          title: __('Label'),
+          title: TOKEN_TITLE_LABEL,
           type: 'labels',
           token: LabelToken,
           defaultLabels: DEFAULT_NONE_ANY,

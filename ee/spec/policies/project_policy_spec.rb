@@ -398,36 +398,25 @@ RSpec.describe ProjectPolicy do
     end
 
     context 'with sso enforcement enabled' do
-      let(:current_user) { create(:user) }
-      let(:group) { create(:group, :private) }
-      let(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
-      let!(:identity) { create(:group_saml_identity, user: current_user, saml_provider: saml_provider) }
-      let(:project) { create(:project, group: saml_provider.group) }
-
       before do
         stub_licensed_features(group_saml: true)
-        group.add_guest(current_user)
       end
 
-      context 'when the session has been set globally' do
-        around do |example|
-          Gitlab::Session.with_session({}) do
-            example.run
-          end
+      around do |example|
+        Gitlab::Session.with_session({}) do
+          example.run
         end
+      end
 
-        it 'prevents access without a SAML session' do
-          is_expected.not_to be_allowed(:read_project)
-        end
-
-        it 'allows access with a SAML session' do
-          Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-          is_expected.to be_allowed(:read_project)
-        end
+      context 'with private groups and projects' do
+        let_it_be(:current_user) { create(:user) }
+        let_it_be(:group) { create(:group, :private) }
+        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
+        let_it_be(:project) { create(:project, group: saml_provider.group) }
+        let_it_be(:identity) { create(:group_saml_identity, user: current_user, saml_provider: saml_provider) }
 
         context 'as an admin' do
-          let(:current_user) { admin }
+          let_it_be(:current_user) { admin }
 
           context 'when admin mode enabled', :enable_admin_mode do
             it 'allows access' do
@@ -442,8 +431,32 @@ RSpec.describe ProjectPolicy do
           end
         end
 
+        context 'as an auditor' do
+          let_it_be(:current_user) { create(:user, :auditor) }
+
+          it 'allows access without a SAML session' do
+            is_expected.to allow_action(:read_project)
+          end
+        end
+
+        context 'as a group guest' do
+          before_all do
+            group.add_guest(current_user)
+          end
+
+          it 'prevents access without a SAML session' do
+            is_expected.not_to be_allowed(:read_project)
+          end
+
+          it 'allows access with a SAML session' do
+            Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+            is_expected.to be_allowed(:read_project)
+          end
+        end
+
         context 'as a group owner' do
-          before do
+          before_all do
             group.add_owner(current_user)
           end
 
@@ -453,7 +466,7 @@ RSpec.describe ProjectPolicy do
         end
 
         context 'as a group maintainer' do
-          before do
+          before_all do
             group.add_maintainer(current_user)
           end
 
@@ -462,25 +475,8 @@ RSpec.describe ProjectPolicy do
           end
         end
 
-        context 'as an auditor' do
-          let(:current_user) { create(:user, :auditor) }
-
-          it 'allows access without a SAML session' do
-            is_expected.to allow_action(:read_project)
-          end
-        end
-
-        context 'with public access' do
-          let(:group) { create(:group, :public) }
-          let(:project) { create(:project, :public, group: saml_provider.group) }
-
-          it 'allows access desipte group enforcement' do
-            is_expected.to allow_action(:read_project)
-          end
-        end
-
         context 'in a personal namespace' do
-          let(:project) { create(:project, :public, namespace: owner.namespace) }
+          let_it_be(:project) { create(:project, :public, namespace: owner.namespace) }
 
           it 'allows access' do
             is_expected.to be_allowed(:read_project)
@@ -488,22 +484,64 @@ RSpec.describe ProjectPolicy do
         end
       end
 
-      context 'when there is no global session or sso state' do
-        it "allows access because we haven't yet restricted all use cases" do
-          is_expected.to be_allowed(:read_project)
+      context 'with public groups and projects' do
+        let_it_be(:group) { create(:group, :public) }
+        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: true) }
+        let_it_be(:project) { create(:project, :public, group: group) }
+
+        context 'when user is signed in' do
+          let_it_be(:current_user) { create(:user) }
+
+          shared_examples 'enforced SSO public groups and projects access' do
+            it 'prevents access without a SAML session' do
+              is_expected.not_to be_allowed(:read_project)
+            end
+
+            context 'when the current user has a SAML identity' do
+              before_all do
+                create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+              end
+
+              it 'prevents access without a SAML session' do
+                is_expected.not_to be_allowed(:read_project)
+              end
+
+              it 'allows access with a SAML session' do
+                Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+                is_expected.to be_allowed(:read_project)
+              end
+            end
+          end
+
+          context 'when the current user is a member of the group' do
+            before_all do
+              group.add_guest(current_user)
+            end
+
+            it_behaves_like 'enforced SSO public groups and projects access'
+          end
+
+          context 'when the current user is not a member of the group' do
+            it 'allows access without a SAML session' do
+              is_expected.to be_allowed(:read_project)
+            end
+          end
+        end
+
+        context 'when user is anonymous' do
+          let_it_be(:current_user) { nil }
+
+          it 'allows access without a SAML session' do
+            is_expected.to be_allowed(:read_project)
+          end
         end
       end
     end
 
     context 'with transparent SSO' do
-      let_it_be(:current_user) { create(:user) }
-      let_it_be(:group) { create(:group, :private) }
-      let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
-      let_it_be(:project) { create(:project, group: saml_provider.group) }
-
       before do
         stub_licensed_features(group_saml: true)
-        group.add_guest(current_user)
       end
 
       around do |example|
@@ -512,29 +550,98 @@ RSpec.describe ProjectPolicy do
         end
       end
 
-      it 'allows access with a SAML session' do
-        is_expected.to be_allowed(:read_project)
+      context 'with private groups and projects' do
+        let_it_be(:current_user) { create(:user) }
+        let_it_be(:group) { create(:group, :private) }
+        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
+        let_it_be(:project) { create(:project, group: saml_provider.group) }
+
+        before_all do
+          group.add_guest(current_user)
+        end
+
+        context 'when the user does not have a Group SAML identity' do
+          it 'allows access without a SAML session' do
+            is_expected.to be_allowed(:read_project)
+          end
+        end
+
+        context 'when the user has a Group SAML identity' do
+          before_all do
+            create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+          end
+
+          it 'prevents access without a SAML session' do
+            is_expected.not_to be_allowed(:read_project)
+          end
+
+          it 'allows access with a SAML session' do
+            Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+            is_expected.to be_allowed(:read_project)
+          end
+
+          it 'allows access when the feature flag is disabled' do
+            stub_feature_flags(transparent_sso_enforcement: false)
+
+            is_expected.to be_allowed(:read_project)
+          end
+        end
       end
 
-      context 'when the user has a Group SAML identity' do
-        before do
-          create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+      context 'with public groups and projects' do
+        let_it_be(:group) { create(:group, :public) }
+        let_it_be(:saml_provider) { create(:saml_provider, group: group, enforced_sso: false) }
+        let_it_be(:project) { create(:project, :public, group: group) }
+
+        context 'when user is signed in' do
+          let_it_be(:current_user) { create(:user) }
+
+          shared_examples 'transparent SSO public groups and projects access' do
+            context 'when the user does not have a Group SAML identity' do
+              it 'allows access without a SAML session' do
+                is_expected.to be_allowed(:read_project)
+              end
+            end
+
+            context 'when the current user has a SAML identity' do
+              before_all do
+                create(:group_saml_identity, saml_provider: saml_provider, user: current_user)
+              end
+
+              it 'prevents access without a SAML session' do
+                is_expected.not_to be_allowed(:read_project)
+              end
+
+              it 'allows access with a SAML session' do
+                Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
+
+                is_expected.to be_allowed(:read_project)
+              end
+            end
+          end
+
+          context 'when the current user is a member of the group' do
+            before_all do
+              group.add_guest(current_user)
+            end
+
+            it_behaves_like 'transparent SSO public groups and projects access'
+          end
+
+          context 'when the current user is not a member of the group' do
+            it 'allows access without a SAML session' do
+              is_expected.to be_allowed(:read_project)
+            end
+          end
         end
 
-        it 'prevents access without a SAML session' do
-          is_expected.not_to be_allowed(:read_project)
-        end
+        context 'when user is anonymous' do
+          let_it_be(:current_user) { nil }
 
-        it 'allows access with a SAML session' do
-          Gitlab::Auth::GroupSaml::SsoEnforcer.new(saml_provider).update_session
-
-          is_expected.to be_allowed(:read_project)
-        end
-
-        it 'allows access when the feature flag is disabled' do
-          stub_feature_flags(transparent_sso_enforcement: false)
-
-          is_expected.to be_allowed(:read_project)
+          it 'allows access without a SAML session' do
+            is_expected.to be_allowed(:read_project)
+          end
         end
       end
     end

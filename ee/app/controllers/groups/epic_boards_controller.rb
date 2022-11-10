@@ -13,7 +13,6 @@ class Groups::EpicBoardsController < Groups::ApplicationController
   end
 
   before_action do
-    push_frontend_feature_flag(:realtime_labels, group)
     push_frontend_feature_flag(:epic_color_highlight, group)
   end
 

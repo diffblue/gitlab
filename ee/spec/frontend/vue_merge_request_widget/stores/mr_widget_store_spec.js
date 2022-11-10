@@ -2,6 +2,7 @@ import MergeRequestStore from 'ee/vue_merge_request_widget/stores/mr_widget_stor
 import mockData from 'ee_jest/vue_merge_request_widget/mock_data';
 import { convertToCamelCase } from '~/lib/utils/text_utility';
 import { stateKey } from '~/vue_merge_request_widget/stores/state_maps';
+import { DETAILED_MERGE_STATUS } from '~/vue_merge_request_widget/constants';
 
 describe('MergeRequestStore', () => {
   let store;
@@ -86,6 +87,14 @@ describe('MergeRequestStore', () => {
       store.setPaths({ ...mockData });
 
       expect(store[convertToCamelCase(property)]).toBe(expectedValue);
+    });
+  });
+
+  describe('hasMergeChecksFailed', () => {
+    it('should be true when detailed merge status is EXTERNAL_STATUS_CHECKS', () => {
+      store.detailedMergeStatus = DETAILED_MERGE_STATUS.EXTERNAL_STATUS_CHECKS;
+
+      expect(store.hasMergeChecksFailed).toBe(true);
     });
   });
 });
