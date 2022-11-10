@@ -57,8 +57,8 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
 
       Gitlab::Redis::SharedState.with do |redis|
         redis.pipelined do |pipeline|
-          pipeline.call(:get, 'foobar')
-          pipeline.call(:get, 'foobarbaz')
+          pipeline.call(:get, '{foobar}buz')
+          pipeline.call(:get, '{foobar}baz')
         end
       end
     end
@@ -103,8 +103,8 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
 
           Gitlab::Redis::SharedState.with do |redis|
             redis.pipelined do |pipeline|
-              pipeline.call(:get, 'foobar')
-              pipeline.call(:get, 'foobarbaz')
+              pipeline.call(:get, '{foobar}:buz')
+              pipeline.call(:get, '{foobar}baz')
             end
           end
         end
