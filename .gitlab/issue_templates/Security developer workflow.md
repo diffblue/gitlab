@@ -46,6 +46,14 @@ After your merge request has been approved according to our [approval guidelines
 - [ ] Add the nickname of the external user who found the issue (and/or HackerOne profile) to the Thanks row in the [details section](#details)
 - [ ] If this includes a breaking change, make sure it is mentioned for the relevant versions in [`doc/update/index.md`](https://gitlab.com/gitlab-org/security/gitlab/-/blob/master/doc/update/index.md#version-specific-upgrading-instructions)
 
+## Development DRI checks 
+
+Final checks for the Development DRI to double-check that all required steps have been completed. This section is intended to catch any mistakes that could prevent the fix from being included in the release but not having these steps completed will not block the fix from being included in the release. 
+
+- [ ] This issue has been linked to the [Security release tracking issue](https://gitlab.com/gitlab-org/gitlab/-/issues?sort=created_date&state=opened&label_name[]=upcoming+security+release)
+- [ ] 4 MRs have been created. Each is labeled, approved, and assigned to the Release Tools Bot with passing Merge Result pipelines
+- [ ] If fewer than 4 MRs are required, the release managers have been informed on the [Security release tracking issue](https://gitlab.com/gitlab-org/gitlab/-/issues?sort=created_date&state=opened&label_name[]=upcoming+security+release)
+
 ## Summary
 
 ### Links
