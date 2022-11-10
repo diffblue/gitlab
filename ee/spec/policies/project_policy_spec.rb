@@ -1786,6 +1786,14 @@ RSpec.describe ProjectPolicy do
   describe 'Incident Management on-call schedules' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:current_user) { public_send(role) }
+    let(:admin_mode) { false }
+
+    before do
+      enable_admin_mode!(current_user) if admin_mode
+      stub_licensed_features(oncall_schedules: true)
+    end
+
     context ':read_incident_management_oncall_schedule' do
       let(:policy) { :read_incident_management_oncall_schedule }
 
@@ -1800,14 +1808,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | true
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        stub_licensed_features(oncall_schedules: true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable license' do
@@ -1818,6 +1819,8 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :reporter
     end
 
     context ':admin_incident_management_oncall_schedule' do
@@ -1834,14 +1837,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | false
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        stub_licensed_features(oncall_schedules: true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable license' do
@@ -1852,11 +1848,21 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :maintainer
     end
   end
 
   describe 'Escalation Policies' do
     using RSpec::Parameterized::TableSyntax
+
+    let(:current_user) { public_send(role) }
+    let(:admin_mode) { false }
+
+    before do
+      enable_admin_mode!(current_user) if admin_mode
+      allow(::Gitlab::IncidentManagement).to receive(:escalation_policies_available?).with(project).and_return(true)
+    end
 
     context ':read_incident_management_escalation_policy' do
       let(:policy) { :read_incident_management_escalation_policy }
@@ -1872,14 +1878,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | true
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        allow(::Gitlab::IncidentManagement).to receive(:escalation_policies_available?).with(project).and_return(true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable escalation policies' do
@@ -1890,6 +1889,8 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :reporter
     end
 
     context ':admin_incident_management_escalation_policy' do
@@ -1906,14 +1907,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | false
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        allow(::Gitlab::IncidentManagement).to receive(:escalation_policies_available?).with(project).and_return(true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable escalation policies' do
@@ -1924,6 +1918,8 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :maintainer
     end
   end
 
