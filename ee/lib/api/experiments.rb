@@ -7,8 +7,12 @@ module API
     feature_category :experimentation_expansion
 
     resource :experiments do
-      desc 'Get a list of all experiments' do
+      desc 'List all experiments' do
+        detail 'Get a list of all experiments. Each experiment has an enabled status that indicates whether'\
+          'the experiment is enabled globally, or only in specific contexts.'
         success EE::API::Entities::Experiment
+        is_array true
+        tags %w[experiments]
       end
       get do
         experiments = []
