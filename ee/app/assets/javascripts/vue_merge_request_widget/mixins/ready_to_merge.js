@@ -69,16 +69,12 @@ export default {
       return __('Merge when pipeline succeeds');
     },
     pipelineId() {
-      if (this.glFeatures.mergeRequestWidgetGraphql) {
-        return getIdFromGraphQLId(this.pipeline.id);
-      }
-
-      return this.pipeline.id;
+      return getIdFromGraphQLId(this.pipeline.id);
     },
     shouldRenderMergeTrainHelperIcon() {
       return (
         this.pipeline &&
-        isNumber(this.pipelineId) &&
+        isNumber(getIdFromGraphQLId(this.pipeline.id)) &&
         isString(this.pipeline.path) &&
         this.preferredAutoMergeStrategy === MTWPS_MERGE_STRATEGY &&
         !this.stateData.autoMergeEnabled
