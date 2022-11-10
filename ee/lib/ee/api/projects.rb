@@ -53,7 +53,7 @@ module EE
             params do
               requires :audit_event_id, type: Integer, desc: 'The ID of the audit event'
             end
-            get '/:audit_event_id', feature_category: :audit_events do
+            get '/:audit_event_id', feature_category: :audit_events, urgency: :low do
               level = ::Gitlab::Audit::Levels::Project.new(project: user_project)
               # rubocop: disable CodeReuse/ActiveRecord, Rails/FindById
               # This is not `find_by!` from ActiveRecord
