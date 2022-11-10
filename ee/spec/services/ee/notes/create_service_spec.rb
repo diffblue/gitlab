@@ -37,32 +37,30 @@ RSpec.describe Notes::CreateService do
       end
 
       context "with assignees quick actions" do
-        let(:feature_flag_hash) { { limit_assignees_per_issuable: false } }
         let(:update_service) { Issues::UpdateService }
         let(:noteable_type) { 'Issue' }
 
         context "with a single line note" do
-          it_behaves_like 'does not exceed the issuable size limit' do
-            let(:note_text) do
-              "/assign #{user1.to_reference} #{user2.to_reference} #{user3.to_reference}"
-            end
+          let(:validation_message) { "Assignees total must be less than or equal to 2" }
 
-            let(:validation_message) { "Assignees total must be less than or equal to 2" }
+          let(:note_text) do
+            "/assign #{user1.to_reference} #{user2.to_reference} #{user3.to_reference}"
           end
+
+          it_behaves_like 'does not exceed the issuable size limit'
         end
 
         context "with a multi line note" do
-          it_behaves_like 'does not exceed the issuable size limit' do
-            let(:note_text) do
-              <<~HEREDOC
+          let(:validation_message) { "Assignees total must be less than or equal to 2" }
+          let(:note_text) do
+            <<~HEREDOC
                   /assign #{user1.to_reference}
                   /assign #{user2.to_reference}
                   /assign #{user3.to_reference}
-              HEREDOC
-            end
-
-            let(:validation_message) { "Assignees total must be less than or equal to 2" }
+            HEREDOC
           end
+
+          it_behaves_like 'does not exceed the issuable size limit'
         end
       end
     end
@@ -91,32 +89,29 @@ RSpec.describe Notes::CreateService do
       end
 
       context "with assignees quick actions" do
-        let(:feature_flag_hash) { { limit_assignees_per_issuable: false } }
         let(:update_service) { MergeRequests::UpdateService }
         let(:noteable_type) { 'MergeRequest' }
 
         context "with a single line note" do
-          it_behaves_like 'does not exceed the issuable size limit' do
-            let(:note_text) do
-              "/assign #{user1.to_reference} #{user2.to_reference} #{user3.to_reference}"
-            end
-
-            let(:validation_message) { "Assignees total must be less than or equal to 2" }
+          let(:validation_message) { "Assignees total must be less than or equal to 2" }
+          let(:note_text) do
+            "/assign #{user1.to_reference} #{user2.to_reference} #{user3.to_reference}"
           end
+
+          it_behaves_like 'does not exceed the issuable size limit'
         end
 
         context "with a multi line note" do
-          it_behaves_like 'does not exceed the issuable size limit' do
-            let(:note_text) do
-              <<~HEREDOC
+          let(:validation_message) { "Assignees total must be less than or equal to 2" }
+          let(:note_text) do
+            <<~HEREDOC
                   /assign #{user1.to_reference}
                   /assign #{user2.to_reference}
                   /assign #{user3.to_reference}
-              HEREDOC
-            end
-
-            let(:validation_message) { "Assignees total must be less than or equal to 2" }
+            HEREDOC
           end
+
+          it_behaves_like 'does not exceed the issuable size limit'
         end
       end
 
@@ -126,27 +121,28 @@ RSpec.describe Notes::CreateService do
         let(:noteable_type) { 'MergeRequest' }
 
         context "with a single line note" do
-          it_behaves_like 'does not exceed the issuable size limit' do
-            let(:note_text) do
-              "/assign_reviewer #{user1.to_reference} #{user2.to_reference} #{user3.to_reference}"
-            end
+          let(:validation_message) { "Reviewers total must be less than or equal to 2" }
 
-            let(:validation_message) { "Reviewers total must be less than or equal to 2" }
+          let(:note_text) do
+            "/assign_reviewer #{user1.to_reference} #{user2.to_reference} #{user3.to_reference}"
           end
+
+          it_behaves_like 'does not exceed the issuable size limit with ff off'
+          it_behaves_like 'does not exceed the issuable size limit'
         end
 
         context "with a multi line note" do
-          it_behaves_like 'does not exceed the issuable size limit' do
-            let(:note_text) do
-              <<~HEREDOC
+          let(:validation_message) { "Reviewers total must be less than or equal to 2" }
+          let(:note_text) do
+            <<~HEREDOC
               /assign_reviewer #{user1.to_reference}
               /assign_reviewer #{user2.to_reference}
               /assign_reviewer #{user3.to_reference}
-              HEREDOC
-            end
-
-            let(:validation_message) { "Reviewers total must be less than or equal to 2" }
+            HEREDOC
           end
+
+          it_behaves_like 'does not exceed the issuable size limit with ff off'
+          it_behaves_like 'does not exceed the issuable size limit'
         end
       end
     end
