@@ -8,7 +8,8 @@ module Projects
     UpdateError = Class.new(Error)
 
     def execute
-      if project.import_url && Gitlab::UrlBlocker.blocked_url?(normalized_url(project.import_url))
+      if project.import_url &&
+          Gitlab::UrlBlocker.blocked_url?(normalized_url(project.import_url), schemes: Project::VALID_MIRROR_PROTOCOLS)
         return error("The import URL is invalid.")
       end
 
