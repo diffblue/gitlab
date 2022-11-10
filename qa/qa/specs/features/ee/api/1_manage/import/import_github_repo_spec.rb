@@ -14,8 +14,35 @@ module QA
           expect { imported_project.project_import_status[:import_status] }.to eventually_eq('finished')
             .within(max_duration: 240, sleep_interval: 1)
 
+          aggregate_failures do
+            verify_push_rules
+            verify_protected_branches_import
+          end
+        end
+
+        def verify_push_rules
           # GitHub branch protection rule "Require signed commits" is mapped to the "Reject unsigned commits" push rule
           expect(imported_project.push_rules[:reject_unsigned_commits]).to be_truthy
+        end
+
+        def verify_protected_branches_import
+          imported_branches = imported_project.protected_branches.map do |branch|
+            branch.slice(:name, :allow_force_push, :code_owner_approval_required)
+          end
+          actual_branches = [
+            {
+              name: 'main',
+              allow_force_push: false,
+              code_owner_approval_required: true
+            },
+            {
+              name: 'release',
+              allow_force_push: true,
+              code_owner_approval_required: true
+            }
+          ]
+
+          expect(imported_branches).to match_array(actual_branches)
         end
       end
     end
