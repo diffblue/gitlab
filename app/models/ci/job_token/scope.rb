@@ -5,12 +5,12 @@
 # A scope is initialized with a source project.
 #
 # Projects can be added to the scope by adding ScopeLinks to
-# create an allowlist of projects.
+# create an allowlist of projects in either access direction (inbound, outbound).
 #
-# Projects in the outbound allowlist can be accessed via the token
+# Currently, Projects in the outbound allowlist can be accessed via the token
 # in the source project.
 #
-# Projects in the inbound allowlist can use their token to access
+# TODO(Issue #346298) Projects in the inbound allowlist can use their token to access
 # the source project.
 #
 # CI_JOB_TOKEN should be considered untrusted without these features enabled.
