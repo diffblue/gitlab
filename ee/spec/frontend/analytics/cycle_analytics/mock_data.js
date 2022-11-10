@@ -346,10 +346,10 @@ export const durationDataNullSeries = {
     ['2019-01-02', null],
   ],
   itemStyle: {
-    color: '#a4a3a8',
+    color: '#999',
   },
   lineStyle: {
-    color: '#a4a3a8',
+    color: '#999',
     type: 'dashed',
   },
   name: `${DURATION_CHART_Y_AXIS_TITLE} no data series`,
