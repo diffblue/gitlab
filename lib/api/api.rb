@@ -219,6 +219,7 @@ module API
         mount ::API::RemoteMirrors
         mount ::API::Repositories
         mount ::API::ResourceAccessTokens
+        mount ::API::ResourceMilestoneEvents
         mount ::API::Snippets
         mount ::API::SnippetRepositoryStorageMoves
         mount ::API::Statistics
@@ -309,7 +310,6 @@ module API
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
       mount ::API::ResourceLabelEvents
-      mount ::API::ResourceMilestoneEvents
       mount ::API::ResourceStateEvents
       mount ::API::RpmProjectPackages
       mount ::API::RubygemPackages
