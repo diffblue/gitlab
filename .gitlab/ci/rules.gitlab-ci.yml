@@ -973,8 +973,8 @@
       changes: *code-backstage-patterns
     - <<: *if-merge-request-not-approved
       when: never
-    - <<: *if-default-refs
-      changes: *code-backstage-patterns
+    - <<: *if-merge-request
+      changes: *frontend-patterns-for-as-if-foss
 
 .frontend:rules:jest:minimal:as-if-foss:
   rules:
