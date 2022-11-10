@@ -186,6 +186,7 @@ module Gitlab
         def validate!(commands)
           return unless Rails.env.development? || Rails.env.test?
           return if allow_cross_slot_commands?
+          return if commands.empty?
 
           command_name = commands.size > 1 ? "PIPELINE/MULTI" : commands.first.first.to_s.upcase
           argument_positions = REDIS_COMMANDS[command_name]

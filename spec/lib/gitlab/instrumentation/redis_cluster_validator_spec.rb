@@ -74,6 +74,7 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
       [[:get, "foo"], [:mget, "foo", "bar"]] | true # mix of single-key and multi-key cmds
       [[:get, "{foo}:name"], [:get, "{foo}:profile"]] | false
       [[:del, "foo"], [:del, "bar"]] | true
+      [] | false # pipeline or transaction opened and closed without ops
     end
 
     with_them do
