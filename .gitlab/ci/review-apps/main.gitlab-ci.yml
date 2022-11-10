@@ -32,14 +32,15 @@ review-build-cng-env:
   extends:
     - .default-retry
     - .review:rules:review-build-cng
-  image: ${GITLAB_DEPENDENCY_PROXY_ADDRESS}ruby:3.0-alpine3.13
+  image: ${REGISTRY_HOST}/${REGISTRY_GROUP}/gitlab-build-images/debian-${DEBIAN_VERSION}-ruby-${RUBY_VERSION}:bundler-2.3
   stage: prepare
   needs: []
   before_script:
     - source ./scripts/utils.sh
     - install_gitlab_gem
   script:
-    - 'ruby -r./scripts/trigger-build.rb -e "puts Trigger.variables_for_env_file(Trigger::CNG.new.variables)" > build.env'
+    - ruby -r./scripts/trigger-build.rb -e "puts Trigger.variables_for_env_file(Trigger::CNG.new.variables)" > build.env
+    - ruby -e 'puts "FULL_RUBY_VERSION=#{RUBY_VERSION}"' >> build.env
     - cat build.env
   artifacts:
     reports:
@@ -77,6 +78,7 @@ review-build-cng:
     GITLAB_SHELL_VERSION: "${GITLAB_SHELL_VERSION}"
     GITLAB_WORKHORSE_VERSION: "${GITLAB_WORKHORSE_VERSION}"
     GITALY_SERVER_VERSION: "${GITALY_SERVER_VERSION}"
+    RUBY_VERSION: "${FULL_RUBY_VERSION}"
   trigger:
     project: gitlab-org/build/CNG-mirror
     branch: $TRIGGER_BRANCH
