@@ -8,7 +8,7 @@ module Gitlab
 
     # Returns the complete list of alert fields for the custom mapping to be consumed by the frontend and the GraphQL API.
     #
-    # @see https://docs.gitlab.com/ee/operations/incident_management/alert_integrations.html#customize-the-alert-payload-outside-of-gitlab
+    # @see https://docs.gitlab.com/ee/operations/incident_management/integrations.html#customize-the-alert-payload-outside-of-gitlab
     # @return [Array<Hash>]
     def self.alert_fields
       [
