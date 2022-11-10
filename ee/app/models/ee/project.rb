@@ -135,6 +135,12 @@ module EE
           .limit(limit)
       end
 
+      scope :with_hard_import_failures, -> do
+        joins_import_state
+          .where(import_state: { status: [:failed] })
+          .where('import_state.retry_count > ?', ::Gitlab::Mirror::MAX_RETRY)
+      end
+
       scope :with_coverage_feature_usage, ->(default_branch: nil) do
         join_conditions = { feature: :code_coverage }
         join_conditions[:default_branch] = default_branch unless default_branch.nil?

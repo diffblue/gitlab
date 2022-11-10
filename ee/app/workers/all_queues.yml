@@ -1398,6 +1398,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: pull_mirrors_reenable_configuration
+  :worker_name: PullMirrors::ReenableConfigurationWorker
+  :feature_category: :source_code_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: refresh_license_compliance_checks
   :worker_name: RefreshLicenseComplianceChecksWorker
   :feature_category: :license_compliance

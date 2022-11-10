@@ -3,6 +3,7 @@
 class GitlabSubscription < ApplicationRecord
   include EachBatch
   include Gitlab::Utils::StrongMemoize
+  include AfterCommitQueue
 
   EOA_ROLLOUT_DATE = '2021-01-26'
 
@@ -13,6 +14,7 @@ class GitlabSubscription < ApplicationRecord
   before_update :set_max_seats_used_changed_at
   before_update :log_previous_state_for_update
   before_update :reset_seats_for_new_term
+  before_update :publish_subscription_renewed_event
 
   after_commit :index_namespace, on: [:create, :update]
   after_destroy_commit :log_previous_state_for_destroy
@@ -183,6 +185,14 @@ class GitlabSubscription < ApplicationRecord
     self.max_seats_used = attributes['seats_in_use']
     self.seats_owed = calculate_seats_owed
     self.max_seats_used_changed_at = nil
+  end
+
+  def publish_subscription_renewed_event
+    return unless new_term?
+
+    run_after_commit do
+      Gitlab::EventStore.publish(GitlabSubscriptions::RenewedEvent.new(data: { namespace_id: namespace_id }))
+    end
   end
 
   def set_max_seats_used_changed_at

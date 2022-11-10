@@ -582,10 +582,10 @@ RSpec.describe GitlabSubscription, :saas do
 
       context 'when start and end dates change' do
         context 'when start_date is after the old end_date' do
-          it 'resets seats attributes' do
-            new_start = gitlab_subscription.end_date + 1.year
-            new_end = new_start + 1.year
+          let(:new_start) { gitlab_subscription.end_date + 1.year }
+          let(:new_end) { new_start + 1.year }
 
+          it 'resets seats attributes' do
             expect do
               gitlab_subscription.update!(start_date: new_start, end_date: new_end)
             end.to change(gitlab_subscription, :start_date).to(new_start)
@@ -594,6 +594,12 @@ RSpec.describe GitlabSubscription, :saas do
               .and change(gitlab_subscription, :seats_owed).from(29).to(7)
               .and change(gitlab_subscription, :max_seats_used_changed_at).to(nil)
               .and not_change(gitlab_subscription, :seats_in_use)
+          end
+
+          it 'triggers subscription started event' do
+            expect { gitlab_subscription.update!(start_date: new_start, end_date: new_end) }
+              .to publish_event(GitlabSubscriptions::RenewedEvent)
+              .with(namespace_id: gitlab_subscription.namespace_id)
           end
         end
 
@@ -639,6 +645,12 @@ RSpec.describe GitlabSubscription, :saas do
             .and not_change(gitlab_subscription, :max_seats_used)
             .and not_change(gitlab_subscription, :max_seats_used_changed_at)
             .and not_change(gitlab_subscription, :seats_owed)
+        end
+
+        it 'does not trigger subscription started event' do
+          expect(Gitlab::EventStore).not_to receive(:publish)
+
+          gitlab_subscription.update!(start_date: Date.today)
         end
       end
 

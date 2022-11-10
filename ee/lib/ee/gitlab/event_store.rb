@@ -29,6 +29,7 @@ module EE
             to: ::Repositories::KeepAroundRefsCreatedEvent,
             if: -> (_) { ::Gitlab::Geo.primary? }
           store.subscribe ::MergeRequests::StreamApprovalAuditEventWorker, to: ::MergeRequests::ApprovedEvent
+          store.subscribe ::PullMirrors::ReenableConfigurationWorker, to: ::GitlabSubscriptions::RenewedEvent
         end
       end
     end
