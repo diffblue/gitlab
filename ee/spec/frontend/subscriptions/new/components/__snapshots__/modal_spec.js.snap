@@ -4,16 +4,16 @@ exports[`Modal component matches the snapshot 1`] = `
 <b-modal-stub
   canceltitle="Cancel"
   cancelvariant="secondary"
+  footertag="footer"
   headerclosecontent="&times;"
   headercloselabel="Close"
+  headertag="header"
   id="subscription-modal"
-  ignoreenforcefocusselector=""
   lazy="true"
   modalclass="gl-modal,"
   oktitle="OK"
   okvariant="primary"
   size="sm"
-  title=""
   titletag="h4"
 >
   
