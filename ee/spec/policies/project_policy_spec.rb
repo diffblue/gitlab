@@ -2437,4 +2437,106 @@ RSpec.describe ProjectPolicy do
     it { is_expected.to be_disallowed(:download_code) }
     it { is_expected.to be_disallowed(:build_download_code) }
   end
+
+  context 'custom role' do
+    let_it_be(:current_user) { create(:user) }
+    let_it_be(:project) { private_project_in_group }
+    let_it_be(:group_member) do
+      create(
+        :group_member,
+        user: current_user,
+        source: project.group,
+        access_level: Gitlab::Access::GUEST
+      )
+    end
+
+    let_it_be(:project_member) do
+      create(
+        :project_member,
+        :guest,
+        user: current_user,
+        project: project,
+        access_level: Gitlab::Access::GUEST
+      )
+    end
+
+    let_it_be(:member_role_download_code_true) do
+      create(
+        :member_role,
+        :guest,
+        namespace: project.group,
+        download_code: true
+      )
+    end
+
+    let_it_be(:member_role_download_code_false) do
+      create(
+        :member_role,
+        :guest,
+        namespace: project.group,
+        download_code: false
+      )
+    end
+
+    context 'customizable_roles feature flag enabled' do
+      before do
+        stub_feature_flags(customizable_roles: [project.group])
+      end
+
+      context 'custom role for parent group' do
+        context 'custom role allows download code' do
+          before do
+            member_role_download_code_true.members << group_member
+          end
+
+          it { is_expected.to be_allowed(:download_code) }
+        end
+
+        context 'custom role disallows download code' do
+          before do
+            member_role_download_code_false.members << group_member
+          end
+
+          it { is_expected.to be_disallowed(:download_code) }
+        end
+      end
+
+      context 'custom role on project membership' do
+        context 'custom role allows download code' do
+          before do
+            member_role_download_code_true.members << project_member
+          end
+
+          it { is_expected.to be_allowed(:download_code) }
+        end
+
+        context 'custom role disallows download code' do
+          before do
+            member_role_download_code_false.members << project_member
+          end
+
+          it { is_expected.to be_disallowed(:download_code) }
+        end
+      end
+
+      context 'multiple custom roles in hierarchy with different download_code values' do
+        before do
+          member_role_download_code_true.members << project_member
+          member_role_download_code_false.members << group_member
+        end
+
+        # allows download code if any of the custom roles allow it
+        it { is_expected.to be_allowed(:download_code) }
+      end
+    end
+
+    context 'without customizable_roles feature enabled' do
+      before do
+        stub_feature_flags(customizable_roles: false)
+        member_role_download_code_true.members << project_member
+      end
+
+      it { is_expected.to be_disallowed(:download_code) }
+    end
+  end
 end

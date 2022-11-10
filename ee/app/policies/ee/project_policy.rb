@@ -173,6 +173,17 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
+      condition(:custom_roles_allowed) do
+        ::Feature.enabled?(:customizable_roles, @subject.root_ancestor)
+      end
+
+      desc "Custom role on project that enables download code"
+      condition(:role_enables_download_code) do
+        next unless @user.is_a?(User)
+
+        @user.download_code_for?(project)
+      end
+
       # Owners can be banned from their own project except for top-level group
       # owners. This exception is made at the service layer
       # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
@@ -503,6 +514,8 @@ module EE
       rule { (admin | maintainer) & group_merge_request_approval_settings_enabled }.policy do
         enable :admin_merge_request_approval_settings
       end
+
+      rule { custom_roles_allowed & role_enables_download_code }.enable :download_code
     end
 
     override :lookup_access_level!

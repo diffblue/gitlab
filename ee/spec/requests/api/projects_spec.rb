@@ -96,13 +96,10 @@ RSpec.describe API::Projects do
     context 'when there are several projects owned by groups' do
       let_it_be(:admin) { create(:admin) }
 
-      it 'avoids N+1 queries' do
+      it 'avoids N+1 queries', :use_sql_query_cache do
         create(:project, :public, namespace: create(:group))
 
-        # Warming up context
-        get api('/projects', admin)
-
-        control = ActiveRecord::QueryRecorder.new do
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           get api('/projects', admin)
         end
 
@@ -110,7 +107,7 @@ RSpec.describe API::Projects do
 
         expect do
           get api('/projects', admin)
-        end.not_to exceed_query_limit(control.count)
+        end.not_to exceed_all_query_limit(control.count)
       end
     end
   end
