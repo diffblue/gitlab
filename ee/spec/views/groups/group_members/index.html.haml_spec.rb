@@ -12,14 +12,6 @@ RSpec.describe 'groups/group_members/index' do
     assign(:group, group)
   end
 
-  context 'when free plan limit alert is present' do
-    it 'renders the alert partial' do
-      render
-
-      expect(rendered).to render_template('shared/_free_user_cap_alert')
-    end
-  end
-
   context 'when managing members text is present' do
     before do
       allow(view).to receive(:can_admin_group_member?).with(group).and_return(true)
