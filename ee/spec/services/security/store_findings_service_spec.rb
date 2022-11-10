@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::StoreFindingsMetadataService do
+RSpec.describe Security::StoreFindingsService do
   let_it_be(:findings_partition_number) { Security::Finding.active_partition_number }
   let_it_be(:security_scan) { create(:security_scan, findings_partition_number: findings_partition_number) }
   let_it_be(:project) { security_scan.project }
@@ -35,7 +35,7 @@ RSpec.describe Security::StoreFindingsMetadataService do
       end
 
       it 'does not create new findings in database' do
-        expect { store_findings }.not_to change { Security::Finding.count }
+        expect { store_findings }.not_to change(Security::Finding, :count)
       end
     end
 
@@ -74,7 +74,7 @@ RSpec.describe Security::StoreFindingsMetadataService do
         end
 
         it 'does not create new scanner entries in the database' do
-          expect { store_findings }.not_to change { Vulnerabilities::Scanner.count }
+          expect { store_findings }.not_to change(Vulnerabilities::Scanner, :count)
         end
       end
 
