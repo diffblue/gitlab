@@ -33,8 +33,6 @@ module EE
       end
 
       def audit_approval_rules(merge_request)
-        return unless ::Feature.enabled?(:audit_invalid_approver_rules, project)
-
         merge_request.wrapped_approval_rules.each do |rule|
           next if rule.any_approver?
           next unless rule.approvers.empty?
