@@ -45,7 +45,7 @@ module Vulnerabilities
 
     has_one :finding_evidence, class_name: 'Vulnerabilities::Finding::Evidence', inverse_of: :finding, foreign_key: 'vulnerability_occurrence_id'
 
-    serialize :config_options, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
+    attribute :config_options, :ind_jsonb
 
     attr_writer :sha
     attr_accessor :scan
