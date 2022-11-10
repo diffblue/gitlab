@@ -47938,6 +47938,9 @@ msgstr ""
 msgid "ciReport|New"
 msgstr ""
 
+msgid "ciReport|New vulnerabilities are vulnerabilities that the security scan detects in the merge request that are different to existing vulnerabilities in the default branch."
+msgstr ""
+
 msgid "ciReport|No changes to Code Quality."
 msgstr ""
 
@@ -47966,6 +47969,9 @@ msgid "ciReport|Secret detection"
 msgstr ""
 
 msgid "ciReport|Security reports failed loading results"
+msgstr ""
+
+msgid "ciReport|Security scan results"
 msgstr ""
 
 msgid "ciReport|Security scanning"

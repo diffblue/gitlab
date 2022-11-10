@@ -58,6 +58,7 @@ describe('MR Widget Security Reports', () => {
   };
 
   const findWidget = () => wrapper.findComponent(Widget);
+  const findWidgetRow = (reportType) => wrapper.findByTestId(`report-${reportType}`);
   const findSummaryText = () => wrapper.findComponent(SummaryText);
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
 
@@ -207,7 +208,7 @@ describe('MR Widget Security Reports', () => {
     };
 
     it.each`
-      reportType               | reportDescription                                | helpPath
+      reportType               | reportTitle                                      | helpPath
       ${'SAST'}                | ${'Static Application Security Testing (SAST)'}  | ${sastHelp}
       ${'DAST'}                | ${'Dynamic Application Security Testing (DAST)'} | ${dastHelp}
       ${'DEPENDENCY_SCANNING'} | ${'Dependency scanning'}                         | ${dependencyScanningHelp}
@@ -216,7 +217,7 @@ describe('MR Widget Security Reports', () => {
       ${'SECRET_DETECTION'}    | ${'Secret detection'}                            | ${secretDetectionHelp}
     `(
       'shows the correct help popover for $reportType',
-      async ({ reportType, reportDescription, helpPath }) => {
+      async ({ reportType, reportTitle, helpPath }) => {
         mockWithData();
 
         createComponent({
@@ -229,14 +230,10 @@ describe('MR Widget Security Reports', () => {
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
         await nextTick();
 
-        const helpButtons = wrapper.findAllByRole('button', { name: 'Help' });
-
-        expect(helpButtons).toHaveLength(Object.keys(reportEndpoints).length);
-        helpButtons.at(0).trigger('click');
-        await nextTick();
-
-        expect(wrapper.findByText(reportDescription).exists()).toBe(true);
-        expect(wrapper.findByTestId(`${reportType}-learn-more`).attributes('href')).toBe(helpPath);
+        expect(findWidgetRow(reportType).props('helpPopover')).toMatchObject({
+          options: { title: reportTitle },
+          content: { learnMorePath: helpPath },
+        });
       },
     );
   });
