@@ -153,7 +153,6 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'true',
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
-          has_multiple_issue_assignees_feature: 'true',
           has_scoped_labels_feature: 'true',
           group_path: project.group.full_path
         }
@@ -181,7 +180,6 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'false',
           has_issue_weights_feature: 'false',
           has_iterations_feature: 'false',
-          has_multiple_issue_assignees_feature: 'false',
           has_scoped_labels_feature: 'false'
         }
 
@@ -223,7 +221,6 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'true',
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
-          has_multiple_issue_assignees_feature: 'true',
           has_scoped_labels_feature: 'true',
           group_path: project.group.full_path
         }
@@ -244,7 +241,6 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'false',
           has_issue_weights_feature: 'false',
           has_iterations_feature: 'false',
-          has_multiple_issue_assignees_feature: 'false',
           has_scoped_labels_feature: 'false'
         }
 

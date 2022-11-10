@@ -51,7 +51,6 @@ describe('EE IssuesListApp component', () => {
     hasIssuableHealthStatusFeature: true,
     hasIssueWeightsFeature: true,
     hasIterationsFeature: true,
-    hasMultipleIssueAssigneesFeature: true,
     hasScopedLabelsFeature: true,
     initialEmail: 'email@example.com',
     initialSort: CREATED_DESC,

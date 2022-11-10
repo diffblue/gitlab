@@ -1,5 +1,7 @@
 import { GlFilteredSearchToken } from '@gitlab/ui';
 import {
+  OPERATOR_IS_AND_IS_NOT,
+  OPERATOR_IS_ONLY,
   TOKEN_TITLE_ASSIGNEE,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_CONFIDENTIAL,
@@ -487,10 +489,7 @@ export const mockTokens = (
     icon: 'user',
     title: TOKEN_TITLE_ASSIGNEE,
     type: 'assignee',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    operators: OPERATOR_IS_AND_IS_NOT,
     token: AuthorToken,
     unique: true,
     fetchAuthors,
@@ -500,10 +499,7 @@ export const mockTokens = (
     icon: 'pencil',
     title: TOKEN_TITLE_AUTHOR,
     type: 'author',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    operators: OPERATOR_IS_AND_IS_NOT,
     symbol: '@',
     token: AuthorToken,
     unique: true,
@@ -514,10 +510,7 @@ export const mockTokens = (
     icon: 'labels',
     title: TOKEN_TITLE_LABEL,
     type: 'label',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    operators: OPERATOR_IS_AND_IS_NOT,
     token: LabelToken,
     unique: false,
     symbol: '~',
@@ -537,7 +530,7 @@ export const mockTokens = (
     title: TOKEN_TITLE_CONFIDENTIAL,
     unique: true,
     token: GlFilteredSearchToken,
-    operators: [{ value: '=', description: 'is' }],
+    operators: OPERATOR_IS_ONLY,
     options: [
       { icon: 'eye-slash', value: 'yes', title: 'Yes' },
       { icon: 'eye', value: 'no', title: 'No' },
@@ -586,10 +579,7 @@ export const mockTokens = (
     type: 'iteration',
     icon: 'iteration',
     title: TOKEN_TITLE_ITERATION,
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    operators: OPERATOR_IS_AND_IS_NOT,
     unique: true,
     fetchIterations,
     fetchIterationCadences,
@@ -608,6 +598,6 @@ export const mockTokens = (
     title: TOKEN_TITLE_HEALTH,
     token: HealthToken,
     unique: true,
-    operators: [{ value: '=', description: 'is' }],
+    operators: OPERATOR_IS_ONLY,
   },
 ];
