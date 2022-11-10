@@ -65,6 +65,7 @@ and method in GitLab 16.0, and introduce a new
 [GitLab Runner token architecture](https://docs.gitlab.com/ee/architecture/blueprints/runner_tokens/).
 This new architecture introduces a new method for registering runners and eliminates the legacy
 [runner registration token](https://docs.gitlab.com/ee/security/token_overview.html#runner-registration-tokens).
+We plan to introduce a new method of binding a GitLab Runner to a GitLab instance in GitLab 15.8. This will be the only supported method starting in GitLab 16.0.
 
 </div>
 
