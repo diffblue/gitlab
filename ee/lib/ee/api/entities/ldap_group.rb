@@ -4,7 +4,7 @@ module EE
   module API
     module Entities
       class LdapGroup < Grape::Entity
-        expose :cn
+        expose :cn, documentation: { type: 'string', example: 'ldap-group-1' }
       end
     end
   end

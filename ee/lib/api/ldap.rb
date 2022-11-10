@@ -8,6 +8,8 @@ module API
     # group.
     before { authenticated_with_ldap_admin_access! }
 
+    ldap_groups_tags = %w[ldap_groups]
+
     feature_category :authentication_and_authorization
 
     resource :ldap do
@@ -22,8 +24,11 @@ module API
         end
       end
 
-      desc 'Get a LDAP groups list. Limit size to 20 of them.' do
+      desc 'List LDAP groups' do
+        detail 'Limit size to 20 of them.'
         success EE::API::Entities::LdapGroup
+        is_array true
+        tags ldap_groups_tags
       end
       params do
         use :search_params
@@ -34,8 +39,11 @@ module API
         present groups, with: EE::API::Entities::LdapGroup
       end
 
-      desc 'Get a LDAP groups list by the requested provider. Limit size to 20 of them.' do
+      desc 'List LDAP groups by the requested provider' do
+        detail 'Limit size to 20 of them.'
         success EE::API::Entities::LdapGroup
+        is_array true
+        tags ldap_groups_tags
       end
       params do
         use :search_params
