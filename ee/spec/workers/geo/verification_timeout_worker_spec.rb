@@ -9,6 +9,7 @@ RSpec.describe Geo::VerificationTimeoutWorker, :geo do
 
   it 'uses a Geo queue' do
     expect(described_class.new.sidekiq_options_hash).to include(
+      'queue' => 'geo:geo_verification_timeout',
       'queue_namespace' => :geo
     )
   end
