@@ -48441,10 +48441,16 @@ msgstr ""
 msgid "is not in the member group"
 msgstr ""
 
+msgid "is not one of"
+msgstr ""
+
 msgid "is not the member project"
 msgstr ""
 
 msgid "is not valid. The iteration group has to match the iteration cadence group."
+msgstr ""
+
+msgid "is one of"
 msgstr ""
 
 msgid "is read-only"
