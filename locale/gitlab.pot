@@ -19146,6 +19146,9 @@ msgstr ""
 msgid "GroupSAML|\"persistent\" recommended"
 msgstr ""
 
+msgid "GroupSAML|%{group_name} SAML authentication failed: %{message}"
+msgstr ""
+
 msgid "GroupSAML|%{strongOpen}Warning%{strongClose} - Enable %{linkStart}SSO enforcement%{linkEnd} to reduce security risks."
 msgstr ""
 
@@ -19249,6 +19252,9 @@ msgid "GroupSAML|SAML Group Name"
 msgstr ""
 
 msgid "GroupSAML|SAML Group Name: %{saml_group_name}"
+msgstr ""
+
+msgid "GroupSAML|SAML Name ID and email address do not match your user account. Contact an administrator."
 msgstr ""
 
 msgid "GroupSAML|SAML Response Output"

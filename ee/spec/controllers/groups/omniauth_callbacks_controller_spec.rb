@@ -177,10 +177,29 @@ RSpec.describe Groups::OmniauthCallbacksController do
           create(:identity, user: user, extern_uid: 'some-other-name-id', provider: provider, saml_provider: saml_provider)
         end
 
-        it 'displays warning to user' do
+        it "displays a flash message verifying group sign in" do
           post provider, params: { group_id: group }
 
-          expect(flash[:notice]).to match(/has already been taken*/)
+          expect(flash[:notice]).to eq(s_("SAML|Your organization's SSO has been connected to your GitLab account"))
+        end
+
+        context 'when user email address does not match auth hash email address' do
+          before do
+            mock_auth_hash(provider, uid, generate(:email), response_object: saml_response)
+            stub_omniauth_provider(provider, context: request)
+          end
+
+          it 'redirects and displays an error', :aggregate_failures do
+            post provider, params: { group_id: group }
+
+            expect(flash[:alert])
+              .to eq(format(
+                       s_("GroupSAML|%{group_name} SAML authentication failed: %{message}"),
+                       group_name: group.name,
+                       message: s_('GroupSAML|SAML Name ID and email address do not match your user account. Contact an administrator.')
+                     ))
+            expect(response).to redirect_to(root_path)
+          end
         end
       end
 
@@ -189,10 +208,16 @@ RSpec.describe Groups::OmniauthCallbacksController do
           create_linked_user
         end
 
-        it 'displays warning to user' do
+        it 'redirects and displays an error' do
           post provider, params: { group_id: group }
 
-          expect(flash[:notice]).to match(/has already been taken*/)
+          expect(flash[:alert])
+            .to eq(format(
+                     s_("GroupSAML|%{group_name} SAML authentication failed: %{message}"),
+                     group_name: group.name,
+                     message: 'Extern uid has already been taken'
+                   ))
+          expect(response).to redirect_to(root_path)
         end
       end
 

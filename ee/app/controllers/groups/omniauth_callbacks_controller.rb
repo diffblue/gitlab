@@ -45,12 +45,16 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
 
   override :redirect_identity_link_failed
   def redirect_identity_link_failed(error_message)
-    flash[:notice] = "SAML authentication failed: #{error_message}"
+    flash[:alert] = format(
+      s_("GroupSAML|%{group_name} SAML authentication failed: %{message}"),
+      group_name: @unauthenticated_group.name,
+      message: error_message
+    )
 
     if ::Feature.enabled?(:sign_up_on_sso, @unauthenticated_group) && @saml_provider.enforced_group_managed_accounts?
       redirect_to_group_sign_up
     else
-      redirect_to after_sign_in_path_for(current_user)
+      redirect_to root_path
     end
   end
 

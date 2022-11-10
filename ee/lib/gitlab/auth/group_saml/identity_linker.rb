@@ -4,29 +4,77 @@ module Gitlab
   module Auth
     module GroupSaml
       class IdentityLinker < Gitlab::Auth::Saml::IdentityLinker
-        attr_reader :saml_provider
+        include ::Gitlab::Utils::StrongMemoize
+        attr_reader :saml_provider, :auth_hash
 
         def initialize(current_user, oauth, session, saml_provider)
           super(current_user, oauth, session)
 
+          @auth_hash = AuthHash.new(oauth)
           @saml_provider = saml_provider
+        end
+
+        override :link
+        def link
+          super
+
+          update_extern_uid if extern_uid_update_required?
+        end
+
+        override :failed?
+        def failed?
+          super || update_extern_uid_failed?
+        end
+
+        override :error_message
+        def error_message
+          return super unless update_extern_uid_failed?
+
+          s_('GroupSAML|SAML Name ID and email address do not match your user account. Contact an administrator.')
         end
 
         protected
 
         # rubocop: disable CodeReuse/ActiveRecord
+        override :identity
         def identity
-          @identity ||= current_user.identities.where(provider: :group_saml,
-                                                      saml_provider: saml_provider,
-                                                      extern_uid: uid.to_s)
-                                    .first_or_initialize
+          current_user.identities
+                      .where(provider: :group_saml, saml_provider: saml_provider)
+                      .first_or_initialize(extern_uid: uid.to_s)
         end
+        strong_memoize_attr :identity
         # rubocop: enable CodeReuse/ActiveRecord
 
         override :update_group_membership
         def update_group_membership
           auth_hash = AuthHash.new(oauth)
           MembershipUpdater.new(current_user, saml_provider, auth_hash).execute
+        end
+
+        def update_extern_uid
+          return unless update_extern_uid_allowed?
+
+          identity.extern_uid = uid.to_s
+          save
+        end
+
+        # When the current extern_uid doesn't match the
+        # uid (Name ID) from SAML, we need to update.
+        def extern_uid_update_required?
+          identity.extern_uid != uid.to_s
+        end
+
+        # Updating the extern_uid is only allowed if the email
+        # address sent from the IdP matches a verified email
+        # address of the current user. This prevents accidentally
+        # linking an unintended IdP account.
+        def update_extern_uid_allowed?
+          current_user.verified_email?(auth_hash.email)
+        end
+        strong_memoize_attr :update_extern_uid_allowed?, :update_extern_uid_allowed
+
+        def update_extern_uid_failed?
+          extern_uid_update_required? && !update_extern_uid_allowed?
         end
       end
     end
