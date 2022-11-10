@@ -256,6 +256,34 @@ RSpec.shared_examples 'an API endpoint for updating project approval rule' do
       end
     end
 
+    context 'with nil scanners' do
+      let(:scanners) { nil }
+
+      it 'returns 200 status' do
+        expect do
+          put api(url, current_user), params: { scanners: scanners }
+        end.not_to change { approval_rule.reload.scanners }
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
+    context 'when scanners is NULL in the database' do
+      let(:vulnerabilities_allowed) { 10 }
+
+      before do
+        approval_rule.update_column(:scanners, nil)
+      end
+
+      it 'returns 200 status' do
+        expect do
+          put api(url, current_user), params: { vulnerabilities_allowed: vulnerabilities_allowed }
+        end.not_to change { approval_rule.reload.scanners }
+
+        expect(response).to have_gitlab_http_status(:ok)
+      end
+    end
+
     context 'with valid severity_levels' do
       let(:severity_levels) { ['critical'] }
 

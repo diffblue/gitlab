@@ -14,6 +14,8 @@ class ApprovalProjectRule < ApplicationRecord
   has_and_belongs_to_many :protected_branches
   has_many :approval_merge_request_rule_sources
   has_many :approval_merge_request_rules, through: :approval_merge_request_rule_sources
+
+  after_initialize :set_scanners_default_value
   after_create_commit :audit_creation
 
   enum rule_type: {
@@ -23,6 +25,8 @@ class ApprovalProjectRule < ApplicationRecord
     any_approver: 3
   }
 
+  attribute :severity_levels, default: DEFAULT_SEVERITIES
+
   scope :report_approver_without_scan_finding, -> { report_approver.where.not(report_type: :scan_finding) }
 
   alias_method :code_owner, :code_owner?
@@ -30,19 +34,9 @@ class ApprovalProjectRule < ApplicationRecord
   validates :name, uniqueness: { scope: [:project_id, :rule_type] }
   validate :validate_security_report_approver_name
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
-
   validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
-
-  # No scanners specified in a vulnerability approval rule means all scanners will be used.
-  # scan result policy approval rules require at least one scanner.
-  default_value_for :scanners, allows_nil: false, value: []
-
   validates :vulnerabilities_allowed, numericality: { only_integer: true }
-  default_value_for :vulnerabilities_allowed, allows_nil: false, value: 0
-
   validates :severity_levels, inclusion: { in: ::Enums::Vulnerability.severity_levels.keys }
-  default_value_for :severity_levels, allows_nil: false, value: DEFAULT_SEVERITIES
-
   validates :vulnerability_states, inclusion: { in: APPROVAL_VULNERABILITY_STATES.keys }
 
   def applies_to_branch?(branch)
@@ -93,7 +87,22 @@ class ApprovalProjectRule < ApplicationRecord
     end
   end
 
+  # No scanners specified in a vulnerability approval rule means all scanners will be used.
+  # scan result policy approval rules require at least one scanner.
+  # We also want to prevent nil values from being assigned.
+  def scanners=(value)
+    super(Array.wrap(value))
+  end
+
   private
+
+  # There are NULL values in the database and we want to convert them to empty arrays.
+  def set_scanners_default_value
+    # `scanners` might not be included in all `select` queries
+    return unless has_attribute?(:scanners)
+
+    self.scanners ||= read_attribute(:scanners)
+  end
 
   def report_approver_attributes
     attributes
