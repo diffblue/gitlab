@@ -49,6 +49,21 @@ sole discretion of GitLab Inc.
 
 <div class="deprecation removal-160 breaking-change">
 
+### Configuration fields in GitLab Runner Helm Chart
+
+End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+From GitLab 13.6, users can [specify any runner configuration in the GitLab Runner Helm chart](https://docs.gitlab.com/runner/install/kubernetes.html). When we implemented this feature, we deprecated values in the GitLab Helm Chart configuration that were specific to GitLab Runner. These fields are deprecated and we plan to remove them in v1.0 of the GitLab Runner Helm chart.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### `POST /api/v4/runners` method to register runners
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
