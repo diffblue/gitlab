@@ -2,115 +2,58 @@
 
 module Namespaces
   module FreeUserCap
-    class AlertComponent < ViewComponent::Base
-      # @param [Namespace or Group] namespace
-      # @param [User] user
-      # @param [String] content_class
-      def initialize(namespace:, user:, content_class:)
-        @namespace = namespace
-        @user = user
-        @content_class = content_class
-      end
-
+    class AlertComponent < BaseAlertComponent
       private
 
       USER_REACHED_LIMIT_FREE_PLAN_ALERT = 'user_reached_limit_free_plan_alert'
-      BLOG_URL = 'https://about.gitlab.com/blog/2022/03/24/efficient-free-tier'
-
-      attr_reader :namespace, :user, :content_class
-
-      def render?
-        return false unless Shared.default_render?(user: user, namespace: namespace)
-        return false if dismissed?
-
-        breached_cap_limit?
-      end
-
-      def breached_cap_limit?
-        Shared.breached_standard_cap_limit?(namespace)
-      end
 
       def variant
-        :warning
+        :danger
+      end
+
+      def dismissible
+        false
       end
 
       def dismissed?
-        user.dismissed_callout_for_group?(feature_name: feature_name,
-                                          group: namespace,
-                                          ignore_dismissal_earlier_than: ignore_dismissal_earlier_than)
-      end
-
-      def ignore_dismissal_earlier_than
-        nil
-      end
-
-      def alert_data
-        base_alert_data.merge(Shared.extra_alert_data(namespace))
-      end
-
-      def base_alert_data
-        Shared.base_alert_data(feature_name)
+        false
       end
 
       def feature_name
         USER_REACHED_LIMIT_FREE_PLAN_ALERT
       end
 
-      def close_button_data
-        Shared.close_button_data
-      end
-
       def alert_attributes
         {
-          title: _("Looks like you've reached your %{free_limit} member limit for " \
-                   "%{strong_start}%{namespace_name}%{strong_end}").html_safe % {
-            free_limit: Shared.free_user_limit,
-            strong_start: "<strong>".html_safe,
-            strong_end: "</strong>".html_safe,
+          title: _("Your namespace %{namespace_name} is over the %{free_limit} user " \
+                   'limit and has been placed in a read-only state.').html_safe % {
+            free_limit: free_user_limit,
             namespace_name: namespace.name
           },
-          body: _("You can't add any more, but you can manage your existing members, for example, " \
-                  "by removing inactive members and replacing them with new members. To get more " \
-                  "members an owner of the group can start a trial or upgrade to a paid tier."),
+          body: _("To remove the %{link_start}read-only%{link_end} state and regain write access, " \
+                  "you can reduce the number of users in your namespace to %{free_limit} users or " \
+                  "less. You can also upgrade to a paid tier, which do not have user limits. If you " \
+                  "need additional time, you can start a free 30-day trial which includes unlimited " \
+                  "users.").html_safe % {
+            link_start: free_user_limit_link_start,
+            link_end: link_end,
+            free_limit: free_user_limit
+          },
           primary_cta: namespace_primary_cta,
           secondary_cta: namespace_secondary_cta
         }
       end
 
-      def namespace_primary_cta
-        link_to _('Manage members'),
-                group_usage_quotas_path(namespace),
-                class: 'btn gl-alert-action btn-info btn-md gl-button',
-                data: {
-                  track_action: 'click_button',
-                  track_label: 'manage_members',
-                  testid: 'user-over-limit-primary-cta'
-                }
+      def namespace_secondary_cta_path
+        group_billings_path(namespace, source: 'user-limit-alert-enforcement')
       end
 
-      def namespace_secondary_cta
-        link_to _('Explore paid plans'),
-                group_billings_path(namespace),
-                class: 'btn gl-alert-action btn-default btn-md gl-button',
-                data: { track_action: 'click_button',
-                        track_label: 'explore_paid_plans',
-                        testid: 'user-over-limit-secondary-cta' }
+      def free_user_limit_link_start
+        "<a href='#{free_user_limit_url}' target='_blank' rel='noopener noreferrer'>".html_safe
       end
 
-      def link_end
-        '</a>'.html_safe
-      end
-
-      def container_class
-        Shared.container_class(content_class)
-      end
-
-      def free_user_limit
-        Shared.free_user_limit
-      end
-
-      def blog_link_start
-        '<a href="%{url}" target="_blank" rel="noopener noreferrer">'.html_safe % { url: BLOG_URL }
+      def free_user_limit_url
+        help_page_path('user/free_user_limit')
       end
     end
   end

@@ -2,7 +2,7 @@
 
 module Namespaces
   module FreeUserCap
-    class UsageQuotaTrialAlertComponent < AlertComponent
+    class UsageQuotaTrialAlertComponent < BaseAlertComponent
       private
 
       USAGE_QUOTA_TRIAL_ALERT = 'usage_quota_trial_alert'

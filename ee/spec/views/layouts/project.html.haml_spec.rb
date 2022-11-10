@@ -2,16 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe 'projects/show' do
+RSpec.describe 'layouts/project' do
   let_it_be(:user) { create(:user) }
-  let_it_be(:project) { ProjectPresenter.new(create(:project, :empty_repo), current_user: user) }
-
-  let(:can_admin_project_member) { true }
+  let_it_be(:project) { create(:project) }
 
   before do
-    allow(view).to receive(:current_user).and_return(user)
     assign(:project, project)
-    stub_template 'projects/_activity.html.haml' => ''
+    allow(view).to receive(:current_user_mode).and_return(Gitlab::Auth::CurrentUserMode.new(user))
   end
 
   context 'when free plan limit alert is present' do
