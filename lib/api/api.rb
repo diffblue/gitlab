@@ -198,6 +198,7 @@ module API
         mount ::API::GroupVariables
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
+        mount ::API::Invitations
         mount ::API::Keys
         mount ::API::Lint
         mount ::API::MergeRequestDiffs
@@ -278,7 +279,6 @@ module API
       mount ::API::HelmPackages
       mount ::API::Integrations
       mount ::API::Integrations::JiraConnect::Subscriptions
-      mount ::API::Invitations
       mount ::API::IssueLinks
       mount ::API::Issues
       mount ::API::Labels
