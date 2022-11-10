@@ -1,5 +1,5 @@
 - if issuable_sidebar[:supports_weight]
   - if issuable_sidebar[:features_available][:issue_weights]
-    .js-sidebar-weight-entry-point{ data: { can_edit: can_edit, project_path: project_path, issue_iid: issue_iid } }
+    .js-sidebar-weight-widget-root{ data: { can_edit: can_edit, project_path: project_path, issue_iid: issue_iid } }
   - else
     = render 'shared/promotions/promote_issue_weights'

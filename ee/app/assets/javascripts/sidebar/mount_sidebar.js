@@ -24,26 +24,25 @@ import {
 
 Vue.use(VueApollo);
 
-const mountWeightComponent = () => {
-  const el = document.querySelector('.js-sidebar-weight-entry-point');
+const mountSidebarWeightWidget = () => {
+  const el = document.querySelector('.js-sidebar-weight-widget-root');
 
-  if (!el) return false;
+  if (!el) {
+    return null;
+  }
 
   const { canEdit, projectPath, issueIid } = el.dataset;
 
   return new Vue({
     el,
-    name: 'SidebarWeightRoot',
+    name: 'SidebarWeightWidgetRoot',
     apolloProvider,
-    components: {
-      SidebarWeightWidget,
-    },
     provide: {
       canUpdate: parseBoolean(canEdit),
       isClassicSidebar: true,
     },
     render: (createElement) =>
-      createElement('sidebar-weight-widget', {
+      createElement(SidebarWeightWidget, {
         props: {
           fullPath: projectPath,
           iid: issueIid,
@@ -53,8 +52,8 @@ const mountWeightComponent = () => {
   });
 };
 
-const mountHealthStatusComponent = (store) => {
-  const el = document.querySelector('.js-sidebar-health-status-entry-point');
+const mountSidebarHealthStatusWidget = () => {
+  const el = document.querySelector('.js-sidebar-health-status-widget-root');
 
   if (!el) {
     return null;
@@ -66,7 +65,6 @@ const mountHealthStatusComponent = (store) => {
     el,
     name: 'SidebarHealthStatusWidgetRoot',
     apolloProvider,
-    store,
     provide: {
       canUpdate: parseBoolean(canEdit),
       fullPath,
@@ -78,7 +76,7 @@ const mountHealthStatusComponent = (store) => {
 };
 
 export function mountHealthStatusDropdown() {
-  const el = document.getElementById('js-bulk-update-health-status-root');
+  const el = document.querySelector('.js-health-status-dropdown-root');
   const healthStatusFormInput = document.getElementById('issue_health_status_value');
 
   if (!el || !healthStatusFormInput) {
@@ -115,11 +113,11 @@ export function mountHealthStatusDropdown() {
   });
 }
 
-function mountCveIdRequestComponent(store) {
-  const el = document.getElementById('js-sidebar-cve-id-request-entry-point');
+function mountSidebarCveIdRequest(store) {
+  const el = document.querySelector('.js-sidebar-cve-id-request-root');
 
   if (!el) {
-    return false;
+    return null;
   }
 
   const { iid, fullPath } = CEMountSidebar.getSidebarOptions();
@@ -136,26 +134,25 @@ function mountCveIdRequestComponent(store) {
   });
 }
 
-function mountEpicsSelect() {
-  const el = document.querySelector('#js-vue-sidebar-item-epics-select');
+function mountSidebarEpicWidget() {
+  const el = document.querySelector('.js-sidebar-epic-widget-root');
 
-  if (!el) return false;
+  if (!el) {
+    return null;
+  }
 
   const { groupPath, canEdit, projectPath, issueIid } = el.dataset;
 
   return new Vue({
     el,
-    name: 'SidebarEpicRoot',
+    name: 'SidebarEpicWidgetRoot',
     apolloProvider,
-    components: {
-      SidebarDropdownWidget,
-    },
     provide: {
       canUpdate: parseBoolean(canEdit),
       isClassicSidebar: true,
     },
     render: (createElement) =>
-      createElement('sidebar-dropdown-widget', {
+      createElement(SidebarDropdownWidget, {
         props: {
           attrWorkspacePath: groupPath,
           workspacePath: projectPath,
@@ -168,7 +165,7 @@ function mountEpicsSelect() {
 }
 
 export function mountEpicDropdown() {
-  const el = document.getElementById('js-epic-dropdown-root');
+  const el = document.querySelector('.js-epic-dropdown-root');
   const epicFormInput = document.getElementById('issue_epic_id');
 
   if (!el || !epicFormInput) {
@@ -210,18 +207,18 @@ export function mountEpicDropdown() {
   });
 }
 
-function mountIterationSelect() {
-  const el = document.querySelector('.js-iteration-select');
+function mountSidebarIterationWidget() {
+  const el = document.querySelector('.js-sidebar-iteration-widget-root');
 
   if (!el) {
-    return false;
+    return null;
   }
 
   const { groupPath, canEdit, projectPath, issueIid } = el.dataset;
 
   return new Vue({
     el,
-    name: 'SidebarIterationRoot',
+    name: 'SidebarIterationWidgetRoot',
     apolloProvider,
     provide: {
       canUpdate: parseBoolean(canEdit),
@@ -241,7 +238,7 @@ function mountIterationSelect() {
 }
 
 export function mountIterationDropdown() {
-  const el = document.querySelector('#js-iteration-dropdown');
+  const el = document.querySelector('.js-iteration-dropdown-root');
   const iterationFormInput = document.getElementById('issue_iteration_id');
 
   if (!el || !iterationFormInput) {
@@ -286,11 +283,11 @@ export function mountIterationDropdown() {
   });
 }
 
-function mountEscalationPoliciesSelect() {
-  const el = document.querySelector('#js-escalation-policy');
+function mountSidebarEscalationPolicy() {
+  const el = document.querySelector('.js-sidebar-escalation-policy-root');
 
   if (!el) {
-    return false;
+    return null;
   }
 
   const { canEdit, projectPath, issueIid, hasEscalationPolicies } = el.dataset;
@@ -299,15 +296,12 @@ function mountEscalationPoliciesSelect() {
     el,
     name: 'SidebarEscalationPolicyRoot',
     apolloProvider,
-    components: {
-      SidebarEscalationPolicy,
-    },
     provide: {
       canUpdate: parseBoolean(canEdit),
       isClassicSidebar: true,
     },
     render: (createElement) =>
-      createElement('sidebar-escalation-policy', {
+      createElement(SidebarEscalationPolicy, {
         props: {
           projectPath,
           iid: issueIid,
@@ -321,10 +315,10 @@ export const { getSidebarOptions } = CEMountSidebar;
 
 export function mountSidebar(mediator, store) {
   CEMountSidebar.mountSidebar(mediator, store);
-  mountWeightComponent();
-  mountHealthStatusComponent(store);
-  mountEpicsSelect();
-  mountIterationSelect();
-  mountEscalationPoliciesSelect();
-  mountCveIdRequestComponent(store);
+  mountSidebarWeightWidget();
+  mountSidebarHealthStatusWidget();
+  mountSidebarEpicWidget();
+  mountSidebarIterationWidget();
+  mountSidebarEscalationPolicy();
+  mountSidebarCveIdRequest(store);
 }

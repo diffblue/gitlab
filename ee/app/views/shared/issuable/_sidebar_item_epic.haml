@@ -1,7 +1,7 @@
 - if issuable_sidebar[:supports_epic]
   - if issuable_sidebar[:features_available][:epics]
     .block.epic{ data: { testid: 'sidebar-epic' } }
-      #js-vue-sidebar-item-epics-select{ data: { can_edit: can_admin_issue?.to_s, group_path: group_path, project_path: project_path, issue_iid: issue_iid } }
+      .js-sidebar-epic-widget-root{ data: { can_edit: can_admin_issue?.to_s, group_path: group_path, project_path: project_path, issue_iid: issue_iid } }
 
   - else
     = render 'shared/promotions/promote_epics'
