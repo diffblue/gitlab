@@ -6,7 +6,7 @@ RSpec.describe Epics::CrossHierarchyAncestorsFinder do
   let_it_be(:user) { create(:user) }
   let_it_be(:search_user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
-  let_it_be(:another_group) { create(:group) }
+  let_it_be(:another_group) { create(:group, :private) }
   let_it_be(:reference_time) { Time.parse('2020-09-15 01:00') } # Arbitrary time used for time/date range filters
   let_it_be(:label) { create(:group_label, group: group) }
 
@@ -85,14 +85,67 @@ RSpec.describe Epics::CrossHierarchyAncestorsFinder do
           end
         end
 
-        it_behaves_like 'epics hierarchy finder with filtering' do
-          let(:base_param) { :child }
-          let(:sort_order) { :asc }
+        it 'returns only accessible ancestors' do
+          params = { child: epic4 }
 
-          let_it_be(:public_group) { create(:group, :public) }
-          let_it_be(:epic5) { create(:epic, group: public_group, title: 'tanuki') }
-          let_it_be(:epic6) { create(:epic, parent: epic5, group: public_group, title: 'ikunat') }
-          let_it_be(:epic7) { create(:epic, parent: epic6, group: public_group) }
+          expect(epics(params)).to eq([epic2])
+        end
+
+        context 'with confidential epics' do
+          let_it_be(:parent_epic) { create(:epic, :confidential, group: another_group) }
+          let_it_be(:child_epic) { create(:epic, :confidential, group: group, parent: parent_epic) }
+
+          context 'when user is guest in other group' do
+            before do
+              another_group.add_guest(search_user)
+            end
+
+            it 'filters out confidential parent' do
+              params = { child: child_epic }
+
+              expect(epics(params)).to be_empty
+            end
+          end
+
+          context 'when user is reporter in other group' do
+            before do
+              another_group.add_reporter(search_user)
+            end
+
+            it 'returns confidential ancestor' do
+              params = { child: child_epic }
+
+              expect(epics(params)).to eq([parent_epic])
+            end
+          end
+        end
+
+        context 'when user can access all ancestors' do
+          before do
+            another_group.add_developer(search_user)
+          end
+
+          it 'returns an empty list if there is no parent' do
+            params = { child: epic1 }
+
+            expect(epics(params)).to be_empty
+          end
+
+          it 'returns ancestors in ascending order' do
+            params = { child: epic4 }
+
+            expect(epics(params)).to eq([epic3, epic2, epic1])
+          end
+
+          it_behaves_like 'epics hierarchy finder with filtering' do
+            let(:base_param) { :child }
+            let(:sort_order) { :asc }
+
+            let_it_be(:public_group) { create(:group, :public) }
+            let_it_be(:epic5) { create(:epic, group: public_group, title: 'tanuki') }
+            let_it_be(:epic6) { create(:epic, parent: epic5, group: public_group, title: 'ikunat') }
+            let_it_be(:epic7) { create(:epic, parent: epic6, group: public_group) }
+          end
         end
       end
     end

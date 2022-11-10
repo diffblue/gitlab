@@ -57,10 +57,6 @@ module Epics
       by_search(items)
     end
 
-    def init_collection
-      raise NotImplementedError
-    end
-
     def milestone_groups
       raise NotImplementedError
     end
