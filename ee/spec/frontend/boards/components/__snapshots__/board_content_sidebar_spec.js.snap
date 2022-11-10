@@ -143,7 +143,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
         <!---->
         <button
           aria-expanded="false"
-          aria-haspopup="menu"
+          aria-haspopup="true"
           class="btn dropdown-toggle btn-default btn-md btn-block dropdown-menu-toggle gl-mb-2 gl-button gl-dropdown-toggle"
           id="__BVID__40__BV_toggle_"
           type="button"

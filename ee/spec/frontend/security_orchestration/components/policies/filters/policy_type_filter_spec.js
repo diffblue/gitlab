@@ -14,7 +14,7 @@ describe('PolicyTypeFilter component', () => {
     });
   };
 
-  const findToggle = () => wrapper.find('button[aria-haspopup="menu"]');
+  const findToggle = () => wrapper.find('button[aria-haspopup="true"]');
 
   afterEach(() => {
     wrapper.destroy();
