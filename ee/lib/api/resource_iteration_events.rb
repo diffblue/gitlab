@@ -5,6 +5,8 @@ module API
     include PaginationParams
     helpers ::API::Helpers::NotesHelpers
 
+    resource_iteration_events_tags = %w[resource_iteration_events]
+
     before { authenticate! }
 
     { Issue => :team_planning }.each do |eventable_type, feature_category|
@@ -12,12 +14,14 @@ module API
       eventables_str = eventable_type.to_s.underscore.pluralize
 
       params do
-        requires :id, type: String, desc: "The ID of a #{parent_type}"
+        requires :id, types: [String, Integer], desc: "The ID or URL-encoded path the #{parent_type}"
       end
       resource parent_type.pluralize.to_sym, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         desc "Get a list of #{eventable_type.to_s.downcase} resource iteration events" do
           detail 'This feature was introduced in GitLab 13.4'
           success EE::API::Entities::ResourceIterationEvent
+          is_array true
+          tags resource_iteration_events_tags
         end
         params do
           requires :eventable_id, types: [Integer, String], desc: 'The ID of the eventable'
@@ -34,6 +38,7 @@ module API
         desc "Get a single #{eventable_type.to_s.downcase} resource iteration event" do
           detail 'This feature was introduced in GitLab 13.4'
           success EE::API::Entities::ResourceIterationEvent
+          tags resource_iteration_events_tags
         end
         params do
           requires :event_id, type: String, desc: 'The ID of a resource iteration event'
