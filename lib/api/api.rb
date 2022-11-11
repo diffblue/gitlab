@@ -217,6 +217,7 @@ module API
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::ProjectSnippets
         mount ::API::ProjectSnapshots
+        mount ::API::ProjectStatistics
         mount ::API::ProjectTemplates
         mount ::API::ProtectedBranches
         mount ::API::ProtectedTags
@@ -309,7 +310,6 @@ module API
       mount ::API::ProjectEvents
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
-      mount ::API::ProjectStatistics
       mount ::API::Projects
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
