@@ -17,12 +17,7 @@ module API
         success Entities::Event
       end
       params do
-        optional :action, type: String, desc: 'Include only events of a particular action type'
-        optional :target_type, type: String, desc: 'Include only events of a particular target type'
-        optional :before, type: DateTime, desc: 'Include only events created before a particular date'
-        optional :after, type: DateTime, desc: 'Include only events created after a particular date'
         optional :scope, type: String, desc: 'Include all events across a user’s projects'
-        optional :sort, type: String, desc: 'Sort events in asc or desc order by created_at. Default is desc'
         use :pagination
         use :event_filter_params
         use :sort_params
@@ -47,13 +42,6 @@ module API
         tags %w[events]
       end
       params do
-        optional :action, type: String, desc: 'Include only events of a particular action type'
-        optional :target_type, type: String, desc: 'Include only events of a particular target type'
-        optional :before, type: DateTime, desc: 'Include only events created before a particular date'
-        optional :after, type: DateTime, desc: 'Include only events created after a particular date'
-        optional :sort, type: String, desc: 'Sort events in asc or desc order by created_at. Default is desc'
-        optional :page, type: Integer, desc: 'The page of results to return. Defaults to 1'
-        optional :per_page, type: Integer, desc: 'The number of results per page. Defaults to 20'
         use :pagination
         use :event_filter_params
         use :sort_params
