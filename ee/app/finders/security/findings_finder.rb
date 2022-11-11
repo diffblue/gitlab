@@ -97,6 +97,7 @@ module Security
               .latest
               .page(page)
               .per(per_page)
+              .then(&method(:by_uuid))
               .then(&method(:by_confidence_levels))
               .then(&method(:by_report_types))
               .then(&method(:by_severity_levels))
@@ -130,6 +131,12 @@ module Security
       return relation unless params[:severity]
 
       relation.by_severity_levels(params[:severity])
+    end
+
+    def by_uuid(relation)
+      return relation unless params[:uuid]
+
+      relation.by_uuid(params[:uuid])
     end
   end
 end
