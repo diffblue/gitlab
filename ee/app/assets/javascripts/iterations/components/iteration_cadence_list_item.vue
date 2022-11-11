@@ -14,7 +14,7 @@ import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { fetchPolicies } from '~/lib/graphql';
 import { __, s__ } from '~/locale';
 import { getIterationPeriod } from '../utils';
-import { Namespace } from '../constants';
+import { Namespace, iterationSortDesc } from '../constants';
 import groupQuery from '../queries/group_iterations_in_cadence.query.graphql';
 import projectQuery from '../queries/project_iterations_in_cadence.query.graphql';
 import TimeboxStatusBadge from './timebox_status_badge.vue';
@@ -134,6 +134,7 @@ export default {
         iterationCadenceId: this.cadenceId,
         firstPageSize: pageSize,
         state: this.iterationState,
+        sort: this.iterationSortOrder,
       };
     },
     pageInfo() {
@@ -169,6 +170,9 @@ export default {
     },
     showDurationBadget() {
       return this.automatic && this.durationInWeeks;
+    },
+    iterationSortOrder() {
+      return this.iterationState === 'closed' ? iterationSortDesc : null;
     },
   },
   created() {
