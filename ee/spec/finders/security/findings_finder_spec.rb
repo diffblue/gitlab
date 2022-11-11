@@ -207,6 +207,17 @@ RSpec.describe Security::FindingsFinder do
           it { is_expected.to match_array(expected_uuids) }
         end
 
+        context 'when the uuid is provided' do
+          let(:uuid) { Security::Finding.pick(:uuid) }
+          let(:params) do
+            {
+              uuid: uuid
+            }
+          end
+
+          it { is_expected.to match_array([uuid]) }
+        end
+
         context 'when the page is provided' do
           let(:page) { 2 }
           # Limit per_page to force pagination on smaller dataset
