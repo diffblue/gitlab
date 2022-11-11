@@ -2749,6 +2749,9 @@ msgstr ""
 msgid "AdminSettings|Auto DevOps domain"
 msgstr ""
 
+msgid "AdminSettings|By default, set a limit to 0 to have no limit."
+msgstr ""
+
 msgid "AdminSettings|CI/CD limits"
 msgstr ""
 
@@ -2992,9 +2995,6 @@ msgstr ""
 msgid "AdminSettings|Set a CI/CD template as the required pipeline configuration for all projects in the instance. Project CI/CD configuration merges into the required pipeline configuration when the pipeline runs. %{link_start}What is a required pipeline configuration?%{link_end}"
 msgstr ""
 
-msgid "AdminSettings|Set limit to 0 to disable it."
-msgstr ""
-
 msgid "AdminSettings|Set the expiration time of authentication tokens of newly registered group runners."
 msgstr ""
 
@@ -3038,6 +3038,9 @@ msgid "AdminSettings|The template for the required pipeline configuration can be
 msgstr ""
 
 msgid "AdminSettings|There are Advanced Search migrations pending that require indexing to pause. Indexing must remain paused until GitLab completes the migrations."
+msgstr ""
+
+msgid "AdminSettings|This limit cannot be disabled. Set to 0 to block all DAG dependencies."
 msgstr ""
 
 msgid "AdminSettings|To enable Registration Features, first enable Service Ping."
