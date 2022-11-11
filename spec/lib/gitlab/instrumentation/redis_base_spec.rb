@@ -154,11 +154,15 @@ RSpec.describe Gitlab::Instrumentation::RedisBase, :request_store do
 
   describe '.redis_cluster_validate!' do
     context 'Rails environments' do
-      where(:env, :should_raise) do
-        'production' | false
-        'staging' | false
-        'development' | true
-        'test' | true
+      where(:env, :allowed, :should_raise) do
+        'production' | false | false
+        'production' | true | false
+        'staging' | false | false
+        'staging' | true | false
+        'development' | true | false
+        'development' | false | true
+        'test' | true | false
+        'test' | false | true
       end
 
       before do
@@ -171,11 +175,20 @@ RSpec.describe Gitlab::Instrumentation::RedisBase, :request_store do
 
           args = [[:mget, 'foo', 'bar']]
 
+          expectation = if allowed
+                          expect do
+                            Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+                              instrumentation_class_a.redis_cluster_validate!(args)
+                            end
+                          end
+                        else
+                          expect { instrumentation_class_a.redis_cluster_validate!(args) }
+                        end
+
           if should_raise
-            expect { instrumentation_class_a.redis_cluster_validate!(args) }
-              .to raise_error(::Gitlab::Instrumentation::RedisClusterValidator::CrossSlotError)
+            expectation.to raise_error(::Gitlab::Instrumentation::RedisClusterValidator::CrossSlotError)
           else
-            expect { instrumentation_class_a.redis_cluster_validate!(args) }.not_to raise_error
+            expectation.not_to raise_error
           end
         end
       end
