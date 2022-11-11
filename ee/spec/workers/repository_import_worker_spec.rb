@@ -3,9 +3,11 @@
 require 'spec_helper'
 
 RSpec.describe RepositoryImportWorker do
-  let(:project) { create(:project, :import_scheduled) }
+  let_it_be(:project) { create(:project) }
 
   it 'updates the error on custom project template Import/Export' do
+    create(:import_state, :scheduled, project: project)
+
     stub_licensed_features(custom_project_templates: true)
     error = %q{remote: Not Found fatal: repository 'https://user:pass@test.com/root/repoC.git/' not found }
 
@@ -15,15 +17,15 @@ RSpec.describe RepositoryImportWorker do
       expect(service).to receive(:execute).and_return({ status: :error, message: error })
     end
 
-    expect do
-      subject.perform(project.id)
-    end.to raise_error(RuntimeError, error)
+    subject.perform(project.id)
 
-    expect(project.import_state.reload.last_error).not_to be_nil
+    expect(project.import_state.reload.last_error).to include('remote: Not Found fatal')
   end
 
   context 'when project is a mirror' do
-    let(:project) { create(:project, :mirror, :import_scheduled) }
+    before do
+      create(:import_state, :mirror, :scheduled, project: project)
+    end
 
     it 'adds mirror in front of the mirror scheduler queue' do
       expect_next_instance_of(Projects::ImportService) do |service|
@@ -33,6 +35,18 @@ RSpec.describe RepositoryImportWorker do
       expect_any_instance_of(EE::ProjectImportState).to receive(:force_import_job!)
 
       subject.perform(project.id)
+    end
+
+    context 'when import failed' do
+      it 'does not add import job' do
+        expect_next_instance_of(Projects::ImportService) do |service|
+          expect(service).to receive(:execute).and_return({ status: :error, message: 'error!' })
+        end
+
+        expect_any_instance_of(EE::ProjectImportState).not_to receive(:force_import_job!)
+
+        subject.perform(project.id)
+      end
     end
   end
 
