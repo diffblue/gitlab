@@ -28,7 +28,8 @@ The minimum recommended configuration for a Gitaly Cluster requires:
 - 3 Praefect nodes
 - 3 Gitaly nodes (1 primary, 2 secondary)
 
-It is recommended to have an odd number of Gitaly nodes so that we transactions have a tie-breaker.
+You should configure an odd number of Gitaly nodes so that transactions have a tie-breaker in case one of the
+Gitaly nodes fails in a mutating RPC call.
 
 See the [design document](https://gitlab.com/gitlab-org/gitaly/-/blob/master/doc/design_ha.md)
 for implementation details.
