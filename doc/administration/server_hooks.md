@@ -47,7 +47,7 @@ To create server hooks for a repository:
      `pre-receive` server hook, the filename should be `pre-receive` with no extension.
    - To create many server hooks, create a directory for the hooks that matches the hook type. For example, for a
      `pre-receive` server hook, the directory name should be `pre-receive.d`. Put the files for the hook in that directory.
-1. Make the server hook files executable and ensure that they are owned by the Git user.
+1. **Make the server hook files executable** and ensure that they are owned by the Git user.
 1. Write the code to make the server hook function as expected. Git server hooks can be in any programming language. Ensure
    the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) at the top reflects the language type. For
    example, if the script is in Ruby the shebang is probably `#!/usr/bin/env ruby`.
@@ -55,6 +55,20 @@ To create server hooks for a repository:
    pattern (`*~`).
 
 If the server hook code is properly implemented, it should execute when the Git hook is next triggered.
+
+### Gitaly cluster
+
+To deploy server hooks to Gitaly cluster, the scripts need to be deployed to every replica of the repository.
+
+Server hooks are safe, because the hook will only be run on the primary node for that repository.
+The primary node can change, so every replica must have a copy.
+
+In GitLab 15.3 and later, new repositories are created using Praefect replica paths, which are
+not the `@hashed` storage path.
+
+To deploy server hooks, the replica path can be identified by
+[querying the Praefect repository metadata](../administration/gitaly/troubleshooting.md#view-repository-metadata)
+using `-relative-path` to specify the expected GitLab `@hashed` storage path.
 
 ## Create global server hooks for all repositories
 
