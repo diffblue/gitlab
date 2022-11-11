@@ -180,6 +180,7 @@ module API
         mount ::API::Ci::ResourceGroups
         mount ::API::Ci::Runner
         mount ::API::Ci::Runners
+        mount ::API::Ci::Pipelines
         mount ::API::Ci::Variables
         mount ::API::Clusters::AgentTokens
         mount ::API::Clusters::Agents
@@ -245,7 +246,6 @@ module API
       mount ::API::Ci::JobArtifacts
       mount ::API::Ci::Jobs
       mount ::API::Ci::PipelineSchedules
-      mount ::API::Ci::Pipelines
       mount ::API::Ci::SecureFiles
       mount ::API::Ci::Triggers
       mount ::API::CommitStatuses
