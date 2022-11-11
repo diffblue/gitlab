@@ -17400,6 +17400,18 @@ msgstr ""
 msgid "Forks"
 msgstr ""
 
+msgid "ForksDivergence|%{ahead} %{commit_word} ahead of"
+msgstr ""
+
+msgid "ForksDivergence|%{behind} %{commit_word} behind"
+msgstr ""
+
+msgid "ForksDivergence|%{messages} upstream repository"
+msgstr ""
+
+msgid "ForksDivergence|Up to date with upstream repository"
+msgstr ""
+
 msgid "Format: %{dateFormat}"
 msgstr ""
 
@@ -48305,6 +48317,11 @@ msgstr ""
 
 msgid "commented on %{link_to_project}"
 msgstr ""
+
+msgid "commit"
+msgid_plural "commits"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "commit %{commit_id}"
 msgstr ""
