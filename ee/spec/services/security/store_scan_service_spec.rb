@@ -56,7 +56,7 @@ RSpec.describe Security::StoreScanService do
     subject(:store_scan) { service_object.execute }
 
     before do
-      allow(Security::StoreFindingsMetadataService).to receive(:execute).and_return(status: :success)
+      allow(Security::StoreFindingsService).to receive(:execute).and_return(status: :success)
 
       known_keys.add(finding_key)
     end
@@ -126,9 +126,9 @@ RSpec.describe Security::StoreScanService do
         artifact.security_report.errors << { 'type' => 'foo', 'message' => 'bar' }
       end
 
-      it 'does not call the `Security::StoreFindingsMetadataService` and returns false' do
+      it 'does not call the `Security::StoreFindingsService` and returns false' do
         expect(store_scan).to be(false)
-        expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
+        expect(Security::StoreFindingsService).not_to have_received(:execute)
       end
 
       it 'sets the status of the scan as `report_error`' do
@@ -141,10 +141,10 @@ RSpec.describe Security::StoreScanService do
         artifact.job.update!(status: :failed)
       end
 
-      it 'does not call the `Security::StoreFindingsMetadataService` and sets the security scan as `job_failed`' do
+      it 'does not call the `Security::StoreFindingsService` and sets the security scan as `job_failed`' do
         expect { store_scan }.to change { Security::Scan.job_failed.count }.by(1)
 
-        expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
+        expect(Security::StoreFindingsService).not_to have_received(:execute)
       end
     end
 
@@ -152,7 +152,7 @@ RSpec.describe Security::StoreScanService do
       let(:error) { RuntimeError.new }
 
       before do
-        allow(Security::StoreFindingsMetadataService).to receive(:execute).and_raise(error)
+        allow(Security::StoreFindingsService).to receive(:execute).and_raise(error)
         allow(Gitlab::ErrorTracking).to receive(:track_exception)
       end
 
@@ -168,10 +168,10 @@ RSpec.describe Security::StoreScanService do
         artifact.job.update!(retried: true)
       end
 
-      it 'does not call the `Security::StoreFindingsMetadataService` and sets the security scan as non latest' do
+      it 'does not call the `Security::StoreFindingsService` and sets the security scan as non latest' do
         expect { store_scan }.to change { Security::Scan.where(latest: false).count }.by(1)
 
-        expect(Security::StoreFindingsMetadataService).not_to have_received(:execute)
+        expect(Security::StoreFindingsService).not_to have_received(:execute)
       end
     end
 
@@ -180,10 +180,10 @@ RSpec.describe Security::StoreScanService do
         artifact.security_report.errors.clear
       end
 
-      it 'calls the `Security::StoreFindingsMetadataService` to store findings' do
+      it 'calls the `Security::StoreFindingsService` to store findings' do
         store_scan
 
-        expect(Security::StoreFindingsMetadataService).to have_received(:execute)
+        expect(Security::StoreFindingsService).to have_received(:execute)
       end
 
       context 'when the report has no warnings' do
@@ -207,10 +207,10 @@ RSpec.describe Security::StoreScanService do
 
         let(:security_scan) { Security::Scan.last }
 
-        it 'calls the `Security::StoreFindingsMetadataService` to store findings' do
+        it 'calls the `Security::StoreFindingsService` to store findings' do
           expect(store_scan).to be(true)
 
-          expect(Security::StoreFindingsMetadataService).to have_received(:execute)
+          expect(Security::StoreFindingsService).to have_received(:execute)
         end
 
         it 'stores the warnings' do
@@ -253,15 +253,15 @@ RSpec.describe Security::StoreScanService do
         context 'when the `deduplicate` param is set as true' do
           let(:deduplicate) { true }
 
-          context 'when the `StoreFindingsMetadataService` returns success' do
+          context 'when the `StoreFindingsService` returns success' do
             it 'does not run the re-deduplicate logic' do
               expect { store_scan }.not_to change { unique_security_finding.reload.deduplicated }.from(false)
             end
           end
 
-          context 'when the `StoreFindingsMetadataService` returns error' do
+          context 'when the `StoreFindingsService` returns error' do
             before do
-              allow(Security::StoreFindingsMetadataService).to receive(:execute).and_return({ status: :error })
+              allow(Security::StoreFindingsService).to receive(:execute).and_return({ status: :error })
             end
 
             it 'does not change the deduplicated flag of duplicated finding from false' do
@@ -285,7 +285,7 @@ RSpec.describe Security::StoreScanService do
         end
 
         before do
-          allow(Security::StoreFindingsMetadataService).to receive(:execute).and_call_original
+          allow(Security::StoreFindingsService).to receive(:execute).and_call_original
         end
 
         it 'creates a new security scan' do

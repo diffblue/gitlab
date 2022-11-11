@@ -2,7 +2,7 @@
 
 module Security
   # This service class stores the findings metadata for all pipelines.
-  class StoreFindingsMetadataService < ::BaseService
+  class StoreFindingsService < ::BaseService
     BATCH_SIZE = 50
 
     attr_reader :security_scan, :report, :deduplicated_finding_uuids
@@ -41,8 +41,8 @@ module Security
     end
 
     def store_finding_batch(batch)
-      batch.map(&method(:finding_data))
-           .then(&method(:import_batch))
+      batch.map { finding_data(_1) }
+           .then { import_batch(_1) }
     end
 
     def import_batch(report_finding_data)
