@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'Create', :gitlab_pages, :orchestrated, except: { job: 'review-qa-*', subdomain: :production } do
+  RSpec.describe 'Create', :gitlab_pages, :orchestrated, except: { job: 'review-qa-*'} do
     # TODO: Convert back to :smoke once proved to be stable. Related issue: https://gitlab.com/gitlab-org/gitlab/-/issues/300906
     describe 'Pages', product_group: :editor do
       let!(:project) do
