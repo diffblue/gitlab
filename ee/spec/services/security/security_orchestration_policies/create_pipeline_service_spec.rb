@@ -132,28 +132,76 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CreatePipelineService do
           [{ scan: "dast" }]
         end
 
-        it "succeeds" do
-          expect(status).to be(:success)
+        context "without associated DAST profile" do
+          it "succeeds" do
+            expect(status).to be(:success)
+          end
+
+          it "creates a single pipeline" do
+            expect { subject }.to change(project.all_pipelines, :count).by(1)
+          end
+
+          it "creates a stage" do
+            expect { subject }.to change(project.stages, :count).by(1)
+          end
+
+          it "creates a `test` stage" do
+            subject
+            expect(project.stages.last.name).to eq("test")
+          end
+
+          it "returns the pipeline" do
+            expect(payload).to eq(on_demand: project.all_pipelines.last)
+          end
+
+          it "sets the pipeline ref to the branch" do
+            expect(on_demand_pipeline.ref).to eq(branch)
+          end
+
+          it "sets the pipeline source" do
+            expect(on_demand_pipeline.source).to eq("ondemand_dast_scan")
+          end
         end
 
-        it "creates a single pipeline" do
-          expect { subject }.to change(project.all_pipelines, :count).by(1)
-        end
+        context "with associated DAST profiles" do
+          let!(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project) }
+          let!(:dast_scanner_profile) { create(:dast_scanner_profile, project: project, spider_timeout: 42, target_timeout: 21) }
+          let!(:dast_profile) { create(:dast_profile, project: project, dast_site_profile: dast_site_profile, dast_scanner_profile: dast_scanner_profile) }
 
-        it "creates a stage" do
-          expect { subject }.to change(project.stages, :count).by(1)
-        end
+          let(:actions) do
+            [{ scan: "dast",
+               scanner_profile: dast_scanner_profile.name,
+               site_profile: dast_site_profile.name }]
+          end
 
-        it "returns the pipeline" do
-          expect(payload).to eq(on_demand: project.all_pipelines.last)
-        end
+          it "succeeds" do
+            expect(status).to be(:success)
+          end
 
-        it "sets the pipeline ref to the branch" do
-          expect(on_demand_pipeline.ref).to eq(branch)
-        end
+          it "creates a single pipeline" do
+            expect { subject }.to change(project.all_pipelines, :count).by(1)
+          end
 
-        it "sets the pipeline source" do
-          expect(on_demand_pipeline.source).to eq("ondemand_dast_scan")
+          it "creates a stage" do
+            expect { subject }.to change(project.stages, :count).by(1)
+          end
+
+          it "creates a `dast` stage" do
+            subject
+            expect(project.stages.last.name).to eq("dast")
+          end
+
+          it "returns the pipeline" do
+            expect(payload).to eq(on_demand: project.all_pipelines.last)
+          end
+
+          it "sets the pipeline ref to the branch" do
+            expect(on_demand_pipeline.ref).to eq(branch)
+          end
+
+          it "sets the pipeline source" do
+            expect(on_demand_pipeline.source).to eq("ondemand_dast_scan")
+          end
         end
       end
 

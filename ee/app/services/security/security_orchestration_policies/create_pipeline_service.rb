@@ -69,8 +69,15 @@ module Security
       def execute_on_demand_scans(ci_config)
         return if ci_config.blank?
 
+        ci_config[:stages] = on_demand_stages
+
         service = ::AppSec::Dast::Scans::RunService.new(project, current_user)
         service.execute(branch: params[:branch], ci_configuration: ci_config.to_yaml)
+      end
+
+      def on_demand_stages
+        [*Gitlab::Ci::Config::Entry::Stages.default,
+         AppSec::Dast::ScanConfigs::BuildService::STAGE_NAME]
       end
     end
   end

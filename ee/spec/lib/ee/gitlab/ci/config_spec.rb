@@ -81,6 +81,7 @@ RSpec.describe Gitlab::Ci::Config do
         context 'when DAST profiles are not found' do
           it 'adds a job with error message' do
             expect(config.to_hash).to eq(
+              stages: [".pre", "build", "test", "deploy", ".post", "dast"],
               sample_job: { script: ["echo 'test'"] },
               'dast-on-demand-0': { allow_failure: true, script: 'echo "Error during On-Demand Scan execution: Dast site profile was not provided" && false' }
             )
