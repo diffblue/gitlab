@@ -108,6 +108,17 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
             end
           end
         end
+
+        it 'raises error when keys are not from the same slot' do
+          expect do
+            Gitlab::Redis::SharedState.with do |redis|
+              redis.pipelined do |pipeline|
+                pipeline.call(:get, 'foo')
+                pipeline.call(:get, 'bar')
+              end
+            end
+          end.to raise_error(instance_of(Gitlab::Instrumentation::RedisClusterValidator::CrossSlotError))
+        end
       end
     end
 
