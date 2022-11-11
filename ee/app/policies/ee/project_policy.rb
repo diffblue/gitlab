@@ -221,6 +221,20 @@ module EE
         enable :admin_epic_issue
       end
 
+      rule { ~split_operations_visibility_permissions & operations_disabled }.policy do
+        prevent :read_incident_management_oncall_schedule
+        prevent :admin_incident_management_oncall_schedule
+        prevent :read_incident_management_escalation_policy
+        prevent :admin_incident_management_escalation_policy
+      end
+
+      rule { split_operations_visibility_permissions & monitor_disabled }.policy do
+        prevent :read_incident_management_oncall_schedule
+        prevent :admin_incident_management_oncall_schedule
+        prevent :read_incident_management_escalation_policy
+        prevent :admin_incident_management_escalation_policy
+      end
+
       rule { oncall_schedules_available & can?(:reporter_access) }.enable :read_incident_management_oncall_schedule
       rule { escalation_policies_available & can?(:reporter_access) }.enable :read_incident_management_escalation_policy
 
