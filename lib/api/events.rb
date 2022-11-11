@@ -15,9 +15,9 @@ module API
       desc "List currently authenticated user's events" do
         detail 'This feature was introduced in GitLab 9.3.'
         success Entities::Event
+        is_array true
       end
       params do
-        optional :scope, type: String, desc: 'Include all events across a user’s projects'
         use :pagination
         use :event_filter_params
         use :sort_params
@@ -40,6 +40,7 @@ module API
         detail 'This feature was introduced in GitLab 8.13.'
         success Entities::Event
         tags %w[events]
+        is_array true
       end
       params do
         use :pagination
