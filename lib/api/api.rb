@@ -187,6 +187,7 @@ module API
         mount ::API::Clusters::Agents
         mount ::API::Commits
         mount ::API::CommitStatuses
+        mount ::API::DependencyProxy
         mount ::API::DeployKeys
         mount ::API::DeployTokens
         mount ::API::Deployments
@@ -262,7 +263,6 @@ module API
       mount ::API::ContainerRepositories
       mount ::API::DebianGroupPackages
       mount ::API::DebianProjectPackages
-      mount ::API::DependencyProxy
       mount ::API::Discussions
       mount ::API::ErrorTracking::ClientKeys
       mount ::API::ErrorTracking::Collector

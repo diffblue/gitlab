@@ -25,6 +25,8 @@ metadata:
     description: Operations related to clusters
   - name: ci_resource_groups
     description: Operations to manage job concurrency with resource groups
+  - name: dependency_proxy
+    description: Operations to manage dependency proxy for a groups
   - name: deploy_keys
     description: Operations related to deploy keys
   - name: deploy_tokens
