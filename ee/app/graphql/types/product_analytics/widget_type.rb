@@ -15,6 +15,12 @@ module Types
             type: GraphQL::Types::JSON,
             null: true,
             description: 'Description of the position and size of the widget.'
+
+      field :visualization,
+            type: Types::ProductAnalytics::VisualizationType,
+            null: false,
+            description: 'Visualization of the widget.',
+            resolver: Resolvers::ProductAnalytics::VisualizationResolver
     end
   end
 end
