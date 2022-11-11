@@ -21,6 +21,7 @@ module Gitlab
     API_SCOPE = 'geo_api'
     GEO_PROXIED_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY'
     GEO_PROXIED_EXTRA_DATA_HEADER = 'HTTP_GITLAB_WORKHORSE_GEO_PROXY_EXTRA_DATA'
+    SIGN_IN_VIA_GEO_SITE_ID = "geo_proxied_site_id"
 
     # TODO: Avoid having to maintain a list. Discussions related to possible
     # solutions can be found at

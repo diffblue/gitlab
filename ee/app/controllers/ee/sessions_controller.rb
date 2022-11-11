@@ -142,5 +142,41 @@ module EE
       session[:verification_user_id] = user.id
       redirect_to identity_verification_path
     end
+
+    override :store_redirect_uri
+    def store_redirect_uri
+      store_sign_in_via_geo_site
+
+      super
+    end
+
+    # Remember which Geo site the user tried to sign in on so we can redirect
+    # them to it if needed after sign in.
+    #
+    # store_location_for only remembers relative paths, partly for security.
+    # It might be risky to allow special-case absolute URLs in that method.
+    # Instead, this method only remembers the Geo site ID, which was sent
+    # securely via JWT data encoded in the request header. After the user signs
+    # in successfully, we can get the stored Geo site ID to look up the site
+    # URL, combine it with stored_location_for, and then redirect.
+    #
+    # See https://gitlab.com/gitlab-org/gitlab/-/issues/372490
+    def store_sign_in_via_geo_site
+      return unless ::Gitlab::Geo.enabled?
+      return unless ::Feature.enabled?(:geo_fix_redirect_after_saml_sign_in)
+
+      proxied_site = ::Gitlab::Geo.proxied_site(request.env)
+
+      id = if proxied_site && proxied_site.url != ::Gitlab::Geo.primary_node_url
+             log_message = "User is signing in via a Geo proxy site with a separate URL. Saving Geo proxy site ID."
+             proxied_site.id
+           else
+             log_message = "User is signing in via a Geo primary site or Unified URL. Clearing Geo proxy site ID."
+             nil
+           end
+
+      ::Gitlab::AppJsonLogger.debug(message: log_message, "#{::Gitlab::Geo::SIGN_IN_VIA_GEO_SITE_ID}": id)
+      session[::Gitlab::Geo::SIGN_IN_VIA_GEO_SITE_ID] = id
+    end
   end
 end
