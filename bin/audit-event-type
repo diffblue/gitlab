@@ -147,7 +147,7 @@ class AuditEventTypeOptionParser
 
     def read_saved_to_database
       $stdout.puts
-      $stdout.puts ">> Specify whether to persist events to database and JSON logs:"
+      $stdout.puts ">> Specify whether to persist events to database and JSON logs [yes, no]:"
 
       loop do
         saved_to_database = Readline.readline('?> ', false)&.strip
@@ -160,7 +160,7 @@ class AuditEventTypeOptionParser
 
     def read_streamed
       $stdout.puts
-      $stdout.puts ">> Specify if events should be streamed to external services (if configured):"
+      $stdout.puts ">> Specify if events should be streamed to external services (if configured) [yes, no]:"
 
       loop do
         streamed = Readline.readline('?> ', false)&.strip

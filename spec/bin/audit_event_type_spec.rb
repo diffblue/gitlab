@@ -169,7 +169,7 @@ RSpec.describe 'bin/audit-event-type' do
         expect(Readline).to receive(:readline).and_return(saved_to_database)
         expect do
           expect(described_class.read_saved_to_database).to eq(true)
-        end.to output(/Specify whether to persist events to database and JSON logs:/).to_stdout
+        end.to output(/Specify whether to persist events to database and JSON logs \[yes, no\]:/).to_stdout
       end
 
       context 'when saved_to_database is invalid' do
@@ -181,7 +181,7 @@ RSpec.describe 'bin/audit-event-type' do
 
           expect do
             expect { described_class.read_saved_to_database }.to raise_error(/EOF/)
-          end.to output(/Specify whether to persist events to database and JSON logs:/)
+          end.to output(/Specify whether to persist events to database and JSON logs \[yes, no\]:/)
                    .to_stdout.and output(/saved_to_database is a required boolean field/).to_stderr
         end
       end
@@ -194,7 +194,8 @@ RSpec.describe 'bin/audit-event-type' do
         expect(Readline).to receive(:readline).and_return(streamed)
         expect do
           expect(described_class.read_streamed).to eq(true)
-        end.to output(/Specify if events should be streamed to external services \(if configured\):/).to_stdout
+        end.to output(/Specify if events should be streamed to external services \(if configured\) \[yes, no\]:/)
+                 .to_stdout
       end
 
       context 'when streamed is invalid' do
@@ -206,7 +207,7 @@ RSpec.describe 'bin/audit-event-type' do
 
           expect do
             expect { described_class.read_streamed }.to raise_error(/EOF/)
-          end.to output(/Specify if events should be streamed to external services \(if configured\):/)
+          end.to output(/Specify if events should be streamed to external services \(if configured\) \[yes, no\]:/)
                    .to_stdout.and output(/streamed is a required boolean field/).to_stderr
         end
       end
