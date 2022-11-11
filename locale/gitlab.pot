@@ -36626,6 +36626,9 @@ msgstr ""
 msgid "SecurityReports|All activity"
 msgstr ""
 
+msgid "SecurityReports|All severities"
+msgstr ""
+
 msgid "SecurityReports|Although it's rare to have no vulnerabilities, it can happen. Check your settings to make sure you've set up your dashboard correctly."
 msgstr ""
 
