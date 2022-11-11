@@ -51,24 +51,25 @@ To create server hooks for a repository:
 1. Write the code to make the server hook function as expected. Git server hooks can be in any programming language. Ensure
    the [shebang](https://en.wikipedia.org/wiki/Shebang_(Unix)) at the top reflects the language type. For
    example, if the script is in Ruby the shebang is probably `#!/usr/bin/env ruby`.
-1. Make the hook file executable, ensure that it's owned by the Git user, and ensure it does not match the backup file
+1. Ensure the hook file does not match the backup file
    pattern (`*~`).
 
 If the server hook code is properly implemented, it should execute when the Git hook is next triggered.
 
-### Gitaly cluster
+### Gitaly Cluster
 
-To deploy server hooks to Gitaly cluster, the scripts need to be deployed to every replica of the repository.
+If you use [Gitaly Cluster](gitaly/index.md), the scripts must be copied to every Gitaly node that has a replica of the repository. Every Gitaly node
+needs a copy because any node can be made a primary at any time. Server hooks only run on primary nodes.
 
-Server hooks are safe, because the hook will only be run on the primary node for that repository.
-The primary node can change, so every replica must have a copy.
+The location to copy the scripts to depends on where repositories are stored:
 
-In GitLab 15.3 and later, new repositories are created using Praefect replica paths, which are
-not the `@hashed` storage path.
-
-To deploy server hooks, the replica path can be identified by
-[querying the Praefect repository metadata](../administration/gitaly/troubleshooting.md#view-repository-metadata)
-using `-relative-path` to specify the expected GitLab `@hashed` storage path.
+- In GitLab 15.2 and earlier, Gitaly Cluster uses the [hashed storage path](repository_storage_types.md#hashed-storage)
+  reported by the GitLab application.
+- In GitLab 15.3 and later, new repositories are created using
+  [Praefect-generated replica paths](gitaly/index.md#praefect-generated-replica-paths-gitlab-150-and-later),
+  which are not the hashed storage path. The replica path can be identified by
+  [querying the Praefect repository metadata](../administration/gitaly/troubleshooting.md#view-repository-metadata)
+  using `-relative-path` to specify the expected GitLab hashed storage path.
 
 ## Create global server hooks for all repositories
 
