@@ -22,6 +22,7 @@ module API
       segment ':id/merge_requests/:merge_request_iid/approval_rules' do
         desc 'Get all merge request approval rules' do
           success EE::API::Entities::MergeRequestApprovalRule
+          tags %w[merge_request_approval_rules]
         end
         params do
           use :pagination
@@ -38,6 +39,7 @@ module API
 
         desc 'Create new merge request approval rules' do
           success EE::API::Entities::MergeRequestApprovalRule
+          tags %w[merge_request_approval_rules]
         end
         params do
           requires :name, type: String, desc: 'The name of the approval rule'
@@ -60,6 +62,7 @@ module API
         segment ':approval_rule_id' do
           desc 'Get merge request approval rule' do
             success EE::API::Entities::MergeRequestApprovalRule
+            tags %w[merge_request_approval_rules]
           end
           params do
             requires :approval_rule_id, type: Integer, desc: 'The ID of a merge request approval rule'
@@ -73,6 +76,7 @@ module API
 
           desc 'Update merge request approval rule' do
             success EE::API::Entities::MergeRequestApprovalRule
+            tags %w[merge_request_approval_rules]
           end
           params do
             requires :approval_rule_id, type: Integer, desc: 'The ID of a merge request approval rule'
@@ -95,7 +99,10 @@ module API
             end
           end
 
-          desc 'Destroy merge request approval rule'
+          desc 'Destroy merge request approval rule' do
+            success [{ code: 204 }]
+            tags %w[merge_request_approval_rules]
+          end
           params do
             requires :approval_rule_id, type: Integer, desc: 'The ID of a merge request approval rule'
           end
