@@ -12,8 +12,8 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
 
     context 'Rails environments' do
       where(:env, :should_raise) do
-        'production' | false
-        'staging' | false
+        'production' | true
+        'staging' | true
         'development' | true
         'test' | true
       end

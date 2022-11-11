@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 require 'rspec-parameterized'
+require 'support/helpers/rails_helpers'
 
 RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_shared_state, :request_store do
   using RSpec::Parameterized::TableSyntax
@@ -46,6 +47,10 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
   describe 'counting' do
     let(:instrumentation_class) { Gitlab::Redis::SharedState.instrumentation_class }
 
+    before do
+      stub_rails_env('staging') # to avoid raising CrossSlotError
+    end
+
     it 'counts successful requests' do
       expect(instrumentation_class).to receive(:instance_count_request).with(1).and_call_original
 
@@ -61,6 +66,18 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
           pipeline.call(:get, '{foobar}baz')
         end
       end
+    end
+
+    it 'counts cross-slot requests' do
+      expect(instrumentation_class).to receive(:increment_cross_slot_request_count).and_call_original
+
+      Gitlab::Redis::SharedState.with { |redis| redis.call(:mget, 'foo', 'bar') }
+    end
+
+    it 'skips count for non-cross-slot requests' do
+      expect(instrumentation_class).not_to receive(:increment_cross_slot_request_count).and_call_original
+
+      Gitlab::Redis::SharedState.with { |redis| redis.call(:mget, '{foo}bar', '{foo}baz') }
     end
 
     it 'counts exceptions' do
