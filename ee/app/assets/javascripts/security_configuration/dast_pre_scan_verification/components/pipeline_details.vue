@@ -20,6 +20,11 @@ export default {
       required: false,
       default: PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS,
     },
+    isLowerCase: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     pipelineId: {
       type: String,
       required: false,
@@ -48,6 +53,11 @@ export default {
         timeAgo: this.timeAgo,
       });
     },
+    preScanVerificationPipelineInfoCase() {
+      return this.isLowerCase
+        ? this.preScanVerificationPipelineInfo.toLowerCase()
+        : this.preScanVerificationPipelineInfo;
+    },
     statusInfoMessage() {
       return this.status === PRE_SCAN_VERIFICATION_STATUS.IN_PROGRESS
         ? this.$options.i18n.preScanVerificationInProgressText
@@ -62,7 +72,7 @@ export default {
 
 <template>
   <div data-testid="status-message">
-    <span>{{ preScanVerificationPipelineInfo }}</span>
+    <span>{{ preScanVerificationPipelineInfoCase }}</span>
     <gl-link v-if="verificationUsedBefore" :href="pipelinePath">
       {{ pipelineIdFormatted }}
     </gl-link>

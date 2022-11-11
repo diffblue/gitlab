@@ -37,4 +37,15 @@ describe('PipelineDetails', () => {
       expect(findStatusMessage().text()).toContain(expectedResult);
     });
   });
+
+  describe('status case', () => {
+    it.each`
+      isLowerCase | expectedResult
+      ${true}     | ${'last run'}
+      ${false}    | ${'Last run'}
+    `('should render status in lower case or capitalized', ({ isLowerCase, expectedResult }) => {
+      createComponent({ isLowerCase, status: PRE_SCAN_VERIFICATION_STATUS.COMPLETE });
+      expect(findStatusMessage().text()).toContain(expectedResult);
+    });
+  });
 });

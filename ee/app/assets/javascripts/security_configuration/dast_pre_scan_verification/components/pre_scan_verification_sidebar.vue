@@ -4,6 +4,7 @@ import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
 import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
+import PreScanVerificationAlert from './pre_scan_verification_alert.vue';
 import PreScanVerificationList from './pre_scan_verification_list.vue';
 import PreScanVerificationSummary from './pre_scan_verification_summary.vue';
 
@@ -18,6 +19,7 @@ export default {
   name: 'PreScanVerificationSidebar',
   components: {
     GlDrawer,
+    PreScanVerificationAlert,
     PreScanVerificationList,
     PreScanVerificationSummary,
   },
@@ -31,6 +33,11 @@ export default {
       type: String,
       required: false,
       default: PRE_SCAN_VERIFICATION_STATUS.DEFAULT,
+    },
+    showAlert: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {
@@ -59,6 +66,14 @@ export default {
     </template>
     <template #default>
       <div class="gl-px-4!">
+        <pre-scan-verification-alert
+          v-if="showAlert"
+          class="gl-mb-4"
+          pipeline-created-at="2022-09-23 11:19:49 UTC"
+          :status="status"
+          @dismiss="$emit('dismiss-alert')"
+        />
+
         <p class="gl-text-gray-500 gl-line-height-20">
           {{ $options.i18n.preScanVerificationSidebarInfo }}
         </p>
