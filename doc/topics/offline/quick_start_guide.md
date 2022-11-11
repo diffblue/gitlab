@@ -205,3 +205,12 @@ users are on the most up-to-date instances of GitLab. These two services can be 
 environments so that they do not attempt and fail to reach out to GitLab services.
 
 Learn more about [disabling usage statistics](../../user/admin_area/settings/usage_statistics.md#enable-or-disable-usage-statistics).
+
+### Configure NTP
+
+In GitLab 15.4 and later, Gitaly cluster will not function if `pool.ntp.org` is unreachable.
+[Customise the time server setting](../../administration/gitaly/praefect.md#customize-time-server-setting) on the Gitaly
+and Praefect servers so they can use an accessible NTP server.
+
+The GitLab Geo check Rake task also verifies server time using `pool.ntp.org`.
+This error can be ignored, [read more about how to work around it](../../administration/geo/replication/troubleshooting.md#message-machine-clock-is-synchronized--exception).
