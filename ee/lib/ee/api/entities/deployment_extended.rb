@@ -7,7 +7,7 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
-          expose :pending_approval_count
+          expose :pending_approval_count, documentation: { type: 'integer', example: 0 }
           expose :approvals, using: ::API::Entities::Deployments::Approval
           expose :approval_summary, using: ::API::Entities::Deployments::ApprovalSummary
         end
