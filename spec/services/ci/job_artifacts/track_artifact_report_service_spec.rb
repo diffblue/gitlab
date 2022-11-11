@@ -28,7 +28,7 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
       end
 
       it 'tracks the test event using HLLRedisCounter' do
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_1, values: user1.id)
           .and_call_original
@@ -68,12 +68,12 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
       let_it_be(:pipeline2) { create(:ci_pipeline, :with_test_reports, project: project, user: user1) }
 
       it 'tracks all pipelines using HLLRedisCounter by one user_id for the test event' do
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_1, values: user1.id)
           .and_call_original
 
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_1, values: user1.id)
           .and_call_original
@@ -96,22 +96,12 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
       let_it_be(:pipeline2) { create(:ci_pipeline, :with_test_reports, project: project, user: user2) }
 
       it 'tracks all pipelines using HLLRedisCounter by multiple users for test reports' do
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_1, values: user1.id)
           .and_call_original
 
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
-          .to receive(:track_event)
-          .with(test_event_name_1, values: user1.id)
-          .and_call_original
-
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
-                 .to receive(:track_event)
-                 .with(test_event_name_1, values: user2.id)
-                 .and_call_original
-
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_1, values: user2.id)
           .and_call_original
@@ -139,7 +129,7 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
       end
 
       it 'tracks the coverage test event using HLLRedisCounter' do
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_2, values: user1.id)
           .and_call_original
@@ -159,14 +149,10 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
       let_it_be(:pipeline2) { create(:ci_pipeline, :with_coverage_reports, project: project, user: user1) }
 
       it 'tracks all pipelines using HLLRedisCounter by one user_id for the coverage test event' do
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_2, values: user1.id)
-          .and_call_original
-
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
-          .to receive(:track_event)
-          .with(test_event_name_2, values: user1.id)
+          .twice
           .and_call_original
 
         expect do
@@ -187,22 +173,12 @@ RSpec.describe Ci::JobArtifacts::TrackArtifactReportService do
       let_it_be(:pipeline2) { create(:ci_pipeline, :with_coverage_reports, project: project, user: user2) }
 
       it 'tracks all pipelines using HLLRedisCounter by multiple users for coverage test reports' do
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_2, values: user1.id)
           .and_call_original
 
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
-          .to receive(:track_event)
-          .with(test_event_name_2, values: user1.id)
-          .and_call_original
-
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
-                 .to receive(:track_event)
-                 .with(test_event_name_2, values: user2.id)
-                 .and_call_original
-
-        allow(Gitlab::UsageDataCounters::HLLRedisCounter)
+        expect(Gitlab::UsageDataCounters::HLLRedisCounter)
           .to receive(:track_event)
           .with(test_event_name_2, values: user2.id)
           .and_call_original
