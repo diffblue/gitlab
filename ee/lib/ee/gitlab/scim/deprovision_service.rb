@@ -4,6 +4,8 @@ module EE
   module Gitlab
     module Scim
       class DeprovisionService
+        include ::Gitlab::Utils::StrongMemoize
+
         attr_reader :identity
 
         delegate :user, :group, to: :identity
@@ -13,7 +15,6 @@ module EE
         end
 
         def execute
-          return error(_("Could not remove %{user} from %{group}. User is not a group member.") % { user: user.name, group: group.name }) unless group_membership
           return error(_("Could not remove %{user} from %{group}. Cannot remove last group owner.") % { user: user.name, group: group.name }) if group.last_owner?(user)
 
           ScimIdentity.transaction do
@@ -27,11 +28,15 @@ module EE
         private
 
         def remove_group_access
+          return unless group_membership
+
           ::Members::DestroyService.new(user).execute(group_membership)
         end
 
         def group_membership
-          @group_membership ||= group.all_group_members.with_user(user).first
+          strong_memoize(:group_membership) do
+            group.all_group_members.with_user(user).first
+          end
         end
 
         def error(message)
