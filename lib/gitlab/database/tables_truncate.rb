@@ -24,6 +24,12 @@ module Gitlab
           GITLAB_SCHEMAS_TO_IGNORE.union(schemas_for_connection).include?(schema_name)
         end.keys
 
+        Gitlab::Database::SharedModel.using_connection(connection) do
+          tables_to_truncate += Postgresql::DetachedPartition.pluck(:table_name).reject do |table_name|
+            (GITLAB_SCHEMAS_TO_IGNORE.union(schemas_for_connection)).include? Gitlab::Database::GitlabSchema.table_schema(table_name)
+          end
+        end
+
         tables_sorted = Gitlab::Database::TablesSortedByForeignKeys.new(connection, tables_to_truncate).execute
         # Checking if all the tables have the write-lock triggers
         # to make sure we are deleting the right tables on the right database.

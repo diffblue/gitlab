@@ -21,12 +21,17 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   let(:main_db_ci_item_model) { table("_test_gitlab_ci_items", database: "main") }
   let(:main_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "main") }
   let(:main_db_shared_item_model) { table("_test_gitlab_shared_items", database: "main") }
+  let(:main_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "main") }
+  let(:main_db_partitioned_item_detached) { table("_test_gitlab_partitioned_items_20220101", database: "main") }
+
   # CI Database
   let(:ci_db_main_item_model) { table("_test_gitlab_main_items", database: "ci") }
   let(:ci_db_main_reference_model) { table("_test_gitlab_main_references", database: "ci") }
   let(:ci_db_ci_item_model) { table("_test_gitlab_ci_items", database: "ci") }
   let(:ci_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "ci") }
   let(:ci_db_shared_item_model) { table("_test_gitlab_shared_items", database: "ci") }
+  let(:ci_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "ci") }
+  let(:ci_db_partitioned_item_detached) { table("_test_gitlab_partitioned_items_20220101", database: "ci") }
 
   subject(:truncate_legacy_tables) do
     described_class.new(
@@ -47,6 +52,18 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
         CREATE TABLE _test_gitlab_main_items (id serial NOT NULL PRIMARY KEY);
 
         CREATE TABLE _test_gitlab_main_references (
+          id serial NOT NULL PRIMARY KEY,
+          item_id BIGINT NOT NULL,
+          CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
+        );
+
+        CREATE TABLE _test_gitlab_partitioned_items (
+          id serial NOT NULL PRIMARY KEY,
+          item_id BIGINT NOT NULL,
+          CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
+        );
+
+        CREATE TABLE _test_gitlab_partitioned_items_20220101 (
           id serial NOT NULL PRIMARY KEY,
           item_id BIGINT NOT NULL,
           CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
@@ -84,18 +101,37 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
         main_db_ci_item_model.create!(id: i)
         main_db_ci_reference_model.create!(item_id: i)
         main_db_shared_item_model.create!(id: i)
+        main_db_partitioned_item.create!(item_id: i)
+        main_db_partitioned_item_detached.create!(item_id: i)
         # CI Database
         ci_db_main_item_model.create!(id: i)
         ci_db_main_reference_model.create!(item_id: i)
         ci_db_ci_item_model.create!(id: i)
         ci_db_ci_reference_model.create!(item_id: i)
         ci_db_shared_item_model.create!(id: i)
+        ci_db_partitioned_item.create!(item_id: i)
+        ci_db_partitioned_item_detached.create!(item_id: i)
+      end
+
+      Gitlab::Database::SharedModel.using_connection(main_connection) do
+        Postgresql::DetachedPartition.create!(
+          table_name: '_test_gitlab_partitioned_items_20220101',
+          drop_after: Time.current
+        )
+      end
+
+      Gitlab::Database::SharedModel.using_connection(ci_connection) do
+        Postgresql::DetachedPartition.create!(
+          table_name: '_test_gitlab_partitioned_items_20220101',
+          drop_after: Time.current
+        )
       end
 
       allow(Gitlab::Database::GitlabSchema).to receive(:tables_to_schema).and_return(
         {
           "_test_gitlab_main_items" => :gitlab_main,
           "_test_gitlab_main_references" => :gitlab_main,
+          "_test_gitlab_partitioned_items" => :gitlab_main,
           "_test_gitlab_ci_items" => :gitlab_ci,
           "_test_gitlab_ci_references" => :gitlab_ci,
           "_test_gitlab_shared_items" => :gitlab_shared,
@@ -218,7 +254,7 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   context 'when truncating gitlab_main tables on the ci database' do
     let(:connection) { Ci::ApplicationRecord.connection }
     let(:database_name) { "ci" }
-    let(:legacy_tables_models) { [ci_db_main_item_model, ci_db_main_reference_model] }
+    let(:legacy_tables_models) { [ci_db_main_item_model, ci_db_main_reference_model, ci_db_partitioned_item, ci_db_partitioned_item_detached] }
     let(:referencing_table_model) { ci_db_main_reference_model }
     let(:referenced_table_model) { ci_db_main_item_model }
     let(:other_tables_models) do
