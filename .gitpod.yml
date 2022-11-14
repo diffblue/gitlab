@@ -125,5 +125,5 @@ vscode:
     - karunamurti.haml@1.4.1
     - octref.vetur@0.36.0
     - dbaeumer.vscode-eslint@2.2.6
-    - GitLab.gitlab-workflow@3.48.1
+    - GitLab.gitlab-workflow@3.56.0
     - DavidAnson.vscode-markdownlint@0.47.0
