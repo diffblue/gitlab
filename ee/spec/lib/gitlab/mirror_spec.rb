@@ -103,7 +103,7 @@ RSpec.describe Gitlab::Mirror do
 
         Gitlab::Redis::SharedState.with do |redis|
           (1..10).to_a.each do |id|
-            redis.sadd(Gitlab::Mirror::PULL_CAPACITY_KEY, id)
+            redis.sadd?(Gitlab::Mirror::PULL_CAPACITY_KEY, id)
           end
         end
 
