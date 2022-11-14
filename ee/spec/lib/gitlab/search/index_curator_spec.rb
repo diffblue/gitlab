@@ -237,6 +237,16 @@ RSpec.describe Gitlab::Search::IndexCurator do
         expect(curator).not_to be_should_ignore_index(index_info)
       end
     end
+
+    context 'when index name matches one of the ignore pattern and also an include pattern' do
+      let(:settings) do
+        { ignore_patterns: [/.*/], include_patterns: [/#{index_info['index']}/] }
+      end
+
+      it 'returns false' do
+        expect(curator).not_to be_should_ignore_index(index_info)
+      end
+    end
   end
 
   describe '#increment_index_name' do

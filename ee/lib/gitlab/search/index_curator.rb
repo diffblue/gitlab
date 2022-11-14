@@ -11,6 +11,7 @@ module Gitlab
         min_docs_before_rollover: 100_000,
         max_docs_shard_count: 5,
         ignore_patterns: [/migrations/],
+        include_patterns: [],
         index_pattern: 'gitlab*'
       }.freeze
 
@@ -91,6 +92,8 @@ module Gitlab
       end
 
       def should_ignore_index?(index_info)
+        return false if settings[:include_patterns].any? { |p| p.match? index_info['index'] }
+
         settings[:ignore_patterns].any? { |p| p.match? index_info['index'] }
       end
 
