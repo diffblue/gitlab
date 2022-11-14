@@ -47,6 +47,8 @@ metadata:
     description: Operations related to linting a CI config file
   - name: group_export
     description: Operations related to exporting groups
+  - name: group_import
+    description: Operations related to importing groups
   - name: merge_requests
     description: Operations related to merge requests
   - name: metadata
