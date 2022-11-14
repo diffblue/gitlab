@@ -93,9 +93,9 @@ export default {
       return !isEmpty(this.getDataSelectedMonth)
         ? this.getDataSelectedMonth.projects.nodes.map((cur) => {
             if (this.displaySharedRunnerData) {
-              return [cur.name, (cur.sharedRunnersDuration / 60).toFixed(2)];
+              return [cur.project.name, (cur.sharedRunnersDuration / 60).toFixed(2)];
             }
-            return [cur.name, cur.minutes];
+            return [cur.project.name, cur.minutes];
           })
         : [];
     },

@@ -1,18 +1,16 @@
 <script>
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { sprintf } from '~/locale';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import { TYPE_GROUP } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
 import getCiMinutesUsageProfile from 'ee/ci/ci_minutes_usage/graphql/queries/ci_minutes.query.graphql';
 import getCiMinutesUsageNamespace from 'ee/ci/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
-import getNamespaceProjectsInfo from '../queries/namespace_projects_info.query.graphql';
-import { getProjectMinutesUsage } from '../utils';
 import {
   ERROR_MESSAGE,
   LABEL_BUY_ADDITIONAL_MINUTES,
   TITLE_USAGE_SINCE,
-  TITLE_CURRENT_PERIOD,
   TOTAL_USED_UNLIMITED,
   MINUTES_USED,
   ADDITIONAL_MINUTES,
@@ -50,29 +48,18 @@ export default {
     return {
       error: '',
       namespace: null,
-      ciMinutesUsages: [],
+      ciMinutesUsage: [],
     };
   },
   apollo: {
-    namespace: {
-      query: getNamespaceProjectsInfo,
-      variables() {
-        return {
-          fullPath: this.namespacePath,
-          first: this.pageSize,
-        };
-      },
-      error() {
-        this.error = ERROR_MESSAGE;
-      },
-    },
-    ciMinutesUsages: {
+    ciMinutesUsage: {
       query() {
         return this.userNamespace ? getCiMinutesUsageProfile : getCiMinutesUsageNamespace;
       },
       variables() {
         return {
           namespaceId: convertToGraphQLId(TYPE_GROUP, this.namespaceId),
+          first: this.pageSize,
         };
       },
       update(res) {
@@ -84,29 +71,28 @@ export default {
     },
   },
   computed: {
+    currentMonthProjectData() {
+      return (
+        this.ciMinutesUsage.find((usage) => usage.monthIso8601 === this.ciMinutesLastResetDate) ||
+        {}
+      );
+    },
     projects() {
-      return this.namespace?.projects?.nodes.map((project) => ({
-        project,
-        ci_minutes: getProjectMinutesUsage(project, this.ciMinutesUsages),
-      }));
+      return this.currentMonthProjectData?.projects?.nodes ?? [];
     },
     projectsPageInfo() {
-      return this.namespace?.projects?.pageInfo ?? {};
+      return this.currentMonthProjectData?.projects?.pageInfo ?? {};
     },
     shouldShowBuyAdditionalMinutes() {
       return this.buyAdditionalMinutesPath && this.buyAdditionalMinutesTarget;
     },
     isLoading() {
-      return this.$apollo.queries.namespace.loading || this.$apollo.queries.ciMinutesUsages.loading;
+      return this.$apollo.queries.ciMinutesUsage.loading;
     },
     monthlyUsageTitle() {
-      if (this.ciMinutesLastResetDate) {
-        return sprintf(TITLE_USAGE_SINCE, {
-          usageSince: this.ciMinutesLastResetDate,
-        });
-      }
-
-      return TITLE_CURRENT_PERIOD;
+      return sprintf(TITLE_USAGE_SINCE, {
+        usageSince: formatDate(this.ciMinutesLastResetDate, 'mmm dd, yyyy', true),
+      });
     },
     monthlyMinutesUsed() {
       return sprintf(MINUTES_USED, {
@@ -129,9 +115,9 @@ export default {
       this.error = '';
     },
     fetchMoreProjects(variables) {
-      this.$apollo.queries.namespace.fetchMore({
+      this.$apollo.queries.ciMinutesUsage.fetchMore({
         variables: {
-          fullPath: this.namespacePath,
+          namespaceId: convertToGraphQLId(TYPE_GROUP, this.namespaceId),
           ...variables,
         },
         updateQuery(previousResult, { fetchMoreResult }) {
@@ -217,7 +203,7 @@ export default {
           data-testid="purchased-usage-overview"
         />
       </section>
-      <minutes-usage-charts :ci-minutes-usages="ciMinutesUsages" />
+      <minutes-usage-charts :ci-minutes-usage="ciMinutesUsage" />
       <section class="gl-py-5">
         <project-list
           :projects="projects"

@@ -1,3 +1,11 @@
+export const pageInfo = {
+  __typename: 'PageInfo',
+  hasNextPage: false,
+  hasPreviousPage: false,
+  startCursor: 'eyJpZCI6IjYifQ',
+  endCursor: 'eyJpZCI6IjYifQ',
+};
+
 export const ciMinutesUsageMockData = {
   data: {
     ciMinutesUsage: {
@@ -10,11 +18,18 @@ export const ciMinutesUsageMockData = {
           projects: {
             nodes: [
               {
-                name: 'devcafe-wp-theme',
                 minutes: 5,
                 sharedRunnersDuration: 60,
+                project: {
+                  id: 'gid://gitlab/Project/6',
+                  name: 'devcafe-wp-theme',
+                  nameWithNamespace: 'Group / devcafe-wp-theme',
+                  avatarUrl: null,
+                  webUrl: 'http://gdk.test:3000/group/devcafe-wp-theme',
+                },
               },
             ],
+            pageInfo,
           },
         },
         {
@@ -24,6 +39,7 @@ export const ciMinutesUsageMockData = {
           sharedRunnersDuration: 0,
           projects: {
             nodes: [],
+            pageInfo,
           },
         },
         {
@@ -34,11 +50,18 @@ export const ciMinutesUsageMockData = {
           projects: {
             nodes: [
               {
-                name: 'devcafe-mx',
                 minutes: 5,
                 sharedRunnersDuration: 80,
+                project: {
+                  id: 'gid://gitlab/Project/7',
+                  name: 'devcafe-mx',
+                  nameWithNamespace: 'Group / devcafe-mx',
+                  avatarUrl: null,
+                  webUrl: 'http://gdk.test:3000/group/devcafe-mx',
+                },
               },
             ],
+            pageInfo,
           },
         },
       ],

@@ -1,10 +1,12 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
-import { formatDate } from '~/lib/utils/datetime_utility';
+import getCiMinutesUsageNamespace from 'ee/ci/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import { sprintf } from '~/locale';
+import { formatDate } from '~/lib/utils/datetime_utility';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
+import { useFakeDate } from 'helpers/fake_date';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import PipelineUsageApp from 'ee/ci/usage_quotas/pipelines/components/app.vue';
@@ -14,7 +16,6 @@ import {
   LABEL_BUY_ADDITIONAL_MINUTES,
   ERROR_MESSAGE,
   TITLE_USAGE_SINCE,
-  TITLE_CURRENT_PERIOD,
   TOTAL_USED_UNLIMITED,
   MINUTES_USED,
   ADDITIONAL_MINUTES,
@@ -23,12 +24,10 @@ import {
   CI_MINUTES_HELP_LINK,
   CI_MINUTES_HELP_LINK_LABEL,
 } from 'ee/ci/usage_quotas/pipelines/constants';
-import getNamespaceProjectsInfo from 'ee/ci/usage_quotas/pipelines/queries/namespace_projects_info.query.graphql';
-import getCiMinutesUsageNamespace from 'ee/ci/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
 import {
   defaultProvide,
-  mockGetNamespaceProjectsInfo,
   mockGetCiMinutesUsageNamespace,
+  defaultProjectListProps,
 } from '../mock_data';
 
 Vue.use(VueApollo);
@@ -39,15 +38,10 @@ describe('PipelineUsageApp', () => {
 
   const createMockApolloProvider = ({
     reject = false,
-    mockNamespaceProject = mockGetNamespaceProjectsInfo,
     mockCiMinutesUsageQuery = mockGetCiMinutesUsageNamespace,
   } = {}) => {
     const rejectResponse = jest.fn().mockRejectedValue(new Error('GraphQL error'));
     const requestHandlers = [
-      [
-        getNamespaceProjectsInfo,
-        reject ? rejectResponse : jest.fn().mockResolvedValue(mockNamespaceProject),
-      ],
       [
         getCiMinutesUsageNamespace,
         reject ? rejectResponse : jest.fn().mockResolvedValue(mockCiMinutesUsageQuery),
@@ -131,17 +125,9 @@ describe('PipelineUsageApp', () => {
 
       expect(findMonthlyUsageOverview().props('minutesTitle')).toBe(
         sprintf(TITLE_USAGE_SINCE, {
-          usageSince: defaultProvide.ciMinutesLastResetDate,
+          usageSince: formatDate(defaultProvide.ciMinutesLastResetDate, 'mmm dd, yyyy', true),
         }),
       );
-    });
-
-    it('passes current period for monthlyUsageTitle to minutes UsageOverview if no reset date', async () => {
-      createComponent({ mockApollo, provide: { ciMinutesLastResetDate: '' } });
-
-      await waitForPromises();
-
-      expect(findMonthlyUsageOverview().props('minutesTitle')).toBe(TITLE_CURRENT_PERIOD);
     });
 
     it('passes correct props to minutes UsageOverview', async () => {
@@ -154,7 +140,7 @@ describe('PipelineUsageApp', () => {
         helpLinkLabel: CI_MINUTES_HELP_LINK_LABEL,
         minutesLimit: defaultProvide.ciMinutesMonthlyMinutesLimit,
         minutesTitle: sprintf(TITLE_USAGE_SINCE, {
-          usageSince: defaultProvide.ciMinutesLastResetDate,
+          usageSince: formatDate(defaultProvide.ciMinutesLastResetDate, 'mmm dd, yyyy', true),
         }),
         minutesUsed: sprintf(MINUTES_USED, {
           minutesUsed: `${defaultProvide.ciMinutesMonthlyMinutesUsed} / ${defaultProvide.ciMinutesMonthlyMinutesLimit}`,
@@ -223,42 +209,16 @@ describe('PipelineUsageApp', () => {
   });
 
   describe('with apollo fetching successful', () => {
-    beforeEach(() => {
-      const mockCiMinutesUsageQuery = { ...mockGetCiMinutesUsageNamespace };
-      mockCiMinutesUsageQuery.data.ciMinutesUsage.nodes[0].monthIso8601 = formatDate(
-        Date.now(),
-        'yyyy-mm-dd',
-      );
+    const mockApollo = createMockApolloProvider();
 
-      const mockApollo = createMockApolloProvider({
-        mockCiMinutesUsageQuery,
-      });
+    useFakeDate(2022, 0, 14);
+
+    it('passes the correct props to ProjectList', async () => {
       createComponent({ mockApollo });
-      return waitForPromises();
-    });
 
-    it('passes the correct props to ProjectList', () => {
-      expect(findProjectList().props()).toMatchObject({
-        pageInfo: {
-          endCursor: 'eyJpZCI6IjYifQ',
-          hasNextPage: false,
-          hasPreviousPage: false,
-          startCursor: 'eyJpZCI6IjYifQ',
-        },
-        projects: [
-          {
-            ci_minutes: mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[0].minutes,
-            project: {
-              avatarUrl: null,
-              fullPath: 'flightjs/Flight',
-              id: 'gid://gitlab/Project/6',
-              name: 'Flight',
-              nameWithNamespace: 'Flightjs / Flight',
-              webUrl: 'http://gdk.test:3000/flightjs/Flight',
-            },
-          },
-        ],
-      });
+      await waitForPromises();
+
+      expect(findProjectList().props()).toMatchObject(defaultProjectListProps);
     });
   });
 
@@ -289,11 +249,11 @@ describe('PipelineUsageApp', () => {
 
   describe('with a namespace without projects', () => {
     beforeEach(() => {
-      const mockNamespaceProject = { ...mockGetNamespaceProjectsInfo };
-      mockNamespaceProject.data.namespace.projects.nodes = [];
+      const mockCiMinutesUsageQuery = { ...mockGetCiMinutesUsageNamespace };
+      mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[0].projects.nodes = [];
 
       const mockApollo = createMockApolloProvider({
-        mockNamespaceProject,
+        mockCiMinutesUsageQuery,
       });
       createComponent({ mockApollo });
       return waitForPromises();
@@ -313,13 +273,13 @@ describe('PipelineUsageApp', () => {
 
     it('makes a query to fetch more data when `fetchMore` is emitted', async () => {
       jest
-        .spyOn(wrapper.vm.$apollo.queries.namespace, 'fetchMore')
+        .spyOn(wrapper.vm.$apollo.queries.ciMinutesUsage, 'fetchMore')
         .mockImplementation(jest.fn().mockResolvedValue());
 
       findProjectList().vm.$emit('fetchMore');
       await nextTick();
 
-      expect(wrapper.vm.$apollo.queries.namespace.fetchMore).toHaveBeenCalledTimes(1);
+      expect(wrapper.vm.$apollo.queries.ciMinutesUsage.fetchMore).toHaveBeenCalledTimes(1);
     });
   });
 });

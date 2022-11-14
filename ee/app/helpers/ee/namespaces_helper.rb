@@ -71,7 +71,7 @@ module EE
       super.merge(
         ci_minutes: {
           any_project_enabled: minutes_usage_presenter.any_project_enabled?.to_s,
-          last_reset_date: minutes_usage.reset_date.present? ? minutes_usage.reset_date.strftime('%b %d, %Y') : '',
+          last_reset_date: minutes_usage.reset_date,
           display_minutes_available_data: minutes_usage_presenter.display_minutes_available_data?.to_s,
           monthly_minutes_used: minutes_usage_presenter.monthly_minutes_report.used,
           monthly_minutes_used_percentage: minutes_usage_presenter.monthly_percent_used,
