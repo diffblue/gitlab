@@ -24782,6 +24782,9 @@ msgstr ""
 msgid "Manage %{workspace} labels"
 msgstr ""
 
+msgid "Manage Dashboards"
+msgstr ""
+
 msgid "Manage Web IDE features."
 msgstr ""
 
