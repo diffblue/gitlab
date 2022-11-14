@@ -25,6 +25,21 @@ RSpec.describe API::SamlGroupLinks, api: true do
     group_with_saml_group_links.add_member user, Gitlab::Access::DEVELOPER
   end
 
+  shared_examples 'has expected results' do
+    it "returns SAML group links" do
+      subject
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response).to(
+        match([
+                { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group1" },
+                { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group2" },
+                { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group3" }
+              ])
+      )
+    end
+  end
+
   describe "GET /groups/:id/saml_group_links" do
     subject { get api("/groups/#{group_id}/saml_group_links", current_user) }
 
@@ -54,18 +69,7 @@ RSpec.describe API::SamlGroupLinks, api: true do
       context "when owner of the group" do
         let(:current_user) { owner }
 
-        it "returns saml group links" do
-          subject
-
-          expect(response).to have_gitlab_http_status(:ok)
-          expect(json_response).to(
-            match([
-                    { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group1" },
-                    { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group2" },
-                    { "access_level" => ::Gitlab::Access::GUEST, "name" => "saml-group3" }
-                  ])
-          )
-        end
+        it_behaves_like 'has expected results'
 
         context "when group does not have any associated saml_group_links" do
           let_it_be(:group_with_no_saml_links) { create(:group) }
@@ -84,6 +88,12 @@ RSpec.describe API::SamlGroupLinks, api: true do
               expect(json_response).to(match([]))
             end
           end
+        end
+
+        context 'with URL-encoded path of the group' do
+          let(:group_id) { group_with_saml_group_links.full_path }
+
+          it_behaves_like 'has expected results'
         end
       end
     end
