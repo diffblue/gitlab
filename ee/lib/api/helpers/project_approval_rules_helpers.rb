@@ -8,16 +8,25 @@ module API
       params :create_project_approval_rule do
         requires :name, type: String, desc: 'The name of the approval rule'
         requires :approvals_required, type: Integer, desc: 'The number of required approvals for this rule'
-        optional :rule_type, type: String, desc: 'The type of approval rule'
+        optional :rule_type, type: String, desc: 'The type of approval rule', documentation: { example: 'regular' }
         optional :users, as: :user_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The user ids for this rule'
         optional :groups, as: :group_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The group ids for this rule'
         optional :protected_branch_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The protected branch ids for this rule'
         optional :applies_to_all_protected_branches, default: false, type: Boolean, desc: 'Apply this rule to all protected branches within the project'
-        optional :scanners, type: Array[String], desc: 'The security scanners to be considered by the approval rule'
-        optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
-        optional :severity_levels, type: Array[String], desc: 'The security levels to be considered by the approval rule'
         optional :report_type, type: String, desc: 'The type of the report required when rule type equals to report_approver'
-        optional :vulnerability_states, type: Array[String], desc: 'The vulnerability states to be considered by the approval rule'
+        optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
+        optional :scanners,
+                 type: Array[String],
+                 desc: 'The security scanners to be considered by the approval rule',
+                 documentation: { example: ApprovalProjectRule::SUPPORTED_SCANNERS }
+        optional :severity_levels,
+                 type: Array[String],
+                 desc: 'The security levels to be considered by the approval rule',
+                 documentation: { example: ApprovalProjectRule::DEFAULT_SEVERITIES }
+        optional :vulnerability_states,
+                 type: Array[String],
+                 desc: 'The vulnerability states to be considered by the approval rule',
+                 documentation: { example: ApprovalProjectRule::APPROVAL_VULNERABILITY_STATES }
       end
 
       params :update_project_approval_rule do
@@ -29,10 +38,19 @@ module API
         optional :protected_branch_ids, type: Array[Integer], coerce_with: ::API::Validations::Types::CommaSeparatedToIntegerArray.coerce, desc: 'The protected branch ids for this rule'
         optional :applies_to_all_protected_branches, default: false, type: Boolean, desc: 'Apply this rule to all protected branches within the project'
         optional :remove_hidden_groups, type: Boolean, desc: 'Whether hidden groups should be removed'
-        optional :scanners, type: Array[String], desc: 'The security scanners to be considered by the approval rule'
         optional :vulnerabilities_allowed, type: Integer, desc: 'The number of vulnerabilities allowed for this rule'
-        optional :severity_levels, type: Array[String], desc: 'The security levels to be considered by the approval rule'
-        optional :vulnerability_states, type: Array[String], desc: 'The vulnerability states to be considered by the approval rule'
+        optional :scanners,
+                 type: Array[String],
+                 desc: 'The security scanners to be considered by the approval rule',
+                 documentation: { example: ApprovalProjectRule::SUPPORTED_SCANNERS }
+        optional :severity_levels,
+                 type: Array[String],
+                 desc: 'The security levels to be considered by the approval rule',
+                 documentation: { example: ApprovalProjectRule::DEFAULT_SEVERITIES }
+        optional :vulnerability_states,
+                 type: Array[String],
+                 desc: 'The vulnerability states to be considered by the approval rule',
+                 documentation: { example: ApprovalProjectRule::APPROVAL_VULNERABILITY_STATES }
       end
 
       params :delete_project_approval_rule do
