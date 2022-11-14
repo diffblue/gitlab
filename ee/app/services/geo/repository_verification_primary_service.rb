@@ -48,6 +48,7 @@ module Geo
     end
 
     def update_wiki_repository_state!(checksum: nil, failure: nil)
+      wiki_repository_state.project_wiki_repository ||= project_wiki_repository
       wiki_repository_state.verification_started! unless wiki_repository_state.verification_started?
 
       if failure
@@ -65,8 +66,16 @@ module Geo
       @project_repository_state ||= project.repository_state || project.build_repository_state
     end
 
-    def wiki_repository_state
-      @wiki_repository_state ||= project.wiki_repository_state || project.build_wiki_repository_state
+    # rubocop:disable CodeReuse/ActiveRecord
+    def project_wiki_repository
+      @project_wiki_repository ||=
+        Projects::WikiRepository.find_or_initialize_by(project_id: project.id)
     end
+
+    def wiki_repository_state
+      @wiki_repository_state ||=
+        Geo::ProjectWikiRepositoryState.find_or_initialize_by(project_id: project.id)
+    end
+    # rubocop:enable CodeReuse/ActiveRecord
   end
 end
