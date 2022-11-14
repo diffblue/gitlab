@@ -3,6 +3,9 @@ import MockAdapter from 'axios-mock-adapter';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 
+import getStateQueryResponse from 'test_fixtures/graphql/merge_requests/get_state.query.graphql.json';
+import readyToMergeResponse from 'test_fixtures/graphql/merge_requests/states/ready_to_merge.query.graphql.json';
+
 import {
   registerExtension,
   registeredExtensions,
@@ -44,6 +47,9 @@ import { SUCCESS } from '~/vue_merge_request_widget/components/deployment/consta
 import _Deployment from '~/vue_merge_request_widget/components/deployment/deployment.vue';
 import securityReportMergeRequestDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_merge_request_download_paths.query.graphql';
 
+import getStateQuery from '~/vue_merge_request_widget/queries/get_state.query.graphql';
+import readyToMergeQuery from 'ee_else_ce/vue_merge_request_widget/queries/states/ready_to_merge.query.graphql';
+
 import mockData from './mock_data';
 
 jest.mock('~/vue_shared/components/help_popover.vue');
@@ -65,6 +71,11 @@ describe('ee merge request widget options', () => {
   const createComponent = (options) => {
     wrapper = mount(MrWidgetOptions, {
       ...options,
+      data() {
+        return {
+          loading: false,
+        };
+      },
     });
   };
 
@@ -663,6 +674,8 @@ describe('ee merge request widget options', () => {
         createComponent({
           propsData: { mrData: gl.mrWidgetData },
           apolloProvider: createMockApollo([
+            [getStateQuery, jest.fn().mockResolvedValue(getStateQueryResponse)],
+            [readyToMergeQuery, jest.fn().mockResolvedValue(readyToMergeResponse)],
             [
               securityReportMergeRequestDownloadPathsQuery,
               async () => ({ data: securityReportMergeRequestDownloadPathsQueryResponse }),
