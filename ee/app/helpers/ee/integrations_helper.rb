@@ -24,6 +24,10 @@ module EE
         )
       end
 
+      if integration.is_a?(::Integrations::GitlabSlackApplication)
+        form_data[:upgrade_slack_url] = add_to_slack_link(project, slack_app_id)
+      end
+
       form_data
     end
 
