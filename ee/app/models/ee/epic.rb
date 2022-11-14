@@ -345,11 +345,26 @@ module EE
         ::Gitlab::ObjectHierarchy.new(self.id_in(epic_ids)).base_and_descendants.pluck(:id)
       end
 
-      def issue_metadata_for_epics(epic_ids:, limit:)
+      def issue_metadata_for_epics(epic_ids:, limit:, count_health_status: false)
+        columns = [
+          "epics.id", "epics.iid", "epics.parent_id", "epics.state_id AS epic_state_id", "issues.state_id AS issues_state_id",
+          "COUNT(issues) AS issues_count",
+          "SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum"
+        ]
+
+        if count_health_status
+          issues_health_status = ::Issue.arel_table[:health_status]
+          columns += [
+            "COUNT(issues) FILTER (WHERE #{issues_health_status.eq(::Issue.health_statuses[:on_track]).to_sql}) AS issues_on_track",
+            "COUNT(issues) FILTER (WHERE #{issues_health_status.eq(::Issue.health_statuses[:needs_attention]).to_sql}) AS issues_needs_attention",
+            "COUNT(issues) FILTER (WHERE #{issues_health_status.eq(::Issue.health_statuses[:at_risk]).to_sql}) AS issues_at_risk"
+          ]
+        end
+
         records = self.id_in(epic_ids)
           .left_joins(epic_issues: :issue)
           .group("epics.id", "epics.iid", "epics.parent_id", "epics.state_id", "issues.state_id")
-          .select("epics.id, epics.iid, epics.parent_id, epics.state_id AS epic_state_id, issues.state_id AS issues_state_id, COUNT(issues) AS issues_count, SUM(COALESCE(issues.weight, 0)) AS issues_weight_sum")
+          .select(columns)
           .limit(limit)
 
         records.map { |record| record.attributes.with_indifferent_access }

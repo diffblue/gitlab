@@ -226,6 +226,21 @@ RSpec.describe 'getting epics information' do
 
       include_examples 'N+1 query check'
     end
+
+    context 'when requesting `health_status`' do
+      let(:requested_fields) { 'healthStatus { issuesAtRisk issuesNeedingAttention issuesOnTrack }' }
+
+      before do
+        # Add children to epic_a
+        create(:epic, group: group, title: 'child epic 1', parent: epic_a)
+        create(:epic, group: group, title: 'child epic 2', parent: epic_a)
+        # Add children to epic_b
+        create(:epic, group: group, title: 'child epic 3', parent: epic_b)
+        create(:epic, group: group, title: 'child epic 4', parent: epic_b)
+      end
+
+      include_examples 'N+1 query check'
+    end
   end
 
   describe 'query for epics including their count' do

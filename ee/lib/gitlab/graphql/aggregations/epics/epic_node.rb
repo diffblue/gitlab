@@ -11,11 +11,12 @@ module Gitlab
           include Gitlab::Utils::StrongMemoize
 
           attr_reader :epic_id, :epic_state_id, :epic_info_flat_list, :parent_id,
-                      :count_aggregate, :weight_sum_aggregate
+                      :count_aggregate, :weight_sum_aggregate, :health_status_aggregate
 
           attr_accessor :children, :calculated_count_totals, :calculated_weight_sum_totals
 
           AggregateStruct = Struct.new(:opened_issues, :closed_issues, :opened_epics, :closed_epics)
+          HealthStatusStruct = Struct.new(:issues_at_risk, :issues_needing_attention, :issues_on_track)
 
           def initialize(epic_id, flat_info_list)
             # epic aggregate records from the DB loader look like the following:
@@ -50,6 +51,16 @@ module Gitlab
             end
           end
 
+          def aggregate_health_status_sum
+            strong_memoize(:health_status_aggregate) do
+              HealthStatusStruct.new(
+                sum_objects(HEALTH_STATUS_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE, AT_RISK_STATUS),
+                sum_objects(HEALTH_STATUS_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE, NEEDS_ATTENTION_STATUS),
+                sum_objects(HEALTH_STATUS_SUM, OPENED_ISSUE_STATE, ISSUE_TYPE, ON_TRACK_STATUS)
+              )
+            end
+          end
+
           def to_s
             {
               epic_id: @epic_id,
@@ -59,8 +70,8 @@ module Gitlab
             }.to_s
           end
 
-          def sum_objects(facet, state, type)
-            key = [facet, state, type]
+          def sum_objects(facet, state, type, status = nil)
+            key = [facet, state, type, status]
             return @sums[key] if @sums[key]
 
             direct_sum = value_from_records(*key)
@@ -74,7 +85,7 @@ module Gitlab
 
           def has_issues?
             [CLOSED_ISSUE_STATE, OPENED_ISSUE_STATE].any? do |state|
-              value_from_records(COUNT, state, ISSUE_TYPE) > 0
+              value_from_records(COUNT, state, ISSUE_TYPE, nil) > 0
             end
           end
 
@@ -85,19 +96,22 @@ module Gitlab
             @parent_id = record[:parent_id]
           end
 
-          def value_from_records(facet, state, type)
+          def value_from_records(facet, state, type, status)
             # DB records look like:
+            # {iid: 1, epic_state_id: 1, issues_count: 1, issues_weight_sum: 2, parent_id: nil, issues_state_id: 2, issues_at_risk: 2, issues_needs_attention: 1, issues_on_track: 1}
+            # or like this (when health_status_sum fields are skipped from source query)
             # {iid: 1, epic_state_id: 1, issues_count: 1, issues_weight_sum: 2, parent_id: nil, issues_state_id: 2}
-            if type == EPIC_TYPE
-              # can only be COUNT
-              children.count { |node| node.epic_state_id == state }
-            else
-              matching_record = epic_info_flat_list.find do |record|
-                record[:issues_state_id] == state
-              end || {}
+            return children.count { |node| node.epic_state_id == state } if type == EPIC_TYPE
 
-              matching_record.fetch("issues_#{facet}".to_sym, 0)
-            end
+            matching_record = epic_info_flat_list.find do |record|
+              record[:issues_state_id] == state
+            end || {}
+
+            # overwrite facet when health status specified
+            # as values stored in dedicated health_status_sum fields
+            facet = Issue.health_statuses.key(status) if status
+
+            matching_record.fetch("issues_#{facet}".to_sym, 0)
           end
         end
       end

@@ -10,9 +10,10 @@ module Gitlab
 
           attr_reader :facet, :epic_id, :lazy_state
 
-          PERMITTED_FACETS = [COUNT, WEIGHT_SUM].freeze
+          PERMITTED_FACETS = [COUNT, WEIGHT_SUM, HEALTH_STATUS_SUM].freeze
 
-          # Because facets "count" and "weight_sum" share the same db query, but have a different graphql type object,
+          # Because facets "count", "weight_sum" and "health_status_sum" share the same db query,
+          # but have a different graphql type object,
           # we can separate them and serve only the fields which are requested by the GraphQL query
           def initialize(query_ctx, epic_id, aggregate_facet, epic: nil, &block)
             @epic_id = epic_id
@@ -20,7 +21,7 @@ module Gitlab
 
             error = validate_facet(aggregate_facet)
             if error
-              raise ArgumentError, "#{error}. Please specify either #{COUNT} or #{WEIGHT_SUM}"
+              raise ArgumentError, "#{error}. Please specify either #{COUNT}, #{HEALTH_STATUS_SUM} or #{WEIGHT_SUM}"
             end
 
             @facet = aggregate_facet.to_sym
@@ -29,10 +30,13 @@ module Gitlab
             # or get the previously-initiated state
             @lazy_state = query_ctx[:lazy_epic_aggregate] ||= {
                 pending_ids: Set.new,
+                facets: Set.new,
                 tree: {}
             }
             # Register this ID to be loaded later:
             @lazy_state[:pending_ids] << epic_id
+            # Register this facet to later determine what types of data are requested
+            @lazy_state[:facets] << @facet
 
             @block = block
           end
@@ -76,7 +80,10 @@ module Gitlab
             pending_ids = @lazy_state[:pending_ids].to_a
 
             # Fire off the db query and get the results (grouped by epic_id and facet)
-            raw_epic_aggregates = Gitlab::Graphql::Loaders::BulkEpicAggregateLoader.new(epic_ids: pending_ids).execute
+            raw_epic_aggregates = Gitlab::Graphql::Loaders::BulkEpicAggregateLoader.new(
+              epic_ids: pending_ids,
+              count_health_status: health_status_sum_requested?
+            ).execute
             create_epic_nodes(raw_epic_aggregates)
             @lazy_state[:pending_ids].clear
           end
@@ -101,8 +108,11 @@ module Gitlab
           end
 
           def aggregate_object(node)
-            if @facet == COUNT
+            case @facet
+            when COUNT
               node.aggregate_count
+            when HEALTH_STATUS_SUM
+              node.aggregate_health_status_sum
             else
               node.aggregate_weight_sum
             end
@@ -121,6 +131,10 @@ module Gitlab
               @epic.total_closed_issue_count == object.closed_issues.to_i
 
             Gitlab::AppJsonLogger.error(message: 'epic cached count mismatch', aggregation: facet, epic_id: @epic_id)
+          end
+
+          def health_status_sum_requested?
+            @lazy_state[:facets].include?(HEALTH_STATUS_SUM)
           end
         end
       end

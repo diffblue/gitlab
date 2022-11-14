@@ -9,13 +9,14 @@ module Gitlab
         MAXIMUM_LOADABLE = 100_001
         EPIC_BATCH_SIZE = 1000
 
-        attr_reader :target_epic_ids, :results
+        attr_reader :target_epic_ids, :results, :count_health_status
 
         # This class retrieves each epic and its child epics recursively
         # It allows us to recreate the epic tree structure in POROs
-        def initialize(epic_ids:)
+        def initialize(epic_ids:, count_health_status: false)
           @results = {}
           @target_epic_ids = epic_ids
+          @count_health_status = count_health_status
         end
 
         def execute
@@ -32,7 +33,7 @@ module Gitlab
           # This is so we can aggregate the epic counts for every epic
           raw_results = []
           epic_ids.in_groups_of(EPIC_BATCH_SIZE).each do |epic_batch_ids|
-            raw_results += ::Epic.issue_metadata_for_epics(epic_ids: epic_batch_ids, limit: MAXIMUM_LOADABLE)
+            raw_results += ::Epic.issue_metadata_for_epics(epic_ids: epic_batch_ids, limit: MAXIMUM_LOADABLE, count_health_status: count_health_status)
             raise ArgumentError, "There are too many records to load. Please select fewer epics or contact your administrator." if raw_results.count >= MAXIMUM_LOADABLE
           end
 

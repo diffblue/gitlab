@@ -921,6 +921,63 @@ RSpec.describe Epic do
         }]
         expect(result).to match_array(expected)
       end
+
+      context 'with multiple health statuses' do
+        let_it_be(:issue4) { create(:issue, :opened, :on_track, project: project) }
+        let_it_be(:issue5) { create(:issue, :opened, :needs_attention, project: project) }
+        let_it_be(:issue6) { create(:issue, :opened, :at_risk, project: project) }
+        let_it_be(:issue7) { create(:issue, :opened, :at_risk, project: project) }
+
+        before do
+          # Connect issues to epic 2
+          create(:epic_issue, epic: epic2, issue: issue4)
+          create(:epic_issue, epic: epic2, issue: issue5)
+          create(:epic_issue, epic: epic2, issue: issue6)
+          # Connect issues to epic 3
+          create(:epic_issue, epic: epic3, issue: issue7)
+        end
+
+        it 'returns hash containing epic issues count, weight, epic status and epic issues health statuses' do
+          result = described_class.issue_metadata_for_epics(epic_ids: [epic2.id, epic3.id], limit: 100, count_health_status: true)
+
+          expected = [{
+            "epic_state_id" => 1,
+            "id" => epic2.id,
+            "iid" => epic2.iid,
+            "issues_count" => 5,
+            "issues_state_id" => 1,
+            "issues_weight_sum" => 5,
+            "parent_id" => epic1.id,
+            "issues_on_track" => 1,
+            "issues_needs_attention" => 1,
+            "issues_at_risk" => 1
+          }, {
+            "epic_state_id" => 2,
+            "id" => epic3.id,
+            "iid" => epic3.iid,
+            "issues_count" => 1,
+            "issues_state_id" => 2,
+            "issues_weight_sum" => 0,
+            "parent_id" => epic2.id,
+            "issues_on_track" => 0,
+            "issues_needs_attention" => 0,
+            "issues_at_risk" => 0
+          }, {
+            "epic_state_id" => 2,
+            "id" => epic3.id,
+            "iid" => epic3.iid,
+            "issues_count" => 1,
+            "issues_state_id" => 1,
+            "issues_weight_sum" => 0,
+            "parent_id" => epic2.id,
+            "issues_on_track" => 0,
+            "issues_needs_attention" => 0,
+            "issues_at_risk" => 1
+          }]
+
+          expect(result).to match_array(expected)
+        end
+      end
     end
   end
 
