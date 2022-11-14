@@ -192,6 +192,7 @@ module API
         mount ::API::DeployTokens
         mount ::API::Deployments
         mount ::API::Environments
+        mount ::API::ErrorTracking::ProjectSettings
         mount ::API::FeatureFlags
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
@@ -268,7 +269,6 @@ module API
       mount ::API::Discussions
       mount ::API::ErrorTracking::ClientKeys
       mount ::API::ErrorTracking::Collector
-      mount ::API::ErrorTracking::ProjectSettings
       mount ::API::Events
       mount ::API::GenericPackages
       mount ::API::Geo
