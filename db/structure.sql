@@ -31223,6 +31223,8 @@ CREATE UNIQUE INDEX taggings_idx ON taggings USING btree (tag_id, taggable_id, t
 
 CREATE UNIQUE INDEX term_agreements_unique_index ON term_agreements USING btree (user_id, term_id);
 
+CREATE INDEX tmp_idx_for_vulnerability_feedback_migration ON vulnerability_feedback USING btree (migrated_to_state_transition, feedback_type) WHERE ((migrated_to_state_transition = false) AND (feedback_type = 0));
+
 CREATE INDEX tmp_idx_vulnerabilities_on_id_where_report_type_7_99 ON vulnerabilities USING btree (id) WHERE (report_type = ANY (ARRAY[7, 99]));
 
 CREATE INDEX tmp_idx_where_user_details_fields_filled ON users USING btree (id) WHERE (((COALESCE(linkedin, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(twitter, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(skype, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(website_url, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(location, ''::character varying))::text IS DISTINCT FROM ''::text) OR ((COALESCE(organization, ''::character varying))::text IS DISTINCT FROM ''::text));
