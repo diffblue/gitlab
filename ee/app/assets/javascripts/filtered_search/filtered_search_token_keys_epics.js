@@ -4,12 +4,15 @@ import {
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MY_REACTION,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MY_REACTION,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 
 const tokenKeys = [
   {
     formattedKey: TOKEN_TITLE_AUTHOR,
-    key: 'author',
+    key: TOKEN_TYPE_AUTHOR,
     type: 'string',
     param: 'username',
     symbol: '@',
@@ -18,7 +21,7 @@ const tokenKeys = [
   },
   {
     formattedKey: TOKEN_TITLE_LABEL,
-    key: 'label',
+    key: TOKEN_TYPE_LABEL,
     type: 'array',
     param: 'name[]',
     symbol: '~',
@@ -31,7 +34,7 @@ if (gon.current_user_id) {
   // Appending tokenkeys only logged-in
   tokenKeys.push({
     formattedKey: TOKEN_TITLE_MY_REACTION,
-    key: 'my-reaction',
+    key: TOKEN_TYPE_MY_REACTION,
     type: 'string',
     param: 'emoji',
     symbol: '',
@@ -43,7 +46,7 @@ if (gon.current_user_id) {
 const alternativeTokenKeys = [
   {
     formattedKey: TOKEN_TITLE_LABEL,
-    key: 'label',
+    key: TOKEN_TYPE_LABEL,
     type: 'string',
     param: 'name',
     symbol: '~',
@@ -53,24 +56,24 @@ const alternativeTokenKeys = [
 const conditions = [
   {
     url: 'label_name[]=No+Label',
-    tokenKey: 'label',
+    tokenKey: TOKEN_TYPE_LABEL,
     value: 'none',
     operator: '=',
   },
   {
     url: 'not[label_name][]=No+Label',
-    tokenKey: 'label',
+    tokenKey: TOKEN_TYPE_LABEL,
     value: 'none',
     operator: '!=',
   },
   {
     url: 'my_reaction_emoji=None',
-    tokenKey: 'my-reaction',
+    tokenKey: TOKEN_TYPE_MY_REACTION,
     value: __('None'),
   },
   {
     url: 'my_reaction_emoji=Any',
-    tokenKey: 'my-reaction',
+    tokenKey: TOKEN_TYPE_MY_REACTION,
     value: __('Any'),
   },
 ];
