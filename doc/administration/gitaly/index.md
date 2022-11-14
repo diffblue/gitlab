@@ -468,12 +468,6 @@ including [horizontally distributing reads](https://gitlab.com/groups/gitlab-org
 
 #### Distributed reads
 
-> - Introduced in GitLab 13.1 in [beta](../../policy/alpha-beta-support.md#beta-features) with feature flag `gitaly_distributed_reads` set to disabled.
-> - [Made generally available and enabled by default](https://gitlab.com/gitlab-org/gitaly/-/issues/2951) in GitLab 13.3.
-> - [Disabled by default](https://gitlab.com/gitlab-org/gitaly/-/issues/3178) in GitLab 13.5.
-> - [Enabled by default](https://gitlab.com/gitlab-org/gitaly/-/issues/3334) in GitLab 13.8.
-> - [Feature flag removed](https://gitlab.com/gitlab-org/gitaly/-/issues/3383) in GitLab 13.11.
-
 Gitaly Cluster supports distribution of read operations across Gitaly nodes that are configured for
 the [virtual storage](#virtual-storage).
 
@@ -494,31 +488,21 @@ You can [monitor distribution of reads](monitoring.md#monitor-gitaly-cluster) us
 
 #### Strong consistency
 
-> - Introduced in GitLab 13.1 in [alpha](../../policy/alpha-beta-support.md#alpha-features), disabled by default.
-> - Entered [beta](../../policy/alpha-beta-support.md#beta-features) in GitLab 13.2, disabled by default.
-> - In GitLab 13.3, disabled unless primary-wins voting strategy is disabled.
-> - From GitLab 13.4, enabled by default.
-> - From GitLab 13.5, you must use Git v2.28.0 or higher on Gitaly nodes to enable strong consistency.
-> - From GitLab 13.6, primary-wins voting strategy and the `gitaly_reference_transactions_primary_wins` feature flag was removed.
-> - From GitLab 14.0, [Gitaly Cluster only supports strong consistency](https://gitlab.com/gitlab-org/gitaly/-/merge_requests/3575), and the `gitaly_reference_transactions` feature flag was removed.
+> - In GitLab 13.6 to 13.12, strong consistency must be manually configured. Refer to [the 13.12 documentation](https://docs.gitlab.com/13.12/ee/administration/gitaly/praefect.html#strong-consistency).
+> - In GitLab 14.0, strong consistency is the primary replication method.
 
 Gitaly Cluster provides strong consistency by writing changes synchronously to all healthy, up-to-date replicas. If a
 replica is outdated or unhealthy at the time of the transaction, the write is asynchronously replicated to it.
 
+Strong consistency is the primary replication method. A subset of operations still use replication jobs
+(eventual consistency) instead of strong consistency. Refer to the
+[strong consistency epic](https://gitlab.com/groups/gitlab-org/-/epics/1189) for more information.
+
 If strong consistency is unavailable, Gitaly Cluster guarantees eventual consistency. In this case. Gitaly Cluster
 replicates all writes to secondary Gitaly nodes after the write to the primary Gitaly node has occurred.
 
-Strong consistency:
-
-- Is the primary replication method in GitLab 14.0 and later. A subset of operations still use replication jobs
-  (eventual consistency) instead of strong consistency. Refer to the
-  [strong consistency epic](https://gitlab.com/groups/gitlab-org/-/epics/1189) for more information.
-- Must be configured in GitLab versions 13.1 to 13.12. For configuration information, refer to either:
-  - Documentation on your GitLab instance at `/help`.
-  - The [13.12 documentation](https://docs.gitlab.com/13.12/ee/administration/gitaly/praefect.html#strong-consistency).
-- Is unavailable in GitLab 13.0 and earlier.
-
-For more information on monitoring strong consistency, see the Gitaly Cluster [Prometheus metrics documentation](monitoring.md#monitor-gitaly-cluster).
+For more information on monitoring strong consistency, see the Gitaly Cluster
+[Prometheus metrics documentation](monitoring.md#monitor-gitaly-cluster).
 
 #### Replication factor
 
