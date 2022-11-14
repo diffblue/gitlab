@@ -5,7 +5,6 @@ class Groups::EpicsController < Groups::ApplicationController
   include IssuableCollections
   include ToggleAwardEmoji
   include ToggleSubscriptionAction
-  include RendersNotes
   include EpicsActions
   include DescriptionDiffActions
 
