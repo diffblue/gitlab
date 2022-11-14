@@ -244,6 +244,7 @@ RSpec.describe Sidebars::Groups::Menus::SettingsMenu do
 
         before do
           stub_feature_flags(group_administration_nav_item: group_admin_nav_enabled)
+          stub_feature_flags(auditor_billing_page_access: group)
           allow(::Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(check_billing)
         end
 

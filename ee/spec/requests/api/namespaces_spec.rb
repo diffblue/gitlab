@@ -606,6 +606,7 @@ RSpec.describe API::Namespaces do
 
       context 'with :auditor_billing_page_access feature flag' do
         before do
+          stub_feature_flags(auditor_billing_page_access: namespace)
           do_get(auditor)
         end
 

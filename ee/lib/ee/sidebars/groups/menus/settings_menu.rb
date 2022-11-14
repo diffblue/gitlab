@@ -177,7 +177,7 @@ module EE
           end
 
           def can_see_billing?
-            return unless ::Feature.enabled?(:auditor_billing_page_access)
+            return unless ::Feature.enabled?(:auditor_billing_page_access, context.group)
 
             can?(context.current_user, :read_billing, context.group)
           end

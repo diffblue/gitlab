@@ -37,7 +37,7 @@ module BillingPlansHelper
 
   # [namespace] can be either a namespace or a group
   def can_edit_billing?(namespace)
-    return true unless Feature.enabled?(:auditor_billing_page_access)
+    return true unless Feature.enabled?(:auditor_billing_page_access, namespace)
 
     can?(current_user, :edit_billing, namespace)
   end

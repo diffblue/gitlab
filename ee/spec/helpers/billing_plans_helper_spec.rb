@@ -251,6 +251,39 @@ RSpec.describe BillingPlansHelper, :saas do
     end
   end
 
+  describe '#can_edit_billing?' do
+    let(:group_with_flag) { build(:group) }
+    let(:group_without_flag) { build(:group) }
+    let(:auditor) { create(:auditor) }
+    let(:dev) { create(:user) }
+
+    describe 'when feature flag is set to true for group' do
+      before do
+        stub_feature_flags(auditor_billing_page_access: group_with_flag)
+
+        group_with_flag.add_developer(dev)
+        group_with_flag.add_guest(auditor)
+      end
+
+      it 'is true for auditor' do
+        allow(helper).to receive(:current_user).and_return(auditor)
+
+        expect(helper.can_edit_billing?(group_with_flag)).to eq(true)
+      end
+
+      it 'is false for developer' do
+        allow(helper).to receive(:current_user).and_return(dev)
+
+        expect(helper.can_edit_billing?(group_with_flag)).to eq(true)
+      end
+    end
+
+    it 'is true for group without feature flag set' do
+      stub_feature_flags(auditor_billing_page_access: false)
+      expect(helper.can_edit_billing?(group_without_flag)).to eq(true)
+    end
+  end
+
   describe '#show_contact_sales_button?' do
     using RSpec::Parameterized::TableSyntax
 
