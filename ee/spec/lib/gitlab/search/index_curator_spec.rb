@@ -7,7 +7,8 @@ RSpec.describe Gitlab::Search::IndexCurator do
 
   let(:settings) { {} }
   let(:client) { Gitlab::Search::Client.new }
-  let(:stubbed_helper) { instance_double(Gitlab::Elastic::Helper) }
+  let(:stubbed_helper) { instance_double(::Gitlab::Elastic::Helper) }
+  let(:stubbed_logger) { instance_double(::Gitlab::Elasticsearch::Logger) }
 
   let(:index_info) do
     { "health" => "yellow",
@@ -83,14 +84,34 @@ RSpec.describe Gitlab::Search::IndexCurator do
   end
 
   describe '#rollover_index' do
-    it 'returns a Hash with rollover info' do
-      allow(curator).to receive(:create_new_index_with_same_settings)
-      allow(curator).to receive(:update_aliases)
+    let(:rollover_info) do
+      { from: "gitlab-development-20220915-0422", to: "gitlab-development-20220915-0423" }
+    end
 
-      expect(curator.rollover_index(index_info)).to eq({
-                                                         from: "gitlab-development-20220915-0422",
-                                                         to: "gitlab-development-20220915-0423"
-                                                       })
+    context 'when dry_run is not enabled' do
+      it 'updates settings and returns rollover info' do
+        expect(curator).to receive(:create_new_index_with_same_settings)
+        expect(curator).to receive(:update_aliases)
+
+        expect(curator.rollover_index(index_info)).to eq(rollover_info)
+      end
+    end
+
+    context 'when dry_run is enabled' do
+      let(:settings) { { dry_run: true } }
+
+      it 'logs a statement, does not do anything, and returns rollover info' do
+        expect(curator).not_to receive(:create_new_index_with_same_settings)
+        expect(curator).not_to receive(:update_aliases)
+        allow(curator).to receive(:logger).and_return(stubbed_logger)
+
+        expect(stubbed_logger).to receive(:info).with(
+          message: "[DRY RUN]: would have rolled over => #{rollover_info}",
+          class: "Gitlab::Search::IndexCurator"
+        )
+
+        expect(curator.rollover_index(index_info)).to eq(rollover_info)
+      end
     end
   end
 
@@ -308,7 +329,6 @@ RSpec.describe Gitlab::Search::IndexCurator do
 
   describe 'log_exception' do
     it 'logs an error with correct labels' do
-      stubbed_logger = instance_double(::Gitlab::Elasticsearch::Logger)
       err = ArgumentError.new("boom")
 
       allow(curator).to receive(:logger).and_return stubbed_logger
