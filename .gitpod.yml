@@ -82,7 +82,6 @@ tasks:
         # Install Lefthook
         bundle exec lefthook install
         git checkout db/structure.sql
-        cd /workspace/gitlab-development-kit
         # Waiting for GitLab ...
         gp ports await 3000
         printf "Waiting for GitLab at $(gp url 3000) ..."
