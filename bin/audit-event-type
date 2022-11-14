@@ -186,7 +186,7 @@ class AuditEventTypeOptionParser
       loop do
         introduced_by_mr = Readline.readline('?> ', false)&.strip
         introduced_by_mr = nil if introduced_by_mr.empty?
-        return introduced_by_mr if !introduced_by_mr.nil? && introduced_by_mr.start_with?('https://')
+        return introduced_by_mr if introduced_by_mr.nil? || introduced_by_mr.start_with?('https://')
 
         warn "URL needs to start with https://"
       end

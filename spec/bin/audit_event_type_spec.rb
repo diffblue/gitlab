@@ -226,14 +226,12 @@ RSpec.describe 'bin/audit-event-type' do
       context 'when URL is empty' do
         let(:url) { '' }
 
-        it 'shows an error message and retries' do
+        it 'does not raise an error' do
           expect(Readline).to receive(:readline).and_return(url)
-          expect(Readline).to receive(:readline).and_raise('EOF')
 
           expect do
-            expect { described_class.read_introduced_by_mr }.to raise_error(/EOF/)
-          end.to output(/URL to GitLab merge request that added this type of audit event:/)
-                   .to_stdout.and output(/URL needs to start with https/).to_stderr
+            expect(described_class.read_introduced_by_mr).to be_nil
+          end.to output(/URL to GitLab merge request that added this type of audit event:/).to_stdout
         end
       end
 
