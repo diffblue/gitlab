@@ -13536,6 +13536,9 @@ msgstr ""
 msgid "DeploymentApproval|Rejected by you %{time}"
 msgstr ""
 
+msgid "DeploymentTarget|Edge Computing (e.g. Cloudflare Workers)"
+msgstr ""
+
 msgid "DeploymentTarget|GitLab Pages"
 msgstr ""
 
@@ -13570,6 +13573,9 @@ msgid "DeploymentTarget|Serverless backend (Lambda, Cloud functions)"
 msgstr ""
 
 msgid "DeploymentTarget|Virtual machine (for example, EC2)"
+msgstr ""
+
+msgid "DeploymentTarget|Web Deployment Platform (Netlify, Vercel, Gatsby)"
 msgstr ""
 
 msgid "Deployments"
