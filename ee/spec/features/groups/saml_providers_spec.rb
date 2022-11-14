@@ -235,14 +235,14 @@ RSpec.describe 'SAML provider settings' do
           sign_in(user)
         end
 
-        it 'shows warning that linking accounts authorizes control over sign in' do
+        it 'shows warning that linking accounts authorizes control over sign in', :js do
           visit sso_group_saml_providers_path(group)
 
           expect(page).to have_content(/Allow .* to sign you in/)
           expect(page).to have_content('Authorize')
         end
 
-        it 'Authorize/link button redirects to auth flow' do
+        it 'Authorize/link button redirects to auth flow', :js do
           external_uid = '98765'
           mock_group_saml(uid: external_uid)
           visit sso_group_saml_providers_path(group)
@@ -325,7 +325,7 @@ RSpec.describe 'SAML provider settings' do
             visit sso_group_saml_providers_path(group)
           end
 
-          it 'displays sign in button' do
+          it 'displays sign in button', :js do
             expect(page).to have_current_path sso_group_saml_providers_path(group), ignore_query: true
 
             within '.login-box' do
