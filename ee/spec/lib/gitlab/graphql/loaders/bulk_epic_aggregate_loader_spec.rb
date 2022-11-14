@@ -97,9 +97,9 @@ RSpec.describe Gitlab::Graphql::Loaders::BulkEpicAggregateLoader do
       ids_batch_3 = [epic_without_issues.id]
       limit = described_class::MAXIMUM_LOADABLE
 
-      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_1, limit: limit)
-      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_2, limit: limit)
-      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_3, limit: limit)
+      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_1, limit: limit, count_health_status: false)
+      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_2, limit: limit, count_health_status: false)
+      expect(::Epic).to receive(:issue_metadata_for_epics).with(epic_ids: ids_batch_3, limit: limit, count_health_status: false)
 
       subject.execute
     end

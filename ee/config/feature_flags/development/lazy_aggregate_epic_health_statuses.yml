@@ -1,0 +1,8 @@
+---
+name: lazy_aggregate_epic_health_statuses
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/99317
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/382242
+milestone: '15.6'
+type: development
+group: group::product planning
+default_enabled: false
