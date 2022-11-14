@@ -22,7 +22,8 @@ module API
 
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
         desc 'Get list of secure files in a project' do
-          success Entities::Ci::SecureFiles
+          success Entities::Ci::SecureFile
+          tags %w[secure_files]
         end
         params do
           use :pagination
@@ -34,7 +35,8 @@ module API
         end
 
         desc 'Get the details of a specific secure file in a project' do
-          success Entities::Ci::SecureFiles
+          success Entities::Ci::SecureFile
+          tags %w[secure_files]
         end
         params do
           requires :id, type: Integer, desc: 'The id of a secure file'
@@ -46,7 +48,9 @@ module API
           present secure_file, with: Entities::Ci::SecureFile
         end
 
-        desc 'Download secure file'
+        desc 'Download secure file' do
+          tags %w[secure_files]
+        end
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         get ':id/secure_files/:secure_file_id/download' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])
@@ -64,7 +68,8 @@ module API
           end
 
           desc 'Create a secure file' do
-            success Entities::Ci::Secure::File
+            success Entities::Ci::SecureFile
+            tags %w[secure_files]
             failure [{ code: 400, message: '400 Bad Request' }]
           end
           params do
@@ -94,6 +99,7 @@ module API
           end
 
           desc 'Remove a secure file' do
+            tags %w[secure_files]
             failure [{ code: 204, message: '204 No Content' }]
           end
           route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
