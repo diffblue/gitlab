@@ -57,6 +57,13 @@ export default {
             learnMorePath: this.mr.secretDetectionHelp,
           },
         },
+        CONTAINER_SCANNING: {
+          options: { title: popovers.CONTAINER_SCANNING_TITLE },
+          content: {
+            text: popovers.CONTAINER_SCANNING_TEXT,
+            learnMorePath: this.mr.containerScanningHelp,
+          },
+        },
         DEPENDENCY_SCANNING: {
           options: { title: popovers.DEPENDENCY_SCANNING_TITLE },
           content: {
@@ -154,6 +161,7 @@ export default {
         [this.mr.apiFuzzingComparisonPath, 'API_FUZZING'],
         [this.mr.coverageFuzzingComparisonPath, 'COVERAGE_FUZZING'],
         [this.mr.dependencyScanningComparisonPath, 'DEPENDENCY_SCANNING'],
+        [this.mr.containerScanningComparisonPath, 'CONTAINER_SCANNING'],
       ].filter(([endpoint, reportType]) => Boolean(endpoint) && Boolean(reportType));
 
       return endpoints.map(([path, reportType]) => () =>

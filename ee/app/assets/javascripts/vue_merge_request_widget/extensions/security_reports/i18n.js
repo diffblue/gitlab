@@ -4,6 +4,7 @@ export const reportTypes = {
   SAST: s__('ciReport|SAST'),
   DAST: s__('ciReport|DAST'),
   DEPENDENCY_SCANNING: s__('ciReport|Dependency scanning'),
+  CONTAINER_SCANNING: s__('ciReport|Container scanning'),
   SECRET_DETECTION: s__('ciReport|Secret detection'),
   COVERAGE_FUZZING: s__('ciReport|Coverage fuzzing'),
   API_FUZZING: s__('ciReport|API fuzzing'),
@@ -36,6 +37,11 @@ export const popovers = {
 
   DAST_TEXT: s__('ciReport|Detects known vulnerabilities in your web application.'),
   DAST_TITLE: s__('ciReport|Dynamic Application Security Testing (DAST)'),
+
+  CONTAINER_SCANNING_TITLE: reportTypes.CONTAINER_SCANNING,
+  CONTAINER_SCANNING_TEXT: s__(
+    'ciReport|Container scanning detects known vulnerabilities in your docker images.',
+  ),
 
   DEPENDENCY_SCANNING_TITLE: reportTypes.DEPENDENCY_SCANNING,
   DEPENDENCY_SCANNING_TEXT: s__(
