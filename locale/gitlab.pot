@@ -22786,9 +22786,6 @@ msgstr ""
 msgid "Issue|Title"
 msgstr ""
 
-msgid "It is not possible to %{action} files that are stored in LFS using the web interface"
-msgstr ""
-
 msgid "It looks like you have some draft commits in this branch."
 msgstr ""
 
@@ -46604,9 +46601,6 @@ msgid "You can now submit a merge request to get this change into the original b
 msgstr ""
 
 msgid "You can now submit a merge request to get this change into the original project."
-msgstr ""
-
-msgid "You can only %{action} files when you are on a branch"
 msgstr ""
 
 msgid "You can only add up to %{max_contacts} contacts at one time"
