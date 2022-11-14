@@ -56,7 +56,7 @@ module Gitlab
           ## For other scan types, add `scan-policies` stage after `build` stage if `test` stage is not defined
           def merge_policies_with_stages(config)
             merged_config = config
-            defined_stages = config[:stages].presence || DEFAULT_STAGES
+            defined_stages = config[:stages].presence || DEFAULT_STAGES.clone
 
             merge_on_demand_scan_template(merged_config, defined_stages)
             merge_pipeline_scan_template(merged_config, defined_stages)
