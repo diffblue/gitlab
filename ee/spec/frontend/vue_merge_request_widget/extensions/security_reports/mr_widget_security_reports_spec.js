@@ -24,6 +24,7 @@ describe('MR Widget Security Reports', () => {
   const secretDetectionHelp = '/help/user/application_security/secret-detection/index';
   const apiFuzzingHelp = '/help/user/application_security/api-fuzzing/index';
   const dependencyScanningHelp = '/help/user/application_security/api-fuzzing/index';
+  const containerScanningHelp = '/help/user/application_security/container-scanning/index';
 
   const reportEndpoints = {
     sastComparisonPath: '/my/sast/endpoint',
@@ -32,6 +33,7 @@ describe('MR Widget Security Reports', () => {
     coverageFuzzingComparisonPath: '/my/coverage-fuzzing/endpoint',
     apiFuzzingComparisonPath: '/my/api-fuzzing/endpoint',
     secretDetectionComparisonPath: '/my/secret-detection/endpoint',
+    containerScanningComparisonPath: '/my/container-scanning/endpoint',
   };
 
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
@@ -45,6 +47,7 @@ describe('MR Widget Security Reports', () => {
           sourceProjectFullPath,
           sastHelp,
           dastHelp,
+          containerScanningHelp,
           dependencyScanningHelp,
           coverageFuzzingHelp,
           secretDetectionHelp,
@@ -124,6 +127,7 @@ describe('MR Widget Security Reports', () => {
         reportEndpoints.coverageFuzzingComparisonPath,
         reportEndpoints.apiFuzzingComparisonPath,
         reportEndpoints.secretDetectionComparisonPath,
+        reportEndpoints.containerScanningComparisonPath,
       ].forEach((path) => {
         mockAxios.onGet(path).replyOnce(200, {
           added: [],
@@ -215,6 +219,7 @@ describe('MR Widget Security Reports', () => {
       ${'COVERAGE_FUZZING'}    | ${'Coverage fuzzing'}                            | ${coverageFuzzingHelp}
       ${'API_FUZZING'}         | ${'API fuzzing'}                                 | ${apiFuzzingHelp}
       ${'SECRET_DETECTION'}    | ${'Secret detection'}                            | ${secretDetectionHelp}
+      ${'CONTAINER_SCANNING'}  | ${'Container scanning'}                          | ${containerScanningHelp}
     `(
       'shows the correct help popover for $reportType',
       async ({ reportType, reportTitle, helpPath }) => {
