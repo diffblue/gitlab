@@ -22,7 +22,9 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   let(:main_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "main") }
   let(:main_db_shared_item_model) { table("_test_gitlab_shared_items", database: "main") }
   let(:main_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "main") }
-  let(:main_db_partitioned_item_detached) { table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "main") }
+  let(:main_db_partitioned_item_detached) do
+    table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "main")
+  end
 
   # CI Database
   let(:ci_db_main_item_model) { table("_test_gitlab_main_items", database: "ci") }
@@ -31,7 +33,9 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   let(:ci_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "ci") }
   let(:ci_db_shared_item_model) { table("_test_gitlab_shared_items", database: "ci") }
   let(:ci_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "ci") }
-  let(:ci_db_partitioned_item_detached) { table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "ci") }
+  let(:ci_db_partitioned_item_detached) do
+    table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "ci")
+  end
 
   subject(:truncate_legacy_tables) do
     described_class.new(
@@ -58,16 +62,22 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
         );
 
         CREATE TABLE _test_gitlab_partitioned_items (
-          id serial NOT NULL PRIMARY KEY,
+          id bigserial not null,
+          created_at timestamptz not null,
           item_id BIGINT NOT NULL,
+          primary key (id, created_at),
           CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
-        );
+        ) PARTITION BY RANGE(created_at);
 
-        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101 (
-          id serial NOT NULL PRIMARY KEY,
-          item_id BIGINT NOT NULL,
-          CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
-        );
+        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101
+        PARTITION OF _test_gitlab_partitioned_items
+        FOR VALUES FROM ('20220101') TO ('20220131');
+
+        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220201
+        PARTITION OF _test_gitlab_partitioned_items
+        FOR VALUES FROM ('20220201') TO ('20220228');
+
+        ALTER TABLE _test_gitlab_partitioned_items DETACH PARTITION gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101;
       SQL
 
       main_connection.execute(main_tables_sql)
@@ -101,16 +111,16 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
         main_db_ci_item_model.create!(id: i)
         main_db_ci_reference_model.create!(item_id: i)
         main_db_shared_item_model.create!(id: i)
-        main_db_partitioned_item.create!(item_id: i)
-        main_db_partitioned_item_detached.create!(item_id: i)
+        main_db_partitioned_item.create!(item_id: i, created_at: '2022-02-02 02:00')
+        main_db_partitioned_item_detached.create!(item_id: i, created_at: '2022-01-01 01:00')
         # CI Database
         ci_db_main_item_model.create!(id: i)
         ci_db_main_reference_model.create!(item_id: i)
         ci_db_ci_item_model.create!(id: i)
         ci_db_ci_reference_model.create!(item_id: i)
         ci_db_shared_item_model.create!(id: i)
-        ci_db_partitioned_item.create!(item_id: i)
-        ci_db_partitioned_item_detached.create!(item_id: i)
+        ci_db_partitioned_item.create!(item_id: i, created_at: '2022-02-02 02:00')
+        ci_db_partitioned_item_detached.create!(item_id: i, created_at: '2022-01-01 01:00')
       end
 
       Gitlab::Database::SharedModel.using_connection(main_connection) do
@@ -254,7 +264,10 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   context 'when truncating gitlab_main tables on the ci database' do
     let(:connection) { Ci::ApplicationRecord.connection }
     let(:database_name) { "ci" }
-    let(:legacy_tables_models) { [ci_db_main_item_model, ci_db_main_reference_model, ci_db_partitioned_item, ci_db_partitioned_item_detached] }
+    let(:legacy_tables_models) do
+      [ci_db_main_item_model, ci_db_main_reference_model, ci_db_partitioned_item, ci_db_partitioned_item_detached]
+    end
+
     let(:referencing_table_model) { ci_db_main_reference_model }
     let(:referenced_table_model) { ci_db_main_item_model }
     let(:other_tables_models) do
