@@ -200,6 +200,7 @@ module API
         mount ::API::Features
         mount ::API::Files
         mount ::API::FreezePeriods
+        mount ::API::Geo
         mount ::API::GroupAvatar
         mount ::API::GroupClusters
         mount ::API::GroupExport
@@ -279,7 +280,6 @@ module API
       mount ::API::ErrorTracking::ProjectSettings
       mount ::API::Events
       mount ::API::GenericPackages
-      mount ::API::Geo
       mount ::API::GoProxy
       mount ::API::GroupBoards
       mount ::API::GroupContainerRepositories
