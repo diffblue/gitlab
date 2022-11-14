@@ -13,7 +13,7 @@ tasks:
     command: |
       # send signal to other tasks that Gitpod started
       gp sync-done gitpod-start
-      echo "Waiting for other task to copy GDK..""
+      echo "Waiting for other task to copy GDK.."
       gp sync-await gdk-copied && cd /workspace/gitlab-development-kit && gdk help
 
   - name: GitLab
