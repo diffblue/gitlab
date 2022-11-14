@@ -210,6 +210,7 @@ module API
         mount ::API::Lint
         mount ::API::MergeRequestDiffs
         mount ::API::Metadata
+        mount ::API::Metrics::UserStarredDashboards
         mount ::API::PersonalAccessTokens::SelfInformation
         mount ::API::PersonalAccessTokens
         mount ::API::ProjectClusters
@@ -297,7 +298,6 @@ module API
       mount ::API::MergeRequestApprovals
       mount ::API::MergeRequests
       mount ::API::Metrics::Dashboard::Annotations
-      mount ::API::Metrics::UserStarredDashboards
       mount ::API::Namespaces
       mount ::API::Notes
       mount ::API::NotificationSettings
