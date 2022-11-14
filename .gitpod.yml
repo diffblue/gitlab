@@ -1,3 +1,6 @@
+# Gitpod file reference
+# https://www.gitpod.io/docs/configure/workspaces/tasks
+
 image: registry.gitlab.com/gitlab-org/gitlab-development-kit/gitpod-workspace:stable
 
 tasks:
@@ -8,7 +11,9 @@ tasks:
       START_UNIXTIME="$(date +%s)"
       echo START_UNIXTIME="$(date +%s)" > /workspace/gitpod_start_time.sh
     command: |
+      # send signal to other tasks that Gitpod started
       gp sync-done gitpod-start
+      # wait until other task copied GDK
       gp sync-await gdk-copied && cd /workspace/gitlab-development-kit && gdk help
 
   - name: GitLab
