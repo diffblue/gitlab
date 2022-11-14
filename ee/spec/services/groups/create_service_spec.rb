@@ -111,13 +111,10 @@ RSpec.describe Groups::CreateService, '#execute' do
 
         it 'uses the configured push rules settings' do
           group = create_group(user, group_params)
+          group.reload
 
-          expect(group.reload.push_rule).to have_attributes(
-            force_push_regex: sample.force_push_regex,
-            deny_delete_tag: sample.deny_delete_tag,
-            delete_branch_regex: sample.delete_branch_regex,
-            commit_message_regex: sample.commit_message_regex
-          )
+          expect(group.push_rule).to be_nil
+          expect(group.predefined_push_rule).to eq(sample)
         end
       end
 
