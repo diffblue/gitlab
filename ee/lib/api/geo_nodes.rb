@@ -31,12 +31,17 @@ module API
     end
 
     resource :geo_nodes do
-      # Add a new Geo node
-      #
       # Example request:
       #   POST /geo_nodes
       desc 'Create a new Geo node' do
-        success EE::API::Entities::GeoNode
+        summary 'Creates a new Geo node'
+        success code: 200, model: EE::API::Entities::GeoNode
+        failure [
+          { code: 400, message: 'Validation error' },
+          { code: 401, message: '401 Unauthorized' },
+          { code: 403, message: '403 Forbidden' }
+        ]
+        tags %w[geo_nodes]
       end
       params do
         optional :primary, type: Boolean, desc: 'Specifying whether this node will be primary. Defaults to false.'
@@ -66,12 +71,21 @@ module API
         end
       end
 
-      # Get all Geo node information
-      #
       # Example request:
       #   GET /geo_nodes
       desc 'Retrieves the available Geo nodes' do
-        success EE::API::Entities::GeoNode
+        summary 'Retrieve configuration about all Geo nodes'
+        success code: 200, model: EE::API::Entities::GeoNode
+        failure [
+          { code: 400, message: '400 Bad request' },
+          { code: 401, message: '401 Unauthorized' },
+          { code: 403, message: '403 Forbidden' }
+        ]
+        is_array true
+        tags %w[geo_nodes]
+      end
+      params do
+        use :pagination
       end
 
       get do
@@ -80,12 +94,21 @@ module API
         present paginate(nodes), with: EE::API::Entities::GeoNode
       end
 
-      # Get all Geo node statuses
-      #
       # Example request:
       #   GET /geo_nodes/status
       desc 'Get status for all Geo nodes' do
-        success EE::API::Entities::GeoNodeStatus
+        summary 'Get all Geo node statuses'
+        success code: 200, model: EE::API::Entities::GeoNodeStatus
+        failure [
+          { code: 400, message: '400 Bad request' },
+          { code: 401, message: '401 Unauthorized' },
+          { code: 403, message: '403 Forbidden' }
+        ]
+        is_array true
+        tags %w[geo_nodes]
+      end
+      params do
+        use :pagination
       end
       get '/status' do
         status = GeoNodeStatus.all
@@ -93,12 +116,19 @@ module API
         present paginate(status), with: EE::API::Entities::GeoNodeStatus
       end
 
-      # Get project registry failures for the current Geo node
-      #
       # Example request:
       #   GET /geo_nodes/current/failures
-      desc 'Get project registry failures for the current Geo node' do
-        success ::GeoProjectRegistryEntity
+      desc 'Get project sync or verification failures that occurred on the current node' do
+        summary 'Get project registry failures for the current Geo node'
+        success code: 200, model: ::GeoProjectRegistryEntity
+        failure [
+          { code: 400, message: '400 Bad request' },
+          { code: 401, message: '401 Unauthorized' },
+          { code: 403, message: '403 Forbidden' },
+          { code: 404, message: '404 Failure type unknown Not Found' }
+        ]
+        is_array true
+        tags %w[geo_nodes]
       end
       params do
         optional :type, type: String, values: %w[wiki repository], desc: 'Type of failure (repository/wiki)'
@@ -140,12 +170,18 @@ module API
           end
         end
 
-        # Get all Geo node information
-        #
         # Example request:
         #   GET /geo_nodes/:id
         desc 'Get a single GeoNode' do
-          success EE::API::Entities::GeoNode
+          summary 'Retrieve configuration about a specific Geo node'
+          success code: 200, model: EE::API::Entities::GeoNode
+          failure [
+            { code: 400, message: '400 Bad request' },
+            { code: 401, message: '401 Unauthorized' },
+            { code: 403, message: '403 Forbidden' },
+            { code: 404, message: '404 GeoNode Not Found' }
+          ]
+          tags %w[geo_nodes]
         end
         get do
           not_found!('GeoNode') unless geo_node
@@ -153,12 +189,18 @@ module API
           present geo_node, with: EE::API::Entities::GeoNode
         end
 
-        # Get Geo metrics for a single node
-        #
         # Example request:
         #   GET /geo_nodes/:id/status
         desc 'Get metrics for a single Geo node' do
-          success EE::API::Entities::GeoNodeStatus
+          summary 'Get Geo metrics for a single node'
+          success code: 200, model: EE::API::Entities::GeoNodeStatus
+          failure [
+            { code: 400, message: '400 Bad request' },
+            { code: 401, message: '401 Unauthorized' },
+            { code: 403, message: '403 Forbidden' },
+            { code: 404, message: '404 GeoNode Not Found' }
+          ]
+          tags %w[geo_nodes]
         end
         params do
           optional :refresh, type: Boolean, desc: 'Attempt to fetch the latest status from the Geo node directly, ignoring the cache'
@@ -171,12 +213,18 @@ module API
           present geo_node_status, with: EE::API::Entities::GeoNodeStatus
         end
 
-        # Repair authentication of the Geo node
-        #
         # Example request:
         #   POST /geo_nodes/:id/repair
         desc 'Repair authentication of the Geo node' do
-          success EE::API::Entities::GeoNodeStatus
+          summary 'Repair authentication of the Geo node'
+          success code: 200, model: EE::API::Entities::GeoNodeStatus
+          failure [
+            { code: 400, message: '400 Bad request' },
+            { code: 401, message: '401 Unauthorized' },
+            { code: 403, message: '403 Forbidden' },
+            { code: 404, message: '404 GeoNode Not Found' }
+          ]
+          tags %w[geo_nodes]
         end
         post 'repair' do
           not_found!('GeoNode') unless geo_node
@@ -189,12 +237,18 @@ module API
           end
         end
 
-        # Edit an existing Geo node
-        #
         # Example request:
         #   PUT /geo_nodes/:id
-        desc 'Update an existing Geo node' do
-          success EE::API::Entities::GeoNode
+        desc 'Updates an existing Geo node' do
+          summary 'Edit a Geo node'
+          success code: 200, model: EE::API::Entities::GeoNode
+          failure [
+            { code: 400, message: '400 Bad request' },
+            { code: 401, message: '401 Unauthorized' },
+            { code: 403, message: '403 Forbidden' },
+            { code: 404, message: '404 GeoNode Not Found' }
+          ]
+          tags %w[geo_nodes]
         end
         params do
           optional :enabled, type: Boolean, desc: 'Flag indicating if the Geo node is enabled'
@@ -225,12 +279,18 @@ module API
           end
         end
 
-        # Delete an existing Geo node
-        #
         # Example request:
         #   DELETE /geo_nodes/:id
-        desc 'Delete an existing Geo secondary node' do
-          success EE::API::Entities::GeoNode
+        desc 'Remove the Geo node' do
+          summary 'Delete a Geo node'
+          success code: 204, message: '204 No Content'
+          failure [
+            { code: 400, message: '400 Bad request' },
+            { code: 401, message: '401 Unauthorized' },
+            { code: 403, message: '403 Forbidden' },
+            { code: 404, message: '404 GeoNode Not Found' }
+          ]
+          tags %w[geo_nodes]
         end
         delete do
           not_found!('GeoNode') unless geo_node
