@@ -200,6 +200,7 @@ module API
         mount ::API::Files
         mount ::API::FreezePeriods
         mount ::API::Geo
+        mount ::API::GroupAvatar
         mount ::API::GroupClusters
         mount ::API::GroupExport
         mount ::API::GroupImport
@@ -280,7 +281,6 @@ module API
       mount ::API::Events
       mount ::API::GenericPackages
       mount ::API::GoProxy
-      mount ::API::GroupAvatar
       mount ::API::GroupBoards
       mount ::API::GroupContainerRepositories
       mount ::API::GroupDebianDistributions
