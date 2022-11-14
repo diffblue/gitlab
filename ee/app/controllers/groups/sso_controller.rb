@@ -10,6 +10,7 @@ class Groups::SsoController < Groups::ApplicationController
   before_action :require_saml_provider!
   before_action :require_enabled_provider!, except: [:unlink]
   before_action :check_user_can_sign_in_with_provider, only: [:saml]
+  before_action :group, only: [:saml]
   before_action :redirect_if_group_moved
   before_action :check_oauth_data, only: [:sign_up_form, :sign_up, :authorize_managed_account]
 

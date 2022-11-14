@@ -1,7 +1,9 @@
 import Vue from 'vue';
 
+import { parseBoolean } from '~/lib/utils/common_utils';
 import ScimToken from './components/scim_token.vue';
-import { AUTO_REDIRECT_TO_PROVIDER_BUTTON_SELECTOR } from './constants';
+import SamlAuthorize from './components/saml_authorize.vue';
+import { AUTO_REDIRECT_TO_PROVIDER_BUTTON_SELECTOR, SAML_AUTHORIZE_SELECTOR } from './constants';
 
 export const redirectUserWithSSOIdentity = () => {
   const signInButton = document.querySelector(AUTO_REDIRECT_TO_PROVIDER_BUTTON_SELECTOR);
@@ -11,6 +13,39 @@ export const redirectUserWithSSOIdentity = () => {
   }
 
   signInButton.click();
+};
+
+export const initSamlAuthorize = () => {
+  const el = document.getElementById(SAML_AUTHORIZE_SELECTOR);
+
+  if (!el) return null;
+
+  const {
+    groupName,
+    groupUrl,
+    samlUrl,
+    rememberable,
+    username,
+    userFullName,
+    userUrl,
+  } = el.dataset;
+
+  return new Vue({
+    el,
+    name: 'SamlAuthorizeRoot',
+    provide: {
+      groupName,
+      groupUrl,
+      rememberable: parseBoolean(rememberable),
+      samlUrl,
+      username,
+      userFullName,
+      userUrl,
+    },
+    render(createElement) {
+      return createElement(SamlAuthorize);
+    },
+  });
 };
 
 export const initScimTokenApp = () => {
