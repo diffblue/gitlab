@@ -2797,16 +2797,6 @@ RSpec.describe Ci::Build do
         expect(environment_based_variables_collection).to be_empty
       end
 
-      context 'when ci_job_jwt feature flag is disabled' do
-        before do
-          stub_feature_flags(ci_job_jwt: false)
-        end
-
-        it 'CI_JOB_JWT is not included' do
-          expect(subject.pluck(:key)).not_to include('CI_JOB_JWT')
-        end
-      end
-
       context 'when CI_JOB_JWT generation fails' do
         [
           OpenSSL::PKey::RSAError,
