@@ -179,6 +179,7 @@ module API
         mount ::API::BroadcastMessages
         mount ::API::BulkImports
         mount ::API::Ci::Jobs
+        mount ::API::Ci::PipelineSchedules
         mount ::API::Ci::ResourceGroups
         mount ::API::Ci::Runner
         mount ::API::Ci::Runners
@@ -253,6 +254,7 @@ module API
       mount ::API::Boards
       mount ::API::Branches
       mount ::API::Ci::JobArtifacts
+      mount ::API::Ci::Pipelines
       mount ::API::Ci::PipelineSchedules
       mount ::API::Ci::SecureFiles
       mount ::API::Ci::Triggers
