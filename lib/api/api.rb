@@ -205,6 +205,7 @@ module API
         mount ::API::Geo
         mount ::API::GroupAvatar
         mount ::API::GroupClusters
+        mount ::API::GroupContainerRepositories
         mount ::API::GroupExport
         mount ::API::GroupImport
         mount ::API::GroupPackages
@@ -284,7 +285,6 @@ module API
       mount ::API::GenericPackages
       mount ::API::GoProxy
       mount ::API::GroupBoards
-      mount ::API::GroupContainerRepositories
       mount ::API::GroupDebianDistributions
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
