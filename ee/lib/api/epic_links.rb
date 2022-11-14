@@ -16,17 +16,33 @@ module API
     helpers do
       def child_epic
         strong_memoize(:child_epic) do
-          find_epics(finder_params: { group_id: user_group.id })
-            .find_by_id(declared_params[:child_epic_id])
+          if cross_group_child_epics_enabled?
+            find_epics(finder_params: { parent: epic }, children_only: true)
+              .find_by_id(declared_params[:child_epic_id])
+          else
+            find_epics(finder_params: { group_id: user_group.id })
+              .find_by_id(declared_params[:child_epic_id])
+          end
         end
       end
 
       def child_epics
-        EpicsFinder.new(current_user, {
-          parent_id: epic.id,
-          group_id: user_group.id,
-          sort: 'relative_position'
-        }).execute
+        if cross_group_child_epics_enabled?
+          ::Epics::CrossHierarchyChildrenFinder.new(current_user, {
+            parent: epic,
+            sort: 'relative_position'
+          }).execute.with_child_api_entity_associations
+        else
+          EpicsFinder.new(current_user, {
+            parent_id: epic.id,
+            group_id: user_group.id,
+            sort: 'relative_position'
+          }).execute
+        end
+      end
+
+      def cross_group_child_epics_enabled?
+        ::Feature.enabled?(:child_epics_from_different_hierarchies, user_group)
       end
 
       params :child_epic_id do
@@ -61,7 +77,9 @@ module API
         authorize_subepics_feature!
         authorize_can_admin_epic_link!
 
-        create_params = { target_issuable: child_epic }
+        target_child_epic = Epic.find_by_id(declared_params[:child_epic_id])
+
+        create_params = { target_issuable: target_child_epic }
 
         result = ::Epics::EpicLinks::CreateService.new(epic, current_user, create_params).execute
 
@@ -102,9 +120,13 @@ module API
       delete ':id/(-/)epics/:epic_iid/epics/:child_epic_id' do
         authorize_can_destroy_epic_link!
 
-        updated_epic = ::Epics::UpdateService.new(group: user_group, current_user: current_user, params: { parent: nil }).execute(child_epic)
+        result = ::Epics::EpicLinks::DestroyService.new(child_epic, current_user).execute
 
-        present updated_epic, with: EE::API::Entities::Epic
+        if result[:status] == :success
+          present child_epic, with: EE::API::Entities::Epic
+        else
+          render_api_error!(result[:message], result[:http_status])
+        end
       end
 
       desc 'Reorder child epics'

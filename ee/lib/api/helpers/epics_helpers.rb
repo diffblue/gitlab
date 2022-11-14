@@ -44,13 +44,14 @@ module API
         @epic ||= user_group.epics.find_by(iid: params[:epic_iid])
       end
 
-      def find_epics(finder_params: {}, preload: nil)
+      def find_epics(finder_params: {}, preload: nil, children_only: false)
         args = declared_params.merge(finder_params)
         args[:label_name] = args.delete(:labels)
         args[:not] ||= {}
         args[:not][:label_name] ||= args[:not].delete(:labels)
 
-        epics = EpicsFinder.new(current_user, args).execute.preload(preload)
+        finder_class = children_only ? ::Epics::CrossHierarchyChildrenFinder : EpicsFinder
+        epics = finder_class.new(current_user, args).execute.preload(preload)
 
         if args[:order_by] && args[:sort]
           epics.reorder(args[:order_by] => args[:sort])

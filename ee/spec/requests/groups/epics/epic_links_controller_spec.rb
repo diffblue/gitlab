@@ -3,12 +3,12 @@
 require 'spec_helper'
 
 RSpec.describe Groups::Epics::EpicLinksController do
-  let(:group) { create(:group, :public) }
-  let(:parent_epic) { create(:epic, group: group) }
-  let(:epic1) { create(:epic, group: group) }
-  let(:epic2) { create(:epic, group: group) }
-  let(:user)  { create(:user) }
-  let(:features_when_forbidden) { { epics: true, subepics: false } }
+  let_it_be(:group) { create(:group, :public) }
+  let_it_be(:parent_epic, reload: true) { create(:epic, group: group) }
+  let_it_be(:epic1, reload: true) { create(:epic, group: group) }
+  let_it_be(:epic2, reload: true) { create(:epic, group: group) }
+  let_it_be(:user)  { create(:user) }
+  let_it_be(:features_when_forbidden) { { epics: true, subepics: false } }
 
   before do
     sign_in(user)
@@ -36,6 +36,24 @@ RSpec.describe Groups::Epics::EpicLinksController do
 
     subject { get group_epic_links_path(group_id: group, epic_id: parent_epic.to_param) }
 
+    shared_examples 'avoids N+1 queries' do |threshold: 0, with_new_group: false|
+      it 'executes same number of queries plus threshold', :use_sql_query_cache do
+        # When with_new_group is false, the new child belong to the same group as the parent
+        # When true, the new child is created in a new group
+        epics_group = with_new_group ? create(:group) : group
+
+        def get_epics
+          get group_epic_links_path(group_id: group, epic_id: parent_epic.to_param, format: :json)
+        end
+
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) { get_epics }
+
+        create(:epic, group: epics_group, parent: parent_epic)
+
+        expect { get_epics }.not_to exceed_all_query_limit(control).with_threshold(threshold)
+      end
+    end
+
     it_behaves_like 'unlicensed subepics action'
 
     context 'when epics are enabled' do
@@ -56,6 +74,33 @@ RSpec.describe Groups::Epics::EpicLinksController do
           expect(response).to have_gitlab_http_status(:ok)
           expect(json_response).to eq(list_service_response.as_json)
         end
+
+        context 'with query performance' do
+          before do
+            create_list(:epic, 3, group: group, parent: parent_epic)
+          end
+
+          # Executes 3 extra queries to fetch the new group
+          #   SELECT "saml_providers"
+          #   SELECT "namespaces"
+          #   SELECT "routes"
+          # Executes 2 extra queries per the child to fetch its issues and epics
+          # See: https://gitlab.com/gitlab-org/gitlab/-/issues/382056
+          it_behaves_like 'avoids N+1 queries', threshold: 5, with_new_group: true
+
+          context 'when child_epics_from_different_hierarchies is disabled' do
+            before do
+              stub_feature_flags(child_epics_from_different_hierarchies: false)
+            end
+
+            # Executes 2 extra queries to fetch group
+            #   SELECT "namespaces"
+            #   SELECT "routes"
+            # Executes 2 extra queries per the child to fetch its issues and epics
+            # See: https://gitlab.com/gitlab-org/gitlab/-/issues/382056
+            it_behaves_like 'avoids N+1 queries', threshold: 4
+          end
+        end
       end
 
       context 'when user does not have access to epic' do
@@ -65,6 +110,41 @@ RSpec.describe Groups::Epics::EpicLinksController do
           subject
 
           expect(response).to have_gitlab_http_status(:not_found)
+        end
+      end
+
+      context 'with children in different group hierarchies' do
+        let_it_be(:other_group) { create(:group) }
+        let_it_be(:other_child) { create(:epic, group: other_group, parent: parent_epic) }
+
+        shared_examples 'returns correct response' do |children_count:|
+          it 'includes only children with access' do
+            subject
+
+            list_service_response = Epics::EpicLinks::ListService.new(parent_epic, user).execute
+
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response).to eq(list_service_response.as_json)
+            expect(list_service_response.count).to eq(children_count)
+          end
+        end
+
+        it_behaves_like 'returns correct response', children_count: 2
+
+        context 'when user has no access to the other group' do
+          before do
+            other_group.update!(visibility_level: Gitlab::VisibilityLevel::PRIVATE)
+          end
+
+          it_behaves_like 'returns correct response', children_count: 1
+        end
+
+        context 'when child_epics_from_different_hierarchies is disabled' do
+          before do
+            stub_feature_flags(child_epics_from_different_hierarchies: false)
+          end
+
+          it_behaves_like 'returns correct response', children_count: 1
         end
       end
     end
