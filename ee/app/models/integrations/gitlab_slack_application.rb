@@ -2,7 +2,7 @@
 
 module Integrations
   class GitlabSlackApplication < Integration
-    default_value_for :category, 'chat'
+    attribute :category, default: 'chat'
 
     has_one :slack_integration, foreign_key: :integration_id
 
