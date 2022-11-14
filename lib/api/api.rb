@@ -202,6 +202,7 @@ module API
         mount ::API::GroupClusters
         mount ::API::GroupExport
         mount ::API::GroupImport
+        mount ::API::GroupPackages
         mount ::API::GroupVariables
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
@@ -283,7 +284,6 @@ module API
       mount ::API::GroupDebianDistributions
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
-      mount ::API::GroupPackages
       mount ::API::Groups
       mount ::API::HelmPackages
       mount ::API::Integrations

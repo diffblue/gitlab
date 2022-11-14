@@ -51,6 +51,8 @@ metadata:
     description: Operations related to exporting groups
   - name: group_import
     description: Operations related to importing groups
+  - name: group_packages
+    description: Operations related to group packages
   - name: merge_requests
     description: Operations related to merge requests
   - name: metadata
