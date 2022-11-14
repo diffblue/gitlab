@@ -604,6 +604,16 @@ For each replica, the following metadata is available:
 | `Valid Primary`  | Indicates whether the replica is fit to serve as the primary node. If the repository's primary is not a valid primary, a failover occurs on the next write to the repository if there is another replica that is a valid primary. A replica is a valid primary if:<br><br>- It is stored on a healthy Gitaly node.<br>- It is fully up to date.<br>- It is not targeted by a pending deletion job from decreasing replication factor.<br>- It is assigned. |
 | `Verified At` | Indicates last successful verification of the replica by the [verification worker](praefect.md#repository-verification). If the replica has not yet been verified, `unverified` is displayed in place of the last successful verification time. Introduced in GitLab 15.0. |
 
+#### Command fails with 'repository not found'
+
+If the supplied value for `-virtual-storage` is incorrect, the command returns the following error:
+
+```plaintext
+get metadata: rpc error: code = NotFound desc = repository not found
+```
+
+The documented examples specify `-virtual-storage default`. Check the Praefect server setting `praefect['virtual_storages']` in `/etc/gitlab/gitlab.rb`.
+
 ### Check that repositories are in sync
 
 Is [some cases](index.md#known-issues) the Praefect database can get out of sync with the underlying Gitaly nodes. To check that
