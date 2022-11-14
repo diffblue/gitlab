@@ -216,6 +216,7 @@ module API
         mount ::API::MergeRequestDiffs
         mount ::API::Metadata
         mount ::API::Metrics::UserStarredDashboards
+        mount ::API::PackageFiles
         mount ::API::PersonalAccessTokens::SelfInformation
         mount ::API::PersonalAccessTokens
         mount ::API::ProjectClusters
@@ -305,7 +306,6 @@ module API
       mount ::API::NpmProjectPackages
       mount ::API::NugetGroupPackages
       mount ::API::NugetProjectPackages
-      mount ::API::PackageFiles
       mount ::API::Pages
       mount ::API::PagesDomains
       mount ::API::ProjectContainerRepositories
