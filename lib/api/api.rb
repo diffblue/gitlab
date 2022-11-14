@@ -200,6 +200,7 @@ module API
         mount ::API::FreezePeriods
         mount ::API::GroupClusters
         mount ::API::GroupExport
+        mount ::API::GroupImport
         mount ::API::GroupVariables
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
@@ -278,7 +279,6 @@ module API
       mount ::API::GroupBoards
       mount ::API::GroupContainerRepositories
       mount ::API::GroupDebianDistributions
-      mount ::API::GroupImport
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
       mount ::API::GroupPackages
