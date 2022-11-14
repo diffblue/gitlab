@@ -2646,6 +2646,9 @@ msgstr ""
 msgid "AdminArea|Total users"
 msgstr ""
 
+msgid "AdminArea|Updated %{last_update_time}"
+msgstr ""
+
 msgid "AdminArea|Users"
 msgstr ""
 

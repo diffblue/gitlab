@@ -999,6 +999,26 @@ RSpec.describe License do
     end
   end
 
+  describe '#daily_billable_users_updated_time' do
+    before do
+      freeze_time
+    end
+
+    context 'when a billable_users usage trend measurement is available' do
+      it 'returns the same recorded_at value' do
+        create(:usage_trends_measurement, identifier: :billable_users, count: 2, recorded_at: '2012-10-11T09:15:15Z')
+
+        expect(license.daily_billable_users_updated_time).to eq('2012-10-11 09:15:15 UTC')
+      end
+    end
+
+    context 'without a billable_users usage trend measurement record' do
+      it 'returns Time.zone.now value' do
+        expect(license.daily_billable_users_updated_time).to eq(Time.zone.now.to_s)
+      end
+    end
+  end
+
   describe '#overage' do
     it 'returns 0 if restricted_user_count is nil' do
       allow(license).to receive(:restricted_user_count) { nil }
