@@ -146,7 +146,7 @@ class Group < Namespace
             format: { with: Gitlab::Regex.group_name_regex,
                       message: Gitlab::Regex.group_name_regex_message },
             if: :name_changed?
-  validates :name, uniqueness: { :scope => [:type, :parent_id] }, if: -> { parent_id.present? }
+  validates :name, uniqueness: { scope: [:type, :parent_id] }, if: -> { parent_id.present? }
 
   validates :group_feature, presence: true
 

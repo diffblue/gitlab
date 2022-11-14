@@ -104,7 +104,8 @@ RSpec.describe Group do
           sub_group1 = create(:group, parent: group, name: "SG", path: 'api')
           sub_group2 = described_class.new(parent: group, name: "SG", path: 'api2')
 
-          expect(sub_group2).to_not be_valid
+          expect(sub_group1).to be_valid
+          expect(sub_group2).not_to be_valid
           expect(sub_group2.errors.full_messages.to_sentence).to eq('Name has already been taken')
         end
       end
