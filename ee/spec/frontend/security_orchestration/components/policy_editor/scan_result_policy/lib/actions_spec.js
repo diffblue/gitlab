@@ -8,21 +8,21 @@ import {
 
 // As returned by endpoints based on API::Entities::UserBasic
 const userApprover = {
+  avatar_url: null,
   id: 1,
   name: null,
   state: null,
   username: 'user name',
-  avatar_url: null,
   web_url: null,
 };
 
 // As returned by endpoints based on API::Entities::PublicGroupDetails
 const groupApprover = {
+  avatar_url: null,
   id: 2,
   name: null,
   full_name: null,
   full_path: 'full path',
-  avatar_url: null,
   web_url: null,
 };
 
@@ -43,24 +43,8 @@ describe('groupApprovers', () => {
   describe('with mixed approvers', () => {
     it('returns a copy of the input values with their proper type attribute', () => {
       expect(groupApprovers(allApprovers)).toStrictEqual([
-        {
-          avatar_url: null,
-          id: userApprover.id,
-          name: null,
-          state: null,
-          type: 'user',
-          username: 'user name',
-          web_url: null,
-        },
-        {
-          avatar_url: null,
-          full_name: null,
-          full_path: 'full path',
-          id: groupApprover.id,
-          name: null,
-          type: 'group',
-          web_url: null,
-        },
+        { ...userApprover, type: 'user', value: 'gid://gitlab/User/1' },
+        { ...groupApprover, type: 'group' },
       ]);
     });
 
@@ -76,30 +60,12 @@ describe('groupApprovers', () => {
   });
 
   it('sets group as a type for group related approvers', () => {
-    expect(groupApprovers([groupApprover])).toStrictEqual([
-      {
-        avatar_url: null,
-        full_name: null,
-        full_path: 'full path',
-        id: groupApprover.id,
-        name: null,
-        type: 'group',
-        web_url: null,
-      },
-    ]);
+    expect(groupApprovers([groupApprover])).toStrictEqual([{ ...groupApprover, type: 'group' }]);
   });
 
   it('sets user as a type for user related approvers', () => {
     expect(groupApprovers([userApprover])).toStrictEqual([
-      {
-        avatar_url: null,
-        id: userApprover.id,
-        name: null,
-        state: null,
-        type: 'user',
-        username: 'user name',
-        web_url: null,
-      },
+      { ...userApprover, type: 'user', value: 'gid://gitlab/User/1' },
     ]);
   });
 
@@ -299,7 +265,7 @@ describe('approversOutOfSync', () => {
       ${['not present']}              | ${[]}              | ${true}
       ${['not present']}              | ${[groupApprover]} | ${true}
     `(
-      'return $result when fullPath and approvers length equal to $fullPath and $approvers.length',
+      'return $result when full_path and approvers length equal to $full_path and $approvers.length',
       ({ fullPath, approvers, result }) => {
         const action = {
           approvals_required: 1,

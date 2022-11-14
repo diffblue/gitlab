@@ -1,17 +1,23 @@
 <script>
-import { GlSprintf, GlForm, GlFormInput, GlModalDirective } from '@gitlab/ui';
-import { s__ } from '~/locale';
-import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
-import ApproversList from 'ee/approvals/components/approvers_list.vue';
-import { groupApprovers, decomposeApprovers, groupIds, userIds } from './lib/actions';
+import { GlSprintf, GlForm, GlFormInput, GlListbox, GlModalDirective } from '@gitlab/ui';
+import { n__, s__ } from '~/locale';
+import UserSelect from './user_select.vue';
+import {
+  APPROVER_TYPE_LIST_ITEMS,
+  groupApprovers,
+  decomposeApprovers,
+  groupIds,
+  userIds,
+  USER_TYPE,
+} from './lib/actions';
 
 export default {
   components: {
     GlSprintf,
     GlForm,
     GlFormInput,
-    ApproversSelect,
-    ApproversList,
+    GlListbox,
+    UserSelect,
   },
   directives: {
     GlModalDirective,
@@ -31,10 +37,23 @@ export default {
     return {
       action: { ...this.initAction },
       approvers: groupApprovers(this.existingApprovers),
-      approversToAdd: [],
+      approverType:
+        this.initAction.user_approvers?.length || this.initAction.user_approvers_ids?.length
+          ? USER_TYPE
+          : '',
     };
   },
   computed: {
+    approverTypeToggleText() {
+      return this.approverType ? '' : s__('SecurityOrchestration|Choose approver type');
+    },
+    humanizedTemplate() {
+      return n__(
+        '%{thenLabelStart}Then%{thenLabelEnd} Require %{approvalsRequired} approval from %{approverType}%{approvers}',
+        '%{thenLabelStart}Then%{thenLabelEnd} Require %{approvalsRequired} approvals from %{approverType}%{approvers}',
+        this.action.approvals_required,
+      );
+    },
     groupIds() {
       return groupIds(this.approvers);
     },
@@ -43,13 +62,6 @@ export default {
     },
   },
   watch: {
-    approvers(values) {
-      this.action = decomposeApprovers(this.action, values);
-      this.$emit('approversUpdated', this.approvers);
-    },
-    approversToAdd(val) {
-      this.approvers.push(val[0]);
-    },
     action: {
       handler(values) {
         this.$emit('changed', values);
@@ -61,17 +73,21 @@ export default {
     approvalsRequiredChanged(value) {
       this.action.approvals_required = parseInt(value, 10);
     },
+    handleApproversUpdate(updatedApprovers) {
+      this.approvers = updatedApprovers;
+      this.action = decomposeApprovers(this.action, updatedApprovers);
+      this.$emit('approversUpdated', this.approvers);
+    },
   },
-  humanizedTemplate: s__(
-    'ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers:',
-  ),
+  APPROVER_TYPE_LIST_ITEMS,
+  USER_TYPE,
 };
 </script>
 
 <template>
-  <div class="gl-bg-gray-10 gl-rounded-base gl-px-5! gl-pt-5! gl-relative gl-pb-4">
-    <gl-form inline @submit.prevent>
-      <gl-sprintf :message="$options.humanizedTemplate">
+  <div class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-display-flex gl-relative">
+    <gl-form inline class="gl-flex-grow-1 gl-gap-3" @submit.prevent>
+      <gl-sprintf :message="humanizedTemplate">
         <template #thenLabel="{ content }">
           <label for="approvalRequired" class="text-uppercase gl-font-lg gl-mr-3">{{
             content
@@ -82,25 +98,30 @@ export default {
           <gl-form-input
             :value="action.approvals_required"
             type="number"
-            class="gl-w-11! gl-m-3"
+            class="gl-w-11!"
             :min="1"
             data-testid="approvals-required-input"
             @update="approvalsRequiredChanged"
           />
         </template>
+
+        <template #approverType>
+          <gl-listbox
+            v-model="approverType"
+            :items="$options.APPROVER_TYPE_LIST_ITEMS"
+            :toggle-text="approverTypeToggleText"
+          />
+        </template>
+
+        <template #approvers>
+          <template v-if="approverType === $options.USER_TYPE">
+            <user-select
+              :existing-approvers="approvers"
+              @updateSelectedApprovers="handleApproversUpdate"
+            />
+          </template>
+        </template>
       </gl-sprintf>
-      <div class="gl-bg-white gl-w-full gl-display-flex">
-        <approvers-select
-          v-model="approversToAdd"
-          :skip-user-ids="userIds"
-          :skip-group-ids="groupIds"
-          :namespace-id="namespaceId"
-          :namespace-type="namespaceType"
-        />
-      </div>
-      <div class="gl-bg-white gl-w-full gl-mt-3 gl-border gl-rounded-base gl-overflow-auto gl-h-13">
-        <approvers-list v-model="approvers" />
-      </div>
     </gl-form>
   </div>
 </template>
