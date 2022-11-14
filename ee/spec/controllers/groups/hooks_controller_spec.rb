@@ -183,6 +183,7 @@ RSpec.describe Groups::HooksController do
 
     describe 'POST #test', :clean_gitlab_redis_shared_state do
       let(:hook) { create(:group_hook, group: group) }
+      let(:success_response) { ServiceResponse.success(payload: { http_status: 200 }) }
 
       context 'when group does not have a project' do
         it 'redirects back' do
@@ -201,7 +202,7 @@ RSpec.describe Groups::HooksController do
         context 'when "trigger" params is empty' do
           it 'defaults to "push_events"' do
             expect_next_instance_of(TestHooks::ProjectService, hook, user, 'push_events') do |service|
-              expect(service).to receive(:execute).and_return(http_status: 200)
+              expect(service).to receive(:execute).and_return(success_response)
             end
 
             post :test, params: { group_id: group.to_param, id: hook }
@@ -216,7 +217,7 @@ RSpec.describe Groups::HooksController do
 
           it 'uses it' do
             expect_next_instance_of(TestHooks::ProjectService, hook, user, trigger) do |service|
-              expect(service).to receive(:execute).and_return(http_status: 200)
+              expect(service).to receive(:execute).and_return(success_response)
             end
 
             post :test, params: { group_id: group.to_param, id: hook, trigger: trigger }
@@ -234,7 +235,7 @@ RSpec.describe Groups::HooksController do
 
           it 'prevents making test requests' do
             expect_next_instance_of(TestHooks::ProjectService) do |service|
-              expect(service).to receive(:execute).and_return(http_status: 200)
+              expect(service).to receive(:execute).and_return(success_response)
             end
 
             2.times { post :test, params: { group_id: group.to_param, id: hook } }
