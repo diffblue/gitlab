@@ -19,7 +19,16 @@ module Types
               null: true,
               description: 'Total duration (in seconds) of shared runners use by the project for the month.'
 
-        field :name, GraphQL::Types::String, null: true, description: 'Name of the project.'
+        field :project,
+              Types::ProjectType,
+              null: true,
+              description: 'Project having the recorded usage.'
+
+        field :name,
+              ::GraphQL::Types::String,
+              null: true,
+              deprecated: { reason: 'Use `project.name`', milestone: '15.6' },
+              description: 'Name of the project.'
 
         def name
           object.project&.name

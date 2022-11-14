@@ -3,7 +3,7 @@ import {
   formatYearMonthData,
   getSortedYears,
 } from 'ee/ci/ci_minutes_usage/utils';
-import { ciMinutesUsageMockData } from './mock_data';
+import { ciMinutesUsageMockData, pageInfo } from './mock_data';
 
 const {
   data: {
@@ -21,7 +21,20 @@ describe('CI Minutes Usage Utils', () => {
           month: '06',
           monthIso8601: '2021-06-01',
           projects: {
-            nodes: [{ minutes: 5, name: 'devcafe-wp-theme', sharedRunnersDuration: 60 }],
+            nodes: [
+              {
+                minutes: 5,
+                sharedRunnersDuration: 60,
+                project: {
+                  id: 'gid://gitlab/Project/6',
+                  name: 'devcafe-wp-theme',
+                  nameWithNamespace: 'Group / devcafe-wp-theme',
+                  avatarUrl: null,
+                  webUrl: 'http://gdk.test:3000/group/devcafe-wp-theme',
+                },
+              },
+            ],
+            pageInfo,
           },
           sharedRunnersDuration: 60,
           year: '2021',
@@ -31,7 +44,10 @@ describe('CI Minutes Usage Utils', () => {
           minutes: 0,
           month: '07',
           monthIso8601: '2021-07-01',
-          projects: { nodes: [] },
+          projects: {
+            nodes: [],
+            pageInfo,
+          },
           sharedRunnersDuration: 0,
           year: '2021',
         },
@@ -45,11 +61,18 @@ describe('CI Minutes Usage Utils', () => {
           projects: {
             nodes: [
               {
-                name: 'devcafe-mx',
                 minutes: 5,
                 sharedRunnersDuration: 80,
+                project: {
+                  id: 'gid://gitlab/Project/7',
+                  name: 'devcafe-mx',
+                  nameWithNamespace: 'Group / devcafe-mx',
+                  avatarUrl: null,
+                  webUrl: 'http://gdk.test:3000/group/devcafe-mx',
+                },
               },
             ],
+            pageInfo,
           },
           sharedRunnersDuration: 0,
           year: '2022',
@@ -67,7 +90,22 @@ describe('CI Minutes Usage Utils', () => {
         minutes: 5,
         month: '06',
         monthIso8601: '2021-06-01',
-        projects: { nodes: [{ minutes: 5, name: 'devcafe-wp-theme', sharedRunnersDuration: 60 }] },
+        projects: {
+          nodes: [
+            {
+              minutes: 5,
+              sharedRunnersDuration: 60,
+              project: {
+                id: 'gid://gitlab/Project/6',
+                name: 'devcafe-wp-theme',
+                nameWithNamespace: 'Group / devcafe-wp-theme',
+                avatarUrl: null,
+                webUrl: 'http://gdk.test:3000/group/devcafe-wp-theme',
+              },
+            },
+          ],
+          pageInfo,
+        },
         sharedRunnersDuration: 60,
         year: '2021',
       },
@@ -76,7 +114,10 @@ describe('CI Minutes Usage Utils', () => {
         minutes: 0,
         month: '07',
         monthIso8601: '2021-07-01',
-        projects: { nodes: [] },
+        projects: {
+          nodes: [],
+          pageInfo,
+        },
         sharedRunnersDuration: 0,
         year: '2021',
       },
@@ -88,11 +129,18 @@ describe('CI Minutes Usage Utils', () => {
         projects: {
           nodes: [
             {
-              name: 'devcafe-mx',
               minutes: 5,
               sharedRunnersDuration: 80,
+              project: {
+                id: 'gid://gitlab/Project/7',
+                name: 'devcafe-mx',
+                nameWithNamespace: 'Group / devcafe-mx',
+                avatarUrl: null,
+                webUrl: 'http://gdk.test:3000/group/devcafe-mx',
+              },
             },
           ],
+          pageInfo,
         },
         sharedRunnersDuration: 0,
         year: '2022',
@@ -110,7 +158,22 @@ describe('CI Minutes Usage Utils', () => {
         month: '06',
         monthIso8601: '2021-06-01',
         monthName: 'June',
-        projects: { nodes: [{ minutes: 5, name: 'devcafe-wp-theme', sharedRunnersDuration: 60 }] },
+        projects: {
+          nodes: [
+            {
+              minutes: 5,
+              sharedRunnersDuration: 60,
+              project: {
+                id: 'gid://gitlab/Project/6',
+                name: 'devcafe-wp-theme',
+                nameWithNamespace: 'Group / devcafe-wp-theme',
+                avatarUrl: null,
+                webUrl: 'http://gdk.test:3000/group/devcafe-wp-theme',
+              },
+            },
+          ],
+          pageInfo,
+        },
         sharedRunnersDuration: 60,
         year: '2021',
       },
@@ -120,7 +183,10 @@ describe('CI Minutes Usage Utils', () => {
         month: '07',
         monthIso8601: '2021-07-01',
         monthName: 'July',
-        projects: { nodes: [] },
+        projects: {
+          nodes: [],
+          pageInfo,
+        },
         sharedRunnersDuration: 0,
         year: '2021',
       },
@@ -133,11 +199,18 @@ describe('CI Minutes Usage Utils', () => {
         projects: {
           nodes: [
             {
-              name: 'devcafe-mx',
               minutes: 5,
               sharedRunnersDuration: 80,
+              project: {
+                id: 'gid://gitlab/Project/7',
+                name: 'devcafe-mx',
+                nameWithNamespace: 'Group / devcafe-mx',
+                avatarUrl: null,
+                webUrl: 'http://gdk.test:3000/group/devcafe-mx',
+              },
             },
           ],
+          pageInfo,
         },
         sharedRunnersDuration: 0,
         year: '2022',

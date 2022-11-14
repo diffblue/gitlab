@@ -5,7 +5,7 @@ import ProjectList from 'ee/ci/usage_quotas/pipelines/components/project_list.vu
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import {
   LABEL_CI_MINUTES_DISABLED,
-  LABEL_NO_PROJECTS,
+  PROJECTS_NO_SHARED_RUNNERS,
 } from 'ee/ci/usage_quotas/pipelines/constants';
 import { defaultProvide, defaultProjectListProps } from '../mock_data';
 
@@ -32,25 +32,45 @@ describe('ProjectCIMinutesList', () => {
     wrapper.destroy();
   });
 
-  it('renders project names and CI minutes values', () => {
-    createComponent();
-    const firstProjectColumns = findTableRows().at(0).findAll('td');
-    expect(firstProjectColumns.at(0).findComponent(ProjectAvatar).props()).toMatchObject({
-      projectId: defaultProjectListProps.projects[0].project.id,
-      projectName: defaultProjectListProps.projects[0].project.nameWithNamespace,
-      projectAvatarUrl: defaultProjectListProps.projects[0].project.avatarUrl,
+  describe('with projects', () => {
+    beforeEach(() => {
+      createComponent();
     });
-    expect(firstProjectColumns.at(1).text()).toContain(
-      defaultProjectListProps.projects[0].ci_minutes.toString(),
-    );
+
+    it('renders projects data', () => {
+      const firstProjectColumns = findTableRows().at(0).findAll('td');
+
+      expect(firstProjectColumns.at(0).findComponent(ProjectAvatar).props()).toMatchObject({
+        projectId: defaultProjectListProps.projects[0].project.id,
+        projectName: defaultProjectListProps.projects[0].project.nameWithNamespace,
+        projectAvatarUrl: defaultProjectListProps.projects[0].project.avatarUrl,
+      });
+    });
+
+    it('renders Shared runner duration', () => {
+      const firstProjectColumns = findTableRows().at(0).findAll('td');
+
+      expect(firstProjectColumns.at(1).text()).toBe(
+        defaultProjectListProps.projects[0].sharedRunnersDuration.toString(),
+      );
+    });
+
+    it('renders CI minutes', () => {
+      const firstProjectColumns = findTableRows().at(0).findAll('td');
+
+      expect(firstProjectColumns.at(2).text()).toBe(
+        defaultProjectListProps.projects[0].minutes.toString(),
+      );
+    });
   });
 
   describe('with no projects', () => {
     beforeEach(() => {
       createComponent({ props: { projects: [] } });
     });
+
     it('renders the `no projects` message', () => {
-      expect(wrapper.text()).toBe(LABEL_NO_PROJECTS);
+      expect(wrapper.text()).toContain(PROJECTS_NO_SHARED_RUNNERS);
     });
   });
 
@@ -58,8 +78,9 @@ describe('ProjectCIMinutesList', () => {
     beforeEach(() => {
       createComponent({ provide: { ciMinutesAnyProjectEnabled: false } });
     });
+
     it('renders the ci minutes disabled message', () => {
-      expect(wrapper.text().replace(/\s+/g, ' ').trim()).toBe(
+      expect(wrapper.text().replace(/\s+/g, ' ').trim()).toContain(
         sprintf(LABEL_CI_MINUTES_DISABLED, { linkStart: '', linkEnd: '' }),
       );
     });

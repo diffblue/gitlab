@@ -42,9 +42,11 @@ RSpec.describe 'Query.ciMinutesUsage' do
               month
               projects {
                 nodes {
-                  name
                   minutes
                   sharedRunnersDuration
+                  project {
+                    name
+                  }
                 }
               }
             }
@@ -62,9 +64,11 @@ RSpec.describe 'Query.ciMinutesUsage' do
         'minutes' => 50,
         'sharedRunnersDuration' => 100,
         'projects' => { 'nodes' => [{
-          'name' => 'Project 1',
           'minutes' => 40,
-          'sharedRunnersDuration' => 80
+          'sharedRunnersDuration' => 80,
+          'project' => {
+            'name' => 'Project 1'
+          }
         }] }
       })
     end

@@ -98,7 +98,7 @@ describe('Minutes usage by project chart component', () => {
         {
           data: [
             [
-              ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].name,
+              ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].project.name,
               ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].minutes,
             ],
           ],
@@ -123,7 +123,7 @@ describe('Minutes usage by project chart component', () => {
         {
           data: [
             [
-              ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].name,
+              ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0].project.name,
               (
                 ciMinutesUsage.nodes[ciMinutesUsage.nodes.length - 1].projects.nodes[0]
                   .sharedRunnersDuration / 60

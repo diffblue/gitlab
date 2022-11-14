@@ -43762,6 +43762,9 @@ msgstr ""
 msgid "UsageQuota|The table below shows usage since %{timeElapsed}"
 msgstr ""
 
+msgid "UsageQuota|The table below shows usage since %{usageSince}"
+msgstr ""
+
 msgid "UsageQuota|This is the total amount of storage used across your projects within this namespace."
 msgstr ""
 
@@ -43769,9 +43772,6 @@ msgid "UsageQuota|This is the total amount of storage used by projects above the
 msgstr ""
 
 msgid "UsageQuota|This namespace contains locked projects"
-msgstr ""
-
-msgid "UsageQuota|This namespace has no projects which use shared runners"
 msgstr ""
 
 msgid "UsageQuota|This namespace has no projects which used shared runners in the current period"

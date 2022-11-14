@@ -7,7 +7,7 @@ import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 describe('MinutesUsageCharts', () => {
   let wrapper;
   const defaultProps = {
-    ciMinutesUsages: cloneDeep(mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes),
+    ciMinutesUsage: cloneDeep(mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes),
   };
 
   const createComponent = ({ props = {} } = {}) => {
@@ -40,8 +40,8 @@ describe('MinutesUsageCharts', () => {
   describe('with no minutes', () => {
     beforeEach(() => {
       const props = cloneDeep(defaultProps);
-      props.ciMinutesUsages[0].minutes = 0;
-      props.ciMinutesUsages[0].projects.nodes[0].minutes = 0;
+      props.ciMinutesUsage[0].minutes = 0;
+      props.ciMinutesUsage[0].projects.nodes[0].minutes = 0;
 
       createComponent({ props });
     });
@@ -60,8 +60,8 @@ describe('MinutesUsageCharts', () => {
   describe('with no shared runners', () => {
     beforeEach(() => {
       const props = cloneDeep(defaultProps);
-      props.ciMinutesUsages[0].sharedRunnersDuration = 0;
-      props.ciMinutesUsages[0].projects.nodes[0].sharedRunnersDuration = 0;
+      props.ciMinutesUsage[0].sharedRunnersDuration = 0;
+      props.ciMinutesUsage[0].projects.nodes[0].sharedRunnersDuration = 0;
 
       createComponent({ props });
     });

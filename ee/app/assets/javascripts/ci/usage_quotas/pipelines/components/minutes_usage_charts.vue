@@ -25,7 +25,7 @@ export default {
     GlTabs,
   },
   props: {
-    ciMinutesUsages: {
+    ciMinutesUsage: {
       type: Array,
       required: false,
       default: () => [],
@@ -33,10 +33,10 @@ export default {
   },
   computed: {
     hasCiMinutes() {
-      return this.ciMinutesUsages.find((usage) => usage.minutes > 0);
+      return this.ciMinutesUsage.find((usage) => usage.minutes > 0);
     },
     hasSharedRunnersMinutes() {
-      return this.ciMinutesUsages.find((usage) => usage.sharedRunnersDuration > 0);
+      return this.ciMinutesUsage.find((usage) => usage.sharedRunnersDuration > 0);
     },
   },
   borderStyles: 'gl-border-b-solid gl-border-gray-200 gl-border-b-1',
@@ -57,7 +57,7 @@ export default {
         <minutes-usage-month-chart
           v-else
           :class="$options.borderStyles"
-          :ci-minutes-usage="ciMinutesUsages"
+          :ci-minutes-usage="ciMinutesUsage"
           data-testid="minutes-by-namespace"
         />
       </gl-tab>
@@ -71,7 +71,7 @@ export default {
         <no-minutes-alert v-if="!hasSharedRunnersMinutes" />
         <shared-runner-usage-month-chart
           v-else
-          :ci-minutes-usage="ciMinutesUsages"
+          :ci-minutes-usage="ciMinutesUsage"
           data-testid="shared-runner-by-namespace"
         />
       </gl-tab>
@@ -82,7 +82,7 @@ export default {
         <no-minutes-alert v-if="!hasCiMinutes" />
         <minutes-usage-project-chart
           v-else
-          :minutes-usage-data="ciMinutesUsages"
+          :minutes-usage-data="ciMinutesUsage"
           data-testid="minutes-by-project"
         />
       </gl-tab>
@@ -96,7 +96,7 @@ export default {
         <no-minutes-alert v-if="!hasSharedRunnersMinutes" />
         <minutes-usage-project-chart
           v-else
-          :minutes-usage-data="ciMinutesUsages"
+          :minutes-usage-data="ciMinutesUsage"
           display-shared-runner-data
           data-testid="shared-runner-by-project"
         />
