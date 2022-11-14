@@ -261,9 +261,11 @@ class License < ApplicationRecord
   end
 
   def daily_billable_users_count
-    strong_memoize(:daily_billable_users_count) do
-      ::Analytics::UsageTrends::Measurement.find_latest_or_fallback(:billable_users).count
-    end
+    daily_billable_users.count
+  end
+
+  def daily_billable_users_updated_time
+    (daily_billable_users.try(:recorded_at) || Time.zone.now).to_s
   end
 
   def validate_with_trueup?
@@ -550,6 +552,12 @@ class License < ApplicationRecord
 
   def expires_at_for_historical_data
     (expires_at || Time.current).end_of_day
+  end
+
+  def daily_billable_users
+    strong_memoize(:daily_billable_users) do
+      ::Analytics::UsageTrends::Measurement.find_latest_or_fallback(:billable_users)
+    end
   end
 end
 

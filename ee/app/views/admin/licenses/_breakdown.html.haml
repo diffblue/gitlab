@@ -3,6 +3,7 @@
 - billable_users_url = help_page_path('subscriptions/self_managed/index', anchor: 'billable-users')
 - billable_users_link_start = '<a href="%{url}" target="_blank" rel="noopener noreferrer nofollow">'.html_safe % { url: billable_users_url }
 - link_end = '</a>'.html_safe
+- billable_users_updated_string = s_("AdminArea|Updated %{last_update_time}") % { last_update_time: @license.daily_billable_users_updated_time }
 
 .d-flex
   .row
@@ -17,8 +18,11 @@
             %strong<>
               = _(' %{start} to %{end}') % { start: @license.starts_at, end: @license.expires_at }
             \.
-          = _('The %{link_start}true-up model%{link_end} allows having more users, and additional users will incur a retroactive charge on renewal.').html_safe % { link_start: true_up_link_start, link_end: link_end }
-          = seats_calculation_message(@license)
+          %p
+            = _('The %{link_start}true-up model%{link_end} allows having more users, and additional users will incur a retroactive charge on renewal.').html_safe % { link_start: true_up_link_start, link_end: link_end }
+            = seats_calculation_message(@license)
+          .gl-font-sm.gl-text-gray-300
+            = s_("AdminArea|Updated %{last_update_time}") % { last_update_time: @license.updated_at.to_s }
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
         = c.body do
@@ -26,7 +30,9 @@
             = number_with_delimiter @license.daily_billable_users_count
           .text-uppercase.gl-mb-4= _('Billable Users')
           %p
-          = _('This is the number of %{billable_users_link_start}billable users%{link_end} on your installation, and this is the minimum number you need to purchase when you renew your license.').html_safe % { billable_users_link_start: billable_users_link_start, link_end: link_end }
+            = _('This is the number of %{billable_users_link_start}billable users%{link_end} on your installation, and this is the minimum number you need to purchase when you renew your license.').html_safe % { billable_users_link_start: billable_users_link_start, link_end: link_end }
+          .gl-font-sm.gl-text-gray-300
+            = billable_users_updated_string
 .d-flex
   .row
     .col-sm-6.d-flex.gl-mb-5
@@ -35,7 +41,10 @@
           %h2.gl-mt-0{ data: { qa_selector: 'maximum_users' } }
             = number_with_delimiter @license.maximum_user_count
           .text-uppercase.gl-mb-4= _('Maximum Users')
-          = _('This is the highest peak of users on your installation since the license started.')
+          %p= _('This is the highest peak of users on your installation since the license started.')
+          .gl-font-sm.gl-text-gray-300
+            = billable_users_updated_string
+
     .col-sm-6.d-flex.gl-mb-5
       = render Pajamas::CardComponent.new do |c|
         = c.body do
@@ -46,4 +55,6 @@
             = render Pajamas::AlertComponent.new(alert_options: { class: 'gl-mb-3' }, dismissible: false) do |c|
               = c.body do
                 = s_('Your instance has exceeded your subscription\'s licensed user count.')
-          = _('You\'ll be charged for %{true_up_link_start}users over license%{link_end} on a quarterly or annual basis, depending on the terms of your agreement.').html_safe % { true_up_link_start: true_up_link_start, link_end: link_end }
+          %p= _('You\'ll be charged for %{true_up_link_start}users over license%{link_end} on a quarterly or annual basis, depending on the terms of your agreement.').html_safe % { true_up_link_start: true_up_link_start, link_end: link_end }
+          .gl-font-sm.gl-text-gray-300
+            = billable_users_updated_string
