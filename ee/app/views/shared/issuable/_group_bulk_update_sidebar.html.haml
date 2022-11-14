@@ -18,7 +18,7 @@
           .title
             = _('Milestone')
           .filter-item
-            .js-milestone-dropdown{ data: { full_path: group.full_path, workspace_type: Group.sti_name.downcase } }
+            .js-milestone-dropdown-root{ data: { full_path: group.full_path, workspace_type: Group.sti_name.downcase } }
       - if is_issue
         = render "shared/issuable/iterations_dropdown", parent: group
       .block
