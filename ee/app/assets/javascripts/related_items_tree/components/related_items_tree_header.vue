@@ -3,7 +3,7 @@ import { GlAlert, GlPopover, GlIcon } from '@gitlab/ui';
 import { mapState, mapActions } from 'vuex';
 
 import { issuableTypesMap } from '~/related_issues/constants';
-import { i18n } from '../constants';
+import { i18n, treeTitle, ParentType } from '../constants';
 import EpicHealthStatus from './epic_health_status.vue';
 import EpicActionsSplitButton from './epic_issue_actions_split_button.vue';
 
@@ -39,6 +39,9 @@ export default {
     totalWeight() {
       return this.weightSum.openedIssues + this.weightSum.closedIssues;
     },
+    parentIsEpic() {
+      return this.parentItem.type === ParentType.Epic;
+    },
   },
   methods: {
     ...mapActions([
@@ -72,6 +75,7 @@ export default {
     },
   },
   i18n,
+  treeTitle,
 };
 </script>
 
@@ -84,9 +88,12 @@ export default {
     >
       <div class="gl-display-flex gl-flex-shrink-0 gl-align-items-center gl-flex-wrap">
         <h3 class="card-title h5 gl-my-0 gl-flex-shrink-0">
-          {{ allowSubEpics ? __('Child issues and epics') : __('Issues') }}
+          {{ allowSubEpics ? __('Child issues and epics') : $options.treeTitle[parentItem.type] }}
         </h3>
-        <div class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-5 gl-flex-wrap">
+        <div
+          v-if="parentIsEpic"
+          class="gl-display-inline-flex lh-100 gl-vertical-align-middle gl-ml-5 gl-flex-wrap"
+        >
           <gl-popover :target="() => $refs.countBadge">
             <p v-if="allowSubEpics" class="gl-font-weight-bold gl-m-0">
               {{ __('Epics') }} &#8226;
@@ -155,6 +162,7 @@ export default {
     </div>
 
     <div
+      v-if="parentIsEpic"
       class="gl-display-flex gl-sm-display-inline-flex gl-sm-ml-auto lh-100 gl-vertical-align-middle gl-mt-3 gl-sm-mt-0 gl-pl-0 gl-sm-pl-7"
     >
       <div

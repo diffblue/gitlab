@@ -1,5 +1,10 @@
 import { s__, __ } from '~/locale';
 
+export const ParentType = {
+  // eslint-disable-next-line @gitlab/require-i18n-strings
+  Epic: 'Epic',
+};
+
 export const ChildType = {
   // eslint-disable-next-line @gitlab/require-i18n-strings
   Epic: 'Epic',
@@ -81,4 +86,14 @@ export const ITEM_TABS = {
 
 export const i18n = {
   permissionAlert: __('Counts reflect children you may not have access to.'),
+};
+
+export const i18nConfidentialParent = {
+  [ParentType.Epic]: __(
+    'The parent epic is confidential and can only contain confidential epics and issues',
+  ),
+};
+
+export const treeTitle = {
+  [ParentType.Epic]: __('Issues'),
 };

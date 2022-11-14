@@ -30,6 +30,7 @@ export default () => {
     allowIssuableHealthStatus,
     allowScopedLabels,
     allowSubEpics,
+    type,
   } = el.dataset;
   const initialData = JSON.parse(el.dataset.initial);
   const roadmapAppData = JSON.parse(el.dataset.roadmapAppData);
@@ -48,6 +49,7 @@ export default () => {
     created() {
       this.setInitialParentItem({
         fullPath,
+        type,
         numericalId: parseInt(numericalId, 10),
         groupId: parseInt(groupId, 10),
         groupName,
@@ -57,8 +59,7 @@ export default () => {
         confidential: initialData.confidential,
         reference: `${initialData.fullPath}${initialData.issuableRef}`,
         userPermissions: {
-          adminEpic: initialData.canAdmin,
-          createEpic: initialData.canUpdate,
+          canAdmin: initialData.canAdmin,
         },
       });
 
