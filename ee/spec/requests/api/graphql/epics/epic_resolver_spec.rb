@@ -8,6 +8,8 @@ RSpec.describe 'getting epics information' do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
+  let(:node_path) { %w[group epics nodes] }
+
   before do
     group.add_maintainer(user)
     stub_licensed_features(epics: true)
@@ -23,7 +25,7 @@ RSpec.describe 'getting epics information' do
       it 'returns the expected epics' do
         query_epics_which_start_with_iid('22')
 
-        expect_epics_response(epic2, epic3)
+        expect_epics_response([epic2, epic3], node_path: node_path)
       end
     end
 
@@ -61,43 +63,43 @@ RSpec.describe 'getting epics information' do
     it 'filters by createdBefore' do
       post_graphql(epics_query(group, 'createdBefore', 5.days.ago), current_user: user)
 
-      expect_epics_response(epic1, epic2)
+      expect_epics_response([epic1, epic2], node_path: node_path)
     end
 
     it 'filters by createdAfter' do
       post_graphql(epics_query(group, 'createdAfter', 5.days.ago), current_user: user)
 
-      expect_epics_response(epic3, epic4)
+      expect_epics_response([epic3, epic4], node_path: node_path)
     end
 
     it 'filters by updatedBefore' do
       post_graphql(epics_query(group, 'updatedBefore', 7.minutes.ago), current_user: user)
 
-      expect_epics_response(epic3, epic4)
+      expect_epics_response([epic3, epic4], node_path: node_path)
     end
 
     it 'filters by updatedAfter' do
       post_graphql(epics_query(group, 'updatedAfter', 7.minutes.ago), current_user: user)
 
-      expect_epics_response(epic1, epic2)
+      expect_epics_response([epic1, epic2], node_path: node_path)
     end
 
     it 'filters by a combination of created parameters provided' do
       post_graphql(epics_query_by_hash(group, { 'createdBefore' => Time.zone.now, 'createdAfter' => 20.minutes.ago }), current_user: user)
 
-      expect_epics_response(epic4)
+      expect_epics_response([epic4], node_path: node_path)
     end
 
     it 'filters by a combination of created/updated parameters provided' do
       post_graphql(epics_query_by_hash(group, { 'updatedBefore' => 3.minutes.ago, 'createdAfter' => 20.minutes.ago }), current_user: user)
 
-      expect_epics_response(epic4)
+      expect_epics_response([epic4], node_path: node_path)
     end
 
     it 'returns nothing for impossible parameters' do
       post_graphql(epics_query_by_hash(group, { 'createdBefore' => 7.minutes.ago, 'createdAfter' => Time.zone.now }), current_user: user)
 
-      expect_epics_response # empty set
+      expect_epics_response([], node_path: node_path) # empty set
     end
   end
 
@@ -111,7 +113,7 @@ RSpec.describe 'getting epics information' do
       it 'returns epics within timeframe' do
         post_graphql(epics_query_by_hash(group, 'startDate' => '2019-08-13', 'endDate' => '2019-08-21'), current_user: user)
 
-        expect_epics_response(epic1, epic2)
+        expect_epics_response([epic1, epic2], node_path: node_path)
       end
     end
 
@@ -156,17 +158,42 @@ RSpec.describe 'getting epics information' do
   end
 
   context 'query for epics with ancestors' do
-    let_it_be(:parent_epic) { create(:epic, group: group) }
-    let_it_be(:epic) { create(:epic, group: group, parent: parent_epic) }
+    let_it_be(:cross_group) { create(:group, :private) }
+    let_it_be(:parent_epic1) { create(:epic, group: group) }
+    let_it_be(:parent_epic2) { create(:epic, parent: parent_epic1, group: cross_group) }
+    let_it_be(:parent_epic3) { create(:epic, group: group, parent: parent_epic2) }
+    let_it_be(:epic) { create(:epic, group: group, parent: parent_epic3) }
 
-    it 'returns the ancestors' do
+    let(:node_path) { %w[group epic ancestors nodes] }
+
+    it 'returns only ancestors up to the last accessible ancestor' do
       query_epic_with_ancestors(epic.iid)
 
-      ancestors = graphql_data['group']['epic']['ancestors']['nodes']
+      expect_epics_response([parent_epic3], node_path: node_path)
+    end
 
-      expect(ancestors.count).to eq(1)
-      expect(ancestors.first['id']).to eq(parent_epic.to_global_id.to_s)
-      expect(graphql_errors).to be_nil
+    context 'when user is member of cross-hierarchy group' do
+      before do
+        parent_epic2.group.add_developer(user)
+      end
+
+      it 'returns all ancestors' do
+        query_epic_with_ancestors(epic.iid)
+
+        expect_epics_response([parent_epic1, parent_epic2, parent_epic3], node_path: node_path)
+      end
+
+      context 'when child_epics_from_different_hierarchies is disabled' do
+        before do
+          stub_feature_flags(child_epics_from_different_hierarchies: false)
+        end
+
+        it 'returns only accessible ancestors from the same hierarchy' do
+          query_epic_with_ancestors(epic.iid)
+
+          expect_epics_response([parent_epic1, parent_epic3], node_path: node_path)
+        end
+      end
     end
   end
 
@@ -303,9 +330,10 @@ RSpec.describe 'getting epics information' do
     QUERY
   end
 
-  def expect_epics_response(*epics)
+  def expect_epics_response(epics, node_path:)
     epics ||= []
-    actual_epics = graphql_data['group']['epics']['nodes'].map { |epic| epic['id'] }
+    nodes = graphql_data.dig(*node_path)
+    actual_epics = nodes.map { |epic| epic['id'] }
     expected_epics = epics.map { |epic| epic.to_global_id.to_s }
 
     expect(actual_epics).to contain_exactly(*expected_epics)

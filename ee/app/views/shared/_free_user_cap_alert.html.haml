@@ -1,3 +1,5 @@
+- return if content_for?(:usage_quotas_free_user_cap_alert)
+
 - content_for :free_user_cap_alert do
   = render Namespaces::FreeUserCap::AlertComponent.new(namespace: source.root_ancestor,
     user: current_user,

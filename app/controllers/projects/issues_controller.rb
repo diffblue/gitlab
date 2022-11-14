@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Projects::IssuesController < Projects::ApplicationController
-  include RendersNotes
   include ToggleSubscriptionAction
   include IssuableActions
   include ToggleAwardEmoji
@@ -47,6 +46,10 @@ class Projects::IssuesController < Projects::ApplicationController
 
   before_action only: [:index, :show] do
     push_force_frontend_feature_flag(:work_items, project&.work_items_feature_flag_enabled?)
+  end
+
+  before_action only: :index do
+    push_frontend_feature_flag(:or_issuable_queries, project)
   end
 
   before_action only: :show do

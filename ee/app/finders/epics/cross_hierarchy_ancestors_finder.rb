@@ -1,35 +1,43 @@
 # frozen_string_literal: true
 
-# EpicsFinder
+# CrossHierarchyAncestorsFinder
 #
 # Used to find and filter all ancestors for an epic.
-# Returns list of all epic's ancestors from the closest to root epic.
-#
-# WARNING: the result relation is not filtered by user's accessibility (because
-# we want to return query/AR relation so it can be used with looksahead) and
-# permission filtering of accessible epics needs to be done on upper layer
+# Returns list of all epic's ancestors from the closest to root epic,
+# any ancestors not accessible to the user are filtered out.
 
 module Epics
   class CrossHierarchyAncestorsFinder < IssuableFinder
     include Findable
+    include WithAccessCheck
     extend ::Gitlab::Utils::Override
 
     def execute
       return Epic.none unless Ability.allowed?(current_user, :read_epic, child)
+      return Epic.none unless child.parent_id
 
-      filter_and_search(init_collection)
+      filter_and_search(epics_with_read_access)
     end
 
     private
 
-    override :init_collection
-    def init_collection
+    override :epics_collection
+    def epics_collection
       child.ancestors(hierarchy_order: :asc)
+    end
+
+    def epics_collection_for_groups
+      child.ancestors(hierarchy_order: nil)
     end
 
     override :milestone_groups
     def milestone_groups
-      ::Group.id_in(child.ancestors(hierarchy_order: nil).select(:group_id)) # rubocop: disable CodeReuse/ActiveRecord
+      permissioned_groups
+    end
+
+    override :base_epic
+    def base_epic
+      child
     end
 
     def child

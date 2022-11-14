@@ -73,7 +73,7 @@ $badge-height: $gl-spacing-scale-7;
     @include gl-mb-0;
 
     &-active {
-      background-color: $gray-light;
+      background-color: var(--gray-light, $gray-light);
     }
 
     .card-body {
@@ -162,15 +162,15 @@ $badge-height: $gl-spacing-scale-7;
   .flex-grid {
     .grid-cell {
       .property-label {
-        color: $gl-text-color-secondary;
+        color: var(--gl-text-color-secondary, $gl-text-color-secondary);
       }
 
       .btn-help {
-        color: $blue-600;
+        color: var(--blue-600, $blue-600);
       }
 
       .property-value {
-        color: $gl-text-color;
+        color: var(--gl-text-color, $gl-text-color);
 
         &.number {
           font-size: 20px;

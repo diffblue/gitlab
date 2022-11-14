@@ -1,34 +1,12 @@
 # frozen_string_literal: true
 
 RSpec.shared_examples_for 'over the free user limit alert' do
-  before do
-    stub_ee_application_setting(dashboard_limit_enabled: true)
+  let_it_be(:dismiss_button) do
+    '[data-testid="user-over-limit-free-plan-dismiss"]'
   end
 
-  shared_examples 'performs entire show dismiss cycle' do
-    it 'shows free user limit warning and honors dismissal', :js do
-      visit_page
-
-      expect(page).not_to have_content(alert_title_content)
-
-      group.add_developer(create(:user))
-
-      page.refresh
-
-      expect(page).to have_content(alert_title_content)
-
-      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
-        expect(page).to have_link('Manage members')
-        expect(page).to have_link('Explore paid plans')
-      end
-
-      find('[data-testid="user-over-limit-free-plan-dismiss"]').click
-      wait_for_requests
-
-      page.refresh
-
-      expect(page).not_to have_content(alert_title_content)
-    end
+  before do
+    stub_ee_application_setting(dashboard_limit_enabled: true)
   end
 
   context 'when over limit for preview' do
@@ -45,7 +23,29 @@ RSpec.shared_examples_for 'over the free user limit alert' do
       'From October 19, 2022, free private groups will be limited to'
     end
 
-    it_behaves_like 'performs entire show dismiss cycle'
+    it 'performs dismiss cycle', :js do
+      visit_page
+
+      expect(page).not_to have_content(alert_title_content)
+
+      group.add_developer(create(:user))
+
+      page.refresh
+
+      expect(page).to have_content(alert_title_content)
+
+      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
+        expect(page).to have_link('Manage members')
+        expect(page).to have_link('Explore paid plans')
+      end
+
+      find(dismiss_button).click
+      wait_for_requests
+
+      page.refresh
+
+      expect(page).not_to have_content(alert_title_content)
+    end
   end
 
   context 'when reached/over limit' do
@@ -55,8 +55,27 @@ RSpec.shared_examples_for 'over the free user limit alert' do
       stub_ee_application_setting(dashboard_enforcement_limit: 2)
     end
 
-    let(:alert_title_content) { "Looks like you've reached your" }
+    let(:alert_title_content) do
+      "user limit and has been placed in a read-only state"
+    end
 
-    it_behaves_like 'performs entire show dismiss cycle'
+    it 'shows free user limit warning', :js do
+      visit_page
+
+      expect(page).not_to have_content(alert_title_content)
+
+      group.add_developer(create(:user))
+
+      page.refresh
+
+      expect(page).to have_content(alert_title_content)
+
+      page.within('[data-testid="user-over-limit-free-plan-alert"]') do
+        expect(page).to have_link('Manage members')
+        expect(page).to have_link('Explore paid plans')
+      end
+
+      expect(page).not_to have_css(dismiss_button)
+    end
   end
 end

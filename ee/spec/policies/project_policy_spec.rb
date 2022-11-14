@@ -1786,6 +1786,14 @@ RSpec.describe ProjectPolicy do
   describe 'Incident Management on-call schedules' do
     using RSpec::Parameterized::TableSyntax
 
+    let(:current_user) { public_send(role) }
+    let(:admin_mode) { false }
+
+    before do
+      enable_admin_mode!(current_user) if admin_mode
+      stub_licensed_features(oncall_schedules: true)
+    end
+
     context ':read_incident_management_oncall_schedule' do
       let(:policy) { :read_incident_management_oncall_schedule }
 
@@ -1800,14 +1808,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | true
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        stub_licensed_features(oncall_schedules: true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable license' do
@@ -1818,6 +1819,8 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :reporter
     end
 
     context ':admin_incident_management_oncall_schedule' do
@@ -1834,14 +1837,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | false
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        stub_licensed_features(oncall_schedules: true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable license' do
@@ -1852,11 +1848,21 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :maintainer
     end
   end
 
   describe 'Escalation Policies' do
     using RSpec::Parameterized::TableSyntax
+
+    let(:current_user) { public_send(role) }
+    let(:admin_mode) { false }
+
+    before do
+      enable_admin_mode!(current_user) if admin_mode
+      allow(::Gitlab::IncidentManagement).to receive(:escalation_policies_available?).with(project).and_return(true)
+    end
 
     context ':read_incident_management_escalation_policy' do
       let(:policy) { :read_incident_management_escalation_policy }
@@ -1872,14 +1878,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | true
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        allow(::Gitlab::IncidentManagement).to receive(:escalation_policies_available?).with(project).and_return(true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable escalation policies' do
@@ -1890,6 +1889,8 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :reporter
     end
 
     context ':admin_incident_management_escalation_policy' do
@@ -1906,14 +1907,7 @@ RSpec.describe ProjectPolicy do
         :auditor    | false | false
       end
 
-      before do
-        enable_admin_mode!(current_user) if admin_mode
-        allow(::Gitlab::IncidentManagement).to receive(:escalation_policies_available?).with(project).and_return(true)
-      end
-
       with_them do
-        let(:current_user) { public_send(role) }
-
         it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
 
         context 'with unavailable escalation policies' do
@@ -1924,6 +1918,8 @@ RSpec.describe ProjectPolicy do
           it { is_expected.to(be_disallowed(policy)) }
         end
       end
+
+      it_behaves_like 'monitor feature visibility', allow_lowest_role: :maintainer
     end
   end
 
@@ -2426,6 +2422,42 @@ RSpec.describe ProjectPolicy do
     end
   end
 
+  describe 'create_objective' do
+    using RSpec::Parameterized::TableSyntax
+
+    let(:policy) { :create_objective }
+
+    where(:role, :allowed) do
+      :guest      | true
+      :reporter   | true
+      :developer  | true
+      :maintainer | true
+      :auditor    | false
+      :owner      | true
+      :admin      | true
+    end
+
+    with_them do
+      let(:current_user) { public_send(role) }
+
+      before do
+        enable_admin_mode!(current_user) if role == :admin
+      end
+
+      context 'when okrs_mvc feature flag is enabled' do
+        it { is_expected.to(allowed ? be_allowed(policy) : be_disallowed(policy)) }
+      end
+
+      context 'when okrs_mvc feature flag is disabled' do
+        before do
+          stub_feature_flags(okrs_mvc: false)
+        end
+
+        it { is_expected.to(be_disallowed(policy)) }
+      end
+    end
+  end
+
   context 'hidden projects' do
     let(:project) { create(:project, :repository, hidden: true) }
     let(:current_user) { create(:user) }
@@ -2436,5 +2468,107 @@ RSpec.describe ProjectPolicy do
 
     it { is_expected.to be_disallowed(:download_code) }
     it { is_expected.to be_disallowed(:build_download_code) }
+  end
+
+  context 'custom role' do
+    let_it_be(:current_user) { create(:user) }
+    let_it_be(:project) { private_project_in_group }
+    let_it_be(:group_member) do
+      create(
+        :group_member,
+        user: current_user,
+        source: project.group,
+        access_level: Gitlab::Access::GUEST
+      )
+    end
+
+    let_it_be(:project_member) do
+      create(
+        :project_member,
+        :guest,
+        user: current_user,
+        project: project,
+        access_level: Gitlab::Access::GUEST
+      )
+    end
+
+    let_it_be(:member_role_download_code_true) do
+      create(
+        :member_role,
+        :guest,
+        namespace: project.group,
+        download_code: true
+      )
+    end
+
+    let_it_be(:member_role_download_code_false) do
+      create(
+        :member_role,
+        :guest,
+        namespace: project.group,
+        download_code: false
+      )
+    end
+
+    context 'customizable_roles feature flag enabled' do
+      before do
+        stub_feature_flags(customizable_roles: [project.group])
+      end
+
+      context 'custom role for parent group' do
+        context 'custom role allows download code' do
+          before do
+            member_role_download_code_true.members << group_member
+          end
+
+          it { is_expected.to be_allowed(:download_code) }
+        end
+
+        context 'custom role disallows download code' do
+          before do
+            member_role_download_code_false.members << group_member
+          end
+
+          it { is_expected.to be_disallowed(:download_code) }
+        end
+      end
+
+      context 'custom role on project membership' do
+        context 'custom role allows download code' do
+          before do
+            member_role_download_code_true.members << project_member
+          end
+
+          it { is_expected.to be_allowed(:download_code) }
+        end
+
+        context 'custom role disallows download code' do
+          before do
+            member_role_download_code_false.members << project_member
+          end
+
+          it { is_expected.to be_disallowed(:download_code) }
+        end
+      end
+
+      context 'multiple custom roles in hierarchy with different download_code values' do
+        before do
+          member_role_download_code_true.members << project_member
+          member_role_download_code_false.members << group_member
+        end
+
+        # allows download code if any of the custom roles allow it
+        it { is_expected.to be_allowed(:download_code) }
+      end
+    end
+
+    context 'without customizable_roles feature enabled' do
+      before do
+        stub_feature_flags(customizable_roles: false)
+        member_role_download_code_true.members << project_member
+      end
+
+      it { is_expected.to be_disallowed(:download_code) }
+    end
   end
 end

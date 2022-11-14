@@ -1,0 +1,8 @@
+---
+name: geo_fix_redirect_after_saml_sign_in
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/101321
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/378227
+milestone: '15.6'
+type: development
+group: group::geo
+default_enabled: false

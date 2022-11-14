@@ -12,16 +12,24 @@ module API
     end
 
     params do
-      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project',
+                    documentation: { example: 11 }
     end
     resource 'projects/:id', requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       resource :merge_trains do
         desc 'Get all merge trains of a project' do
           detail 'This feature was introduced in GitLab 12.9'
-          success EE::API::Entities::MergeTrain
+          success code: 200, model: EE::API::Entities::MergeTrain
+          failure [
+            { code: 401, message: 'Unauthorized' },
+            { code: 403, message: 'Forbidden' },
+            { code: 404, message: 'Not found' }
+          ]
+          is_array true
         end
         params do
-          optional :scope, type: String, desc: 'The scope of merge trains', values: %w[active complete]
+          optional :scope, type: String, desc: 'The scope of merge trains', values: %w[active complete],
+                           documentation: { example: 'active' }
           optional :sort,
             type: String, desc: 'Sort by asc (ascending) or desc (descending)', values: %w[asc desc], default: 'desc'
           use :pagination

@@ -24,6 +24,9 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
 
   describe '.current_node' do
     it 'returns a GeoNode instance' do
+      # To isolate it better from other tests
+      described_class.clear_memoization(:current_node)
+
       expect(GeoNode).to receive(:current_node).and_return(primary_node)
 
       expect(described_class.current_node).to eq(primary_node)
@@ -52,6 +55,9 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
 
   describe '.secondary_nodes' do
     it 'returns a list of Geo secondary nodes' do
+      # To isolate it better from other tests
+      described_class.clear_memoization(:secondary_nodes)
+
       expect(described_class.secondary_nodes).to match_array(secondary_node)
     end
   end

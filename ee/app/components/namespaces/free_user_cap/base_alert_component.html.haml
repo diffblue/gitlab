@@ -1,0 +1,13 @@
+%div{ class: container_class }
+  = render Pajamas::AlertComponent.new(variant: variant,
+        dismissible: dismissible,
+        alert_options: { class: Namespaces::FreeUserCap::Shared::ALERT_CLASS, data: alert_data },
+        title: alert_attributes[:title],
+        close_button_options: { data: close_button_data }) do |c|
+    = c.body do
+      = alert_attributes[:body]
+
+    - if alert_attributes[:primary_cta] || alert_attributes[:secondary_cta]
+      = c.actions do
+        = alert_attributes[:primary_cta]
+        = alert_attributes[:secondary_cta]

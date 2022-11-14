@@ -132,14 +132,10 @@ RSpec.describe 'New/edit issue', :js do
       end
       expect(find('a', text: 'Assign to me', visible: false)).not_to be_visible
 
-      click_button 'Milestone'
-      page.within '.issue-milestone' do
-        click_link milestone.title
-      end
+      click_button 'Select milestone'
+      click_button milestone.title
       expect(find('input[name="issue[milestone_id]"]', visible: false).value).to match(milestone.id.to_s)
-      page.within '.js-milestone-select' do
-        expect(page).to have_content milestone.title
-      end
+      expect(page).to have_button milestone.title
 
       click_button 'Labels'
       page.within '.dropdown-menu-labels' do

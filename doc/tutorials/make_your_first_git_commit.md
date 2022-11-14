@@ -4,7 +4,7 @@ group: Tutorials
 info: For assistance with this tutorial, see https://about.gitlab.com/handbook/product/ux/technical-writing/#assignments-to-other-projects-and-subjects.
 ---
 
-# Make your first Git commit
+# Tutorial: Make your first Git commit
 
 This tutorial is going to teach you a little bit about how Git works. It walks
 you through the steps of creating your own project, editing a file, and
@@ -39,6 +39,7 @@ the history of when and how a file changed, and who changed it.
 ```mermaid
 graph LR
     subgraph Repository commit history
+    direction LR
     A(Author: Alex<br>Date: 3 Jan at 1PM<br>Commit message: Added sales figures<br> Commit ID: 123abc12) --->  B
     B(Author: Sam<br>Date: 4 Jan at 10AM<br>Commit message: Removed old info<br> Commit ID: aabb1122) ---> C
     C(Author: Zhang<br>Date: 5 Jan at 3PM<br>Commit message: Added invoices<br> Commit ID: ddee4455)

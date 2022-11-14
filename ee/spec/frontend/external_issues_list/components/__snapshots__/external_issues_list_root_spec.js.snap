@@ -142,6 +142,7 @@ Object {
     },
   ],
   "showBulkEditSidebar": false,
+  "showFilteredSearchFriendlyText": false,
   "showPageSizeChangeControls": false,
   "showPaginationControls": true,
   "showWorkItemTypeIcon": false,

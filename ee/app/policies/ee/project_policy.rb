@@ -173,6 +173,19 @@ module EE
         @user.banned_from_namespace?(root_namespace)
       end
 
+      condition(:custom_roles_allowed) do
+        ::Feature.enabled?(:customizable_roles, @subject.root_ancestor)
+      end
+
+      desc "Custom role on project that enables download code"
+      condition(:role_enables_download_code) do
+        next unless @user.is_a?(User)
+
+        @user.download_code_for?(project)
+      end
+
+      condition(:okrs_enabled, scope: :subject) { project&.okrs_mvc_feature_flag_enabled? }
+
       # Owners can be banned from their own project except for top-level group
       # owners. This exception is made at the service layer
       # (Users::Abuse::GitAbuse::NamespaceThrottleService) where the ban record
@@ -208,6 +221,20 @@ module EE
       rule { can?(:reporter_access) }.policy do
         enable :admin_issue_board
         enable :admin_epic_issue
+      end
+
+      rule { ~split_operations_visibility_permissions & operations_disabled }.policy do
+        prevent :read_incident_management_oncall_schedule
+        prevent :admin_incident_management_oncall_schedule
+        prevent :read_incident_management_escalation_policy
+        prevent :admin_incident_management_escalation_policy
+      end
+
+      rule { split_operations_visibility_permissions & monitor_disabled }.policy do
+        prevent :read_incident_management_oncall_schedule
+        prevent :admin_incident_management_oncall_schedule
+        prevent :read_incident_management_escalation_policy
+        prevent :admin_incident_management_escalation_policy
       end
 
       rule { oncall_schedules_available & can?(:reporter_access) }.enable :read_incident_management_oncall_schedule
@@ -269,6 +296,7 @@ module EE
         enable :create_vulnerability_export
         enable :admin_vulnerability
         enable :admin_vulnerability_issue_link
+        enable :admin_vulnerability_merge_request_link
         enable :admin_vulnerability_external_issue_link
       end
 
@@ -361,6 +389,7 @@ module EE
         prevent :admin_vulnerability
         prevent :admin_vulnerability_issue_link
         prevent :admin_vulnerability_external_issue_link
+        prevent :admin_vulnerability_merge_request_link
       end
 
       rule { auditor & ~guest }.policy do
@@ -503,6 +532,10 @@ module EE
       rule { (admin | maintainer) & group_merge_request_approval_settings_enabled }.policy do
         enable :admin_merge_request_approval_settings
       end
+
+      rule { custom_roles_allowed & role_enables_download_code }.enable :download_code
+
+      rule { can?(:create_issue) & okrs_enabled }.enable :create_objective
     end
 
     override :lookup_access_level!

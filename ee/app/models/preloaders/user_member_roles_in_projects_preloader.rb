@@ -2,15 +2,21 @@
 
 module Preloaders
   class UserMemberRolesInProjectsPreloader
-    def initialize(project_ids:, user:)
-      @project_ids = project_ids
+    def initialize(projects:, user:)
+      @projects = if projects.is_a?(Array)
+                    Project.where(id: projects)
+                  else
+                    # Push projects base query in to a sub-select to avoid
+                    # table name clashes. Performs better than aliasing.
+                    Project.where(id: projects.reselect(:id))
+                  end
+
       @user = user
     end
 
     def execute
-      sql_values_array = project_ids.each_with_object([]) do |project_id, array|
-        project = Project.find(project_id)
-        next unless ::Feature.enabled?(:customizable_roles, project)
+      sql_values_array = projects.each_with_object([]) do |project, array|
+        next unless ::Feature.enabled?(:customizable_roles, project.root_ancestor)
 
         array << [project.id, Arel.sql("ARRAY[#{project.namespace.traversal_ids.join(',')}]::integer[]")]
       end
@@ -58,6 +64,6 @@ module Preloaders
 
     private
 
-    attr_reader :project_ids, :user
+    attr_reader :projects, :user
   end
 end

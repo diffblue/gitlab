@@ -17,7 +17,7 @@ describe('ReadyToMerge', () => {
   let vm;
 
   const service = {
-    merge: () => {},
+    merge: () => Promise.resolve({ res: { data: { status: '' } } }),
     poll: () => {},
   };
 
@@ -29,7 +29,7 @@ describe('ReadyToMerge', () => {
 
   const mr = {
     isPipelineActive: false,
-    pipeline: { id: 1, path: 'path/to/pipeline' },
+    headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline' },
     isPipelineFailed: false,
     isPipelinePassing: false,
     isMergeAllowed: true,
@@ -49,18 +49,24 @@ describe('ReadyToMerge', () => {
     canRemoveSourceBranch: false,
     canMerge: true,
     targetBranch: 'main',
-    preferredAutoMergeStrategy: MWPS_MERGE_STRATEGY,
     availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY],
     mergeImmediatelyDocsPath: 'path/to/merge/immediately/docs',
     mergeTrainsCount: 0,
+    userPermissions: { canMerge: true },
   };
 
   const factory = (mrUpdates = {}, shallow = true) => {
     const func = shallow ? shallowMount : mount;
     wrapper = func(ReadyToMerge, {
       propsData: {
-        mr: { ...mr, ...mrUpdates },
+        mr: { ...mr, ...mrUpdates, transitionStateMachine() {} },
         service,
+      },
+      data() {
+        return {
+          loading: false,
+          state: { ...mr, ...mrUpdates },
+        };
       },
       stubs: {
         MergeImmediatelyConfirmationDialog,
@@ -107,7 +113,7 @@ describe('ReadyToMerge', () => {
 
       it('should return "Merge when pipeline succeeds" when the MWPS auto merge strategy is available', () => {
         factory({
-          preferredAutoMergeStrategy: MWPS_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY],
         });
 
         expect(vm.mergeButtonText).toEqual('Merge when pipeline succeeds');
@@ -115,7 +121,7 @@ describe('ReadyToMerge', () => {
 
       it('should return "Start merge train" when the merge train auto merge stategy is available and there is no existing merge train', () => {
         factory({
-          preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
           mergeTrainsCount: 0,
         });
 
@@ -124,7 +130,7 @@ describe('ReadyToMerge', () => {
 
       it('should return "Add to merge train" when the merge train auto merge stategy is available and a merge train already exists', () => {
         factory({
-          preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
           mergeTrainsCount: 1,
         });
 
@@ -133,7 +139,7 @@ describe('ReadyToMerge', () => {
 
       it('should return "Start merge train when pipeline succeeds" when the MTWPS auto merge strategy is available and there is no existing merge train', () => {
         factory({
-          preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
           mergeTrainsCount: 0,
         });
 
@@ -142,7 +148,7 @@ describe('ReadyToMerge', () => {
 
       it('should return "Add to merge train when pipeline succeeds" when the MTWPS auto merge strategy is available and a merge train already exists', () => {
         factory({
-          preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
           mergeTrainsCount: 1,
         });
 
@@ -152,14 +158,14 @@ describe('ReadyToMerge', () => {
 
     describe('autoMergeText', () => {
       it('should return Merge when pipeline succeeds', () => {
-        factory({ preferredAutoMergeStrategy: MWPS_MERGE_STRATEGY });
+        factory({ availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY] });
 
         expect(vm.autoMergeText).toEqual('Merge when pipeline succeeds');
       });
 
       it('should return Start merge train when pipeline succeeds', () => {
         factory({
-          preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
           mergeTrainsCount: 0,
         });
 
@@ -168,7 +174,7 @@ describe('ReadyToMerge', () => {
 
       it('should return Add to merge train when pipeline succeeds', () => {
         factory({
-          preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
+          availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
           mergeTrainsCount: 1,
         });
 
@@ -178,19 +184,19 @@ describe('ReadyToMerge', () => {
 
     describe('isMergeImmediatelyDangerous', () => {
       it('should return false if the preferred auto merge strategy is not merge train-related', () => {
-        factory({ preferredAutoMergeStrategy: MWPS_MERGE_STRATEGY });
+        factory({ availableAutoMergeStrategies: [MWPS_MERGE_STRATEGY] });
 
         expect(vm.isMergeImmediatelyDangerous).toBe(false);
       });
 
       it('should return true if the preferred auto merge strategy is merge trains', () => {
-        factory({ preferredAutoMergeStrategy: MT_MERGE_STRATEGY });
+        factory({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] });
 
         expect(vm.isMergeImmediatelyDangerous).toBe(true);
       });
 
       it('should return true if the preferred auto merge strategy is merge trains when pipeline succeeds', () => {
-        factory({ preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY });
+        factory({ availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY] });
 
         expect(vm.isMergeImmediatelyDangerous).toBe(true);
       });
@@ -201,7 +207,7 @@ describe('ReadyToMerge', () => {
     it('should render the helper icon if MTWPS is available and the user has not yet pressed the MTWPS button', () => {
       factory({
         onlyAllowMergeIfPipelineSucceeds: true,
-        preferredAutoMergeStrategy: MTWPS_MERGE_STRATEGY,
+        availableAutoMergeStrategies: [MTWPS_MERGE_STRATEGY],
         autoMergeEnabled: false,
       });
 
@@ -213,7 +219,7 @@ describe('ReadyToMerge', () => {
     it('does not render the merge train helper icon if the MTWPS strategy is not available', () => {
       factory({
         availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
-        pipeline: activePipeline,
+        headPipeline: activePipeline,
       });
 
       expect(findMergeTrainHelperIcon().exists()).toBe(false);
@@ -223,7 +229,7 @@ describe('ReadyToMerge', () => {
   describe('shouldShowMergeImmediatelyDropdown', () => {
     it('should return false if no pipeline is active', () => {
       factory({
-        isPipelineActive: false,
+        headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: false },
         onlyAllowMergeIfPipelineSucceeds: false,
       });
 
@@ -232,7 +238,7 @@ describe('ReadyToMerge', () => {
 
     it('should return false if "Pipelines must succeed" is enabled for the current project', () => {
       factory({
-        isPipelineActive: true,
+        headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
         onlyAllowMergeIfPipelineSucceeds: true,
       });
 
@@ -241,7 +247,7 @@ describe('ReadyToMerge', () => {
 
     it('should return true if the MR\'s pipeline is active and "Pipelines must succeed" is not enabled for the current project', () => {
       factory({
-        isPipelineActive: true,
+        headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
         onlyAllowMergeIfPipelineSucceeds: false,
       });
 
@@ -250,8 +256,8 @@ describe('ReadyToMerge', () => {
 
     it('should return true when the merge train auto merge stategy is available', () => {
       factory({
-        preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
-        isPipelineActive: false,
+        availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
+        headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: false },
         onlyAllowMergeIfPipelineSucceeds: true,
       });
 
@@ -269,7 +275,14 @@ describe('ReadyToMerge', () => {
     `(
       'with merge stragtegy $mergeStrategy and pipeline failed status of $isPipelineFailed we should show the modal: $isVisible',
       async ({ mergeStrategy, isPipelineFailed, isVisible }) => {
-        factory({ preferredAutoMergeStrategy: mergeStrategy, isPipelineFailed });
+        factory({
+          availableAutoMergeStrategies: [mergeStrategy],
+          headPipeline: {
+            id: 'gid://gitlab/Pipeline/1',
+            path: 'path/to/pipeline',
+            status: isPipelineFailed ? 'FAILED' : 'PASSED',
+          },
+        });
         const modalConfirmation = findMergeTrainFailedPipelineConfirmationDialog();
 
         if (!isVisible) {
@@ -301,14 +314,14 @@ describe('ReadyToMerge', () => {
     };
 
     it('should show a warning dialog asking for confirmation if the user is trying to skip the merge train', async () => {
-      factory({ preferredAutoMergeStrategy: MT_MERGE_STRATEGY }, false);
+      factory({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, false);
       await clickMergeImmediately();
       expect(dialog.vm.show).toHaveBeenCalled();
       expect(vm.handleMergeButtonClick).not.toHaveBeenCalled();
     });
 
     it('should perform the merge when the user confirms their intent to merge immediately', async () => {
-      factory({ preferredAutoMergeStrategy: MT_MERGE_STRATEGY }, false);
+      factory({ availableAutoMergeStrategies: [MT_MERGE_STRATEGY] }, false);
       await clickMergeImmediately();
       dialog.vm.$emit('mergeImmediately');
       await nextTick();
@@ -319,7 +332,7 @@ describe('ReadyToMerge', () => {
     it('should not ask for confirmation in non-merge train scenarios', async () => {
       factory(
         {
-          isPipelineActive: true,
+          headPipeline: { id: 'gid://gitlab/Pipeline/1', path: 'path/to/pipeline', active: true },
           onlyAllowMergeIfPipelineSucceeds: false,
         },
         false,
@@ -335,7 +348,6 @@ describe('ReadyToMerge', () => {
       beforeEach(() => {
         factory({
           isPipelineFailed: true,
-          preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
           availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
           hasCI: true,
           onlyAllowMergeIfPipelineSucceeds: false,
@@ -350,11 +362,14 @@ describe('ReadyToMerge', () => {
     describe('pipeline passed', () => {
       beforeEach(() => {
         factory({
-          preferredAutoMergeStrategy: MT_MERGE_STRATEGY,
           availableAutoMergeStrategies: [MT_MERGE_STRATEGY],
           hasCI: true,
           onlyAllowMergeIfPipelineSucceeds: false,
-          ciStatus: 'success',
+          headPipeline: {
+            id: 'gid://gitlab/Pipeline/1',
+            path: 'path/to/pipeline',
+            status: 'passed',
+          },
         });
       });
 

@@ -2,6 +2,7 @@ import { __, s__ } from '~/locale';
 import {
   SAST_SHORT_NAME,
   DAST_SHORT_NAME,
+  DEPENDENCY_SCANNING_NAME,
   SECRET_DETECTION_NAME,
   CONTAINER_SCANNING_NAME,
 } from '~/security_configuration/components/constants';
@@ -43,4 +44,5 @@ export const RULE_MODE_SCANNERS = {
   dast: DAST_SHORT_NAME,
   secret_detection: SECRET_DETECTION_NAME,
   container_scanning: CONTAINER_SCANNING_NAME,
+  dependency_scanning: DEPENDENCY_SCANNING_NAME,
 };

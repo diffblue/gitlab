@@ -314,7 +314,7 @@ export const receiveAddItemSuccess = ({ dispatch, commit, getters }, { rawItems 
       }),
       ...globalItemId,
       type: getters.isEpic ? ChildType.Epic : ChildType.Issue,
-      userPermissions: getters.isEpic ? { adminEpic: item.can_admin } : {},
+      userPermissions: getters.isEpic ? { canAdmin: item.can_admin } : {},
     });
   });
 

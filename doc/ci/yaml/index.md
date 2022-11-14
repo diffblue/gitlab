@@ -146,7 +146,7 @@ the time limit to resolve all files is 30 seconds.
 **Possible inputs**: The `include` subkeys:
 
 - [`include:local`](#includelocal)
-- [`include:file`](#includefile)
+- [`include:project`](#includeproject)
 - [`include:remote`](#includeremote)
 - [`include:template`](#includetemplate)
 
@@ -203,56 +203,50 @@ include: '.gitlab-ci-production.yml'
 - All [nested includes](includes.md#use-nested-includes) are executed in the scope of the same project,
   so you can use local, project, remote, or template includes.
 
-#### `include:file`
+#### `include:project`
 
 > Including multiple files from the same project [introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/26793) in GitLab 13.6. [Feature flag removed](https://gitlab.com/gitlab-org/gitlab/-/issues/271560) in GitLab 13.8.
 
 To include files from another private project on the same GitLab instance,
-use `include:file`. You can use `include:file` in combination with `include:project` only.
+use `include:project` and `include:file`.
 
 **Keyword type**: Global keyword.
 
 **Possible inputs**:
 
-A full path, relative to the root directory (`/`):
+- `include:project`: The full GitLab project path.
+- `include:file` A full file path, or array of file paths, relative to the root directory (`/`).
+  The YAML files must have the `.yml` or `.yaml` extension.
+- `include:ref`: Optional. The ref to retrieve the file from. Defaults to the `HEAD` of the project
+  when not specified.
 
-- The YAML file must have the extension `.yml` or `.yaml`.
-- You can use [certain CI/CD variables](includes.md#use-variables-with-include).
+You can use [certain CI/CD variables](includes.md#use-variables-with-include).
 
-**Example of `include:file`**:
-
-```yaml
-include:
-  - project: 'my-group/my-project'
-    file: '/templates/.gitlab-ci-template.yml'
-```
-
-You can also specify a `ref`. If you do not specify a value, the ref defaults to the `HEAD` of the project:
+**Example of `include:project`**:
 
 ```yaml
 include:
   - project: 'my-group/my-project'
-    ref: main
     file: '/templates/.gitlab-ci-template.yml'
-
-  - project: 'my-group/my-project'
-    ref: v1.0.0  # Git Tag
-    file: '/templates/.gitlab-ci-template.yml'
-
-  - project: 'my-group/my-project'
-    ref: 787123b47f14b552955ca2786bc9542ae66fee5b  # Git SHA
-    file: '/templates/.gitlab-ci-template.yml'
-```
-
-You can include multiple files from the same project:
-
-```yaml
-include:
-  - project: 'my-group/my-project'
-    ref: main
+  - project: 'my-group/my-subgroup/my-project-2'
     file:
       - '/templates/.builds.yml'
       - '/templates/.tests.yml'
+```
+
+You can also specify a `ref`:
+
+```yaml
+include:
+  - project: 'my-group/my-project'
+    ref: main                                      # Git branch
+    file: '/templates/.gitlab-ci-template.yml'
+  - project: 'my-group/my-project'
+    ref: v1.0.0                                    # Git Tag
+    file: '/templates/.gitlab-ci-template.yml'
+  - project: 'my-group/my-project'
+    ref: 787123b47f14b552955ca2786bc9542ae66fee5b  # Git SHA
+    file: '/templates/.gitlab-ci-template.yml'
 ```
 
 **Additional details**:
@@ -4260,6 +4254,38 @@ variables:
 
 - A global variable defined with `value` but no `description` behaves the same as
   [`variables`](#variables).
+
+#### `variables:expand`
+
+> [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/353991) in GitLab 15.6 [with a flag](../../administration/feature_flags.md) named `ci_raw_variables_in_yaml_config`. Disabled by default.
+
+Use the `expand` keyword to configure a variable to be expandable or not.
+
+**Keyword type**: Global and job keyword. You can use it at the global level, and also at the job level.
+
+**Possible inputs**:
+
+- `true` (default): The variable is expandable.
+- `false`: The variable is not expandable.
+
+**Example of `variables:expand`**:
+
+```yaml
+variables:
+  VAR1: value1
+  VAR2: value2 $VAR1
+  VAR3:
+    value: value3 $VAR1
+    expand: false
+```
+
+- The result of `VAR2` is `value2 value1`.
+- The result of `VAR3` is `value3 $VAR1`.
+
+**Additional details**:
+
+- The `expand` keyword can only be used with the global and job-level `variables` keywords.
+  You can't use it with [`rules:variables`](#rulesvariables) or [`workflow:rules:variables`](#workflowrulesvariables).
 
 ### `when`
 

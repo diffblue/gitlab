@@ -6,7 +6,7 @@ import { __, sprintf } from '~/locale';
 import AddItemForm from '~/related_issues/components/add_issuable_form.vue';
 import SlotSwitch from '~/vue_shared/components/slot_switch.vue';
 import { issuableTypesMap } from '~/related_issues/constants';
-import { ITEM_TABS, OVERFLOW_AFTER } from '../constants';
+import { ITEM_TABS, OVERFLOW_AFTER, i18nConfidentialParent } from '../constants';
 import CreateEpicForm from './create_epic_form.vue';
 import CreateIssueForm from './create_issue_form.vue';
 import RelatedItemsTreeBody from './related_items_tree_body.vue';
@@ -25,6 +25,7 @@ export default {
   OVERFLOW_AFTER,
   FORM_SLOTS,
   ITEM_TABS,
+  i18nConfidentialParent,
   components: {
     GlLoadingIcon,
     GlIcon,
@@ -198,11 +199,7 @@ export default {
               v-gl-tooltip.hover
               name="question-o"
               class="gl-text-gray-500"
-              :title="
-                __(
-                  'The parent epic is confidential and can only contain confidential epics and issues',
-                )
-              "
+              :title="$options.i18nConfidentialParent[parentItem.type]"
             />
           </h6>
         </template>

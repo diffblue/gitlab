@@ -91,18 +91,6 @@ RSpec.describe MergeRequests::PostMergeService do
 
             subject
           end
-
-          context 'when audit_invalid_approver_rules is disabled' do
-            before do
-              stub_feature_flags(audit_invalid_approver_rules: false)
-            end
-
-            it 'does not track the event' do
-              expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
-
-              subject
-            end
-          end
         end
       end
 

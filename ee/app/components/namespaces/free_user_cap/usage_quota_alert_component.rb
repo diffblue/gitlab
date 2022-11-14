@@ -2,7 +2,7 @@
 
 module Namespaces
   module FreeUserCap
-    class UsageQuotaAlertComponent < AlertComponent
+    class UsageQuotaAlertComponent < BaseAlertComponent
       private
 
       FREE_GROUP_LIMITED_ALERT = 'free_group_limited_alert'

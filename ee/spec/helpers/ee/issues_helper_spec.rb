@@ -143,7 +143,8 @@ RSpec.describe EE::IssuesHelper do
           issue_weights: true,
           iterations: true,
           multiple_issue_assignees: true,
-          scoped_labels: true
+          scoped_labels: true,
+          okrs: true
         )
       end
 
@@ -153,8 +154,8 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'true',
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
-          has_multiple_issue_assignees_feature: 'true',
           has_scoped_labels_feature: 'true',
+          has_okrs_feature: 'true',
           group_path: project.group.full_path
         }
 
@@ -172,7 +173,7 @@ RSpec.describe EE::IssuesHelper do
 
     context 'when features are disabled' do
       before do
-        stub_licensed_features(epics: false, iterations: false, issue_weights: false, issuable_health_status: false, blocked_issues: false, multiple_issue_assignees: false)
+        stub_licensed_features(epics: false, iterations: false, issue_weights: false, issuable_health_status: false, blocked_issues: false, multiple_issue_assignees: false, okrs: false)
       end
 
       it 'returns data with licensed features disabled' do
@@ -181,8 +182,8 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'false',
           has_issue_weights_feature: 'false',
           has_iterations_feature: 'false',
-          has_multiple_issue_assignees_feature: 'false',
-          has_scoped_labels_feature: 'false'
+          has_scoped_labels_feature: 'false',
+          has_okrs_feature: 'false'
         }
 
         result = helper.project_issues_list_data(project, current_user)
@@ -212,7 +213,8 @@ RSpec.describe EE::IssuesHelper do
           issue_weights: true,
           iterations: true,
           multiple_issue_assignees: true,
-          scoped_labels: true
+          scoped_labels: true,
+          okrs: true
         )
       end
 
@@ -223,8 +225,8 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'true',
           has_issue_weights_feature: 'true',
           has_iterations_feature: 'true',
-          has_multiple_issue_assignees_feature: 'true',
           has_scoped_labels_feature: 'true',
+          has_okrs_feature: 'true',
           group_path: project.group.full_path
         }
 
@@ -234,7 +236,7 @@ RSpec.describe EE::IssuesHelper do
 
     context 'when features are disabled' do
       before do
-        stub_licensed_features(blocked_issues: false, epics: false, group_bulk_edit: false, issuable_health_status: false, issue_weights: false, iterations: false, multiple_issue_assignees: false)
+        stub_licensed_features(blocked_issues: false, epics: false, group_bulk_edit: false, issuable_health_status: false, issue_weights: false, iterations: false, multiple_issue_assignees: false, okrs: false)
       end
 
       it 'returns data with licensed features disabled' do
@@ -244,8 +246,8 @@ RSpec.describe EE::IssuesHelper do
           has_issuable_health_status_feature: 'false',
           has_issue_weights_feature: 'false',
           has_iterations_feature: 'false',
-          has_multiple_issue_assignees_feature: 'false',
-          has_scoped_labels_feature: 'false'
+          has_scoped_labels_feature: 'false',
+          has_okrs_feature: 'false'
         }
 
         result = helper.group_issues_list_data(group, current_user)

@@ -99,7 +99,7 @@ export default {
         class="d-inline-block mb-2"
         variant="link"
         @click="handleShowMoreClick($event)"
-        >{{ s__('Epics|Show more') }}</gl-button
+        >{{ __('Show more') }}</gl-button
       >
       <gl-loading-icon v-else size="sm" class="mt-1 mb-1" />
     </li>

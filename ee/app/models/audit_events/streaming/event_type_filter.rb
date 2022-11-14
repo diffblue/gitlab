@@ -13,6 +13,10 @@ module AuditEvents
                 uniqueness: { scope: :external_audit_event_destination_id }
 
       scope :audit_event_type_in, ->(audit_event_types) { where(audit_event_type: audit_event_types) }
+
+      def to_s
+        audit_event_type
+      end
     end
   end
 end

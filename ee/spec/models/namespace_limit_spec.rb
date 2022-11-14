@@ -128,7 +128,7 @@ RSpec.describe NamespaceLimit do
 
       context 'when temporary_storage_increase_ends_on is already set' do
         before do
-          namespace_limit.update_attribute(:temporary_storage_increase_ends_on, 30.days.ago) # rubocop:disable Rails/SkipsModelValidations
+          namespace_limit.update_attribute(:temporary_storage_increase_ends_on, 30.days.ago)
         end
 
         it 'can not be set again' do

@@ -93,11 +93,9 @@ export const LFS_STORAGE = 'lfs';
  * These are file types that we want the legacy (backend) syntax highlighter to highlight.
  */
 export const LEGACY_FILE_TYPES = [
-  'gemfile',
   'composer_json',
   'podfile',
   'podspec',
-  'podspec_json',
   'cartfile',
   'requirements_txt',
   'cargo_toml',

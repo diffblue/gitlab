@@ -13,9 +13,13 @@ export default {
     return {
       isSidebarOpen: false,
       status: PRE_SCAN_VERIFICATION_STATUS.DEFAULT,
+      showAlert: false,
     };
   },
   methods: {
+    dismissAlert() {
+      this.showAlert = false;
+    },
     openSidebar() {
       this.isSidebarOpen = true;
     },
@@ -40,8 +44,10 @@ export default {
 
     <pre-scan-verification-sidebar
       :is-open="isSidebarOpen"
+      :show-alert="showAlert"
       :status="status"
       @close="closeSidebar"
+      @dismiss-alert="dismissAlert"
     />
   </div>
 </template>

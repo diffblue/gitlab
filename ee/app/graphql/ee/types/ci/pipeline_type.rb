@@ -20,6 +20,12 @@ module EE
             description: 'Vulnerability findings reported on the pipeline.',
             resolver: ::Resolvers::PipelineSecurityReportFindingsResolver
 
+          field :security_report_finding,
+            ::Types::PipelineSecurityReportFindingType,
+            null: true,
+            description: 'Vulnerability finding reported on the pipeline.',
+            resolver: ::Resolvers::SecurityReport::FindingResolver
+
           field :code_quality_reports,
             ::Types::Ci::CodeQualityDegradationType.connection_type,
             null: true,

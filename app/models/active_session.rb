@@ -98,7 +98,7 @@ class ActiveSession
             Marshal.dump(active_user_session)
           )
 
-          pipeline.sadd(
+          pipeline.sadd?(
             lookup_key_name(user.id),
             session_private_id
           )
@@ -300,7 +300,7 @@ class ActiveSession
       session_ids_and_entries.each do |session_id, entry|
         next if entry
 
-        pipeline.srem(lookup_key, session_id)
+        pipeline.srem?(lookup_key, session_id)
         removed << session_id
       end
     end

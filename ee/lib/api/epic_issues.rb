@@ -31,17 +31,27 @@ module API
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
+      requires :id, types: [Integer, String], desc: 'The ID or URL-encoded path of the group owned by the authenticated user', documentation: { example: '1' }
     end
 
     resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-      desc 'Update epic issue association' do
+      desc 'Update epic-issue association' do
+        detail 'Updates an epic-issue association'
+        is_array true
+        success EE::API::Entities::EpicIssue
+        failure [
+          { code: 400, message: 'Issue could not be moved!' },
+          { code: 401, message: 'Unauthorized' },
+          { code: 403, message: 'Forbidden' },
+          { code: 404, message: 'Not found' }
+        ]
+        tags %w[epic_issues]
       end
       params do
-        requires :epic_iid, type: Integer, desc: 'The IID of the epic'
-        requires :epic_issue_id, type: Integer, desc: 'The ID of the epic issue association to update'
-        optional :move_before_id, type: Integer, desc: 'The ID of the epic issue association that should be positioned before the actual issue'
-        optional :move_after_id, type: Integer, desc: 'The ID of the epic issue association that should be positioned after the actual issue'
+        requires :epic_iid, types: [Integer, String], desc: 'The internal ID of the epic', documentation: { example: 5 }
+        requires :epic_issue_id, types: [Integer, String], desc: 'The ID of the epic-issue association to update', documentation: { example: 11 }
+        optional :move_before_id, types: [Integer, String], desc: 'The ID of the epic-issue association that should be positioned before the actual issue', documentation: { example: 20 }
+        optional :move_after_id, types: [Integer, String], desc: 'The ID of the epic-issue association that should be positioned after the actual issue', documentation: { example: 25 }
         use :pagination
       end
       put ':id/(-/)epics/:epic_iid/issues/:epic_issue_id' do
@@ -63,14 +73,22 @@ module API
         end
       end
 
-      desc 'Get issues assigned to the epic' do
-        success EE::API::Entities::EpicIssue
-      end
-      params do
-        requires :epic_iid, type: Integer, desc: 'The IID of the epic'
-        use :pagination
-      end
       [':id/epics/:epic_iid/issues', ':id/-/epics/:epic_iid/issues'].each do |path|
+        desc 'List issues for an epic' do
+          detail 'Gets all issues that are assigned to an epic and the authenticated user has access to'
+          is_array true
+          success EE::API::Entities::EpicIssue
+          failure [
+            { code: 401, message: 'Unauthorized' },
+            { code: 403, message: 'Forbidden' },
+            { code: 404, message: 'Not found' }
+          ]
+          tags %w[epic_issues]
+        end
+        params do
+          requires :epic_iid, types: [Integer, String], desc: 'The internal ID of the epic', documentation: { example: 5 }
+          use :pagination
+        end
         get path do
           authorize_can_read!
 
@@ -82,10 +100,19 @@ module API
       end
 
       desc 'Assign an issue to the epic' do
+        detail 'Creates an epic-issue association. If the issue in question belongs to another epic it is unassigned from that epic'
         success EE::API::Entities::EpicIssueLink
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 403, message: 'Forbidden' },
+          { code: 404, message: 'No matching issue found' },
+          { code: 409, message: 'Issue already assigned' }
+        ]
+        tags %w[epic_issues]
       end
       params do
-        requires :epic_iid, type: Integer, desc: 'The IID of the epic'
+        requires :epic_iid, types: [Integer, String], desc: 'The internal ID of the epic', documentation: { example: 5 }
+        requires :issue_id, types: [Integer, String], desc: 'The ID of the issue', documentation: { example: 55 }
       end
       # rubocop: disable CodeReuse/ActiveRecord
       post ':id/(-/)epics/:epic_iid/issues/:issue_id' do
@@ -108,11 +135,18 @@ module API
       # rubocop: enable CodeReuse/ActiveRecord
 
       desc 'Remove an issue from the epic' do
-        success EE::API::Entities::EpicIssueLink
+        detail 'Removes an epic-issue association'
+        success code: 200, model: EE::API::Entities::EpicIssueLink
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 403, message: 'Forbidden' },
+          { code: 404, message: 'Not found' }
+        ]
+        tags %w[epic_issues]
       end
       params do
-        requires :epic_iid, type: Integer, desc: 'The IID of the epic'
-        requires :epic_issue_id, type: Integer, desc: 'The ID of the association'
+        requires :epic_iid, types: [Integer, String], desc: 'The internal ID of the epic', documentation: { example: 5 }
+        requires :epic_issue_id, types: [Integer, String], desc: 'The ID of the association', documentation: { example: 11 }
       end
       delete ':id/(-/)epics/:epic_iid/issues/:epic_issue_id' do
         authorize_can_assign_to_epic!(link.issue)

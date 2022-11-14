@@ -6,6 +6,24 @@ import {
   MTWPS_MERGE_STRATEGY,
 } from '~/vue_merge_request_widget/constants';
 
+function convertPropsToGraphqlState(props) {
+  return {
+    autoMergeStrategy: props.autoMergeStrategy,
+    cancelAutoMergePath: 'http://text.com',
+    mergeUser: {
+      id: props.mergeUserId,
+      ...props.setToAutoMergeBy,
+    },
+    targetBranch: props.targetBranch,
+    targetBranchCommitsPath: props.targetBranchPath,
+    shouldRemoveSourceBranch: props.shouldRemoveSourceBranch,
+    forceRemoveSourceBranch: props.shouldRemoveSourceBranch,
+    userPermissions: {
+      removeSourceBranch: props.canRemoveSourceBranch,
+    },
+  };
+}
+
 describe('MRWidgetAutoMergeEnabled', () => {
   let wrapper;
   let vm;
@@ -31,10 +49,22 @@ describe('MRWidgetAutoMergeEnabled', () => {
   };
 
   const factory = (mrUpdates = {}) => {
+    const state = { ...convertPropsToGraphqlState(mr), ...mrUpdates };
+
     wrapper = mount(MRWidgetAutoMergeEnabled, {
       propsData: {
         mr: { ...mr, ...mrUpdates },
         service,
+      },
+      data() {
+        return { state };
+      },
+      mocks: {
+        $apollo: {
+          queries: {
+            state: { loading: false },
+          },
+        },
       },
     });
 

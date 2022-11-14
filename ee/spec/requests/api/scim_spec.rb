@@ -472,6 +472,18 @@ RSpec.describe API::Scim do
         end
       end
 
+      context 'when the user is not a group member' do
+        before do
+          group.members.find_by_user_id(user.id).destroy!
+        end
+
+        it 'deactivates the identity' do
+          delete scim_api("scim/v2/groups/#{group.full_path}/Users/#{identity.extern_uid}")
+
+          expect(identity.reload.active).to be false
+        end
+      end
+
       context 'with owner' do
         before do
           group.add_owner(user)

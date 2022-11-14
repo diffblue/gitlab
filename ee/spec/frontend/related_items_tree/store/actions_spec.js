@@ -934,7 +934,7 @@ describe('RelatedItemTree', () => {
           const mockEpicsWithoutPerm = mockEpics.map((item) => ({
             ...item,
             pathIdSeparator: PathIdSeparator.Epic,
-            userPermissions: { adminEpic: undefined },
+            userPermissions: { canAdmin: undefined },
           }));
 
           testAction(

@@ -19,5 +19,9 @@ FactoryBot.define do
       latest { true }
       status { :succeeded }
     end
+
+    trait :purged do
+      status { :purged }
+    end
   end
 end

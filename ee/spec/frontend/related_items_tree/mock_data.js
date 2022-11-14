@@ -25,7 +25,7 @@ export const mockParentItem = {
   hasChildren: true,
   hasIssues: true,
   userPermissions: {
-    adminEpic: true,
+    canAdmin: true,
     createEpic: true,
   },
   descendantCounts: {
@@ -59,7 +59,7 @@ export const mockParentItem2 = {
   reference: 'gitlab-org&2',
   parentReference: 'gitlab-org&2',
   userPermissions: {
-    adminEpic: true,
+    canAdmin: true,
     createEpic: true,
   },
   descendantCounts: {
@@ -98,7 +98,7 @@ export const mockEpic1 = {
   hasChildren: true,
   hasIssues: true,
   userPermissions: {
-    adminEpic: true,
+    canAdmin: true,
     createEpic: true,
   },
   group: {
@@ -134,7 +134,7 @@ export const mockEpic2 = {
   hasChildren: false,
   hasIssues: false,
   userPermissions: {
-    adminEpic: true,
+    canAdmin: true,
     createEpic: true,
   },
   group: {

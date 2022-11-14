@@ -7,15 +7,20 @@ module API
 
     before { authenticate! }
 
+    resource_weight_events_tags = %w[resource_weight_events]
+
     feature_category :team_planning
     urgency :low
 
     params do
-      requires :id, type: String, desc: "The ID of a project"
+      requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
     end
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-      desc "Get a list of issue resource weight events" do
+      desc 'List project issue weight events' do
+        detail 'Gets a list of all weight events for a single issue'
         success EE::API::Entities::ResourceWeightEvent
+        is_array true
+        tags resource_weight_events_tags
       end
       params do
         requires :eventable_id, types: [Integer, String], desc: 'The ID of the eventable'
@@ -34,8 +39,13 @@ module API
         present paginate(events), with: EE::API::Entities::ResourceWeightEvent
       end
 
-      desc "Get a single issue resource weight event" do
+      desc 'Get single issue weight event' do
+        detail 'Returns a single weight event for a specific project issue'
         success EE::API::Entities::ResourceWeightEvent
+        failure [
+          { code: 404, message: 'Not found' }
+        ]
+        tags resource_weight_events_tags
       end
       params do
         requires :event_id, type: String, desc: 'The ID of a resource weight event'

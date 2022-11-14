@@ -2,7 +2,7 @@
 
 module Namespaces
   module FreeUserCap
-    class PreviewAlertComponent < AlertComponent
+    class PreviewAlertComponent < BaseAlertComponent
       private
 
       PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'

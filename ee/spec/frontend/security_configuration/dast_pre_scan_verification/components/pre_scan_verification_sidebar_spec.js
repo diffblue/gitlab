@@ -1,6 +1,7 @@
 import { GlDrawer } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
+import PreScanVerificationAlert from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_alert.vue';
 import PreScanVerificationSidebar from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_sidebar.vue';
 import PreScanVerificationSummary from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_summary.vue';
 import { PRE_SCAN_VERIFICATION_STATUS } from 'ee/security_configuration/dast_pre_scan_verification/constants';
@@ -19,6 +20,7 @@ describe('PreScanVerificationSidebar', () => {
     });
   };
 
+  const findPreScanVerificationAlert = () => wrapper.findComponent(PreScanVerificationAlert);
   const findPreScanVerificationSummary = () => wrapper.findComponent(PreScanVerificationSummary);
   const findDrawer = () => wrapper.findComponent(GlDrawer);
 
@@ -59,5 +61,17 @@ describe('PreScanVerificationSidebar', () => {
         expect(findPreScanVerificationSummary().exists()).toEqual(expectedResult);
       },
     );
+  });
+
+  describe('verification alert', () => {
+    it.each`
+      showAlert | expectedResult
+      ${true}   | ${true}
+      ${false}  | ${false}
+    `('should display alert component', ({ showAlert, expectedResult }) => {
+      createComponent({ showAlert });
+
+      expect(findPreScanVerificationAlert().exists()).toBe(expectedResult);
+    });
   });
 });

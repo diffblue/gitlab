@@ -80,11 +80,8 @@ RSpec.describe ::EE::Gitlab::Scim::DeprovisionService do
           expect { service.execute }.not_to change { group.members.count }
         end
 
-        it 'returns the group membership error' do
-          response = service.execute
-
-          expect(response.error?).to be true
-          expect(response.errors).to include("Could not remove #{user.name} from #{group.name}. User is not a group member.")
+        it 'deactivates scim identity' do
+          expect { service.execute }.to change { identity.active }.from(true).to(false)
         end
       end
     end

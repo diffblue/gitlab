@@ -9,7 +9,7 @@ module Integrations
     validates :token, presence: true, if: :activated?
     validates :repository_url, public_url: true, allow_blank: true
 
-    default_value_for :pipeline_events, true
+    attribute :pipeline_events, default: true
 
     field :token,
       type: 'password',

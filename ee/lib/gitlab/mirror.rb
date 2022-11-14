@@ -50,12 +50,12 @@ module Gitlab
       end
 
       def increment_capacity(project_id)
-        Gitlab::Redis::SharedState.with { |redis| redis.sadd(PULL_CAPACITY_KEY, project_id) }
+        Gitlab::Redis::SharedState.with { |redis| redis.sadd?(PULL_CAPACITY_KEY, project_id) }
       end
 
       # We do not want negative capacity
       def decrement_capacity(project_id)
-        Gitlab::Redis::SharedState.with { |redis| redis.srem(PULL_CAPACITY_KEY, project_id) }
+        Gitlab::Redis::SharedState.with { |redis| redis.srem?(PULL_CAPACITY_KEY, project_id) }
       end
 
       def max_delay
@@ -83,7 +83,7 @@ module Gitlab
       end
 
       def untrack_scheduling(project_id)
-        Gitlab::Redis::SharedState.with { |redis| redis.srem(SCHEDULING_TRACKING_KEY, project_id) }
+        Gitlab::Redis::SharedState.with { |redis| redis.srem?(SCHEDULING_TRACKING_KEY, project_id) }
       end
 
       def reset_scheduling

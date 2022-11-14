@@ -24,6 +24,7 @@ describe('MR Widget Security Reports', () => {
   const secretDetectionHelp = '/help/user/application_security/secret-detection/index';
   const apiFuzzingHelp = '/help/user/application_security/api-fuzzing/index';
   const dependencyScanningHelp = '/help/user/application_security/api-fuzzing/index';
+  const containerScanningHelp = '/help/user/application_security/container-scanning/index';
 
   const reportEndpoints = {
     sastComparisonPath: '/my/sast/endpoint',
@@ -32,6 +33,7 @@ describe('MR Widget Security Reports', () => {
     coverageFuzzingComparisonPath: '/my/coverage-fuzzing/endpoint',
     apiFuzzingComparisonPath: '/my/api-fuzzing/endpoint',
     secretDetectionComparisonPath: '/my/secret-detection/endpoint',
+    containerScanningComparisonPath: '/my/container-scanning/endpoint',
   };
 
   const createComponent = ({ propsData, mountFn = shallowMountExtended } = {}) => {
@@ -45,6 +47,7 @@ describe('MR Widget Security Reports', () => {
           sourceProjectFullPath,
           sastHelp,
           dastHelp,
+          containerScanningHelp,
           dependencyScanningHelp,
           coverageFuzzingHelp,
           secretDetectionHelp,
@@ -58,6 +61,7 @@ describe('MR Widget Security Reports', () => {
   };
 
   const findWidget = () => wrapper.findComponent(Widget);
+  const findWidgetRow = (reportType) => wrapper.findByTestId(`report-${reportType}`);
   const findSummaryText = () => wrapper.findComponent(SummaryText);
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
 
@@ -123,6 +127,7 @@ describe('MR Widget Security Reports', () => {
         reportEndpoints.coverageFuzzingComparisonPath,
         reportEndpoints.apiFuzzingComparisonPath,
         reportEndpoints.secretDetectionComparisonPath,
+        reportEndpoints.containerScanningComparisonPath,
       ].forEach((path) => {
         mockAxios.onGet(path).replyOnce(200, {
           added: [],
@@ -207,16 +212,17 @@ describe('MR Widget Security Reports', () => {
     };
 
     it.each`
-      reportType               | reportDescription                                | helpPath
+      reportType               | reportTitle                                      | helpPath
       ${'SAST'}                | ${'Static Application Security Testing (SAST)'}  | ${sastHelp}
       ${'DAST'}                | ${'Dynamic Application Security Testing (DAST)'} | ${dastHelp}
       ${'DEPENDENCY_SCANNING'} | ${'Dependency scanning'}                         | ${dependencyScanningHelp}
       ${'COVERAGE_FUZZING'}    | ${'Coverage fuzzing'}                            | ${coverageFuzzingHelp}
       ${'API_FUZZING'}         | ${'API fuzzing'}                                 | ${apiFuzzingHelp}
       ${'SECRET_DETECTION'}    | ${'Secret detection'}                            | ${secretDetectionHelp}
+      ${'CONTAINER_SCANNING'}  | ${'Container scanning'}                          | ${containerScanningHelp}
     `(
       'shows the correct help popover for $reportType',
-      async ({ reportType, reportDescription, helpPath }) => {
+      async ({ reportType, reportTitle, helpPath }) => {
         mockWithData();
 
         createComponent({
@@ -229,14 +235,10 @@ describe('MR Widget Security Reports', () => {
         wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
         await nextTick();
 
-        const helpButtons = wrapper.findAllByRole('button', { name: 'Help' });
-
-        expect(helpButtons).toHaveLength(Object.keys(reportEndpoints).length);
-        helpButtons.at(0).trigger('click');
-        await nextTick();
-
-        expect(wrapper.findByText(reportDescription).exists()).toBe(true);
-        expect(wrapper.findByTestId(`${reportType}-learn-more`).attributes('href')).toBe(helpPath);
+        expect(findWidgetRow(reportType).props('helpPopover')).toMatchObject({
+          options: { title: reportTitle },
+          content: { learnMorePath: helpPath },
+        });
       },
     );
   });

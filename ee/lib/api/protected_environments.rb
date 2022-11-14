@@ -101,6 +101,7 @@ module API
         failure [
           { code: '404', message: 'Not found' }
         ]
+        is_array true
         tags project_protected_environments_tags
       end
       params do
@@ -228,6 +229,7 @@ module API
         failure [
           { code: '404', message: 'Not found' }
         ]
+        is_array true
         tags group_protected_environments_tags
       end
       params do

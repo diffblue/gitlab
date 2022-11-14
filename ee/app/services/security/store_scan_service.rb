@@ -64,8 +64,8 @@ module Security
     end
 
     def store_findings
-      StoreFindingsMetadataService.execute(security_scan, security_report, register_finding_keys).then do |result|
-        # If `StoreFindingsMetadataService` returns error, it means the findings
+      StoreFindingsService.execute(security_scan, security_report, register_finding_keys).then do |result|
+        # If `StoreFindingsService` returns error, it means the findings
         # have already been stored before so we may re-run the deduplication logic.
         update_deduplicated_findings if result[:status] == :error && deduplicate_findings?
       end

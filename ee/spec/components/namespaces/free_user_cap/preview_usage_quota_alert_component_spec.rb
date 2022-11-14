@@ -95,7 +95,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewUsageQuotaAlertComponent, :saas, 
     it 'does not render the alert' do
       render_inline(component)
 
-      expect(rendered_component).not_to have_content(title)
+      expect(page).not_to have_content(title)
     end
   end
 
@@ -105,7 +105,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewUsageQuotaAlertComponent, :saas, 
     it 'does not render the alert' do
       render_inline(component)
 
-      expect(rendered_component).not_to have_content(title)
+      expect(page).not_to have_content(title)
     end
   end
 end

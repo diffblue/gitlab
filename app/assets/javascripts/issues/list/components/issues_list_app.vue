@@ -27,6 +27,7 @@ import { getParameterByName, joinPaths } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import {
   DEFAULT_NONE_ANY,
+  FILTERED_SEARCH_TERM,
   OPERATOR_IS_ONLY,
   TOKEN_TITLE_ASSIGNEE,
   TOKEN_TITLE_AUTHOR,
@@ -38,10 +39,22 @@ import {
   TOKEN_TITLE_ORGANIZATION,
   TOKEN_TITLE_RELEASE,
   TOKEN_TITLE_TYPE,
-  FILTERED_SEARCH_TERM,
+  OPERATOR_IS_NOT_OR,
+  OPERATOR_IS_AND_IS_NOT,
+  TOKEN_TYPE_ASSIGNEE,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_CONFIDENTIAL,
+  TOKEN_TYPE_CONTACT,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+  TOKEN_TYPE_MY_REACTION,
+  TOKEN_TYPE_ORGANIZATION,
+  TOKEN_TYPE_RELEASE,
+  TOKEN_TYPE_TYPE,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { IssuableListTabs, IssuableStates } from '~/vue_shared/issuable/list/constants';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   CREATED_DESC,
   defaultTypeTokenOptions,
@@ -57,16 +70,6 @@ import {
   PARAM_SORT,
   PARAM_STATE,
   RELATIVE_POSITION_ASC,
-  TOKEN_TYPE_ASSIGNEE,
-  TOKEN_TYPE_AUTHOR,
-  TOKEN_TYPE_CONFIDENTIAL,
-  TOKEN_TYPE_CONTACT,
-  TOKEN_TYPE_LABEL,
-  TOKEN_TYPE_MILESTONE,
-  TOKEN_TYPE_MY_REACTION,
-  TOKEN_TYPE_ORGANIZATION,
-  TOKEN_TYPE_RELEASE,
-  TOKEN_TYPE_TYPE,
   TYPE_TOKEN_TASK_OPTION,
   UPDATED_DESC,
   urlSortParams,
@@ -123,6 +126,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: [
     'autocompleteAwardEmojisPath',
     'calendarPath',
@@ -137,7 +141,6 @@ export default {
     'hasAnyProjects',
     'hasBlockedIssuesFeature',
     'hasIssueWeightsFeature',
-    'hasMultipleIssueAssigneesFeature',
     'hasScopedLabelsFeature',
     'initialEmail',
     'initialSort',
@@ -245,6 +248,9 @@ export default {
     typeTokenOptions() {
       return defaultTypeTokenOptions.concat(TYPE_TOKEN_TASK_OPTION);
     },
+    hasOrFeature() {
+      return this.glFeatures.orIssuableQueries;
+    },
     hasSearch() {
       return (
         this.searchQuery ||
@@ -311,8 +317,8 @@ export default {
           icon: 'user',
           token: AuthorToken,
           dataType: 'user',
-          unique: !this.hasMultipleIssueAssigneesFeature,
           defaultAuthors: DEFAULT_NONE_ANY,
+          operators: this.hasOrFeature ? OPERATOR_IS_NOT_OR : OPERATOR_IS_AND_IS_NOT,
           fetchAuthors: this.fetchUsers,
           recentSuggestionsStorageKey: `${this.fullPath}-issues-recent-tokens-assignee`,
           preloadedAuthors,
@@ -781,6 +787,7 @@ export default {
       :show-page-size-change-controls="showPageSizeControls"
       :has-next-page="pageInfo.hasNextPage"
       :has-previous-page="pageInfo.hasPreviousPage"
+      :show-filtered-search-friendly-text="hasOrFeature"
       show-work-item-type-icon
       @click-tab="handleClickTab"
       @dismiss-alert="handleDismissAlert"

@@ -65,7 +65,7 @@ class AwarenessSession # rubocop:disable Gitlab/NamespacedClass
     with_redis do |redis|
       Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
         redis.pipelined do |pipeline|
-          pipeline.sadd(user_key, id_i)
+          pipeline.sadd?(user_key, id_i)
           pipeline.expire(user_key, USER_LIFETIME.to_i)
 
           pipeline.zadd(users_key, timestamp.to_f, user.id)
@@ -87,7 +87,7 @@ class AwarenessSession # rubocop:disable Gitlab/NamespacedClass
     with_redis do |redis|
       Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
         redis.pipelined do |pipeline|
-          pipeline.srem(user_key, id_i)
+          pipeline.srem?(user_key, id_i)
           pipeline.zrem(users_key, user.id)
         end
       end

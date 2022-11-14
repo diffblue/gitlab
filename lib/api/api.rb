@@ -175,11 +175,14 @@ module API
         mount ::API::Admin::InstanceClusters
         mount ::API::Appearance
         mount ::API::Applications
+        mount ::API::Badges
         mount ::API::BroadcastMessages
         mount ::API::BulkImports
+        mount ::API::Ci::Jobs
         mount ::API::Ci::ResourceGroups
         mount ::API::Ci::Runner
         mount ::API::Ci::Runners
+        mount ::API::Ci::Pipelines
         mount ::API::Ci::Variables
         mount ::API::Clusters::AgentTokens
         mount ::API::Clusters::Agents
@@ -192,12 +195,14 @@ module API
         mount ::API::FeatureFlags
         mount ::API::FeatureFlagsUserLists
         mount ::API::Features
+        mount ::API::Files
         mount ::API::FreezePeriods
         mount ::API::GroupClusters
         mount ::API::GroupExport
         mount ::API::GroupVariables
         mount ::API::ImportBitbucketServer
         mount ::API::ImportGithub
+        mount ::API::Invitations
         mount ::API::Keys
         mount ::API::Lint
         mount ::API::MergeRequestDiffs
@@ -208,9 +213,11 @@ module API
         mount ::API::ProjectEvents
         mount ::API::ProjectExport
         mount ::API::ProjectHooks
+        mount ::API::ProjectImport
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::ProjectSnippets
         mount ::API::ProjectSnapshots
+        mount ::API::ProjectStatistics
         mount ::API::ProjectTemplates
         mount ::API::ProtectedBranches
         mount ::API::ProtectedTags
@@ -226,8 +233,12 @@ module API
         mount ::API::Suggestions
         mount ::API::SystemHooks
         mount ::API::Tags
+        mount ::API::Terraform::Modules::V1::Packages
+        mount ::API::Terraform::State
+        mount ::API::Terraform::StateVersion
         mount ::API::Unleash
         mount ::API::UserCounts
+        mount ::API::Wikis
 
         add_open_api_documentation!
       end
@@ -239,13 +250,10 @@ module API
       mount ::API::AlertManagementAlerts
       mount ::API::Avatar
       mount ::API::AwardEmoji
-      mount ::API::Badges
       mount ::API::Boards
       mount ::API::Branches
       mount ::API::Ci::JobArtifacts
-      mount ::API::Ci::Jobs
       mount ::API::Ci::PipelineSchedules
-      mount ::API::Ci::Pipelines
       mount ::API::Ci::SecureFiles
       mount ::API::Ci::Triggers
       mount ::API::CommitStatuses
@@ -262,7 +270,6 @@ module API
       mount ::API::ErrorTracking::Collector
       mount ::API::ErrorTracking::ProjectSettings
       mount ::API::Events
-      mount ::API::Files
       mount ::API::GenericPackages
       mount ::API::Geo
       mount ::API::GoProxy
@@ -278,7 +285,6 @@ module API
       mount ::API::HelmPackages
       mount ::API::Integrations
       mount ::API::Integrations::JiraConnect::Subscriptions
-      mount ::API::Invitations
       mount ::API::IssueLinks
       mount ::API::Issues
       mount ::API::Labels
@@ -301,10 +307,9 @@ module API
       mount ::API::PagesDomains
       mount ::API::ProjectContainerRepositories
       mount ::API::ProjectDebianDistributions
-      mount ::API::ProjectImport
+      mount ::API::ProjectEvents
       mount ::API::ProjectMilestones
       mount ::API::ProjectPackages
-      mount ::API::ProjectStatistics
       mount ::API::Projects
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
@@ -319,16 +324,12 @@ module API
       mount ::API::Subscriptions
       mount ::API::Tags
       mount ::API::Templates
-      mount ::API::Terraform::Modules::V1::Packages
-      mount ::API::Terraform::State
-      mount ::API::Terraform::StateVersion
       mount ::API::Todos
       mount ::API::Topics
       mount ::API::UsageData
       mount ::API::UsageDataNonSqlMetrics
       mount ::API::UsageDataQueries
       mount ::API::Users
-      mount ::API::Wikis
       mount ::API::Ml::Mlflow
     end
 

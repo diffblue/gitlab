@@ -368,6 +368,10 @@ module EE
       namespace.store_security_reports_available? || public?
     end
 
+    def okrs_mvc_feature_flag_enabled?
+      ::Feature.enabled?(:okrs_mvc, self)
+    end
+
     def latest_ingested_security_pipeline
       vulnerability_statistic&.pipeline
     end

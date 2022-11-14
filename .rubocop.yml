@@ -311,6 +311,10 @@ Rails/SquishedSQLHeredocs:
 Rails/WhereExists:
   Enabled: false
 
+# See https://gitlab.com/gitlab-org/gitlab/-/merge_requests/94061#note_1160343775
+Rails/SkipsModelValidations:
+  Enabled: false
+
 # See https://gitlab.com/gitlab-org/gitlab/-/issues/378105#note_1138487716
 Rails/HasManyOrHasOneDependent:
   Enabled: false
@@ -482,6 +486,12 @@ RSpec/FactoryBot/AvoidCreate:
     - 'spec/serializers/**/*.rb'
     - 'ee/spec/presenters/**/*.rb'
     - 'ee/spec/serializers/**/*.rb'
+
+RSpec/FactoryBot/StrategyInCallback:
+  Enabled: true
+  Include:
+    - 'spec/factories/**/*.rb'
+    - 'ee/spec/factories/**/*.rb'
 
 Cop/IncludeSidekiqWorker:
   Enabled: true

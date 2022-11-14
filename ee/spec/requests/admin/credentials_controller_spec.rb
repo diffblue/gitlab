@@ -165,6 +165,12 @@ RSpec.describe Admin::CredentialsController, type: :request do
 
         expect(response).to have_gitlab_http_status(:not_found)
       end
+
+      it do
+        put admin_credential_resource_revoke_path(credential_id: project_access_token.id, resource_id: project.id, resource_type: 'InvalidType')
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
     end
 
     shared_examples_for 'displays the flash success message' do

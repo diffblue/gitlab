@@ -28,4 +28,10 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilter do
       expect(subject).to contain_exactly(filter1)
     end
   end
+
+  describe '#to_s' do
+    subject { event_type_filter.to_s }
+
+    it { is_expected.to eq(event_type_filter.audit_event_type) }
+  end
 end

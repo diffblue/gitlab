@@ -6,14 +6,14 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :private, :in_group) }
 
-  context 'when customizable_roles feature is not enabled on project' do
+  context 'when customizable_roles feature is not enabled on project root ancestor' do
     it 'skips preload' do
       stub_feature_flags(customizable_roles: false)
       project_member = create(:project_member, :guest, user: user, source: project)
       create(:member_role, :guest, download_code: true, members: [project_member])
 
       result = described_class.new(
-        project_ids: [project.id],
+        projects: [project],
         user: user
       ).execute
 
@@ -21,24 +21,37 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
     end
   end
 
-  context 'when customizable_roles feature is enabled on project' do
+  context 'when customizable_roles feature is enabled on project root ancestor' do
     context 'when project has custom role with download_code: true' do
-      it 'returns the project_id with a value array that includes :download_code' do
-        project_member = create(:project_member, :guest, user: user, source: project)
-        create(:member_role, :guest, download_code: true, members: [project_member])
+      context 'when Array of project passed' do
+        it 'returns the project_id with a value array that includes :download_code' do
+          project_member = create(:project_member, :guest, user: user, source: project)
+          create(:member_role, :guest, download_code: true, members: [project_member])
 
-        result = described_class.new(project_ids: [project.id], user: user).execute
+          result = described_class.new(projects: [project], user: user).execute
 
-        expect(result).to eq({ project.id => [:download_code] })
+          expect(result).to eq({ project.id => [:download_code] })
+        end
+      end
+
+      context 'when ActiveRecord::Relation of projects passed' do
+        it 'returns the project_id with a value array that includes :download_code' do
+          project_member = create(:project_member, :guest, user: user, source: project)
+          create(:member_role, :guest, download_code: true, members: [project_member])
+
+          result = described_class.new(projects: Project.where(id: project.id), user: user).execute
+
+          expect(result).to eq({ project.id => [:download_code] })
+        end
       end
     end
 
     context 'when project namespace has a custom role with download_code: true' do
       it 'returns the project_id with a value array that includes :download_code' do
-        group_member = create(:group_member, :guest, user: user, source: project.namespace)
+        group_member = create(:group_member, :guest, user: user, source: project.group)
         create(:member_role, :guest, download_code: true, members: [group_member])
 
-        result = described_class.new(project_ids: [project.id], user: user).execute
+        result = described_class.new(projects: [project], user: user).execute
 
         expect(result).to eq({ project.id => [:download_code] })
       end
@@ -51,7 +64,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
         create(:member_role, :guest, download_code: false, members: [group_member])
         create(:member_role, :guest, download_code: true, members: [project_member])
 
-        result = described_class.new(project_ids: [project.id], user: user).execute
+        result = described_class.new(projects: [project], user: user).execute
 
         expect(result).to eq({ project.id => [:download_code] })
       end
@@ -63,7 +76,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
         create(:project_member, :guest, user: user, source: project_without_custom_role)
 
         result = described_class.new(
-          project_ids: [project_without_custom_role.id],
+          projects: [project_without_custom_role],
           user: user
         ).execute
 
@@ -87,7 +100,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
         )
 
         result = described_class.new(
-          project_ids: [project_without_download_code.id],
+          projects: [project_without_download_code],
           user: user
         ).execute
 
@@ -107,7 +120,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
         )
 
         result = described_class.new(
-          project_ids: [project.id],
+          projects: [project],
           user: user
         ).execute
 

@@ -2,12 +2,20 @@ import { GlFilteredSearchToken } from '@gitlab/ui';
 import { keyBy } from 'lodash';
 import { ListType } from '~/boards/constants';
 import {
+  OPERATOR_IS_AND_IS_NOT,
+  OPERATOR_IS_ONLY,
   TOKEN_TITLE_ASSIGNEE,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
   TOKEN_TITLE_RELEASE,
   TOKEN_TITLE_TYPE,
+  TOKEN_TYPE_ASSIGNEE,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+  TOKEN_TYPE_RELEASE,
+  TOKEN_TYPE_TYPE,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
@@ -739,7 +747,7 @@ export const mockConfidentialToken = {
   title: 'Confidential',
   unique: true,
   token: GlFilteredSearchToken,
-  operators: [{ value: '=', description: 'is' }],
+  operators: OPERATOR_IS_ONLY,
   options: [
     { icon: 'eye-slash', value: 'yes', title: 'Yes' },
     { icon: 'eye', value: 'no', title: 'No' },
@@ -750,11 +758,8 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, isSignedI
   {
     icon: 'user',
     title: TOKEN_TITLE_ASSIGNEE,
-    type: 'assignee',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    type: TOKEN_TYPE_ASSIGNEE,
+    operators: OPERATOR_IS_AND_IS_NOT,
     token: AuthorToken,
     unique: true,
     fetchAuthors,
@@ -763,11 +768,8 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, isSignedI
   {
     icon: 'pencil',
     title: TOKEN_TITLE_AUTHOR,
-    type: 'author',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    type: TOKEN_TYPE_AUTHOR,
+    operators: OPERATOR_IS_AND_IS_NOT,
     symbol: '@',
     token: AuthorToken,
     unique: true,
@@ -777,11 +779,8 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, isSignedI
   {
     icon: 'labels',
     title: TOKEN_TITLE_LABEL,
-    type: 'label',
-    operators: [
-      { value: '=', description: 'is' },
-      { value: '!=', description: 'is not' },
-    ],
+    type: TOKEN_TYPE_LABEL,
+    operators: OPERATOR_IS_AND_IS_NOT,
     token: LabelToken,
     unique: false,
     symbol: '~',
@@ -792,7 +791,7 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, isSignedI
     icon: 'clock',
     title: TOKEN_TITLE_MILESTONE,
     symbol: '%',
-    type: 'milestone',
+    type: TOKEN_TYPE_MILESTONE,
     shouldSkipSort: true,
     token: MilestoneToken,
     unique: true,
@@ -801,7 +800,7 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, isSignedI
   {
     icon: 'issues',
     title: TOKEN_TITLE_TYPE,
-    type: 'type',
+    type: TOKEN_TYPE_TYPE,
     token: GlFilteredSearchToken,
     unique: true,
     options: [
@@ -810,7 +809,7 @@ export const mockTokens = (fetchLabels, fetchAuthors, fetchMilestones, isSignedI
     ],
   },
   {
-    type: 'release',
+    type: TOKEN_TYPE_RELEASE,
     title: TOKEN_TITLE_RELEASE,
     icon: 'rocket',
     token: ReleaseToken,

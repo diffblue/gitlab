@@ -140,7 +140,7 @@ export default {
       );
     },
     showEmptySpacer() {
-      return !this.parentItem.userPermissions.adminEpic && this.userSignedIn;
+      return !this.parentItem.userPermissions.canAdmin && this.userSignedIn;
     },
     totalEpicsCount() {
       const { descendantCounts: { openedEpics = 0, closedEpics = 0 } = {} } = this.item;
@@ -344,7 +344,7 @@ export default {
         </div>
 
         <gl-button
-          v-if="parentItem.userPermissions.adminEpic"
+          v-if="parentItem.userPermissions.canAdmin"
           v-gl-tooltip.hover
           v-gl-modal-directive="$options.itemRemoveModalId"
           category="tertiary"

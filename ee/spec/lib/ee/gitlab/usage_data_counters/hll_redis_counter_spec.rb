@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_shared_state, feature_category: :service_ping do
   using RSpec::Parameterized::TableSyntax
 
   let(:entity1) { 'dfb9d2d2-f56c-4c77-8aeb-6cddc4a1f857' }

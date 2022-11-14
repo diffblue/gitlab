@@ -1980,6 +1980,53 @@ RSpec.describe User do
     end
   end
 
+  describe '#preloaded_member_roles_for_projects' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:user) { create(:user) }
+    let_it_be(:project_member) { create(:project_member, :guest, user: user, source: project) }
+    let_it_be(:member_role) { create(:member_role, :guest, download_code: true, members: [project_member]) }
+
+    context 'when custom roles are present' do
+      context 'when custom role enables download code' do
+        it 'returns hash with project ids as keys and download_code in value' do
+          preloaded = user.preloaded_member_roles_for_projects([project])
+
+          expect(preloaded).to eq({ project.id => [:download_code] })
+        end
+      end
+
+      context 'when custom role does not enable download code' do
+        let(:user) { create(:user) }
+        let(:project_member) { create(:project_member, :guest, user: user, source: project) }
+        let(:member_role) { create(:member_role, :guest, download_code: false, members: [project_member]) }
+
+        it 'returns hash with project ids as keys and empty array as value' do
+          preloaded = user.preloaded_member_roles_for_projects([project])
+
+          expect(preloaded).to eq({ project.id => [] })
+        end
+      end
+    end
+
+    context 'when custom roles are not present' do
+      it 'returns hash with project ids as keys and empty array as value' do
+        project_without_custom_role = create(:project)
+
+        preloaded = user.preloaded_member_roles_for_projects([project_without_custom_role])
+
+        expect(preloaded).to eq({ project_without_custom_role.id => [] })
+      end
+    end
+
+    context 'when custom roles are already preloaded', :request_store do
+      it 'does not perform extra queries when asked for projects have already been preloaded' do
+        user.preloaded_member_roles_for_projects([project])
+
+        expect { user.download_code_for?(project) }.not_to exceed_query_limit(0)
+      end
+    end
+  end
+
   describe '#has_valid_credit_card?' do
     it 'returns true when a credit card validation is present' do
       credit_card_validation = build(:credit_card_validation, credit_card_validated_at: Time.current)

@@ -7,17 +7,13 @@ description: 'Pipeline data partitioning design'
 
 # Pipeline data partitioning design
 
-_Disclaimer: The following contains information related to upcoming products,
-features, and functionality._
-
-_It is important to note that the information presented is for informational
-purposes only. Please do not rely on this information for purchasing or
-planning purposes._
-
-_As with all projects, the items mentioned in this document and linked pages
-are subject to change or delay. The development, release and timing of any
-products, features, or functionality remain at the sole discretion of GitLab
-Inc._
+DISCLAIMER:
+This page contains information related to upcoming products, features, and functionality.
+It is important to note that the information presented is for informational purposes only.
+Please do not rely on this information for purchasing or planning purposes.
+As with all projects, the items mentioned on this page are subject to change or delay.
+The development, release, and timing of any products, features, or functionality remain at the
+sole discretion of GitLab Inc.
 
 ## What problem are we trying to solve?
 
@@ -383,6 +379,20 @@ ArgumentError: The association scope 'builds' is instance dependent (the
 scope block takes an argument). Preloading instance dependent scopes is not
 supported.
 ```
+
+### Query analyzers
+
+We implemented 2 query analyzers to detect queries that need to be fixed so that everything
+keeps working with partitioned tables:
+
+- One analyzer to detect queries not going through a routing table.
+- One analyzer to detect queries that use routing tables without specifying the `partition_id` in the `WHERE` clauses.
+
+We started by enabling our first analyzer in `test` environment to detect existing broken
+queries. It is also enabled on `production` environment, but for a small subset of the traffic (`0.1%`)
+because of scalability concerns.
+
+The second analyzer will be enabled in a future iteration.
 
 ### Primary key
 

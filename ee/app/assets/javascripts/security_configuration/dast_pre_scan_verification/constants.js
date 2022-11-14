@@ -120,3 +120,20 @@ export const PRE_SCAN_VERIFICATION_LIST_TRANSLATIONS = {
     'PreScanVerification|You must complete the scan configuration form before running pre-scan verification',
   ),
 };
+
+export const PRE_SCAN_VERIFICATION_ALERT_TRANSLATIONS = {
+  preScanVerificationDefaultTitle: s__(
+    'PreScanVerification|The pre-scan verification status was reset for this scan',
+  ),
+  preScanVerificationDefaultText: s__(
+    'PreScanVerification|The last pre-scan verification job is no longer valid because this scan’s configuration has changed.',
+  ),
+};
+
+export const ALERT_VARIANT_STATUS_MAP = {
+  [PRE_SCAN_VERIFICATION_STATUS.DEFAULT]: 'tip',
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE]: 'success',
+  [PRE_SCAN_VERIFICATION_STATUS.COMPLETE_WITH_ERRORS]: 'warning',
+  [PRE_SCAN_VERIFICATION_STATUS.FAILED]: 'danger',
+  [PRE_SCAN_VERIFICATION_STATUS.INVALIDATED]: 'danger',
+};

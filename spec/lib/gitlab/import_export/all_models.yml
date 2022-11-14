@@ -552,6 +552,7 @@ project:
 - path_locks
 - approver_groups
 - repository_state
+- wiki_repository
 - wiki_repository_state
 - source_pipelines
 - sourced_pipelines
@@ -647,6 +648,7 @@ project:
 - build_artifacts_size_refresh
 - project_callouts
 - pipeline_metadata
+- disable_download_button
 award_emoji:
 - awardable
 - user

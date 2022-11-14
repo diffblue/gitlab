@@ -32,10 +32,11 @@ module CredentialsInventoryActions
   def revoke
     personal_access_token = personal_access_token_finder.find_by_id(params[:id] || params[:credential_id])
     return render_404 unless personal_access_token
+    return render_404 if params[:resource_id] && !resource_type
 
     result = revoke_service(
       personal_access_token,
-      resource_type: params[:resource_type],
+      resource_type: resource_type,
       resource_id: params[:resource_id]
     ).execute
 
@@ -85,8 +86,15 @@ module CredentialsInventoryActions
     end
   end
 
+  def resource_type
+    type = params[:resource_type]
+    return unless type == "Group" || type == "Project"
+
+    type.constantize
+  end
+
   def revoke_service(token, resource_id: nil, resource_type: nil)
-    return ::ResourceAccessTokens::RevokeService.new(current_user, resource_type.constantize.find_by_id(resource_id), token) if resource_id
+    return ::ResourceAccessTokens::RevokeService.new(current_user, resource_type.find_by_id(resource_id), token) if resource_id
 
     if revocable.instance_of?(Group)
       ::PersonalAccessTokens::RevokeService.new(current_user, token: token, group: revocable)

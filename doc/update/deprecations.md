@@ -49,6 +49,21 @@ sole discretion of GitLab Inc.
 
 <div class="deprecation removal-160 breaking-change">
 
+### Configuration fields in GitLab Runner Helm Chart
+
+End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+From GitLab 13.6, users can [specify any runner configuration in the GitLab Runner Helm chart](https://docs.gitlab.com/runner/install/kubernetes.html). When we implemented this feature, we deprecated values in the GitLab Helm Chart configuration that were specific to GitLab Runner. These fields are deprecated and we plan to remove them in v1.0 of the GitLab Runner Helm chart.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### `POST /api/v4/runners` method to register runners
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
@@ -62,9 +77,10 @@ The `POST` method operation on the `/api/v4/runners` endpoint is deprecated.
 This endpoint and method [registers](https://docs.gitlab.com/ee/api/runners.html#register-a-new-runner) a runner
 with a GitLab instance at the instance, group, or project level through the API. We plan to remove this endpoint
 and method in GitLab 16.0, and introduce a new
-[GitLab Runner token architecture](https://docs.gitlab.com/ee/architecture/blueprints/runner_tokens/).
+[GitLab Runner token architecture](https://docs.gitlab.com/ee/architecture/blueprints/runner_tokens/) in GitLab 15.8.
 This new architecture introduces a new method for registering runners and eliminates the legacy
 [runner registration token](https://docs.gitlab.com/ee/security/token_overview.html#runner-registration-tokens).
+We plan to introduce a new method of binding a GitLab Runner to a GitLab instance in GitLab 15.8. This will be the only supported method starting in GitLab 16.0.
 
 </div>
 
@@ -79,7 +95,23 @@ WARNING:
 This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
 Review the details carefully before upgrading.
 
-The command to [register](https://docs.gitlab.com/runner/register/) a runner, `gitlab-runner register` is deprecated. GitLab plans to introduce a new [GitLab Runner token architecture](https://docs.gitlab.com/ee/architecture/blueprints/runner_tokens/), which introduces a new method for registering runners and eliminates the legacy [runner registration token](https://docs.gitlab.com/ee/security/token_overview.html#runner-registration-tokens).
+The command to [register](https://docs.gitlab.com/runner/register/) a runner, `gitlab-runner register` is deprecated. GitLab plans to introduce a new [GitLab Runner token architecture](https://docs.gitlab.com/ee/architecture/blueprints/runner_tokens/) in GitLab 15.8, which introduces a new method for registering runners and eliminates the legacy [runner registration token](https://docs.gitlab.com/ee/security/token_overview.html#runner-registration-tokens).
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### `runnerRegistrationToken` parameter for GitLab Runner Helm Chart
+
+End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The [`runnerRegistrationToken`](https://docs.gitlab.com/runner/install/kubernetes.html#required-configuration) parameter to use the GitLab Helm Chart to install a runner on Kubernetes is deprecated. GitLab plans to introduce a new [GitLab Runner token architecture](https://docs.gitlab.com/ee/architecture/blueprints/runner_tokens/). As part of the new architecture, we plan to introduce a single runner authentication token, `runnerToken`, and a unique system ID saved to the `config.toml` to allow traceability between jobs and runners.
+We plan to introduce a new method of binding a GitLab Runner to a GitLab instance in GitLab 15.8. This will be the only supported method starting in GitLab 16.0.
 
 </div>
 </div>

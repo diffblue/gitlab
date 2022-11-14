@@ -19,6 +19,7 @@ module Epics
     def epics_collection
       Epic.in_parents(parent)
     end
+    alias_method :epics_collection_for_groups, :epics_collection
 
     def parent
       raise ArgumentError, 'parent argument is missing' unless params[:parent]

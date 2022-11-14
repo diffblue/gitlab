@@ -6,6 +6,8 @@ import issueBoardFilters from '~/boards/issue_board_filters';
 import {
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
@@ -45,7 +47,7 @@ describe('EpicFilteredSearch', () => {
         {
           icon: 'labels',
           title: TOKEN_TITLE_LABEL,
-          type: 'label',
+          type: TOKEN_TYPE_LABEL,
           operators: [
             { value: '=', description: 'is' },
             { value: '!=', description: 'is not' },
@@ -58,7 +60,7 @@ describe('EpicFilteredSearch', () => {
         {
           icon: 'pencil',
           title: TOKEN_TITLE_AUTHOR,
-          type: 'author',
+          type: TOKEN_TYPE_AUTHOR,
           operators: [
             { value: '=', description: 'is' },
             { value: '!=', description: 'is not' },

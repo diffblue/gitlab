@@ -46,12 +46,20 @@ module Epics
     # rubocop: disable CodeReuse/ActiveRecord
     def epic_groups
       strong_memoize(:epic_groups) do
-        Group.for_epics(epics_collection).where.not(id: groups_to_exclude).distinct
+        Group.for_epics(epics_collection_for_groups).where.not(id: groups_to_exclude).distinct
       end
     end
     # rubocop: enable CodeReuse/ActiveRecord
 
     def epics_collection
+      raise NotImplementedError
+    end
+
+    # for epic ancestors finder we need to use different sub-query for getting
+    # groups, because epics_collection uses ordering by hierarchy. And the
+    # problem is that if (hierarchy_order: :asc) is used for getting groups,
+    # then ambiguous group_id column is included.
+    def epics_collection_for_groups
       raise NotImplementedError
     end
 

@@ -129,13 +129,13 @@ RSpec.describe Gitlab::Redis::MultiStore do
     before(:all) do
       primary_store.set(key1, value1)
       primary_store.set(key2, value2)
-      primary_store.sadd(skey, value1)
-      primary_store.sadd(skey, value2)
+      primary_store.sadd?(skey, value1)
+      primary_store.sadd?(skey, value2)
 
       secondary_store.set(key1, value1)
       secondary_store.set(key2, value2)
-      secondary_store.sadd(skey, value1)
-      secondary_store.sadd(skey, value2)
+      secondary_store.sadd?(skey, value1)
+      secondary_store.sadd?(skey, value2)
     end
 
     RSpec.shared_examples_for 'reads correct value' do
@@ -328,8 +328,8 @@ RSpec.describe Gitlab::Redis::MultiStore do
     let_it_be(:skey) { "redis:set:key" }
     let_it_be(:svalues1) { [value2, value1] }
     let_it_be(:svalues2) { [value1] }
-    let_it_be(:skey_value1) { [skey, value1] }
-    let_it_be(:skey_value2) { [skey, value2] }
+    let_it_be(:skey_value1) { [skey, [value1]] }
+    let_it_be(:skey_value2) { [skey, [value2]] }
     let_it_be(:script) { %(redis.call("set", "#{key1}", "#{value1}")) }
 
     where(:case_name, :name, :args, :expected_value, :verification_name, :verification_args) do
@@ -348,10 +348,10 @@ RSpec.describe Gitlab::Redis::MultiStore do
       secondary_store.flushdb
 
       primary_store.set(key2, value1)
-      primary_store.sadd(skey, value1)
+      primary_store.sadd?(skey, value1)
 
       secondary_store.set(key2, value1)
-      secondary_store.sadd(skey, value1)
+      secondary_store.sadd?(skey, value1)
     end
 
     with_them do
