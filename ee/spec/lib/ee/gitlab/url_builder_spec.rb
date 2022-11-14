@@ -17,10 +17,12 @@ RSpec.describe Gitlab::UrlBuilder do
       :note_on_vulnerability | ->(note)          { "/#{note.project.full_path}/-/security/vulnerabilities/#{note.noteable.id}#note_#{note.id}" }
 
       :group_wiki            | ->(wiki)          { "/groups/#{wiki.container.full_path}/-/wikis/home" }
+
+      [:issue, :objective]   | ->(issue)         { "/#{issue.project.full_path}/-/work_items/#{issue.iid}?iid_path=true" }
     end
 
     with_them do
-      let(:object) { build_stubbed(factory) }
+      let(:object) { build_stubbed(*Array(factory)) }
       let(:path) { path_generator.call(object) }
 
       it 'returns the full URL' do
@@ -29,6 +31,28 @@ RSpec.describe Gitlab::UrlBuilder do
 
       it 'returns only the path if only_path is set' do
         expect(subject.build(object, only_path: true)).to eq(path)
+      end
+    end
+
+    context 'when use_iid_in_work_items_path feature flag is disabled' do
+      before do
+        stub_feature_flags(use_iid_in_work_items_path: false)
+      end
+
+      context 'when a objective issue is passed' do
+        it 'returns a path using the work item\'s ID and no query params' do
+          objective = create(:issue, :objective)
+
+          expect(subject.build(objective, only_path: true)).to eq("/#{objective.project.full_path}/-/work_items/#{objective.id}")
+        end
+      end
+
+      context 'when a work item is passed' do
+        it 'returns a path using the work item\'s ID and no query params' do
+          work_item = create(:work_item)
+
+          expect(subject.build(work_item, only_path: true)).to eq("/#{work_item.project.full_path}/-/work_items/#{work_item.id}")
+        end
       end
     end
   end

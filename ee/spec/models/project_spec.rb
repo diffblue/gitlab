@@ -3632,4 +3632,18 @@ RSpec.describe Project do
       it { is_expected.to be_falsey }
     end
   end
+
+  describe '#okrs_mvc_feature_flag_enabled?' do
+    let_it_be(:project) { create(:project) }
+
+    it 'returns true if feature_flag is enabled' do
+      stub_feature_flags(okrs_mvc: true)
+      expect(project.okrs_mvc_feature_flag_enabled?).to be_truthy
+    end
+
+    it 'returns false if feature_flag is disabled' do
+      stub_feature_flags(okrs_mvc: false)
+      expect(project.okrs_mvc_feature_flag_enabled?).to be_falsey
+    end
+  end
 end
