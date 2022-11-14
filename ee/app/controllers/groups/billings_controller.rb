@@ -58,7 +58,7 @@ class Groups::BillingsController < Groups::ApplicationController
   end
 
   def verify_authorization
-    if Feature.enabled?(:auditor_billing_page_access)
+    if Feature.enabled?(:auditor_billing_page_access, @group)
       authorize_billings_page!
     else
       authorize_admin_group!

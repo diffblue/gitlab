@@ -72,6 +72,7 @@ RSpec.describe Groups::BillingsController, :saas do
 
     context 'auditor' do
       before do
+        stub_feature_flags(auditor_billing_page_access: group)
         sign_in(auditor)
       end
 
@@ -80,6 +81,7 @@ RSpec.describe Groups::BillingsController, :saas do
 
     context 'owner' do
       before do
+        stub_feature_flags(auditor_billing_page_access: group)
         sign_in(owner)
       end
 
