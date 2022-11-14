@@ -22,7 +22,7 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   let(:main_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "main") }
   let(:main_db_shared_item_model) { table("_test_gitlab_shared_items", database: "main") }
   let(:main_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "main") }
-  let(:main_db_partitioned_item_detached) { table("_test_gitlab_partitioned_items_20220101", database: "main") }
+  let(:main_db_partitioned_item_detached) { table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "main") }
 
   # CI Database
   let(:ci_db_main_item_model) { table("_test_gitlab_main_items", database: "ci") }
@@ -31,7 +31,7 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   let(:ci_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "ci") }
   let(:ci_db_shared_item_model) { table("_test_gitlab_shared_items", database: "ci") }
   let(:ci_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "ci") }
-  let(:ci_db_partitioned_item_detached) { table("_test_gitlab_partitioned_items_20220101", database: "ci") }
+  let(:ci_db_partitioned_item_detached) { table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "ci") }
 
   subject(:truncate_legacy_tables) do
     described_class.new(
@@ -63,7 +63,7 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
           CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
         );
 
-        CREATE TABLE _test_gitlab_partitioned_items_20220101 (
+        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101 (
           id serial NOT NULL PRIMARY KEY,
           item_id BIGINT NOT NULL,
           CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
