@@ -1111,6 +1111,11 @@ msgstr ""
 msgid "%{text} is available"
 msgstr ""
 
+msgid "%{thenLabelStart}Then%{thenLabelEnd} Require %{approvalsRequired} approval from %{approverType}%{approvers}"
+msgid_plural "%{thenLabelStart}Then%{thenLabelEnd} Require %{approvalsRequired} approvals from %{approverType}%{approvers}"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "%{timebox_type} does not support burnup charts"
 msgstr ""
 
@@ -36299,6 +36304,9 @@ msgstr ""
 msgid "SecurityOrchestration|Choose a project"
 msgstr ""
 
+msgid "SecurityOrchestration|Choose approver type"
+msgstr ""
+
 msgid "SecurityOrchestration|Create more robust vulnerability rules and apply them to all your projects."
 msgstr ""
 
@@ -36356,7 +36364,13 @@ msgstr ""
 msgid "SecurityOrchestration|Failed to load vulnerability scanners."
 msgstr ""
 
+msgid "SecurityOrchestration|Groups"
+msgstr ""
+
 msgid "SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security."
+msgstr ""
+
+msgid "SecurityOrchestration|Individual users"
 msgstr ""
 
 msgid "SecurityOrchestration|Inherited"
@@ -36495,6 +36509,9 @@ msgid "SecurityOrchestration|Select policy"
 msgstr ""
 
 msgid "SecurityOrchestration|Select security project"
+msgstr ""
+
+msgid "SecurityOrchestration|Select users"
 msgstr ""
 
 msgid "SecurityOrchestration|Something went wrong, unable to fetch policies"

@@ -1,12 +1,8 @@
-import { GlFormInput } from '@gitlab/ui';
-import { mount } from '@vue/test-utils';
-import { nextTick } from 'vue';
-import MockAdapter from 'axios-mock-adapter';
+import { GlForm, GlFormInput, GlListbox, GlSprintf } from '@gitlab/ui';
+import { shallowMount } from '@vue/test-utils';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder_v2.vue';
-import ApproversSelect from 'ee/approvals/components/approvers_select.vue';
-import ApproversList from 'ee/approvals/components/approvers_list.vue';
-import ApproversListItem from 'ee/approvals/components/approvers_list_item.vue';
-import axios from '~/lib/utils/axios_utils';
+import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
+import { USER_TYPE } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
 
 const APPROVERS_IDS = [1, 2, 3];
 
@@ -20,112 +16,97 @@ const MOCK_APPROVERS = APPROVERS_IDS.map((id) => ({
 }));
 
 const APPROVERS = [MOCK_APPROVERS[0], MOCK_APPROVERS[1]];
-const NEW_APPROVER = MOCK_APPROVERS[2];
 
-const ACTION = {
+const DEFAULT_ACTION = {
+  approvals_required: 1,
+  type: 'require_approval',
+  user_approvers_ids: [],
+};
+
+const EXISTING_ACTION = {
   approvals_required: 1,
   user_approvers_ids: APPROVERS_IDS,
 };
 
 describe('PolicyActionBuilder', () => {
   let wrapper;
-  let mock;
 
   const factory = (propsData = {}) => {
-    wrapper = mount(PolicyActionBuilder, {
+    wrapper = shallowMount(PolicyActionBuilder, {
       propsData: {
-        initAction: ACTION,
-        existingApprovers: APPROVERS,
+        initAction: DEFAULT_ACTION,
+        existingApprovers: [],
         ...propsData,
       },
       provide: {
         namespaceId: '1',
+        namespacePath: 'path/to/project',
         namespaceType: 'project',
+      },
+      stubs: {
+        GlForm,
+        GlSprintf,
       },
     });
   };
 
   const findApprovalsRequiredInput = () => wrapper.findComponent(GlFormInput);
-  const findApproversList = () => wrapper.findComponent(ApproversList);
-  const findAddApproversSelect = () => wrapper.findComponent(ApproversSelect);
-  const findAllApproversItem = () => wrapper.findAllComponents(ApproversListItem);
-
-  beforeEach(() => {
-    mock = new MockAdapter(axios);
-    mock.onGet('/api/undefined/projects/1/users').reply(200);
-    mock.onGet('/api/undefined/projects/1/groups.json').reply(200);
-  });
+  const findApproverTypeDropdown = () => wrapper.findComponent(GlListbox);
+  const findUserSelect = () => wrapper.findComponent(UserSelect);
 
   afterEach(() => {
     wrapper.destroy();
-    mock.restore();
   });
 
-  it('renders approvals required form input, approvers list and approvers select', async () => {
-    factory();
-    await nextTick();
+  describe('default', () => {
+    beforeEach(factory);
 
-    expect(findApprovalsRequiredInput().exists()).toBe(true);
-    expect(findApproversList().exists()).toBe(true);
-    expect(findAddApproversSelect().exists()).toBe(true);
+    it('triggers an update when changing number of approvals required', async () => {
+      const approvalRequestPlusOne = DEFAULT_ACTION.approvals_required + 1;
+      const formInput = findApprovalsRequiredInput();
+
+      await formInput.vm.$emit('update', approvalRequestPlusOne);
+
+      expect(wrapper.emitted('changed')).toEqual([
+        [{ ...DEFAULT_ACTION, approvals_required: approvalRequestPlusOne }],
+      ]);
+    });
+
+    it('renders the users select when the "user" type approver is selected', async () => {
+      expect(findUserSelect().exists()).toBe(false);
+      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
+      expect(findUserSelect().exists()).toBe(true);
+    });
+
+    it('does not render the users select when the "group" type approver is selected', async () => {
+      expect(findUserSelect().exists()).toBe(false);
+      await findApproverTypeDropdown().vm.$emit('select', 'group');
+      expect(findUserSelect().exists()).toBe(false);
+    });
+
+    it('triggers an update when changing available approvers', async () => {
+      const newUser = { id: 1, type: USER_TYPE };
+
+      await findApproverTypeDropdown().vm.$emit('select', USER_TYPE);
+      await findUserSelect().vm.$emit('updateSelectedApprovers', [newUser]);
+
+      expect(wrapper.emitted()).toEqual({
+        approversUpdated: [[[newUser]]],
+        changed: [[{ ...DEFAULT_ACTION, user_approvers_ids: [newUser.id] }]],
+      });
+    });
   });
 
-  it('triggers an update when changing approvals required', async () => {
-    factory();
-    await nextTick();
+  describe('existing approvers', () => {
+    beforeEach(() => {
+      factory({
+        initAction: EXISTING_ACTION,
+        existingApprovers: APPROVERS,
+      });
+    });
 
-    const approvalRequestPlusOne = ACTION.approvals_required + 1;
-    const formInput = findApprovalsRequiredInput();
-
-    await formInput.vm.$emit('update', approvalRequestPlusOne);
-
-    expect(wrapper.emitted().changed).toEqual([
-      [{ approvals_required: approvalRequestPlusOne, user_approvers_ids: APPROVERS_IDS }],
-    ]);
-  });
-
-  it('removes one approver when triggering a remove button click', async () => {
-    factory();
-    await nextTick();
-
-    const allApproversItems = findAllApproversItem();
-    const approversItem = allApproversItems.at(0);
-    const approversLengthMinusOne = APPROVERS.length - 1;
-
-    expect(allApproversItems.length).toBe(APPROVERS.length);
-
-    await approversItem.vm.$emit('remove', { ...APPROVERS[1], type: 'user' });
-
-    expect(wrapper.emitted().changed).toEqual([
-      [
-        {
-          approvals_required: ACTION.approvals_required,
-          user_approvers_ids: [APPROVERS[1].id],
-        },
-      ],
-    ]);
-    expect(findAllApproversItem()).toHaveLength(approversLengthMinusOne);
-  });
-
-  it('adds one approver when triggering a new user is selected', async () => {
-    factory();
-    await nextTick();
-
-    const allApproversItems = findAllApproversItem();
-    const approversLengthPlusOne = APPROVERS.length + 1;
-
-    expect(allApproversItems.length).toBe(APPROVERS.length);
-
-    await findAddApproversSelect().vm.$emit('input', [{ ...NEW_APPROVER, type: 'user' }]);
-
-    expect(wrapper.emitted().changed).toEqual([
-      [
-        {
-          approvals_required: ACTION.approvals_required,
-          user_approvers_ids: [APPROVERS[0].id, APPROVERS[1].id, NEW_APPROVER.id],
-        },
-      ],
-    ]);
-    expect(findAllApproversItem()).toHaveLength(approversLengthPlusOne);
+    it('renders the users select when there are existing user approvers', () => {
+      expect(findUserSelect().exists()).toBe(true);
+    });
   });
 });

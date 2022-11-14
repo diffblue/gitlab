@@ -1,7 +1,15 @@
 import { omitBy, isEmpty } from 'lodash';
+import { convertToGraphQLId } from '~/graphql_shared/utils';
+import { s__ } from '~/locale';
+import { TYPE_USER } from '~/graphql_shared/constants';
 
 export const USER_TYPE = 'user';
 const GROUP_TYPE = 'group';
+
+export const APPROVER_TYPE_LIST_ITEMS = [
+  { text: s__('SecurityOrchestration|Individual users'), value: USER_TYPE },
+  { text: s__('SecurityOrchestration|Groups'), value: GROUP_TYPE },
+];
 
 /*
   Return the ids for all approvers of the group type.
@@ -23,17 +31,20 @@ export function userIds(approvers) {
   Group existing approvers into a single array.
 */
 export function groupApprovers(existingApprovers) {
-  const approvers = [...existingApprovers];
   const userUniqKeys = ['state', 'username'];
   const groupUniqKeys = ['full_name', 'full_path'];
 
-  return approvers.map((approver) => {
+  return existingApprovers.map((approver) => {
     const approverKeys = Object.keys(approver);
 
     if (approverKeys.includes(...groupUniqKeys)) {
       return { ...approver, type: GROUP_TYPE };
     } else if (approverKeys.includes(...userUniqKeys)) {
-      return { ...approver, type: USER_TYPE };
+      return {
+        ...approver,
+        type: USER_TYPE,
+        value: convertToGraphQLId(TYPE_USER, approver.id),
+      };
     }
     return approver;
   });
