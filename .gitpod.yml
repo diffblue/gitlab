@@ -43,11 +43,11 @@ tasks:
         echo "$(date) – Stopping GDK" | tee -a /workspace/startup.log
         gdk stop
         echo "$(date) – GDK stopped" | tee -a /workspace/startup.log
-        gp sync-done gdk-copied
       )
     command: |
       (
         set -e
+        gp sync-done gdk-copied
         gp sync-await gitpod-start
         [[ -f /workspace/gitpod_start_time.sh ]] && source /workspace/gitpod_start_time.sh
         SECONDS=0
