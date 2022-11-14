@@ -8,12 +8,12 @@ module EE
 
         prepended do
           field :user,
-                ::Types::UserType,
+                ::Types::AccessLevels::UserType,
                 null: true,
                 description: 'User associated with this access level.'
 
           field :group,
-                '::Types::GroupType',
+                ::Types::AccessLevels::GroupType,
                 null: true,
                 description: 'Group associated with this access level.'
         end
