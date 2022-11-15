@@ -14,6 +14,8 @@ module EE
         value 'SLA_DUE_AT_DESC', 'Issues with latest SLA due time shown first.', value: :sla_due_at_desc
         value 'BLOCKING_ISSUES_ASC', 'Blocking issues count by ascending order.', value: :blocking_issues_asc
         value 'BLOCKING_ISSUES_DESC', 'Blocking issues count by descending order.', value: :blocking_issues_desc
+        value 'HEALTH_STATUS_ASC', 'Issues with healthy issues first.', value: :health_status_asc
+        value 'HEALTH_STATUS_DESC', 'Issues with unhealthy issues first.', value: :health_status_desc
       end
     end
   end
