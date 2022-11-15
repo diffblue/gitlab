@@ -7198,6 +7198,9 @@ msgstr ""
 msgid "BuildArtifacts|Loading artifacts"
 msgstr ""
 
+msgid "Building your merge request. Wait a few moments, then refresh this page."
+msgstr ""
+
 msgid "Built-in"
 msgstr ""
 
