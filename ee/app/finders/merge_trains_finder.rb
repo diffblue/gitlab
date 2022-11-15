@@ -16,6 +16,7 @@ class MergeTrainsFinder
     end
 
     items = merge_trains
+    items = for_target(items, params[:target_branch])
     items = by_scope(items)
 
     sort(items)
@@ -38,5 +39,11 @@ class MergeTrainsFinder
     return items unless %w[asc desc].include?(params[:sort])
 
     items.by_id(params[:sort].to_sym)
+  end
+
+  def for_target(items, target_branch)
+    return items unless target_branch
+
+    items.for_target(project, target_branch)
   end
 end

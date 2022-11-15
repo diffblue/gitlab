@@ -19,8 +19,8 @@ RSpec.describe MergeTrainsFinder do
   describe '#execute' do
     subject { finder.execute }
 
-    let!(:merge_train_1) { create(:merge_train, target_project: project) }
-    let!(:merge_train_2) { create(:merge_train, target_project: project) }
+    let!(:merge_train_1) { create(:merge_train, target_project: project, target_branch: 'main') }
+    let!(:merge_train_2) { create(:merge_train, target_project: project, target_branch: 'main') }
 
     it 'returns merge trains ordered by id' do
       is_expected.to eq([merge_train_1, merge_train_2])
@@ -68,6 +68,30 @@ RSpec.describe MergeTrainsFinder do
         it 'returns complete merge train' do
           is_expected.to eq([merge_train_2])
         end
+      end
+    end
+
+    context 'when target branch is given' do
+      let(:params) { { target_branch: 'main' } }
+
+      it 'returns merge train for target branch' do
+        is_expected.to match_array([merge_train_1, merge_train_2])
+      end
+
+      context 'with multiple merge trains for project' do
+        let!(:merge_train_3) { create(:merge_train, target_project: project, target_branch: 'develop') }
+
+        it 'returns merge train for target branch' do
+          is_expected.to match_array([merge_train_1, merge_train_2])
+        end
+      end
+    end
+
+    context 'when target branch has empty merge_train' do
+      let(:params) { { target_branch: 'random' } }
+
+      it 'returns an empty list' do
+        is_expected.to be_empty
       end
     end
   end
