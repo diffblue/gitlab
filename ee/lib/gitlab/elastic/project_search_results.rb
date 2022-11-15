@@ -19,7 +19,7 @@ module Gitlab
 
       def blobs(page: 1, per_page: DEFAULT_PER_PAGE, count_only: false, preload_method: nil)
         return Kaminari.paginate_array([]) if project.empty_repo? || query.blank?
-        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
+        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :read_code, project)
 
         strong_memoize(memoize_key(:blobs, count_only: count_only)) do
           project.repository.__elasticsearch__.elastic_search_as_found_blob(
@@ -54,7 +54,7 @@ module Gitlab
 
       def commits(page: 1, per_page: DEFAULT_PER_PAGE, preload_method: nil, count_only: false)
         return Kaminari.paginate_array([]) if project.empty_repo? || query.blank?
-        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :download_code, project)
+        return Kaminari.paginate_array([]) unless Ability.allowed?(@current_user, :read_code, project)
 
         strong_memoize(memoize_key(:commits, count_only: count_only)) do
           project.repository.find_commits_by_message_with_elastic(
@@ -69,7 +69,7 @@ module Gitlab
 
       def blob_aggregations
         return [] if project.empty_repo? || query.blank?
-        return [] unless Ability.allowed?(@current_user, :download_code, project)
+        return [] unless Ability.allowed?(@current_user, :read_code, project)
 
         strong_memoize(:blob_aggregations) do
           project.repository.__elasticsearch__.blob_aggregations(query, base_options)
