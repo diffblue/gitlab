@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::UsersController do
+RSpec.describe Admin::UsersController, feature_category: :user_management do
   let(:admin) { create(:admin) }
   let(:user) { create(:user) }
 

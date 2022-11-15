@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe InternalRedirect do
+RSpec.describe InternalRedirect, feature_category: :geo_replication do
   let(:controller_class) do
     Class.new do
       include InternalRedirect

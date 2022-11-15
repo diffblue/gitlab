@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GeoInstrumentation do
+RSpec.describe GeoInstrumentation, feature_category: :geo_replication do
   let(:user) { create(:user) }
 
   controller(ActionController::Base) do

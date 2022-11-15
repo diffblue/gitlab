@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSubscriptions::SeatCountAlert do
+RSpec.describe GitlabSubscriptions::SeatCountAlert, feature_category: :subscription_management do
   controller(ActionController::Base) do
     include GitlabSubscriptions::SeatCountAlert
   end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::GroupsController do
+RSpec.describe Admin::GroupsController, feature_category: :subgroups do
   let(:admin) { create(:admin) }
   let(:group) { create(:group) }
 

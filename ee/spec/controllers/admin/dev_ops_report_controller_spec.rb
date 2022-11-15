@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::DevOpsReportController do
+RSpec.describe Admin::DevOpsReportController, feature_category: :devops_reports do
   describe 'show_adoption?' do
     it "is false if license feature 'devops_adoption' is disabled" do
       expect(controller.show_adoption?).to be false

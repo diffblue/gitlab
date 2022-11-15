@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::AuditLogsController do
+RSpec.describe Admin::AuditLogsController, feature_category: :audit_events do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:admin) { create(:admin) }
