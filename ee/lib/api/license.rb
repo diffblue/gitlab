@@ -41,6 +41,27 @@ module API
         end
       end
 
+      desc 'Get a license' do
+        detail 'Gets a license'
+        success EE::API::Entities::GitlabLicenseWithActiveUsers
+        failure [
+          { code: 404, message: 'Not Found' },
+          { code: 403, message: 'Forbidden' },
+          { code: 401, message: 'Unauthorized' }
+        ]
+        tags LICENSES_TAGS
+      end
+      params do
+        requires :id, type: Integer, desc: 'ID of the GitLab license'
+      end
+      get ':id' do
+        license = LicensesFinder.new(current_user, id: params[:id]).execute.first
+
+        not_found! unless license
+
+        present license, with: EE::API::Entities::GitlabLicenseWithActiveUsers
+      end
+
       desc 'Delete a license' do
         detail 'Deletes a license'
         failure [
