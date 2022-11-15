@@ -46848,9 +46848,6 @@ msgstr ""
 msgid "You have successfully purchased %{product}. You'll receive a receipt by email. Your purchase may take a minute to sync, so refresh the page if you don't see it yet."
 msgstr ""
 
-msgid "You have successfully purchased a %{plan} plan subscription for %{seats}. You’ll receive a receipt via email. Your purchase may take a minute to sync, so refresh the page if you don't see it yet."
-msgstr ""
-
 msgid "You have unsaved changes"
 msgstr ""
 
@@ -47026,6 +47023,9 @@ msgid "You've already enabled two-factor authentication using one time password 
 msgstr ""
 
 msgid "You've rejected %{user}"
+msgstr ""
+
+msgid "You've successfully purchased the %{plan} plan subscription for %{seats} and you'll receive a receipt by email. Your purchase may take a minute to sync, refresh the page if your subscription details haven't displayed yet."
 msgstr ""
 
 msgid "YouTube"
