@@ -53,6 +53,8 @@ metadata:
     description: Operations related to Geo
   - name: geo_nodes
     description: Operations related Geo Nodes
+  - name: go_proxy
+    description: Operations related to Go Proxy
   - name: group_export
     description: Operations related to exporting groups
   - name: group_import
