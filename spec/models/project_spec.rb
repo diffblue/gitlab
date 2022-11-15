@@ -597,7 +597,8 @@ RSpec.describe Project, factory_default: :keep do
       end
 
       it 'contains errors related to the project being deleted' do
-        expect(new_project.errors.full_messages.first).to eq(_('The project is still being deleted. Please try again later.'))
+        expect(new_project.errors.full_messages.first).to eq(_('Project namespace name has already been taken'))
+        expect(new_project.errors.full_messages.second).to eq(_('The project is still being deleted. Please try again later.'))
       end
     end
 
