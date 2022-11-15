@@ -8004,6 +8004,9 @@ msgstr ""
 msgid "ChatMessage|Pipeline %{pipeline_link} of %{ref_type} %{ref_link} by %{user_combined_name} %{humanized_status}"
 msgstr ""
 
+msgid "ChatMessage|Pipeline name"
+msgstr ""
+
 msgid "ChatMessage|Tag"
 msgstr ""
 
