@@ -186,6 +186,7 @@ module API
         mount ::API::Ci::Runners
         mount ::API::Ci::Pipelines
         mount ::API::Ci::PipelineSchedules
+        mount ::API::Ci::Triggers
         mount ::API::Ci::Variables
         mount ::API::Clusters::AgentTokens
         mount ::API::Clusters::Agents
@@ -269,7 +270,6 @@ module API
       mount ::API::Boards
       mount ::API::Ci::JobArtifacts
       mount ::API::Ci::SecureFiles
-      mount ::API::Ci::Triggers
       mount ::API::ComposerPackages
       mount ::API::ConanInstancePackages
       mount ::API::ConanProjectPackages
