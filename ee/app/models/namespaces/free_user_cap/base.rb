@@ -16,12 +16,12 @@ module Namespaces
         users_count > limit
       end
 
-      strong_memoize_attr :enforce_cap?, :enforce_cap
       def enforce_cap?
         return false unless enforceable_subscription?
 
         feature_enabled?
       end
+      strong_memoize_attr :enforce_cap?, :enforce_cap
 
       def users_count
         root_namespace.free_plan_members_count || 0

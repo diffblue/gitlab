@@ -60,12 +60,11 @@ module Integrations
 
       private
 
-      strong_memoize_attr :slack_installation
       def slack_installation
         SlackIntegration.with_bot.find_by_team_id(slack_workspace_id)
       end
+      strong_memoize_attr :slack_installation
 
-      strong_memoize_attr :slack_gitlab_user_connection
       def slack_gitlab_user_connection
         ChatName.find_by_integration_id_and_team_id_and_chat_id(
           slack_installation.integration_id,
@@ -73,6 +72,7 @@ module Integrations
           slack_user_id
         )
       end
+      strong_memoize_attr :slack_gitlab_user_connection
 
       def payload
         {
