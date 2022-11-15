@@ -276,6 +276,29 @@ module Gitlab
             error(CONNECTIVITY_ERROR)
           end
 
+          def send_seat_overage_notification_batch(namespaces)
+            query = <<~GQL
+              mutation($namespaces: [NamespaceSeatOverageInput!]) {
+                sendSeatOverageNotificationEmail(input: {
+                  namespaces: $namespaces
+                }) {
+                  errors
+                }
+              }
+            GQL
+
+            response = execute_graphql_query(
+              query: query,
+              variables: { namespaces: namespaces }
+            )
+
+            parse_errors(response, query_name: 'sendSeatOverageNotificationEmail').presence || { success: true }
+          rescue *RESCUABLE_HTTP_ERRORS => e
+            Gitlab::ErrorTracking.log_exception(e)
+
+            error(CONNECTIVITY_ERROR)
+          end
+
           private
 
           def execute_graphql_query(params)

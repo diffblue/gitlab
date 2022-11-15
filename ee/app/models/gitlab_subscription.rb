@@ -36,6 +36,11 @@ class GitlabSubscription < ApplicationRecord
 
   scope :preload_for_refresh_seat, -> { preload([{ namespace: :route }, :hosted_plan]) }
 
+  scope :max_seats_used_changed_between, -> (from:, to:) do
+    where('max_seats_used_changed_at >= ?', from)
+      .where('max_seats_used_changed_at <= ?', to)
+  end
+
   DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX = 30
 
   # We set a threshold for expiration before removing them from
