@@ -175,6 +175,7 @@ module API
         mount ::API::Admin::InstanceClusters
         mount ::API::Appearance
         mount ::API::Applications
+        mount ::API::Avatar
         mount ::API::Badges
         mount ::API::BroadcastMessages
         mount ::API::BulkImports
@@ -241,7 +242,6 @@ module API
       mount ::API::Admin::PlanLimits
       mount ::API::Admin::Sidekiq
       mount ::API::AlertManagementAlerts
-      mount ::API::Avatar
       mount ::API::AwardEmoji
       mount ::API::Boards
       mount ::API::Branches
