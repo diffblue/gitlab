@@ -187,7 +187,7 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
 
       context 'when user does not have download_code permission on project' do
         it 'returns an empty array' do
-          allow(Ability).to receive(:allowed?).with(user, :download_code, project).and_return(false)
+          allow(Ability).to receive(:allowed?).with(user, :read_code, project).and_return(false)
 
           expect(subject).to match_array([])
         end
