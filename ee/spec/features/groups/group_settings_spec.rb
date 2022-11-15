@@ -238,19 +238,15 @@ RSpec.describe 'Edit group settings' do
 
       context 'group selection menu', :js do
         before do
-          slow_requests do
-            find('#s2id_group_custom_project_templates_group_id').click
-            wait_for_all_requests
+          wait_for_all_requests
+          page.within('[data-test-id="custom_project_templates_selector"]') do
+            find('.dropdown-toggle').click
           end
         end
 
         it 'shows only the subgroups' do
-          # the default value of 0.2 from the slow_requests helper isn't
-          # enough when this spec is exec along with other feature specs.
-          sleep 0.5
-
-          page.within('.select2-drop .select2-results') do
-            results = find_all('.select2-result')
+          page.within('[data-test-id="custom_project_templates_selector"] [role="listbox"]') do
+            results = find_all('[role="option"]')
 
             expect(results.count).to eq(1)
             expect(results.last.text).to eq "#{nested_group.full_name}\n#{nested_group.full_path}"
