@@ -2,8 +2,8 @@
 import StepOrderApp from 'ee/vue_shared/purchase_flow/components/step_order_app.vue';
 import GitlabExperiment from '~/experimentation/components/gitlab_experiment.vue';
 import Checkout from 'jh_else_ee/subscriptions/new/components/checkout.vue';
+import OrderSummary from 'jh_else_ee/subscriptions/new/components/order_summary.vue';
 import Modal from './modal.vue';
-import OrderSummary from './order_summary.vue';
 
 export default {
   components: {
