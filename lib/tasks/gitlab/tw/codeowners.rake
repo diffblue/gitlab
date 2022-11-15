@@ -81,6 +81,10 @@ namespace :tw do
       CodeOwnerRule.new('Workspace', '@lciutacu')
     ].freeze
 
+    ERRORS_EXCLUDED_FILES = [
+      '/doc/architecture'
+    ].freeze
+
     CODEOWNERS_BLOCK_BEGIN = "# Begin rake-managed-docs-block"
     CODEOWNERS_BLOCK_END = "# End rake-managed-docs-block"
 
@@ -105,16 +109,17 @@ namespace :tw do
     Dir.glob(path) do |file|
       yaml_data = YAML.load_file(file)
       document = Document.new(yaml_data['group'], yaml_data['redirect_to'])
+      relative_file = file.delete_prefix(Dir.pwd)
 
       if document.missing_metadata?
-        errors << file
+        errors << relative_file unless ERRORS_EXCLUDED_FILES.any? { |element| relative_file.starts_with?(element) }
         next
       end
 
       writer = writer_for_group(document.group)
       next unless writer
 
-      mappings << DocumentOwnerMapping.new(file.delete_prefix(Dir.pwd), writer) if document.has_a_valid_group?
+      mappings << DocumentOwnerMapping.new(relative_file, writer) if document.has_a_valid_group?
     end
 
     deduplicated_mappings = Set.new
@@ -142,7 +147,7 @@ namespace :tw do
     if errors.present?
       puts "-----"
       puts "ERRORS - the following files are missing the correct metadata:"
-      errors.map { |file| puts file.gsub(Dir.pwd, ".") }
+      errors.map { |file| puts file }
     end
   end
 end
