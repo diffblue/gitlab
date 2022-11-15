@@ -37,27 +37,33 @@ module QA
           end
 
           def filter_by_status(statuses)
-            retry_on_exception(sleep_interval: 5, reload: true) do
+            wait_until(max_duration: 30, message: "Waiting for status dropdown element to appear") do
+              has_element?(:filter_status_dropdown)
+            end
+
+            retry_until(sleep_interval: 2, message: "Retrying status click until current url matches state") do
               click_element(:filter_status_dropdown)
+              click_element("filter_all_statuses_dropdown")
+              statuses.each do |status|
+                # The data-qa-selector for this element is dynamically computed in qaSelector method in
+                # ee/app/assets/javascripts/security_dashboard/components/shared/filters/filter_body.vue
+                click_element("filter_#{status.downcase.tr(" ", "_")}_dropdown")
+                # To account for 'All statuses' dropdown item
+              end
+              click_element(:filter_status_dropdown)
+              state = statuses.map { |status| status.include?("all") ? "state=all" : "state=#{status}" }.join("&")
+              page.current_url.downcase.include?(state)
             end
-            click_element("filter_all_statuses_dropdown")
-            statuses.each do |status|
-              # The data-qa-selector for this element is dynamically computed in qaSelector method in
-              # ee/app/assets/javascripts/security_dashboard/components/shared/filters/filter_body.vue
-              click_element("filter_#{status.downcase.tr(" ", "_")}_dropdown")
-              # To account for 'All statuses' dropdown item
-            end
-            click_element(:filter_status_dropdown)
           end
 
           def has_vulnerability?(name)
-            retry_until(reload: true, sleep_interval: 10, max_attempts: 12) do
+            retry_until(reload: true, sleep_interval: 10, max_attempts: 6, message: "Retry for vulnerability text") do
               has_element?(:vulnerability, text: name)
             end
           end
 
           def has_vulnerability_info_content?(name)
-            retry_until(reload: true, sleep_interval: 10, max_attempts: 12) do
+            retry_until(reload: true, sleep_interval: 10, max_attempts: 6) do
               has_element?(:vulnerability_info_content, text: name)
             end
           end
