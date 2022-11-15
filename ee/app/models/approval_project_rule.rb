@@ -31,7 +31,8 @@ class ApprovalProjectRule < ApplicationRecord
 
   alias_method :code_owner, :code_owner?
 
-  validates :name, uniqueness: { scope: [:project_id, :rule_type] }
+  validates :name, uniqueness: { scope: [:project_id, :rule_type] }, unless: :scan_finding?
+  validates :name, uniqueness: { scope: [:project_id, :rule_type, :security_orchestration_policy_configuration_id, :orchestration_policy_idx] }, if: :scan_finding?
   validate :validate_security_report_approver_name
   validates :rule_type, uniqueness: { scope: :project_id, message: proc { _('any-approver for the project already exists') } }, if: :any_approver?
   validates :scanners, if: :scanners_changed?, inclusion: { in: SUPPORTED_SCANNERS }
