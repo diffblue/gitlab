@@ -5,10 +5,14 @@ module EE
     module TransferService
       extend ::Gitlab::Utils::Override
 
+      # TODO: Remove this method and lost_groups as well as
+      # Epic#nullify_lost_group_parents and Epic#schedule_parent_cache_update when
+      # `child_epics_from_different_hierarchies` feature flag is removed:
+      # https://gitlab.com/gitlab-org/gitlab/-/issues/382719
       def update_group_attributes
-        ::Epic.nullify_lost_group_parents(group.self_and_descendants, lost_groups)
+        return super if cross_group_epics_enabled?
 
-        super
+        ::Epic.nullify_lost_group_parents(group.self_and_descendants, lost_groups)
       end
 
       private
@@ -45,6 +49,11 @@ module EE
           project.invalidate_elasticsearch_indexes_cache! if ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
           ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project) if project.maintaining_elasticsearch?
         end
+      end
+
+      def cross_group_epics_enabled?
+        ::Feature.enabled?(:child_epics_from_different_hierarchies, group) &&
+          ::Feature.enabled?(:child_epics_from_different_hierarchies, new_parent_group)
       end
     end
   end
