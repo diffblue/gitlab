@@ -17,6 +17,9 @@ import { HTTP_STATUS_PAYLOAD_TOO_LARGE } from '~/lib/utils/http_status';
 import { __, s__, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import TimeagoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
+import Cer from './metadata/cer.vue';
+import P12 from './metadata/p12.vue';
+import Mobileprovision from './metadata/mobileprovision.vue';
 
 export default {
   components: {
@@ -29,6 +32,9 @@ export default {
     GlSprintf,
     GlTable,
     TimeagoTooltip,
+    Cer,
+    P12,
+    Mobileprovision,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
@@ -39,6 +45,7 @@ export default {
   DEFAULT_PER_PAGE,
   i18n: {
     deleteLabel: __('Delete File'),
+    metadataLabel: __('View File Metadata'),
     uploadLabel: __('Upload File'),
     uploadingLabel: __('Uploading...'),
     noFilesMessage: __('There are no secure files yet.'),
@@ -50,6 +57,7 @@ export default {
       duplicate: __('A file with this name already exists.'),
       tooLarge: __('File too large. Secure Files must be less than %{limit} MB.'),
     },
+    metadataModalTitle: s__('SecureFiles|%{name} Metadata'),
     deleteModalTitle: s__('SecureFiles|Delete %{name}?'),
     deleteModalMessage: s__(
       'SecureFiles|Secure File %{name} will be permanently deleted. Are you sure?',
@@ -57,6 +65,7 @@ export default {
     deleteModalButton: s__('SecureFiles|Delete secure file'),
   },
   deleteModalId: 'deleteModalId',
+  metadataModalId: 'metadataModalId',
   data() {
     return {
       page: 1,
@@ -68,6 +77,8 @@ export default {
       projectSecureFiles: [],
       deleteModalFileId: null,
       deleteModalFileName: null,
+      metadataModalData: {},
+      metadataFileExtension: null,
     };
   },
   fields: [
@@ -162,6 +173,15 @@ export default {
       this.deleteModalFileId = secureFile.id;
       this.deleteModalFileName = secureFile.name;
     },
+    setMetadataModalData(secureFile) {
+      this.metadataModalFileId = secureFile.id;
+      this.metadataModalFileName = secureFile.name;
+      this.metadataModalData = secureFile.metadata;
+      this.metadataFileExtension = secureFile.file_extension;
+    },
+    hasMetadata(secureFile) {
+      return secureFile.metadata !== null;
+    },
     uploadFormData(file) {
       const formData = new FormData();
       formData.append('name', file.name);
@@ -209,6 +229,18 @@ export default {
 
         <template #cell(actions)="{ item }">
           <gl-button
+            v-if="admin && hasMetadata(item)"
+            v-gl-modal="$options.metadataModalId"
+            v-gl-tooltip.hover.top="$options.i18n.metadataLabel"
+            category="secondary"
+            variant="info"
+            icon="doc-text"
+            :aria-label="$options.i18n.metadataLabel"
+            data-testid="metadata-button"
+            @click="setMetadataModalData(item)"
+          />
+
+          <gl-button
             v-if="admin"
             v-gl-modal="$options.deleteModalId"
             v-gl-tooltip.hover.top="$options.i18n.deleteLabel"
@@ -252,6 +284,26 @@ export default {
       :prev-text="$options.i18n.pagination.prev"
       align="center"
     />
+
+    <gl-modal
+      :ref="$options.metadataModalId"
+      :modal-id="$options.metadataModalId"
+      title-tag="h4"
+      category="primary"
+    >
+      <template #modal-title>
+        <gl-sprintf :message="$options.i18n.metadataModalTitle">
+          <template #name>{{ metadataModalFileName }}</template>
+        </gl-sprintf>
+      </template>
+
+      <cer v-if="metadataFileExtension == 'cer'" :metadata="metadataModalData" />
+      <p12 v-if="metadataFileExtension == 'p12'" :metadata="metadataModalData" />
+      <mobileprovision
+        v-if="metadataFileExtension == 'mobileprovision'"
+        :metadata="metadataModalData"
+      />
+    </gl-modal>
 
     <gl-modal
       :ref="$options.deleteModalId"
