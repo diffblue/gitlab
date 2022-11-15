@@ -96,19 +96,11 @@ module QA
           two_fa_group.visit!
           Page::Group::Menu.perform(&:click_group_general_settings_item)
           Page::Group::Settings::General.perform(&:set_require_2fa_enabled)
-          Support::Retrier.retry_until(sleep_interval: 3, message: "Retrying clicking on configure it later",
-                                       retry_on_exception: true) do
-            Page::Profile::TwoFactorAuth.perform(&:click_configure_it_later_button)
-            has_text?("Welcome to GitLab") && has_text?("Create a group")
-          end
+          Page::Profile::TwoFactorAuth.perform(&:click_configure_it_later_button)
 
           two_fa_group.visit!
           Page::Group::Menu.perform(&:click_group_general_settings_item)
           Page::Group::Settings::General.perform(&:set_require_2fa_disabled)
-        end
-
-        after do
-          Page::Main::Menu.perform(&:sign_out_if_signed_in)
         end
 
         it_behaves_like 'audit event',
