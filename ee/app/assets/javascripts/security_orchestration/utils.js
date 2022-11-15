@@ -2,20 +2,8 @@ import createGqClient from '~/lib/graphql';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from './components/constants';
 
 /**
- * Get the height of the wrapper page element
- * This height can be used to determine where the highest element goes in a page
- * Useful for gl-drawer's header-height prop
- * @param {String} class the content wrapper class
- * @returns {String} height in px
- */
-export const getContentWrapperHeight = (contentWrapperClass) => {
-  const wrapperEl = document.querySelector(contentWrapperClass);
-  return wrapperEl ? `${wrapperEl.offsetTop}px` : '';
-};
-
-/**
  * Get a policy's type
- * @param {String} yaml policy's YAML manifest
+ * @param {String} typeName policy's YAML manifest
  * @returns {String|null} policy type if available
  */
 export const getPolicyType = (typeName = '') => {

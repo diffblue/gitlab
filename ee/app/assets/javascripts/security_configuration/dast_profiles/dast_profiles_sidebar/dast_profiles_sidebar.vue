@@ -4,7 +4,7 @@ import { GlDrawer, GlLink } from '@gitlab/ui';
 import { s__, sprintf } from '~/locale';
 import { SIDEBAR_VIEW_MODE } from 'ee/on_demand_scans/constants';
 import DastProfilesLoader from 'ee/security_configuration/dast_profiles/components/dast_profiles_loader.vue';
-import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
+import { getContentWrapperHeight } from 'ee/vue_shared/shared_utils';
 import dastProfileConfiguratorMixin from 'ee/security_configuration/dast_profiles/dast_profiles_configurator_mixin';
 import DastProfilesSidebarHeader from './dast_profiles_sidebar_header.vue';
 import DastProfilesSidebarEmptyState from './dast_profiles_sidebar_empty_state.vue';
