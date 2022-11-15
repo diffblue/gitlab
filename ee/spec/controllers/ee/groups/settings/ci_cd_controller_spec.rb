@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Settings::CiCdController do
+RSpec.describe Groups::Settings::CiCdController, feature_category: :continuous_integration do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
 

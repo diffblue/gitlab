@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::PreferencesController do
+RSpec.describe Profiles::PreferencesController, feature_category: :users do
   let(:user) { create(:user) }
 
   before do

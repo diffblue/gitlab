@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::VariablesController do
+RSpec.describe Projects::VariablesController, feature_category: :pipeline_authoring do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 

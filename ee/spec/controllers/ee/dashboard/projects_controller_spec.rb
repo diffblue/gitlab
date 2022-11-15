@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Dashboard::ProjectsController do
+RSpec.describe Dashboard::ProjectsController, feature_category: :projects do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user) }

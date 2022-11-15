@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe OmniauthCallbacksController, type: :controller do
+RSpec.describe OmniauthCallbacksController, type: :controller, feature_category: :authentication_and_authorization do
   include LoginHelpers
   include EE::GeoHelpers
 
