@@ -81,8 +81,11 @@ RSpec.describe EE::IntegrationsHelper do
     context 'with a GitLab Slack App integration' do
       let(:integration) { build(:gitlab_slack_application_integration, project: project) }
 
-      it 'includes Slack app upgrade URL' do
+      before do
         stub_ee_application_setting(slack_app_id: 'MOCK_APP_ID')
+      end
+
+      it 'includes Slack app upgrade URL' do
         redirect_url = "http://test.host/#{project.full_path}/-/settings/slack/slack_auth"
 
         expect(form_data[:upgrade_slack_url]).to start_with(
@@ -92,6 +95,10 @@ RSpec.describe EE::IntegrationsHelper do
             "&redirect_uri=#{CGI.escape(redirect_url)}"
           ].join
         )
+      end
+
+      it 'includes the flag to upgrade Slack app' do
+        expect(form_data[:should_upgrade_slack]).to eq 'true'
       end
     end
   end
