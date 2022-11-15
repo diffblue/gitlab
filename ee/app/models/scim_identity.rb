@@ -5,10 +5,9 @@ class ScimIdentity < ApplicationRecord
   include CaseSensitivity
   include ScimPaginatable
 
-  belongs_to :group
+  belongs_to :group, optional: true
   belongs_to :user
 
-  validates :group, presence: true
   validates :user, presence: true, uniqueness: { scope: [:group_id] }
   validates :extern_uid, presence: true,
                          uniqueness: { case_sensitive: false, scope: [:group_id] }

@@ -7,13 +7,14 @@ class ScimFinder
 
   UnsupportedFilter = Class.new(StandardError)
 
-  def initialize(group)
+  def initialize(group = nil)
+    raise ArgumentError, 'Group cannot be nil' if group.nil? && ::Gitlab.com?
+
     @group = group
-    @saml_provider = group&.saml_provider
   end
 
   def search(params)
-    return null_identity unless saml_provider&.enabled?
+    return null_identity unless saml_enabled?
     return all_identities if unfiltered?(params)
 
     filter_identities(params)
@@ -25,8 +26,17 @@ class ScimFinder
     ScimIdentity.none
   end
 
+  def saml_enabled?
+    return Gitlab::Auth::Saml::Config.enabled? unless group
+    return false unless group.saml_provider
+
+    group.saml_provider.enabled?
+  end
+
   def all_identities
-    group.scim_identities
+    return group.scim_identities if group
+
+    ScimIdentity.all
   end
 
   def unfiltered?(params)
@@ -53,7 +63,9 @@ class ScimFinder
   end
 
   def by_extern_uid(extern_uid)
-    group.scim_identities.with_extern_uid(extern_uid)
+    return group.scim_identities.with_extern_uid(extern_uid) if group
+
+    ScimIdentity.with_extern_uid(extern_uid)
   end
 
   def eq_filter_on_username?(parser)
@@ -67,7 +79,9 @@ class ScimFinder
       user ||= User.find_by_any_email(username) || User.find_by_username(email_local_part(username))
     end
 
-    group.scim_identities.for_user(user)
+    return group.scim_identities.for_user(user) if group
+
+    ScimIdentity.for_user(user)
   end
 
   def email?(email)
