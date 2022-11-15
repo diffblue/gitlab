@@ -20,7 +20,7 @@ module Namespaces
         # before Standard does.  So this will cover the ones that are 'at' the number
         # but not over for the Standard as they will always get a preview before being
         # enforced with Standard.
-        !Standard.new(root_namespace).reached_limit?
+        !Standard.new(root_namespace).over_limit?
       end
     end
   end

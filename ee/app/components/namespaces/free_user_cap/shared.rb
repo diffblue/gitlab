@@ -34,7 +34,7 @@ module Namespaces
       end
 
       def self.breached_standard_cap_limit?(namespace)
-        ::Namespaces::FreeUserCap::Standard.new(namespace).reached_limit?
+        ::Namespaces::FreeUserCap::Standard.new(namespace).over_limit?
       end
 
       # region: alert data ---------------------------------------------
@@ -72,6 +72,13 @@ module Namespaces
 
       def self.breached_preview_cap_limit?(namespace)
         ::Namespaces::FreeUserCap::Preview.new(namespace).over_limit?
+      end
+
+      def self.non_owner_render?(user:, namespace:)
+        return false unless user
+        return false if default_render?(user: user, namespace: namespace)
+
+        Ability.allowed?(user, :read_group, namespace)
       end
 
       def self.preview_render?(user:, namespace:, feature_name:)

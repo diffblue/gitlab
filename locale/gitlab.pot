@@ -42463,6 +42463,9 @@ msgstr ""
 msgid "To reactivate your account, sign in to GitLab at %{gitlab_url}."
 msgstr ""
 
+msgid "To remove the %{link_start}read-only%{link_end} state and regain write access, ask your namespace owner to reduce the number of users in your namespace to %{free_limit} users or less, or to upgrade to a paid tier which do not have user limits."
+msgstr ""
+
 msgid "To remove the %{link_start}read-only%{link_end} state and regain write access, you can reduce the number of users in your namespace to %{free_limit} users or less. You can also upgrade to a paid tier, which do not have user limits. If you need additional time, you can start a free 30-day trial which includes unlimited users."
 msgstr ""
 

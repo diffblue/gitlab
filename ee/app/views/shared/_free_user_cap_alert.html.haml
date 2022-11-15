@@ -2,6 +2,11 @@
   = render Namespaces::FreeUserCap::AlertComponent.new(namespace: source.root_ancestor,
     user: current_user,
     content_class: full_content_class)
+
+  = render Namespaces::FreeUserCap::NonOwnerAlertComponent.new(namespace: source.root_ancestor,
+    user: current_user,
+    content_class: full_content_class)
+
   = render Namespaces::FreeUserCap::PreviewAlertComponent.new(namespace: source.root_ancestor,
     user: current_user,
     content_class: full_content_class)

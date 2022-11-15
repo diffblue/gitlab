@@ -54,10 +54,10 @@ RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
           it { is_expected.to be true }
         end
 
-        context 'when at dashboard_limit preview is off' do
+        context 'when at dashboard_limit preview is honored' do
           let(:free_user_count) { 3 }
 
-          it { is_expected.to be false }
+          it { is_expected.to be true }
         end
 
         context 'when over the dashboard_limit preview is off' do
@@ -78,10 +78,10 @@ RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
           it { is_expected.to be true }
         end
 
-        context 'when at dashboard_enforcement_limit preview is off' do
+        context 'when at dashboard_enforcement_limit preview is honored' do
           let(:free_user_count) { 3 }
 
-          it { is_expected.to be false }
+          it { is_expected.to be true }
         end
 
         context 'when over the dashboard_enforcement_limit preview is off' do
