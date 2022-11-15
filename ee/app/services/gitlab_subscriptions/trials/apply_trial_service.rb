@@ -51,10 +51,10 @@ module GitlabSubscriptions
         Onboarding::ProgressService.new(namespace).execute(action: :trial_started)
       end
 
-      strong_memoize_attr :namespace
       def namespace
         Namespace.find_by(id: trial_user_information[:namespace_id]) # rubocop: disable CodeReuse/ActiveRecord
       end
+      strong_memoize_attr :namespace
     end
   end
 end

@@ -39,16 +39,15 @@ module Geo
 
     private
 
-    strong_memoize_attr :registry
     def registry
       replicator.registry
     end
+    strong_memoize_attr :registry
 
     def destroy_repository
       container_repository.delete_tags!
     end
 
-    strong_memoize_attr :container_repository
     def container_repository
       if path
         ContainerRepository.new.tap { |cr| cr.path = path }
@@ -56,6 +55,7 @@ module Geo
         ContainerRepository.find_by_id(container_repository_id)
       end
     end
+    strong_memoize_attr :container_repository
 
     def destroy_registry
       log_info('Removing container repository registry', registry_id: registry.id)
@@ -63,13 +63,13 @@ module Geo
       registry.destroy
     end
 
-    strong_memoize_attr :replicator
     def replicator
       Gitlab::Geo::Replicator.for_replicable_params(
         replicable_name: 'container_repository',
         replicable_id: container_repository_id
       )
     end
+    strong_memoize_attr :replicator
 
     def lease_key
       "container_repository_registry_removal_service:#{container_repository_id}"
