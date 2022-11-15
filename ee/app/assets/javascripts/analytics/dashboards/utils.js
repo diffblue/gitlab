@@ -1,30 +1,10 @@
 import { isNumeric } from '~/lib/utils/number_utils';
-import { roundOffFloat } from '~/lib/utils/common_utils';
 import { fetchMetricsData } from '~/analytics/shared/utils';
 import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
-import { CHANGE_FAILURE_RATE, DEPLOYMENT_FREQUENCY_METRIC_TYPE } from 'ee/api/dora_api';
-import { DORA_METRIC_IDENTIFIERS } from './constants';
+import { DORA_METRICS } from './constants';
 
-export const formatPercentChange = ({ current, previous, precision = 2 }) =>
-  previous > 0 && current > 0
-    ? `${roundOffFloat(((current - previous) / previous) * 100, precision)}%`
-    : '-';
-
-export const formatMetricString = ({ identifier, value }) => {
-  let unit = '';
-  switch (identifier) {
-    case CHANGE_FAILURE_RATE:
-      unit = '%';
-      break;
-    case DEPLOYMENT_FREQUENCY_METRIC_TYPE:
-      unit = '/d';
-      break;
-    default:
-      unit = ' d';
-      break;
-  }
-  return `${value}${unit}`;
-};
+export const percentChange = ({ current, previous }) =>
+  previous > 0 && current > 0 ? (current - previous) / previous : 0;
 
 /**
  * Takes a flat array of metrics and extracts only the DORA metrics,
@@ -39,7 +19,7 @@ export const formatMetricString = ({ identifier, value }) => {
  */
 export const extractDoraMetrics = (metrics = []) =>
   metrics
-    .filter(({ identifier }) => DORA_METRIC_IDENTIFIERS.includes(identifier))
+    .filter(({ identifier }) => Object.keys(DORA_METRICS).includes(identifier))
     .reduce((acc, curr) => {
       return {
         ...acc,
@@ -81,7 +61,7 @@ export const hasDoraMetricValues = (timePeriods) =>
     // timePeriod may contain more attributes than just the DORA metrics,
     // so filter out non-metrics before making a list of the raw values
     const metricValues = Object.entries(timePeriod)
-      .filter(([k]) => DORA_METRIC_IDENTIFIERS.includes(k))
+      .filter(([k]) => Object.keys(DORA_METRICS).includes(k))
       .map(([, v]) => v.value);
 
     return metricValues.some((value) => isNumeric(value) && Number(value) > 0);
@@ -95,12 +75,23 @@ export const hasDoraMetricValues = (timePeriods) =>
  * @returns {Array} array comparing each DORA metric between the different time periods
  */
 export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
-  return DORA_METRIC_IDENTIFIERS.map((identifier) => {
-    const data = {};
-    timePeriods.forEach((timePeriod) => {
-      const doraMetric = timePeriod[identifier];
-      data.metric = doraMetric.label;
-      data[timePeriod.key] = doraMetric?.identifier ? formatMetricString(doraMetric) : '-';
+  return Object.entries(DORA_METRICS).map(([identifier, { label, formatValue }]) => {
+    const data = { metric: { value: label } };
+    timePeriods.forEach((timePeriod, index) => {
+      // The last timePeriod is not rendered, we just use it
+      // to determine the % change for the 2nd last timePeriod
+      if (index === timePeriods.length - 1) return;
+
+      const current = timePeriod[identifier];
+      const previous = timePeriods[index + 1][identifier];
+
+      data[timePeriod.key] = {
+        value: current ? formatValue(current.value) : '-',
+        change: percentChange({
+          current: current?.value || 0,
+          previous: previous?.value || 0,
+        }),
+      };
     });
     return data;
   });

@@ -1,5 +1,10 @@
 import { shallowMount } from '@vue/test-utils';
-import { THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO } from 'ee/analytics/dashboards/constants';
+import {
+  THIS_MONTH,
+  LAST_MONTH,
+  TWO_MONTHS_AGO,
+  THREE_MONTHS_AGO,
+} from 'ee/analytics/dashboards/constants';
 import Component from 'ee/analytics/dashboards/components/app.vue';
 import DoraComparisonTable from 'ee/analytics/dashboards/components/dora_comparison_table.vue';
 import * as utils from '~/analytics/shared/utils';
@@ -7,6 +12,7 @@ import {
   mockMonthToDateApiResponse,
   mockPreviousMonthApiResponse,
   mockTwoMonthsAgoApiResponse,
+  mockThreeMonthsAgoApiResponse,
 } from '../mock_data';
 
 const mockProps = { groupName: 'Exec group', groupFullPath: 'exec-group' };
@@ -55,9 +61,9 @@ describe('Executive dashboard app', () => {
     };
 
     it('will request the summary and time summary metrics for all time periods', () => {
-      expect(utils.fetchMetricsData).toHaveBeenCalledTimes(3);
+      expect(utils.fetchMetricsData).toHaveBeenCalledTimes(4);
 
-      [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO].forEach((timePeriod) =>
+      [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO, THREE_MONTHS_AGO].forEach((timePeriod) =>
         expectDataRequests({
           created_after: timePeriod.start.toISOString(),
           created_before: timePeriod.end.toISOString(),
@@ -83,7 +89,8 @@ describe('Executive dashboard app', () => {
       utils.fetchMetricsData
         .mockReturnValueOnce(mockMonthToDateApiResponse)
         .mockReturnValueOnce(mockPreviousMonthApiResponse)
-        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse);
+        .mockReturnValueOnce(mockTwoMonthsAgoApiResponse)
+        .mockReturnValueOnce(mockThreeMonthsAgoApiResponse);
 
       wrapper = await createComponent();
     });
@@ -92,10 +99,10 @@ describe('Executive dashboard app', () => {
       const metricNames = getTableData().map(({ metric }) => metric);
 
       expect(metricNames).toEqual([
-        'Deployment Frequency',
-        'Lead Time for Changes',
-        'Time to Restore Service',
-        'Change Failure Rate',
+        { value: 'Deployment Frequency' },
+        { value: 'Lead Time for Changes' },
+        { value: 'Time to Restore Service' },
+        { value: 'Change Failure Rate' },
       ]);
     });
   });
