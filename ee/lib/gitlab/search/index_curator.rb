@@ -39,10 +39,16 @@ module Gitlab
         old_index_name = index_info.fetch('index')
         new_index_name = increment_index_name(old_index_name)
 
-        create_new_index_with_same_settings(old_index: old_index_name, new_index: new_index_name)
-        update_aliases(old_index: old_index_name, new_index: new_index_name)
-
-        { from: old_index_name, to: new_index_name }
+        { from: old_index_name, to: new_index_name }.tap do |rollover_info|
+          if settings[:dry_run]
+            logger.info(
+              log_labels.merge(message: "[DRY RUN]: would have rolled over => #{rollover_info}")
+            )
+          else
+            create_new_index_with_same_settings(old_index: old_index_name, new_index: new_index_name)
+            update_aliases(old_index: old_index_name, new_index: new_index_name)
+          end
+        end
       end
 
       def increment_index_name(index_name)
