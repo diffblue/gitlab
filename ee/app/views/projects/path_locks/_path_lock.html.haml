@@ -1,8 +1,8 @@
 %li{ data: { qa_selector: 'locked_file_content' } }
   %div
     %span.item-title{ data: { qa_selector: 'locked_file_title_content' } }
-      = sprite_icon('lock', size: 14, css_class: 'gl-mr-1 gl-vertical-align-middle')
-      = path_lock.path
+      = link_to project_blob_path(@project, tree_join(@project.default_branch, path_lock.path)) do
+        = path_lock.path
 
     .controls
       - if can_unlock?(path_lock)

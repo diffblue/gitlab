@@ -24622,10 +24622,10 @@ msgstr ""
 msgid "Locked by %{fileLockUserName}"
 msgstr ""
 
-msgid "Locked the discussion."
+msgid "Locked files"
 msgstr ""
 
-msgid "Locks give the ability to lock specific file or folder."
+msgid "Locked the discussion."
 msgstr ""
 
 msgid "Locks the discussion."
@@ -40644,6 +40644,9 @@ msgid "The following Personal Access Token was revoked by an administrator, %{us
 msgstr ""
 
 msgid "The following SSH key was deleted by an administrator, %{username}."
+msgstr ""
+
+msgid "The following files or directories can only be modified by the user who locked them."
 msgstr ""
 
 msgid "The following items will NOT be exported:"
