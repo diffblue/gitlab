@@ -1,0 +1,8 @@
+---
+name: geo_dependency_proxy_blob_replication
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/101429
+rollout_issue_url: https://gitlab.com/gitlab-org/gitlab/-/issues/375151
+milestone: '15.6'
+type: development
+group: group::geo
+default_enabled: false

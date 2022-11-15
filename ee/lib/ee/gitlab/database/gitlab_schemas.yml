@@ -1,5 +1,6 @@
 ci_secure_file_registry: :gitlab_geo
 container_repository_registry: :gitlab_geo
+dependency_proxy_blob_registry: :gitlab_geo
 design_registry: :gitlab_geo
 event_log_states: :gitlab_geo
 file_registry: :gitlab_geo
