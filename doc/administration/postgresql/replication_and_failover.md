@@ -1085,7 +1085,7 @@ then reverting the leader, and finally reverting the replicas.
 
 With Patroni it is possible to run a major PostgreSQL upgrade without shutting down the cluster. However, this will
 require additional resources to host the new Patroni nodes with the upgraded PostgreSQL. In practice, with this
-procedure, you are creating a new Patroni cluster with a new version of PostgreSQL and and migrating the data from the
+procedure, you are creating a new Patroni cluster with a new version of PostgreSQL and migrating the data from the
 existing cluster. This procedure is non-invasive and does not impact your existing cluster before switching it off. But
 this can be both time and resource consuming and you should consider their trade-off with availability.
 
