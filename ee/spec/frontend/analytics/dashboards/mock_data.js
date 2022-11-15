@@ -1,4 +1,9 @@
-import { THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO } from 'ee/analytics/dashboards/constants';
+import {
+  THIS_MONTH,
+  LAST_MONTH,
+  TWO_MONTHS_AGO,
+  THREE_MONTHS_AGO,
+} from 'ee/analytics/dashboards/constants';
 
 const mockDoraMetrics = ([
   leadTimeForChanges,
@@ -32,42 +37,82 @@ const mockDoraMetrics = ([
   },
 });
 
-export const mockMonthToDate = mockDoraMetrics([0.2, 0.4, 8.54, 19.9]);
+export const mockMonthToDate = mockDoraMetrics([5.1, 4, 8, 0]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
 export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
-export const mockPreviousMonth = mockDoraMetrics([2.5, 22.32, 5.2, 1.7]);
+export const mockPreviousMonth = mockDoraMetrics([3.6, 20, 4, 2]);
 export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
 export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
 
-export const mockTwoMonthsAgo = mockDoraMetrics([3.5, 25.32, 8.2, 0.7]);
+export const mockTwoMonthsAgo = mockDoraMetrics([9.2, 32, 8, 4]);
 export const mockTwoMonthsAgoTimePeriod = { ...TWO_MONTHS_AGO, ...mockTwoMonthsAgo };
 export const mockTwoMonthsAgoApiResponse = Object.values(mockTwoMonthsAgo);
 
+export const mockThreeMonthsAgo = mockDoraMetrics([20.1, 32, 8, 2]);
+export const mockThreeMonthsAgoTimePeriod = { ...THREE_MONTHS_AGO, ...mockThreeMonthsAgo };
+export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
+
 export const mockComparativeTableData = [
   {
-    metric: 'Deployment Frequency',
-    thisMonth: '19.9/d',
-    lastMonth: '1.7/d',
-    twoMonthsAgo: '0.7/d',
+    metric: { value: 'Deployment Frequency' },
+    thisMonth: {
+      value: '0.0/d',
+      change: 0,
+    },
+    lastMonth: {
+      value: '2.0/d',
+      change: -0.5,
+    },
+    twoMonthsAgo: {
+      value: '4.0/d',
+      change: 1,
+    },
   },
   {
-    metric: 'Lead Time for Changes',
-    thisMonth: '0.2 d',
-    lastMonth: '2.5 d',
-    twoMonthsAgo: '3.5 d',
+    metric: { value: 'Lead Time for Changes' },
+    thisMonth: {
+      value: '5.1 d',
+      change: 0.4166666666666665,
+    },
+    lastMonth: {
+      value: '3.6 d',
+      change: -0.6086956521739131,
+    },
+    twoMonthsAgo: {
+      value: '9.2 d',
+      change: -0.5422885572139304,
+    },
   },
   {
-    metric: 'Time to Restore Service',
-    thisMonth: '0.4 d',
-    lastMonth: '22.32 d',
-    twoMonthsAgo: '25.32 d',
+    metric: { value: 'Time to Restore Service' },
+    thisMonth: {
+      value: '4.0 d',
+      change: -0.8,
+    },
+    lastMonth: {
+      value: '20.0 d',
+      change: -0.375,
+    },
+    twoMonthsAgo: {
+      value: '32.0 d',
+      change: 0,
+    },
   },
   {
-    metric: 'Change Failure Rate',
-    thisMonth: '8.54%',
-    lastMonth: '5.2%',
-    twoMonthsAgo: '8.2%',
+    metric: { value: 'Change Failure Rate' },
+    thisMonth: {
+      value: '8.00%',
+      change: 1,
+    },
+    lastMonth: {
+      value: '4.00%',
+      change: -0.5,
+    },
+    twoMonthsAgo: {
+      value: '8.00%',
+      change: 0,
+    },
   },
 ];
 
