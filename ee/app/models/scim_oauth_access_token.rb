@@ -13,10 +13,11 @@ class ScimOauthAccessToken < ApplicationRecord
     # Necessary to call `TokenAuthenticatableStrategies::Encrypted.find_token_authenticatable`
     token = find_by_token(token)
 
-    token && (token.group_id == group.id)
+    token && group && token.group_id == group.id
   end
 
   def self.token_matches?(token)
+    # Necessary to call `TokenAuthenticatableStrategies::Encrypted.find_token_authenticatable`
     find_by_token(token)
   end
 

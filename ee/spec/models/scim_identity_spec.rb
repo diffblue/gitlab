@@ -45,13 +45,13 @@ RSpec.describe ScimIdentity do
 
     context 'with existing user and not associated with group' do
       before do
-        create(:scim_identity, user: user, extern_uid: user.email)
+        create(:scim_identity, user: user, extern_uid: user.email, group: nil)
       end
 
-      it 'returns true for a duplicate identity with the same extern_uid' do
+      it 'returns false for a duplicate identity with the same extern_uid' do
         identity = user.scim_identities.build(extern_uid: user.email)
 
-        expect(identity.validate).to eq(true)
+        expect(identity.validate).to eq(false)
       end
     end
   end
