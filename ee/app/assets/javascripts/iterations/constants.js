@@ -15,4 +15,6 @@ export const iterationStates = {
   all: 'all',
 };
 
+export const iterationSortDesc = 'CADENCE_AND_DUE_DATE_DESC';
+
 export default {};
