@@ -1,8 +1,9 @@
-- page_title _("Locked Files")
+- page_title _("Locked files")
 
 .top-area
   .nav-text
-    = _("Locks give the ability to lock specific file or folder.")
+    = sprite_icon('lock', size: 16, css_class: 'gl-vertical-align-middle')
+    = _("The following files or directories can only be modified by the user who locked them.")
 
 .locks
   - if @path_locks.any?
