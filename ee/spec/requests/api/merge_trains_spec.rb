@@ -5,12 +5,21 @@ RSpec.describe API::MergeTrains do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:developer) { create(:user) }
   let_it_be(:guest) { create(:user) }
+  let_it_be(:other_project) { create(:project, :repository) }
 
   let(:user) { developer }
+
+  before do
+    stub_feature_flags(disable_merge_trains: false)
+    stub_licensed_features(merge_pipelines: true, merge_trains: true)
+
+    project.update!(merge_pipelines_enabled: true, merge_trains_enabled: true)
+  end
 
   before_all do
     project.add_developer(developer)
     project.add_guest(guest)
+    other_project.add_developer(developer)
   end
 
   describe 'GET /projects/:id/merge_trains' do
@@ -84,6 +93,89 @@ RSpec.describe API::MergeTrains do
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
+      end
+    end
+  end
+
+  describe 'GET /projects/:id/merge_trains/:target_branch' do
+    let!(:merge_train_1) { create(:merge_train, :idle, target_project: project, target_branch: 'master') }
+    let!(:merge_train_2) { create(:merge_train, :merged, target_project: project, target_branch: 'master') }
+    let!(:merge_train_3) { create(:merge_train, target_project: project, target_branch: 'feature') }
+    let!(:merge_train_4) { create(:merge_train, target_project: other_project, target_branch: 'master') }
+
+    context 'when the project and target branch exist' do
+      subject do
+        get api("/projects/#{project.id}/merge_trains/#{merge_train_1.target_branch}", developer), params: params
+      end
+
+      context 'with no params' do
+        let(:params) { {} }
+
+        it 'returns the target branch merge train cars' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.count).to eq(2)
+        end
+      end
+
+      context 'with ascending sort' do
+        let(:params) { { sort: 'asc' } }
+
+        it 'returns the target branch merge train cars ascending' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.count).to eq(2)
+          expect(json_response.first['id']).to eq(merge_train_1.id)
+          expect(json_response.second['id']).to eq(merge_train_2.id)
+        end
+      end
+
+      context 'with descending sort' do
+        let(:params) { { sort: 'desc' } }
+
+        it 'returns the target branch merge train cars descending' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.count).to eq(2)
+          expect(json_response.first['id']).to eq(merge_train_2.id)
+          expect(json_response.second['id']).to eq(merge_train_1.id)
+        end
+      end
+
+      context 'with scope active' do
+        let(:params) { { scope: 'active' } }
+
+        it 'returns the active target branch merge train cars' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:ok)
+          expect(json_response.count).to eq(1)
+          expect(json_response.first['id']).to eq(merge_train_1.id)
+        end
+      end
+    end
+
+    context 'when the target branch does not exist' do
+      subject { get api("/projects/#{project.id}/merge_trains/random", developer) }
+
+      it 'returns no merge train cars' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response.count).to eq(0)
+      end
+    end
+
+    context 'when the user does not have project access' do
+      subject { get api("/projects/#{project.id}/merge_trains/#{merge_train_1.target_branch}", guest) }
+
+      it 'returns forbidden' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
       end
     end
   end
