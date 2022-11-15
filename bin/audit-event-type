@@ -81,12 +81,12 @@ class AuditEventTypeOptionParser
           options.milestone = value
         end
 
-        opts.on('-s', '--saved-to-database [string]', String,
+        opts.on('-s', '--[no-]saved-to-database',
 "Indicate whether to persist events to database and JSON logs") do |value|
           options.saved_to_database = value
         end
 
-        opts.on('-t', '--streamed [string]', String,
+        opts.on('-t', '--[no-]streamed',
 "Indicate that events should be streamed to external services (if configured)") do |value|
           options.streamed = value
         end
@@ -230,12 +230,11 @@ class AuditEventTypeCreator
     assert_name!
     assert_existing_audit_event_type!
 
-    # Read type from stdin unless is already set
     options.description ||= AuditEventTypeOptionParser.read_description
     options.group ||= AuditEventTypeOptionParser.read_group
     options.milestone ||= AuditEventTypeOptionParser.read_milestone
-    options.saved_to_database ||= AuditEventTypeOptionParser.read_saved_to_database
-    options.streamed ||= AuditEventTypeOptionParser.read_streamed
+    options.saved_to_database = AuditEventTypeOptionParser.read_saved_to_database if options.saved_to_database.nil?
+    options.streamed = AuditEventTypeOptionParser.read_streamed if options.streamed.nil?
     options.introduced_by_mr ||= AuditEventTypeOptionParser.read_introduced_by_mr
     options.introduced_by_issue ||= AuditEventTypeOptionParser.read_introduced_by_issue
 

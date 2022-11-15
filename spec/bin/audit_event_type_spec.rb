@@ -9,7 +9,7 @@ RSpec.describe 'bin/audit-event-type' do
   using RSpec::Parameterized::TableSyntax
 
   describe AuditEventTypeCreator do
-    let(:argv) { %w[test_audit_event -d test -g govern::compliance -s true -t true -i https://url -m http://url] }
+    let(:argv) { %w[test_audit_event -d test -g govern::compliance -s -t -i https://url -m http://url] }
     let(:options) { AuditEventTypeOptionParser.parse(argv) }
     let(:creator) { described_class.new(options) }
     let(:existing_audit_event_types) do
@@ -75,14 +75,18 @@ RSpec.describe 'bin/audit-event-type' do
         :group               | %w[foo --group govern::compliance]        | 'govern::compliance'
         :milestone           | %w[foo -M 15.6]                           | '15.6'
         :milestone           | %w[foo --milestone 15.6]                  | '15.6'
-        :saved_to_database   | %w[foo -s true]                           | "true"
-        :saved_to_database   | %w[foo --saved-to-database true]          | "true"
-        :streamed            | %w[foo -t true]                           | "true"
-        :streamed            | %w[foo --streamed true]                   | "true"
+        :saved_to_database   | %w[foo -s]                                | true
+        :saved_to_database   | %w[foo --saved-to-database]               | true
+        :saved_to_database   | %w[foo --no-saved-to-database]            | false
+        :streamed            | %w[foo -t]                                | true
+        :streamed            | %w[foo --streamed]                        | true
+        :streamed            | %w[foo --no-streamed]                     | false
         :dry_run             | %w[foo -n]                                | true
         :dry_run             | %w[foo --dry-run]                         | true
         :ee                  | %w[foo -e]                                | true
         :ee                  | %w[foo --ee]                              | true
+        :jh                  | %w[foo -j]                                | true
+        :jh                  | %w[foo --jh]                              | true
         :introduced_by_mr    | %w[foo -m https://url]                    | 'https://url'
         :introduced_by_mr    | %w[foo --introduced-by-mr https://url]    | 'https://url'
         :introduced_by_issue | %w[foo -i https://url]                    | 'https://url'
