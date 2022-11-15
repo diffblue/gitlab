@@ -19,8 +19,6 @@ module Gitlab
 
         logger&.info "DRY RUN:" if dry_run
 
-        @connection = Gitlab::Database.database_base_models[database_name].connection
-
         schemas_for_connection = Gitlab::Database.gitlab_schemas_for_connection(connection)
         tables_to_truncate = Gitlab::Database::GitlabSchema.tables_to_schema.reject do |_, schema_name|
           (GITLAB_SCHEMAS_TO_IGNORE.union(schemas_for_connection)).include?(schema_name)
@@ -58,7 +56,11 @@ module Gitlab
 
       private
 
-      attr_accessor :database_name, :min_batch_size, :logger, :dry_run, :until_table, :connection
+      attr_accessor :database_name, :min_batch_size, :logger, :dry_run, :until_table
+
+      def connection
+        @connection ||= Gitlab::Database.database_base_models[database_name].connection
+      end
 
       def truncate_tables_in_batches(tables_sorted, min_batch_size)
         truncated_tables = []
