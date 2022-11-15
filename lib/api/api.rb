@@ -181,11 +181,11 @@ module API
         mount ::API::BroadcastMessages
         mount ::API::BulkImports
         mount ::API::Ci::Jobs
-        mount ::API::Ci::PipelineSchedules
         mount ::API::Ci::ResourceGroups
         mount ::API::Ci::Runner
         mount ::API::Ci::Runners
         mount ::API::Ci::Pipelines
+        mount ::API::Ci::PipelineSchedules
         mount ::API::Ci::Variables
         mount ::API::Clusters::AgentTokens
         mount ::API::Clusters::Agents
@@ -267,11 +267,8 @@ module API
       mount ::API::AwardEmoji
       mount ::API::Boards
       mount ::API::Ci::JobArtifacts
-      mount ::API::Ci::Pipelines
-      mount ::API::Ci::PipelineSchedules
       mount ::API::Ci::SecureFiles
       mount ::API::Ci::Triggers
-      mount ::API::CommitStatuses
       mount ::API::ComposerPackages
       mount ::API::ConanInstancePackages
       mount ::API::ConanProjectPackages
