@@ -57,6 +57,37 @@ CREATE SEQUENCE container_repository_registry_id_seq
 
 ALTER SEQUENCE container_repository_registry_id_seq OWNED BY container_repository_registry.id;
 
+CREATE TABLE dependency_proxy_blob_registry (
+    id bigint NOT NULL,
+    dependency_proxy_blob_id bigint NOT NULL,
+    created_at timestamp with time zone NOT NULL,
+    last_synced_at timestamp with time zone,
+    retry_at timestamp with time zone,
+    verified_at timestamp with time zone,
+    verification_started_at timestamp with time zone,
+    verification_retry_at timestamp with time zone,
+    state smallint DEFAULT 0 NOT NULL,
+    verification_state smallint DEFAULT 0 NOT NULL,
+    retry_count smallint DEFAULT 0 NOT NULL,
+    verification_retry_count smallint DEFAULT 0 NOT NULL,
+    checksum_mismatch boolean DEFAULT false NOT NULL,
+    verification_checksum bytea,
+    verification_checksum_mismatched bytea,
+    verification_failure text,
+    last_sync_failure text,
+    CONSTRAINT check_d14529e1aa CHECK ((char_length(last_sync_failure) <= 255)),
+    CONSTRAINT check_d3ca83a09e CHECK ((char_length(verification_failure) <= 255))
+);
+
+CREATE SEQUENCE dependency_proxy_blob_registry_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE dependency_proxy_blob_registry_id_seq OWNED BY dependency_proxy_blob_registry.id;
+
 CREATE TABLE design_registry (
     id integer NOT NULL,
     project_id integer NOT NULL,
@@ -501,6 +532,8 @@ ALTER TABLE ONLY ci_secure_file_registry ALTER COLUMN id SET DEFAULT nextval('ci
 
 ALTER TABLE ONLY container_repository_registry ALTER COLUMN id SET DEFAULT nextval('container_repository_registry_id_seq'::regclass);
 
+ALTER TABLE ONLY dependency_proxy_blob_registry ALTER COLUMN id SET DEFAULT nextval('dependency_proxy_blob_registry_id_seq'::regclass);
+
 ALTER TABLE ONLY design_registry ALTER COLUMN id SET DEFAULT nextval('design_registry_id_seq'::regclass);
 
 ALTER TABLE ONLY event_log_states ALTER COLUMN event_id SET DEFAULT nextval('event_log_states_event_id_seq'::regclass);
@@ -539,6 +572,9 @@ ALTER TABLE ONLY ci_secure_file_registry
 
 ALTER TABLE ONLY container_repository_registry
     ADD CONSTRAINT container_repository_registry_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY dependency_proxy_blob_registry
+    ADD CONSTRAINT dependency_proxy_blob_registry_pkey PRIMARY KEY (id);
 
 ALTER TABLE ONLY design_registry
     ADD CONSTRAINT design_registry_pkey PRIMARY KEY (id);
@@ -594,11 +630,19 @@ CREATE INDEX ci_secure_file_registry_needs_verification ON ci_secure_file_regist
 
 CREATE INDEX ci_secure_file_registry_pending_verification ON ci_secure_file_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
 
+CREATE INDEX dependency_proxy_blob_registry_failed_verification ON dependency_proxy_blob_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
+
+CREATE INDEX dependency_proxy_blob_registry_needs_verification ON dependency_proxy_blob_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
+
+CREATE INDEX dependency_proxy_blob_registry_pending_verification ON dependency_proxy_blob_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
 CREATE INDEX file_registry_failed_verification ON file_registry USING btree (verification_retry_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 3));
 
 CREATE INDEX file_registry_needs_verification ON file_registry USING btree (verification_state) WHERE ((state = 2) AND (verification_state = ANY (ARRAY[0, 3])));
 
 CREATE INDEX file_registry_pending_verification ON file_registry USING btree (verified_at NULLS FIRST) WHERE ((state = 2) AND (verification_state = 0));
+
+CREATE UNIQUE INDEX i_dependency_proxy_blob_registry_on_dependency_proxy_blob_id ON dependency_proxy_blob_registry USING btree (dependency_proxy_blob_id);
 
 CREATE INDEX idx_project_registry_failed_repositories_partial ON project_registry USING btree (repository_retry_count) WHERE ((repository_retry_count > 0) OR (last_repository_verification_failure IS NOT NULL) OR repository_checksum_mismatch);
 
@@ -633,6 +677,10 @@ CREATE INDEX index_container_repository_registry_on_retry_at ON container_reposi
 CREATE INDEX index_container_repository_registry_on_state ON container_repository_registry USING btree (state);
 
 CREATE UNIQUE INDEX index_container_repository_registry_repository_id_unique ON container_repository_registry USING btree (container_repository_id);
+
+CREATE INDEX index_dependency_proxy_blob_registry_on_retry_at ON dependency_proxy_blob_registry USING btree (retry_at);
+
+CREATE INDEX index_dependency_proxy_blob_registry_on_state ON dependency_proxy_blob_registry USING btree (state);
 
 CREATE UNIQUE INDEX index_design_registry_on_project_id ON design_registry USING btree (project_id);
 

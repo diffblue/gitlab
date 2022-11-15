@@ -72,4 +72,11 @@ RSpec.describe 'Gets registries' do
     registry_factory: :geo_ci_secure_file_registry,
     registry_foreign_key_field_name: 'ciSecureFileId'
   }
+
+  it_behaves_like 'gets registries for', {
+    field_name: 'dependencyProxyBlobRegistries',
+    registry_class_name: 'DependencyProxyBlobRegistry',
+    registry_factory: :geo_dependency_proxy_blob_registry,
+    registry_foreign_key_field_name: 'dependencyProxyBlobId'
+  }
 end
