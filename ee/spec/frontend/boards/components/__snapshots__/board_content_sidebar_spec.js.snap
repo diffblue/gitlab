@@ -605,7 +605,7 @@ exports[`ee/BoardContentSidebar issue sidebar matches the snapshot 1`] = `
       workspacepath="gitlab-org/gitlab-test"
     />
      
-    <iterationsidebardropdownwidget-stub
+    <sidebariterationwidget-stub
       attr-workspace-path="gitlab-org"
       class="gl-mt-5"
       data-testid="iteration-edit"

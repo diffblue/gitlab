@@ -7,9 +7,9 @@ import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import SidebarDropdown from '~/sidebar/components/sidebar_dropdown.vue';
 import * as CEMountSidebar from '~/sidebar/mount_sidebar';
-import CveIdRequest from './components/cve_id_request/cve_id_request_sidebar.vue';
-import IterationDropdown from './components/iteration_dropdown.vue';
-import IterationSidebarDropdownWidget from './components/iteration_sidebar_dropdown_widget.vue';
+import CveIdRequest from './components/cve_id_request/cve_id_request.vue';
+import IterationDropdown from './components/iteration/iteration_dropdown.vue';
+import SidebarIterationWidget from './components/iteration/sidebar_iteration_widget.vue';
 import SidebarDropdownWidget from './components/sidebar_dropdown_widget.vue';
 import HealthStatusDropdown from './components/health_status/health_status_dropdown.vue';
 import SidebarHealthStatusWidget from './components/health_status/sidebar_health_status_widget.vue';
@@ -229,7 +229,7 @@ function mountSidebarIterationWidget() {
       isClassicSidebar: true,
     },
     render: (createElement) =>
-      createElement(IterationSidebarDropdownWidget, {
+      createElement(SidebarIterationWidget, {
         props: {
           attrWorkspacePath: groupPath,
           workspacePath: projectPath,

@@ -1,7 +1,7 @@
 import { getByTestId as getByTestIdHelper, within } from '@testing-library/dom';
 import { createWrapper, shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
-import CveIdRequest from 'ee/sidebar/components/cve_id_request/cve_id_request_sidebar.vue';
+import CveIdRequest from 'ee/sidebar/components/cve_id_request/cve_id_request.vue';
 import { store } from '~/notes/stores';
 
 describe('CveIdRequest', () => {

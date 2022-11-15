@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import Vue from 'vue';
-import IterationSidebarDropdownWidget from 'ee/sidebar/components/iteration_sidebar_dropdown_widget.vue';
+import SidebarIterationWidget from 'ee/sidebar/components/iteration/sidebar_iteration_widget.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -17,12 +17,12 @@ import {
   mockIteration2,
   mockCurrentIterationResponse1,
   mockCurrentIterationResponse2,
-} from '../mock_data';
-import { clickEdit } from '../helpers';
+} from '../../mock_data';
+import { clickEdit } from '../../helpers';
 
 Vue.use(VueApollo);
 
-describe('IterationSidebarDropdownWidget', () => {
+describe('SidebarIterationWidget', () => {
   let wrapper;
   let mockApollo;
 
@@ -41,7 +41,7 @@ describe('IterationSidebarDropdownWidget', () => {
     ]);
 
     wrapper = extendedWrapper(
-      mount(IterationSidebarDropdownWidget, {
+      mount(SidebarIterationWidget, {
         provide: {
           glFeatures: { iterationCadences },
           issuableAttributesQueries,
