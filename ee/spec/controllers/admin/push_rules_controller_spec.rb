@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::PushRulesController do
+RSpec.describe Admin::PushRulesController, feature_category: :source_code_management do
   include StubENV
 
   let(:admin) { create(:admin) }

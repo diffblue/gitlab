@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::Verification do
+RSpec.describe Registrations::Verification, feature_category: :onboarding do
   controller(ActionController::Base) do
     include Registrations::Verification
 

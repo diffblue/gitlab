@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::Geo::SettingsController, :geo do
+RSpec.describe Admin::Geo::SettingsController, :geo, feature_category: :geo_replication do
   include EE::GeoHelpers
   include StubENV
 

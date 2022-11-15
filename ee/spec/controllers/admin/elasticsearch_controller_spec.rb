@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::ElasticsearchController do
+RSpec.describe Admin::ElasticsearchController, feature_category: :global_search do
   let(:admin) { create(:admin) }
   let(:helper) { Gitlab::Elastic::Helper.new }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe AuditEvents::AuditEventsParams do
+RSpec.describe AuditEvents::AuditEventsParams, feature_category: :audit_events do
   let_it_be(:current_user) { build(:user) }
 
   concern = described_class

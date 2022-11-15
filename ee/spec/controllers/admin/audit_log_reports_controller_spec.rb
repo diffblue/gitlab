@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::AuditLogReportsController do
+RSpec.describe Admin::AuditLogReportsController, feature_category: :audit_events do
   using RSpec::Parameterized::TableSyntax
 
   describe 'GET index' do

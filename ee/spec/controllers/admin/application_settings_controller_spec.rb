@@ -11,7 +11,7 @@ RSpec.describe Admin::ApplicationSettingsController do
     stub_env('IN_MEMORY_APPLICATION_SETTINGS', 'false')
   end
 
-  describe 'PUT #update' do
+  describe 'PUT #update', feature_category: :not_owned do
     before do
       sign_in(admin)
     end
@@ -341,7 +341,7 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
   end
 
-  describe '#advanced_search' do
+  describe '#advanced_search', feature_category: :global_search do
     before do
       sign_in(admin)
       @request.env['HTTP_REFERER'] = advanced_search_admin_application_settings_path
@@ -479,7 +479,7 @@ RSpec.describe Admin::ApplicationSettingsController do
     end
   end
 
-  describe 'GET #seat_link_payload' do
+  describe 'GET #seat_link_payload', feature_category: :sm_provisioning do
     context 'when a non-admin user attempts a request' do
       before do
         sign_in(create(:user))

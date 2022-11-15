@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::LicensesController do
+RSpec.describe Admin::LicensesController, feature_category: :sm_provisioning do
   let(:admin) { create(:admin) }
 
   before do

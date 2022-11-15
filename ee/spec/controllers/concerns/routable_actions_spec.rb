@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RoutableActions do
+RSpec.describe RoutableActions, feature_category: :authentication_and_authorization do
   controller(::ApplicationController) do
     include RoutableActions
 
