@@ -48,13 +48,6 @@ RSpec.describe Audit::ProjectChangesAuditor do
         expect(AuditEvent.last.details[:change]).to eq 'visibility'
       end
 
-      # it 'creates an event when the name change' do
-      #   project.update!(name: 'new name')
-
-      #   expect { auditor_instance.execute }.to change(AuditEvent, :count).by(1)
-      #   expect(AuditEvent.last.details[:change]).to eq 'name'
-      # end
-
       context 'when project name is updated' do
         it "logs project_name_updated event" do
           old_project_name = project.full_name.to_s
