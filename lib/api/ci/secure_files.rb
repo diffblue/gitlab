@@ -16,11 +16,14 @@ module API
       default_format :json
 
       params do
-        requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project'
+        requires :id, types: [String, Integer], desc: 'The ID or URL-encoded path of the project owned by the
+        authenticated user'
       end
 
       resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-        desc 'List all Secure Files for a Project'
+        desc 'Get list of secure files in a project' do
+          success Entities::Ci::SecureFiles
+        end
         params do
           use :pagination
         end
@@ -30,9 +33,11 @@ module API
           present paginate(secure_files), with: Entities::Ci::SecureFile
         end
 
-        desc 'Get an individual Secure File'
+        desc 'Get the details of a specific secure file in a project' do
+          success Entities::Ci::SecureFiles
+        end
         params do
-          requires :id, type: Integer, desc: 'The Secure File ID'
+          requires :id, type: Integer, desc: 'The id of a secure file'
         end
 
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
@@ -41,7 +46,7 @@ module API
           present secure_file, with: Entities::Ci::SecureFile
         end
 
-        desc 'Download a Secure File'
+        desc 'Download secure file'
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
         get ':id/secure_files/:secure_file_id/download' do
           secure_file = user_project.secure_files.find(params[:secure_file_id])
@@ -58,10 +63,14 @@ module API
             authorize! :admin_secure_files, user_project
           end
 
-          desc 'Upload a Secure File'
+          desc 'Create a secure file' do
+            success Entities::Ci::Secure::File
+            failure [{ code: 400, message: '400 Bad Request' }]
+          end
           params do
-            requires :name, type: String, desc: 'The name of the file'
-            requires :file, types: [Rack::Multipart::UploadedFile, ::API::Validations::Types::WorkhorseFile], desc: 'The secure file to be uploaded', documentation: { type: 'file' }
+            requires :name, type: String, desc: 'The name of the file being uploaded. The filename must be unique within
+            the project'
+            requires :file, types: [Rack::Multipart::UploadedFile, ::API::Validations::Types::WorkhorseFile], desc: 'The secure file being uploaded', documentation: { type: 'file' }
           end
           route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
           post ':id/secure_files' do
@@ -84,7 +93,9 @@ module API
             end
           end
 
-          desc 'Delete an individual Secure File'
+          desc 'Remove a secure file' do
+            failure [{ code: 204, message: '204 No Content' }]
+          end
           route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
           delete ':id/secure_files/:secure_file_id' do
             secure_file = user_project.secure_files.find(params[:secure_file_id])
