@@ -16,7 +16,6 @@ const Template = (_, { argTypes }) => ({
 });
 export const Default = Template.bind({});
 
-/* eslint-disable @gitlab/require-i18n-strings */
 Default.args = {
   usageValue: '1,400',
   totalValue: '1,500',
