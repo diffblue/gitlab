@@ -285,6 +285,20 @@ RSpec.describe ApprovalProjectRule do
         specify { expect { subject.valid? }.to change { subject.errors[:report_type].present? } }
       end
     end
+
+    context 'for report type different than scan_finding' do
+      it 'is invalid when name not unique within rule type and project' do
+        is_expected.to validate_uniqueness_of(:name).scoped_to([:project_id, :rule_type])
+      end
+    end
+
+    context 'for scan_finding report type' do
+      subject { create(:approval_project_rule, :scan_finding) }
+
+      it 'is invalid when name not unique within scan result policy, rule type and project' do
+        is_expected.to validate_uniqueness_of(:name).scoped_to([:project_id, :rule_type, :security_orchestration_policy_configuration_id, :orchestration_policy_idx])
+      end
+    end
   end
 
   context 'any_approver rules' do

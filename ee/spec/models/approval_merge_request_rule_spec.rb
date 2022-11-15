@@ -23,8 +23,18 @@ RSpec.describe ApprovalMergeRequestRule, factory_default: :keep do
       expect(build(:approval_merge_request_rule, name: nil)).not_to be_valid
     end
 
-    it 'is invalid when name not unique within rule type and merge request' do
-      is_expected.to validate_uniqueness_of(:name).scoped_to([:merge_request_id, :rule_type, :section])
+    context 'for report type different than scan_finding' do
+      it 'is invalid when name not unique within rule type and merge request' do
+        is_expected.to validate_uniqueness_of(:name).scoped_to([:merge_request_id, :rule_type, :section])
+      end
+    end
+
+    context 'for scan_finding report type' do
+      subject { create(:approval_merge_request_rule, :scan_finding, merge_request: merge_request) }
+
+      it 'is invalid when name not unique within scan result policy, rule type and merge request' do
+        is_expected.to validate_uniqueness_of(:name).scoped_to([:merge_request_id, :rule_type, :section, :security_orchestration_policy_configuration_id, :orchestration_policy_idx])
+      end
     end
 
     context 'approval_project_rule is set' do

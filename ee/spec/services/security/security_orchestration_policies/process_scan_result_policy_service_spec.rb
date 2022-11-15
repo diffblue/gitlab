@@ -148,7 +148,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       first_rule = policy[:rules].first
       first_action = policy[:actions].first
 
-      expect(policy[:name]).to include(scan_finding_rule.name)
+      expect(scan_finding_rule.name).to include(policy[:name])
       expect(scan_finding_rule.report_type).to eq(Security::ScanResultPolicy::SCAN_FINDING)
       expect(scan_finding_rule.rule_type).to eq('report_approver')
       expect(scan_finding_rule.scanners).to eq(first_rule[:scanners])
@@ -157,6 +157,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       expect(scan_finding_rule.vulnerability_states).to eq(first_rule[:vulnerability_states])
       expect(scan_finding_rule.approvals_required).to eq(first_action[:approvals_required])
       expect(scan_finding_rule.security_orchestration_policy_configuration).to eq(policy_configuration)
+      expect(scan_finding_rule.orchestration_policy_idx).to eq(0)
     end
   end
 end
