@@ -51,7 +51,7 @@ module Gitlab
         # min_batch_size is the minimum number of new tables to truncate at each stage.
         # But in each stage we have also have to truncate the already truncated tables in the previous stages
         logger&.info "Truncating legacy tables for the database #{database_name}"
-        truncate_tables_in_batches(tables_sorted, min_batch_size)
+        truncate_tables_in_batches(tables_sorted)
       end
 
       private
@@ -62,7 +62,7 @@ module Gitlab
         @connection ||= Gitlab::Database.database_base_models[database_name].connection
       end
 
-      def truncate_tables_in_batches(tables_sorted, min_batch_size)
+      def truncate_tables_in_batches(tables_sorted)
         truncated_tables = []
 
         tables_sorted.flatten.each do |table|
