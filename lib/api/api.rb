@@ -196,6 +196,7 @@ module API
         mount ::API::DeployTokens
         mount ::API::Deployments
         mount ::API::Environments
+        mount ::API::ErrorTracking::ClientKeys
         mount ::API::ErrorTracking::ProjectSettings
         mount ::API::FeatureFlags
         mount ::API::FeatureFlagsUserLists
@@ -279,7 +280,6 @@ module API
       mount ::API::DebianGroupPackages
       mount ::API::DebianProjectPackages
       mount ::API::Discussions
-      mount ::API::ErrorTracking::ClientKeys
       mount ::API::ErrorTracking::Collector
       mount ::API::Events
       mount ::API::GenericPackages

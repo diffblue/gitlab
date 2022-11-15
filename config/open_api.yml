@@ -39,6 +39,8 @@ metadata:
     description: Operations related to DevOps Research and Assessment (DORA) key metrics
   - name: environments
     description: Operations related to environments
+  - name: error_tracking_client_keys
+    description: Operations related to error tracking client keys
   - name: error_tracking_project_settings
     description: Operations related to error tracking project settings
   - name: feature_flags_user_lists
