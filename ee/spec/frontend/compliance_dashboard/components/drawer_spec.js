@@ -6,13 +6,13 @@ import MergedBy from 'ee/compliance_dashboard/components/drawer_sections/merged_
 import Project from 'ee/compliance_dashboard/components/drawer_sections/project.vue';
 import Reference from 'ee/compliance_dashboard/components/drawer_sections/reference.vue';
 import Reviewers from 'ee/compliance_dashboard/components/drawer_sections/reviewers.vue';
-import { getContentWrapperHeight } from 'ee/vue_shared/shared_utils';
+import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
 import { createComplianceViolation } from '../mock_data';
 
-jest.mock('ee/vue_shared/shared_utils', () => ({
+jest.mock('~/lib/utils/dom_utils', () => ({
   getContentWrapperHeight: jest.fn(),
 }));
 

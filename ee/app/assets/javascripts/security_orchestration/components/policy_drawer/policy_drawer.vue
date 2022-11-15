@@ -11,7 +11,7 @@ import {
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
-import { getContentWrapperHeight } from 'ee/vue_shared/shared_utils';
+import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { removeUnnecessaryDashes } from '../../utils';
 import { POLICIES_LIST_CONTAINER_CLASS, POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import { getSourceUrl, isPolicyInherited } from '../utils';
