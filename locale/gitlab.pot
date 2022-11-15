@@ -6904,6 +6904,12 @@ msgstr ""
 msgid "BranchRules|%{linkStart}Wildcards%{linkEnd} such as *-stable or production/* are supported."
 msgstr ""
 
+msgid "BranchRules|%{total} approval %{subject}"
+msgstr ""
+
+msgid "BranchRules|%{total} status %{subject}"
+msgstr ""
+
 msgid "BranchRules|All branches"
 msgstr ""
 
@@ -7016,9 +7022,6 @@ msgid "BranchRules|Users"
 msgstr ""
 
 msgid "BranchRules|default"
-msgstr ""
-
-msgid "BranchRules|protected"
 msgstr ""
 
 msgid "Branches"
@@ -47705,6 +47708,11 @@ msgid_plural "changes"
 msgstr[0] ""
 msgstr[1] ""
 
+msgid "check"
+msgid_plural "checks"
+msgstr[0] ""
+msgstr[1] ""
+
 msgid "ciReport|%{criticalStart}critical%{criticalEnd}, %{highStart}high%{highEnd} and %{otherStart}others%{otherEnd}"
 msgstr ""
 
@@ -49249,6 +49257,11 @@ msgstr ""
 
 msgid "role's base access level does not match the access level of the membership"
 msgstr ""
+
+msgid "rule"
+msgid_plural "rules"
+msgstr[0] ""
+msgstr[1] ""
 
 msgid "running"
 msgstr ""
