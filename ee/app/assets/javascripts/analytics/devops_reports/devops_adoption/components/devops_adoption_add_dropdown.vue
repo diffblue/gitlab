@@ -165,6 +165,7 @@ export default {
     <template #header>
       <gl-search-box-by-type
         :debounce="$options.debounceDelay"
+        :placeholder="__('Search')"
         @input="$emit('fetchGroups', $event)"
       />
     </template>
