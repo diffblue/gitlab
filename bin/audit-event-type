@@ -41,6 +41,7 @@ class AuditEventTypeOptionParser
     :saved_to_database,
     :streamed,
     :ee,
+    :jh,
     :amend,
     :dry_run,
     :force,
@@ -96,6 +97,10 @@ class AuditEventTypeOptionParser
 
         opts.on('-e', '--ee', 'Generate an audit event type entry for GitLab EE') do |value|
           options.ee = value
+        end
+
+        opts.on('-j', '--jh', 'Generate an audit event type entry for GitLab JH') do |value|
+          options.jh = value
         end
 
         opts.on('-m', '--introduced-by-mr [string]', String,
@@ -320,11 +325,16 @@ class AuditEventTypeCreator
     paths = []
     paths << File.join('config', 'audit_events', 'types', '*.yml')
     paths << File.join('ee', 'config', 'audit_events', 'types', '*.yml') if ee?
+    paths << File.join('jh', 'config', 'audit_events', 'types', '*.yml') if jh?
     paths
   end
 
   def ee?
     options.ee
+  end
+
+  def jh?
+    options.jh
   end
 
   def branch_name
