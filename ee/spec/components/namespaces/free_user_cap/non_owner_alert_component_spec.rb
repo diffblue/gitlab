@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failures, type: :component do
+RSpec.describe Namespaces::FreeUserCap::NonOwnerAlertComponent, :saas, :aggregate_failures, type: :component do
   let_it_be(:namespace, reload: true) { create(:group) }
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:content_class) { '_content_class_' }
@@ -25,7 +25,7 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
 
   context 'when user is authorized to see alert' do
     before do
-      namespace.add_owner(user)
+      namespace.add_guest(user)
     end
 
     context 'when over the limit' do
@@ -33,14 +33,7 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
         render_inline(component)
 
         expect(page).to have_content(title)
-        expect(page).to have_css('.gl-alert-actions')
         expect(page).to have_link('read-only', href: help_page_path('user/free_user_limit'))
-        expect(page).to have_link('Manage members', href: group_usage_quotas_path(namespace))
-
-        expect(page).to have_link(
-          'Explore paid plans',
-          href: group_billings_path(namespace, source: 'user-limit-alert-enforcement')
-        )
 
         expect(page).to have_css(".gl-overflow-auto.#{content_class}")
 
@@ -49,19 +42,6 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
                        "[data-dismiss-endpoint='#{group_callouts_path}']" \
                        "[data-feature-id='#{described_class::USER_REACHED_LIMIT_FREE_PLAN_ALERT}']" \
                        "[data-group-id='#{namespace.id}']")
-      end
-
-      it 'renders all the expected tracking items' do
-        render_inline(component)
-
-        expect(page).to have_css('.js-user-over-limit-free-plan-alert[data-track-action="render"]' \
-                                 '[data-track-label="user_limit_banner"]')
-        expect(page).to have_css('[data-testid="user-over-limit-primary-cta"]' \
-                                 '[data-track-action="click_button"]' \
-                                 '[data-track-label="manage_members"]')
-        expect(page).to have_css('[data-testid="user-over-limit-secondary-cta"]' \
-                                 '[data-track-action="click_button"]' \
-                                 '[data-track-label="explore_paid_plans"]')
       end
     end
 
@@ -78,7 +58,7 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
 
   context 'when user is not authorized to see alert' do
     before do
-      namespace.add_guest(user)
+      namespace.add_owner(user)
     end
 
     it 'does not render the alert' do
