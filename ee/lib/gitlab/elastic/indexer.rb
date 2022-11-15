@@ -86,20 +86,21 @@ module Gitlab
 
         timeout_argument = "--timeout=#{TIMEOUT}s"
 
-        command =
-          if index_wiki?
-            [path_to_indexer, timeout_argument, "--blob-type=wiki_blob", "--skip-commits", "--project-path=#{project.full_path}", project.id.to_s, repository_path]
-          else
-            [
-              path_to_indexer,
-              timeout_argument,
-              "--project-path=#{project.full_path}",
-              "--visibility-level=#{project.visibility_level}",
-              "--repository-access-level=#{project.repository_access_level}",
-              project.id.to_s,
-              repository_path
-            ]
-          end
+        command = [path_to_indexer, timeout_argument]
+
+        command << "--search-curation" if Feature.enabled?(:search_index_curation)
+
+        command += if index_wiki?
+                     ["--blob-type=wiki_blob", "--skip-commits", "--project-path=#{project.full_path}"]
+                   else
+                     [
+                       "--project-path=#{project.full_path}",
+                       "--visibility-level=#{project.visibility_level}",
+                       "--repository-access-level=#{project.repository_access_level}"
+                     ]
+                   end
+
+        command += [project.id.to_s, repository_path]
 
         output, status = Gitlab::Popen.popen(command, nil, vars)
 
