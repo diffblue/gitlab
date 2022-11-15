@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 
 import AuditEventsFilter from 'ee/audit_events/components/audit_events_filter.vue';
 import { AVAILABLE_TOKEN_TYPES } from 'ee/audit_events/constants';
-import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
+import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 
 describe('AuditEventsFilter', () => {
   let wrapper;
@@ -39,7 +39,7 @@ describe('AuditEventsFilter', () => {
       expect(getAvailableTokenProps(type)).toMatchObject({
         title,
         unique: true,
-        operators: OPERATOR_IS_ONLY,
+        operators: OPERATORS_IS,
       });
     });
   });

@@ -7,8 +7,8 @@ import { orderBy } from 'lodash';
 import IssueBoardFilteredSearchFoss from '~/boards/components/issue_board_filtered_search.vue';
 import { BoardType } from '~/boards/constants';
 import {
-  OPERATOR_IS_AND_IS_NOT,
-  OPERATOR_IS_ONLY,
+  OPERATORS_IS_NOT,
+  OPERATORS_IS,
   TOKEN_TYPE_EPIC,
   TOKEN_TYPE_HEALTH,
   TOKEN_TYPE_ITERATION,
@@ -66,7 +66,7 @@ export default {
                 icon: 'iteration',
                 title: TOKEN_TITLE_ITERATION,
                 type: TOKEN_TYPE_ITERATION,
-                operators: OPERATOR_IS_AND_IS_NOT,
+                operators: OPERATORS_IS_NOT,
                 token: IterationToken,
                 unique: true,
                 fetchIterations: this.fetchIterations,
@@ -87,7 +87,7 @@ export default {
                 type: TOKEN_TYPE_HEALTH,
                 title: TOKEN_TITLE_HEALTH,
                 icon: 'status-health',
-                operators: OPERATOR_IS_ONLY,
+                operators: OPERATORS_IS,
                 token: HealthToken,
                 unique: true,
               },

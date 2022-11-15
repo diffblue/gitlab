@@ -1,4 +1,4 @@
-import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
+import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
@@ -37,7 +37,7 @@ export const mockEpicToken = {
   unique: true,
   symbol: '&',
   token: EpicToken,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
   idProperty: 'iid',
   fullPath: 'gitlab-org',
 };
@@ -110,6 +110,6 @@ export const mockHealthToken = {
   icon: 'status-health',
   title: 'Health',
   unique: true,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
   token: HealthToken,
 };

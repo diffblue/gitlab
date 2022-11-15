@@ -2,7 +2,7 @@ import { GlFilteredSearchToken } from '@gitlab/ui';
 import { groupMemberRequestFormatter } from '~/groups/members/utils';
 
 import { __ } from '~/locale';
-import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
+import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import {
   AVAILABLE_FILTERED_SEARCH_TOKENS as AVAILABLE_FILTERED_SEARCH_TOKENS_CE,
   MEMBER_TYPES as MEMBER_TYPES_CE,
@@ -20,7 +20,7 @@ export const FILTERED_SEARCH_TOKEN_ENTERPRISE = {
   title: __('Enterprise'),
   token: GlFilteredSearchToken,
   unique: true,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
   options: [
     { value: 'true', title: __('Yes') },
     { value: 'false', title: __('No') },

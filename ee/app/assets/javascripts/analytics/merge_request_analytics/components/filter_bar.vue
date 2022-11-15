@@ -1,7 +1,7 @@
 <script>
 import { mapActions, mapState } from 'vuex';
 import {
-  OPERATOR_IS_ONLY,
+  OPERATORS_IS,
   DEFAULT_NONE_ANY,
   TOKEN_TITLE_ASSIGNEE,
   TOKEN_TITLE_AUTHOR,
@@ -52,7 +52,7 @@ export default {
           token: BranchToken,
           initialBranches: this.branchesData,
           unique: true,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           fetchBranches: this.fetchBranches,
         },
         {
@@ -62,7 +62,7 @@ export default {
           token: BranchToken,
           initialBranches: this.branchesData,
           unique: true,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           fetchBranches: this.fetchBranches,
         },
         {
@@ -93,7 +93,7 @@ export default {
           token: AuthorToken,
           initialAuthors: this.authorsData,
           unique: true,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           fetchAuthors: this.fetchAuthors,
         },
         {
@@ -103,7 +103,7 @@ export default {
           token: AuthorToken,
           initialAuthors: this.assigneesData,
           unique: false,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           fetchAuthors: this.fetchAssignees,
         },
       ];
