@@ -326,6 +326,9 @@ This is the list of known affected features with the proposed solutions.
 - [Pods: Router Endpoints Classification](pods-feature-router-endpoints-classification.md)
 - [Pods: Schema changes (Postgres and Elasticsearch migrations)](pods-feature-schema-changes.md)
 - [Pods: Global Search](pods-feature-global-search.md)
+- [Pods: CI Runners](pods-feature-ci-runners.md)
+- [Pods: Admin Area](pods-feature-admin-area.md)
+- [Pods: Container Registry](pods-feature-container-registry.md)
 
 ## Links
 
