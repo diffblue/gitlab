@@ -21,7 +21,7 @@ module Gitlab
         curator.preflight_checks!
 
         [].tap do |rolled_over_indices|
-          curator.indices.each do |index_info|
+          curator.write_indices.each do |index_info|
             next unless curator.should_rollover?(index_info)
 
             rolled_over_indices << curator.rollover_index(index_info)
@@ -94,14 +94,27 @@ module Gitlab
         settings[:ignore_patterns].any? { |p| p.match? index_info['index'] }
       end
 
-      def indices
-        # We only care about the write indices for purposes of curation
-        aliases = client.cat.aliases(name: settings[:index_pattern], format: 'json')
-                        .filter { |hsh| hsh['is_write_index'] == 'true' || hsh['is_write_index'] == '-' }
+      def read_indices
+        indices(lifecycle: :read)
+      end
+
+      def write_indices
+        indices(lifecycle: :write)
+      end
+
+      def indices(lifecycle: :all)
+        aliases = case lifecycle
+                  when :write then fetch_aliases(is_write_index: true)
+                  when :read  then fetch_aliases(is_write_index: false)
+                  when :all   then fetch_aliases(is_write_index: nil)
+                  else
+                    raise ArgumentError, "Acceptable lifecycle values are ':write', ':read', or ':all'"
+                  end
 
         return [] unless aliases.present?
 
-        index_names = aliases.map { |hsh| hsh['index'] }
+        index_names = aliases.filter { |hsh| !should_ignore_index?(hsh) }.map { |hsh| hsh['index'] }
+
         client.cat.indices(index: index_names, expand_wildcards: 'open', format: 'json', pri: true, bytes: 'gb')
       end
 
@@ -142,7 +155,10 @@ module Gitlab
 
       def update_aliases(old_index:, new_index:)
         # Because we only have one alias for right now, we can just use the first alias for this index
-        alias_name = get_alias_info(old_index).dig(old_index, 'aliases').each_key.first
+        alias_info = get_alias_info(old_index).dig(old_index, 'aliases')
+        raise ArgumentError, "Multiple aliases detected for index: #{old_index}" if alias_info.length > 1
+
+        alias_name = alias_info.each_key.first
 
         client.indices.update_aliases(
           body: {
@@ -152,6 +168,20 @@ module Gitlab
             ]
           }
         )
+      end
+
+      def fetch_aliases(is_write_index: nil)
+        aliases = client.cat.aliases(name: settings[:index_pattern], format: 'json')
+
+        return aliases if is_write_index.nil?
+
+        if is_write_index
+          aliases.filter! { |hsh| %w[true -].include?(hsh['is_write_index']) }
+        else
+          aliases.filter! { |hsh| %w[false -].include?(hsh['is_write_index']) }
+        end
+
+        aliases
       end
 
       def get_alias_info(pattern)
