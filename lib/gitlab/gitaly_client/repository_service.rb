@@ -371,11 +371,11 @@ module Gitlab
 
           current_match << message.match_data
 
-          if message.end_of_match
-            matches << current_match
-            current_match = +""
-            matches_count += 1
-          end
+          next unless message.end_of_match
+
+          matches << current_match
+          current_match = +""
+          matches_count += 1
         end
 
         matches

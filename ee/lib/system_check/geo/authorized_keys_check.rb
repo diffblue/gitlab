@@ -193,11 +193,11 @@ module SystemCheck
 
         File.open(openssh_config_path) do |f|
           f.each_line do |line|
-            if (match = line.strip.match(regexp))
-              raw_content = match[:content]
-              # remove linebreak, and lead and trailing spaces
-              return raw_content.chomp.strip # rubocop:disable Cop/AvoidReturnFromBlocks
-            end
+            next unless (match = line.strip.match(regexp))
+
+            raw_content = match[:content]
+            # remove linebreak, and lead and trailing spaces
+            return raw_content.chomp.strip # rubocop:disable Cop/AvoidReturnFromBlocks
           end
         end
 

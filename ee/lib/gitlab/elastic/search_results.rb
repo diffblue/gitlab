@@ -179,11 +179,11 @@ module Gitlab
         highlight_found = false
 
         highlight_content.each_line.each_with_index do |line, index|
-          if line.include?(::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG)
-            found_line_number = index
-            highlight_found = true
-            break
-          end
+          next unless line.include?(::Elastic::Latest::GitClassProxy::HIGHLIGHT_START_TAG)
+
+          found_line_number = index
+          highlight_found = true
+          break
         end
 
         from = if found_line_number >= 2
