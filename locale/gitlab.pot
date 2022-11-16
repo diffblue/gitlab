@@ -17232,6 +17232,9 @@ msgstr ""
 msgid "Followed users"
 msgstr ""
 
+msgid "Following tags don't exist"
+msgstr ""
+
 msgid "Font Color"
 msgstr ""
 
