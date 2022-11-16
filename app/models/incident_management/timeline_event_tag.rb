@@ -25,5 +25,9 @@ module IncidentManagement
     def self.pluck_names
       pluck(:name)
     end
+
+    def self.tag_ids
+      pluck(:id)
+    end
   end
 end

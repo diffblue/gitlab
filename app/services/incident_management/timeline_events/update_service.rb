@@ -77,13 +77,18 @@ module IncidentManagement
       end
 
       def remove_tag_links(timeline_event, tags_to_remove_names)
-        tags_to_remove_ids = timeline_event.timeline_event_tags.by_names(tags_to_remove_names).ids
+        tags_to_remove_ids = timeline_event.timeline_event_tags.by_names(tags_to_remove_names).tag_ids
 
-        timeline_event.timeline_event_tag_links.where(timeline_event_tag_id: tags_to_remove_ids).delete_all
+        timeline_event
+          .timeline_event_tag_links
+          .find_by_timeline_event_tag_id(timeline_event_tag_id: tags_to_remove_ids).delete_all
       end
 
       def create_tag_links(timeline_event, tags_to_add_names)
-        tags_to_add_ids = timeline_event.project.incident_management_timeline_event_tags.by_names(tags_to_add_names).ids
+        tags_to_add_ids = timeline_event
+                            .project
+                            .incident_management_timeline_event_tags
+                            .by_names(tags_to_add_names).tag_ids
 
         tag_links = tags_to_add_ids.map do |tag_id|
           {
