@@ -16,6 +16,7 @@ module API
         desc 'Get all project approval rules' do
           detail 'Private API subject to change'
           success EE::API::Entities::ProjectApprovalSettings
+          tags %w[project_approval_rules]
         end
         params do
           optional :target_branch, type: String, desc: 'Branch that scoped approval rules apply to'
@@ -35,6 +36,7 @@ module API
           desc 'Create new approval rule' do
             detail 'Private API subject to change'
             success EE::API::Entities::ProjectApprovalSettingRule
+            tags %w[project_approval_rules]
           end
           params do
             use :create_project_approval_rule
@@ -47,6 +49,7 @@ module API
             desc 'Update approval rule' do
               detail 'Private API subject to change'
               success EE::API::Entities::ProjectApprovalSettingRule
+              tags %w[project_approval_rules]
             end
             params do
               use :update_project_approval_rule
@@ -57,6 +60,8 @@ module API
 
             desc 'Delete an approval rule' do
               detail 'Private API subject to change'
+              success [{ code: 204 }]
+              tags %w[project_approval_rules]
             end
             params do
               use :delete_project_approval_rule
