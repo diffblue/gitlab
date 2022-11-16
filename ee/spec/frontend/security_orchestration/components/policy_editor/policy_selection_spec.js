@@ -6,11 +6,12 @@ describe('PolicySelection component', () => {
   const policiesPath = '/policies/path';
   let wrapper;
 
-  const factory = () => {
+  const factory = (provide = {}) => {
     wrapper = shallowMountExtended(PolicySelection, {
       stubs: { GlCard: true },
       provide: {
         policiesPath,
+        ...provide,
       },
     });
   };
@@ -20,16 +21,22 @@ describe('PolicySelection component', () => {
   });
 
   describe.each`
-    id                                                          | title
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}
-    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle}
-  `('selection card: $title', ({ id, title }) => {
+    id                                                          | title                                            | description                                     | licenseScanFlag
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}    | ${PolicySelection.i18n.scanResultPolicyDesc}    | ${false}
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle} | ${PolicySelection.i18n.scanExecutionPolicyDesc} | ${false}
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter}    | ${PolicySelection.i18n.scanResultPolicyTitle}    | ${PolicySelection.i18n.scanResultPolicyDescV2}  | ${true}
+    ${POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter} | ${PolicySelection.i18n.scanExecutionPolicyTitle} | ${PolicySelection.i18n.scanExecutionPolicyDesc} | ${true}
+  `('selection card: $title', ({ id, title, description, licenseScanFlag }) => {
     beforeEach(() => {
-      factory();
+      factory({ glFeatures: { licenseScanningPolicies: licenseScanFlag } });
     });
 
     it(`should display the title`, () => {
       expect(wrapper.findByText(title).exists()).toBe(true);
+    });
+
+    it(`should display the description`, () => {
+      expect(wrapper.findByText(description).exists()).toBe(true);
     });
 
     it(`should have a button to link to the second page`, () => {

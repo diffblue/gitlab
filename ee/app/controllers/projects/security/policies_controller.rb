@@ -12,6 +12,7 @@ module Projects
         push_frontend_feature_flag(:scan_execution_rule_mode, project)
         push_frontend_feature_flag(:group_level_scan_result_policies, project.namespace)
         push_frontend_feature_flag(:scan_result_role_action, project)
+        push_frontend_feature_flag(:license_scanning_policies, project)
       end
 
       feature_category :security_policy_management
