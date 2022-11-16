@@ -2,7 +2,7 @@
 
 RSpec.shared_context 'Insights issues reducer context' do |state = :opened|
   around do |example|
-    Timecop.freeze(Time.utc(2019, 5, 5)) { example.run }
+    travel_to(Time.utc(2019, 5, 5)) { example.run }
   end
 
   let(:period_fied) do
@@ -26,7 +26,7 @@ end
 
 RSpec.shared_context 'Insights merge requests reducer context' do |state = :opened|
   around do |example|
-    Timecop.freeze(Time.utc(2019, 5, 5)) { example.run }
+    travel_to(Time.utc(2019, 5, 5)) { example.run }
   end
 
   let(:project) { create(:project, :public) }

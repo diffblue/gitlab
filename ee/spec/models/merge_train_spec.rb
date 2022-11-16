@@ -578,12 +578,12 @@ RSpec.describe MergeTrain do
           expect(merge_train.duration).to be_nil
           expect(merge_train.merged_at).to be_nil
 
-          Timecop.freeze(1.hour.from_now) do
+          travel_to(1.hour.from_now) do
             merge_train.finish_merge!
 
             merge_train.reload
-            expect(merge_train.merged_at.to_i).to eq(Time.zone.now.to_i)
-            expect(merge_train.duration).to eq(1.hour.to_i)
+            expect(merge_train.merged_at.to_i).to eq(Time.current.to_i)
+            expect(merge_train.duration).to be_within(1.hour.to_i).of(1.hour.to_i + 1)
           end
         end
 

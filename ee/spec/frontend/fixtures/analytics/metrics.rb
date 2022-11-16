@@ -26,10 +26,6 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
     merge_merge_requests_closing_issue(user, project, issue_3)
   end
 
-  around do |example|
-    freeze_time { example.run }
-  end
-
   describe Groups::Analytics::CycleAnalytics::SummaryController, type: :controller do
     render_views
 

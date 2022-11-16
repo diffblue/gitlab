@@ -38,6 +38,7 @@ RSpec.describe 'DevOps Adoption (GraphQL fixtures)' do
 
     before do
       stub_licensed_features(instance_level_devops_adoption: true, group_level_devops_adoption: true)
+      travel_back
     end
 
     path = 'analytics/devops_reports/devops_adoption/graphql/queries/devops_adoption_enabled_namespaces.query.graphql'

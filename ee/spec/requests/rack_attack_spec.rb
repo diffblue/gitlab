@@ -55,6 +55,7 @@ RSpec.describe 'Rack Attack EE throttles' do
 
           expect_rejection { post(path, **post_args) }
 
+          travel_back
           travel_to(period.from_now) do
             requests_per_period.times do
               post(path, **post_args)

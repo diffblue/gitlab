@@ -140,15 +140,20 @@ RSpec.describe Gitlab::Insights::Reducers::CountPerPeriodReducer do
 
     # Populate the MR metrics' merged_at, except for issuable3 to reproduce a real use-case where merged_at is null.
     before do
+      # We're traveling back in the loop below, so we want to travel back to the current time ater the loop
+      current_now = Time.current
+
       (0..2).each do |i|
         merge_request = public_send("issuable#{i}")
         merge_request_metrics_service = MergeRequestMetricsService.new(merge_request.metrics)
         Event.transaction do
-          travel_to(merge_request.created_at) do
-            merge_event = EventCreateService.new.merge_mr(merge_request, merge_request.author)
-            merge_request_metrics_service.merge(merge_event)
-          end
+          travel_to(merge_request.created_at)
+
+          merge_event = EventCreateService.new.merge_mr(merge_request, merge_request.author)
+          merge_request_metrics_service.merge(merge_event)
         end
+
+        travel_to(current_now)
       end
     end
 

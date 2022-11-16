@@ -33,6 +33,7 @@ RSpec.shared_context '[EE] Analytics fixtures shared context' do
 
     issue = create(:issue, project: project, created_at: 20.days.ago, author: user)
 
+    travel_back
     travel_to(5.days.ago) do
       Issues::UpdateService.new(
         project: project,
