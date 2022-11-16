@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::BlobController do
+RSpec.describe Projects::BlobController, feature_category: :source_code_management do
   include ProjectForksHelper
   include FakeBlobHelpers
 

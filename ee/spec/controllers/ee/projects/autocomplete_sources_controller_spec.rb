@@ -14,7 +14,7 @@ RSpec.describe Projects::AutocompleteSourcesController do
     sign_in(user)
   end
 
-  describe '#epics' do
+  describe '#epics', feature_category: :portfolio_management do
     context 'when epics feature is disabled' do
       it 'returns 404 status' do
         get :epics, params: { namespace_id: project.namespace, project_id: project }
@@ -47,7 +47,7 @@ RSpec.describe Projects::AutocompleteSourcesController do
     end
   end
 
-  describe '#vulnerabilities' do
+  describe '#vulnerabilities', feature_category: :vulnerability_management do
     context 'when vulnerabilities feature is disabled' do
       it 'returns 404 status' do
         get :vulnerabilities, params: { namespace_id: project.namespace, project_id: project }

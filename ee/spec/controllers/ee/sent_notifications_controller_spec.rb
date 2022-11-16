@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SentNotificationsController do
+RSpec.describe SentNotificationsController, feature_category: :team_planning do
   let(:user) { create(:user) }
 
   context 'Unsubscribing from an epic' do

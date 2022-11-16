@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SearchController, :elastic do
+RSpec.describe SearchController, :elastic, feature_category: :global_search do
   let_it_be(:user) { create(:user) }
 
   before do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe RootController do
+RSpec.describe RootController, feature_category: :projects do
   include ::EE::GeoHelpers
 
   describe 'GET #index' do
