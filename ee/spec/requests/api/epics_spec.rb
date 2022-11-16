@@ -440,6 +440,10 @@ RSpec.describe API::Epics, feature_category: :portfolio_management do
           let(:issuable) { epic2 }
           let(:result) { issuable.id }
         end
+
+        it_behaves_like 'issuable API rate-limited search' do
+          let(:issuable) { epic2 }
+        end
       end
 
       describe "#to_reference" do
