@@ -2,6 +2,7 @@
 import shieldCheckIllustration from '@gitlab/svgs/dist/illustrations/shield-check.svg';
 import magnifyingGlassIllustration from '@gitlab/svgs/dist/illustrations/magnifying-glass.svg';
 import { GlCard, GlButton, GlSafeHtmlDirective } from '@gitlab/ui';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __ } from '~/locale';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
@@ -13,6 +14,9 @@ const i18n = {
   scanResultPolicyTitle: s__('SecurityOrchestration|Scan result policy'),
   scanResultPolicyDesc: s__(
     'SecurityOrchestration|Use a scan result policy to create rules that ensure security issues are checked before merging a merge request.',
+  ),
+  scanResultPolicyDescV2: s__(
+    'SecurityOrchestration|Use a scan result policy to create rules that check for security vulnerabilities and license compliance before merging a merge request.',
   ),
   scanResultPolicyExample: s__(
     'SecurityOrchestration|If any scanner finds a newly detected critical vulnerability in an open merge request targeting the master branch, then require two approvals from any member of App security.',
@@ -34,28 +38,35 @@ export default {
   directives: {
     SafeHtml: GlSafeHtmlDirective,
   },
+  mixins: [glFeatureFlagsMixin()],
   inject: ['policiesPath'],
+  computed: {
+    policies() {
+      return [
+        {
+          urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
+          title: i18n.scanResultPolicyTitle,
+          description: this.glFeatures.licenseScanningPolicies
+            ? i18n.scanResultPolicyDescV2
+            : i18n.scanResultPolicyDesc,
+          example: i18n.scanResultPolicyExample,
+          svg: shieldCheckIllustration,
+        },
+        {
+          urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
+          title: i18n.scanExecutionPolicyTitle,
+          description: i18n.scanExecutionPolicyDesc,
+          example: i18n.scanExecutionPolicyExample,
+          svg: magnifyingGlassIllustration,
+        },
+      ];
+    },
+  },
   methods: {
     constructUrl(policyType) {
       return mergeUrlParams({ type: policyType }, window.location.href);
     },
   },
-  policies: [
-    {
-      urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter,
-      title: i18n.scanResultPolicyTitle,
-      description: i18n.scanResultPolicyDesc,
-      example: i18n.scanResultPolicyExample,
-      svg: shieldCheckIllustration,
-    },
-    {
-      urlParameter: POLICY_TYPE_COMPONENT_OPTIONS.scanExecution.urlParameter,
-      title: i18n.scanExecutionPolicyTitle,
-      description: i18n.scanExecutionPolicyDesc,
-      example: i18n.scanExecutionPolicyExample,
-      svg: magnifyingGlassIllustration,
-    },
-  ],
   i18n,
   safeHtmlConfig: { ADD_TAGS: ['use'] },
 };
@@ -67,7 +78,7 @@ export default {
       data-qa-selector="policy_selection_wizard"
     >
       <gl-card
-        v-for="option in $options.policies"
+        v-for="option in policies"
         :key="option.title"
         body-class="gl-p-6 gl-display-flex gl-flex-grow-1"
       >
