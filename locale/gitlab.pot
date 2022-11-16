@@ -7044,6 +7044,9 @@ msgstr ""
 msgid "Branches: %{source_branch} → %{target_branch}"
 msgstr ""
 
+msgid "Branches|A branch won't be deleted if it is protected or associated with an open merge request."
+msgstr ""
+
 msgid "Branches|Active"
 msgstr ""
 
@@ -7065,7 +7068,10 @@ msgstr ""
 msgid "Branches|Compare"
 msgstr ""
 
-msgid "Branches|Delete all branches that are merged into '%{default_branch}'"
+msgid "Branches|Delete all branches that are merged into '%{defaultBranch}'"
+msgstr ""
+
+msgid "Branches|Delete all merged branches?"
 msgstr ""
 
 msgid "Branches|Delete branch"
@@ -7084,9 +7090,6 @@ msgid "Branches|Delete protected branch. Are you ABSOLUTELY SURE?"
 msgstr ""
 
 msgid "Branches|Deleting the %{strongStart}%{branchName}%{strongEnd} branch cannot be undone. Are you sure?"
-msgstr ""
-
-msgid "Branches|Deleting the merged branches cannot be undone. Are you sure?"
 msgstr ""
 
 msgid "Branches|Filter by branch name"
@@ -7108,6 +7111,9 @@ msgid "Branches|Overview"
 msgstr ""
 
 msgid "Branches|Please type the following to confirm:"
+msgstr ""
+
+msgid "Branches|Plese type the following to confirm: %{codeStart}delete%{codeEnd}."
 msgstr ""
 
 msgid "Branches|Show active branches"
@@ -7143,6 +7149,12 @@ msgstr ""
 msgid "Branches|This branch hasn't been merged into %{defaultBranchName}. To avoid data loss, consider merging this branch before deleting it."
 msgstr ""
 
+msgid "Branches|This bulk action is %{strongStart}permanent and cannot be undone or recovered%{strongEnd}."
+msgstr ""
+
+msgid "Branches|This may include merged branches that are not visible on the current screen."
+msgstr ""
+
 msgid "Branches|To discard the local changes and overwrite the branch with the upstream version, delete it here and choose 'Update Now' above."
 msgstr ""
 
@@ -7153,6 +7165,9 @@ msgid "Branches|Yes, delete branch"
 msgstr ""
 
 msgid "Branches|Yes, delete protected branch"
+msgstr ""
+
+msgid "Branches|You are about to %{strongStart}delete all branches%{strongEnd} that were merged into %{codeStart}%{defaultBranch}%{codeEnd}."
 msgstr ""
 
 msgid "Branches|You're about to permanently delete the branch %{branchName}."
