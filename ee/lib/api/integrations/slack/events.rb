@@ -8,15 +8,9 @@ module API
   class Integrations
     module Slack
       class Events < ::API::Base
+        include ::API::Integrations::Slack::Concerns::VerifiesRequest
+
         feature_category :integrations
-
-        before { verify_slack_request! }
-
-        helpers do
-          def verify_slack_request!
-            unauthorized! unless Request.verify!(request)
-          end
-        end
 
         namespace 'integrations/slack' do
           post :events do

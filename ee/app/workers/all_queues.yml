@@ -1281,6 +1281,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: integrations_slack_interactivity
+  :worker_name: Integrations::SlackInteractivityWorker
+  :feature_category: :integrations
+  :has_external_dependencies: true
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: false
+  :tags: []
 - :name: ldap_group_sync
   :worker_name: LdapGroupSyncWorker
   :feature_category: :authentication_and_authorization

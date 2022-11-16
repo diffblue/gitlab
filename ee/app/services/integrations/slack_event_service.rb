@@ -30,10 +30,6 @@ module Integrations
 
     private
 
-    def routable_event?
-      route_in_request? || SlackEventWorker.event?(slack_event)
-    end
-
     # The `url_verification` slack_event response must be returned to Slack in-request,
     # so for this event we call the service directly instead of through a worker.
     #
@@ -41,6 +37,14 @@ module Integrations
     # immediately to Slack in the request. See https://api.slack.com/apis/connections/events-api.
     def route_in_request?
       slack_event == URL_VERIFICATION_EVENT
+    end
+
+    def routable_event?
+      route_in_request? || route_to_event_worker?
+    end
+
+    def route_to_event_worker?
+      SlackEventWorker.event?(slack_event)
     end
 
     # Returns a payload for the service response.
