@@ -2,21 +2,22 @@
 
 # Verifies that the proper CSP rules for Observabilty UI are applied to a given controller/path
 #
-# It requires passing the controller class handling the path under test as a parameter, e.g.
-# ```
-#   it_behaves_like "observability csp policy", described_class
-#
-#   it_behaves_like "observability csp policy", Groups::ObservabilityController
-# ```
-#
 # The path under test needs to be declared with  `let(:tested_path) { .. }` in the context including this example
 #
 # ```
-#   it_behaves_like "observability csp policy", described_class do
+#   it_behaves_like "observability csp policy" do
 #     let(:tested_path) { ....the path under test }
 #   end
 # ```
-RSpec.shared_examples 'observability csp policy' do |controller_class|
+#
+# It optionally supports specifying the controller class handling the tested path as a parameter, e.g.
+#
+# ```
+#   it_behaves_like "observability csp policy", Groups::ObservabilityController
+# ```
+# (If not specified it will default to `described_class`)
+#
+RSpec.shared_examples 'observability csp policy' do |controller_class = described_class|
   include ContentSecurityPolicyHelpers
 
   let(:observability_url) { Gitlab::Observability.observability_url }
