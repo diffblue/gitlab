@@ -29814,6 +29814,8 @@ CREATE INDEX index_namespaces_on_traversal_ids_for_groups_btree ON namespaces US
 
 CREATE INDEX index_namespaces_on_type_and_id ON namespaces USING btree (type, id);
 
+CREATE INDEX index_namespaces_on_type_and_visibility_and_parent_id ON namespaces USING btree (id) WHERE (((type)::text = 'Group'::text) AND (parent_id IS NULL) AND (visibility_level <> 20));
+
 CREATE INDEX index_namespaces_public_groups_name_id ON namespaces USING btree (name, id) WHERE (((type)::text = 'Group'::text) AND (visibility_level = 20));
 
 CREATE INDEX index_namespaces_sync_events_on_namespace_id ON namespaces_sync_events USING btree (namespace_id);
