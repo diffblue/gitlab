@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SubscriptionsController do
+RSpec.describe SubscriptionsController, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
 
   shared_examples 'unauthenticated subscription request' do |redirect_from|

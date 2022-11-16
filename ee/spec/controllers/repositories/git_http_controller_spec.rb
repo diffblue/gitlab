@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Repositories::GitHttpController do
+RSpec.describe Repositories::GitHttpController, feature_category: :source_code_management do
   context 'when repository container is a group wiki' do
     include WikiHelpers
 

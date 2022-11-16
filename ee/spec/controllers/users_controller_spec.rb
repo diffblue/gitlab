@@ -10,7 +10,7 @@ RSpec.describe UsersController do
     sign_in(user)
   end
 
-  describe 'GET #available_project_templates' do
+  describe 'GET #available_project_templates', feature_category: :source_code_management do
     context 'a user requests templates for themselves' do
       it 'responds successfully' do
         get :available_project_templates, params: { username: user.username }, xhr: true
@@ -29,7 +29,7 @@ RSpec.describe UsersController do
     end
   end
 
-  describe 'GET #available_group_templates' do
+  describe 'GET #available_group_templates', feature_category: :users do
     context 'a user requests templates for themselves' do
       it 'responds successfully' do
         get :available_group_templates, params: { username: user.username }, xhr: true

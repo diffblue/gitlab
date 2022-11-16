@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Subscriptions::GroupsController do
+RSpec.describe Subscriptions::GroupsController, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 

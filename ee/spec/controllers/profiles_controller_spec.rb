@@ -6,7 +6,7 @@ RSpec.describe ProfilesController, :request_store do
   let_it_be(:user) { create(:user) }
   let_it_be(:admin) { create(:admin) }
 
-  describe 'PUT update' do
+  describe 'PUT update', feature_category: :users do
     context 'updating name' do
       subject { put :update, params: { user: { name: 'New Name' } } }
 

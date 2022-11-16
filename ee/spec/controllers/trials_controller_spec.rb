@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TrialsController, :saas do
+RSpec.describe TrialsController, :saas, feature_category: :purchase do
   let_it_be(:user) { create(:user, email_opted_in: true, last_name: 'Doe') }
 
   let(:logged_in) { true }

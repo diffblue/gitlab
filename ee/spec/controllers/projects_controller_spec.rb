@@ -15,7 +15,7 @@ RSpec.describe ProjectsController do
     sign_in(user)
   end
 
-  describe 'GET show' do
+  describe 'GET show', feature_category: :projects do
     render_views
 
     subject { get :show, params: { namespace_id: public_project.namespace.path, id: public_project.path } }
@@ -126,7 +126,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'GET edit' do
+  describe 'GET edit', feature_category: :projects do
     it 'does not allow an auditor user to access the page' do
       sign_in(create(:user, :auditor))
 
@@ -140,7 +140,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'POST create' do
+  describe 'POST create', feature_category: :projects do
     let!(:params) do
       {
         path: 'foo',
@@ -248,7 +248,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'PUT #update' do
+  describe 'PUT #update', feature_category: :projects do
     it 'updates EE attributes' do
       params = {
         repository_size_limit: 1024
@@ -613,7 +613,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe '#download_export' do
+  describe '#download_export', feature_category: :importers do
     let(:request) { get :download_export, params: { namespace_id: project.namespace, id: project } }
 
     context 'when project export is enabled' do
@@ -633,7 +633,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  context 'Archive & Unarchive actions' do
+  context 'Archive & Unarchive actions', feature_category: :projects do
     let(:project) { create(:project, group: group) }
     let(:archived_project) { create(:project, :archived, group: group) }
 
@@ -688,7 +688,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'DELETE #destroy' do
+  describe 'DELETE #destroy', feature_category: :projects do
     let(:project) { create(:project, group: group) }
 
     before do
@@ -831,7 +831,7 @@ RSpec.describe ProjectsController do
     end
   end
 
-  describe 'POST #restore' do
+  describe 'POST #restore', feature_category: :projects do
     let(:project) { create(:project, namespace: user.namespace) }
 
     before do

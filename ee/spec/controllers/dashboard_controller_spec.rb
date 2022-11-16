@@ -12,7 +12,7 @@ RSpec.describe DashboardController do
       sign_in(user)
     end
 
-    describe 'GET issues' do
+    describe 'GET issues', feature_category: :team_planning do
       it 'includes test cases' do
         issue = create(:incident, project: project, author: user)
         incident = create(:incident, project: project, author: user)

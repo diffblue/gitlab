@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::DashboardController do
+RSpec.describe Security::DashboardController, feature_category: :vulnerability_management do
   let_it_be(:user) { create(:user) }
 
   describe 'GET #show' do
