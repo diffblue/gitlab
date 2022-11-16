@@ -1224,7 +1224,7 @@ To check the status of replication, run these queries:
 #### Grow the new cluster
 
 Configure other nodes of the new cluster in the way you
-[configured the leader](#step-2-configure-the-leader-of-the-new-cluster).
+[configured the leader](#configure-the-leader-of-the-new-cluster).
 Make sure that you use the same `patroni['scope']` and
 `consul['internal']['postgresql_service_name']`.
 
