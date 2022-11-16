@@ -14,6 +14,12 @@ module Epics
       create(epic)
     end
 
+    def handle_changes(epic, options)
+      super
+
+      handle_parent_change(epic)
+    end
+
     private
 
     def before_create(epic)
@@ -39,6 +45,12 @@ module Epics
       if params[:due_date_fixed] && params[:due_date_is_fixed]
         params[:end_date] = params[:due_date_fixed]
       end
+    end
+
+    def handle_parent_change(epic)
+      return unless epic.parent
+
+      SystemNoteService.change_epics_relation(epic.parent, epic, current_user, 'relate_epic')
     end
   end
 end
