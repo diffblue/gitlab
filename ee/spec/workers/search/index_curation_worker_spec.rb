@@ -7,6 +7,7 @@ RSpec.describe Search::IndexCurationWorker do
   subject { described_class.new }
 
   let(:curator) { ::Gitlab::Search::IndexCurator }
+  let(:settings) { described_class::CURATOR_SETTINGS }
   let(:logger) { ::Gitlab::Elasticsearch::Logger.build }
 
   describe '#perform' do
@@ -15,7 +16,7 @@ RSpec.describe Search::IndexCurationWorker do
     end
 
     it 'calls on the curator' do
-      expect(curator).to receive(:curate)
+      expect(curator).to receive(:curate).with(settings: settings)
       expect(subject.perform).not_to be_falsey
     end
 

@@ -5,6 +5,11 @@ module Search
     include ApplicationWorker
     include Gitlab::ExclusiveLeaseHelpers
 
+    CURATOR_SETTINGS = {
+      ignore_patterns: [/.*/],
+      include_patterns: [/notes/]
+    }.freeze
+
     data_consistency :always
 
     # There is no onward scheduling and this cron handles work from across the
@@ -20,7 +25,7 @@ module Search
       return unless Feature.enabled?(:search_index_curation)
 
       in_lock(self.class.name.underscore, ttl: 10.minutes, retries: 10, sleep_sec: 1) do
-        ::Gitlab::Search::IndexCurator.curate.each do |rolled_over_index|
+        ::Gitlab::Search::IndexCurator.curate(settings: CURATOR_SETTINGS).each do |rolled_over_index|
           logger.info("Rollover: #{rolled_over_index[:from]} => #{rolled_over_index[:to]}")
         end
       end
