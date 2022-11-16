@@ -1,4 +1,3 @@
-/* eslint-disable @gitlab/require-i18n-strings */
 import SurveyBanner from './survey_banner.vue';
 
 export default {
