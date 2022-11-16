@@ -2220,18 +2220,6 @@ RSpec.describe User do
 
       user.update!(name: 'New Name')
     end
-
-    context 'when feature index_user_callback is disabled' do
-      before do
-        stub_feature_flags(index_user_callback: false)
-      end
-
-      it 'does not invoke maintain_elasticsearch_update callback' do
-        expect(user).not_to receive(:maintain_elasticsearch_update)
-
-        user.update!(name: 'New Name')
-      end
-    end
   end
 
   it 'overrides .use_separate_indices? to true' do

@@ -235,7 +235,7 @@ module EE
     end
 
     def maintaining_elasticsearch?
-      ::Feature.enabled?(:index_user_callback) && ::Gitlab::CurrentSettings.elasticsearch_indexing?
+      ::Gitlab::CurrentSettings.elasticsearch_indexing?
     end
 
     def search_membership_ancestry
