@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe CountriesController do
+RSpec.describe CountriesController, feature_category: :not_owned do
   include CountriesControllerTestHelper
 
   describe 'GET #index' do

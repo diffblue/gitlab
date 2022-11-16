@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::VulnerabilitiesController do
+RSpec.describe Security::VulnerabilitiesController, feature_category: :vulnerability_management do
   let_it_be(:user) { create(:user) }
 
   describe 'GET #index' do

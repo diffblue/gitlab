@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::CompanyController, :saas do
+RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
 
   let(:logged_in) { true }

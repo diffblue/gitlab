@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Registrations::VerificationController do
+RSpec.describe Registrations::VerificationController, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
 
   describe 'GET #new' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe OperationsController do
+RSpec.describe OperationsController, feature_category: :release_orchestration do
   include Rails.application.routes.url_helpers
 
   let(:user) { create(:user) }
