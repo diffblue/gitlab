@@ -32,6 +32,7 @@ class GitlabSubscriptionHistory < ApplicationRecord
   # Attributes can be added to this list if they should not be tracked by the history table.
   # By default, attributes should be tracked, and only added to this list if there is a
   # good reason not to.
+  # We don't use this list other than to raise awareness of which attributes we should not track.
   OMITTED_ATTRIBUTES = %w[
     seats_in_use
     seats_owed
