@@ -21,7 +21,7 @@
 
 .tab-content
   .tab-pane.active#pipelines-quota-tab
-    - if Feature.enabled?(:usage_quotas_pipelines_vue, @group)
+    - if Feature.enabled?(:usage_quotas_pipelines_vue, @namespace)
       #js-pipeline-usage-app{ data: pipeline_usage_app_data(@namespace) }
     - else
       = render "namespaces/pipelines_quota/ci_minutes_report",
