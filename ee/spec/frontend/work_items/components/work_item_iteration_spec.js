@@ -15,7 +15,7 @@ import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import { TRACKING_CATEGORY_SHOW } from '~/work_items/constants';
-import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
+import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemByIidQuery from '~/work_items/graphql/work_item_by_iid.query.graphql';
 import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
@@ -88,7 +88,7 @@ describe('WorkItemIteration component', () => {
       apolloProvider: createMockApollo([
         [workItemQuery, workItemQueryHandler],
         [workItemIterationSubscription, iterationSubscriptionHandler],
-        [groupIterationsQuery, searchQueryHandler],
+        [projectIterationsQuery, searchQueryHandler],
         [updateWorkItemMutation, mutationHandler],
         [workItemByIidQuery, workItemByIidResponseHandler],
       ]),
@@ -101,9 +101,9 @@ describe('WorkItemIteration component', () => {
           id: workItemId,
         },
         fetchByIid,
+        fullPath: 'test-project-path',
       },
       provide: {
-        projectNamespace: 'namespace',
         hasIterationsFeature: true,
       },
       stubs: { GlDropdown, GlSearchBoxByType },
