@@ -2,7 +2,7 @@
 import { ITEM_TYPE } from '~/groups/constants';
 import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
 import {
-  OPERATOR_IS_ONLY,
+  OPERATORS_IS,
   TOKEN_TYPE_EPIC,
   TOKEN_TYPE_ITERATION,
   TOKEN_TYPE_WEIGHT,
@@ -88,7 +88,7 @@ export default {
           type: TOKEN_TYPE_HEALTH,
           title: TOKEN_TITLE_HEALTH,
           icon: 'status-health',
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           token: HealthToken,
           unique: true,
         });

@@ -6,7 +6,7 @@ import { TYPE_USER } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import {
-  OPERATOR_IS_AND_IS_NOT,
+  OPERATORS_IS_NOT,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
   TOKEN_TYPE_AUTHOR,
@@ -31,7 +31,7 @@ export default {
           icon: 'labels',
           title: TOKEN_TITLE_LABEL,
           type: TOKEN_TYPE_LABEL,
-          operators: OPERATOR_IS_AND_IS_NOT,
+          operators: OPERATORS_IS_NOT,
           token: LabelToken,
           unique: false,
           symbol: '~',
@@ -42,7 +42,7 @@ export default {
           icon: 'pencil',
           title: TOKEN_TITLE_AUTHOR,
           type: TOKEN_TYPE_AUTHOR,
-          operators: OPERATOR_IS_AND_IS_NOT,
+          operators: OPERATORS_IS_NOT,
           symbol: '@',
           token: AuthorToken,
           unique: true,

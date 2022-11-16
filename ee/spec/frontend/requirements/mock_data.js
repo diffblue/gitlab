@@ -1,5 +1,5 @@
 import StatusToken from 'ee/requirements/components/tokens/status_token.vue';
-import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
+import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 
 export const mockUserPermissions = {
@@ -167,7 +167,7 @@ export const mockAuthorToken = {
   unique: false,
   symbol: '@',
   token: AuthorToken,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
   fetchPath: 'gitlab-org/gitlab-shell',
   fetchAuthors: expect.any(Function),
 };
@@ -178,7 +178,7 @@ export const mockStatusToken = {
   title: 'Status',
   unique: true,
   token: StatusToken,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
 };
 
 /*

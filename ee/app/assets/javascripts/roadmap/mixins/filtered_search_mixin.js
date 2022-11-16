@@ -5,10 +5,10 @@ import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 
 import {
-  OPERATOR_IS_ONLY,
-  OPERATOR_IS_NOT,
+  OPERATORS_IS,
+  OPERATOR_NOT,
   OPERATOR_IS,
-  OPERATOR_IS_AND_IS_NOT,
+  OPERATORS_IS_NOT,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_CONFIDENTIAL,
   TOKEN_TITLE_LABEL,
@@ -87,7 +87,7 @@ export default {
           unique: true,
           symbol: '@',
           token: AuthorToken,
-          operators: OPERATOR_IS_AND_IS_NOT,
+          operators: OPERATORS_IS_NOT,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-author_username`,
           fetchAuthors: Api.users.bind(Api),
           defaultAuthors: [],
@@ -100,7 +100,7 @@ export default {
           unique: false,
           symbol: '~',
           token: LabelToken,
-          operators: OPERATOR_IS_AND_IS_NOT,
+          operators: OPERATORS_IS_NOT,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-label_name`,
           fetchLabels: (search = '') => {
             const params = {
@@ -125,7 +125,7 @@ export default {
           unique: true,
           symbol: '%',
           token: MilestoneToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           defaultMilestones: [], // TODO: Add support for wildcards once https://gitlab.com/gitlab-org/gitlab/-/issues/356756 is resolved
           fetchMilestones: (search = '') => {
             return axios.get(this.groupMilestonesPath).then(({ data }) => {
@@ -147,7 +147,7 @@ export default {
           title: TOKEN_TITLE_CONFIDENTIAL,
           unique: true,
           token: GlFilteredSearchToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           options: [
             { icon: 'eye-slash', value: true, title: __('Yes') },
             { icon: 'eye', value: false, title: __('No') },
@@ -165,7 +165,7 @@ export default {
           useIdValue: true,
           symbol: '&',
           token: EpicToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           recentSuggestionsStorageKey: `${this.groupFullPath}-epics-recent-tokens-epic_iid`,
           fullPath: this.groupFullPath,
         });
@@ -179,7 +179,7 @@ export default {
           title: TOKEN_TITLE_MY_REACTION,
           unique: true,
           token: EmojiToken,
-          operators: OPERATOR_IS_AND_IS_NOT,
+          operators: OPERATORS_IS_NOT,
           fetchEmojis: (search = '') => {
             return axios
               .get(`${gon.relative_url_root || ''}/-/autocomplete/award_emojis`)
@@ -222,7 +222,7 @@ export default {
       if (notAuthorUsername) {
         filteredSearchValue.push({
           type: 'author_username',
-          value: { data: notAuthorUsername, operator: OPERATOR_IS_NOT },
+          value: { data: notAuthorUsername, operator: OPERATOR_NOT },
         });
       }
 
@@ -238,7 +238,7 @@ export default {
         filteredSearchValue.push(
           ...notLabelName.map((label) => ({
             type: 'label_name',
-            value: { data: label, operator: OPERATOR_IS_NOT },
+            value: { data: label, operator: OPERATOR_NOT },
           })),
         );
       }
@@ -266,7 +266,7 @@ export default {
       if (notMyReactionEmoji) {
         filteredSearchValue.push({
           type: 'my_reaction_emoji',
-          value: { data: notMyReactionEmoji, operator: OPERATOR_IS_NOT },
+          value: { data: notMyReactionEmoji, operator: OPERATOR_NOT },
         });
       }
 
@@ -293,12 +293,12 @@ export default {
         switch (filter.type) {
           case 'author_username': {
             const key =
-              filter.value.operator === OPERATOR_IS_NOT ? 'not[authorUsername]' : 'authorUsername';
+              filter.value.operator === OPERATOR_NOT ? 'not[authorUsername]' : 'authorUsername';
             filterParams[key] = filter.value.data;
             break;
           }
           case 'label_name':
-            if (filter.value.operator === OPERATOR_IS_NOT) {
+            if (filter.value.operator === OPERATOR_NOT) {
               notLabels.push(filter.value.data);
             } else {
               labels.push(filter.value.data);
@@ -312,9 +312,7 @@ export default {
             break;
           case 'my_reaction_emoji': {
             const key =
-              filter.value.operator === OPERATOR_IS_NOT
-                ? 'not[myReactionEmoji]'
-                : 'myReactionEmoji';
+              filter.value.operator === OPERATOR_NOT ? 'not[myReactionEmoji]' : 'myReactionEmoji';
 
             filterParams[key] = filter.value.data;
             break;

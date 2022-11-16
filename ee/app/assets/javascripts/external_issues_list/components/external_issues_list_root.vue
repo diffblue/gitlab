@@ -20,7 +20,7 @@ import { i18n } from '~/issues/list/constants';
 import {
   FILTERED_SEARCH_LABELS,
   FILTERED_SEARCH_TERM,
-  OPERATOR_IS_ONLY,
+  OPERATORS_IS,
   TOKEN_TITLE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
@@ -148,7 +148,7 @@ export default {
           title: TOKEN_TITLE_LABEL,
           unique: false,
           token: LabelToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           defaultLabels: [],
           suggestionsDisabled: true,
           fetchLabels: () => {

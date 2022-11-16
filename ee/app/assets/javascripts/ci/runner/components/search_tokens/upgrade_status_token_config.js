@@ -1,5 +1,5 @@
 import { s__ } from '~/locale';
-import { OPERATOR_IS_ONLY } from '~/vue_shared/components/filtered_search_bar/constants';
+import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
 import {
   UPGRADE_STATUS_AVAILABLE,
@@ -38,7 +38,7 @@ const getToken = () => {
       // see: https://gitlab.com/gitlab-org/gitlab-ui/-/issues/1438
       title: title.replace(/\s/g, '\u00a0'),
     })),
-    operators: OPERATOR_IS_ONLY,
+    operators: OPERATORS_IS,
   };
 };
 

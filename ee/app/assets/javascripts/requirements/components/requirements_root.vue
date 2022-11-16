@@ -9,7 +9,7 @@ import Tracking from '~/tracking';
 
 import {
   DEFAULT_LABEL_ANY,
-  OPERATOR_IS_ONLY,
+  OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_STATUS,
 } from '~/vue_shared/components/filtered_search_bar/constants';
@@ -290,7 +290,7 @@ export default {
           unique: false,
           symbol: '@',
           token: AuthorToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           fetchPath: this.projectPath,
           fetchAuthors: Api.projectUsers.bind(Api),
         },
@@ -300,7 +300,7 @@ export default {
           title: TOKEN_TITLE_STATUS,
           unique: true,
           token: StatusToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
         },
       ];
     },

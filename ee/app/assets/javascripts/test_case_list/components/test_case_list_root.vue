@@ -9,7 +9,7 @@ import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_util
 
 import { s__ } from '~/locale';
 import {
-  OPERATOR_IS_ONLY,
+  OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
@@ -202,7 +202,7 @@ export default {
           unique: true,
           symbol: '@',
           token: AuthorToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           fetchPath: this.projectFullPath,
           fetchAuthors: Api.projectUsers.bind(Api),
         },
@@ -213,7 +213,7 @@ export default {
           unique: false,
           symbol: '~',
           token: LabelToken,
-          operators: OPERATOR_IS_ONLY,
+          operators: OPERATORS_IS,
           fetchLabels: (search = '') => {
             const params = {
               include_ancestor_groups: true,

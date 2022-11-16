@@ -4,8 +4,8 @@ import { DATE_RANGES, PRESET_TYPES } from 'ee/roadmap/constants';
 
 import { dateFromString } from 'helpers/datetime_helpers';
 import {
-  OPERATOR_IS_ONLY,
-  OPERATOR_IS_AND_IS_NOT,
+  OPERATORS_IS,
+  OPERATORS_IS_NOT,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
@@ -830,7 +830,7 @@ export const mockAuthorTokenConfig = {
   unique: true,
   symbol: '@',
   token: AuthorToken,
-  operators: OPERATOR_IS_AND_IS_NOT,
+  operators: OPERATORS_IS_NOT,
   recentSuggestionsStorageKey: 'gitlab-org-epics-recent-tokens-author_username',
   fetchAuthors: expect.any(Function),
   preloadedAuthors: [],
@@ -844,7 +844,7 @@ export const mockLabelTokenConfig = {
   unique: false,
   symbol: '~',
   token: LabelToken,
-  operators: OPERATOR_IS_AND_IS_NOT,
+  operators: OPERATORS_IS_NOT,
   recentSuggestionsStorageKey: 'gitlab-org-epics-recent-tokens-label_name',
   fetchLabels: expect.any(Function),
 };
@@ -856,7 +856,7 @@ export const mockMilestoneTokenConfig = {
   unique: true,
   symbol: '%',
   token: MilestoneToken,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
   fetchMilestones: expect.any(Function),
   defaultMilestones: [],
 };
@@ -867,7 +867,7 @@ export const mockConfidentialTokenConfig = {
   title: 'Confidential',
   unique: true,
   token: GlFilteredSearchToken,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
   options: [
     { icon: 'eye-slash', value: true, title: 'Yes' },
     { icon: 'eye', value: false, title: 'No' },
@@ -881,7 +881,7 @@ export const mockEpicTokenConfig = {
   unique: true,
   symbol: '&',
   token: EpicToken,
-  operators: OPERATOR_IS_ONLY,
+  operators: OPERATORS_IS,
   idProperty: 'iid',
   useIdValue: true,
   recentSuggestionsStorageKey: 'gitlab-org-epics-recent-tokens-epic_iid',
@@ -894,6 +894,6 @@ export const mockReactionEmojiTokenConfig = {
   title: 'My-Reaction',
   unique: true,
   token: EmojiToken,
-  operators: OPERATOR_IS_AND_IS_NOT,
+  operators: OPERATORS_IS_NOT,
   fetchEmojis: expect.any(Function),
 };
