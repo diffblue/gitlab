@@ -23,7 +23,7 @@ import {
 } from '~/work_items/constants';
 import { iterationDisplayState } from 'ee/sidebar/constants';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
-import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
+import projectIterationsQuery from 'ee/work_items/graphql/project_iterations.query.graphql';
 import updateWorkItemMutation from '~/work_items/graphql/update_work_item.mutation.graphql';
 import workItemIterationSubscription from 'ee/work_items/graphql/work_item_iteration.subscription.graphql';
 import { getWorkItemQuery } from '~/work_items/utils';
@@ -49,7 +49,7 @@ export default {
     GlDropdownText,
   },
   mixins: [Tracking.mixin()],
-  inject: ['projectNamespace', 'hasIterationsFeature'],
+  inject: ['hasIterationsFeature'],
   props: {
     iteration: {
       type: Object,
@@ -76,6 +76,10 @@ export default {
     },
     queryVariables: {
       type: Object,
+      required: true,
+    },
+    fullPath: {
+      type: String,
       required: true,
     },
   },
@@ -159,11 +163,11 @@ export default {
       },
     },
     iterations: {
-      query: groupIterationsQuery,
+      query: projectIterationsQuery,
       variables() {
         const search = this.searchTerm ? `"${this.searchTerm}"` : '';
         return {
-          fullPath: this.projectNamespace,
+          fullPath: this.fullPath,
           title: search,
           state: iterationDisplayState,
         };

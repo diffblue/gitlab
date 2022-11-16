@@ -485,6 +485,7 @@ export default {
           :work-item-type="workItemType"
           :fetch-by-iid="fetchByIid"
           :query-variables="queryVariables"
+          :full-path="fullPath"
           @error="updateError = $event"
         />
       </template>
