@@ -37,6 +37,7 @@ module API
         desc 'Get the details of a specific secure file in a project' do
           success Entities::Ci::SecureFile
           tags %w[secure_files]
+          failure [{ code: 404, message: '404 Not found' }]
         end
         params do
           requires :id, type: Integer, desc: 'The id of a secure file'
@@ -49,6 +50,7 @@ module API
         end
 
         desc 'Download secure file' do
+          failure [{ code: 404, message: '404 Not found' }]
           tags %w[secure_files]
         end
         route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
@@ -100,7 +102,7 @@ module API
 
           desc 'Remove a secure file' do
             tags %w[secure_files]
-            failure [{ code: 204, message: '204 No Content' }]
+            failure [{ code: 404, message: '404 Not found' }]
           end
           route_setting :authentication, basic_auth_personal_access_token: true, job_token_allowed: true
           delete ':id/secure_files/:secure_file_id' do
