@@ -5,6 +5,7 @@ FactoryBot.define do
     project
     active { true }
     type { 'Integrations::GitlabSlackApplication' }
+    sequence(:webhook) { |n| "https://example.com/webhook/#{n}" }
   end
 
   factory :github_integration, class: 'Integrations::Github' do

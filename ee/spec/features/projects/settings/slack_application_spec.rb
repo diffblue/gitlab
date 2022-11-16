@@ -2,21 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Slack application' do
-  let(:project) { create(:project) }
-  let(:user) { create(:user) }
-  let(:role) { :developer }
-  let(:integration) { create(:gitlab_slack_application_integration, project: project) }
+RSpec.describe 'Slack application', :js do
+  let_it_be(:project) { create(:project) }
+  let_it_be(:user) { create(:user, maintainer_projects: [project]) }
+  let_it_be(:integration) { create(:gitlab_slack_application_integration, project: project) }
   let(:slack_application_form_path) { edit_project_settings_integration_path(project, integration) }
 
-  before do
-    gitlab_sign_in(user)
-    project.add_maintainer(user)
-
+  before_all do
     create(:slack_integration, integration: integration)
+  end
 
-    allow(Gitlab).to receive(:com?).and_return(true)
-    allow(Gitlab::CurrentSettings).to receive(:slack_app_enabled).and_return(true)
+  before do
+    stub_application_setting(slack_app_enabled: true)
+
+    gitlab_sign_in(user)
   end
 
   it 'I can edit slack integration' do
@@ -33,6 +32,32 @@ RSpec.describe 'Slack application' do
 
     within '[data-testid="integration-settings-form"]' do
       expect(page).to have_content('alias-edited')
+    end
+  end
+
+  it 'shows the trigger form fields' do
+    visit slack_application_form_path
+
+    expect(page).to have_selector('[data-testid="trigger-fields-group"]')
+  end
+
+  context 'when the integration is disabled' do
+    before do
+      integration.update!(active: false)
+    end
+
+    it 'does not show the trigger form fields' do
+      expect(page).not_to have_selector('[data-testid="trigger-fields-group"]')
+    end
+  end
+
+  context 'when the feature flag is disabled' do
+    before do
+      stub_feature_flags(integration_slack_app_notifications: false)
+    end
+
+    it 'does not show the trigger form fields' do
+      expect(page).not_to have_selector('[data-testid="trigger-fields-group"]')
     end
   end
 end
