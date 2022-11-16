@@ -16,7 +16,7 @@ RSpec.describe Groups::ObservabilityController do
       response
     end
 
-    it_behaves_like "observability csp policy", described_class do
+    it_behaves_like 'observability csp policy', described_class do
       let(:tested_path) { path }
     end
 

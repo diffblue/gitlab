@@ -3,6 +3,7 @@
 module Observability
   module ContentSecurityPolicy
     extend ActiveSupport::Concern
+
     included do
       content_security_policy do |p|
         next if p.directives.blank? || Gitlab::Observability.observability_url.blank?
