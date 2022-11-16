@@ -16,8 +16,8 @@ module Sbom
           component_id: component_id,
           component_version_id: component_version_id,
           component_type: report_component.component_type,
-          name: report_component.name,
-          purl_type: report_component.purl&.type,
+          name: component_name,
+          purl_type: purl_type,
           source_id: source_id,
           source_type: report_source&.source_type,
           source: report_source&.data,
@@ -30,6 +30,16 @@ module Sbom
       end
 
       delegate :version, to: :report_component, private: true
+
+      private
+
+      def purl_type
+        report_component.purl&.type
+      end
+
+      def component_name
+        ::Sbom::PackageUrl::Normalizer.new(type: purl_type, text: report_component.name).normalize_name
+      end
     end
   end
 end

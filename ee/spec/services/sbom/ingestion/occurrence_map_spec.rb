@@ -86,6 +86,32 @@ RSpec.describe Sbom::Ingestion::OccurrenceMap do
         )
       end
     end
+
+    describe 'normalization' do
+      using RSpec::Parameterized::TableSyntax
+
+      let(:report_component) { create(:ci_reports_sbom_component, purl_type: purl_type, name: name) }
+
+      where(:purl_type, :name, :expected) do
+        :npm  | 'Cookie_Parser'            | 'Cookie_Parser'
+        :pypi | 'Flask_SQLAlchemy'         | 'flask-sqlalchemy'
+      end
+
+      with_them do
+        it 'outputs normalized name' do
+          expect(occurrence_map.to_h[:name]).to eq(expected)
+        end
+      end
+
+      context 'when purl is absent' do
+        let(:name) { 'EnterpriseLibrary_Common' }
+        let(:report_component) { create(:ci_reports_sbom_component, purl: nil, name: name) }
+
+        it 'does not perform normalization' do
+          expect(occurrence_map.to_h[:name]).to eq(name)
+        end
+      end
+    end
   end
 
   describe '#version_present?' do

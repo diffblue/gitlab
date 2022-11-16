@@ -79,5 +79,30 @@ RSpec.describe Sbom::Ingestion::Tasks::IngestComponents do
         expect { ingest_components }.to change(Sbom::Component, :count).by(2)
       end
     end
+
+    context 'when there is a pypi component' do
+      let(:report_component) do
+        create(
+          :ci_reports_sbom_component,
+          name: 'Flask_SQLAlchemy',
+          version: 'v0.0.1',
+          purl_type: 'pypi'
+        )
+      end
+
+      let(:occurrence_maps) { [create(:sbom_occurrence_map, report_component: report_component)] }
+
+      it 'normalizes component name' do
+        ingest_components
+
+        component = Sbom::Component.find_by(purl_type: :pypi)
+
+        expect(component).to have_attributes(
+          name: 'flask-sqlalchemy',
+          purl_type: 'pypi',
+          component_type: 'library'
+        )
+      end
+    end
   end
 end
