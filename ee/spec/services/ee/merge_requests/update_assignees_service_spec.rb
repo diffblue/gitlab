@@ -63,34 +63,9 @@ RSpec.describe MergeRequests::UpdateAssigneesService do
         stub_const("Issuable::MAX_NUMBER_OF_ASSIGNEES_OR_REVIEWERS", 2)
       end
 
-      context 'when limit_assignees_per_issuable is on' do
-        it 'does not update and returns a merge request with an error' do
-          expect(MergeRequests::HandleAssigneesChangeService).not_to receive(:new)
-          expect { update_merge_request }.not_to change { merge_request.reload.assignees.map(&:id) }
-        end
-      end
-
-      context 'when limit_assignees_per_issuable is off' do
-        let(:new_users) { [user, user2, user3] }
-
-        before do
-          stub_feature_flags(limit_assignees_per_issuable: false)
-        end
-
-        it 'correctly updates the MR and enqueues the job' do
-          expect_next_instance_of(
-            MergeRequests::HandleAssigneesChangeService,
-            project: project,
-            current_user: user) do |service|
-            expect(service)
-              .to receive(:async_execute).with(merge_request, [user], execute_hooks: true)
-          end
-
-          expect { update_merge_request }
-            .to change { merge_request.reload.assignees }.from([user]).to(new_users)
-            .and change(merge_request, :updated_at)
-            .and change(merge_request, :updated_by).to(user)
-        end
+      it 'does not update and returns a merge request with an error' do
+        expect(MergeRequests::HandleAssigneesChangeService).not_to receive(:new)
+        expect { update_merge_request }.not_to change { merge_request.reload.assignees.map(&:id) }
       end
     end
   end
