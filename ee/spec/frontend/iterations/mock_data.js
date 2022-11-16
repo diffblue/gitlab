@@ -33,46 +33,6 @@ export const mockIterationNodeWithoutTitle = {
   title: null,
 };
 
-export const mockGroupIterations = {
-  data: {
-    group: {
-      id: 'gid://gitlab/Group/114',
-      iterations: {
-        nodes: [mockIterationNode],
-        pageInfo: {
-          hasNextPage: true,
-          hasPreviousPage: true,
-          startCursor: 'first-item',
-          endCursor: 'last-item',
-          __typename: 'PageInfo',
-        },
-        __typename: 'IterationConnection',
-      },
-      __typename: 'Group',
-    },
-  },
-};
-
-export const mockGroupIterationsEmpty = {
-  data: {
-    group: {
-      id: 'gid://gitlab/Group/114',
-      iterations: {
-        nodes: [],
-        pageInfo: {
-          hasNextPage: false,
-          hasPreviousPage: false,
-          startCursor: '',
-          endCursor: '',
-          __typename: 'PageInfo',
-        },
-        __typename: 'IterationConnection',
-      },
-      __typename: 'Group',
-    },
-  },
-};
-
 export const createMockGroupIterations = (mockIteration = mockIterationNode) => {
   return {
     data: {
@@ -175,17 +135,6 @@ export const nonEmptyGroupIterationsSuccess = {
           startCursor: '',
           endCursor: '',
         },
-      },
-    },
-  },
-};
-
-export const readAutomaticCadenceSuccess = {
-  data: {
-    group: {
-      id: 'gid://gitlab/Group/114',
-      iterationCadences: {
-        nodes: [automaticIterationCadence],
       },
     },
   },
