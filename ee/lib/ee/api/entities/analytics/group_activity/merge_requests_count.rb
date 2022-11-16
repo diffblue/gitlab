@@ -6,8 +6,11 @@ module EE
       module Analytics
         module GroupActivity
           class MergeRequestsCount < Grape::Entity
-            expose :merge_requests_count,
-                   documentation: { type: "Integer", desc: "Number of merge requests", example: '3' }
+            expose :merge_requests_count, documentation: {
+              type: "Integer",
+              desc: "Number of merge requests. Limited to #{::Analytics::GroupActivityCalculator::RECENT_COUNT_LIMIT}",
+              example: 3
+            }
           end
         end
       end
