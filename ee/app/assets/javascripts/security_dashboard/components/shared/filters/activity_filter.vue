@@ -1,9 +1,11 @@
 <script>
-import { GlDropdownDivider, GlDropdownSectionHeader, GlBadge } from '@gitlab/ui';
+import { GlDropdown, GlDropdownDivider, GlDropdownSectionHeader, GlBadge } from '@gitlab/ui';
+import { without } from 'lodash';
 import { s__ } from '~/locale';
-import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
-import SimpleFilter from './simple_filter.vue';
+import QuerystringSync from './querystring_sync.vue';
+import DropdownButtonText from './dropdown_button_text.vue';
+import { ALL_ID } from './constants';
 
 export const ITEMS = {
   STILL_DETECTED: {
@@ -43,82 +45,108 @@ export const GROUPS = [
 ];
 
 export default {
-  components: { FilterBody, FilterItem, GlDropdownDivider, GlDropdownSectionHeader, GlBadge },
-  extends: SimpleFilter,
+  components: {
+    FilterItem,
+    GlDropdown,
+    GlDropdownDivider,
+    GlDropdownSectionHeader,
+    GlBadge,
+    QuerystringSync,
+    DropdownButtonText,
+  },
+  data: () => ({
+    selected: [],
+  }),
   computed: {
-    options() {
-      return Object.values(ITEMS);
+    selectedItemNames() {
+      const items = Object.values(ITEMS).filter(({ id }) => this.selected.includes(id));
+      return items.length ? items.map(({ name }) => name) : [this.$options.i18n.allItemsText];
     },
-    filterObject() {
+  },
+  watch: {
+    selected() {
       let hasResolution;
       let hasIssues;
       // The above variables can be true, false, or unset, so we need to use if/else-if here instead
       // of if/else.
-      if (this.isSelected(ITEMS.NO_LONGER_DETECTED)) {
+      if (this.selected.includes(ITEMS.NO_LONGER_DETECTED.id)) {
         hasResolution = true;
-      } else if (this.isSelected(ITEMS.STILL_DETECTED)) {
+      } else if (this.selected.includes(ITEMS.STILL_DETECTED.id)) {
         hasResolution = false;
       }
 
-      if (this.isSelected(ITEMS.HAS_ISSUE)) {
+      if (this.selected.includes(ITEMS.HAS_ISSUE.id)) {
         hasIssues = true;
-      } else if (this.isSelected(ITEMS.DOES_NOT_HAVE_ISSUE)) {
+      } else if (this.selected.includes(ITEMS.DOES_NOT_HAVE_ISSUE.id)) {
         hasIssues = false;
       }
 
-      return { hasResolution, hasIssues };
+      this.$emit('filter-changed', { hasResolution, hasIssues });
     },
   },
   methods: {
-    toggleOption(group, item) {
-      // If the clicked item is already selected, unselect it.
-      if (this.selectedOptions.includes(item)) {
-        this.selectedOptions = this.selectedOptions.filter((selected) => selected !== item);
+    deselectAll() {
+      this.selected = [];
+    },
+    toggleSelected(group, id) {
+      // If the clicked ID is already selected, unselect it.
+      if (this.selected.includes(id)) {
+        this.selected = without(this.selected, id);
       }
-      // Otherwise, unselect all the items in the group, then select the clicked item.
+      // Otherwise, unselect all the IDs in the group, then select the clicked ID.
       else {
-        this.selectedOptions = this.selectedOptions
-          .filter((selected) => !group.items.includes(selected))
-          .concat(item);
+        const groupItemIds = group.items.map((item) => item.id);
+        this.selected = without(this.selected, ...groupItemIds).concat(id);
       }
-
-      this.updateQuerystring();
     },
   },
+  i18n: {
+    label: s__('SecurityReports|Activity'),
+    allItemsText: s__('SecurityReports|All activity'),
+  },
   GROUPS,
+  ALL_ID,
 };
 </script>
 
 <template>
-  <filter-body :name="filter.name" :selected-options="selectedOptionsOrAll">
-    <filter-item
-      :is-checked="isNoOptionsSelected"
-      :text="filter.allOption.name"
-      :data-testid="`option-${filter.allOption.id}`"
-      @click="deselectAllOptions"
-    />
-
-    <template v-for="group in $options.GROUPS">
-      <gl-dropdown-divider :key="`divider-${group.header.name}`" />
-
-      <gl-dropdown-section-header
-        :key="`header-${group.header.name}`"
-        :data-testid="`header-${group.header.name}`"
-      >
-        <div class="gl--flex-center">
-          <div class="gl-flex-grow-1">{{ group.header.name }}</div>
-          <gl-badge :icon="group.header.icon" :variant="group.header.variant" />
-        </div>
-      </gl-dropdown-section-header>
+  <div>
+    <querystring-sync v-model="selected" querystring-key="activity" />
+    <label class="gl-mb-2">{{ $options.i18n.label }}</label>
+    <gl-dropdown :header-text="$options.i18n.label" block toggle-class="gl-mb-0">
+      <template #button-text>
+        <dropdown-button-text :items="selectedItemNames" />
+      </template>
 
       <filter-item
-        v-for="item in group.items"
-        :key="item.id"
-        :is-checked="isSelected(item)"
-        :text="item.name"
-        :data-testid="`option-${item.id}`"
-        @click="toggleOption(group, item)"
+        :is-checked="!selected.length"
+        :text="$options.i18n.allItemsText"
+        :data-testid="$options.ALL_ID"
+        @click="deselectAll"
       />
-    </template>
-  </filter-body>
+
+      <template v-for="group in $options.GROUPS">
+        <gl-dropdown-divider :key="`divider-${group.header.name}`" />
+
+        <gl-dropdown-section-header
+          :key="`header-${group.header.name}`"
+          :data-testid="`header-${group.header.name}`"
+        >
+          <div class="gl--flex-center">
+            <div class="gl-flex-grow-1">{{ group.header.name }}</div>
+            <gl-badge :icon="group.header.icon" :variant="group.header.variant" />
+          </div>
+        </gl-dropdown-section-header>
+
+        <filter-item
+          v-for="{ id, name } in group.items"
+          :key="id"
+          :is-checked="selected.includes(id)"
+          :text="name"
+          :data-testid="id"
+          @click="toggleSelected(group, id)"
+        />
+      </template>
+    </gl-dropdown>
+  </div>
 </template>
