@@ -22,6 +22,9 @@ export default {
       skip() {
         return this.isEpicBoard;
       },
+      context: {
+        isSingleRequest: true,
+      },
     },
     epicBoardList: {
       query: epicListQuery,
