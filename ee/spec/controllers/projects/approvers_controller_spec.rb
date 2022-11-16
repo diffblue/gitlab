@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::ApproversController do
+RSpec.describe Projects::ApproversController, feature_category: :source_code_management do
   describe '#destroy' do
     let(:user) { create(:user) }
     let(:project) { create(:project) }

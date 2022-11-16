@@ -14,7 +14,7 @@ RSpec.describe Projects::PipelinesController do
     sign_in(user)
   end
 
-  describe 'GET security' do
+  describe 'GET security', feature_category: :vulnerability_management do
     context 'with a sast artifact' do
       before do
         create(:ee_ci_build, :sast, pipeline: pipeline)
@@ -69,7 +69,7 @@ RSpec.describe Projects::PipelinesController do
     end
   end
 
-  describe 'GET codequality_report' do
+  describe 'GET codequality_report', feature_category: :code_quality do
     let(:pipeline) { create(:ci_pipeline, project: project) }
 
     it do
@@ -80,7 +80,7 @@ RSpec.describe Projects::PipelinesController do
     end
   end
 
-  describe 'GET licenses' do
+  describe 'GET licenses', feature_category: :license_compliance do
     let(:licenses_with_html) do
       get :licenses,
       format: :html,

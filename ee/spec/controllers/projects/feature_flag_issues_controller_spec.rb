@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::FeatureFlagIssuesController do
+RSpec.describe Projects::FeatureFlagIssuesController, feature_category: :feature_flags do
   let_it_be(:project) { create(:project) }
   let_it_be(:developer) { create(:user) }
   let_it_be(:reporter) { create(:user) }

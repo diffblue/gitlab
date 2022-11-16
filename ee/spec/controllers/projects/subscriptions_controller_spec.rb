@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::SubscriptionsController do
+RSpec.describe Projects::SubscriptionsController, feature_category: :continuous_integration do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::RequirementsManagement::RequirementsController do
+RSpec.describe Projects::RequirementsManagement::RequirementsController, feature_category: :requirements_management do
   let_it_be(:user) { create(:user) }
 
   shared_examples 'response with 404 status' do

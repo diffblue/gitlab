@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::IssueLinksController do
+RSpec.describe Projects::IssueLinksController, feature_category: :team_planning do
   let_it_be(:namespace) { create(:group, :public) }
   let_it_be(:project)   { create(:project, :public, namespace: namespace) }
   let_it_be(:user) { create(:user) }

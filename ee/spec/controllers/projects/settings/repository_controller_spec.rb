@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Settings::RepositoryController do
+RSpec.describe Projects::Settings::RepositoryController, feature_category: :source_code_management do
   let(:project) { create(:project_empty_repo, :public) }
   let(:user) { create(:user) }
 

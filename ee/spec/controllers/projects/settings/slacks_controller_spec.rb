@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Settings::SlacksController do
+RSpec.describe Projects::Settings::SlacksController, feature_category: :integrations do
   let(:project) { create(:project, :public) }
   let(:user) { create(:user) }
 

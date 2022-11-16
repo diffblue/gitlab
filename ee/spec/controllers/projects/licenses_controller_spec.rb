@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::LicensesController do
+RSpec.describe Projects::LicensesController, feature_category: :dependency_management do
   describe "GET #index" do
     let_it_be(:project) { create(:project, :repository, :private) }
     let_it_be(:user) { create(:user) }
