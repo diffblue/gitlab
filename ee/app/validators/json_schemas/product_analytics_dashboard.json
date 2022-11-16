@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/ProductAnalyticsDashboard",
+  "definitions": {
+    "Welcome6": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": "1"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "widgets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Widget"
+          }
+        }
+      },
+      "required": [
+        "description",
+        "title",
+        "version",
+        "widgets"
+      ],
+      "title": "ProductAnalyticsDashboard"
+    },
+    "Widget": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "gridAttributes": {
+          "$ref": "#/definitions/GridAttributes"
+        },
+        "visualization": {
+          "type": "string"
+        },
+        "queryOverrides": {
+          "$ref": "#/definitions/QueryOverrides"
+        }
+      },
+      "required": [
+        "gridAttributes",
+        "queryOverrides",
+        "title",
+        "visualization"
+      ],
+      "title": "Widget"
+    },
+    "GridAttributes": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "yPos": {
+          "type": "integer"
+        },
+        "xPos": {
+          "type": "integer"
+        },
+        "width": {
+          "type": "integer"
+        },
+        "height": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "height",
+        "width",
+        "xPos",
+        "yPos"
+      ],
+      "title": "GridAttributes"
+    },
+    "QueryOverrides": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "timeDimensions": {
+          "$ref": "#/definitions/TimeDimensions"
+        }
+      },
+      "required": [
+        "timeDimensions"
+      ],
+      "title": "QueryOverrides"
+    },
+    "TimeDimensions": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dateRange": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "required": [
+        "dateRange"
+      ],
+      "title": "TimeDimensions"
+    }
+  }
+}

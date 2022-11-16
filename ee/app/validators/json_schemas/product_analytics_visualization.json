@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/ProductAnalyticsVisualization",
+  "definitions": {
+    "Welcome7": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "const": "1"
+        },
+        "type": {
+          "enum": ["LineChart"]
+        },
+        "options": {
+          "$ref": "#/definitions/Options"
+        },
+        "data": {
+          "$ref": "#/definitions/Data"
+        }
+      },
+      "required": [
+        "data",
+        "options",
+        "type",
+        "version"
+      ],
+      "title": "ProductAnalyticsVisualization"
+    },
+    "Data": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "Cube"
+        },
+        "query": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "query",
+        "type"
+      ],
+      "title": "Data"
+    },
+    "Options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "xAxis": {
+          "$ref": "#/definitions/XAxis"
+        },
+        "yAxis": {
+          "$ref": "#/definitions/YAxis"
+        }
+      },
+      "required": [
+        "xAxis",
+        "yAxis"
+      ],
+      "title": "Options"
+    },
+    "XAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "title": "XAxis"
+    },
+    "YAxis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "type"
+      ],
+      "title": "YAxis"
+    }
+  }
+}
