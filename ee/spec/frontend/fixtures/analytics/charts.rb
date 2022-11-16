@@ -8,10 +8,6 @@ RSpec.describe 'Analytics (JavaScript fixtures)', :sidekiq_inline do
   let_it_be(:project) { create(:project, :repository, namespace: group) }
   let_it_be(:user) { create(:user, :admin) }
 
-  around do |example|
-    freeze_time { example.run }
-  end
-
   describe Groups::Analytics::TasksByTypeController, type: :controller do
     render_views
 

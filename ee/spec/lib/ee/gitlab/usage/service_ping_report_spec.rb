@@ -32,11 +32,11 @@ RSpec.describe Gitlab::Usage::ServicePingReport, :use_clean_rails_memory_store_c
     end
 
     it 'returns queries that do not change between calls' do
-      report = Timecop.freeze(2021, 1, 1) do
+      report = travel_to(Time.utc(2021, 1, 1)) do
         described_class.for(output: :metrics_queries)
       end
 
-      other_report = Timecop.freeze(2021, 1, 1) do
+      other_report = travel_to(Time.utc(2021, 1, 1)) do
         described_class.for(output: :metrics_queries)
       end
 
