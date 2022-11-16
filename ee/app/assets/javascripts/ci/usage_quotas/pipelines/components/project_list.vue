@@ -50,6 +50,9 @@ export default {
         this.fetchMoreProjects({ after, first: this.pageSize });
       }
     },
+    formattedSharedRunnersDuration(sharedRunnersDuration) {
+      return (sharedRunnersDuration / 60).toFixed(2);
+    },
   },
   LABEL_CI_MINUTES_DISABLED,
   SHARED_RUNNERS_DOC_LINK,
@@ -83,7 +86,9 @@ export default {
         </div>
       </template>
       <template #cell(shared_runners)="{ item }">
-        <span data-testid="project_shared_runner_duration">{{ item.sharedRunnersDuration }}</span>
+        <span data-testid="project_shared_runner_duration">{{
+          formattedSharedRunnersDuration(item.sharedRunnersDuration)
+        }}</span>
       </template>
       <template #cell(ci_minutes)="{ item }">
         <span data-testid="project_amount_used">{{ item.minutes }}</span>
