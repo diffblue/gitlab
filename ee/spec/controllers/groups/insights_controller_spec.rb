@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::InsightsController do
+RSpec.describe Groups::InsightsController, feature_category: :value_stream_management do
   let_it_be(:parent_group) { create(:group, :private) }
   let_it_be(:nested_group) { create(:group, :private, parent: parent_group) }
   let_it_be(:project) { create(:project, :private) }

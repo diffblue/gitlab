@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::ScimOauthController do
+RSpec.describe Groups::ScimOauthController, feature_category: :authentication_and_authorization do
   let(:saml_provider) { create(:saml_provider, group: group) }
   let(:group) { create(:group, :private, parent_id: nil) }
   let(:user) { create(:user) }

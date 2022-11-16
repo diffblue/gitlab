@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::IterationsController do
+RSpec.describe Groups::IterationsController, feature_category: :team_planning do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:group) { create(:group, :private) }

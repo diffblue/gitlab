@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EpicBoardsController do
+RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_management do
   let_it_be_with_reload(:group) { create(:group, :private) }
   let_it_be(:user) { create(:user) }
   let_it_be(:other_user) { create(:user) }

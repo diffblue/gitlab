@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::EpicIssuesController do
+RSpec.describe Groups::EpicIssuesController, feature_category: :portfolio_management do
   let(:group) { create(:group, :public) }
   let(:project) { create(:project, group: group) }
   let(:milestone) { create(:milestone, project: project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::HooksController do
+RSpec.describe Groups::HooksController, feature_category: :integrations do
   let_it_be(:user)  { create(:user) }
   let_it_be(:group) { create(:group) }
 

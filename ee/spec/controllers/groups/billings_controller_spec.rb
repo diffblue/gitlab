@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::BillingsController, :saas do
+RSpec.describe Groups::BillingsController, :saas, feature_category: :purchase do
   let_it_be(:owner) { create(:user) }
   let_it_be(:auditor) { create(:auditor) }
   let_it_be(:developer) { create(:user) }

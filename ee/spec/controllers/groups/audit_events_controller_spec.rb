@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::AuditEventsController do
+RSpec.describe Groups::AuditEventsController, feature_category: :audit_events do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Epics::NotesController do
+RSpec.describe Groups::Epics::NotesController, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:epic) { create(:epic, group: group) }
