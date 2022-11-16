@@ -69,10 +69,3 @@ export default {
     </gl-button>
   </div>
 </template>
-
-<style>
-.gl-drawer-title {
-  margin-left: -12px;
-  margin-right: -12px;
-}
-</style>

@@ -209,7 +209,6 @@ export default {
           <gl-dropdown-item
             v-if="glFeatures.dastPreScanVerification"
             :aria-label="$options.i18n.verifyConfigurationLabel"
-            data-testid="verify-scan-button-desktop"
             @click="openSidebar"
           >
             {{ $options.i18n.verifyConfigurationLabel }}
