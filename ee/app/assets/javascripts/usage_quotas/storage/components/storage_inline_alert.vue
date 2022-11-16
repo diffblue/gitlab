@@ -8,14 +8,14 @@ export default {
   i18n: {
     lockedWithNoPurchasedStorageTitle: s__('UsageQuota|This namespace contains locked projects'),
     lockedWithNoPurchasedStorageText: s__(
-      'UsageQuota|You have reached the free storage limit of %{actualRepositorySizeLimit} on %{projectsLockedText}. To unlock them, please purchase additional storage.',
+      'UsageQuota|You have reached the free storage limit of %{actualRepositorySizeLimit} on %{projectsLockedText}. To unlock them, purchase additional storage.',
     ),
     storageUsageText: s__('UsageQuota|%{percentageLeft} of purchased storage is available'),
     lockedWithPurchaseText: s__(
-      'UsageQuota|You have consumed all of your additional storage, please purchase more to unlock your projects over the free %{actualRepositorySizeLimit} limit.',
+      'UsageQuota|You have consumed all of your additional storage. Purchase more to unlock your projects over the free %{actualRepositorySizeLimit} limit.',
     ),
     warningWithPurchaseText: s__(
-      'UsageQuota|Your purchased storage is running low. To avoid locked projects, please purchase more storage.',
+      'UsageQuota|Your purchased storage is running low. To avoid locked projects, purchase more storage.',
     ),
     infoWithPurchaseText: s__(
       'UsageQuota|When you purchase additional storage, we automatically unlock projects that were locked when you reached the %{actualRepositorySizeLimit} limit.',
