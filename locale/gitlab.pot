@@ -29641,6 +29641,24 @@ msgstr ""
 msgid "Phone"
 msgstr ""
 
+msgid "PhoneVerification|Enter a valid code."
+msgstr ""
+
+msgid "PhoneVerification|Something went wrong. Please try again."
+msgstr ""
+
+msgid "PhoneVerification|The code has expired. Request a new code and try again."
+msgstr ""
+
+msgid "PhoneVerification|There was a problem with the phone number you entered. Enter a different phone number and try again."
+msgstr ""
+
+msgid "PhoneVerification|There was a problem with the phone number you entered. Enter a valid phone number."
+msgstr ""
+
+msgid "PhoneVerification|You've reached the maximum number of tries. Request a new code and try again."
+msgstr ""
+
 msgid "Pick a name"
 msgstr ""
 
