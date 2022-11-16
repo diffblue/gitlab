@@ -4,31 +4,37 @@ require 'spec_helper'
 
 RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
   let_it_be(:project) { create(:project) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:user) { create(:user, developer_projects: [project]) }
   let_it_be(:chat_name) { create(:chat_name, user: user) }
-  let_it_be(:regex_match) { described_class.match('declare') }
+  let_it_be(:regex_match) { described_class.match('incident declare') }
 
   subject do
     described_class.new(project, chat_name)
   end
 
   describe '#execute' do
+    before do
+      allow_next_instance_of(
+        EE::Integrations::SlackInteractions::IncidentManagement::IncidentModalOpenedService
+      ) do |modal_service|
+        allow(modal_service).to receive(:execute).and_return(
+          ServiceResponse.success(message: 'Please fill the incident creation form.')
+        )
+      end
+    end
+
     context 'when invoked' do
       it 'sends ephemeral response' do
         response = subject.execute(regex_match)
 
         expect(response[:response_type]).to be(:ephemeral)
-        expect(response[:text]).to eq('It works!')
+        expect(response[:text]).to eq('Please fill the incident creation form.')
       end
     end
   end
 
   describe '#allowed?' do
     context 'when user has permissions' do
-      before do
-        project.add_developer(user)
-      end
-
       it 'returns true' do
         expect(described_class).to be_allowed(project, user)
       end
@@ -36,7 +42,6 @@ RSpec.describe Gitlab::SlashCommands::IncidentManagement::IncidentNew do
 
     context 'when feature flag is disabled' do
       before do
-        project.add_developer(user)
         stub_feature_flags(incident_declare_slash_command: false)
       end
 

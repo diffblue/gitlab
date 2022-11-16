@@ -24,16 +24,14 @@ RSpec.describe API::Integrations::Slack::Events do
 
     subject { post api('/integrations/slack/events'), params: params, headers: headers }
 
-    shared_examples 'an unauthorized request' do
-      specify do
-        subject
+    it_behaves_like 'Slack request verification'
 
-        expect(response).to have_gitlab_http_status(:unauthorized)
+    context 'when type param is unknown' do
+      let(:params) do
+        { type: 'unknown_type' }
       end
-    end
 
-    shared_examples 'a successful request that generates a tracked error' do
-      specify do
+      it 'generates a tracked error' do
         expect(Gitlab::ErrorTracking).to receive(:track_exception).once
 
         subject
@@ -41,58 +39,6 @@ RSpec.describe API::Integrations::Slack::Events do
         expect(response).to have_gitlab_http_status(:no_content)
         expect(response.body).to be_empty
       end
-    end
-
-    context 'when the slack_app_signing_secret setting is not set' do
-      before do
-        stub_application_setting(slack_app_signing_secret: nil)
-      end
-
-      it_behaves_like 'an unauthorized request'
-    end
-
-    context 'when the timestamp header has expired' do
-      before do
-        headers[::API::Integrations::Slack::Request::VERIFICATION_TIMESTAMP_HEADER] = 5.minutes.ago.to_i.to_s
-      end
-
-      it_behaves_like 'an unauthorized request'
-    end
-
-    context 'when the timestamp header is missing' do
-      before do
-        headers.delete(::API::Integrations::Slack::Request::VERIFICATION_TIMESTAMP_HEADER)
-      end
-
-      it_behaves_like 'an unauthorized request'
-    end
-
-    context 'when the signature header is missing' do
-      before do
-        headers.delete(::API::Integrations::Slack::Request::VERIFICATION_SIGNATURE_HEADER)
-      end
-
-      it_behaves_like 'an unauthorized request'
-    end
-
-    context 'when the signature is not verified' do
-      before do
-        headers[::API::Integrations::Slack::Request::VERIFICATION_SIGNATURE_HEADER] = 'unverified_signature'
-      end
-
-      it_behaves_like 'an unauthorized request'
-    end
-
-    context 'when type param is missing' do
-      it_behaves_like 'a successful request that generates a tracked error'
-    end
-
-    context 'when type param is unknown' do
-      let(:params) do
-        { type: 'unknown_type' }
-      end
-
-      it_behaves_like 'a successful request that generates a tracked error'
     end
 
     context 'when type param is url_verification' do
