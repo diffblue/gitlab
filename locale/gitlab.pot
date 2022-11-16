@@ -42590,6 +42590,9 @@ msgstr ""
 msgid "Todos|Design"
 msgstr ""
 
+msgid "Todos|Due %{due_date}"
+msgstr ""
+
 msgid "Todos|Epic"
 msgstr ""
 
