@@ -271,29 +271,56 @@ RSpec.describe 'Admin updates EE-only settings' do
 
     it 'allows you to change the maven_forwarding setting' do
       page.within('#js-package-settings') do
-        check 'Forward Maven package requests to the Maven Registry if the packages are not found in the GitLab Package Registry'
+        check 'Forward Maven package requests'
         click_button 'Save'
       end
 
       expect(current_settings.maven_package_requests_forwarding).to be true
     end
 
+    it 'allows you to change the maven_lock setting' do
+      page.within('#js-package-settings') do
+        check 'Enforce Maven setting for all subgroups'
+        click_button 'Save'
+      end
+
+      expect(current_settings.lock_maven_package_requests_forwarding).to be true
+    end
+
     it 'allows you to change the npm_forwarding setting' do
       page.within('#js-package-settings') do
-        check 'Forward npm package requests to the npm Registry if the packages are not found in the GitLab Package Registry'
+        check 'Forward npm package requests'
         click_button 'Save'
       end
 
       expect(current_settings.npm_package_requests_forwarding).to be true
     end
 
+    it 'allows you to change the npm_lock setting' do
+      page.within('#js-package-settings') do
+        check 'Enforce npm setting for all subgroups'
+        click_button 'Save'
+      end
+
+      expect(current_settings.lock_npm_package_requests_forwarding).to be true
+    end
+
     it 'allows you to change the pypi_forwarding setting' do
       page.within('#js-package-settings') do
-        check 'Forward PyPI package requests to the PyPI Registry if the packages are not found in the GitLab Package Registry'
+        check 'Forward PyPI package requests'
         click_button 'Save'
       end
 
       expect(current_settings.pypi_package_requests_forwarding).to be true
+    end
+
+    it 'allows you to change the pypi_lock setting' do
+      page.within('#js-package-settings') do
+        check 'Enforce PyPI setting for all subgroups'
+        click_button 'Save'
+      end
+
+      expect(current_settings.lock_pypi_package_requests_forwarding).to be true
     end
   end
 

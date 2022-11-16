@@ -83,8 +83,11 @@ module EE
           required_ci_templates: :required_instance_ci_template,
           disable_name_update_for_users: :updating_name_disabled_for_users,
           package_forwarding: [:npm_package_requests_forwarding,
+                               :lock_npm_package_requests_forwarding,
                                :pypi_package_requests_forwarding,
-                               :maven_package_requests_forwarding],
+                               :lock_pypi_package_requests_forwarding,
+                               :maven_package_requests_forwarding,
+                               :lock_maven_package_requests_forwarding],
           default_branch_protection_restriction_in_groups: :group_owners_can_manage_default_branch_protection,
           group_ip_restriction: :globally_allowed_ips
         }.each do |license_feature, attribute_names|
