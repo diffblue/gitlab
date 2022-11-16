@@ -54,7 +54,7 @@ RSpec.describe 'Global elastic search', :elastic, :sidekiq_inline do
       end
 
       it 'sets tab count to 0' do
-        expect(page.find('.search-filter .active')).to have_text('0')
+        expect(page.find('[data-testid="search-filter"] .active')).to have_text('0')
       end
     end
   end
