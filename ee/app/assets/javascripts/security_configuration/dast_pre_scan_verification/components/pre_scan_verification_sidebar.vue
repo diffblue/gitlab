@@ -2,7 +2,7 @@
 import { GlDrawer } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
-import { getContentWrapperHeight } from 'ee/security_orchestration/utils';
+import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
 import PreScanVerificationAlert from './pre_scan_verification_alert.vue';
 import PreScanVerificationList from './pre_scan_verification_list.vue';
