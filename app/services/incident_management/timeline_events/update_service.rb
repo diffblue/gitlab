@@ -66,12 +66,11 @@ module IncidentManagement
       def update_timeline_event_tags(timeline_event, tag_updates)
         tag_updates = tag_updates.map(&:downcase)
         already_assigned_tags = timeline_event.timeline_event_tags.pluck_names.map(&:downcase)
-        tags_defined_on_project = timeline_event.project.incident_management_timeline_event_tags.pluck_names.map(&:downcase)
 
         tags_to_remove = already_assigned_tags - tag_updates
         tags_to_add = tag_updates - already_assigned_tags
 
-        validate_tags(tags_to_add, tags_defined_on_project)
+        validate_tags(tags_to_add)
 
         remove_tag_links(timeline_event, tags_to_remove) if tags_to_remove.any?
         create_tag_links(timeline_event, tags_to_add) if tags_to_add.any?
@@ -97,7 +96,9 @@ module IncidentManagement
         IncidentManagement::TimelineEventTagLink.insert_all(tag_links) if tag_links.any?
       end
 
-      def validate_tags(tags_to_add, defined_tags)
+      def validate_tags(tags_to_add)
+        defined_tags = timeline_event.project.incident_management_timeline_event_tags.by_names(tags_to_add)
+
         non_existing_tags = tags_to_add - defined_tags
 
         return if non_existing_tags.empty?
