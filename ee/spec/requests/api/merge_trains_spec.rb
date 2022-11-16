@@ -179,4 +179,61 @@ RSpec.describe API::MergeTrains do
       end
     end
   end
+
+  describe 'GET /projects/:id/merge_trains/merge_requests/:merge_request_iid' do
+    let(:merge_request_1) do
+      create(:merge_request, :with_merge_request_pipeline,
+             source_project: project, source_branch: 'feature',
+             target_project: project, target_branch: 'master', title: 'Test')
+    end
+
+    let!(:merge_train_1) { create(:merge_train, merge_request: merge_request_1) }
+
+    context 'when the project and target branch exist' do
+      subject { get api("/projects/#{project.id}/merge_trains/merge_requests/#{merge_request_1.iid}", developer) }
+
+      it 'returns the target branch merge train cars' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:ok)
+        expect(json_response["id"]).to eq(merge_train_1.id)
+        expect(json_response["merge_request"]["iid"]).to eq(merge_request_1.iid)
+      end
+    end
+
+    context 'when the user does not have project access' do
+      subject { get api("/projects/#{project.id}/merge_trains/merge_requests/#{merge_request_1.iid}", guest) }
+
+      it 'returns forbidden' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:forbidden)
+      end
+    end
+
+    context 'when the merge request does not exist' do
+      subject { get api("/projects/#{project.id}/merge_trains/merge_requests/50", developer) }
+
+      it 'returns not found' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+
+    context 'when merge request is not in a merge train' do
+      let(:merge_request_2) do
+        create(:merge_request, source_project: project, source_branch: 'second',
+                               target_project: project, target_branch: 'master')
+      end
+
+      subject { get api("/projects/#{project.id}/merge_trains/merge_requests/#{merge_request_2.iid}", developer) }
+
+      it 'returns not found' do
+        subject
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
 end
