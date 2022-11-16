@@ -9,17 +9,28 @@ module Elastic
     end
 
     def indices
-      @indices ||= [helper.target_name, helper.migrations_index_name] + helper.standalone_indices_proxies.map(&:index_name)
+      @indices ||= curator.indices.map { |info| info['index'] } + [helper.migrations_index_name]
     end
 
-    def setup
+    def curator
+      @curator ||= ::Gitlab::Search::IndexCurator.new(ignore_patterns: [/migrations/])
+    end
+
+    def setup(multi_index: false)
       clear_tracking!
       delete_indices!
       helper.create_empty_index(options: { settings: { number_of_replicas: 0 } })
       helper.create_migrations_index
       ::Elastic::DataMigrationService.mark_all_as_completed!
       helper.create_standalone_indices
+      rollover_indices if multi_index
       refresh_elasticsearch_index!
+    end
+
+    def rollover_indices
+      curator.write_indices.each do |index_info|
+        curator.rollover_index(index_info) unless curator.should_ignore_index?(index_info)
+      end
     end
 
     def teardown
@@ -65,7 +76,7 @@ RSpec.configure do |config|
   # wherever possible.
   config.before(:all, :elastic) do
     helper = Elastic::TestHelpers.new
-    helper.setup
+    helper.setup(multi_index: true)
   end
 
   config.after(:all, :elastic) do

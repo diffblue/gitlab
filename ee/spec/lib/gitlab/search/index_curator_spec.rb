@@ -36,7 +36,7 @@ RSpec.describe Gitlab::Search::IndexCurator do
 
     it 'rolls over the indices that need to be rolled over' do
       allow(stubbed_curator).to receive(:preflight_checks!)
-      allow(stubbed_curator).to receive(:indices).and_return([index_one, index_two, index_three])
+      allow(stubbed_curator).to receive(:write_indices).and_return([index_one, index_two, index_three])
       allow(stubbed_curator).to receive(:should_rollover?).and_return false
       allow(stubbed_curator).to receive(:should_rollover?).with(index_two).and_return true
 
@@ -276,20 +276,58 @@ RSpec.describe Gitlab::Search::IndexCurator do
   end
 
   describe '#indices' do
-    it 'returns write indices from aliases' do
-      aliases = [
+    using RSpec::Parameterized::TableSyntax
+
+    let(:settings) { { ignore_patterns: [/ignore_me/, /me_too/] } }
+
+    let(:aliases) do
+      [
         { 'index' => 'foo', 'is_write_index' => '-' },
         { 'index' => 'bar', 'is_write_index' => 'true' },
-        { 'index' => 'baz', 'is_write_index' => 'false' }
+        { 'index' => 'baz', 'is_write_index' => 'false' },
+        { 'index' => 'you_should_ignore_me', 'is_write_index' => '-' },
+        { 'index' => 'you_should_filter_me_too', 'is_write_index' => '-' }
       ]
+    end
+
+    let(:indices) { instance_double(Array) }
+
+    before do
       allow(curator.client).to receive_message_chain(:cat, :aliases).and_return(aliases)
+    end
 
-      indices = instance_double(Array)
-      expect(curator.client).to receive_message_chain(:cat, :indices).with(
-        index: %w[foo bar], expand_wildcards: 'open', format: 'json', pri: true, bytes: 'gb'
-      ).and_return indices
+    where(:lifecycle, :index_names, :convenience_method) do
+      :write | %w[foo bar]     | :write_indices
+      :read  | %w[foo baz]     | :read_indices
+      :all   | %w[foo bar baz] | :indices
+    end
 
-      expect(curator.indices).to eq(indices)
+    with_them do
+      it 'returns the correct indices from aliases' do
+        expect(curator.client).to receive_message_chain(:cat, :indices).with(
+          index: index_names, expand_wildcards: 'open', format: 'json', pri: true, bytes: 'gb'
+        ).and_return indices
+
+        expect(curator.indices(lifecycle: lifecycle)).to eq(indices)
+      end
+    end
+
+    it 'raises an ArgumentError if given an invalid lifecycle' do
+      expect { curator.indices(lifecycle: :foo) }.to raise_error ArgumentError, /Acceptable lifecycle values are/
+    end
+  end
+
+  describe '#write_indices' do
+    it 'is a convenience method for indices(lifecycle: :write)' do
+      expect(curator).to receive(:indices).with(lifecycle: :write).and_return :write_indices
+      expect(curator.write_indices).to eq(:write_indices)
+    end
+  end
+
+  describe '#read_indices' do
+    it 'is a convenience method for indices(lifecycle: :read)' do
+      expect(curator).to receive(:indices).with(lifecycle: :read).and_return :read_indices
+      expect(curator.read_indices).to eq(:read_indices)
     end
   end
 

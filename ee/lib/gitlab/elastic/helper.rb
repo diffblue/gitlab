@@ -410,6 +410,8 @@ module Gitlab
           raise "Index or alias under '#{alias_name}' already exists."
         end
 
+        settings = settings.with_indifferent_access
+        mappings = mappings.with_indifferent_access
         settings.merge!(options[:settings]) if options[:settings]
         mappings.merge!(options[:mappings]) if options[:mappings]
 
