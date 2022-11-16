@@ -26,7 +26,7 @@ describe('MR Widget Security Reports - Summary Text', () => {
     createComponent();
     await nextTick();
     expect(wrapper.html()).toBe(
-      '<div>Security scanning detected no <strong>new</strong> potential vulnerabilities</div>',
+      '<div>Security scanning detected no new potential vulnerabilities</div>',
     );
   });
 

@@ -47807,10 +47807,10 @@ msgstr ""
 msgid "ciReport|%{scanner} detected %{strong_start}%{number}%{strong_end} new potential %{vulnStr}"
 msgstr ""
 
-msgid "ciReport|%{scanner} detected no %{boldStart}new%{boldEnd} potential vulnerabilities"
+msgid "ciReport|%{scanner} detected no new %{vulnStr}"
 msgstr ""
 
-msgid "ciReport|%{scanner} detected no new %{vulnStr}"
+msgid "ciReport|%{scanner} detected no new potential vulnerabilities"
 msgstr ""
 
 msgid "ciReport|: Loading resulted in an error"
