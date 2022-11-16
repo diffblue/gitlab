@@ -144,9 +144,15 @@ namespace :tw do
 
     File.write(codeowners_path, new_codeowners_content)
 
+    if current_codeowners_content == new_codeowners_content
+      puts "~ CODEOWNERS already up to date".color(:yellow)
+    else
+      puts "✓ CODEOWNERS updated".color(:green)
+    end
+
     if errors.present?
-      puts "-----"
-      puts "ERRORS - the following files are missing the correct metadata:"
+      puts ""
+      puts "✘ Files with missing metadata found:".color(:red)
       errors.map { |file| puts file }
     end
   end
