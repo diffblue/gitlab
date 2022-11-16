@@ -25,9 +25,7 @@ export const i18n = {
   highlights: s__(
     'ciReport|%{criticalStart}critical%{criticalEnd}, %{highStart}high%{highEnd} and %{otherStart}others%{otherEnd}',
   ),
-  noNewVulnerabilities: s__(
-    'ciReport|%{scanner} detected no %{boldStart}new%{boldEnd} potential vulnerabilities',
-  ),
+  noNewVulnerabilities: s__('ciReport|%{scanner} detected no new potential vulnerabilities'),
   newVulnerabilities: s__('ciReport|%{scanner} detected %{number} new potential %{vulnStr}'),
 };
 
