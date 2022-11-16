@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_support/testing/time_helpers'
 require 'spec_helper'
 
 RSpec.describe ProjectWiki do
