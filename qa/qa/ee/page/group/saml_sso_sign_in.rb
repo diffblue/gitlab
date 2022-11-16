@@ -9,10 +9,6 @@ module QA
             element :saml_sso_signin_button
           end
 
-          view 'ee/app/assets/javascripts/saml_sso/components/saml_authorize.vue' do
-            element :saml_sso_signin_button
-          end
-
           def click_sign_in
             Support::Retrier.retry_until do
               click_element :saml_sso_signin_button
