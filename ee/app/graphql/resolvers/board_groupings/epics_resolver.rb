@@ -19,21 +19,39 @@ module Resolvers
 
         context.scoped_set!(:board, board)
 
-        Epic.id_in(board_epic_ids(args[:issue_filters]))
+        issue_params = item_filters(args[:issue_filters])
+
+        if empty_issue_params?(issue_params) && Feature.enabled?(:board_grouped_by_epic_performance, group)
+          # The service outputs an optimized query in which `ORDER` clause must appear nested inside a CTE.
+          # To prevent the keyset pagination connection from appending unnecessary `ORDER` clause that
+          # could make the query very slow, we are using the offset pagination connection.
+          # However, this query is only more performant when there are no issue filters as it would
+          # take a longer time to find matching epics.
+          offset_pagination(
+            ::Epics::WithIssuesFinder.new(
+              accessible_epics: accessible_epics,
+              accessible_issues: accessible_issues(issue_params)
+            ).execute
+          )
+        else
+          Epic.id_in(board_epic_ids(issue_params))
+        end
       end
 
       private
 
       def board_epic_ids(issue_params)
-        params = item_filters(issue_params).merge(all_lists: true, board_id: board.id)
+        accessible_issues(issue_params).in_epics(accessible_epics).distinct_epic_ids
+      end
 
-        list_service = ::Boards::Issues::ListService.new(
+      def accessible_issues(issue_params)
+        params = issue_params.merge(all_lists: true, board_id: board.id)
+
+        ::Boards::Issues::ListService.new(
           board.resource_parent,
           current_user,
           params
-        )
-
-        list_service.execute.in_epics(accessible_epics).distinct_epic_ids
+        ).execute
       end
 
       # rubocop: disable CodeReuse/ActiveRecord
@@ -50,6 +68,12 @@ module Resolvers
 
       def group
         board.project_board? ? board.project.group : board.group
+      end
+
+      def empty_issue_params?(issue_params)
+        return true if issue_params.nil?
+
+        issue_params.values.all? { |v| v.nil? || v.empty? }
       end
     end
   end

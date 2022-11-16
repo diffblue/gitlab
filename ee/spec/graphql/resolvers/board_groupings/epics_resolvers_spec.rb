@@ -18,11 +18,11 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
   let_it_be(:list) { create(:list, board: board, label: label1) }
 
   let_it_be(:issue1) { create(:issue, project: project, labels: [label1]) }
-  let_it_be(:issue2) { create(:issue, project: project, labels: [label1, label2]) }
+  let_it_be(:issue2) { create(:issue, :confidential, project: project, labels: [label1, label2]) }
   let_it_be(:issue3) { create(:issue, project: other_project) }
 
   let_it_be(:epic1) { create(:epic, group: parent_group) }
-  let_it_be(:epic2) { create(:epic, group: group) }
+  let_it_be(:epic2) { create(:epic, :confidential, group: group) }
   let_it_be(:epic3) { create(:epic, group: group) }
 
   let_it_be(:epic_issue1) { create(:epic_issue, epic: epic1, issue: issue1) }
@@ -37,7 +37,7 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
     )
   end
 
-  describe '#resolve' do
+  shared_examples '#resolve' do
     before do
       stub_licensed_features(epics: true)
     end
@@ -58,13 +58,17 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
       it 'finds all epics for issues in the project board' do
         result = resolve_board_epics(board)
 
+        # WithIssueFinders takes care of ordering and orders based on descending epics.id.
+        # The other query does not take care of ordering as it's done with our GraphQL Pagination.
         expect(result).to match_array([epic1, epic2])
       end
 
       it 'finds all epics for issues in the group board' do
         result = resolve_board_epics(group_board)
 
-        expect(result).to eq([epic1, epic2, epic3])
+        # WithIssueFinders takes care of ordering and orders based on descending epics.id.
+        # The other query does not take care of ordering as it's done with our GraphQL Pagination.
+        expect(result).to match_array([epic1, epic2, epic3])
       end
 
       it 'finds only epics for issues matching issue filters' do
@@ -81,22 +85,21 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
         expect(result).to match_array([epic1])
       end
 
-      it 'accepts negated issue params' do
-        filters = { label_name: ['foo'], not: { label_name: %w(foo bar) } }
-
-        expect(Boards::Issues::ListService).to receive(:new).with(
-          group_board.resource_parent,
-          current_user,
-          { all_lists: true, board_id: group_board.id, **filters }
-        ).and_call_original
-
-        resolve_board_epics(group_board, { issue_filters: filters })
-      end
-
       it 'generates an error if both epic_id and epic_wildcard_id are present' do
         expect_graphql_error_to_be_created(Gitlab::Graphql::Errors::ArgumentError) do
           resolve_board_epics(group_board, { issue_filters: { epic_id: epic1.to_global_id, epic_wildcard_id: 'NONE' } })
         end
+      end
+
+      it 'calls service with right params' do
+        filters = { label_name: ['foo'], not: { label_name: %w(foo bar) } }
+        service_params = { all_lists: true, board_id: group_board.id }.merge(filters)
+
+        expect(Boards::Issues::ListService).to receive(:new)
+          .with(group_board.resource_parent, current_user, service_params)
+          .and_call_original
+
+        resolve_board_epics(group_board, { issue_filters: filters })
       end
 
       it 'accepts epic global id' do
@@ -113,6 +116,71 @@ RSpec.describe Resolvers::BoardGroupings::EpicsResolver do
         expect(result).to match_array([])
       end
     end
+
+    context 'when user is a group guest' do
+      before do
+        parent_group.add_guest(current_user)
+      end
+
+      it 'finds non-confidental epics for issues in the project board' do
+        result = resolve_board_epics(board)
+
+        expect(result).to match_array([epic1])
+      end
+
+      it 'finds non-confidental epics for issues in the group board' do
+        result = resolve_board_epics(group_board)
+
+        expect(result).to match_array([epic1, epic3])
+      end
+    end
+  end
+
+  context 'when board_grouped_by_epic_performance is turned on' do
+    before do
+      stub_feature_flags(board_grouped_by_epic_performance: true)
+    end
+
+    it_behaves_like '#resolve'
+
+    context 'with issue filters' do
+      before do
+        stub_licensed_features(epics: true)
+        parent_group.add_developer(current_user)
+      end
+
+      context 'when issue filters are set' do
+        it 'does not call the Epics::WithIssuesFinder' do
+          filters = { label_name: ['foo'] }
+
+          expect(::Epics::WithIssuesFinder).not_to receive(:new)
+
+          resolve_board_epics(group_board, { issue_filters: filters })
+        end
+      end
+
+      context 'when there are no issue filters' do
+        it 'call the Epics::WithIssuesFinder and orders the result' do
+          expect(::Epics::WithIssuesFinder).to receive(:new).and_call_original
+
+          resolve_board_epics(group_board)
+        end
+
+        it 'orders by descending epics.id' do
+          result = resolve_board_epics(group_board)
+
+          expect(result).to eq([epic3, epic2, epic1])
+        end
+      end
+    end
+  end
+
+  context 'when board_grouped_by_epic_performance is turned off' do
+    before do
+      stub_feature_flags(board_grouped_by_epic_performance: false)
+    end
+
+    it_behaves_like '#resolve'
   end
 
   def resolve_board_epics(object, args = {})
