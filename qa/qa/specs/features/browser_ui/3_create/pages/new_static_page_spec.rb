@@ -45,8 +45,8 @@ module QA
           pages.go_to_access_page
           Support::Waiter.wait_until(sleep_interval: 2, max_duration: 60, reload_page: page,
                                      retry_on_exception: true) do
-            expect(page).to have_content('This is a simple plain-HTML website on GitLab Pages,
-            without any fancy static site generator.')
+            expect(page).to have_content(
+              'This is a simple plain-HTML website on GitLab Pages, without any fancy static site generator.')
           end
         end
       end
