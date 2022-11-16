@@ -73,6 +73,41 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
         end
       end
 
+      context 'when predefined tags exist' do
+        let_it_be(:end_time_tag) do
+          create(:incident_management_timeline_event_tag, project: project, name: 'End time')
+        end
+
+        let(:args) do
+          {
+            note: 'note',
+            occurred_at: Time.current,
+            timeline_event_tag_names: ['End time']
+          }
+        end
+
+        it 'does not create a new tag' do
+          expect { resolve }.not_to change(IncidentManagement::TimelineEventTag, :count)
+        end
+      end
+
+      context 'when same tags are tried to be assigned to same timeline event' do
+        let(:args) do
+          {
+            note: 'note',
+            occurred_at: Time.current,
+            timeline_event_tag_names: ['Start time', 'Start time']
+          }
+        end
+
+        it 'only assigns the tag once on the event' do
+          timeline_event = resolve[:timeline_event]
+
+          expect(timeline_event.timeline_event_tags.by_names(['Start time']).count).to eq(1)
+          expect(timeline_event.timeline_event_tags.count).to eq(1)
+        end
+      end
+
       context 'with case-insentive tags' do
         let(:args) do
           {
@@ -98,14 +133,11 @@ RSpec.describe Mutations::IncidentManagement::TimelineEvent::Create do
           }
         end
 
-        it 'raises an error' do
-          old_count = incident.incident_management_timeline_events
+        it_behaves_like 'responding with an incident timeline errors',
+          errors: ["Following tags don't exist: [\"other time\"]"]
 
-          expect { resolve }.to raise_error(Gitlab::Graphql::Errors::ArgumentError)
-
-          new_count = incident.incident_management_timeline_events
-
-          expect(new_count).to eq(old_count)
+        it 'does not create the timeline event' do
+          expect { resolve }.not_to change(IncidentManagement::TimelineEvent, :count)
         end
       end
     end

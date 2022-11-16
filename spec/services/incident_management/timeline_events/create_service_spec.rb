@@ -178,6 +178,24 @@ RSpec.describe IncidentManagement::TimelineEvents::CreateService do
             .to include('Start time', 'End time')
         end
       end
+
+      context 'when invalid tag names are passed' do
+        let(:args) do
+          {
+            note: 'note',
+            occurred_at: Time.current,
+            action: 'new comment',
+            promoted_from_note: comment,
+            timeline_event_tag_names: ['some other time']
+          }
+        end
+
+        it_behaves_like 'error response', "Following tags don't exist: [\"some other time\"]"
+
+        it 'does not create timeline event' do
+          expect { execute }.not_to change(IncidentManagement::TimelineEvent, :count)
+        end
+      end
     end
 
     context 'with editable param' do
