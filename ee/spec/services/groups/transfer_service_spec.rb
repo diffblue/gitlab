@@ -3,7 +3,8 @@
 require 'spec_helper'
 
 RSpec.describe Groups::TransferService, '#execute' do
-  let(:user) { create(:user) }
+  let_it_be(:user) { create(:user) }
+
   let(:group) { create(:group, :public) }
   let(:project) { create(:project, :public, namespace: group) }
   let(:new_group) { create(:group, :public) }
@@ -110,55 +111,91 @@ RSpec.describe Groups::TransferService, '#execute' do
       end
 
       context 'when group is moved completely out of the main group' do
-        let(:group) { subgroup_group_level_1 }
+        it 'keeps relations between all epics' do
+          described_class.new(subgroup_group_level_1, user).execute(new_group)
 
-        before do
-          transfer_service.execute(new_group)
-        end
-
-        it 'keeps relations between epics in the group structure' do
           expect(level_1_epic_2.reload.parent).to eq(level_1_epic_1)
           expect(level_2_epic_2.reload.parent).to eq(level_1_epic_1)
           expect(level_2_subepic.reload.parent).to eq(level_2_epic_2)
           expect(level_3_epic.reload.parent).to eq(level_2_epic_2)
+          expect(level_1_epic_1.reload.parent).to eq(root_epic)
+          expect(level_2_epic_1.reload.parent).to eq(root_epic)
         end
 
-        it 'removes relations to epics of the old parent group' do
-          expect(level_1_epic_1.reload.parent).to be_nil
-          expect(level_2_epic_1.reload.parent).to be_nil
+        context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+          before do
+            stub_feature_flags(child_epics_from_different_hierarchies: false)
+            described_class.new(subgroup_group_level_1, user).execute(new_group)
+          end
+
+          it 'keeps relations between epics in the group structure' do
+            expect(level_1_epic_2.reload.parent).to eq(level_1_epic_1)
+            expect(level_2_epic_2.reload.parent).to eq(level_1_epic_1)
+            expect(level_2_subepic.reload.parent).to eq(level_2_epic_2)
+            expect(level_3_epic.reload.parent).to eq(level_2_epic_2)
+          end
+
+          it 'removes relations to epics of the old parent group' do
+            expect(level_1_epic_1.reload.parent).to be_nil
+            expect(level_2_epic_1.reload.parent).to be_nil
+          end
         end
       end
 
       context 'when group is moved some levels up' do
-        let(:group) { subgroup_group_level_2 }
+        it 'keeps relations between all epics' do
+          described_class.new(subgroup_group_level_2, user).execute(root_group)
 
-        before do
-          transfer_service.execute(root_group)
-        end
-
-        it 'keeps relations between epics in the group structure' do
           expect(level_1_epic_1.reload.parent).to eq(root_epic)
           expect(level_1_epic_2.reload.parent).to eq(level_1_epic_1)
           expect(level_2_epic_1.reload.parent).to eq(root_epic)
           expect(level_2_subepic.reload.parent).to eq(level_2_epic_2)
           expect(level_3_epic.reload.parent).to eq(level_2_epic_2)
+          expect(level_2_epic_2.reload.parent).to eq(level_1_epic_1)
         end
 
-        it 'removes relations to epics of the old parent group' do
-          expect(level_2_epic_2.reload.parent).to be_nil
+        context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+          before do
+            stub_feature_flags(child_epics_from_different_hierarchies: false)
+            described_class.new(subgroup_group_level_2, user).execute(root_group)
+          end
+
+          it 'keeps relations between epics in the group structure' do
+            expect(level_1_epic_1.reload.parent).to eq(root_epic)
+            expect(level_1_epic_2.reload.parent).to eq(level_1_epic_1)
+            expect(level_2_epic_1.reload.parent).to eq(root_epic)
+            expect(level_2_subepic.reload.parent).to eq(level_2_epic_2)
+            expect(level_3_epic.reload.parent).to eq(level_2_epic_2)
+          end
+
+          it 'removes relations to epics of the old parent group' do
+            expect(level_2_epic_2.reload.parent).to be_nil
+          end
         end
       end
 
       describe 'update cached metadata' do
         subject { described_class.new(subgroup_group_level_1, user).execute(new_group) }
 
-        it 'schedules update of issue counts for removed parent epic references' do
-          expect(::Epics::UpdateCachedMetadataWorker).to receive(:bulk_perform_in) do |delay, ids|
-            expect(delay).to eq(1.minute)
-            expect(ids.flatten).to match_array([level_1_epic_1.parent_id, level_2_epic_1.parent_id].uniq)
-          end.once
+        it 'does not schedule update of issue counts' do
+          expect(::Epics::UpdateCachedMetadataWorker).not_to receive(:bulk_perform_in)
 
           subject
+        end
+
+        context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+          before do
+            stub_feature_flags(child_epics_from_different_hierarchies: false)
+          end
+
+          it 'schedules update of issue counts for removed parent epic references' do
+            expect(::Epics::UpdateCachedMetadataWorker).to receive(:bulk_perform_in) do |delay, ids|
+              expect(delay).to eq(1.minute)
+              expect(ids.flatten).to match_array([level_1_epic_1.parent_id, level_2_epic_1.parent_id].uniq)
+            end.once
+
+            subject
+          end
         end
       end
     end

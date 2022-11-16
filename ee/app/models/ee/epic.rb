@@ -296,8 +296,6 @@ module EE
         ::Group
       end
 
-      # TODO: both nullification and cache count update can be removed when
-      # cross-group epic relationships are enabled: https://gitlab.com/gitlab-org/gitlab/-/issues/373977
       def nullify_lost_group_parents(groups, lost_groups)
         epics_to_update = in_selected_groups(groups).where(parent: in_selected_groups(lost_groups))
         schedule_parent_cache_update(epics_to_update)
