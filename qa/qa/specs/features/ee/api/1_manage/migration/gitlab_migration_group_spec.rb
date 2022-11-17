@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# TODO: this needs to be migrated to using 2 gitlab instances
+# however currently it's not possible to add license to the second source instance
 module QA
   RSpec.describe 'Manage', :reliable, requires_admin: 'creates a user via API', product_group: :import do
     describe 'Gitlab migration' do
