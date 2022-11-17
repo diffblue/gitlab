@@ -77,7 +77,10 @@ export default {
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
     <gl-dropdown :header-text="$options.i18n.label" block toggle-class="gl-mb-0">
       <template #button-text>
-        <dropdown-button-text :items="selectedItemTexts" />
+        <dropdown-button-text
+          :items="selectedItemTexts"
+          data-qa-selector="filter_status_dropdown"
+        />
       </template>
       <filter-item
         :is-checked="!selected.length"
