@@ -1065,6 +1065,24 @@
   :weight: 2
   :idempotent: false
   :tags: []
+- :name: dependencies_destroy_export
+  :worker_name: Dependencies::DestroyExportWorker
+  :feature_category: :dependency_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
+- :name: dependencies_export
+  :worker_name: Dependencies::ExportWorker
+  :feature_category: :dependency_management
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: elastic_association_indexer
   :worker_name: ElasticAssociationIndexerWorker
   :feature_category: :global_search
