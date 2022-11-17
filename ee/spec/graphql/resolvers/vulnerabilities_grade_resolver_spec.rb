@@ -19,13 +19,22 @@ RSpec.describe Resolvers::VulnerabilitiesGradeResolver do
   let_it_be(:vulnerability_statistic_2) { create(:vulnerability_statistic, :grade_d, project: project_in_subgroup) }
 
   describe '#resolve' do
-    let(:args) { { include_subgroups: include_subgroups } }
+    let(:letter_grade) { nil }
+    let(:args) { { include_subgroups: include_subgroups, letter_grade: letter_grade } }
 
     context 'when include_subgroups is set to true' do
       let(:include_subgroups) { true }
 
       it 'returns project grades for projects in group and its subgroups' do
         expect(subject.map(&:grade)).to match_array(%w[d f])
+      end
+
+      context 'when the letter grade is given' do
+        let(:letter_grade) { :d }
+
+        it 'returns only the requested grade' do
+          expect(subject.map(&:grade)).to match_array(%w[d])
+        end
       end
     end
 
@@ -34,6 +43,14 @@ RSpec.describe Resolvers::VulnerabilitiesGradeResolver do
 
       it 'returns project grades for projects in group only' do
         expect(subject.map(&:grade)).to match_array(%w[f])
+      end
+
+      context 'when the letter grade is given' do
+        let(:letter_grade) { :d }
+
+        it 'returns only the requested grade' do
+          expect(subject.map(&:grade)).to be_empty
+        end
       end
     end
   end

@@ -22,45 +22,81 @@ RSpec.describe Vulnerabilities::ProjectsGrade do
   describe '.grades_for' do
     let(:compare_key) { ->(projects_grade) { [projects_grade.grade, projects_grade.project_ids.sort] } }
     let(:include_subgroups) { false }
+    let(:filter) { nil }
 
-    subject(:projects_grades) { described_class.grades_for([vulnerable], include_subgroups: include_subgroups) }
+    subject(:projects_grades) { described_class.grades_for([vulnerable], filter: filter, include_subgroups: include_subgroups) }
 
     context 'when the given vulnerable is a Group' do
       let(:vulnerable) { group }
 
       context 'when subgroups are not included' do
-        let(:expected_projects_grades) do
-          {
-            vulnerable => [
-              described_class.new(vulnerable, 'a', [project_1.id]),
-              described_class.new(vulnerable, 'b', [project_2.id, project_3.id]),
-              described_class.new(vulnerable, 'c', [project_4.id]),
-              described_class.new(vulnerable, 'f', [project_5.id])
-            ]
-          }
+        context 'when the filter is not given' do
+          let(:expected_projects_grades) do
+            {
+              vulnerable => [
+                described_class.new(vulnerable, 'a', [project_1.id]),
+                described_class.new(vulnerable, 'b', [project_2.id, project_3.id]),
+                described_class.new(vulnerable, 'c', [project_4.id]),
+                described_class.new(vulnerable, 'f', [project_5.id])
+              ]
+            }
+          end
+
+          it 'returns the letter grades for given vulnerable' do
+            expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+          end
         end
 
-        it 'returns the letter grades for given vulnerable' do
-          expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+        context 'when the filter is given' do
+          let(:filter) { :a }
+          let(:expected_projects_grades) do
+            {
+              vulnerable => [
+                described_class.new(vulnerable, 'a', [project_1.id])
+              ]
+            }
+          end
+
+          it 'returns the filtered letter grade for given vulnerable' do
+            expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+          end
         end
       end
 
       context 'when subgroups are included' do
         let(:include_subgroups) { true }
-        let(:expected_projects_grades) do
-          {
-            vulnerable => [
-              described_class.new(vulnerable, 'a', [project_1.id]),
-              described_class.new(vulnerable, 'b', [project_2.id, project_3.id]),
-              described_class.new(vulnerable, 'c', [project_4.id]),
-              described_class.new(vulnerable, 'd', [project_6.id]),
-              described_class.new(vulnerable, 'f', [project_5.id])
-            ]
-          }
+
+        context 'when the filter is not given' do
+          let(:expected_projects_grades) do
+            {
+              vulnerable => [
+                described_class.new(vulnerable, 'a', [project_1.id]),
+                described_class.new(vulnerable, 'b', [project_2.id, project_3.id]),
+                described_class.new(vulnerable, 'c', [project_4.id]),
+                described_class.new(vulnerable, 'd', [project_6.id]),
+                described_class.new(vulnerable, 'f', [project_5.id])
+              ]
+            }
+          end
+
+          it 'returns the letter grades for given vulnerable' do
+            expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+          end
         end
 
-        it 'returns the letter grades for given vulnerable' do
-          expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+        context 'when the filter is given' do
+          let(:filter) { :d }
+          let(:expected_projects_grades) do
+            {
+              vulnerable => [
+                described_class.new(vulnerable, 'd', [project_6.id])
+              ]
+            }
+          end
+
+          it 'returns the filtered letter grade for given vulnerable' do
+            expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+          end
         end
       end
     end
@@ -68,19 +104,36 @@ RSpec.describe Vulnerabilities::ProjectsGrade do
     context 'when the given vulnerable is an InstanceSecurityDashboard' do
       let(:user) { create(:user) }
       let(:vulnerable) { InstanceSecurityDashboard.new(user) }
-      let(:expected_projects_grades) do
-        {
-          vulnerable => [described_class.new(vulnerable, 'a', [project_1.id])]
-        }
-      end
 
       before do
         project_1.add_developer(user)
+        project_2.add_developer(user)
         user.security_dashboard_projects << project_1
+        user.security_dashboard_projects << project_2
       end
 
-      it 'returns the letter grades for given vulnerable' do
-        expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+      context 'when the filter is not given' do
+        let(:expected_projects_grades) do
+          {
+            vulnerable => [
+              described_class.new(vulnerable, 'a', [project_1.id]),
+              described_class.new(vulnerable, 'b', [project_2.id])
+            ]
+          }
+        end
+
+        it 'returns the letter grades for given vulnerable' do
+          expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+        end
+      end
+
+      context 'when the filter is given' do
+        let(:filter) { :b }
+        let(:expected_projects_grades) { { vulnerable => [described_class.new(vulnerable, 'b', [project_2.id])] } }
+
+        it 'returns the filtered letter grade for given vulnerable' do
+          expect(projects_grades[vulnerable].map(&compare_key)).to match_array(expected_projects_grades[vulnerable].map(&compare_key))
+        end
       end
     end
   end

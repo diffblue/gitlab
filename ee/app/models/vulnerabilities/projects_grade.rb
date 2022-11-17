@@ -21,18 +21,19 @@ module Vulnerabilities
       projects.with_vulnerability_statistics.inc_routes.where(id: project_ids)
     end
 
-    def self.grades_for(vulnerables, include_subgroups: false)
+    def self.grades_for(vulnerables, filter: nil, include_subgroups: false)
       projects = include_subgroups ? vulnerables.map(&:all_projects) : vulnerables.map(&:projects)
 
-      ::Vulnerabilities::Statistic
-        .for_project(projects.reduce(&:or))
-        .group(:letter_grade)
-        .select(:letter_grade, 'array_agg(project_id) project_ids')
-        .then do |statistics|
-          vulnerables.each_with_object({}) do |vulnerable, hash|
-            hash[vulnerable] = statistics.map { |statistic| new(vulnerable, statistic.letter_grade, statistic.project_ids, include_subgroups: include_subgroups) }
-          end
-        end
+      relation = ::Vulnerabilities::Statistic.for_project(projects.reduce(&:or))
+      relation = relation.by_grade(filter) if filter
+
+      relation.group(:letter_grade)
+              .select(:letter_grade, 'array_agg(project_id) project_ids')
+              .then do |statistics|
+                vulnerables.each_with_object({}) do |vulnerable, hash|
+                  hash[vulnerable] = statistics.map { |statistic| new(vulnerable, statistic.letter_grade, statistic.project_ids, include_subgroups: include_subgroups) }
+                end
+              end
     end
   end
 end

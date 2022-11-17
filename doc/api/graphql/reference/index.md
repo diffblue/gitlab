@@ -13957,6 +13957,7 @@ Returns [`[VulnerableProjectsByGrade!]!`](#vulnerableprojectsbygrade).
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="groupvulnerabilitygradesincludesubgroups"></a>`includeSubgroups` | [`Boolean`](#boolean) | Include grades belonging to subgroups. |
+| <a id="groupvulnerabilitygradeslettergrade"></a>`letterGrade` | [`VulnerabilityGrade`](#vulnerabilitygrade) | Filter the response by given letter grade. |
 
 ##### `Group.vulnerabilitySeveritiesCount`
 
@@ -14184,7 +14185,6 @@ A block of time for which a participant is on-call.
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
-| <a id="instancesecuritydashboardvulnerabilitygrades"></a>`vulnerabilityGrades` | [`[VulnerableProjectsByGrade!]!`](#vulnerableprojectsbygrade) | Represents vulnerable project counts for each grade. |
 | <a id="instancesecuritydashboardvulnerabilityscanners"></a>`vulnerabilityScanners` | [`VulnerabilityScannerConnection`](#vulnerabilityscannerconnection) | Vulnerability scanners reported on the vulnerabilities from projects selected in Instance Security Dashboard. (see [Connections](#connections)) |
 
 #### Fields with arguments
@@ -14220,6 +14220,18 @@ four standard [pagination arguments](#connection-pagination-arguments):
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | <a id="instancesecuritydashboardprojectssearch"></a>`search` | [`String`](#string) | Search query, which can be for the project name, a path, or a description. |
+
+##### `InstanceSecurityDashboard.vulnerabilityGrades`
+
+Represents vulnerable project counts for each grade.
+
+Returns [`[VulnerableProjectsByGrade!]!`](#vulnerableprojectsbygrade).
+
+###### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="instancesecuritydashboardvulnerabilitygradeslettergrade"></a>`letterGrade` | [`VulnerabilityGrade`](#vulnerabilitygrade) | Filter the response by given letter grade. |
 
 ##### `InstanceSecurityDashboard.vulnerabilitySeveritiesCount`
 
