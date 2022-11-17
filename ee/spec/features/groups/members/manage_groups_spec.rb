@@ -81,7 +81,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
 
   context 'for a free group' do
     before do
-      allow(group).to receive(:paid?).and_return(false)
+      create(:gitlab_subscription, namespace: group, hosted_plan: nil)
     end
 
     it_behaves_like "doesn't trigger an overage modal when adding a group with a given role", 'Reporter'
@@ -164,6 +164,10 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       let(:group) { create(:group) }
       let(:group_to_add) { create(:group) }
 
+      before do
+        create(:gitlab_subscription, namespace: group, hosted_plan: nil)
+      end
+
       it_behaves_like 'restricted membership by email domain'
     end
 
@@ -173,6 +177,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       let(:group_to_add) { create(:group) }
 
       before do
+        create(:gitlab_subscription, namespace: parent_group, hosted_plan: nil)
         parent_group.add_owner(user)
       end
 
@@ -183,6 +188,10 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       let(:group) { create(:group) }
       let(:group_to_add) { create(:group, parent: create(:group)) }
 
+      before do
+        create(:gitlab_subscription, namespace: group, hosted_plan: nil)
+      end
+
       it_behaves_like 'restricted membership by email domain'
     end
 
@@ -192,6 +201,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       let(:group_to_add) { create(:group, parent: create(:group)) }
 
       before do
+        create(:gitlab_subscription, namespace: parent_group, hosted_plan: nil)
         parent_group.add_owner(user)
       end
 

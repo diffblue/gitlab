@@ -13,24 +13,11 @@ import {
   OVERAGE_MODAL_BACK_BUTTON,
 } from 'ee/invite_members/constants';
 import { propsData as propsDataCE } from 'jest/invite_members/mock_data/modal_base';
-import { fetchUserIdsFromGroup } from 'ee/invite_members/utils';
 import getSubscriptionEligibility from 'ee/invite_members/subscription_eligible.customer.query.graphql';
-import createMockApollo from 'helpers/mock_apollo_helper';
-import { noFreePlacesSubscription as mockSubscription } from '../mock_data';
+import getBillableUserCountChanges from 'ee/invite_members/billable_users_count.query.graphql';
+import { createMockClient } from 'helpers/mock_apollo_helper';
 
 Vue.use(VueApollo);
-
-jest.mock('ee/invite_members/check_overage', () => ({
-  checkOverage: jest.fn().mockImplementation(() => ({ hasOverage: true, usersOverage: 2 })),
-}));
-
-jest.mock('ee/invite_members/get_subscription_data', () => ({
-  fetchSubscription: jest.fn().mockImplementation(() => mockSubscription),
-}));
-
-jest.mock('ee/invite_members/utils', () => ({
-  fetchUserIdsFromGroup: jest.fn().mockImplementation(() => [123, 256]),
-}));
 
 describe('EEInviteModalBase', () => {
   let wrapper;
@@ -40,13 +27,30 @@ describe('EEInviteModalBase', () => {
   const defaultResolverMock = jest
     .fn()
     .mockResolvedValue({ data: { subscription: { eligibleForSeatUsageAlerts: true } } });
+  const defaultBillableMock = jest.fn().mockResolvedValue({
+    data: {
+      group: {
+        id: 12345,
+        gitlabSubscriptionsPreviewBillableUserChange: {
+          hasOverage: true,
+          newBillableUserCount: 2,
+          seatsInSubscription: 1,
+        },
+      },
+    },
+  });
 
   const createComponent = ({
     props = {},
     glFeatures = {},
     queryHandler = defaultResolverMock,
   } = {}) => {
-    mockApollo = createMockApollo([[getSubscriptionEligibility, queryHandler]]);
+    const mockCustomersDotClient = createMockClient([[getSubscriptionEligibility, queryHandler]]);
+    const mockGitlabClient = createMockClient([[getBillableUserCountChanges, defaultBillableMock]]);
+    mockApollo = new VueApollo({
+      defaultClient: mockCustomersDotClient,
+      clients: { customersDotClient: mockCustomersDotClient, gitlabClient: mockGitlabClient },
+    });
 
     wrapper = shallowMountExtended(EEInviteModalBase, {
       propsData: {
@@ -99,7 +103,7 @@ describe('EEInviteModalBase', () => {
 
   describe('default', () => {
     beforeEach(() => {
-      createComponent({ props: { invalidFeedbackMessage: 'error appeared' } });
+      createComponent({ props: { invalidFeedbackMessage: 'error appeared', fullPath: 'project' } });
     });
 
     it('passes attrs to CE base', () => {
@@ -151,7 +155,7 @@ describe('EEInviteModalBase', () => {
   describe('with overageMembersModal feature flag and a group to invite, and invite is clicked', () => {
     beforeEach(async () => {
       createComponent({
-        props: { newGroupToInvite: 123, rootGroupId: '54321' },
+        props: { newGroupToInvite: 123, rootGroupId: '54321', fullPath: 'project' },
         glFeatures: { overageMembersModal: true },
       });
       clickInviteButton();
@@ -163,16 +167,14 @@ describe('EEInviteModalBase', () => {
       expect(defaultResolverMock).toHaveBeenCalledTimes(1);
       expect(defaultResolverMock).toHaveBeenCalledWith({ namespaceId: 54321 });
     });
-
-    it('calls fetchUserIdsFromGroup and passes correct parameter', () => {
-      expect(fetchUserIdsFromGroup).toHaveBeenCalledTimes(1);
-      expect(fetchUserIdsFromGroup).toHaveBeenCalledWith(123);
-    });
   });
 
   describe('with overageMembersModal feature flag, and invite is clicked', () => {
     beforeEach(async () => {
-      createComponent({ glFeatures: { overageMembersModal: true } });
+      createComponent({
+        props: { newUsersToInvite: [123], fullPath: 'project' },
+        glFeatures: { overageMembersModal: true },
+      });
       clickInviteButton();
       await waitForPromises();
     });
@@ -205,7 +207,7 @@ describe('EEInviteModalBase', () => {
 
     it('shows the info text', () => {
       expect(findModal().text()).toContain(
-        'If you continue, the _name_ group will have 2 seats in use and will be billed for the overage.',
+        'Your subscription includes 1 seat. If you continue, the _name_ group will have 2 seats in use and will be billed for the overage.',
       );
     });
 
@@ -230,6 +232,7 @@ describe('EEInviteModalBase', () => {
   describe('when the group is not eligible to show overage', () => {
     beforeEach(async () => {
       createComponent({
+        props: { fullPath: 'project' },
         glFeatures: { overageMembersModal: true },
         queryHandler: jest
           .fn()
@@ -253,6 +256,7 @@ describe('EEInviteModalBase', () => {
   describe('when group eligibility API request fails', () => {
     beforeEach(async () => {
       createComponent({
+        props: { fullPath: 'project' },
         glFeatures: { overageMembersModal: true },
         queryHandler: jest.fn().mockRejectedValue(new Error('GraphQL error')),
       });
@@ -280,6 +284,7 @@ describe('EEInviteModalBase', () => {
   describe('integration', () => {
     it('sets overage and actual feedback message if invalidFeedbackMessage prop is passed', async () => {
       createComponent({
+        props: { newUsersToInvite: [123], fullPath: 'project' },
         glFeatures: { overageMembersModal: true },
       });
 

@@ -1,0 +1,21 @@
+query getBillableUsersCount(
+  $fullPath: ID!
+  $addGroupId: Int
+  $addUserEmails: [String!]
+  $addUserIds: [Int!]
+  $role: GitlabSubscriptionsUserRole!
+) {
+  group(fullPath: $fullPath) {
+    id
+    gitlabSubscriptionsPreviewBillableUserChange(
+      addGroupId: $addGroupId
+      addUserEmails: $addUserEmails
+      addUserIds: $addUserIds
+      role: $role
+    ) {
+      hasOverage
+      seatsInSubscription
+      newBillableUserCount
+    }
+  }
+}
