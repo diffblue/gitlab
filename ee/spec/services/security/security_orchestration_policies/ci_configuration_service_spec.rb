@@ -55,7 +55,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
 
       context 'when scan type is container_scanning' do
         let_it_be(:action) { { scan: 'container_scanning' } }
-        let_it_be(:template_name) { 'Security/Container-Scanning' }
+        let_it_be(:template_name) { 'Jobs/Container-Scanning' }
         let_it_be(:ci_variables) { {} }
 
         it_behaves_like 'with template name for scan type'
