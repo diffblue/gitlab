@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis_shared_state do
+RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic, :clean_gitlab_redis_shared_state do
   let_it_be(:issue) { create(:issue) }
   let_it_be(:other_issue) { create(:issue, project: issue.project) }
 
@@ -18,6 +18,14 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
   let(:issue_as_json_with_times) { issue.__elasticsearch__.as_indexed_json }
   let(:issue_as_json) { issue_as_json_with_times.except('created_at', 'updated_at') }
   let(:other_issue_as_ref) { ref(other_issue) }
+
+  # Because there are two indices, one rolled over and one active,
+  # there is an additional op for each index.
+  #
+  # Whatever the json payload bytesize is, it will ultimately be multiplied
+  # by the total number of indices. We add an additional 0.5 to the overflow
+  # factor to simulate the bulk_limit being exceeded in tests.
+  let(:bulk_limit_overflow_factor) { 2.5 }
 
   describe '#process' do
     it 'returns bytesize for the indexing operation and data' do
@@ -59,7 +67,7 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
     end
 
     it 'sends a bulk request before adding an item that exceeds the bulk limit' do
-      bulk_limit_bytes = (issue_as_json_with_times.to_json.bytesize * 1.5).to_i
+      bulk_limit_bytes = (issue_as_json_with_times.to_json.bytesize * bulk_limit_overflow_factor).to_i
       set_bulk_limit(indexer, bulk_limit_bytes)
       indexer.process(issue_as_ref)
       allow(es_client).to receive(:bulk).and_return({})
@@ -79,9 +87,13 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
     it 'completes a bulk' do
       indexer.process(issue_as_ref)
 
+      # The es_client will receive three items in bulk request for a single ref:
+      # 1) The bulk index header, ie: { "index" => { "_index": "gitlab-issues" } }
+      # 2) The payload of the actual document to write index
+      # 3) The delete request for document in rolled over index
       expect(es_client)
         .to receive(:bulk)
-        .with(body: [kind_of(String), kind_of(String)])
+        .with(body: [kind_of(String), kind_of(String), kind_of(String)])
         .and_return({})
 
       expect(indexer.flush).to be_empty
@@ -110,12 +122,14 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
       indexer.process(issue_as_ref)
       indexer.process(other_issue_as_ref)
 
-      expect(indexer.flush).to contain_exactly(issue_as_ref, other_issue_as_ref)
-      expect(indexer.failures).to contain_exactly(issue_as_ref, other_issue_as_ref)
+      # Since there are two indices, one rolled over and one active
+      # we can expect to have double the instances of failed refs
+      expect(indexer.flush).to contain_exactly(issue_as_ref, issue_as_ref, other_issue_as_ref, other_issue_as_ref)
+      expect(indexer.failures).to contain_exactly(issue_as_ref, issue_as_ref, other_issue_as_ref, other_issue_as_ref)
     end
 
     it 'fails a document correctly on exception after adding an item that exceeded the bulk limit' do
-      bulk_limit_bytes = (issue_as_json_with_times.to_json.bytesize * 1.5).to_i
+      bulk_limit_bytes = (issue_as_json_with_times.to_json.bytesize * bulk_limit_overflow_factor).to_i
       set_bulk_limit(indexer, bulk_limit_bytes)
       indexer.process(issue_as_ref)
       allow(es_client).to receive(:bulk).and_return({})
@@ -129,8 +143,10 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
 
       expect(es_client).to receive(:bulk) { raise 'An exception' }
 
-      expect(indexer.flush).to contain_exactly(issue_as_ref)
-      expect(indexer.failures).to contain_exactly(issue_as_ref)
+      # Since there are two indices, one rolled over and one active
+      # we can expect to have double the instances of failed refs
+      expect(indexer.flush).to contain_exactly(issue_as_ref, issue_as_ref)
+      expect(indexer.failures).to contain_exactly(issue_as_ref, issue_as_ref)
     end
 
     context 'indexing an issue' do
