@@ -12,7 +12,13 @@ module API
     default_format :json
 
     resource :users do
-      desc 'Post captcha check result for ArkoseLabs'
+      desc 'Post captcha check result for ArkoseLabs' do
+        detail 'Returns captcha check result'
+        success code: 200, model: Entities::CaptchaCheck
+        failure [
+          { code: 404, message: 'Not Found' }
+        ]
+      end
       post '/captcha_check' do
         not_found! 'User' unless Feature.enabled?(:arkose_labs_login_challenge)
 
