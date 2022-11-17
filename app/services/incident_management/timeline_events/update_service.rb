@@ -26,12 +26,12 @@ module IncidentManagement
         # We first update the tags, if any, as they return error for non-existing tags.
         # And then we update the other attributes of timeline event.
         unless timeline_event_tags.nil?
-          tags_to_remove, tags_to_add = compute_tag_updates(timeline_event, timeline_event_tags)
+          tags_to_remove, tags_to_add = compute_tag_updates
           non_existing_tags = validate_tags(tags_to_add)
 
           return error("#{_("Following tags don't exist")}: #{non_existing_tags}") unless non_existing_tags.empty?
 
-          update_timeline_event_tags(timeline_event, tags_to_add, tags_to_remove)
+          update_timeline_event_tags(tags_to_add, tags_to_remove)
         end
 
         timeline_event.assign_attributes(update_params)
@@ -73,8 +73,8 @@ module IncidentManagement
         :none
       end
 
-      def compute_tag_updates(timeline_event, tag_updates)
-        tag_updates = tag_updates.map(&:downcase)
+      def compute_tag_updates
+        tag_updates = timeline_event_tags.map(&:downcase)
         already_assigned_tags = timeline_event.timeline_event_tags.pluck_names.map(&:downcase)
 
         tags_to_remove = already_assigned_tags - tag_updates
@@ -83,12 +83,12 @@ module IncidentManagement
         [tags_to_remove, tags_to_add]
       end
 
-      def update_timeline_event_tags(timeline_event, tags_to_add, tags_to_remove)
-        remove_tag_links(timeline_event, tags_to_remove) if tags_to_remove.any?
-        create_tag_links(timeline_event, tags_to_add) if tags_to_add.any?
+      def update_timeline_event_tags(tags_to_add, tags_to_remove)
+        remove_tag_links(tags_to_remove) if tags_to_remove.any?
+        create_tag_links(tags_to_add) if tags_to_add.any?
       end
 
-      def remove_tag_links(timeline_event, tags_to_remove_names)
+      def remove_tag_links(tags_to_remove_names)
         tags_to_remove_ids = timeline_event.timeline_event_tags.by_names(tags_to_remove_names).tag_ids
 
         timeline_event
@@ -96,7 +96,7 @@ module IncidentManagement
           .by_tag_ids(tags_to_remove_ids).delete_all
       end
 
-      def create_tag_links(timeline_event, tags_to_add_names)
+      def create_tag_links(tags_to_add_names)
         tags_to_add_ids = timeline_event
                             .project
                             .incident_management_timeline_event_tags
