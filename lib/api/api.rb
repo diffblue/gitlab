@@ -228,6 +228,7 @@ module API
         mount ::API::Metadata
         mount ::API::Metrics::Dashboard::Annotations
         mount ::API::Metrics::UserStarredDashboards
+        mount ::API::Namespaces
         mount ::API::PackageFiles
         mount ::API::Pages
         mount ::API::PersonalAccessTokens::SelfInformation
@@ -298,7 +299,6 @@ module API
       mount ::API::MavenPackages
       mount ::API::Members
       mount ::API::MergeRequests
-      mount ::API::Namespaces
       mount ::API::Notes
       mount ::API::NotificationSettings
       mount ::API::NpmInstancePackages
