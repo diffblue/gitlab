@@ -20,8 +20,8 @@ module Mutations
 
         private
 
-        def pre_update_checks!(_note, _args)
-          # no-op
+        def pre_update_checks!(note, _args)
+          verify_notes_support!(note.noteable)
         end
       end
     end

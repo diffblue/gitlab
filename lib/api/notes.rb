@@ -37,6 +37,11 @@ module API
         get ":id/#{noteables_str}/:noteable_id/notes", feature_category: feature_category do
           noteable = find_noteable(noteable_type, params[:noteable_id])
 
+          # If this is an issue, depending on its work item type it may not support notes widget.
+          # This is not a breaking change as currently all work item types support notes, however this is added
+          # as a precaution in case in future we add work item types without notes widget support.
+          render_api_error!("Notes are not supported", 404) unless noteable&.supports_notes?
+
           # We exclude notes that are cross-references and that cannot be viewed
           # by the current user. By doing this exclusion at this level and not
           # at the DB query level (which we cannot in that case), the current
@@ -64,6 +69,12 @@ module API
         end
         get ":id/#{noteables_str}/:noteable_id/notes/:note_id", feature_category: feature_category do
           noteable = find_noteable(noteable_type, params[:noteable_id])
+
+          # If this is an issue, depending on its work item type it may not support notes widget.
+          # This is not a breaking change as currently all work item types support notes, however this is added
+          # as a precaution in case in future we add work item types without notes widget support.
+          render_api_error!("Notes are not supported", 404) unless noteable&.supports_notes?
+
           get_note(noteable, params[:note_id])
         end
 
@@ -83,6 +94,11 @@ module API
             Gitlab::CurrentSettings.current_application_settings.notes_create_limit_allowlist
           check_rate_limit! :notes_create, scope: current_user, users_allowlist: allowlist
           noteable = find_noteable(noteable_type, params[:noteable_id])
+
+          # If this is an issue, depending on its work item type it may not support notes widget.
+          # This is not a breaking change as currently all work item types support notes, however this is added
+          # as a precaution in case in future we add work item types without notes widget support.
+          render_api_error!("Notes are not supported", 404) unless noteable&.supports_notes?
 
           opts = {
             note: params[:body],
@@ -118,6 +134,11 @@ module API
         put ":id/#{noteables_str}/:noteable_id/notes/:note_id", feature_category: feature_category do
           noteable = find_noteable(noteable_type, params[:noteable_id])
 
+          # If this is an issue, depending on its work item type it may not support notes widget.
+          # This is not a breaking change as currently all work item types support notes, however this is added
+          # as a precaution in case in future we add work item types without notes widget support.
+          render_api_error!("Notes are not supported", 404) unless noteable&.supports_notes?
+
           update_note(noteable, params[:note_id])
         end
 
@@ -130,6 +151,11 @@ module API
         end
         delete ":id/#{noteables_str}/:noteable_id/notes/:note_id" do
           noteable = find_noteable(noteable_type, params[:noteable_id])
+
+          # If this is an issue, depending on its work item type it may not support notes widget.
+          # This is not a breaking change as currently all work item types support notes, however this is added
+          # as a precaution in case in future we add work item types without notes widget support.
+          render_api_error!("Notes are not supported", 404) unless noteable&.supports_notes?
 
           delete_note(noteable, params[:note_id])
         end
