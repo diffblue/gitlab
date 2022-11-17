@@ -127,9 +127,6 @@ RSpec.describe ApplicationSetting do
       it { is_expected.to allow_value("http://test.com").for(:secret_detection_token_revocation_url) }
       it { is_expected.to allow_value("AKVD34#$%56").for(:secret_detection_token_revocation_token) }
       it { is_expected.to allow_value("http://test.com").for(:secret_detection_revocation_token_types_url) }
-      it { is_expected.not_to allow_value(nil).for(:secret_detection_token_revocation_url) }
-      it { is_expected.not_to allow_value(nil).for(:secret_detection_token_revocation_token) }
-      it { is_expected.not_to allow_value(nil).for(:secret_detection_revocation_token_types_url) }
     end
 
     context 'when validating geo_node_allowed_ips' do

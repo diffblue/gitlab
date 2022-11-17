@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Security
+  GLPAT_KEY_TYPE = 'gitleaks_rule_id_gitlab_personal_access_token'
+
   # Service for alerting revocation service of leaked security tokens
   #
   class TokenRevocationService < ::BaseService
@@ -11,9 +13,13 @@ module Security
     end
 
     def execute
+      glpats, @revocable_keys = @revocable_keys.partition { |key| key[:type] == GLPAT_KEY_TYPE }
+
+      glpats.each { |token| revoke_glpat(token) }
+
+      return success if @revocable_keys.empty? || !external_token_revocation_enabled?
       raise RevocationFailedError, 'Missing revocation token data' if missing_token_data?
 
-      return error('Token revocation is disabled') unless token_revocation_enabled?
       return success if revoke_token_body.blank?
 
       response = revoke_tokens
@@ -27,7 +33,22 @@ module Security
 
     private
 
-    def token_revocation_enabled?
+    def revoke_glpat(token)
+      pat = PersonalAccessToken.active.find_by_token(token[:token])
+
+      return unless pat && Feature.enabled?(:gitlab_pat_auto_revocation, pat.user)
+      return unless AccessTokenValidationService.new(pat).validate == :valid
+
+      result = PersonalAccessTokens::RevokeService.new(
+        nil,
+        token: pat,
+        source: 'secret_detection'
+      ).execute
+
+      raise RevocationFailedError, result[:message] if result[:status] == :error
+    end
+
+    def external_token_revocation_enabled?
       ::Gitlab::CurrentSettings.secret_detection_token_revocation_enabled?
     end
 
