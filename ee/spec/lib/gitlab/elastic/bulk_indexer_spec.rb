@@ -17,12 +17,26 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
   let(:issue_as_ref) { ref(issue) }
   let(:issue_as_json_with_times) { issue.__elasticsearch__.as_indexed_json }
   let(:issue_as_json) { issue_as_json_with_times.except('created_at', 'updated_at') }
-
   let(:other_issue_as_ref) { ref(other_issue) }
 
   describe '#process' do
-    it 'returns self' do
-      expect(indexer.process(issue_as_ref)).to be(indexer)
+    it 'returns bytesize for the indexing operation and data' do
+      bytesize = instance_double(Integer)
+      allow(indexer).to receive(:submit).and_return(bytesize)
+
+      expect(indexer.process(issue_as_ref)).to eq(bytesize)
+    end
+
+    it 'returns bytesize when DocumentShouldBeDeletedFromIndexException is raised' do
+      bytesize = instance_double(Integer)
+      allow(indexer).to receive(:submit).and_return(bytesize)
+
+      rec = issue_as_ref.database_record
+      allow(rec.__elasticsearch__)
+        .to receive(:as_indexed_json)
+        .and_raise ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError.new(rec.class.name, rec.id)
+
+      expect(indexer.process(issue_as_ref)).to eq(bytesize)
     end
 
     it 'does not send a bulk request per call' do
@@ -121,7 +135,9 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
 
     context 'indexing an issue' do
       it 'adds the issue to the index' do
-        expect(indexer.process(issue_as_ref).flush).to be_empty
+        indexer.process(issue_as_ref)
+
+        expect(indexer.flush).to be_empty
 
         refresh_index!
 
@@ -132,7 +148,10 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
         ensure_elasticsearch_index!
 
         expect(es_client).to receive(:bulk).and_call_original
-        expect(indexer.process(issue_as_ref).flush).to be_empty
+
+        indexer.process(issue_as_ref)
+
+        expect(indexer.flush).to be_empty
       end
 
       it 'reindexes a changed issue' do
@@ -140,7 +159,10 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
         issue.update!(title: 'new title')
 
         expect(issue_as_json['title']).to eq('new title')
-        expect(indexer.process(issue_as_ref).flush).to be_empty
+
+        indexer.process(issue_as_ref)
+
+        expect(indexer.flush).to be_empty
 
         refresh_index!
 
@@ -153,7 +175,9 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
           .to receive(:as_indexed_json)
                 .and_raise ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError.new(database_record.class.name, database_record.id)
 
-        expect(indexer.process(issue_as_ref).flush).to be_empty
+        indexer.process(issue_as_ref)
+
+        expect(indexer.flush).to be_empty
 
         refresh_index!
 
@@ -179,7 +203,9 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
           expect(indexer).to receive(:delete).with(issue_as_ref, index_name: read_index)
           expect(indexer).not_to receive(:delete).with(issue_as_ref, index_name: write_index)
 
-          expect(indexer.process(issue_as_ref).flush).to be_empty
+          indexer.process(issue_as_ref)
+
+          expect(indexer.flush).to be_empty
         end
       end
 
@@ -196,7 +222,10 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
 
         it 'does not do any delete ops' do
           expect(indexer).not_to receive(:delete)
-          expect(indexer.process(issue_as_ref).flush).to be_empty
+
+          indexer.process(issue_as_ref)
+
+          expect(indexer.flush).to be_empty
         end
       end
 
@@ -208,7 +237,10 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
         it 'does not check for alias info or add any delete ops' do
           expect(es_client).not_to receive(:indices)
           expect(indexer).not_to receive(:delete)
-          expect(indexer.process(issue_as_ref).flush).to be_empty
+
+          indexer.process(issue_as_ref)
+
+          expect(indexer.flush).to be_empty
         end
       end
     end
@@ -218,7 +250,10 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
         ensure_elasticsearch_index!
 
         expect(issue_as_ref).to receive(:database_record).and_return(nil)
-        expect(indexer.process(issue_as_ref).flush).to be_empty
+
+        indexer.process(issue_as_ref)
+
+        expect(indexer.flush).to be_empty
 
         refresh_index!
 
@@ -227,7 +262,10 @@ RSpec.describe Gitlab::Elastic::BulkIndexer, :elastic_clean, :clean_gitlab_redis
 
       it 'succeeds even if the issue is not present' do
         expect(issue_as_ref).to receive(:database_record).and_return(nil)
-        expect(indexer.process(issue_as_ref).flush).to be_empty
+
+        indexer.process(issue_as_ref)
+
+        expect(indexer.flush).to be_empty
 
         refresh_index!
 

@@ -216,8 +216,10 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
         expect_processing(*fake_refs)
 
         expect(logger_double).to receive(:info).with(
+          class: described_class.name,
           message: 'bulk_indexer_flushed',
-          flushing_duration_s: an_instance_of(Float)
+          search_flushing_duration_s: an_instance_of(Float),
+          search_indexed_bytes_per_second: an_instance_of(Integer)
         )
 
         described_class.new.execute
@@ -228,6 +230,7 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
         expect_processing(*fake_refs)
 
         expect(logger_double).to receive(:info).with(
+          class: described_class.name,
           message: 'indexing_done',
           model_class: "Issue",
           model_id: an_instance_of(String),
@@ -247,6 +250,7 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
         expect_processing(*fake_refs, failures: [failed])
 
         expect(logger_double).not_to receive(:info).with(
+          class: described_class.name,
           message: 'indexing_done',
           model_class: "Issue",
           model_id: failed.db_id,
@@ -257,6 +261,7 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
         )
 
         expect(logger_double).to receive(:info).with(
+          class: described_class.name,
           message: 'indexing_done',
           model_class: "Issue",
           model_id: an_instance_of(String),
@@ -376,7 +381,7 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
 
     def expect_processing(*refs, failures: [])
       expect_next_instance_of(::Gitlab::Elastic::BulkIndexer) do |indexer|
-        refs.each { |ref| expect(indexer).to receive(:process).with(ref) }
+        refs.each { |ref| expect(indexer).to receive(:process).with(ref).and_return(10) }
 
         expect(indexer).to receive(:flush) { failures }
       end
@@ -384,7 +389,7 @@ RSpec.describe Elastic::ProcessBookkeepingService, :clean_gitlab_redis_shared_st
 
     def allow_processing(*refs, failures: [])
       expect_next_instance_of(::Gitlab::Elastic::BulkIndexer) do |indexer|
-        refs.each { |ref| allow(indexer).to receive(:process).with(anything) }
+        refs.each { |ref| allow(indexer).to receive(:process).with(anything).and_return(10) }
 
         expect(indexer).to receive(:flush) { failures }
       end
