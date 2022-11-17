@@ -15,7 +15,7 @@ class UserExistenceValidator < ActiveModel::EachValidator # rubocop:disable Gitl
   private
 
   def non_existing_users(usernames)
-    return unless usernames.is_a?(Array)
+    return unless usernames.present? && usernames.is_a?(Array)
 
     usernames - ::User.where(username: usernames).pluck(:username) # rubocop: disable CodeReuse/ActiveRecord
   end
