@@ -101,11 +101,9 @@ export default {
         data-testid="grid-stack-widget"
       >
         <widgets-base
-          :component="widget.component"
           :title="widget.title"
-          :data="widget.data"
-          :chart-options="widget.chartOptions"
-          :customizations="widget.customizations"
+          :visualization="widget.visualization"
+          :query-overrides="widget.queryOverrides"
         />
       </div>
     </div>

@@ -73,24 +73,21 @@ describe('CustomizableDashboard', () => {
 
     it.each(
       dashboard.widgets.map((widget, index) => [
-        widget.component,
         widget.title,
+        widget.visualization,
         widget.gridAttributes,
-        widget.customizations,
-        widget.chartOptions,
-        widget.data,
+        widget.queryOverrides,
         index,
       ]),
     )(
       'should render the widget for %s',
-      (component, title, gridAttributes, customizations, chartOptions, data, index) => {
+      (title, visualization, gridAttributes, queryOverrides, index) => {
         expect(findWidgets().at(index).props()).toMatchObject({
-          component,
           title,
-          customizations,
-          chartOptions,
-          data,
+          visualization,
+          queryOverrides,
         });
+
         expect(findGridStackWidgets().at(index).attributes()).toMatchObject({
           'gs-id': `${index}`,
           'gs-h': `${gridAttributes.size.height}`,

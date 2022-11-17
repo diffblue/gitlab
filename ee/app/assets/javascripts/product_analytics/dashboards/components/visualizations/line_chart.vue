@@ -2,19 +2,14 @@
 import { s__ } from '~/locale';
 
 export default {
-  name: 'CubeLineChart',
+  name: 'LineChart',
   props: {
     data: {
       type: Object,
       required: false,
       default: () => ({}),
     },
-    chartOptions: {
-      type: Object,
-      required: false,
-      default: () => ({}),
-    },
-    customizations: {
+    options: {
       type: Object,
       required: false,
       default: () => ({}),

@@ -1,13 +1,17 @@
 <script>
+import { GlLoadingIcon } from '@gitlab/ui';
+import dataSources from 'ee/product_analytics/dashboards/data_sources';
+
 export default {
   name: 'AnalyticsDashboardWidget',
   components: {
-    CubeLineChart: () =>
-      import('ee/product_analytics/dashboards/components/widgets/cube_line_chart.vue'),
+    GlLoadingIcon,
+    LineChart: () =>
+      import('ee/product_analytics/dashboards/components/visualizations/line_chart.vue'),
   },
   props: {
-    component: {
-      type: String,
+    visualization: {
+      type: Object,
       required: true,
     },
     title: {
@@ -15,21 +19,33 @@ export default {
       required: false,
       default: '',
     },
-    data: {
+    queryOverrides: {
       type: Object,
       required: false,
       default: () => ({}),
     },
-    chartOptions: {
-      type: Object,
-      required: false,
-      default: () => ({}),
-    },
-    customizations: {
-      type: Object,
-      required: false,
-      default: () => ({}),
-    },
+  },
+  data() {
+    return {
+      error: null,
+      data: null,
+      loading: true,
+    };
+  },
+  async created() {
+    const { type, query } = this.visualization.data;
+    this.loading = true;
+
+    try {
+      const { fetch } = await dataSources[type]();
+      this.data = await fetch(query, this.queryOverrides);
+    } catch (error) {
+      // TODO: add the ability to display multiple errors on the dashboard page in https://gitlab.com/gitlab-org/gitlab/-/issues/377708
+      this.error = error;
+      this.$emit('error', error);
+    } finally {
+      this.loading = false;
+    }
   },
 };
 </script>
@@ -38,13 +54,15 @@ export default {
   <div
     class="grid-stack-item-content gl-shadow gl-rounded-base gl-p-4 gl-display-flex gl-flex-direction-column"
   >
-    <strong v-if="title" class="gl-mb-4" data-testid="widget-title">{{ title }}</strong>
-    <component
-      :is="component"
-      :data="data"
-      :customizations="customizations"
-      :chart-options="chartOptions"
-      class="gl-overflow-y-auto"
-    />
+    <strong v-if="title" class="gl-mb-2" data-testid="widget-title">{{ title }}</strong>
+    <div class="gl-overflow-y-auto gl-h-full" :class="{ 'gl--flex-center': loading }">
+      <gl-loading-icon v-if="loading" size="lg" />
+      <component
+        :is="visualization.type"
+        v-else-if="!error"
+        :data="data"
+        :options="visualization.options"
+      />
+    </div>
   </div>
 </template>
