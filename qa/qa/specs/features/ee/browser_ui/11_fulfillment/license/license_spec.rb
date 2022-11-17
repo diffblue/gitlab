@@ -5,10 +5,12 @@ module QA
 
   RSpec.describe 'Fulfillment', :requires_admin, :skip_live_env, except: { job: 'review-qa-*' },
                                                                  product_group: :provision do
-    let(:user) { 'GitLab QA' }
-    let(:company) { 'QA User' }
-    let(:user_count) { 10_000 }
-    let(:plan) { ULTIMATE_SELF_MANAGED }
+    include QA::Support::Data::License
+
+    let(:user) { license_user }
+    let(:company) { license_company }
+    let(:user_count) { license_user_count }
+    let(:plan) { license_plan }
 
     context 'Active license details' do
       before do
