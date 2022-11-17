@@ -5,7 +5,7 @@ module Projects
     class EmailCampaignsController < Projects::Pipelines::ApplicationController
       before_action :check_if_gl_com_or_dev
 
-      feature_category :navigation
+      feature_category :experimentation_activation
       urgency :low
 
       def validate_account
