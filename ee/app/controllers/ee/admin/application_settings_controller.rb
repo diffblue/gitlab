@@ -13,6 +13,7 @@ module EE
         before_action :search_error_if_version_incompatible, only: [:advanced_search]
         before_action :search_outdated_code_analyzer_detected, only: [:advanced_search]
         before_action :push_password_complexity_feature, only: [:general]
+        before_action :new_license, only: [:general]
 
         feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
@@ -58,11 +59,6 @@ module EE
 
       EE_VALID_SETTING_PANELS.each do |action|
         define_method(action) { perform_update if submitted? }
-      end
-
-      def general
-        super
-        @new_license ||= License.new(data: params[:trial_key]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
 
       def visible_application_setting_attributes
@@ -147,6 +143,10 @@ module EE
 
       def push_password_complexity_feature
         push_licensed_feature(:password_complexity)
+      end
+
+      def new_license
+        @new_license ||= License.new(data: params[:trial_key]) # rubocop:disable Gitlab/ModuleWithInstanceVariables
       end
     end
   end
