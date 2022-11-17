@@ -7,7 +7,7 @@ RSpec.describe Search::IndexCurationWorker do
   subject { described_class.new }
 
   let(:curator) { ::Gitlab::Search::IndexCurator }
-  let(:settings) { described_class::CURATOR_SETTINGS }
+  let(:settings) { subject.curator_settings }
   let(:logger) { ::Gitlab::Elasticsearch::Logger.build }
 
   describe '#perform' do
