@@ -55,17 +55,13 @@ export default {
 <template>
   <div>
     <template v-if="dashboard">
-      <section>
-        <div
-          class="gl-display-flex gl-align-items-center gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
-        >
-          <h3 class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
-          <div class="gl-display-flex">
-            <router-link to="/" class="gl-button btn btn-default btn-md">
-              {{ __('Go back') }}
-            </router-link>
-          </div>
-        </div>
+      <section
+        class="gl-display-flex gl-align-items-center gl-py-5 gl-border-b-1 gl-border-b-solid gl-border-b-gray-100"
+      >
+        <h3 class="gl-my-0 flex-fill">{{ dashboard.title }}</h3>
+        <router-link to="/" class="gl-button btn btn-default btn-md">
+          {{ __('Go back') }}
+        </router-link>
       </section>
       <customizable-dashboard :widgets="dashboard.widgets" />
     </template>

@@ -48,7 +48,7 @@ describe('AnalyticsDashboard', () => {
       });
     });
 
-    it('should render skeleton while fetching data', async () => {
+    it('should render the loading icon while fetching data', async () => {
       createWrapper({}, 'dashboard_overview');
 
       expect(findLoader().exists()).toBe(true);
