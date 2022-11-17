@@ -11190,6 +11190,9 @@ msgstr ""
 msgid "Couldn't assign policy to project or group"
 msgstr ""
 
+msgid "Couldn't find event type filters where audit event type(s): %{missing_filters}"
+msgstr ""
+
 msgid "Country"
 msgstr ""
 

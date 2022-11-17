@@ -17,6 +17,10 @@ module AuditEvents
       def to_s
         audit_event_type
       end
+
+      def self.pluck_audit_event_type
+        pluck(:audit_event_type)
+      end
     end
   end
 end

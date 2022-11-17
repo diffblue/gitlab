@@ -34,4 +34,15 @@ RSpec.describe AuditEvents::Streaming::EventTypeFilter do
 
     it { is_expected.to eq(event_type_filter.audit_event_type) }
   end
+
+  describe '.pluck_audit_event_type' do
+    subject(:pluck_audit_event_type) { described_class.pluck_audit_event_type }
+
+    it 'returns the audit event type of the event type filter' do
+      filter1 = create(:audit_events_streaming_event_type_filter)
+      filter2 = create(:audit_events_streaming_event_type_filter)
+
+      expect(pluck_audit_event_type).to contain_exactly(filter1.audit_event_type, filter2.audit_event_type)
+    end
+  end
 end
