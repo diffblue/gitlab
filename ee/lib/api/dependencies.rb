@@ -25,7 +25,8 @@ module API
 
     resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       desc 'Get a list of project dependencies' do
-        success ::EE::API::Entities::Dependency
+        success code: 200, model: ::EE::API::Entities::Dependency
+        failure [{ code: 401, message: 'Unauthorized' }, { code: 404, message: 'Not found' }]
       end
 
       params do
@@ -33,7 +34,8 @@ module API
                  type: Array[String],
                  coerce_with: Validations::Types::CommaSeparatedToArray.coerce,
                  desc: "Returns dependencies belonging to specified package managers: #{::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES.join(', ')}.",
-                 values: ::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES
+                 values: ::Security::DependencyListService::FILTER_PACKAGE_MANAGERS_VALUES,
+                 documentation: { example: 'maven,yarn' }
         use :pagination
       end
 
