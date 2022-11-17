@@ -1,0 +1,10 @@
+---
+table_name: file_registry
+description: TODO
+introduced_by_url: TODO
+milestone: TODO
+feature_categories:
+- geo
+classes:
+- Geo::UploadRegistry
+gitlab_schema: gitlab_geo

@@ -1,0 +1,9 @@
+---
+table_name: ar_internal_metadata
+description: TODO
+introduced_by_url: TODO
+milestone: TODO
+feature_categories:
+- geo
+classes: []
+gitlab_schema: gitlab_geo

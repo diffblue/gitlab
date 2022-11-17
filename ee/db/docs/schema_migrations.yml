@@ -1,0 +1,11 @@
+---
+table_name: schema_migrations
+description: TODO
+introduced_by_url: TODO
+milestone: TODO
+feature_categories:
+- TODO
+classes:
+- Geo::TrackingBase::SchemaMigration
+- ActiveRecord::SchemaMigration
+gitlab_schema: gitlab_geo
