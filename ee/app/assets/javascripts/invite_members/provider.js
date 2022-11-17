@@ -12,6 +12,12 @@ const customersDotClient = createClient(
   },
 );
 
+const gitlabClient = createClient();
+
 export default new VueApollo({
   defaultClient: customersDotClient,
+  clients: {
+    gitlabClient,
+    customersDotClient,
+  },
 });

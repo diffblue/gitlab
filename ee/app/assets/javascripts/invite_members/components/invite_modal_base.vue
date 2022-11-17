@@ -1,6 +1,6 @@
 <script>
 import { GlLink } from '@gitlab/ui';
-import { partition, isString } from 'lodash';
+import { partition, isString, invert } from 'lodash';
 import * as Sentry from '@sentry/browser';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import InviteModalBase from '~/invite_members/components/invite_modal_base.vue';
@@ -14,10 +14,8 @@ import {
   overageModalInfoText,
   overageModalInfoWarning,
 } from '../constants';
-import { checkOverage } from '../check_overage';
-import { fetchSubscription } from '../get_subscription_data';
-import { fetchUserIdsFromGroup } from '../utils';
 import getSubscriptionEligibility from '../subscription_eligible.customer.query.graphql';
+import getBillableUserCountChanges from '../billable_users_count.query.graphql';
 
 const OVERAGE_CONTENT_SLOT = 'overage-content';
 const EXTRA_SLOTS = [
@@ -44,6 +42,10 @@ export default {
       required: true,
     },
     modalTitle: {
+      type: String,
+      required: true,
+    },
+    fullPath: {
       type: String,
       required: true,
     },
@@ -87,6 +89,7 @@ export default {
       eligibleForSeatUsageAlerts: false,
       isLoading: false,
       actualFeedbackMessage: this.invalidFeedbackMessage,
+      billableUsersDetails: null,
     };
   },
   computed: {
@@ -135,6 +138,9 @@ export default {
       // Use CE default
       return {};
     },
+    hasInput() {
+      return Boolean(this.newGroupToInvite || this.newUsersToInvite.length !== 0);
+    },
   },
   watch: {
     invalidFeedbackMessage(newValue) {
@@ -160,7 +166,7 @@ export default {
     onSubmit(args) {
       if (this.reachedLimit) return;
 
-      if (this.enabledOverageCheck && !this.hasOverage) {
+      if (this.enabledOverageCheck && !this.hasOverage && this.hasInput) {
         this.actualFeedbackMessage = '';
         this.checkEligibility(args);
       } else {
@@ -170,6 +176,7 @@ export default {
     checkEligibility(args) {
       this.isLoading = true;
       this.$apollo.addSmartQuery('eligibleForSeatUsageAlerts', {
+        client: 'customersDotClient',
         query: getSubscriptionEligibility,
         variables() {
           return {
@@ -195,32 +202,34 @@ export default {
       });
     },
     async checkAndSubmit(args) {
-      let usersToAddById = [];
-      let usersToInviteByEmail = [];
+      const variables = this.overageVariables(args);
 
-      const subscriptionData = await fetchSubscription(this.namespaceId);
-      this.subscriptionSeats = subscriptionData.subscriptionSeats;
+      try {
+        this.isLoading = true;
+        const { data } = await this.$apollo.query({
+          query: getBillableUserCountChanges,
+          client: 'gitlabClient',
+          variables,
+        });
 
-      if (this.newGroupToInvite) {
-        usersToAddById = await fetchUserIdsFromGroup(this.newGroupToInvite);
-      } else {
-        [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
-      }
-
-      const isGuestRole = args.accessLevel === this.$attrs['access-levels'].Guest;
-
-      const { hasOverage, usersOverage } = checkOverage(subscriptionData, {
-        isGuestRole,
-        usersToAddById,
-        usersToInviteByEmail,
-      });
-      this.isLoading = false;
-      this.hasOverage = hasOverage;
-
-      if (hasOverage) {
-        this.totalUserCount = usersOverage;
-      } else {
+        if (!data?.group?.gitlabSubscriptionsPreviewBillableUserChange) {
+          // we don't want to block the flow if API response has unexpected data
+          this.emitSubmit(args);
+        }
+        const billingDetails = data.group.gitlabSubscriptionsPreviewBillableUserChange;
+        this.hasOverage = billingDetails.hasOverage;
+        if (this.hasOverage) {
+          this.totalUserCount = billingDetails.newBillableUserCount;
+          this.subscriptionSeats = billingDetails.seatsInSubscription;
+        } else {
+          this.emitSubmit(args);
+        }
+      } catch (error) {
+        // do smth with error
         this.emitSubmit(args);
+        Sentry.captureException(error);
+      } finally {
+        this.isLoading = false;
       }
     },
     emitSubmit({ accessLevel, expiresAt } = {}) {
@@ -236,6 +245,19 @@ export default {
       );
 
       return [usersToInviteByEmail.map(({ name }) => name), usersToAddById.map(({ id }) => id)];
+    },
+    overageVariables(args) {
+      const [usersToInviteByEmail, usersToAddById] = this.partitionNewUsersToInvite();
+      const accessLevelsKeyMap = invert(this.$attrs['access-levels']);
+      const addGroupId = this.newGroupToInvite;
+
+      return {
+        fullPath: this.fullPath,
+        addGroupId,
+        addUserEmails: usersToInviteByEmail,
+        addUserIds: usersToAddById,
+        role: accessLevelsKeyMap[args.accessLevel].toUpperCase(),
+      };
     },
     onCancel() {
       if (this.showOverageModal) {
