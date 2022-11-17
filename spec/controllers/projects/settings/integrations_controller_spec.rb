@@ -86,6 +86,7 @@ RSpec.describe Projects::Settings::IntegrationsController do
               put :test, params: project_params(service: integration_params)
 
               expect(response).to be_successful
+              expect(integration.reload.webhook).to eq('http://webhook.com')
             end
           end
         end
