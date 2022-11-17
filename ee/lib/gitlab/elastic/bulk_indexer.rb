@@ -40,8 +40,6 @@ module Gitlab
         else
           delete(ref)
         end
-
-        self
       end
 
       def flush
@@ -61,9 +59,11 @@ module Gitlab
       def index(ref)
         proxy = ref.database_record.__elasticsearch__
         op = build_op(ref, proxy)
-        submit(ref, { index: op }, proxy.as_indexed_json)
 
-        delete_from_rolled_over_indices(alias_name: proxy.index_name, ref: ref)
+        # return bytesize to calculate total bytes in calling method
+        submit(ref, { index: op }, proxy.as_indexed_json).tap do |_bytesize|
+          delete_from_rolled_over_indices(alias_name: proxy.index_name, ref: ref)
+        end
       rescue ::Elastic::Latest::DocumentShouldBeDeletedFromIndexError => error
         logger.warn(message: error.message, record_id: error.record_id, class_name: error.class_name)
         delete(ref)
@@ -94,17 +94,18 @@ module Gitlab
 
       def submit(ref, *hashes)
         jsons = hashes.map(&:to_json)
-        bytesize = calculate_bytesize(jsons)
 
-        # if new ref will exceed the bulk limit, send existing buffer of records
-        # when successful, clears `body`, `ref_buffer`, and `body_size_bytes`
-        # continue to buffer refs until bulk limit is reached or flush is called
-        # any errors encountered are added to `failures`
-        send_bulk if will_exceed_bulk_limit?(bytesize)
+        calculate_bytesize(jsons).tap do |bytesize|
+          # if new ref will exceed the bulk limit, send existing buffer of records
+          # when successful, clears `body`, `ref_buffer`, and `body_size_bytes`
+          # continue to buffer refs until bulk limit is reached or flush is called
+          # any errors encountered are added to `failures`
+          send_bulk if will_exceed_bulk_limit?(bytesize)
 
-        ref_buffer << ref
-        body.concat(jsons)
-        @body_size_bytes += bytesize
+          ref_buffer << ref
+          body.concat(jsons)
+          @body_size_bytes += bytesize
+        end
       end
 
       def calculate_bytesize(jsons)

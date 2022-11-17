@@ -142,6 +142,7 @@ module Elastic
         last_score = specs.last.last
 
         logger.info(
+          class: self.class.name,
           message: 'bulk_indexing_start',
           redis_set: set_key,
           records_count: specs.count,
@@ -158,9 +159,10 @@ module Elastic
 
       indexing_durations = []
       refs = deserialize_all(specs_buffer)
+      total_bytes = 0
 
       refs.preload_database_records.each do |ref|
-        submit_document(ref)
+        total_bytes += submit_document(ref)
 
         indexing_duration = ref.database_record&.updated_at&.then { |updated_at| Time.current - updated_at } || 0.0
         indexing_durations << indexing_duration
@@ -170,9 +172,13 @@ module Elastic
         @failures = bulk_indexer.flush
       end
 
+      indexed_bytes_per_second = (total_bytes / (Time.current - start_time)).ceil
+
       logger.info(
+        class: self.class.name,
         message: 'bulk_indexer_flushed',
-        flushing_duration_s: flushing_duration_s
+        search_flushing_duration_s: flushing_duration_s,
+        search_indexed_bytes_per_second: indexed_bytes_per_second
       )
 
       # Re-enqueue any failures so they are retried
@@ -183,6 +189,7 @@ module Elastic
         redis.zremrangebyscore(set_key, first_score, last_score)
 
         logger.info(
+          class: self.class.name,
           message: 'bulk_indexing_end',
           redis_set: set_key,
           records_count: count,
@@ -199,6 +206,7 @@ module Elastic
         klass = ref.klass.to_s
 
         logger.info(
+          class: self.class.name,
           message: 'indexing_done',
           model_class: klass,
           model_id: ref.db_id,
@@ -220,6 +228,7 @@ module Elastic
         refs.deserialize_and_add(spec)
       rescue ::Gitlab::Elastic::DocumentReference::InvalidError => err
         logger.warn(
+          class: self.class.name,
           message: 'submit_document_failed',
           reference: spec,
           error_class: err.class.to_s,
