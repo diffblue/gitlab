@@ -17,6 +17,28 @@ This feature is not ready for production use.
 
 You can view the [product category](https://about.gitlab.com/direction/analytics/product-analytics/) page for more information about our direction. This page is a work in progress and will be updated as we add more features.
 
+## Enable product analytics
+
+To enable and configure product analytics to track events
+within your project applications on a self-managed instance:
+
+1. Sign in to GitLab as an administrator.
+1. On the top bar, select **Main menu > Admin**.
+1. On the left sidebar, select **Settings > General**.
+1. Expand the **Product analytics** section.
+1. Select **Enable product analytics** and enter the configuration values.
+   All fields are required. This is an example:
+   | Name                         | Value                      |
+   |------------------------------|----------------------------|
+   | Jitsu host                   | `https://jitsu.gitlab.com` |
+   | Jitsu project ID             | `g0maofw84gx5sjxgse2k` |
+   | Jitsu administrator email    | `jitsu.admin@gitlab.com` |
+   | Jitsu administrator password | _your_password_here_ |
+   | Clickhouse URL               | `https://user:pass@clickhouse.gitlab.com:8123` |
+   | Cube API URL                 | `https://cube.gitlab.com` |
+   | Cube API key                 | `25718201b3e9...ae6bbdc62dbb` |
+1. Select **Save changes**.
+
 ## Product analytics dashboards
 
 Each project can define an unlimited number of dashboards. These dashboards are defined using our YAML schema and stored
