@@ -54,7 +54,7 @@ RSpec.describe MergeRequests::PostMergeService do
       end
     end
 
-    context 'auditing invalid logs' do
+    context 'auditing and tracking invalid logs' do
       shared_examples 'auditing invalid logs' do
         let(:expected_params) do
           {
@@ -76,8 +76,9 @@ RSpec.describe MergeRequests::PostMergeService do
         context 'when the rule is valid' do
           let!(:rule) { valid_rule }
 
-          it 'does not audit the event' do
+          it 'does not audit or track the event' do
             expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+            expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).not_to receive(:track_invalid_approvers)
 
             subject
           end
@@ -86,8 +87,9 @@ RSpec.describe MergeRequests::PostMergeService do
         context 'when invalid' do
           let!(:rule) { invalid_rule }
 
-          it 'audit logs the event' do
+          it 'audits and tracks logs the event' do
             expect(::Gitlab::Audit::Auditor).to receive(:audit).with(expected_params)
+            expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).to receive(:track_invalid_approvers).with(merge_request: merge_request)
 
             subject
           end
@@ -110,8 +112,9 @@ RSpec.describe MergeRequests::PostMergeService do
         context 'when the rule is valid' do
           let!(:rule) { create(:any_approver_rule, merge_request: merge_request, users: create_list(:user, 1)) }
 
-          it 'does not audit the event' do
+          it 'does not audit or track the event' do
             expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+            expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).not_to receive(:track_invalid_approvers)
 
             subject
           end
@@ -120,8 +123,9 @@ RSpec.describe MergeRequests::PostMergeService do
         context 'when invalid' do
           let!(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
 
-          it 'does not audit the event' do
+          it 'does not audit or track the event' do
             expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+            expect(Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter).not_to receive(:track_invalid_approvers)
 
             subject
           end

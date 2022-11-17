@@ -1587,22 +1587,108 @@ RSpec.describe ApprovalState do
   end
 
   describe '#invalid_approvers_rules' do
-    let_it_be(:scan_finding_rule) { create_rule(rule_type: :report_approver, report_type: :scan_finding, users: []) }
+    subject { merge_request.approval_state.invalid_approvers_rules }
 
-    context 'with valid approvers' do
-      before do
-        scan_finding_rule.users << approver1
+    shared_examples 'invalid approver rules' do
+      context 'when the rule is valid' do
+        let!(:rule) { valid_rule }
+
+        it 'does not include the rule' do
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).not_to include(rule)
+        end
       end
 
-      it 'returns an empty array' do
-        expect(subject.invalid_approvers_rules).to be_empty
+      context 'when invalid' do
+        let!(:rule) { invalid_rule }
+
+        it 'returns the rule' do
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).to include(rule)
+        end
       end
     end
 
-    context 'with invalid approvers' do
-      it 'returns rules with empty approvers' do
-        expect(subject.invalid_approvers_rules.first.approval_rule).to eq(scan_finding_rule)
+    context 'when the rule is code owner' do
+      let(:valid_rule) { create(:code_owner_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+      let(:invalid_rule) { create(:code_owner_rule, merge_request: merge_request) }
+
+      before do
+        stub_licensed_features(code_owner_approval_required: true)
+        create(:protected_branch, project: project, name: merge_request.target_branch, code_owner_approval_required: true)
       end
+
+      context 'when branch_requires_code_owner_approval is false' do
+        let!(:rule) { create(:code_owner_rule, merge_request: merge_request) }
+
+        it 'does not include the rule' do
+          stub_licensed_features(code_owner_approval_required: false)
+
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).not_to include(rule)
+        end
+      end
+
+      include_examples 'invalid approver rules'
+    end
+
+    context 'when the rule is any_approver' do
+      context 'when the rule has approvers' do
+        let!(:rule) { create(:any_approver_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+
+        it 'is still valid and does not include the rule' do
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).not_to include(rule)
+        end
+      end
+
+      context 'when the rule has required approvals' do
+        let!(:rule) { create(:any_approver_rule, merge_request: merge_request, approvals_required: 1) }
+
+        it 'is still valid does not include the rule' do
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).not_to include(rule)
+        end
+      end
+    end
+
+    context 'when the rule is approval_merge_request_rule' do
+      let(:valid_rule) { create(:approval_merge_request_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+      let(:invalid_rule) { create(:approval_merge_request_rule, merge_request: merge_request, approvals_required: 1) }
+
+      context 'when approvals required is 0' do
+        let!(:rule) { create(:approval_merge_request_rule, merge_request: merge_request) }
+
+        it 'does not include the rule' do
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).not_to include(rule)
+        end
+      end
+
+      include_examples 'invalid approver rules'
+    end
+
+    context 'when the rule is report_approver' do
+      let(:valid_rule) { create(:report_approver_rule, merge_request: merge_request, users: create_list(:user, 1)) }
+      let(:invalid_rule) { create(:report_approver_rule, merge_request: merge_request, approvals_required: 1) }
+
+      context 'when approvals required is 0' do
+        let!(:rule) { create(:report_approver_rule, merge_request: merge_request) }
+
+        it 'does not include the rule' do
+          approval_rules = subject.map(&:approval_rule)
+
+          expect(approval_rules).not_to include(rule)
+        end
+      end
+
+      include_examples 'invalid approver rules'
     end
   end
 end

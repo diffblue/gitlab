@@ -33,16 +33,18 @@ module EE
       end
 
       def audit_approval_rules(merge_request)
-        merge_request.wrapped_approval_rules.each do |rule|
-          next if rule.any_approver?
-          next unless rule.approvers.empty?
+        invalid_rules = merge_request.invalid_approvers_rules
 
-          if rule.code_owner?
-            audit_invalid_rule(merge_request, rule) if rule.branch_requires_code_owner_approval?
-          elsif rule.approvals_required > 0
-            audit_invalid_rule(merge_request, rule)
-          end
+        track_invalid_approvers(merge_request) if invalid_rules.present?
+
+        invalid_rules.each do |rule|
+          audit_invalid_rule(merge_request, rule)
         end
+      end
+
+      def track_invalid_approvers(merge_request)
+        ::Gitlab::UsageDataCounters::MergeRequestActivityUniqueCounter
+          .track_invalid_approvers(merge_request: merge_request)
       end
 
       def audit_invalid_rule(merge_request, rule)
