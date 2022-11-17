@@ -35,6 +35,12 @@ RSpec.describe UserExistenceValidator do
     let(:value) { [] }
 
     it_behaves_like 'does not add an error'
+
+    it 'does not trigger SQL queries' do
+      recorder = ActiveRecord::QueryRecorder.new { subject }
+
+      expect(recorder.count).to be_zero
+    end
   end
 
   context 'with array containing valid usernames' do
