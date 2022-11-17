@@ -5,7 +5,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import IterationCadenceListItem from 'ee/iterations/components/iteration_cadence_list_item.vue';
 import TimeboxStatusBadge from 'ee/iterations/components/timebox_status_badge.vue';
-import { Namespace } from 'ee/iterations/constants';
+import { Namespace, iterationSortDesc } from 'ee/iterations/constants';
 import { getIterationPeriod } from 'ee/iterations/utils';
 import groupIterationsInCadenceQuery from 'ee/iterations/queries/group_iterations_in_cadence.query.graphql';
 import projectIterationsInCadenceQuery from 'ee/iterations/queries/project_iterations_in_cadence.query.graphql';
@@ -152,6 +152,38 @@ describe('Iteration cadence list item', () => {
     });
 
     expect(resolverMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    {
+      namespaceType: Namespace.Group,
+      query: groupIterationsInCadenceQuery,
+    },
+    {
+      namespaceType: Namespace.Project,
+      query: projectIterationsInCadenceQuery,
+    },
+  ])('uses DESC sort order for closed iterations', async (params) => {
+    const iterationsQueryHandler = jest.fn().mockResolvedValue(queryEmptyResponse);
+
+    await createComponent({
+      resolverMock: iterationsQueryHandler,
+      props: {
+        iterationState: 'closed',
+      },
+      query: params.query,
+      namespaceType: params.namespaceType,
+    });
+
+    expand();
+
+    await waitForPromises();
+
+    expect(iterationsQueryHandler).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sort: iterationSortDesc,
+      }),
+    );
   });
 
   it.each(['opened', 'closed', 'all'])(
