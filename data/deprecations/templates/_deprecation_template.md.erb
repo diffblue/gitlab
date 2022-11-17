@@ -34,6 +34,11 @@ In each release, GitLab announces features that are deprecated and no longer rec
 Each deprecated feature will be removed in a future release.
 Some features cause breaking changes when they are removed.
 
+#### Receive breaking changes notifications via RSS
+
+To be notified of upcoming breaking changes to GitLab, add this URL to your RSS feed reader:
+`https://about.gitlab.com/breaking-changes.xml`
+
 DISCLAIMER:
 This page contains information related to upcoming products, features, and functionality.
 It is important to note that the information presented is for informational purposes only.
