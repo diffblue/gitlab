@@ -331,11 +331,7 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
         subject.execute
 
-        repo_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
-          repository.path
-        end
-
-        expect(File.directory?(repo_path)).to be true
+        expect(repository.raw).to exist
       end
 
       context 'with geo_use_clone_on_first_sync flag disabled' do

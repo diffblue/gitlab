@@ -12,27 +12,20 @@ RSpec.describe Geo::MoveRepositoryService, :geo do
     subject(:service) { described_class.new(project, old_path, new_path) }
 
     it 'renames the project repositories' do
-      old_disk_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
-        project.repository.path_to_repo
-      end
-      old_wiki_disk_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
-        project.wiki.repository.path_to_repo
-      end
+      old_repository = project.repository.raw
+      old_wiki_repository = project.wiki.repository.raw
+      new_repository = Gitlab::Git::Repository.new(project.repository.storage, "#{new_path}.git", nil, nil)
+      new_wiki_repository = Gitlab::Git::Repository.new(project.repository.storage, "#{new_path}.wiki.git", nil, nil)
 
-      full_new_path = Gitlab::GitalyClient::StorageSettings.allow_disk_access do
-        File.join(
-          Gitlab.config.repositories.storages[project.repository_storage].legacy_disk_path,
-          new_path
-        )
-      end
+      expect(old_repository).to exist
+      expect(old_wiki_repository).to exist
 
-      expect(File.directory?(old_disk_path)).to be_truthy
-      expect(File.directory?(old_wiki_disk_path)).to be_truthy
       expect(service.execute).to eq(true)
-      expect(File.directory?(old_disk_path)).to be_falsey
-      expect(File.directory?(old_wiki_disk_path)).to be_falsey
-      expect(File.directory?("#{full_new_path}.git")).to be_truthy
-      expect(File.directory?("#{full_new_path}.wiki.git")).to be_truthy
+
+      expect(old_repository).not_to exist
+      expect(old_wiki_repository).not_to exist
+      expect(new_repository).to exist
+      expect(new_wiki_repository).to exist
     end
 
     it 'returns false when project repository can not be renamed' do
