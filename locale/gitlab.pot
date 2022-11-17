@@ -17524,6 +17524,9 @@ msgstr ""
 msgid "General settings"
 msgstr ""
 
+msgid "Generate API key at %{site}"
+msgstr ""
+
 msgid "Generate a default set of labels"
 msgstr ""
 
