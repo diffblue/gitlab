@@ -312,6 +312,7 @@
   - "scripts/rspec_helpers.sh"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
+  - "doc/index.md"
 
 .search-backend-patterns: &search-backend-patterns
   - "{,jh/}Gemfile.lock"
@@ -381,6 +382,7 @@
   - ".gitlab/ci/**/*"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
+  - "doc/index.md"
 
 # .code-patterns + .backstage-patterns
 .code-backstage-patterns: &code-backstage-patterns
@@ -411,6 +413,7 @@
   - "{,spec/}tooling/**/*"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
+  - "doc/index.md"
 
 # .code-patterns + .qa-patterns
 .code-qa-patterns: &code-qa-patterns
@@ -437,6 +440,7 @@
   - "{,jh/}qa/**/*"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
+  - "doc/index.md"
 
 # .code-patterns + .backstage-patterns + .qa-patterns
 .code-backstage-qa-patterns: &code-backstage-qa-patterns
@@ -471,6 +475,7 @@
   - "{,jh/}qa/**/*"
   # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
+  - "doc/index.md"
 
 # .code-backstage-qa-patterns + .workhorse-patterns
 # NOTE: `setup-test-env-patterns` intentionally does not include docs files, because this would
@@ -493,7 +498,9 @@
   - "config.ru"
   - "{,ee/,jh/}{app,bin,config,db,generator_templates,haml_lint,lib,locale,public,scripts,storybook,symbol,vendor}/**/*"
   - "doc/api/graphql/reference/*"  # Files in this folder are auto-generated
+  # Mapped patterns (see tests.yml)
   - "data/whats_new/*.yml"
+  - "doc/index.md"
   # CI changes
   - ".gitlab-ci.yml"
   - ".gitlab/ci/**/*"
