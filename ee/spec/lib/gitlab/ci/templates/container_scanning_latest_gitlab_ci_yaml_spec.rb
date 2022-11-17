@@ -6,7 +6,7 @@ RSpec.describe 'Container-Scanning.latest.gitlab-ci.yml' do
   subject(:template) do
     <<~YAML
       include:
-        - template: 'Security/Container-Scanning.latest.gitlab-ci.yml'
+        - template: 'Jobs/Container-Scanning.latest.gitlab-ci.yml'
     YAML
   end
 

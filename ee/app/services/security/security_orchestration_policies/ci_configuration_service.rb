@@ -5,7 +5,7 @@ module Security
     class CiConfigurationService
       SCAN_TEMPLATES = {
         'secret_detection' => 'Jobs/Secret-Detection',
-        'container_scanning' => 'Security/Container-Scanning',
+        'container_scanning' => 'Jobs/Container-Scanning',
         'sast' => 'Security/SAST',
         'dependency_scanning' => 'Jobs/Dependency-Scanning'
       }.freeze
