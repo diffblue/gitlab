@@ -16,7 +16,7 @@ module Elastic
       @curator ||= ::Gitlab::Search::IndexCurator.new(ignore_patterns: [/migrations/])
     end
 
-    def setup(multi_index: false)
+    def setup(multi_index: true)
       clear_tracking!
       delete_indices!
       helper.create_empty_index(options: { settings: { number_of_replicas: 0 } })
@@ -93,7 +93,7 @@ RSpec.configure do |config|
 
   config.around(:each, :elastic_clean) do |example|
     helper = Elastic::TestHelpers.new
-    helper.setup
+    helper.setup(multi_index: false)
 
     example.run
 
