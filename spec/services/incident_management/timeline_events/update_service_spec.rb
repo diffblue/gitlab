@@ -142,6 +142,83 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
         it_behaves_like 'error response',
           'You have insufficient permissions to manage timeline events for this incident'
       end
+
+      context 'when timeline event tags are passed' do
+        context 'when they exist' do
+          let_it_be(:tag1) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 1') }
+          let_it_be(:tag2) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 2') }
+          let_it_be(:tag3) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 3') }
+
+          let!(:tag_link1) do
+            create(:incident_management_timeline_event_tag_link,
+              timeline_event: timeline_event,
+              timeline_event_tag: tag3
+            )
+          end
+
+          let(:params) do
+            {
+              note: 'Updated note',
+              occurred_at: occurred_at,
+              timeline_event_tag_names: [tag3.name, tag1.name]
+            }
+          end
+
+          it_behaves_like 'successful response'
+
+          it 'adds the new tag' do
+            expect { execute }.to change(timeline_event.timeline_event_tags, :count).by(1)
+          end
+
+          it 'adds the new tag link' do
+            expect { execute }.to change(IncidentManagement::TimelineEventTagLink, :count).by(1)
+          end
+
+          it 'returns the new tag in response' do
+            timeline_event = execute.payload[:timeline_event]
+
+            expect(timeline_event.timeline_event_tags.pluck_names).to contain_exactly(tag1.name, tag3.name)
+          end
+
+          context 'when tag is removed' do
+            let(:params) { { note: 'Updated note', occurred_at: occurred_at, timeline_event_tag_names: [tag2.name] } }
+
+            it_behaves_like 'successful response'
+
+            it 'adds the new tag and removes the old tag' do
+              # Since it adds a tag (+1) and removes old tag (-1) so next change in count in 0
+              expect { execute }.to change(timeline_event.timeline_event_tags, :count).by(0)
+            end
+
+            it 'adds the new tag link and removes the old tag link' do
+              # Since it adds a tag link (+1) and removes old tag link (-1) so next change in count in 0
+              expect { execute }.to change(IncidentManagement::TimelineEventTagLink, :count).by(0)
+            end
+
+            it 'returns the new tag and does not contain the old tag in response' do
+              timeline_event = execute.payload[:timeline_event]
+
+              expect(timeline_event.timeline_event_tags.pluck_names).to contain_exactly(tag2.name)
+            end
+          end
+        end
+
+        context 'when they do not exist' do
+          let(:params) do
+            {
+              note: 'Updated note 2',
+              occurred_at: occurred_at,
+              timeline_event_tag_names: ['non existing tag']
+            }
+          end
+
+          it_behaves_like 'error response', "Following tags don't exist: [\"non existing tag\"]"
+
+          it 'does not update the note' do
+            expect { execute }.not_to change { timeline_event.reload.note }
+          end
+        end
+      end
     end
 
     context 'when user does not have permissions' do

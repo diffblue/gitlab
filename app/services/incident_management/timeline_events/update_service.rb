@@ -23,8 +23,18 @@ module IncidentManagement
       def execute
         return error_no_permissions unless allowed?
 
+        # We first update the tags, if any, as they return error for non-existing tags.
+        # And then we update the other attributes of timeline event.
+        unless timeline_event_tags.nil?
+          tags_to_remove, tags_to_add = compute_tag_updates(timeline_event, timeline_event_tags)
+          non_existing_tags = validate_tags(tags_to_add)
+
+          return error("#{_("Following tags don't exist")}: #{non_existing_tags}") unless non_existing_tags.empty?
+
+          update_timeline_event_tags(timeline_event, tags_to_add, tags_to_remove)
+        end
+
         timeline_event.assign_attributes(update_params)
-        update_timeline_event_tags(timeline_event, timeline_event_tags) unless timeline_event_tags.nil?
 
         if timeline_event.save(context: validation_context)
           add_system_note(timeline_event)
@@ -63,15 +73,17 @@ module IncidentManagement
         :none
       end
 
-      def update_timeline_event_tags(timeline_event, tag_updates)
+      def compute_tag_updates(timeline_event, tag_updates)
         tag_updates = tag_updates.map(&:downcase)
         already_assigned_tags = timeline_event.timeline_event_tags.pluck_names.map(&:downcase)
 
         tags_to_remove = already_assigned_tags - tag_updates
         tags_to_add = tag_updates - already_assigned_tags
 
-        validate_tags(tags_to_add)
+        [tags_to_remove, tags_to_add]
+      end
 
+      def update_timeline_event_tags(timeline_event, tags_to_add, tags_to_remove)
         remove_tag_links(timeline_event, tags_to_remove) if tags_to_remove.any?
         create_tag_links(timeline_event, tags_to_add) if tags_to_add.any?
       end
@@ -81,7 +93,7 @@ module IncidentManagement
 
         timeline_event
           .timeline_event_tag_links
-          .find_by_timeline_event_tag_id(timeline_event_tag_id: tags_to_remove_ids).delete_all
+          .by_tag_ids(tags_to_remove_ids).delete_all
       end
 
       def create_tag_links(timeline_event, tags_to_add_names)
@@ -102,14 +114,14 @@ module IncidentManagement
       end
 
       def validate_tags(tags_to_add)
-        defined_tags = timeline_event.project.incident_management_timeline_event_tags.by_names(tags_to_add)
+        defined_tags = timeline_event
+                        .project
+                        .incident_management_timeline_event_tags
+                        .by_names(tags_to_add)
+                        .pluck_names
+                        .map(&:downcase)
 
-        non_existing_tags = tags_to_add - defined_tags
-
-        return if non_existing_tags.empty?
-
-        raise Gitlab::Graphql::Errors::ArgumentError,
-          "Following tags don't exist: #{non_existing_tags}"
+        tags_to_add - defined_tags
       end
 
       def allowed?
