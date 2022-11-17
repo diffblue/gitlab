@@ -14,8 +14,9 @@ RSpec.describe 'Every GitLab uploader' do
         .to be_empty, "New uploader type detected: #{missing_data_types.to_a.inspect}. " \
                       "Additional work may be needed to add Geo support. Geo support will " \
                       "soon be part of the definition of done, see https://gitlab.com/gitlab-org/gitlab/-/merge_requests/97172. " \
-                      "Please visit https://gitlab.com/gitlab-org/gitlab/-/issues/378964 for details. If work is not needed, " \
-                      "add the uploader to known_unimplemented_uploader? and get a review by a Geo team member."
+                      "Please visit https://docs.gitlab.com/ee/development/geo.html#ensuring-a-new-feature-has-geo-support " \
+                      "for details. If work is not needed, add the uploader to known_unimplemented_uploader? and get a review " \
+                      "by a Geo team member."
     end
     # rubocop:enable Layout/LineLength
 
