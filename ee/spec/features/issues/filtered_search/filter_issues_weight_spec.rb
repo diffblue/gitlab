@@ -22,6 +22,7 @@ RSpec.describe 'Filter issues weight', :js do
   end
 
   before do
+    stub_feature_flags(or_issuable_queries: false)
     project.add_maintainer(user)
     sign_in(user)
 

@@ -51,6 +51,7 @@ RSpec.describe 'Filter issues health status', :js do
   end
 
   before do
+    stub_feature_flags(or_issuable_queries: false)
     stub_licensed_features(issuable_health_status: true)
     project.add_maintainer(user)
     sign_in(user)
