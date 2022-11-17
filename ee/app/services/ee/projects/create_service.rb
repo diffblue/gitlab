@@ -87,16 +87,19 @@ module EE
       # rubocop: disable CodeReuse/ActiveRecord
       def create_predefined_push_rule
         return unless project.feature_available?(:push_rules)
+        return unless predefined_push_rule.present?
 
-        predefined_push_rule = PushRule.find_by(is_sample: true)
+        log_info(predefined_push_rule)
+        push_rule = predefined_push_rule.dup.tap { |predefined_rule| predefined_rule.is_sample = false }
+        project.push_rule = push_rule
+        project.project_setting.update(push_rule: push_rule)
+      end
 
-        if group_push_rule_available?
-          create_push_rule_from_group
-        elsif predefined_push_rule
-          log_info(predefined_push_rule)
-          push_rule = predefined_push_rule.dup.tap { |gh| gh.is_sample = false }
-          project.push_rule = push_rule
-          project.project_setting.update(push_rule: push_rule)
+      def predefined_push_rule
+        if project.group
+          project.group.predefined_push_rule
+        else
+          PushRule.global
         end
       end
 
@@ -114,18 +117,6 @@ module EE
           project.id,
           default_compliance_framework_id
         )
-      end
-
-      def group_push_rule_available?
-        return false unless project.group
-
-        !!project.group.predefined_push_rule
-      end
-
-      def create_push_rule_from_group
-        push_rule_attributes = project.group.predefined_push_rule.attributes.slice(*PushRule.column_names).except("id")
-        project.create_push_rule(push_rule_attributes.merge(is_sample: false))
-        project.project_setting.update(push_rule: project.push_rule)
       end
 
       # When using a project template from a Group, the new project can only be created
