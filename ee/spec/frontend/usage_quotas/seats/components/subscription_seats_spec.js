@@ -247,7 +247,7 @@ describe('Subscription Seats', () => {
   describe('statistics cards', () => {
     const defaultInitialState = {
       seatsInSubscription: 3,
-      total: 10,
+      total: 2,
       seatsInUse: 2,
       maxSeatsUsed: 3,
       seatsOwed: 1,
@@ -308,7 +308,7 @@ describe('Subscription Seats', () => {
               description: 'Seats in use / Seats in subscription',
               percentage: 0,
               totalValue: 'Unlimited',
-              usageValue: '10',
+              usageValue: '2',
               helpTooltip: null,
             });
           });
@@ -334,7 +334,7 @@ describe('Subscription Seats', () => {
                 description: 'Seats in use / Seats in subscription',
                 percentage: 0,
                 totalValue: 'Unlimited',
-                usageValue: '10',
+                usageValue: '2',
                 helpTooltip: null,
               });
             });

@@ -134,7 +134,7 @@ export default {
       if (this.hasLimitedPlanOrPreviewLimitedPlan) {
         return this.seatsInUse;
       }
-      return this.hasNoSubscription ? this.total : this.seatsInUse;
+      return this.total;
     },
     seatsInUseText() {
       return this.hasLimitedPlanOrPreviewLimitedPlan
