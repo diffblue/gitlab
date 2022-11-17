@@ -48,6 +48,8 @@ describe('SidebarHealthStatusWidget component', () => {
       ]),
       provide: {
         canUpdate: true,
+      },
+      propsData: {
         fullPath: 'foo/bar',
         iid: '1',
         issuableType,
@@ -80,19 +82,21 @@ describe('SidebarHealthStatusWidget component', () => {
   });
 
   describe('when dropdown value is selected', () => {
-    it('calls a GraphQL mutation to update the health status', () => {
+    it('calls a GraphQL mutation to update the health status', async () => {
       const healthStatus = HEALTH_STATUS_AT_RISK;
       const mutationHandler = createMutationHandler({ healthStatus });
       mountComponent({ healthStatus: HEALTH_STATUS_ON_TRACK, mutationHandler });
       wrapper.vm.$refs.editable.collapse = jest.fn();
 
       findHealthStatusDropdown().vm.$emit('change', healthStatus);
+      await waitForPromises();
 
       expect(mutationHandler).toHaveBeenCalledWith({
         healthStatus,
         iid: '1',
         projectPath: 'foo/bar',
       });
+      expect(wrapper.emitted('statusUpdated')).toEqual([[healthStatus]]);
     });
 
     it('does not call a GraphQL mutation when the health status value is the same', async () => {
@@ -105,6 +109,7 @@ describe('SidebarHealthStatusWidget component', () => {
       findHealthStatusDropdown().vm.$emit('change', healthStatus);
 
       expect(mutationHandler).not.toHaveBeenCalled();
+      expect(wrapper.emitted('statusUpdated')).not.toBeTruthy();
     });
 
     it('shows an alert message when there is an error', async () => {
@@ -119,9 +124,10 @@ describe('SidebarHealthStatusWidget component', () => {
         message: 'Something went wrong while setting issue health status.',
       });
       expect(Sentry.captureException).toHaveBeenCalledWith(error);
+      expect(wrapper.emitted('statusUpdated')).not.toBeTruthy();
     });
 
-    it('tracks updating health status', () => {
+    it('tracks updating health status', async () => {
       const healthStatus = HEALTH_STATUS_AT_RISK;
       const mutationHandler = createMutationHandler({ healthStatus });
       mountComponent({ mutationHandler });
@@ -129,10 +135,12 @@ describe('SidebarHealthStatusWidget component', () => {
       wrapper.vm.$refs.editable.collapse = jest.fn();
 
       findHealthStatusDropdown().vm.$emit('change', healthStatus);
+      await waitForPromises();
 
       expect(trackingSpy).toHaveBeenCalledWith(undefined, 'change_health_status', {
         property: healthStatus,
       });
+      expect(wrapper.emitted('statusUpdated')).toEqual([[healthStatus]]);
     });
   });
 });

@@ -753,6 +753,23 @@ describe('setActiveItemWeight', () => {
   });
 });
 
+describe('setActiveItemHealthStatus', () => {
+  it('should commit health status', () => {
+    const payload = {
+      itemId: mockIssue.id,
+      prop: 'healthStatus',
+      value: 'onTrack',
+    };
+    testAction(
+      actions.setActiveItemHealthStatus,
+      payload.value,
+      { boardItems: { [mockIssue.id]: mockIssue }, activeBoardItem: mockIssue },
+      [{ type: typesCE.UPDATE_BOARD_ITEM_BY_ID, payload }],
+      [],
+    );
+  });
+});
+
 describe.each`
   isEpicBoard | issuableType             | dispatchedAction
   ${false}    | ${'issuableTypes.issue'} | ${'moveIssue'}

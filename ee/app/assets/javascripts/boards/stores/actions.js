@@ -495,6 +495,15 @@ export default {
     });
   },
 
+  setActiveItemHealthStatus: ({ commit, getters }, healthStatus) => {
+    const { activeBoardItem } = getters;
+    commit(typesCE.UPDATE_BOARD_ITEM_BY_ID, {
+      itemId: activeBoardItem.id,
+      prop: 'healthStatus',
+      value: healthStatus,
+    });
+  },
+
   moveItem: ({ getters, dispatch }, params) => {
     if (!getters.isEpicBoard) {
       dispatch('moveIssue', params);

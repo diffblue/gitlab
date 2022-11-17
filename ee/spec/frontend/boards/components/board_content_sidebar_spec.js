@@ -59,6 +59,7 @@ describe('ee/BoardContentSidebar', () => {
         epicFeatureAvailable: true,
         iterationFeatureAvailable: true,
         weightFeatureAvailable: true,
+        healthStatusFeatureAvailable: true,
       },
       store,
       stubs: {
@@ -79,6 +80,7 @@ describe('ee/BoardContentSidebar', () => {
         SidebarDateWidget: true,
         SidebarSubscriptionsWidget: true,
         SidebarWeightWidget: true,
+        SidebarHealthStatusWidget: true,
         SidebarDropdownWidget: true,
         IterationSidebarDropdownWidget: true,
         SidebarTodoWidget: true,
