@@ -13,6 +13,7 @@ export const reportTypes = {
 export const i18n = {
   new: __('New'),
   fixed: __('Fixed'),
+  dismissed: __('Dismissed'),
   learnMore: __('Learn more'),
   label: s__('ciReport|Security scanning'),
   loading: s__('ciReport|Security scanning is loading'),

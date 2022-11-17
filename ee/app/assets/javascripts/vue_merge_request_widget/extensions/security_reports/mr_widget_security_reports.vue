@@ -1,5 +1,5 @@
 <script>
-import { GlSprintf } from '@gitlab/ui';
+import { GlSprintf, GlBadge } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
@@ -22,6 +22,7 @@ export default {
     SummaryHighlights,
     SecurityTrainingPromoWidget,
     GlSprintf,
+    GlBadge,
   },
   i18n,
   props: {
@@ -206,6 +207,10 @@ export default {
     statusIconNameVulnerability(vuln) {
       return EXTENSION_ICONS[`severity${capitalizeFirstCharacter(vuln.severity)}`];
     },
+
+    isDismissed(vuln) {
+      return vuln.state === 'dismissed';
+    },
   },
   SEVERITY_LEVELS,
   widgetHelpPopover: {
@@ -279,9 +284,13 @@ export default {
                 :level="3"
                 :widget-name="$options.name"
                 :status-icon-name="statusIconNameVulnerability(vuln)"
+                class="gl-mt-2"
               >
                 <template #body>
                   {{ $options.SEVERITY_LEVELS[vuln.severity] }} {{ vuln.name }}
+                  <gl-badge v-if="isDismissed(vuln)" class="gl-ml-3">{{
+                    $options.i18n.dismissed
+                  }}</gl-badge>
                 </template>
               </mr-widget-row>
             </div>
