@@ -236,7 +236,7 @@ module API
 
           error!('400 Missing header Content-Range', 400) unless request.headers.key?('Content-Range')
           content_range = request.headers['Content-Range']
-          debug_trace = params[:debug_trace]
+          debug_trace = Gitlab::Utils.to_boolean(params[:debug_trace])
 
           result = ::Ci::AppendBuildTraceService
             .new(job, content_range: content_range, debug_trace: debug_trace)

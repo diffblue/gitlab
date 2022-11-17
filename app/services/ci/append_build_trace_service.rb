@@ -21,7 +21,7 @@ module Ci
       # Issue: https://gitlab.com/gitlab-org/gitlab-runner/issues/3275
 
       # Update the build metadata prior to appending trace content
-      update_build_metadata if params[:debug_trace]
+      update_build_metadata if debug_trace
 
       content_range = stream_range.split('-')
       body_start = content_range[0].to_i
@@ -53,14 +53,14 @@ module Ci
     end
 
     def debug_trace
-      params.fetch(:debug_trace)
+      params.fetch(:debug_trace, false)
     end
 
     # rubocop: disable CodeReuse/ActiveRecord
     def update_build_metadata
       metadata = Ci::BuildMetadata.find_by(build_id: build)
 
-      metadata.update!(debug_trace: debug_trace)
+      metadata.update!(debug_trace_enabled: debug_trace)
     end
     # rubocop: enable CodeReuse/ActiveRecord
 

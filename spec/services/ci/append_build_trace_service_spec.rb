@@ -89,7 +89,7 @@ RSpec.describe Ci::AppendBuildTraceService do
          .new(build, content_range: content_range, debug_trace: true)
          .execute(body_data)
 
-      expect(metadata.debug_trace).to be(true)
+      expect(metadata.debug_trace_enabled).to be(true)
     end
   end
 end
