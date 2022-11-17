@@ -56,18 +56,6 @@ module EE
       validates :elasticsearch_username, length: { maximum: 255 }
       validates :elasticsearch_password, length: { maximum: 255 }
 
-      validates :secret_detection_revocation_token_types_url,
-                presence: { message: "can't be blank when secret detection token revocation is enabled" },
-                if: ->(setting) { setting.secret_detection_token_revocation_enabled? }
-
-      validates :secret_detection_token_revocation_url,
-                presence: { message: "can't be blank when secret detection token revocation is enabled" },
-                if: ->(setting) { setting.secret_detection_token_revocation_enabled? }
-
-      validates :secret_detection_token_revocation_token,
-                presence: { message: "can't be blank when secret detection token revocation is enabled" },
-                if: ->(setting) { setting.secret_detection_token_revocation_enabled? }
-
       validate :check_elasticsearch_url_scheme, if: :elasticsearch_url_changed?
 
       validates :elasticsearch_aws_region,

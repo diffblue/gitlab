@@ -24,7 +24,7 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
      }]
   end
 
-  let_it_be(:revocable_token_types) do
+  let_it_be(:revocable_external_token_types) do
     { 'types': %w(aws_key_id aws_secret gcp_key_id gcp_secret) }
   end
 
@@ -34,6 +34,27 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
     stub_application_setting(secret_detection_revocation_token_types_url: revocation_token_types_url)
     stub_application_setting(secret_detection_token_revocation_token: 'token1')
     stub_application_setting(secret_detection_token_revocation_url: token_revocation_url)
+    stub_feature_flags(gitlab_pat_auto_revocation: false)
+  end
+
+  context 'when revoking a glpat token' do
+    let_it_be(:glpat_token) { create(:personal_access_token) }
+
+    let_it_be(:revocable_keys) do
+      [{
+        'type': 'gitleaks_rule_id_gitlab_personal_access_token',
+        'token': glpat_token.token,
+        'location': 'https://example.com/some-repo/blob/abcdefghijklmnop/compromisedfile1.java'
+      }]
+    end
+
+    before do
+      stub_feature_flags(gitlab_pat_auto_revocation: true)
+    end
+
+    it 'returns success' do
+      expect(subject[:status]).to be(:success)
+    end
   end
 
   context 'when revocation token API returns a response with failure' do
@@ -58,11 +79,11 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
     specify { expect(subject).to eql({ status: :success }) }
   end
 
-  context 'when revocation service is disabled' do
-    specify { expect(subject).to eql({ message: 'Token revocation is disabled', status: :error }) }
+  context 'when external revocation service is disabled' do
+    specify { expect(subject).to eql({ status: :success }) }
   end
 
-  context 'when revocation service is enabled' do
+  context 'when external revocation service is enabled' do
     before do
       stub_application_setting(secret_detection_token_revocation_enabled: true)
       stub_revoke_token_api_with_success
@@ -108,7 +129,7 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
       end
 
       context 'when there is no token to be revoked' do
-        let_it_be(:revocable_token_types) do
+        let_it_be(:revocable_external_token_types) do
           { 'types': %w() }
         end
 
@@ -150,7 +171,7 @@ RSpec.describe Security::TokenRevocationService, '#execute' do
       .to_return(
         status: 200,
         headers: { 'Content-Type' => 'application/json' },
-        body: revocable_token_types.to_json
+        body: revocable_external_token_types.to_json
       )
   end
 
