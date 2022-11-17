@@ -6,6 +6,7 @@ module Gitlab
       # Reference: https://docs.gitlab.com/ee/integration/advanced_search/elasticsearch.html#tuning
 
       DEFAULT_SETTINGS = {
+        dry_run: false,
         max_shard_size_gb: 50,
         max_docs_denominator: 5_000_000,
         min_docs_before_rollover: 100_000,
