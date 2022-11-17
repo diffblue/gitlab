@@ -47,10 +47,6 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
   describe 'counting' do
     let(:instrumentation_class) { Gitlab::Redis::SharedState.instrumentation_class }
 
-    before do
-      stub_rails_env('staging') # to avoid raising CrossSlotError
-    end
-
     it 'counts successful requests' do
       expect(instrumentation_class).to receive(:instance_count_request).with(1).and_call_original
 
@@ -66,12 +62,6 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
           pipeline.call(:get, '{foobar}baz')
         end
       end
-    end
-
-    it 'counts cross-slot requests' do
-      expect(instrumentation_class).to receive(:increment_cross_slot_request_count).and_call_original
-
-      Gitlab::Redis::SharedState.with { |redis| redis.call(:mget, 'foo', 'bar') }
     end
 
     it 'skips count for non-cross-slot requests' do
@@ -90,6 +80,18 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
           redis.call(:auth, 'foo', 'bar')
         end
       end.to raise_exception(Redis::CommandError)
+    end
+
+    context 'in production env' do
+      before do
+        stub_rails_env('production') # to avoid raising CrossSlotError
+      end
+
+      it 'counts cross-slot requests' do
+        expect(instrumentation_class).to receive(:increment_cross_slot_request_count).and_call_original
+
+        Gitlab::Redis::SharedState.with { |redis| redis.call(:mget, 'foo', 'bar') }
+      end
     end
   end
 
