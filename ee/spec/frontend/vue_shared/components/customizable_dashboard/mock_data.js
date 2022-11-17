@@ -1,23 +1,41 @@
 import { __ } from '~/locale';
 
+const cubeLineChart = {
+  type: 'LineChart',
+  data: {
+    type: 'cube_analytics',
+    query: {
+      users: {
+        measures: ['Jitsu.count'],
+        dimensions: ['Jitsu.eventType'],
+      },
+    },
+  },
+  options: {
+    xAxis: {
+      name: 'Time',
+      type: 'time',
+    },
+    yAxis: {
+      name: 'Counts',
+    },
+  },
+};
+
 export const dashboard = {
   title: 'Analytics Overview',
   widgets: [
     {
-      component: 'CubeLineChart',
       title: __('Test A'),
       gridAttributes: { size: { width: 3, height: 3 } },
-      customizations: {},
-      chartOptions: {},
-      data: {},
+      visualization: cubeLineChart,
+      queryOverrides: {},
     },
     {
-      component: 'CubeLineChart',
       title: __('Test B'),
       gridAttributes: { size: { width: 2, height: 4 } },
-      customizations: {},
-      chartOptions: {},
-      data: {},
+      visualization: cubeLineChart,
+      queryOverrides: {},
     },
   ],
 };

@@ -1,0 +1,26 @@
+{
+  "version": "1",
+  "type": "LineChart",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "users": {
+        "measures": [
+          "Jitsu.count"
+        ],
+        "dimensions": [
+          "Jitsu.eventType"
+        ]
+      }
+    }
+  },
+  "options": {
+    "xAxis": {
+      "name": "Time",
+      "type": "time"
+    },
+    "yAxis": {
+      "name": "Counts"
+    }
+  }
+}

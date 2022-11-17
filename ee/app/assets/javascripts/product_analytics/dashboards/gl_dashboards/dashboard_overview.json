@@ -2,7 +2,7 @@
   "title": "Analytics Overview",
   "widgets": [
     {
-      "component": "CubeLineChart",
+      "visualization": "cube_analytics_line_chart",
       "title": "Audience",
       "gridAttributes": {
         "size": {
@@ -12,7 +12,7 @@
       }
     },
     {
-      "component": "CubeLineChart",
+      "visualization": "cube_analytics_line_chart",
       "title": "Sources",
       "gridAttributes": {
         "size": {

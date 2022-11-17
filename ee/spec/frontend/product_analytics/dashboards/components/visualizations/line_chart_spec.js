@@ -1,15 +1,14 @@
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CubeLineChart from 'ee/product_analytics/dashboards/components/widgets/cube_line_chart.vue';
+import LineChart from 'ee/product_analytics/dashboards/components/visualizations/line_chart.vue';
 
-describe('CubeLineChart', () => {
+describe('LineChart Visualization', () => {
   let wrapper;
 
   const createWrapper = (props = {}) => {
-    wrapper = shallowMountExtended(CubeLineChart, {
+    wrapper = shallowMountExtended(LineChart, {
       propsData: {
         data: {},
-        chartOptions: {},
-        customizations: {},
+        options: {},
         ...props,
       },
     });
