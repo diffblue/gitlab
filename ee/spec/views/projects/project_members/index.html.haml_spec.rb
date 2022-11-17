@@ -58,7 +58,7 @@ RSpec.describe 'projects/project_members/index', :aggregate_failures do
 
       before do
         allow(view).to receive(:can?).with(user, :admin_group_member, project.root_ancestor).and_return(true)
-        allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?)
+        allow(::Namespaces::FreeUserCap).to receive(:notification_or_enforcement_enabled?)
                                               .with(project.root_ancestor).and_return(true)
       end
 

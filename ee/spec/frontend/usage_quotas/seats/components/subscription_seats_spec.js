@@ -40,7 +40,7 @@ const providedFields = {
   hasNoSubscription: false,
   hasLimitedFreePlan: false,
   hasReachedFreePlanLimit: false,
-  previewFreeUserCap: false,
+  notificationFreeUserCapEnabled: false,
   activeTrial: false,
 };
 
@@ -398,14 +398,14 @@ describe('Subscription Seats', () => {
           });
         });
 
-        describe('when preview free user cap', () => {
+        describe('when notification free user cap is enabled', () => {
           beforeEach(() => {
             wrapper = createComponent({
               initialState: {
                 ...defaultInitialState,
                 hasNoSubscription: true,
                 hasLimitedFreePlan: false,
-                previewFreeUserCap: true,
+                notificationFreeUserCapEnabled: true,
               },
             });
           });
@@ -457,13 +457,13 @@ describe('Subscription Seats', () => {
       });
     });
 
-    describe('for free namespace with free user cap preview enabled', () => {
+    describe('for free namespace with free user cap notification enabled', () => {
       beforeEach(() => {
         wrapper = createComponent({
           initialState: {
             hasNoSubscription: true,
             hasLimitedFreePlan: false,
-            previewFreeUserCap: true,
+            notificationFreeUserCapEnabled: true,
           },
         });
       });
@@ -533,28 +533,28 @@ describe('Subscription Seats', () => {
 
   describe('pending members alert', () => {
     it.each`
-      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | previewFreeUserCap | shouldBeRendered
-      ${undefined}           | ${undefined}        | ${false}           | ${false}           | ${false}
-      ${undefined}           | ${0}                | ${false}           | ${false}           | ${false}
-      ${'fake-path'}         | ${0}                | ${false}           | ${false}           | ${false}
-      ${'fake-path'}         | ${3}                | ${true}            | ${false}           | ${false}
-      ${'fake-path'}         | ${3}                | ${false}           | ${true}            | ${false}
-      ${'fake-path'}         | ${3}                | ${false}           | ${false}           | ${true}
+      pendingMembersPagePath | pendingMembersCount | hasLimitedFreePlan | notificationFreeUserCapEnabled | shouldBeRendered
+      ${undefined}           | ${undefined}        | ${false}           | ${false}                       | ${false}
+      ${undefined}           | ${0}                | ${false}           | ${false}                       | ${false}
+      ${'fake-path'}         | ${0}                | ${false}           | ${false}                       | ${false}
+      ${'fake-path'}         | ${3}                | ${true}            | ${false}                       | ${false}
+      ${'fake-path'}         | ${3}                | ${false}           | ${true}                        | ${false}
+      ${'fake-path'}         | ${3}                | ${false}           | ${false}                       | ${true}
     `(
-      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan and previewFreeUserCap=$previewFreeUserCap',
+      'rendering alert is $shouldBeRendered when pendingMembersPagePath=$pendingMembersPagePath and pendingMembersCount=$pendingMembersCount and hasLimitedFreePlan=$hasLimitedFreePlan and notificationFreeUserCapEnabled=$notificationFreeUserCapEnabled',
       ({
         pendingMembersPagePath,
         pendingMembersCount,
         shouldBeRendered,
         hasLimitedFreePlan,
-        previewFreeUserCap,
+        notificationFreeUserCapEnabled,
       }) => {
         wrapper = createComponent({
           initialState: {
             pendingMembersCount,
             pendingMembersPagePath,
             hasLimitedFreePlan,
-            previewFreeUserCap,
+            notificationFreeUserCapEnabled,
           },
         });
 

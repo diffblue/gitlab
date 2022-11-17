@@ -18,7 +18,7 @@ RSpec.describe Namespaces::FreeUserCap::NonOwnerAlertComponent, :saas, :aggregat
   end
 
   before do
-    allow_next_instance_of(::Namespaces::FreeUserCap::Standard) do |free_user_cap|
+    allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement) do |free_user_cap|
       allow(free_user_cap).to receive(:over_limit?).and_return(free_user_cap_over_limit?)
     end
   end

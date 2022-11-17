@@ -8,8 +8,8 @@ export default ({
   hasNoSubscription = null,
   maxFreeNamespaceSeats = null,
   explorePlansPath = '',
-  freeUserCapEnabled = false,
-  previewFreeUserCap = false,
+  enforcementFreeUserCapEnabled = false,
+  notificationFreeUserCapEnabled = false,
 } = {}) => ({
   isLoadingBillableMembers: false,
   isLoadingGitlabSubscription: false,
@@ -37,8 +37,8 @@ export default ({
   addSeatsHref,
   maxFreeNamespaceSeats,
   explorePlansPath,
-  hasLimitedFreePlan: freeUserCapEnabled,
+  hasLimitedFreePlan: enforcementFreeUserCapEnabled,
   hasReachedFreePlanLimit: null,
-  previewFreeUserCap,
+  notificationFreeUserCapEnabled,
   activeTrial: false,
 });

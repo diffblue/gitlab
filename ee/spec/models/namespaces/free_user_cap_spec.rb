@@ -5,10 +5,10 @@ require 'spec_helper'
 RSpec.describe Namespaces::FreeUserCap do
   using RSpec::Parameterized::TableSyntax
 
-  describe '.enforce_preview_or_standard?' do
+  describe '.notification_or_enforcement_enabled?' do
     let(:namespace) { build(:namespace) }
 
-    subject { described_class.enforce_preview_or_standard?(namespace) }
+    subject { described_class.notification_or_enforcement_enabled?(namespace) }
 
     where(:enforce_preview, :enforce_standard, :result) do
       true  | true  | true
@@ -18,11 +18,11 @@ RSpec.describe Namespaces::FreeUserCap do
     end
 
     before do
-      allow_next_instance_of(::Namespaces::FreeUserCap::Preview, namespace) do |instance|
+      allow_next_instance_of(::Namespaces::FreeUserCap::Notification, namespace) do |instance|
         allow(instance).to receive(:enforce_cap?).and_return(enforce_preview)
       end
 
-      allow_next_instance_of(::Namespaces::FreeUserCap::Standard, namespace) do |instance|
+      allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, namespace) do |instance|
         allow(instance).to receive(:enforce_cap?).and_return(enforce_standard)
       end
     end

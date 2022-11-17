@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failures, type: :component do
+RSpec.describe Namespaces::FreeUserCap::EnforcementAlertComponent, :saas, :aggregate_failures, type: :component do
   let_it_be(:namespace, reload: true) { create(:group) }
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:content_class) { '_content_class_' }
@@ -18,7 +18,7 @@ RSpec.describe Namespaces::FreeUserCap::AlertComponent, :saas, :aggregate_failur
   end
 
   before do
-    allow_next_instance_of(::Namespaces::FreeUserCap::Standard) do |free_user_cap|
+    allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement) do |free_user_cap|
       allow(free_user_cap).to receive(:over_limit?).and_return(free_user_cap_over_limit?)
     end
   end

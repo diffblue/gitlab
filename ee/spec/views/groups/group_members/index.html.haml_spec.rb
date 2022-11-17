@@ -16,7 +16,7 @@ RSpec.describe 'groups/group_members/index' do
     before do
       allow(view).to receive(:can_admin_group_member?).with(group).and_return(true)
       allow(view).to receive(:can?).with(user, :admin_group_member, group.root_ancestor).and_return(true)
-      allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?)
+      allow(::Namespaces::FreeUserCap).to receive(:notification_or_enforcement_enabled?)
                                             .with(group.root_ancestor).and_return(true)
     end
 

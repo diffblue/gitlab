@@ -1213,7 +1213,7 @@ RSpec.describe Namespace do
     with_them do
       before do
         allow(namespace).to receive(:over_storage_limit?).and_return(over_storage_limit)
-        allow_next_instance_of(::Namespaces::FreeUserCap::Standard, namespace) do |instance|
+        allow_next_instance_of(::Namespaces::FreeUserCap::Enforcement, namespace) do |instance|
           allow(instance).to receive(:over_limit?).with(cache: true).and_return(over_free_user_limit)
         end
       end

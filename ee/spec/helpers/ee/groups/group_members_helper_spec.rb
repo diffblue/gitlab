@@ -80,7 +80,7 @@ RSpec.describe Groups::GroupMembersHelper do
 
     before do
       allow(helper).to receive(:can?).with(current_user, :admin_group_member, group).and_return(can_admin_member)
-      allow(::Namespaces::FreeUserCap).to receive(:enforce_preview_or_standard?)
+      allow(::Namespaces::FreeUserCap).to receive(:notification_or_enforcement_enabled?)
                                                       .with(group).and_return(enforce_free_user_cap)
     end
 

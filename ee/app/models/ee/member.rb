@@ -170,7 +170,7 @@ module EE
 
     def seat_available
       return unless source # due to source being evaluated during creation, source must be present to evaluate
-      return if ::Namespaces::FreeUserCap::Standard.new(source.root_ancestor).seat_available?(user)
+      return if ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor).seat_available?(user)
 
       msg = format(_("cannot be added since you've reached your %{free_limit} member limit for %{namespace_name}"),
                    free_limit: ::Namespaces::FreeUserCap.dashboard_limit, namespace_name: source.root_ancestor.name)

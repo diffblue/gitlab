@@ -26,7 +26,7 @@ module Namespaces
       end
 
       def breached_cap_limit?
-        Shared.breached_standard_cap_limit?(namespace)
+        Shared.enforcement_over_limit?(namespace)
       end
 
       def variant

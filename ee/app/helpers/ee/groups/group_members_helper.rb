@@ -21,7 +21,7 @@ module EE::Groups::GroupMembersHelper
   end
 
   def group_member_header_subtext(group)
-    if ::Namespaces::FreeUserCap.enforce_preview_or_standard?(group.root_ancestor) &&
+    if ::Namespaces::FreeUserCap.notification_or_enforcement_enabled?(group.root_ancestor) &&
       can?(current_user, :admin_group_member, group.root_ancestor)
       super + member_header_manage_namespace_members_text(group.root_ancestor)
     else

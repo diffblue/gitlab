@@ -81,7 +81,7 @@ export default {
       'explorePlansPath',
       'hasLimitedFreePlan',
       'hasReachedFreePlanLimit',
-      'previewFreeUserCap',
+      'notificationFreeUserCapEnabled',
       'activeTrial',
     ]),
     ...mapGetters(['tableItems', 'isLoading']),
@@ -115,7 +115,7 @@ export default {
       return (
         this.pendingMembersCount > 0 &&
         this.pendingMembersPagePath &&
-        !this.hasLimitedPlanOrPreviewLimitedPlan
+        !this.hasLimitedPlanOrInNotificationFreePlan
       );
     },
     seatsInUsePercentage() {
@@ -132,13 +132,13 @@ export default {
       return this.seatsInSubscription;
     },
     totalSeatsInUse() {
-      if (this.hasLimitedPlanOrPreviewLimitedPlan) {
+      if (this.hasLimitedPlanOrInNotificationFreePlan) {
         return this.seatsInUse;
       }
       return this.total;
     },
     seatsInUseText() {
-      return this.hasLimitedPlanOrPreviewLimitedPlan
+      return this.hasLimitedPlanOrInNotificationFreePlan
         ? this.$options.i18n.seatsAvailableText
         : this.$options.i18n.seatsInSubscriptionText;
     },
@@ -159,10 +159,10 @@ export default {
       if (!this.hasNoSubscription) {
         return false;
       }
-      return this.hasLimitedPlanOrPreviewLimitedPlan;
+      return this.hasLimitedPlanOrInNotificationFreePlan;
     },
-    hasLimitedPlanOrPreviewLimitedPlan() {
-      return this.hasLimitedFreePlan || this.previewFreeUserCap;
+    hasLimitedPlanOrInNotificationFreePlan() {
+      return this.hasLimitedFreePlan || this.notificationFreeUserCapEnabled;
     },
     isLoaderShown() {
       return this.isLoading || this.hasError;

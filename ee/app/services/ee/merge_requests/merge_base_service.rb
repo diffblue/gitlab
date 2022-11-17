@@ -73,8 +73,8 @@ module EE
       end
 
       def check_free_user_cap_over_limit!
-        ::Namespaces::FreeUserCap::Standard.new(merge_request.project.root_ancestor)
-                                           .git_check_over_limit!(::MergeRequests::MergeService::MergeError)
+        ::Namespaces::FreeUserCap::Enforcement.new(merge_request.project.root_ancestor)
+                                              .git_check_over_limit!(::MergeRequests::MergeService::MergeError)
       end
 
       def check_size_limit

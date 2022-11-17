@@ -23,8 +23,8 @@ export default (containerId = 'js-seat-usage-app') => {
     hasNoSubscription,
     maxFreeNamespaceSeats,
     explorePlansPath,
-    freeUserCapEnabled,
-    previewFreeUserCap,
+    enforcementFreeUserCapEnabled,
+    notificationFreeUserCapEnabled,
   } = el.dataset;
 
   return new Vue({
@@ -42,8 +42,8 @@ export default (containerId = 'js-seat-usage-app') => {
         hasNoSubscription: parseBoolean(hasNoSubscription),
         maxFreeNamespaceSeats: parseInt(maxFreeNamespaceSeats, 10),
         explorePlansPath,
-        freeUserCapEnabled: parseBoolean(freeUserCapEnabled),
-        previewFreeUserCap: parseBoolean(previewFreeUserCap),
+        enforcementFreeUserCapEnabled: parseBoolean(enforcementFreeUserCapEnabled),
+        notificationFreeUserCapEnabled: parseBoolean(notificationFreeUserCapEnabled),
       }),
     ),
     render(createElement) {

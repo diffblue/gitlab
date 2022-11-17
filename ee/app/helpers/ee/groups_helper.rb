@@ -75,8 +75,8 @@ module EE
         has_no_subscription: group.has_free_or_no_subscription?.to_s,
         max_free_namespace_seats: ::Namespaces::FreeUserCap.dashboard_limit,
         explore_plans_path: group_billings_path(group),
-        free_user_cap_enabled: ::Namespaces::FreeUserCap::Standard.new(group).enforce_cap?.to_s,
-        preview_free_user_cap: ::Namespaces::FreeUserCap::Preview.new(group).enforce_cap?.to_s
+        enforcement_free_user_cap_enabled: ::Namespaces::FreeUserCap::Enforcement.new(group).enforce_cap?.to_s,
+        notification_free_user_cap_enabled: ::Namespaces::FreeUserCap::Notification.new(group).enforce_cap?.to_s
       }
     end
 

@@ -2,13 +2,13 @@
 
 module Namespaces
   module FreeUserCap
-    class PreviewAlertComponent < BaseAlertComponent
+    class NotificationAlertComponent < BaseAlertComponent
       private
 
-      PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
+      NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
 
       def breached_cap_limit?
-        Shared.breached_preview_cap_limit?(namespace)
+        Shared.over_notification_limit?(namespace)
       end
 
       def variant
@@ -16,11 +16,11 @@ module Namespaces
       end
 
       def ignore_dismissal_earlier_than
-        Shared::PREVIEW_IGNORE_DISMISSAL_EARLIER_THAN
+        Shared::NOTIFICATION_IGNORE_DISMISSAL_EARLIER_THAN
       end
 
       def feature_name
-        PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT
+        NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT
       end
 
       def alert_attributes
@@ -36,7 +36,7 @@ module Namespaces
       end
 
       def alert_title
-        Shared.preview_alert_title
+        Shared.notification_alert_title
       end
 
       def over_limit_message

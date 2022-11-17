@@ -7,7 +7,7 @@ module EE
     override :common_invite_group_modal_data
     def common_invite_group_modal_data(source, _member_class, _is_project)
       super.merge(
-        free_user_cap_enabled: ::Namespaces::FreeUserCap.enforce_preview_or_standard?(
+        free_user_cap_enabled: ::Namespaces::FreeUserCap.notification_or_enforcement_enabled?(
           source.root_ancestor
         ).to_s,
         free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
@@ -18,7 +18,7 @@ module EE
     def common_invite_modal_dataset(source)
       dataset = super
 
-      free_user_cap = ::Namespaces::FreeUserCap::Standard.new(source.root_ancestor)
+      free_user_cap = ::Namespaces::FreeUserCap::Enforcement.new(source.root_ancestor)
 
       return dataset unless free_user_cap.enforce_cap?
 

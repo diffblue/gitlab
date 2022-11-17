@@ -1609,7 +1609,7 @@ RSpec.describe Group do
 
     with_them do
       specify do
-        expect_next_instance_of(Namespaces::FreeUserCap::Standard, group) do |instance|
+        expect_next_instance_of(Namespaces::FreeUserCap::Enforcement, group) do |instance|
           expect(instance).to receive(:enforce_cap?).and_return(enforce_free_cap)
         end
 

@@ -2,7 +2,7 @@
 
 module Namespaces
   module FreeUserCap
-    class Standard < Base
+    class Enforcement < Base
       def over_limit?(cache: false, update_database: true)
         return preloaded_over_limit[root_namespace.id] if cache
         return false unless enforce_cap?
@@ -115,4 +115,4 @@ module Namespaces
   end
 end
 
-Namespaces::FreeUserCap::Standard.prepend_mod
+Namespaces::FreeUserCap::Enforcement.prepend_mod

@@ -38,8 +38,8 @@ module EE
     end
 
     def check_free_user_cap_over_limit!
-      ::Namespaces::FreeUserCap::Standard.new(project.root_ancestor)
-                                         .git_check_over_limit!(::LfsRequest::LfsForbiddenError) { limit_exceeded? }
+      ::Namespaces::FreeUserCap::Enforcement.new(project.root_ancestor)
+                                            .git_check_over_limit!(::LfsRequest::LfsForbiddenError) { limit_exceeded? }
     end
 
     def render_over_limit_error(message)

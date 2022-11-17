@@ -9,7 +9,7 @@ module Namespaces
 
       def breached_cap_limit?
         namespace.trial_active? &&
-          ::Namespaces::FreeUserCap::Standard.new(namespace).enforce_cap?
+          ::Namespaces::FreeUserCap::Enforcement.new(namespace).enforce_cap?
       end
 
       def variant
