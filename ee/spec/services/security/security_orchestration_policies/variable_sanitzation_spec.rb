@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies do
+RSpec.describe "Variable sanitzation" do
   include ::UpdateOrchestrationPolicyConfiguration
 
   let(:group) { create(:group) }
@@ -81,7 +81,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies do
       variables:
         CONTAINER_SCANNING_DISABLED: 'true'
         SAST_DISABLED: 'true'
-      YML
+        YML
       end
 
       specify do
@@ -113,8 +113,6 @@ RSpec.describe Security::SecurityOrchestrationPolicies do
   end
 
   describe "pipeline scans" do
-    include ::UpdateOrchestrationPolicyConfiguration
-
     let(:gitlab_ci_yml) do
       <<~YML
       variables:
