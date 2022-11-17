@@ -261,6 +261,8 @@ export default class MergeRequestTabs {
   }
 
   tabShown(action, href, shouldScroll = true) {
+    toggleLoader(false);
+
     if (action !== this.currentTab && this.mergeRequestTabs) {
       this.currentTab = action;
 
@@ -477,8 +479,6 @@ export default class MergeRequestTabs {
       return;
     }
 
-    toggleLoader(true);
-
     loadDiffs({
       // We extract pathname for the current Changes tab anchor href
       // some pages like MergeRequestsController#new has query parameters on that anchor
@@ -496,9 +496,6 @@ export default class MergeRequestTabs {
         createAlert({
           message: __('An error occurred while fetching this tab.'),
         });
-      })
-      .finally(() => {
-        toggleLoader(false);
       });
   }
 
