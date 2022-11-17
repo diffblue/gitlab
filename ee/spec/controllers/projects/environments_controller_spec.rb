@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::EnvironmentsController do
+RSpec.describe Projects::EnvironmentsController, feature_category: :continuous_delivery do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
 

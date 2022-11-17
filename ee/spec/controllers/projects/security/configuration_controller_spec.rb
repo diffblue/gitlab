@@ -12,7 +12,7 @@ RSpec.describe Projects::Security::ConfigurationController do
     group.add_developer(user)
   end
 
-  describe 'GET #show' do
+  describe 'GET #show', feature_category: :static_application_security_testing do
     using RSpec::Parameterized::TableSyntax
 
     subject(:request) { get :show, params: { namespace_id: project.namespace, project_id: project } }
@@ -109,7 +109,7 @@ RSpec.describe Projects::Security::ConfigurationController do
     end
   end
 
-  describe 'POST #auto_fix' do
+  describe 'POST #auto_fix', feature_category: :dependency_scanning do
     subject(:request) { post :auto_fix, params: params }
 
     let_it_be(:maintainer) { create(:user) }

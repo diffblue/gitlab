@@ -62,7 +62,7 @@ RSpec.describe Projects::MergeRequestsController do
     sign_in(viewer)
   end
 
-  describe 'PUT update' do
+  describe 'PUT update', feature_category: :code_review do
     let_it_be_with_reload(:merge_request) do
       create(:merge_request_with_diffs, source_project: project, author: author)
     end
@@ -317,7 +317,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
-  describe 'POST #rebase' do
+  describe 'POST #rebase', feature_category: :code_review do
     def post_rebase
       post :rebase, params: { namespace_id: project.namespace, project_id: project, id: merge_request }
     end
@@ -340,7 +340,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
-  describe 'GET #edit' do
+  describe 'GET #edit', feature_category: :code_review do
     render_views
 
     let(:params) do
@@ -392,7 +392,7 @@ RSpec.describe Projects::MergeRequestsController do
     end
   end
 
-  describe 'GET #dependency_scanning_reports' do
+  describe 'GET #dependency_scanning_reports', feature_category: :vulnerability_management do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_dependency_scanning_reports, source_project: project, author: author) }
 
     let(:params) do
@@ -465,7 +465,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #container_scanning_reports' do
+  describe 'GET #container_scanning_reports', feature_category: :vulnerability_management do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_container_scanning_reports, source_project: project, author: author) }
 
     let(:params) do
@@ -538,7 +538,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #sast_reports' do
+  describe 'GET #sast_reports', feature_category: :vulnerability_management do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_sast_reports, source_project: project, author: author) }
 
     let(:params) do
@@ -611,7 +611,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #coverage_fuzzing_reports' do
+  describe 'GET #coverage_fuzzing_reports', feature_category: :vulnerability_management do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_coverage_fuzzing_reports, source_project: project, author: author) }
 
     let(:params) do
@@ -684,7 +684,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #api_fuzzing_reports' do
+  describe 'GET #api_fuzzing_reports', feature_category: :vulnerability_management do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_api_fuzzing_reports, source_project: project, author: author) }
 
     let(:params) do
@@ -757,7 +757,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #secret_detection_reports' do
+  describe 'GET #secret_detection_reports', feature_category: :vulnerability_management do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_secret_detection_reports, source_project: project, author: author) }
 
     let(:params) do
@@ -831,7 +831,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #dast_reports' do
+  describe 'GET #dast_reports', feature_category: :vulnerability_management do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_dast_reports, source_project: project) }
 
     let(:params) do
@@ -904,7 +904,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #license_scanning_reports' do
+  describe 'GET #license_scanning_reports', feature_category: :license_compliance do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project, author: author) }
 
     let(:comparison_status) { { status: :parsed, data: { new_licenses: [], existing_licenses: [], removed_licenses: [] } } }
@@ -935,7 +935,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #license_scanning_reports_collapsed' do
+  describe 'GET #license_scanning_reports_collapsed', feature_category: :license_compliance do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_license_scanning_reports, source_project: project, author: author) }
 
     let(:comparison_status) { { status: :parsed, data: { new_licenses: 0, existing_licenses: 0, removed_licenses: 0 } } }
@@ -973,7 +973,7 @@ RSpec.describe Projects::MergeRequestsController do
     it_behaves_like 'authorize read pipeline'
   end
 
-  describe 'GET #metrics_reports' do
+  describe 'GET #metrics_reports', feature_category: :metrics do
     let_it_be_with_reload(:merge_request) { create(:ee_merge_request, :with_metrics_reports, source_project: project, author: author) }
 
     let(:params) do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Quality::TestCasesController do
+RSpec.describe Projects::Quality::TestCasesController, feature_category: :quality_management do
   let_it_be(:project) { create(:project) }
   let_it_be(:non_member) { create(:user) }
   let_it_be(:guest) { create(:project_member, :guest, project: project).user }

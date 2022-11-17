@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Integrations::Jira::IssuesController do
+RSpec.describe Projects::Integrations::Jira::IssuesController, feature_category: :integrations do
   include ProjectForksHelper
 
   let_it_be(:project) { create(:project) }

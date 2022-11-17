@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::RunnersController, :saas do
+RSpec.describe Projects::RunnersController, :saas, feature_category: :runner do
   let_it_be(:user) { create(:user) }
   let_it_be(:namespace) { create(:namespace) }
 

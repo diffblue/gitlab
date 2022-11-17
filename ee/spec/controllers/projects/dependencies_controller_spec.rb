@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::DependenciesController do
+RSpec.describe Projects::DependenciesController, feature_category: :dependency_management do
   describe 'GET #index' do
     let_it_be(:developer) { create(:user) }
     let_it_be(:guest) { create(:user) }

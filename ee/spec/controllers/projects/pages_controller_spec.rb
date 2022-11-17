@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::PagesController do
+RSpec.describe Projects::PagesController, feature_category: :pages do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 

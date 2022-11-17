@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::IncidentManagement::OncallSchedulesController do
+RSpec.describe Projects::IncidentManagement::OncallSchedulesController, feature_category: :incident_management do
   let_it_be(:registered_user) { create(:user) }
   let_it_be(:user_with_read_permissions) { create(:user) }
   let_it_be(:user_with_admin_permissions) { create(:user) }

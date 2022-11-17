@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Security::ApiFuzzingConfigurationController do
+RSpec.describe Projects::Security::ApiFuzzingConfigurationController, feature_category: :fuzz_testing do
   let_it_be(:group) { create(:group) }
   let_it_be(:project) { create(:project, namespace: group) }
   let_it_be(:developer) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Security::VulnerabilitiesController do
+RSpec.describe Projects::Security::VulnerabilitiesController, feature_category: :vulnerability_management do
   let_it_be(:group)   { create(:group) }
   let_it_be(:project) { create(:project, :repository, :public, namespace: group) }
   let_it_be(:user)    { create(:user) }
