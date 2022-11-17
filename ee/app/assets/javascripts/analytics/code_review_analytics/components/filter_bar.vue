@@ -1,7 +1,7 @@
 <script>
 import { mapState, mapActions } from 'vuex';
 import {
-  DEFAULT_NONE_ANY,
+  OPTIONS_NONE_ANY,
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
 } from '~/vue_shared/components/filtered_search_bar/constants';
@@ -50,7 +50,7 @@ export default {
           title: TOKEN_TITLE_LABEL,
           type: 'labels',
           token: LabelToken,
-          defaultLabels: DEFAULT_NONE_ANY,
+          defaultLabels: OPTIONS_NONE_ANY,
           initialLabels: this.labelsData,
           unique: false,
           symbol: '~',

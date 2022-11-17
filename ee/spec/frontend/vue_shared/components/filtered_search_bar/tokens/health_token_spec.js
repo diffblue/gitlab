@@ -1,6 +1,6 @@
 import { GlFilteredSearchTokenSegment, GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
-import { DEFAULT_NONE_ANY } from '~/vue_shared/components/filtered_search_bar/constants';
+import { OPTIONS_NONE_ANY } from '~/vue_shared/components/filtered_search_bar/constants';
 import { __ } from '~/locale';
 import HealthToken from 'ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue';
 import { HEALTH_SUGGESTIONS } from 'ee/vue_shared/components/filtered_search_bar//constants';
@@ -50,8 +50,8 @@ describe('HealthToken', () => {
 
     const suggestions = wrapper.findAllComponents(GlFilteredSearchSuggestion);
 
-    expect(suggestions).toHaveLength(DEFAULT_NONE_ANY.length + HEALTH_SUGGESTIONS.length);
-    DEFAULT_NONE_ANY.forEach((label, index) => {
+    expect(suggestions).toHaveLength(OPTIONS_NONE_ANY.length + HEALTH_SUGGESTIONS.length);
+    OPTIONS_NONE_ANY.forEach((label, index) => {
       expect(suggestions.at(index).text()).toBe(label.title);
     });
   });

@@ -1,7 +1,7 @@
 <script>
 import { GlFilteredSearchSuggestion } from '@gitlab/ui';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import { DEFAULT_NONE_ANY, WEIGHT_TOKEN_SUGGESTIONS_SIZE } from '../constants';
+import { OPTIONS_NONE_ANY, WEIGHT_TOKEN_SUGGESTIONS_SIZE } from '../constants';
 
 const weights = Array.from(Array(WEIGHT_TOKEN_SUGGESTIONS_SIZE), (_, index) => index.toString());
 
@@ -31,7 +31,7 @@ export default {
   },
   computed: {
     defaultWeights() {
-      return this.config.defaultWeights || DEFAULT_NONE_ANY;
+      return this.config.defaultWeights || OPTIONS_NONE_ANY;
     },
   },
   methods: {
