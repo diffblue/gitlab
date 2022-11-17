@@ -2,7 +2,7 @@
 import { GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import { HEALTH_SUGGESTIONS, HEALTH_DEFAULT_NONE_ANY } from '../constants';
+import { HEALTH_SUGGESTIONS, DEFAULT_HEALTH_STATUSES } from '../constants';
 
 export default {
   components: {
@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     defaultHealth() {
-      return this.config.defaultHealth || HEALTH_DEFAULT_NONE_ANY;
+      return this.config.defaultHealth || DEFAULT_HEALTH_STATUSES;
     },
   },
   methods: {

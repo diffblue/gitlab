@@ -8,7 +8,7 @@ import { __, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 
 import {
-  DEFAULT_LABEL_ANY,
+  OPTION_ANY,
   OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_STATUS,
@@ -625,7 +625,7 @@ export default {
       filters.forEach((filter) => {
         switch (filter.type) {
           case 'author_username':
-            if (filter.value.data !== DEFAULT_LABEL_ANY.value) {
+            if (filter.value.data !== OPTION_ANY.value) {
               authors.push(filter.value.data);
             }
             break;

@@ -4,7 +4,7 @@ import createFlash from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
-import { DEFAULT_NONE_ANY } from '../constants';
+import { OPTIONS_NONE_ANY } from '../constants';
 import searchEpicsQuery from '../queries/search_epics.query.graphql';
 
 export default {
@@ -46,7 +46,7 @@ export default {
       return this.value.data;
     },
     defaultEpics() {
-      return this.config.defaultEpics || DEFAULT_NONE_ANY;
+      return this.config.defaultEpics || OPTIONS_NONE_ANY;
     },
   },
   methods: {
