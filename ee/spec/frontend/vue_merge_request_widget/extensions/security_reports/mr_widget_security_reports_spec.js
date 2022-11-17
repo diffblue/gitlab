@@ -1,3 +1,4 @@
+import { GlBadge } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -64,6 +65,7 @@ describe('MR Widget Security Reports', () => {
   const findWidgetRow = (reportType) => wrapper.findByTestId(`report-${reportType}`);
   const findSummaryText = () => wrapper.findComponent(SummaryText);
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
+  const findDismissedBadge = () => wrapper.findComponent(GlBadge);
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
@@ -110,7 +112,12 @@ describe('MR Widget Security Reports', () => {
     const mockWithData = () => {
       mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(200, {
         added: [
-          { id: 1, severity: 'critical', name: 'Password leak' },
+          {
+            id: 1,
+            severity: 'critical',
+            name: 'Password leak',
+            state: 'dismissed',
+          },
           { id: 2, severity: 'high', name: 'XSS vulnerability' },
         ],
       });
@@ -134,6 +141,22 @@ describe('MR Widget Security Reports', () => {
         });
       });
     };
+
+    it('should display the dismissed badge', async () => {
+      mockWithData();
+
+      createComponent({
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      // Click on the toggle button to expand data
+      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+
+      expect(findDismissedBadge().text()).toBe('Dismissed');
+    });
 
     it('should mount the widget component', async () => {
       mockWithData();
