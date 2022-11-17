@@ -514,7 +514,7 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
   [upgraded to 15.1](#1510) before upgrading to 15.2 (and later) due to a
   configuration change in Rails that can result in inconsistent ETag key
   generation.
-- Some Sidekiq workers were renamed in this release. To avoid any disruption, [run the Rake tasks to migrate any pending jobs](../administration/sidekiq/sidekiq_job_migration.md#future-jobs) before starting the upgrade to GitLab 15.2.0.
+- Some Sidekiq workers were renamed in this release. To avoid any disruption, [run the Rake tasks to migrate any pending jobs](../administration/sidekiq/sidekiq_job_migration.md#migrate-queued-and-future-jobs) before starting the upgrade to GitLab 15.2.0.
 - Gitaly now executes its binaries in a [runtime location](https://gitlab.com/gitlab-org/gitaly/-/merge_requests/4670). By default on Omnibus GitLab,
   this path is `/var/opt/gitlab/gitaly/run/`. If this location is mounted with `noexec`, merge requests generate the following error:
 
