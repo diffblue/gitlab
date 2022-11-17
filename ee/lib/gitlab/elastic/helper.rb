@@ -410,6 +410,8 @@ module Gitlab
           raise "Index or alias under '#{alias_name}' already exists."
         end
 
+        # Indifferent access avoids issue where there could be duplicate keys
+        # where one is a string and another is a symbol
         settings = settings.with_indifferent_access
         mappings = mappings.with_indifferent_access
         settings.merge!(options[:settings]) if options[:settings]
