@@ -161,6 +161,18 @@ function toggleLoader(state) {
   $('.mr-loading-status .loading').toggleClass('hide', !state);
 }
 
+function getActionFromHref(href) {
+  let action = new URL(href).pathname.match(/\/(commits|diffs|pipelines).*$/);
+
+  if (action) {
+    action = action[0].replace(/(^\/|\.html)/g, '');
+  } else {
+    action = 'show';
+  }
+
+  return action;
+}
+
 export default class MergeRequestTabs {
   constructor({ action, setUrl, stubLocation } = {}) {
     this.mergeRequestTabs = document.querySelector('.merge-request-tabs-container');
@@ -206,12 +218,11 @@ export default class MergeRequestTabs {
 
   bindEvents() {
     $('.merge-request-tabs a[data-toggle="tabvue"]').on('click', this.clickTab);
-    window.addEventListener('popstate', (event) => {
-      if (event.state && event.state.action) {
-        this.tabShown(event.state.action, event.target.location);
-        this.currentAction = event.state.action;
-        this.eventHub.$emit('MergeRequestTabChange', this.getCurrentAction());
-      }
+    window.addEventListener('popstate', () => {
+      const action = getActionFromHref(location.href);
+
+      this.tabShown(action, location.href);
+      this.eventHub.$emit('MergeRequestTabChange', action);
     });
   }
 
@@ -252,10 +263,6 @@ export default class MergeRequestTabs {
       } else if (action) {
         const href = e.currentTarget.getAttribute('href');
         this.tabShown(action, href);
-
-        if (this.setUrl) {
-          this.setCurrentAction(action);
-        }
       }
     }
   }
@@ -265,6 +272,9 @@ export default class MergeRequestTabs {
 
     if (action !== this.currentTab && this.mergeRequestTabs) {
       this.currentTab = action;
+      if (this.setUrl) {
+        this.setCurrentAction(action);
+      }
 
       if (this.mergeRequestTabPanesAll) {
         this.mergeRequestTabPanesAll.forEach((el) => {
@@ -400,7 +410,7 @@ export default class MergeRequestTabs {
     // Ensure parameters and hash come along for the ride
     newState += location.search + location.hash;
 
-    if (window.history.state && window.history.state.url && window.location.pathname !== newState) {
+    if (window.location.pathname !== newState) {
       window.history.pushState(
         {
           url: newState,
