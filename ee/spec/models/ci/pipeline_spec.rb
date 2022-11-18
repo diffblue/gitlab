@@ -77,6 +77,24 @@ RSpec.describe Ci::Pipeline do
     end
   end
 
+  describe '#ignores_ci_settings?' do
+    subject { pipeline.ignores_ci_settings? }
+
+    let(:pipeline) { build(:ci_pipeline, source: source) }
+
+    context 'when source is security_orchestration_policy' do
+      let(:source) { 'security_orchestration_policy' }
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when source is not security_orchestration_policy' do
+      let(:source) { 'push' }
+
+      it { is_expected.to be_falsey }
+    end
+  end
+
   describe '#expose_license_scanning_data?' do
     subject { pipeline.expose_license_scanning_data? }
 

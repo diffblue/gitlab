@@ -22,13 +22,17 @@ module Security
 
       security_orchestration_policy_configuration.namespace.all_projects.find_in_batches.each do |projects|
         projects.each do |project|
-          with_context(project: project, user: schedule.owner) do
+          with_context(project: project, user: security_policy_bot) do
             Security::SecurityOrchestrationPolicies::RuleScheduleService
-              .new(container: project, current_user: schedule.owner)
+              .new(container: project, current_user: security_policy_bot)
               .execute(schedule)
           end
         end
       end
+    end
+
+    def security_policy_bot
+      @security_policy_bot ||= User.security_policy_bot
     end
   end
 end
