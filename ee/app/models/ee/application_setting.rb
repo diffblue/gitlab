@@ -78,6 +78,7 @@ module EE
                 allow_blank: true,
                 length: { maximum: EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT }
 
+      attribute :future_subscriptions, :ind_jsonb
       validates :future_subscriptions, json_schema: { filename: 'future_subscriptions' }
 
       validates :required_instance_ci_template, presence: true, allow_nil: true
@@ -168,8 +169,6 @@ module EE
       before_save :update_lock_delayed_project_removal, if: :delayed_group_deletion_changed?
       after_commit :update_personal_access_tokens_lifetime, if: :saved_change_to_max_personal_access_token_lifetime?
       after_commit :resume_elasticsearch_indexing
-
-      serialize :future_subscriptions, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
     end
 
     class_methods do

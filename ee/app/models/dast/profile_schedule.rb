@@ -18,10 +18,10 @@ class Dast::ProfileSchedule < ApplicationRecord
 
   validates :timezone, presence: true, inclusion: { in: :timezones }
   validates :starts_at, presence: true
-  validates :cadence, json_schema: { filename: 'dast_profile_schedule_cadence', draft: 7 }
   validates :dast_profile_id, uniqueness: true
 
-  serialize :cadence, Serializers::Json # rubocop:disable Cop/ActiveRecordSerialize
+  attribute :cadence, :ind_jsonb
+  validates :cadence, json_schema: { filename: 'dast_profile_schedule_cadence', draft: 7 }
 
   validate :validate_plan_limit_not_exceeded_while_activating, if: :will_save_change_to_active?
 
