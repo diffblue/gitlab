@@ -1,4 +1,4 @@
-import { GlEmptyState, GlSprintf, GlButton } from '@gitlab/ui';
+import { GlEmptyState, GlButton } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 
 import { nextTick } from 'vue';
@@ -25,6 +25,8 @@ const createComponent = (props = {}) =>
 
 describe('TestCaseListEmptyState', () => {
   let wrapper;
+
+  const findEmptyState = () => wrapper.findComponent(GlEmptyState);
 
   beforeEach(() => {
     wrapper = createComponent();
@@ -66,9 +68,7 @@ describe('TestCaseListEmptyState', () => {
       });
 
       it('returns a generic string when project has no test cases', () => {
-        expect(wrapper.vm.emptyStateTitle).toBe(
-          'With test cases, you can define conditions for your project to meet in determining quality',
-        );
+        expect(wrapper.vm.emptyStateTitle).toBe('Improve quality with test cases');
       });
     });
 
@@ -98,15 +98,13 @@ describe('TestCaseListEmptyState', () => {
 
   describe('template', () => {
     it('renders gl-empty-state component', () => {
-      expect(wrapper.findComponent(GlEmptyState).exists()).toBe(true);
+      expect(findEmptyState().exists()).toBe(true);
     });
 
     it('renders empty state description', () => {
-      const descriptionEl = wrapper.findComponent(GlSprintf);
-
-      expect(descriptionEl.exists()).toBe(true);
-      expect(descriptionEl.attributes('message')).toBe(
-        'You can group test cases using labels. To learn about the future direction of this feature, visit %{linkStart}Quality Management direction page%{linkEnd}.',
+      expect(findEmptyState().exists()).toBe(true);
+      expect(findEmptyState().text()).toContain(
+        'Create testing scenarios by defining project conditions in your development platform.',
       );
     });
 
