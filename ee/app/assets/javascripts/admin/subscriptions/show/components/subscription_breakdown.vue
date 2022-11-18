@@ -1,6 +1,7 @@
 <script>
-import { GlButton, GlModalDirective, GlModal, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { GlButton, GlModalDirective, GlModal } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { createAlert } from '~/flash';
 import { __, sprintf } from '~/locale';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';

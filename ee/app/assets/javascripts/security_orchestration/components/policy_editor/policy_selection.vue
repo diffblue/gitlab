@@ -1,8 +1,9 @@
 <script>
 import shieldCheckIllustration from '@gitlab/svgs/dist/illustrations/shield-check.svg';
 import magnifyingGlassIllustration from '@gitlab/svgs/dist/illustrations/magnifying-glass.svg';
-import { GlCard, GlButton, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlCard, GlButton } from '@gitlab/ui';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { s__, __ } from '~/locale';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
@@ -36,7 +37,7 @@ export default {
     GlButton,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   mixins: [glFeatureFlagsMixin()],
   inject: ['policiesPath'],

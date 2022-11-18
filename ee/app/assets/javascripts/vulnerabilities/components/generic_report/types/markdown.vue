@@ -1,6 +1,7 @@
 <script>
-import { GlSkeletonLoader, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { GlSkeletonLoader } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { getMarkdown } from '~/rest_api';
 
 export default {

@@ -1,6 +1,7 @@
 <script>
-import { GlBreadcrumb, GlButton, GlSafeHtmlDirective as SafeHtml } from '@gitlab/ui';
+import { GlBreadcrumb, GlButton } from '@gitlab/ui';
 import newGroupIllustration from '@gitlab/svgs/dist/illustrations/group-new.svg';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import CreateGroupDescriptionDetails from '~/pages/groups/new/components/create_group_description_details.vue';
 import Zuora from 'ee/billings/components/zuora.vue';
 import {

@@ -7,8 +7,8 @@ import {
   GlIcon,
   GlLoadingIcon,
   GlModal,
-  GlSafeHtmlDirective,
 } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import BurnCharts from 'ee/burndown_chart/components/burn_charts.vue';
 import { TYPE_ITERATION } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
@@ -37,7 +37,7 @@ export default {
     IterationTitle,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   apollo: {
     iteration: {

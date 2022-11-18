@@ -1,15 +1,7 @@
 <script>
 import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
-import {
-  GlAlert,
-  GlCard,
-  GlIcon,
-  GlLink,
-  GlLoadingIcon,
-  GlButton,
-  GlSafeHtmlDirective as SafeHtml,
-  GlSprintf,
-} from '@gitlab/ui';
+import { GlAlert, GlCard, GlIcon, GlLink, GlLoadingIcon, GlButton, GlSprintf } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import CreateJiraIssue from 'ee/vue_shared/security_reports/components/create_jira_issue.vue';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';

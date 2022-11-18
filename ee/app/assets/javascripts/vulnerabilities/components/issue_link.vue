@@ -1,6 +1,7 @@
 <script>
 import jiraLogo from '@gitlab/svgs/dist/illustrations/logos/jira.svg';
-import { GlIcon, GlLink, GlTooltipDirective, GlSafeHtmlDirective, GlSprintf } from '@gitlab/ui';
+import { GlIcon, GlLink, GlTooltipDirective, GlSprintf } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 
 export default {
   components: {
@@ -10,7 +11,7 @@ export default {
   },
   directives: {
     GlTooltip: GlTooltipDirective,
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   props: {
     issue: {

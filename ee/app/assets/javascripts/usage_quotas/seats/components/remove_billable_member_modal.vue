@@ -1,11 +1,5 @@
 <script>
-import {
-  GlBadge,
-  GlFormInput,
-  GlModal,
-  GlSprintf,
-  GlSafeHtmlDirective as SafeHtml,
-} from '@gitlab/ui';
+import { GlBadge, GlFormInput, GlModal, GlSprintf } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
 import {
   REMOVE_BILLABLE_MEMBER_MODAL_ID,
@@ -22,9 +16,6 @@ export default {
     GlModal,
     GlSprintf,
     GlBadge,
-  },
-  directives: {
-    SafeHtml,
   },
   data() {
     return {

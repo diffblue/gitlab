@@ -5,13 +5,13 @@ import {
   GlModal,
   GlSkeletonLoader,
   GlTable,
-  GlSafeHtmlDirective,
   GlTooltipDirective,
   GlDropdown,
   GlDropdownItem,
   GlIcon,
 } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 
@@ -27,7 +27,7 @@ export default {
     GlIcon,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
     GlTooltip: GlTooltipDirective,
   },
   props: {

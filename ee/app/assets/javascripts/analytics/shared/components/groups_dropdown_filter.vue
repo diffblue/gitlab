@@ -7,9 +7,9 @@ import {
   GlDropdownSectionHeader,
   GlDropdownItem,
   GlSearchBoxByType,
-  GlSafeHtmlDirective as SafeHtml,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { filterBySearchTerm } from '~/analytics/shared/utils';
 import Api from '~/api';
 import { s__, __ } from '~/locale';

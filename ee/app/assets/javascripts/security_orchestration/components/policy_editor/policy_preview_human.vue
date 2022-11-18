@@ -1,5 +1,6 @@
 <script>
-import { GlAlert, GlSafeHtmlDirective } from '@gitlab/ui';
+import { GlAlert } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { PARSING_ERROR_MESSAGE } from './constants';
 
 export default {
@@ -10,7 +11,7 @@ export default {
     GlAlert,
   },
   directives: {
-    safeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   props: {
     policyDescription: {

@@ -1,13 +1,10 @@
 <script>
-import { GlSafeHtmlDirective, GlIcon } from '@gitlab/ui';
+import { GlIcon } from '@gitlab/ui';
 import { PASSWORD_RULE_MAP } from '../constants';
 
 export default {
   components: {
     GlIcon,
-  },
-  directives: {
-    SafeHtml: GlSafeHtmlDirective,
   },
   props: {
     submitted: {

@@ -1,5 +1,6 @@
 <script>
-import { GlSafeHtmlDirective, GlEmptyState } from '@gitlab/ui';
+import { GlEmptyState } from '@gitlab/ui';
+import SafeHtml from '~/vue_shared/directives/safe_html';
 import { dateInWords } from '~/lib/utils/datetime_utility';
 import { s__, sprintf } from '~/locale';
 
@@ -15,7 +16,7 @@ export default {
     GlEmptyState,
   },
   directives: {
-    SafeHtml: GlSafeHtmlDirective,
+    SafeHtml,
   },
   mixins: [CommonMixin],
   inject: ['newEpicPath', 'listEpicsPath', 'epicsDocsPath', 'canCreateEpic'],
