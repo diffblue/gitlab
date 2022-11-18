@@ -5,6 +5,8 @@ require 'spec_helper'
 RSpec.describe ElasticIndexBulkCronWorker do
   include ExclusiveLeaseHelpers
   describe '.perform' do
+    let(:worker) { described_class.new }
+
     context 'indexing is not paused' do
       before do
         expect(Elastic::IndexingControl).to receive(:non_cached_pause_indexing?).and_return(false)
@@ -17,7 +19,7 @@ RSpec.describe ElasticIndexBulkCronWorker do
           expect(service).to receive(:execute)
         end
 
-        described_class.new.perform
+        worker.perform
       end
     end
 
@@ -29,22 +31,45 @@ RSpec.describe ElasticIndexBulkCronWorker do
       it 'does nothing if indexing is paused' do
         expect(::Elastic::ProcessBookkeepingService).not_to receive(:new)
 
-        expect(described_class.new.perform).to eq(false)
+        expect(worker.perform).to eq(false)
       end
     end
 
-    it 'adds the elastic_bulk_count to the done log' do
-      expect_next_instance_of(::Elastic::ProcessBookkeepingService) do |service|
-        expect(service).to receive(:execute).and_return(15)
+    context 'when service returns non-zero counter' do
+      before do
+        expect_next_instance_of(::Elastic::ProcessBookkeepingService) do |service|
+          expect(service).to receive(:execute).and_return(15)
+        end
       end
 
-      worker = described_class.new
+      it 'adds the elastic_bulk_count to the done log' do
+        worker.perform
 
-      worker.perform
+        expect(worker.logging_extras).to eq(
+          "#{ApplicationWorker::LOGGING_EXTRA_KEY}.elastic_index_bulk_cron_worker.records_count" => 15
+        )
+      end
 
-      expect(worker.logging_extras).to eq(
-        "#{ApplicationWorker::LOGGING_EXTRA_KEY}.elastic_index_bulk_cron_worker.records_count" => 15
-      )
+      it 'requeues the worker' do
+        expect(described_class).to receive(:perform_in)
+
+        worker.perform
+      end
+
+      it 'does not requeue the worker if FF is disabled' do
+        stub_feature_flags(bulk_cron_worker_auto_requeue: false)
+        expect(described_class).not_to receive(:perform_in)
+
+        worker.perform
+      end
+    end
+
+    context 'when there are no records in the queue' do
+      it 'does not requeue the worker' do
+        expect(described_class).not_to receive(:perform_in)
+
+        worker.perform
+      end
     end
   end
 
