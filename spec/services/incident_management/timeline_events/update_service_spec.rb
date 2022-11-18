@@ -6,6 +6,16 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project) }
   let_it_be(:incident) { create(:incident, project: project) }
+  let_it_be(:tag1) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 1') }
+  let_it_be(:tag2) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 2') }
+  let_it_be(:tag3) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 3') }
+
+  let!(:tag_link1) do
+    create(:incident_management_timeline_event_tag_link,
+      timeline_event: timeline_event,
+      timeline_event_tag: tag3
+    )
+  end
 
   let!(:timeline_event) { create(:incident_management_timeline_event, project: project, incident: incident) }
   let(:occurred_at) { 1.minute.ago }
@@ -85,7 +95,7 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
       it_behaves_like 'passing the correct was_changed value', :occurred_at_and_note
 
       context 'when note is nil' do
-        let(:params) { { occurred_at: occurred_at } }
+        let(:params) { { occurred_at: occurred_at, timeline_event_tag_names: [tag3.name, tag2.name] } }
 
         it_behaves_like 'successful response'
         it_behaves_like 'passing the correct was_changed value', :occurred_at
@@ -97,18 +107,30 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
         it 'updates occurred_at' do
           expect { execute }.to change { timeline_event.occurred_at }.to(params[:occurred_at])
         end
+
+        it 'updates the tags' do
+          expect { execute }.to change { timeline_event.timeline_event_tags.count }.by(1)
+        end
       end
 
       context 'when note is blank' do
-        let(:params) { { note: '', occurred_at: occurred_at } }
+        let(:params) { { note: '', occurred_at: occurred_at, timeline_event_tag_names: [tag3.name, tag2.name] } }
 
         it_behaves_like 'error response', "Timeline text can't be blank"
+
+        it 'does not add the tags as it rollsback the transaction' do
+          expect { execute }.not_to change { timeline_event.timeline_event_tags.count }
+        end
       end
 
       context 'when note is more than 280 characters long' do
-        let(:params) { { note: 'n' * 281, occurred_at: occurred_at } }
+        let(:params) { { note: 'n' * 281, occurred_at: occurred_at, timeline_event_tag_names: [tag3.name, tag2.name] } }
 
         it_behaves_like 'error response', 'Timeline text is too long (maximum is 280 characters)'
+
+        it 'does not add the tags as it rollsback the transaction' do
+          expect { execute }.not_to change { timeline_event.timeline_event_tags.count }
+        end
       end
 
       context 'when occurred_at is nil' do
@@ -127,9 +149,13 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
       end
 
       context 'when occurred_at is blank' do
-        let(:params) { { note: 'Updated note', occurred_at: '' } }
+        let(:params) { { note: 'Updated note', occurred_at: '', timeline_event_tag_names: [tag3.name, tag2.name] } }
 
         it_behaves_like 'error response', "Occurred at can't be blank"
+
+        it 'does not add the tags as it rollsback the transaction' do
+          expect { execute }.not_to change { timeline_event.timeline_event_tags.count }
+        end
       end
 
       context 'when both occurred_at and note is nil' do
@@ -163,17 +189,6 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
 
       context 'when timeline event tags are passed' do
         context 'when they exist' do
-          let_it_be(:tag1) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 1') }
-          let_it_be(:tag2) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 2') }
-          let_it_be(:tag3) { create(:incident_management_timeline_event_tag, project: project, name: 'Tag 3') }
-
-          let!(:tag_link1) do
-            create(:incident_management_timeline_event_tag_link,
-              timeline_event: timeline_event,
-              timeline_event_tag: tag3
-            )
-          end
-
           let(:params) do
             {
               note: 'Updated note',

@@ -35,9 +35,13 @@ module IncidentManagement
           return error("#{_("Following tags don't exist")}: #{non_existing_tags}") unless non_existing_tags.empty?
         end
 
-        update_timeline_event_and_event_tags(tags_to_add, tags_to_remove, defined_tags)
+        begin
+          timeline_event_saved = update_timeline_event_and_event_tags(tags_to_add, tags_to_remove, defined_tags)
+        rescue ActiveRecord::RecordInvalid
+          error_in_save(timeline_event)
+        end
 
-        if timeline_event.save(context: validation_context)
+        if timeline_event_saved
           add_system_note(timeline_event)
 
           track_usage_event(:incident_management_timeline_event_edited, user.id)
@@ -56,6 +60,8 @@ module IncidentManagement
           update_timeline_event_tags(tags_to_add, tags_to_remove, defined_tags) unless timeline_event_tags.nil?
 
           timeline_event.assign_attributes(update_params)
+
+          timeline_event.save!(context: validation_context)
         end
       end
 
