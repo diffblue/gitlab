@@ -425,7 +425,7 @@ RSpec.describe Projects::UpdateMirrorService do
           it 'updates LFS objects' do
             expect(Projects::LfsPointers::LfsImportService).to receive(:new).and_call_original
             expect_next_instance_of(Projects::LfsPointers::LfsObjectDownloadListService) do |instance|
-              expect(instance).to receive(:execute).and_return({})
+              expect(instance).to receive(:each_list_item)
             end
 
             service.execute
