@@ -25,12 +25,17 @@ module IncidentManagement
 
         unless timeline_event_tags.nil?
           tags_to_remove, tags_to_add = compute_tag_updates
-          non_existing_tags = validate_tags(tags_to_add)
+          defined_tags = timeline_event
+                          .project
+                          .incident_management_timeline_event_tags
+                          .by_names(tags_to_add)
+
+          non_existing_tags = validate_tags(tags_to_add, defined_tags)
 
           return error("#{_("Following tags don't exist")}: #{non_existing_tags}") unless non_existing_tags.empty?
         end
 
-        update_timeline_event_and_event_tags(tags_to_add, tags_to_remove)
+        update_timeline_event_and_event_tags(tags_to_add, tags_to_remove, defined_tags)
 
         if timeline_event.save(context: validation_context)
           add_system_note(timeline_event)
@@ -46,13 +51,11 @@ module IncidentManagement
 
       attr_reader :timeline_event, :incident, :user, :note, :occurred_at, :validation_context, :timeline_event_tags
 
-      def update_timeline_event_and_event_tags(tags_to_add, tags_to_remove)
-        IncidentManagement::TimelineEvent.transaction do
-          IncidentManagement::TimelineEventTag.transaction do
-            update_timeline_event_tags(tags_to_add, tags_to_remove) unless timeline_event_tags.nil?
+      def update_timeline_event_and_event_tags(tags_to_add, tags_to_remove, defined_tags)
+        ApplicationRecord.transaction do
+          update_timeline_event_tags(tags_to_add, tags_to_remove, defined_tags) unless timeline_event_tags.nil?
 
-            timeline_event.assign_attributes(update_params)
-          end
+          timeline_event.assign_attributes(update_params)
         end
       end
 
@@ -89,9 +92,9 @@ module IncidentManagement
         [tags_to_remove, tags_to_add]
       end
 
-      def update_timeline_event_tags(tags_to_add, tags_to_remove)
+      def update_timeline_event_tags(tags_to_add, tags_to_remove, defined_tags)
         remove_tag_links(tags_to_remove) if tags_to_remove.any?
-        create_tag_links(tags_to_add) if tags_to_add.any?
+        create_tag_links(tags_to_add, defined_tags) if tags_to_add.any?
       end
 
       def remove_tag_links(tags_to_remove_names)
@@ -102,11 +105,8 @@ module IncidentManagement
           .by_tag_ids(tags_to_remove_ids).delete_all
       end
 
-      def create_tag_links(tags_to_add_names)
-        tags_to_add_ids = timeline_event
-                            .project
-                            .incident_management_timeline_event_tags
-                            .by_names(tags_to_add_names).tag_ids
+      def create_tag_links(tags_to_add_names, defined_tags)
+        tags_to_add_ids = defined_tags.tag_ids
 
         tag_links = tags_to_add_ids.map do |tag_id|
           {
@@ -119,13 +119,8 @@ module IncidentManagement
         IncidentManagement::TimelineEventTagLink.insert_all(tag_links) if tag_links.any?
       end
 
-      def validate_tags(tags_to_add)
-        defined_tags = timeline_event
-                        .project
-                        .incident_management_timeline_event_tags
-                        .by_names(tags_to_add)
-                        .pluck_names
-                        .map(&:downcase)
+      def validate_tags(tags_to_add, defined_tags)
+        defined_tags = defined_tags.pluck_names.map(&:downcase)
 
         tags_to_add - defined_tags
       end
