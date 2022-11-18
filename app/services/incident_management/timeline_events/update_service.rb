@@ -23,18 +23,14 @@ module IncidentManagement
       def execute
         return error_no_permissions unless allowed?
 
-        # We first update the tags, if any, as they return error for non-existing tags.
-        # And then we update the other attributes of timeline event.
         unless timeline_event_tags.nil?
           tags_to_remove, tags_to_add = compute_tag_updates
           non_existing_tags = validate_tags(tags_to_add)
 
           return error("#{_("Following tags don't exist")}: #{non_existing_tags}") unless non_existing_tags.empty?
-
-          update_timeline_event_tags(tags_to_add, tags_to_remove)
         end
 
-        timeline_event.assign_attributes(update_params)
+        update_timeline_event_and_event_tags(tags_to_add, tags_to_remove)
 
         if timeline_event.save(context: validation_context)
           add_system_note(timeline_event)
@@ -49,6 +45,16 @@ module IncidentManagement
       private
 
       attr_reader :timeline_event, :incident, :user, :note, :occurred_at, :validation_context, :timeline_event_tags
+
+      def update_timeline_event_and_event_tags(tags_to_add, tags_to_remove)
+        IncidentManagement::TimelineEvent.transaction do
+          IncidentManagement::TimelineEventTag.transaction do
+            update_timeline_event_tags(tags_to_add, tags_to_remove) unless timeline_event_tags.nil?
+
+            timeline_event.assign_attributes(update_params)
+          end
+        end
+      end
 
       def update_params
         { updated_by_user: user, note: note, occurred_at: occurred_at }.compact

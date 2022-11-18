@@ -13,6 +13,24 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
   let(:current_user) { user }
 
   describe '#execute' do
+    shared_examples 'successful tag response' do
+      it_behaves_like 'successful response'
+
+      it 'adds the new tag' do
+        expect { execute }.to change(timeline_event.timeline_event_tags, :count).by(1)
+      end
+
+      it 'adds the new tag link' do
+        expect { execute }.to change(IncidentManagement::TimelineEventTagLink, :count).by(1)
+      end
+
+      it 'returns the new tag in response' do
+        timeline_event = execute.payload[:timeline_event]
+
+        expect(timeline_event.timeline_event_tags.pluck_names).to contain_exactly(tag1.name, tag3.name)
+      end
+    end
+
     shared_examples 'successful response' do
       it 'responds with success', :aggregate_failures do
         expect(execute).to be_success
@@ -164,20 +182,18 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
             }
           end
 
-          it_behaves_like 'successful response'
+          it_behaves_like 'successful tag response'
 
-          it 'adds the new tag' do
-            expect { execute }.to change(timeline_event.timeline_event_tags, :count).by(1)
-          end
+          context 'when tag name is of random case' do
+            let(:params) do
+              {
+                note: 'Updated note',
+                occurred_at: occurred_at,
+                timeline_event_tag_names: ['tAg 3', 'TaG 1']
+              }
+            end
 
-          it 'adds the new tag link' do
-            expect { execute }.to change(IncidentManagement::TimelineEventTagLink, :count).by(1)
-          end
-
-          it 'returns the new tag in response' do
-            timeline_event = execute.payload[:timeline_event]
-
-            expect(timeline_event.timeline_event_tags.pluck_names).to contain_exactly(tag1.name, tag3.name)
+            it_behaves_like 'successful tag response'
           end
 
           context 'when tag is removed' do
