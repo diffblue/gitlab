@@ -158,6 +158,7 @@ RSpec.describe PushRule, :saas do
     with_them do
       context "when rule is enabled at global level" do
         before do
+          stub_feature_flags(inherited_push_rule_for_project: false)
           global_push_rule.update_column(setting, value)
         end
 

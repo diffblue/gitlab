@@ -63,7 +63,7 @@ module EE
           create_security_policy_configuration_if_exists
         end
 
-        create_predefined_push_rule
+        create_predefined_push_rule if ::Feature.disabled?(:inherited_push_rule_for_project, project)
         set_default_compliance_framework
       end
 

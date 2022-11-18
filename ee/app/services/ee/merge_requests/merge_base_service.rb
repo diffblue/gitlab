@@ -58,7 +58,7 @@ module EE
 
       def push_rule
         strong_memoize(:push_rule) do
-          merge_request.project.push_rule if project.feature_available?(:push_rules)
+          merge_request.project.predefined_push_rule if project.feature_available?(:push_rules)
         end
       end
 
