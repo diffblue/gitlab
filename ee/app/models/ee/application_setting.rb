@@ -78,7 +78,7 @@ module EE
                 allow_blank: true,
                 length: { maximum: EMAIL_ADDITIONAL_TEXT_CHARACTER_LIMIT }
 
-      attribute :future_subscriptions, :ind_jsonb
+      attribute :future_subscriptions, ::Gitlab::Database::Type::IndifferentJsonb.new
       validates :future_subscriptions, json_schema: { filename: 'future_subscriptions' }
 
       validates :required_instance_ci_template, presence: true, allow_nil: true
