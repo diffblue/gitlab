@@ -4,6 +4,8 @@ module Elastic
   module BulkCronWorker
     extend ActiveSupport::Concern
 
+    RESCHEDULE_INTERVAL = 1.second
+
     included do
       include ApplicationWorker
       include Gitlab::ExclusiveLeaseHelpers
@@ -19,14 +21,24 @@ module Elastic
       end
 
       in_lock(self.class.name.underscore, ttl: 10.minutes, retries: 10, sleep_sec: 1) do
-        records_count = service.execute
-        log_extra_metadata_on_done(:records_count, records_count)
+        service.execute.tap do |records_count|
+          log_extra_metadata_on_done(:records_count, records_count)
+
+          # Requeue current worker if the queue isn't empty
+          self.class.perform_in(RESCHEDULE_INTERVAL) if should_requeue?(records_count)
+        end
       end
     rescue Gitlab::ExclusiveLeaseHelpers::FailedToObtainLockError
       # We're scheduled on a cronjob, so nothing to do here
     end
 
     private
+
+    def should_requeue?(records_count)
+      return false unless records_count
+
+      records_count > 0 && Feature.enabled?(:bulk_cron_worker_auto_requeue)
+    end
 
     def logger
       Elastic::IndexingControl.logger
