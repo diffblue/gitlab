@@ -90,14 +90,14 @@ export default {
 };
 </script>
 <template>
-  <div class="gl-display-flex gl-sm-flex-direction-column gl-py-5">
+  <div class="gl-display-flex gl-sm-flex-direction-column gl-gap-5 gl-py-5">
     <storage-statistics-card
       :used-storage="usedStorageAmount"
       :total-storage="storageLimitEnforced ? repositorySizeLimit : null"
       :show-progress-bar="storageLimitEnforced"
       :loading="loading"
       data-testid="namespace-usage-card"
-      class="gl-w-half gl-md-mr-5"
+      class="gl-flex-grow-1"
     >
       <template #description>
         {{ $options.i18n.totalUsageDescription }}
@@ -121,7 +121,7 @@ export default {
       :loading="loading"
       data-testid="purchased-usage-card"
       data-qa-selector="purchased_usage_total_free"
-      class="gl-w-half"
+      class="gl-flex-grow-1"
     >
       <template #actions>
         <gl-button
