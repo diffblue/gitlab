@@ -21,11 +21,15 @@ import DimDisableContainer from '../dim_disable_container.vue';
 import PolicyActionBuilder from './policy_action_builder.vue';
 import PolicyActionBuilderV2 from './policy_action_builder_v2.vue';
 import PolicyRuleBuilder from './policy_rule_builder.vue';
+import PolicyRuleBuilderV2 from './policy_rule_builder_v2.vue';
+
 import {
   DEFAULT_SCAN_RESULT_POLICY,
+  DEFAULT_SCAN_RESULT_POLICY_V2,
   fromYaml,
   toYaml,
   buildRule,
+  buildRuleV2,
   approversOutOfSync,
   invalidScanners,
   humanizeInvalidBranchesError,
@@ -53,6 +57,7 @@ export default {
     PolicyActionBuilder,
     PolicyActionBuilderV2,
     PolicyRuleBuilder,
+    PolicyRuleBuilderV2,
     PolicyEditorLayout,
     DimDisableContainer,
   },
@@ -83,9 +88,17 @@ export default {
     },
   },
   data() {
-    const yamlEditorValue = this.existingPolicy
-      ? toYaml(this.existingPolicy)
-      : DEFAULT_SCAN_RESULT_POLICY;
+    let yamlEditorValue;
+
+    if (this.glFeatures.licenseScanningPolicies) {
+      yamlEditorValue = this.existingPolicy
+        ? toYaml(this.existingPolicy)
+        : DEFAULT_SCAN_RESULT_POLICY_V2;
+    } else {
+      yamlEditorValue = this.existingPolicy
+        ? toYaml(this.existingPolicy)
+        : DEFAULT_SCAN_RESULT_POLICY;
+    }
 
     return {
       error: '',
@@ -125,6 +138,9 @@ export default {
     areRolesAvailable() {
       return this.glFeatures.scanResultRoleAction;
     },
+    hasLicenseScanningPolicies() {
+      return this.glFeatures.licenseScanningPolicies;
+    },
   },
   watch: {
     invalidBranches(branches) {
@@ -141,7 +157,11 @@ export default {
       this.policy.actions.splice(actionIndex, 1, values);
     },
     addRule() {
-      this.policy.rules.push(buildRule());
+      if (this.glFeatures.licenseScanningPolicies) {
+        this.policy.rules.push(buildRuleV2());
+      } else {
+        this.policy.rules.push(buildRule());
+      }
     },
     removeRule(ruleIndex) {
       this.policy.rules.splice(ruleIndex, 1);
@@ -277,14 +297,27 @@ export default {
           <div class="gl-bg-gray-10 gl-rounded-base gl-p-6"></div>
         </template>
 
-        <policy-rule-builder
-          v-for="(rule, index) in policy.rules"
-          :key="index"
-          class="gl-mb-4"
-          :init-rule="rule"
-          @changed="updateRule(index, $event)"
-          @remove="removeRule(index)"
-        />
+        <template v-if="hasLicenseScanningPolicies">
+          <policy-rule-builder-v-2
+            v-for="(rule, index) in policy.rules"
+            :key="index"
+            class="gl-mb-4"
+            :init-rule="rule"
+            @changed="updateRule(index, $event)"
+            @remove="removeRule(index)"
+          />
+        </template>
+
+        <template v-else>
+          <policy-rule-builder
+            v-for="(rule, index) in policy.rules"
+            :key="index"
+            class="gl-mb-4"
+            :init-rule="rule"
+            @changed="updateRule(index, $event)"
+            @remove="removeRule(index)"
+          />
+        </template>
 
         <div v-if="isWithinLimit" class="gl-bg-gray-10 gl-rounded-base gl-p-5 gl-mb-5">
           <gl-button variant="link" data-testid="add-rule" icon="plus" @click="addRule">

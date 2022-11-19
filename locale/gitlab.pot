@@ -24309,6 +24309,9 @@ msgstr ""
 msgid "License Compliance| Used by %{dependencies}"
 msgstr ""
 
+msgid "License Scan"
+msgstr ""
+
 msgid "License compliance"
 msgstr ""
 
@@ -35941,6 +35944,9 @@ msgstr ""
 msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}"
 msgstr ""
 
+msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{selector}"
+msgstr ""
+
 msgid "ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers:"
 msgstr ""
 
@@ -36327,6 +36333,9 @@ msgid "Security Dashboard"
 msgstr ""
 
 msgid "Security Finding not found"
+msgstr ""
+
+msgid "Security Scan"
 msgstr ""
 
 msgid "Security dashboard"
@@ -37404,6 +37413,9 @@ msgid "Select report"
 msgstr ""
 
 msgid "Select reviewer(s)"
+msgstr ""
+
+msgid "Select scan type"
 msgstr ""
 
 msgid "Select severity (optional)"

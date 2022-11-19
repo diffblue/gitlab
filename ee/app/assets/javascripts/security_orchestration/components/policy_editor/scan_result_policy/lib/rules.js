@@ -17,6 +17,15 @@ export function buildRule() {
 }
 
 /*
+  Construct a new rule object for when the licenseScanningPolocies flag is on
+*/
+export function buildRuleV2() {
+  return {
+    type: null,
+  };
+}
+
+/*
   Check if scanners are valid for each rule.
 */
 export function invalidScanners(rules) {
