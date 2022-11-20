@@ -20,6 +20,8 @@
   = f.hidden_field :mirror, value: '1'
   = f.hidden_field :username_only_import_url, class: 'js-mirror-url-hidden', required: true, pattern: "(#{protocols}):\/\/.+", value: ''
   = f.hidden_field :only_mirror_protected_branches, class: 'js-mirror-protected-hidden'
+  - if Feature.enabled?(:mirror_only_branches_match_regex, @project) && @project.licensed_feature_available?(:repository_mirrors)
+    = f.hidden_field :mirror_branch_regex, class: 'js-mirror-branch-regex-hidden'
 
   = f.fields_for :import_data, import_data, include_id: false do |import_form|
     = render partial: 'projects/mirrors/ssh_host_keys', locals: { f: import_form }

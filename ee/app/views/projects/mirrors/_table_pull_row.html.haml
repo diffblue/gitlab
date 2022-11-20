@@ -7,7 +7,9 @@
 - return unless import_state
 
 %tr{ data: { qa_selector: 'mirrored_repository_row_container' } }
-  %td.mirror-url{ data: { qa_selector: 'mirror_repository_url_content' } }= @project.safe_import_url
+  %td.mirror-url{ data: { qa_selector: 'mirror_repository_url_content' } }
+    = @project.safe_import_url
+    = render_if_exists 'projects/mirrors/mirror_branches_setting_badge', record: @project
   %td= _('Pull')
   %td
     = import_state.last_update_started_at.present? ? time_ago_with_tooltip(import_state.last_update_started_at) : _('Never')

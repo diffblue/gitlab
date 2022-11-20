@@ -2,6 +2,13 @@
 
 module EE
   module MirrorHelper
+    extend ::Gitlab::Utils::Override
+
+    override :mirrors_form_data_attributes
+    def mirrors_form_data_attributes
+      super.merge(mirror_only_branches_match_regex_enabled: ::Feature.enabled?(:mirror_only_branches_match_regex, @project) && @project.licensed_feature_available?(:repository_mirrors))
+    end
+
     def render_mirror_failed_message(raw_message:)
       mirror_last_update_at = @project.import_state.last_update_at
       message = "Pull mirroring failed #{time_ago_with_tooltip(mirror_last_update_at)}.".html_safe
@@ -31,6 +38,17 @@ module EE
     def mirrored_repositories_count(project = @project)
       count = project.mirror == true ? 1 : 0
       count + @project.remote_mirrors.to_a.count { |mirror| mirror.enabled }
+    end
+
+    def mirror_branches_text(record)
+      case record.mirror_branches_setting
+      when 'all'
+        _('All branches')
+      when 'protected'
+        _('All protected branches')
+      when 'regex'
+        _('Specific branches')
+      end
     end
   end
 end

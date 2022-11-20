@@ -1,0 +1,2 @@
+- if Feature.enabled?(:mirror_only_branches_match_regex, @project) && @project.licensed_feature_available?(:repository_mirrors)
+  = f.hidden_field :mirror_branch_regex, class: 'js-mirror-branch-regex-hidden'
