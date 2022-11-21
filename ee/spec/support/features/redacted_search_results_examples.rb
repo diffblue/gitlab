@@ -2,28 +2,27 @@
 
 RSpec.shared_examples 'a redacted search results page' do |include_anonymous: true|
   let(:public_group) { create(:group, :public) }
-  let(:public_restricted_project) { create(:project, :repository, :public, :wiki_repo, namespace: public_group, name: 'The Project') }
+  let(:public_restricted_project) { create(:project, :repository, :public, :wiki_repo, namespace: public_group, name: 'The Project searchabletext') }
   let(:issue_access_level) { ProjectFeature::PRIVATE }
   let(:user_not_in_project) { create(:user) }
 
   before do
     stub_ee_application_setting(elasticsearch_search: true, elasticsearch_indexing: true)
-    stub_feature_flags(search_page_vertical_nav: false)
 
     Sidekiq::Testing.inline! do
       # Create a public project that the user is not member of.
       # And add some content to it.
-      issue = create(:issue, project: public_restricted_project, title: 'The Issue')
-      create(:note, project: public_restricted_project, noteable: issue, note: 'A note on issue')
-      confidential_issue = create(:issue, :confidential, project: public_restricted_project, title: 'The Confidential Issue')
-      create(:note, project: public_restricted_project, noteable: confidential_issue, note: 'A note on confidential issue')
-      create(:milestone, project: public_restricted_project, title: 'The Milestone')
-      create(:note_on_commit, project: public_restricted_project, note: 'A note on commit')
-      create(:diff_note_on_commit, project: public_restricted_project, note: 'A note on diff on commit')
-      merge_request = create(:merge_request_with_diffs, target_project: public_restricted_project, source_project: public_restricted_project, title: 'The Merge Request')
-      create(:discussion_note_on_merge_request, noteable: merge_request, project: public_restricted_project, note: 'A note on discussion on merge request')
-      create(:diff_note_on_merge_request, noteable: merge_request, project: public_restricted_project, note: 'A note on diff on merge request')
-      create(:note_on_project_snippet, noteable: merge_request, project: public_restricted_project, note: 'A note on project snippet')
+      issue = create(:issue, project: public_restricted_project, title: 'The Issue searchabletext')
+      create(:note, project: public_restricted_project, noteable: issue, note: 'A note on issue searchabletext')
+      confidential_issue = create(:issue, :confidential, project: public_restricted_project, title: 'The Confidential Issue searchabletext')
+      create(:note, project: public_restricted_project, noteable: confidential_issue, note: 'A note on confidential issue searchabletext')
+      create(:milestone, project: public_restricted_project, title: 'The Milestone searchabletext')
+      create(:note_on_commit, project: public_restricted_project, note: 'A note on commit searchabletext')
+      create(:diff_note_on_commit, project: public_restricted_project, note: 'A note on diff on commit searchabletext')
+      merge_request = create(:merge_request_with_diffs, target_project: public_restricted_project, source_project: public_restricted_project, title: 'The Merge Request searchabletext')
+      create(:discussion_note_on_merge_request, noteable: merge_request, project: public_restricted_project, note: 'A note on discussion on merge request searchabletext')
+      create(:diff_note_on_merge_request, noteable: merge_request, project: public_restricted_project, note: 'A note on diff on merge request searchabletext')
+      create(:note_on_project_snippet, noteable: merge_request, project: public_restricted_project, note: 'A note on project snippet searchabletext')
 
       # Add to the index while the data is still public
       ensure_elasticsearch_index!
@@ -48,7 +47,7 @@ end
 # Only intended to be used in the above shared examples to avoid duplication of
 # logged in vs. anonymous users
 RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
-  context "when #{logged_in ? '' : 'not '}logged in" do
+  context "when #{logged_in ? '' : 'not '}logged in", :elastic, :js, :disable_rate_limiter do
     before do
       sign_in(user_not_in_project) if logged_in
     end
@@ -56,7 +55,7 @@ RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
     it 'redacts private features the user does not have access to' do
       visit search_path
 
-      submit_search('*')
+      submit_search('searchabletext')
 
       # Projects scope is never available for searching within a project
       if has_search_scope?('Projects')
@@ -64,7 +63,6 @@ RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
         # Project is still public
         expect(page).to have_content('The Project')
       end
-
       # Issues scope is not available for search within a project when
       # issues are restricted
       if has_search_scope?('Issues')
@@ -97,13 +95,13 @@ RSpec.shared_examples 'redacted search results page assertions' do |logged_in|
       end
     end
 
-    context 'when issues are public' do
+    context 'when issues are public', :elastic, :js, :disable_rate_limiter do
       let(:issue_access_level) { ProjectFeature::ENABLED }
 
       it 'redacts other private features' do
         visit search_path
 
-        submit_search('*')
+        submit_search('searchabletext')
 
         # Projects scope is never available for searching within a project
         if has_search_scope?('Projects')
