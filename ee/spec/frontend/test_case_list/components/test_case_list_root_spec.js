@@ -6,6 +6,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { mockIssuable } from 'jest/vue_shared/issuable/list/mock_data';
 
 import {
+  FILTERED_SEARCH_TERM,
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
@@ -268,7 +269,7 @@ describe('TestCaseListRoot', () => {
             },
           },
           {
-            type: 'filtered-search-term',
+            type: FILTERED_SEARCH_TERM,
             value: {
               data: 'foo',
             },

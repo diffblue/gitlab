@@ -12,6 +12,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { stubComponent } from 'helpers/stub_component';
 import { mockAuthor, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
 
+import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { IssuableListTabs } from '~/vue_shared/issuable/list/constants';
 
@@ -254,7 +255,7 @@ describe('EpicsListRoot', () => {
       jest.spyOn(wrapper.vm, 'getFilteredSearchTokens');
 
       getIssuableList().vm.$emit('filter', [
-        { id: 'token-1', type: 'filtered-search-term', value: { data: 'foo' } },
+        { id: 'token-1', type: FILTERED_SEARCH_TERM, value: { data: 'foo' } },
       ]);
 
       await nextTick();

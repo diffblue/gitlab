@@ -1,4 +1,5 @@
 <script>
+import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 export default {
@@ -43,7 +44,7 @@ export default {
   methods: {
     onFilter(searchTerms) {
       const searchQuery = searchTerms.reduce((terms, searchTerm) => {
-        if (searchTerm.type !== 'filtered-search-term') {
+        if (searchTerm.type !== FILTERED_SEARCH_TERM) {
           return '';
         }
 

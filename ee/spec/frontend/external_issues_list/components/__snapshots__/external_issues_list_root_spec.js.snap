@@ -137,7 +137,7 @@ Object {
       "symbol": "~",
       "title": "Label",
       "token": "LabelTokenMock",
-      "type": "labels",
+      "type": "label",
       "unique": false,
     },
   ],
