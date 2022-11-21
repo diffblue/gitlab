@@ -6,12 +6,14 @@ RSpec.describe API::ProviderIdentity, api: true do
   include ApiHelpers
 
   let_it_be(:owner) { create(:user) }
-  let_it_be(:user) { create(:user) }
+  let_it_be(:guest_user_1) { create(:user) }
+  let_it_be(:guest_user_2) { create(:user) }
   let(:current_user) { nil }
 
   let_it_be(:group) do
     group = create(:group)
-    group.add_guest(user)
+    group.add_guest(guest_user_1)
+    group.add_guest(guest_user_2)
     group.add_owner(owner)
     group
   end
@@ -19,7 +21,7 @@ RSpec.describe API::ProviderIdentity, api: true do
   let_it_be(:saml_provider) { create(:saml_provider, group: group) }
 
   let_it_be(:saml_identity_one) do
-    create(:identity, user_id: user.id, provider: 'group_saml',
+    create(:identity, user_id: guest_user_1.id, provider: 'group_saml',
                       saml_provider_id: saml_provider.id, extern_uid: 'saml-uid-1')
   end
 
@@ -29,19 +31,29 @@ RSpec.describe API::ProviderIdentity, api: true do
   end
 
   let_it_be(:scim_identity_one) do
-    create(:scim_identity, user: user, group: group, extern_uid: 'scim-uid-1')
+    create(:scim_identity, user: guest_user_1, group: group, extern_uid: 'scim-uid-1')
   end
 
   let_it_be(:scim_identity_two) do
     create(:scim_identity, user: owner, group: group, extern_uid: 'scim-uid-2')
   end
 
+  let_it_be(:saml_identity_with_dot) do
+    create(:identity, user_id: guest_user_2.id, provider: 'group_saml',
+                      saml_provider_id: saml_provider.id, extern_uid: 'saml-test@gmail.com')
+  end
+
+  let_it_be(:scim_identity_with_dot) do
+    create(:scim_identity, user: guest_user_2, group: group, extern_uid: 'scim-test@gmail.com')
+  end
+
   describe "Provider Identity API" do
     using RSpec::Parameterized::TableSyntax
 
-    where(:provider_type, :provider_extern_uid_1, :provider_extern_uid_2, :identity_type, :validation_error) do
-      "saml" | "saml-uid-1" | "saml-uid-2" | Identity | "SAML NameID can't be blank"
-      "scim" | "scim-uid-1" | "scim-uid-2" | ScimIdentity | "Extern uid can't be blank"
+    where(:provider_type, :provider_extern_uid_1, :provider_extern_uid_2, :provider_extern_uid_with_dot, :identity_type,
+:validation_error) do
+      "saml" | "saml-uid-1" | "saml-uid-2" | "saml-test@gmail.com" | Identity | "SAML NameID can't be blank"
+      "scim" | "scim-uid-1" | "scim-uid-2" | "scim-test@gmail.com" | ScimIdentity | "Extern uid can't be blank"
     end
 
     with_them do
@@ -49,7 +61,7 @@ RSpec.describe API::ProviderIdentity, api: true do
         subject(:get_identities) { get api("/groups/#{group.id}/#{provider_type}/identities", current_user) }
 
         context "when user is not a group owner" do
-          let(:current_user) { user }
+          let(:current_user) { guest_user_1 }
 
           it "throws unauthorized error" do
             get_identities
@@ -67,8 +79,9 @@ RSpec.describe API::ProviderIdentity, api: true do
             expect(json_response).to(
               match_array(
                 [
-                  { "extern_uid" => provider_extern_uid_1, "user_id" => user.id },
-                  { "extern_uid" => provider_extern_uid_2, "user_id" => owner.id }
+                  { "extern_uid" => provider_extern_uid_1, "user_id" => guest_user_1.id },
+                  { "extern_uid" => provider_extern_uid_2, "user_id" => owner.id },
+                  { "extern_uid" => provider_extern_uid_with_dot, "user_id" => guest_user_2.id }
                 ]
               )
             )
@@ -84,7 +97,7 @@ RSpec.describe API::ProviderIdentity, api: true do
 
         context "when user is not a group owner" do
           let(:uid) { provider_extern_uid_1 }
-          let(:current_user) { user }
+          let(:current_user) { guest_user_1 }
           let(:extern_uid) { 'updated_uid' }
 
           it "throws forbidden error" do
@@ -118,6 +131,21 @@ RSpec.describe API::ProviderIdentity, api: true do
 
               # Check that response is equal to the updated object
               expect(json_response['extern_uid']).to eq('updated_uid')
+            end
+
+            context "when extern uid contains period" do
+              let(:uid) { provider_extern_uid_with_dot }
+              let(:extern_uid) { 'updated_test@gmail.com' }
+
+              it "updates the identity record" do
+                patch api("/groups/#{group.id}/#{provider_type}/#{uid}", current_user),
+                params: { extern_uid: extern_uid }
+
+                expect(response).to have_gitlab_http_status(:ok)
+
+                # Check that response is equal to the updated object
+                expect(json_response['extern_uid']).to eq('updated_test@gmail.com')
+              end
             end
 
             context "when invalid extern_uid to update is passed" do

@@ -40,7 +40,7 @@ module API
             requires :extern_uid, type: String, desc: "Desired/new external UID of the user"
           end
 
-          patch ':uid' do
+          patch ':uid', format: false, requirements: { uid: API::NO_SLASH_URL_PART_REGEX } do
             group = find_group(params[:id])
             identity = find_provider_identity(provider_type, params[:uid], group)
 
