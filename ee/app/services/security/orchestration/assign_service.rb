@@ -33,6 +33,7 @@ module Security
 
         if create_result
           audit(policy_project, "Linked #{policy_project.name} as the security policy project")
+          Security::SyncScanPoliciesWorker.perform_async(container.security_orchestration_policy_configuration.id)
         end
 
         create_result
@@ -50,17 +51,22 @@ module Security
       end
 
       def reassign_policy_project(policy_project)
-        old_policy_project = container.security_orchestration_policy_configuration.security_policy_management_project
+        configuration = container.security_orchestration_policy_configuration
+        old_policy_project = configuration.security_policy_management_project
 
-        update_result = container.security_orchestration_policy_configuration.update!(
-          security_policy_management_project_id: policy_project.id
-        )
+        update_result = nil
+        configuration.transaction do
+          configuration.delete_scan_finding_rules
+          update_result = configuration.update!(security_policy_management_project_id: policy_project.id)
+        end
 
         if update_result
           audit(
             policy_project,
             "Changed the linked security policy project from #{old_policy_project.name} to #{policy_project.name}"
           )
+
+          Security::SyncScanPoliciesWorker.perform_async(configuration.id)
         end
 
         update_result
