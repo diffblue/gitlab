@@ -125,7 +125,7 @@ page, with these behaviors:
   removes leading `ce-` and `ee-`, and trailing `-ce` and `-ee`, so
   that it can be stable for backport branches.
 
-The [Roulette dashboard](https://gitlab-org.gitlab.io/gitlab-roulette) contains:
+The [Roulette dashboard](https://gitlab-org.gitlab.io/gitlab-roulette/) contains:
 
 - Assignment events in the last 7 and 30 days.
 - Currently assigned merge requests per person.
