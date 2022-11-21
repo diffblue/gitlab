@@ -1,5 +1,11 @@
 import StatusToken from 'ee/requirements/components/tokens/status_token.vue';
-import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
+import {
+  OPERATORS_IS,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_STATUS,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_STATUS,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 
 export const mockUserPermissions = {
@@ -143,15 +149,15 @@ export const mockPageInfo = {
 
 export const mockFilters = [
   {
-    type: 'author_username',
+    type: TOKEN_TYPE_AUTHOR,
     value: { data: 'root' },
   },
   {
-    type: 'author_username',
+    type: TOKEN_TYPE_AUTHOR,
     value: { data: 'john.doe' },
   },
   {
-    type: 'status',
+    type: TOKEN_TYPE_STATUS,
     value: { data: 'satisfied' },
   },
   {
@@ -161,9 +167,9 @@ export const mockFilters = [
 ];
 
 export const mockAuthorToken = {
-  type: 'author_username',
+  type: TOKEN_TYPE_AUTHOR,
   icon: 'user',
-  title: 'Author',
+  title: TOKEN_TITLE_AUTHOR,
   unique: false,
   symbol: '@',
   token: AuthorToken,
@@ -173,9 +179,9 @@ export const mockAuthorToken = {
 };
 
 export const mockStatusToken = {
-  type: 'status',
+  type: TOKEN_TYPE_STATUS,
   icon: 'status',
-  title: 'Status',
+  title: TOKEN_TITLE_STATUS,
   unique: true,
   token: StatusToken,
   operators: OPERATORS_IS,

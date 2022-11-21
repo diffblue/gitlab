@@ -3,12 +3,15 @@ import {
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 
 const tokenKeys = [
   {
     formattedKey: TOKEN_TITLE_AUTHOR,
-    key: 'author',
+    key: TOKEN_TYPE_AUTHOR,
     type: 'string',
     param: 'username',
     symbol: '@',
@@ -17,7 +20,7 @@ const tokenKeys = [
   },
   {
     formattedKey: TOKEN_TITLE_MILESTONE,
-    key: 'milestone',
+    key: TOKEN_TYPE_MILESTONE,
     type: 'string',
     param: 'title',
     symbol: '%',
@@ -26,7 +29,7 @@ const tokenKeys = [
   },
   {
     formattedKey: TOKEN_TITLE_LABEL,
-    key: 'label',
+    key: TOKEN_TYPE_LABEL,
     type: 'array',
     param: 'name[]',
     symbol: '~',
@@ -38,7 +41,7 @@ const tokenKeys = [
 const alternativeTokenKeys = [
   {
     formattedKey: TOKEN_TITLE_LABEL,
-    key: 'label',
+    key: TOKEN_TYPE_LABEL,
     type: 'string',
     param: 'name',
     symbol: '~',

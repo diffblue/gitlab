@@ -25,6 +25,13 @@ import {
 import { TEST_HOST } from 'helpers/test_constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { updateHistory } from '~/lib/utils/url_utility';
+import {
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_CONFIDENTIAL,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+  TOKEN_TYPE_MY_REACTION,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({
@@ -124,31 +131,31 @@ describe('RoadmapFilters', () => {
     describe('FilteredSearchBar', () => {
       const mockInitialFilterValue = [
         {
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           value: { data: 'root', operator: '=' },
         },
         {
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           value: { data: 'John', operator: '!=' },
         },
         {
-          type: 'label_name',
+          type: TOKEN_TYPE_LABEL,
           value: { data: 'Bug', operator: '=' },
         },
         {
-          type: 'label_name',
+          type: TOKEN_TYPE_LABEL,
           value: { data: 'Feature', operator: '!=' },
         },
         {
-          type: 'milestone_title',
+          type: TOKEN_TYPE_MILESTONE,
           value: { data: '4.0' },
         },
         {
-          type: 'confidential',
+          type: TOKEN_TYPE_CONFIDENTIAL,
           value: { data: true },
         },
         {
-          type: 'my_reaction_emoji',
+          type: TOKEN_TYPE_MY_REACTION,
           value: { data: 'thumbs_up', operator: '!=' },
         },
       ];

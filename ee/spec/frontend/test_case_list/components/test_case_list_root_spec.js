@@ -5,6 +5,10 @@ import TestCaseListRoot from 'ee/test_case_list/components/test_case_list_root.v
 import { TEST_HOST } from 'helpers/test_constants';
 import { mockIssuable } from 'jest/vue_shared/issuable/list/mock_data';
 
+import {
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 
 jest.mock('~/flash');
@@ -252,13 +256,13 @@ describe('TestCaseListRoot', () => {
       it('filter event changes filterParams value and calls updateUrl', async () => {
         getIssuableList().vm.$emit('filter', [
           {
-            type: 'author_username',
+            type: TOKEN_TYPE_AUTHOR,
             value: {
               data: 'root',
             },
           },
           {
-            type: 'label_name',
+            type: TOKEN_TYPE_LABEL,
             value: {
               data: 'bug',
             },
@@ -274,8 +278,8 @@ describe('TestCaseListRoot', () => {
         await nextTick();
 
         expect(getIssuableList().props('initialFilterValue')).toEqual([
-          { type: 'author_username', value: { data: 'root' } },
-          { type: 'label_name', value: { data: 'bug' } },
+          { type: TOKEN_TYPE_AUTHOR, value: { data: 'root' } },
+          { type: TOKEN_TYPE_LABEL, value: { data: 'bug' } },
           'foo',
         ]);
         expect(wrapper.vm.updateUrl).toHaveBeenCalled();

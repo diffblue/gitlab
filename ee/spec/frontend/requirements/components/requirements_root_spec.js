@@ -26,6 +26,10 @@ import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { queryToObject } from '~/lib/utils/url_utility';
+import {
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_STATUS,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBarRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 import {
@@ -866,9 +870,9 @@ describe('RequirementsRoot', () => {
         );
         expect(trackingSpy).toHaveBeenCalledWith(undefined, 'filter', {
           property: JSON.stringify([
-            { type: 'author_username', value: { data: 'root' } },
-            { type: 'author_username', value: { data: 'john.doe' } },
-            { type: 'status', value: { data: 'satisfied' } },
+            { type: TOKEN_TYPE_AUTHOR, value: { data: 'root' } },
+            { type: TOKEN_TYPE_AUTHOR, value: { data: 'john.doe' } },
+            { type: TOKEN_TYPE_STATUS, value: { data: 'satisfied' } },
             { type: 'filtered-search-term', value: { data: 'foo' } },
           ]),
         });
