@@ -3,11 +3,12 @@ import { mountExtended, shallowMountExtended } from 'helpers/vue_test_utils_help
 import { trackIncidentDetailsViewsOptions } from '~/incidents/constants';
 import DescriptionComponent from '~/issues/show/components/description.vue';
 import HighlightBar from '~/issues/show/components/incidents/highlight_bar.vue';
-import IncidentTabs from '~/issues/show/components/incidents/incident_tabs.vue';
+import IncidentTabs, {
+  incidentTabsI18n,
+} from '~/issues/show/components/incidents/incident_tabs.vue';
 import INVALID_URL from '~/lib/utils/invalid_url';
 import Tracking from '~/tracking';
 import AlertDetailsTable from '~/vue_shared/components/alert_details_table.vue';
-import { incidentTabsI18n } from '~/issues/show/components/incidents/constants';
 import { descriptionProps } from '../../mock_data/mock_data';
 
 const mockAlert = {

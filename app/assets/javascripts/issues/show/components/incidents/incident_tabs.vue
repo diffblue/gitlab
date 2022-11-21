@@ -9,14 +9,20 @@ import DescriptionComponent from '../description.vue';
 import getAlert from './graphql/queries/get_alert.graphql';
 import HighlightBar from './highlight_bar.vue';
 import TimelineTab from './timeline_events_tab.vue';
-import { incidentTabsI18n } from './constants';
 
-export const TAB_NAMES = {
+export const incidentTabsI18n = Object.freeze({
+  summaryTitle: s__('Incident|Summary'),
+  metricsTitle: s__('Incident|Metrics'),
+  alertsTitle: s__('Incident|Alert details'),
+  timelineTitle: s__('Incident|Timeline'),
+});
+
+export const TAB_NAMES = Object.freeze({
   SUMMARY: '',
   ALERTS: 'alerts',
   METRICS: 'metrics',
   TIMELINE: 'timeline',
-};
+});
 
 export default {
   components: {

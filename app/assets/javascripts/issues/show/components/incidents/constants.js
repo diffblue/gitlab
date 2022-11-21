@@ -1,12 +1,5 @@
 import { __, n__, s__ } from '~/locale';
 
-export const incidentTabsI18n = Object.freeze({
-  summaryTitle: s__('Incident|Summary'),
-  metricsTitle: s__('Incident|Metrics'),
-  alertsTitle: s__('Incident|Alert details'),
-  timelineTitle: s__('Incident|Timeline'),
-});
-
 export const timelineTabI18n = Object.freeze({
   title: s__('Incident|Timeline'),
   emptyDescription: s__('Incident|No timeline items have been added yet.'),
