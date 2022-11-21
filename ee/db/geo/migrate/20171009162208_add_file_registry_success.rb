@@ -9,7 +9,7 @@ class AddFileRegistrySuccess < ActiveRecord::Migration[4.2]
 
   def up
     # Ensure existing rows are recorded as successes
-    add_column_with_default :file_registry, :success, :boolean, default: true, allow_null: false # rubocop:disable Migration/AddColumnWithDefault
+    add_column :file_registry, :success, :boolean, default: true, allow_null: false
 
     change_column :file_registry, :success, :boolean, default: false
   end

@@ -8,7 +8,7 @@ class AddMissingOnPrimaryToJobArtifactRegistry < ActiveRecord::Migration[4.2]
   disable_ddl_transaction!
 
   def up
-    add_column_with_default :job_artifact_registry, :missing_on_primary, :boolean, default: false, allow_null: false # rubocop:disable Migration/AddColumnWithDefault
+    add_column :job_artifact_registry, :missing_on_primary, :boolean, default: false, allow_null: false
   end
 
   def down
