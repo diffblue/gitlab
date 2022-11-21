@@ -5,7 +5,7 @@ module EE
     module Checks
       module PushRules
         class BranchCheck < ::Gitlab::Checks::BaseSingleChecker
-          ERROR_MESSAGE = "Branch name does not follow the pattern '%{branch_name_regex}'"
+          ERROR_MESSAGE = "Branch name '%{branch_name}' does not follow the pattern '%{branch_name_regex}'"
           LOG_MESSAGE = "Checking if branch follows the naming patterns defined by the project..."
 
           def validate!
@@ -13,7 +13,7 @@ module EE
 
             logger.log_timed(LOG_MESSAGE) do
               unless branch_name_allowed_by_push_rule?
-                message = ERROR_MESSAGE % { branch_name_regex: push_rule.branch_name_regex }
+                message = ERROR_MESSAGE % { branch_name: branch_name, branch_name_regex: push_rule.branch_name_regex }
                 raise ::Gitlab::GitAccess::ForbiddenError, message
               end
             end

@@ -65,7 +65,7 @@ module QA
 
         it 'restricts branches by branch name', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347781' do
           expect_error_on_push(file: standard_file, branch: 'forbidden_branch',
-                               error: Regexp.escape("Branch name does not follow the pattern '#{@branch_name_limitation}'"))
+                               error: Regexp.escape("Branch name 'forbidden_branch' does not follow the pattern '#{@branch_name_limitation}'"))
         end
 
         it 'restricts commit by message format', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347780' do
