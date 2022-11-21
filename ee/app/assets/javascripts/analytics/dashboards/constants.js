@@ -33,7 +33,7 @@ export const DORA_METRICS = {
   },
 };
 
-export const DASHBOARD_TITLE = __('Executive Dashboard');
+export const DASHBOARD_TITLE = __('DevOps metrics comparison (Alpha)');
 export const DASHBOARD_DESCRIPTION = s__('DORA4Metrics|DORA metrics for %{groupName} group');
 export const DASHBOARD_NO_DATA = __('No data available');
 export const DASHBOARD_LOADING_FAILURE = __('Failed to load');
