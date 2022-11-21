@@ -50,11 +50,27 @@ RSpec.describe Gitlab::Audit::Auditor do
   describe '.audit' do
     context 'when licensed' do
       before do
-        stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true)
+        stub_licensed_features(admin_audit_log: true, audit_events: true, extended_audit_events: true,
+                               external_audit_events: true)
       end
 
       context 'when recording multiple events', :request_store do
         let(:audit!) { auditor.audit(context, &operation) }
+
+        context 'when the event is created within a transaction' do
+          let_it_be(:scope) { create(:group) }
+          let_it_be(:target) { create(:project) }
+
+          before do
+            scope.external_audit_event_destinations.create!(destination_url: 'http://example.com')
+          end
+
+          it 'does not raise Sidekiq::Worker::EnqueueFromTransactionError' do
+            ApplicationRecord.transaction do
+              expect { audit! }.not_to raise_error
+            end
+          end
+        end
 
         it 'interacts with the event queue in correct order', :aggregate_failures do
           allow(Gitlab::Audit::EventQueue).to receive(:begin!).and_call_original
