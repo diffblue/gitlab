@@ -56,10 +56,10 @@ module EE
       }.merge(scoped_labels_fields, opts)
     end
 
-    def issuable_types
+    def labels_function_introduction
       return super unless @group&.feature_available?(:epics)
 
-      super + ['epics']
+      _('Labels can be applied to issues, merge requests, and epics. Group labels are available for any project within the group.')
     end
   end
 end
