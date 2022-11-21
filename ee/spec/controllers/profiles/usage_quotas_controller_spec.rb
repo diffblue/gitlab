@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::UsageQuotasController do
+RSpec.describe Profiles::UsageQuotasController, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
 
   before do

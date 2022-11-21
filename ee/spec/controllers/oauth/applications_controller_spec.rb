@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Oauth::ApplicationsController do
+RSpec.describe Oauth::ApplicationsController, feature_category: :authentication_and_authorization do
   let(:user) { create(:user) }
 
   context 'project members' do

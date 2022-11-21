@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::BillingsController do
+RSpec.describe Profiles::BillingsController, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
 
   describe 'GET #index' do

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Profiles::SlacksController do
+RSpec.describe Profiles::SlacksController, feature_category: :integrations do
   let(:user) { create(:user) }
 
   before do
