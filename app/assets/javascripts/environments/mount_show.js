@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import EnvironmentsDetailHeader from './components/environments_detail_header.vue';
+import EnvironmentsDetailPage from './components/environment_details_page.vue';
 import environmentsMixin from './mixins/environments_mixin';
 
 export const initHeader = () => {
@@ -41,9 +42,19 @@ export const initHeader = () => {
           cancelAutoStopPath: dataset.environmentCancelAutoStopPath,
           terminalPath: dataset.environmentTerminalPath,
           metricsPath: dataset.environmentMetricsPath,
-          updatePath: dataset.environmentEditPath,
+          updatePath: dataset.tnvironmentEditPath,
         },
       });
+    },
+  });
+};
+
+export const initPage = () => {
+  const el = document.getElementById('app');
+  return new Vue({
+    el,
+    render(createElement) {
+      return createElement(EnvironmentsDetailPage);
     },
   });
 };
