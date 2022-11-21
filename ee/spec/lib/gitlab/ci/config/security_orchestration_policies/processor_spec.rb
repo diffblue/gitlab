@@ -156,18 +156,6 @@ RSpec.describe Gitlab::Ci::Config::SecurityOrchestrationPolicies::Processor do
       stub_licensed_features(security_orchestration_policies: true)
     end
 
-    describe 'variable overrides' do
-      let(:config) do
-        { image: 'image:1.0.0',
-          variables: { SECRET_DETECTION_DISABLED: "true",
-                       SAST_DISABLED: "false" } }
-      end
-
-      it 'overrides scan-related variables' do
-        expect(subject[:variables]).to eq(SECRET_DETECTION_HISTORIC_SCAN: "false")
-      end
-    end
-
     context 'when policy is not applicable on branch from the pipeline' do
       let(:ref) { 'refs/head/another-branch' }
 
