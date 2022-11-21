@@ -7,7 +7,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
 
   let(:current_user) { project.owner }
   let(:cube_api_url) { "http://cube.dev/cubejs-api/v1/load" }
-  let(:query) { { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi' } }
+  let(:query) { { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' } }
 
   subject(:request) { post api("/projects/#{project.id}/product_analytics/request/load", current_user), params: query }
 
@@ -86,13 +86,13 @@ RSpec.describe API::Analytics::ProductAnalytics do
       end
 
       context 'when a query param is unsupported' do
-        let(:query) { { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi', 'badParam': 1 } }
+        let(:query) { { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi', 'badParam': 1 } }
 
         it 'ignores the unsupported param' do
           request
 
           expect(WebMock).to have_requested(:post, cube_api_url).with(
-            body: { query: { measures: ['Jitsu.count'] }.to_json, 'queryType': 'multi' }
+            body: { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' }
           )
 
           expect(response).to have_gitlab_http_status(:created)

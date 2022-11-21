@@ -28,7 +28,7 @@ module API
         params do
           requires :project_id, type: Integer, desc: 'ID of the project to query'
           requires :query,
-                   type: String,
+                   type: Hash,
                    desc: "A valid Cube query. See reference documentation: https://cube.dev/docs/query-format"
           optional :queryType, type: 'String',
                                default: 'multi',
