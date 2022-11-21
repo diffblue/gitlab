@@ -157,7 +157,6 @@ export default {
       v-if="hasData"
       :option="chartOptions"
       :data="chartData"
-      :show-toolbox="false"
       :format-tooltip-text="renderTooltip"
       :include-legend-avg-max="false"
       :show-legend="false"
