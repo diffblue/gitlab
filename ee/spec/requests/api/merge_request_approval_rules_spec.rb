@@ -81,7 +81,7 @@ RSpec.describe API::MergeRequestApprovalRules do
       end
     end
 
-    context 'use can read merge request' do
+    context 'user can read merge request' do
       before do
         group.add_developer(approver)
         merge_request.approvals.create!(user: approver)
@@ -161,7 +161,7 @@ RSpec.describe API::MergeRequestApprovalRules do
 
     it_behaves_like 'getting approval rule/s'
 
-    context 'use can read merge request' do
+    context 'user can read merge request' do
       let(:pagination_ff) { true }
 
       before do
