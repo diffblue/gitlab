@@ -10,8 +10,7 @@ export { groupedTextBuilder, countVulnerabilities };
  * @param {Array} issues
  * @param {Object} issue
  */
-export const findIssueIndex = (issues, issue) =>
-  issues.findIndex((el) => el.project_fingerprint === issue.project_fingerprint);
+export const findIssueIndex = (issues, issue) => issues.findIndex((el) => el.uuid === issue.uuid);
 
 export const statusIcon = (loading = false, failed = false, newIssues = 0, neutralIssues = 0) => {
   if (loading) {

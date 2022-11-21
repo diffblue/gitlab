@@ -163,6 +163,7 @@ export default {
         reportType: category,
         pipeline: { sourceBranch },
         projectFingerprint,
+        uuid,
       } = this.vulnerability;
 
       // note: this direct API call will be replaced when migrating the vulnerability details page to GraphQL
@@ -173,6 +174,7 @@ export default {
             feedback_type: FEEDBACK_TYPES.MERGE_REQUEST,
             category,
             project_fingerprint: projectFingerprint,
+            finding_uuid: uuid,
             vulnerability_data: {
               ...convertObjectPropsToSnakeCase(this.vulnerability),
               category,

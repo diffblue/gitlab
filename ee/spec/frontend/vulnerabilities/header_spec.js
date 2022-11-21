@@ -39,6 +39,7 @@ describe('Vulnerability Header', () => {
     createMrUrl: '/create_mr_url',
     newIssueUrl: '/new_issue_url',
     projectFingerprint: 'abc123',
+    uuid: 'xxxxxxxx-xxxx-5xxx-xxxx-xxxxxxxxxxxx',
     pipeline: {
       id: 2,
       createdAt: new Date().toISOString(),
@@ -259,6 +260,7 @@ describe('Vulnerability Header', () => {
               feedback_type: FEEDBACK_TYPES.MERGE_REQUEST,
               category: defaultVulnerability.reportType,
               project_fingerprint: defaultVulnerability.projectFingerprint,
+              finding_uuid: defaultVulnerability.uuid,
               vulnerability_data: {
                 ...convertObjectPropsToSnakeCase(
                   getVulnerability({ shouldShowMergeRequestButton: true }),
