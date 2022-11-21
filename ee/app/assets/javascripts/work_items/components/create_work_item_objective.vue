@@ -90,6 +90,7 @@ export default {
     },
     handleCancelClick() {
       this.resetForm();
+      this.$emit('objective-creation-cancelled');
     },
     resetForm() {
       this.title = '';
@@ -101,31 +102,29 @@ export default {
   <div>
     <gl-alert v-if="error" variant="danger" @dismiss="error = null">{{ error }}</gl-alert>
     <form
-      class="gl-md-display-flex gl-flex-grow-1 gl-border-t-0 row-content-block"
+      class="gl-md-display-flex gl-flex-grow-1 gl-border-t-0 row-content-block gl-bg-none"
       @submit.prevent="createObjective"
     >
       <gl-form-input
+        ref="objectiveTitle"
         v-model.trim="title"
         type="text"
-        class="gl-flex-grow-1 gl-mr-3"
+        class="gl-flex-grow-1 gl-mr-3 gl-md-mb-0! gl-mb-5"
+        :autofocus="true"
         :placeholder="__('Title')"
       />
-      <gl-button
-        type="button"
-        data-testid="cancel-button"
-        class="gl-mr-3"
-        @click="handleCancelClick"
-      >
-        {{ __('Cancel') }}
-      </gl-button>
       <gl-button
         variant="confirm"
         :disabled="isButtonDisabled"
         :loading="loading"
+        class="gl-mr-3"
         data-testid="create-button"
         type="submit"
       >
-        {{ s__('WorkItem|Create Objective') }}
+        {{ s__('WorkItem|Create objective') }}
+      </gl-button>
+      <gl-button type="button" data-testid="cancel-button" @click="handleCancelClick">
+        {{ __('Cancel') }}
       </gl-button>
     </form>
   </div>

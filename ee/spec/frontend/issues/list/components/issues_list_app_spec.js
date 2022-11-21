@@ -174,6 +174,31 @@ describe('EE IssuesListApp component', () => {
     );
   });
 
+  describe('isOkrsEnabled', () => {
+    describe.each`
+      hasOkrsFeature | okrsMvc  | eeIsOkrsEnabled | message
+      ${false}       | ${true}  | ${false}        | ${'false'}
+      ${true}        | ${false} | ${false}        | ${'false'}
+      ${true}        | ${true}  | ${true}         | ${'true'}
+    `(
+      'when hasOkrsFeature is "$hasOkrsFeature" and okrsMvc is "$okrsMvc"',
+      ({ hasOkrsFeature, okrsMvc, eeIsOkrsEnabled, message }) => {
+        beforeEach(() => {
+          wrapper = mountComponent({
+            provide: {
+              hasOkrsFeature,
+            },
+            okrsMvc,
+          });
+        });
+
+        it(`should have eeIsOkrsEnabled value to be ${message} `, () => {
+          expect(findIssueListApp().props('eeIsOkrsEnabled')).toBe(eeIsOkrsEnabled);
+        });
+      },
+    );
+  });
+
   describe('tokens', () => {
     const mockCurrentUser = {
       id: 1,

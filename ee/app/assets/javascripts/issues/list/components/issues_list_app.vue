@@ -17,10 +17,11 @@ import {
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import { TYPE_TOKEN_OBJECTIVE_OPTION } from '~/issues/list/constants';
 import { WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
-
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import CreateWorkItemObjective from 'ee/work_items/components/create_work_item_objective.vue';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
+
+import NewIssueDropdown from './new_issue_dropdown.vue';
 
 const EpicToken = () =>
   import('ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue');
@@ -37,6 +38,7 @@ export default {
     BlockingIssuesCount,
     IssuesListApp,
     CreateWorkItemObjective,
+    NewIssueDropdown,
   },
   mixins: [glFeatureFlagMixin()],
   inject: [
@@ -48,6 +50,11 @@ export default {
     'hasOkrsFeature',
     'isProject',
   ],
+  data() {
+    return {
+      showObjectiveCreationForm: false,
+    };
+  },
   computed: {
     namespace() {
       return this.isProject ? ITEM_TYPE.PROJECT : ITEM_TYPE.GROUP;
@@ -68,9 +75,6 @@ export default {
     },
     isOkrsEnabled() {
       return this.hasOkrsFeature && this.glFeatures.okrsMvc;
-    },
-    showObjectiveCreationForm() {
-      return this.isOkrsEnabled;
     },
     searchTokens() {
       const tokens = [];
@@ -144,9 +148,16 @@ export default {
     handleObjectiveCreationSuccess({ objective }) {
       if (objective.id) {
         // Refresh results on list
+        this.showObjectiveCreationForm = false;
         this.$refs.issuesListApp.$apollo.queries.issues.refetch();
         this.$refs.issuesListApp.$apollo.queries.issuesCounts.refetch();
       }
+    },
+    handleNewObjectiveButtonClick() {
+      this.showObjectiveCreationForm = true;
+    },
+    handleObjectiveCreationCancelled() {
+      this.showObjectiveCreationForm = false;
     },
   },
 };
@@ -155,6 +166,7 @@ export default {
 <template>
   <issues-list-app
     ref="issuesListApp"
+    :ee-is-okrs-enabled="isOkrsEnabled"
     :ee-work-item-types="workItemTypes"
     :ee-type-token-options="typeTokenOptions"
     :ee-search-tokens="searchTokens"
@@ -167,8 +179,15 @@ export default {
         data-testid="blocking-issues"
       />
     </template>
-    <template v-if="showObjectiveCreationForm" #list-body>
-      <create-work-item-objective @objective-created="handleObjectiveCreationSuccess" />
+    <template v-if="isOkrsEnabled" #new-objective-button>
+      <new-issue-dropdown @new-objective-clicked="handleNewObjectiveButtonClick()" />
+    </template>
+    <template v-if="showObjectiveCreationForm && isOkrsEnabled" #list-body>
+      <create-work-item-objective
+        ref="objectiveForm"
+        @objective-created="handleObjectiveCreationSuccess"
+        @objective-creation-cancelled="handleObjectiveCreationCancelled"
+      />
     </template>
   </issues-list-app>
 </template>
