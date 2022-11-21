@@ -24,7 +24,7 @@ module Search
       @curator_settings = {
         dry_run: Feature.enabled?(:search_curation_dry_run, type: :ops),
         ignore_patterns: [/.*/],
-        include_patterns: [/notes/]
+        include_patterns: curation_include_patterns
       }
     end
 
@@ -43,6 +43,27 @@ module Search
     end
 
     private
+
+    def curation_include_patterns
+      [].tap do |patterns|
+        separate_index_types.each do |index_type|
+          patterns << /#{index_type}/ if Feature.enabled?("search_index_curation_#{index_type}", type: :ops)
+        end
+
+        patterns << main_index_pattern if Feature.enabled?(:search_index_curation_main_index, type: :ops)
+      end
+    end
+
+    def main_index_pattern
+      helper = ::Gitlab::Elastic::Helper.default
+      write_index_name = helper.target_index_name(target: helper.target_name)
+      write_index_prefix = write_index_name.slice(0, write_index_name.length - 4) # Everything but auto increment number
+      /#{write_index_prefix}/
+    end
+
+    def separate_index_types
+      ::Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.map { |c| c.to_s.underscore.pluralize }
+    end
 
     def logger
       @logger ||= ::Gitlab::Elasticsearch::Logger.build

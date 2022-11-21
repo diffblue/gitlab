@@ -10,6 +10,38 @@ RSpec.describe Search::IndexCurationWorker do
   let(:settings) { subject.curator_settings }
   let(:logger) { ::Gitlab::Elasticsearch::Logger.build }
 
+  describe '#curator_settings' do
+    let(:standalone_index_types) { %w[commits issues merge_requests notes users] }
+    let(:curation_include_patterns) { [main_index_pattern] + standalone_index_types.map { |x| /#{x}/ } }
+    let(:main_index_target_name) { "gitlab-test" }
+    let(:main_index_name) { "gitlab-test-20220923-1517" }
+    let(:main_index_pattern) { /gitlab-test-20220923-/ }
+    let(:stubbed_helper) { instance_double(::Gitlab::Elastic::Helper) }
+
+    before do
+      allow(::Gitlab::Elastic::Helper).to receive(:default).and_return(stubbed_helper)
+      allow(stubbed_helper).to receive(:target_name).and_return(main_index_target_name)
+      allow(stubbed_helper).to receive(:target_index_name).with(target: main_index_target_name)
+        .and_return main_index_name
+    end
+
+    it 'includes a pattern for all index types with enabled feature flags' do
+      expect(settings[:include_patterns]).to contain_exactly(*curation_include_patterns)
+    end
+
+    it 'does not include patterns for disabled index types' do
+      standalone_index_types.each do |index_type|
+        curation_include_patterns.delete(/#{index_type}/)
+        stub_feature_flags("search_index_curation_#{index_type}" => false)
+        expect(described_class.new.curator_settings[:include_patterns]).to contain_exactly(*curation_include_patterns)
+      end
+
+      stub_feature_flags(search_index_curation_main_index: false)
+      curation_include_patterns.delete(main_index_pattern)
+      expect(described_class.new.curator_settings[:include_patterns]).to contain_exactly(*curation_include_patterns)
+    end
+  end
+
   describe '#perform' do
     before do
       allow(subject).to receive(:logger).and_return(logger)
