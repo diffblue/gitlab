@@ -32,9 +32,14 @@ class DastSiteProfile < ApplicationRecord
 
   enum target_type: { website: 0, api: 1 }
 
-  enum scan_method: { site: 0, openapi: 1, har: 2, postman: 3 }, _prefix: true
+  enum scan_method: { site: 0, openapi: 1, har: 2, postman: 3, graphql: 4 }, _prefix: true
 
   delegate :dast_site_validation, to: :dast_site, allow_nil: true
+
+  SCAN_METHOD_VARIABLE_MAP = { openapi: 'DAST_API_OPENAPI',
+                               har: 'DAST_API_HAR',
+                               postman: 'DAST_API_POSTMAN_COLLECTION',
+                               graphql: 'DAST_API_GRAPHQL' }.with_indifferent_access.freeze
 
   sanitizes! :name, :scan_file_path
 
@@ -178,13 +183,7 @@ class DastSiteProfile < ApplicationRecord
 
       dast_api_config.append(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
 
-      if scan_method_openapi?
-        dast_api_config.append(key: 'DAST_API_OPENAPI', value: api_specification)
-      elsif scan_method_har?
-        dast_api_config.append(key: 'DAST_API_HAR', value: api_specification)
-      elsif scan_method_postman?
-        dast_api_config.append(key: 'DAST_API_POSTMAN_COLLECTION', value: api_specification)
-      end
+      dast_api_config.append(key: SCAN_METHOD_VARIABLE_MAP[scan_method], value: api_specification)
     end
   end
 

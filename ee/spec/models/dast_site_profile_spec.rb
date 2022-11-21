@@ -181,7 +181,7 @@ RSpec.describe DastSiteProfile, type: :model do
     end
 
     let(:scan_methods) do
-      { site: 0, openapi: 1, har: 2, postman: 3 }
+      { site: 0, openapi: 1, har: 2, postman: 3, graphql: 4 }
     end
 
     it { is_expected.to define_enum_for(:target_type).with_values(**target_types) }
@@ -369,7 +369,7 @@ RSpec.describe DastSiteProfile, type: :model do
           let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
           let(:scan_method) { :openapi }
 
-          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_HAR DAST_API_POSTMAN_COLLECTION] }
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_HAR DAST_API_POSTMAN_COLLECTION DAST_API_GRAPHQL] }
 
           let(:included) do
             [
@@ -401,7 +401,7 @@ RSpec.describe DastSiteProfile, type: :model do
           let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
           let(:scan_method) { :har }
 
-          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_POSTMAN_COLLECTION] }
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_POSTMAN_COLLECTION DAST_API_GRAPHQL] }
 
           let(:included) do
             [
@@ -433,7 +433,7 @@ RSpec.describe DastSiteProfile, type: :model do
           let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
           let(:scan_method) { :postman }
 
-          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_HAR] }
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_HAR DAST_API_GRAPHQL] }
 
           let(:included) do
             [
@@ -452,6 +452,38 @@ RSpec.describe DastSiteProfile, type: :model do
             let(:included) do
               [
                 { key: 'DAST_API_POSTMAN_COLLECTION', value: subject.dast_site.url, public: true },
+                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
+              ]
+            end
+
+            it_behaves_like 'an api target'
+          end
+        end
+
+        context 'when scan_method is graphql' do
+          let(:targeting_api) { 'graphql' }
+          let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
+          let(:scan_method) { :graphql }
+
+          let(:excluded) { %w[DAST_WEBSITE DAST_EXCLUDE_URLS DAST_API_OPENAPI DAST_API_HAR DAST_API_POSTMAN_COLLECTION] }
+
+          let(:included) do
+            [
+              { key: 'DAST_API_GRAPHQL', value: scan_file_path, public: true },
+              { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
+            ]
+          end
+
+          it_behaves_like 'an api target'
+
+          it_behaves_like 'an api target when dast_api_scanner is disabled'
+
+          context 'when scan_file_path is blank' do
+            let(:scan_file_path) { nil }
+
+            let(:included) do
+              [
+                { key: 'DAST_API_GRAPHQL', value: subject.dast_site.url, public: true },
                 { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
               ]
             end
