@@ -339,27 +339,45 @@ RSpec.describe EE::Gitlab::Checks::PushRules::CommitCheck do
         stub_licensed_features(commit_committer_name_check: true)
       end
 
-      context 'with consistent user name' do
-        before do
-          allow_any_instance_of(Commit).to receive(:committer_name).and_return(user.name)
+      context 'when committer email is consistent with user email' do
+        context 'with consistent user name' do
+          before do
+            allow_any_instance_of(Commit).to receive(:author_name).and_return(user.name)
+          end
+
+          it 'does not raise an error' do
+            expect { subject.validate! }.not_to raise_error
+          end
         end
 
-        it 'not raise error' do
-          expect { subject.validate! }.not_to raise_error
+        context 'with inconsistent user name' do
+          it 'raises error' do
+            expect { subject.validate! }
+              .to raise_error(Gitlab::GitAccess::ForbiddenError,
+                "Your git username is inconsistent with GitLab account name")
+          end
         end
       end
 
-      context 'with inconsistent user name' do
-        let(:user) { create(:user, name: 'Test') }
-
+      context 'when committer email is inconsistent with user email' do
         before do
-          allow_any_instance_of(Commit).to receive(:committer_name).and_return('Test1')
+          allow_any_instance_of(Commit).to receive(:committer_email).and_return("#{user.email}1")
         end
 
-        it 'raises error' do
-          expect { subject.validate! }
-            .to raise_error(Gitlab::GitAccess::ForbiddenError,
-              "Your git username is inconsistent with GitLab account name")
+        context 'with consistent user name' do
+          before do
+            allow_any_instance_of(Commit).to receive(:author_name).and_return(user.name)
+          end
+
+          it 'does not raise error' do
+            expect { subject.validate! }.not_to raise_error
+          end
+        end
+
+        context 'with inconsistent user name' do
+          it 'does not raise error' do
+            expect { subject.validate! }.not_to raise_error
+          end
         end
       end
     end

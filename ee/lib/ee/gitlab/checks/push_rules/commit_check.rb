@@ -99,7 +99,7 @@ module EE
               end
             end
 
-            unless push_rule.committer_name_allowed?(commit.committer_name, user_access.user)
+            if commit.committer_email == commit.author_email && !push_rule.committer_name_allowed?(commit.author_name, user_access.user)
               "Your git username is inconsistent with GitLab account name"
             end
           end
