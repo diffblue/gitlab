@@ -238,6 +238,7 @@ module API
         mount ::API::ProjectExport
         mount ::API::ProjectHooks
         mount ::API::ProjectImport
+        mount ::API::ProjectPackages
         mount ::API::ProjectRepositoryStorageMoves
         mount ::API::ProjectSnippets
         mount ::API::ProjectSnapshots
@@ -310,7 +311,6 @@ module API
       mount ::API::ProjectDebianDistributions
       mount ::API::ProjectEvents
       mount ::API::ProjectMilestones
-      mount ::API::ProjectPackages
       mount ::API::Projects
       mount ::API::ProtectedTags
       mount ::API::PypiPackages
