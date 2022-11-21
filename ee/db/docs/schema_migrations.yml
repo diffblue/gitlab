@@ -1,10 +1,11 @@
 ---
 table_name: schema_migrations
-description: TODO
+description: >-
+  An internal table used by ActiveRecord to keep track of which migrations have been applied to the database.
 introduced_by_url: TODO
 milestone: TODO
 feature_categories:
-- TODO
+- geo_replication
 classes:
 - Geo::TrackingBase::SchemaMigration
 - ActiveRecord::SchemaMigration
