@@ -47848,9 +47848,6 @@ msgstr ""
 msgid "cannot be associated with both a Group and a Project"
 msgstr ""
 
-msgid "cannot be blank"
-msgstr ""
-
 msgid "cannot be changed"
 msgstr ""
 
