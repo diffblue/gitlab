@@ -9,11 +9,15 @@ import {
   TOKEN_TITLE_EPIC,
   TOKEN_TITLE_ITERATION,
   TOKEN_TITLE_WEIGHT,
+  TOKEN_TYPE_ASSIGNEE,
+  TOKEN_TYPE_EPIC,
+  TOKEN_TYPE_ITERATION,
+  TOKEN_TYPE_WEIGHT,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 
 export const weightTokenKey = {
   formattedKey: TOKEN_TITLE_WEIGHT,
-  key: 'weight',
+  key: TOKEN_TYPE_WEIGHT,
   type: 'string',
   param: '',
   symbol: '',
@@ -23,7 +27,7 @@ export const weightTokenKey = {
 
 export const epicTokenKey = {
   formattedKey: TOKEN_TITLE_EPIC,
-  key: 'epic',
+  key: TOKEN_TYPE_EPIC,
   type: 'string',
   param: 'id',
   symbol: '&',
@@ -32,7 +36,7 @@ export const epicTokenKey = {
 
 export const iterationTokenKey = {
   formattedKey: TOKEN_TITLE_ITERATION,
-  key: 'iteration',
+  key: TOKEN_TYPE_ITERATION,
   type: 'string',
   param: 'title',
   symbol: '',
@@ -43,25 +47,25 @@ export const weightConditions = [
   {
     url: 'weight=None',
     operator: '=',
-    tokenKey: 'weight',
+    tokenKey: TOKEN_TYPE_WEIGHT,
     value: __('None'),
   },
   {
     url: 'weight=Any',
     operator: '=',
-    tokenKey: 'weight',
+    tokenKey: TOKEN_TYPE_WEIGHT,
     value: __('Any'),
   },
   {
     url: 'not[weight]=None',
     operator: '!=',
-    tokenKey: 'weight',
+    tokenKey: TOKEN_TYPE_WEIGHT,
     value: __('None'),
   },
   {
     url: 'not[weight]=Any',
     operator: '!=',
-    tokenKey: 'weight',
+    tokenKey: TOKEN_TYPE_WEIGHT,
     value: __('Any'),
   },
 ];
@@ -70,25 +74,25 @@ export const epicConditions = [
   {
     url: 'epic_id=None',
     operator: '=',
-    tokenKey: 'epic',
+    tokenKey: TOKEN_TYPE_EPIC,
     value: __('None'),
   },
   {
     url: 'epic_id=Any',
     operator: '=',
-    tokenKey: 'epic',
+    tokenKey: TOKEN_TYPE_EPIC,
     value: __('Any'),
   },
   {
     url: 'not[epic_id]=None',
     operator: '!=',
-    tokenKey: 'epic',
+    tokenKey: TOKEN_TYPE_EPIC,
     value: __('None'),
   },
   {
     url: 'not[epic_id]=Any',
     operator: '!=',
-    tokenKey: 'epic',
+    tokenKey: TOKEN_TYPE_EPIC,
     value: __('Any'),
   },
 ];
@@ -97,25 +101,25 @@ export const iterationConditions = [
   {
     url: 'iteration_id=None',
     operator: '=',
-    tokenKey: 'iteration',
+    tokenKey: TOKEN_TYPE_ITERATION,
     value: __('None'),
   },
   {
     url: 'iteration_id=Any',
     operator: '=',
-    tokenKey: 'iteration',
+    tokenKey: TOKEN_TYPE_ITERATION,
     value: __('Any'),
   },
   {
     url: 'iteration_id=Current',
     operator: '=',
-    tokenKey: 'iteration',
+    tokenKey: TOKEN_TYPE_ITERATION,
     value: __('Current'),
   },
   {
     url: 'not[iteration_id]=Current',
     operator: '!=',
-    tokenKey: 'iteration',
+    tokenKey: TOKEN_TYPE_ITERATION,
     value: __('Current'),
   },
 ];
@@ -140,7 +144,7 @@ class IssuesFilteredSearchTokenKeysEE extends FilteredSearchTokenKeys {
    * Changes assignee token to accept multiple values.
    */
   enableMultipleAssignees() {
-    const assigneeTokenKey = this.tokenKeys.find((tk) => tk.key === 'assignee');
+    const assigneeTokenKey = this.tokenKeys.find((tk) => tk.key === TOKEN_TYPE_ASSIGNEE);
 
     // Add the original as an alternative token key
     this.tokenKeysWithAlternative.push({ ...assigneeTokenKey });
