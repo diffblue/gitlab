@@ -23,7 +23,12 @@ module EE
 
         override :send_to_stream
         def send_to_stream(events)
-          events.each { |e| e.stream_to_external_destinations(use_json: true, event_name: name) }
+          events.each do |event|
+            event_name = name
+            event.run_after_commit_or_now do
+              event.stream_to_external_destinations(use_json: true, event_name: event_name)
+            end
+          end
         end
 
         override :audit_enabled?
