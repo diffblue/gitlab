@@ -55,6 +55,7 @@ module API
             body: { query: params["query"], "queryType": params["queryType"] }.to_json
           )
 
+          status :ok
           Gitlab::Json.parse(response.body)
         end
       end

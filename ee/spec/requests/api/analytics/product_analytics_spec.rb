@@ -69,10 +69,10 @@ RSpec.describe API::Analytics::ProductAnalytics do
         project.add_developer(current_user)
       end
 
-      it 'returns a 201' do
+      it 'returns a 200' do
         request
 
-        expect(response).to have_gitlab_http_status(:created)
+        expect(response).to have_gitlab_http_status(:ok)
       end
 
       context 'when query param is missing' do
@@ -95,7 +95,7 @@ RSpec.describe API::Analytics::ProductAnalytics do
             body: { query: { measures: ['Jitsu.count'] }, 'queryType': 'multi' }
           )
 
-          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to have_gitlab_http_status(:ok)
         end
       end
     end
