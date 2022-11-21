@@ -28,8 +28,8 @@ import {
   DEFAULT_SCAN_RESULT_POLICY_V2,
   fromYaml,
   toYaml,
-  buildRule,
-  buildRuleV2,
+  securityScanBuildRule,
+  emptyBuildRule,
   approversOutOfSync,
   invalidScanners,
   humanizeInvalidBranchesError,
@@ -157,10 +157,10 @@ export default {
       this.policy.actions.splice(actionIndex, 1, values);
     },
     addRule() {
-      if (this.glFeatures.licenseScanningPolicies) {
-        this.policy.rules.push(buildRuleV2());
+      if (this.hasLicenseScanningPolicies) {
+        this.policy.rules.push(emptyBuildRule());
       } else {
-        this.policy.rules.push(buildRule());
+        this.policy.rules.push(securityScanBuildRule());
       }
     },
     removeRule(ruleIndex) {

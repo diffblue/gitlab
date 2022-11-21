@@ -24309,9 +24309,6 @@ msgstr ""
 msgid "License Compliance| Used by %{dependencies}"
 msgstr ""
 
-msgid "License Scan"
-msgstr ""
-
 msgid "License compliance"
 msgstr ""
 
@@ -36335,9 +36332,6 @@ msgstr ""
 msgid "Security Finding not found"
 msgstr ""
 
-msgid "Security Scan"
-msgstr ""
-
 msgid "Security dashboard"
 msgstr ""
 
@@ -36650,6 +36644,9 @@ msgstr ""
 msgid "SecurityOrchestration|Latest scan run against %{agent}"
 msgstr ""
 
+msgid "SecurityOrchestration|License Scan"
+msgstr ""
+
 msgid "SecurityOrchestration|New policy"
 msgstr ""
 
@@ -36761,6 +36758,9 @@ msgstr ""
 msgid "SecurityOrchestration|Security Approvals"
 msgstr ""
 
+msgid "SecurityOrchestration|Security Scan"
+msgstr ""
+
 msgid "SecurityOrchestration|Security policy project was linked successfully"
 msgstr ""
 
@@ -36774,6 +36774,9 @@ msgid "SecurityOrchestration|Select groups"
 msgstr ""
 
 msgid "SecurityOrchestration|Select policy"
+msgstr ""
+
+msgid "SecurityOrchestration|Select scan type"
 msgstr ""
 
 msgid "SecurityOrchestration|Select security project"
@@ -37413,9 +37416,6 @@ msgid "Select report"
 msgstr ""
 
 msgid "Select reviewer(s)"
-msgstr ""
-
-msgid "Select scan type"
 msgstr ""
 
 msgid "Select severity (optional)"

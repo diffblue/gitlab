@@ -2,7 +2,14 @@ import { s__ } from '~/locale';
 
 export { fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
-export { buildRule, buildRuleV2, invalidScanners } from './rules';
+export {
+  securityScanBuildRule,
+  emptyBuildRule,
+  getDefaultRule,
+  invalidScanners,
+  SCAN_FINDING,
+  LICENSE_FINDING,
+} from './rules';
 export { approversOutOfSync } from './actions';
 export * from './humanize';
 

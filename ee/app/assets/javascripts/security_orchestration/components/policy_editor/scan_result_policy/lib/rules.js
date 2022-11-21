@@ -2,12 +2,15 @@ import { REPORT_TYPES_DEFAULT } from 'ee/security_dashboard/store/constants';
 
 const REPORT_TYPES_KEYS = Object.keys(REPORT_TYPES_DEFAULT);
 
+export const SCAN_FINDING = 'scan_finding';
+export const LICENSE_FINDING = 'license_finding';
+
 /*
   Construct a new rule object.
 */
-export function buildRule() {
+export function securityScanBuildRule() {
   return {
-    type: 'scan_finding',
+    type: SCAN_FINDING,
     branches: [],
     scanners: [],
     vulnerabilities_allowed: 0,
@@ -16,12 +19,22 @@ export function buildRule() {
   };
 }
 
+export function licenseScanBuildRule() {
+  return {
+    type: LICENSE_FINDING,
+    branches: [],
+    match_on_inclusion: true,
+    license_types: [],
+    license_states: [],
+  };
+}
+
 /*
   Construct a new rule object for when the licenseScanningPolocies flag is on
 */
-export function buildRuleV2() {
+export function emptyBuildRule() {
   return {
-    type: null,
+    type: '',
   };
 }
 
@@ -35,3 +48,17 @@ export function invalidScanners(rules) {
       .some((scanner) => !REPORT_TYPES_KEYS.includes(scanner)) || false
   );
 }
+
+/* 
+  Returns the config for a particular rule type
+*/
+export const getDefaultRule = (scanType) => {
+  if (scanType === SCAN_FINDING) {
+    return securityScanBuildRule();
+  }
+  if (scanType === LICENSE_FINDING) {
+    return licenseScanBuildRule();
+  }
+
+  return emptyBuildRule();
+};

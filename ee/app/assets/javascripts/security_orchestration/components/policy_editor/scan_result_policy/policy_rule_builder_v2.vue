@@ -1,6 +1,8 @@
 <script>
 import { GlSprintf, GlForm, GlButton, GlFormSelect } from '@gitlab/ui';
-import { __, s__ } from '~/locale';
+import { s__ } from '~/locale';
+
+import { getDefaultRule, SCAN_FINDING, LICENSE_FINDING } from './lib';
 
 export default {
   scanResultRuleCopy: s__('ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{selector}'),
@@ -25,24 +27,8 @@ export default {
         return this.initRule.type;
       },
       set(value) {
-        if (value === 'scan_finding') {
-          this.updateRule({
-            type: value,
-            branches: [],
-            scanners: [],
-            vulnerabilities_allowed: 0,
-            severity_levels: [],
-            vulnerability_states: [],
-          });
-        } else {
-          this.updateRule({
-            type: value,
-            branches: [],
-            match_on_inclusion: true,
-            license_types: [],
-            license_states: [],
-          });
-        }
+        const rule = getDefaultRule(value);
+        this.updateRule(rule);
       },
     },
   },
@@ -58,14 +44,14 @@ export default {
     },
   },
   scanTypeOptions: [
-    { value: null, text: __('Select scan type') },
+    { value: null, text: s__('SecurityOrchestration|Select scan type') },
     {
-      value: 'scan_finding',
-      text: __('Security Scan'),
+      value: SCAN_FINDING,
+      text: s__('SecurityOrchestration|Security Scan'),
     },
     {
-      value: 'license_finding',
-      text: __('License Scan'),
+      value: LICENSE_FINDING,
+      text: s__('SecurityOrchestration|License Scan'),
     },
   ],
 };
