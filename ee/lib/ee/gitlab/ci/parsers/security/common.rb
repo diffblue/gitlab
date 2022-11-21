@@ -10,21 +10,6 @@ module EE
 
             private
 
-            override :report_data
-            def report_data
-              @report_data ||= parser.parse(json_data)
-            end
-
-            def parser
-              ::Feature.enabled?(:use_introspect_parser, project) ? introspect_parser : ::Gitlab::Json
-            end
-
-            # New Oj parsers are not thread safe, therefore,
-            # we need to initialize them for each thread.
-            def introspect_parser
-              Thread.current[:introspect_parser] ||= Oj::Introspect.new(filter: "remediations")
-            end
-
             # map remediations to relevant vulnerabilities
             def collate_remediations
               return report_data["vulnerabilities"] || [] unless report_data["remediations"]
