@@ -91,4 +91,36 @@ RSpec.describe LabelsHelper do
       it { is_expected.to eq(data) }
     end
   end
+
+  describe '#labels_function_introduction' do
+    subject { helper.labels_function_introduction }
+
+    let(:group) { instance_double(Group) }
+
+    context 'when epics is unavailable' do
+      before do
+        allow(group).to receive(:feature_available?).with(:epics).and_return(false)
+        assign(:group, group)
+      end
+
+      it {
+        expect_text = _('Labels can be applied to issues and merge requests. '\
+          'Group labels are available for any project within the group.')
+        is_expected.to eq(expect_text)
+      }
+    end
+
+    context 'when epics is available' do
+      before do
+        allow(group).to receive(:feature_available?).with(:epics).and_return(true)
+        assign(:group, group)
+      end
+
+      it {
+        expect_text = _('Labels can be applied to issues, merge requests, and epics. '\
+          'Group labels are available for any project within the group.')
+        is_expected.to eq(expect_text)
+      }
+    end
+  end
 end
