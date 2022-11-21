@@ -1,6 +1,7 @@
 <script>
 import { ITEM_TYPE } from '~/groups/constants';
 import IssuesListApp from '~/issues/list/components/issues_list_app.vue';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   OPERATORS_IS,
   TOKEN_TYPE_EPIC,
@@ -14,7 +15,11 @@ import {
   TOKEN_TITLE_HEALTH,
   TOKEN_TYPE_HEALTH,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
+import { TYPE_TOKEN_OBJECTIVE_OPTION } from '~/issues/list/constants';
+import { WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
+
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
+import CreateWorkItemObjective from 'ee/work_items/components/create_work_item_objective.vue';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
 
 const EpicToken = () =>
@@ -27,21 +32,45 @@ const HealthToken = () =>
   import('ee/vue_shared/components/filtered_search_bar/tokens/health_token.vue');
 
 export default {
+  name: 'IssuesListAppEE',
   components: {
     BlockingIssuesCount,
     IssuesListApp,
+    CreateWorkItemObjective,
   },
+  mixins: [glFeatureFlagMixin()],
   inject: [
     'fullPath',
     'groupPath',
     'hasIssueWeightsFeature',
     'hasIterationsFeature',
     'hasIssuableHealthStatusFeature',
+    'hasOkrsFeature',
     'isProject',
   ],
   computed: {
     namespace() {
       return this.isProject ? ITEM_TYPE.PROJECT : ITEM_TYPE.GROUP;
+    },
+    workItemTypes() {
+      const types = [];
+      if (this.isOkrsEnabled) {
+        types.push(WORK_ITEM_TYPE_ENUM_OBJECTIVE);
+      }
+      return types;
+    },
+    typeTokenOptions() {
+      const typeTokens = [];
+      if (this.isOkrsEnabled) {
+        typeTokens.push(TYPE_TOKEN_OBJECTIVE_OPTION);
+      }
+      return typeTokens;
+    },
+    isOkrsEnabled() {
+      return this.hasOkrsFeature && this.glFeatures.okrsMvc;
+    },
+    showObjectiveCreationForm() {
+      return this.isOkrsEnabled;
     },
     searchTokens() {
       const tokens = [];
@@ -112,17 +141,34 @@ export default {
         })
         .then(({ data }) => data[this.namespace]?.iterations.nodes);
     },
+    handleObjectiveCreationSuccess({ objective }) {
+      if (objective.id) {
+        // Refresh results on list
+        this.$refs.issuesListApp.$apollo.queries.issues.refetch();
+        this.$refs.issuesListApp.$apollo.queries.issuesCounts.refetch();
+      }
+    },
   },
 };
 </script>
 
 <template>
-  <issues-list-app #default="{ issuable }" :ee-search-tokens="searchTokens">
-    <blocking-issues-count
-      class="blocking-issues gl-display-none gl-sm-display-block"
-      :blocking-issues-count="issuable.blockingCount"
-      is-list-item
-      data-testid="blocking-issues"
-    />
+  <issues-list-app
+    ref="issuesListApp"
+    :ee-work-item-types="workItemTypes"
+    :ee-type-token-options="typeTokenOptions"
+    :ee-search-tokens="searchTokens"
+  >
+    <template #blocking-count="{ issuable }">
+      <blocking-issues-count
+        class="blocking-issues gl-display-none gl-sm-display-block"
+        :blocking-issues-count="issuable.blockingCount"
+        is-list-item
+        data-testid="blocking-issues"
+      />
+    </template>
+    <template v-if="showObjectiveCreationForm" #list-body>
+      <create-work-item-objective @objective-created="handleObjectiveCreationSuccess" />
+    </template>
   </issues-list-app>
 </template>
