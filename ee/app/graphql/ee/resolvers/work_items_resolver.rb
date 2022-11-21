@@ -23,7 +23,7 @@ module EE
 
       override :widget_preloads
       def widget_preloads
-        super.merge(status: { requirement: :recent_test_reports })
+        super.merge(status: { requirement: :recent_test_reports }, progress: :progress)
       end
     end
   end

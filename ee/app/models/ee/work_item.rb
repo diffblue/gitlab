@@ -6,13 +6,16 @@ module EE
 
     prepended do
       include FilterableByTestReports
+
+      has_one :progress, class_name: 'WorkItems::Progress', foreign_key: 'issue_id', inverse_of: :work_item
     end
 
     LICENSED_WIDGETS = {
       iterations: ::WorkItems::Widgets::Iteration,
       issue_weights: ::WorkItems::Widgets::Weight,
       requirements: ::WorkItems::Widgets::Status,
-      issuable_health_status: ::WorkItems::Widgets::HealthStatus
+      issuable_health_status: ::WorkItems::Widgets::HealthStatus,
+      okrs: ::WorkItems::Widgets::Progress
     }.freeze
 
     def widgets

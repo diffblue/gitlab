@@ -12,6 +12,7 @@ RSpec.describe ::Types::WorkItems::WidgetInterface do
       WorkItems::Widgets::Status             | Types::WorkItems::Widgets::StatusType
       WorkItems::Widgets::Weight             | Types::WorkItems::Widgets::WeightType
       WorkItems::Widgets::HealthStatus       | Types::WorkItems::Widgets::HealthStatusType
+      WorkItems::Widgets::Progress           | Types::WorkItems::Widgets::ProgressType
     end
 
     with_them do

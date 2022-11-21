@@ -12,7 +12,6 @@ RSpec.describe 'Query.work_item(id)' do
   # rubocop:disable Layout/LineLength
   let_it_be(:work_item) { create(:work_item, project: project, description: '- List item', weight: 1, iteration: iteration) }
   # rubocop:enable Layout/LineLength
-
   let(:current_user) { guest }
   let(:work_item_data) { graphql_data['workItem'] }
   let(:work_item_fields) { all_graphql_fields_for('WorkItem') }
@@ -73,9 +72,63 @@ RSpec.describe 'Query.work_item(id)' do
           end
 
           it 'returns without iteration' do
-            expect(work_item_data).not_to include(
+            expect(work_item_data['widgets']).not_to include(
+              hash_including('type' => 'ITERATION')
+            )
+          end
+        end
+      end
+
+      describe 'progress widget' do
+        let_it_be(:objective) { create(:work_item, :objective, project: project) }
+        let_it_be(:progress) { create(:progress, work_item: objective) }
+        let(:global_id) { objective.to_gid.to_s }
+
+        let(:work_item_fields) do
+          <<~GRAPHQL
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetProgress {
+                progress
+              }
+            }
+          GRAPHQL
+        end
+
+        context 'when okrs feature is licensed' do
+          before do
+            stub_licensed_features(okrs: true)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns widget information' do
+            expect(objective&.work_item_type&.base_type).to match('objective')
+            expect(work_item_data).to include(
+              'id' => objective.to_gid.to_s,
               'widgets' => include(
-                hash_including('type' => 'ITERATION')
+                hash_including(
+                  'type' => 'PROGRESS',
+                  'progress' => objective&.progress&.progress
+                )
+              )
+            )
+          end
+        end
+
+        context 'when okrs feature is unlicensed' do
+          before do
+            stub_licensed_features(okrs: false)
+
+            post_graphql(query, current_user: current_user)
+          end
+
+          it 'returns without progress' do
+            expect(objective&.work_item_type&.base_type).to match('objective')
+            expect(work_item_data['widgets']).not_to include(
+              hash_including(
+                'type' => 'PROGRESS'
               )
             )
           end
@@ -123,12 +176,9 @@ RSpec.describe 'Query.work_item(id)' do
           end
 
           it 'returns without weight' do
-            expect(work_item_data).not_to include(
-              'widgets' => include(
-                hash_including(
-                  'type' => 'WEIGHT',
-                  'weight' => work_item.weight
-                )
+            expect(work_item_data['widgets']).not_to include(
+              hash_including(
+                'type' => 'WEIGHT'
               )
             )
           end
@@ -202,12 +252,9 @@ RSpec.describe 'Query.work_item(id)' do
           end
 
           it 'returns no status information' do
-            expect(work_item_data).not_to include(
-              'widgets' => include(
-                hash_including(
-                  'type' => 'STATUS',
-                  'status' => 'unverified'
-                )
+            expect(work_item_data['widgets']).not_to include(
+              hash_including(
+                'type' => 'STATUS'
               )
             )
           end
