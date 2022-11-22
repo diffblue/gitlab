@@ -96,6 +96,32 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
         end
       end
 
+      context 'when audit event type is tracked for count' do
+        before do
+          allow(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter::KNOWN_EVENTS).to receive(:include?).and_return(true)
+        end
+
+        it 'tracks the event count and makes http call' do
+          expect(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).to receive(:count).with('audit_operation')
+          expect(Gitlab::HTTP).to receive(:post).once
+
+          subject
+        end
+      end
+
+      context 'when audit event type is not tracked for count' do
+        before do
+          allow(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter::KNOWN_EVENTS).to receive(:include?).and_return(false)
+        end
+
+        it 'does not track the event count and makes http call' do
+          expect(Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter).not_to receive(:count).with('audit_operation')
+          expect(Gitlab::HTTP).to receive(:post).once
+
+          subject
+        end
+      end
+
       context "when feature flag 'allow_audit_event_type_filtering' is enabled" do
         before do
           stub_feature_flags(allow_audit_event_type_filtering: true)

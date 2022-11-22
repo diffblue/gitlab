@@ -34,6 +34,8 @@ module AuditEvents
         headers = destination.headers_hash
         headers[EVENT_TYPE_HEADER_KEY] = audit_operation if audit_operation.present?
 
+        track_audit_event_count(audit_operation)
+
         Gitlab::HTTP.post(destination.destination_url,
                           body: request_body(audit_event, audit_operation),
                           headers: headers)
@@ -44,6 +46,12 @@ module AuditEvents
     end
 
     private
+
+    def track_audit_event_count(audit_operation)
+      return unless Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter::KNOWN_EVENTS.include? audit_operation
+
+      Gitlab::UsageDataCounters::StreamingAuditEventTypeCounter.count(audit_operation)
+    end
 
     # TODO: Remove audit_operation.present? guard clause once we implement names for all the audit event types.
     # Epic: https://gitlab.com/groups/gitlab-org/-/epics/8497
