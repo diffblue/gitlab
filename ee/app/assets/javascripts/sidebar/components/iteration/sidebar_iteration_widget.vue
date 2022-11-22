@@ -10,7 +10,7 @@ import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
 import { IssuableType } from '~/issues/constants';
-import { IssuableAttributeType } from '../constants';
+import { IssuableAttributeType } from '../../constants';
 
 export default {
   issuableAttribute: IssuableAttributeType.Iteration,

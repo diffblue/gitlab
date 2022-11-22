@@ -9,7 +9,7 @@ import {
 import { mount, shallowMount } from '@vue/test-utils';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import IterationDropdown from 'ee/sidebar/components/iteration_dropdown.vue';
+import IterationDropdown from 'ee/sidebar/components/iteration/iteration_dropdown.vue';
 import groupIterationsQuery from 'ee/sidebar/queries/group_iterations.query.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { getIterationPeriod } from 'ee/iterations/utils';

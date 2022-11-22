@@ -82,7 +82,7 @@ describe('ee/BoardContentSidebar', () => {
         SidebarWeightWidget: true,
         SidebarHealthStatusWidget: true,
         SidebarDropdownWidget: true,
-        IterationSidebarDropdownWidget: true,
+        SidebarIterationWidget: true,
         SidebarTodoWidget: true,
         MountingPortal: true,
       },

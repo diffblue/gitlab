@@ -16,7 +16,7 @@ module QA
                   element :edit_link
                 end
 
-                view 'ee/app/assets/javascripts/sidebar/components/iteration_sidebar_dropdown_widget.vue' do
+                view 'ee/app/assets/javascripts/sidebar/components/iteration/sidebar_iteration_widget.vue' do
                   element :iteration_link
                 end
 
