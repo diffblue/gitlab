@@ -474,12 +474,8 @@ export default {
         this.editor.registerCiSchema();
       };
 
-      if (this.isCiConfigFile) {
-        if (this.glFeatures.schemaLinting) {
-          registerLocalSchema();
-        } else {
-          registerExternalSchema();
-        }
+      if (this.isCiConfigFile && this.glFeatures.schemaLinting) {
+        registerLocalSchema();
       } else {
         if (this.CiSchemaExtension) {
           this.editor.unuse(this.CiSchemaExtension);
