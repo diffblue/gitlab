@@ -30,8 +30,8 @@ module Users
       end
 
       def user_exceeded_download_limit_for_namespace?
-        return false unless ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, namespace)
-        return false unless License.feature_available?(:unique_project_download_limit)
+        return false unless namespace.group_namespace?
+        return false unless namespace.unique_project_download_limit_enabled?
 
         result = GitAbuse::NamespaceThrottleService.execute(project, user)
 
