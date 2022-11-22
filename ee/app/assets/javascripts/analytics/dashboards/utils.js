@@ -85,13 +85,15 @@ export const generateDoraTimePeriodComparisonTable = (timePeriods) => {
 
       const current = timePeriod[identifier];
       const previous = timePeriods[index + 1][identifier];
+      const hasCurrentValue = current && current.value !== '-';
+      const hasPreviousValue = previous && previous.value !== '-';
 
       data[timePeriod.key] = {
-        value: current ? formatValue(current.value) : '-',
+        value: hasCurrentValue ? formatValue(current.value) : '-',
         invertTrendColor,
         change: percentChange({
-          current: current?.value || 0,
-          previous: previous?.value || 0,
+          current: hasCurrentValue ? current.value : 0,
+          previous: hasPreviousValue ? previous.value : 0,
         }),
       };
     });
