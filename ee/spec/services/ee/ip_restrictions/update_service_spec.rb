@@ -6,7 +6,7 @@ RSpec.describe EE::IpRestrictions::UpdateService do
   subject(:service) { described_class.new(current_user, group, comma_separated_ranges) }
 
   let(:group) { create(:group) }
-  let(:current_user) { build(:user) }
+  let(:current_user) { create(:user) }
   let(:comma_separated_ranges) { '192.168.0.0/24,10.0.0.0/8' }
 
   describe '#execute' do
