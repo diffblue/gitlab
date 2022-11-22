@@ -158,6 +158,26 @@ RSpec.describe 'Git LFS API and storage' do
 
           context 'when pushing a lfs object that does not exist' do
             it_behaves_like 'pushes new LFS objects'
+
+            context 'when the namespace is over the free user cap limit', :saas do
+              let(:namespace) { create(:group_with_plan, :private, :with_root_storage_statistics, plan: :free_plan) }
+
+              before do
+                project.update!(namespace: namespace)
+                stub_ee_application_setting(dashboard_limit_enabled: true)
+                enforce_namespace_storage_limit(namespace)
+                set_storage_size_limit(namespace, megabytes: 100)
+                set_used_storage(namespace, megabytes: 140)
+              end
+
+              it 'responds with status 406', :aggregate_failures do
+                batch_request
+
+                expect(response).to have_gitlab_http_status(:not_acceptable)
+                expect(json_response['documentation_url']).to include('/help', 'free_user_limit')
+                expect(json_response['message']).to match(/Your namespace is over the user and storage limits/)
+              end
+            end
           end
 
           context 'when pushing to a subgroup project' do

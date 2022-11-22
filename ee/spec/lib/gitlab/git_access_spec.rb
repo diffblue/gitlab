@@ -361,6 +361,21 @@ RSpec.describe Gitlab::GitAccess do
     end
   end
 
+  context 'when namespace storage size is below the limit', :saas do
+    let(:sha_with_smallest_changes) { 'b9238ee5bf1d7359dd3b8c89fd76c1c7f8b75aba' }
+    let(:namespace) { create(:group_with_plan, :private, plan: :free_plan) }
+
+    before do
+      project.add_developer(user)
+      project.update!(namespace: namespace)
+      stub_ee_application_setting(dashboard_limit_enabled: true)
+    end
+
+    it 'rejects the push' do
+      expect { push_changes }.to raise_error(described_class::ForbiddenError, /Your namespace is over the user limit/)
+    end
+  end
+
   describe 'repository size restrictions' do
     let(:namespace) { project.namespace }
     # SHA for the 2-mb-file branch

@@ -11,7 +11,13 @@ module EE
       def validate!
         super
 
+        check_free_user_cap_over_limit! # order matters here, this needs to come before size check for storage limits
         validate_repository_size!
+      end
+
+      def check_free_user_cap_over_limit!
+        ::Namespaces::FreeUserCap::Standard.new(project.root_ancestor)
+                                           .git_check_over_limit!(::Commits::CreateService::ValidationError)
       end
 
       def validate_repository_size!
