@@ -1,7 +1,9 @@
 import Vue from 'vue';
+import VueApollo from 'vue-apollo';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import EnvironmentsDetailHeader from './components/environments_detail_header.vue';
 import EnvironmentsDetailPage from './components/environment_details_page.vue';
+import { apolloProvider } from './graphql/client';
 import environmentsMixin from './mixins/environments_mixin';
 
 export const initHeader = () => {
@@ -50,11 +52,22 @@ export const initHeader = () => {
 };
 
 export const initPage = () => {
+  const dataElement = document.getElementById('environments-detail-view');
+  const dataSet = convertObjectPropsToCamelCase(JSON.parse(dataElement.dataset.details));
+
+  Vue.use(VueApollo);
   const el = document.getElementById('app');
   return new Vue({
     el,
+    apolloProvider: apolloProvider(),
+    provide: {},
     render(createElement) {
-      return createElement(EnvironmentsDetailPage);
+      return createElement(EnvironmentsDetailPage, {
+        props: {
+          projectFullPath: dataSet.projectFullPath,
+          environmentName: dataSet.name,
+        },
+      });
     },
   });
 };
