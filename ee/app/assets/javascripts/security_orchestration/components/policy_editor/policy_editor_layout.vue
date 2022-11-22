@@ -6,17 +6,29 @@ import {
   GlFormInput,
   GlFormRadioGroup,
   GlFormTextarea,
+  GlIcon,
   GlModal,
   GlModalDirective,
   GlTooltipDirective,
 } from '@gitlab/ui';
 import { __, s__, sprintf } from '~/locale';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
-import { DELETE_MODAL_CONFIG, EDITOR_MODES, EDITOR_MODE_RULE, EDITOR_MODE_YAML } from './constants';
+import { NAMESPACE_TYPES } from '../../constants';
+import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
+import {
+  DELETE_MODAL_CONFIG,
+  EDITOR_MODES,
+  EDITOR_MODE_RULE,
+  EDITOR_MODE_YAML,
+  POLICY_RUN_TIME_MESSAGE,
+  POLICY_RUN_TIME_TOOLTIP,
+} from './constants';
 
 export default {
   i18n: {
     DELETE_MODAL_CONFIG,
+    POLICY_RUN_TIME_MESSAGE,
+    POLICY_RUN_TIME_TOOLTIP,
     description: __('Description'),
     name: __('Name'),
     toggleLabel: s__('SecurityOrchestration|Policy status'),
@@ -33,13 +45,14 @@ export default {
     GlFormInput,
     GlFormTextarea,
     GlFormRadioGroup,
+    GlIcon,
     GlModal,
     SegmentedControlButtonGroup,
     PolicyYamlEditor: () =>
       import(/* webpackChunkName: 'policy_yaml_editor' */ '../policy_yaml_editor.vue'),
   },
   directives: { GlModal: GlModalDirective, GlTooltip: GlTooltipDirective },
-  inject: ['policiesPath'],
+  inject: ['namespaceType', 'policiesPath'],
   props: {
     customSaveButtonText: {
       type: String,
@@ -142,6 +155,12 @@ export default {
     },
     shouldShowYamlEditor() {
       return this.selectedEditorMode === EDITOR_MODE_YAML;
+    },
+    shouldShowRuntimeMessage() {
+      return (
+        this.policy.type === POLICY_TYPE_COMPONENT_OPTIONS.scanResult.urlParameter &&
+        this.namespaceType !== NAMESPACE_TYPES.PROJECT
+      );
     },
   },
   watch: {
@@ -268,6 +287,14 @@ export default {
       ><gl-button class="gl-mt-5 gl-lg-mt-0" category="secondary" :href="policiesPath">
         {{ __('Cancel') }}
       </gl-button>
+      <span
+        v-if="shouldShowRuntimeMessage"
+        class="gl-ml-11 gl-mt-5 gl-lg-mt-0"
+        data-testid="scan-result-policy-run-time-info"
+      >
+        <gl-icon v-gl-tooltip="$options.i18n.POLICY_RUN_TIME_TOOLTIP" name="information-o" />
+        {{ $options.i18n.POLICY_RUN_TIME_MESSAGE }}
+      </span>
     </div>
     <gl-modal
       modal-id="delete-modal"

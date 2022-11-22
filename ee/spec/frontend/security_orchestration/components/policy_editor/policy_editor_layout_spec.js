@@ -1,28 +1,40 @@
 import { nextTick } from 'vue';
-import { GlAlert, GlFormInput, GlFormRadioGroup, GlFormTextarea, GlModal } from '@gitlab/ui';
+import {
+  GlAlert,
+  GlFormInput,
+  GlFormRadioGroup,
+  GlFormTextarea,
+  GlIcon,
+  GlModal,
+} from '@gitlab/ui';
 import {
   EDITOR_MODE_YAML,
+  POLICY_RUN_TIME_MESSAGE,
+  POLICY_RUN_TIME_TOOLTIP,
   EDITOR_MODE_RULE,
   EDITOR_MODES,
 } from 'ee/security_orchestration/components/policy_editor/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import SegmentedControlButtonGroup from '~/vue_shared/components/segmented_control_button_group.vue';
 import PolicyEditorLayout from 'ee/security_orchestration/components/policy_editor/policy_editor_layout.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import {
   mockDastScanExecutionManifest,
-  mockProjectScanExecutionPolicy,
+  mockDastScanExecutionObject,
+  mockScanResultObject,
 } from '../../mocks/mock_data';
 
 describe('PolicyEditorLayout component', () => {
   let wrapper;
   let glTooltipDirectiveMock;
-  const policiesPath = '/threat-monitoring';
+  const policiesPath = 'path/to/policy';
+  const namespaceType = NAMESPACE_TYPES.PROJECT;
   const defaultProps = {
-    policy: mockProjectScanExecutionPolicy,
+    policy: mockDastScanExecutionObject,
     policyYaml: mockDastScanExecutionManifest,
   };
 
-  const factory = ({ propsData = {} } = {}) => {
+  const factory = ({ propsData = {}, provide = {} } = {}) => {
     glTooltipDirectiveMock = jest.fn();
     wrapper = shallowMountExtended(PolicyEditorLayout, {
       directives: {
@@ -34,6 +46,8 @@ describe('PolicyEditorLayout component', () => {
       },
       provide: {
         policiesPath,
+        namespaceType,
+        ...provide,
       },
       stubs: { PolicyYamlEditor: true },
     });
@@ -50,6 +64,10 @@ describe('PolicyEditorLayout component', () => {
   const findRuleModeSection = () => wrapper.findByTestId('rule-editor');
   const findRuleModePreviewSection = () => wrapper.findByTestId('rule-editor-preview');
   const findSavePolicyButton = () => wrapper.findByTestId('save-policy');
+  const findScanResultPolicyRunTimeInfo = () =>
+    wrapper.findByTestId('scan-result-policy-run-time-info');
+  const findScanResultPolicyRunTimeTooltip = () =>
+    findScanResultPolicyRunTimeInfo().findComponent(GlIcon);
 
   afterEach(() => {
     wrapper.destroy();
@@ -202,12 +220,14 @@ describe('PolicyEditorLayout component', () => {
     it('displays the custom save button text when it is passed in', async () => {
       const customSaveButtonText = 'Custom Text';
       factory({ propsData: { customSaveButtonText } });
+      await nextTick();
       expect(findSavePolicyButton().exists()).toBe(true);
       expect(findSavePolicyButton().text()).toBe(customSaveButtonText);
     });
 
     it('disables the save button when "disableUpdate" is true', async () => {
       factory({ propsData: { disableUpdate: true } });
+      await nextTick();
       expect(findSavePolicyButton().exists()).toBe(true);
       expect(findSavePolicyButton().attributes('disabled')).toBe('true');
     });
@@ -215,8 +235,37 @@ describe('PolicyEditorLayout component', () => {
     it('enables the save button tooltip when "disableTooltip" is false', async () => {
       const customSaveTooltipText = 'Custom Test';
       factory({ propsData: { customSaveTooltipText, disableTooltip: false } });
+      await nextTick();
       expect(glTooltipDirectiveMock.mock.calls[0][1].value.disabled).toBe(false);
       expect(glTooltipDirectiveMock.mock.calls[0][0].title).toBe(customSaveTooltipText);
+    });
+  });
+
+  describe('policy runtime info', () => {
+    it.each`
+      title                                                           | currentNamespaceType       | propsData
+      ${'does not display for project-level scan execution policies'} | ${NAMESPACE_TYPES.PROJECT} | ${{}}
+      ${'does not display for group-level scan execution policies'}   | ${NAMESPACE_TYPES.GROUP}   | ${{}}
+      ${'does not display for project-level scan result policies'}    | ${NAMESPACE_TYPES.PROJECT} | ${{ policy: mockScanResultObject }}
+    `('$title', async ({ currentNamespaceType, propsData }) => {
+      factory({ propsData, provide: { namespaceType: currentNamespaceType } });
+      await nextTick();
+      const policyRunTimeInfo = findScanResultPolicyRunTimeInfo();
+      expect(policyRunTimeInfo.exists()).toBe(false);
+    });
+
+    it('does display for group-level scan result policies', async () => {
+      factory({
+        propsData: { policy: mockScanResultObject },
+        provide: { namespaceType: NAMESPACE_TYPES.GROUP },
+      });
+      await nextTick();
+      const policyRunTimeInfo = findScanResultPolicyRunTimeInfo();
+      expect(policyRunTimeInfo.exists()).toBe(true);
+      expect(policyRunTimeInfo.text()).toBe(POLICY_RUN_TIME_MESSAGE);
+      const policyRunTimeTooltip = findScanResultPolicyRunTimeTooltip();
+      expect(policyRunTimeTooltip.exists()).toBe(true);
+      expect(glTooltipDirectiveMock.mock.calls[1][1].value).toBe(POLICY_RUN_TIME_TOOLTIP);
     });
   });
 });

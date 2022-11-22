@@ -25,6 +25,14 @@ export const DELETE_MODAL_CONFIG = {
 
 export const DEFAULT_MR_TITLE = s__('SecurityOrchestration|Update scan policies');
 
+export const POLICY_RUN_TIME_MESSAGE = s__(
+  'SecurityOrchestration|Policy changes may take some time to be applied.',
+);
+
+export const POLICY_RUN_TIME_TOOLTIP = s__(
+  'SecurityOrchestration|For large groups, there may be a significant delay in applying policy changes to pre-existing merge requests. Policy changes typically apply almost immediately for newly created merge requests.',
+);
+
 export const SECURITY_POLICY_ACTIONS = Object.freeze({
   APPEND: 'APPEND',
   REMOVE: 'REMOVE',
