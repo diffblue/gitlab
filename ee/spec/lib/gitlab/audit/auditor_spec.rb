@@ -83,11 +83,9 @@ RSpec.describe Gitlab::Audit::Auditor do
         end
 
         it 'bulk-inserts audit events to database' do
-          allow(AuditEvent).to receive(:bulk_insert!)
+          expect(AuditEvent).to receive(:bulk_insert!).with(include(kind_of(AuditEvent)), returns: :ids)
 
           audit!
-
-          expect(AuditEvent).to have_received(:bulk_insert!)
         end
 
         it 'records audit events in correct order', :aggregate_failures do
@@ -120,6 +118,7 @@ RSpec.describe Gitlab::Audit::Auditor do
 
           expect(logger).to have_received(:info).exactly(2).times.with(
             hash_including(
+              'id' => kind_of(Integer),
               'author_id' => author.id,
               'author_name' => author.name,
               'entity_id' => scope.id,
@@ -333,6 +332,15 @@ RSpec.describe Gitlab::Audit::Auditor do
           expect(audit_event.details[:custom_message]).to eq('Project has been deleted')
         end
 
+        it 'does not bulk insert and uses save to insert' do
+          expect(AuditEvent).not_to receive(:bulk_insert!)
+          expect_next_instance_of(AuditEvent) do |instance|
+            expect(instance).to receive(:save!)
+          end
+
+          audit!
+        end
+
         it 'logs audit events to file' do
           expect(::Gitlab::AuditJsonLogger).to receive(:build).and_return(logger)
 
@@ -340,6 +348,7 @@ RSpec.describe Gitlab::Audit::Auditor do
 
           expect(logger).to have_received(:info).once.with(
             hash_including(
+              'id' => AuditEvent.last.id,
               'author_id' => author.id,
               'author_name' => author.name,
               'entity_id' => scope.id,
