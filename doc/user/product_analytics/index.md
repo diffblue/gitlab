@@ -28,15 +28,17 @@ within your project applications on a self-managed instance:
 1. Expand the **Product analytics** section.
 1. Select **Enable product analytics** and enter the configuration values.
    All fields are required. This is an example:
-   | Name                         | Value                      |
-   |------------------------------|----------------------------|
-   | Jitsu host                   | `https://jitsu.gitlab.com` |
-   | Jitsu project ID             | `g0maofw84gx5sjxgse2k` |
-   | Jitsu administrator email    | `jitsu.admin@gitlab.com` |
-   | Jitsu administrator password | _your_password_here_ |
-   | Clickhouse URL               | `https://user:pass@clickhouse.gitlab.com:8123` |
-   | Cube API URL                 | `https://cube.gitlab.com` |
-   | Cube API key                 | `25718201b3e9...ae6bbdc62dbb` |
+
+    | Name                         | Value                      |
+    |------------------------------|----------------------------|
+    | Jitsu host                   | `https://jitsu.gitlab.com` |
+    | Jitsu project ID             | `g0maofw84gx5sjxgse2k` |
+    | Jitsu administrator email    | `jitsu.admin@gitlab.com` |
+    | Jitsu administrator password | _your_password_here_ |
+    | Clickhouse URL               | `https://user:pass@clickhouse.gitlab.com:8123` |
+    | Cube API URL                 | `https://cube.gitlab.com` |
+    | Cube API key                 | `25718201b3e9...ae6bbdc62dbb` |
+
 1. Select **Save changes**.
 
 ## Product analytics dashboards
