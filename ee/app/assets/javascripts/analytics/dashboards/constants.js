@@ -21,14 +21,17 @@ export const DORA_METRICS = {
   },
   [LEAD_TIME_FOR_CHANGES]: {
     label: s__('DORA4Metrics|Lead Time for Changes'),
+    invertTrendColor: true,
     formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
   },
   [TIME_TO_RESTORE_SERVICE]: {
     label: s__('DORA4Metrics|Time to Restore Service'),
+    invertTrendColor: true,
     formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
   },
   [CHANGE_FAILURE_RATE]: {
     label: s__('DORA4Metrics|Change Failure Rate'),
+    invertTrendColor: true,
     formatValue: (value) => percentHundred(value, 2),
   },
 };

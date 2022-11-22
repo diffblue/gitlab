@@ -36,9 +36,9 @@ export default {
       </template>
     </template>
 
-    <template #cell()="{ value: { value, change } }">
+    <template #cell()="{ value: { value, change, invertTrendColor } }">
       {{ value }}
-      <trend-indicator v-if="change" :change="change" />
+      <trend-indicator v-if="change" :change="change" :invert-color="invertTrendColor" />
     </template>
   </gl-table-lite>
 </template>
