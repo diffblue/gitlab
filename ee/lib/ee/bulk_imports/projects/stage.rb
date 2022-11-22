@@ -9,7 +9,7 @@ module EE
         private
 
         def ee_config
-          @ee_config ||= {
+          {
             push_rule: {
               pipeline: ::BulkImports::Projects::Pipelines::PushRulePipeline,
               stage: 4
@@ -19,7 +19,7 @@ module EE
 
         override :config
         def config
-          @config ||= super.deep_merge(ee_config)
+          bulk_import.source_enterprise ? super.deep_merge(ee_config) : super
         end
       end
     end
