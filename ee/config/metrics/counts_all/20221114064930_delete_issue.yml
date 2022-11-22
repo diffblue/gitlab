@@ -1,0 +1,22 @@
+---
+key_path: counts.delete_issue
+description: "Count of event triggered on successful issue deletion"
+product_section: sec
+product_stage: govern
+product_group: compliance
+product_category: audit_events
+value_type: number
+status: active
+milestone: "15.6"
+introduced_by_url: "https://gitlab.com/gitlab-org/gitlab/-/merge_requests/103455"
+time_frame: all
+data_source: redis
+data_category: optional
+instrumentation_class: RedisMetric
+options:
+  prefix: audit_events
+  event: delete_issue
+distribution:
+  - ee
+tier:
+  - ultimate
