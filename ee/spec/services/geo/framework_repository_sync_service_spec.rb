@@ -12,10 +12,13 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
   let_it_be(:project) { create(:project_empty_repo) }
   let_it_be(:snippet) { create(:project_snippet, :public, :repository, project: project) }
   let_it_be(:replicator) { snippet.snippet_repository.replicator }
+  let_it_be(:replicator_class) { replicator.class }
+  let_it_be(:model_record) { replicator.model_record }
 
-  let(:repository) { snippet.repository }
+  let(:housekeeping_incremental_repack_period) { Gitlab::CurrentSettings.housekeeping_incremental_repack_period }
+  let(:repository) { model_record.repository }
   let(:temp_repo) { subject.send(:temp_repo) }
-  let(:lease_key) { "geo_sync_ssf_service:snippet_repository:#{replicator.model_record.id}" }
+  let(:lease_key) { "geo_sync_ssf_service:snippet_repository:#{model_record.id}" }
   let(:lease_uuid) { 'uuid' }
   let(:registry) { replicator.registry }
 
@@ -44,7 +47,40 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
     end
   end
 
-  describe '#execute' do
+  describe '#execute', :clean_gitlab_redis_shared_state, :aggregate_failures do
+    shared_examples 'runs the garbage collection task specifically' do
+      it 'runs the garbage collection task specifically' do
+        expect_next_instance_of(Repositories::HousekeepingService, model_record, :gc) do |service|
+          expect(service).to receive(:increment!).once
+          expect(service).to receive(:execute).once
+        end
+
+        subject.execute
+      end
+    end
+
+    shared_examples 'does not run any task specifically' do
+      it 'does not run any task specifically' do
+        expect_next_instance_of(Repositories::HousekeepingService, model_record, nil) do |service|
+          expect(service).to receive(:increment!).once
+          expect(service).to receive(:execute).once
+        end
+
+        subject.execute
+      end
+    end
+
+    shared_examples 'does not run housekeeping' do
+      it 'does not run housekeeping' do
+        expect_next_instance_of(Repositories::HousekeepingService, model_record, nil) do |service|
+          expect(service).to receive(:increment!).once
+          expect(service).not_to receive(:execute)
+        end
+
+        subject.execute
+      end
+    end
+
     let(:url_to_repo) { replicator.remote_url }
 
     before do
@@ -61,6 +97,11 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
       allow(repository).to receive(:find_remote_root_ref)
                              .with(url_to_repo, anything)
                              .and_return('master')
+
+      git_garbage_collect_worker_klass = double(perform_async: :the_jid) # rubocop:disable RSpec/VerifiedDoubles
+
+      allow_any_instance_of(replicator_class.model).to receive(:git_garbage_collect_worker_klass)
+                                                         .and_return(git_garbage_collect_worker_klass)
     end
 
     include_context 'lease handling'
@@ -79,8 +120,56 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
       subject.execute
     end
 
+    context 'repository housekeeping' do
+      before do
+        allow(model_record).to receive(:pushes_since_gc).and_return(housekeeping_incremental_repack_period)
+      end
+
+      context 'when the replicator class supports housekeeping' do
+        before do
+          allow(replicator_class).to receive(:housekeeping_enabled?).and_return(true)
+        end
+
+        it 'runs housekeeping' do
+          expect_next_instance_of(Repositories::HousekeepingService, model_record, anything) do |service|
+            expect(service).to receive(:increment!).once
+            expect(service).to receive(:execute).once.and_call_original
+          end
+
+          expect(replicator).to receive(:before_housekeeping).once.and_call_original
+
+          subject.execute
+        end
+
+        it 'does not raise an error when a lease can not be taken' do
+          allow_next_instance_of(Gitlab::ExclusiveLease, "#{model_record.class.name.underscore.pluralize}_housekeeping:#{model_record.id}", anything) do |lease|
+            expect(lease).to receive(:try_obtain).and_return(nil)
+          end
+
+          allow_next_instance_of(Repositories::HousekeepingService, model_record, anything) do |service|
+            expect(service).to receive(:increment!).once
+            expect(service).to receive(:execute).once.and_call_original
+          end
+
+          expect { subject.execute }.not_to raise_error
+        end
+      end
+
+      context 'when the replicator class does not support housekeeping' do
+        before do
+          allow(replicator_class).to receive(:housekeeping_enabled?).and_return(false)
+        end
+
+        it 'does not run housekeeping' do
+          expect(Repositories::HousekeepingService).not_to receive(:new)
+
+          subject.execute
+        end
+      end
+    end
+
     context 'with existing repository' do
-      it 'fetches project repository with JWT credentials' do
+      it 'fetches git repository with JWT credentials' do
         expect(repository).to receive(:fetch_as_mirror)
                                 .with(url_to_repo, forced: true, http_authorization_header: anything)
                                 .once
@@ -147,6 +236,48 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
         expect(registry.reload.failed?).to be true
       end
+
+      context 'repository housekeeping' do
+        before do
+          allow(replicator_class).to receive(:housekeeping_enabled?).and_return(true)
+        end
+
+        context 'when the count is high enough' do
+          before do
+            allow(model_record).to receive(:pushes_since_gc).and_return(housekeeping_incremental_repack_period)
+          end
+
+          include_examples 'does not run any task specifically'
+
+          context 'when there were errors' do
+            before do
+              allow(repository).to receive(:fetch_as_mirror)
+                                     .with(url_to_repo, forced: true, http_authorization_header: anything)
+                                     .and_raise(Gitlab::Shell::Error)
+            end
+
+            include_examples 'does not run any task specifically'
+          end
+        end
+
+        context 'when the count is low enough' do
+          before do
+            allow(model_record).to receive(:pushes_since_gc).and_return(housekeeping_incremental_repack_period - 1)
+          end
+
+          include_examples 'does not run housekeeping'
+
+          context 'when there were errors' do
+            before do
+              allow(repository).to receive(:fetch_as_mirror)
+                         .with(url_to_repo, forced: true, http_authorization_header: anything)
+                         .and_raise(Gitlab::Shell::Error)
+            end
+
+            include_examples 'does not run housekeeping'
+          end
+        end
+      end
     end
 
     context 'with a never synced repository' do
@@ -163,6 +294,25 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
           subject.execute
         end
+
+        context 'repository housekeeping' do
+          before do
+            allow(model_record).to receive(:pushes_since_gc).and_return(0)
+            allow(replicator_class).to receive(:housekeeping_enabled?).and_return(true)
+          end
+
+          include_examples 'runs the garbage collection task specifically'
+
+          context 'when there were errors' do
+            before do
+              allow(repository).to receive(:clone_as_mirror)
+                       .with(url_to_repo, http_authorization_header: anything)
+                       .and_raise(Gitlab::Shell::Error)
+            end
+
+            include_examples 'does not run housekeeping'
+          end
+        end
       end
 
       context 'with geo_use_clone_on_first_sync flag disabled' do
@@ -177,6 +327,175 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
                                   .once
 
           subject.execute
+        end
+
+        context 'repository housekeeping' do
+          before do
+            allow(model_record).to receive(:pushes_since_gc).and_return(0)
+            allow(replicator_class).to receive(:housekeeping_enabled?).and_return(true)
+          end
+
+          include_examples 'runs the garbage collection task specifically'
+
+          context 'when there were errors' do
+            before do
+              allow(repository).to receive(:fetch_as_mirror)
+                                     .with(url_to_repo, forced: true, http_authorization_header: anything)
+                                     .and_raise(Gitlab::Shell::Error)
+            end
+
+            include_examples 'runs the garbage collection task specifically'
+          end
+        end
+      end
+    end
+
+    context 'when repository is redownloaded' do
+      it 'sets the redownload flag to false after success' do
+        registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload: true)
+
+        subject.execute
+
+        expect(registry.reload.force_to_redownload).to be false
+      end
+
+      it 'tries to redownload repo' do
+        registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1)
+
+        expect(subject).to receive(:sync_repository).and_call_original
+        expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
+
+        expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
+
+        subject.execute
+
+        expect(repository.raw).to exist
+      end
+
+      context 'with geo_use_clone_on_first_sync flag disabled' do
+        before do
+          stub_feature_flags(geo_use_clone_on_first_sync: false)
+          allow(subject).to receive(:should_be_redownloaded?).and_return(true)
+        end
+
+        it 'creates a new repository and fetches with JWT credentials' do
+          expect(temp_repo).to receive(:create_repository)
+          expect(temp_repo).to receive(:fetch_as_mirror)
+                                 .with(url_to_repo, forced: true, http_authorization_header: anything)
+                                 .once
+          expect(subject).to receive(:set_temp_repository_as_main)
+
+          subject.execute
+        end
+
+        it 'cleans temporary repo after redownload' do
+          expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
+          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(replicator.model_record.repository_storage, /.git$/)
+
+          subject.execute
+        end
+
+        context 'repository housekeeping' do
+          before do
+            allow(replicator_class).to receive(:housekeeping_enabled?).and_return(true)
+            allow(temp_repo).to receive(:fetch_as_mirror).and_return(true)
+          end
+
+          context 'when the count is high enough' do
+            before do
+              allow(model_record).to receive(:pushes_since_gc).and_return(housekeeping_incremental_repack_period)
+            end
+
+            include_examples 'runs the garbage collection task specifically'
+
+            context 'when there were errors' do
+              before do
+                allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
+              end
+
+              include_examples 'does not run any task specifically'
+            end
+          end
+
+          context 'when the count is low enough' do
+            before do
+              allow(model_record).to receive(:pushes_since_gc).and_return(housekeeping_incremental_repack_period - 1)
+            end
+
+            include_examples 'runs the garbage collection task specifically'
+
+            context 'when there were errors' do
+              before do
+                allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
+              end
+
+              include_examples 'does not run housekeeping'
+            end
+          end
+        end
+      end
+
+      context 'with geo_use_clone_on_first_sync flag enabled' do
+        before do
+          stub_feature_flags(geo_use_clone_on_first_sync: true)
+          allow(subject).to receive(:should_be_redownloaded?) { true }
+        end
+
+        it 'clones a new repository with JWT credentials' do
+          expect(temp_repo).to receive(:clone_as_mirror)
+                                 .with(url_to_repo, http_authorization_header: anything)
+                                 .once
+          expect(subject).to receive(:set_temp_repository_as_main)
+
+          subject.execute
+        end
+
+        it 'cleans temporary repo after redownload' do
+          expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
+          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
+          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(replicator.model_record.repository_storage, /.git$/)
+
+          subject.execute
+        end
+
+        context 'repository housekeeping' do
+          before do
+            allow(replicator_class).to receive(:housekeeping_enabled?).and_return(true)
+            allow(subject).to receive(:clone_geo_mirror).and_return(true)
+          end
+
+          context 'when the count is high enough' do
+            before do
+              allow(model_record).to receive(:pushes_since_gc).and_return(housekeeping_incremental_repack_period)
+            end
+
+            include_examples 'runs the garbage collection task specifically'
+
+            context 'when there were errors' do
+              before do
+                allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
+              end
+
+              include_examples 'does not run any task specifically'
+            end
+          end
+
+          context 'when the count is low enough' do
+            before do
+              allow(model_record).to receive(:pushes_since_gc).and_return(housekeeping_incremental_repack_period - 1)
+            end
+
+            include_examples 'runs the garbage collection task specifically'
+
+            context 'when there were errors' do
+              before do
+                allow(subject).to receive(:redownload_repository).and_raise(Gitlab::Shell::Error)
+              end
+
+              include_examples 'does not run housekeeping'
+            end
+          end
         end
       end
     end
@@ -306,78 +625,6 @@ RSpec.describe Geo::FrameworkRepositorySyncService, :geo do
 
           expect(repository).to receive(:expire_exists_cache).twice.and_call_original
           expect(subject).not_to receive(:fail_registry_sync!)
-
-          subject.execute
-        end
-      end
-    end
-
-    context 'when repository is redownloaded' do
-      it 'sets the redownload flag to false after success' do
-        registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1, force_to_redownload: true)
-
-        subject.execute
-
-        expect(registry.reload.force_to_redownload).to be false
-      end
-
-      it 'tries to redownload repo' do
-        registry.update!(retry_count: described_class::RETRIES_BEFORE_REDOWNLOAD + 1)
-
-        expect(subject).to receive(:sync_repository).and_call_original
-        expect(subject.gitlab_shell).to receive(:mv_repository).twice.and_call_original
-
-        expect(subject.gitlab_shell).to receive(:remove_repository).twice.and_call_original
-
-        subject.execute
-
-        expect(repository.raw).to exist
-      end
-
-      context 'with geo_use_clone_on_first_sync flag disabled' do
-        before do
-          stub_feature_flags(geo_use_clone_on_first_sync: false)
-          allow(subject).to receive(:should_be_redownloaded?) { true }
-        end
-
-        it 'creates a new repository and fetches with JWT credentials' do
-          expect(temp_repo).to receive(:create_repository)
-          expect(temp_repo).to receive(:fetch_as_mirror)
-                                 .with(url_to_repo, forced: true, http_authorization_header: anything)
-                                 .once
-          expect(subject).to receive(:set_temp_repository_as_main)
-
-          subject.execute
-        end
-
-        it 'cleans temporary repo after redownload' do
-          expect(subject).to receive(:fetch_geo_mirror).with(target_repository: temp_repo)
-          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
-          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(replicator.model_record.repository_storage, /.git$/)
-
-          subject.execute
-        end
-      end
-
-      context 'with geo_use_clone_on_first_sync flag enabled' do
-        before do
-          stub_feature_flags(geo_use_clone_on_first_sync: true)
-          allow(subject).to receive(:should_be_redownloaded?) { true }
-        end
-
-        it 'clones a new repository with JWT credentials' do
-          expect(temp_repo).to receive(:clone_as_mirror)
-                                 .with(url_to_repo, http_authorization_header: anything)
-                                 .once
-          expect(subject).to receive(:set_temp_repository_as_main)
-
-          subject.execute
-        end
-
-        it 'cleans temporary repo after redownload' do
-          expect(subject).to receive(:clone_geo_mirror).with(target_repository: temp_repo)
-          expect(subject).to receive(:clean_up_temporary_repository).twice.and_call_original
-          expect(subject.gitlab_shell).to receive(:repository_exists?).twice.with(replicator.model_record.repository_storage, /.git$/)
 
           subject.execute
         end

@@ -3,6 +3,7 @@
 module Geo
   class GroupWikiRepositoryReplicator < Gitlab::Geo::Replicator
     include ::Geo::RepositoryReplicatorStrategy
+    extend ::Gitlab::Utils::Override
 
     def self.model
       ::GroupWikiRepository
@@ -14,6 +15,11 @@ module Geo
 
     def self.no_repo_message
       git_access_class.error_message(:no_group_repo)
+    end
+
+    override :housekeeping_enabled?
+    def self.housekeeping_enabled?
+      false
     end
 
     def repository

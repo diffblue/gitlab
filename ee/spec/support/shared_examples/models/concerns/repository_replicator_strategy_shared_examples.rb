@@ -134,6 +134,12 @@ RSpec.shared_examples 'a repository replicator' do
     end
   end
 
+  describe '.housekeeping_enabled?' do
+    it 'is implemented' do
+      expect(replicator.class.housekeeping_enabled?).to be_in([true, false])
+    end
+  end
+
   describe '#model' do
     let(:invoke_model) { replicator.class.model }
 
