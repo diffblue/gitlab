@@ -7,6 +7,21 @@ FactoryBot.modify do
       association :work_item_type, :default, :requirement
     end
 
+    trait :test_case do
+      issue_type { :test_case }
+      association :work_item_type, :default, :test_case
+    end
+
+    trait :objective do
+      issue_type { :objective }
+      association :work_item_type, :default, :objective
+    end
+
+    trait :key_result do
+      issue_type { :key_result }
+      association :work_item_type, :default, :key_result
+    end
+
     trait :satisfied_status do
       issue_type { :requirement }
       association :work_item_type, :default, :requirement

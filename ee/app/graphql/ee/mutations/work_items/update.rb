@@ -18,6 +18,10 @@ module EE
           argument :status_widget, ::Types::WorkItems::Widgets::StatusInputType,
                    required: false,
                    description: 'Input for status widget.'
+
+          argument :health_status_widget, ::Types::WorkItems::Widgets::HealthStatusInputType,
+                   required: false,
+                   description: 'Input for health status widget.'
         end
       end
     end

@@ -7,9 +7,11 @@ module EE
       extend ::Gitlab::Utils::Override
 
       EE_WIDGETS_FOR_TYPE = {
-        issue: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight],
+        issue: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight, ::WorkItems::Widgets::HealthStatus],
         requirement: [::WorkItems::Widgets::Status],
-        task: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight]
+        task: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight, ::WorkItems::Widgets::HealthStatus],
+        objective: [::WorkItems::Widgets::HealthStatus],
+        key_result: [::WorkItems::Widgets::HealthStatus]
       }.freeze
 
       class_methods do

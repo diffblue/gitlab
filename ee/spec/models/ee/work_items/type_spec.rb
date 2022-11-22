@@ -16,6 +16,7 @@ RSpec.describe WorkItems::Type do
         ::WorkItems::Widgets::Weight,
         ::WorkItems::Widgets::StartAndDueDate,
         ::WorkItems::Widgets::Status,
+        ::WorkItems::Widgets::HealthStatus,
         ::WorkItems::Widgets::Milestone,
         ::WorkItems::Widgets::Notes
       )
