@@ -1,13 +1,14 @@
 import { GlPopover, GlIcon, GlTooltip } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import Vuex from 'vuex';
-import { shallowMount } from '@vue/test-utils';
+import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CodeQualityGutterIcon from 'ee/diffs/components/code_quality_gutter_icon.vue';
 import createDiffsStore from 'jest/diffs/create_diffs_store';
 import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
 import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/reports/codequality_report/constants';
 import {
-  multipleFindings,
+  fiveFindings,
+  threeFindings,
   singularFinding,
 } from '../../../../../spec/frontend/diffs/mock_data/diff_code_quality';
 
@@ -15,6 +16,8 @@ Vue.use(Vuex);
 
 let wrapper;
 const findIcon = () => wrapper.findComponent(GlIcon);
+const findIcons = () => wrapper.findAllComponents(GlIcon);
+const findFirstIcon = () => wrapper.findComponent({ ref: 'firstCodeQualityIcon' });
 
 let store;
 let codequalityDiff;
@@ -24,7 +27,7 @@ const createComponent = (props = {}, flag = false) => {
   store.state.diffs.codequalityDiff = codequalityDiff;
 
   const payload = {
-    propsData: { ...multipleFindings, ...props },
+    propsData: props,
     provide: {
       glFeatures: {
         refactorCodeQualityInlineFindings: flag,
@@ -33,7 +36,7 @@ const createComponent = (props = {}, flag = false) => {
     store,
   };
 
-  wrapper = shallowMount(CodeQualityGutterIcon, payload);
+  wrapper = shallowMountExtended(CodeQualityGutterIcon, payload);
 };
 
 describe('EE CodeQualityGutterIcon with flag off', () => {
@@ -44,7 +47,7 @@ describe('EE CodeQualityGutterIcon with flag off', () => {
   it.each(['info', 'minor', 'major', 'critical', 'blocker', 'unknown'])(
     'shows icon for %s degradation',
     (severity) => {
-      createComponent({ codequality: [{ severity }] });
+      createComponent({ filePath: 'index.js', codequality: [{ severity }] });
 
       expect(findIcon().exists()).toBe(true);
       expect(findIcon().attributes()).toMatchObject({
@@ -57,7 +60,7 @@ describe('EE CodeQualityGutterIcon with flag off', () => {
 
   describe('code quality gutter icon', () => {
     beforeEach(() => {
-      createComponent();
+      createComponent(threeFindings);
     });
 
     it('shows a popover on hover', () => {
@@ -75,7 +78,7 @@ describe('EE CodeQualityGutterIcon with flag off', () => {
 
       expect(issueProps).toHaveLength(3);
       expect(issueProps).toEqual(
-        multipleFindings.codequality.map((codequality) => ({
+        threeFindings.codequality.map((codequality) => ({
           issue: {
             severity: codequality.severity,
             name: codequality.description,
@@ -99,7 +102,7 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
     ${'blocker'}
     ${'unknown'}
   `('shows icon for $severity degradation', ({ severity }) => {
-    createComponent({ codequality: [{ severity }] });
+    createComponent({ filePath: 'index.js', codequality: [{ severity }] });
 
     expect(findIcon().exists()).toBe(true);
     expect(findIcon().attributes()).toMatchObject({
@@ -110,9 +113,9 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
   });
 
   describe('code quality gutter icon', () => {
-    describe('with multiple findings', () => {
+    describe('with maximum 3 findings', () => {
       beforeEach(() => {
-        createComponent(multipleFindings, true);
+        createComponent(threeFindings, true);
       });
 
       it('contains a tooltip', () => {
@@ -125,16 +128,68 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
 
       it('emits showCodeQualityFindings event on click', () => {
         wrapper.trigger('click');
-        expect(wrapper.emitted('showCodeQualityFindings').length).toBe(1);
+        expect(wrapper.emitted('showCodeQualityFindings')).toHaveLength(1);
+      });
+
+      it('displays correct amount of icons with correct severity', () => {
+        const icons = findIcons();
+        expect(icons).toHaveLength(3);
+        expect(icons.at(0).props().name).toBe('severity-low');
+        expect(icons.at(1).props().name).toBe('severity-medium');
+        expect(icons.at(2).props().name).toBe('severity-info');
+      });
+
+      it('does not display more count', () => {
+        expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(false);
+      });
+
+      it('triggers "first-icon-hovered" class on 2 icons when first icon is hovered and removes it when not', async () => {
+        findFirstIcon().vm.$emit('mouseenter');
+        await nextTick();
+        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(2);
+        findFirstIcon().vm.$emit('mouseleave');
+        await nextTick();
+        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(0);
       });
     });
+
+    describe('with more than 3 findings', () => {
+      beforeEach(() => {
+        createComponent(fiveFindings, true);
+      });
+
+      it('displays correct amount of icons with correct severity + more count', () => {
+        const icons = findIcons();
+        expect(icons).toHaveLength(3);
+        expect(icons.at(0).props().name).toBe('severity-low');
+        expect(icons.at(1).props().name).toBe('severity-medium');
+        expect(icons.at(2).props().name).toBe('severity-info');
+        expect(wrapper.findByTestId('codeQualityMoreCount').exists()).toBe(true);
+      });
+
+      it('triggers "first-icon-hovered" class on 2 icons and more count when first icon is hovered and removes it when not', async () => {
+        findFirstIcon().vm.$emit('mouseenter');
+        await nextTick();
+        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(3);
+        findFirstIcon().vm.$emit('mouseleave');
+        await nextTick();
+        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(0);
+      });
+    });
+
     describe('with singular finding', () => {
       beforeEach(() => {
         createComponent(singularFinding, true);
       });
 
-      it('displays correct popover text with multiple codequality findings', () => {
+      it('displays correct popover text with singular codequality finding', () => {
         expect(wrapper.findComponent(GlTooltip).text()).toContain('1 Code quality finding');
+      });
+
+      it('does not trigger "first-icon-hovered" class when firstCodeQualityIcon is hovered', async () => {
+        findFirstIcon().vm.$emit('mouseenter');
+        await nextTick();
+        expect(wrapper.findAll('.first-icon-hovered')).toHaveLength(0);
       });
     });
 
@@ -144,7 +199,7 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
           createComponent(singularFinding, true);
         });
 
-        it('shows severity icon with correct tooltip', async () => {
+        it('shows severity icon with correct tooltip', () => {
           expect(wrapper.findComponent(GlTooltip).text()).toContain('1 Code quality finding');
           expect(wrapper.findComponent(GlIcon).props().name).toBe('severity-low');
         });
@@ -154,7 +209,7 @@ describe('EE CodeQualityGutterIcon with flag on', () => {
           createComponent({ ...singularFinding, codeQualityExpanded: true }, true);
         });
 
-        it('shows collapse icon', async () => {
+        it('shows collapse icon', () => {
           expect(wrapper.findComponent(GlIcon).props().name).toBe('collapse');
         });
       });

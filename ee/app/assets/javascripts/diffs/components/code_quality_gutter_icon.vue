@@ -3,7 +3,9 @@ import { GlPopover, GlIcon, GlTooltip } from '@gitlab/ui';
 import { s__, n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
-import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/reports/codequality_report/constants';
+import { SEVERITIES } from '~/reports/codequality_report/constants';
+
+const codequalityCountThreshold = 3;
 
 export default {
   components: {
@@ -32,18 +34,14 @@ export default {
       default: () => [],
     },
   },
+  data() {
+    return {
+      isHoveringFirstIcon: false,
+    };
+  },
   computed: {
     tooltipTextCollapsed() {
       return n__('1 Code quality finding', '%d Code quality findings', this.codequality.length);
-    },
-    severity() {
-      return this.codequality[0].severity;
-    },
-    severityClass() {
-      return SEVERITY_CLASSES[this.severity] || SEVERITY_CLASSES.unknown;
-    },
-    severityIcon() {
-      return SEVERITY_ICONS[this.severity] || SEVERITY_ICONS.unknown;
     },
     line() {
       return this.codequality[0].line;
@@ -56,6 +54,22 @@ export default {
         };
       });
     },
+    moreCount() {
+      return this.codequality.length > codequalityCountThreshold
+        ? this.codequality.length - codequalityCountThreshold
+        : 0;
+    },
+    severity() {
+      return this.codequality.reduce((acc, elem) => {
+        return { ...acc, [elem.severity]: SEVERITIES[elem.severity] || SEVERITIES.unknown };
+      }, {});
+    },
+    firstCodequalityItem() {
+      return this.codequality[0];
+    },
+    codeQualitySubItems() {
+      return this.codequality.slice(1, 3);
+    },
   },
 };
 </script>
@@ -63,21 +77,50 @@ export default {
 <template>
   <div
     v-if="glFeatures.refactorCodeQualityInlineFindings"
+    class="gl-z-index-1 gl-relative"
     @click="$emit('showCodeQualityFindings')"
   >
-    <span ref="codeQualityIcon">
+    <div
+      v-if="!codeQualityExpanded"
+      class="codequality-severity-icon-container gl-display-inline-flex"
+    >
+      <span ref="codeQualityIcon" class="gl-z-index-200">
+        <gl-icon
+          :id="`codequality-${firstCodequalityItem.filePath}:${firstCodequalityItem.line}`"
+          ref="firstCodeQualityIcon"
+          :key="firstCodequalityItem.description"
+          :size="16"
+          :name="severity[firstCodequalityItem.severity].name"
+          :class="severity[firstCodequalityItem.severity].class"
+          class="gl-hover-cursor-pointer codequality-severity-icon gl-vertical-align-baseline!"
+          @mouseenter="isHoveringFirstIcon = true"
+          @mouseleave="isHoveringFirstIcon = false"
+        />
+      </span>
       <gl-icon
-        v-if="!$props.codeQualityExpanded"
-        :id="`codequality-${filePath}:${line}`"
-        :size="12"
-        :name="severityIcon"
-        :class="severityClass"
-        class="gl-hover-cursor-pointer codequality-severity-icon"
+        v-for="item in codeQualitySubItems"
+        :key="item.description"
+        :size="16"
+        :name="severity[item.severity].name"
+        :class="[isHoveringFirstIcon ? 'first-icon-hovered' : '', severity[item.severity].class]"
+        class="gl-hover-cursor-pointer codequality-severity-icon gl-absolute gl-left-0 gl-opacity-0"
       />
-      <button v-else class="diff-codequality-collapse gl-mx-n2">
-        <gl-icon :size="12" name="collapse" />
-      </button>
-    </span>
+      <div
+        v-if="moreCount"
+        :class="[
+          isHoveringFirstIcon ? 'first-icon-hovered' : '',
+          'more-count gl-px-2 gl-w-auto gl-absolute gl-left-0 gl-opacity-0',
+        ]"
+        data-testid="codeQualityMoreCount"
+      >
+        <p class="gl-mb-0 gl-display-block gl-w-3 more-count-copy">
+          {{ moreCount }}
+        </p>
+      </div>
+    </div>
+    <button v-else class="diff-codequality-collapse gl-mx-n2">
+      <gl-icon :size="12" name="collapse" />
+    </button>
     <!-- Only show tooltip when indicator is not expanded
       a) to stay consistent with other collapsed icon on the same page
       b) because the tooltip would be misaligned hence the negative margin
@@ -94,8 +137,8 @@ export default {
     <gl-icon
       :id="`codequality-${filePath}:${line}`"
       :size="12"
-      :name="severityIcon"
-      :class="severityClass"
+      :name="severity[firstCodequalityItem.severity].name"
+      :class="severity[firstCodequalityItem.severity].class"
       class="gl-hover-cursor-pointer codequality-severity-icon"
     />
     <gl-popover

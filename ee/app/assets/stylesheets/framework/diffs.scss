@@ -29,7 +29,46 @@
     }
   }
 
+  .more-count {
+    @include avatar-counter(50%);
+    width: $default-icon-size;
+    height: $default-icon-size;
+  }
+
+  .codequality-severity-icon-container > .codequality-severity-icon,
+  .codequality-severity-icon-container > .more-count {
+    &:first-child {
+      z-index: 100;
+    }
+
+    @for $i from 2 through 4 {
+      &:nth-child(#{$i}) {
+        // moving children behind first element
+        z-index: 100 + $i * -1;
+        transition: opacity 0.1s, transform 0.2s;
+      }
+    }
+  }
+
+  .codequality-severity-icon-container {
+    .first-icon-hovered {
+      @for $i from 1 through 4 {
+        $x-pos: 10px;
+
+        &:nth-child(#{$i}) {
+          opacity: 1;
+          transform: translateX((($i * $x-pos) - $x-pos));
+        }
+      }
+    }
+  }
+
+  .more-count,
   .codequality-severity-icon {
     filter: drop-shadow(0 1px 0.5px #fff) drop-shadow(1px 0 0.5px #fff) drop-shadow(0 -1px 0.5px #fff) drop-shadow(-1px 0 0.5px #fff);
+  }
+
+  .more-count-copy {
+    line-height: 0.9rem;
   }
 }
