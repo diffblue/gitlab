@@ -12,6 +12,8 @@ import {
   OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_STATUS,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_STATUS,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
@@ -284,7 +286,7 @@ export default {
     getFilteredSearchTokens() {
       return [
         {
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           icon: 'user',
           title: TOKEN_TITLE_AUTHOR,
           unique: false,
@@ -295,7 +297,7 @@ export default {
           fetchAuthors: Api.projectUsers.bind(Api),
         },
         {
-          type: 'status',
+          type: TOKEN_TYPE_STATUS,
           icon: 'status',
           title: TOKEN_TITLE_STATUS,
           unique: true,
@@ -306,13 +308,13 @@ export default {
     },
     getFilteredSearchValue() {
       const value = this.authorUsernames.map((author) => ({
-        type: 'author_username',
+        type: TOKEN_TYPE_AUTHOR,
         value: { data: author },
       }));
 
       if (this.status) {
         value.push({
-          type: 'status',
+          type: TOKEN_TYPE_STATUS,
           value: { data: this.status },
         });
       }
@@ -624,12 +626,12 @@ export default {
 
       filters.forEach((filter) => {
         switch (filter.type) {
-          case 'author_username':
+          case TOKEN_TYPE_AUTHOR:
             if (filter.value.data !== OPTION_ANY.value) {
               authors.push(filter.value.data);
             }
             break;
-          case 'status':
+          case TOKEN_TYPE_STATUS:
             status = filter.value.data;
             break;
           case 'filtered-search-term':

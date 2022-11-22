@@ -14,6 +14,12 @@ import {
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
   TOKEN_TITLE_MY_REACTION,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_CONFIDENTIAL,
+  TOKEN_TYPE_EPIC,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+  TOKEN_TYPE_MY_REACTION,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
@@ -81,7 +87,7 @@ export default {
 
       const tokens = [
         {
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           icon: 'user',
           title: TOKEN_TITLE_AUTHOR,
           unique: true,
@@ -94,7 +100,7 @@ export default {
           preloadedAuthors,
         },
         {
-          type: 'label_name',
+          type: TOKEN_TYPE_LABEL,
           icon: 'labels',
           title: TOKEN_TITLE_LABEL,
           unique: false,
@@ -119,7 +125,7 @@ export default {
           },
         },
         {
-          type: 'milestone_title',
+          type: TOKEN_TYPE_MILESTONE,
           icon: 'clock',
           title: TOKEN_TITLE_MILESTONE,
           unique: true,
@@ -142,7 +148,7 @@ export default {
           },
         },
         {
-          type: 'confidential',
+          type: TOKEN_TYPE_CONFIDENTIAL,
           icon: 'eye-slash',
           title: TOKEN_TITLE_CONFIDENTIAL,
           unique: true,
@@ -157,7 +163,7 @@ export default {
 
       if (supportsEpic) {
         tokens.push({
-          type: 'epic_iid',
+          type: TOKEN_TYPE_EPIC,
           icon: 'epic',
           title: TOKEN_TITLE_EPIC,
           unique: true,
@@ -174,7 +180,7 @@ export default {
       if (gon.current_user_id) {
         // Appending to tokens only when logged-in
         tokens.push({
-          type: 'my_reaction_emoji',
+          type: TOKEN_TYPE_MY_REACTION,
           icon: 'thumb-up',
           title: TOKEN_TITLE_MY_REACTION,
           unique: true,
@@ -214,14 +220,14 @@ export default {
 
       if (authorUsername) {
         filteredSearchValue.push({
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           value: { data: authorUsername, operator: OPERATOR_IS },
         });
       }
 
       if (notAuthorUsername) {
         filteredSearchValue.push({
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           value: { data: notAuthorUsername, operator: OPERATOR_NOT },
         });
       }
@@ -229,7 +235,7 @@ export default {
       if (labelName?.length && Array.isArray(labelName)) {
         filteredSearchValue.push(
           ...labelName.map((label) => ({
-            type: 'label_name',
+            type: TOKEN_TYPE_LABEL,
             value: { data: label, operator: OPERATOR_IS },
           })),
         );
@@ -237,7 +243,7 @@ export default {
       if (notLabelName?.length) {
         filteredSearchValue.push(
           ...notLabelName.map((label) => ({
-            type: 'label_name',
+            type: TOKEN_TYPE_LABEL,
             value: { data: label, operator: OPERATOR_NOT },
           })),
         );
@@ -245,34 +251,34 @@ export default {
 
       if (milestoneTitle) {
         filteredSearchValue.push({
-          type: 'milestone_title',
+          type: TOKEN_TYPE_MILESTONE,
           value: { data: milestoneTitle },
         });
       }
 
       if (confidential !== undefined) {
         filteredSearchValue.push({
-          type: 'confidential',
+          type: TOKEN_TYPE_CONFIDENTIAL,
           value: { data: confidential },
         });
       }
 
       if (myReactionEmoji) {
         filteredSearchValue.push({
-          type: 'my_reaction_emoji',
+          type: TOKEN_TYPE_MY_REACTION,
           value: { data: myReactionEmoji, operator: OPERATOR_IS },
         });
       }
       if (notMyReactionEmoji) {
         filteredSearchValue.push({
-          type: 'my_reaction_emoji',
+          type: TOKEN_TYPE_MY_REACTION,
           value: { data: notMyReactionEmoji, operator: OPERATOR_NOT },
         });
       }
 
       if (epicIid) {
         filteredSearchValue.push({
-          type: 'epic_iid',
+          type: TOKEN_TYPE_EPIC,
           value: { data: epicIid },
         });
       }
@@ -291,33 +297,33 @@ export default {
 
       filters.forEach((filter) => {
         switch (filter.type) {
-          case 'author_username': {
+          case TOKEN_TYPE_AUTHOR: {
             const key =
               filter.value.operator === OPERATOR_NOT ? 'not[authorUsername]' : 'authorUsername';
             filterParams[key] = filter.value.data;
             break;
           }
-          case 'label_name':
+          case TOKEN_TYPE_LABEL:
             if (filter.value.operator === OPERATOR_NOT) {
               notLabels.push(filter.value.data);
             } else {
               labels.push(filter.value.data);
             }
             break;
-          case 'milestone_title':
+          case TOKEN_TYPE_MILESTONE:
             filterParams.milestoneTitle = filter.value.data;
             break;
-          case 'confidential':
+          case TOKEN_TYPE_CONFIDENTIAL:
             filterParams.confidential = filter.value.data;
             break;
-          case 'my_reaction_emoji': {
+          case TOKEN_TYPE_MY_REACTION: {
             const key =
               filter.value.operator === OPERATOR_NOT ? 'not[myReactionEmoji]' : 'myReactionEmoji';
 
             filterParams[key] = filter.value.data;
             break;
           }
-          case 'epic_iid':
+          case TOKEN_TYPE_EPIC:
             filterParams.epicIid = filter.value.data;
             break;
           case 'filtered-search-term':

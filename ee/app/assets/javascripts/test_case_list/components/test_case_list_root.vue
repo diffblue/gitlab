@@ -12,6 +12,8 @@ import {
   OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
@@ -196,7 +198,7 @@ export default {
     getFilteredSearchTokens() {
       return [
         {
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           icon: 'user',
           title: TOKEN_TITLE_AUTHOR,
           unique: true,
@@ -207,7 +209,7 @@ export default {
           fetchAuthors: Api.projectUsers.bind(Api),
         },
         {
-          type: 'label_name',
+          type: TOKEN_TYPE_LABEL,
           icon: 'labels',
           title: TOKEN_TITLE_LABEL,
           unique: false,
@@ -236,7 +238,7 @@ export default {
 
       if (authorUsername) {
         filteredSearchValue.push({
-          type: 'author_username',
+          type: TOKEN_TYPE_AUTHOR,
           value: { data: authorUsername },
         });
       }
@@ -244,7 +246,7 @@ export default {
       if (labelName?.length) {
         filteredSearchValue.push(
           ...labelName.map((label) => ({
-            type: 'label_name',
+            type: TOKEN_TYPE_LABEL,
             value: { data: label },
           })),
         );
@@ -283,10 +285,10 @@ export default {
 
       filters.forEach((filter) => {
         switch (filter.type) {
-          case 'author_username':
+          case TOKEN_TYPE_AUTHOR:
             filterParams.authorUsername = filter.value.data;
             break;
-          case 'label_name':
+          case TOKEN_TYPE_LABEL:
             labels.push(filter.value.data);
             break;
           case 'filtered-search-term':

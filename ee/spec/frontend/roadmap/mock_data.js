@@ -6,12 +6,24 @@ import { dateFromString } from 'helpers/datetime_helpers';
 import {
   OPERATORS_IS,
   OPERATORS_IS_NOT,
+  TOKEN_TITLE_AUTHOR,
+  TOKEN_TITLE_CONFIDENTIAL,
+  TOKEN_TITLE_LABEL,
+  TOKEN_TITLE_MILESTONE,
+  TOKEN_TITLE_MY_REACTION,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_CONFIDENTIAL,
+  TOKEN_TYPE_EPIC,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+  TOKEN_TYPE_MY_REACTION,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 import MilestoneToken from '~/vue_shared/components/filtered_search_bar/tokens/milestone_token.vue';
+import { TOKEN_TITLE_EPIC } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import EpicToken from 'ee/vue_shared/components/filtered_search_bar/tokens/epic_token.vue';
 
 export const mockScrollBarSize = 15;
@@ -824,9 +836,9 @@ export const mockEpicsWithParents = [
 ];
 
 export const mockAuthorTokenConfig = {
-  type: 'author_username',
+  type: TOKEN_TYPE_AUTHOR,
   icon: 'user',
-  title: 'Author',
+  title: TOKEN_TITLE_AUTHOR,
   unique: true,
   symbol: '@',
   token: AuthorToken,
@@ -838,9 +850,9 @@ export const mockAuthorTokenConfig = {
 };
 
 export const mockLabelTokenConfig = {
-  type: 'label_name',
+  type: TOKEN_TYPE_LABEL,
   icon: 'labels',
-  title: 'Label',
+  title: TOKEN_TITLE_LABEL,
   unique: false,
   symbol: '~',
   token: LabelToken,
@@ -850,9 +862,9 @@ export const mockLabelTokenConfig = {
 };
 
 export const mockMilestoneTokenConfig = {
-  type: 'milestone_title',
+  type: TOKEN_TYPE_MILESTONE,
   icon: 'clock',
-  title: 'Milestone',
+  title: TOKEN_TITLE_MILESTONE,
   unique: true,
   symbol: '%',
   token: MilestoneToken,
@@ -862,9 +874,9 @@ export const mockMilestoneTokenConfig = {
 };
 
 export const mockConfidentialTokenConfig = {
-  type: 'confidential',
+  type: TOKEN_TYPE_CONFIDENTIAL,
   icon: 'eye-slash',
-  title: 'Confidential',
+  title: TOKEN_TITLE_CONFIDENTIAL,
   unique: true,
   token: GlFilteredSearchToken,
   operators: OPERATORS_IS,
@@ -875,9 +887,9 @@ export const mockConfidentialTokenConfig = {
 };
 
 export const mockEpicTokenConfig = {
-  type: 'epic_iid',
+  type: TOKEN_TYPE_EPIC,
   icon: 'epic',
-  title: 'Epic',
+  title: TOKEN_TITLE_EPIC,
   unique: true,
   symbol: '&',
   token: EpicToken,
@@ -889,9 +901,9 @@ export const mockEpicTokenConfig = {
 };
 
 export const mockReactionEmojiTokenConfig = {
-  type: 'my_reaction_emoji',
+  type: TOKEN_TYPE_MY_REACTION,
   icon: 'thumb-up',
-  title: 'My-Reaction',
+  title: TOKEN_TITLE_MY_REACTION,
   unique: true,
   token: EmojiToken,
   operators: OPERATORS_IS_NOT,
