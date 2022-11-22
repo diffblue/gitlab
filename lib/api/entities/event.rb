@@ -21,7 +21,7 @@ module API
         using: Entities::PushEventPayload,
         if: -> (event, _) { event.push_action? }
 
-        expose :author_username, documentation: { type: 'string', example: 'root' } do |event, options|
+      expose :author_username, documentation: { type: 'string', example: 'root' } do |event, options|
         event.author&.username
       end
     end
