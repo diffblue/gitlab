@@ -2,15 +2,15 @@
 
 module ProductAnalytics
   class Dashboard
-    attr_reader :title, :description, :schema_version, :widgets, :project, :slug
+    attr_reader :title, :description, :schema_version, :widgets, :project, :slug, :path
 
     DASHBOARD_ROOT_LOCATION = '.gitlab/product_analytics/dashboards'
 
     def self.for_project(project)
       root_trees = project.repository.tree(:head, DASHBOARD_ROOT_LOCATION)
-      return [] unless root_trees
+      return [] unless root_trees&.entries&.any?
 
-      root_trees.trees.map do |tree|
+      root_trees.trees.delete_if { |tree| tree.name == 'visualizations' }.map do |tree|
         config = YAML.safe_load(
           project.repository.blob_data_at(project.repository.root_ref_sha,
                                           "#{tree.path}/#{tree.name}.yaml")
@@ -22,7 +22,7 @@ module ProductAnalytics
           slug: tree.name,
           description: config['description'],
           schema_version: config['version'],
-          widgets: ProductAnalytics::Widget.from_data(config['widgets'])
+          widgets: ProductAnalytics::Widget.from_data(config['widgets'], project)
         )
       end
     end

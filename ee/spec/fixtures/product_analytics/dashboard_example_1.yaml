@@ -9,7 +9,7 @@ widgets:
       xPos: 1
       width: 12
       height: 2
-    figure: cube_line_chart
+    visualization: cube_line_chart
     queryOverrides:
       timeDimensions:
         dateRange:
@@ -21,7 +21,7 @@ widgets:
       xPos: 1
       width: 12
       height: 2
-    figure: cube_line_chart
+    visualization: cube_line_chart
     queryOverrides:
       timeDimensions:
         dateRange:

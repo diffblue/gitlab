@@ -1,0 +1,30 @@
+version: '1'
+type: LineChart
+options:
+  xAxis:
+    name: Time
+    type: time
+  yAxis:
+    name: Counts
+data:
+  type: Cube
+  query:
+    measures:
+      - Stories.count
+    dimensions:
+      - Stories.category
+    filters:
+      - member: Stories.isDraft
+        operator: equals
+        values:
+          - 'No'
+    timeDimensions:
+      - dimension: Stories.time
+        # dateRange set by the dashboard filter
+        granularity: month
+    limit: 100
+    offset: 50
+    order:
+      Stories.time: asc
+      Stories.count: desc
+    timezone: America/Los_Angeles

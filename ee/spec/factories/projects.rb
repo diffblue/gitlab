@@ -93,6 +93,14 @@ FactoryBot.modify do
           message: 'test',
           branch_name: 'master'
         )
+
+        project.repository.create_file(
+          project.creator,
+          '.gitlab/product_analytics/dashboards/visualizations/cube_line_chart.yaml',
+          File.open(Rails.root.join('ee/spec/fixtures/product_analytics/cube_line_chart.yaml')).read,
+          message: 'test',
+          branch_name: 'master'
+        )
       end
     end
   end

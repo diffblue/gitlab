@@ -16,6 +16,12 @@ RSpec.describe ProductAnalytics::Dashboard do
       expect(subject.first.schema_version).to eq('1')
     end
 
+    context 'when the project does not have a dashboards directory' do
+      let_it_be(:project) { create(:project, :repository) }
+
+      it { is_expected.to be_empty }
+    end
+
     context 'when the dashboard file does not exist in the directory' do
       before do
         project.repository.create_file(
