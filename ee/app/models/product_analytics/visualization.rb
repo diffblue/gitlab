@@ -21,8 +21,6 @@ module ProductAnalytics
       @data = @config['data']
     end
 
-    private
-
     def self.visualization_config_path(data)
       "#{ProductAnalytics::Dashboard::DASHBOARD_ROOT_LOCATION}/visualizations/#{data}.yaml"
     end

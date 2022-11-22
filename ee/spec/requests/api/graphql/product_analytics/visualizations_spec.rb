@@ -40,9 +40,7 @@ RSpec.describe 'Query.project(id).dashboards.widgets(id).visualization' do
   end
 
   context 'when current user is a developer' do
-    before_all do
-      project.add_developer(user)
-    end
+    let_it_be(:user) { create(:user).tap { |u| project.add_developer(u) } }
 
     it 'returns visualization' do
       get_graphql(query, current_user: user)
