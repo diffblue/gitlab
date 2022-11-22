@@ -688,8 +688,14 @@
     - <<: *if-dot-com-gitlab-org-and-security-merge-request
       changes: *code-qa-patterns
     - <<: *if-auto-deploy-branches
+      variables:
+        ARCH: amd64,arm64
     - <<: *if-default-branch-or-tag
+      variables:
+        ARCH: amd64,arm64
     - <<: *if-dot-com-gitlab-org-schedule
+      variables:
+        ARCH: amd64,arm64
     - <<: *if-force-ci
     - <<: *if-ruby3-branch
 
