@@ -5,9 +5,9 @@ require 'spec_helper'
 RSpec.describe Commits::CreateService do
   include NamespaceStorageHelpers
 
-  let(:user) { create(:user) }
-  let(:group) { create(:group) }
-  let(:project) { create(:project, group: group) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:group) { create(:group) }
+  let_it_be(:project, refind: true) { create(:project, group: group) }
 
   before do
     project.add_maintainer(user)
@@ -75,6 +75,28 @@ RSpec.describe Commits::CreateService do
             EE::Gitlab::NamespaceStorageSizeErrorMessage.storage_limit_reached_error_msg
           )
         end
+      end
+    end
+
+    context 'when the namespace is over the free user cap limit', :saas do
+      let_it_be(:group) do
+        create(:group_with_plan, :private, :with_root_storage_statistics, plan: :free_plan).tap do |record|
+          project.update!(group: record)
+        end
+      end
+
+      before do
+        stub_ee_application_setting(dashboard_limit_enabled: true)
+      end
+
+      it 'raises an error' do
+        expect(Gitlab::ErrorTracking).to receive(:log_exception)
+                                           .with(instance_of(Commits::CreateService::ValidationError)).and_call_original
+
+        result = service.execute
+
+        expect(result[:status]).to be(:error)
+        expect(result[:message]).to match(/Your namespace is over the user limit/)
       end
     end
   end

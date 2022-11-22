@@ -7,6 +7,7 @@ module EE
 
       override :error_check!
       def error_check!
+        check_free_user_cap_over_limit! # order matters here, this needs to come before size check for storage limits
         check_size_limit
         check_blocking_mrs
         check_jira_issue_enforcement
@@ -69,6 +70,11 @@ module EE
         elsif push_rule.commit_message_blocked?(params[:squash_commit_message])
           "Squash commit message contains the forbidden pattern '#{push_rule.commit_message_negative_regex}'"
         end
+      end
+
+      def check_free_user_cap_over_limit!
+        ::Namespaces::FreeUserCap::Standard.new(merge_request.project.root_ancestor)
+                                           .git_check_over_limit!(::MergeRequests::MergeService::MergeError)
       end
 
       def check_size_limit

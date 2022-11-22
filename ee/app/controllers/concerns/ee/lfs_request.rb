@@ -6,11 +6,17 @@ module EE
     extend ::Gitlab::Utils::Override
     include ::Gitlab::Utils::StrongMemoize
 
+    LfsForbiddenError = Class.new(StandardError)
+
     private
 
     override :lfs_forbidden!
     def lfs_forbidden!
+      check_free_user_cap_over_limit!
+
       limit_exceeded? ? render_size_error : super
+    rescue LfsForbiddenError => e
+      render_over_limit_error(e.message)
     end
 
     override :limit_exceeded?
@@ -25,6 +31,22 @@ module EE
         json: {
           message: size_checker.error_message.push_error(lfs_push_size),
           documentation_url: help_url
+        },
+        content_type: ::LfsRequest::CONTENT_TYPE,
+        status: :not_acceptable
+      )
+    end
+
+    def check_free_user_cap_over_limit!
+      ::Namespaces::FreeUserCap::Standard.new(project.root_ancestor)
+                                         .git_check_over_limit!(::LfsRequest::LfsForbiddenError) { limit_exceeded? }
+    end
+
+    def render_over_limit_error(message)
+      render(
+        json: {
+          message: message,
+          documentation_url: help_url('user/free_user_limit')
         },
         content_type: ::LfsRequest::CONTENT_TYPE,
         status: :not_acceptable

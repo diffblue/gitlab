@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe MergeRequests::MergeService do
   include NamespaceStorageHelpers
 
-  let(:user) { create(:user) }
-  let(:merge_request) { create(:merge_request, :simple) }
+  let_it_be(:user) { create(:user) }
+  let_it_be(:merge_request, reload: true) { create(:merge_request, :simple) }
   let(:project) { merge_request.project }
   let(:service) { described_class.new(project: project, current_user: user, params: params) }
   let(:params) { { sha: merge_request.diff_head_sha, commit_message: 'Awesome message' } }
@@ -92,6 +92,21 @@ RSpec.describe MergeRequests::MergeService do
         expect(merge_request.merge_error).to include(
           'Your namespace storage is full. This merge request cannot be merged.'
         )
+      end
+    end
+
+    context 'when the namespace is over the free user cap limit', :saas do
+      let(:namespace) { create(:group_with_plan, :private, plan: :free_plan) }
+
+      before do
+        project.update!(namespace: namespace)
+        stub_ee_application_setting(dashboard_limit_enabled: true)
+      end
+
+      it 'persists the correct error message' do
+        service.execute(merge_request)
+
+        expect(merge_request.merge_error).to match(/Your namespace is over the user limit/)
       end
     end
 
