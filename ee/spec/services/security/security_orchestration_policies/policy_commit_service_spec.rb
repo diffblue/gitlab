@@ -22,7 +22,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::PolicyCommitService do
     end
 
     around do |example|
-      Timecop.scale(60) { example.run }
+      freeze_time { example.run }
     end
 
     shared_examples 'commits policy to associated project' do

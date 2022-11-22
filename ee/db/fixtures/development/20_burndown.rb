@@ -30,7 +30,7 @@ class Gitlab::Seeder::Burndown
       end
     end
 
-    Timecop.return
+    travel_back
 
     print '.'
   end
@@ -77,7 +77,7 @@ class Gitlab::Seeder::Burndown
       end
     end
 
-    Timecop.return
+    travel_back
   end
 
   def reopen_issues
