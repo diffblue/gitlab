@@ -2016,6 +2016,8 @@
   rules:
     - <<: *if-default-branch-or-tag
       allow_failure: true
+    - <<: *if-schedule-maintenance
+      allow_failure: true
     - <<: *if-auto-deploy-branches
       allow_failure: true
     - when: manual
