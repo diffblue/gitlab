@@ -12,13 +12,24 @@ export default {
       type: Number,
       required: true,
     },
+
+    // By default `change` will be rendered: +green/-red
+    // `invertColor = true` will render the opposite: +red/-green
+    invertColor: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   computed: {
+    trendingUp() {
+      return this.change > 0;
+    },
     textColor() {
-      return this.change > 0 ? 'gl-text-green-500' : 'gl-text-red-500';
+      return this.trendingUp !== this.invertColor ? 'gl-text-green-500' : 'gl-text-red-500';
     },
     iconName() {
-      return this.change > 0 ? 'trend-up' : 'trend-down';
+      return this.trendingUp ? 'trend-up' : 'trend-down';
     },
     formattedChange() {
       return percent(Math.abs(this.change), 1);
