@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::IterationCadencesController do
+RSpec.describe Groups::IterationCadencesController, feature_category: :team_planning do
   let_it_be(:group) { create(:group, :private) }
 
   it_behaves_like 'accessing iteration cadences' do

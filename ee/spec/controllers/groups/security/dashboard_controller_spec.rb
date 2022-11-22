@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Security::DashboardController do
+RSpec.describe Groups::Security::DashboardController, feature_category: :vulnerability_management do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
 

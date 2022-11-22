@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::WikisController do
+RSpec.describe Groups::WikisController, feature_category: :wiki do
   include WikiHelpers
 
   before do

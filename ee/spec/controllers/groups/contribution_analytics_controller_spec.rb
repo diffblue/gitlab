@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::ContributionAnalyticsController do
+RSpec.describe Groups::ContributionAnalyticsController, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:user2) { create(:user) }
   let_it_be(:user3) { create(:user) }

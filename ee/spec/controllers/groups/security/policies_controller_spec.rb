@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Security::PoliciesController, type: :request do
+RSpec.describe Groups::Security::PoliciesController, type: :request, feature_category: :security_policy_management do
   let_it_be(:owner) { create(:user) }
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }

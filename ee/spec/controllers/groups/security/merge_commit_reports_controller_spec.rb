@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Security::MergeCommitReportsController do
+RSpec.describe Groups::Security::MergeCommitReportsController, feature_category: :compliance_management do
   let_it_be(:user) { create(:user, name: 'John Cena') }
   let_it_be(:group) { create(:group, name: 'Kombucha lovers') }
 

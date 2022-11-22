@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::SeatUsageController do
+RSpec.describe Groups::SeatUsageController, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :private) }
 

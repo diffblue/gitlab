@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Analytics::CycleAnalytics::StagesController do
+RSpec.describe Groups::Analytics::CycleAnalytics::StagesController, feature_category: :planning_analytics do
   let_it_be(:user) { create(:user) }
   let_it_be(:group, refind: true) { create(:group) }
   let_it_be(:stages) { [] }

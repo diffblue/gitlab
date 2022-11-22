@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Analytics::CycleAnalyticsController do
+RSpec.describe Groups::Analytics::CycleAnalyticsController, feature_category: :planning_analytics do
   let(:group) { create(:group) }
   let(:user) { create(:user) }
 
