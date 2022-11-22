@@ -24,6 +24,22 @@ RSpec.describe Elastic::ProjectTransferWorker, :elastic do
           stub_ee_application_setting(elasticsearch_limit_indexing: true)
         end
 
+        context 'when transferring from a non-existent namespace to an indexed namespace' do
+          before do
+            create(:elasticsearch_indexed_namespace, namespace: indexed_namespace)
+          end
+
+          it 'invalidates cache when an namespace is not found' do
+            expect(ElasticDeleteProjectWorker).not_to receive(:perform_async)
+            expect(Elastic::ProcessInitialBookkeepingService).to receive(:backfill_projects!).with(project)
+            expect(::Gitlab::CurrentSettings)
+              .to receive(:invalidate_elasticsearch_indexes_cache_for_project!)
+              .with(project.id).and_call_original
+
+            worker.perform(project.id, "non-existent-namespace-id", indexed_namespace.id)
+          end
+        end
+
         context 'when transferring from a non-indexed namespace to an indexed namespace' do
           before do
             create(:elasticsearch_indexed_namespace, namespace: indexed_namespace)

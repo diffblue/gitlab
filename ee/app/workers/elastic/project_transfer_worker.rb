@@ -11,14 +11,10 @@ module Elastic
     urgency :throttled
 
     def perform(project_id, old_namespace_id, new_namespace_id)
-      old_namespace = Namespace.find(old_namespace_id)
-      new_namespace = Namespace.find(new_namespace_id)
       project = Project.find(project_id)
+      should_invalidate_elasticsearch_indexes_cache = should_invalidate_elasticsearch_indexes_cache?(old_namespace_id,
+new_namespace_id)
 
-      # When a project is moved to a new namespace, invalidate the Elasticsearch cache if
-      # Elasticsearch limit indexing is enabled and the indexing settings are different between the two namespaces.
-      should_invalidate_elasticsearch_indexes_cache = ::Gitlab::CurrentSettings.elasticsearch_limit_indexing? &&
-        old_namespace.use_elasticsearch? != new_namespace.use_elasticsearch?
       if should_invalidate_elasticsearch_indexes_cache
         project.invalidate_elasticsearch_indexes_cache!
       end
@@ -34,6 +30,21 @@ module Elastic
           should_invalidate_elasticsearch_indexes_cache &&
           ::Gitlab::CurrentSettings.elasticsearch_indexing?
       end
+    end
+
+    private
+
+    def should_invalidate_elasticsearch_indexes_cache?(old_namespace_id, new_namespace_id)
+      # When a project is moved to a new namespace, invalidate the Elasticsearch cache if
+      # Elasticsearch limit indexing is enabled and the indexing settings are different between the two namespaces.
+      return false unless ::Gitlab::CurrentSettings.elasticsearch_limit_indexing?
+
+      old_namespace = Namespace.find_by(id: old_namespace_id) # rubocop: disable CodeReuse/ActiveRecord
+      new_namespace = Namespace.find_by(id: new_namespace_id) # rubocop: disable CodeReuse/ActiveRecord
+
+      return ::Gitlab::CurrentSettings.elasticsearch_limit_indexing? unless old_namespace && new_namespace
+
+      old_namespace.use_elasticsearch? != new_namespace.use_elasticsearch?
     end
   end
 end
