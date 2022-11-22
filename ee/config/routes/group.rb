@@ -48,7 +48,7 @@ constraints(::Constraints::GroupUrlConstrainer.new) do
             get :count
           end
         end
-        resources :value_streams, only: [:index, :create, :update, :destroy] do
+        resources :value_streams, only: [:index, :new, :edit, :show, :create, :update, :destroy] do
           resources :stages, only: [:index, :create, :update, :destroy] do
             member do
               get :average_duration_chart
