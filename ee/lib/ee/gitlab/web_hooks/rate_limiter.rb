@@ -26,11 +26,6 @@ module EE
 
         private
 
-        override :no_limit?
-        def no_limit?
-          super || paid_plan? && ::Feature.enabled?(:web_hooks_no_rate_limit, root_namespace)
-        end
-
         override :limit_name
         def limit_name
           strong_memoize(:ee_limit_name) do

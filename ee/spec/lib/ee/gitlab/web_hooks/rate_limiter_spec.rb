@@ -43,20 +43,8 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
   end
 
   describe '#rate_limit!' do
-    before do
-      stub_feature_flags(web_hooks_no_rate_limit: false)
-    end
-
     def rate_limit!
       described_class.new(hook).rate_limit!
-    end
-
-    shared_examples 'can never be rate-limited' do
-      it 'can never be rate-limited' do
-        expect(Gitlab::ApplicationRateLimiter).not_to receive(:throttled?)
-
-        rate_limit!
-      end
     end
 
     context 'when there is no GitLab subscription' do
@@ -68,18 +56,11 @@ RSpec.describe Gitlab::WebHooks::RateLimiter, :saas, :clean_gitlab_redis_rate_li
         root_namespace.reload
       end
 
-      include_examples 'can never be rate-limited'
-    end
+      it 'can never be rate-limited' do
+        expect(Gitlab::ApplicationRateLimiter).not_to receive(:throttled?)
 
-    context 'when the `web_hooks_no_rate_limit` flag has been enabled for the root_namespace' do
-      let(:hook) { project_hook_with_premium_plan }
-      let(:root_namespace) { hook.parent.root_namespace }
-
-      before do
-        stub_feature_flags(web_hooks_no_rate_limit: root_namespace)
+        rate_limit!
       end
-
-      include_examples 'can never be rate-limited'
     end
 
     context 'when there are no reasons preventing the rate limit' do
