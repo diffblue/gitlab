@@ -21,9 +21,9 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   let(:main_db_ci_item_model) { table("_test_gitlab_ci_items", database: "main") }
   let(:main_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "main") }
   let(:main_db_shared_item_model) { table("_test_gitlab_shared_items", database: "main") }
-  let(:main_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "main") }
+  let(:main_db_partitioned_item) { table("_test_gitlab_hook_logs", database: "main") }
   let(:main_db_partitioned_item_detached) do
-    table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "main")
+    table("gitlab_partitions_dynamic._test_gitlab_hook_logs_20220101", database: "main")
   end
 
   # CI Database
@@ -32,9 +32,9 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
   let(:ci_db_ci_item_model) { table("_test_gitlab_ci_items", database: "ci") }
   let(:ci_db_ci_reference_model) { table("_test_gitlab_ci_references", database: "ci") }
   let(:ci_db_shared_item_model) { table("_test_gitlab_shared_items", database: "ci") }
-  let(:ci_db_partitioned_item) { table("_test_gitlab_partitioned_items", database: "ci") }
+  let(:ci_db_partitioned_item) { table("_test_gitlab_hook_logs", database: "ci") }
   let(:ci_db_partitioned_item_detached) do
-    table("gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101", database: "ci")
+    table("gitlab_partitions_dynamic._test_gitlab_hook_logs_20220101", database: "ci")
   end
 
   subject(:truncate_legacy_tables) do
@@ -61,7 +61,7 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
           CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
         );
 
-        CREATE TABLE _test_gitlab_partitioned_items (
+        CREATE TABLE _test_gitlab_hook_logs (
           id bigserial not null,
           created_at timestamptz not null,
           item_id BIGINT NOT NULL,
@@ -69,15 +69,15 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
           CONSTRAINT fk_constrained_1 FOREIGN KEY(item_id) REFERENCES _test_gitlab_main_items(id)
         ) PARTITION BY RANGE(created_at);
 
-        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101
-        PARTITION OF _test_gitlab_partitioned_items
+        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_hook_logs_20220101
+        PARTITION OF _test_gitlab_hook_logs
         FOR VALUES FROM ('20220101') TO ('20220131');
 
-        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220201
-        PARTITION OF _test_gitlab_partitioned_items
+        CREATE TABLE gitlab_partitions_dynamic._test_gitlab_hook_logs_20220201
+        PARTITION OF _test_gitlab_hook_logs
         FOR VALUES FROM ('20220201') TO ('20220228');
 
-        ALTER TABLE _test_gitlab_partitioned_items DETACH PARTITION gitlab_partitions_dynamic._test_gitlab_partitioned_items_20220101;
+        ALTER TABLE _test_gitlab_hook_logs DETACH PARTITION gitlab_partitions_dynamic._test_gitlab_hook_logs_20220101;
       SQL
 
       main_connection.execute(main_tables_sql)
@@ -125,14 +125,14 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
 
       Gitlab::Database::SharedModel.using_connection(main_connection) do
         Postgresql::DetachedPartition.create!(
-          table_name: '_test_gitlab_partitioned_items_20220101',
+          table_name: '_test_gitlab_hook_logs_20220101',
           drop_after: Time.current
         )
       end
 
       Gitlab::Database::SharedModel.using_connection(ci_connection) do
         Postgresql::DetachedPartition.create!(
-          table_name: '_test_gitlab_partitioned_items_20220101',
+          table_name: '_test_gitlab_hook_logs_20220101',
           drop_after: Time.current
         )
       end
@@ -141,7 +141,7 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
         {
           "_test_gitlab_main_items" => :gitlab_main,
           "_test_gitlab_main_references" => :gitlab_main,
-          "_test_gitlab_partitioned_items" => :gitlab_main,
+          "_test_gitlab_hook_logs" => :gitlab_main,
           "_test_gitlab_ci_items" => :gitlab_ci,
           "_test_gitlab_ci_references" => :gitlab_ci,
           "_test_gitlab_shared_items" => :gitlab_shared,
