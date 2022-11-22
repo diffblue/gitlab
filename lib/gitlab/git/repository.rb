@@ -116,8 +116,14 @@ module Gitlab
       # Returns an Array of branch names
       # sorted by name ASC
       def branch_names
-        wrapped_gitaly_errors do
-          gitaly_ref_client.branch_names
+        if Feature.enabled?(:list_refs_for_find_all_tags_branches, self)
+          refs = list_refs([Gitlab::Git::BRANCH_REF_PREFIX])
+
+          refs.map { |ref| Gitlab::Git.branch_name(ref.name) }
+        else
+          wrapped_gitaly_errors do
+            gitaly_ref_client.branch_names
+          end
         end
       end
 
@@ -162,8 +168,12 @@ module Gitlab
 
       # Returns the number of valid branches
       def branch_count
-        wrapped_gitaly_errors do
-          gitaly_ref_client.count_branch_names
+        if Feature.enabled?(:list_refs_for_find_all_tags_branches, self)
+          branch_names.count
+        else
+          wrapped_gitaly_errors do
+            gitaly_ref_client.count_branch_names
+          end
         end
       end
 
