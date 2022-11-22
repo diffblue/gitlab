@@ -114,7 +114,34 @@ RSpec.describe Gitlab::Git::Repository do
     it { is_expected.to include("v1.0.0") }
     it { is_expected.not_to include("v5.0.0") }
 
-    it_behaves_like 'wrapping gRPC errors', Gitlab::GitalyClient::RefService, :tag_names
+    it_behaves_like 'wrapping gRPC errors', Gitlab::GitalyClient::RefService, :list_refs
+
+    context 'feature list_refs_for_find_all_tags_branches disabled' do
+      before do
+        stub_feature_flags(list_refs_for_find_all_tags_branches: false)
+      end
+
+      it { is_expected.to be_kind_of Array }
+
+      it 'has some elements' do
+        expect(subject.size).to be >= 1
+      end
+
+      it 'returns UTF-8' do
+        expect(subject.first).to be_utf8
+      end
+
+      describe '#last' do
+        subject { super().last }
+
+        it { is_expected.to eq("v1.1.1") }
+      end
+
+      it { is_expected.to include("v1.0.0") }
+      it { is_expected.not_to include("v5.0.0") }
+
+      it_behaves_like 'wrapping gRPC errors', Gitlab::GitalyClient::RefService, :tag_names
+    end
   end
 
   describe '#tags' do

@@ -216,15 +216,25 @@ module Gitlab
 
       # Returns the number of valid tags
       def tag_count
-        wrapped_gitaly_errors do
-          gitaly_ref_client.count_tag_names
+        if Feature.enabled?(:list_refs_for_find_all_tags_branches, self)
+          tag_names.count
+        else
+          wrapped_gitaly_errors do
+            gitaly_ref_client.count_tag_names
+          end
         end
       end
 
       # Returns an Array of tag names
       def tag_names
-        wrapped_gitaly_errors do
-          gitaly_ref_client.tag_names
+        if Feature.enabled?(:list_refs_for_find_all_tags_branches, self)
+          refs = list_refs([Gitlab::Git::TAG_REF_PREFIX])
+
+          refs.map { |ref| Gitlab::Git.tag_name(ref.name) }
+        else
+          wrapped_gitaly_errors do
+            gitaly_ref_client.tag_names
+          end
         end
       end
 
