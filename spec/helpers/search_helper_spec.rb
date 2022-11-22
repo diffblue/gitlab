@@ -60,6 +60,28 @@ RSpec.describe SearchHelper do
         expect(search_autocomplete_opts(project.name).size).to eq(1)
       end
 
+      context 'for users' do
+        let_it_be(:another_user) { create(:user, name: 'Jane Doe') }
+        let(:term) { 'jane' }
+
+        it 'returns users matching the term' do
+          result = search_autocomplete_opts(term)
+          expect(result.size).to eq(1)
+          expect(result.first[:id]).to eq(another_user.id)
+        end
+
+        context 'when current_user cannot read_users_list' do
+          before do
+            allow(Ability).to receive(:allowed?).and_return(true)
+            allow(Ability).to receive(:allowed?).with(current_user, :read_users_list).and_return(false)
+          end
+
+          it 'returns an empty array' do
+            expect(search_autocomplete_opts(term)).to eq([])
+          end
+        end
+      end
+
       it "includes the required project attrs" do
         project = create(:project, namespace: create(:namespace, owner: user))
         result = search_autocomplete_opts(project.name).first
