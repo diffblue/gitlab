@@ -100,8 +100,7 @@ export default {
       type: Object,
       required: true,
       validator: (policy) => {
-        // TODO add name validation right before defaulting on the scan_execution_rule_mode feature flag: https://gitlab.com/gitlab-org/gitlab/-/issues/359883
-        return ['enabled'].every((value) => value in policy);
+        return ['name', 'enabled'].every((value) => value in policy);
       },
     },
     policyYaml: {
