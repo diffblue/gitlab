@@ -16,6 +16,9 @@ module API
         detail 'This feature was introduced in GitLab 9.3.'
         success Entities::Event
         is_array true
+        failure [
+          { code: 401, message: 'Unauthorized' }
+        ]
       end
       params do
         optional :scope, type: String,
@@ -44,6 +47,9 @@ module API
         success Entities::Event
         tags %w[events]
         is_array true
+        failure [
+          { code: 404, message: 'Not found' }
+        ]
       end
       params do
         use :pagination
