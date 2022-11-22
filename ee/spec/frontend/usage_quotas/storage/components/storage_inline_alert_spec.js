@@ -48,14 +48,11 @@ describe('StorageInlineAlert', () => {
       });
     });
 
-    it('renders danger variant alert', () => {
-      expect(findAlert().exists()).toBe(true);
-      expect(findAlert().props('variant')).toBe('danger');
-    });
-
-    it('renders human readable repositoryFreeLimit', () => {
-      expect(findAlert().text()).toBe(
-        'You have reached the free storage limit of 10.0GiB on 1 project. To unlock them, please purchase additional storage.',
+    it('renders danger alert with correct message', () => {
+      const alert = findAlert();
+      expect(alert.props('variant')).toBe('danger');
+      expect(alert.text()).toBe(
+        'You have reached the free storage limit of 10.0GiB on 1 project. To unlock them, purchase additional storage.',
       );
     });
   });
@@ -72,13 +69,10 @@ describe('StorageInlineAlert', () => {
       });
     });
 
-    it('renders info variant alert', () => {
-      expect(findAlert().exists()).toBe(true);
-      expect(findAlert().props('variant')).toBe('info');
-    });
-
-    it('renders text explaining storage', () => {
-      expect(findAlert().text()).toBe(
+    it('renders info alert with correct message', () => {
+      const alert = findAlert();
+      expect(alert.props('variant')).toBe('info');
+      expect(alert.text()).toBe(
         'When you purchase additional storage, we automatically unlock projects that were locked when you reached the 10.0GiB limit.',
       );
     });
@@ -96,9 +90,33 @@ describe('StorageInlineAlert', () => {
       });
     });
 
-    it('renders danger alert', () => {
-      expect(findAlert().exists()).toBe(true);
-      expect(findAlert().props('variant')).toBe('danger');
+    it('renders danger alert with correct message', () => {
+      const alert = findAlert();
+      expect(alert.props('variant')).toBe('danger');
+      expect(alert.text()).toBe(
+        'You have consumed all of your additional storage. Purchase more to unlock your projects over the free 10.0GiB limit.',
+      );
+    });
+  });
+
+  describe('excess storage below purchase limit in warning threshold', () => {
+    beforeEach(() => {
+      mountComponent({
+        containsLockedProjects: false,
+        repositorySizeExcessProjectCount: 0,
+        totalRepositorySizeExcess: TEN_GB_IN_BYTES,
+        totalRepositorySize: THIRTEEN_GB_IN_BYTES,
+        additionalPurchasedStorageSize: THIRTEEN_GB_IN_BYTES,
+        actualRepositorySizeLimit: TEN_GB_IN_BYTES,
+      });
+    });
+
+    it('renders warning alert with correct message', () => {
+      const alert = findAlert();
+      expect(alert.props('variant')).toBe('warning');
+      expect(alert.text()).toBe(
+        'Your purchased storage is running low. To avoid locked projects, purchase more storage.',
+      );
     });
   });
 });
