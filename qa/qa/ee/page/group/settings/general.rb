@@ -12,7 +12,7 @@ module QA
               super
 
               base.class_eval do
-                prepend ::QA::Page::Component::Select2
+                prepend ::QA::Page::Component::Dropdown
                 prepend ::QA::Page::Settings::Common
 
                 view 'ee/app/views/groups/_custom_project_templates_setting.html.haml' do
@@ -57,7 +57,16 @@ module QA
               within_element(:custom_project_templates_container) do
                 clear_current_selection_if_present
                 expand_select_list
+
+                unless use_select2?
+                  search_and_select(path)
+                  click_element(:save_changes_button)
+                  return # rubocop:disable Cop/AvoidReturnFromBlocks
+                end
               end
+
+              # TODO: Remove the following two lines and the use_select2?
+              # check above once ff vue_group_select is default.
               search_and_select(path)
               click_element(:save_changes_button)
             end
