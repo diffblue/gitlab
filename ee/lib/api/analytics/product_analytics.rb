@@ -28,7 +28,7 @@ module API
         params do
           requires :project_id, type: Integer, desc: 'ID of the project to query'
           requires :query,
-                   type: String,
+                   type: Hash,
                    desc: "A valid Cube query. See reference documentation: https://cube.dev/docs/query-format"
           optional :queryType, type: 'String',
                                default: 'multi',
@@ -55,6 +55,7 @@ module API
             body: { query: params["query"], "queryType": params["queryType"] }.to_json
           )
 
+          status :ok
           Gitlab::Json.parse(response.body)
         end
       end
