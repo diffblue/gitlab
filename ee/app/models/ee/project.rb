@@ -292,6 +292,10 @@ module EE
             licensed_feature_available?(:suggested_reviewers)
         end
       end
+
+      def member_usernames_among(users)
+        members_among(users).pluck(:username)
+      end
     end
 
     def mirror_last_update_succeeded?

@@ -7,7 +7,7 @@ module EE
 
       private
 
-      attr_accessor :blocking_merge_requests_params
+      attr_accessor :blocking_merge_requests_params, :suggested_reviewer_ids
 
       override :execute_external_hooks
       def execute_external_hooks(merge_request, merge_data)
@@ -28,6 +28,14 @@ module EE
           ::MergeRequests::UpdateBlocksService.extract_params!(params)
 
         super
+      end
+
+      override :filter_suggested_reviewers
+      def filter_suggested_reviewers
+        suggested_reviewer_ids_from_params = params.delete(:suggested_reviewer_ids)
+        return if suggested_reviewer_ids_from_params.blank?
+
+        self.suggested_reviewer_ids = suggested_reviewer_ids_from_params & params[:reviewer_ids]
       end
 
       def reset_approvals?(merge_request, _newrev)
@@ -81,6 +89,15 @@ module EE
         return if merge_request.closed?
 
         todo_service.add_merge_request_approvers(merge_request, all_approvers(merge_request))
+      end
+
+      override :capture_suggested_reviewers_accepted
+      def capture_suggested_reviewers_accepted(merge_request)
+        return if suggested_reviewer_ids.blank?
+
+        ::MergeRequests::CaptureSuggestedReviewersAcceptedService
+          .new(project: project)
+          .execute(merge_request, suggested_reviewer_ids)
       end
     end
   end
