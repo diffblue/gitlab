@@ -40,7 +40,7 @@ class AuditEventPresenter < Gitlab::View::Presenter::Simple
   end
 
   def date
-    audit_event.created_at.to_s(:db)
+    audit_event.created_at.utc
   end
 
   def action
