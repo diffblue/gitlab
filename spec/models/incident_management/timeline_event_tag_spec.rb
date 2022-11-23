@@ -26,12 +26,20 @@ RSpec.describe IncidentManagement::TimelineEventTag do
     it { is_expected.not_to allow_value('s' * 256).for(:name) }
   end
 
-  describe '.pluck_names' do
-    it 'returns the names of the tags' do
-      tag1 = create(:incident_management_timeline_event_tag)
-      tag2 = create(:incident_management_timeline_event_tag)
+  describe 'model methods' do
+    let_it_be(:tag1) { create(:incident_management_timeline_event_tag) }
+    let_it_be(:tag2) { create(:incident_management_timeline_event_tag) }
 
-      expect(described_class.pluck_names).to contain_exactly(tag1.name, tag2.name)
+    context 'when .pluck_names is called' do
+      it 'returns the names of the tags' do
+        expect(described_class.pluck_names).to contain_exactly(tag1.name, tag2.name)
+      end
+    end
+
+    context 'when .tag_ids is called' do
+      it 'returns the ids of the tags' do
+        expect(described_class.tag_ids).to contain_exactly(tag1.id, tag2.id)
+      end
     end
   end
 
