@@ -3,6 +3,8 @@ import { GlPagination, GlTable } from '@gitlab/ui';
 
 import { getParameterValues, setUrlParams } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
+import UserDate from '~/vue_shared/components/user_date.vue';
+import { LONG_DATE_FORMAT_WITH_TZ } from '~/vue_shared/constants';
 
 import HtmlTableCell from './table_cells/html_table_cell.vue';
 import UrlTableCell from './table_cells/url_table_cell.vue';
@@ -15,6 +17,7 @@ export default {
     GlTable,
     GlPagination,
     UrlTableCell,
+    UserDate,
   },
   props: {
     events: {
@@ -81,6 +84,7 @@ export default {
       thClass: TABLE_HEADER_CLASSES,
     },
   ],
+  dateTimeFormat: LONG_DATE_FORMAT_WITH_TZ,
 };
 </script>
 
@@ -95,6 +99,9 @@ export default {
       </template>
       <template #cell(action)="{ value }">
         <html-table-cell :html="value" />
+      </template>
+      <template #cell(date)="{ value }">
+        <user-date :date="value" :date-format="$options.dateTimeFormat" />
       </template>
     </gl-table>
     <gl-pagination

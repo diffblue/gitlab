@@ -123,7 +123,7 @@ RSpec.describe AuditEventPresenter do
   end
 
   it 'exposes the date' do
-    expect(presenter.date).to eq(audit_event.created_at.to_s(:db))
+    expect(presenter.date).to eq(audit_event.created_at.utc)
   end
 
   it 'exposes the action' do
