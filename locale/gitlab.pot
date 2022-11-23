@@ -6924,6 +6924,9 @@ msgstr ""
 msgid "BranchRules|%{total} approval %{subject}"
 msgstr ""
 
+msgid "BranchRules|%{total} matching %{subject}"
+msgstr ""
+
 msgid "BranchRules|%{total} status %{subject}"
 msgstr ""
 
