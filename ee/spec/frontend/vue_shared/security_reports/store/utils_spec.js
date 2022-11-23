@@ -20,16 +20,12 @@ describe('security reports utils', () => {
     let issuesList;
 
     beforeEach(() => {
-      issuesList = [
-        { project_fingerprint: 'abc123' },
-        { project_fingerprint: 'abc456' },
-        { project_fingerprint: 'abc789' },
-      ];
+      issuesList = [{ uuid: 'abc123' }, { uuid: 'abc456' }, { uuid: 'abc789' }];
     });
 
     it('returns index of found issue', () => {
       const issue = {
-        project_fingerprint: 'abc456',
+        uuid: 'abc456',
       };
 
       expect(findIssueIndex(issuesList, issue)).toEqual(1);
@@ -37,7 +33,7 @@ describe('security reports utils', () => {
 
     it('returns -1 when issue is not found', () => {
       const issue = {
-        project_fingerprint: 'foo',
+        uuid: 'foo',
       };
 
       expect(findIssueIndex(issuesList, issue)).toEqual(-1);

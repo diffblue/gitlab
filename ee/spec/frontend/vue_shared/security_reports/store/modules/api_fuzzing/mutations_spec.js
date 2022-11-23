@@ -18,9 +18,9 @@ describe('EE api fuzzing module mutations', () => {
     let allIssue;
 
     beforeEach(() => {
-      newIssue = createIssue({ project_fingerprint: 'new' });
-      resolvedIssue = createIssue({ project_fingerprint: 'resolved' });
-      allIssue = createIssue({ project_fingerprint: 'all' });
+      newIssue = createIssue({ uuid: 'new' });
+      resolvedIssue = createIssue({ uuid: 'resolved' });
+      allIssue = createIssue({ uuid: 'all' });
 
       state.newIssues.push(newIssue);
       state.resolvedIssues.push(resolvedIssue);
@@ -61,7 +61,7 @@ describe('EE api fuzzing module mutations', () => {
       beforeEach(() => {
         mutations[types.UPDATE_VULNERABILITY](
           state,
-          createIssue({ project_fingerprint: 'invalid', changed: true }),
+          createIssue({ uuid: 'invalid', changed: true }),
         );
       });
 
