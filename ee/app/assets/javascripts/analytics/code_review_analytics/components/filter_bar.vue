@@ -4,6 +4,8 @@ import {
   OPTIONS_NONE_ANY,
   TOKEN_TITLE_LABEL,
   TOKEN_TITLE_MILESTONE,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import {
@@ -38,7 +40,7 @@ export default {
         {
           icon: 'clock',
           title: TOKEN_TITLE_MILESTONE,
-          type: 'milestone',
+          type: TOKEN_TYPE_MILESTONE,
           token: MilestoneToken,
           initialMilestones: this.milestonesData,
           unique: true,
@@ -48,7 +50,7 @@ export default {
         {
           icon: 'labels',
           title: TOKEN_TITLE_LABEL,
-          type: 'labels',
+          type: TOKEN_TYPE_LABEL,
           token: LabelToken,
           defaultLabels: OPTIONS_NONE_ANY,
           initialLabels: this.labelsData,
@@ -66,15 +68,17 @@ export default {
     },
     initialFilterValue() {
       return prepareTokens({
-        milestone: this.selectedMilestone,
-        labels: this.selectedLabelList,
+        [TOKEN_TYPE_MILESTONE]: this.selectedMilestone,
+        [TOKEN_TYPE_LABEL]: this.selectedLabelList,
       });
     },
   },
   methods: {
     ...mapActions('filters', ['setFilters', 'fetchMilestones', 'fetchLabels']),
     handleFilter(filters) {
-      const { labels, milestone } = processFilters(filters);
+      const { [TOKEN_TYPE_LABEL]: labels, [TOKEN_TYPE_MILESTONE]: milestone } = processFilters(
+        filters,
+      );
 
       this.setFilters({
         selectedMilestone: milestone ? milestone[0] : null,
