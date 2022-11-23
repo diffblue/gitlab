@@ -44,7 +44,7 @@ export default {
     },
   },
   scanTypeOptions: [
-    { value: null, text: s__('SecurityOrchestration|Select scan type') },
+    { value: '', text: s__('SecurityOrchestration|Select scan type') },
     {
       value: SCAN_FINDING,
       text: s__('SecurityOrchestration|Security Scan'),

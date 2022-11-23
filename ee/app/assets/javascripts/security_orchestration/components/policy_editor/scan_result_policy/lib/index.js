@@ -37,7 +37,7 @@ name: ''
 description: ''
 enabled: true
 rules:
-  - type:
+  - type: ''
 actions:
   - type: require_approval
     approvals_required: 1
