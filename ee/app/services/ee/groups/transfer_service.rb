@@ -10,9 +10,9 @@ module EE
       # `child_epics_from_different_hierarchies` feature flag is removed:
       # https://gitlab.com/gitlab-org/gitlab/-/issues/382719
       def update_group_attributes
-        return super if cross_group_epics_enabled?
+        ::Epic.nullify_lost_group_parents(group.self_and_descendants, lost_groups) unless cross_group_epics_enabled?
 
-        ::Epic.nullify_lost_group_parents(group.self_and_descendants, lost_groups)
+        super
       end
 
       private

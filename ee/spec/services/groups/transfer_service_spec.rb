@@ -15,6 +15,26 @@ RSpec.describe Groups::TransferService, '#execute' do
     new_group&.add_owner(user)
   end
 
+  describe '#execute' do
+    it 'transfers a group successfully' do
+      transfer_service.execute(new_group)
+
+      expect(group.parent).to eq(new_group)
+    end
+
+    context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+      before do
+        stub_feature_flags(child_epics_from_different_hierarchies: false)
+      end
+
+      it 'transfers a group successfully' do
+        transfer_service.execute(new_group)
+
+        expect(group.parent).to eq(new_group)
+      end
+    end
+  end
+
   describe 'elasticsearch indexing', :aggregate_failures do
     before do
       stub_ee_application_setting(elasticsearch_indexing: true)
@@ -87,6 +107,18 @@ RSpec.describe Groups::TransferService, '#execute' do
         transfer_service.execute(new_group)
 
         expect(group.parent).to eq(new_group)
+      end
+
+      context 'when child_epics_from_different_hierarchies feature flag is disabled' do
+        before do
+          stub_feature_flags(child_epics_from_different_hierarchies: false)
+        end
+
+        it 'transfers a group successfully' do
+          transfer_service.execute(new_group)
+
+          expect(group.parent).to eq(new_group)
+        end
       end
     end
 
