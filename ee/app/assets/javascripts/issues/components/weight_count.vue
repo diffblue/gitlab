@@ -8,11 +8,7 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  inject: {
-    hasIssueWeightsFeature: {
-      default: false,
-    },
-  },
+  inject: ['hasIssueWeightsFeature'],
   props: {
     weight: {
       type: Number,
