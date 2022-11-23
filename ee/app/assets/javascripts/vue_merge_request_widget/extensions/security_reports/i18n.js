@@ -17,6 +17,7 @@ export const i18n = {
   learnMore: __('Learn more'),
   label: s__('ciReport|Security scanning'),
   loading: s__('ciReport|Security scanning is loading'),
+  loadingError: s__('ciReport|%{scanner}: Loading resulted in an error'),
   error: s__('ciReport|Security reports failed loading results'),
   helpPopoverTitle: s__('ciReport|Security scan results'),
   helpPopoverContent: s__(

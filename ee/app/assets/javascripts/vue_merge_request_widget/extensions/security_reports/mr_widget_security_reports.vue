@@ -1,5 +1,5 @@
 <script>
-import { GlSprintf, GlBadge } from '@gitlab/ui';
+import { GlBadge } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
@@ -21,7 +21,6 @@ export default {
     SummaryText,
     SummaryHighlights,
     SecurityTrainingPromoWidget,
-    GlSprintf,
     GlBadge,
   },
   i18n,
@@ -97,7 +96,7 @@ export default {
 
     vulnerabilitiesCount() {
       return this.vulnerabilities.collapsed.reduce((counter, current) => {
-        return counter + (current.added?.length || 0) + (current.fixed?.length || 0);
+        return counter + current.numberOfNewFindings + (current.fixed?.length || 0);
       }, 0);
     },
 
@@ -131,7 +130,7 @@ export default {
       }
 
       return this.vulnerabilities.collapsed.reduce((counter, current) => {
-        return counter + current.added.length;
+        return counter + (current.numberOfNewFindings || 0);
       }, 0);
     },
 
@@ -141,10 +140,6 @@ export default {
       }
 
       return 'success';
-    },
-
-    reportsWithNewVulnerabilities() {
-      return this.vulnerabilities.collapsed?.filter((report) => report?.added?.length > 0) || [];
     },
   },
   methods: {
@@ -165,16 +160,24 @@ export default {
         [this.mr.containerScanningComparisonPath, 'CONTAINER_SCANNING'],
       ].filter(([endpoint, reportType]) => Boolean(endpoint) && Boolean(reportType));
 
-      return endpoints.map(([path, reportType]) => () =>
-        axios.get(path).then((r) => ({
-          ...r,
-          data: {
-            ...r.data,
-            reportType,
-            reportTypeDescription: reportTypes[reportType],
-          },
-        })),
-      );
+      return endpoints.map(([path, reportType]) => () => {
+        const props = {
+          reportType,
+          reportTypeDescription: reportTypes[reportType],
+          numberOfNewFindings: 0,
+          added: [],
+          fixed: [],
+        };
+
+        return axios
+          .get(path)
+          .then(({ data }) => ({
+            data: { ...props, ...data, numberOfNewFindings: data.added?.length || 0 },
+          }))
+          .catch(() => ({
+            data: { ...props, error: true },
+          }));
+      });
     },
 
     highlightsFromReport(report, highlights = { [HIGH]: 0, [CRITICAL]: 0, other: 0 }) {
@@ -197,7 +200,7 @@ export default {
     },
 
     statusIconNameReportType(report) {
-      if (report.added?.length > 0) {
+      if (report.numberOfNewFindings > 0 || report.error) {
         return EXTENSION_ICONS.warning;
       }
 
@@ -250,7 +253,7 @@ export default {
         :project-full-path="mr.sourceProjectFullPath"
       />
       <mr-widget-row
-        v-for="report in reportsWithNewVulnerabilities"
+        v-for="report in vulnerabilities.collapsed"
         :key="report.reportType"
         :widget-name="$options.name"
         :level="2"
@@ -260,22 +263,21 @@ export default {
       >
         <template #header>
           <div>
-            <div :data-testid="`${report.reportType}-report-header`">
-              <gl-sprintf :message="$options.i18n.newVulnerabilities">
-                <template #scanner>{{ report.reportTypeDescription }}</template>
-                <template #number
-                  ><strong>{{ report.added.length }}</strong></template
-                >
-                <template #vulnStr>{{
-                  n__('vulnerability', 'vulnerabilities', report.added.length)
-                }}</template>
-              </gl-sprintf>
-            </div>
-            <summary-highlights :highlights="highlightsFromReport(report)" />
+            <summary-text
+              :total-new-vulnerabilities="report.numberOfNewFindings"
+              :is-loading="false"
+              :error="report.error"
+              :scanner="report.reportTypeDescription"
+              :data-testid="`${report.reportType}-report-header`"
+            />
+            <summary-highlights
+              v-if="report.numberOfNewFindings > 0"
+              :highlights="highlightsFromReport(report)"
+            />
           </div>
         </template>
         <template #body>
-          <div class="gl-mt-2">
+          <div v-if="report.numberOfNewFindings > 0" class="gl-mt-2">
             <strong>{{ $options.i18n.new }}</strong>
             <div class="gl-mt-2">
               <mr-widget-row

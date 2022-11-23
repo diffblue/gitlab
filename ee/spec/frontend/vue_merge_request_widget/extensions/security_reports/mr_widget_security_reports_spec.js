@@ -225,6 +225,46 @@ describe('MR Widget Security Reports', () => {
     });
   });
 
+  describe('error states', () => {
+    const mockWithData = () => {
+      mockAxios.onGet(reportEndpoints.sastComparisonPath).replyOnce(400);
+
+      mockAxios.onGet(reportEndpoints.dastComparisonPath).replyOnce(200, {
+        added: [
+          { id: 5, severity: 'low', name: 'SQL Injection' },
+          { id: 3, severity: 'unknown', name: 'Weak password' },
+        ],
+      });
+
+      [
+        reportEndpoints.dependencyScanningComparisonPath,
+        reportEndpoints.coverageFuzzingComparisonPath,
+        reportEndpoints.apiFuzzingComparisonPath,
+        reportEndpoints.secretDetectionComparisonPath,
+        reportEndpoints.containerScanningComparisonPath,
+      ].forEach((path) => {
+        mockAxios.onGet(path).replyOnce(200, {
+          added: [],
+        });
+      });
+    };
+
+    it('displays an error message for the individual level report', async () => {
+      mockWithData();
+      createComponent({
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      // Click on the toggle button to expand data
+      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+
+      expect(wrapper.findByText('SAST: Loading resulted in an error').exists()).toBe(true);
+    });
+  });
+
   describe('help popovers', () => {
     const mockWithData = () => {
       Object.keys(reportEndpoints).forEach((key, i) => {

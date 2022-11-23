@@ -37,4 +37,11 @@ describe('MR Widget Security Reports - Summary Text', () => {
       '<div>Security scanning detected <strong>5</strong> new potential vulnerabilities</div>',
     );
   });
+
+  it('should display an error message when error property is true', () => {
+    createComponent({ propsData: { error: true, scanner: 'Container Scanning' } });
+    expect(wrapper.findByText('Container Scanning: Loading resulted in an error').exists()).toBe(
+      true,
+    );
+  });
 });
