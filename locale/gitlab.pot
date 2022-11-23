@@ -13907,6 +13907,9 @@ msgstr ""
 msgid "DevOps adoption"
 msgstr ""
 
+msgid "DevOps metrics comparison (Alpha)"
+msgstr ""
+
 msgid "Developer"
 msgstr ""
 
@@ -16204,9 +16207,6 @@ msgid "Excluding merge commits. Limited to 6,000 commits."
 msgstr ""
 
 msgid "Execution time"
-msgstr ""
-
-msgid "Executive Dashboard"
 msgstr ""
 
 msgid "Existing branch name, tag, or commit SHA"
