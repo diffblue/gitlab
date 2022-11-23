@@ -1946,7 +1946,7 @@ RSpec.describe User do
   end
 
   describe '#download_code_for?', :request_store do
-    let_it_be(:project) { create(:project) }
+    let_it_be(:project) { create(:project, :in_group) }
     let_it_be(:user) { create(:user) }
 
     before_all do
@@ -1955,7 +1955,8 @@ RSpec.describe User do
         :member_role,
         :guest,
         download_code: true,
-        members: [project_member]
+        members: [project_member],
+        namespace: project.group
       )
     end
 
@@ -1981,10 +1982,10 @@ RSpec.describe User do
   end
 
   describe '#preloaded_member_roles_for_projects' do
-    let_it_be(:project) { create(:project) }
+    let_it_be(:project) { create(:project, :private, :in_group) }
     let_it_be(:user) { create(:user) }
     let_it_be(:project_member) { create(:project_member, :guest, user: user, source: project) }
-    let_it_be(:member_role) { create(:member_role, :guest, download_code: true, members: [project_member]) }
+    let_it_be(:member_role) { create(:member_role, :guest, download_code: true, members: [project_member], namespace: project.group) }
 
     context 'when custom roles are present' do
       context 'when custom role enables download code' do
@@ -1998,7 +1999,7 @@ RSpec.describe User do
       context 'when custom role does not enable download code' do
         let(:user) { create(:user) }
         let(:project_member) { create(:project_member, :guest, user: user, source: project) }
-        let(:member_role) { create(:member_role, :guest, download_code: false, members: [project_member]) }
+        let(:member_role) { create(:member_role, :guest, download_code: false, members: [project_member], namespace: project.group) }
 
         it 'returns hash with project ids as keys and empty array as value' do
           preloaded = user.preloaded_member_roles_for_projects([project])

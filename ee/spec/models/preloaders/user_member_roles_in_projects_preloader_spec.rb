@@ -10,7 +10,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
     it 'skips preload' do
       stub_feature_flags(customizable_roles: false)
       project_member = create(:project_member, :guest, user: user, source: project)
-      create(:member_role, :guest, download_code: true, members: [project_member])
+      create(:member_role, :guest, download_code: true, members: [project_member], namespace: project.group)
 
       result = described_class.new(
         projects: [project],
@@ -26,7 +26,7 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
       context 'when Array of project passed' do
         it 'returns the project_id with a value array that includes :download_code' do
           project_member = create(:project_member, :guest, user: user, source: project)
-          create(:member_role, :guest, download_code: true, members: [project_member])
+          create(:member_role, :guest, download_code: true, members: [project_member], namespace: project.group)
 
           result = described_class.new(projects: [project], user: user).execute
 
@@ -37,7 +37,12 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
       context 'when ActiveRecord::Relation of projects passed' do
         it 'returns the project_id with a value array that includes :download_code' do
           project_member = create(:project_member, :guest, user: user, source: project)
-          create(:member_role, :guest, download_code: true, members: [project_member])
+          create(
+            :member_role, :guest,
+            download_code: true,
+            members: [project_member],
+            namespace: project.group
+          )
 
           result = described_class.new(projects: Project.where(id: project.id), user: user).execute
 
@@ -48,8 +53,8 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
 
     context 'when project namespace has a custom role with download_code: true' do
       it 'returns the project_id with a value array that includes :download_code' do
-        group_member = create(:group_member, :guest, user: user, source: project.group)
-        create(:member_role, :guest, download_code: true, members: [group_member])
+        group_member = create(:group_member, :guest, user: user, source: project.namespace)
+        create(:member_role, :guest, download_code: true, members: [group_member], namespace: project.group)
 
         result = described_class.new(projects: [project], user: user).execute
 
@@ -61,8 +66,8 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
       it 'project value array includes :download_code if any custom roles enable download_code' do
         group_member = create(:group_member, :guest, user: user, source: project.group)
         project_member = create(:project_member, :guest, user: user, source: project)
-        create(:member_role, :guest, download_code: false, members: [group_member])
-        create(:member_role, :guest, download_code: true, members: [project_member])
+        create(:member_role, :guest, download_code: false, members: [group_member], namespace: project.group)
+        create(:member_role, :guest, download_code: true, members: [project_member], namespace: project.group)
 
         result = described_class.new(projects: [project], user: user).execute
 
@@ -96,7 +101,8 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
           :member_role,
           :guest,
           download_code: false,
-          members: [project_without_download_code_member]
+          members: [project_without_download_code_member],
+          namespace: project_without_download_code.group
         )
 
         result = described_class.new(
@@ -116,7 +122,8 @@ RSpec.describe Preloaders::UserMemberRolesInProjectsPreloader do
         _custom_role_outside_hierarchy = create(
           :member_role, :guest,
           members: [subgroup_member],
-          download_code: true
+          download_code: true,
+          namespace: project.group
         )
 
         result = described_class.new(
