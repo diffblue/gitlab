@@ -2755,7 +2755,7 @@ msgstr ""
 msgid "AdminSettings|Configure limits on the number of repositories users can download in a given time."
 msgstr ""
 
-msgid "AdminSettings|Configure product analytics to track events within your project applications. %{link_start}Learn more.%{link_end}"
+msgid "AdminSettings|Configure product analytics to track events within your project applications."
 msgstr ""
 
 msgid "AdminSettings|Configure when inactive projects should be automatically deleted. %{linkStart}What are inactive projects?%{linkEnd}"
