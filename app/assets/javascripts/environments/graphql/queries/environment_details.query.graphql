@@ -13,6 +13,8 @@ query getEnvironmentDetails($projectFullPath: ID!, $environmentName: String) {
             iid
             status
             createdAt
+            ref
+            tag
             job {
               name
               id
