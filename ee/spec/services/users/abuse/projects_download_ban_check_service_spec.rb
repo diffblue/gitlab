@@ -61,7 +61,7 @@ RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService do
           stub_feature_flags(git_abuse_rate_limit_feature_flag: feature_flag_state)
           stub_licensed_features(git_abuse_rate_limit: licensed_feature_state)
 
-          allow_next_instance_of(Users::Abuse::ExcessiveProjectsDownloadBanService, project, user) do |service|
+          allow_next_instance_of(Users::Abuse::GitAbuse::ApplicationThrottleService, project, user) do |service|
             allow(service).to receive(:execute).and_return(service_response)
           end
         end
@@ -93,7 +93,7 @@ RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService do
           unique_project_download_limit: true
         )
 
-        allow_next_instance_of(Users::Abuse::ExcessiveProjectsDownloadBanService, project, user) do |service|
+        allow_next_instance_of(Users::Abuse::GitAbuse::ApplicationThrottleService, project, user) do |service|
           allow(service).to receive(:execute).and_return({ banned: banned_from_application })
         end
         allow_next_instance_of(Users::Abuse::GitAbuse::NamespaceThrottleService, project, user) do |service|

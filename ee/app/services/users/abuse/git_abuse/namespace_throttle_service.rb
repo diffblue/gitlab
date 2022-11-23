@@ -3,45 +3,16 @@
 module Users
   module Abuse
     module GitAbuse
-      class NamespaceThrottleService < BaseService
-        def self.execute(project, user)
-          new(project, user).execute
-        end
+      class NamespaceThrottleService < BaseThrottleService
+        private
 
-        def initialize(project, user)
-          super
-          @admins_alerted = rate_limited?(peek: true)
-        end
-
-        def execute
-          return { banned: false } unless rate_limited?
-
+        def log_rate_limit_exceeded
           log_info(
             message: "User exceeded max projects download within set time period for namespace",
             username: current_user.username,
             max_project_downloads: max_project_downloads,
             time_period_s: time_period,
             namespace_id: namespace.id
-          )
-
-          alert_admins
-
-          { banned: ban_user! }
-        end
-
-        private
-
-        attr_reader :admins_alerted
-
-        def rate_limited?(peek: false)
-          ::Gitlab::ApplicationRateLimiter.throttled?(
-            :unique_project_downloads_for_namespace,
-            scope: [current_user, namespace],
-            resource: project,
-            peek: peek,
-            threshold: max_project_downloads,
-            interval: time_period,
-            users_allowlist: allowlist
           )
         end
 
@@ -69,21 +40,12 @@ module Users
           banned || current_user.banned_from_namespace?(namespace)
         end
 
-        def alert_admins
-          return if admins_alerted
+        def key
+          :unique_project_downloads_for_namespace
+        end
 
-          admins.each do |admin|
-            next unless admin.active?
-
-            Notify.user_auto_banned_email(
-              admin.id,
-              current_user.id,
-              max_project_downloads: max_project_downloads,
-              within_seconds: time_period,
-              auto_ban_enabled: auto_ban_users,
-              group: namespace
-            ).deliver_later
-          end
+        def scope
+          [current_user, namespace]
         end
 
         def namespace
@@ -94,8 +56,8 @@ module Users
           @namespace_settings ||= namespace&.namespace_settings
         end
 
-        def admins
-          @admins ||= namespace&.owners
+        def active_admins
+          @active_admins ||= namespace&.owners&.active
         end
 
         def max_project_downloads
