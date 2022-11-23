@@ -164,6 +164,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
         expect(Rake::Task['gitlab:elastic:clear_index_status']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_projects']).to receive(:invoke).ordered
         expect(Rake::Task['gitlab:elastic:index_snippets']).to receive(:invoke).ordered
+        expect(Rake::Task['gitlab:elastic:index_users']).to receive(:invoke).ordered
 
         subject
       end
@@ -220,6 +221,16 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
         expect(Snippet).to receive(:es_import)
 
         run_rake_task 'gitlab:elastic:index_snippets'
+      end
+    end
+
+    describe 'index_users' do
+      let_it_be(:users) { create_list(:user, 2) }
+
+      it 'queues jobs for all users' do
+        expect(Elastic::ProcessInitialBookkeepingService).to receive(:track!).with(*users).once
+
+        run_rake_task 'gitlab:elastic:index_users'
       end
     end
 

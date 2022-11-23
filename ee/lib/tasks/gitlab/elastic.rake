@@ -29,6 +29,7 @@ namespace :gitlab do
 
       Rake::Task["gitlab:elastic:index_projects"].invoke
       Rake::Task["gitlab:elastic:index_snippets"].invoke
+      Rake::Task["gitlab:elastic:index_users"].invoke
     end
 
     desc 'GitLab | Elasticsearch | Enable Elasticsearch search'
@@ -91,6 +92,18 @@ namespace :gitlab do
       Snippet.es_import
 
       logger.info("Indexing snippets... " + "done".color(:green))
+    end
+
+    desc "GitLab | Elasticsearch | Index all users"
+    task index_users: :environment do
+      logger = Logger.new($stdout)
+      logger.info("Indexing users...")
+
+      User.each_batch do |users|
+        ::Elastic::ProcessInitialBookkeepingService.track!(*users)
+      end
+
+      logger.info("Indexing users... " + "done".color(:green))
     end
 
     desc "GitLab | Elasticsearch | Create empty indexes and assigns an alias for each"
