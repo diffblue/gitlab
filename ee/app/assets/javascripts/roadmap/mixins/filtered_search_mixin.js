@@ -5,6 +5,7 @@ import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 
 import {
+  FILTERED_SEARCH_TERM,
   OPERATORS_IS,
   OPERATOR_NOT,
   OPERATOR_IS,
@@ -326,7 +327,7 @@ export default {
           case TOKEN_TYPE_EPIC:
             filterParams.epicIid = filter.value.data;
             break;
-          case 'filtered-search-term':
+          case FILTERED_SEARCH_TERM:
             if (filter.value.data) plainText.push(filter.value.data);
             break;
           default:

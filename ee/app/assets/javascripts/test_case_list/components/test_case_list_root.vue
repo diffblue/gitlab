@@ -9,6 +9,7 @@ import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_util
 
 import { s__ } from '~/locale';
 import {
+  FILTERED_SEARCH_TERM,
   OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_LABEL,
@@ -291,7 +292,7 @@ export default {
           case TOKEN_TYPE_LABEL:
             labels.push(filter.value.data);
             break;
-          case 'filtered-search-term':
+          case FILTERED_SEARCH_TERM:
             if (filter.value.data) plainText.push(filter.value.data);
             break;
           default:

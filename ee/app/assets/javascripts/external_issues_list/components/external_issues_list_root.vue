@@ -12,10 +12,10 @@ import {
 } from '~/vue_shared/issuable/list/constants';
 import { i18n } from '~/issues/list/constants';
 import {
-  FILTERED_SEARCH_LABELS,
   FILTERED_SEARCH_TERM,
   OPERATORS_IS,
   TOKEN_TITLE_LABEL,
+  TOKEN_TYPE_LABEL,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import LabelToken from '~/vue_shared/components/filtered_search_bar/tokens/label_token.vue';
 
@@ -136,7 +136,7 @@ export default {
     getFilteredSearchTokens() {
       return [
         {
-          type: FILTERED_SEARCH_LABELS,
+          type: TOKEN_TYPE_LABEL,
           icon: 'labels',
           symbol: '~',
           title: TOKEN_TITLE_LABEL,
@@ -158,7 +158,7 @@ export default {
       if (labels) {
         filteredSearchValue.push(
           ...labels.map((label) => ({
-            type: FILTERED_SEARCH_LABELS,
+            type: TOKEN_TYPE_LABEL,
             value: { data: label },
           })),
         );
@@ -200,7 +200,7 @@ export default {
         if (!filter.value.data) return;
 
         switch (filter.type) {
-          case FILTERED_SEARCH_LABELS:
+          case TOKEN_TYPE_LABEL:
             labels.push(filter.value.data);
             break;
           case FILTERED_SEARCH_TERM:

@@ -1,5 +1,6 @@
 import { shallowMount } from '@vue/test-utils';
 import SearchAndSortBar from 'ee/usage_quotas/components/search_and_sort_bar/search_and_sort_bar.vue';
+import { FILTERED_SEARCH_TERM } from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSortContainerRoot from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 
 describe('SearchAndSortBar', () => {
@@ -35,21 +36,21 @@ describe('SearchAndSortBar', () => {
       filteredSortContainerRoot.vm.$emit('onFilter', [
         {
           id: 'token-1',
-          type: 'filtered-search-term',
+          type: FILTERED_SEARCH_TERM,
           value: {
             data: 'abc',
           },
         },
         {
           id: 'token-2',
-          type: 'filtered-search-term',
+          type: FILTERED_SEARCH_TERM,
           value: {
             data: 'def',
           },
         },
         {
           id: 'token-3',
-          type: 'filtered-search-term',
+          type: FILTERED_SEARCH_TERM,
           value: {
             data: '123',
           },

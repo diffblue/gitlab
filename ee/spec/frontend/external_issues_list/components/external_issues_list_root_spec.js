@@ -11,6 +11,10 @@ import jiraIssuesResolver from 'ee/integrations/jira/issues_list/graphql/resolve
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
+import {
+  FILTERED_SEARCH_TERM,
+  TOKEN_TYPE_LABEL,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import { i18n } from '~/issues/list/constants';
 import axios from '~/lib/utils/axios_utils';
@@ -64,8 +68,8 @@ describe('ExternalIssuesListRoot', () => {
   const findIssuableList = () => wrapper.findComponent(IssuableList);
   const findAlert = () => wrapper.findComponent(GlAlert);
   const findAlertMessage = () => findAlert().find('span');
-  const createLabelFilterEvent = (data) => ({ type: 'labels', value: { data } });
-  const createSearchFilterEvent = (data) => ({ type: 'filtered-search-term', value: { data } });
+  const createLabelFilterEvent = (data) => ({ type: TOKEN_TYPE_LABEL, value: { data } });
+  const createSearchFilterEvent = (data) => ({ type: FILTERED_SEARCH_TERM, value: { data } });
 
   const expectErrorHandling = (expectedRenderedErrorMessage) => {
     const issuesList = findIssuableList();
@@ -151,8 +155,8 @@ describe('ExternalIssuesListRoot', () => {
       const issuableList = findIssuableList();
 
       expect(issuableList.props('initialFilterValue')).toEqual([
-        { type: 'labels', value: { data: mockLabel } },
-        { type: 'filtered-search-term', value: { data: mockSearchTerm } },
+        { type: TOKEN_TYPE_LABEL, value: { data: mockLabel } },
+        { type: FILTERED_SEARCH_TERM, value: { data: mockSearchTerm } },
       ]);
       expect(issuableList.props('urlParams').search).toBe(mockSearchTerm);
     });

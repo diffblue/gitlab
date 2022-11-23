@@ -29295,9 +29295,6 @@ msgstr ""
 msgid "PackageRegistry|To widen your search, change or remove the filters above."
 msgstr ""
 
-msgid "PackageRegistry|Type"
-msgstr ""
-
 msgid "PackageRegistry|Unable to fetch package version information."
 msgstr ""
 

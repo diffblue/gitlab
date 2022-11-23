@@ -27,6 +27,7 @@ import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import { queryToObject } from '~/lib/utils/url_utility';
 import {
+  FILTERED_SEARCH_TERM,
   TOKEN_TYPE_AUTHOR,
   TOKEN_TYPE_STATUS,
 } from '~/vue_shared/components/filtered_search_bar/constants';
@@ -873,7 +874,7 @@ describe('RequirementsRoot', () => {
             { type: TOKEN_TYPE_AUTHOR, value: { data: 'root' } },
             { type: TOKEN_TYPE_AUTHOR, value: { data: 'john.doe' } },
             { type: TOKEN_TYPE_STATUS, value: { data: 'satisfied' } },
-            { type: 'filtered-search-term', value: { data: 'foo' } },
+            { type: FILTERED_SEARCH_TERM, value: { data: 'foo' } },
           ]),
         });
       });

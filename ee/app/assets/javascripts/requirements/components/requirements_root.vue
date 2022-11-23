@@ -8,6 +8,7 @@ import { __, sprintf } from '~/locale';
 import Tracking from '~/tracking';
 
 import {
+  FILTERED_SEARCH_TERM,
   OPTION_ANY,
   OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
@@ -321,7 +322,7 @@ export default {
 
       if (this.textSearch) {
         value.push({
-          type: 'filtered-search-term',
+          type: FILTERED_SEARCH_TERM,
           value: { data: this.textSearch },
         });
       }
@@ -634,7 +635,7 @@ export default {
           case TOKEN_TYPE_STATUS:
             status = filter.value.data;
             break;
-          case 'filtered-search-term':
+          case FILTERED_SEARCH_TERM:
             if (filter.value.data) textSearch.push(filter.value.data);
             break;
           default:

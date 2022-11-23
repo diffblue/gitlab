@@ -1,5 +1,6 @@
 import StatusToken from 'ee/requirements/components/tokens/status_token.vue';
 import {
+  FILTERED_SEARCH_TERM,
   OPERATORS_IS,
   TOKEN_TITLE_AUTHOR,
   TOKEN_TITLE_STATUS,
@@ -161,7 +162,7 @@ export const mockFilters = [
     value: { data: 'satisfied' },
   },
   {
-    type: 'filtered-search-term',
+    type: FILTERED_SEARCH_TERM,
     value: { data: 'foo' },
   },
 ];
