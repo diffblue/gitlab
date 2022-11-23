@@ -30,10 +30,7 @@ module EE
       end
 
       scope :preload_for_cluster_environment_entity, -> do
-        preload(
-          last_deployment: [:deployable],
-          project: [:route, { namespace: :route }]
-        )
+        preload({ project: [:route, { namespace: :route }] })
       end
     end
 
