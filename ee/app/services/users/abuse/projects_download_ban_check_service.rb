@@ -24,7 +24,7 @@ module Users
         return false unless ::Feature.enabled?(:git_abuse_rate_limit_feature_flag, user)
         return false unless License.feature_available?(:git_abuse_rate_limit)
 
-        result = ExcessiveProjectsDownloadBanService.execute(user, project)
+        result = GitAbuse::ApplicationThrottleService.execute(user, project)
 
         result[:banned]
       end
@@ -33,7 +33,7 @@ module Users
         return false unless ::Feature.enabled?(:limit_unique_project_downloads_per_namespace_user, namespace)
         return false unless License.feature_available?(:unique_project_download_limit)
 
-        result = GitAbuse::NamespaceThrottleService.execute(project, user)
+        result = GitAbuse::NamespaceThrottleService.execute(user, project)
 
         result[:banned]
       end

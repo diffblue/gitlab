@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
+RSpec.describe Users::Abuse::GitAbuse::ApplicationThrottleService do
   describe '.execute' do
     let_it_be(:limit) { 3 }
     let_it_be(:time_period_in_seconds) { 60 }
@@ -30,9 +30,10 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'returns { banned: false }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: false)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: false)
       end
 
       it 'does not ban the user' do
@@ -48,9 +49,10 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'returns { banned: true }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: true)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: true)
       end
 
       it 'bans the user' do
@@ -60,19 +62,23 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'logs the event', :aggregate_failures do
-        expect(Gitlab::AppLogger).to receive(:info).with({
-          message: "User exceeded max projects download within set time period",
-          username: user.username,
-          max_project_downloads: limit,
-          time_period_s: time_period_in_seconds
-        })
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          {
+            message: "User exceeded max projects download within set time period for application",
+            username: user.username,
+            max_project_downloads: limit,
+            time_period_s: time_period_in_seconds
+          }
+        )
 
-        expect(Gitlab::AppLogger).to receive(:info).with({
-          message: "User ban",
-          user: user.username,
-          email: user.email,
-          ban_by: described_class.name
-        })
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          {
+            message: "Application-level user ban",
+            user: user.username,
+            email: user.email,
+            ban_by: described_class.name
+          }
+        )
 
         execute
       end
@@ -81,7 +87,8 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
         opts = {
           max_project_downloads: limit,
           within_seconds: time_period_in_seconds,
-          auto_ban_enabled: true
+          auto_ban_enabled: true,
+          group: nil
         }
 
         expect(Notify).to receive(:user_auto_banned_email).with(admin.id, user.id, opts).once.and_return(mail_instance)
@@ -115,9 +122,10 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'returns { banned: false }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: false)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: false)
       end
 
       it 'does not ban the user' do
@@ -127,19 +135,23 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'logs a notification event but not a ban event', :aggregate_failures do
-        expect(Gitlab::AppLogger).to receive(:info).with({
-          message: "User exceeded max projects download within set time period",
-          username: user.username,
-          max_project_downloads: limit,
-          time_period_s: time_period_in_seconds
-        })
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          {
+            message: "User exceeded max projects download within set time period for application",
+            username: user.username,
+            max_project_downloads: limit,
+            time_period_s: time_period_in_seconds
+          }
+        )
 
-        expect(Gitlab::AppLogger).not_to receive(:info).with({
-          message: "User ban",
-          user: user.username,
-          email: user.email,
-          ban_by: described_class.name
-        })
+        expect(Gitlab::AppLogger).not_to receive(:info).with(
+          {
+            message: "Application-level user ban",
+            user: user.username,
+            email: user.email,
+            ban_by: described_class.name
+          }
+        )
 
         execute
       end
@@ -148,7 +160,8 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
         opts = {
           max_project_downloads: limit,
           within_seconds: time_period_in_seconds,
-          auto_ban_enabled: false
+          auto_ban_enabled: false,
+          group: nil
         }
         expect(Notify).to receive(:user_auto_banned_email).with(admin.id, user.id, opts).once.and_return(mail_instance)
         expect(mail_instance).to receive(:deliver_later)
@@ -165,26 +178,31 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'returns { banned: true }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: true)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: true)
       end
 
       it 'logs a notification event and user already banned event', :aggregate_failures do
-        expect(Gitlab::AppLogger).to receive(:info).with({
-          message: "User exceeded max projects download within set time period",
-          username: user.username,
-          max_project_downloads: limit,
-          time_period_s: time_period_in_seconds
-        })
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          {
+            message: "User exceeded max projects download within set time period for application",
+            username: user.username,
+            max_project_downloads: limit,
+            time_period_s: time_period_in_seconds
+          }
+        )
 
-        expect(Gitlab::AppLogger).to receive(:info).with({
-          message: "Invalid transition when banning: " \
-            "Cannot transition state via :ban from :banned (Reason(s): State cannot transition via \"ban\")",
-          user: user.username,
-          email: user.email,
-          ban_by: described_class.name
-        })
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          {
+            message: "Invalid transition when banning: " \
+              "Cannot transition state via :ban from :banned (Reason(s): State cannot transition via \"ban\")",
+            user: user.username,
+            email: user.email,
+            ban_by: described_class.name
+          }
+        )
 
         execute
       end
@@ -193,7 +211,8 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
         opts = {
           max_project_downloads: limit,
           within_seconds: time_period_in_seconds,
-          auto_ban_enabled: true
+          auto_ban_enabled: true,
+          group: nil
         }
         expect(Notify).to receive(:user_auto_banned_email).with(admin.id, user.id, opts).once.and_return(mail_instance)
         expect(mail_instance).to receive(:deliver_later)
@@ -210,9 +229,10 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
       end
 
       it 'returns { banned: false }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: false)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: false)
       end
 
       it 'does not ban the user' do
@@ -242,6 +262,8 @@ RSpec.describe Users::Abuse::ExcessiveProjectsDownloadBanService do
     args = {
       scope: user,
       resource: resource,
+      threshold: limit,
+      interval: time_period_in_seconds,
       users_allowlist: allowlist
     }
 

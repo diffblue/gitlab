@@ -27,7 +27,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
 
     let(:mail_instance) { instance_double(ActionMailer::MessageDelivery, deliver_later: true) }
 
-    subject(:execute) { described_class.execute(project, user) }
+    subject(:execute) { described_class.execute(user, project) }
 
     before do
       namespace.add_owner(namespace_admin)
@@ -40,9 +40,10 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       end
 
       it 'returns { banned: false }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: false)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: false)
       end
 
       it 'does not ban the user' do
@@ -58,9 +59,10 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       end
 
       it 'returns { banned: true }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: true)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: true)
       end
 
       it 'bans the user' do
@@ -128,7 +130,7 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
         it 'does not send another email to namespace admins', :mailer do
           expect(Notify).not_to receive(:user_auto_banned_email)
 
-          described_class.execute(another_project, user)
+          described_class.execute(user, another_project)
         end
       end
     end
@@ -141,9 +143,10 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       end
 
       it 'returns { banned: false }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: false)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: false)
       end
 
       it 'does not ban the user' do
@@ -198,9 +201,10 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       end
 
       it 'returns { banned: true }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: true)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: true)
       end
 
       it 'user remains banned' do
@@ -239,9 +243,10 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       end
 
       it 'returns { banned: false }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: false)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: false)
       end
 
       it 'does not ban the user' do
@@ -273,9 +278,10 @@ RSpec.describe Users::Abuse::GitAbuse::NamespaceThrottleService do
       end
 
       it 'returns { banned: false }' do
-        execute
+        response = execute
 
-        expect(execute).to include(banned: false)
+        expect(response).to be_success
+        expect(response.payload).to eq(banned: false)
       end
 
       it 'does not ban the user' do
