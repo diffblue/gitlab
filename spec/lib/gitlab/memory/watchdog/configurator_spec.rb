@@ -133,7 +133,7 @@ RSpec.describe Gitlab::Memory::Watchdog::Configurator do
                     described_class::DEFAULT_SLEEP_INTERVAL_S
 
     context 'with DISABLE_PUMA_WORKER_KILLER set to true' do
-      let(:primary_memory_bytes) { 2000.megabytes }
+      let(:primary_memory_bytes) { 2_097_152_000 }
       let(:worker_memory_bytes) { max_mem_growth * primary_memory_bytes + 1 }
       let(:expected_payloads) do
         {

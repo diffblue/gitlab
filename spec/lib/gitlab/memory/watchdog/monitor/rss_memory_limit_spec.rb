@@ -4,8 +4,8 @@ require 'fast_spec_helper'
 require 'support/shared_examples/lib/gitlab/memory/watchdog/monitor_result_shared_examples'
 
 RSpec.describe Gitlab::Memory::Watchdog::Monitor::RssMemoryLimit do
-  let(:memory_limit_bytes) { 2000.megabytes }
-  let(:worker_memory_bytes) { 1000.megabytes }
+  let(:memory_limit_bytes) { 2_097_152_000 }
+  let(:worker_memory_bytes) { 1_048_576_000 }
 
   subject(:monitor) do
     described_class.new(memory_limit_bytes: memory_limit_bytes)
