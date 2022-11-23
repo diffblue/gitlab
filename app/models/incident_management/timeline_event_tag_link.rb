@@ -7,7 +7,5 @@ module IncidentManagement
     belongs_to :timeline_event_tag, class_name: 'IncidentManagement::TimelineEventTag'
 
     belongs_to :timeline_event, class_name: 'IncidentManagement::TimelineEvent'
-
-    scope :by_tag_ids, -> (ids) { where(timeline_event_tag_id: ids) }
   end
 end
