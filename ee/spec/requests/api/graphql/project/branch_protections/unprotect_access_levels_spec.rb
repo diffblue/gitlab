@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe 'getting unprotect access levels for a branch protection' do
-  include_examples 'perform graphql requests for AccessLevel type objects', :unprotect do
+  it_behaves_like 'a GraphQL query for access levels', :unprotect do
     include_examples 'AccessLevel type objects contains user and group', :unprotect
   end
 end

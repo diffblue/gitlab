@@ -10,8 +10,7 @@ module EE
           field :unprotect_access_levels,
                 type: ::Types::BranchProtections::UnprotectAccessLevelType.connection_type,
                 null: true,
-                description: 'Details about who can unprotect this branch.',
-                complexity: 5
+                description: 'Details about who can unprotect this branch.'
 
           field :code_owner_approval_required,
                 type: GraphQL::Types::Boolean,
