@@ -106,10 +106,10 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form' do
   context 'when elasticsearch_aws_secret_access_key is set' do
     let(:application_setting) { build(:application_setting, elasticsearch_aws_secret_access_key: 'elasticsearch_aws_secret_access_key') }
 
-    it 'has field with "Enter new AWS Secret Access Key" label and no value' do
+    it 'has field with "Enter new AWS Secret Access Key" label and a masked value' do
       render
       expect(rendered).to have_field('Enter new AWS Secret Access Key', type: 'password')
-      expect(page.find_field('Enter new AWS Secret Access Key').value).to be_blank
+      expect(page.find_field('Enter new AWS Secret Access Key').value).to eq(ApplicationSetting::MASK_PASSWORD)
     end
   end
 
