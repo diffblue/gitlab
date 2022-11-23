@@ -12,7 +12,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::BranchCheck do
     it_behaves_like 'check ignored when push rule unlicensed'
 
     it 'rejects the branch that is not allowed' do
-      expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Branch name does not follow the pattern '^(w*)$'")
+      expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Branch name 'a-branch-that-is-not-allowed' does not follow the pattern '^(w*)$'")
     end
 
     it 'returns an error if the regex is invalid' do
@@ -35,7 +35,7 @@ RSpec.describe EE::Gitlab::Checks::PushRules::BranchCheck do
       end
 
       it 'rejects the branch that is not allowed' do
-        expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Branch name does not follow the pattern '^(w*)$'")
+        expect { subject.validate! }.to raise_error(Gitlab::GitAccess::ForbiddenError, "Branch name 'a-branch-that-is-not-allowed' does not follow the pattern '^(w*)$'")
       end
     end
 
