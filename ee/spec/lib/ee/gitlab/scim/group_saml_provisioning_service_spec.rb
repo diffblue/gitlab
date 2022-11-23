@@ -2,10 +2,20 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
+RSpec.describe ::EE::Gitlab::Scim::GroupSamlProvisioningService, :saas,
+feature_category: :authentication_and_authorization do
   describe '#execute' do
     let(:group) { create(:group) }
-    let(:service) { described_class.new(group, service_params) }
+    let_it_be(:service_params) do
+      {
+        email: 'work@example.com',
+        name: 'Test Name',
+        extern_uid: 'test_uid',
+        username: 'username'
+      }
+    end
+
+    let(:service) { described_class.new(service_params, group) }
     let(:enforced_sso) { false }
     let!(:saml_provider) do
       create(:saml_provider, group: group,
@@ -43,25 +53,7 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
       end
     end
 
-    let_it_be(:service_params) do
-      {
-        email: 'work@example.com',
-        name: 'Test Name',
-        extern_uid: 'test_uid',
-        username: 'username'
-      }
-    end
-
-    context 'valid params' do
-      let_it_be(:service_params) do
-        {
-          email: 'work@example.com',
-          name: 'Test Name',
-          extern_uid: 'test_uid',
-          username: 'username'
-        }
-      end
-
+    context 'when valid params' do
       def user
         User.find_by(email: service_params[:email])
       end
@@ -82,7 +74,7 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
         expect(user).to be_a(User)
       end
 
-      context 'access level of created group member' do
+      context 'when access level is given for created group member' do
         let!(:saml_provider) do
           create(:saml_provider, group: group, default_membership_role: Gitlab::Access::DEVELOPER)
         end
@@ -128,7 +120,30 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
       end
     end
 
-    context 'invalid params' do
+    context 'when a provisioning error occurs' do
+      let(:result) { StandardError.new("testing error") }
+      let(:log_params) do
+        {
+          error: result.class.name,
+          message: "testing error"
+        }
+      end
+
+      let(:logger) { described_class.new(service_params, group).send(:logger) }
+
+      before do
+        allow(service).to receive(:logger).and_return(logger)
+      end
+
+      it 'logs error to standard error' do
+        allow(service).to receive(:create_user_and_member).and_raise(result)
+        expect(logger).to receive(:error).with(hash_including(log_params))
+
+        service.execute
+      end
+    end
+
+    context 'when invalid params' do
       let_it_be(:service_params) do
         {
           email: 'work@example.com',
@@ -158,6 +173,7 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
       before do
         create(:email, :confirmed, user: user, email: 'work@example.com')
       end
+
       let(:user) { create(:user) }
 
       context 'when user is not a group member' do
@@ -193,6 +209,22 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
 
         it 'does not create the group member' do
           expect { service.execute }.not_to change { GroupMember.count }
+        end
+
+        context 'when error in create identity' do
+          let(:error_response) { described_class.new(service_params, group).send(:error_response) }
+          let(:provision_response) do
+            ::EE::Gitlab::Scim::ProvisioningResponse.new(status: :error,
+                                                         message: "undefined method `save' for nil:NilClass")
+          end
+
+          before do
+            allow(service).to receive(:identity).and_return(nil)
+          end
+
+          it 'returns provision response error' do
+            expect(service.execute.to_json).to eq(provision_response.to_json)
+          end
         end
       end
     end
