@@ -5,18 +5,16 @@ module EE
     module UsageDataCounters
       extend ActiveSupport::Concern
 
-      EE_COUNTERS = [
-        ::Gitlab::UsageDataCounters::LicensesList,
-        ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter,
-        ::Gitlab::UsageDataCounters::LicenseTestingCounter
-      ].freeze
-
       class_methods do
         extend ::Gitlab::Utils::Override
 
         override :counters
         def counters
-          super + EE_COUNTERS
+          super + [
+            ::Gitlab::UsageDataCounters::LicensesList,
+            ::Gitlab::StatusPage::UsageDataCounters::IncidentCounter,
+            ::Gitlab::UsageDataCounters::LicenseTestingCounter
+          ]
         end
       end
     end
