@@ -40271,6 +40271,12 @@ msgstr ""
 msgid "TasksToBeDone|Set up CI/CD pipelines to build, test, deploy, and monitor code"
 msgstr ""
 
+msgid "Tasks|%{complete_count} of %{total_count} %{checklist_item_noun} completed"
+msgstr ""
+
+msgid "Tasks|%{complete_count}/%{total_count} %{checklist_item_noun}"
+msgstr ""
+
 msgid "Team"
 msgstr ""
 
@@ -47957,6 +47963,11 @@ msgstr[1] ""
 
 msgid "check"
 msgid_plural "checks"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "checklist item"
+msgid_plural "checklist items"
 msgstr[0] ""
 msgstr[1] ""
 
