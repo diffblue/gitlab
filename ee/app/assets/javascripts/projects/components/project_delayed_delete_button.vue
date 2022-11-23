@@ -18,7 +18,7 @@ export default {
       type: String,
       required: true,
     },
-    adjournedRemovalDate: {
+    delayedDeletionDate: {
       type: String,
       required: true,
     },
@@ -70,7 +70,7 @@ export default {
         class="gl-display-flex gl-display-flex gl-align-items-center gl-mt-3 gl-mb-0 gl-text-gray-500"
       >
         <gl-sprintf :message="$options.strings.restoreMessage">
-          <template #date>{{ adjournedRemovalDate }}</template>
+          <template #date>{{ delayedDeletionDate }}</template>
         </gl-sprintf>
         <gl-link
           :aria-label="$options.strings.restoreLabel"

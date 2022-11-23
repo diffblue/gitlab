@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Project remove modal initialized matches the snapshot 1`] = `
+exports[`Project delayed delete modal initialized matches the snapshot 1`] = `
 <form
   action="some/path"
   method="post"

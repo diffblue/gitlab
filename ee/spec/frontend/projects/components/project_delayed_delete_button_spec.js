@@ -1,17 +1,17 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlSprintf } from '@gitlab/ui';
-import ProjectAdjournedDeleteButton from 'ee/projects/components/project_adjourned_delete_button.vue';
+import ProjectDelayedDeleteButton from 'ee/projects/components/project_delayed_delete_button.vue';
 import SharedDeleteButton from '~/projects/components/shared/delete_button.vue';
 
 jest.mock('lodash/uniqueId', () => () => 'fakeUniqueId');
 
-describe('Project remove modal', () => {
+describe('Project delayed delete modal', () => {
   let wrapper;
 
   const findSharedDeleteButton = () => wrapper.findComponent(SharedDeleteButton);
 
   const defaultProps = {
-    adjournedRemovalDate: '2020-12-12',
+    delayedDeletionDate: '2020-12-12',
     confirmPhrase: 'foo',
     formPath: 'some/path',
     restoreHelpPath: 'recovery/help/path',
@@ -23,7 +23,7 @@ describe('Project remove modal', () => {
   };
 
   const createComponent = (props = {}) => {
-    wrapper = shallowMount(ProjectAdjournedDeleteButton, {
+    wrapper = shallowMount(ProjectDelayedDeleteButton, {
       propsData: {
         ...defaultProps,
         ...props,
