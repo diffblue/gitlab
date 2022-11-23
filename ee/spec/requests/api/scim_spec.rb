@@ -167,7 +167,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
 
       context 'when a provisioning error occurs' do
         before do
-          allow_next_instance_of(::EE::Gitlab::Scim::GroupSamlProvisioningService) do |instance|
+          allow_next_instance_of(::EE::Gitlab::Scim::Group::ProvisioningService) do |instance|
             allow(instance).to receive(:execute).and_return(::EE::Gitlab::Scim::ProvisioningResponse.new(status: :error))
           end
 
@@ -370,7 +370,7 @@ RSpec.describe API::Scim, feature_category: :authentication_and_authorization do
         end
 
         it 'does not call reprovision service when identity is already active' do
-          expect(::EE::Gitlab::Scim::GroupSamlReprovisionService).not_to receive(:new)
+          expect(::EE::Gitlab::Scim::Group::ReprovisioningService).not_to receive(:new)
 
           call_patch_api(params)
         end

@@ -44834,6 +44834,12 @@ msgstr ""
 msgid "User %{username} was successfully removed."
 msgstr ""
 
+msgid "User %{user} SCIM identity is deactivated"
+msgstr ""
+
+msgid "User %{user} SCIM identity is reactivated"
+msgstr ""
+
 msgid "User %{user} was removed from %{group}."
 msgstr ""
 
