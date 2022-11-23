@@ -20302,6 +20302,12 @@ msgstr ""
 msgid "Hierarchy|Planning hierarchy"
 msgstr ""
 
+msgid "Hierarchy|Something went wrong while fetching children."
+msgstr ""
+
+msgid "Hierarchy|Something went wrong while removing a child item."
+msgstr ""
+
 msgid "Hierarchy|Take the work items survey"
 msgstr ""
 
@@ -23901,9 +23907,6 @@ msgid "Key"
 msgstr ""
 
 msgid "Key (PEM)"
-msgstr ""
-
-msgid "Key result"
 msgstr ""
 
 msgid "Key:"
@@ -46877,7 +46880,7 @@ msgstr ""
 msgid "WorkItem|Iteration"
 msgstr ""
 
-msgid "WorkItem|Key result"
+msgid "WorkItem|Key Result"
 msgstr ""
 
 msgid "WorkItem|Milestone"
@@ -46962,6 +46965,12 @@ msgid "WorkItem|Something went wrong when trying to create a child. Please try a
 msgstr ""
 
 msgid "WorkItem|Something went wrong while fetching milestones. Please try again."
+msgstr ""
+
+msgid "WorkItem|Something went wrong while removing child."
+msgstr ""
+
+msgid "WorkItem|Something went wrong while undoing child removal."
 msgstr ""
 
 msgid "WorkItem|Something went wrong while updating the %{workItemType}. Please try again."
