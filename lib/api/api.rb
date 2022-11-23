@@ -293,8 +293,7 @@ module API
       mount ::API::DebianProjectPackages
       mount ::API::Discussions
       mount ::API::ErrorTracking::Collector
-      mount ::API::Events
-      mount ::API::Files
+      mount ::API::ErrorTracking::ProjectSettings
       mount ::API::GenericPackages
       mount ::API::GroupBoards
       mount ::API::GroupDebianDistributions
