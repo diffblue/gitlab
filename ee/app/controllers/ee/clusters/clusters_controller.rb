@@ -32,6 +32,9 @@ module EE
 
             environments = ::Clusters::EnvironmentsFinder.new(cluster, current_user).execute
 
+            ::Preloaders::Environments::DeploymentPreloader.new(environments)
+              .execute_with_union(:last_deployment, { deployable: [] })
+
             render json: serialize_environments(
               environments.preload_for_cluster_environment_entity,
               request,
