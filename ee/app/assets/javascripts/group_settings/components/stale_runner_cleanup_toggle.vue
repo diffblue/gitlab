@@ -150,7 +150,7 @@ export default {
         <gl-sprintf
           :message="
             s__(
-              'Runners|A periodic background task deletes runners that haven\'t contacted GitLab in more than %{elapsedTime}. %{linkStart}Can I view how many runners were deleted?%{linkEnd}',
+              'Runners|A periodic background task deletes runners that haven\'t contacted GitLab in more than %{elapsedTime}. Only runners registered in this group are deleted. Runners in subgroups and projects are not. %{linkStart}Can I view how many runners were deleted?%{linkEnd}',
             )
           "
         >
