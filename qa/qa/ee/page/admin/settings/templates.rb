@@ -7,7 +7,7 @@ module QA
         module Settings
           class Templates < QA::Page::Base
             include ::QA::Page::Settings::Common
-            include ::QA::Page::Component::Select2
+            include ::QA::Page::Component::Dropdown
 
             view 'ee/app/views/admin/application_settings/_custom_templates_form.html.haml' do
               element :custom_project_template_container
@@ -29,7 +29,14 @@ module QA
               within_element(:custom_project_template_container) do
                 clear_current_selection_if_present
                 expand_select_list
+
+                unless use_select2?
+                  search_and_select(path)
+                  click_element(:save_changes_button)
+                  return # rubocop:disable Cop/AvoidReturnFromBlocks
+                end
               end
+
               search_and_select(path)
               click_element(:save_changes_button)
             end
