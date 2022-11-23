@@ -25410,6 +25410,12 @@ msgstr ""
 msgid "MemberInviteEmail|Invitation to join the %{project_or_group} %{project_or_group_name}"
 msgstr ""
 
+msgid "MemberRole|can't be changed"
+msgstr ""
+
+msgid "MemberRole|must be top-level namespace"
+msgstr ""
+
 msgid "Members"
 msgstr ""
 
@@ -49253,6 +49259,9 @@ msgstr ""
 msgid "must be greater than start date"
 msgstr ""
 
+msgid "must be in same hierarchy as custom role's namespace"
+msgstr ""
+
 msgid "must be inside the fork network"
 msgstr ""
 
@@ -49260,9 +49269,6 @@ msgid "must be less than the limit of %{tag_limit} tags"
 msgstr ""
 
 msgid "must be set for a project namespace"
-msgstr ""
-
-msgid "must be top-level namespace"
 msgstr ""
 
 msgid "must be unique by status and elapsed time within a policy"
