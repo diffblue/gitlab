@@ -69,7 +69,7 @@ describe('MaintenanceModeSettingsApp', () => {
         expect(findMaintenanceModeSettingsForm().exists()).toBe(true);
       });
 
-      it('renders the Submit Button', () => {
+      it('renders the submit button', () => {
         expect(findSubmitButton().exists()).toBe(true);
       });
     });
