@@ -368,6 +368,12 @@ module EE
       super
     end
 
+    def elasticsearch_aws_secret_access_key=(value)
+      return if value == MASK_PASSWORD
+
+      super
+    end
+
     def elasticsearch_url_with_credentials
       elasticsearch_url.map do |uri|
         ::Gitlab::Elastic::Helper.connection_settings(uri: uri, user: elasticsearch_username, password: elasticsearch_password)
