@@ -48020,6 +48020,9 @@ msgstr ""
 msgid "ciReport|%{scanner} detected no new potential vulnerabilities"
 msgstr ""
 
+msgid "ciReport|%{scanner}: Loading resulted in an error"
+msgstr ""
+
 msgid "ciReport|: Loading resulted in an error"
 msgstr ""
 
