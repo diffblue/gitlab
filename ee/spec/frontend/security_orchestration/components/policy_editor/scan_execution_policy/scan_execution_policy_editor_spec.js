@@ -19,12 +19,7 @@ import {
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { modifyPolicy } from 'ee/security_orchestration/components/policy_editor/utils';
-import {
-  EDITOR_MODES,
-  EDITOR_MODE_RULE,
-  EDITOR_MODE_YAML,
-  SECURITY_POLICY_ACTIONS,
-} from 'ee/security_orchestration/components/policy_editor/constants';
+import { SECURITY_POLICY_ACTIONS } from 'ee/security_orchestration/components/policy_editor/constants';
 import {
   DEFAULT_SCANNER,
   SCAN_EXECUTION_PIPELINE_RULE,
@@ -75,9 +70,6 @@ describe('ScanExecutionPolicyEditor', () => {
         policyEditorEmptyStateSvgPath,
         namespacePath: defaultProjectPath,
         scanPolicyDocumentationPath,
-        glFeatures: {
-          scanExecutionRuleMode: false,
-        },
         ...provide,
       },
     });
@@ -106,29 +98,7 @@ describe('ScanExecutionPolicyEditor', () => {
     wrapper.destroy();
   });
 
-  describe('default', () => {
-    beforeEach(() => {
-      factory();
-    });
-
-    it('displays the correct modes', async () => {
-      expect(findPolicyEditorLayout().attributes('editormodes')).toBe(EDITOR_MODES[1].toString());
-    });
-
-    it('defaults to yaml mode', async () => {
-      expect(findPolicyEditorLayout().attributes('defaulteditormode')).toBe(EDITOR_MODE_YAML);
-    });
-
-    it('updates the yaml when "update-yaml" is emitted', async () => {
-      const newManifest = 'enabled: true';
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(DEFAULT_SCAN_EXECUTION_POLICY);
-      findPolicyEditorLayout().vm.$emit('update-yaml', newManifest);
-      await nextTick();
-      expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(newManifest);
-    });
-  });
-
-  describe('modifying a policy', () => {
+  describe('saving a policy', () => {
     it.each`
       status                            | action                             | event              | factoryFn                    | yamlEditorValue                  | currentlyAssignedPolicyProject
       ${'to save a new policy'}         | ${SECURITY_POLICY_ACTIONS.APPEND}  | ${'save-policy'}   | ${factory}                   | ${DEFAULT_SCAN_EXECUTION_POLICY} | ${newlyCreatedPolicyProject}
@@ -173,21 +143,13 @@ describe('ScanExecutionPolicyEditor', () => {
     });
   });
 
-  describe('scan execution rule mode feature flag', () => {
-    beforeEach(() => {
-      factory({ provide: { glFeatures: { scanExecutionRuleMode: true } } });
-    });
-
-    it('displays the correct modes', () => {
-      expect(findPolicyEditorLayout().attributes('editormodes')).toBe(EDITOR_MODES.toString());
-    });
-
-    it('defaults to rule mode', () => {
-      expect(findPolicyEditorLayout().attributes('defaulteditormode')).toBe(EDITOR_MODE_RULE);
-    });
+  describe('modifying a policy', () => {
+    beforeEach(factory);
 
     it('updates the yaml and policy object when "update-yaml" is emitted', async () => {
-      const newManifest = 'enabled: true';
+      const newManifest = `name: test
+enabled: true`;
+
       expect(findPolicyEditorLayout().props('yamlEditorValue')).toBe(DEFAULT_SCAN_EXECUTION_POLICY);
       expect(findPolicyEditorLayout().props('policy')).toMatchObject(
         fromYaml({ manifest: DEFAULT_SCAN_EXECUTION_POLICY }),
@@ -220,9 +182,7 @@ describe('ScanExecutionPolicyEditor', () => {
   });
 
   describe('policy rule builder', () => {
-    beforeEach(() => {
-      factory({ provide: { glFeatures: { scanExecutionRuleMode: true } } });
-    });
+    beforeEach(factory);
 
     it('should add new rule', async () => {
       const initialValue = [RULE_KEY_MAP[SCAN_EXECUTION_PIPELINE_RULE]()];
@@ -283,9 +243,7 @@ describe('ScanExecutionPolicyEditor', () => {
   });
 
   describe('policy action builder', () => {
-    beforeEach(() => {
-      factory({ provide: { glFeatures: { scanExecutionRuleMode: true } } });
-    });
+    beforeEach(factory);
 
     it('should add new action', async () => {
       const initialValue = [buildScannerAction({ scanner: DEFAULT_SCANNER })];

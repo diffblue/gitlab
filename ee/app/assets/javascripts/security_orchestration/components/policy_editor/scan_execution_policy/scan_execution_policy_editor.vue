@@ -4,7 +4,6 @@ import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
-  EDITOR_MODES,
   EDITOR_MODE_RULE,
   EDITOR_MODE_YAML,
   GRAPHQL_ERROR_MESSAGE,
@@ -103,18 +102,6 @@ export default {
   computed: {
     originalName() {
       return this.existingPolicy?.name;
-    },
-    defaultEditorMode() {
-      if (this.glFeatures.scanExecutionRuleMode) {
-        return undefined;
-      }
-      return EDITOR_MODE_YAML;
-    },
-    editorModes() {
-      if (this.glFeatures.scanExecutionRuleMode) {
-        return undefined;
-      }
-      return [EDITOR_MODES[1]];
     },
   },
   methods: {
@@ -216,8 +203,6 @@ export default {
   <policy-editor-layout
     v-if="!disableScanPolicyUpdate"
     :custom-save-button-text="$options.i18n.createMergeRequest"
-    :default-editor-mode="defaultEditorMode"
-    :editor-modes="editorModes"
     :has-parsing-error="hasParsingError"
     :is-editing="isEditing"
     :is-removing-policy="isRemovingPolicy"
