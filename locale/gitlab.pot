@@ -47027,6 +47027,9 @@ msgstr ""
 msgid "You don't have permission to review this deployment. Contact the project or group owner for help."
 msgstr ""
 
+msgid "You don't have permission to view this epic"
+msgstr ""
+
 msgid "You don't have permissions to create this project"
 msgstr ""
 

@@ -180,6 +180,7 @@ export const epicAncestorsResponse = () => ({
               title: 'Ancestor epic',
               url: 'http://gdk.test:3000/groups/gitlab-org/-/epics/2',
               state: 'opened',
+              hasParent: false,
             },
           ],
         },
