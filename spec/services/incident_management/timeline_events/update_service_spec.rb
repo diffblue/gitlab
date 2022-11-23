@@ -232,6 +232,26 @@ RSpec.describe IncidentManagement::TimelineEvents::UpdateService do
               expect(timeline_event.timeline_event_tags.pluck_names).to contain_exactly(tag2.name)
             end
           end
+
+          context 'when all assigned tags are removed' do
+            let(:params) { { note: 'Updated note', occurred_at: occurred_at, timeline_event_tag_names: [] } }
+
+            it_behaves_like 'successful response'
+
+            it 'removes all the assigned tags' do
+              expect { execute }.to change { timeline_event.timeline_event_tags.count }.by(-1)
+            end
+
+            it 'removes all the assigned tag links' do
+              expect { execute }.to change { IncidentManagement::TimelineEventTagLink.count }.by(-1)
+            end
+
+            it 'does not contain any tags in response' do
+              timeline_event = execute.payload[:timeline_event]
+
+              expect(timeline_event.timeline_event_tags.pluck_names).to be_empty
+            end
+          end
         end
 
         context 'when they do not exist' do
