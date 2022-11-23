@@ -168,13 +168,7 @@ module Gitlab
 
       # Returns the number of valid branches
       def branch_count
-        if Feature.enabled?(:list_refs_for_find_all_tags_branches, self)
-          branch_names.count
-        else
-          wrapped_gitaly_errors do
-            gitaly_ref_client.count_branch_names
-          end
-        end
+        branch_names.count
       end
 
       def rename(new_relative_path)
@@ -216,13 +210,7 @@ module Gitlab
 
       # Returns the number of valid tags
       def tag_count
-        if Feature.enabled?(:list_refs_for_find_all_tags_branches, self)
-          tag_names.count
-        else
-          wrapped_gitaly_errors do
-            gitaly_ref_client.count_tag_names
-          end
-        end
+        tag_names.count
       end
 
       # Returns an Array of tag names
