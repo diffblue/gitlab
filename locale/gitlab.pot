@@ -24045,6 +24045,9 @@ msgstr ""
 msgid "Learn More."
 msgstr ""
 
+msgid "Learn about signing commits with SSH keys."
+msgstr ""
+
 msgid "Learn how to %{link_start}contribute to the built-in templates%{link_end}"
 msgstr ""
 
@@ -35747,6 +35750,9 @@ msgid "SSH host keys are not available on this system. Please use %{ssh_keyscan}
 msgstr ""
 
 msgid "SSH key"
+msgstr ""
+
+msgid "SSH key fingerprint:"
 msgstr ""
 
 msgid "SSH keys"
