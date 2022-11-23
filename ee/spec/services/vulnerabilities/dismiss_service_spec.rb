@@ -175,6 +175,7 @@ RSpec.describe Vulnerabilities::DismissService do
                 have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
               expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
               expect(vulnerability.finding.dismissal_feedback.finding_uuid).to eq(vulnerability.finding.uuid_v5)
+              expect(vulnerability.finding.dismissal_feedback.migrated_to_state_transition).to be_truthy
             end
           end
         end
@@ -192,7 +193,11 @@ RSpec.describe Vulnerabilities::DismissService do
                   have_attributes(state: 'dismissed', dismissed_by: user, dismissed_at: be_like_time(Time.current)))
                 expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
                 expect(vulnerability.findings.map(&:dismissal_feedback)).to(
-                  all(have_attributes(comment: comment, comment_author: user, comment_timestamp: be_like_time(Time.current), pipeline_id: pipeline.id)))
+                  all(have_attributes(comment: comment, comment_author: user,
+                                      comment_timestamp: be_like_time(Time.current), pipeline_id: pipeline.id,
+                                      migrated_to_state_transition: true)
+                     )
+                )
               end
             end
           end
@@ -207,7 +212,7 @@ RSpec.describe Vulnerabilities::DismissService do
 
             expect(vulnerability.reload).to have_attributes(state: 'dismissed', dismissed_by: user)
             expect(vulnerability.findings).to all have_vulnerability_dismissal_feedback
-            expect(vulnerability.findings.map(&:dismissal_feedback)).to all(have_attributes(dismissal_reason: dismissal_reason))
+            expect(vulnerability.findings.map(&:dismissal_feedback)).to all(have_attributes(dismissal_reason: dismissal_reason, migrated_to_state_transition: true))
           end
         end
 
