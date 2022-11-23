@@ -17,7 +17,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
     let_it_be(:premium_plan) { create(:premium_plan) }
 
     shared_examples "adding one user with a given role doesn't trigger an overage modal" do |role|
-      it do
+      it "adding one user with a given role doesn't trigger an overage modal" do
         group.add_owner(user1)
         add_user_by_name(user2.name, role)
 
@@ -34,7 +34,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
     end
 
     shared_examples "shows an overage for one Developer added and invites them to a group if confirmed" do
-      it do
+      it "shows an overage for one Developer added and invites them to a group if confirmed", quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/382373" do
         group.add_owner(user1)
         add_user_by_name(user2.name, 'Developer')
 
@@ -63,7 +63,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
         create(:gitlab_subscription, namespace: group, hosted_plan: nil)
       end
 
-      it_behaves_like "adding one user with a given role doesn't trigger an overage modal", 'Developer'
+      include_examples "adding one user with a given role doesn't trigger an overage modal", 'Developer'
     end
 
     context 'when adding a member to a premium group' do
@@ -72,7 +72,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
           create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 2, seats_in_use: 1)
         end
 
-        it_behaves_like "adding one user with a given role doesn't trigger an overage modal", 'Developer'
+        include_examples "adding one user with a given role doesn't trigger an overage modal", 'Developer'
 
         it 'adding two users triggers overage modal', :aggregate_failures do
           group.add_owner(user1)
@@ -90,7 +90,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
           create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 1, seats_in_use: 1)
         end
 
-        it_behaves_like "shows an overage for one Developer added and invites them to a group if confirmed"
+        include_examples "shows an overage for one Developer added and invites them to a group if confirmed"
 
         it 'get back to initial modal if not confirmed', :aggregate_failures do
           group.add_owner(user1)
@@ -117,8 +117,8 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
         create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan, seats: 1, seats_in_use: 1)
       end
 
-      it_behaves_like "shows an overage for one Developer added and invites them to a group if confirmed"
-      it_behaves_like "adding one user with a given role doesn't trigger an overage modal", 'Guest'
+      include_examples "shows an overage for one Developer added and invites them to a group if confirmed"
+      include_examples "adding one user with a given role doesn't trigger an overage modal", 'Guest'
     end
 
     context 'when adding to a group not eligible for reconciliation', :aggregate_failures do
@@ -127,7 +127,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
         stub_subscription_request_seat_usage(false)
       end
 
-      it_behaves_like "adding one user with a given role doesn't trigger an overage modal", 'Developer'
+      include_examples "adding one user with a given role doesn't trigger an overage modal", 'Developer'
     end
 
     def add_user_by_name(name, role)
