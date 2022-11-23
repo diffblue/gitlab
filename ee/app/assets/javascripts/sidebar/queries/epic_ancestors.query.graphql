@@ -8,6 +8,7 @@ query epicAncestors($fullPath: ID!, $iid: ID) {
           id
           title
           state
+          hasParent
           url: webUrl
         }
       }
