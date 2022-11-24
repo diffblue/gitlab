@@ -74,6 +74,7 @@ RSpec.describe Vulnerabilities::FeedbackPolicy do
 
       context 'with security bot' do
         let(:current_user) { create(:user, :security_bot) }
+        let_it_be_with_reload(:project) { create(:project, :public) }
 
         before do
           stub_licensed_features(vulnerability_auto_fix: true)
