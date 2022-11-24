@@ -2,8 +2,10 @@
 import { GlAvatarLabeled, GlListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import searchProjectMembers from '~/graphql_shared/queries/project_user_members_search.query.graphql';
+import searchGroupMembers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 import { USER_TYPE } from './lib/actions';
 
 const createUserObject = (user) => ({
@@ -18,7 +20,7 @@ export default {
     GlAvatarLabeled,
     GlListbox,
   },
-  inject: ['namespacePath'],
+  inject: ['namespacePath', 'namespaceType'],
   props: {
     existingApprovers: {
       type: Array,
@@ -28,7 +30,11 @@ export default {
   },
   apollo: {
     users: {
-      query: searchProjectMembers,
+      query() {
+        return this.namespaceType === NAMESPACE_TYPES.PROJECT
+          ? searchProjectMembers
+          : searchGroupMembers;
+      },
       variables() {
         return {
           fullPath: this.namespacePath,
@@ -36,9 +42,12 @@ export default {
         };
       },
       update(data) {
-        return (data?.project?.projectMembers?.nodes || []).map(({ user }) =>
-          createUserObject(user),
-        );
+        const nodes =
+          this.namespaceType === NAMESPACE_TYPES.PROJECT
+            ? data?.project?.projectMembers?.nodes
+            : data?.workspace?.users?.nodes;
+
+        return (nodes || []).map(({ user }) => createUserObject(user));
       },
       debounce: DEFAULT_DEBOUNCE_AND_THROTTLE_MS,
     },
