@@ -1146,6 +1146,16 @@ RSpec.describe API::Groups do
         expect(subgroup.marked_for_deletion_on).to eq(Date.current)
         expect(subgroup.deleting_user).to eq(user)
       end
+
+      it 'marks for deletion of a group with a trial plan', :saas do
+        create(:gitlab_subscription, :ultimate_trial, trial: true, namespace: group)
+
+        delete api("/groups/#{group.id}", user)
+
+        expect(response).to have_gitlab_http_status(:accepted)
+        expect(group.marked_for_deletion_on).to eq(Date.current)
+        expect(group.deleting_user).to eq(user)
+      end
     end
 
     context 'feature is not available' do
@@ -1168,6 +1178,13 @@ RSpec.describe API::Groups do
         subgroup = create(:group, parent: group)
 
         expect { delete api("/groups/#{subgroup.id}", user) }.to change(GroupDestroyWorker.jobs, :size).by(1)
+        expect(response).to have_gitlab_http_status(:accepted)
+      end
+
+      it 'deletes a group with a trial plan', :saas do
+        create(:gitlab_subscription, :ultimate_trial, trial: true, namespace: group)
+
+        expect { delete api("/groups/#{group.id}", user) }.to change(GroupDestroyWorker.jobs, :size).by(1)
         expect(response).to have_gitlab_http_status(:accepted)
       end
     end
