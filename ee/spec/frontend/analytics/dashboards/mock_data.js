@@ -151,14 +151,17 @@ export const mockComparativeTableData = [
     lastMonth: {
       change: 1,
       value: '4.0 d',
+      invertTrendColor: true,
     },
     thisMonth: {
       change: -0.5,
       value: '2.0 d',
+      invertTrendColor: true,
     },
     twoMonthsAgo: {
       change: -0.5,
       value: '2.0 d',
+      invertTrendColor: true,
     },
   },
   {
@@ -166,14 +169,17 @@ export const mockComparativeTableData = [
     lastMonth: {
       change: 0,
       value: '-',
+      invertTrendColor: true,
     },
     thisMonth: {
       change: 0,
       value: '4.0 d',
+      invertTrendColor: true,
     },
     twoMonthsAgo: {
       change: 0,
       value: '-',
+      invertTrendColor: true,
     },
   },
   {
@@ -181,14 +187,17 @@ export const mockComparativeTableData = [
     lastMonth: {
       change: 1,
       value: 12,
+      invertTrendColor: undefined,
     },
     thisMonth: {
       change: -0.5,
       value: 6,
+      invertTrendColor: undefined,
     },
     twoMonthsAgo: {
       change: -0.5,
       value: 6,
+      invertTrendColor: undefined,
     },
   },
   {
@@ -196,14 +205,17 @@ export const mockComparativeTableData = [
     lastMonth: {
       change: 1,
       value: 16,
+      invertTrendColor: undefined,
     },
     thisMonth: {
       change: -0.5,
       value: 8,
+      invertTrendColor: undefined,
     },
     twoMonthsAgo: {
       change: -0.5,
       value: 8,
+      invertTrendColor: undefined,
     },
   },
 ];

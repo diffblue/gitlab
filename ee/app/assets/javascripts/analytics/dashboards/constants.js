@@ -52,7 +52,6 @@ export const DORA_METRICS = {
   },
   [ISSUES_METRIC_TYPE]: {
     label: s__('DORA4Metrics|New issues'),
-    invertTrendColor: true,
     formatValue: (value) => value,
   },
   [DEPLOYS_METRIC_TYPE]: {
