@@ -12110,6 +12110,9 @@ msgstr ""
 msgid "DORA4Metrics|Change failure rate (percentage)"
 msgstr ""
 
+msgid "DORA4Metrics|Cycle time"
+msgstr ""
+
 msgid "DORA4Metrics|DORA metrics for %{groupName} group"
 msgstr ""
 
@@ -12128,7 +12131,13 @@ msgstr ""
 msgid "DORA4Metrics|Deployment frequency"
 msgstr ""
 
+msgid "DORA4Metrics|Deploys"
+msgstr ""
+
 msgid "DORA4Metrics|Lead Time for Changes"
+msgstr ""
+
+msgid "DORA4Metrics|Lead time"
 msgstr ""
 
 msgid "DORA4Metrics|Lead time for changes"
@@ -12147,6 +12156,9 @@ msgid "DORA4Metrics|Median time an incident was open in a production environment
 msgstr ""
 
 msgid "DORA4Metrics|Month to date"
+msgstr ""
+
+msgid "DORA4Metrics|New issues"
 msgstr ""
 
 msgid "DORA4Metrics|No incidents during this period"
