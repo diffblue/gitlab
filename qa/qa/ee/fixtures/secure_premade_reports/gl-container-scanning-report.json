@@ -1,7 +1,8 @@
 {
-  "version": "14.1.1",
+  "version": "15.0.0",
   "vulnerabilities": [
     {
+      "id": "52018b6745ad5b362900a790b63ad146fc9aea9e",
       "category": "container_scanning",
       "message": "CVE-2017-18269 in glibc",
       "description": "Short description to match in specs",
@@ -38,6 +39,7 @@
       ]
     },
     {
+      "id": "5f08a4fe9f00467e0bf5029c1435a3d8c8b90598",
       "category": "container_scanning",
       "message": "CVE-2017-16997 in glibc",
       "description": "elf/dl-load.c in the GNU C Library (aka glibc or libc6) 2.19 through 2.26 mishandles RPATH and RUNPATH containing $ORIGIN for a privileged (setuid or AT_SECURE) program, which allows local users to gain privileges via a Trojan horse library in the current working directory, related to the fillin_rpath and decompose_rpath functions. This is associated with misinterpretion of an empty RPATH/RUNPATH token as the \"./\" directory. NOTE: this configuration of RPATH/RUNPATH for a privileged program is apparently very uncommon; most likely, no such program is shipped with any common Linux distribution.",
@@ -74,6 +76,7 @@
       ]
     },
     {
+      "id": "f447b8d75631a6fb9acee51dbdc4f2d111024784",
       "category": "container_scanning",
       "message": "CVE-2018-1000001 in glibc",
       "description": "In glibc 2.26 and earlier there is confusion in the usage of getcwd() by realpath() which can be used to write before the destination buffer leading to a buffer underflow and potential code execution.",
@@ -109,6 +112,7 @@
       ]
     },
     {
+      "id": "2632247a7856e5f96fd3eb5739c4352321e37f3d",
       "category": "container_scanning",
       "message": "CVE-2016-10228 in glibc",
       "description": "The iconv program in the GNU C Library (aka glibc or libc6) 2.25 and earlier, when invoked with the -c option, enters an infinite loop when processing invalid multi-byte input sequences, leading to a denial of service.",
@@ -144,6 +148,7 @@
       ]
     },
     {
+      "id": "82f8c9fa788a49a1a8be4529c8ec77648e98024c",
       "category": "container_scanning",
       "message": "CVE-2018-18520 in elfutils",
       "description": "An Invalid Memory Address Dereference exists in the function elf_end in libelf in elfutils through v0.174. Although eu-size is intended to support ar files inside ar files, handle_ar in size.c closes the outer ar file before handling all inner entries. The vulnerability allows attackers to cause a denial of service (application crash) with a crafted ELF file.",
@@ -179,6 +184,7 @@
       ]
     },
     {
+      "id": "79e6d0252266a205525e0e5a3d43090efe3e7aab",
       "category": "container_scanning",
       "message": "CVE-2010-4052 in glibc",
       "description": "Stack consumption vulnerability in the regcomp implementation in the GNU C Library (aka glibc or libc6) through 2.11.3, and 2.12.x through 2.12.2, allows context-dependent attackers to cause a denial of service (resource exhaustion) via a regular expression containing adjacent repetition operators, as demonstrated by a {10,}{10,}{10,}{10,} sequence in the proftpd.gnu.c exploit for ProFTPD.",
@@ -214,6 +220,7 @@
       ]
     },
     {
+      "id": "301fcb2182f9e334d1cd3641b60be7a0e5c91c12",
       "category": "container_scanning",
       "message": "CVE-2018-16869 in nettle",
       "description": "A Bleichenbacher type side-channel based padding oracle attack was found in the way nettle handles endian conversion of RSA decrypted PKCS#1 v1.5 data. An attacker who is able to run a process on the same physical core as the victim process, could use this flaw extract plaintext or in some cases downgrade any TLS connections to a vulnerable server.",
@@ -249,6 +256,7 @@
       ]
     },
     {
+      "id": "e232a5094127fccbf0008b61c2bcfe821566f315",
       "category": "container_scanning",
       "message": "CVE-2018-18311 in perl",
       "description": "Perl before 5.26.3 and 5.28.x before 5.28.1 has a buffer overflow via a crafted regular expression that triggers invalid write operations.",
@@ -285,5 +293,28 @@
       ]
     }
   ],
-  "remediations": []
+  "remediations": [],
+  "scan": {
+    "scanner": {
+      "id": "trivy",
+      "name": "Trivy",
+      "url": "https://github.com/aquasecurity/trivy/",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "0.32.1"
+    },
+    "analyzer": {
+      "id": "gcs",
+      "name": "GitLab Container Scanning",
+      "vendor": {
+        "name": "GitLab"
+      },
+      "version": "5.2.5"
+    },
+    "type": "container_scanning",
+    "start_time": "2022-11-22T16:07:51",
+    "end_time": "2022-11-22T16:08:11",
+    "status": "success"
+  }
 }
