@@ -234,6 +234,16 @@ module EE
               calls_gitaly: true,
               alpha: { milestone: '15.6' },
               resolver: ::Resolvers::ProductAnalytics::DashboardsResolver
+
+        field :jitsu_key, GraphQL::Types::String,
+              null: true,
+              description: 'Jitsu key assigned to the project.',
+              alpha: { milestone: '15.7' },
+              authorize: :developer_access
+      end
+
+      def jitsu_key
+        object.project_setting.jitsu_key if object.product_analytics_enabled?
       end
 
       def api_fuzzing_ci_configuration
