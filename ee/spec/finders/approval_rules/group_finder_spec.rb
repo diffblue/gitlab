@@ -73,18 +73,6 @@ RSpec.describe ApprovalRules::GroupFinder do
         expect { described_class.new(rule, user).visible_groups }.not_to exceed_query_limit(count)
       end
     end
-
-    context 'when FF is disabled' do
-      before do
-        stub_feature_flags(subgroups_approval_rules: false)
-      end
-
-      it 'does not return subgroups' do
-        expect(subject.visible_groups).to contain_exactly(public_group, private_accessible_group)
-        expect(subject.hidden_groups).to contain_exactly(private_inaccessible_group, private_accessible_subgroup)
-        expect(subject.contains_hidden_groups?).to eq(true)
-      end
-    end
   end
 
   context 'when without inaccessible groups' do
