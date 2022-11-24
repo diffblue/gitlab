@@ -3,6 +3,7 @@ import { nextTick } from 'vue';
 import MockAdapter from 'axios-mock-adapter';
 import waitForPromises from 'helpers/wait_for_promises';
 import MRSecurityWidget from 'ee/vue_merge_request_widget/extensions/security_reports/mr_widget_security_reports.vue';
+import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import SummaryText from 'ee/vue_merge_request_widget/extensions/security_reports/summary_text.vue';
 import SummaryHighlights from 'ee/vue_merge_request_widget/extensions/security_reports/summary_highlights.vue';
 import { shallowMountExtended, mountExtended } from 'helpers/vue_test_utils_helper';
@@ -66,6 +67,7 @@ describe('MR Widget Security Reports', () => {
   const findSummaryText = () => wrapper.findComponent(SummaryText);
   const findSummaryHighlights = () => wrapper.findComponent(SummaryHighlights);
   const findDismissedBadge = () => wrapper.findComponent(GlBadge);
+  const findModal = () => wrapper.findComponent(FindingModal);
 
   beforeEach(() => {
     mockAxios = new MockAdapter(axios);
@@ -304,5 +306,58 @@ describe('MR Widget Security Reports', () => {
         });
       },
     );
+  });
+
+  describe('modal', () => {
+    const mockWithData = () => {
+      Object.keys(reportEndpoints).forEach((key, i) => {
+        mockAxios.onGet(reportEndpoints[key]).replyOnce(200, {
+          added: [{ id: i, severity: 'critical', name: 'Password leak' }],
+        });
+      });
+    };
+
+    it('does not display the modal until the finding is clicked', async () => {
+      mockWithData();
+
+      createComponent({
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      // Click on the toggle button to expand data
+      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+
+      expect(findModal().exists()).toBe(false);
+    });
+
+    it('renders the modal when the finding is clicked', async () => {
+      mockWithData();
+
+      createComponent({
+        mountFn: mountExtended,
+      });
+
+      await waitForPromises();
+
+      // Click on the toggle button to expand data
+      wrapper.findByRole('button', { name: 'Show details' }).trigger('click');
+      await nextTick();
+
+      // Click on the vulnerability name
+      wrapper.findAllByText('Password leak').at(0).trigger('click');
+      await nextTick();
+
+      expect(findModal().props('modal')).toEqual({
+        title: 'Password leak',
+        vulnerability: {
+          id: 0,
+          severity: 'critical',
+          name: 'Password leak',
+        },
+      });
+    });
   });
 });

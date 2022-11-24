@@ -1,9 +1,12 @@
 <script>
-import { GlBadge } from '@gitlab/ui';
+import { GlBadge, GlButton } from '@gitlab/ui';
 import axios from '~/lib/utils/axios_utils';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import MrWidget from '~/vue_merge_request_widget/components/widget/widget.vue';
 import MrWidgetRow from '~/vue_merge_request_widget/components/widget/widget_content_row.vue';
+import { BV_SHOW_MODAL } from '~/lib/utils/constants';
+import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
+import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -16,12 +19,14 @@ import { i18n, reportTypes, popovers } from './i18n';
 export default {
   name: 'WidgetSecurityReports',
   components: {
+    FindingModal,
     MrWidget,
     MrWidgetRow,
     SummaryText,
     SummaryHighlights,
     SecurityTrainingPromoWidget,
     GlBadge,
+    GlButton,
   },
   i18n,
   props: {
@@ -33,6 +38,7 @@ export default {
   data() {
     return {
       isLoading: false,
+      modalData: null,
       vulnerabilities: {
         collapsed: null,
         expanded: null,
@@ -214,6 +220,11 @@ export default {
     isDismissed(vuln) {
       return vuln.state === 'dismissed';
     },
+
+    setModalData(finding) {
+      this.modalData = { vulnerability: finding, title: finding.name };
+      this.$root.$emit(BV_SHOW_MODAL, VULNERABILITY_MODAL_ID);
+    },
   },
   SEVERITY_LEVELS,
   widgetHelpPopover: {
@@ -248,6 +259,14 @@ export default {
       />
     </template>
     <template #content>
+      <finding-modal
+        v-if="modalData"
+        :visible="true"
+        :modal="modalData"
+        :is-dismissing-vulnerability="false"
+        :is-creating-merge-request="false"
+        :is-creating-issue="false"
+      />
       <security-training-promo-widget
         :security-configuration-path="mr.securityConfigurationPath"
         :project-full-path="mr.sourceProjectFullPath"
@@ -289,7 +308,10 @@ export default {
                 class="gl-mt-2"
               >
                 <template #body>
-                  {{ $options.SEVERITY_LEVELS[vuln.severity] }} {{ vuln.name }}
+                  {{ $options.SEVERITY_LEVELS[vuln.severity] }}
+                  <gl-button variant="link" class="gl-ml-2" @click="setModalData(vuln)">{{
+                    vuln.name
+                  }}</gl-button>
                   <gl-badge v-if="isDismissed(vuln)" class="gl-ml-3">{{
                     $options.i18n.dismissed
                   }}</gl-badge>
