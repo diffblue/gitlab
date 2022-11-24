@@ -1,0 +1,10 @@
+---
+table_name: package_file_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/24498
+milestone: '12.8'
+feature_categories:
+- geo_replication
+classes:
+- Geo::PackageFileRegistry
+gitlab_schema: gitlab_geo

@@ -1,0 +1,10 @@
+---
+table_name: project_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1197
+milestone: '9.0'
+feature_categories:
+- geo_replication
+classes:
+- Geo::ProjectRegistry
+gitlab_schema: gitlab_geo

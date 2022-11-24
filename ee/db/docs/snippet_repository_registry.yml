@@ -1,0 +1,10 @@
+---
+table_name: snippet_repository_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/38688
+milestone: '13.4'
+feature_categories:
+- geo_replication
+classes:
+- Geo::SnippetRepositoryRegistry
+gitlab_schema: gitlab_geo

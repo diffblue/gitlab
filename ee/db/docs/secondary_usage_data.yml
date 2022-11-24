@@ -1,0 +1,10 @@
+---
+table_name: secondary_usage_data
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/53758
+milestone: TODO
+feature_categories:
+- geo_replication
+classes:
+- Geo::SecondaryUsageData
+gitlab_schema: gitlab_geo

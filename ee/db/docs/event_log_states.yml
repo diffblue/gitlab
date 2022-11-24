@@ -1,0 +1,10 @@
+---
+table_name: event_log_states
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1988
+milestone: '9.4'
+feature_categories:
+- geo_replication
+classes:
+- Geo::EventLogState
+gitlab_schema: gitlab_geo

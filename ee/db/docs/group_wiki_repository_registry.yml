@@ -1,0 +1,10 @@
+---
+table_name: group_wiki_repository_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/54914
+milestone: '13.10'
+feature_categories:
+- geo_replication
+classes:
+- Geo::GroupWikiRepositoryRegistry
+gitlab_schema: gitlab_geo

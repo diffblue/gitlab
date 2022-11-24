@@ -1,0 +1,10 @@
+---
+table_name: file_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/1382
+milestone: '9.0'
+feature_categories:
+- geo_replication
+classes:
+- Geo::UploadRegistry
+gitlab_schema: gitlab_geo

@@ -1,0 +1,10 @@
+---
+table_name: dependency_proxy_blob_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/101429
+milestone: '15.6'
+feature_categories:
+- geo_replication
+classes:
+- Geo::DependencyProxyBlobRegistry
+gitlab_schema: gitlab_geo

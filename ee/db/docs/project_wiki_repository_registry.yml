@@ -1,0 +1,10 @@
+---
+table_name: project_wiki_repository_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/101294
+milestone: '15.6'
+feature_categories:
+- geo_replication
+classes:
+- Geo::ProjectWikiRepositoryRegistry
+gitlab_schema: gitlab_geo

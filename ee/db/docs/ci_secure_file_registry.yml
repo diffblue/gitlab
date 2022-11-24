@@ -1,0 +1,10 @@
+---
+table_name: ci_secure_file_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/90510
+milestone: '15.2'
+feature_categories:
+- geo_replication
+classes:
+- Geo::CiSecureFileRegistry
+gitlab_schema: gitlab_geo

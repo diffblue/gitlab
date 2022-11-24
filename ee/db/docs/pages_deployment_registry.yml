@@ -1,0 +1,10 @@
+---
+table_name: pages_deployment_registry
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/68662
+milestone: '14.3'
+feature_categories:
+- geo_replication
+classes:
+- Geo::PagesDeploymentRegistry
+gitlab_schema: gitlab_geo
