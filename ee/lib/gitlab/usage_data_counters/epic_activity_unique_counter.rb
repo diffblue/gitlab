@@ -226,7 +226,7 @@ module Gitlab
           Gitlab::UsageDataCounters::HLLRedisCounter.track_event(action, values: author.id)
         end
 
-        def track_snowplow_action(action, author, namespace)
+        def track_snowplow_action(event_name, author, namespace)
           return unless Feature.enabled?(:route_hll_to_snowplow_phase2, namespace)
           return unless author
 
@@ -234,9 +234,10 @@ module Gitlab
             EPIC_CATEGORY,
             EPIC_ACTION,
             label: EPIC_LABEL,
-            property: action,
+            property: event_name,
             namespace: namespace,
-            user: author
+            user: author,
+            context: [Gitlab::Tracking::ServicePingContext.new(data_source: :redis_hll, event: event_name).to_context]
           )
         end
       end
