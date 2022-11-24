@@ -24,18 +24,18 @@ module IncidentManagement
         return error_no_permissions unless allowed?
 
         unless timeline_event_tags.nil?
-          tags_to_add = compute_tags_to_add
-          defined_tags = timeline_event
-                          .project
-                          .incident_management_timeline_event_tags
+          new_tags = timeline_event
+                      .project
+                      .incident_management_timeline_event_tags
+                      .by_names(timeline_event_tags)
 
-          non_existing_tags = validate_tags(tags_to_add, defined_tags)
+          non_existing_tags = validate_tags(new_tags)
 
           return error("#{_("Following tags don't exist")}: #{non_existing_tags}") if non_existing_tags.any?
         end
 
         begin
-          timeline_event_saved = update_timeline_event_and_event_tags(defined_tags)
+          timeline_event_saved = update_timeline_event_and_event_tags(new_tags)
         rescue ActiveRecord::RecordInvalid
           error_in_save(timeline_event)
         end
@@ -54,12 +54,9 @@ module IncidentManagement
 
       attr_reader :timeline_event, :incident, :user, :note, :occurred_at, :validation_context, :timeline_event_tags
 
-      def update_timeline_event_and_event_tags(defined_tags)
+      def update_timeline_event_and_event_tags(new_tags)
         ApplicationRecord.transaction do
-          unless timeline_event_tags.nil?
-            tags = defined_tags.by_names(timeline_event_tags.map(&:downcase))
-            timeline_event.timeline_event_tags = tags
-          end
+          timeline_event.timeline_event_tags = new_tags unless timeline_event_tags.nil?
 
           timeline_event.assign_attributes(update_params)
 
@@ -90,20 +87,8 @@ module IncidentManagement
         :none
       end
 
-      def compute_tags_to_add
-        tag_updates = timeline_event_tags.map(&:downcase)
-        already_assigned_tags = timeline_event.timeline_event_tags.pluck_names.map(&:downcase)
-
-        tag_updates - already_assigned_tags
-      end
-
-      def validate_tags(tags_to_add, defined_tags)
-        defined_tags = defined_tags
-                        .by_names(tags_to_add)
-                        .pluck_names
-                        .map(&:downcase)
-
-        tags_to_add - defined_tags
+      def validate_tags(new_tags)
+        timeline_event_tags.map(&:downcase) - new_tags.map(&:name).map(&:downcase)
       end
 
       def allowed?
