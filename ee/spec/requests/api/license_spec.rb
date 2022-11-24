@@ -119,6 +119,33 @@ RSpec.describe API::License, api: true do
     end
   end
 
+  describe 'GET /license/:id', :aggregate_failures do
+    let(:license) { create(:license) }
+    let(:endpoint) { "/license/#{license.id}" }
+
+    it 'gets a license by its id' do
+      get api(endpoint, admin)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(json_response['id']).to eq(license.id)
+      expect(json_response['active_users']).to eq(1)
+    end
+
+    it "returns an error if the license doesn't exist" do
+      get api("/license/#{non_existing_record_id}", admin)
+
+      expect(response).to have_gitlab_http_status(:not_found)
+      expect(json_response['message']).to eq('404 Not Found')
+    end
+
+    it 'returns 403 if the user is not an admin' do
+      get api(endpoint, user)
+
+      expect(response).to have_gitlab_http_status(:forbidden)
+      expect(json_response['message']).to eq('403 Forbidden')
+    end
+  end
+
   describe 'GET /licenses' do
     let(:endpoint) { '/licenses' }
     let(:gl_licenses) do
