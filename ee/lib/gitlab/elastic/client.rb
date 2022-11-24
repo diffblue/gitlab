@@ -23,7 +23,9 @@ module Gitlab
             }
           },
           randomize_hosts: true,
-          retry_on_failure: config[:retry_on_failure] || NO_RETRY
+          retry_on_failure: config[:retry_on_failure] || NO_RETRY,
+          log: debug?,
+          debug: debug?
         }.compact
 
         if config[:aws]
@@ -40,6 +42,10 @@ module Gitlab
 
       def self.adapter
         ::Feature.enabled?(:use_typhoeus_elasticsearch_adapter) ? :typhoeus : :net_http
+      end
+
+      def self.debug?
+        Gitlab.dev_or_test_env? && Gitlab::Utils.to_boolean(ENV['ELASTIC_CLIENT_DEBUG'])
       end
 
       def self.resolve_aws_credentials(config)
