@@ -3,10 +3,15 @@
 module Namespaces
   module FreeUserCap
     class Standard < Base
-      def over_limit?(cache: false)
+      def over_limit?(cache: false, update_database: true)
         return preloaded_over_limit[root_namespace.id] if cache
+        return false unless enforce_cap?
 
-        super
+        result = users_count > limit
+
+        update_database_fields(result) if update_database
+
+        result
       end
 
       def reached_limit?
@@ -43,6 +48,23 @@ module Namespaces
 
         ::Gitlab::SafeRequestLoader.execute(resource_key: resource_key, resource_ids: [root_namespace.id]) do
           { root_namespace.id => over_limit? }
+        end
+      end
+
+      def update_database_fields(result)
+        Rails.cache.fetch([self.class.name, root_namespace.id], expires_in: 1.day) do
+          value = result ? Time.current : nil
+          namespace_details = root_namespace.namespace_details
+          # check for presence sometimes in test the namespace_details record isn't created
+          next unless namespace_details.present?
+          next if value && namespace_details.dashboard_enforcement_at.present?
+
+          namespace_details.update(dashboard_enforcement_at: value)
+
+          # to ensure proper data analysis, we need to remove notification when we are in enforcement
+          if namespace_details.dashboard_notification_at.present? && value
+            namespace_details.update(dashboard_notification_at: nil)
+          end
         end
       end
 

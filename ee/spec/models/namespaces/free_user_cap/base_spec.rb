@@ -14,14 +14,4 @@ RSpec.describe Namespaces::FreeUserCap::Base, :saas do
       expect { described_class.new(namespace).enforce_cap? }.to raise_error(NotImplementedError)
     end
   end
-
-  describe '#over_limit?' do
-    it 'raises an error for limit definition' do
-      allow_next_instance_of(described_class) do |instance|
-        allow(instance).to receive(:enforce_cap?).and_return(true)
-      end
-
-      expect { described_class.new(namespace).over_limit? }.to raise_error(NotImplementedError)
-    end
-  end
 end
