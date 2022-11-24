@@ -2,6 +2,7 @@
 import PushesChart from './pushes_chart.vue';
 import MergeRequestsChart from './merge_requests_chart.vue';
 import IssuesChart from './issues_chart.vue';
+import GroupMembersTable from './group_members_table.vue';
 
 export default {
   name: 'ContributionAnalyticsApp',
@@ -9,6 +10,7 @@ export default {
     PushesChart,
     MergeRequestsChart,
     IssuesChart,
+    GroupMembersTable,
   },
 };
 </script>
@@ -17,5 +19,6 @@ export default {
     <pushes-chart />
     <merge-requests-chart />
     <issues-chart />
+    <group-members-table />
   </div>
 </template>

@@ -1,18 +1,19 @@
 import MockAdapter from 'axios-mock-adapter';
-import defaultColumns from 'ee/group_member_contributions/constants';
-import GroupMemberStore from 'ee/group_member_contributions/store/group_member_store';
+import { TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
+import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
 import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
+import waitForPromises from 'helpers/wait_for_promises';
 
-import { rawMembers, contributionsPath } from '../mock_data';
+import { MOCK_MEMBERS, CONTRIBUTIONS_PATH } from './mock_data';
 
 jest.mock('~/flash');
 
-describe('GroupMemberStore', () => {
+describe('GroupMembers', () => {
   let store;
 
   beforeEach(() => {
-    store = new GroupMemberStore(contributionsPath);
+    store = new GroupMembers(CONTRIBUTIONS_PATH);
   });
 
   afterEach(() => {
@@ -21,11 +22,11 @@ describe('GroupMemberStore', () => {
 
   describe('setColumns', () => {
     beforeEach(() => {
-      store.setColumns(defaultColumns);
+      store.setColumns(TABLE_COLUMNS);
     });
 
     it('sets columns to store state', () => {
-      expect(store.state.columns).toBe(defaultColumns);
+      expect(store.state.columns).toBe(TABLE_COLUMNS);
     });
 
     it('initializes sortOrders on store state', () => {
@@ -37,16 +38,16 @@ describe('GroupMemberStore', () => {
 
   describe('setMembers', () => {
     it('sets members to store state', () => {
-      store.setMembers(rawMembers);
+      store.setMembers(MOCK_MEMBERS);
 
-      expect(store.state.members).toHaveLength(rawMembers.length);
+      expect(store.state.members).toHaveLength(MOCK_MEMBERS.length);
     });
   });
 
   describe('sortMembers', () => {
     it('sorts members list based on provided column name', () => {
-      store.setColumns(defaultColumns);
-      store.setMembers(rawMembers);
+      store.setColumns(TABLE_COLUMNS);
+      store.setMembers(MOCK_MEMBERS);
 
       let [firstMember] = store.state.members;
 
@@ -71,20 +72,21 @@ describe('GroupMemberStore', () => {
     });
 
     it('calls service.getContributedMembers and sets response to the store on success', async () => {
-      mock.onGet(contributionsPath).reply(200, rawMembers);
+      mock.onGet(CONTRIBUTIONS_PATH).reply(200, MOCK_MEMBERS);
       jest.spyOn(store, 'setColumns').mockImplementation(() => {});
       jest.spyOn(store, 'setMembers').mockImplementation(() => {});
 
+      store.fetchContributedMembers();
       expect(store.isLoading).toBe(true);
-      await store.fetchContributedMembers();
 
+      await waitForPromises();
       expect(store.isLoading).toBe(false);
       expect(store.setColumns).toHaveBeenCalledWith(expect.any(Object));
-      expect(store.setMembers).toHaveBeenCalledWith(rawMembers);
+      expect(store.setMembers).toHaveBeenCalledWith(MOCK_MEMBERS);
     });
 
     it('calls service.getContributedMembers and sets `isLoading` to false and shows flash message if request failed', async () => {
-      mock.onGet(contributionsPath).reply(500, {});
+      mock.onGet(CONTRIBUTIONS_PATH).reply(500, {});
 
       await expect(store.fetchContributedMembers()).rejects.toEqual(
         new Error('Request failed with status code 500'),

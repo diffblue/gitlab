@@ -1,12 +1,12 @@
 import { mount } from '@vue/test-utils';
 import { GlIcon } from '@gitlab/ui';
 
-import TableHeaderComponent from 'ee/group_member_contributions/components/table_header.vue';
-import defaultColumns from 'ee/group_member_contributions/constants';
+import TableHeaderComponent from 'ee/analytics/contribution_analytics/components/table_header.vue';
+import { TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
 
-import { mockSortOrders } from '../mock_data';
+import { MOCK_SORT_ORDERS } from '../mock_data';
 
-const createComponent = (columns = defaultColumns, sortOrders = mockSortOrders) =>
+const createComponent = (columns = TABLE_COLUMNS, sortOrders = MOCK_SORT_ORDERS) =>
   mount(TableHeaderComponent, { propsData: { columns, sortOrders } });
 
 describe('TableHeaderComponent', () => {
@@ -40,7 +40,7 @@ describe('TableHeaderComponent', () => {
 
     await wrapper.find('th').trigger('click');
 
-    expect(wrapper.vm.getColumnIconMeta).toHaveBeenCalledWith(firstColumnName, mockSortOrders);
+    expect(wrapper.vm.getColumnIconMeta).toHaveBeenCalledWith(firstColumnName, MOCK_SORT_ORDERS);
   });
 
   it('sorts by first column by default', () => {
