@@ -41,6 +41,7 @@ describe('WorkItemWeight component', () => {
     weight,
     mutationHandler = jest.fn().mockResolvedValue(updateWorkItemMutationResponse),
     fetchByIid = false,
+    queryVariables = { id: workItemId },
   } = {}) => {
     wrapper = mountExtended(WorkItemWeight, {
       apolloProvider: createMockApollo([
@@ -54,10 +55,8 @@ describe('WorkItemWeight component', () => {
         weight,
         workItemId,
         workItemType,
-        queryVariables: {
-          id: workItemId,
-        },
         fetchByIid,
+        queryVariables,
       },
       provide: {
         hasIssueWeightsFeature,
@@ -260,5 +259,12 @@ describe('WorkItemWeight component', () => {
 
     expect(workItemQueryHandler).not.toHaveBeenCalled();
     expect(workItemByIidResponseHandler).toHaveBeenCalled();
+  });
+
+  it('skips calling the handlers when missing the needed queryVariables', async () => {
+    createComponent({ queryVariables: {}, fetchByIid: false });
+    await waitForPromises();
+
+    expect(workItemQueryHandler).not.toHaveBeenCalled();
   });
 });
