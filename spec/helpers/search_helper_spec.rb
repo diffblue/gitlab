@@ -64,6 +64,12 @@ RSpec.describe SearchHelper do
         let_it_be(:another_user) { create(:user, name: 'Jane Doe') }
         let(:term) { 'jane' }
 
+        it 'makes a call to SearchService' do
+          expect(SearchService).to receive(:new).with(current_user, { search: term, scope: 'users' }).and_call_original
+
+          search_autocomplete_opts(term)
+        end
+
         it 'returns users matching the term' do
           result = search_autocomplete_opts(term)
           expect(result.size).to eq(1)
