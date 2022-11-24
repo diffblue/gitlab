@@ -7,6 +7,8 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
+          include ::Admin::IpRestrictionHelper
+
           expose :shared_runners_minutes_limit
           expose :extra_shared_runners_minutes_limit
           expose :prevent_forking_outside_group?,
@@ -14,7 +16,7 @@ module EE
           expose :membership_lock?,
                  as: :membership_lock
           expose :ip_restriction_ranges,
-                  if: ->(group, options) { group.licensed_feature_available?(:group_ip_restriction) }
+                  if: ->(group, options) { ip_restriction_feature_available?(group) }
 
           unique_project_download_limit_enabled = lambda do |group, options|
             options[:current_user]&.can?(:admin_group, group) &&
