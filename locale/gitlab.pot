@@ -48985,6 +48985,9 @@ msgstr ""
 msgid "is already linked to this vulnerability"
 msgstr ""
 
+msgid "is already present in ancestors"
+msgstr ""
+
 msgid "is an invalid IP address range"
 msgstr ""
 
@@ -49025,6 +49028,9 @@ msgid "is not allowed since the group is not top-level group."
 msgstr ""
 
 msgid "is not allowed to add this type of parent"
+msgstr ""
+
+msgid "is not allowed to point to itself"
 msgstr ""
 
 msgid "is not allowed. Please use your regular email address."
@@ -49737,6 +49743,9 @@ msgid "reCAPTCHA private key"
 msgstr ""
 
 msgid "reCAPTCHA site key"
+msgstr ""
+
+msgid "reached maximum depth"
 msgstr ""
 
 msgid "recent activity"
