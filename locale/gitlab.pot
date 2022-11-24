@@ -35364,9 +35364,6 @@ msgstr ""
 msgid "Runners|Never expires"
 msgstr ""
 
-msgid "Runners|New group runners view"
-msgstr ""
-
 msgid "Runners|New registration token generated!"
 msgstr ""
 
@@ -35574,12 +35571,6 @@ msgid "Runners|Tags"
 msgstr ""
 
 msgid "Runners|Tags control which type of jobs a runner can handle. By tagging a runner, you make sure shared runners only handle the jobs they are equipped to run."
-msgstr ""
-
-msgid "Runners|Take me there!"
-msgstr ""
-
-msgid "Runners|The new view gives you more space and better visibility into your fleet of runners."
 msgstr ""
 
 msgid "Runners|The project, group or instance where the runner was registered. Instance runners are always owned by Administrator."
