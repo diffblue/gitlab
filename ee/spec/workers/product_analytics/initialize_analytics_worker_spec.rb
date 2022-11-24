@@ -21,7 +21,7 @@ RSpec.describe ProductAnalytics::InitializeAnalyticsWorker do
     end
   end
 
-  describe 'perform' do
+  describe 'perform', :clean_gitlab_redis_shared_state do
     subject { worker.perform(project.id) }
 
     context 'when jitsu_host application setting is not defined' do
@@ -56,6 +56,18 @@ RSpec.describe ProductAnalytics::InitializeAnalyticsWorker do
         end
 
         subject
+      end
+
+      it 'ensures the temporary redis key is deleted' do
+        allow_next_instance_of(ProductAnalytics::JitsuAuthentication) do |auth|
+          allow(auth).to receive(:create_clickhouse_destination!).once
+        end
+
+        subject
+
+        expect(
+          Gitlab::Redis::SharedState.with { |redis| redis.get("project:#{project.id}:product_analytics_initializing") }
+        ).to eq(nil)
       end
 
       context 'when project does not have analytics enabled?' do
