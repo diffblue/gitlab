@@ -16,6 +16,7 @@ import {
   prepareStageErrors,
   formatMedianValuesWithOverview,
   generateFilterTextDescription,
+  groupDurationsByDay,
 } from 'ee/analytics/cycle_analytics/utils';
 import {
   TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST,
@@ -135,6 +136,26 @@ describe('Value Stream Analytics utils', () => {
       const flattenedData = flattenDurationChartData(transformedDurationData);
 
       expect(flattenedData).toStrictEqual(flattenedDurationData);
+    });
+  });
+
+  describe('groupDurationsByDay', () => {
+    it('returns a Map of the durations with the day as key', () => {
+      const grouped = groupDurationsByDay(flattenDurationChartData(transformedDurationData));
+
+      expect(grouped.size).toBe(2);
+
+      expect(grouped.has('2019-01-01')).toBe(true);
+      expect(grouped.get('2019-01-01')).toEqual([1134000, 2142000, 1234000]);
+
+      expect(grouped.has('2019-01-02')).toBe(true);
+      expect(grouped.get('2019-01-02')).toEqual([2321000, 3635000, 4321000]);
+    });
+
+    it('returns an empty Map given an empty array', () => {
+      const grouped = groupDurationsByDay([]);
+
+      expect(grouped.size).toBe(0);
     });
   });
 

@@ -120,6 +120,34 @@ export const flattenDurationChartData = (data) =>
     .flat();
 
 /**
+ * Takes the flat array of average durations and will return a map of
+ * dates to an array of all the averages for that date.
+ *
+ * For example, with the array:
+ * [
+ *  { average_duration_in_seconds: 1111, date: '2019-09-02'},
+ *  { average_duration_in_seconds: 2222, date: '2019-09-01'},
+ *  { average_duration_in_seconds: 3333, date: '2019-09-01'},
+ * ]
+ *
+ * Will return the map:
+ * Map({
+ *  '2019-09-01' => [2222, 3333],
+ *  '2019-09-02' => [1111]
+ * })
+ *
+ * @param {Array} flattenedData - A flattened array of objects containing average duration in seconds and the date measured
+ * @returns a map of each date with an array of duration values
+ */
+export const groupDurationsByDay = (flattenedData = []) => {
+  const durationMap = new Map();
+  return flattenedData.reduce((acc, { date, average_duration_in_seconds: duration }) => {
+    const durationArr = acc.has(date) ? [...acc.get(date), duration] : [duration];
+    return acc.set(date, durationArr);
+  }, durationMap);
+};
+
+/**
  * Takes the duration data for selected stages, groups the data by day and calculates the average duration
  * per day, for stages with values on that specific day.
  *
@@ -158,7 +186,8 @@ export const flattenDurationChartData = (data) =>
  * @returns {Array} An array with each item being another array of three items (plottable date, computed average)
  */
 export const getDurationChartData = (data, startDate, endDate) => {
-  const flattenedData = flattenDurationChartData(data);
+  const grouped = groupDurationsByDay(flattenDurationChartData(data));
+
   const eventData = [];
   const endOfDay = newDate(endDate);
   endOfDay.setHours(23, 59, 59); // make sure we're at the end of the day
@@ -169,16 +198,15 @@ export const getDurationChartData = (data, startDate, endDate) => {
     currentDate = dayAfter(currentDate)
   ) {
     const currentISODate = dateFormat(newDate(currentDate), dateFormats.isoDate);
-    const valuesForDay = flattenedData.filter(
-      (object) => object.date === currentISODate && isNumeric(object.average_duration_in_seconds),
-    );
+    const valuesForDay = grouped.has(currentISODate)
+      ? grouped.get(currentISODate).filter((durationInSeconds) => isNumeric(durationInSeconds))
+      : [];
 
     if (!valuesForDay.length) {
       eventData.push([currentISODate, null]);
     } else {
       const averagedData =
-        valuesForDay.reduce((total, value) => total + value.average_duration_in_seconds, 0) /
-        valuesForDay.length;
+        valuesForDay.reduce((total, value) => total + value, 0) / valuesForDay.length;
       const averagedDataInDays = secondsToDays(averagedData);
       eventData.push([currentISODate, averagedDataInDays]);
     }
