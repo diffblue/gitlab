@@ -19,6 +19,10 @@ RSpec.describe 'Filter issues by iteration', :js do
   let_it_be(:iteration_2_issue) { create(:issue, project: project, iteration: iteration_2) }
   let_it_be(:no_iteration_issue) { create(:issue, project: project) }
 
+  before do
+    stub_feature_flags(or_issuable_queries: false)
+  end
+
   shared_examples 'filters by iteration' do
     context 'when iterations are not available' do
       before do
