@@ -42,7 +42,7 @@ export default {
 </script>
 
 <template>
-  <div class="gl-p-5 gl-bg-gray-10 gl-rounded-base">
+  <div class="gl-bg-gray-50 gl-rounded-base gl-mx-6 gl-border-0 gl-mb-5">
     <pipeline-details
       class="gl-mb-4 gl-text-gray-50"
       :status="status"

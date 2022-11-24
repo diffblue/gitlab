@@ -9,7 +9,9 @@ import {
 } from '@gitlab/ui';
 import { __, s__ } from '~/locale';
 import { redirectTo } from '~/lib/utils/url_utility';
+import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import ScanTypeBadge from 'ee/security_configuration/dast_profiles/components/dast_scan_type_badge.vue';
+import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import dastProfileRunMutation from '../../graphql/dast_profile_run.mutation.graphql';
 import dastProfileDelete from '../../graphql/dast_profile_delete.mutation.graphql';
 import handlesErrors from '../../mixins/handles_errors';
@@ -27,12 +29,13 @@ export default {
     GlIcon,
     GlModal,
     BaseTab,
+    PreScanVerificationConfigurator,
     ScanTypeBadge,
   },
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [handlesErrors],
+  mixins: [handlesErrors, glFeatureFlagMixin()],
   inject: ['projectPath'],
   maxItemsCount: MAX_DAST_PROFILES_COUNT,
   tableFields: SAVED_TAB_TABLE_FIELDS,
@@ -53,6 +56,7 @@ export default {
     deletionError: s__(
       'OnDemandScans|Could not delete saved scan. Please refresh the page, or try again later.',
     ),
+    verifyConfigurationLabel: s__('OnDemandScans|Verify configuration'),
   },
   data() {
     return {
@@ -140,6 +144,9 @@ export default {
     cancelDeletion() {
       this.deletingScanId = null;
     },
+    openSidebar() {
+      this.$refs.verification.openSidebar();
+    },
   },
 };
 </script>
@@ -200,6 +207,13 @@ export default {
           </gl-dropdown-item>
 
           <gl-dropdown-item
+            v-if="glFeatures.dastPreScanVerification"
+            :aria-label="$options.i18n.verifyConfigurationLabel"
+            @click="openSidebar"
+          >
+            {{ $options.i18n.verifyConfigurationLabel }}
+          </gl-dropdown-item>
+          <gl-dropdown-item
             :aria-label="$options.i18n.deleteProfile"
             boundary="viewport"
             variant="danger"
@@ -244,6 +258,12 @@ export default {
       lazy
       @ok="deleteProfile"
       @cancel="cancelDeletion"
+    />
+
+    <pre-scan-verification-configurator
+      v-if="glFeatures.dastPreScanVerification"
+      ref="verification"
+      :show-trigger="false"
     />
   </base-tab>
 </template>

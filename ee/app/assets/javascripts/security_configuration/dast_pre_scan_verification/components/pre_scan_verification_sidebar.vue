@@ -65,23 +65,21 @@ export default {
       </h4>
     </template>
     <template #default>
-      <div class="gl-px-4!">
-        <pre-scan-verification-alert
-          v-if="showAlert"
-          class="gl-mb-4"
-          pipeline-created-at="2022-09-23 11:19:49 UTC"
-          :status="status"
-          @dismiss="$emit('dismiss-alert')"
-        />
+      <pre-scan-verification-alert
+        v-if="showAlert"
+        pipeline-created-at="2022-09-23 11:19:49 UTC"
+        :status="status"
+        class="gl-px-9! gl-py-5! gl-mx-6 gl-mt-5 gl-border-0"
+        @dismiss="$emit('dismiss-alert')"
+      />
 
-        <p class="gl-text-gray-500 gl-line-height-20">
-          {{ $options.i18n.preScanVerificationSidebarInfo }}
-        </p>
+      <p class="gl-text-gray-500 gl-line-height-20 gl-border-0 gl-mb-0">
+        {{ $options.i18n.preScanVerificationSidebarInfo }}
+      </p>
 
-        <pre-scan-verification-summary v-if="!isDefaultStatus" :status="status" />
+      <pre-scan-verification-summary v-if="!isDefaultStatus" :status="status" />
 
-        <pre-scan-verification-list class="gl-mt-6" :status="status" />
-      </div>
+      <pre-scan-verification-list class="gl-pt-0!" :status="status" />
     </template>
   </gl-drawer>
 </template>

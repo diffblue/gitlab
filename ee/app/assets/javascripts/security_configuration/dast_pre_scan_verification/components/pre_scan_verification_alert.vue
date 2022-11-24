@@ -61,7 +61,7 @@ export default {
 <template>
   <gl-alert :variant="alertVariant" :title="alertTitle" @dismiss="$emit('dismiss')">
     <slot name="content">
-      {{ $options.i18n.preScanVerificationDefaultText }}
+      <span>{{ $options.i18n.preScanVerificationDefaultText }}</span>
       <span v-if="showPipelineDetails">
         <pipeline-details
           class="gl-text-gray-50 gl-display-inline"
