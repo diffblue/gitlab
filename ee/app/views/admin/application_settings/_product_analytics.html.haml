@@ -7,7 +7,9 @@
       = _('Product analytics')
     = render Pajamas::ButtonComponent.new(button_options: { class: 'js-settings-toggle' }) do
       = expanded ? _('Collapse') : _('Expand')
-    %p= s_('AdminSettings|Configure product analytics to track events within your project applications.')
+    %p
+      = s_('AdminSettings|Configure product analytics to track events within your project applications.')
+      = link_to _('Learn more.'), help_page_path('user/product_analytics/index')
   .settings-content
     = gitlab_ui_form_for @application_setting, url: general_admin_application_settings_path(anchor: 'js-product-analytics-settings'), html: { class: 'fieldset-form', id: 'product-analytics-settings', autocomplete: 'off' } do |f|
       = form_errors(@application_setting)
