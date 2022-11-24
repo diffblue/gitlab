@@ -23,19 +23,19 @@ RSpec.describe 'User views issues page', :js do
     it 'shows health status, blocking issues, and weight information', :aggregate_failures do
       within '.issue:nth-of-type(1)' do
         expect(page).to have_css '.badge-danger', text: 'At risk'
-        expect(page).not_to have_css '.blocking-issues'
+        expect(page).not_to have_css '[data-testid="blocking-issues"]'
         expect(page).not_to have_css '.issuable-weight'
       end
 
       within '.issue:nth-of-type(2)' do
         expect(page).to have_css '.badge-warning', text: 'Needs attention'
-        expect(page).not_to have_css '.blocking-issues'
+        expect(page).not_to have_css '[data-testid="blocking-issues"]'
         expect(page).not_to have_css '.issuable-weight'
       end
 
       within '.issue:nth-of-type(3)' do
         expect(page).to have_css '.badge-success', text: 'On track'
-        expect(page).to have_css '.blocking-issues', text: 1
+        expect(page).to have_css '[data-testid="blocking-issues"]', text: 1
         expect(page).to have_css '.issuable-weight', text: 2
       end
     end
