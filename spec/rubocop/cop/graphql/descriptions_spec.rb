@@ -65,7 +65,7 @@ RSpec.describe RuboCop::Cop::Graphql::Descriptions do
         module Types
           class FakeType < BaseObject
             field :a_thing,
-            ^^^^^^^^^^^^^^^ #{described_class::MSG_CONTAINS_DEMONSTRATIVE_THIS}
+            ^^^^^^^^^^^^^^^ #{described_class::MSG_CONTAINS_THIS}
               GraphQL::Types::String,
               null: false,
               description: 'Description of this thing.'
@@ -172,7 +172,7 @@ RSpec.describe RuboCop::Cop::Graphql::Descriptions do
         module Types
           class FakeType < BaseObject
             argument :a_thing,
-            ^^^^^^^^^^^^^^^^^^ #{described_class::MSG_CONTAINS_DEMONSTRATIVE_THIS}
+            ^^^^^^^^^^^^^^^^^^ #{described_class::MSG_CONTAINS_THIS}
               GraphQL::Types::String,
               null: false,
               description: 'Description of this thing.'
@@ -258,7 +258,7 @@ RSpec.describe RuboCop::Cop::Graphql::Descriptions do
         module Types
           class FakeEnum < BaseEnum
             value 'FOO', value: 'foo', description: 'Description of this issue.'
-            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ #{described_class::MSG_CONTAINS_DEMONSTRATIVE_THIS}
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ #{described_class::MSG_CONTAINS_THIS}
           end
         end
       TYPE
