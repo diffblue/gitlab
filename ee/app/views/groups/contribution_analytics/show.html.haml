@@ -18,8 +18,7 @@
     total_merge_requests_created_count: @data_collector.total_merge_requests_created_count,
     total_merge_requests_merged_count: @data_collector.total_merge_requests_merged_count,
     total_issues_created_count: @data_collector.total_issues_created_count,
-    total_issues_closed_count: @data_collector.total_issues_closed_count
+    total_issues_closed_count: @data_collector.total_issues_closed_count,
+    member_contributions_path: group_contribution_analytics_path(@group, { start_date: @start_date, format: :json })
   }
 }
-
-#js-group-member-contributions{ data: { member_contributions_path: group_contribution_analytics_path(@group, { start_date: @start_date, format: :json }) } }

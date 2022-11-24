@@ -1,13 +1,13 @@
 import { mount } from '@vue/test-utils';
 
-import TableBodyComponent from 'ee/group_member_contributions/components/table_body.vue';
-import GroupMemberStore from 'ee/group_member_contributions/store/group_member_store';
+import TableBodyComponent from 'ee/analytics/contribution_analytics/components/table_body.vue';
+import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
 
-import { rawMembers } from '../mock_data';
+import { MOCK_MEMBERS } from '../mock_data';
 
 const createComponent = () => {
-  const store = new GroupMemberStore();
-  store.setMembers(rawMembers);
+  const store = new GroupMembers();
+  store.setMembers(MOCK_MEMBERS);
   const rows = store.members;
 
   return mount(TableBodyComponent, { propsData: { rows } });
@@ -35,6 +35,6 @@ describe('TableBodyComponent', () => {
     const cellEl = wrapper.find('td strong');
 
     expect(cellEl.exists()).toBe(true);
-    expect(cellEl.find('a').attributes('href')).toBe(rawMembers[0].user_web_url);
+    expect(cellEl.find('a').attributes('href')).toBe(MOCK_MEMBERS[0].user_web_url);
   });
 });

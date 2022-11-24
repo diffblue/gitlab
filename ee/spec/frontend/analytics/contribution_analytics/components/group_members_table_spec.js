@@ -1,43 +1,32 @@
 import { mount } from '@vue/test-utils';
 
-import AppComponent from 'ee/group_member_contributions/components/app.vue';
-import GroupMemberStore from 'ee/group_member_contributions/store/group_member_store';
-import { contributionsPath } from '../mock_data';
+import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
+import GroupMembersTable from 'ee/analytics/contribution_analytics/components/group_members_table.vue';
+import { CONTRIBUTIONS_PATH } from '../mock_data';
 
-describe('AppComponent', () => {
+describe('GroupMembersTable', () => {
   let wrapper;
 
-  const createStore = (state = {}) => {
-    const store = new GroupMemberStore(contributionsPath);
-
-    Object.assign(store.state, state);
-
-    return store;
+  const createComponent = ({ isLoading = false } = {}) => {
+    jest.spyOn(GroupMembers.prototype, 'fetchContributedMembers').mockImplementation(() => {});
+    jest.spyOn(GroupMembers.prototype, 'isLoading', 'get').mockReturnValue(isLoading);
+    wrapper = mount(GroupMembersTable, {
+      provide: { memberContributionsPath: CONTRIBUTIONS_PATH },
+    });
   };
-
-  const createComponent = (store = createStore()) => {
-    wrapper = mount(AppComponent, { propsData: { store } });
-  };
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
 
   it('renders component container element with class `group-member-contributions-container`', () => {
     createComponent();
-
     expect(wrapper.classes()).toContain('group-member-contributions-container');
   });
 
   it('renders header title element within component container', () => {
     createComponent();
-
     expect(wrapper.find('h3').text()).toBe('Contributions per group member');
   });
 
   it('shows loading icon when isLoading prop is true', () => {
-    const store = createStore({ isLoading: true });
-    createComponent(store);
+    createComponent({ isLoading: true });
     const loadingEl = wrapper.find('.loading-animation');
 
     expect(loadingEl.exists()).toBe(true);
@@ -47,20 +36,18 @@ describe('AppComponent', () => {
   });
 
   it('renders table container element', () => {
-    const store = createStore({ isLoading: false });
-    createComponent(store);
-
+    createComponent();
     expect(wrapper.find('table.table.gl-sortable').exists()).toBe(true);
   });
 
   it('calls store.sortMembers with columnName param', async () => {
-    const store = createStore({ isLoading: false });
-    jest.spyOn(store, 'sortMembers').mockImplementation(() => {});
-    createComponent(store);
+    createComponent();
+    const sortMembers = jest
+      .spyOn(GroupMembers.prototype, 'sortMembers')
+      .mockImplementation(() => {});
 
     const firstColumnName = 'fullname';
     await wrapper.find('th').trigger('click');
-
-    expect(store.sortMembers).toHaveBeenCalledWith(firstColumnName);
+    expect(sortMembers).toHaveBeenCalledWith(firstColumnName);
   });
 });

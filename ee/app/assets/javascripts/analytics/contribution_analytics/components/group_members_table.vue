@@ -1,37 +1,39 @@
 <script>
 import { GlLoadingIcon } from '@gitlab/ui';
-import COLUMNS from '../constants';
+import { TABLE_COLUMNS } from '../constants';
 
+import GroupMembers from '../group_members';
 import TableBody from './table_body.vue';
 import TableHeader from './table_header.vue';
 
 export default {
-  columns: COLUMNS,
+  columns: TABLE_COLUMNS,
   components: {
     TableHeader,
     TableBody,
     GlLoadingIcon,
   },
-  props: {
-    store: {
-      type: Object,
-      required: true,
-    },
+  inject: ['memberContributionsPath'],
+  data() {
+    return { groupMembers: new GroupMembers(this.memberContributionsPath) };
   },
   computed: {
     isLoading() {
-      return this.store.isLoading;
+      return this.groupMembers.isLoading;
     },
     members() {
-      return this.store.members;
+      return this.groupMembers.members;
     },
     sortOrders() {
-      return this.store.sortOrders;
+      return this.groupMembers.sortOrders;
     },
+  },
+  mounted() {
+    this.groupMembers.fetchContributedMembers();
   },
   methods: {
     handleColumnClick(columnName) {
-      this.store.sortMembers(columnName);
+      this.groupMembers.sortMembers(columnName);
     },
   },
 };

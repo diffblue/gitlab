@@ -2,14 +2,14 @@ import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
-import COLUMNS from '../constants';
+import { TABLE_COLUMNS } from './constants';
 
-export default class GroupMemberStore {
+export default class GroupMembers {
   constructor(memberContributionsPath) {
     this.memberContributionsPath = memberContributionsPath;
 
     this.state = {};
-    this.state.isLoading = true;
+    this.state.isLoading = false;
     this.state.members = [];
     this.state.columns = [];
     this.state.sortOrders = {};
@@ -37,7 +37,7 @@ export default class GroupMemberStore {
   }
 
   setMembers(rawMembers) {
-    this.state.members = rawMembers.map((rawMember) => GroupMemberStore.formatMember(rawMember));
+    this.state.members = rawMembers.map((rawMember) => GroupMembers.formatMember(rawMember));
   }
 
   sortMembers(sortByColumn) {
@@ -65,11 +65,12 @@ export default class GroupMemberStore {
   }
 
   fetchContributedMembers() {
+    this.state.isLoading = true;
     return axios
       .get(this.memberContributionsPath)
       .then((res) => res.data)
       .then((members) => {
-        this.setColumns(COLUMNS);
+        this.setColumns(TABLE_COLUMNS);
         this.setMembers(members);
         this.state.isLoading = false;
       })

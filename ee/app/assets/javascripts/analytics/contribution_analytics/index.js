@@ -12,6 +12,7 @@ export default (el) => {
     totalMergeRequestsMergedCount,
     totalIssuesCreatedCount,
     totalIssuesClosedCount,
+    memberContributionsPath,
   } = el.dataset;
 
   const {
@@ -24,6 +25,7 @@ export default (el) => {
   return new Vue({
     el,
     provide: {
+      memberContributionsPath,
       labels,
 
       push,
