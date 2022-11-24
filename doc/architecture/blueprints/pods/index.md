@@ -329,6 +329,12 @@ This is the list of known affected features with the proposed solutions.
 - [Pods: CI Runners](pods-feature-ci-runners.md)
 - [Pods: Admin Area](pods-feature-admin-area.md)
 - [Pods: Container Registry](pods-feature-container-registry.md)
+- [Pods: Contributions: Forks](pods-feature-contributions-forks.md)
+- [Pods: Personal Namespaces](pods-feature-personal-namespaces.md)
+- [Pods: Dashboard: Projects, Todos, Issues, Merge Requests, Activity, ...](pods-feature-dashboard.md)
+- [Pods: Snippets](pods-feature-snippets.md)
+- [Pods: Uploads](pods-feature-uploads.md)
+- [Pods: GitLab Pages](pods-feature-gitlab-pages.md)
 
 ## Links
 
