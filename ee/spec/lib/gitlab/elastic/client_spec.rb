@@ -23,6 +23,16 @@ RSpec.describe Gitlab::Elastic::Client do
         expect(options).to include(open_timeout: described_class::OPEN_TIMEOUT, timeout: nil)
       end
 
+      it 'does not set log & debug flags by default' do
+        expect(client.transport.options).not_to include(debug: true, log: true)
+      end
+
+      it 'sets log & debug flags if .debug? is true' do
+        allow(described_class).to receive(:debug?).and_return(true)
+
+        expect(client.transport.options).to include(debug: true, log: true)
+      end
+
       context 'with typhoeus adapter for keep-alive connections' do
         it 'sets typhoeus as the adapter' do
           options = client.transport.options
@@ -212,6 +222,28 @@ RSpec.describe Gitlab::Elastic::Client do
 
       it 'returns nil' do
         expect(creds).to eq(nil)
+      end
+    end
+  end
+
+  describe '.debug?' do
+    using RSpec::Parameterized::TableSyntax
+
+    where(:dev_or_test_env, :env_variable, :expected_result) do
+      false | 'true'  | false
+      false | 'false' | false
+      true  | 'false' | false
+      true  | 'true'  | true
+    end
+
+    with_them do
+      before do
+        allow(Gitlab).to receive(:dev_or_test_env?).and_return(dev_or_test_env)
+        allow(ENV).to receive(:[]).with('ELASTIC_CLIENT_DEBUG').and_return(env_variable)
+      end
+
+      it 'returns expected result' do
+        expect(described_class.debug?).to eq(expected_result)
       end
     end
   end
