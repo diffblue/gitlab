@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module QA
-  RSpec.describe 'ModelOps' do
+  RSpec.describe 'ModelOps', :skip_live_env do
     describe 'Suggested Reviewers' do
       let(:project) do
         Resource::Project.init do |project|
