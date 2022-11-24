@@ -1,4 +1,4 @@
-- title: "Support for resetting runner registration tokens in `POST /api/v4/*/runners/reset_registration_token` REST API endpoints"  # (required) The name of the feature to be deprecated
+- title: "Support for REST API endpoints that reset runner registration tokens"  # (required) The name of the feature to be deprecated
   announcement_milestone: "15.7"  # (required) The milestone when this feature was first announced as deprecated.
   announcement_date: "2022-12-22"  # (required) The date of the milestone release when this feature was first announced as deprecated. This should almost always be the 22nd of a month (YYYY-MM-22), unless you did an out of band blog post.
   removal_milestone: "16.0"  # (required) The milestone when this feature is planned to be removed
@@ -10,7 +10,7 @@
   body: |  # (required) Do not modify this line, instead modify the lines below.
     The support for runner registration tokens is deprecated. As a consequence, the REST API endpoints to reset a registration token are also deprecated and will
     be removed in GitLab 16.0.
-    The affected endpoints are:
+    The deprecated endpoints are:
 
     - `POST /runners/reset_registration_token`
     - `POST /projects/:id/runners/reset_registration_token`

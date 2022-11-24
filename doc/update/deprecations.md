@@ -68,7 +68,7 @@ This port is used for much more than just metrics, which warranted this change t
 
 <div class="deprecation removal-160 breaking-change">
 
-### Support for resetting runner registration tokens in `POST /api/v4/*/runners/reset_registration_token` REST API endpoints
+### Support for REST API endpoints that reset runner registration tokens
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
 Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
@@ -79,7 +79,7 @@ Review the details carefully before upgrading.
 
 The support for runner registration tokens is deprecated. As a consequence, the REST API endpoints to reset a registration token are also deprecated and will
 be removed in GitLab 16.0.
-The affected endpoints are:
+The deprecated endpoints are:
 
 - `POST /runners/reset_registration_token`
 - `POST /projects/:id/runners/reset_registration_token`
