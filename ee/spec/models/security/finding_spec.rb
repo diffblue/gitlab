@@ -109,6 +109,20 @@ RSpec.describe Security::Finding do
     it { is_expected.to match_array(expected_findings) }
   end
 
+  describe '.undismissed_by_vulnerability' do
+    let(:expected_findings) { [finding_2] }
+
+    subject { described_class.undismissed_by_vulnerability }
+
+    before do
+      create(:vulnerabilities_finding,
+             :dismissed,
+             uuid: finding_1.uuid)
+    end
+
+    it { is_expected.to match_array(expected_findings) }
+  end
+
   describe '.undismissed' do
     let(:expected_findings) { [finding_2] }
 

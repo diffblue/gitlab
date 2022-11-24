@@ -47,6 +47,13 @@ module Security
     scope :by_confidence_levels, -> (confidence_levels) { where(confidence: confidence_levels) }
     scope :by_report_types, -> (report_types) { joins(:scan).merge(Scan.by_scan_types(report_types)) }
     scope :by_scan, -> (scans) { where(scan: scans) }
+    scope :undismissed_by_vulnerability, -> do
+      where('NOT EXISTS (?)',
+            Vulnerability.select(1)
+                         .dismissed
+                         .joins(:findings)
+                         .where('vulnerability_occurrences.uuid = security_findings.uuid::text'))
+    end
     scope :undismissed, -> do
       where('NOT EXISTS (?)',
             Scan.select(1)
