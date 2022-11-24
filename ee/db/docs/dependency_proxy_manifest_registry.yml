@@ -1,0 +1,9 @@
+---
+table_name: dependency_proxy_manifest_registry
+classes:
+  - Geo::DependencyProxyManifestRegistry
+feature_categories:
+  - geo_replication
+description: TODO
+introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/102908
+milestone: '15.6'
