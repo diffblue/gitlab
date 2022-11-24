@@ -1,16 +1,17 @@
 import { omitBy, isEmpty } from 'lodash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { s__ } from '~/locale';
-import { TYPE_USER } from '~/graphql_shared/constants';
+import { TYPE_GROUP, TYPE_USER } from '~/graphql_shared/constants';
 
 export const USER_TYPE = 'user';
-const GROUP_TYPE = 'group';
+export const GROUP_TYPE = 'group';
 
 export const APPROVER_TYPE_LIST_ITEMS = [
   { text: s__('SecurityOrchestration|Individual users'), value: USER_TYPE },
   { text: s__('SecurityOrchestration|Groups'), value: GROUP_TYPE },
 ];
 
+// TODO delete this function as part of the clean up for the `:scan_result_role_action` feature
 /*
   Return the ids for all approvers of the group type.
 */
@@ -20,6 +21,7 @@ export function groupIds(approvers) {
     .map((approver) => approver.id);
 }
 
+// TODO delete this file as part of the clean up for the `:scan_result_role_action` feature
 /*
   Return the ids for all approvers of the user type.
 */
@@ -27,6 +29,7 @@ export function userIds(approvers) {
   return approvers.filter((approver) => approver.type === USER_TYPE).map((approver) => approver.id);
 }
 
+// TODO delete this function as part of the clean up for the `:scan_result_role_action` feature
 /*
   Group existing approvers into a single array.
 */
@@ -48,6 +51,41 @@ export function groupApprovers(existingApprovers) {
     }
     return approver;
   });
+}
+
+/**
+ * Separate existing approvers by type
+ * @param {Array} existingApprovers all approvers
+ * @returns {Object} approvers separated by type
+ */
+export function groupApproversV2(existingApprovers) {
+  const USER_UNIQ_KEY = 'username';
+  // TODO remove groupUniqKeys with the removal of the `:scan_result_role_action` feature flag (https://gitlab.com/gitlab-org/gitlab/-/issues/377866)
+  const GROUP_UNIQ_KEY = 'full_name';
+  const GROUP_UNIQ_KEY_V2 = 'fullName';
+
+  return existingApprovers.reduce(
+    (acc, approver) => {
+      const approverKeys = Object.keys(approver);
+
+      if (approverKeys.includes(GROUP_UNIQ_KEY) || approverKeys.includes(GROUP_UNIQ_KEY_V2)) {
+        acc.groups.push({
+          ...approver,
+          type: GROUP_TYPE,
+          value: convertToGraphQLId(TYPE_GROUP, approver.id),
+        });
+      } else if (approverKeys.includes(USER_UNIQ_KEY)) {
+        acc.users.push({
+          ...approver,
+          type: USER_TYPE,
+          value: convertToGraphQLId(TYPE_USER, approver.id),
+        });
+      }
+
+      return acc;
+    },
+    { users: [], groups: [] },
+  );
 }
 
 /*

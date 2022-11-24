@@ -2,12 +2,12 @@
 import { GlSprintf, GlForm, GlFormInput, GlListbox, GlModalDirective } from '@gitlab/ui';
 import { n__, s__ } from '~/locale';
 import UserSelect from './user_select.vue';
+import GroupSelect from './group_select.vue';
 import {
   APPROVER_TYPE_LIST_ITEMS,
-  groupApprovers,
   decomposeApprovers,
-  groupIds,
-  userIds,
+  groupApproversV2,
+  GROUP_TYPE,
   USER_TYPE,
 } from './lib/actions';
 
@@ -17,6 +17,7 @@ export default {
     GlForm,
     GlFormInput,
     GlListbox,
+    GroupSelect,
     UserSelect,
   },
   directives: {
@@ -34,13 +35,19 @@ export default {
     },
   },
   data() {
+    const action = { ...this.initAction };
+
+    let approverType = '';
+    if (action.user_approvers?.length || action.user_approvers_ids?.length) {
+      approverType = USER_TYPE;
+    } else if (action.group_approvers?.length || action.group_approvers_ids?.length) {
+      approverType = GROUP_TYPE;
+    }
+
     return {
-      action: { ...this.initAction },
-      approvers: groupApprovers(this.existingApprovers),
-      approverType:
-        this.initAction.user_approvers?.length || this.initAction.user_approvers_ids?.length
-          ? USER_TYPE
-          : '',
+      action,
+      approvers: groupApproversV2(this.existingApprovers),
+      approverType,
     };
   },
   computed: {
@@ -54,32 +61,30 @@ export default {
         this.action.approvals_required,
       );
     },
-    groupIds() {
-      return groupIds(this.approvers);
-    },
-    userIds() {
-      return userIds(this.approvers);
-    },
-  },
-  watch: {
-    action: {
-      handler(values) {
-        this.$emit('changed', values);
-      },
-      deep: true,
-    },
   },
   methods: {
     approvalsRequiredChanged(value) {
       this.action.approvals_required = parseInt(value, 10);
+      this.handleActionUpdate();
     },
-    handleApproversUpdate(updatedApprovers) {
-      this.approvers = updatedApprovers;
-      this.action = decomposeApprovers(this.action, updatedApprovers);
-      this.$emit('approversUpdated', this.approvers);
+    handleActionUpdate() {
+      this.$emit('changed', this.action);
+    },
+    handleApproversUpdate({ updatedApprovers, type }) {
+      if (type === GROUP_TYPE) {
+        this.approvers.groups = updatedApprovers;
+      } else if (type === USER_TYPE) {
+        this.approvers.users = updatedApprovers;
+      }
+
+      const allApprovers = [...this.approvers.groups, ...this.approvers.users];
+      this.action = decomposeApprovers(this.action, allApprovers);
+      this.$emit('approversUpdated', allApprovers);
+      this.handleActionUpdate();
     },
   },
   APPROVER_TYPE_LIST_ITEMS,
+  GROUP_TYPE,
   USER_TYPE,
 };
 </script>
@@ -116,8 +121,18 @@ export default {
         <template #approvers>
           <template v-if="approverType === $options.USER_TYPE">
             <user-select
-              :existing-approvers="approvers"
-              @updateSelectedApprovers="handleApproversUpdate"
+              :existing-approvers="approvers.users"
+              @updateSelectedApprovers="
+                handleApproversUpdate({ updatedApprovers: $event, type: $options.USER_TYPE })
+              "
+            />
+          </template>
+          <template v-else-if="approverType === $options.GROUP_TYPE">
+            <group-select
+              :existing-approvers="approvers.groups"
+              @updateSelectedApprovers="
+                handleApproversUpdate({ updatedApprovers: $event, type: $options.GROUP_TYPE })
+              "
             />
           </template>
         </template>

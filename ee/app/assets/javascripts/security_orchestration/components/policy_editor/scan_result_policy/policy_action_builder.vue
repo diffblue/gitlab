@@ -1,4 +1,5 @@
 <script>
+// TODO delete this file as part of the clean up for the `:scan_result_role_action` feature
 import { GlSprintf, GlForm, GlFormInput, GlModalDirective } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import { AVATAR_SHAPE_OPTION_CIRCLE, AVATAR_SHAPE_OPTION_RECT } from '~/vue_shared/constants';
