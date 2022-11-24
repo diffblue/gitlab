@@ -10,12 +10,6 @@ module Namespaces
         @root_namespace = root_namespace.root_ancestor # just in case the true root isn't passed
       end
 
-      def over_limit?(*args)
-        return false unless enforce_cap?
-
-        users_count > limit
-      end
-
       def enforce_cap?
         return false unless enforceable_subscription?
 
@@ -37,10 +31,6 @@ module Namespaces
         return false if root_namespace.public?
 
         root_namespace.has_free_or_no_subscription?
-      end
-
-      def limit
-        raise NotImplementedError
       end
 
       def feature_enabled?

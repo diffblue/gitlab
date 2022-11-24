@@ -89,6 +89,86 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
         stub_feature_flags(free_user_cap: true)
       end
 
+      context 'with updating dashboard enforcement_at and notification_at fields', :use_clean_rails_redis_caching do
+        context 'when cache has expired or does not exist' do
+          context 'when under the limit' do
+            let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
+
+            it 'updates the database for non enforcement' do
+              time = Time.current
+              namespace.namespace_details.update!(dashboard_enforcement_at: time)
+
+              expect do
+                expect(over_limit?).to be(false)
+              end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(time).to(nil)
+            end
+
+            it 'does not blank out dashboard_notification_at' do
+              namespace.namespace_details.update!(dashboard_notification_at: Time.current)
+
+              expect do
+                expect(over_limit?).to be(false)
+              end.to not_change(namespace.namespace_details, :dashboard_enforcement_at)
+                       .and(not_change(namespace.namespace_details, :dashboard_notification_at))
+            end
+          end
+
+          context 'when over the limit' do
+            it 'updates the database for enforcement' do
+              freeze_time do
+                expect do
+                  expect(over_limit?).to be(true)
+                end.to change { namespace.namespace_details.dashboard_enforcement_at }.from(nil).to(Time.current)
+              end
+            end
+
+            it 'blanks out dashboard_notification_at' do
+              time = Time.current
+              namespace.namespace_details.update!(dashboard_notification_at: time)
+
+              expect do
+                expect(over_limit?).to be(true)
+              end.to change { namespace.namespace_details.dashboard_notification_at }.from(time).to(nil)
+            end
+
+            it 'does not update dashboard_notification_at field needlessly' do
+              expect(namespace.namespace_details).not_to receive(:update).with(dashboard_notification_at: nil)
+
+              expect(over_limit?).to be(true)
+            end
+
+            context 'when dashboard_enforcement_at is already set' do
+              it 'does not update dashboard_notification_at field needlessly or update dashboard_enforcement_at' do
+                namespace.namespace_details.update!(dashboard_enforcement_at: Time.current)
+
+                expect(namespace.namespace_details).not_to receive(:update)
+
+                expect do
+                  expect(over_limit?).to be(true)
+                end.to not_change(namespace.namespace_details, :dashboard_enforcement_at)
+                         .and(not_change(namespace.namespace_details, :dashboard_notification_at))
+              end
+            end
+          end
+        end
+
+        context 'when cache exists' do
+          before do
+            over_limit?
+          end
+
+          it 'does not update the database' do
+            namespace.namespace_details.update!(dashboard_enforcement_at: nil)
+
+            expect(namespace.namespace_details).not_to receive(:update)
+
+            expect do
+              expect(over_limit?).to be(true)
+            end.not_to change { namespace.namespace_details.dashboard_enforcement_at }
+          end
+        end
+      end
+
       context 'when under the number of free users limit' do
         let(:free_plan_members_count) { Namespaces::FreeUserCap.dashboard_limit - 1 }
 
