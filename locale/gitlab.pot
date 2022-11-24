@@ -36878,6 +36878,9 @@ msgstr ""
 msgid "SecurityReports|All statuses"
 msgstr ""
 
+msgid "SecurityReports|All tools"
+msgstr ""
+
 msgid "SecurityReports|Although it's rare to have no vulnerabilities, it can happen. Check your settings to make sure you've set up your dashboard correctly."
 msgstr ""
 
