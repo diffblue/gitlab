@@ -46443,6 +46443,9 @@ msgstr ""
 msgid "WorkItem|Delete %{workItemType}"
 msgstr ""
 
+msgid "WorkItem|Discard changes"
+msgstr ""
+
 msgid "WorkItem|Due date"
 msgstr ""
 
@@ -46512,10 +46515,16 @@ msgstr ""
 msgid "WorkItem|Requirements"
 msgstr ""
 
+msgid "WorkItem|Save and overwrite"
+msgstr ""
+
 msgid "WorkItem|Search existing %{workItemType}s"
 msgstr ""
 
 msgid "WorkItem|Select type"
+msgstr ""
+
+msgid "WorkItem|Someone edited the description at the same time you did. If you save it will overwrite their changes. Please confirm you'd like to save your edits."
 msgstr ""
 
 msgid "WorkItem|Something went wrong when creating %{workItemType}. Please try again."
@@ -46582,6 +46591,9 @@ msgid "WorkItem|Undo"
 msgstr ""
 
 msgid "WorkItem|Use tasks to break down your work in an issue into smaller pieces. %{learnMoreLink}"
+msgstr ""
+
+msgid "WorkItem|View current version"
 msgstr ""
 
 msgid "WorkItem|Work Items"
