@@ -20,6 +20,7 @@ module Vulnerabilities
     before_save :assign_letter_grade
 
     scope :for_project, ->(project) { where(project_id: project) }
+    scope :by_grade, -> (grade) { where(letter_grade: grade) }
 
     class << self
       # Takes an object which responds to `#[]` method call

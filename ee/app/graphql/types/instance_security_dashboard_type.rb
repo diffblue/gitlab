@@ -25,7 +25,11 @@ module Types
     field :vulnerability_grades,
           [Types::VulnerableProjectsByGradeType],
           null: false,
-          description: 'Represents vulnerable project counts for each grade.'
+          description: 'Represents vulnerable project counts for each grade.' do
+            argument :letter_grade, Types::VulnerabilityGradeEnum,
+                     required: false,
+                     description: "Filter the response by given letter grade."
+          end
 
     field :cluster_agents,
           ::Types::Clusters::AgentType.connection_type,
@@ -34,10 +38,11 @@ module Types
           description: 'Cluster agents associated with projects selected in the Instance Security Dashboard.',
           resolver: ::Resolvers::Clusters::AgentsResolver
 
-    def vulnerability_grades
+    def vulnerability_grades(letter_grade: nil)
       ::Gitlab::Graphql::Aggregations::VulnerabilityStatistics::LazyAggregate.new(
         context,
-        ::InstanceSecurityDashboard.new(context[:current_user])
+        ::InstanceSecurityDashboard.new(context[:current_user]),
+        filter: letter_grade
       )
     end
   end

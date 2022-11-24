@@ -34,6 +34,18 @@ RSpec.describe Vulnerabilities::Statistic do
     end
   end
 
+  describe '.by_grade' do
+    let!(:statistic_grade_a) { create(:vulnerability_statistic, letter_grade: :a) }
+
+    subject { described_class.by_grade(:a) }
+
+    before do
+      %w[b c d f].each { create(:vulnerability_statistic, :"grade_#{_1}") }
+    end
+
+    it { is_expected.to match_array([statistic_grade_a]) }
+  end
+
   describe '.letter_grade_for' do
     subject { described_class.letter_grade_for(object) }
 
