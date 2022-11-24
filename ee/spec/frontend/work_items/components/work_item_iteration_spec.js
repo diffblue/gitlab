@@ -83,6 +83,9 @@ describe('WorkItemIteration component', () => {
     searchQueryHandler = successSearchQueryHandler,
     mutationHandler = successUpdateWorkItemMutationHandler,
     fetchByIid = false,
+    queryVariables = {
+      id: workItemId,
+    },
   } = {}) => {
     wrapper = shallowMountExtended(WorkItemIteration, {
       apolloProvider: createMockApollo([
@@ -97,9 +100,7 @@ describe('WorkItemIteration component', () => {
         iteration,
         workItemId,
         workItemType,
-        queryVariables: {
-          id: workItemId,
-        },
+        queryVariables,
         fetchByIid,
         fullPath: 'test-project-path',
       },
@@ -274,5 +275,12 @@ describe('WorkItemIteration component', () => {
 
     expect(workItemQueryHandler).not.toHaveBeenCalled();
     expect(workItemByIidResponseHandler).toHaveBeenCalled();
+  });
+
+  it('skips calling the handlers when missing the needed queryVariables', async () => {
+    createComponent({ queryVariables: {}, fetchByIid: false });
+    await waitForPromises();
+
+    expect(workItemQueryHandler).not.toHaveBeenCalled();
   });
 });
