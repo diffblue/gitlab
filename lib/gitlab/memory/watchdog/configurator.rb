@@ -11,6 +11,8 @@ module Gitlab
         DEFAULT_MAX_STRIKES = 5
         DEFAULT_MAX_HEAP_FRAG = 0.5
         DEFAULT_MAX_MEM_GROWTH = 3.0
+        # grace_time / sleep_interval = max_strikes allowed for Sidekiq process to violate defined limits.
+        DEFAULT_SIDEKIQ_GRACE_TIME_S = 300
 
         class << self
           def configure_for_puma
@@ -28,10 +30,7 @@ module Gitlab
               config.logger = Sidekiq.logger
               config.handler = Gitlab::Memory::Watchdog::TermProcessHandler.new
               config.write_heap_dumps = write_heap_dumps?
-              config.sleep_time_seconds = [
-                ENV.fetch('SIDEKIQ_MEMORY_KILLER_CHECK_INTERVAL', DEFAULT_SIDEKIQ_SLEEP_INTERVAL_S).to_i,
-                MIN_SIDEKIQ_SLEEP_INTERVAL_S
-              ].max
+              config.sleep_time_seconds = sidekiq_sleep_time
               config.monitors(&configure_monitors_for_sidekiq)
             end
           end
@@ -68,8 +67,35 @@ module Gitlab
             end
           end
 
+          def sidekiq_sleep_time
+            [
+              ENV.fetch('SIDEKIQ_MEMORY_KILLER_CHECK_INTERVAL', DEFAULT_SIDEKIQ_SLEEP_INTERVAL_S).to_i,
+              MIN_SIDEKIQ_SLEEP_INTERVAL_S
+            ].max
+          end
+
           def configure_monitors_for_sidekiq
-            # NOP - At the moment we don't run watchdog for Sidekiq
+            ->(stack) do
+              if ENV['SIDEKIQ_MEMORY_KILLER_MAX_RSS'].to_i.nonzero?
+                soft_limit_bytes = ENV['SIDEKIQ_MEMORY_KILLER_MAX_RSS'].to_i.kilobytes
+                grace_time = ENV.fetch('SIDEKIQ_MEMORY_KILLER_GRACE_TIME', DEFAULT_SIDEKIQ_GRACE_TIME_S).to_i
+                max_strikes = grace_time / sidekiq_sleep_time
+
+                stack.push Gitlab::Memory::Watchdog::Monitor::RssMemoryLimit,
+                           memory_limit_bytes: soft_limit_bytes,
+                           max_strikes: max_strikes.to_i,
+                           monitor_name: :rss_memory_soft_limit
+              end
+
+              if ENV['SIDEKIQ_MEMORY_KILLER_HARD_LIMIT_RSS'].to_i.nonzero?
+                hard_limit_bytes = ENV['SIDEKIQ_MEMORY_KILLER_HARD_LIMIT_RSS'].to_i.kilobytes
+
+                stack.push Gitlab::Memory::Watchdog::Monitor::RssMemoryLimit,
+                           memory_limit_bytes: hard_limit_bytes,
+                           max_strikes: 0,
+                           monitor_name: :rss_memory_hard_limit
+              end
+            end
           end
         end
       end

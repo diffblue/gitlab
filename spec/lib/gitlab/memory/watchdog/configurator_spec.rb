@@ -237,6 +237,113 @@ RSpec.describe Gitlab::Memory::Watchdog::Configurator do
     it_behaves_like 'as configurator',
                     Gitlab::Memory::Watchdog::TermProcessHandler,
                     'SIDEKIQ_MEMORY_KILLER_CHECK_INTERVAL',
-                    3
+                    described_class::DEFAULT_SIDEKIQ_SLEEP_INTERVAL_S
+
+    context 'when sleep_time_seconds is less than MIN_SIDEKIQ_SLEEP_INTERVAL_S seconds' do
+      before do
+        stub_env('SIDEKIQ_MEMORY_KILLER_CHECK_INTERVAL', 0)
+      end
+
+      it 'configures the correct sleep time' do
+        configurator.call(configuration)
+
+        expect(configuration.sleep_time_seconds).to eq(described_class::MIN_SIDEKIQ_SLEEP_INTERVAL_S)
+      end
+    end
+
+    context 'with monitors' do
+      let(:soft_limit_bytes) { soft_limit_kb.kilobytes }
+      let(:hard_limit_bytes) { hard_limit_kb.kilobytes }
+
+      context 'when settings are set via environment variables' do
+        let(:soft_limit_kb) { 2000001 }
+        let(:hard_limit_kb) { 300000 }
+        let(:max_strikes) { 150 }
+        let(:grace_time) { 300 }
+        let(:expected_payloads) do
+          {
+            rss_memory_soft_limit: {
+              message: 'rss memory limit exceeded',
+              memwd_rss_bytes: soft_limit_bytes + 1,
+              memwd_max_rss_bytes: soft_limit_bytes,
+              memwd_max_strikes: max_strikes,
+              memwd_cur_strikes: 1
+            },
+            rss_memory_hard_limit: {
+              message: 'rss memory limit exceeded',
+              memwd_rss_bytes: hard_limit_bytes + 1,
+              memwd_max_rss_bytes: hard_limit_bytes,
+              memwd_max_strikes: 0,
+              memwd_cur_strikes: 1
+            }
+          }
+        end
+
+        before do
+          stub_env('SIDEKIQ_MEMORY_KILLER_MAX_RSS', soft_limit_kb)
+          stub_env('SIDEKIQ_MEMORY_KILLER_HARD_LIMIT_RSS', hard_limit_kb)
+          stub_env('SIDEKIQ_MEMORY_KILLER_GRACE_TIME', grace_time)
+          stub_env('SIDEKIQ_MEMORY_KILLER_CHECK_INTERVAL', 2)
+          allow(Gitlab::Metrics::System).to receive(:memory_usage_rss)
+            .and_return({ total: soft_limit_bytes + 1 }, { total: hard_limit_bytes + 1 })
+        end
+
+        it_behaves_like 'as monitor configurator'
+      end
+
+      context 'when only SIDEKIQ_MEMORY_KILLER_MAX_RSS is set via environment variable' do
+        let(:soft_limit_kb) { 2000000 }
+        let(:max_strikes) do
+          described_class::DEFAULT_SIDEKIQ_GRACE_TIME_S / described_class::DEFAULT_SIDEKIQ_SLEEP_INTERVAL_S
+        end
+
+        let(:expected_payloads) do
+          {
+            rss_memory_soft_limit: {
+              message: 'rss memory limit exceeded',
+              memwd_rss_bytes: soft_limit_bytes + 1,
+              memwd_max_rss_bytes: soft_limit_bytes,
+              memwd_max_strikes: max_strikes,
+              memwd_cur_strikes: 1
+            }
+          }
+        end
+
+        before do
+          allow(Gitlab::Metrics::System).to receive(:memory_usage_rss).and_return({ total: soft_limit_bytes + 1 })
+          stub_env('SIDEKIQ_MEMORY_KILLER_MAX_RSS', soft_limit_kb)
+        end
+
+        it_behaves_like 'as monitor configurator'
+      end
+
+      context 'when only SIDEKIQ_MEMORY_KILLER_HARD_LIMIT_RSS is set via environment variable' do
+        let(:hard_limit_kb) { 2000000 }
+        let(:expected_payloads) do
+          {
+            rss_memory_hard_limit: {
+              message: 'rss memory limit exceeded',
+              memwd_rss_bytes: hard_limit_bytes + 1,
+              memwd_max_rss_bytes: hard_limit_bytes,
+              memwd_max_strikes: 0,
+              memwd_cur_strikes: 1
+            }
+          }
+        end
+
+        before do
+          allow(Gitlab::Metrics::System).to receive(:memory_usage_rss).and_return({ total: hard_limit_bytes + 1 })
+          stub_env('SIDEKIQ_MEMORY_KILLER_HARD_LIMIT_RSS', hard_limit_kb)
+        end
+
+        it_behaves_like 'as monitor configurator'
+      end
+
+      context 'when both SIDEKIQ_MEMORY_KILLER_MAX_RSS and SIDEKIQ_MEMORY_KILLER_HARD_LIMIT_RSS are not set' do
+        let(:expected_payloads) { {} }
+
+        it_behaves_like 'as monitor configurator'
+      end
+    end
   end
 end
