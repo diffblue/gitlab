@@ -18,10 +18,6 @@ module Gitlab
             Gitlab::Graphql::Pagination::ExternallyPaginatedArrayConnection)
 
           schema.connections.add(
-            Gitlab::Graphql::ExternallyPaginatedArray,
-            Gitlab::Graphql::Pagination::ExternallyPaginatedArrayConnection)
-
-          schema.connections.add(
             Array,
             Gitlab::Graphql::Pagination::ArrayConnection)
         end

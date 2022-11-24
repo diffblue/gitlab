@@ -33,8 +33,12 @@ module Resolvers
         super.merge(connection: false)
       end
 
-      def self.resolver_complexity(args, child_complexity:, context:)
-        super + child_complexity + nodes_limit(args, nil, context: context)
+      def self.external_connection
+        true
+      end
+
+      def self.complexity_multiplier(args)
+        0.05
       end
 
       private

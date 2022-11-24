@@ -132,18 +132,19 @@ module Types
       proc do |ctx, args, child_complexity|
         # Resolvers may add extra complexity depending on used arguments
         complexity = child_complexity + resolver&.try(
-          :resolver_complexity, args, child_complexity: child_complexity, context: ctx
+          :resolver_complexity, args, child_complexity: child_complexity
         ).to_i
         complexity += 1 if calls_gitaly?
-        complexity += complexity * connection_complexity_multiplier(ctx, args)
+        ext_conn = resolver&.try(:external_connection)
+        complexity += complexity * connection_complexity_multiplier(ctx, args, external_connection: ext_conn)
 
         complexity.to_i
       end
     end
 
-    def connection_complexity_multiplier(ctx, args)
+    def connection_complexity_multiplier(ctx, args, external_connection:)
       # Resolvers may add extra complexity depending on number of items being loaded.
-      return 0 unless connection?
+      return 0 if !connection? && !external_connection
 
       page_size   = max_page_size || ctx.schema.default_max_page_size
       limit_value = [args[:first], args[:last], page_size].compact.min

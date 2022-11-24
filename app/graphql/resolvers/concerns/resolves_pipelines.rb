@@ -39,7 +39,7 @@ module ResolvesPipelines
   end
 
   class_methods do
-    def resolver_complexity(args, child_complexity:, context:)
+    def resolver_complexity(args, child_complexity:)
       complexity = super
       complexity += 2 if args[:sha]
       complexity += 2 if args[:ref]

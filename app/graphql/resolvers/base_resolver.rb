@@ -15,6 +15,10 @@ module Resolvers
       @calls_gitaly = true
     end
 
+    def self.external_connection
+      false
+    end
+
     def self.field_options
       extra_options = {
         requires_argument: @requires_argument,
@@ -104,7 +108,7 @@ module Resolvers
       0
     end
 
-    def self.resolver_complexity(args, child_complexity:, context:)
+    def self.resolver_complexity(args, child_complexity:)
       complexity = 1
       complexity += 1 if args[:sort]
       complexity += 5 if args[:search]
