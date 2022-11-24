@@ -4,10 +4,12 @@ import { GlListbox } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import searchProjectMembers from '~/graphql_shared/queries/project_user_members_search.query.graphql';
+import searchGroupMembers from '~/graphql_shared/queries/group_users_search.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import UserSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/user_select.vue';
 import { USER_TYPE } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/actions';
+import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
 
 Vue.use(VueApollo);
 
@@ -19,7 +21,7 @@ const user = {
   __typename: 'UserCore',
 };
 
-const USERS_RESPONSE = {
+const PROJECT_MEMBER_RESPONSE = {
   data: {
     project: {
       id: 'gid://gitlab/Project/6',
@@ -38,22 +40,47 @@ const USERS_RESPONSE = {
   },
 };
 
+const GROUP_MEMBER_RESPONSE = {
+  data: {
+    workspace: {
+      id: 'gid://gitlab/Group/6',
+      users: {
+        nodes: [
+          {
+            id: 'gid://gitlab/GroupMember/1',
+            user: { ...user, webUrl: 'path/to/user', status: null },
+            __typename: 'GroupMember',
+          },
+        ],
+        __typename: 'GroupMemberConnection',
+      },
+      __typename: 'Group',
+    },
+  },
+};
+
 describe('UserSelect component', () => {
   let wrapper;
   const namespacePath = 'path/to/namespace';
-  const searchQueryHandlerSuccess = jest.fn().mockResolvedValue(USERS_RESPONSE);
+  const namespaceType = NAMESPACE_TYPES.PROJECT;
+  const projectSearchQueryHandlerSuccess = jest.fn().mockResolvedValue(PROJECT_MEMBER_RESPONSE);
+  const groupSearchQueryHandlerSuccess = jest.fn().mockResolvedValue(GROUP_MEMBER_RESPONSE);
 
-  const createComponent = (propsData = {}) => {
-    const fakeApollo = createMockApollo([[searchProjectMembers, searchQueryHandlerSuccess]]);
+  const createComponent = ({ provide = {} } = {}) => {
+    const fakeApollo = createMockApollo([
+      [searchProjectMembers, projectSearchQueryHandlerSuccess],
+      [searchGroupMembers, groupSearchQueryHandlerSuccess],
+    ]);
 
     wrapper = mount(UserSelect, {
       apolloProvider: fakeApollo,
       propsData: {
         existingApprovers: [],
-        ...propsData,
       },
       provide: {
         namespacePath,
+        namespaceType,
+        ...provide,
       },
     });
   };
@@ -66,55 +93,76 @@ describe('UserSelect component', () => {
     await waitForPromises();
   };
 
-  beforeEach(async () => {
-    createComponent();
-    await waitForApolloAndVue();
-  });
-
   afterEach(() => {
     wrapper.destroy();
   });
 
-  it('filters users when search is performed in listbox', async () => {
-    expect(searchQueryHandlerSuccess).toHaveBeenCalledWith({
+  describe('default', () => {
+    beforeEach(async () => {
+      createComponent();
+      await waitForApolloAndVue();
+    });
+
+    it('filters users when search is performed in listbox', async () => {
+      expect(projectSearchQueryHandlerSuccess).toHaveBeenCalledWith({
+        fullPath: namespacePath,
+        search: '',
+      });
+
+      const searchTerm = 'test';
+      findListbox().vm.$emit('search', searchTerm);
+      await waitForApolloAndVue();
+
+      expect(projectSearchQueryHandlerSuccess).toHaveBeenCalledWith({
+        fullPath: namespacePath,
+        search: searchTerm,
+      });
+    });
+
+    it('emits when a user is selected', async () => {
+      findListbox().vm.$emit('select', [user.id]);
+      await nextTick();
+      expect(wrapper.emitted('updateSelectedApprovers')).toEqual([
+        [
+          [
+            {
+              ...user,
+              id: getIdFromGraphQLId(user.id),
+              text: user.name,
+              type: USER_TYPE,
+              username: `@${user.username}`,
+              value: user.id,
+            },
+          ],
+        ],
+      ]);
+    });
+
+    it('emits when a user is deselected', async () => {
+      findListbox().vm.$emit('select', [user.id]);
+      await nextTick();
+      findListbox().vm.$emit('select', []);
+      await nextTick();
+      expect(wrapper.emitted('updateSelectedApprovers')[1]).toEqual([[]]);
+    });
+  });
+
+  it('requests project members at the project-level', async () => {
+    createComponent();
+    await waitForApolloAndVue();
+
+    expect(projectSearchQueryHandlerSuccess).toHaveBeenCalledWith({
       fullPath: namespacePath,
       search: '',
     });
+  });
 
-    const searchTerm = 'test';
-    findListbox().vm.$emit('search', searchTerm);
+  it('requests group members at the group-level', async () => {
+    createComponent({ provide: { namespaceType: NAMESPACE_TYPES.GROUP } });
     await waitForApolloAndVue();
-
-    expect(searchQueryHandlerSuccess).toHaveBeenCalledWith({
+    expect(groupSearchQueryHandlerSuccess).toHaveBeenCalledWith({
       fullPath: namespacePath,
-      search: searchTerm,
+      search: '',
     });
-  });
-
-  it('emits when a user is selected', async () => {
-    findListbox().vm.$emit('select', [user.id]);
-    await nextTick();
-    expect(wrapper.emitted('updateSelectedApprovers')).toEqual([
-      [
-        [
-          {
-            ...user,
-            id: getIdFromGraphQLId(user.id),
-            text: user.name,
-            type: USER_TYPE,
-            username: `@${user.username}`,
-            value: user.id,
-          },
-        ],
-      ],
-    ]);
-  });
-
-  it('emits when a user is deselected', async () => {
-    findListbox().vm.$emit('select', [user.id]);
-    await nextTick();
-    findListbox().vm.$emit('select', []);
-    await nextTick();
-    expect(wrapper.emitted('updateSelectedApprovers')[1]).toEqual([[]]);
   });
 });

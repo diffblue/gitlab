@@ -22,7 +22,7 @@ export default {
   directives: {
     GlModalDirective,
   },
-  inject: ['namespaceId', 'namespaceType'],
+  inject: ['namespaceId'],
   props: {
     initAction: {
       type: Object,
