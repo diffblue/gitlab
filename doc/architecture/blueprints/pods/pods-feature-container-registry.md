@@ -15,13 +15,13 @@ we can document the reasons for not choosing this approach.
 # Pods: Container Registry
 
 GitLab Container Registry is a feature allowing to store Docker Container Images
-in GitLab. You can read about GitLab integration [here](https://docs.gitlab.com/ee/user/packages/container_registry/).
+in GitLab. You can read about GitLab integration [here](../../../user/packages/container_registry/index.md).
 
 ## 1. Definition
 
 GitLab Container Registry is a complex service requiring usage of PostgreSQL, Redis
 and Object Storage dependencies. Right now there's undergoing work to introduce
-[Container Registry Metadata](https://docs.gitlab.com/ee/architecture/blueprints/container_registry_metadata_database/)
+[Container Registry Metadata](../container_registry_metadata_database/index.md)
 to optimize data storage and image retention policies of Container Registry.
 
 GitLab Container Registry is serving as a container for stored data,
@@ -59,12 +59,13 @@ The main identifiable problems are:
 
 ### 2.1. Authorization request that is send by `docker login`
 
-```bash
-curl -X GET --user 'username:password' \
-  'https://gitlab/jwt/auth?client_id=docker&offline_token=true&service=container_registry&scope=repository:gitlab-org/gitlab-build-images:push,pull'
+```shell
+curl \
+  --user "username:password" \
+  "https://gitlab/jwt/auth?client_id=docker&offline_token=true&service=container_registry&scope=repository:gitlab-org/gitlab-build-images:push,pull"
 ```
 
-Result is encoded and signed JWT token. Second base64 encoded string (split by `.`) contains json with authorized scopes.
+Result is encoded and signed JWT token. Second base64 encoded string (split by `.`) contains JSON with authorized scopes.
 
 ```json
 {"auth_type":"none","access":[{"type":"repository","name":"gitlab-org/gitlab-build-images","actions":["pull"]}],"jti":"61ca2459-091c-4496-a3cf-01bac51d4dc8","aud":"container_registry","iss":"omnibus-gitlab-issuer","iat":1669309469,"nbf":166}
@@ -72,23 +73,24 @@ Result is encoded and signed JWT token. Second base64 encoded string (split by `
 
 ### 2.2. Docker client fetching tags
 
-```bash
+```shell
 curl \
-  -H 'Accept: application/vnd.docker.distribution.manifest.v2+json' \
-  -H 'Authorization: Bearer token' \
+  -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+  -H "Authorization: Bearer token" \
   https://registry.gitlab.com/v2/gitlab-org/gitlab-build-images/tags/list
 
 curl \
-  -H 'Accept: application/vnd.docker.distribution.manifest.v2+json' \
-  -H 'Authorization: Bearer token' \
+  -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+  -H "Authorization: Bearer token" \
   https://registry.gitlab.com/v2/gitlab-org/gitlab-build-images/manifests/danger-ruby-2.6.6
 ```
 
 ### 2.3. Docker client fetching blobs and manifests
 
-```bash
-curl -H 'Accept: application/vnd.docker.distribution.manifest.v2+json' \
-  -H 'Authorization: Bearer token' \
+```shell
+curl \
+  -H "Accept: application/vnd.docker.distribution.manifest.v2+json" \
+  -H "Authorization: Bearer token" \
   https://registry.gitlab.com/v2/gitlab-org/gitlab-build-images/blobs/sha256:a3f2e1afa377d20897e08a85cae089393daa0ec019feab3851d592248674b416
 ```
 
