@@ -49,6 +49,7 @@ module RuboCop
         MSG_NO_DESCRIPTION = "Please add a `description` property. #{MSG_STYLE_GUIDE_LINK}"
         MSG_NO_PERIOD = "`description` strings must end with a `.`. #{MSG_STYLE_GUIDE_LINK}"
         MSG_BAD_START = "`description` strings should not start with \"A...\" or \"The...\". #{MSG_STYLE_GUIDE_LINK}"
+        MSG_CONTAINS_DEMONSTRATIVE_THIS = "`description` strings should not contain the demonstrative \"this\". #{MSG_STYLE_GUIDE_LINK}"
 
         def_node_matcher :graphql_describable?, <<~PATTERN
           (send nil? {:field :argument :value} ...)
@@ -82,6 +83,8 @@ module RuboCop
                       MSG_NO_PERIOD
                     elsif bad_start?(description)
                       MSG_BAD_START
+                    elsif contains_demonstrative_this?(description)
+                      MSG_CONTAINS_DEMONSTRATIVE_THIS
                     end
 
           return unless message
@@ -112,6 +115,10 @@ module RuboCop
 
         def bad_start?(description)
           string?(description) && description.value.strip.downcase.start_with?('a ', 'the ')
+        end
+
+        def contains_demonstrative_this?(description)
+          string?(description) && description.value.strip.include?(' this ')
         end
 
         # Returns true if `description` node is a `:str` (as opposed to a `#copy_field_description` call)
