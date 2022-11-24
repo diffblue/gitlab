@@ -1,0 +1,13 @@
+query getUserGroups($search: String) {
+  currentUser {
+    id
+    groups(search: $search, permissionScope: CREATE_PROJECTS) {
+      nodes {
+        avatarUrl
+        id
+        fullName
+        fullPath
+      }
+    }
+  }
+}

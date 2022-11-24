@@ -36719,6 +36719,9 @@ msgstr ""
 msgid "SecurityOrchestration|Select a project to store your security policies in. %{linkStart}More information.%{linkEnd}"
 msgstr ""
 
+msgid "SecurityOrchestration|Select groups"
+msgstr ""
+
 msgid "SecurityOrchestration|Select policy"
 msgstr ""
 
