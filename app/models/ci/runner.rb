@@ -90,7 +90,6 @@ module Ci
     scope :ordered, -> { order(id: :desc) }
 
     scope :with_recent_runner_queue, -> { where('contacted_at > ?', recent_queue_deadline) }
-    scope :for_id, -> (id) { where(id: id) }
     scope :with_running_builds, -> do
       where('EXISTS(?)',
             ::Ci::RunningBuild.select(1)

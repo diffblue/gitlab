@@ -701,32 +701,6 @@ RSpec.describe Ci::Runner do
     it { is_expected.to eq([runner1]) }
   end
 
-  describe '.for_id' do
-    subject { described_class.for_id(runner_ids) }
-
-    let_it_be(:runner1) { create(:ci_runner) }
-    let_it_be(:runner2) { create(:ci_runner) }
-    let_it_be(:runner3) { create(:ci_runner) }
-
-    context 'with no runner matching' do
-      let(:runner_ids) { [non_existing_record_id] }
-
-      it { is_expected.to be_empty }
-    end
-
-    context 'with single runner matching' do
-      let(:runner_ids) { [runner1.id] }
-
-      it { is_expected.to contain_exactly(runner1) }
-    end
-
-    context 'with more than one runners matching' do
-      let(:runner_ids) { [runner1.id, runner2.id] }
-
-      it { is_expected.to contain_exactly(runner1, runner2) }
-    end
-  end
-
   describe '.with_running_builds' do
     subject { described_class.with_running_builds }
 
