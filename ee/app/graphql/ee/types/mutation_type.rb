@@ -83,6 +83,7 @@ module EE
         mount_mutation ::Mutations::IncidentManagement::IssuableResourceLink::Destroy
         mount_mutation ::Mutations::AppSec::Fuzzing::Coverage::Corpus::Create
         mount_mutation ::Mutations::Projects::SetComplianceFramework
+        mount_mutation ::Mutations::Projects::InitializeProductAnalytics
         mount_mutation ::Mutations::SecurityPolicy::CommitScanExecutionPolicy
         mount_mutation ::Mutations::SecurityPolicy::AssignSecurityPolicyProject
         mount_mutation ::Mutations::SecurityPolicy::UnassignSecurityPolicyProject

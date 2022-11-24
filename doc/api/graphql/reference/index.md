@@ -4332,6 +4332,25 @@ Input type: `ProjectCiCdSettingsUpdateInput`
 | <a id="mutationprojectcicdsettingsupdateclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
 | <a id="mutationprojectcicdsettingsupdateerrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
 
+### `Mutation.projectInitializeProductAnalytics`
+
+Input type: `ProjectInitializeProductAnalyticsInput`
+
+#### Arguments
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectinitializeproductanalyticsclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectinitializeproductanalyticsprojectpath"></a>`projectPath` | [`ID!`](#id) | Full path of the project to initialize. |
+
+#### Fields
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| <a id="mutationprojectinitializeproductanalyticsclientmutationid"></a>`clientMutationId` | [`String`](#string) | A unique identifier for the client performing the mutation. |
+| <a id="mutationprojectinitializeproductanalyticserrors"></a>`errors` | [`[String!]!`](#string) | Errors encountered during execution of the mutation. |
+| <a id="mutationprojectinitializeproductanalyticsproject"></a>`project` | [`Project`](#project) | Project on which the initialization took place. |
+
 ### `Mutation.projectSetComplianceFramework`
 
 Assign (or unset) a compliance framework to a project.
