@@ -13,6 +13,7 @@ RSpec.describe API::PypiPackages do
   let_it_be(:personal_access_token) { create(:personal_access_token, user: user) }
 
   let(:headers) { basic_auth_header(user.username, personal_access_token.token) }
+  let(:snowplow_gitlab_standard_context) { { project: project, namespace: group, property: 'i_package_pypi_user' } }
 
   shared_examples 'with ip restriction' do
     before do
@@ -53,15 +54,11 @@ RSpec.describe API::PypiPackages do
     describe 'GET /api/v4/groups/:id/-/packages/pypi/files/:sha256/*file_identifier' do
       let(:url) { "/groups/#{group.id}/-/packages/pypi/files/#{package.package_files.first.file_sha256}/#{package_name}-1.0.0.tar.gz" } # rubocop:disable convention:Layout/LineLength
 
-      let(:snowplow_gitlab_standard_context) { {} }
-
       it_behaves_like 'with ip restriction'
     end
 
     describe 'GET /api/v4/projects/:id/packages/pypi/files/:sha256/*file_identifier' do
       let(:url) { "/projects/#{project.id}/packages/pypi/files/#{package.package_files.first.file_sha256}/#{package_name}-1.0.0.tar.gz" } # rubocop:disable convention:Layout/LineLength
-
-      let(:snowplow_gitlab_standard_context) { { project: project, namespace: project.namespace } }
 
       it_behaves_like 'with ip restriction'
     end
