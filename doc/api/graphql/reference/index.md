@@ -16838,6 +16838,7 @@ Represents a product analytics dashboard widget.
 | <a id="projectissuesenabled"></a>`issuesEnabled` | [`Boolean`](#boolean) | Indicates if Issues are enabled for the current user. |
 | <a id="projectjiraimportstatus"></a>`jiraImportStatus` | [`String`](#string) | Status of Jira import background job of the project. |
 | <a id="projectjiraimports"></a>`jiraImports` | [`JiraImportConnection`](#jiraimportconnection) | Jira imports into the project. (see [Connections](#connections)) |
+| <a id="projectjitsukey"></a>`jitsuKey` **{warning-solid}** | [`String`](#string) | **Introduced** in 15.7. This feature is in Alpha. It can be changed or removed at any time. Jitsu key assigned to the project. |
 | <a id="projectjobsenabled"></a>`jobsEnabled` | [`Boolean`](#boolean) | Indicates if CI/CD pipeline jobs are enabled for the current user. |
 | <a id="projectlanguages"></a>`languages` | [`[RepositoryLanguage!]`](#repositorylanguage) | Programming languages used in the project. |
 | <a id="projectlastactivityat"></a>`lastActivityAt` | [`Time`](#time) | Timestamp of the project last activity. |
