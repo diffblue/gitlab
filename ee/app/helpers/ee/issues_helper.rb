@@ -72,5 +72,15 @@ module EE
         end
       end
     end
+
+    override :dashboard_issues_list_data
+    def dashboard_issues_list_data(current_user)
+      super.merge(
+        has_blocked_issues_feature: License.feature_available?(:blocked_issues).to_s,
+        has_issuable_health_status_feature: License.feature_available?(:issuable_health_status).to_s,
+        has_issue_weights_feature: License.feature_available?(:issue_weights).to_s,
+        has_scoped_labels_feature: License.feature_available?(:scoped_labels).to_s
+      )
+    end
   end
 end
