@@ -49,7 +49,8 @@ module RuboCop
         MSG_NO_DESCRIPTION = "Please add a `description` property. #{MSG_STYLE_GUIDE_LINK}"
         MSG_NO_PERIOD = "`description` strings must end with a `.`. #{MSG_STYLE_GUIDE_LINK}"
         MSG_BAD_START = "`description` strings should not start with \"A...\" or \"The...\". #{MSG_STYLE_GUIDE_LINK}"
-        MSG_CONTAINS_THIS = "`description` strings should not contain the demonstrative \"this\". #{MSG_STYLE_GUIDE_LINK}"
+        MSG_CONTAINS_THIS = "`description` strings should not contain the demonstrative \"this\"."\
+          " #{MSG_STYLE_GUIDE_LINK}"
 
         def_node_matcher :graphql_describable?, <<~PATTERN
           (send nil? {:field :argument :value} ...)
