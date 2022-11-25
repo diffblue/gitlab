@@ -99,6 +99,8 @@ metadata:
     description: Operations related to project packages
   - name: protected environments
     description: Operations related to protected environments
+  - name: pypi_packages
+    description: Operations related to PyPI packages
   - name: release_links
     description: Operations related to release assets (links)
   - name: releases
