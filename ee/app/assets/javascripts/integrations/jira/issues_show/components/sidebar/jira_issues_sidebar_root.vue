@@ -5,7 +5,7 @@ import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.v
 import { labelsFilterParam } from 'ee/external_issues_show/constants';
 
 import { __ } from '~/locale';
-import CopyableField from '~/vue_shared/components/sidebar/copyable_field.vue';
+import CopyableField from '~/sidebar/components/copy/copyable_field.vue';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 
 export default {

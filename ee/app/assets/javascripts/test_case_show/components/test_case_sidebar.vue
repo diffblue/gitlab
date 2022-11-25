@@ -4,7 +4,7 @@ import Mousetrap from 'mousetrap';
 
 import { keysFor, ISSUABLE_CHANGE_LABEL } from '~/behaviors/shortcuts/keybindings';
 import { s__, __ } from '~/locale';
-import ProjectSelect from '~/vue_shared/components/sidebar/issuable_move_dropdown.vue';
+import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 
 import TestCaseGraphQL from '../mixins/test_case_graphql';
