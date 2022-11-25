@@ -1,7 +1,7 @@
 import { GlAlert, GlButton, GlSprintf } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import PoliciesHeader from 'ee/security_orchestration/components/policies/policies_header.vue';
-import ScanNewPolicyModal from 'ee/security_orchestration/components/policies/scan_new_policy_modal.vue';
+import ScanNewPolicyModal from 'ee/security_orchestration/components/policies/policy_project_modal.vue';
 import { NEW_POLICY_BUTTON_TEXT } from 'ee/security_orchestration/components/constants';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 
