@@ -3,7 +3,7 @@ import { GlAlert, GlButton, GlIcon, GlSprintf } from '@gitlab/ui';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import { NEW_POLICY_BUTTON_TEXT } from '../constants';
-import ScanNewPolicyModal from './scan_new_policy_modal.vue';
+import PolicyProjectModal from './policy_project_modal.vue';
 
 export default {
   components: {
@@ -11,7 +11,7 @@ export default {
     GlButton,
     GlIcon,
     GlSprintf,
-    ScanNewPolicyModal,
+    PolicyProjectModal,
   },
   inject: [
     'assignedPolicyProject',
@@ -125,7 +125,7 @@ export default {
       >
         {{ $options.i18n.newPolicyButtonText }}
       </gl-button>
-      <scan-new-policy-modal
+      <policy-project-modal
         :visible="modalVisible"
         @close="modalVisible = false"
         @project-updated="updateAlertText"

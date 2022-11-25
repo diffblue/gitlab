@@ -5,7 +5,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { stubComponent } from 'helpers/stub_component';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import ScanNewPolicyModal from 'ee/security_orchestration/components/policies/scan_new_policy_modal.vue';
+import PolicyProjectModal from 'ee/security_orchestration/components/policies/policy_project_modal.vue';
 import linkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/link_security_policy_project.mutation.graphql';
 import unlinkSecurityPolicyProject from 'ee/security_orchestration/graphql/mutations/unlink_security_policy_project.mutation.graphql';
 import InstanceProjectSelector from 'ee/security_orchestration/components/instance_project_selector.vue';
@@ -20,7 +20,7 @@ import {
 
 Vue.use(VueApollo);
 
-describe('ScanNewPolicyModal Component', () => {
+describe('PolicyProjectModal Component', () => {
   let wrapper;
   let projectUpdatedListener;
   const sampleProject = {
@@ -49,7 +49,7 @@ describe('ScanNewPolicyModal Component', () => {
     mutationResult = mockLinkSecurityPolicyProjectResponses.success,
     provide = {},
   } = {}) => {
-    wrapper = mountExtended(ScanNewPolicyModal, {
+    wrapper = mountExtended(PolicyProjectModal, {
       apolloProvider: createMockApollo([[mutationQuery, mutationResult]]),
       stubs: {
         GlModal: stubComponent(GlModal, {
@@ -101,6 +101,10 @@ describe('ScanNewPolicyModal Component', () => {
 
     it('displays a placeholder when no project is selected', () => {
       expect(findDropdown().props('text')).toBe('Choose a project');
+    });
+
+    it('does not display the remove button when no project is selected', () => {
+      expect(findUnlinkButton().exists()).toBe(false);
     });
 
     it('does not display a warning', () => {
@@ -198,6 +202,15 @@ describe('ScanNewPolicyModal Component', () => {
         }
       },
     );
+
+    it('displays the remove button when a project is selected', async () => {
+      createWrapper({
+        provide: { assignedPolicyProject: { id: 'gid://gitlab/Project/0', name: 'Test 0' } },
+      });
+      await nextTick();
+
+      expect(findUnlinkButton().exists()).toBe(true);
+    });
   });
 
   describe('disabled', () => {
