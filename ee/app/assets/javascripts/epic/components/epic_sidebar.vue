@@ -10,7 +10,7 @@ import notesEventHub from '~/notes/event_hub';
 import SidebarConfidentialityWidget from '~/sidebar/components/confidential/sidebar_confidentiality_widget.vue';
 import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue';
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
-import SidebarReferenceWidget from '~/sidebar/components/reference/sidebar_reference_widget.vue';
+import SidebarReferenceWidget from '~/sidebar/components/copy/sidebar_reference_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import sidebarEventHub from '~/sidebar/event_hub';

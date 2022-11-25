@@ -7,7 +7,7 @@ import TestCaseSidebar from 'ee/test_case_show/components/test_case_sidebar.vue'
 import { mockCurrentUserTodo, mockLabels } from 'jest/vue_shared/issuable/list/mock_data';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
 import { keysFor, ISSUABLE_CHANGE_LABEL } from '~/behaviors/shortcuts/keybindings';
-import ProjectSelect from '~/vue_shared/components/sidebar/issuable_move_dropdown.vue';
+import ProjectSelect from '~/sidebar/components/move/issuable_move_dropdown.vue';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 
 import { mockProvide, mockTestCase } from '../mock_data';

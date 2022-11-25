@@ -171,7 +171,7 @@ export default {
       this.$refs.dropdown.hide();
     },
     confirmDeletion() {
-      this.shouldShowUnlinkWarning = !this.shouldShowUnlinkWarning;
+      this.shouldShowUnlinkWarning = true;
       this.selectedProject = {};
       this.hasSelectedNewProject = true;
     },
@@ -242,7 +242,7 @@ export default {
           />
         </gl-dropdown>
         <gl-button
-          v-if="selectedProjectId || shouldShowUnlinkWarning"
+          v-if="selectedProjectId"
           icon="remove"
           class="gl-ml-3"
           :aria-label="$options.i18n.unlinkButtonLabel"
