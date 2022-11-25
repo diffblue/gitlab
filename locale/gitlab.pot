@@ -43246,6 +43246,12 @@ msgstr ""
 msgid "Triggerer"
 msgstr ""
 
+msgid "Trigger|Description"
+msgstr ""
+
+msgid "Trigger|Trigger description"
+msgstr ""
+
 msgid "Trigger|Trigger user has insufficient permissions to project"
 msgstr ""
 
