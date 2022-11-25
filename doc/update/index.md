@@ -501,7 +501,6 @@ and [Helm Chart deployments](https://docs.gitlab.com/charts/). They come with ap
 
 - New Git repositories created in Gitaly cluster [no longer use the `@hashed` storage path](#change-to-praefect-generated-replica-paths-in-gitlab-153). Server
   hooks for new repositories must be copied into a different location.
-
 - The structure of `/etc/gitlab/gitlab-secrets.json` was modified in [GitLab 15.4](https://gitlab.com/gitlab-org/omnibus-gitlab/-/merge_requests/6310),
   and new configuration was added to `gitlab_pages`, `grafana`, and `mattermost` sections.
   In a highly available or GitLab Geo environment, secrets need to be the same on all nodes.
