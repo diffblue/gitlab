@@ -8,8 +8,6 @@ module EE
 
         override :restorers
         def restorers
-          return super unless ndjson?
-
           super << group_and_descendants_repo_restorer
         end
 
