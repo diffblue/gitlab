@@ -26,6 +26,7 @@ module Ci
         CommitStatus
         Ci::BuildMetadata
         Ci::BuildTraceChunk
+        Ci::BuildPendingState
         Ci::JobArtifact
         Ci::PipelineVariable
         Ci::Pipeline
