@@ -46,7 +46,7 @@ module Geo
     end
 
     def reschedule_sync
-      log_info("Reschedule container sync because a ContainerRepositoryUpdatedEvent was processed during the sync")
+      log_info("Reschedule container sync because an update event was processed during the sync")
 
       Geo::ContainerRepositorySyncWorker.perform_async(container_repository.id)
     end

@@ -4,6 +4,7 @@ module Geo
   class EventLog < ApplicationRecord
     include Geo::Model
     include ::EachBatch
+    include IgnorableColumns
 
     EVENT_CLASSES = %w[Geo::CacheInvalidationEvent
                        Geo::RepositoryCreatedEvent
@@ -14,7 +15,6 @@ module Geo
                        Geo::ResetChecksumEvent
                        Geo::HashedStorageMigratedEvent
                        Geo::HashedStorageAttachmentsEvent
-                       Geo::ContainerRepositoryUpdatedEvent
                        Geo::Event].freeze
 
     belongs_to :cache_invalidation_event,
@@ -53,14 +53,12 @@ module Geo
       class_name: 'Geo::ResetChecksumEvent',
       foreign_key: :reset_checksum_event_id
 
-    belongs_to :container_repository_updated_event,
-      class_name: 'Geo::ContainerRepositoryUpdatedEvent',
-      foreign_key: :container_repository_updated_event_id
-
     belongs_to :geo_event,
       class_name: 'Geo::Event',
       foreign_key: :geo_event_id,
       inverse_of: :geo_event_log
+
+    ignore_column :container_repository_updated_event_id, remove_with: '15.9', remove_after: '2023-01-22'
 
     def self.latest_event
       order(id: :desc).first
@@ -92,7 +90,6 @@ module Geo
         hashed_storage_attachments_event ||
         reset_checksum_event ||
         cache_invalidation_event ||
-        container_repository_updated_event ||
         geo_event
     end
     # rubocop:enable Metrics/CyclomaticComplexity

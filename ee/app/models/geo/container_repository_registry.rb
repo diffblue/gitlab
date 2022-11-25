@@ -64,11 +64,6 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
     def replication_enabled?
       Gitlab.config.geo.registry_replication.enabled
     end
-
-    override :registry_consistency_worker_enabled?
-    def registry_consistency_worker_enabled?
-      true
-    end
   end
 
   def finish_sync!

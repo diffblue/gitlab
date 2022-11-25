@@ -34,10 +34,6 @@ FactoryBot.define do
       cache_invalidation_event factory: :geo_cache_invalidation_event
     end
 
-    trait :container_repository_updated_event do
-      container_repository_updated_event factory: :geo_container_repository_updated_event
-    end
-
     trait :design_repository_updated_event do
       repository_updated_event factory: :geo_design_repository_updated_event
     end
@@ -120,9 +116,5 @@ FactoryBot.define do
 
   factory :geo_cache_invalidation_event, class: 'Geo::CacheInvalidationEvent' do
     sequence(:key) { |n| "cache-key-#{n}" }
-  end
-
-  factory :geo_container_repository_updated_event, class: 'Geo::ContainerRepositoryUpdatedEvent' do
-    container_repository
   end
 end

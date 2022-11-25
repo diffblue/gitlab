@@ -14,10 +14,8 @@ module Types
       field :container_repositories_max_capacity, GraphQL::Types::Int, null: true, description: 'Maximum concurrency of container repository sync for this secondary node.'
       field :container_repository_registries, ::Types::Geo::ContainerRepositoryRegistryType.connection_type,
             null: true,
-            alpha: { milestone: '15.5' },
             resolver: ::Resolvers::Geo::ContainerRepositoryRegistriesResolver,
-            description: 'Find Container Repository registries on this Geo node. '\
-                         'Ignored if `geo_container_repository_replication` feature flag is disabled.'
+            description: 'Find Container Repository registries on this Geo node.'
       field :dependency_proxy_blob_registries, ::Types::Geo::DependencyProxyBlobRegistryType.connection_type,
             null: true,
             alpha: { milestone: '15.6' },

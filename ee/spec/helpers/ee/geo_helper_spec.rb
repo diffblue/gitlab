@@ -114,26 +114,6 @@ RSpec.describe EE::GeoHelper do
 
       expect(data_type_titles).to include(*expected_data_type_titles)
     end
-
-    context 'when Geo::ContainerRepositoryReplicator is enabled' do
-      it 'includes ContainerRepository' do
-        allow(::Geo::ContainerRepositoryReplicator).to receive(:enabled?).and_return(true)
-
-        data_type_names = helper.replicable_types.map { |t| t[:name] }
-
-        expect(data_type_names).to include('container_repository')
-      end
-    end
-
-    context 'when Geo::ContainerRepositoryReplicator is disabled' do
-      it 'includes ContainerRepository' do
-        allow(::Geo::ContainerRepositoryReplicator).to receive(:enabled?).and_return(false)
-
-        data_type_names = helper.replicable_types.map { |t| t[:name] }
-
-        expect(data_type_names).to include('container_repository')
-      end
-    end
   end
 
   describe '#geo_filter_nav_options' do

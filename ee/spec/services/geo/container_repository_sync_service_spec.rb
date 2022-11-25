@@ -83,7 +83,7 @@ RSpec.describe Geo::ContainerRepositorySyncService, :geo do
     end
   end
 
-  context 'race condition when ContainerRepositoryUpdatedEvent was processed during a sync' do
+  context 'race condition' do
     it 'reschedules the sync' do
       allow_any_instance_of(described_class).to receive(:registry).and_return(registry)
 

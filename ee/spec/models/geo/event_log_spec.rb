@@ -13,7 +13,6 @@ RSpec.describe Geo::EventLog, type: :model do
     it { is_expected.to belong_to(:reset_checksum_event).class_name('Geo::ResetChecksumEvent').with_foreign_key('reset_checksum_event_id') }
     it { is_expected.to belong_to(:hashed_storage_migrated_event).class_name('Geo::HashedStorageMigratedEvent').with_foreign_key('hashed_storage_migrated_event_id') }
     it { is_expected.to belong_to(:hashed_storage_attachments_event).class_name('Geo::HashedStorageAttachmentsEvent').with_foreign_key('hashed_storage_attachments_event_id') }
-    it { is_expected.to belong_to(:container_repository_updated_event).class_name('Geo::ContainerRepositoryUpdatedEvent').with_foreign_key('container_repository_updated_event_id') }
   end
 
   describe '.next_unprocessed_event' do

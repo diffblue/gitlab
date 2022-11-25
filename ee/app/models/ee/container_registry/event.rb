@@ -8,22 +8,17 @@ module EE
       override :handle!
       def handle!
         super
-        create_geo_container_repository_updated_event_store!
+        handle_after_update!
       end
 
       private
 
-      def create_geo_container_repository_updated_event_store!
+      def handle_after_update!
         return unless media_type_manifest? || target_tag?
         return unless container_repository_exists?
 
         container_repository = find_container_repository!
-
-        if ::Feature.enabled?(:geo_container_repository_replication)
-          container_repository.replicator.handle_after_update
-        else
-          ::Geo::ContainerRepositoryUpdatedEventStore.new(container_repository).create!
-        end
+        container_repository.replicator.handle_after_update
       end
 
       def media_type_manifest?

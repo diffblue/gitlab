@@ -205,19 +205,6 @@ module EE
         }
       ]
 
-      if ::Geo::ContainerRepositoryReplicator.disabled?
-        # 2 is the position of Container Repositories in UI
-        replicable_types.insert(2, {
-          data_type: 'blob',
-          data_type_title: _('File'),
-          title: _('Container repository'),
-          title_plural: _('Container repositories'),
-          name: 'container_repository',
-          name_plural: 'container_repositories',
-          no_replication_view: true
-        })
-      end
-
       # Adds all the SSF Data Types automatically
       enabled_replicator_classes.each do |replicator_class|
         replicable_types.push(

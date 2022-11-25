@@ -427,7 +427,6 @@ class GeoNodeStatus < ApplicationRecord
     self.cursor_last_event_date = Geo::EventLog.find_by(id: self.cursor_last_event_id)&.created_at
 
     load_repositories_data
-    load_container_registry_data
     load_designs_data
     load_ssf_replicable_data
     load_secondary_usage_data
@@ -439,22 +438,6 @@ class GeoNodeStatus < ApplicationRecord
     self.repositories_failed_count = Geo::ProjectRegistry.sync_failed(:repository).count
     self.wikis_synced_count = Geo::ProjectRegistry.synced(:wiki).count
     self.wikis_failed_count = Geo::ProjectRegistry.sync_failed(:wiki).count
-  end
-
-  def load_container_registry_data
-    return if ::Geo::ContainerRepositoryReplicator.enabled?
-
-    if container_repositories_replication_enabled
-      self.container_repositories_count = container_registry_finder.registry_count
-      self.container_repositories_synced_count = container_registry_finder.synced_count
-      self.container_repositories_failed_count = container_registry_finder.failed_count
-      self.container_repositories_registry_count = container_registry_finder.registry_count
-    else
-      self.container_repositories_count = nil
-      self.container_repositories_synced_count = nil
-      self.container_repositories_failed_count = nil
-      self.container_repositories_registry_count = nil
-    end
   end
 
   def load_designs_data
@@ -542,10 +525,6 @@ class GeoNodeStatus < ApplicationRecord
 
   def primary_storage_digest
     @primary_storage_digest ||= Gitlab::Geo.primary_node.find_or_build_status.storage_configuration_digest
-  end
-
-  def container_registry_finder
-    @container_registry_finder ||= Geo::ContainerRepositoryLegacyRegistryFinder.new
   end
 
   def design_registry_finder
