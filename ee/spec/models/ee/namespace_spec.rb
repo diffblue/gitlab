@@ -79,6 +79,26 @@ RSpec.describe Namespace do
     end
   end
 
+  describe '#prevent_delete?' do
+    where(:paid, :trial, :expected) do
+      true  | false | true
+      false | false | false
+      false | true  | false
+      true  | true  | false
+    end
+
+    with_them do
+      before do
+        allow(namespace).to receive(:trial?).and_return(trial)
+        allow(namespace).to receive(:paid?).and_return(paid)
+      end
+
+      it 'returns expected boolean value' do
+        expect(namespace.prevent_delete?).to eq(expected)
+      end
+    end
+  end
+
   describe '#use_elasticsearch?' do
     let(:namespace) { create :namespace }
 
