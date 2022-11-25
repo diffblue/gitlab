@@ -197,20 +197,34 @@ const sortGroupedReportType = (groupedByReportType) => {
 /**
  * Provided a vulnerability scanners from the GraphQL API, this returns an array that is
  * formatted so it can be displayed in the dropdown UI.
+ * The final formatted scanners will include all possible scanners, including the available ones
+ * from the GraphQL API and the unavailable ones.
  *
  * @param {Array} vulnerabilityScanners
  * @returns {Array} formatted vulnerabilityScanners
  */
 export const getFormattedScanners = (vulnerabilityScanners) => {
-  const groupedByReportType = groupBy(vulnerabilityScanners, 'reportType');
-  const sortedGroupedByReportType = sortGroupedReportType(groupedByReportType);
+  const allPossibleReportTypes = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).reduce(
+    (a, v) => ({ ...a, [v.toUpperCase()]: null }),
+    {},
+  );
+  const availableReportTypes = groupBy(vulnerabilityScanners, 'reportType');
 
-  return sortedGroupedByReportType.map(([reportType, scanners]) => {
+  const combinedDeduplicatedReportTypes = {
+    ...allPossibleReportTypes,
+    ...availableReportTypes,
+  };
+
+  const sortedAllReportTypes = sortGroupedReportType(combinedDeduplicatedReportTypes);
+
+  return sortedAllReportTypes.map(([reportType, scanners]) => {
+    const scannersArr = scanners || [];
     return {
       id: reportType,
       reportType,
       name: SCANNER_NAMES_MAP[reportType] || SCANNER_NAMES_MAP.GENERIC,
-      scannerIds: scanners.map(({ id }) => id),
+      scannerIds: scannersArr.map(({ id }) => id),
+      disabled: scannersArr.length === 0,
     };
   });
 };
