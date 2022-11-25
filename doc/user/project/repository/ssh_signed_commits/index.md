@@ -15,7 +15,8 @@ GitLab account to cryptographically verify the commit signature.
 If successful, GitLab displays a **Verified** label on the commit.
 
 You may use the same SSH keys for `git+ssh` authentication to GitLab
-and signing commit signatures.
+and signing commit signatures as long as their usage type is `Authentication & Signing`.
+It can be verified on the page for [adding an SSH key to your GitLab account](../../../ssh.md#add-an-ssh-key-to-your-gitlab-account).
 
 To learn more about managing the SSH keys associated with your GitLab account, read
 [use SSH keys to communicate with GitLab](../../../ssh.md).
@@ -23,7 +24,9 @@ To learn more about managing the SSH keys associated with your GitLab account, r
 ## Configure Git to sign commits with your SSH key
 
 After you have [created an SSH key](../../../ssh.md#generate-an-ssh-key-pair) and
-[added it to your GitLab account](../../../ssh.md#add-an-ssh-key-to-your-gitlab-account),
+[added it to your GitLab account](../../../ssh.md#add-an-ssh-key-to-your-gitlab-account)
+or [generated it using a password manager](../../../ssh.md#generate-an-ssh-key-pair-with-a-password-manager),
+and the usage type of the key is either `Authentication & Signing` or `Signing`,
 you need to configure Git to begin using it.
 
 Prerequisites:
@@ -80,6 +83,15 @@ To sign a commit:
 1. If your SSH key is protected, Git prompts you to enter your passphrase.
 1. Push to GitLab.
 1. Check that your commits [are verified](../gpg_signed_commits/index.md#verify-commits).
+
+  NOTE:
+  SSH keys don't normally have an identity associated with them. The SSH signature verification relies on the `allowed_signers` file in order to associate emails and SSH keys.
+
+If you encounter errors related to allowed signers, try adding your email address and public SSH key to `~/.ssh/allowed_signers` like:
+
+```shell
+user@gitlab.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAmaTS47vRmsKyLyK1jlIFJn/i8wdGQ3J49LYyIYJ2hv
+```
 
 ## Verify commits
 
