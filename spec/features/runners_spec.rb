@@ -129,7 +129,7 @@ RSpec.describe 'Runners' do
             visit project_runners_path(project)
 
             within '[data-testid="available-shared-runners"]' do
-              expect(page).to have_content "#{_('Available shared runners:')} 2"
+              expect(page).to have_content format(_('Available shared runners: %{count}'), { count: 2 })
             end
           end
 
