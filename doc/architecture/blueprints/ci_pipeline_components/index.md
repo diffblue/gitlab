@@ -314,12 +314,12 @@ Proposal:
 
 <!-- vale gitlab.Spelling = NO -->
 
-| Role                         | Who
-|------------------------------|-------------------------|
-| Author                       | Fabio Pitino            |
-| Engineering Leader           | Cheryl Li, Mark Nuzzo              |
-| Product Manager              | Dov Hershkovitch        |
-| Architecture Evolution Coach | Kamil Trzciński, Grzegorz Bizon |
+| Role                           | Who
+|--------------------------------|-------------------------|
+| Author                         | Fabio Pitino            |
+| Engineering Leaders            | Cheryl Li, Mark Nuzzo   |
+| Product Manager                | Dov Hershkovitch        |
+| Architecture Evolution Coaches | Kamil Trzciński, Grzegorz Bizon |
 
 DRIs:
 
