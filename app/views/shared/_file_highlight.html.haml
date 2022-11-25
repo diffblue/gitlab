@@ -5,10 +5,12 @@
 - if file_line_blame
   - blame_path = project_blame_path(@project, tree_join(@ref, blob.path))
 
+- highlighted_blob = blob.present.highlight
+
 #blob-content.file-content.code.js-syntax-highlight
   .line-numbers{ class: "gl-px-0!", data: { blame_path: blame_path } }
     - if blob.data.present?
-      - blob.data.each_line.each_with_index do |_, index|
+      - highlighted_blob.lines.count.times do |index|
         - i = index + offset
         -# We're not using `link_to` because it is too slow once we get to thousands of lines.
         %a.file-line-num.diff-line-num{ class: ("js-line-links" if file_line_blame), href: "#L#{i}", id: "L#{i}", 'data-line-number' => i }
@@ -17,4 +19,4 @@
   .blob-content{ data: { blob_id: blob.id, path: blob.path, highlight_line: highlight, qa_selector: 'file_content' } }
     %pre.code.highlight
       %code
-        = blob.present.highlight
+        = highlighted_blob
