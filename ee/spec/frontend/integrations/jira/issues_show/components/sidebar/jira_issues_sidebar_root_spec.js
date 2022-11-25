@@ -5,7 +5,7 @@ import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_d
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
 import Sidebar from 'ee/integrations/jira/issues_show/components/sidebar/jira_issues_sidebar_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import CopyableField from '~/vue_shared/components/sidebar/copyable_field.vue';
+import CopyableField from '~/sidebar/components/copy/copyable_field.vue';
 import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
 import { mockJiraIssue as mockJiraIssueData } from '../../mock_data';
 

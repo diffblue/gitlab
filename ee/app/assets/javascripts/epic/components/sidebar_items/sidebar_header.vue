@@ -1,7 +1,7 @@
 <script>
 import { mapActions } from 'vuex';
 
-import ToggleSidebar from '~/vue_shared/components/sidebar/toggle_sidebar.vue';
+import ToggleSidebar from '~/sidebar/components/toggle/toggle_sidebar.vue';
 
 export default {
   components: {
