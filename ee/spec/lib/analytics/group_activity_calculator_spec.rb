@@ -44,6 +44,15 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
       expect(subject.issues_count).to eq 1
       expect(described_class.new(group, another_user).issues_count).to eq 2
     end
+
+    it 'limits count to RECENT_COUNT_LIMIT' do
+      stub_const('Analytics::GroupActivityCalculator::RECENT_COUNT_LIMIT', 2)
+
+      create(:issue, project: project)
+      create(:issue, project: project)
+
+      expect(subject.issues_count).to eq 2
+    end
   end
 
   context 'with merge requests' do
@@ -80,6 +89,19 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
       expect(subject.merge_requests_count).to eq 1
       expect(described_class.new(group, another_user).merge_requests_count).to eq 2
     end
+
+    it 'limits count to RECENT_COUNT_LIMIT' do
+      stub_const('Analytics::GroupActivityCalculator::RECENT_COUNT_LIMIT', 2)
+
+      create(:merge_request,
+             source_project: project,
+             source_branch: "my-personal-branch-3")
+      create(:merge_request,
+             source_project: project,
+             source_branch: "my-personal-branch-4")
+
+      expect(subject.merge_requests_count).to eq 2
+    end
   end
 
   context 'with members' do
@@ -114,6 +136,15 @@ RSpec.describe Analytics::GroupActivityCalculator, :use_clean_rails_memory_store
 
       expect(subject.new_members_count).to eq 2
       expect(described_class.new(group, another_user).new_members_count).to eq 3
+    end
+
+    it 'limits count to RECENT_COUNT_LIMIT' do
+      stub_const('Analytics::GroupActivityCalculator::RECENT_COUNT_LIMIT', 2)
+
+      subgroup.add_developer create(:user)
+      subgroup.add_developer create(:user)
+
+      expect(subject.new_members_count).to eq 2
     end
   end
 end

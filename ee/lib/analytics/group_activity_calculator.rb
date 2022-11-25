@@ -3,6 +3,7 @@
 module Analytics
   class GroupActivityCalculator
     RECENT_DURATION = 30.days
+    RECENT_COUNT_LIMIT = 1000
     CACHE_OPTIONS = { raw: false, expires_in: 24.hours }.freeze
 
     def initialize(group, current_user)
@@ -12,13 +13,13 @@ module Analytics
 
     def issues_count
       @issues_count ||= fetch_cached(:issues) do
-        IssuesFinder.new(@current_user, issuable_params).execute.count
+        IssuesFinder.new(@current_user, issuable_params).execute.limit(RECENT_COUNT_LIMIT).reorder(nil).count # rubocop:disable CodeReuse/ActiveRecord
       end
     end
 
     def merge_requests_count
       @merge_requests_count ||= fetch_cached(:merge_requests) do
-        MergeRequestsFinder.new(@current_user, issuable_params).execute.count
+        MergeRequestsFinder.new(@current_user, issuable_params).execute.limit(RECENT_COUNT_LIMIT).reorder(nil).count # rubocop:disable CodeReuse/ActiveRecord
       end
     end
 
@@ -28,7 +29,7 @@ module Analytics
           @group,
           @current_user,
           params: { created_after: RECENT_DURATION.ago }
-        ).execute(include_relations: [:direct, :descendants]).count
+        ).execute(include_relations: [:direct, :descendants]).limit(RECENT_COUNT_LIMIT).reorder(nil).count # rubocop:disable CodeReuse/ActiveRecord
       end
     end
 
