@@ -22,4 +22,4 @@
   .table-section.section-5
     .table-mobile-header{ role: 'rowheader' }
     .table-mobile-content
-      = render 'shared/ssh_keys/key_delete', text: _('Delete'), html_class: "btn btn-danger btn-danger-secondary btn-md btn-secondary gl-button js-confirm-modal-button", button_data: ssh_key_delete_modal_data(ssh_key, ssh_key_delete_path(ssh_key))
+      = render 'shared/ssh_keys/key_delete', category: :secondary, button_data: ssh_key_delete_modal_data(ssh_key, ssh_key_delete_path(ssh_key))

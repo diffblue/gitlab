@@ -97,7 +97,7 @@ RSpec.shared_examples_for 'credentials inventory SSH keys' do
     end
 
     it 'shows the delete button' do
-      expect(first_row).to have_selector('.js-confirm-modal-button[value="Delete"]')
+      expect(first_row).to have_selector('.js-confirm-modal-button', text: _('Delete'))
     end
 
     context 'and the user clicks the delete button', :js do
