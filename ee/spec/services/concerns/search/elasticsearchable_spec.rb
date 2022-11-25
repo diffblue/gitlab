@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Search::Elasticsearchable do
+RSpec.describe Search::Elasticsearchable, feature_category: :global_search do
   let(:class_instance) { subject_class.new(current_user, params) }
   let_it_be(:current_user) { create(:user) }
   let(:params) { {} }
