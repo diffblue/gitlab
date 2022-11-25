@@ -18,6 +18,14 @@ import {
 import { ITEM_TYPE } from '~/groups/constants';
 import * as commonUtils from '~/lib/utils/common_utils';
 import * as urlUtils from '~/lib/utils/url_utility';
+import {
+  TOKEN_TYPE_ASSIGNEE,
+  TOKEN_TYPE_AUTHOR,
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+  TOKEN_TYPE_SOURCE_BRANCH,
+  TOKEN_TYPE_TARGET_BRANCH,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import * as utils from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import initialFiltersState from '~/vue_shared/components/filtered_search_bar/store/modules/filters/state';
@@ -25,12 +33,12 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 
 Vue.use(Vuex);
 
-const sourceBranchTokenType = 'source_branch';
-const targetBranchTokenType = 'target_branch';
-const milestoneTokenType = 'milestone';
-const labelsTokenType = 'labels';
-const authorTokenType = 'author';
-const assigneeTokenType = 'assignee';
+const sourceBranchTokenType = TOKEN_TYPE_SOURCE_BRANCH;
+const targetBranchTokenType = TOKEN_TYPE_TARGET_BRANCH;
+const milestoneTokenType = TOKEN_TYPE_MILESTONE;
+const labelsTokenType = TOKEN_TYPE_LABEL;
+const authorTokenType = TOKEN_TYPE_AUTHOR;
+const assigneeTokenType = TOKEN_TYPE_ASSIGNEE;
 
 const initialFilterBarState = {
   selectedSourceBranch: null,
@@ -217,18 +225,27 @@ describe('Filter bar', () => {
     it('clicks on the search button, setFilters is dispatched', () => {
       const filters = [
         {
-          type: 'source_branch',
+          type: TOKEN_TYPE_SOURCE_BRANCH,
           value: getFilterParams(mockBranches, { key: 'data', prop: 'name' })[2],
         },
         {
-          type: 'target_branch',
+          type: TOKEN_TYPE_TARGET_BRANCH,
           value: getFilterParams(mockBranches, { key: 'data', prop: 'name' })[0],
         },
-        { type: 'milestone', value: getFilterParams(filterMilestones, { key: 'data' })[2] },
-        { type: 'labels', value: getFilterParams(filterLabels, { key: 'data' })[2] },
-        { type: 'labels', value: getFilterParams(filterLabels, { key: 'data' })[4] },
-        { type: 'assignee', value: getFilterParams(filterUsers, { key: 'data', prop: 'name' })[2] },
-        { type: 'author', value: getFilterParams(filterUsers, { key: 'data', prop: 'name' })[1] },
+        {
+          type: TOKEN_TYPE_MILESTONE,
+          value: getFilterParams(filterMilestones, { key: 'data' })[2],
+        },
+        { type: TOKEN_TYPE_LABEL, value: getFilterParams(filterLabels, { key: 'data' })[2] },
+        { type: TOKEN_TYPE_LABEL, value: getFilterParams(filterLabels, { key: 'data' })[4] },
+        {
+          type: TOKEN_TYPE_ASSIGNEE,
+          value: getFilterParams(filterUsers, { key: 'data', prop: 'name' })[2],
+        },
+        {
+          type: TOKEN_TYPE_AUTHOR,
+          value: getFilterParams(filterUsers, { key: 'data', prop: 'name' })[1],
+        },
       ];
 
       findFilteredSearch().vm.$emit('onFilter', filters);

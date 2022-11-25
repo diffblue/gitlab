@@ -15,6 +15,10 @@ import {
 } from 'jest/vue_shared/components/filtered_search_bar/store/modules/filters/test_helper';
 import * as commonUtils from '~/lib/utils/common_utils';
 import * as urlUtils from '~/lib/utils/url_utility';
+import {
+  TOKEN_TYPE_LABEL,
+  TOKEN_TYPE_MILESTONE,
+} from '~/vue_shared/components/filtered_search_bar/constants';
 import FilteredSearchBar from '~/vue_shared/components/filtered_search_bar/filtered_search_bar_root.vue';
 import * as utils from '~/vue_shared/components/filtered_search_bar/filtered_search_utils';
 import initialFiltersState from '~/vue_shared/components/filtered_search_bar/store/modules/filters/state';
@@ -22,8 +26,8 @@ import UrlSync from '~/vue_shared/components/url_sync.vue';
 
 Vue.use(Vuex);
 
-const milestoneTokenType = 'milestone';
-const labelsTokenType = 'labels';
+const milestoneTokenType = TOKEN_TYPE_MILESTONE;
+const labelsTokenType = TOKEN_TYPE_LABEL;
 
 const initialFilterBarState = {
   selectedMilestone: null,
@@ -159,10 +163,13 @@ describe('Filter bar', () => {
 
     it('clicks on the search button, setFilters is dispatched', () => {
       const filters = [
-        { type: 'milestone', value: getFilterParams(filterMilestones, { key: 'data' })[2] },
-        { type: 'labels', value: getFilterParams(filterLabels, { key: 'data' })[2] },
         {
-          type: 'labels',
+          type: TOKEN_TYPE_MILESTONE,
+          value: getFilterParams(filterMilestones, { key: 'data' })[2],
+        },
+        { type: TOKEN_TYPE_LABEL, value: getFilterParams(filterLabels, { key: 'data' })[2] },
+        {
+          type: TOKEN_TYPE_LABEL,
           value: getFilterParams(filterLabels, { key: 'data', operator: '!=' })[4],
         },
       ];
