@@ -9,7 +9,6 @@ module Gitlab
       ELASTIC_COUNT_LIMIT = 10000
       DEFAULT_PER_PAGE = Gitlab::SearchResults::DEFAULT_PER_PAGE
 
-      delegate :admin?, to: :current_user
       attr_reader :current_user, :query, :public_and_internal_projects, :order_by, :sort, :filters
 
       # Limit search results by passed projects
@@ -279,7 +278,7 @@ module Gitlab
           # from projects with milestones disabled.
           base_options.merge(features: [:issues, :merge_requests])
         when :users
-          base_options.merge(admin: admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
+          base_options.merge(admin: current_user&.admin?, routing_disabled: true) # rubocop:disable Cop/UserAdmin
         else
           base_options
         end
