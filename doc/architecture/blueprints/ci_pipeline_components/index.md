@@ -317,7 +317,7 @@ Proposal:
 | Role                         | Who
 |------------------------------|-------------------------|
 | Author                       | Fabio Pitino            |
-| Engineering Leader           | ?                       |
+| Engineering Leader           | Cheryl Li, Mark Nuzzo              |
 | Product Manager              | Dov Hershkovitch        |
 | Architecture Evolution Coach | Kamil Trzciński, Grzegorz Bizon |
 
@@ -325,10 +325,10 @@ DRIs:
 
 | Role                         | Who
 |------------------------------|------------------------|
-| Leadership                   | ?                      |
+| Leadership                   | Mark Nuzzo             |
 | Product                      | Dov Hershkovitch       |
 | Engineering                  | Fabio Pitino           |
-| UX                           | Kevin Comoli              |
+| UX                           | Kevin Comoli           |
 
 Domain experts:
 
