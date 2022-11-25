@@ -132,6 +132,7 @@ export default {
     :title="__('Add time entry')"
     modal-id="create-timelog-modal"
     size="sm"
+    data-testid="create-timelog-modal"
     :action-primary="primaryProps"
     :action-cancel="cancelProps"
     @primary="registerTimeSpent"

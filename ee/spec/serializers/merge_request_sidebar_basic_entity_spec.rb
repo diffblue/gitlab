@@ -17,7 +17,7 @@ RSpec.describe MergeRequestSidebarBasicEntity do
         stub_feature_flags(gitlab_employee_badge: false)
 
         expect(entity[:current_user].keys).to contain_exactly(
-          :id, :name, :username, :state, :avatar_url, :web_url, :todo,
+          :id, :name, :username, :state, :avatar_url, :web_url, :todo, :can_create_timelogs,
           :can_edit, :can_move, :can_admin_label, :can_merge, :can_update_merge_request
         )
       end
@@ -29,7 +29,7 @@ RSpec.describe MergeRequestSidebarBasicEntity do
         allow(Gitlab).to receive(:com?).and_return(false)
 
         expect(entity[:current_user].keys).to contain_exactly(
-          :id, :name, :username, :state, :avatar_url, :web_url, :todo,
+          :id, :name, :username, :state, :avatar_url, :web_url, :todo, :can_create_timelogs,
           :can_edit, :can_move, :can_admin_label, :can_merge, :can_update_merge_request
         )
       end
@@ -41,7 +41,7 @@ RSpec.describe MergeRequestSidebarBasicEntity do
         allow(Gitlab).to receive(:com?).and_return(true)
 
         expect(entity[:current_user].keys).to contain_exactly(
-          :id, :name, :username, :state, :avatar_url, :web_url, :todo,
+          :id, :name, :username, :state, :avatar_url, :web_url, :todo, :can_create_timelogs,
           :can_edit, :can_move, :can_admin_label, :can_merge, :is_gitlab_employee, :can_update_merge_request
         )
       end

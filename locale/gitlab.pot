@@ -1609,6 +1609,9 @@ msgstr ""
 msgid "409|There was a conflict with your request."
 msgstr ""
 
+msgid "4h 30m"
+msgstr ""
+
 msgid "8 hours"
 msgstr ""
 
@@ -2381,6 +2384,9 @@ msgid "Add system hook"
 msgstr ""
 
 msgid "Add text to the sign-in page. Markdown enabled."
+msgstr ""
+
+msgid "Add time entry"
 msgstr ""
 
 msgid "Add to board"
@@ -4505,6 +4511,9 @@ msgid "An error occurred while saving the setting"
 msgid_plural "An error occurred while saving the settings"
 msgstr[0] ""
 msgstr[1] ""
+
+msgid "An error occurred while saving the time entry."
+msgstr ""
 
 msgid "An error occurred while saving your settings. Try saving them again."
 msgstr ""
