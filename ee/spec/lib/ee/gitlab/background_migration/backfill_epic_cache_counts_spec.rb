@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
+# rubocop:disable RSpec/MultipleMemoizedHelpers
 RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration do
   let(:users) { table(:users) }
   let(:namespaces) { table(:namespaces) }
@@ -9,6 +10,9 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration 
   let(:issues) { table(:issues) }
   let(:epic_issues) { table(:epic_issues) }
   let(:updated_at) { 2.days.ago.round }
+
+  let(:issue_base_type_enum_value) { 0 }
+  let(:issue_type) { table(:work_item_types).find_by!(namespace_id: nil, base_type: issue_base_type_enum_value) }
 
   let!(:root_group) do
     namespaces.create!(name: 'root-group', path: 'root-group', type: 'Group').tap do |new_group|
@@ -50,19 +54,38 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration 
   let!(:user) { users.create!(name: 'test', email: 'test@example.com', projects_limit: 5) }
 
   let!(:issue1) do
-    issues.create!(iid: 1, project_id: project.id, title: 'issue1', author_id: user.id, weight: 2)
+    issues.create!(
+      iid: 1, project_id: project.id, title: 'issue1', author_id: user.id, weight: 2, work_item_type_id: issue_type.id
+    )
   end
 
   let!(:issue2) do
-    issues.create!(iid: 1, project_id: project_root.id, title: 'issue1', author_id: user.id, weight: 1)
+    issues.create!(
+      iid: 1,
+      project_id: project_root.id,
+      title: 'issue1',
+      author_id: user.id,
+      weight: 1,
+      work_item_type_id: issue_type.id
+    )
   end
 
   let!(:issue3) do
-    issues.create!(iid: 2, project_id: project_root.id, title: 'issue1', author_id: user.id)
+    issues.create!(
+      iid: 2, project_id: project_root.id, title: 'issue1', author_id: user.id, work_item_type_id: issue_type.id
+    )
   end
 
   let!(:issue4) do
-    issues.create!(iid: 3, project_id: project_root.id, title: 'issue1', author_id: user.id, weight: 4, state_id: 2)
+    issues.create!(
+      iid: 3,
+      project_id: project_root.id,
+      title: 'issue1',
+      author_id: user.id,
+      weight: 4,
+      state_id: 2,
+      work_item_type_id: issue_type.id
+    )
   end
 
   let!(:epic_issue1) { epic_issues.create!(issue_id: issue1.id, epic_id: epic_root.id) }
@@ -156,3 +179,4 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration 
     end
   end
 end
+# rubocop:enable RSpec/MultipleMemoizedHelpers
