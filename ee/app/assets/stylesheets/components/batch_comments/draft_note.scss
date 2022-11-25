@@ -4,9 +4,9 @@ $draft-actions-left-margin: 40px + $gl-padding;
   margin: 0;
 
   .referenced-commands.draft-note-commands {
+    @include gl-text-gray-500;
     background: $orange-50;
     font-size: $label-font-size;
-    margin: 0 0 $gl-padding $draft-actions-left-margin;
   }
 
   .timeline-entry {
@@ -62,4 +62,21 @@ button[disabled] {
       }
     }
   }
+}
+
+.diffs .draft-note-component .referenced-commands.draft-note-commands {
+  margin: 0;
+  border-radius: 0;
+}
+
+.issuable-discussion .draft-note-component .referenced-commands.draft-note-commands {
+  margin: -$gl-padding-4 0 $gl-padding 40px;
+  z-index: 9999;
+  display: block;
+  position: relative;
+  border: 1px solid $border-color;
+  border-top: 0;
+  border-top-right-radius: 0;
+  border-top-left-radius: 0;
+  padding-left: 56px;
 }
