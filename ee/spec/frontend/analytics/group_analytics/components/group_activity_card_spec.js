@@ -11,8 +11,21 @@ import axios from '~/lib/utils/axios_utils';
 const TEST_GROUP_ID = 'gitlab-org';
 const TEST_GROUP_NAME = 'Gitlab Org';
 const TEST_MERGE_REQUESTS_COUNT = { data: { merge_requests_count: 10 } };
+const TEST_LARGE_MERGE_REQUESTS_COUNT = { data: { merge_requests_count: 1001 } };
 const TEST_ISSUES_COUNT = { data: { issues_count: 20 } };
+const TEST_LARGE_ISSUES_COUNT = { data: { issues_count: 999 } };
 const TEST_NEW_MEMBERS_COUNT = { data: { new_members_count: 30 } };
+const TEST_LARGE_NEW_MEMBERS_COUNT = { data: { new_members_count: 998 } };
+
+const mockActivityRequests = ({ issuesCount, mergeRequestsCount, newMembersCount }) => {
+  jest
+    .spyOn(Api, 'groupActivityMergeRequestsCount')
+    .mockReturnValue(Promise.resolve(mergeRequestsCount));
+
+  jest.spyOn(Api, 'groupActivityIssuesCount').mockReturnValue(Promise.resolve(issuesCount));
+
+  jest.spyOn(Api, 'groupActivityNewMembersCount').mockReturnValue(Promise.resolve(newMembersCount));
+};
 
 describe('GroupActivity component', () => {
   let wrapper;
@@ -30,15 +43,11 @@ describe('GroupActivity component', () => {
   beforeEach(() => {
     mock = new MockAdapter(axios);
 
-    jest
-      .spyOn(Api, 'groupActivityMergeRequestsCount')
-      .mockReturnValue(Promise.resolve(TEST_MERGE_REQUESTS_COUNT));
-
-    jest.spyOn(Api, 'groupActivityIssuesCount').mockReturnValue(Promise.resolve(TEST_ISSUES_COUNT));
-
-    jest
-      .spyOn(Api, 'groupActivityNewMembersCount')
-      .mockReturnValue(Promise.resolve(TEST_NEW_MEMBERS_COUNT));
+    mockActivityRequests({
+      issuesCount: TEST_ISSUES_COUNT,
+      mergeRequestsCount: TEST_MERGE_REQUESTS_COUNT,
+      newMembersCount: TEST_NEW_MEMBERS_COUNT,
+    });
   });
 
   afterEach(() => {
@@ -83,9 +92,37 @@ describe('GroupActivity component', () => {
 
     it.each`
       index | value | title
-      ${0}  | ${10} | ${'Merge Requests created'}
+      ${0}  | ${10} | ${'Merge requests created'}
       ${1}  | ${20} | ${'Issues created'}
       ${2}  | ${30} | ${'Members added'}
+    `('renders a GlSingleStat for "$title"', async ({ index, value, title }) => {
+      const singleStat = findAllSingleStats().at(index);
+
+      await nextTick();
+      await waitForPromises();
+      expect(singleStat.props('value')).toBe(`${value}`);
+      expect(singleStat.props('title')).toBe(title);
+    });
+  });
+
+  describe('with large values', () => {
+    beforeEach(() => {
+      mock = new MockAdapter(axios);
+
+      mockActivityRequests({
+        issuesCount: TEST_LARGE_ISSUES_COUNT,
+        mergeRequestsCount: TEST_LARGE_MERGE_REQUESTS_COUNT,
+        newMembersCount: TEST_LARGE_NEW_MEMBERS_COUNT,
+      });
+
+      createComponent();
+    });
+
+    it.each`
+      index | value     | title
+      ${0}  | ${'999+'} | ${'Merge requests created'}
+      ${1}  | ${999}    | ${'Issues created'}
+      ${2}  | ${998}    | ${'Members added'}
     `('renders a GlSingleStat for "$title"', async ({ index, value, title }) => {
       const singleStat = findAllSingleStats().at(index);
 

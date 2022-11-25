@@ -1,15 +1,20 @@
 <script>
-import { GlSkeletonLoader } from '@gitlab/ui';
+import { GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import Api from 'ee/api';
 import createFlash from '~/flash';
 import { __, s__ } from '~/locale';
+
+const ACTIVITY_COUNT_LIMIT = 999;
 
 export default {
   name: 'GroupActivityCard',
   components: {
     GlSkeletonLoader,
     GlSingleStat,
+  },
+  directives: {
+    GlTooltip: GlTooltipDirective,
   },
   inject: ['groupFullPath', 'groupName'],
   data() {
@@ -18,7 +23,7 @@ export default {
       metrics: {
         mergeRequests: {
           value: null,
-          label: s__('GroupActivityMetrics|Merge Requests created'),
+          label: s__('GroupActivityMetrics|Merge requests created'),
         },
         issues: { value: null, label: s__('GroupActivityMetrics|Issues created') },
         newMembers: { value: null, label: s__('GroupActivityMetrics|Members added') },
@@ -62,6 +67,12 @@ export default {
           this.isLoading = false;
         });
     },
+    clampValue(value) {
+      return value > ACTIVITY_COUNT_LIMIT ? '999+' : `${value}`;
+    },
+    tooltip(value) {
+      return value > ACTIVITY_COUNT_LIMIT ? __('Results limit reached') : null;
+    },
   },
 };
 </script>
@@ -82,7 +93,8 @@ export default {
       <gl-skeleton-loader v-if="isLoading" />
       <gl-single-stat
         v-else
-        :value="`${metric.value}`"
+        v-gl-tooltip="tooltip(metric.value)"
+        :value="clampValue(metric.value)"
         :title="metric.label"
         :should-animate="true"
       />
