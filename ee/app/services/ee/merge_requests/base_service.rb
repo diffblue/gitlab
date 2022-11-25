@@ -95,9 +95,8 @@ module EE
       def capture_suggested_reviewers_accepted(merge_request)
         return if suggested_reviewer_ids.blank?
 
-        ::MergeRequests::CaptureSuggestedReviewersAcceptedService
-          .new(project: project)
-          .execute(merge_request, suggested_reviewer_ids)
+        ::MergeRequests::CaptureSuggestedReviewersAcceptedWorker
+          .perform_async(merge_request.id, suggested_reviewer_ids)
       end
     end
   end
