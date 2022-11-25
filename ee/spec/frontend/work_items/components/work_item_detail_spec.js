@@ -51,7 +51,7 @@ describe('WorkItemDetail component', () => {
 
   const createComponent = ({
     handler = successHandler,
-    workItemsMvc2Enabled = false,
+    workItemsMvcEnabled = false,
     confidentialityMock = [updateWorkItemMutation, jest.fn()],
   } = {}) => {
     wrapper = shallowMount(WorkItemDetail, {
@@ -67,7 +67,7 @@ describe('WorkItemDetail component', () => {
       ]),
       provide: {
         glFeatures: {
-          workItemsMvc2: workItemsMvc2Enabled,
+          workItemsMvc: workItemsMvcEnabled,
         },
         hasIssueWeightsFeature: true,
         hasIterationsFeature: true,
@@ -95,7 +95,7 @@ describe('WorkItemDetail component', () => {
       } iteration component`, async () => {
         const response = workItemResponseFactory({ iterationWidgetPresent });
         const handler = jest.fn().mockResolvedValue(response);
-        createComponent({ handler, workItemsMvc2Enabled: true });
+        createComponent({ handler });
         await waitForPromises();
 
         expect(findWorkItemIteration().exists()).toBe(exists);
@@ -103,7 +103,7 @@ describe('WorkItemDetail component', () => {
     });
 
     it('shows an error message when it emits an `error` event', async () => {
-      createComponent({ workItemsMvc2Enabled: true });
+      createComponent();
       await waitForPromises();
       const updateError = 'Failed to update';
 

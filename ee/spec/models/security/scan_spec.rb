@@ -308,6 +308,17 @@ RSpec.describe Security::Scan do
     it { is_expected.to match_array(expected_scans) }
   end
 
+  describe '.ordered_by_created_at_and_id' do
+    let(:created_at) { Time.zone.now }
+    let!(:scan_1) { create(:security_scan, created_at: created_at) }
+    let!(:scan_2) { create(:security_scan, created_at: created_at) }
+    let!(:scan_3) { create(:security_scan, created_at: created_at - 1.minute) }
+
+    subject { described_class.ordered_by_created_at_and_id }
+
+    it { is_expected.to eq([scan_3, scan_1, scan_2]) }
+  end
+
   describe '.with_warnings' do
     let!(:scan_1) { create(:security_scan) }
     let!(:scan_2) { create(:security_scan, :with_warning) }

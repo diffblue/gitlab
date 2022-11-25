@@ -8,7 +8,9 @@ RSpec.describe Security::PurgeScansService do
     let(:mock_service_object) { instance_double(described_class, execute: true) }
 
     describe '.purge_stale_records' do
-      let(:mock_relation) { instance_double(Security::Scan.all.class, limit: batchable_relation) }
+      let(:mock_relation) do
+        instance_double(Security::Scan.all.class, ordered_by_created_at_and_id: batchable_relation)
+      end
 
       subject(:purge_stale_records) { described_class.purge_stale_records }
 
@@ -20,7 +22,6 @@ RSpec.describe Security::PurgeScansService do
       it 'instantiates the service class with stale scans' do
         purge_stale_records
 
-        expect(mock_relation).to have_received(:limit).with(50_000)
         expect(described_class).to have_received(:new).with(batchable_relation)
         expect(mock_service_object).to have_received(:execute)
       end
@@ -55,6 +56,17 @@ RSpec.describe Security::PurgeScansService do
 
     it 'marks the security scans as purged by given relation' do
       expect { purge_scans }.to change { Security::Scan.purged.count }.from(0).to(2)
+    end
+
+    context 'when there are more than maximum stale scans size allowed to be updated' do
+      before do
+        stub_const("#{described_class}::MAX_STALE_SCANS_SIZE", 1)
+        stub_const("#{described_class}::SCAN_BATCH_SIZE", 1)
+      end
+
+      it 'marks only the allowed amount of security scans as purged' do
+        expect { purge_scans }.to change { Security::Scan.purged.count }.from(0).to(1)
+      end
     end
   end
 end
