@@ -11,7 +11,7 @@ module Integrations
     end
 
     def title
-      'Slack application'
+      s_('Integrations|GitLab for Slack app')
     end
 
     def description

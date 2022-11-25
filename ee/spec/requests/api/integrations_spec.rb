@@ -9,7 +9,7 @@ RSpec.describe API::Integrations do
     create(:project, creator_id: user.id, namespace: user.namespace)
   end
 
-  describe 'Slack application Service' do
+  describe 'GitLab for Slack app integration' do
     before do
       project.create_gitlab_slack_application_integration
 
