@@ -55,36 +55,29 @@ RSpec.describe Gitlab::BackgroundMigration::BackfillEpicCacheCounts, :migration 
 
   let!(:issue1) do
     issues.create!(
-      iid: 1, project_id: project.id, title: 'issue1', author_id: user.id, weight: 2, work_item_type_id: issue_type.id
+      iid: 1, project_id: project.id, namespace_id: project.project_namespace_id,
+      title: 'issue1', author_id: user.id, weight: 2, work_item_type_id: issue_type.id
     )
   end
 
   let!(:issue2) do
     issues.create!(
-      iid: 1,
-      project_id: project_root.id,
-      title: 'issue1',
-      author_id: user.id,
-      weight: 1,
-      work_item_type_id: issue_type.id
+      iid: 1, project_id: project_root.id, namespace_id: project_root.project_namespace_id,
+      title: 'issue1', author_id: user.id, weight: 1, work_item_type_id: issue_type.id
     )
   end
 
   let!(:issue3) do
     issues.create!(
-      iid: 2, project_id: project_root.id, title: 'issue1', author_id: user.id, work_item_type_id: issue_type.id
+      iid: 2, project_id: project_root.id, namespace_id: project_root.project_namespace_id,
+      title: 'issue1', author_id: user.id, work_item_type_id: issue_type.id
     )
   end
 
   let!(:issue4) do
     issues.create!(
-      iid: 3,
-      project_id: project_root.id,
-      title: 'issue1',
-      author_id: user.id,
-      weight: 4,
-      state_id: 2,
-      work_item_type_id: issue_type.id
+      iid: 3, project_id: project_root.id, namespace_id: project_root.project_namespace_id,
+      title: 'issue1', author_id: user.id, weight: 4, state_id: 2, work_item_type_id: issue_type.id
     )
   end
 
