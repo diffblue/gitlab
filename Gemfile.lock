@@ -1723,6 +1723,7 @@ DEPENDENCIES
   letter_opener_web (~> 2.0.0)
   license_finder (~> 7.0)
   licensee (~> 9.15)
+  listen (~> 3.7)
   lockbox (~> 0.6.2)
   lograge (~> 0.5)
   loofah (~> 2.19.0)
