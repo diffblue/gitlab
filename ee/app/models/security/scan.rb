@@ -49,6 +49,7 @@ module Security
     scope :by_build_ids, ->(build_ids) { where(build_id: build_ids) }
     scope :without_errors, -> { where("jsonb_array_length(COALESCE(info->'errors', '[]'::jsonb)) = 0") }
     scope :stale, -> { where("created_at < ?", STALE_AFTER.ago).where.not(status: :purged) }
+    scope :ordered_by_created_at_and_id, -> { order(:created_at, :id) }
     scope :with_warnings, -> { where("jsonb_array_length(COALESCE(info->'warnings', '[]'::jsonb)) > 0") }
     scope :with_errors, -> { where("jsonb_array_length(COALESCE(info->'errors', '[]'::jsonb)) > 0") }
 

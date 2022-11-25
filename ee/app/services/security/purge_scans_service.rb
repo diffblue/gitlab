@@ -7,7 +7,7 @@ module Security
 
     class << self
       def purge_stale_records
-        Security::Scan.stale.limit(MAX_STALE_SCANS_SIZE).then { |relation| execute(relation) }
+        Security::Scan.stale.ordered_by_created_at_and_id.then { |relation| execute(relation) }
       end
 
       def purge_by_build_ids(build_ids)
@@ -20,16 +20,21 @@ module Security
     end
 
     def initialize(security_scans)
-      @security_scans = security_scans
+      @iterator = Gitlab::Pagination::Keyset::Iterator.new(scope: security_scans)
+      @updated_count = 0
     end
 
     def execute
-      security_scans.in_batches(of: SCAN_BATCH_SIZE) { |batch| purge(batch) } # rubocop:disable Cop/InBatches (`each_batch` does not let us set a global limit of records to be batched)
+      iterator.each_batch(of: SCAN_BATCH_SIZE) do |batch|
+        @updated_count += purge(batch)
+
+        break if @updated_count >= MAX_STALE_SCANS_SIZE
+      end
     end
 
     private
 
-    attr_reader :security_scans
+    attr_reader :iterator
 
     def purge(scan_batch)
       scan_batch.unscope(where: :build_id).update_all(status: :purged) # rubocop:disable CodeReuse/ActiveRecord unlikely that a `unscope where build_id` scope would be used elsewhere
