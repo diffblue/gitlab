@@ -11,13 +11,16 @@ RSpec.describe MergeRequests::DeleteSourceBranchWorker do
 
   describe '#perform' do
     before do
-      allow(::MergeRequests::DeleteBranchWorker).to receive(:perform_async)
+      allow_next_instance_of(::Projects::DeleteBranchWorker) do |instance|
+        allow(instance).to receive(:perform).with(merge_request.source_project.id, user.id,
+                                                   merge_request.source_branch)
+      end
     end
 
     context 'when the add_delete_branch_worker feature flag is enabled' do
       context 'with a non-existing merge request' do
         it 'does nothing' do
-          expect(::MergeRequests::DeleteBranchWorker).not_to receive(:perform_async)
+          expect(::Projects::DeleteBranchWorker).not_to receive(:new)
 
           worker.perform(non_existing_record_id, sha, user.id)
         end
@@ -25,7 +28,7 @@ RSpec.describe MergeRequests::DeleteSourceBranchWorker do
 
       context 'with a non-existing user' do
         it 'does nothing' do
-          expect(::MergeRequests::DeleteBranchWorker).not_to receive(:perform_async)
+          expect(::Projects::DeleteBranchWorker).not_to receive(:new)
 
           worker.perform(merge_request.id, sha, non_existing_record_id)
         end
@@ -33,15 +36,17 @@ RSpec.describe MergeRequests::DeleteSourceBranchWorker do
 
       context 'with existing user and merge request' do
         it 'creates a new delete branch worker async' do
-          expect(::MergeRequests::DeleteBranchWorker).to receive(:perform_async).with(merge_request.id, user.id,
-                                                                                      merge_request.source_branch, true)
+          expect_next_instance_of(::Projects::DeleteBranchWorker) do |instance|
+            expect(instance).to receive(:perform).with(merge_request.source_project.id, user.id,
+                                                       merge_request.source_branch)
+          end
 
           worker.perform(merge_request.id, sha, user.id)
         end
 
         context 'source branch sha does not match' do
           it 'does nothing' do
-            expect(::MergeRequests::DeleteBranchWorker).not_to receive(:perform_async)
+            expect(::Projects::DeleteBranchWorker).not_to receive(:new)
 
             worker.perform(merge_request.id, 'new-source-branch-sha', user.id)
           end
