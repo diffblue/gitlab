@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlFormInputGroup, GlLink, GlSprintf } from '@gitlab/ui';
+import { GlAlert, GlFormInputGroup, GlLink, GlSprintf, GlIcon } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import ModalCopyButton from '~/vue_shared/components/modal_copy_button.vue';
 import CodeBlock from '~/vue_shared/components/code_block.vue';
@@ -11,12 +11,14 @@ export default {
   advancedInstallPath: helpPagePath('user/clusters/agent/install/index', {
     anchor: 'advanced-installation-method',
   }),
+  helmVersionPolicy: 'https://helm.sh/docs/topics/version_skew/',
   components: {
     GlAlert,
     CodeBlock,
     GlFormInputGroup,
     GlLink,
     GlSprintf,
+    GlIcon,
     ModalCopyButton,
   },
   inject: ['kasAddress', 'kasVersion'],
@@ -77,6 +79,11 @@ export default {
 
     <p>
       {{ $options.i18n.basicInstallBody }}
+      <gl-sprintf :message="$options.i18n.helmVersionText">
+        <template #link="{ content }"
+          ><gl-link :href="$options.helmVersionPolicy" target="_blank"
+            >{{ content }} <gl-icon name="external-link" :size="12" /></gl-link></template
+      ></gl-sprintf>
     </p>
 
     <p class="gl-display-flex gl-align-items-flex-start">
