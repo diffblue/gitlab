@@ -6,14 +6,9 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
                :suppress_gitlab_schemas_validate_connection do
   include MigrationsHelpers
 
-  let(:logger) { instance_double(Logger) }
-  let(:dry_run) { false }
-  let(:until_table) { nil }
   let(:min_batch_size) { 1 }
   let(:main_connection) { ApplicationRecord.connection }
   let(:ci_connection) { Ci::ApplicationRecord.connection }
-  let(:test_gitlab_main_table) { '_test_gitlab_main_table' }
-  let(:test_gitlab_ci_table) { '_test_gitlab_ci_table' }
 
   # Main Database
   let(:main_db_main_item_model) { table("_test_gitlab_main_items", database: "main") }
@@ -37,17 +32,21 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
     table("gitlab_partitions_dynamic._test_gitlab_hook_logs_20220101", database: "ci")
   end
 
-  subject(:truncate_legacy_tables) do
-    described_class.new(
-      database_name: database_name,
-      min_batch_size: min_batch_size,
-      logger: logger,
-      dry_run: dry_run,
-      until_table: until_table
-    ).execute
-  end
-
   shared_examples 'truncating legacy tables on a database' do
+    let(:logger) { instance_double(Logger) }
+    let(:dry_run) { false }
+    let(:until_table) { nil }
+
+    subject(:truncate_legacy_tables) do
+      described_class.new(
+        database_name: connection.pool.db_config.name,
+        min_batch_size: min_batch_size,
+        logger: logger,
+        dry_run: dry_run,
+        until_table: until_table
+      ).execute
+    end
+
     before do
       skip_if_multiple_databases_not_setup
 
@@ -165,7 +164,7 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
           Gitlab::Database::LockWritesManager.new(
             table_name: table,
             connection: connection,
-            database_name: database_name
+            database_name: connection.pool.db_config.name
           ).lock_writes
         end
       end
@@ -245,7 +244,6 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
 
   context 'when truncating gitlab_ci tables on the main database' do
     let(:connection) { ApplicationRecord.connection }
-    let(:database_name) { "main" }
     let(:legacy_tables_models) { [main_db_ci_item_model, main_db_ci_reference_model] }
     let(:referencing_table_model) { main_db_ci_reference_model }
     let(:referenced_table_model) { main_db_ci_item_model }
@@ -263,7 +261,6 @@ RSpec.describe Gitlab::Database::TablesTruncate, :reestablished_active_record_ba
 
   context 'when truncating gitlab_main tables on the ci database' do
     let(:connection) { Ci::ApplicationRecord.connection }
-    let(:database_name) { "ci" }
     let(:legacy_tables_models) do
       [ci_db_main_item_model, ci_db_main_reference_model, ci_db_partitioned_item, ci_db_partitioned_item_detached]
     end
