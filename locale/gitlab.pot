@@ -5623,6 +5623,9 @@ msgstr ""
 msgid "AuditStreams|Destination URL"
 msgstr ""
 
+msgid "AuditStreams|Destination has filters applied. %{linkStart}What are filters?%{linkEnd}"
+msgstr ""
+
 msgid "AuditStreams|Destinations receive all audit event data"
 msgstr ""
 
@@ -5666,6 +5669,9 @@ msgid "AuditStreams|Value"
 msgstr ""
 
 msgid "AuditStreams|Verification token"
+msgstr ""
+
+msgid "AuditStreams|filtered"
 msgstr ""
 
 msgid "Aug"
