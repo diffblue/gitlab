@@ -414,6 +414,11 @@ module EE
       user_namespace? && !paid?
     end
 
+    override :prevent_delete?
+    def prevent_delete?
+      super && !trial?
+    end
+
     def use_elasticsearch?
       ::Gitlab::CurrentSettings.elasticsearch_indexes_namespace?(self)
     end

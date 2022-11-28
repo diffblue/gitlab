@@ -114,6 +114,29 @@ describe('Zuora', () => {
     });
   });
 
+  describe('when the script fails to load', () => {
+    beforeEach(() => {
+      createComponent();
+      wrapper.vm.zuoraScriptEl.onerror();
+    });
+
+    it('emits load-error', () => {
+      expect(wrapper.emitted(Event.LOAD_ERROR)).toHaveLength(1);
+    });
+
+    it('tracks the iframe load error', () => {
+      expect(trackingSpy).toHaveBeenLastCalledWith(ZUORA_EVENT_CATEGORY, TrackingEvent.ERROR, {
+        label: TrackingLabel.ZUORA_SCRIPT_LOAD_ERROR,
+        property: ERROR_LOADING_PAYMENT_FORM,
+        category: ZUORA_EVENT_CATEGORY,
+      });
+    });
+
+    it('shows an error alert', () => {
+      expect(findAlert().text()).toBe(ERROR_LOADING_PAYMENT_FORM);
+    });
+  });
+
   describe('iFrame callbacks', () => {
     describe('paymentFormSubmitted', () => {
       describe('when not successful', () => {

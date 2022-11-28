@@ -50,6 +50,7 @@ export const TrackingLabel = Object.freeze({
   PAYMENT_SUBMITTED: 'payment_form_submitted',
   PAYMENT_VALIDATE: 'payment_method_validate',
   IFRAME_LOAD_ERROR: 'iframe_load_error',
+  ZUORA_SCRIPT_LOAD_ERROR: 'zuora_script_load_error',
 });
 
 /*
@@ -220,9 +221,18 @@ export default {
         this.zuoraScriptEl.type = 'text/javascript';
         this.zuoraScriptEl.async = true;
         this.zuoraScriptEl.onload = this.fetchPaymentFormParams;
+        this.zuoraScriptEl.onerror = this.handleZuoraScriptLoadError;
         this.zuoraScriptEl.src = ZUORA_SCRIPT_URL;
         document.head.appendChild(this.zuoraScriptEl);
       }
+    },
+    handleZuoraScriptLoadError() {
+      this.handleError(ERROR_LOADING_PAYMENT_FORM);
+      this.$emit(Event.LOAD_ERROR);
+      this.track(TrackingEvent.ERROR, {
+        label: TrackingLabel.ZUORA_SCRIPT_LOAD_ERROR,
+        property: ERROR_LOADING_PAYMENT_FORM,
+      });
     },
     paymentFormSubmitted({ success, refId, errorCode, errorMessage } = {}) {
       if (parseBoolean(success)) {
@@ -237,6 +247,7 @@ export default {
         event = Event.LOAD_ERROR;
         trackingLabel = TrackingLabel.IFRAME_LOAD_ERROR;
         this.iframeLoadError = true;
+        this.error = ERROR_LOADING_PAYMENT_FORM;
       } else {
         event = Event.PAYMENT_SUBMIT_ERROR;
         trackingLabel = TrackingLabel.PAYMENT_SUBMITTED;

@@ -31,7 +31,7 @@ export default {
   },
   data() {
     return {
-      hasError: false,
+      hasLoadError: false,
       paymentFormId: window.gon?.payment_validation_form_id,
     };
   },
@@ -41,7 +41,7 @@ export default {
         text: s__('Billings|Validate account'),
         attributes: {
           variant: 'confirm',
-          disabled: this.hasError,
+          disabled: this.hasLoadError,
         },
       };
     },
@@ -60,6 +60,9 @@ export default {
     },
     hide() {
       this.$refs.modal.hide();
+    },
+    handleLoadError() {
+      this.hasLoadError = true;
     },
   },
   i18n,
@@ -90,6 +93,7 @@ export default {
       :allowed-origin="allowedOrigin"
       :payment-form-id="paymentFormId"
       @success="$emit('success')"
+      @load-error="handleLoadError"
     />
   </gl-modal>
 </template>
