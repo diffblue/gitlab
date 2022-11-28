@@ -172,7 +172,7 @@ export default {
           >{{ page.name }}</gl-dropdown-item
         >
       </gl-dropdown>
-      <gl-alert v-if="notice != ''">
+      <gl-alert v-if="notice != ''" :dismissible="false">
         {{ notice }}
       </gl-alert>
       <insights-page :query-endpoint="queryEndpoint" :page-config="activePage" />
