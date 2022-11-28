@@ -1,11 +1,11 @@
-import { mount } from '@vue/test-utils';
+import { shallowMount } from '@vue/test-utils';
 import NumberToHumanSize from 'ee/usage_quotas/storage/components/number_to_human_size.vue';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 
 let wrapper;
 
 const createComponent = (props = {}) => {
-  wrapper = mount(NumberToHumanSize, {
+  wrapper = shallowMount(NumberToHumanSize, {
     propsData: {
       ...props,
     },
