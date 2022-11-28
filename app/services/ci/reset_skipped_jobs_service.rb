@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Ci
-  class AfterRequeueJobService < ::BaseService
+  class ResetSkippedJobsService < ::BaseService
     def execute(processable)
       @processable = processable
 

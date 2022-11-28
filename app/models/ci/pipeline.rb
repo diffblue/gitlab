@@ -1346,7 +1346,7 @@ module Ci
       return unless current_user.can?(:update_pipeline, source_bridge.pipeline)
 
       source_bridge.pending!
-      Ci::AfterRequeueJobService.new(project, current_user).execute(source_bridge) # rubocop:disable CodeReuse/ServiceClass
+      Ci::ResetSkippedJobsService.new(project, current_user).execute(source_bridge) # rubocop:disable CodeReuse/ServiceClass
     end
 
     # EE-only
