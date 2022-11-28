@@ -51,6 +51,7 @@ module QA
       before do
         Page::Main::Menu.perform(&:sign_out_if_signed_in)
         Flow::Saml.logout_from_idp(saml_idp_service)
+        remove_user if user.exists?
 
         visit_group_sso_url
 
@@ -68,7 +69,7 @@ module QA
 
         Runtime::Feature.remove(:group_administration_nav_item)
 
-        user.remove_via_api!
+        remove_user
         group.remove_via_api!
         runner.remove_via_api!
       end
@@ -123,6 +124,14 @@ module QA
         Page::Group::DependencyProxy.perform do |index|
           expect(index).to have_blob_count("Contains 1 blobs of images")
         end
+      end
+
+      private
+
+      def remove_user
+        user.reload!
+        user.remove_via_api!
+        Support::Waiter.wait_until(max_duration: 180, retry_on_exception: true, sleep_interval: 3) { !user.exists? }
       end
 
       def visit_group_sso_url
