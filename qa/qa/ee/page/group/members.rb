@@ -13,7 +13,13 @@ module QA
             element :sync_ldap_confirm_button
           end
 
-          def click_sync_now
+          # Sync can be started by a scheduled background job in which case
+          # the "Sync now" button will not be shown
+          def click_sync_now_if_needed
+            wait_for_requests
+
+            return unless has_element?(:sync_now_button, wait: 2)
+
             click_element :sync_now_button
             click_element :sync_ldap_confirm_button
           end
