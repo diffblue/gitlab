@@ -21,11 +21,45 @@ module API
           not_found! unless Gitlab::CurrentSettings.cube_api_base_url.present?
           not_found! unless Gitlab::CurrentSettings.cube_api_key.present?
         end
-      end
 
-      resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
-        desc 'Proxy analytics request to cube installation. Requires :cube_api_proxy flag to be enabled.'
-        params do
+        def check_access_rights!
+          not_found! unless project.product_analytics_enabled?
+          unauthorized! unless can?(current_user, :developer_access, project)
+        end
+
+        def cube_server_url(endpoint)
+          "#{Gitlab::CurrentSettings.cube_api_base_url}/cubejs-api/v1/" + endpoint
+        end
+
+        def cube_security_headers
+          payload = {
+            iat: Time.now.utc.to_i,
+            exp: Time.now.utc.to_i + 180,
+            appId: "gitlab_project_#{params[:project_id]}",
+            iss: ::Settings.gitlab.host
+          }
+
+          {
+            "Content-Type": 'application/json',
+            Authorization: JWT.encode(payload, Gitlab::CurrentSettings.cube_api_key, 'HS256')
+          }
+        end
+
+        def cube_data_query(load_data)
+          check_access_rights!
+
+          response = ::Gitlab::HTTP.post(
+            cube_server_url(load_data ? 'load' : 'dry-run'),
+            allow_local_requests: true,
+            headers: cube_security_headers,
+            body: { query: params["query"], "queryType": params["queryType"] }.to_json
+          )
+
+          status :ok
+          Gitlab::Json.parse(response.body)
+        end
+
+        params :cube_query_params do
           requires :project_id, type: Integer, desc: 'ID of the project to query'
           requires :query,
                    type: Hash,
@@ -34,25 +68,34 @@ module API
                                default: 'multi',
                                desc: 'The query type. Currently only "multi" is supported.'
         end
+      end
+
+      resource :projects, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
+        desc 'Proxy analytics request to cube installation. Requires :cube_api_proxy flag to be enabled.'
+        params do
+          use :cube_query_params
+        end
         post ':project_id/product_analytics/request/load' do
-          not_found! unless project.product_analytics_enabled?
-          unauthorized! unless can?(current_user, :developer_access, project)
+          cube_data_query(true)
+        end
 
-          payload = {
-            iat: Time.now.utc.to_i,
-            exp: Time.now.utc.to_i + 180,
-            appId: "gitlab_project_#{params[:project_id]}",
-            iss: ::Settings.gitlab.host
-          }
+        params do
+          use :cube_query_params
+        end
+        post ':project_id/product_analytics/request/dry-run' do
+          cube_data_query(false)
+        end
 
-          response = ::Gitlab::HTTP.post(
-            "#{Gitlab::CurrentSettings.cube_api_base_url}/cubejs-api/v1/load",
+        params do
+          requires :project_id, type: Integer, desc: 'ID of the project to get meta data'
+        end
+        post ':project_id/product_analytics/request/meta' do
+          check_access_rights!
+
+          response = ::Gitlab::HTTP.get(
+            cube_server_url('meta'),
             allow_local_requests: true,
-            headers: {
-              "Content-Type": 'application/json',
-              Authorization: JWT.encode(payload, Gitlab::CurrentSettings.cube_api_key, 'HS256')
-            },
-            body: { query: params["query"], "queryType": params["queryType"] }.to_json
+            headers: cube_security_headers
           )
 
           status :ok
