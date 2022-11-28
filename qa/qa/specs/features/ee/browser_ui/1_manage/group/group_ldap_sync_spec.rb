@@ -167,7 +167,9 @@ module QA
       def signin_as_user(user_name)
         user = Struct.new(:ldap_username, :ldap_password).new(user_name, 'password')
 
+        Page::Main::Menu.perform(&:sign_out_if_signed_in)
         Runtime::Browser.visit(:gitlab, Page::Main::Login)
+
         Page::Main::Login.perform do |login_page|
           login_page.sign_in_using_ldap_credentials(user: user)
         end
@@ -175,7 +177,7 @@ module QA
 
       def verify_users_synced(expected_users)
         EE::Page::Group::Members.perform do |members|
-          members.click_sync_now
+          members.click_sync_now_if_needed
 
           users_synchronised = members.retry_until(reload: true) do
             expected_users.map { |user| members.has_content?(user) }.all?
