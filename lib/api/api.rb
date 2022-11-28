@@ -252,6 +252,7 @@ module API
         mount ::API::ProjectTemplates
         mount ::API::ProtectedBranches
         mount ::API::ProtectedTags
+        mount ::API::PypiPackages
         mount ::API::Releases
         mount ::API::Release::Links
         mount ::API::RemoteMirrors
@@ -318,7 +319,6 @@ module API
       mount ::API::ProjectMilestones
       mount ::API::Projects
       mount ::API::ProtectedTags
-      mount ::API::PypiPackages
       mount ::API::ResourceLabelEvents
       mount ::API::ResourceStateEvents
       mount ::API::RpmProjectPackages
