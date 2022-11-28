@@ -19,7 +19,7 @@ module Mutations
       argument :comment,
                GraphQL::Types::String,
                required: false,
-               description: 'Comment why vulnerability should be dismissed.'
+               description: 'Comment why vulnerability should be dismissed (max. 50 000 characters).'
 
       argument :dismissal_reason,
                Types::Vulnerabilities::DismissalReasonEnum,

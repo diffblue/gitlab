@@ -31,6 +31,7 @@ RSpec.describe Vulnerabilities::Feedback do
     it { is_expected.to validate_presence_of(:feedback_type) }
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to validate_presence_of(:project_fingerprint) }
+    it { is_expected.to validate_length_of(:comment).is_at_most(50_000) }
 
     let_it_be(:project) { create(:project) }
 

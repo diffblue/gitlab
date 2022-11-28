@@ -8,7 +8,7 @@ import { dashboard } from './mock_data';
 
 jest.mock('ee/product_analytics/dashboards/data_sources', () => ({
   cube_analytics: jest.fn().mockReturnValue({
-    fetch: jest.fn(),
+    fetch: jest.fn().mockReturnValue([]),
   }),
 }));
 
@@ -19,6 +19,7 @@ describe('WidgetsBase', () => {
 
   const createWrapper = (props = {}) => {
     wrapper = shallowMountExtended(WidgetsBase, {
+      provide: { projectId: '1' },
       propsData: {
         title: widgetConfig.title,
         visualization: widgetConfig.visualization,
@@ -67,7 +68,7 @@ describe('WidgetsBase', () => {
   });
 
   describe('when the data has been fetched', () => {
-    const mockData = { hello: 'world' };
+    const mockData = [{ name: 'foo' }];
 
     beforeEach(() => {
       jest.spyOn(dataSources.cube_analytics(), 'fetch').mockReturnValue(mockData);

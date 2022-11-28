@@ -9,6 +9,7 @@ export default {
     LineChart: () =>
       import('ee/product_analytics/dashboards/components/visualizations/line_chart.vue'),
   },
+  inject: ['projectId'],
   props: {
     visualization: {
       type: Object,
@@ -35,12 +36,12 @@ export default {
   async created() {
     const { type, query } = this.visualization.data;
     this.loading = true;
+    this.error = null;
 
     try {
       const { fetch } = await dataSources[type]();
-      this.data = await fetch(query, this.queryOverrides);
+      this.data = await fetch(this.projectId, query, this.queryOverrides);
     } catch (error) {
-      // TODO: add the ability to display multiple errors on the dashboard page in https://gitlab.com/gitlab-org/gitlab/-/issues/377708
       this.error = error;
       this.$emit('error', error);
     } finally {

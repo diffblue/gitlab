@@ -8,9 +8,11 @@ import {
   GRIDSTACK_CSS_HANDLE,
 } from 'ee/vue_shared/components/customizable_dashboard/constants';
 import { loadCSSFile } from '~/lib/utils/css_utils';
+import { createAlert } from '~/flash';
 import waitForPromises from 'helpers/wait_for_promises';
 import { dashboard } from './mock_data';
 
+jest.mock('~/flash');
 jest.mock('gridstack', () => ({
   GridStack: {
     init: jest.fn(),
@@ -38,6 +40,7 @@ describe('CustomizableDashboard', () => {
 
   const findGridStackWidgets = () => wrapper.findAllByTestId('grid-stack-widget');
   const findWidgets = () => wrapper.findAllComponents(WidgetsBase);
+
   describe('when being created an error occurs while loading the CSS', () => {
     beforeEach(() => {
       jest.spyOn(Sentry, 'captureException');
@@ -95,5 +98,17 @@ describe('CustomizableDashboard', () => {
         });
       },
     );
+
+    it('calls createAlert when a widget emits an error', () => {
+      const error = new Error('foo');
+
+      findWidgets().at(0).vm.$emit('error', error);
+
+      expect(createAlert).toHaveBeenCalledWith({
+        message: `An error occured while loading the ${dashboard.widgets[0].title} widget.`,
+        captureError: true,
+        error,
+      });
+    });
   });
 });
