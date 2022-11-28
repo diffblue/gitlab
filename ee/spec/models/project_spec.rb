@@ -1822,13 +1822,13 @@ RSpec.describe Project do
   end
 
   describe '#with_slack_application_disabled' do
-    let(:project1) { create(:project) }
-    let(:project2) { create(:project) }
-    let(:project3) { create(:project) }
+    let_it_be(:project1) { create(:project) }
+    let_it_be(:project2) { create(:project) }
+    let_it_be(:project3) { create(:project) }
 
-    before do
+    before_all do
       create(:gitlab_slack_application_integration, project: project2)
-      create(:gitlab_slack_application_integration, project: project3, active: false)
+      create(:gitlab_slack_application_integration, project: project3).update!(active: false)
     end
 
     context 'when slack applications are available' do

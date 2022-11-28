@@ -64,16 +64,54 @@ module Integrations
 
     private
 
-    # This method is currently a no-op, until further work is done to enable
-    # notifications.
-    #
-    # See:
-    #
-    # - https://gitlab.com/gitlab-org/gitlab/-/issues/372410
-    # - https://gitlab.com/gitlab-org/gitlab/-/issues/373321
+    override :should_execute?
+    def should_execute?(_data)
+      return false unless Feature.enabled?(:integration_slack_app_notifications, project)
+
+      super
+    end
+
     override :notify
-    def notify(_message, _opts)
-      true
+    def notify(message, opts)
+      channels = Array(opts[:channel])
+      return false if channels.empty?
+
+      payload = {
+        attachments: message.attachments,
+        text: message.pretext,
+        unfurl_links: false,
+        unfurl_media: false
+      }
+
+      successes = channels.map do |channel|
+        notify_slack_channel!(channel, payload)
+      end
+
+      successes.any?
+    end
+
+    def notify_slack_channel!(channel, payload)
+      response = api_client.post(
+        'chat.postMessage',
+        payload.merge(channel: channel)
+      )
+
+      log_error('Slack API error when notifying', api_response: response.parsed_response) unless response['ok']
+
+      response['ok']
+    rescue *Gitlab::HTTP::HTTP_ERRORS => e
+      Gitlab::ErrorTracking.track_and_raise_for_dev_exception(e,
+        {
+          integration_id: id,
+          slack_integration_id: slack_integration.id
+        }
+      )
+
+      false
+    end
+
+    def api_client
+      @slack_api ||= ::Slack::API.new(slack_integration)
     end
 
     override :metrics_key_prefix
