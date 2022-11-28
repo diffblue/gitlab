@@ -71,6 +71,10 @@ fi
 
 echo "Building QA image for '${QA_BUILD_TARGET}' for destinations: ${DESTINATIONS}"
 
+if [ "${QA_IMAGE_BUILD_DRY_RUN}" == "true" ]; then
+  exit 0
+fi
+
 docker buildx build \
   --cache-to=type=inline \
   --cache-from="$QA_IMAGE_BRANCH" \
