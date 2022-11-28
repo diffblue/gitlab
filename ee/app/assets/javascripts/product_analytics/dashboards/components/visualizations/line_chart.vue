@@ -1,13 +1,16 @@
 <script>
-import { s__ } from '~/locale';
+import { GlLineChart } from '@gitlab/ui/dist/charts';
 
 export default {
   name: 'LineChart',
+  components: {
+    GlLineChart,
+  },
   props: {
     data: {
-      type: Object,
+      type: Array,
       required: false,
-      default: () => ({}),
+      default: () => [],
     },
     options: {
       type: Object,
@@ -15,12 +18,9 @@ export default {
       default: () => ({}),
     },
   },
-  i18n: {
-    content: s__('ProductAnalytics|Widgets content'),
-  },
 };
 </script>
 
 <template>
-  <p>{{ $options.i18n.content }}</p>
+  <gl-line-chart :data="data" :option="options" responsive />
 </template>
