@@ -273,13 +273,8 @@ RSpec.describe Gitlab::Workhorse do
 
       context "when git_upload_pack action is passed" do
         let(:action) { 'git_upload_pack' }
-        let(:feature_flag) { :post_upload_pack }
 
-        it 'includes Gitaly params in the returned value' do
-          allow(Gitlab::GitalyClient).to receive(:feature_enabled?).with(feature_flag).and_return(true)
-
-          expect(subject).to include(gitaly_params)
-        end
+        it { expect(subject).to include(gitaly_params) }
 
         context 'show_all_refs enabled' do
           subject { described_class.git_http_ok(repository, Gitlab::GlRepository::PROJECT, user, action, show_all_refs: true) }
