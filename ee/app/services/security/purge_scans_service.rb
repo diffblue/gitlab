@@ -37,7 +37,7 @@ module Security
     attr_reader :iterator
 
     def purge(scan_batch)
-      scan_batch.unscope(where: :build_id).update_all(status: :purged) # rubocop:disable CodeReuse/ActiveRecord unlikely that a `unscope where build_id` scope would be used elsewhere
+      scan_batch.update_all(status: :purged)
     end
   end
 end
