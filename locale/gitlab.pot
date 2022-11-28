@@ -31597,6 +31597,12 @@ msgstr ""
 msgid "Profiles|Upload new avatar"
 msgstr ""
 
+msgid "Profiles|Usage type"
+msgstr ""
+
+msgid "Profiles|Usage type:"
+msgstr ""
+
 msgid "Profiles|Use a private email - %{email}"
 msgstr ""
 
@@ -35816,6 +35822,15 @@ msgid "SSH keys with the following fingerprints have expired and can no longer b
 msgstr ""
 
 msgid "SSH public key"
+msgstr ""
+
+msgid "SSHKey|Authentication"
+msgstr ""
+
+msgid "SSHKey|Authentication & Signing"
+msgstr ""
+
+msgid "SSHKey|Signing"
 msgstr ""
 
 msgid "SSL Verification:"
