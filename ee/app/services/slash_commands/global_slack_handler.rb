@@ -12,6 +12,10 @@ module SlashCommands
     def trigger
       return false unless valid_token?
 
+      if help_command?
+        return Gitlab::SlashCommands::ApplicationHelp.new(nil, params).execute
+      end
+
       unless slack_integration = find_slack_integration
         error_message = 'GitLab error: project or alias not found'
         return Gitlab::SlashCommands::Presenters::Error.new(error_message).message
@@ -21,10 +25,6 @@ module SlashCommands
       project = integration.project
 
       chat_user = ChatNames::FindUserService.new(integration, params).execute
-
-      if help_command?
-        return Gitlab::SlashCommands::ApplicationHelp.new(nil, chat_user, params).execute
-      end
 
       if chat_user&.user
         Gitlab::SlashCommands::Command.new(project, chat_user, params).execute
