@@ -56,6 +56,16 @@ describe('CreditCardVerification', () => {
     });
   });
 
+  describe('when zuora emits load error', () => {
+    it('disables the submit button', async () => {
+      createComponent();
+
+      wrapper.findComponent(Zuora).vm.$emit('load-error');
+
+      expect(findSubmitButton().props('disabled')).toBe(true);
+    });
+  });
+
   describe.each([
     [Event.SERVER_VALIDATION_ERROR, { message: 'server error' }],
     [Event.CLIENT_VALIDATION_ERROR, { message: 'client error' }],

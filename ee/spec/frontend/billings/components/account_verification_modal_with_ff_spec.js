@@ -1,5 +1,6 @@
 import { GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import Zuora from 'ee/billings/components/zuora_simple.vue';
 import AccountVerificationModal, {
   IFRAME_MINIMUM_HEIGHT,
@@ -58,6 +59,19 @@ describe('Account verification modal', () => {
         wrapper.findComponent(Zuora).vm.$emit('success');
 
         expect(wrapper.emitted('success')).toHaveLength(1);
+      });
+    });
+
+    describe('when zuora emits load error', () => {
+      it('disables the CTA on the modal', async () => {
+        wrapper.findComponent(Zuora).vm.$emit('load-error');
+
+        await nextTick();
+
+        expect(findModal().props('actionPrimary').attributes).toMatchObject({
+          disabled: true,
+          variant: 'confirm',
+        });
       });
     });
   });

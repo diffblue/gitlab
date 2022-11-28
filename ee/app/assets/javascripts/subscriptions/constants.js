@@ -14,7 +14,7 @@ export const ERROR_UNEXPECTED = __('An unexpected error occurred');
 export const ERROR_FETCHING_COUNTRIES = s__('Checkout|Failed to load countries. Please try again.');
 export const ERROR_FETCHING_STATES = s__('Checkout|Failed to load states. Please try again.');
 export const ERROR_LOADING_PAYMENT_FORM = s__(
-  'Checkout|Failed to load the payment form. Please try again.',
+  'Checkout|Failed to load the payment form. Refresh the page and try again.',
 );
 
 /* eslint-disable @gitlab/require-i18n-strings */
