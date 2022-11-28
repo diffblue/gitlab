@@ -15,7 +15,10 @@ module Resolvers
       @calls_gitaly = true
     end
 
-    def self.external_connection
+    # This is a flag to allow us to use `complexity_multiplier` to compute complexity for connection
+    # fields(see BaseField#connection_complexity_multiplier) in resolvers that do external connection pagination,
+    # thus disabling the default `connection` option(see self.field_options method above).
+    def self.calculate_ext_conn_complexity
       false
     end
 

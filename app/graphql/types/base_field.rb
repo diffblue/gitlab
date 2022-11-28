@@ -135,8 +135,8 @@ module Types
           :resolver_complexity, args, child_complexity: child_complexity
         ).to_i
         complexity += 1 if calls_gitaly?
-        ext_conn = resolver&.try(:external_connection)
-        complexity += complexity * connection_complexity_multiplier(ctx, args, external_connection: ext_conn)
+        ext_conn = resolver&.try(:calculate_ext_conn_complexity)
+        complexity += complexity * connection_complexity_multiplier(ctx, args, calculate_ext_conn_complexity: ext_conn)
 
         complexity.to_i
       end

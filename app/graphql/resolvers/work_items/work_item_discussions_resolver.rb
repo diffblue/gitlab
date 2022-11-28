@@ -33,7 +33,7 @@ module Resolvers
         super.merge(connection: false)
       end
 
-      def self.external_connection
+      def self.calculate_ext_conn_complexity
         true
       end
 
