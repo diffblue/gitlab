@@ -142,9 +142,9 @@ module Types
       end
     end
 
-    def connection_complexity_multiplier(ctx, args, external_connection:)
+    def connection_complexity_multiplier(ctx, args, calculate_ext_conn_complexity:)
       # Resolvers may add extra complexity depending on number of items being loaded.
-      return 0 if !connection? && !external_connection
+      return 0 if !connection? && !calculate_ext_conn_complexity
 
       page_size   = max_page_size || ctx.schema.default_max_page_size
       limit_value = [args[:first], args[:last], page_size].compact.min
