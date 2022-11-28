@@ -45009,6 +45009,12 @@ msgstr ""
 msgid "Version %{versionNumber} (latest)"
 msgstr ""
 
+msgid "VersionCheck|Critical security upgrade available"
+msgstr ""
+
+msgid "VersionCheck|Learn more about this critical security release."
+msgstr ""
+
 msgid "VersionCheck|Up to date"
 msgstr ""
 
@@ -45016,6 +45022,12 @@ msgid "VersionCheck|Update ASAP"
 msgstr ""
 
 msgid "VersionCheck|Update available"
+msgstr ""
+
+msgid "VersionCheck|Upgrade now"
+msgstr ""
+
+msgid "VersionCheck|You are currently on version %{currentVersion}. We strongly recommend upgrading your GitLab installation. %{link}"
 msgstr ""
 
 msgid "VersionCheck|Your GitLab Version"
