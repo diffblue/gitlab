@@ -434,6 +434,7 @@ Supported attributes:
 | `group_ids`                         | Array             | **{dotted-circle}** No       | The IDs of groups as approvers. |
 | `protected_branch_ids`              | Array             | **{dotted-circle}** No       | The IDs of protected branches to scope the rule by. To identify the ID, [use the API](protected_branches.md#list-protected-branches). |
 | `user_ids`                          | Array             | **{dotted-circle}** No       | The IDs of users as approvers. |
+| `remove_hidden_groups`              | boolean           | **{dotted-circle}** No       | Whether hidden groups should be removed. |
 
 ```json
 {
@@ -965,6 +966,7 @@ Supported attributes:
 | `name`               | string  | **{check-circle}** Yes      | The name of the approval rule.                  |
 | `group_ids`          | Array   | **{dotted-circle}** No       | The IDs of groups as approvers.                 |
 | `user_ids`           | Array   | **{dotted-circle}** No       | The IDs of users as approvers.                  |
+| `remove_hidden_groups` | boolean | **{dotted-circle}** No | Whether hidden groups should be removed. |
 
 ```json
 {
