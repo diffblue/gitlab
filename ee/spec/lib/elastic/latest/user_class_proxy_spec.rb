@@ -64,7 +64,10 @@ RSpec.describe Elastic::Latest::UserClassProxy do
   end
 
   describe '#fuzzy_query' do
-    let(:query_hash) { subject.fuzzy_query(musts, query, fuzzy_search_fields, options) }
+    let(:query_hash) do
+      subject.fuzzy_query(filters: musts, query: query, search_fields: fuzzy_search_fields, options: options)
+    end
+
     let(:musts) { [] }
     let(:query) { nil }
     let(:fuzzy_search_fields) { described_class::FUZZY_SEARCH_FIELDS }

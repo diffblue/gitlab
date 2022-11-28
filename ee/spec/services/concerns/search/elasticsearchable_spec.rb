@@ -84,6 +84,7 @@ RSpec.describe Search::Elasticsearchable, feature_category: :global_search do
       where(:advanced_user_search_enabled, :create_user_index_finished, :backfill_users_finished, :result) do
         true | true | true | true
         true | true | false | false
+        true | false | true | false
         true | false | false | false
         false | true | true | false
         false | false | false | false

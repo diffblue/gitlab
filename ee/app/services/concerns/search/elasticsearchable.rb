@@ -20,8 +20,8 @@ module Search
       return true unless params[:scope] == 'users'
       return false unless ::Feature.enabled?(:advanced_user_search, current_user, type: :ops)
 
-      ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index)
-      ::Elastic::DataMigrationService.migration_has_finished?(:backfill_users)
+      ::Elastic::DataMigrationService.migration_has_finished?(:create_user_index) &&
+        ::Elastic::DataMigrationService.migration_has_finished?(:backfill_users)
     end
   end
 end
