@@ -102,49 +102,13 @@ RSpec.describe Gitlab::ContentSecurityPolicy::ConfigLoader do
     end
 
     context 'when sentry is configured' do
-      let(:legacy_dsn) { 'dummy://abc@legacy-sentry.example.com/1' }
-      let(:dsn) { 'dummy://def@sentry.example.com/2' }
-
       before do
+        stub_sentry_settings
         stub_config_setting(host: 'gitlab.example.com')
       end
 
-      context 'when legacy sentry is configured' do
-        before do
-          allow(Gitlab.config.sentry).to receive(:enabled).and_return(true)
-          allow(Gitlab.config.sentry).to receive(:clientside_dsn).and_return(legacy_dsn)
-          allow(Gitlab::CurrentSettings).to receive(:sentry_enabled).and_return(false)
-        end
-
-        it 'adds legacy sentry path to CSP' do
-          expect(directives['connect_src']).to eq("'self' ws://gitlab.example.com dummy://legacy-sentry.example.com")
-        end
-      end
-
-      context 'when sentry is configured' do
-        before do
-          allow(Gitlab.config.sentry).to receive(:enabled).and_return(false)
-          allow(Gitlab::CurrentSettings).to receive(:sentry_enabled).and_return(true)
-          allow(Gitlab::CurrentSettings).to receive(:sentry_clientside_dsn).and_return(dsn)
-        end
-
-        it 'adds new sentry path to CSP' do
-          expect(directives['connect_src']).to eq("'self' ws://gitlab.example.com dummy://sentry.example.com")
-        end
-      end
-
-      context 'when legacy sentry and sentry are both configured' do
-        before do
-          allow(Gitlab.config.sentry).to receive(:enabled).and_return(true)
-          allow(Gitlab.config.sentry).to receive(:clientside_dsn).and_return(legacy_dsn)
-
-          allow(Gitlab::CurrentSettings).to receive(:sentry_enabled).and_return(true)
-          allow(Gitlab::CurrentSettings).to receive(:sentry_clientside_dsn).and_return(dsn)
-        end
-
-        it 'adds both sentry paths to CSP' do
-          expect(directives['connect_src']).to eq("'self' ws://gitlab.example.com dummy://legacy-sentry.example.com dummy://sentry.example.com")
-        end
+      it 'adds sentry path to CSP without user' do
+        expect(directives['connect_src']).to eq("'self' ws://gitlab.example.com dummy://example.com")
       end
     end
 

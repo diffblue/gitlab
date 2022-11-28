@@ -1,20 +1,17 @@
 import index from '~/sentry/index';
-
-import LegacySentryConfig from '~/sentry/legacy_sentry_config';
 import SentryConfig from '~/sentry/sentry_config';
 
-describe('Sentry init', () => {
-  let originalGon;
-
+describe('SentryConfig options', () => {
   const dsn = 'https://123@sentry.gitlab.test/123';
-  const environment = 'test';
-  const currentUserId = '1';
+  const currentUserId = 'currentUserId';
   const gitlabUrl = 'gitlabUrl';
+  const environment = 'test';
   const revision = 'revision';
   const featureCategory = 'my_feature_category';
 
+  let indexReturnValue;
+
   beforeEach(() => {
-    originalGon = window.gon;
     window.gon = {
       sentry_dsn: dsn,
       sentry_environment: environment,
@@ -24,41 +21,28 @@ describe('Sentry init', () => {
       feature_category: featureCategory,
     };
 
-    jest.spyOn(LegacySentryConfig, 'init').mockImplementation();
+    process.env.HEAD_COMMIT_SHA = revision;
+
     jest.spyOn(SentryConfig, 'init').mockImplementation();
+
+    indexReturnValue = index();
   });
 
-  afterEach(() => {
-    window.gon = originalGon;
+  it('should init with .sentryDsn, .currentUserId, .whitelistUrls and environment', () => {
+    expect(SentryConfig.init).toHaveBeenCalledWith({
+      dsn,
+      currentUserId,
+      whitelistUrls: [gitlabUrl, 'webpack-internal://'],
+      environment,
+      release: revision,
+      tags: {
+        revision,
+        feature_category: featureCategory,
+      },
+    });
   });
 
-  it('exports new version of Sentry in the global object', () => {
-    // eslint-disable-next-line no-underscore-dangle
-    expect(window._Sentry.SDK_VERSION).not.toMatch(/^5\./);
-  });
-
-  describe('when called', () => {
-    beforeEach(() => {
-      index();
-    });
-
-    it('configures sentry', () => {
-      expect(SentryConfig.init).toHaveBeenCalledTimes(1);
-      expect(SentryConfig.init).toHaveBeenCalledWith({
-        dsn,
-        currentUserId,
-        allowUrls: [gitlabUrl, 'webpack-internal://'],
-        environment,
-        release: revision,
-        tags: {
-          revision,
-          feature_category: featureCategory,
-        },
-      });
-    });
-
-    it('does not configure legacy sentry', () => {
-      expect(LegacySentryConfig.init).not.toHaveBeenCalled();
-    });
+  it('should return SentryConfig', () => {
+    expect(indexReturnValue).toBe(SentryConfig);
   });
 });
