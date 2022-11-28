@@ -1,5 +1,7 @@
 pre-push:
   parallel: true
+  skip:
+    - ref: master
   commands:
     danger:
       run: bundle exec rake danger_local
