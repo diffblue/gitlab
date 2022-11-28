@@ -5899,9 +5899,6 @@ msgstr ""
 msgid "Available on-demand"
 msgstr ""
 
-msgid "Available shared runners:"
-msgstr ""
-
 msgid "Available specific runners"
 msgstr ""
 
@@ -35228,6 +35225,9 @@ msgid "Runners|Associated with one or more projects"
 msgstr ""
 
 msgid "Runners|Available"
+msgstr ""
+
+msgid "Runners|Available shared runners: %{count}"
 msgstr ""
 
 msgid "Runners|Available to all projects"
