@@ -8,10 +8,6 @@ RSpec.describe 'Slack application', :js do
   let_it_be(:integration) { create(:gitlab_slack_application_integration, project: project) }
   let(:slack_application_form_path) { edit_project_settings_integration_path(project, integration) }
 
-  before_all do
-    create(:slack_integration, integration: integration)
-  end
-
   before do
     stub_application_setting(slack_app_enabled: true)
 
