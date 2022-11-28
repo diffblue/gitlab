@@ -91,12 +91,14 @@ RSpec.describe Integrations::GitlabSlackApplication do
         stub_slack_request(success: false)
 
         expect(Gitlab::IntegrationsLogger).to receive(:error).with(
-          integration_class: described_class.name,
-          integration_id: integration.id,
-          project_id: integration.project_id,
-          project_path: kind_of(String),
-          message: 'Slack API error when notifying',
-          api_response: { 'ok' => false }
+          {
+            integration_class: described_class.name,
+            integration_id: integration.id,
+            project_id: integration.project_id,
+            project_path: kind_of(String),
+            message: 'Slack API error when notifying',
+            api_response: { 'ok' => false }
+          }
         )
         expect(integration.execute(data)).to be false
       end
