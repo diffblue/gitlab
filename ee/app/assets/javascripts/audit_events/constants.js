@@ -1,5 +1,6 @@
 import { n__, s__, __ } from '~/locale';
 import { OPERATORS_IS } from '~/vue_shared/components/filtered_search_bar/constants';
+import { helpPagePath } from '~/helpers/help_page_helper';
 import GroupToken from './components/tokens/group_token.vue';
 import MemberToken from './components/tokens/member_token.vue';
 import ProjectToken from './components/tokens/project_token.vue';
@@ -82,6 +83,13 @@ export const STREAM_ITEMS_I18N = {
   DELETE_BUTTON_LABEL: s__('AuditStreams|Delete %{link}'),
   EDIT_BUTTON_TOOLTIP: __('Edit'),
   DELETE_BUTTON_TOOLTIP: __('Delete'),
+  FILTER_TOOLTIP_LABEL: s__(
+    'AuditStreams|Destination has filters applied. %{linkStart}What are filters?%{linkEnd}',
+  ),
+  FILTER_TOOLTIP_LINK: helpPagePath('administration/audit_event_streaming', {
+    anchor: 'event-type-filters',
+  }),
+  FILTER_BADGE_LABEL: s__('AuditStreams|filtered'),
 };
 
 export const ADD_STREAM_EDITOR_I18N = {

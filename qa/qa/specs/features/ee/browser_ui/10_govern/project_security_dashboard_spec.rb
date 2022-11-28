@@ -49,7 +49,8 @@ module QA
         project.visit!
       end
 
-      it 'shows vulnerability details', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348076' do
+      it 'shows vulnerability details', :reliable,
+         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/348076' do
         Page::Project::Menu.perform(&:click_on_vulnerability_report)
 
         EE::Page::Project::Secure::SecurityDashboard.perform do |security_dashboard|
@@ -70,7 +71,7 @@ module QA
       end
 
       it(
-        'creates an issue from vulnerability details',
+        'creates an issue from vulnerability details', :reliable,
         testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347683'
       ) do
         Page::Project::Menu.perform(&:click_on_vulnerability_report)

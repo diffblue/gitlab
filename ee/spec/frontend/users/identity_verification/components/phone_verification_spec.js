@@ -16,14 +16,16 @@ describe('Phone Verification component', () => {
     });
   };
 
+  beforeEach(() => {
+    createComponent();
+  });
+
   afterEach(() => {
     wrapper.destroy();
   });
 
   describe('International Phone input', () => {
     it('should render InternationalPhoneInput component', () => {
-      createComponent();
-
       expect(findInternationalPhoneInput().exists()).toBe(true);
     });
   });

@@ -12,6 +12,7 @@ export const initIdentityVerification = () => {
   const {
     email,
     creditCard,
+    phoneNumber,
     verificationState,
     verificationMethods,
   } = convertObjectPropsToCamelCase(JSON.parse(el.dataset.data), { deep: true });
@@ -23,6 +24,7 @@ export const initIdentityVerification = () => {
     provide: {
       email,
       creditCard,
+      phoneNumber,
       verificationSteps: convertArrayToCamelCase(verificationMethods),
       initialVerificationState: verificationState,
     },

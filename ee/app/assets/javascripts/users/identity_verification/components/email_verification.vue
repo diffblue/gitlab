@@ -7,7 +7,7 @@ import { visitUrl } from '~/lib/utils/url_utility';
 import {
   I18N_EMAIL_EMPTY_CODE,
   I18N_EMAIL_INVALID_CODE,
-  I18N_EMAIL_REQUEST_ERROR,
+  I18N_GENERIC_ERROR,
   I18N_EMAIL_RESEND_SUCCESS,
 } from '../constants';
 
@@ -96,7 +96,7 @@ export default {
     },
     handleError(error) {
       createAlert({
-        message: I18N_EMAIL_REQUEST_ERROR,
+        message: I18N_GENERIC_ERROR,
         captureError: true,
         error,
       });

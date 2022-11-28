@@ -30,6 +30,8 @@ exports[`StreamItem editing should render correctly 1`] = `
     </code>
      
     <!---->
+     
+    <!---->
   </div>
    
   <div
@@ -70,6 +72,8 @@ exports[`StreamItem render should render correctly 1`] = `
       id5hzCbERzSkQ82tAs16tH5Y
     
     </code>
+     
+    <!---->
      
     <b-button-stub
       aria-label="Edit https://api.gitlab.com"
@@ -116,4 +120,22 @@ exports[`StreamItem render should render correctly 1`] = `
    
   <!---->
 </li>
+`;
+
+exports[`StreamItem when an item has event filters renders a popover 1`] = `
+<gl-popover-stub
+  cssclasses=""
+  data-testid="filter-popover"
+  target="test_id2"
+>
+  Destination has filters applied. 
+  <gl-link-stub
+    href="/help/administration/audit_event_streaming#event-type-filters"
+    target="_blank"
+  >
+    
+              What are filters?
+            
+  </gl-link-stub>
+</gl-popover-stub>
 `;

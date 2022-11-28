@@ -6,6 +6,7 @@ query getExternalDestinations($fullPath: ID!) {
         id
         destinationUrl
         verificationToken
+        eventTypeFilters
         headers {
           nodes {
             key

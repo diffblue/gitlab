@@ -5,7 +5,6 @@ import VerificationStep from 'ee/users/identity_verification/components/verifica
 import CreditCardVerification from 'ee/users/identity_verification/components/credit_card_verification.vue';
 import PhoneVerification from 'ee/users/identity_verification/components/phone_verification.vue';
 import EmailVerification from 'ee/users/identity_verification/components/email_verification.vue';
-import { PAGE_TITLE } from 'ee/users/identity_verification/constants';
 
 describe('IdentityVerificationWizard', () => {
   let wrapper;
@@ -25,6 +24,7 @@ describe('IdentityVerificationWizard', () => {
   };
 
   const findHeader = () => wrapper.find('h2');
+  const findDescription = () => wrapper.find('p');
 
   afterEach(() => {
     wrapper.destroy();
@@ -41,7 +41,11 @@ describe('IdentityVerificationWizard', () => {
     });
 
     it('displays the header', () => {
-      expect(findHeader().text()).toBe(PAGE_TITLE);
+      expect(findHeader().text()).toBe(wrapper.vm.$options.i18n.pageTitle);
+    });
+
+    it('displays the description', () => {
+      expect(findDescription().text()).toBe(wrapper.vm.$options.i18n.pageDescription);
     });
 
     it('renders the correct verification method components in order', () => {
