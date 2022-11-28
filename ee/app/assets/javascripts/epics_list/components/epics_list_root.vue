@@ -326,7 +326,7 @@ export default {
       <li
         v-if="issuable.blockingCount"
         v-gl-tooltip
-        class="issuable-upvotes gl-display-none gl-sm-display-block"
+        class="gl-display-none gl-sm-display-block"
         :title="__('Blocking epics')"
         data-testid="issuable-blocking-count"
       >
@@ -336,7 +336,7 @@ export default {
       <li
         v-if="issuable.upvotes"
         v-gl-tooltip
-        class="issuable-upvotes gl-display-none gl-sm-display-block"
+        class="gl-display-none gl-sm-display-block"
         :title="__('Upvotes')"
         data-testid="issuable-upvotes"
       >
@@ -346,7 +346,7 @@ export default {
       <li
         v-if="issuable.downvotes"
         v-gl-tooltip
-        class="issuable-downvotes gl-display-none gl-sm-display-block"
+        class="gl-display-none gl-sm-display-block"
         :title="__('Downvotes')"
         data-testid="issuable-downvotes"
       >
