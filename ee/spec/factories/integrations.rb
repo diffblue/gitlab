@@ -5,7 +5,19 @@ FactoryBot.define do
     project
     active { true }
     type { 'Integrations::GitlabSlackApplication' }
-    sequence(:webhook) { |n| "https://example.com/webhook/#{n}" }
+    slack_integration { association :slack_integration, integration: instance }
+
+    transient do
+      all_channels { true }
+    end
+
+    after(:build) do |integration, evaluator|
+      next unless evaluator.all_channels
+
+      integration.event_channel_names.each do |name|
+        integration.send("#{name}=".to_sym, "##{name}")
+      end
+    end
   end
 
   factory :github_integration, class: 'Integrations::Github' do

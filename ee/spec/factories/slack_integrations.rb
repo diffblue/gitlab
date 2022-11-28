@@ -9,7 +9,7 @@ FactoryBot.define do
     sequence(:team_name) { |n| "team#{n}" }
     sequence(:alias) { |n| "namespace#{n}/project_name#{n}" }
 
-    integration factory: :gitlab_slack_application_integration
+    integration { association :gitlab_slack_application_integration, slack_integration: instance }
 
     trait :legacy do
       bot_user_id { nil }
