@@ -1,6 +1,6 @@
 - blocking_issues_count = @issuable_meta_data[issuable.id]&.blocking_issues_count || 0
 
 - if blocking_issues_count > 0
-  %li.blocking-issues.gl-display-none.gl-sm-display-block.has-tooltip{ data: { testid: 'blocking-issues' }, title: _('Blocking issues') }
+  %li.gl-display-none.gl-sm-display-block.has-tooltip{ data: { testid: 'blocking-issues' }, title: _('Blocking issues') }
     = sprite_icon('issue-block', css_class: "gl-vertical-align-middle")
     = blocking_issues_count

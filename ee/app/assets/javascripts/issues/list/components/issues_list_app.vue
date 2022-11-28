@@ -173,7 +173,7 @@ export default {
   >
     <template #blocking-count="{ issuable }">
       <blocking-issues-count
-        class="blocking-issues gl-display-none gl-sm-display-block"
+        class="gl-display-none gl-sm-display-block"
         :blocking-issues-count="issuable.blockingCount"
         is-list-item
         data-testid="blocking-issues"
