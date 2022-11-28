@@ -87,6 +87,7 @@ module EE
 
     def storage_usage_app_data(namespace)
       data = {
+        namespace_id: namespace.id,
         namespace_path: namespace.full_path,
         purchase_storage_url: nil,
         buy_addon_target_attr: nil,
