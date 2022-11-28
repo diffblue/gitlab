@@ -198,6 +198,7 @@ module API
         mount ::API::Clusters::Agents
         mount ::API::Commits
         mount ::API::CommitStatuses
+        mount ::API::ComposerPackages
         mount ::API::ConanInstancePackages
         mount ::API::ConanProjectPackages
         mount ::API::ContainerRegistryEvent
@@ -302,7 +303,6 @@ module API
       mount ::API::Ci::Pipelines
       mount ::API::Ci::PipelineSchedules
       mount ::API::Ci::SecureFiles
-      mount ::API::ComposerPackages
       mount ::API::DebianGroupPackages
       mount ::API::DebianProjectPackages
       mount ::API::Discussions
