@@ -82,12 +82,9 @@ module ApprovalRules
 
       # rubocop: disable CodeReuse/ActiveRecord
       @visible_group_ids = params[:approval_rules_attributes].flat_map { |hash| hash[:group_ids] }
+
       if @visible_group_ids.present?
-        @visible_group_ids = if Feature.enabled?(:subgroups_approval_rules, project)
-                               ::Group.id_in(@visible_group_ids).accessible_to_user(current_user).pluck(:id)
-                             else
-                               ::Group.id_in(@visible_group_ids).public_or_visible_to_user(current_user).pluck(:id)
-                             end
+        @visible_group_ids = ::Group.id_in(@visible_group_ids).accessible_to_user(current_user).pluck(:id)
       end
 
       @visible_user_ids = params[:approval_rules_attributes].flat_map { |hash| hash[:user_ids] }

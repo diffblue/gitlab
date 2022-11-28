@@ -81,23 +81,6 @@ RSpec.describe ApprovalRules::ParamsFilteringService do
         let(:expected_groups) { [accessible_group, accessible_subgroup] }
       end
 
-      context 'when subgroups_approval_rules is disabled' do
-        before do
-          stub_feature_flags(subgroups_approval_rules: false)
-        end
-
-        it_behaves_like :assigning_users_and_groups do
-          let(:approval_rules_attributes) do
-            [
-              { name: 'foo', user_ids: [project_member.id, outsider.id] },
-              { name: 'bar', user_ids: [outsider.id], group_ids: [accessible_group.id, accessible_subgroup.id, inaccessible_group.id] }
-            ]
-          end
-
-          let(:expected_groups) { [accessible_group] }
-        end
-      end
-
       # When a project approval rule is genuinely empty, it should not be converted
       # an any_approver rule
       context 'empty project approval rule' do
