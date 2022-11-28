@@ -45,8 +45,8 @@ module EE
       end
     end
 
-    def push_blob(digest, file_path)
-      client.push_blob(path, digest, file_path)
+    def push_blob(digest, blob_io, size)
+      client.push_blob(path, digest, blob_io, size)
     end
 
     def push_manifest(tag, manifest, manifest_type)

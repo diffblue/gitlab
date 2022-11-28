@@ -7,16 +7,12 @@ module EE
 
       Error = Class.new(StandardError)
 
-      # In the future we may want to read a small chunks into memory and use chunked upload
-      # it will save us some IO.
-      def push_blob(name, digest, file_path)
-        payload = Faraday::UploadIO.new(file_path, 'application/octet-stream')
-        url = get_upload_url(name, digest)
-        headers = { 'Content-Type' => 'application/octet-stream', 'Content-Length' => payload.size.to_s }
+      def push_blob(name, digest, blob_io, size)
+        response = HTTP
+          .headers(base_headers.merge('Content-Length' => size))
+          .put(get_upload_url(name, digest), body: blob_io)
 
-        response = faraday.put(url, payload, headers)
-
-        raise Error, "Push Blob error: #{response.body}" unless response.success?
+        raise Error, "Push Blob error: #{response.body}" unless response.status.success?
 
         true
       end
@@ -38,33 +34,21 @@ module EE
       # Given that we aim to migrate to HTTP.rb client and that updating Faraday is potentially
       # dangerous, we use HTTP.rb here.
       #
-      # @return {Object} Returns a Tempfile object or nil when no success
+      # @return [Array] Returns a Enumerator reader and the size of the object
       def pull_blob(name, digest)
-        file = Tempfile.new("blob-#{digest}")
-
         blob_url = "/v2/#{name}/blobs/#{digest}"
 
         response = HTTP
-          .headers({
-            'Authorization' => "Bearer #{@options[:token]}", # rubocop:disable Gitlab/ModuleWithInstanceVariables
-            'User-Agent' => "GitLab/#{::Gitlab::VERSION}"
-           })
-          .get(::Gitlab::Utils.append_path(@base_uri, blob_url)) # rubocop:disable Gitlab/ModuleWithInstanceVariables
+          .headers(base_headers)
+          .get(::Gitlab::Utils.append_path(base_uri, blob_url))
 
         if response.status.redirect?
           response = HTTP.get(response['Location'])
         end
 
-        response.body.each do |chunk|
-          file.binmode
-          file.write(chunk)
-        end
-
         raise Error, "Could not download the blob: #{digest}" unless response.status.success?
 
-        file
-      ensure
-        file.close
+        [response.body, response.headers['Content-Length'].to_i]
       end
 
       def repository_raw_manifest(name, reference)
@@ -72,6 +56,14 @@ module EE
       end
 
       private
+
+      # Used to set HTTP.rb client
+      def base_headers
+        {
+          'Authorization' => "bearer #{options[:token]}",
+          'User-Agent' => "GitLab/#{::Gitlab::VERSION}"
+        }
+      end
 
       def get_upload_url(name, digest)
         response = faraday.post("/v2/#{name}/blobs/uploads/")
@@ -83,15 +75,13 @@ module EE
         upload_url
       end
 
-      # rubocop:disable Gitlab/ModuleWithInstanceVariables
       def faraday_raw
         strong_memoize(:faraday_raw) do
           faraday_base do |conn|
-            initialize_connection(conn, @options, &method(:accept_raw_manifest))
+            initialize_connection(conn, options, &method(:accept_raw_manifest))
           end
         end
       end
-      # rubocop:enable Gitlab/ModuleWithInstanceVariables
 
       def accept_raw_manifest(conn)
         conn.headers['Accept'] = ::ContainerRegistry::Client::ACCEPTED_TYPES_RAW

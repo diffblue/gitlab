@@ -71,4 +71,17 @@ RSpec.describe ContainerRepository, :saas do
 
     it { is_expected.to contain_exactly(valid_container_repository, valid_container_repository2) }
   end
+
+  describe '#push_blob' do
+    let_it_be(:gitlab_container_repository) { create(:container_repository) }
+
+    it "calls client's push blob with path passed" do
+      client = instance_double("ContainerRegistry::Client")
+      allow(gitlab_container_repository).to receive(:client).and_return(client)
+
+      expect(client).to receive(:push_blob).with(gitlab_container_repository.path, 'a123cd', ['body'], 32456)
+
+      gitlab_container_repository.push_blob('a123cd', ['body'], 32456)
+    end
+  end
 end

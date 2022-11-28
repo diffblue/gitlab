@@ -78,12 +78,8 @@ module Geo
     def sync_blob(digest)
       return if container_repository.blob_exists?(digest)
 
-      file = client.pull_blob(repository_path, digest)
-      begin
-        container_repository.push_blob(digest, file.path)
-      ensure
-        file.unlink
-      end
+      blob_io, size = client.pull_blob(repository_path, digest)
+      container_repository.push_blob(digest, blob_io, size)
     end
 
     def remove_tag(tag)
