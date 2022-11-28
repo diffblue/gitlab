@@ -19,8 +19,8 @@ module Gitlab
         strong_memoize(:verification_status) do
           next :unverified unless all_attributes_present?
           next :unverified unless valid_signature_blob?
-          next :other_user unless committer
           next :unknown_key unless signed_by_key
+          next :other_user unless committer
           next :other_user unless signed_by_key.user == committer
 
           if signed_by_user_email_verified?
