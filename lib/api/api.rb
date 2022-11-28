@@ -237,6 +237,7 @@ module API
         mount ::API::Metrics::UserStarredDashboards
         mount ::API::Namespaces
         mount ::API::NugetGroupPackages
+        mount ::API::NugetProjectPackages
         mount ::API::PackageFiles
         mount ::API::Pages
         mount ::API::PersonalAccessTokens::SelfInformation
@@ -311,7 +312,6 @@ module API
       mount ::API::NotificationSettings
       mount ::API::NpmInstancePackages
       mount ::API::NpmProjectPackages
-      mount ::API::NugetProjectPackages
       mount ::API::PagesDomains
       mount ::API::ProjectContainerRepositories
       mount ::API::ProjectDebianDistributions
