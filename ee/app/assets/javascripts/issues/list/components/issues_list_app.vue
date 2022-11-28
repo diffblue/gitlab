@@ -17,7 +17,6 @@ import {
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import { TYPE_TOKEN_OBJECTIVE_OPTION } from '~/issues/list/constants';
 import { WORK_ITEM_TYPE_ENUM_OBJECTIVE } from '~/work_items/constants';
-import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
 import CreateWorkItemObjective from 'ee/work_items/components/create_work_item_objective.vue';
 import searchIterationsQuery from '../queries/search_iterations.query.graphql';
 
@@ -35,7 +34,6 @@ const HealthToken = () =>
 export default {
   name: 'IssuesListAppEE',
   components: {
-    BlockingIssuesCount,
     IssuesListApp,
     CreateWorkItemObjective,
     NewIssueDropdown,
@@ -171,14 +169,6 @@ export default {
     :ee-type-token-options="typeTokenOptions"
     :ee-search-tokens="searchTokens"
   >
-    <template #blocking-count="{ issuable }">
-      <blocking-issues-count
-        class="gl-display-none gl-sm-display-block"
-        :blocking-issues-count="issuable.blockingCount"
-        is-list-item
-        data-testid="blocking-issues"
-      />
-    </template>
     <template v-if="isOkrsEnabled" #new-objective-button>
       <new-issue-dropdown @new-objective-clicked="handleNewObjectiveButtonClick()" />
     </template>

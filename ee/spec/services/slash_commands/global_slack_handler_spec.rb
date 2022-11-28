@@ -95,15 +95,9 @@ RSpec.describe SlashCommands::GlobalSlackHandler do
 
     it 'calls help presenter' do
       expect_any_instance_of(Gitlab::SlashCommands::ApplicationHelp).to receive(:execute)
-      expect_any_instance_of(ChatNames::FindUserService).to receive(:execute).and_return(chat_name)
-
-      enable_slack_application(project)
-
-      slack_integration = create(:slack_integration, integration: project.gitlab_slack_application_integration)
 
       handler_with_valid_token(
-        text: "help",
-        team_id: slack_integration.team_id
+        text: "help"
       ).trigger
     end
   end
