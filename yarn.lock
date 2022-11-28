@@ -1137,15 +1137,15 @@
   resolved "https://registry.yarnpkg.com/@gitlab/web-ide/-/web-ide-0.0.1-dev-20221114183058.tgz#0b6e38900cf6986027919a6f7dd2166a7d9016e7"
   integrity sha512-M+IfbTGVPBtOfJrEkoNHEomhPoDrFFkuPFIHC1X5G0ixbXdep4UPX3jIAT/3TrOM331nrcZKX7fDMw6wn9jQnw==
 
-"@graphql-eslint/eslint-plugin@3.13.1":
-  version "3.13.1"
-  resolved "https://registry.yarnpkg.com/@graphql-eslint/eslint-plugin/-/eslint-plugin-3.13.1.tgz#2805481f3a39b260035c035d260851c43ee957a5"
-  integrity sha512-Q9holJ9CnV5zgG3uqYAMdJ4GBVsNjF/BOaGWeBx6K33P3BvCXGivCZvJJhpXCRfbp0sP2CiLKf02eG9ScZS3lg==
+"@graphql-eslint/eslint-plugin@3.12.0":
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/@graphql-eslint/eslint-plugin/-/eslint-plugin-3.12.0.tgz#8676ef4ae113a8f0e5893e41ab0e391bf6667381"
+  integrity sha512-DHa6hhCYxGjUtGK6VWcaWHs1RNSIpuZaQOzI7F2ZoVdtd3+amxv6S7h0KwUe+CX+oV3Oxa7x5bFonc/Td6wjaw==
   dependencies:
     "@babel/code-frame" "^7.18.6"
     "@graphql-tools/code-file-loader" "^7.3.6"
     "@graphql-tools/graphql-tag-pluck" "^7.3.6"
-    "@graphql-tools/utils" "^9.0.0"
+    "@graphql-tools/utils" "^8.12.0"
     chalk "^4.1.2"
     debug "^4.3.4"
     fast-glob "^3.2.12"
@@ -1280,7 +1280,7 @@
     value-or-promise "^1.0.11"
     ws "^8.3.0"
 
-"@graphql-tools/utils@8.12.0", "@graphql-tools/utils@^8.6.5":
+"@graphql-tools/utils@8.12.0", "@graphql-tools/utils@^8.12.0", "@graphql-tools/utils@^8.6.5":
   version "8.12.0"
   resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-8.12.0.tgz#243bc4f5fc2edbc9e8fd1038189e57d837cbe31f"
   integrity sha512-TeO+MJWGXjUTS52qfK4R8HiPoF/R7X+qmgtOYd8DTH0l6b+5Y/tlg5aGeUJefqImRq7nvi93Ms40k/Uz4D5CWw==
@@ -1293,13 +1293,6 @@
   integrity sha512-mjOtaWiS2WIqRz/cq5gaeM3sVrllcu2xbtHROw1su1v3xWa3D3dKgn8Lrl7+tvWs5WUVySsBss/VZ3WdoPkCrA==
   dependencies:
     tslib "~2.3.0"
-
-"@graphql-tools/utils@^9.0.0":
-  version "9.1.1"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-9.1.1.tgz#b47ea8f0d18c038c5c1c429e72caa5c25039fbab"
-  integrity sha512-DXKLIEDbihK24fktR2hwp/BNIVwULIHaSTNTNhXS+19vgT50eX9wndx1bPxGwHnVBOONcwjXy0roQac49vdt/w==
-  dependencies:
-    tslib "^2.4.0"
 
 "@graphql-tools/wrap@8.4.10":
   version "8.4.10"
