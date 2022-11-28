@@ -43,10 +43,7 @@ module Gitlab
 
         allow_websocket_connections(directives)
         allow_cdn(directives, Settings.gitlab.cdn_host) if Settings.gitlab.cdn_host.present?
-        # Support for Sentry setup via configuration files will be removed in 16.0
-        # in favor of Gitlab::CurrentSettings.
-        allow_legacy_sentry(directives) if Gitlab.config.sentry&.enabled && Gitlab.config.sentry&.clientside_dsn
-        allow_sentry(directives) if Gitlab::CurrentSettings.sentry_enabled && Gitlab::CurrentSettings.sentry_clientside_dsn
+        allow_sentry(directives) if Gitlab.config.sentry&.enabled && Gitlab.config.sentry&.clientside_dsn
         allow_framed_gitlab_paths(directives)
         allow_customersdot(directives) if ENV['CUSTOMER_PORTAL_URL'].present?
         allow_review_apps(directives) if ENV['REVIEW_APPS_ENABLED']
@@ -138,17 +135,8 @@ module Gitlab
         append_to_directive(directives, 'frame_src', customersdot_host)
       end
 
-      def self.allow_legacy_sentry(directives)
-        # Support for Sentry setup via configuration files will be removed in 16.0
-        # in favor of Gitlab::CurrentSettings.
-        sentry_dsn = Gitlab.config.sentry.clientside_dsn
-        sentry_uri = URI(sentry_dsn)
-
-        append_to_directive(directives, 'connect_src', "#{sentry_uri.scheme}://#{sentry_uri.host}")
-      end
-
       def self.allow_sentry(directives)
-        sentry_dsn = Gitlab::CurrentSettings.sentry_clientside_dsn
+        sentry_dsn = Gitlab.config.sentry.clientside_dsn
         sentry_uri = URI(sentry_dsn)
 
         append_to_directive(directives, 'connect_src', "#{sentry_uri.scheme}://#{sentry_uri.host}")
