@@ -9,7 +9,7 @@ import EmailVerification from 'ee/users/identity_verification/components/email_v
 import {
   I18N_EMAIL_EMPTY_CODE,
   I18N_EMAIL_INVALID_CODE,
-  I18N_EMAIL_REQUEST_ERROR,
+  I18N_GENERIC_ERROR,
   I18N_EMAIL_RESEND_SUCCESS,
 } from 'ee/users/identity_verification/constants';
 
@@ -141,7 +141,7 @@ describe('EmailVerification', () => {
         await axios.waitForAll();
 
         expect(createAlert).toHaveBeenCalledWith({
-          message: I18N_EMAIL_REQUEST_ERROR,
+          message: I18N_GENERIC_ERROR,
           captureError: true,
           error: expect.any(Error),
         });
@@ -176,7 +176,7 @@ describe('EmailVerification', () => {
         alertObject = { message: response.message };
       } else {
         alertObject = {
-          message: I18N_EMAIL_REQUEST_ERROR,
+          message: I18N_GENERIC_ERROR,
           captureError: true,
           error: expect.any(Error),
         };

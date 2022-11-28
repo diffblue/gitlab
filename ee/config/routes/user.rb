@@ -8,6 +8,7 @@ scope :users, module: :users do
   resource :identity_verification, controller: :identity_verification, only: :show do
     post :verify_email_code
     post :resend_email_code
+    post :send_phone_verification_code
   end
 end
 

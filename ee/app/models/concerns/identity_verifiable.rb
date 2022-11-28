@@ -56,7 +56,7 @@ module IdentityVerifiable
   end
 
   def phone_verified?
-    phone_number_validation.present?
+    phone_number_validation.present? && phone_number_validation.validated?
   end
 
   def email_verified?

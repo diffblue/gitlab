@@ -43,6 +43,17 @@ module Users
       end
     end
 
+    def send_phone_verification_code
+      result = ::PhoneVerification::Users::SendVerificationCodeService.new(@user, phone_verification_params).execute
+
+      unless result.success?
+        log_identity_verification(:failed_phone_verification_attempt, result.reason)
+        return render status: :bad_request, json: { message: result.message }
+      end
+
+      render json: { status: :success }
+    end
+
     private
 
     def require_unconfirmed_user!
@@ -92,6 +103,10 @@ module Users
       email_verification_code_send_interval = distance_of_time_in_words(interval_in_seconds)
       format(s_("IdentityVerification|You've reached the maximum amount of resends. "\
         'Wait %{interval} and try again.'), interval: email_verification_code_send_interval)
+    end
+
+    def phone_verification_params
+      params.require(:identity_verification).permit(:country, :international_dial_code, :phone_number)
     end
   end
 end

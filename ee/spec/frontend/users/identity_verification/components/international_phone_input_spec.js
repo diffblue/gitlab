@@ -1,7 +1,14 @@
+import { GlForm } from '@gitlab/ui';
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
+import waitForPromises from 'helpers/wait_for_promises';
+import { createAlert, VARIANT_SUCCESS } from '~/flash';
+import { sprintf } from '~/locale';
+import httpStatusCodes from '~/lib/utils/http_status';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import countriesResolver from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
@@ -9,19 +16,24 @@ import countriesResolver from 'ee/subscriptions/buy_addons_shared/graphql/resolv
 import InternationalPhoneInput from 'ee/users/identity_verification/components/international_phone_input.vue';
 
 import {
-  PHONE_NUMBER_LABEL,
-  COUNTRY_LABEL,
-  PHONE_NUMBER_LENGTH_ERROR,
-  PHONE_NUMBER_NAN_ERROR,
-  PHONE_NUMBER_BLANK_ERROR,
+  I18N_PHONE_NUMBER_LENGTH_ERROR,
+  I18N_PHONE_NUMBER_NAN_ERROR,
+  I18N_PHONE_NUMBER_BLANK_ERROR,
 } from 'ee/users/identity_verification/constants';
 
 import { COUNTRIES, mockCountry1, mockCountry2 } from '../mock_data';
 
 Vue.use(VueApollo);
 
+jest.mock('~/flash');
+
 describe('International Phone input component', () => {
   let wrapper;
+  let axiosMock;
+
+  const SEND_CODE_PATH = '/users/identity_verification/send_phone_verification_code';
+
+  const findForm = () => wrapper.findComponent(GlForm);
 
   const findCountryFormGroup = () => wrapper.findByTestId('country-form-group');
   const findCountrySelect = () => wrapper.findByTestId('country-form-select');
@@ -32,6 +44,9 @@ describe('International Phone input component', () => {
   const expectedCountryText = (country) =>
     `${country.flag} ${country.name} +${country.internationalDialCode}`;
   const expectedCountryValue = (country) => `${country.id}+${country.internationalDialCode}`;
+
+  const enterPhoneNumber = (value) => findPhoneNumberInput().vm.$emit('input', value);
+  const submitForm = () => findForm().vm.$emit('submit', { preventDefault: jest.fn() });
 
   const createMockApolloProvider = () => {
     const mockResolvers = { countriesResolver };
@@ -44,17 +59,27 @@ describe('International Phone input component', () => {
     return mockApollo;
   };
 
-  const createComponent = ({ props } = { props: {} }) => {
+  const createComponent = (provide = {}) => {
     wrapper = shallowMountExtended(InternationalPhoneInput, {
       apolloProvider: createMockApolloProvider(),
-      propsData: {
-        ...props,
+      provide: {
+        phoneNumber: {
+          sendCodePath: SEND_CODE_PATH,
+          ...provide,
+        },
       },
     });
   };
 
+  beforeEach(() => {
+    createComponent();
+    axiosMock = new MockAdapter(axios);
+  });
+
   afterEach(() => {
     wrapper.destroy();
+    axiosMock.restore();
+    createAlert.mockClear();
   });
 
   describe('Country select field', () => {
@@ -63,7 +88,7 @@ describe('International Phone input component', () => {
     });
 
     it('should have label', () => {
-      expect(findCountryFormGroup().attributes('label')).toBe(COUNTRY_LABEL);
+      expect(findCountryFormGroup().attributes('label')).toBe(wrapper.vm.$options.i18n.dialCode);
     });
 
     it('should filter out options without international dial code', () => {
@@ -88,6 +113,11 @@ describe('International Phone input component', () => {
         expectedCountryValue(mockCountry2),
       );
     });
+
+    it('should render injected value', () => {
+      createComponent({ country: 'AU', internationalDialCode: '61' });
+      expect(findCountrySelect().attributes('value')).toBe(expectedCountryValue(mockCountry2));
+    });
   });
 
   describe('Phone number input field', () => {
@@ -96,7 +126,9 @@ describe('International Phone input component', () => {
     });
 
     it('should have label', () => {
-      expect(findPhoneNumberFormGroup().attributes('label')).toBe(PHONE_NUMBER_LABEL);
+      expect(findPhoneNumberFormGroup().attributes('label')).toBe(
+        wrapper.vm.$options.i18n.phoneNumber,
+      );
     });
 
     it('should be of type tel', () => {
@@ -107,15 +139,14 @@ describe('International Phone input component', () => {
       value              | valid    | errorMessage
       ${'1800134678'}    | ${true}  | ${''}
       ${'123456789012'}  | ${true}  | ${''}
-      ${'1234567890123'} | ${false} | ${PHONE_NUMBER_LENGTH_ERROR}
-      ${'1300-123-123'}  | ${false} | ${PHONE_NUMBER_NAN_ERROR}
-      ${'abc'}           | ${false} | ${PHONE_NUMBER_NAN_ERROR}
-      ${''}              | ${false} | ${PHONE_NUMBER_BLANK_ERROR}
+      ${'1234567890123'} | ${false} | ${I18N_PHONE_NUMBER_LENGTH_ERROR}
+      ${'1300-123-123'}  | ${false} | ${I18N_PHONE_NUMBER_NAN_ERROR}
+      ${'abc'}           | ${false} | ${I18N_PHONE_NUMBER_NAN_ERROR}
+      ${''}              | ${false} | ${I18N_PHONE_NUMBER_BLANK_ERROR}
     `(
       'when the input has a value of $value, then its validity should be $valid',
       async ({ value, valid, errorMessage }) => {
-        findPhoneNumberInput().vm.$emit('input', value);
-        findPhoneNumberInput().vm.$emit('blur');
+        enterPhoneNumber(value);
 
         await nextTick();
 
@@ -127,5 +158,52 @@ describe('International Phone input component', () => {
         expect(findPhoneNumberInput().attributes('state')).toBe(expectedState);
       },
     );
+
+    it('should render injected value', () => {
+      const number = '555';
+      createComponent({ number });
+      expect(findPhoneNumberInput().attributes('value')).toBe(number);
+    });
+  });
+
+  describe('Sending verification code', () => {
+    describe('when request is successful', () => {
+      beforeEach(() => {
+        axiosMock.onPost(SEND_CODE_PATH).reply(httpStatusCodes.OK, { success: true });
+
+        enterPhoneNumber('555');
+        submitForm();
+        return waitForPromises();
+      });
+
+      it('renders success message', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          message: sprintf(wrapper.vm.$options.i18n.success, { phoneNumber: '1555' }),
+          variant: VARIANT_SUCCESS,
+        });
+      });
+    });
+
+    describe('when request is unsuccessful', () => {
+      const errorMessage = 'Invalid phone number';
+
+      beforeEach(() => {
+        axiosMock
+          .onPost(SEND_CODE_PATH)
+          .reply(httpStatusCodes.BAD_REQUEST, { message: errorMessage });
+
+        enterPhoneNumber('555');
+        submitForm();
+        return waitForPromises();
+      });
+
+      it('renders error message', () => {
+        expect(createAlert).toHaveBeenCalledWith({
+          message: errorMessage,
+          captureError: true,
+          error: expect.any(Error),
+        });
+      });
+    });
   });
 });

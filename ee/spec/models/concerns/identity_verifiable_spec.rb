@@ -109,8 +109,19 @@ RSpec.describe IdentityVerifiable do
 
       subject { user.identity_verification_state['phone'] }
 
-      context 'when user has not verified a phone number' do
+      context 'when user has no phone number' do
         let(:user) { create(:user, phone_number_validation: nil) }
+
+        it { is_expected.to eq false }
+      end
+
+      context 'when user has not verified a phone number' do
+        let(:validation) { create(:phone_number_validation) }
+        let(:user) { create(:user, phone_number_validation: validation) }
+
+        before do
+          allow(validation).to receive(:validated?).and_return(false)
+        end
 
         it { is_expected.to eq false }
       end
@@ -118,6 +129,10 @@ RSpec.describe IdentityVerifiable do
       context 'when user has verified a phone number' do
         let(:validation) { create(:phone_number_validation) }
         let(:user) { create(:user, phone_number_validation: validation) }
+
+        before do
+          allow(validation).to receive(:validated?).and_return(true)
+        end
 
         it { is_expected.to eq true }
       end

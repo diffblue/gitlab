@@ -1,7 +1,7 @@
 <script>
 import { kebabCase } from 'lodash';
 import { s__, sprintf } from '~/locale';
-import { PAGE_TITLE } from '../constants';
+
 import EmailVerification from './email_verification.vue';
 import CreditCardVerification from './credit_card_verification.vue';
 import PhoneVerification from './phone_verification.vue';
@@ -46,7 +46,10 @@ export default {
     },
   },
   i18n: {
-    pageTitle: PAGE_TITLE,
+    pageTitle: s__('IdentityVerification|Help us keep GitLab secure'),
+    pageDescription: s__(
+      "IdentityVerification|For added security, you'll need to verify your identity in a few quick steps.",
+    ),
     ccStep: s__('IdentityVerification|Step %{stepNumber}: Verify a payment method'),
     phoneStep: s__('IdentityVerification|Step %{stepNumber}: Verify phone number'),
     emailStep: s__('IdentityVerification|Step %{stepNumber}: Verify email address'),
@@ -58,6 +61,7 @@ export default {
     <div class="gl-flex-grow-1 gl-max-w-62">
       <header class="gl-text-center">
         <h2>{{ $options.i18n.pageTitle }}</h2>
+        <p>{{ $options.i18n.pageDescription }}</p>
       </header>
       <component
         :is="methodComponent(verificationSteps[0])"
