@@ -46,6 +46,7 @@ export const mockExternalDestinations = [
     id: 'test_id1',
     destinationUrl: mockExternalDestinationUrl,
     verificationToken: 'id5hzCbERzSkQ82tAs16tH5Y',
+    eventTypeFilters: [],
     headers: {
       nodes: [],
     },
@@ -54,6 +55,7 @@ export const mockExternalDestinations = [
     id: 'test_id2',
     destinationUrl: 'https://apiv2.gitlab.com',
     verificationToken: 'JsSQtg86au6buRtX9j98sYa8',
+    eventTypeFilters: ['filter1', 'filter2'],
     headers: {
       nodes: [],
     },
