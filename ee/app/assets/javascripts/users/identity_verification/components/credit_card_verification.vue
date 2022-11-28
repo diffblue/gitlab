@@ -20,6 +20,7 @@ export default {
     return {
       currentUserId: this.creditCard.userId,
       formId: this.creditCard.formId,
+      hasLoadError: false,
       isLoading: true,
     };
   },
@@ -36,6 +37,9 @@ export default {
     },
     submit() {
       this.$refs.zuora.submit();
+    },
+    handleLoadError() {
+      this.hasLoadError = true;
     },
   },
   i18n: {
@@ -57,6 +61,7 @@ export default {
       @server-validation-error="onError"
       @client-validation-error="onError"
       @loading="updateIsLoading"
+      @load-error="handleLoadError"
     />
     <div class="gl-display-flex gl-mt-4 gl-mx-4 gl-text-secondary">
       <gl-icon class="gl-flex-shrink-0 gl-mt-2" name="information-o" :size="14" />
@@ -66,7 +71,7 @@ export default {
       class="gl-mt-6"
       variant="confirm"
       type="submit"
-      :disabled="isLoading"
+      :disabled="isLoading || hasLoadError"
       @click="submit"
     >
       {{ $options.i18n.formSubmit }}
