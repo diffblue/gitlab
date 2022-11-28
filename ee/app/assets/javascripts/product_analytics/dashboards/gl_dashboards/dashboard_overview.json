@@ -6,8 +6,8 @@
       "title": "Audience",
       "gridAttributes": {
         "size": {
-          "width": 12,
-          "height": 2
+          "width": 6,
+          "height": 5
         }
       }
     },
@@ -17,8 +17,8 @@
       "gridAttributes": {
         "size": {
           "yPos": 4,
-          "width": 12,
-          "height": 2
+          "width": 6,
+          "height": 5
         }
       }
     }

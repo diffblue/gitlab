@@ -2,6 +2,8 @@
 import { GridStack } from 'gridstack';
 import * as Sentry from '@sentry/browser';
 import { loadCSSFile } from '~/lib/utils/css_utils';
+import { createAlert } from '~/flash';
+import { s__, sprintf } from '~/locale';
 import WidgetsBase from './widgets_base.vue';
 import { GRIDSTACK_MARGIN, GRIDSTACK_CSS_HANDLE } from './constants';
 
@@ -78,6 +80,16 @@ export default {
 
       return undefined;
     },
+    handleWidgetError(widgetTitle, error) {
+      createAlert({
+        message: sprintf(
+          s__('ProductAnalytics|An error occured while loading the %{widgetTitle} widget.'),
+          { widgetTitle },
+        ),
+        error,
+        captureError: true,
+      });
+    },
   },
 };
 </script>
@@ -104,6 +116,7 @@ export default {
           :title="widget.title"
           :visualization="widget.visualization"
           :query-overrides="widget.queryOverrides"
+          @error="handleWidgetError(widget.title, $event)"
         />
       </div>
     </div>
