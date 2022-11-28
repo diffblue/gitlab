@@ -1017,8 +1017,26 @@ Do not change to a reference style link.
 
 ![alt text](img/markdown_logo.png "Title Text")
 
-In the rare case where you must set a specific height or width for an image,
-you can use the `img` HTML tag instead of Markdown and set its `height` and
+> Introduced in GitLab 15.7 [with a flag](../administration/feature_flags.md) named `markdown_image_attributes`. Disabled by default.
+
+FLAG:
+On self-managed GitLab, by default this feature is not available. To make it available,
+ask an administrator to [enable the feature flag](../administration/feature_flags.md) named `markdown_image_attributes`.
+On GitLab.com, this feature is available.
+The feature is not ready for production use.
+
+The width and height of an image can be specified by following the image with 
+an attribute list. For example
+
+```markdown
+![alt text](img/markdown_logo.png "Title Text"){width=100 height=100px}
+
+![alt text](img/markdown_logo.png "Title Text"){ width=75% }
+```
+
+![alt text](img/markdown_logo.png "Title Text"){width=100 height=100px}
+
+You can also use the `img` HTML tag instead of Markdown and set its `height` and
 `width` parameters.
 
 #### Videos
