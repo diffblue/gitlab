@@ -13,12 +13,8 @@ module ApprovalRules
     end
 
     def visible_groups
-      if Feature.enabled?(:subgroups_approval_rules, rule.project)
-        strong_memoize(:visible_groups) do
-          groups.accessible_to_user(current_user)
-        end
-      else
-        @visible_groups ||= groups.public_or_visible_to_user(current_user)
+      strong_memoize(:visible_groups) do
+        groups.accessible_to_user(current_user)
       end
     end
 
