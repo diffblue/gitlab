@@ -31222,7 +31222,13 @@ msgstr ""
 msgid "Product analytics"
 msgstr ""
 
+msgid "ProductAnalytics|Add to Dashboard"
+msgstr ""
+
 msgid "ProductAnalytics|Audience"
+msgstr ""
+
+msgid "ProductAnalytics|New Analytics Widget Title"
 msgstr ""
 
 msgid "ProductAnalytics|There is no data for this type of chart currently. Please see the Setup tab if you have not configured the product analytics tool already."
