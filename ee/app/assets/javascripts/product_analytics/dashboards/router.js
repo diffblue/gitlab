@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import DashboardsList from './components/analytics_dashboard_list.vue';
 import AnalyticsDashboard from './components/analytics_dashboard.vue';
+import AnalyticsWidgetDesigner from './components/analytics_widget_designer.vue';
 
 Vue.use(VueRouter);
 
@@ -11,6 +12,11 @@ export default () => {
       name: 'index',
       path: '',
       component: DashboardsList,
+    },
+    {
+      name: 'widget-designer',
+      path: '/widget-designer',
+      component: AnalyticsWidgetDesigner,
     },
     {
       name: 'dashboard-detail',
