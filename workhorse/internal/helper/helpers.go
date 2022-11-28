@@ -18,7 +18,6 @@ import (
 	"gitlab.com/gitlab-org/labkit/mask"
 )
 
-const NginxResponseBufferHeader = "X-Accel-Buffering"
 
 func logErrorWithFields(r *http.Request, err error, fields log.Fields) {
 	if err != nil {
@@ -148,14 +147,6 @@ func ExitStatus(err error) (int, bool) {
 	}
 
 	return waitStatus.ExitStatus(), true
-}
-
-func DisableResponseBuffering(w http.ResponseWriter) {
-	w.Header().Set(NginxResponseBufferHeader, "no")
-}
-
-func AllowResponseBuffering(w http.ResponseWriter) {
-	w.Header().Del(NginxResponseBufferHeader)
 }
 
 func FixRemoteAddr(r *http.Request) {
