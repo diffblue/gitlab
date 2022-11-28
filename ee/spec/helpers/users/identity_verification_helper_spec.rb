@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Users::IdentityVerificationHelper do
-  let_it_be(:user) { build(:user) }
+  let_it_be_with_reload(:user) { create(:user) }
 
   describe '#identity_verification_data' do
     let(:mock_required_identity_verification_methods) { ['email'] }
@@ -23,22 +23,55 @@ RSpec.describe Users::IdentityVerificationHelper do
 
     subject(:data) { helper.identity_verification_data(user) }
 
-    it 'returns the expected data' do
-      expect(data[:data]).to eq(
-        {
-          verification_methods: mock_required_identity_verification_methods,
-          verification_state: mock_identity_verification_state,
-          credit_card: {
-            user_id: user.id,
-            form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
-          },
-          email: {
-            obfuscated: helper.obfuscated_email(user.email),
-            verify_path: verify_email_code_identity_verification_path,
-            resend_path: resend_email_code_identity_verification_path
-          }
-        }.to_json
-      )
+    context 'when no phone number for user exists' do
+      it 'returns the expected data' do
+        expect(data[:data]).to eq(
+          {
+            verification_methods: mock_required_identity_verification_methods,
+            verification_state: mock_identity_verification_state,
+            credit_card: {
+              user_id: user.id,
+              form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
+            },
+            phone_number: {
+              send_code_path: send_phone_verification_code_identity_verification_path
+            },
+            email: {
+              obfuscated: helper.obfuscated_email(user.email),
+              verify_path: verify_email_code_identity_verification_path,
+              resend_path: resend_email_code_identity_verification_path
+            }
+          }.to_json
+        )
+      end
+    end
+
+    context 'when phone number for user exists' do
+      let_it_be(:phone_number_validation) { create(:phone_number_validation, user: user) }
+
+      it 'returns the expected data with saved phone number' do
+        expect(data[:data]).to eq(
+          {
+            verification_methods: mock_required_identity_verification_methods,
+            verification_state: mock_identity_verification_state,
+            credit_card: {
+              user_id: user.id,
+              form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
+            },
+            phone_number: {
+              send_code_path: send_phone_verification_code_identity_verification_path,
+              country: phone_number_validation.country,
+              international_dial_code: phone_number_validation.international_dial_code,
+              number: phone_number_validation.phone_number
+            },
+            email: {
+              obfuscated: helper.obfuscated_email(user.email),
+              verify_path: verify_email_code_identity_verification_path,
+              resend_path: resend_email_code_identity_verification_path
+            }
+          }.to_json
+        )
+      end
     end
   end
 end

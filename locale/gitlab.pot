@@ -20410,7 +20410,7 @@ msgstr ""
 msgid "IdentityVerification|Phone number"
 msgstr ""
 
-msgid "IdentityVerification|Phone number can't be blank."
+msgid "IdentityVerification|Phone number is required."
 msgstr ""
 
 msgid "IdentityVerification|Phone number must be %{maxLength} digits or fewer."
@@ -20465,6 +20465,9 @@ msgid "IdentityVerification|Verify payment method"
 msgstr ""
 
 msgid "IdentityVerification|Verify your identity"
+msgstr ""
+
+msgid "IdentityVerification|We've sent a verification code to +%{phoneNumber}"
 msgstr ""
 
 msgid "IdentityVerification|You can always verify your account at a later time to create a group."
@@ -29720,6 +29723,9 @@ msgid "PhoneVerification|There was a problem with the phone number you entered. 
 msgstr ""
 
 msgid "PhoneVerification|You've reached the maximum number of tries. Request a new code and try again."
+msgstr ""
+
+msgid "PhoneVerification|You've reached the maximum number of tries. Wait %{interval} and try again."
 msgstr ""
 
 msgid "Pick a name"
