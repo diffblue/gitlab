@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe GitlabSchema.types['NotesFilterType'] do
+RSpec.describe GitlabSchema.types['NotesFilterType'], feature_category: :team_planning do
   specify { expect(described_class.graphql_name).to eq('NotesFilterType') }
 
   it 'exposes all the existing widget type values' do

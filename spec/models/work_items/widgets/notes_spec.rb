@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe WorkItems::Widgets::Notes do
+RSpec.describe WorkItems::Widgets::Notes, feature_category: :team_planning do
   let_it_be(:work_item) { create(:work_item) }
   let_it_be(:note) { create(:note, noteable: work_item, project: work_item.project) }
 
