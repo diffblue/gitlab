@@ -32,6 +32,7 @@ module Vulnerabilities
 
     validates :project, presence: true
     validates :author, presence: true
+    validates :comment, length: { maximum: 50_000 }
     validates :comment_timestamp, :comment_author, presence: true, if: :comment?
     validates :issue, presence: true, if: :for_issue?
     validates :merge_request, presence: true, if: :for_merge_request?
