@@ -47,18 +47,27 @@ module API
 
       params :child_epic_id do
         # Unique ID should be used because epics from other groups can be assigned as child.
-        requires :child_epic_id, type: Integer, desc: 'The global ID of the epic that will be assigned as child'
+        requires :child_epic_id,
+          type: Integer,
+          desc: "The global ID of the child epic. Internal ID can't be used because they can conflict with epics from other groups.",
+          documentation: { example: 1 }
       end
     end
 
     params do
-      requires :id, type: String, desc: 'The ID of a group'
-      requires :epic_iid, type: Integer, desc: 'The internal ID of an epic'
+      requires :id, type: String, desc: 'The ID of a group', documentation: { example: '1' }
+      requires :epic_iid, type: Integer, desc: 'The internal ID of an epic', documentation: { example: 1 }
     end
 
     resource :groups, requirements: API::NAMESPACE_OR_PROJECT_REQUIREMENTS do
       desc 'Get related epics' do
         success EE::API::Entities::Epic
+        is_array true
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 403, message: 'Forbidden' },
+          { code: 404, message: 'Not found' }
+        ]
       end
       get ':id/(-/)epics/:epic_iid/epics' do
         authorize_epics_feature!
@@ -69,6 +78,12 @@ module API
 
       desc 'Relate epics' do
         success EE::API::Entities::Epic
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 403, message: 'Forbidden' },
+          { code: 404, message: 'Not found' },
+          { code: 409, message: 'Conflict' }
+        ]
       end
       params do
         use :child_epic_id
@@ -92,10 +107,19 @@ module API
 
       desc 'Create and relate epic to a parent' do
         success EE::API::Entities::Epic
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 403, message: 'Forbidden' },
+          { code: 404, message: 'Not found' },
+          { code: 409, message: 'Conflict' }
+        ]
       end
       params do
-        requires :title, type: String, desc: 'The title of a child epic'
-        optional :confidential, type: Boolean, desc: 'Indicates if the epic is confidential. Will be ignored if `confidential_epics` feature flag is disabled'
+        requires :title, type: String, desc: 'The title of a child epic', documentation: { example: "Epic title" }
+        optional :confidential,
+          type: Boolean,
+          desc: "Whether the epic should be confidential. Parameter is ignored if `confidential_epics`` feature flag is disabled. Defaults to the confidentiality state of the parent epic.",
+          documentation: { example: true }
       end
       post ':id/(-/)epics/:epic_iid/epics' do
         authorize_subepics_feature!
@@ -113,7 +137,13 @@ module API
         end
       end
 
-      desc 'Remove epics relation'
+      desc 'Remove epics relation' do
+        success EE::API::Entities::Epic
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 404, message: 'Not found' }
+        ]
+      end
       params do
         use :child_epic_id
       end
@@ -129,11 +159,23 @@ module API
         end
       end
 
-      desc 'Reorder child epics'
+      desc 'Reorder child epics' do
+        success EE::API::Entities::Epic
+        failure [
+          { code: 401, message: 'Unauthorized' },
+          { code: 404, message: 'Not found' }
+        ]
+      end
       params do
         use :child_epic_id
-        optional :move_before_id, type: Integer, desc: 'The ID of the epic that should be positioned before the child epic'
-        optional :move_after_id, type: Integer, desc: 'The ID of the epic that should be positioned after the child epic'
+        optional :move_before_id,
+          type: Integer,
+          desc: 'The ID of the epic that should be positioned before the child epic',
+          documentation: { example: 1 }
+        optional :move_after_id,
+          type: Integer,
+          desc: 'The ID of the epic that should be positioned after the child epic',
+          documentation: { example: 1 }
       end
       put ':id/(-/)epics/:epic_iid/epics/:child_epic_id' do
         authorize_subepics_feature!
