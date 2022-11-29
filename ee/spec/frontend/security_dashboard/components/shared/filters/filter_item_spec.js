@@ -1,6 +1,7 @@
 import { GlDropdownItem } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
+import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 
 describe('Filter Item component', () => {
   let wrapper;
@@ -14,6 +15,9 @@ describe('Filter Item component', () => {
     wrapper = shallowMount(FilterItem, {
       propsData: { ...defaultProps, ...props },
       slots: { default: slotContent },
+      directives: {
+        GlTooltip: createMockDirective(),
+      },
     });
   };
 
@@ -38,12 +42,21 @@ describe('Filter Item component', () => {
   });
 
   describe('disabled state', () => {
+    const tooltip = 'Not available';
+
     beforeEach(() => {
-      createWrapper({ disabled: true });
+      createWrapper({ disabled: true, tooltip });
     });
 
     it('renders the disabled dropdown item correctly', () => {
       expect(wrapper.element).toMatchSnapshot();
+    });
+
+    it('displays tooltip', () => {
+      const tooltipItem = getBinding(dropdownItem().element, 'gl-tooltip');
+
+      expect(tooltipItem.value).toBe(tooltip);
+      expect(tooltip.modifiers).toBeUndefined();
     });
   });
 
