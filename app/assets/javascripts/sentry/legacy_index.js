@@ -1,18 +1,18 @@
 import '../webpack';
 
-import * as Sentry from 'sentrybrowser7';
-import SentryConfig from './sentry_config';
+import * as Sentry5 from 'sentrybrowser5';
+import LegacySentryConfig from './legacy_sentry_config';
 
 const index = function index() {
-  // Configuration for newer versions of Sentry SDK (v7)
-  SentryConfig.init({
+  // Configuration for legacy versions of Sentry SDK (v5)
+  LegacySentryConfig.init({
     dsn: gon.sentry_dsn,
-    environment: gon.sentry_environment,
     currentUserId: gon.current_user_id,
-    allowUrls:
+    whitelistUrls:
       process.env.NODE_ENV === 'production'
         ? [gon.gitlab_url]
         : [gon.gitlab_url, 'webpack-internal://'],
+    environment: gon.sentry_environment,
     release: gon.revision,
     tags: {
       revision: gon.revision,
@@ -29,6 +29,6 @@ index();
 // in the browser, see app/views/layouts/_head.html.haml to find how it is imported.
 
 // eslint-disable-next-line no-underscore-dangle
-window._Sentry = Sentry;
+window._Sentry = Sentry5;
 
 export default index;
