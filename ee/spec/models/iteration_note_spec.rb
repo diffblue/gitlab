@@ -20,6 +20,8 @@ RSpec.describe IterationNote do
       it 'creates the expected note' do
         expect(subject.note_html).to include('removed iteration')
         expect(subject.note_html).not_to include('changed iteration to')
+        expect(subject.created_at).to eq(event.created_at)
+        expect(subject.updated_at).to eq(event.created_at)
       end
     end
   end

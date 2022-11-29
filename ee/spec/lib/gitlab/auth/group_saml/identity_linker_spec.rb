@@ -43,7 +43,12 @@ RSpec.describe Gitlab::Auth::GroupSaml::IdentityLinker do
     end
 
     context 'when the extern_uid does not match' do
-      let(:extern_uid) { 'ioKaiph5' }
+      let(:audit_event) { AuditEvent.last.details[:custom_message] }
+      let_it_be(:extern_uid) { 'ioKaiph5' }
+
+      before do
+        stub_licensed_features(admin_audit_log: true)
+      end
 
       it 'updates the identity when the email address matches' do
         expect(identity.extern_uid).to eq(extern_uid)
@@ -53,6 +58,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::IdentityLinker do
         expect(identity.reload.extern_uid).to eq(uid)
         expect(identity_linker.failed?).to eq(false)
         expect(identity_linker.error_message).to be_empty
+        expect(audit_event).to eq("Updated extern_uid from #{extern_uid} to #{uid}")
       end
 
       it 'does not update the identity when the email address does not match', :aggregate_failures do
@@ -66,6 +72,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::IdentityLinker do
           .to eq(
             s_('GroupSAML|SAML Name ID and email address do not match your user account. Contact an administrator.')
           )
+        expect(audit_event).to eq("Failed to update extern_uid from #{extern_uid} to #{uid}")
       end
 
       context 'when the extern_uid is already taken' do
@@ -79,6 +86,7 @@ RSpec.describe Gitlab::Auth::GroupSaml::IdentityLinker do
           expect(identity.reload.extern_uid).to eq(extern_uid)
           expect(identity_linker.failed?).to eq(true)
           expect(identity_linker.error_message).to eq('Extern uid has already been taken')
+          expect(audit_event).to eq("Failed to update extern_uid from #{extern_uid} to #{uid}")
         end
       end
     end
