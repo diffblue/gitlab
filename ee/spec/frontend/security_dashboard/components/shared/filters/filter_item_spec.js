@@ -37,6 +37,16 @@ describe('Filter Item component', () => {
     });
   });
 
+  describe('disabled state', () => {
+    beforeEach(() => {
+      createWrapper({ disabled: true });
+    });
+
+    it('renders the disabled dropdown item correctly', () => {
+      expect(wrapper.element).toMatchSnapshot();
+    });
+  });
+
   it.each([true, false])('shows the expected checkmark when isSelected is %s', (isChecked) => {
     createWrapper({ isChecked });
     expect(dropdownItem().props('isChecked')).toBe(isChecked);
