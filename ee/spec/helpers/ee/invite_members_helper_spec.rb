@@ -4,6 +4,21 @@ require 'spec_helper'
 RSpec.describe EE::InviteMembersHelper do
   include Devise::Test::ControllerHelpers
 
+  describe '#common_invite_group_modal_data' do
+    let_it_be(:project) { create(:project) }
+    let_it_be(:group) { create(:group, :private, projects: [project]) }
+
+    before do
+      stub_ee_application_setting(dashboard_limit_enabled: true)
+      stub_ee_application_setting(dashboard_limit: 5)
+    end
+
+    it 'has expected common attributes' do
+      expect(helper.common_invite_group_modal_data(project, ProjectMember, 'true'))
+        .to include({ free_user_cap_enabled: 'true', free_users_limit: 5 })
+    end
+  end
+
   describe '#common_invite_modal_dataset', :saas do
     let(:project) { build(:project) }
 

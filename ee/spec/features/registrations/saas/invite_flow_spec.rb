@@ -10,6 +10,10 @@ RSpec.describe 'SaaS registration from an invite', :js, :saas, :saas_registratio
 
     expect_to_see_welcome_form_without_join_project_question
 
+    # validate user is returned back to the specific onboarding step
+    visit root_path
+    expect_to_see_welcome_form_without_join_project_question
+
     fill_in_welcome_form
     click_on 'Get started!'
 

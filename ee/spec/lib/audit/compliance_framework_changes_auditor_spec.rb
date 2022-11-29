@@ -32,6 +32,13 @@ RSpec.describe Audit::ComplianceFrameworkChangesAuditor do
                                                        to: 'GDPR'
                                                      })
         end
+
+        it 'streams correct audit event stream' do
+          expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async).with(
+            'compliance_framework_id_updated', anything, anything)
+
+          subject.execute
+        end
       end
     end
 
