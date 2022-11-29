@@ -79,10 +79,18 @@ func Error(args ...interface{}) {
 	NewBuilder().Error(args...)
 }
 
-func (b *Builder) Error(args ...interface{}) {
-	b.entry.Error(args...)
-
-	if b.req != nil && b.err != nil {
+func (b *Builder) trackException() {
+	if b.err != nil {
 		exception.Track(b.req, b.err, b.fields)
 	}
+}
+
+func (b *Builder) Error(args ...interface{}) {
+	b.trackException()
+	b.entry.Error(args...)
+}
+
+func (b *Builder) Fatal(args ...interface{}) {
+	b.trackException()
+	b.entry.Fatal(args...)
 }
