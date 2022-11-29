@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Scoped issue boards', :js do
+RSpec.describe 'Scoped issue boards', :js, feature_category: :team_planning do
   include MobileHelpers
 
   let_it_be(:user) { create(:user) }

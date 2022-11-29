@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User visits issue boards', :js do
+RSpec.describe 'User visits issue boards', :js, feature_category: :team_planning do
   include BoardHelpers
   using RSpec::Parameterized::TableSyntax
 

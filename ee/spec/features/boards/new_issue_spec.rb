@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Issue Boards new issue', :js do
+RSpec.describe 'Issue Boards new issue', :js, feature_category: :team_planning do
   before do
     stub_licensed_features(board_milestone_lists: true)
   end

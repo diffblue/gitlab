@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures do
+RSpec.describe 'User adds milestone/iterations lists', :js, :aggregate_failures, feature_category: :team_planning do
   let_it_be(:group) { create(:group, :nested) }
   let_it_be(:project) { create(:project, :public, namespace: group) }
   let_it_be(:group_board) { create(:board, group: group) }

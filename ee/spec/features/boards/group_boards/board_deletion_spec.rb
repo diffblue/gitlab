@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group Boards', :js do
+RSpec.describe 'Group Boards', :js, feature_category: :team_planning do
   let(:group) { create(:group) }
   let!(:board_ux) { create(:board, group: group, name: 'UX') }
   let!(:board_dev) { create(:board, group: group, name: 'Dev') }

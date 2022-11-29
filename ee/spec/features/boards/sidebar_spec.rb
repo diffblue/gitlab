@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Issue Boards', :js do
+RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
   include BoardHelpers
 
   let_it_be(:user)         { create(:user) }
