@@ -4,6 +4,16 @@ module EE
   module InviteMembersHelper
     extend ::Gitlab::Utils::Override
 
+    override :common_invite_group_modal_data
+    def common_invite_group_modal_data(source, _member_class, _is_project)
+      super.merge(
+        free_user_cap_enabled: ::Namespaces::FreeUserCap.enforce_preview_or_standard?(
+          source.root_ancestor
+        ).to_s,
+        free_users_limit: ::Namespaces::FreeUserCap.dashboard_limit
+      )
+    end
+
     override :common_invite_modal_dataset
     def common_invite_modal_dataset(source)
       dataset = super
