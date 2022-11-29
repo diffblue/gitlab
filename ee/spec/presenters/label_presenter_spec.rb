@@ -2,8 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe LabelPresenter do
-  let(:project) { create(:project) }
+RSpec.describe LabelPresenter, feature_category: :team_planning do
+  let(:project) { build(:project) }
 
   describe '#scoped_label?' do
     subject { label.scoped_label? }
@@ -32,7 +32,7 @@ RSpec.describe LabelPresenter do
       end
 
       context 'with project label with context subject set' do
-        let(:label) { create(:label, title: 'key::val', project: project).present(issuable_subject: project) }
+        let(:label) { build(:label, title: 'key::val', project: project).present(issuable_subject: project) }
 
         it { is_expected.to be_falsey }
       end
