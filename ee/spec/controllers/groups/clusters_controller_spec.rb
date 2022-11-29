@@ -44,9 +44,11 @@ RSpec.describe Groups::ClustersController, feature_category: :kubernetes_managem
       context 'when admin mode is enabled', :enable_admin_mode do
         it { expect { go }.to be_allowed_for(:admin) }
       end
+
       context 'when admin mode is disabled' do
         it { expect { go }.to be_denied_for(:admin) }
       end
+
       it { expect { go }.to be_allowed_for(:owner).of(clusterable) }
       it { expect { go }.to be_allowed_for(:maintainer).of(clusterable) }
       it { expect { go }.to be_denied_for(:developer).of(clusterable) }
@@ -86,9 +88,11 @@ RSpec.describe Groups::ClustersController, feature_category: :kubernetes_managem
       context 'when admin mode is enabled', :enable_admin_mode do
         it { expect { get_cluster_environments }.to be_allowed_for(:admin) }
       end
+
       context 'when admin mode is disabled' do
         it { expect { get_cluster_environments }.to be_denied_for(:admin) }
       end
+
       it { expect { get_cluster_environments }.to be_allowed_for(:owner).of(group) }
       it { expect { get_cluster_environments }.to be_allowed_for(:maintainer).of(group) }
       it { expect { get_cluster_environments }.to be_denied_for(:developer).of(group) }

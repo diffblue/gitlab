@@ -31,6 +31,7 @@ RSpec.describe GpgKeys::CreateService do
         )
       end
     end
+
     context 'when unlicensed' do
       before do
         stub_licensed_features(admin_audit_log: false, audit_events: false, extended_audit_events: false)

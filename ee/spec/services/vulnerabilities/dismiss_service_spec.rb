@@ -260,9 +260,11 @@ RSpec.describe Vulnerabilities::DismissService do
     context 'when admin mode is enabled', :enable_admin_mode do
       it { expect { dismiss_vulnerability }.to be_allowed_for(:admin) }
     end
+
     context 'when admin mode is disabled' do
       it { expect { dismiss_vulnerability }.to be_denied_for(:admin) }
     end
+
     it { expect { dismiss_vulnerability }.to be_allowed_for(:owner).of(project) }
     it { expect { dismiss_vulnerability }.to be_allowed_for(:maintainer).of(project) }
     it { expect { dismiss_vulnerability }.to be_allowed_for(:developer).of(project) }
