@@ -27,7 +27,7 @@ RSpec.describe('shared/credentials_inventory/ssh_keys/_ssh_key.html.haml') do
   end
 
   it 'shows the delete button' do
-    expect(rendered).to have_css('.js-confirm-modal-button[value="Delete"]')
+    expect(rendered).to have_css('.js-confirm-modal-button', text: "Delete")
   end
 
   context 'last accessed date' do
