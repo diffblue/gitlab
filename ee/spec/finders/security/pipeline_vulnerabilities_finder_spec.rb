@@ -341,6 +341,12 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
         it 'returns all vulnerabilities with all scanners available' do
           expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array %w[find_sec_bugs gemnasium-maven trivy zaproxy]
         end
+
+        context 'when matching scanners do not exist for the findings' do
+          it 'creates a non-persistent scanner from the report finding' do
+            expect(subject.findings.map(&:scanner).map(&:id).uniq).to match_array([nil])
+          end
+        end
       end
 
       context 'when `zaproxy`' do
@@ -348,6 +354,14 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
         it 'returns only vulnerabilities with selected scanner external id' do
           expect(subject.findings.map(&:scanner).map(&:external_id).uniq).to match_array(%w[zaproxy])
+        end
+
+        context 'when existing scanners exist for the findings' do
+          let_it_be(:zaproxy_scanner) { create(:vulnerabilities_scanner, external_id: 'zaproxy', project: project) }
+
+          it 'associates the finding with the scanner in the database' do
+            expect(subject.findings.map(&:scanner).map(&:id).uniq).to match_array([zaproxy_scanner.id])
+          end
         end
       end
     end
