@@ -1609,9 +1609,6 @@ msgstr ""
 msgid "409|There was a conflict with your request."
 msgstr ""
 
-msgid "4h 30m"
-msgstr ""
-
 msgid "8 hours"
 msgstr ""
 
@@ -42539,6 +42536,9 @@ msgid "Time remaining"
 msgstr ""
 
 msgid "Time spent"
+msgstr ""
+
+msgid "Time spent must be formatted correctly. For example: 1h 30m."
 msgstr ""
 
 msgid "Time to Restore Service"

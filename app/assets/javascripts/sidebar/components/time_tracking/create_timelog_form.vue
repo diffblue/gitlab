@@ -144,16 +144,20 @@ export default {
       @submit.prevent="registerTimeSpent"
     >
       <div class="gl-display-flex gl-gap-3">
-        <gl-form-group key="time-spent" label-for="time-spent" label="Time spent">
+        <gl-form-group
+          key="time-spent"
+          label-for="time-spent"
+          label="Time spent"
+          :description="__(`Example: 1h 30m`)"
+        >
           <gl-form-input
             id="time-spent"
             v-model="timeSpent"
             class="gl-form-input-sm"
-            :placeholder="__(`4h 30m`)"
             autocomplete="off"
           />
         </gl-form-group>
-        <gl-form-group key="spent-at" label-for="spent-at" label="Spent at">
+        <gl-form-group key="spent-at" optional label-for="spent-at" label="Spent at">
           <gl-datepicker
             :target="null"
             :value="spentAt"
@@ -165,8 +169,8 @@ export default {
           />
         </gl-form-group>
       </div>
-      <gl-form-group :label="__('Summary')" label-for="summary" class="gl-mb-0">
-        <gl-form-textarea id="summary" v-model="summary" rows="3" max-rows="6" />
+      <gl-form-group :label="__('Summary')" optional label-for="summary" class="gl-mb-0">
+        <gl-form-textarea id="summary" v-model="summary" rows="3" :no-resize="true" />
       </gl-form-group>
       <gl-alert v-if="saveError" variant="danger" class="gl-mt-5" :dismissible="false">
         {{ saveError }}

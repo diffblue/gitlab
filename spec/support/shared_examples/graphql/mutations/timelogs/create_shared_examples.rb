@@ -65,7 +65,8 @@ RSpec.shared_examples 'issuable supports timelog creation mutation' do
         end.to change { Timelog.count }.by(0)
 
         expect(response).to have_gitlab_http_status(:success)
-        expect(mutation_response['errors']).to match_array(['Time spent can\'t be blank'])
+        expect(mutation_response['errors']).to match_array(
+          ['Time spent must be formatted correctly. For example: 1h 30m.'])
         expect(mutation_response['timelog']).to be_nil
       end
     end
