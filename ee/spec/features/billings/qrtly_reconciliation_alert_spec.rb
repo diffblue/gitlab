@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Billings > Qrtly Reconciliation Alert', :js, :saas do
+RSpec.describe 'Billings > Qrtly Reconciliation Alert', :js, :saas, feature_category: :billing_and_payments do
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }

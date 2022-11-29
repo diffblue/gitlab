@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Billing plan pages', :feature, :saas, :js do
+RSpec.describe 'Billing plan pages', :feature, :saas, :js, feature_category: :billing_and_payments do
   include SubscriptionPortalHelpers
   include BillingPlansHelpers
 
