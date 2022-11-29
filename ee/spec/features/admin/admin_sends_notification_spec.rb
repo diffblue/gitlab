@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "Admin sends notification", :js, :sidekiq_might_not_need_inline do
+RSpec.describe "Admin sends notification", :js, :sidekiq_might_not_need_inline, feature_category: :team_planning do
   let(:group) { create(:group) }
   let!(:project) { create(:project, group: group) }
   let(:admin) { create(:admin) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Admin Dashboard' do
+RSpec.describe 'Admin Dashboard', feature_category: :not_owned do
   before do
     admin = create(:admin)
     sign_in(admin)

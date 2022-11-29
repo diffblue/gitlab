@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe "Admin::Users", :js do
+RSpec.describe "Admin::Users", :js, feature_category: :user_management do
   let_it_be(:user) { create(:omniauth_user, provider: 'twitter', extern_uid: '123456') }
   let_it_be(:current_user) { create(:admin) }
 
