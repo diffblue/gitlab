@@ -1340,6 +1340,8 @@ module Ci
       persistent_ref.create
     end
 
+    # For dependent bridge jobs we reset the upstream bridge recursively
+    # to reflect that a downstream pipeline is running again
     def reset_source_bridge!(current_user)
       # break recursion when no source_pipeline bridge (first upstream pipeline)
       return unless bridge_waiting?

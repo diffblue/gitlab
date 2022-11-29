@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Ci
+  # This service resets skipped jobs so they can be processed again.
+  # It affects the jobs that depend on the passed in job parameter.
   class ResetSkippedJobsService < ::BaseService
     def execute(processable)
       @processable = processable
