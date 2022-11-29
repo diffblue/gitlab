@@ -217,7 +217,6 @@ CREATE TABLE job_artifact_registry (
     bytes bigint,
     artifact_id integer,
     retry_count integer DEFAULT 0,
-    success boolean,
     sha256 character varying,
     missing_on_primary boolean DEFAULT false NOT NULL,
     state smallint DEFAULT 0 NOT NULL,
@@ -745,8 +744,6 @@ CREATE INDEX index_group_wiki_repository_registry_on_state ON group_wiki_reposit
 CREATE INDEX index_job_artifact_registry_on_artifact_id ON job_artifact_registry USING btree (artifact_id);
 
 CREATE INDEX index_job_artifact_registry_on_retry_at ON job_artifact_registry USING btree (retry_at);
-
-CREATE INDEX index_job_artifact_registry_on_success ON job_artifact_registry USING btree (success);
 
 CREATE UNIQUE INDEX index_lfs_object_registry_on_lfs_object_id ON lfs_object_registry USING btree (lfs_object_id);
 

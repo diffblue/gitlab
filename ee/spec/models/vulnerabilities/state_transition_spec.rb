@@ -31,6 +31,7 @@ RSpec.describe Vulnerabilities::StateTransition, type: :model do
     it { is_expected.to validate_presence_of(:vulnerability_id) }
     it { is_expected.to validate_presence_of(:from_state) }
     it { is_expected.to validate_presence_of(:to_state) }
+    it { is_expected.to validate_length_of(:comment).is_at_most(50_000) }
 
     it "is expected to validate that :to_state differs from :from_state" do
       subject.from_state = subject.to_state
