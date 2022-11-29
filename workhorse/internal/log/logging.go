@@ -8,7 +8,7 @@ import (
 	"gitlab.com/gitlab-org/labkit/mask"
 	"golang.org/x/net/context"
 
-	"gitlab.com/gitlab-org/gitlab/workhorse/internal/helper"
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/helper/exception"
 )
 
 type Fields = log.Fields
@@ -83,6 +83,6 @@ func (b *Builder) Error(args ...interface{}) {
 	b.entry.Error(args...)
 
 	if b.req != nil && b.err != nil {
-		helper.CaptureRavenError(b.req, b.err, b.fields)
+		exception.Track(b.req, b.err, b.fields)
 	}
 }

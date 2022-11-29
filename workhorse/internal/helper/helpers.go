@@ -14,11 +14,13 @@ import (
 	"github.com/sebest/xff"
 	"gitlab.com/gitlab-org/labkit/log"
 	"gitlab.com/gitlab-org/labkit/mask"
+
+	"gitlab.com/gitlab-org/gitlab/workhorse/internal/helper/exception"
 )
 
 func logErrorWithFields(r *http.Request, err error, fields log.Fields) {
 	if err != nil {
-		CaptureRavenError(r, err, fields)
+		exception.Track(r, err, fields)
 	}
 
 	printError(r, err, fields)
