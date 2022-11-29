@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Admin Groups' do
+RSpec.describe 'Admin Groups', feature_category: :continuous_integration do
   include ::Ci::MinutesHelpers
 
   let_it_be(:group) { create :group }

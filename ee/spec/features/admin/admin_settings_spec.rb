@@ -15,7 +15,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     allow(Gitlab::Elastic::Helper.default).to receive(:index_exists?).and_return(true)
   end
 
-  context 'Geo settings' do
+  context 'Geo settings', feature_category: :geo_replication do
     context 'when the license has Geo feature' do
       before do
         visit admin_geo_settings_path
@@ -42,7 +42,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  it 'enables external authentication' do
+  it 'enables external authentication', feature_category: :system_access do
     visit general_admin_application_settings_path
     page.within('.as-external-auth') do
       check 'Enable classification control using an external service'
@@ -53,7 +53,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     expect(page).to have_content 'Application settings saved successfully'
   end
 
-  context 'Elasticsearch settings', :elastic_delete_by_query do
+  context 'Elasticsearch settings', :elastic_delete_by_query, feature_category: :global_search do
     let(:elastic_search_license) { true }
 
     before do
@@ -204,7 +204,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  it 'enable Slack application' do
+  it 'enable Slack application', feature_category: :integrations do
     allow(Gitlab).to receive(:com?).and_return(true)
     visit general_admin_application_settings_path
 
@@ -216,7 +216,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     expect(page).to have_content 'Application settings saved successfully'
   end
 
-  context 'Templates page' do
+  context 'Templates page', feature_category: :importers do
     before do
       visit templates_admin_application_settings_path
     end
@@ -234,7 +234,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  describe 'LDAP settings' do
+  describe 'LDAP settings', feature_category: :system_access do
     before do
       allow(Gitlab::Auth::Ldap::Config).to receive(:enabled?).and_return(ldap_setting)
 
@@ -264,7 +264,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  context 'package registry settings' do
+  context 'package registry settings', feature_category: :package_registry do
     before do
       visit ci_cd_admin_application_settings_path
     end
@@ -324,7 +324,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  context 'with free user cap settings', :saas do
+  context 'with free user cap settings', :saas, feature_category: :experimentation_expansion do
     before do
       visit general_admin_application_settings_path
     end
@@ -350,7 +350,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  context 'sign up settings', :js do
+  context 'sign up settings', :js, feature_category: :users do
     before do
       visit general_admin_application_settings_path
     end
@@ -473,7 +473,7 @@ RSpec.describe 'Admin updates EE-only settings' do
     end
   end
 
-  describe 'git abuse rate limit settings', :js do
+  describe 'git abuse rate limit settings', :js, feature_category: :instance_resiliency do
     let(:git_abuse_flag) { true }
     let(:license_allows) { true }
     let(:user) { create(:user, name: 'John Doe') }

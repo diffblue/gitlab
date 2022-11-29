@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'admin Geo Sidebar', :js, :geo do
+RSpec.describe 'admin Geo Sidebar', :js, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
   include StubENV
 

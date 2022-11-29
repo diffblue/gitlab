@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "Admin add license", :js do
+RSpec.describe "Admin add license", :js, feature_category: :sm_provisioning do
   include StubENV
 
   let_it_be(:admin) { create(:admin) }

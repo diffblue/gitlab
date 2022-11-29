@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'DevOps Reports page', :js do
+RSpec.describe 'DevOps Reports page', :js, feature_category: :devops_reports do
   tabs_selector = '.gl-tabs-nav'
   tab_item_selector = '.nav-item'
   active_tab_selector = '.nav-link.active'

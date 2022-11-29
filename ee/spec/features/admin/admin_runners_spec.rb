@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe "Admin Runners" do
+RSpec.describe "Admin Runners", feature_category: :runner do
   include RunnerReleasesHelper
   include Spec::Support::Helpers::Features::RunnersHelpers
 
