@@ -8,7 +8,7 @@ import {
 } from '~/security_configuration/components/constants';
 
 export const SCANNER_DAST = 'dast';
-export const DEFAULT_AGENT_NAME = 'default';
+export const DEFAULT_AGENT_NAME = '';
 export const AGENT_KEY = 'agents';
 
 export const SCAN_EXECUTION_RULES_LABELS = {
