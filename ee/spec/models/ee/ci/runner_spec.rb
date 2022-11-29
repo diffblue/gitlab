@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::Runner do
+RSpec.describe Ci::Runner, feature_category: :continuous_integration do
   let(:shared_runners_minutes) { 400 }
 
   before do

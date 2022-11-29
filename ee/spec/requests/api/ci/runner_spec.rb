@@ -14,7 +14,7 @@ RSpec.describe API::Ci::Runner do
     project.add_developer(user)
   end
 
-  describe '/api/v4/jobs' do
+  describe '/api/v4/jobs', feature_category: :continuous_integration do
     describe 'POST /api/v4/jobs/request' do
       context 'secrets management' do
         let(:valid_secrets) do

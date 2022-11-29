@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe EE::Ci::RunnersHelper do
+RSpec.describe EE::Ci::RunnersHelper, feature_category: :continuous_integration do
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:namespace) { create(:namespace, owner: user) }
   let_it_be(:project) { create(:project, namespace: namespace) }
