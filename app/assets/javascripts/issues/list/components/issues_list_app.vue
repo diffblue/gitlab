@@ -133,6 +133,7 @@ export default {
     'hasAnyIssues',
     'hasAnyProjects',
     'hasBlockedIssuesFeature',
+    'hasIssuableHealthStatusFeature',
     'hasIssueWeightsFeature',
     'hasScopedLabelsFeature',
     'initialEmail',
@@ -440,7 +441,11 @@ export default {
       return this.currentTabCount > PAGE_SIZE;
     },
     sortOptions() {
-      return getSortOptions(this.hasIssueWeightsFeature, this.hasBlockedIssuesFeature);
+      return getSortOptions({
+        hasBlockedIssuesFeature: this.hasBlockedIssuesFeature,
+        hasIssuableHealthStatusFeature: this.hasIssuableHealthStatusFeature,
+        hasIssueWeightsFeature: this.hasIssueWeightsFeature,
+      });
     },
     tabCounts() {
       const { openedIssues, closedIssues, allIssues } = this.issuesCounts;
