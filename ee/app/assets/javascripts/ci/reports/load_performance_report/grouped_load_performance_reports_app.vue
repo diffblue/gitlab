@@ -1,5 +1,5 @@
 <script>
-import { componentNames } from 'ee/reports/components/issue_body';
+import { componentNames } from 'ee/ci/reports/components/issue_body';
 import api from '~/api';
 import ReportSection from '~/reports/components/report_section.vue';
 

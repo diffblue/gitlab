@@ -5,7 +5,7 @@
  * [severity-badge] [name] in [link]:[line]
  */
 import { GlBadge } from '@gitlab/ui';
-import ModalOpenName from 'ee/reports/components/modal_open_name.vue';
+import ModalOpenName from 'ee/ci/reports/components/modal_open_name.vue';
 import ReportLink from '~/reports/components/report_link.vue';
 import SeverityBadge from './severity_badge.vue';
 

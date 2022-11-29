@@ -4,7 +4,7 @@ import { once } from 'lodash';
 import { GlButton, GlSprintf, GlLink, GlModalDirective, GlPopover } from '@gitlab/ui';
 import { spriteIcon } from '~/lib/utils/common_utils';
 import { s__, n__, __, sprintf } from '~/locale';
-import { componentNames } from 'ee/reports/components/issue_body';
+import { componentNames } from 'ee/ci/reports/components/issue_body';
 import { fetchPolicies } from '~/lib/graphql';
 import { mrStates } from '~/issuable/popover/constants';
 import GroupedIssuesList from '~/reports/components/grouped_issues_list.vue';

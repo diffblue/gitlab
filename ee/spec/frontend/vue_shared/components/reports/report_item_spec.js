@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { componentNames, iconComponentNames } from 'ee/reports/components/issue_body';
+import { componentNames, iconComponentNames } from 'ee/ci/reports/components/issue_body';
 import { codequalityParsedIssues } from 'ee_jest/vue_merge_request_widget/mock_data';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/license_issue_body.vue';
 import LicenseStatusIcon from 'ee/vue_shared/license_compliance/components/license_status_icon.vue';

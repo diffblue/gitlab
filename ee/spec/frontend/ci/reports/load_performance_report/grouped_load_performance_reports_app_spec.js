@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import GroupedLoadPerformanceReportsApp from 'ee/reports/load_performance_report/grouped_load_performance_reports_app.vue';
+import GroupedLoadPerformanceReportsApp from 'ee/ci/reports/load_performance_report/grouped_load_performance_reports_app.vue';
 import Api from '~/api';
 
 jest.mock('~/api.js');

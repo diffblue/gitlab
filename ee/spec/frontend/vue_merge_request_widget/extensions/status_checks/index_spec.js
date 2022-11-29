@@ -1,17 +1,17 @@
 import { mount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
+import {
+  approvedChecks,
+  pendingChecks,
+  approvedAndPendingChecks,
+  pendingAndFailedChecks,
+} from 'ee_jest/ci/reports/status_checks_report/mock_data';
 import axios from '~/lib/utils/axios_utils';
 import extensionsContainer from '~/vue_merge_request_widget/components/extensions/container';
 import { registerExtension } from '~/vue_merge_request_widget/components/extensions';
 import statusChecksExtension from 'ee/vue_merge_request_widget/extensions/status_checks';
 import httpStatus from '~/lib/utils/http_status';
 import waitForPromises from 'helpers/wait_for_promises';
-import {
-  approvedChecks,
-  pendingChecks,
-  approvedAndPendingChecks,
-  pendingAndFailedChecks,
-} from 'ee_jest/reports/status_checks_report/mock_data';
 
 describe('Status checks extension', () => {
   let wrapper;

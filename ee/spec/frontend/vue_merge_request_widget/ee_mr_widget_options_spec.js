@@ -13,7 +13,7 @@ import {
 
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
-import _GroupedLoadPerformanceReportsApp from 'ee/reports/load_performance_report/grouped_load_performance_reports_app.vue';
+import _GroupedLoadPerformanceReportsApp from 'ee/ci/reports/load_performance_report/grouped_load_performance_reports_app.vue';
 
 import MrWidgetOptions from 'ee/vue_merge_request_widget/mr_widget_options.vue';
 // Force Jest to transpile and cache

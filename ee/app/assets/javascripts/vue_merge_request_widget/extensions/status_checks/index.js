@@ -1,7 +1,7 @@
 import { s__, sprintf, __ } from '~/locale';
 import axios from '~/lib/utils/axios_utils';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
-import { PASSED, PENDING } from 'ee/reports/status_checks_report/constants';
+import { PASSED, PENDING } from 'ee/ci/reports/status_checks_report/constants';
 
 export default {
   name: 'WidgetStatusChecks',

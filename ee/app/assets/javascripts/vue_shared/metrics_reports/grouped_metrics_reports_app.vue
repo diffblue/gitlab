@@ -1,7 +1,7 @@
 <script>
 import { once } from 'lodash';
 import { mapActions, mapGetters, mapState } from 'vuex';
-import { componentNames } from 'ee/reports/components/issue_body';
+import { componentNames } from 'ee/ci/reports/components/issue_body';
 import api from '~/api';
 import { n__, s__, sprintf } from '~/locale';
 import ReportItem from '~/reports/components/report_item.vue';
