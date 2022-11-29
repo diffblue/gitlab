@@ -14,7 +14,7 @@ import ConfigurationSnippetModal from 'ee/security_configuration/components/conf
 import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
 import { isEmptyValue } from '~/lib/utils/forms';
 import { __, s__ } from '~/locale';
-import { CODE_SNIPPET_SOURCE_API_FUZZING } from '~/pipeline_editor/components/code_snippet_alert/constants';
+import { CODE_SNIPPET_SOURCE_API_FUZZING } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';
 import DropdownInput from '../../components/dropdown_input.vue';
 import DynamicFields from '../../components/dynamic_fields.vue';
 import FormInput from '../../components/form_input.vue';

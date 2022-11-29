@@ -12,7 +12,7 @@ import {
   siteProfiles,
 } from 'ee_jest/security_configuration/dast_profiles/mocks/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { CODE_SNIPPET_SOURCE_DAST } from '~/pipeline_editor/components/code_snippet_alert/constants';
+import { CODE_SNIPPET_SOURCE_DAST } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';
 import { DAST_HELP_PATH } from '~/security_configuration/components/constants';
 
 const [scannerProfile] = scannerProfiles;

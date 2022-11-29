@@ -3,7 +3,7 @@ import { GlModal, GlSprintf, GlLink } from '@gitlab/ui';
 import ClipboardJS from 'clipboard';
 import { getBaseURL, setUrlParams, redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, s__, __ } from '~/locale';
-import { CODE_SNIPPET_SOURCE_URL_PARAM } from '~/pipeline_editor/components/code_snippet_alert/constants';
+import { CODE_SNIPPET_SOURCE_URL_PARAM } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';
 import SourceEditor from '~/vue_shared/components/source_editor.vue';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from './constants';
 

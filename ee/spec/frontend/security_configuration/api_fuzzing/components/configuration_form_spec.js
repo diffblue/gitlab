@@ -9,7 +9,7 @@ import DropdownInput from 'ee/security_configuration/components/dropdown_input.v
 import DynamicFields from 'ee/security_configuration/components/dynamic_fields.vue';
 import FormInput from 'ee/security_configuration/components/form_input.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { CODE_SNIPPET_SOURCE_API_FUZZING } from '~/pipeline_editor/components/code_snippet_alert/constants';
+import { CODE_SNIPPET_SOURCE_API_FUZZING } from '~/ci/pipeline_editor/components/code_snippet_alert/constants';
 import { apiFuzzingConfigurationQueryResponse } from '../mock_data';
 
 jest.mock('ee/security_configuration/api_fuzzing/utils', () => ({
