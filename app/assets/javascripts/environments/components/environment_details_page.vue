@@ -7,6 +7,7 @@ import {
   GlTooltipDirective,
   GlTruncate,
   GlBadge,
+  GlLoadingIcon,
 } from '@gitlab/ui';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Commit from '~/vue_shared/components/commit.vue';
@@ -26,7 +27,6 @@ const convertToDeploymentRow = (deploymentNode) => {
       isTag: deploymentNode.tag,
       commitRef: {
         name: deploymentNode.ref,
-        // ref_url: '#',
       },
       sAuthor: deploymentNode.commit.author && {
         username: deploymentNode.commit.author.name,
@@ -45,6 +45,7 @@ const convertToDeploymentRow = (deploymentNode) => {
 
 export default {
   components: {
+    GlLoadingIcon,
     GlBadge,
     DeploymentStatusBadge,
     TimeAgoTooltip,
@@ -89,25 +90,21 @@ export default {
         {
           key: 'status',
           label: __('Status'),
-          // thClass: 'w-60p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'id',
           label: __('ID'),
-          // thClass: 'w-15p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'triggerer',
           label: __('Triggerer'),
-          // thClass: 'w-15p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'commit',
           label: __('Commit'),
-          // thClass: 'gl-w-5p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
@@ -130,19 +127,28 @@ export default {
   },
   computed: {
     deployments() {
-      return this.project.loading
-        ? []
-        : this.project.environments.nodes[0].deployments.nodes.map(convertToDeploymentRow);
+      if (this.isLoading) {
+        const loadingDeploymentsState = [{}, {}, {}];
+        return loadingDeploymentsState;
+      }
+      return (
+        this.project.environments?.nodes[0]?.deployments.nodes.map(convertToDeploymentRow) || []
+      );
+    },
+    isLoading() {
+      return this.$apollo.queries.project.loading;
     },
   },
 };
 </script>
 <template>
   <div>
-    <div v-if="project.loading">{{ __('The query is running') }}</div>
-    <gl-table-lite :items="deployments" :fields="fields" stacked="lg">
+    <gl-loading-icon v-if="isLoading" size="lg" class="mt-3" />
+    <gl-table-lite v-else :items="deployments" :fields="fields" stacked="lg">
       <template #cell(status)="{ item }">
-        <deployment-status-badge :status="item.status" />
+        <div>
+          <deployment-status-badge :status="item.status" />
+        </div>
       </template>
       <template #cell(id)="{ item }">
         <strong>{{ item.id }}</strong>
@@ -169,28 +175,6 @@ export default {
             :author="item.commit.sAuthor"
           />
         </div>
-        /
-        <!-- <div>
-          <div>
-            <gl-icon name="commit" />
-            <gl-link :href="item.commit.webUrl">{{ item.commit.shaLabel }}</gl-link>
-          </div>
-          <div
-            class="gl-display-flex gl-align-items-center gl-gap-3 gl-justify-content-end gl-lg-justify-content-start"
-          >
-            <gl-avatar-link v-if="!!item.commit.author" :href="item.commit.author.webUrl">
-              <gl-avatar
-                v-gl-tooltip
-                :title="item.commit.author.name"
-                :src="item.commit.author.avatarUrl"
-                :size="24"
-              />
-            </gl-avatar-link>
-            <gl-link :href="item.commit.webUrl" class="gl-display-inline-block gl-max-w-34">
-              <gl-truncate :text="item.commit.message"
-            /></gl-link>
-          </div>
-        </div> -->
       </template>
       <template #cell(job)="{ item }">
         <gl-link
