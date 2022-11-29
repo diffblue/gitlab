@@ -15,6 +15,7 @@ import {
 } from '@gitlab/ui';
 import { mapActions, mapState, mapGetters } from 'vuex';
 import { helpPagePath } from '~/helpers/help_page_helper';
+import dateFormat from '~/lib/dateformat';
 import { visitUrl } from '~/lib/utils/url_utility';
 import {
   FIELDS,
@@ -172,6 +173,9 @@ export default {
     this.fetchGitlabSubscription();
   },
   methods: {
+    formatLastLoginAt(lastLogin) {
+      return lastLogin ? dateFormat(lastLogin, 'yyyy-mm-dd HH:MM:ss') : __('Never');
+    },
     ...mapActions([
       'fetchBillableMembersList',
       'fetchGitlabSubscription',
@@ -376,8 +380,14 @@ export default {
       </template>
 
       <template #cell(lastActivityTime)="data">
-        <span>
+        <span data-testid="last_activity_on">
           {{ data.item.user.last_activity_on ? data.item.user.last_activity_on : __('Never') }}
+        </span>
+      </template>
+
+      <template #cell(lastLoginAt)="data">
+        <span data-testid="last_login_at">
+          {{ formatLastLoginAt(data.item.user.last_login_at) }}
         </span>
       </template>
 
