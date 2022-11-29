@@ -35,6 +35,7 @@ module Security
           approvals_required: action_info[:approvals_required],
           name: rule_name(policy[:name], rule_index),
           protected_branch_ids: project.protected_branches.get_ids_by_name(rule[:branches]),
+          applies_to_all_protected_branches: rule[:branches].empty?,
           scanners: rule[:scanners],
           rule_type: :report_approver,
           severity_levels: rule[:severity_levels],
