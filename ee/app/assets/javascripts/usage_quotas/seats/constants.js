@@ -79,6 +79,14 @@ export const SORT_OPTIONS = [
       ascending: 'name_asc',
     },
   },
+  {
+    id: 30,
+    title: __('Last login'),
+    sortDirection: {
+      descending: 'recent_sign_in',
+      ascending: 'oldest_sign_in',
+    },
+  },
 ];
 
 export const EXPLORE_PAID_PLANS_CLICKED = 'explore_paid_plans_clicked';

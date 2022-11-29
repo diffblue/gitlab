@@ -529,6 +529,35 @@ describe('Subscription Seats', () => {
       expect(actionSpies.setSearchQuery).toHaveBeenCalledTimes(1);
       expect(actionSpies.setSearchQuery).toHaveBeenCalledWith(expect.any(Object), SEARCH_STRING);
     });
+
+    it('contains the correct sort options', () => {
+      expect(findSearchAndSortBar().props('sortOptions')).toMatchObject([
+        {
+          id: 10,
+          title: 'Last Activity',
+          sortDirection: {
+            ascending: 'last_activity_on_asc',
+            descending: 'last_activity_on_desc',
+          },
+        },
+        {
+          id: 20,
+          title: 'Name',
+          sortDirection: {
+            ascending: 'name_asc',
+            descending: 'name_desc',
+          },
+        },
+        {
+          id: 30,
+          title: 'Last login',
+          sortDirection: {
+            ascending: 'oldest_sign_in',
+            descending: 'recent_sign_in',
+          },
+        },
+      ]);
+    });
   });
 
   describe('pending members alert', () => {
