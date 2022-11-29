@@ -121,7 +121,7 @@ module QA
             select_namespace(target_group.path)
 
             wait_for_enabled_transfer_group_button
-            click_element( :transfer_group_button)
+            click_element(:transfer_group_button)
 
             fill_confirmation_text(source_group.path)
             confirm_transfer
