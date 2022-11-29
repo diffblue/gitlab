@@ -34754,6 +34754,33 @@ msgstr ""
 msgid "Report your license usage data to GitLab"
 msgstr ""
 
+msgid "ReportAbuse|Something else."
+msgstr ""
+
+msgid "ReportAbuse|They're being offsensive or abusive."
+msgstr ""
+
+msgid "ReportAbuse|They're crypto mining."
+msgstr ""
+
+msgid "ReportAbuse|They're phising."
+msgstr ""
+
+msgid "ReportAbuse|They're posting malware."
+msgstr ""
+
+msgid "ReportAbuse|They're posting personal information or credentials."
+msgstr ""
+
+msgid "ReportAbuse|They're posting spam."
+msgstr ""
+
+msgid "ReportAbuse|They're violating a copyright or trademark."
+msgstr ""
+
+msgid "ReportAbuse|Why are you reporting this user?"
+msgstr ""
+
 msgid "Reported %{timeAgo} by %{reportedBy}"
 msgstr ""
 
