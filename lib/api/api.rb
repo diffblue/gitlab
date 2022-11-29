@@ -239,6 +239,7 @@ module API
         mount ::API::PersonalAccessTokens::SelfInformation
         mount ::API::PersonalAccessTokens
         mount ::API::ProjectClusters
+        mount ::API::ProjectContainerRepositories
         mount ::API::ProjectEvents
         mount ::API::ProjectExport
         mount ::API::ProjectHooks
@@ -312,7 +313,6 @@ module API
       mount ::API::NugetGroupPackages
       mount ::API::NugetProjectPackages
       mount ::API::PagesDomains
-      mount ::API::ProjectContainerRepositories
       mount ::API::ProjectDebianDistributions
       mount ::API::ProjectEvents
       mount ::API::ProjectMilestones
