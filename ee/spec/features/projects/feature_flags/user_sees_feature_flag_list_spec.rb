@@ -38,6 +38,7 @@ RSpec.describe 'User sees feature flag list', :js do
       )
     end
   end
+
   context 'with too many feature flags' do
     before do
       plan_limits = create(:plan_limits, :default_plan)
