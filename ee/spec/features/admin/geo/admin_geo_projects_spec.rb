@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'admin Geo Projects', :js, :geo do
+RSpec.describe 'admin Geo Projects', :js, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let!(:geo_node) { create(:geo_node) }

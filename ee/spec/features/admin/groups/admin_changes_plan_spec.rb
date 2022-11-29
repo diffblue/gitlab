@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Changes GL.com plan for group', :js, :saas do
+RSpec.describe 'Changes GL.com plan for group', :js, :saas, feature_category: :saas_provisioning do
   include WaitForRequests
 
   let!(:premium_plan) { create(:premium_plan) }
