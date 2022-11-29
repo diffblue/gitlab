@@ -5,6 +5,8 @@ require 'base64'
 module QA
   describe 'Verify', :github, :requires_admin, only: { subdomain: %i[staging staging-canary] } do
     describe 'Pipeline for project mirrors Github', product_group: :pipeline_execution do
+      include QA::Support::Data::Github
+
       let(:commit_message) { "Update #{github_data[:file_name]} - #{Time.now}" }
       let(:project_name) { 'github-project-with-pipeline' }
       let(:github_client) { Octokit::Client.new(access_token: github_data[:access_token]) }
@@ -14,7 +16,7 @@ module QA
         {
           access_token: Runtime::Env.github_access_token,
           file_name: 'text_file.txt',
-          repo: 'gitlab-qa-github/test-project'
+          repo: "#{github_username}/test-project"
         }
       end
 
