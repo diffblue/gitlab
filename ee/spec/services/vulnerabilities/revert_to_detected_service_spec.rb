@@ -115,9 +115,11 @@ RSpec.describe Vulnerabilities::RevertToDetectedService do
     context 'when admin mode is enabled', :enable_admin_mode do
       it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:admin) }
     end
+
     context 'when admin mode is disabled' do
       it { expect { revert_vulnerability_to_detected }.to be_denied_for(:admin) }
     end
+
     it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:owner).of(project) }
     it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:maintainer).of(project) }
     it { expect { revert_vulnerability_to_detected }.to be_allowed_for(:developer).of(project) }
