@@ -4,6 +4,8 @@ module Vulnerabilities
   class Scanner < ApplicationRecord
     self.table_name = "vulnerability_scanners"
 
+    attr_accessor :scan_type
+
     has_many :findings, class_name: 'Vulnerabilities::Finding', inverse_of: :scanner
     has_many :security_findings, class_name: 'Security::Finding', inverse_of: :scanner
 
@@ -23,6 +25,10 @@ module Vulnerabilities
       joins("JOIN LATERAL (#{lateral.to_sql}) report_types ON true")
         .select('DISTINCT ON ("vulnerability_scanners"."external_id", "report_types"."report_type") "vulnerability_scanners".*, "report_types"."report_type" AS "report_type"')
         .order('"vulnerability_scanners"."external_id" ASC, "report_types"."report_type" ASC')
+    end
+
+    def report_type
+      self[:report_type] || scan_type
     end
   end
 end

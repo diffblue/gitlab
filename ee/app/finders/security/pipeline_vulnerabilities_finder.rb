@@ -90,7 +90,7 @@ module Security
         finding.vulnerability = vulnerabilities[finding.project_fingerprint]
         finding.project = pipeline.project
         finding.sha = pipeline.sha
-        finding.build_scanner(report_finding.scanner&.to_hash&.merge(project: finding.project))
+        finding.scanner = scanner_for_report_finding(report_finding)
         finding.finding_links = report_finding.links.map do |link|
           Vulnerabilities::FindingLink.new(link.to_hash)
         end
@@ -111,6 +111,15 @@ module Security
 
         finding
       end
+    end
+
+    # This will look for existing scanners, and if none found, build a non-persistent scanner object
+    def scanner_for_report_finding(report_finding)
+      @existing_scanners ||= pipeline.project.vulnerability_scanners.index_by(&:external_id)
+      scanner = @existing_scanners[report_finding.scanner&.external_id] ||
+        Vulnerabilities::Scanner.new(report_finding.scanner&.to_hash&.merge(project: pipeline.project))
+      scanner.scan_type = report_finding.report_type
+      scanner
     end
 
     def calculate_false_positive?

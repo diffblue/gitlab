@@ -141,6 +141,33 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
       end
     end
 
+    context 'with empty branches' do
+      let(:rule) do
+        {
+          type: 'scan_finding',
+          branches: [],
+          scanners: %w[container_scanning],
+          vulnerabilities_allowed: 0,
+          severity_levels: %w[critical],
+          vulnerability_states: %w[detected]
+        }
+      end
+
+      let(:rules) { [rule] }
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', rules: rules) }
+
+      before do
+        create(:protected_branch, project: project)
+      end
+
+      it 'sets applies_to_all_protected_branches to true' do
+        subject
+
+        expect(project.approval_rules.first.applies_to_all_protected_branches).to be_truthy
+        expect(project.approval_rules.first.applies_to_branch?('random-branch')).to be_falsey
+      end
+    end
+
     it 'sets project approval rule based on policy', :aggregate_failures do
       subject
 
