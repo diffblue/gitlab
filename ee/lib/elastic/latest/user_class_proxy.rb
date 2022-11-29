@@ -35,7 +35,7 @@ module Elastic
       def fuzzy_query(filters:, query:, search_fields:, options: {})
         return filters unless query
 
-        search_fields -= ['email'] unless admin(options)
+        search_fields -= ['email'] unless is_admin?(options)
         shoulds = []
 
         search_fields.each do |field|
@@ -76,7 +76,7 @@ module Elastic
       end
 
       def forbidden_states_filter(filters, options)
-        return filters if admin(options)
+        return filters if is_admin?(options)
 
         filters << {
           term: {
@@ -95,9 +95,11 @@ module Elastic
         groups.map(&:elastic_namespace_ancestry)
       end
 
-      def admin(options)
+      # rubocop:disable Naming/PredicateName
+      def is_admin?(options)
         options[:admin] == true
       end
+      # rubocop:enable Naming/PredicateName
     end
   end
 end
