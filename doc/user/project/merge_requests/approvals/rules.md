@@ -252,6 +252,13 @@ the API.
 For more information about this validation error, read
 [issue 285129](https://gitlab.com/gitlab-org/gitlab/-/issues/285129).
 
+### Groups Need Explicit or Inherited Developer Permissions on Project
+
+When a group is created that is dedicated to approvals, it may be on a branch of the GitLab hierarchy that is different from the 
+branch of the GitLab hierarchy where the project that needs approvals exists.  When this happens, the group will not be recognized
+as a valid Code Owner or show up in the Approvals list.  The approval group will need to be added as a Shared Group in the hierarchy
+from where the project stems from.
+
 ## Security Approvals **(ULTIMATE)**
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/357021) in GitLab 15.0.
