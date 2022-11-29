@@ -1,4 +1,4 @@
-import index from '~/sentry/index';
+import index from '~/sentry/legacy_index';
 
 import LegacySentryConfig from '~/sentry/legacy_sentry_config';
 import SentryConfig from '~/sentry/sentry_config';
@@ -32,9 +32,9 @@ describe('Sentry init', () => {
     window.gon = originalGon;
   });
 
-  it('exports new version of Sentry in the global object', () => {
+  it('exports legacy version of Sentry in the global object', () => {
     // eslint-disable-next-line no-underscore-dangle
-    expect(window._Sentry.SDK_VERSION).not.toMatch(/^5\./);
+    expect(window._Sentry.SDK_VERSION).toMatch(/^5\./);
   });
 
   describe('when called', () => {
@@ -42,12 +42,12 @@ describe('Sentry init', () => {
       index();
     });
 
-    it('configures sentry', () => {
-      expect(SentryConfig.init).toHaveBeenCalledTimes(1);
-      expect(SentryConfig.init).toHaveBeenCalledWith({
+    it('configures legacy sentry', () => {
+      expect(LegacySentryConfig.init).toHaveBeenCalledTimes(1);
+      expect(LegacySentryConfig.init).toHaveBeenCalledWith({
         dsn,
         currentUserId,
-        allowUrls: [gitlabUrl, 'webpack-internal://'],
+        whitelistUrls: [gitlabUrl, 'webpack-internal://'],
         environment,
         release: revision,
         tags: {
@@ -57,8 +57,8 @@ describe('Sentry init', () => {
       });
     });
 
-    it('does not configure legacy sentry', () => {
-      expect(LegacySentryConfig.init).not.toHaveBeenCalled();
+    it('does not configure new sentry', () => {
+      expect(SentryConfig.init).not.toHaveBeenCalled();
     });
   });
 });
