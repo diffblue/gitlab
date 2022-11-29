@@ -57,7 +57,7 @@ RSpec.describe Gitlab::Elastic::GroupSearchResults, :elastic do
   end
 
   context 'query performance' do
-    include_examples 'does not hit Elasticsearch twice for objects and counts', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones]
-    include_examples 'does not load results for count only queries', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones]
+    include_examples 'does not hit Elasticsearch twice for objects and counts', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones users]
+    include_examples 'does not load results for count only queries', %w[projects notes blobs wiki_blobs commits issues merge_requests milestones users]
   end
 end

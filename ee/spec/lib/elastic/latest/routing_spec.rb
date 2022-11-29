@@ -49,6 +49,10 @@ RSpec.describe Elastic::Latest::Routing do
       expect(subject.routing_options({ project_ids: project_ids, public_and_internal_projects: true })).to eq({})
     end
 
+    it 'returns empty hash when routing_disabled flag is passed' do
+      expect(subject.routing_options(routing_disabled: true)).to eq({})
+    end
+
     it 'uses project_ids rather than repository_id when both are supplied' do
       options = { project_ids: project_ids, repository_id: 'wiki_5' }
 

@@ -115,6 +115,43 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
     end
   end
 
+  describe 'users' do
+    let(:query) { 'john' }
+    let(:scope) { 'users' }
+    let(:results) { described_class.new(user, query, project: project) }
+
+    it 'returns an empty list' do
+      create(:user, name: 'Sarah John')
+      create(:user, name: 'John Doe')
+      create(:user, name: 'john@c.o')
+
+      ensure_elasticsearch_index!
+
+      users = results.objects('users')
+
+      expect(users).to eq([])
+      expect(results.users_count).to eq 0
+    end
+
+    context 'with project members' do
+      it 'returns users who are members of the project' do
+        user_1 = create(:user, name: 'Sarah John')
+        user_2 = create(:user, name: 'John Doe') # rubocop:disable Lint/UselessAssignment
+        user_3 = create(:user, name: 'john@c.o')
+
+        project.add_developer(user_1)
+        project.add_developer(user_3)
+
+        ensure_elasticsearch_index!
+
+        users = results.objects('users')
+
+        expect(users).to contain_exactly(user_1, user_3)
+        expect(results.users_count).to eq 2
+      end
+    end
+  end
+
   context 'query performance' do
     let(:project) { create(:project, :public, :repository, :wiki_repo) }
     let(:query) { '*' }
@@ -125,8 +162,8 @@ RSpec.describe Gitlab::Elastic::ProjectSearchResults, :elastic do
       create(:wiki_page, wiki: project.wiki)
     end
 
-    include_examples 'does not hit Elasticsearch twice for objects and counts', %w[notes blobs wiki_blobs commits issues merge_requests milestones]
-    include_examples 'does not load results for count only queries', %w[notes blobs wiki_blobs commits issues merge_requests milestones]
+    include_examples 'does not hit Elasticsearch twice for objects and counts', %w[notes blobs wiki_blobs commits issues merge_requests milestones users]
+    include_examples 'does not load results for count only queries', %w[notes blobs wiki_blobs commits issues merge_requests milestones users]
   end
 
   describe '#aggregations' do

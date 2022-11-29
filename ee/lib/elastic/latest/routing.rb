@@ -8,7 +8,7 @@ module Elastic
       ES_ROUTING_MAX_COUNT = 128
 
       def routing_options(options)
-        return {} if options[:public_and_internal_projects]
+        return {} if routing_disabled?(options)
 
         ids = if options[:project_id]
                 [options[:project_id]]
@@ -35,6 +35,10 @@ module Elastic
         return [] if ids.count > ES_ROUTING_MAX_COUNT
 
         ids.map { |id| "project_#{id}" }.join(',')
+      end
+
+      def routing_disabled?(options)
+        options[:routing_disabled] || options[:public_and_internal_projects]
       end
     end
   end
