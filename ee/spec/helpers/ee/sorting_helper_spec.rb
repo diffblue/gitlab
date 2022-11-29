@@ -14,13 +14,6 @@ RSpec.describe SortingHelper do
     end
   end
 
-  describe '#runners_sort_options_hash' do
-    it 'behaves like non-ee for other sort values' do
-      expect(runners_sort_options_hash['created_date']).to eq('Created date')
-      expect(runners_sort_options_hash['contacted_asc']).to eq('Last Contact')
-    end
-  end
-
   describe '#can_sort_by_issue_weight?' do
     subject { can_sort_by_issue_weight?(viewing_issue) }
 

@@ -320,6 +320,18 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
       end
 
       it_behaves_like 'pagination', scope: 'users', search: ''
+
+      it 'avoids N+1 queries' do
+        control = ActiveRecord::QueryRecorder.new { get api(endpoint, user), params: { scope: 'users', search: '*' } }
+        create_list(:user, 2).each do |user|
+          project.add_developer(user)
+          group.add_developer(user)
+        end
+
+        ensure_elasticsearch_index!
+
+        expect { get api(endpoint, user), params: { scope: 'users', search: '*' } }.not_to exceed_query_limit(control)
+      end
     end
 
     context 'for notes scope', :sidekiq_inline do
