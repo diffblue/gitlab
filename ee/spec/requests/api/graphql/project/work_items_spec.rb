@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'getting a work item list for a project' do
+RSpec.describe 'getting a work item list for a project', feature_category: :team_planning do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
@@ -97,6 +97,36 @@ RSpec.describe 'getting a work item list for a project' do
             expect(item_ids).to contain_exactly(work_item2.to_global_id.to_s)
           end
         end
+      end
+    end
+
+    describe 'fetching work item notes widget' do
+      let(:work_item) { create(:work_item, project: project) }
+      let(:item_filter_params) { { iid: work_item.iid.to_s } }
+      let(:fields) do
+        <<~GRAPHQL
+        edges {
+          node {
+            widgets {
+              type
+              ... on WorkItemWidgetNotes {
+                system: discussions(filter: ONLY_ACTIVITY, first: 10) { nodes { id  notes { nodes { id system internal body } } } },
+                comments: discussions(filter: ONLY_COMMENTS, first: 10) { nodes { id  notes { nodes { id system internal body } } } },
+                all_notes: discussions(filter: ALL_NOTES, first: 10) { nodes { id  notes { nodes { id system internal body } } } }
+              }
+            }
+          }
+        }
+        GRAPHQL
+      end
+
+      it 'fetches notes that require gitaly call to parse note' do
+        # this 9 digit long weight triggers a gitaly call when parsing the system note
+        create(:resource_weight_event, user: current_user, issue: work_item, weight: 123456789)
+
+        post_graphql(query, current_user: current_user)
+
+        expect_graphql_errors_to_be_empty
       end
     end
   end
