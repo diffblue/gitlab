@@ -47,7 +47,7 @@ describe('ScanResultPolicy', () => {
     const text = wrapper.text();
 
     expect(text).toContain('test policy');
-    expect(text).toContain('All branches');
+    expect(text).toContain('All protected branches');
     expect(text).toContain('1');
   });
 

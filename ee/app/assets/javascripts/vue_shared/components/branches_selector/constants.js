@@ -9,3 +9,7 @@ export const ALL_PROTECTED_BRANCHES = {
   id: 'ALL_PROTECTED_BRANCHES',
   name: __('All protected branches'),
 };
+export const PLACEHOLDER = {
+  id: 'PLACEHOLDER',
+  name: __('Select a branch'),
+};

@@ -10,6 +10,6 @@ export const fetchBranches = ({ commit, dispatch }, { branches, projectId }) => 
 export const fetchBranch = ({ commit }, { branch, projectId }) => {
   return Api.projectProtectedBranch(projectId, branch).catch((error) => {
     const decomposedUrl = error.config.url.split('/');
-    commit(types.INVALID_BRANCHES, decomposedUrl[decomposedUrl.length - 1]);
+    commit(types.INVALID_PROTECTED_BRANCHES, decomposedUrl[decomposedUrl.length - 1]);
   });
 };

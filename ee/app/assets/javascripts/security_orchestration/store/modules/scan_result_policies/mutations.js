@@ -4,7 +4,7 @@ export default {
   [types.LOADING_BRANCHES](state) {
     state.invalidBranches = [];
   },
-  [types.INVALID_BRANCHES](state, invalidBranch) {
+  [types.INVALID_PROTECTED_BRANCHES](state, invalidBranch) {
     state.invalidBranches.push(invalidBranch);
   },
 };

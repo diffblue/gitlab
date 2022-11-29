@@ -3,7 +3,7 @@ import { GlDropdown, GlDropdownItem, GlSearchBoxByType } from '@gitlab/ui';
 import { debounce } from 'lodash';
 import Api from 'ee/api';
 import { __ } from '~/locale';
-import { BRANCH_FETCH_DELAY, ALL_BRANCHES, ALL_PROTECTED_BRANCHES } from './constants';
+import { BRANCH_FETCH_DELAY, ALL_BRANCHES, ALL_PROTECTED_BRANCHES, PLACEHOLDER } from './constants';
 
 export default {
   components: {
@@ -31,6 +31,11 @@ export default {
       required: false,
       default: false,
     },
+    allowAllBranchesOption: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     allowAllProtectedBranchesOption: {
       type: Boolean,
       required: false,
@@ -54,18 +59,26 @@ export default {
         this.selectedBranchesNames.includes(branch.name),
       );
 
-      if (this.allowAllProtectedBranchesOption && idsOnly.includes(ALL_PROTECTED_BRANCHES.id)) {
+      if (this.allowAllBranchesOption && idsOnly.includes(ALL_BRANCHES.id)) {
+        return ALL_BRANCHES;
+      } else if (
+        this.allowAllProtectedBranchesOption &&
+        idsOnly.includes(ALL_PROTECTED_BRANCHES.id)
+      ) {
         return ALL_PROTECTED_BRANCHES;
       }
 
-      if (
-        idsOnly.includes(ALL_BRANCHES.id) ||
-        (!this.allowAllProtectedBranchesOption && idsOnly.includes(ALL_PROTECTED_BRANCHES.id))
-      ) {
+      const userSelectedBranch = selectedById || selectedByName || this.selected;
+
+      if (userSelectedBranch) {
+        return userSelectedBranch;
+      } else if (this.allowAllBranchesOption) {
         return ALL_BRANCHES;
+      } else if (this.allowAllProtectedBranchesOption) {
+        return ALL_PROTECTED_BRANCHES;
       }
 
-      return selectedById || selectedByName || this.selected || ALL_BRANCHES;
+      return PLACEHOLDER;
     },
   },
   mounted() {
@@ -85,7 +98,9 @@ export default {
       const baseBranches = [];
 
       if (includeAllBranches) {
-        baseBranches.push(ALL_BRANCHES);
+        if (this.allowAllBranchesOption) {
+          baseBranches.push(ALL_BRANCHES);
+        }
 
         if (this.allowAllProtectedBranchesOption) {
           baseBranches.push(ALL_PROTECTED_BRANCHES);
