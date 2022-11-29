@@ -33,7 +33,7 @@ module Gitlab
           s_('GroupSAML|SAML Name ID and email address do not match your user account. Contact an administrator.')
         end
 
-        protected
+        private
 
         # rubocop: disable CodeReuse/ActiveRecord
         override :identity
@@ -52,10 +52,16 @@ module Gitlab
         end
 
         def update_extern_uid
-          return unless update_extern_uid_allowed?
+          existing_extern_uid = identity.extern_uid
 
-          identity.extern_uid = uid.to_s
-          save
+          success = if update_extern_uid_allowed?
+                      identity.extern_uid = uid.to_s
+                      save
+                    else
+                      false
+                    end
+
+          audit(success, existing_extern_uid, uid.to_s)
         end
 
         # When the current extern_uid doesn't match the
@@ -75,6 +81,20 @@ module Gitlab
 
         def update_extern_uid_failed?
           extern_uid_update_required? && !update_extern_uid_allowed?
+        end
+
+        def audit(success, old_uid, new_uid)
+          action = success ? "Updated" : "Failed to update"
+
+          audit_context = {
+            name: 'update_mismatched_group_saml_extern_uid',
+            author: current_user,
+            scope: current_user,
+            target: current_user,
+            message: "#{action} extern_uid from #{old_uid} to #{new_uid}"
+          }
+
+          ::Gitlab::Audit::Auditor.audit(audit_context)
         end
       end
     end

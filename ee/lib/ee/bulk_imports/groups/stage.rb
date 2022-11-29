@@ -9,7 +9,7 @@ module EE
         private
 
         def ee_config
-          @ee_config ||= {
+          {
             iterations: {
               pipeline: ::BulkImports::Groups::Pipelines::IterationsPipeline,
               maximum_source_version: '15.3.0',
@@ -37,7 +37,7 @@ module EE
 
         override :config
         def config
-          @config ||= super.deep_merge(ee_config)
+          bulk_import.source_enterprise ? super.deep_merge(ee_config) : super
         end
       end
     end

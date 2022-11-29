@@ -30,6 +30,7 @@ review-cleanup:
   before_script:
     - source scripts/review_apps/gcp_cleanup.sh
     - setup_gcp_dependencies
+    - !reference [".use-kube-context", before_script]
 
 review-k8s-resources-count-checks:
   extends:
