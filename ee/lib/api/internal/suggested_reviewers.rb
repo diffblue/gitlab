@@ -5,7 +5,6 @@ module API
   module Internal
     class SuggestedReviewers < ::API::Base
       feature_category :workflow_automation
-      urgency :low
 
       before do
         check_feature_enabled

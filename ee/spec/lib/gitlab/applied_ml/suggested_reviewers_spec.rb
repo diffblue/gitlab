@@ -10,7 +10,8 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers, feature_category: :workflo
   end
 
   describe '.verify_api_request' do
-    let(:payload) { { 'iss' => described_class::JWT_ISSUER } }
+    let(:iat) { 1.minute.ago.to_i }
+    let(:payload) { { 'iss' => described_class::JWT_ISSUER, 'iat' => iat } }
 
     subject(:decoded_token) do
       described_class.verify_api_request(headers)
@@ -37,44 +38,38 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers, feature_category: :workflo
         { described_class::INTERNAL_API_REQUEST_HEADER => encoded_token }
       end
 
-      it { is_expected.to match_array([{ "iss" => described_class::JWT_ISSUER }, { "alg" => "HS256" }]) }
+      it { is_expected.to match_array([{ 'iss' => described_class::JWT_ISSUER, 'iat' => iat }, { 'alg' => 'HS256' }]) }
+    end
+  end
+
+  describe '.secret_path' do
+    it 'returns default gitlab config' do
+      expect(described_class.secret_path).to eq(Gitlab.config.gitlab_suggested_reviewers.secret_file)
     end
   end
 
   describe '.ensure_secret!' do
-    context 'when environment value is not set' do
+    context 'when secret file exists' do
       before do
-        stub_env(described_class::SECRET_NAME, nil)
+        allow(File).to receive(:exist?).with(Gitlab.config.gitlab_suggested_reviewers.secret_file).and_return(true)
       end
 
-      it 'raises an error' do
-        expect { described_class.ensure_secret! }.to raise_error(
-          Gitlab::AppliedMl::Errors::ConfigurationError,
-          'Variable GITLAB_SUGGESTED_REVIEWERS_API_SECRET is missing'
-        )
+      it 'does not call write_secret' do
+        expect(described_class).not_to receive(:write_secret)
+
+        described_class.ensure_secret!
       end
     end
 
-    context 'when secret is not correct length' do
+    context 'when secret file does not exist' do
       before do
-        stub_env(described_class::SECRET_NAME, 'abcd1234')
+        allow(File).to receive(:exist?).with(Gitlab.config.gitlab_suggested_reviewers.secret_file).and_return(false)
       end
 
-      it 'raises an error' do
-        expect { described_class.ensure_secret! }.to raise_error(
-          Gitlab::AppliedMl::Errors::ConfigurationError,
-          "Secret must contain #{described_class::SECRET_LENGTH} bytes"
-        )
-      end
-    end
+      it 'calls write_secret' do
+        expect(described_class).to receive(:write_secret)
 
-    context 'when secret is valid' do
-      before do
-        stub_env(described_class::SECRET_NAME, secret)
-      end
-
-      it 'returns the secret' do
-        expect(described_class.ensure_secret!).to eq(secret)
+        described_class.ensure_secret!
       end
     end
   end

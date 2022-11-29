@@ -5,10 +5,8 @@ module Gitlab
     module SuggestedReviewers
       INTERNAL_API_REQUEST_HEADER = 'Gitlab-Sugggested-Reviewers-Api-Request'
       JWT_ISSUER = 'gitlab-suggested-reviewers'
-      SECRET_NAME = 'GITLAB_SUGGESTED_REVIEWERS_API_SECRET'
-      SECRET_LENGTH = 64
+      EXPIRATION = 5.minutes
 
-      include Gitlab::Utils::StrongMemoize
       include JwtAuthenticatable
 
       class << self
@@ -16,30 +14,23 @@ module Gitlab
           token = request_headers[INTERNAL_API_REQUEST_HEADER]
           return unless token
 
-          decode_jwt(token, issuer: JWT_ISSUER)
+          decode_jwt(
+            token,
+            issuer: JWT_ISSUER,
+            iat_after: Time.current - EXPIRATION
+          )
         rescue JWT::DecodeError
           nil
         end
 
-        # rubocop:disable Gitlab/StrongMemoizeAttr
-        def secret
-          strong_memoize(:secret) do
-            ENV.fetch(SECRET_NAME)
-          end
+        def secret_path
+          Gitlab.config.gitlab_suggested_reviewers.secret_file
         end
-        # rubocop:enable Gitlab/StrongMemoizeAttr
 
         def ensure_secret!
-          secret = ENV[SECRET_NAME]
+          return if File.exist?(secret_path)
 
-          raise Gitlab::AppliedMl::Errors::ConfigurationError, "Variable #{SECRET_NAME} is missing" if secret.blank?
-
-          if secret.length != SECRET_LENGTH
-            raise Gitlab::AppliedMl::Errors::ConfigurationError,
-                  "Secret must contain #{SECRET_LENGTH} bytes"
-          end
-
-          secret
+          write_secret
         end
       end
     end

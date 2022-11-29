@@ -18,7 +18,7 @@ RSpec.describe API::Internal::SuggestedReviewers, feature_category: :workflow_au
     end
 
     before do
-      stub_env(Gitlab::AppliedMl::SuggestedReviewers::SECRET_NAME, secret)
+      allow(Gitlab::AppliedMl::SuggestedReviewers).to receive(:secret).and_return(secret)
     end
 
     context 'when feature flag is disabled' do
@@ -49,7 +49,10 @@ RSpec.describe API::Internal::SuggestedReviewers, feature_category: :workflow_au
 
       context 'when authentication header is set' do
         let(:headers) do
-          jwt_token = JWT.encode({ 'iss' => Gitlab::AppliedMl::SuggestedReviewers::JWT_ISSUER }, secret, 'HS256')
+          jwt_token = JWT.encode(
+            { 'iss' => Gitlab::AppliedMl::SuggestedReviewers::JWT_ISSUER, 'iat' => 1.minute.ago.to_i },
+            secret, 'HS256'
+          )
 
           { Gitlab::AppliedMl::SuggestedReviewers::INTERNAL_API_REQUEST_HEADER => jwt_token }
         end
