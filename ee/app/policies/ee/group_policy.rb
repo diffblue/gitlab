@@ -521,8 +521,8 @@ module EE
     def lookup_access_level!(for_any_session: false)
       if for_any_session
         return ::GroupMember::NO_ACCESS if no_active_sso_session?
-      else
-        return ::GroupMember::NO_ACCESS if needs_new_sso_session?
+      elsif needs_new_sso_session?
+        return ::GroupMember::NO_ACCESS
       end
 
       super

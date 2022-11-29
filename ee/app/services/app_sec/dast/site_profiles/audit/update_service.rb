@@ -9,10 +9,11 @@ module AppSec
             new_params.each do |property, new_value|
               old_value = old_params[property]
 
-              if new_value.is_a?(Array)
+              case new_value
+              when Array
                 next if old_value.sort == new_value.sort
-              else
-                next if old_value == new_value
+              when old_value
+                next
               end
 
               ::Gitlab::Audit::Auditor.audit(

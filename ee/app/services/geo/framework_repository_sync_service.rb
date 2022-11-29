@@ -79,19 +79,17 @@ module Geo
         @new_repository = true
       elsif repository.exists?
         fetch_geo_mirror
-      else
-        if Feature.enabled?('geo_use_clone_on_first_sync')
-          clone_geo_mirror
+      elsif Feature.enabled?('geo_use_clone_on_first_sync')
+        clone_geo_mirror
 
-          @new_repository = true
-        else
-          ensure_repository
-          # Because we ensure a repository exists by this point, we need to
-          # mark it as new, even if fetching the mirror fails, we should run
-          # housekeeping to enable object deduplication to run
-          @new_repository = true
-          fetch_geo_mirror
-        end
+        @new_repository = true
+      else
+        ensure_repository
+        # Because we ensure a repository exists by this point, we need to
+        # mark it as new, even if fetching the mirror fails, we should run
+        # housekeeping to enable object deduplication to run
+        @new_repository = true
+        fetch_geo_mirror
       end
 
       update_root_ref

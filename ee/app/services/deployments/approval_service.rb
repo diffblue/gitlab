@@ -29,12 +29,10 @@ module Deployments
         return approval if approval.status == status
 
         approval.tap { |a| a.update(status: status, comment: comment) }
+      elsif environment.has_approval_rules?
+        deployment.approvals.create(user: current_user, status: status, comment: comment, approval_rule: approval_rule)
       else
-        if environment.has_approval_rules?
-          deployment.approvals.create(user: current_user, status: status, comment: comment, approval_rule: approval_rule)
-        else
-          deployment.approvals.create(user: current_user, status: status, comment: comment)
-        end
+        deployment.approvals.create(user: current_user, status: status, comment: comment)
       end
     end
 

@@ -33,8 +33,8 @@ module ProtectedEnvironments
 
       if inherit_group_membership?
         return group.member?(user) if group_type?
-      else
-        return group.users.exists?(user.id) if group_type?
+      elsif group_type?
+        return group.users.exists?(user.id)
       end
 
       protected_environment.container_access_level(user) >= access_level

@@ -157,16 +157,14 @@ module Iterations
         backfill_iterations = ((Date.current - new_start_date) / duration_in_days).floor
 
         backfill_iterations + 1 + iterations_in_advance
+      elsif start_date == new_start_date
+        iterations_in_advance
       else
-        if start_date == new_start_date
-          iterations_in_advance
-        else
-          prev_open_due_date = open_iterations.any? ? open_iterations.first.due_date : Date.current
-          future_count = ((new_start_date - prev_open_due_date - 1) / duration_in_days).floor
+        prev_open_due_date = open_iterations.any? ? open_iterations.first.due_date : Date.current
+        future_count = ((new_start_date - prev_open_due_date - 1) / duration_in_days).floor
 
-          # Take a max b/c iterations are never deleted.
-          [0, iterations_in_advance - future_count].max
-        end
+        # Take a max b/c iterations are never deleted.
+        [0, iterations_in_advance - future_count].max
       end
     end
 
