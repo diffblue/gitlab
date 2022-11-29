@@ -84,7 +84,7 @@ To sign a commit:
 1. Push to GitLab.
 1. Check that your commits [are verified](#verify-commits).
    Signature verification uses the `allowed_signers` file to associate emails and SSH keys.
-   For help configuring this file, read [Verifying commits locally](#verifying-commits-locally).
+   For help configuring this file, read [Verify commits locally](#verify-commits-locally).
 
 ## Verify commits
 
@@ -104,10 +104,11 @@ they are signed:
 1. To display the signature details for a commit, select **Verified**. GitLab shows
    the SSH key's fingerprint.
 
-## Verifying commits locally
+## Verify commits locally
 
-Verifying commits locally requires you to create an [allowed signers file](https://man7.org/linux/man-pages/man1/ssh-keygen.1.html#ALLOWED_SIGNERS)
-so that Git can tell which SSH public key belongs to which user.
+To verify commits locally, create an
+[allowed signers file](https://man7.org/linux/man-pages/man1/ssh-keygen.1.html#ALLOWED_SIGNERS)
+for Git to associate SSH public keys with users:
 
 1. Create an allowed signers file:
 
@@ -121,10 +122,9 @@ so that Git can tell which SSH public key belongs to which user.
    git config gpg.ssh.allowedSignersFile "$(pwd)/allowed_signers"
    ```
 
-1. Add your entry to the allowed signers file:
-
-   To add your email address and public SSH key to the `allowed_signers` file, use
-   this command. Replace `<MY_KEY>` with the name of your key, and `~/.ssh/allowed_signers`
+1. Add your entry to the allowed signers file. Use this command to add your
+   email address and public SSH key to the `allowed_signers` file. Replace `<MY_KEY>`
+   with the name of your key, and `~/.ssh/allowed_signers`
    with the location of your project's `allowed_signers` file:
 
    ```shell
@@ -140,7 +140,7 @@ so that Git can tell which SSH public key belongs to which user.
    example@gitlab.com namespaces="git" ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAmaTS47vRmsKyLyK1jlIFJn/i8wdGQ3J49LYyIYJ2hv
    ```
 
-   This step needs to be repeated for each user who you want to verify signatures for.
+1. Repeat the previous step for each user who you want to verify signatures for.
    Consider checking this file in to your Git repository if you want to locally
    verify signatures for many different contributors.
 
@@ -148,6 +148,7 @@ so that Git can tell which SSH public key belongs to which user.
 
    ```shell
    $ git log --show-signature
+
    commit e2406b6cd8ebe146835ceab67ff4a5a116e09154 (HEAD -> main, origin/main, origin/HEAD)
    Good "git" signature for johndoe@example.com with ED25519 key SHA256:Ar44iySGgxic+U6Dph4Z9Rp+KDaix5SFGFawovZLAcc
    Author: John Doe <johndoe@example.com>
