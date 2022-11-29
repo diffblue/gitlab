@@ -119,7 +119,7 @@ module RuboCop
         end
 
         def contains_demonstrative_this?(description)
-          string?(description) && description.value.strip.include?(' this ')
+          string?(description) && /\bthis\b/.match?(description.value.strip)
         end
 
         # Returns true if `description` node is a `:str` (as opposed to a `#copy_field_description` call)
