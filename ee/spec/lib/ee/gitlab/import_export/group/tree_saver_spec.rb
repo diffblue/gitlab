@@ -37,6 +37,10 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
     end
 
     context 'epics relation' do
+      before do
+        stub_licensed_features(epics: true)
+      end
+
       let(:epic_json) do
         read_association(group, 'epics').find do |attrs|
           attrs['id'] == epic.id
@@ -116,6 +120,17 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
         event = epic_json['resource_state_events'].first
 
         expect(event['state']).to eq('closed')
+      end
+
+      context 'when epic parent is not readable' do
+        before do
+          epic.update!(parent: create(:epic, group: create(:group, :private)))
+        end
+
+        it 'filters out inaccessible epic object' do
+          expect_successful_save(group_tree_saver)
+          expect(epic_json['parent']).to be_nil
+        end
       end
     end
 

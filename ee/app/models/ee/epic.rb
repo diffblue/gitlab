@@ -700,6 +700,12 @@ module EE
       true
     end
 
+    def exportable_association?(key, current_user: nil)
+      return false unless key == :parent
+
+      parent.present? && current_user&.can?(:read_epic, parent)
+    end
+
     private
 
     def validate_parent_epic

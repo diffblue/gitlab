@@ -1380,4 +1380,45 @@ RSpec.describe Epic do
       expect(epic.confidentiality_errors).to be_empty
     end
   end
+
+  describe '#exportable_association?' do
+    let_it_be(:other_group) { create(:group, :private) }
+    let_it_be(:cross_group_parent) { create(:epic, group: other_group) }
+    let_it_be_with_reload(:epic) { create(:epic, group: group, parent: cross_group_parent) }
+
+    let(:key) { :parent }
+
+    subject { epic.exportable_association?(key, current_user: user) }
+
+    it { is_expected.to be_falsey }
+
+    context 'when user can read epic' do
+      before do
+        group.add_developer(user)
+        stub_licensed_features(epics: true)
+      end
+
+      it { is_expected.to be_falsey }
+
+      context "when user can read epic's parent" do
+        before do
+          other_group.add_developer(user)
+        end
+
+        it { is_expected.to be_truthy }
+
+        context 'for an unknown key' do
+          let(:key) { :labels }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'for an unauthenticated user' do
+          let(:user) { nil }
+
+          it { is_expected.to be_falsey }
+        end
+      end
+    end
+  end
 end
