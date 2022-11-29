@@ -184,6 +184,7 @@ module API
         mount ::API::BroadcastMessages
         mount ::API::BulkImports
         mount ::API::Ci::JobArtifacts
+        mount ::API::Groups
         mount ::API::Ci::Jobs
         mount ::API::Ci::ResourceGroups
         mount ::API::Ci::Runner
@@ -305,7 +306,6 @@ module API
       mount ::API::GroupDebianDistributions
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
-      mount ::API::Groups
       mount ::API::Issues
       mount ::API::Labels
       mount ::API::MavenPackages
