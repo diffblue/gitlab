@@ -81,7 +81,7 @@ describe('Image Filter component', () => {
     });
 
     it('displays the all option item', () => {
-      expect(findFilterItems().at(0).props()).toStrictEqual({
+      expect(findFilterItems().at(0).props()).toMatchObject({
         isChecked: true,
         text: 'All images',
       });
