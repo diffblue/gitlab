@@ -21,13 +21,11 @@ module SlashCommands
         return Gitlab::SlashCommands::Presenters::Error.new(error_message).message
       end
 
+      chat_user = ChatNames::FindUserService.new(params[:team_id], params[:user_id]).execute
       integration = slack_integration.integration
-      project = integration.project
-
-      chat_user = ChatNames::FindUserService.new(integration, params).execute
 
       if chat_user&.user
-        Gitlab::SlashCommands::Command.new(project, chat_user, params).execute
+        Gitlab::SlashCommands::Command.new(integration.project, chat_user, params).execute
       else
         url = ChatNames::AuthorizeUserService.new(integration, params).execute
         Gitlab::SlashCommands::Presenters::Access.new(url).authorize

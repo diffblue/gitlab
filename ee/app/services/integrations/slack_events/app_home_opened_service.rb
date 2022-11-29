@@ -66,11 +66,7 @@ module Integrations
       strong_memoize_attr :slack_installation
 
       def slack_gitlab_user_connection
-        ChatName.find_by_integration_id_and_team_id_and_chat_id(
-          slack_installation.integration_id,
-          slack_workspace_id,
-          slack_user_id
-        )
+        ChatNames::FindUserService.new(slack_workspace_id, slack_user_id).execute
       end
       strong_memoize_attr :slack_gitlab_user_connection
 
