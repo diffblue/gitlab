@@ -372,6 +372,8 @@ group :development do
   gem 'better_errors', '~> 2.9.1'
 
   gem 'sprite-factory', '~> 1.7'
+
+  gem "listen", "~> 3.7"
 end
 
 group :development, :test do
