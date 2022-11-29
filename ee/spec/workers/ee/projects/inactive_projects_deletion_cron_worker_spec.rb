@@ -8,7 +8,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
   describe "#perform", :clean_gitlab_redis_shared_state, :sidekiq_inline do
     subject(:worker) { described_class.new }
 
-    let_it_be(:admin_user) { create(:user, :admin) }
+    let_it_be(:admin_bot) { create(:user, :admin_bot) }
     let_it_be(:non_admin_user) { create(:user) }
     let_it_be(:group) { create(:group) }
     let_it_be(:new_blank_project) do
@@ -87,7 +87,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
 
         expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
         expect(::Projects::MarkForDeletionService).not_to receive(:perform_in)
-        expect(::Projects::DestroyService).to receive(:new).with(inactive_large_project, admin_user, {})
+        expect(::Projects::DestroyService).to receive(:new).with(inactive_large_project, admin_bot, {})
                                                            .at_least(:once).and_call_original
 
         worker.perform
@@ -120,7 +120,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
 
           expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
           expect(::Projects::MarkForDeletionService).not_to receive(:perform_in)
-          expect(::Projects::DestroyService).to receive(:new).with(inactive_large_project, admin_user, {})
+          expect(::Projects::DestroyService).to receive(:new).with(inactive_large_project, admin_bot, {})
                                                              .at_least(:once).and_call_original
 
           worker.perform
@@ -147,7 +147,7 @@ RSpec.describe Projects::InactiveProjectsDeletionCronWorker do
           end
 
           expect(::Projects::InactiveProjectsDeletionNotificationWorker).not_to receive(:perform_async)
-          expect(::Projects::MarkForDeletionService).to receive(:new).with(inactive_large_project, admin_user, {})
+          expect(::Projects::MarkForDeletionService).to receive(:new).with(inactive_large_project, admin_bot, {})
                                                                      .and_call_original
 
           worker.perform

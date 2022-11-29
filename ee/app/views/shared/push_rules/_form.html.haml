@@ -26,19 +26,19 @@
 
 .form-group
   = f.label :commit_message_regex, s_("PushRules|Require expression in commit messages"), class: "label-bold"
-  = f.text_field :commit_message_regex, class: "form-control", placeholder: 'Example: Fixes \d+\..*', data: { qa_selector: 'commit_message_field' }
+  = f.text_field :commit_message_regex, class: "form-control", placeholder: _('Example: Fixes \d+\..*'), data: { qa_selector: 'commit_message_field' }
   .form-text.text-muted
     = s_("PushRules|All commit messages must match this %{wiki_syntax_link_start}regular expression%{wiki_syntax_link_end}. If empty, commit messages are not required to match any expression.").html_safe % { wiki_syntax_link_start: wiki_syntax_link_start, wiki_syntax_link_end: '</a>'.html_safe }
 
 .form-group
   = f.label :commit_message_negative_regex, s_("PushRules|Reject expression in commit messages"), class: 'label-bold'
-  = f.text_field :commit_message_negative_regex, class: "form-control", placeholder: 'Example: ssh\:\/\/', data: { qa_selector: 'deny_commit_message_field' }
+  = f.text_field :commit_message_negative_regex, class: "form-control", placeholder: _('Example: ssh\:\/\/'), data: { qa_selector: 'deny_commit_message_field' }
   .form-text.text-muted
     = s_("PushRules|Commit messages cannot match this %{wiki_syntax_link_start}regular expression%{wiki_syntax_link_end}. If empty, commit messages are not rejected based on any expression.").html_safe % { wiki_syntax_link_start: wiki_syntax_link_start, wiki_syntax_link_end: '</a>'.html_safe }
 
 .form-group
   = f.label :branch_name_regex, s_("PushRules|Branch name"), class: "label-bold"
-  = f.text_field :branch_name_regex, class: "form-control", placeholder: 'Example: (feature|hotfix)\/*', data: { qa_selector: 'branch_name_field' }
+  = f.text_field :branch_name_regex, class: "form-control", placeholder: _('Example: (feature|hotfix)\/*'), data: { qa_selector: 'branch_name_field' }
   .form-text.text-muted
     = s_("PushRules|All branch names must match this %{wiki_syntax_link_start}regular expression%{wiki_syntax_link_end}. If empty, any branch name is allowed.").html_safe % { wiki_syntax_link_start: wiki_syntax_link_start, wiki_syntax_link_end: '</a>'.html_safe }
 
@@ -50,7 +50,7 @@
 
 .form-group
   = f.label :file_name_regex, s_("PushRules|Prohibited file names"), class: "label-bold"
-  = f.text_field :file_name_regex, class: "form-control", placeholder: 'Example: (jar|exe)$', data: { qa_selector: 'file_name_field' }
+  = f.text_field :file_name_regex, class: "form-control", placeholder: _('Example: (jar|exe)$'), data: { qa_selector: 'file_name_field' }
   .form-text.text-muted
     = s_('PushRules|All committed filenames cannot match this %{wiki_syntax_link_start}regular expression%{wiki_syntax_link_end}. If empty, any filename is allowed.').html_safe % { wiki_syntax_link_start: wiki_syntax_link_start, wiki_syntax_link_end: '</a>'.html_safe }
 

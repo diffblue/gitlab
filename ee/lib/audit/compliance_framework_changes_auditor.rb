@@ -22,7 +22,8 @@ module Audit
 
         ::Gitlab::Audit::Auditor.audit(audit_context)
       else
-        audit_changes(:framework_id, as: 'compliance framework', model: model, entity: @project)
+        audit_changes(:framework_id, as: 'compliance framework', model: model, entity: @project,
+                                     event_type: 'compliance_framework_id_updated')
       end
     end
 

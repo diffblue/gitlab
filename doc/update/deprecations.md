@@ -52,6 +52,26 @@ sole discretion of GitLab Inc.
 
 <div class="deprecation removal-160 breaking-change">
 
+### DAST API variables
+
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2022-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+With the switch to the new DAST API analyzer in GitLab 15.6, two legacy DAST API variables are being deprecated. The variables `DAST_API_HOST_OVERRIDE` and `DAST_API_SPECIFICATION` will no longer be used for DAST API scans.
+
+`DAST_API_HOST_OVERRIDE` has been deprecated in favor of using the `DAST_API_TARGET_URL` to automatically override the host in the OpenAPI specification.
+
+`DAST_API_SPECIFICATION` has been deprecated in favor of `DAST_API_OPENAPI`. To continue using an OpenAPI specification to guide the test, users must replace the `DAST_API_SPECIFICATION` variable with the `DAST_API_OPENAPI` variable. The value can remain the same, but the variable name must be replaced.
+
+These two variables will be removed in GitLab 16.0.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
 ### KAS Metrics Port in GitLab Helm Chart
 
 End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
@@ -63,6 +83,33 @@ Review the details carefully before upgrading.
 
 The `gitlab.kas.metrics.port` has been deprecated in favor of the new `gitlab.kas.observability.port` configuration field for the [GitLab Helm Chart](https://gitlab.com/gitlab-org/charts/gitlab/-/merge_requests/2839).
 This port is used for much more than just metrics, which warranted this change to avoid confusion in configuration.
+
+</div>
+
+<div class="deprecation removal-160 breaking-change">
+
+### Support for REST API endpoints that reset runner registration tokens
+
+End of Support: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)<br />
+Planned removal: GitLab <span class="removal-milestone">16.0</span> (2023-05-22)
+
+WARNING:
+This is a [breaking change](https://docs.gitlab.com/ee/development/deprecation_guidelines/).
+Review the details carefully before upgrading.
+
+The support for runner registration tokens is deprecated. As a consequence, the REST API endpoints to reset a registration token are also deprecated and will
+be removed in GitLab 16.0.
+The deprecated endpoints are:
+
+- `POST /runners/reset_registration_token`
+- `POST /projects/:id/runners/reset_registration_token`
+- `POST /groups/:id/runners/reset_registration_token`
+
+In GitLab 15.8, we plan to implement a new method to bind runners to a GitLab instance,
+as part of the new [GitLab Runner token architecture](https://docs.gitlab.com/ee/architecture/blueprints/runner_tokens/).
+This new architecture introduces a new method for registering runners and will eliminate the legacy
+[runner registration token](https://docs.gitlab.com/ee/security/token_overview.html#runner-registration-tokens).
+From GitLab 16.0 and later, the runner registration methods implemented by the new GitLab Runner token architecture will be the only supported methods.
 
 </div>
 
