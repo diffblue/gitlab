@@ -649,6 +649,7 @@ RSpec.describe Vulnerabilities::Finding do
       context 'when a vulnerability present for a dismissed finding' do
         before do
           create(:vulnerability, project: dismissed_finding.project, findings: [dismissed_finding])
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
         end
 
         it 'still reports a dismissed state' do

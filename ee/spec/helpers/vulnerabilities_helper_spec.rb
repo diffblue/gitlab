@@ -151,16 +151,40 @@ RSpec.describe VulnerabilitiesHelper do
     describe '[:has_mr]' do
       subject { helper.vulnerability_details(vulnerability, pipeline)[:has_mr] }
 
-      context 'with existing merge request feedback' do
+      context 'when `deprecate_vulnerabilities_feedback` is enabled' do
         before do
-          create(:vulnerability_feedback, :merge_request, project: project, pipeline: pipeline, finding_uuid: finding.uuid)
+          stub_feature_flags(deprecate_vulnerabilities_feedback: true)
         end
 
-        it { is_expected.to be_truthy }
+        context 'with existing merge request' do
+          before do
+            create(:vulnerabilities_merge_request_link, vulnerability: vulnerability)
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'without existing merge request' do
+          it { is_expected.to be_falsey }
+        end
       end
 
-      context 'without feedback' do
-        it { is_expected.to be_falsey }
+      context 'when `deprecate_vulnerabilities_feedback` is disabled' do
+        before do
+          stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+        end
+
+        context 'with existing merge request feedback' do
+          before do
+            create(:vulnerability_feedback, :merge_request, project: project, pipeline: pipeline, finding_uuid: finding.uuid)
+          end
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'without feedback' do
+          it { is_expected.to be_falsey }
+        end
       end
     end
 

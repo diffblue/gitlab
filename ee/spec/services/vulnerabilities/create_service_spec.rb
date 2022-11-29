@@ -44,6 +44,10 @@ RSpec.describe Vulnerabilities::CreateService do
     context 'and finding is dismissed' do
       let(:finding) { create(:vulnerabilities_finding, :with_dismissal_feedback, project: project) }
 
+      before do
+        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+      end
+
       it 'creates a vulnerability in a dismissed state and sets dismissal information' do
         expect { subject }.to change { project.vulnerabilities.count }.by(1)
 
