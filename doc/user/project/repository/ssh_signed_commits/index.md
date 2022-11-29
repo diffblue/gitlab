@@ -20,7 +20,7 @@ GitLab account to cryptographically verify the commit signature.
 If successful, GitLab displays a **Verified** label on the commit.
 
 You may use the same SSH keys for `git+ssh` authentication to GitLab
-and signing commit signatures as long as their usage type is `Authentication & Signing`.
+and signing commit signatures as long as their usage type is **Authentication & Signing**.
 It can be verified on the page for [adding an SSH key to your GitLab account](../../../ssh.md#add-an-ssh-key-to-your-gitlab-account).
 
 To learn more about managing the SSH keys associated with your GitLab account, read
@@ -28,11 +28,10 @@ To learn more about managing the SSH keys associated with your GitLab account, r
 
 ## Configure Git to sign commits with your SSH key
 
-After you have [created an SSH key](../../../ssh.md#generate-an-ssh-key-pair) and
-[added it to your GitLab account](../../../ssh.md#add-an-ssh-key-to-your-gitlab-account)
-or [generated it using a password manager](../../../ssh.md#generate-an-ssh-key-pair-with-a-password-manager),
-and the usage type of the key is either `Authentication & Signing` or `Signing`,
-you need to configure Git to begin using it.
+After you [create an SSH key](../../../ssh.md#generate-an-ssh-key-pair) and
+[add it to your GitLab account](../../../ssh.md#add-an-ssh-key-to-your-gitlab-account)
+or [generate it using a password manager](../../../ssh.md#generate-an-ssh-key-pair-with-a-password-manager),
+configure Git to begin using the key.
 
 Prerequisites:
 
@@ -42,11 +41,12 @@ Prerequisites:
   NOTE:
   OpenSSH 8.7 has broken signing functionality. If you are on OpenSSH 8.7, upgrade to OpenSSH 8.8.
 
-- A SSH key of one of these types:
+- A SSH key with the usage type of either **Authentication & Signing** or **Signing**.
+  The SSH key must be one of these types:
   - [ED25519](../../../ssh.md#ed25519-ssh-keys) (recommended)
   - [RSA](../../../ssh.md#rsa-ssh-keys)
 
-To configure Git:
+To configure Git to use your key:
 
 1. Configure Git to use SSH for commit signing:
 
