@@ -1,10 +1,14 @@
-import { ACTIVE_CONNECTION_TIME } from './constants';
+import { ACTIVE_CONNECTION_TIME, NAME_MAX_LENGTH } from './constants';
+
+function getTruncatedName(name) {
+  return name.length > NAME_MAX_LENGTH ? name.substring(0, NAME_MAX_LENGTH) : name;
+}
 
 export function generateAgentRegistrationCommand({ name, token, version, address }) {
   return `helm repo add gitlab https://charts.gitlab.io
 helm repo update
 helm upgrade --install ${name} gitlab/gitlab-agent \\
-    --namespace gitlab-agent \\
+    --namespace gitlab-agent-${getTruncatedName(name)} \\
     --create-namespace \\
     --set image.tag=v${version} \\
     --set config.token=${token} \\
