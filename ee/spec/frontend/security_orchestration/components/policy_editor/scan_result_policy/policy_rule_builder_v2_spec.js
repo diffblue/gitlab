@@ -1,4 +1,3 @@
-import { GlButton } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import PolicyRuleBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_rule_builder_v2.vue';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
@@ -21,7 +20,7 @@ describe('PolicyRuleBuilder V2', () => {
     });
   };
 
-  const findDeleteBtn = () => wrapper.findComponent(GlButton);
+  const findDeleteBtn = () => wrapper.findByTestId('remove-rule');
 
   afterEach(() => {
     wrapper.destroy();

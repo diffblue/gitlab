@@ -1,5 +1,5 @@
 <script>
-import { GlSprintf, GlForm, GlButton, GlFormSelect } from '@gitlab/ui';
+import { GlSprintf, GlForm, GlButton, GlListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 import { getDefaultRule, SCAN_FINDING, LICENSE_FINDING } from './lib';
@@ -10,7 +10,7 @@ export default {
     GlSprintf,
     GlForm,
     GlButton,
-    GlFormSelect,
+    GlListbox,
   },
   props: {
     initRule: {
@@ -22,6 +22,9 @@ export default {
     return {};
   },
   computed: {
+    scanRuleTypeToggleText() {
+      return this.scanType ? '' : this.$options.i18n.scanRuleTypeToggleText;
+    },
     scanType: {
       get() {
         return this.initRule.type;
@@ -43,8 +46,10 @@ export default {
       this.$emit('changed', { ...this.initRule, ...value });
     },
   },
+  i18n: {
+    scanRuleTypeToggleText: s__('SecurityOrchestration|Select scan type'),
+  },
   scanTypeOptions: [
-    { value: '', text: s__('SecurityOrchestration|Select scan type') },
     {
       value: SCAN_FINDING,
       text: s__('SecurityOrchestration|Security Scan'),
@@ -68,11 +73,12 @@ export default {
         </template>
 
         <template #selector>
-          <gl-form-select
+          <gl-listbox
             id="scanType"
             v-model="scanType"
             class="gl-display-inline! gl-w-auto"
-            :options="$options.scanTypeOptions"
+            :items="$options.scanTypeOptions"
+            :toggle-text="scanRuleTypeToggleText"
           />
         </template>
       </gl-sprintf>
