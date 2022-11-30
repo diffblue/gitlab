@@ -35980,6 +35980,9 @@ msgstr ""
 msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}"
 msgstr ""
 
+msgid "ScanResultPolicy|%{ifLabelStart}if%{ifLabelEnd} %{selector}"
+msgstr ""
+
 msgid "ScanResultPolicy|%{thenLabelStart}Then%{thenLabelEnd} Require approval from %{approvalsRequired} of the following approvers:"
 msgstr ""
 
@@ -36680,6 +36683,9 @@ msgstr ""
 msgid "SecurityOrchestration|Latest scan run against %{agent}"
 msgstr ""
 
+msgid "SecurityOrchestration|License Scan"
+msgstr ""
+
 msgid "SecurityOrchestration|New policy"
 msgstr ""
 
@@ -36791,6 +36797,9 @@ msgstr ""
 msgid "SecurityOrchestration|Security Approvals"
 msgstr ""
 
+msgid "SecurityOrchestration|Security Scan"
+msgstr ""
+
 msgid "SecurityOrchestration|Security policy project was linked successfully"
 msgstr ""
 
@@ -36804,6 +36813,9 @@ msgid "SecurityOrchestration|Select groups"
 msgstr ""
 
 msgid "SecurityOrchestration|Select policy"
+msgstr ""
+
+msgid "SecurityOrchestration|Select scan type"
 msgstr ""
 
 msgid "SecurityOrchestration|Select security project"
