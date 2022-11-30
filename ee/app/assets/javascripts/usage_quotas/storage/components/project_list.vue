@@ -2,7 +2,10 @@
 import { GlTable, GlLink } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
+import { namespaceContainerRegistryPopoverContent } from '../constants';
 import NumberToHumanSize from './number_to_human_size.vue';
+import StorageTypeHelpLink from './storage_type_help_link.vue';
+import StorageTypeWarning from './storage_type_warning.vue';
 
 export default {
   name: 'ProjectList',
@@ -11,6 +14,8 @@ export default {
     GlLink,
     ProjectAvatar,
     NumberToHumanSize,
+    StorageTypeHelpLink,
+    StorageTypeWarning,
   },
   props: {
     projects: {
@@ -21,19 +26,42 @@ export default {
       type: Boolean,
       required: true,
     },
+    helpLinks: {
+      type: Object,
+      required: true,
+    },
+  },
+  methods: {
+    /**
+     * Builds a gl-table td cell slot name for particular field
+     * @param {string} key
+     * @returns {string} */
+    getHeaderSlotName(key) {
+      return `head(${key})`;
+    },
   },
   fields: [
     { key: 'name', label: s__('UsageQuota|Project') },
-    { key: 'storageSize', label: s__('UsageQuota|Total') },
-    { key: 'repositorySize', label: s__('UsageQuota|Repository') },
-    { key: 'uploadsSize', label: s__('UsageQuota|Uploads') },
-    { key: 'snippetsSize', label: s__('UsageQuota|Snippets') },
-    { key: 'buildArtifactsSize', label: s__('UsageQuota|Artifacts') },
-    { key: 'containerRegistrySize', label: s__('UsageQuota|Container Registry') },
-    { key: 'lfsObjectsSize', label: s__('UsageQuota|LFS') },
-    { key: 'packagesSize', label: s__('UsageQuota|Packages') },
-    { key: 'wikiSize', label: s__('UsageQuota|Wiki') },
-  ],
+    { key: 'storage', label: s__('UsageQuota|Total') },
+    { key: 'repository', label: s__('UsageQuota|Repository') },
+    { key: 'uploads', label: s__('UsageQuota|Uploads') },
+    { key: 'snippets', label: s__('UsageQuota|Snippets') },
+    { key: 'buildArtifacts', label: s__('UsageQuota|Artifacts') },
+    {
+      key: 'containerRegistry',
+      label: s__('UsageQuota|Container Registry'),
+    },
+    { key: 'lfsObjects', label: s__('UsageQuota|LFS') },
+    { key: 'packages', label: s__('UsageQuota|Packages') },
+    { key: 'wiki', label: s__('UsageQuota|Wiki') },
+  ].map((f) => ({
+    ...f,
+    tdClass: 'gl-px-3!',
+    thClass: 'gl-px-3!',
+  })),
+  i18n: {
+    namespaceContainerRegistryPopoverContent,
+  },
 };
 </script>
 
@@ -47,6 +75,18 @@ export default {
     small
     stacked="lg"
   >
+    <template v-for="field in $options.fields" #[getHeaderSlotName(field.key)]>
+      <div :key="field.key" :data-testid="'th-' + field.key">
+        {{ field.label }}
+
+        <storage-type-help-link
+          v-if="field.key in helpLinks"
+          :storage-type="field.key"
+          :help-links="helpLinks"
+        />
+      </div>
+    </template>
+
     <template #cell(name)="{ item: project }">
       <project-avatar
         :project-id="project.id"
@@ -62,38 +102,41 @@ export default {
       }}</gl-link>
     </template>
 
-    <template #cell(storageSize)="{ item: project }">
+    <template #cell(storage)="{ item: project }">
       <number-to-human-size :value="project.statistics.storageSize" />
     </template>
 
-    <template #cell(repositorySize)="{ item: project }">
+    <template #cell(repository)="{ item: project }">
       <number-to-human-size :value="project.statistics.repositorySize" />
     </template>
-    <template #cell(lfsObjectsSize)="{ item: project }">
+
+    <template #cell(lfsObjects)="{ item: project }">
       <number-to-human-size :value="project.statistics.lfsObjectsSize" />
     </template>
 
-    <template #cell(containerRegistrySize)="{ item: project }">
+    <template #cell(containerRegistry)="{ item: project }">
       <number-to-human-size :value="project.statistics.containerRegistrySize" />
+
+      <storage-type-warning :content="$options.i18n.namespaceContainerRegistryPopoverContent" />
     </template>
 
-    <template #cell(buildArtifactsSize)="{ item: project }">
+    <template #cell(buildArtifacts)="{ item: project }">
       <number-to-human-size :value="project.statistics.buildArtifactsSize" />
     </template>
 
-    <template #cell(packagesSize)="{ item: project }">
+    <template #cell(packages)="{ item: project }">
       <number-to-human-size :value="project.statistics.packagesSize" />
     </template>
 
-    <template #cell(wikiSize)="{ item: project }">
+    <template #cell(wiki)="{ item: project }">
       <number-to-human-size :value="project.statistics.wikiSize" />
     </template>
 
-    <template #cell(snippetsSize)="{ item: project }">
+    <template #cell(snippets)="{ item: project }">
       <number-to-human-size :value="project.statistics.snippetsSize" />
     </template>
 
-    <template #cell(uploadsSize)="{ item: project }">
+    <template #cell(uploads)="{ item: project }">
       <number-to-human-size :value="project.statistics.uploadsSize" />
     </template>
   </gl-table>

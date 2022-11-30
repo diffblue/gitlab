@@ -324,7 +324,11 @@ export default {
         />
       </div>
 
-      <project-list :projects="namespaceProjects" :is-loading="isQueryLoading" />
+      <project-list
+        :projects="namespaceProjects"
+        :is-loading="isQueryLoading"
+        :help-links="helpLinks"
+      />
 
       <div class="gl-display-flex gl-justify-content-center gl-mt-5">
         <gl-keyset-pagination
