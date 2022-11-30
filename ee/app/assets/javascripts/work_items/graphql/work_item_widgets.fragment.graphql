@@ -48,6 +48,12 @@ fragment WorkItemWidgets on WorkItemWidget {
       iid
       title
       confidential
+      webUrl
+      workItemType {
+        id
+        name
+        iconName
+      }
     }
     children {
       nodes {
