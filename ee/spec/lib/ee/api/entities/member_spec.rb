@@ -58,4 +58,22 @@ RSpec.describe API::Entities::Member do
       expect(entity_representation[:membership_state]).to eq member.human_state_name
     end
   end
+
+  context 'when the member is provisioned' do
+    it 'does not include the user email address' do
+      expect(entity_representation.keys).not_to include(:email)
+    end
+
+    context 'when the current user manages the provisioned user' do
+      before do
+        allow(member.user).to receive(:provisioned_by_group).and_return(true)
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability).to receive(:allowed?).with(anything, :admin_group_member, anything).and_return(true)
+      end
+
+      it 'includes the user email address' do
+        expect(entity_representation[:email]).to eq(member.user.email)
+      end
+    end
+  end
 end

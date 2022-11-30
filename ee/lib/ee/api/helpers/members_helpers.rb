@@ -30,7 +30,7 @@ module EE
         override :retrieve_members
         def retrieve_members(source, params:, deep: false)
           members = super
-          members = members.includes(user: :user_highest_role)
+          members = members.includes(user: [:user_highest_role, { user_detail: :provisioned_by_group }])
 
           if can_view_group_identity?(source)
             members = members.includes(user: :group_saml_identities)
