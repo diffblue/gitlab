@@ -17,9 +17,21 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
     end
 
     context 'when audit event json is passed' do
-      subject { worker.perform('audit_operation', nil, event.to_json) }
+      context 'when audit event is streamed as well as database saved' do
+        subject { worker.perform('audit_operation', nil, event.to_json) }
 
-      include_context 'audit event stream'
+        include_context 'audit event stream'
+      end
+
+      context 'when audit event is stream only' do
+        before do
+          event.id = nil # id is nil in case of stream only events because they are not stored in database.
+        end
+
+        subject { worker.perform('audit_operation', nil, event.to_json) }
+
+        include_context 'audit event stream'
+      end
     end
   end
 
@@ -74,6 +86,24 @@ RSpec.describe AuditEvents::AuditEventStreamingWorker do
       context 'sends correct event type in request body' do
         it 'adds event type only when audit operation is present' do
           expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String), hash_including(body: a_string_including("\"event_type\":\"audit_operation\"")))
+
+          subject
+        end
+      end
+
+      context 'and id is always passed in request body' do
+        before do
+          allow(SecureRandom).to receive(:uuid).and_return('randomtoken')
+        end
+
+        it 'sends correct id in request body' do
+          if event.id.present?
+            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
+                                                        hash_including(body: a_string_including("id\":#{event.id}")))
+          else
+            expect(Gitlab::HTTP).to receive(:post).with(an_instance_of(String),
+                                                        hash_including(body: a_string_including("id\":\"randomtoken\"")))
+          end
 
           subject
         end
