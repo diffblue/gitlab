@@ -3,7 +3,7 @@ import Vuex from 'vuex';
 import { GlDropdown, GlDropdownItem, GlIcon, GlButton, GlLoadingIcon } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
-import IssueStatusIcon from '~/reports/components/issue_status_icon.vue';
+import IssueStatusIcon from '~/ci/reports/components/issue_status_icon.vue';
 
 import AdminLicenseManagementRow from 'ee/vue_shared/license_compliance/components/admin_license_management_row.vue';
 import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';

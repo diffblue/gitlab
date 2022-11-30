@@ -3,7 +3,7 @@ import {
   getIssueStatusFromLicenseStatus,
   getStatusTranslationsFromLicenseStatus,
 } from 'ee/vue_shared/license_compliance/store/utils';
-import IssueStatusIcon from '~/reports/components/issue_status_icon.vue';
+import IssueStatusIcon from '~/ci/reports/components/issue_status_icon.vue';
 
 export default {
   name: 'LicenseManagementRow',

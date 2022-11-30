@@ -4,8 +4,8 @@ import { mapActions, mapGetters, mapState } from 'vuex';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
 import api from '~/api';
 import { n__, s__, sprintf } from '~/locale';
-import ReportItem from '~/reports/components/report_item.vue';
-import ReportSection from '~/reports/components/report_section.vue';
+import ReportItem from '~/ci/reports/components/report_item.vue';
+import ReportSection from '~/ci/reports/components/report_section.vue';
 import SmartVirtualList from '~/vue_shared/components/smart_virtual_list.vue';
 import createStore from './store';
 

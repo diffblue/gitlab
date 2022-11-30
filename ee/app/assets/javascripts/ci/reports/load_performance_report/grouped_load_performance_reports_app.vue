@@ -1,7 +1,7 @@
 <script>
 import { componentNames } from 'ee/ci/reports/components/issue_body';
 import api from '~/api';
-import ReportSection from '~/reports/components/report_section.vue';
+import ReportSection from '~/ci/reports/components/report_section.vue';
 
 export default {
   name: 'GroupedLoadPerformanceReportsApp',

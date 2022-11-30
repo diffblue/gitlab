@@ -2,8 +2,8 @@
 import { GlPopover, GlIcon, GlTooltip } from '@gitlab/ui';
 import { s__, n__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
-import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
-import { SEVERITIES } from '~/reports/codequality_report/constants';
+import CodequalityIssueBody from '~/ci/reports/codequality_report/components/codequality_issue_body.vue';
+import { SEVERITIES } from '~/ci/reports/codequality_report/constants';
 
 const codequalityCountThreshold = 3;
 

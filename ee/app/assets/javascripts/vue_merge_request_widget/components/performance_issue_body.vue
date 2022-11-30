@@ -4,7 +4,7 @@
  *  [name] :[score] [symbol] [delta] in [link]
  */
 import { formattedChangeInPercent } from '~/lib/utils/number_utils';
-import ReportLink from '~/reports/components/report_link.vue';
+import ReportLink from '~/ci/reports/components/report_link.vue';
 
 function formatScore(value) {
   if (Number(value) && !Number.isInteger(value)) {

@@ -25,7 +25,7 @@ module QA
                   element :licenses_counter
                 end
 
-                view 'app/assets/javascripts/reports/components/report_item.vue' do
+                view 'app/assets/javascripts/ci/reports/components/report_item.vue' do
                   element :report_item_row
                 end
               end

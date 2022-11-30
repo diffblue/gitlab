@@ -6,9 +6,9 @@ import api from '~/api';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { n__, s__, sprintf } from '~/locale';
-import ReportSection from '~/reports/components/report_section.vue';
-import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
-import { parseCodeclimateMetrics } from '~/reports/codequality_report/store/utils/codequality_parser';
+import ReportSection from '~/ci/reports/components/report_section.vue';
+import CodequalityIssueBody from '~/ci/reports/codequality_report/components/codequality_issue_body.vue';
+import { parseCodeclimateMetrics } from '~/ci/reports/codequality_report/store/utils/codequality_parser';
 import getCodeQualityViolations from './graphql/queries/get_code_quality_violations.query.graphql';
 import { PAGE_SIZE, VIEW_EVENT_NAME } from './store/constants';
 

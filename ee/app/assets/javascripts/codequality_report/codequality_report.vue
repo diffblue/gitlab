@@ -3,7 +3,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { componentNames } from 'ee/ci/reports/components/issue_body';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
 import { n__, s__, sprintf } from '~/locale';
-import ReportSection from '~/reports/components/report_section.vue';
+import ReportSection from '~/ci/reports/components/report_section.vue';
 import PaginationLinks from '~/vue_shared/components/pagination_links.vue';
 import { setupStore } from './store';
 

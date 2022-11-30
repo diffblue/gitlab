@@ -8,8 +8,8 @@ import {
   parsedDast,
   secretDetectionParsedIssues,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
-import ReportIssues from '~/reports/components/report_item.vue';
-import { STATUS_FAILED, STATUS_SUCCESS } from '~/reports/constants';
+import ReportIssues from '~/ci/reports/components/report_item.vue';
+import { STATUS_FAILED, STATUS_SUCCESS } from '~/ci/reports/constants';
 
 describe('Report issues', () => {
   let wrapper;

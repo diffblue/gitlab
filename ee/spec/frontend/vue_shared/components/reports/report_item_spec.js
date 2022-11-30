@@ -11,8 +11,8 @@ import {
   secretDetectionParsedIssues,
   licenseComplianceParsedIssues,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
-import ReportIssue from '~/reports/components/report_item.vue';
-import { STATUS_FAILED, STATUS_SUCCESS, STATUS_NEUTRAL } from '~/reports/constants';
+import ReportIssue from '~/ci/reports/components/report_item.vue';
+import { STATUS_FAILED, STATUS_SUCCESS, STATUS_NEUTRAL } from '~/ci/reports/constants';
 
 describe('Report issue', () => {
   let wrapper;

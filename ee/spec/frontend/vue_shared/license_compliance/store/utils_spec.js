@@ -8,7 +8,7 @@ import {
   addLicensesMatchingReportGroupStatus,
   reportGroupHasAtLeastOneLicense,
 } from 'ee/vue_shared/license_compliance/store/utils';
-import { STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS } from '~/reports/constants';
+import { STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS } from '~/ci/reports/constants';
 import { licenseReport } from '../mock_data';
 
 describe('utils', () => {

@@ -4,7 +4,7 @@ import {
   componentNames as componentNamesCE,
   iconComponents as iconComponentsCE,
   iconComponentNames as iconComponentNamesCE,
-} from '~/reports/components/issue_body';
+} from '~/ci/reports/components/issue_body';
 
 export const components = {
   ...componentsCE,

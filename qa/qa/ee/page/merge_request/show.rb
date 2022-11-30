@@ -30,7 +30,7 @@ module QA
                 element :api_fuzzing_report
               end
 
-              view 'app/assets/javascripts/reports/components/report_section.vue' do
+              view 'app/assets/javascripts/ci/reports/components/report_section.vue' do
                 element :expand_report_button
               end
 
