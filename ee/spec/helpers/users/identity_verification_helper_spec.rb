@@ -34,7 +34,8 @@ RSpec.describe Users::IdentityVerificationHelper do
               form_id: ::Gitlab::SubscriptionPortal::REGISTRATION_VALIDATION_FORM_ID
             },
             phone_number: {
-              send_code_path: send_phone_verification_code_identity_verification_path
+              send_code_path: send_phone_verification_code_identity_verification_path,
+              verify_code_path: verify_phone_verification_code_identity_verification_path
             },
             email: {
               obfuscated: helper.obfuscated_email(user.email),
@@ -60,6 +61,7 @@ RSpec.describe Users::IdentityVerificationHelper do
             },
             phone_number: {
               send_code_path: send_phone_verification_code_identity_verification_path,
+              verify_code_path: verify_phone_verification_code_identity_verification_path,
               country: phone_number_validation.country,
               international_dial_code: phone_number_validation.international_dial_code,
               number: phone_number_validation.phone_number
