@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemCheck::Geo::AuthorizedKeysCheck, :silence_stdout do
+RSpec.describe SystemCheck::Geo::AuthorizedKeysCheck, :silence_stdout, feature_category: :geo_replication do
   describe '#multi_check' do
     subject { described_class.new }
 

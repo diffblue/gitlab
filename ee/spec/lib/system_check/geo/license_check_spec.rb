@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SystemCheck::Geo::LicenseCheck do
+RSpec.describe SystemCheck::Geo::LicenseCheck, feature_category: :geo_replication do
   describe '#check?' do
     using RSpec::Parameterized::TableSyntax
 
