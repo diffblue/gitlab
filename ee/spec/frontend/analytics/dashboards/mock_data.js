@@ -10,46 +10,66 @@ const mockDoraMetrics = ([
   timeToRestoreService,
   changeFailureRate,
   deploymentFrequency,
+  leadTime,
+  cycleTime,
+  issues,
+  deploys,
 ]) => ({
   lead_time_for_changes: {
     value: leadTimeForChanges,
-    unit: 'days',
     label: 'Lead Time for Changes',
     identifier: 'lead_time_for_changes',
   },
   time_to_restore_service: {
     value: timeToRestoreService,
-    unit: 'days',
     label: 'Time to Restore Service',
     identifier: 'time_to_restore_service',
   },
   change_failure_rate: {
     value: changeFailureRate,
-    unit: '%',
     label: 'Change Failure Rate',
     identifier: 'change_failure_rate',
   },
   deployment_frequency: {
     value: deploymentFrequency,
-    unit: '/day',
     label: 'Deployment Frequency',
     identifier: 'deployment_frequency',
   },
+  lead_time: {
+    value: leadTime,
+    label: 'Lead Time',
+    identifier: 'lead_time',
+  },
+  cycle_time: {
+    value: cycleTime,
+    label: 'Cycle Time',
+    identifier: 'cycle_time',
+  },
+  issues: {
+    value: issues,
+    label: 'New Issues',
+    identifier: 'issues',
+  },
+  deploys: {
+    value: deploys,
+    label: 'Deploys',
+    identifier: 'deploys',
+  },
 });
 
-export const mockMonthToDate = mockDoraMetrics([5.1, 4, 8, 0]);
+export const mockMonthToDate = mockDoraMetrics([5.1, 4, 8, 0, 2, 4, 6, 8]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };
 export const mockMonthToDateApiResponse = Object.values(mockMonthToDate);
 
-export const mockPreviousMonth = mockDoraMetrics([3.6, 20, 4, 2]);
+export const mockPreviousMonth = mockDoraMetrics([3.6, 20, 4, 2, 4, '-', 12, 16]);
 export const mockPreviousMonthTimePeriod = { ...LAST_MONTH, ...mockPreviousMonth };
 export const mockPreviousMonthApiResponse = Object.values(mockPreviousMonth);
 
-export const mockTwoMonthsAgo = mockDoraMetrics([9.2, 32, 8, 4]);
+export const mockTwoMonthsAgo = mockDoraMetrics([9.2, 32, 8, 4, 2, '-', 6, 8]);
 export const mockTwoMonthsAgoTimePeriod = { ...TWO_MONTHS_AGO, ...mockTwoMonthsAgo };
 export const mockTwoMonthsAgoApiResponse = Object.values(mockTwoMonthsAgo);
 
-export const mockThreeMonthsAgo = mockDoraMetrics([20.1, 32, 8, 2]);
+export const mockThreeMonthsAgo = mockDoraMetrics([20.1, 32, 8, 2, 4, 8, 12, 16]);
 export const mockThreeMonthsAgoTimePeriod = { ...THREE_MONTHS_AGO, ...mockThreeMonthsAgo };
 export const mockThreeMonthsAgoApiResponse = Object.values(mockThreeMonthsAgo);
 
@@ -126,31 +146,76 @@ export const mockComparativeTableData = [
       invertTrendColor: true,
     },
   },
-];
-
-export const mockMetricsResponse = [
-  ...Object.values(mockMonthToDate),
   {
-    value: '-',
-    unit: 'days',
-    label: 'Lead Time',
-    identifier: 'lead_time',
+    metric: { value: 'Lead time' },
+    lastMonth: {
+      change: 1,
+      value: '4.0 d',
+      invertTrendColor: true,
+    },
+    thisMonth: {
+      change: -0.5,
+      value: '2.0 d',
+      invertTrendColor: true,
+    },
+    twoMonthsAgo: {
+      change: -0.5,
+      value: '2.0 d',
+      invertTrendColor: true,
+    },
   },
   {
-    value: '-',
-    unit: 'days',
-    label: 'Cycle Time',
-    identifier: 'cycle_time',
+    metric: { value: 'Cycle time' },
+    lastMonth: {
+      change: 0,
+      value: '-',
+      invertTrendColor: true,
+    },
+    thisMonth: {
+      change: 0,
+      value: '4.0 d',
+      invertTrendColor: true,
+    },
+    twoMonthsAgo: {
+      change: 0,
+      value: '-',
+      invertTrendColor: true,
+    },
   },
   {
-    value: '-',
-    label: 'New Issues',
-    identifier: 'issues',
-    description: 'Number of new issues created.',
+    metric: { value: 'New issues' },
+    lastMonth: {
+      change: 1,
+      value: 12,
+      invertTrendColor: undefined,
+    },
+    thisMonth: {
+      change: -0.5,
+      value: 6,
+      invertTrendColor: undefined,
+    },
+    twoMonthsAgo: {
+      change: -0.5,
+      value: 6,
+      invertTrendColor: undefined,
+    },
   },
   {
-    value: '597',
-    label: 'Deploys',
-    identifier: 'deploys',
+    metric: { value: 'Deploys' },
+    lastMonth: {
+      change: 1,
+      value: 16,
+      invertTrendColor: undefined,
+    },
+    thisMonth: {
+      change: -0.5,
+      value: 8,
+      invertTrendColor: undefined,
+    },
+    twoMonthsAgo: {
+      change: -0.5,
+      value: 8,
+      invertTrendColor: undefined,
+    },
   },
 ];
