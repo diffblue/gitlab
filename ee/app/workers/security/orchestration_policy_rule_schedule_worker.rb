@@ -15,7 +15,7 @@ module Security
     def perform
       Security::OrchestrationPolicyRuleSchedule.with_configuration_and_project_or_namespace.with_owner.runnable_schedules.find_in_batches do |schedules|
         schedules.each do |schedule|
-          with_context(project: schedule.security_orchestration_policy_configuration.project, user: security_policy_bot) do
+          with_context(project: schedule.security_orchestration_policy_configuration.project, user: schedule.owner) do
             if schedule.security_orchestration_policy_configuration.project?
               schedule_rules(schedule)
             else
@@ -28,15 +28,11 @@ module Security
 
     private
 
-    def security_policy_bot
-      @security_policy_bot ||= User.security_policy_bot
-    end
-
     def schedule_rules(schedule)
       schedule.schedule_next_run!
 
       Security::SecurityOrchestrationPolicies::RuleScheduleService
-        .new(container: schedule.security_orchestration_policy_configuration.project, current_user: security_policy_bot)
+        .new(container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner)
         .execute(schedule)
     end
   end

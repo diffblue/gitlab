@@ -34,12 +34,12 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleNamespaceWorker do
 
           it 'executes the rule schedule service for all projects in the group' do
             expect_next_instance_of(Security::SecurityOrchestrationPolicies::RuleScheduleService,
-                                    container: project_1, current_user: User.security_policy_bot) do |service|
+                                    container: project_1, current_user: schedule.owner) do |service|
               expect(service).to receive(:execute)
             end
 
             expect_next_instance_of(Security::SecurityOrchestrationPolicies::RuleScheduleService,
-                                    container: project_2, current_user: User.security_policy_bot) do |service|
+                                    container: project_2, current_user: schedule.owner) do |service|
               expect(service).to receive(:execute)
             end
 

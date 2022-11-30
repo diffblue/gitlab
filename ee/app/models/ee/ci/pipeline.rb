@@ -95,10 +95,6 @@ module EE
         end
       end
 
-      def ignores_ci_settings?
-        source == 'security_orchestration_policy'
-      end
-
       def needs_touch?
         updated_at < 5.minutes.ago
       end

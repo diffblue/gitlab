@@ -20,18 +20,6 @@ module EE
 
                 super
               end
-
-              override :builds_enabled?
-              def builds_enabled?
-                project.builds_enabled? || pipeline.ignores_ci_settings?
-              end
-
-              override :allowed_to_write_ref?
-              def allowed_to_write_ref?
-                return true if current_user&.security_policy_bot? && pipeline.ignores_ci_settings?
-
-                super
-              end
             end
           end
         end
