@@ -1,4 +1,5 @@
 import $ from 'jquery';
+import { escape } from 'lodash';
 import Api from '~/api';
 import { sanitizeItem } from '~/frequent_items/utils';
 import { loadCSSFile } from '~/lib/utils/css_utils';
@@ -6,9 +7,13 @@ import { sprintf, __ } from '~/locale';
 
 const formatResult = (selectedItem) => {
   if (selectedItem.path_with_namespace) {
-    return `<div class='project-result'> <div class='project-name'>${selectedItem.name}</div> <div class='project-path'>${selectedItem.path_with_namespace}</div> </div>`;
+    return `<div class='project-result'> <div class='project-name'>${escape(
+      selectedItem.name,
+    )}</div> <div class='project-path'>${selectedItem.path_with_namespace}</div> </div>`;
   } else if (selectedItem.path) {
-    return `<div class='group-result'> <div class='group-name'>${selectedItem.name}</div> <div class='group-path'>${selectedItem.path}</div> </div>`;
+    return `<div class='group-result'> <div class='group-name'>${escape(
+      selectedItem.name,
+    )}</div> <div class='group-path'>${selectedItem.path}</div> </div>`;
   }
   return `<div class='group-result'> <div class='group-name'>${__(
     'All',

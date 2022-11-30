@@ -33,7 +33,7 @@ describe('GfmAutoCompleteEE', () => {
           title: 'Another Epic',
           reference: 'foo&42',
         }),
-      ).toBe('<li><small>foo&42</small> Another Epic</li>');
+      ).toBe('<li><small>foo&amp;42</small> Another Epic</li>');
     });
   });
 });
