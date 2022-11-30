@@ -4,14 +4,14 @@ group: Source Code
 info: To determine the technical writer assigned to the Stage/Group associated with this page, see https://about.gitlab.com/handbook/engineering/ux/technical-writing/#assignments
 ---
 
-# Sign commits with SSH keys **(FREE SELF)**
+# Sign commits with SSH keys **(FREE)**
 
 > [Introduced](https://gitlab.com/gitlab-org/gitlab/-/issues/343879) in GitLab 15.7 [with a flag](../../../../administration/feature_flags.md) named `ssh_commit_signatures`. Disabled by default.
 
 FLAG:
 On self-managed GitLab, by default this feature is not available. To make it available,
 ask an administrator to [enable the feature flag](../../../../administration/feature_flags.md) named `ssh_commit_signatures`.
-On GitLab.com, this feature is not available.
+On GitLab.com, this feature is available.
 
 Use SSH keys to sign Git commits in the same manner as
 [GPG signed commits](../gpg_signed_commits/index.md). When you sign commits
