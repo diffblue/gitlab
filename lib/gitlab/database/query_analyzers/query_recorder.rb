@@ -12,8 +12,9 @@ module Gitlab
           end
 
           def enabled?
-            # Only enable QueryRecorder in CI
-            ENV['CI'].present?
+            # Only enable QueryRecorder in CI on database MRs or default branch
+            ENV['CI_MERGE_REQUEST_LABELS']&.include?('database') ||
+              (ENV['CI_COMMIT_REF_NAME'].present? && ENV['CI_COMMIT_REF_NAME'] == ENV['CI_DEFAULT_BRANCH'])
           end
 
           def analyze(sql)

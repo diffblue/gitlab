@@ -10,30 +10,49 @@ RSpec.describe Gitlab::Database::QueryAnalyzers::QueryRecorder, query_analyzers:
     end
   end
 
-  context 'when analyzer is enabled for tests' do
+  context 'with query analyzer' do
     let(:query) { 'SELECT 1 FROM projects' }
     let(:log_path) { Rails.root.join(described_class::LOG_PATH) }
     let(:log_file) { described_class.log_file }
-
-    before do
-      stub_env('CI', 'true')
-
-      # This is needed to be able to stub_env the CI variable
-      ::Gitlab::Database::QueryAnalyzer.instance.begin!([described_class])
-    end
 
     after do
       ::Gitlab::Database::QueryAnalyzer.instance.end!([described_class])
     end
 
-    it 'logs queries to a file' do
-      allow(FileUtils).to receive(:mkdir_p)
-        .with(log_path)
-      expect(File).to receive(:write)
-        .with(log_file, /^{"sql":"#{query}/, mode: 'a')
-      expect(described_class).to receive(:analyze).with(/^#{query}/).and_call_original
+    shared_examples_for 'an enabled query recorder' do
+      it 'logs queries to a file' do
+        allow(FileUtils).to receive(:mkdir_p)
+          .with(log_path)
+        expect(File).to receive(:write)
+          .with(log_file, /^{"sql":"#{query}/, mode: 'a')
+        expect(described_class).to receive(:analyze).with(/^#{query}/).and_call_original
 
-      expect { ApplicationRecord.connection.execute(query) }.not_to raise_error
+        expect { ApplicationRecord.connection.execute(query) }.not_to raise_error
+      end
+    end
+
+    context 'on default branch' do
+      before do
+        stub_env('CI_MERGE_REQUEST_LABELS', nil)
+        stub_env('CI_DEFAULT_BRANCH', 'default_branch_name')
+        stub_env('CI_COMMIT_REF_NAME', 'default_branch_name')
+
+        # This is needed to be able to stub_env the CI variable
+        ::Gitlab::Database::QueryAnalyzer.instance.begin!([described_class])
+      end
+
+      it_behaves_like 'an enabled query recorder'
+    end
+
+    context 'on database merge requests' do
+      before do
+        stub_env('CI_MERGE_REQUEST_LABELS', 'database')
+
+        # This is needed to be able to stub_env the CI variable
+        ::Gitlab::Database::QueryAnalyzer.instance.begin!([described_class])
+      end
+
+      it_behaves_like 'an enabled query recorder'
     end
   end
 
