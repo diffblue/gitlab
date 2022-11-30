@@ -14,7 +14,6 @@ module HasUserType
     migration_bot: 7,
     security_bot: 8,
     automation_bot: 9,
-    security_policy_bot: 10,
     admin_bot: 11,
     suggested_reviewers_bot: 12
   }.with_indifferent_access.freeze
@@ -27,7 +26,6 @@ module HasUserType
     migration_bot
     security_bot
     automation_bot
-    security_policy_bot
     admin_bot
     suggested_reviewers_bot
   ].freeze
