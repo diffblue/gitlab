@@ -17,7 +17,7 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker do
       context 'when schedule is created for security orchestration policy configuration in project' do
         it 'executes the rule schedule service' do
           expect_next_instance_of(Security::SecurityOrchestrationPolicies::RuleScheduleService,
-                                  container: schedule.security_orchestration_policy_configuration.project, current_user: User.security_policy_bot) do |service|
+                                  container: schedule.security_orchestration_policy_configuration.project, current_user: schedule.owner) do |service|
             expect(service).to receive(:execute)
           end
 
@@ -61,7 +61,6 @@ RSpec.describe Security::OrchestrationPolicyRuleScheduleWorker do
     context 'when multiple schedules exists' do
       before do
         schedule.update_column(:next_run_at, 1.minute.ago)
-        worker.send(:security_policy_bot)
       end
 
       def record_preloaded_queries

@@ -871,30 +871,6 @@ RSpec.describe ProjectPolicy do
     end
   end
 
-  describe 'permissions for security policy bot' do
-    let_it_be(:current_user) { create(:user, :security_policy_bot) }
-
-    let(:project) { private_project }
-
-    let(:permissions) { [:create_pipeline] }
-
-    context 'when security_orchestration_policies is enabled' do
-      before do
-        stub_licensed_features(security_orchestration_policies: true)
-      end
-
-      it { is_expected.to be_allowed(*permissions) }
-    end
-
-    context 'when security_orchestration_policies is disabled' do
-      before do
-        stub_licensed_features(security_orchestration_policies: false)
-      end
-
-      it { is_expected.to be_disallowed(*permissions) }
-    end
-  end
-
   describe 'permissions for security bot' do
     let_it_be(:current_user) { create(:user, :security_bot) }
 

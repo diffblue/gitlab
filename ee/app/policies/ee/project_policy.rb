@@ -307,10 +307,6 @@ module EE
         enable :admin_merge_request
       end
 
-      rule { security_policy_bot & security_orchestration_policies_enabled }.policy do
-        enable :create_pipeline
-      end
-
       rule { issues_disabled }.policy do
         prevent :read_issue_analytics
       end
