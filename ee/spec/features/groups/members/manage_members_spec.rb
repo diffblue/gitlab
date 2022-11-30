@@ -16,13 +16,27 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
   context 'with overage modal concerns' do
     let_it_be(:premium_plan) { create(:premium_plan) }
 
+    shared_examples "adding one user by email with a given role doesn't trigger an overage modal" do |role|
+      it "adding one user with a given role doesn't trigger an overage modal" do
+        group.add_owner(user1)
+        add_user_by_email(role)
+
+        wait_for_requests
+        expect(page).not_to have_content(s_('MembersOverage|You are about to incur additional charges'))
+
+        page.refresh
+
+        expect(page).to have_content(_('Invited'))
+      end
+    end
+
     shared_examples "adding one user with a given role doesn't trigger an overage modal" do |role|
       it "adding one user with a given role doesn't trigger an overage modal" do
         group.add_owner(user1)
         add_user_by_name(user2.name, role)
 
-        expect(page).not_to have_content("You are about to incur additional charges")
         wait_for_requests
+        expect(page).not_to have_content(s_('MembersOverage|You are about to incur additional charges'))
 
         page.refresh
 
@@ -33,21 +47,45 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
       end
     end
 
-    shared_examples "shows an overage for one Developer added and invites them to a group if confirmed" do
-      it "shows an overage for one Developer added and invites them to a group if confirmed", quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/382373" do
+    shared_examples "shows an overage modal when adding one user with a given role" do |role|
+      it "shows a modal and invites them to a group if confirmed" do
         group.add_owner(user1)
-        add_user_by_name(user2.name, 'Developer')
+        add_user_by_name(user2.name, role)
 
-        expect(page).to have_content("You are about to incur additional charges")
-        expect(page).to have_content("Your subscription includes 1 seat. If you continue, the #{group.name} group will have 2 seats in use and will be billed for the overage. Learn more.")
+        message = ns_('MembersOverage|Your subscription includes %d seat.', 'MembersOverage|Your subscription includes %d seats.', 1) % 1
+        info = format(ns_('MembersOverage|If you continue, the %{groupName} group will have %{quantity} seat in use and will be billed for the overage.', 'MembersOverage|If you continue, the %{groupName} group will have %{quantity} seats in use and will be billed for the overage.', 2), groupName: group.name, quantity: 2)
 
-        click_button 'Continue'
+        expect(page).to have_content(s_('MembersOverage|You are about to incur additional charges'))
+        expect(page).to have_content(message)
+        expect(page).to have_content(info)
+
+        click_button _('Continue')
 
         page.refresh
 
         page.within find_member_row(user2) do
-          expect(page).to have_button('Developer')
+          expect(page).to have_button(role)
         end
+      end
+    end
+
+    shared_examples "adding user by email with a given role" do |role|
+      it "shows a modal and invites them to a group if confirmed" do
+        group.add_owner(user1)
+        add_user_by_email(role)
+
+        message = ns_('MembersOverage|Your subscription includes %d seat.', 'MembersOverage|Your subscription includes %d seats.', 1) % 1
+        info = format(ns_('MembersOverage|If you continue, the %{groupName} group will have %{quantity} seat in use and will be billed for the overage.', 'MembersOverage|If you continue, the %{groupName} group will have %{quantity} seats in use and will be billed for the overage.', 2), groupName: group.name, quantity: 2)
+
+        expect(page).to have_content(s_('MembersOverage|You are about to incur additional charges'))
+        expect(page).to have_content(message)
+        expect(page).to have_content(info)
+
+        click_button _('Continue')
+
+        page.refresh
+
+        expect(page).to have_content(_('Invited'))
       end
     end
 
@@ -63,16 +101,28 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
         create(:gitlab_subscription, namespace: group, hosted_plan: nil)
       end
 
-      include_examples "adding one user with a given role doesn't trigger an overage modal", 'Developer'
+      include_examples 'adding one user with a given role doesn\'t trigger an overage modal', 'Developer'
     end
 
     context 'when adding a member to a premium group' do
+      context 'when there is no free spaces in the subscription' do
+        before do
+          create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 1, seats_in_use: 1)
+        end
+
+        include_examples 'shows an overage modal when adding one user with a given role', 'Guest'
+        include_examples 'shows an overage modal when adding one user with a given role', 'Developer'
+
+        include_examples 'adding user by email with a given role', 'Guest'
+        include_examples 'adding user by email with a given role', 'Developer'
+      end
+
       context 'when there is one free space in the subscription' do
         before do
           create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 2, seats_in_use: 1)
         end
 
-        include_examples "adding one user with a given role doesn't trigger an overage modal", 'Developer'
+        include_examples 'adding one user with a given role doesn\'t trigger an overage modal', 'Developer'
 
         it 'adding two users triggers overage modal', :aggregate_failures do
           group.add_owner(user1)
@@ -80,8 +130,12 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
           invite_member([user2.name, user3.name], role: 'Developer', refresh: false)
 
-          expect(page).to have_content("You are about to incur additional charges")
-          expect(page).to have_content("Your subscription includes 2 seats. If you continue, the #{group.name} group will have 3 seats in use and will be billed for the overage. Learn more.")
+          message = ns_('MembersOverage|Your subscription includes %d seat.', 'MembersOverage|Your subscription includes %d seats.', 2) % 2
+          info = format(ns_('MembersOverage|If you continue, the %{groupName} group will have %{quantity} seat in use and will be billed for the overage.', 'MembersOverage|If you continue, the %{groupName} group will have %{quantity} seats in use and will be billed for the overage.', 3), groupName: group.name, quantity: 3)
+
+          expect(page).to have_content(s_('MembersOverage|You are about to incur additional charges'))
+          expect(page).to have_content(message)
+          expect(page).to have_content(info)
         end
       end
 
@@ -90,15 +144,16 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
           create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 1, seats_in_use: 1)
         end
 
-        include_examples "shows an overage for one Developer added and invites them to a group if confirmed"
-
         it 'get back to initial modal if not confirmed', :aggregate_failures do
           group.add_owner(user1)
           add_user_by_name(user2.name, 'Developer')
 
-          expect(page).to have_content("You are about to incur additional charges")
-          expect(page).to have_content("Your subscription includes 1 seat. If you continue, the #{group.name} " \
-                                       "group will have 2 seats in use and will be billed for the overage. Learn more.")
+          message = ns_('MembersOverage|Your subscription includes %d seat.', 'MembersOverage|Your subscription includes %d seats.', 1) % 1
+          info = format(ns_('MembersOverage|If you continue, the %{groupName} group will have %{quantity} seat in use and will be billed for the overage.', 'MembersOverage|If you continue, the %{groupName} group will have %{quantity} seats in use and will be billed for the overage.', 2), groupName: group.name, quantity: 2)
+
+          expect(page).to have_content(s_('MembersOverage|You are about to incur additional charges'))
+          expect(page).to have_content(message)
+          expect(page).to have_content(info)
 
           click_button 'Back'
 
@@ -117,8 +172,11 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
         create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan, seats: 1, seats_in_use: 1)
       end
 
-      include_examples "shows an overage for one Developer added and invites them to a group if confirmed"
-      include_examples "adding one user with a given role doesn't trigger an overage modal", 'Guest'
+      include_examples 'adding one user with a given role doesn\'t trigger an overage modal', 'Guest'
+      include_examples 'shows an overage modal when adding one user with a given role', 'Developer'
+
+      include_examples 'adding one user by email with a given role doesn\'t trigger an overage modal', 'Guest'
+      include_examples 'adding user by email with a given role', 'Developer'
     end
 
     context 'when adding to a group not eligible for reconciliation', :aggregate_failures do
@@ -127,13 +185,19 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
         stub_subscription_request_seat_usage(false)
       end
 
-      include_examples "adding one user with a given role doesn't trigger an overage modal", 'Developer'
+      include_examples 'adding one user with a given role doesn\'t trigger an overage modal', 'Developer'
     end
 
     def add_user_by_name(name, role)
       visit group_group_members_path(group)
 
       invite_member(name, role: role, refresh: false)
+    end
+
+    def add_user_by_email(role)
+      visit group_group_members_path(group)
+
+      invite_member_by_email(role)
     end
   end
 
@@ -218,7 +282,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
         visit group_group_members_path(group)
 
-        click_on 'Invite members'
+        click_on _('Invite members')
 
         page.within invite_modal_selector do
           expect(page).to have_content "You've reached your"
@@ -239,7 +303,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
         visit group_group_members_path(group)
 
-        click_on 'Invite members'
+        click_on _('Invite members')
 
         page.within invite_modal_selector do
           expect(page).to have_content 'You only have space for'

@@ -11,13 +11,19 @@ import {
   TIME_TO_RESTORE_SERVICE,
 } from 'ee/api/dora_api';
 import {
+  LEAD_TIME_METRIC_TYPE,
+  CYCLE_TIME_METRIC_TYPE,
+  ISSUES_METRIC_TYPE,
+  DEPLOYS_METRIC_TYPE,
+} from '~/api/analytics_api';
+import {
   mockMonthToDate,
   mockMonthToDateTimePeriod,
   mockPreviousMonthTimePeriod,
   mockTwoMonthsAgoTimePeriod,
   mockThreeMonthsAgoTimePeriod,
   mockComparativeTableData,
-  mockMetricsResponse,
+  mockMonthToDateApiResponse,
 } from './mock_data';
 
 describe('Analytics Dashboards utils', () => {
@@ -59,15 +65,19 @@ describe('Analytics Dashboards utils', () => {
   describe('extractDoraMetrics', () => {
     let res = {};
     beforeEach(() => {
-      res = extractDoraMetrics(mockMetricsResponse);
+      res = extractDoraMetrics(mockMonthToDateApiResponse);
     });
 
-    it('returns an object with each of the four DORA metrics', () => {
+    it('returns an object with all of the DORA and cycle metrics', () => {
       expect(Object.keys(res)).toEqual([
         LEAD_TIME_FOR_CHANGES,
         TIME_TO_RESTORE_SERVICE,
         CHANGE_FAILURE_RATE,
         DEPLOYMENT_FREQUENCY_METRIC_TYPE,
+        LEAD_TIME_METRIC_TYPE,
+        CYCLE_TIME_METRIC_TYPE,
+        ISSUES_METRIC_TYPE,
+        DEPLOYS_METRIC_TYPE,
       ]);
     });
 

@@ -103,6 +103,10 @@ describe('Executive dashboard app', () => {
         { value: 'Lead Time for Changes' },
         { value: 'Time to Restore Service' },
         { value: 'Change Failure Rate' },
+        { value: 'Lead time' },
+        { value: 'Cycle time' },
+        { value: 'New issues' },
+        { value: 'Deploys' },
       ]);
     });
   });

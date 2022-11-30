@@ -144,6 +144,24 @@ RSpec.describe WebHooks::LogExecutionService do
       end
     end
 
+    context 'with url_variables' do
+      before do
+        project_hook.update!(
+          url: 'http://example1.test/{foo}-{bar}',
+          url_variables: { 'foo' => 'supers3cret', 'bar' => 'token' }
+        )
+      end
+
+      let(:data) { super().merge(response_headers: { 'X-Token-Id' => 'supers3cret-token', 'X-Request' => 'PUBLIC-token' }) }
+      let(:expected_headers) { { 'X-Token-Id' => '{foo}-{bar}', 'X-Request' => 'PUBLIC-{bar}' } }
+
+      it 'logs the data and masks response headers' do
+        expect { service.execute }.to change(::WebHookLog, :count).by(1)
+
+        expect(WebHookLog.recent.first.response_headers).to eq(expected_headers)
+      end
+    end
+
     context 'with X-Gitlab-Token' do
       let(:request_headers) { { 'X-Gitlab-Token' => project_hook.token } }
 
