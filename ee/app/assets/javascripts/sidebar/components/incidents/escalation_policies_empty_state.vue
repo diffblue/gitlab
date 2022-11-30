@@ -1,6 +1,6 @@
 <script>
 import { GlIcon, GlButton } from '@gitlab/ui';
-import { i18nPolicyText } from './constants';
+import { i18nPolicyText } from '../../constants';
 import EscalationPolicyHelpState from './escalation_policy_help_state.vue';
 import EscalationPolicyCollapsedState from './escalation_policy_collapsed_state.vue';
 

@@ -2,7 +2,7 @@
 
 exports[`DastProfileSummaryCard renders properly 1`] = `
 <div
-  class="gl-card gl-m-3 gl-p-0!"
+  class="gl-card gl-my-3"
 >
   <div
     class="gl-card-header"

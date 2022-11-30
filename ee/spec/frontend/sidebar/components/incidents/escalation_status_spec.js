@@ -2,7 +2,7 @@ import { GlDropdownSectionHeader, GlPopover, GlLink } from '@gitlab/ui';
 import { nextTick } from 'vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import EscalationStatus from 'ee/sidebar/components/incidents/escalation_status.vue';
-import { STATUS_TRIGGERED } from '~/sidebar/components/incidents/constants';
+import { STATUS_TRIGGERED } from '~/sidebar/constants';
 
 describe('EscalationStatus', () => {
   let wrapper;

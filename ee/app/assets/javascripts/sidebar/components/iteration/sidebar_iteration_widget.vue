@@ -6,11 +6,11 @@ import {
   GlIcon,
   GlLink,
 } from '@gitlab/ui';
-import SidebarDropdownWidget from 'ee/sidebar/components/sidebar_dropdown_widget.vue';
 import IterationTitle from 'ee/iterations/components/iteration_title.vue';
 import { getIterationPeriod, groupByIterationCadences } from 'ee/iterations/utils';
 import { IssuableType } from '~/issues/constants';
 import { IssuableAttributeType } from '../../constants';
+import SidebarDropdownWidget from '../sidebar_dropdown_widget.vue';
 
 export default {
   issuableAttribute: IssuableAttributeType.Iteration,

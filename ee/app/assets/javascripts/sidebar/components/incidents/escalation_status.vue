@@ -3,7 +3,7 @@ import { GlDropdownDivider, GlDropdownSectionHeader, GlIcon, GlLink, GlPopover }
 import EscalationStatus from '~/sidebar/components/incidents/escalation_status.vue';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { i18nStatusText } from './constants';
+import { i18nStatusText } from '../../constants';
 
 export default {
   i18n: i18nStatusText,

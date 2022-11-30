@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import { helpPagePath } from '~/helpers/help_page_helper';
-import { i18nHelpText } from './constants';
+import { i18nHelpText } from '../../constants';
 
 export default {
   POLICIES_PATH: helpPagePath('operations/incident_management/escalation_policies.md'),
