@@ -278,4 +278,53 @@ RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessio
       end
     end
   end
+
+  describe '#verify_phone_verification_code' do
+    let_it_be(:params) do
+      { identity_verification: { verification_code: '999' } }
+    end
+
+    subject(:do_request) { post verify_phone_verification_code_identity_verification_path(params) }
+
+    before do
+      allow_next_instance_of(::PhoneVerification::Users::VerifyCodeService) do |service|
+        allow(service).to receive(:execute).and_return(service_response)
+      end
+      stub_session(verification_user_id: unconfirmed_user.id)
+    end
+
+    context 'when sending the code is successful' do
+      let_it_be(:service_response) { ServiceResponse.success }
+
+      it 'responds with status 200 OK' do
+        do_request
+
+        expect(response.body).to eq({ status: :success }.to_json)
+      end
+    end
+
+    context 'when sending the code is unsuccessful' do
+      let_it_be(:service_response) { ServiceResponse.error(message: 'message', reason: 'reason') }
+
+      it 'logs the failed attempt' do
+        expect(Gitlab::AppLogger).to receive(:info).with(
+          hash_including(
+            message: 'Identity Verification',
+            event: 'Failed Phone Verification Attempt',
+            username: unconfirmed_user.username,
+            reason: service_response.reason
+          )
+        )
+
+        do_request
+      end
+
+      it 'responds with error message' do
+        do_request
+
+        expect(response).to have_gitlab_http_status(:bad_request)
+        expect(response.body).to eq({ message: service_response.message }.to_json)
+      end
+    end
+  end
 end

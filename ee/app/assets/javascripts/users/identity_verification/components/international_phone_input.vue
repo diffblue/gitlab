@@ -1,8 +1,10 @@
 <script>
 import { GlForm, GlFormGroup, GlFormInput, GlFormSelect, GlIcon, GlButton } from '@gitlab/ui';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
+
+import { createAlert } from '~/flash';
+import { s__ } from '~/locale';
+
 import axios from '~/lib/utils/axios_utils';
-import { s__, sprintf } from '~/locale';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
 import { validatePhoneNumber } from '../validations';
@@ -58,6 +60,7 @@ export default {
       },
       countries: [],
       isLoading: false,
+      alert: null,
     };
   },
   computed: {
@@ -65,33 +68,41 @@ export default {
       return this.countries.filter((country) => country.internationalDialCode);
     },
     internationalPhoneNumber() {
-      const internationalDialCode = this.form.fields.country.value.split('+')[1];
-      const phoneNumber = this.form.fields.phoneNumber.value;
+      const internationalDialCode = this.countryAndDialCode[1];
+      const phoneNumber = this.number;
 
       return `${internationalDialCode}${phoneNumber}`;
     },
+    countryAndDialCode() {
+      return this.form.fields.country.value.split('+');
+    },
+    number() {
+      return this.form.fields.phoneNumber.value;
+    },
   },
   mounted() {
-    if (this.form.fields.phoneNumber.value) {
+    if (this.number) {
       this.checkPhoneNumber();
     }
   },
   methods: {
     checkPhoneNumber() {
-      const errorMessage = validatePhoneNumber(this.form.fields.phoneNumber.value);
+      const errorMessage = validatePhoneNumber(this.number);
       this.form.fields.phoneNumber.feedback = errorMessage;
       this.form.fields.phoneNumber.state = errorMessage.length <= 0;
     },
     sendVerificationCode() {
       this.isLoading = true;
+      this.alert?.dismiss();
 
-      const [country, internationalDialCode] = this.form.fields.country.value.split('+');
+      const [country, internationalDialCode] = this.countryAndDialCode;
+      const { number } = this;
 
       axios
         .post(this.phoneNumber.sendCodePath, {
           country,
           international_dial_code: internationalDialCode,
-          phone_number: this.form.fields.phoneNumber.value,
+          phone_number: number,
         })
         .then(this.handleSendCodeResponse)
         .catch(this.handleError)
@@ -100,15 +111,17 @@ export default {
         });
     },
     handleSendCodeResponse() {
-      createAlert({
-        message: sprintf(this.$options.i18n.success, {
-          phoneNumber: this.internationalPhoneNumber,
-        }),
-        variant: VARIANT_SUCCESS,
+      const [country, internationalDialCode] = this.countryAndDialCode;
+      const { number } = this;
+
+      this.$emit('next', {
+        country,
+        internationalDialCode,
+        number,
       });
     },
     handleError(error) {
-      createAlert({
+      this.alert = createAlert({
         message: error.response?.data?.message || this.$options.i18n.I18N_GENERIC_ERROR,
         captureError: true,
         error,
@@ -123,7 +136,7 @@ export default {
 };
 </script>
 <template>
-  <gl-form data-testid="send-verification-code-form" @submit.prevent="sendVerificationCode">
+  <gl-form @submit.prevent="sendVerificationCode">
     <gl-form-group
       v-if="!$apollo.loading.countries"
       :label="$options.i18n.dialCode"

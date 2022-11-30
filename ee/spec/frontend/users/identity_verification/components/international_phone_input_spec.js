@@ -6,8 +6,8 @@ import MockAdapter from 'axios-mock-adapter';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import { createAlert, VARIANT_SUCCESS } from '~/flash';
-import { sprintf } from '~/locale';
+
+import { createAlert } from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
@@ -176,11 +176,15 @@ describe('International Phone input component', () => {
         return waitForPromises();
       });
 
-      it('renders success message', () => {
-        expect(createAlert).toHaveBeenCalledWith({
-          message: sprintf(wrapper.vm.$options.i18n.success, { phoneNumber: '1555' }),
-          variant: VARIANT_SUCCESS,
-        });
+      it('emits next event with user entered phone number', () => {
+        expect(wrapper.emitted('next')).toHaveLength(1);
+        expect(wrapper.emitted('next')[0]).toEqual([
+          {
+            country: 'US',
+            internationalDialCode: '1',
+            number: '555',
+          },
+        ]);
       });
     });
 

@@ -11,7 +11,8 @@ module EE
     LICENSED_WIDGETS = {
       iterations: ::WorkItems::Widgets::Iteration,
       issue_weights: ::WorkItems::Widgets::Weight,
-      requirements: ::WorkItems::Widgets::Status
+      requirements: ::WorkItems::Widgets::Status,
+      issuable_health_status: ::WorkItems::Widgets::HealthStatus
     }.freeze
 
     def widgets

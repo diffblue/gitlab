@@ -11,6 +11,7 @@ RSpec.describe ::Types::WorkItems::WidgetInterface do
     where(:widget_class, :widget_type_name) do
       WorkItems::Widgets::Status             | Types::WorkItems::Widgets::StatusType
       WorkItems::Widgets::Weight             | Types::WorkItems::Widgets::WeightType
+      WorkItems::Widgets::HealthStatus       | Types::WorkItems::Widgets::HealthStatusType
     end
 
     with_them do

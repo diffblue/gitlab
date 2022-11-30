@@ -54,6 +54,17 @@ module Users
       render json: { status: :success }
     end
 
+    def verify_phone_verification_code
+      result = ::PhoneVerification::Users::VerifyCodeService.new(@user, verify_phone_verification_code_params).execute
+
+      unless result.success?
+        log_identity_verification(:failed_phone_verification_attempt, result.reason)
+        return render status: :bad_request, json: { message: result.message }
+      end
+
+      render json: { status: :success }
+    end
+
     private
 
     def require_unconfirmed_user!
@@ -107,6 +118,10 @@ module Users
 
     def phone_verification_params
       params.require(:identity_verification).permit(:country, :international_dial_code, :phone_number)
+    end
+
+    def verify_phone_verification_code_params
+      params.require(:identity_verification).permit(:verification_code)
     end
   end
 end

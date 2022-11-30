@@ -16,6 +16,13 @@ export const I18N_PHONE_NUMBER_LENGTH_ERROR = sprintf(
   },
 );
 
+export const I18N_VERIFICATION_CODE_BLANK_ERROR = s__(
+  "IdentityVerification|Verification code can't be blank.",
+);
+export const I18N_VERIFICATION_CODE_NAN_ERROR = s__(
+  'IdentityVerification|Verification code must be a number.',
+);
+
 export const I18N_EMAIL_EMPTY_CODE = s__('IdentityVerification|Enter a code.');
 export const I18N_EMAIL_INVALID_CODE = s__('IdentityVerification|Enter a valid code.');
 export const I18N_EMAIL_RESEND_SUCCESS = s__('IdentityVerification|A new code has been sent.');
