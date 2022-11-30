@@ -30,7 +30,7 @@ module EE
       end
 
       def licenses
-        report_exists = pipeline.expose_license_scanning_data?
+        report_exists = ::Gitlab::LicenseScanning::Report.new(project, pipeline).expose_license_scanning_data?
         return access_to_licenses_denied! unless report_exists
 
         respond_to do |format|

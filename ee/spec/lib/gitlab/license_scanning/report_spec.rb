@@ -3,10 +3,11 @@
 require "spec_helper"
 
 RSpec.describe ::Gitlab::LicenseScanning::Report, :license_compliance do
-  describe "#license_scanning_report" do
-    subject(:report) { described_class.new(project, pipeline).license_scanning_report }
+  let(:report) { described_class.new(project, pipeline) }
+  let(:project) { build(:project, :repository) }
 
-    let(:project) { build(:project, :repository) }
+  describe "#license_scanning_report" do
+    subject(:ls_report) { report.license_scanning_report }
 
     before do
       stub_licensed_features(license_scanning: true)
@@ -17,7 +18,7 @@ RSpec.describe ::Gitlab::LicenseScanning::Report, :license_compliance do
 
       it "returns an empty report" do
         is_expected.to be_a_kind_of(::Gitlab::Ci::Reports::LicenseScanning::Report)
-        expect(report.licenses).to be_empty
+        expect(ls_report.licenses).to be_empty
       end
     end
 
@@ -26,8 +27,28 @@ RSpec.describe ::Gitlab::LicenseScanning::Report, :license_compliance do
 
       it "returns a report with licenses" do
         is_expected.to be_a_kind_of(::Gitlab::Ci::Reports::LicenseScanning::Report)
-        expect(report.license_names).not_to be_empty
+        expect(ls_report.license_names).not_to be_empty
       end
+    end
+  end
+
+  describe "#expose_license_scanning_data?" do
+    subject { report.expose_license_scanning_data? }
+
+    context 'when pipeline is blank' do
+      let(:pipeline) { nil }
+
+      it { is_expected.to be_nil }
+    end
+
+    context 'when pipeline exists' do
+      let(:pipeline) { build(:ee_ci_pipeline, project: project) }
+
+      before do
+        allow(pipeline).to receive(:expose_license_scanning_data?).and_return(true)
+      end
+
+      it { is_expected.to be_truthy }
     end
   end
 end
