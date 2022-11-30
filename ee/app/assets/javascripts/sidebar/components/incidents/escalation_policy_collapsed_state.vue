@@ -1,6 +1,6 @@
 <script>
 import { GlIcon, GlTooltipDirective } from '@gitlab/ui';
-import { i18nPolicyText } from './constants';
+import { i18nPolicyText } from '../../constants';
 
 export default {
   i18n: i18nPolicyText,
