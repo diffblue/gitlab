@@ -10,6 +10,7 @@ module Types
       value 'OPENAPI', description: 'OpenAPI scan method.', value: 'openapi'
       value 'HAR', description: 'HAR scan method.', value: 'har'
       value 'POSTMAN_COLLECTION', description: 'Postman scan method.', value: 'postman'
+      value 'GRAPHQL', description: 'GraphQL scan method.', value: 'graphql'
     end
   end
 end
