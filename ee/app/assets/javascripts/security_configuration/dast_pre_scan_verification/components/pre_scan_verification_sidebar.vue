@@ -1,7 +1,6 @@
 <script>
 import { GlDrawer } from '@gitlab/ui';
 import { s__ } from '~/locale';
-import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import { getContentWrapperHeight } from '~/lib/utils/dom_utils';
 import { PRE_SCAN_VERIFICATION_STATUS } from '../constants';
 import PreScanVerificationAlert from './pre_scan_verification_alert.vue';
@@ -9,7 +8,6 @@ import PreScanVerificationList from './pre_scan_verification_list.vue';
 import PreScanVerificationSummary from './pre_scan_verification_summary.vue';
 
 export default {
-  DRAWER_Z_INDEX,
   i18n: {
     preScanVerificationSidebarHeader: s__('PreScanVerification|Pre-scan verification'),
     preScanVerificationSidebarInfo: s__(
@@ -24,7 +22,7 @@ export default {
     PreScanVerificationSummary,
   },
   props: {
-    isOpen: {
+    open: {
       type: Boolean,
       required: false,
       default: false,
@@ -55,8 +53,7 @@ export default {
   <gl-drawer
     :header-height="getDrawerHeaderHeight"
     :header-sticky="true"
-    :open="isOpen"
-    :z-index="$options.DRAWER_Z_INDEX"
+    :open="open"
     @close="$emit('close')"
   >
     <template #title>

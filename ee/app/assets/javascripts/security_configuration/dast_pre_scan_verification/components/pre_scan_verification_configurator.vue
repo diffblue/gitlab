@@ -10,6 +10,11 @@ export default {
     PreScanVerificationSidebar,
   },
   props: {
+    open: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
     showTrigger: {
       type: Boolean,
       required: false,
@@ -23,12 +28,24 @@ export default {
       showAlert: false,
     };
   },
+  watch: {
+    open(newVal) {
+      if (!newVal) {
+        this.closeSidebar();
+      }
+    },
+  },
   methods: {
     dismissAlert() {
       this.showAlert = false;
     },
     openSidebar() {
-      this.isSidebarOpen = true;
+      this.isSidebarOpen = false;
+
+      this.$nextTick(() => {
+        this.isSidebarOpen = true;
+        this.$emit('open-drawer');
+      });
     },
     closeSidebar() {
       this.isSidebarOpen = false;
@@ -49,7 +66,7 @@ export default {
     />
 
     <pre-scan-verification-sidebar
-      :is-open="isSidebarOpen"
+      :open="isSidebarOpen"
       :show-alert="showAlert"
       :status="status"
       @close="closeSidebar"

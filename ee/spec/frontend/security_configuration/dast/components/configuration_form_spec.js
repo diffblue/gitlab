@@ -1,3 +1,4 @@
+import { nextTick } from 'vue';
 import { GlSprintf } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import { merge } from 'lodash';
@@ -219,6 +220,33 @@ describe('EE - DAST Configuration Form', () => {
       );
 
       expect(findPreScanVerificationConfigurator().exists()).toBe(expectedResult);
+    });
+  });
+
+  describe('toggle sidebars', () => {
+    beforeEach(() => {
+      createComponent(
+        {},
+        {
+          glFeatures: {
+            dastPreScanVerification: true,
+          },
+        },
+      );
+    });
+
+    it('should close toggle sidebars when one sidebar opens', async () => {
+      findPreScanVerificationConfigurator().vm.$emit('open-drawer');
+      await nextTick();
+
+      expect(findDastProfilesConfigurator().props('open')).toBe(false);
+      expect(findPreScanVerificationConfigurator().props('open')).toBe(true);
+
+      findDastProfilesConfigurator().vm.$emit('open-drawer');
+      await nextTick();
+
+      expect(findDastProfilesConfigurator().props('open')).toBe(true);
+      expect(findPreScanVerificationConfigurator().props('open')).toBe(false);
     });
   });
 });

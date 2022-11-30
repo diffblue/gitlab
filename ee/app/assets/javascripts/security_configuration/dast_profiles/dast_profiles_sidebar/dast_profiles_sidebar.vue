@@ -27,7 +27,7 @@ export default {
   },
   mixins: [dastProfileConfiguratorMixin()],
   props: {
-    isOpen: {
+    open: {
       type: Boolean,
       required: false,
       default: false,
@@ -188,8 +188,7 @@ export default {
   <gl-drawer
     :header-height="getDrawerHeaderHeight"
     :header-sticky="true"
-    :open="isOpen"
-    :z-index="10"
+    :open="open"
     @close="resetAndEmitCloseEvent"
   >
     <template #title>

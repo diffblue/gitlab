@@ -1,6 +1,5 @@
 import { GlDrawer } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
-import { DRAWER_Z_INDEX } from '~/lib/utils/constants';
 import PreScanVerificationAlert from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_alert.vue';
 import PreScanVerificationSidebar from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_sidebar.vue';
 import PreScanVerificationSummary from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_summary.vue';
@@ -33,10 +32,10 @@ describe('PreScanVerificationSidebar', () => {
   });
 
   it('should render drawer with proper z index', () => {
-    expect(findDrawer().props('zIndex')).toBe(DRAWER_Z_INDEX);
+    expect(findDrawer().props('zIndex')).toBe(10);
   });
 
-  it('should close drawer', async () => {
+  it('should close drawer', () => {
     expect(wrapper.emitted('close')).toBeUndefined();
 
     findDrawer().vm.$emit('close');
