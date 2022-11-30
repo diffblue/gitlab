@@ -2,7 +2,6 @@
 
 class UserPermissionExportUpload < ApplicationRecord
   include WithUploads
-  include ObjectStorage::BackgroundMove
 
   belongs_to :user, -> { where(admin: true) }
 
