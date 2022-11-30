@@ -19,14 +19,14 @@
 module Ci
   module JobToken
     class Scope
-      attr_reader :source_project
+      attr_reader :current_project
 
-      def initialize(source_project)
-        @source_project = source_project
+      def initialize(current_project)
+        @current_project = current_project
       end
 
-      def includes?(target_project)
-        outbound_scope.includes?(target_project)
+      def includes?(accessed_project)
+        outbound_scope.includes?(accessed_project)
       end
 
       delegate :all_projects, to: :outbound_scope
@@ -34,7 +34,7 @@ module Ci
       private
 
       def outbound_scope
-        Ci::JobToken::OutboundScope.new(source_project)
+        Ci::JobToken::OutboundScope.new(current_project)
       end
     end
   end
