@@ -4,6 +4,8 @@ exports[`Subscription Seats renders table content renders the correct data 1`] =
 Array [
   Object {
     "email": "administrator@email.com",
+    "lastActivityOn": "2020-03-01",
+    "lastLoginAt": "2022-11-10 10:58:05",
     "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {
@@ -20,6 +22,8 @@ Array [
   },
   Object {
     "email": "agustin_walker@email.com",
+    "lastActivityOn": "2020-03-01",
+    "lastLoginAt": "2021-01-20 10:58:05",
     "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {
@@ -36,6 +40,8 @@ Array [
   },
   Object {
     "email": "Private",
+    "lastActivityOn": "Never",
+    "lastLoginAt": "Never",
     "removeUserButtonExists": true,
     "tooltip": "An email address is only visible for users with public emails.",
     "user": Object {
@@ -54,6 +60,8 @@ Array [
   },
   Object {
     "email": "jdoe@email.com",
+    "lastActivityOn": "Never",
+    "lastLoginAt": "Never",
     "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {
@@ -72,6 +80,8 @@ Array [
   },
   Object {
     "email": "jsnow@email.com",
+    "lastActivityOn": "2020-03-01",
+    "lastLoginAt": "Never",
     "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {
@@ -88,6 +98,8 @@ Array [
   },
   Object {
     "email": "current_user@email.com",
+    "lastActivityOn": "2020-03-01",
+    "lastLoginAt": "Never",
     "removeUserButtonExists": true,
     "tooltip": undefined,
     "user": Object {

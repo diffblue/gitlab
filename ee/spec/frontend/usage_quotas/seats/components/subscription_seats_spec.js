@@ -121,6 +121,8 @@ describe('Subscription Seats', () => {
       email: emailWrapper.text(),
       tooltip: emailWrapper.find('span').attributes('title'),
       removeUserButtonExists: rowWrapper.findComponent(GlButton).exists(),
+      lastActivityOn: rowWrapper.find('[data-testid="last_activity_on"]').text(),
+      lastLoginAt: rowWrapper.find('[data-testid="last_login_at"]').text(),
     };
   };
 
