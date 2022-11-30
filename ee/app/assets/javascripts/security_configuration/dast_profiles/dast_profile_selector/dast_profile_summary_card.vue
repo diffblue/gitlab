@@ -61,7 +61,7 @@ export default {
 </script>
 
 <template>
-  <gl-card :class="{ 'gl-m-3 gl-p-0!': allowSelection }">
+  <gl-card :class="{ 'gl-my-3': allowSelection }">
     <template #header>
       <div class="gl-display-flex gl-justify-content-space-between gl-align-items-center">
         <div>

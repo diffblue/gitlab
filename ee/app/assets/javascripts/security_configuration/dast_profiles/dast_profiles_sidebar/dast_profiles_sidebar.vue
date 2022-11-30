@@ -228,7 +228,6 @@ export default {
         <!-- Profile list - reading mode -->
         <dast-profiles-sidebar-list
           v-if="isReadingMode"
-          class="gl-p-1!"
           :profiles="profiles"
           :profile-id-in-use="profileIdInUse"
           :selected-profile-id="selectedProfileId"

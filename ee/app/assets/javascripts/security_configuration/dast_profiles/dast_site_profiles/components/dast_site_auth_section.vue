@@ -118,7 +118,7 @@ export default {
 
 <template>
   <section>
-    <gl-form-group data-testid="dast-site-auth-parent-group" :disabled="disabled">
+    <gl-form-group class="gl-mb-0" data-testid="dast-site-auth-parent-group" :disabled="disabled">
       <gl-form-group :label="s__('DastProfiles|Authentication')">
         <gl-form-checkbox v-model="form.fields.enabled.value" data-testid="auth-enable-checkbox">{{
           i18n.enableAuth
