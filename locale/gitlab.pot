@@ -18710,6 +18710,9 @@ msgstr ""
 msgid "GlobalSearch|Use the shortcut key %{kbdOpen}/%{kbdClose} to start a search"
 msgstr ""
 
+msgid "GlobalSearch|Users"
+msgstr ""
+
 msgid "GlobalSearch|What are you searching for?"
 msgstr ""
 
