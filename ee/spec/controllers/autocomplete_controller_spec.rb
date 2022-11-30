@@ -269,18 +269,37 @@ RSpec.describe AutocompleteController do
     context 'as admin' do
       let_it_be(:user) { create(:admin) }
 
-      describe "while searching for a project by namespace" do
-        let(:search) { group.path }
-        let!(:expected_results) { group.projects.map { |p| [p.id, 'Project'] } }
+      shared_examples 'search as admin' do
+        describe 'while searching for a project by namespace' do
+          let(:search) { group.path }
+          let!(:expected_results) { group.projects.map { |p| [p.id, 'Project'] } }
 
-        include_examples 'has expected results'
+          include_examples 'has expected results'
+        end
+
+        describe 'while searching for a project by path' do
+          let(:search) { projects.first.path }
+          let!(:expected_results) { [[projects.first.id, 'Project']] }
+
+          include_examples 'has expected results'
+        end
       end
 
-      describe "while searching for a project by path" do
-        let(:search) { projects.first.path }
-        let!(:expected_results) { [[projects.first.id, 'Project']] }
+      context 'when admin mode setting is disabled', :do_not_mock_admin_mode_setting do
+        it_behaves_like 'search as admin'
+      end
 
-        include_examples 'has expected results'
+      context 'when admin mode setting is enabled' do
+        context 'when in admin mode', :enable_admin_mode do
+          it_behaves_like 'search as admin'
+        end
+
+        context 'when not in admin mode' do
+          let(:search) { projects.first.path }
+          let!(:expected_results) { [] }
+
+          include_examples 'has expected results'
+        end
       end
     end
 
@@ -321,22 +340,41 @@ RSpec.describe AutocompleteController do
     context 'as admin' do
       let_it_be(:user) { create(:admin) }
 
-      describe "while searching for a namespace by group path" do
-        let(:search) { 'group' }
-        let!(:expected_results) do
-          Group.all.map { |g| [g.id, 'Namespace'] }
+      shared_examples 'search as admin' do
+        describe 'while searching for a namespace by group path' do
+          let(:search) { 'group' }
+          let!(:expected_results) do
+            Group.all.map { |g| [g.id, 'Namespace'] }
+          end
+
+          include_examples 'has expected results'
         end
 
-        include_examples 'has expected results'
+        describe 'while searching for a namespace by user path' do
+          let(:search) { 'user' }
+          let!(:expected_results) do
+            User.all.map { |u| [u.namespace.id, 'Namespace'] }
+          end
+
+          include_examples 'has expected results'
+        end
       end
 
-      describe "while searching for a namespace by user path" do
-        let(:search) { 'user' }
-        let!(:expected_results) do
-          User.all.map { |u| [u.namespace.id, 'Namespace'] }
+      context 'when admin mode setting is disabled', :do_not_mock_admin_mode_setting do
+        it_behaves_like 'search as admin'
+      end
+
+      context 'when admin mode setting is enabled' do
+        context 'when in admin mode', :enable_admin_mode do
+          it_behaves_like 'search as admin'
         end
 
-        include_examples 'has expected results'
+        context 'when not in admin mode' do
+          let(:search) { 'group' }
+          let!(:expected_results) { [] }
+
+          include_examples 'has expected results'
+        end
       end
     end
 
