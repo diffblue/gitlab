@@ -11,7 +11,7 @@ module Security
 
     def pipeline
       strong_memoize(:pipeline) do
-        project.latest_pipeline_with_reports(artifact)
+        project.latest_default_branch_pipeline_with_reports(artifact)
       end
     end
 
