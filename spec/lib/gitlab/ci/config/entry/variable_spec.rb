@@ -309,9 +309,9 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variable do
   end
 
   describe 'ComplexArrayVariable' do
-    context 'when allow_array_value metadata is false' do
+    context 'when options metadata is false' do
       let(:config) { { value: %w[value value2], description: 'description' } }
-      let(:metadata) { { allow_array_value: false } }
+      let(:metadata) { { } }
 
       describe '#valid?' do
         it { is_expected.not_to be_valid }
@@ -324,9 +324,9 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variable do
       end
     end
 
-    context 'when allow_array_value metadata is true' do
-      let(:config) { { value: %w[value value2], description: 'description' } }
-      let(:metadata) { { allowed_value_data: %i[value description], allow_array_value: true } }
+    context 'when options are allowed' do
+      let(:config) { { value: 'value', options: %w[value value2], description: 'description' } }
+      let(:metadata) { { allowed_value_data: %i[value description options] } }
 
       describe '#valid?' do
         it { is_expected.to be_valid }
