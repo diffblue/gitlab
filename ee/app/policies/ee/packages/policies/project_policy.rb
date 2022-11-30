@@ -7,8 +7,10 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
+          include CrudPolicyHelpers
+
           rule { project.ip_enforcement_prevents_access & ~admin & ~auditor }.policy do
-            prevent :read_package
+            prevent(*create_read_update_admin_destroy(:package))
           end
         end
       end
