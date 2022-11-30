@@ -33,14 +33,10 @@ module Dast
 
     validates :key, uniqueness: { scope: :dast_site_profile_id, message: N_('(%{value}) has already been taken') }
 
-    # Since user input is base64 encoded before being encrypted, we must validate against the encoded length
+    MIN_VALUE_LENGTH = 8
     MAX_VALUE_LENGTH = 10_000
-    MAX_ENCODED_VALUE_LENGTH = ((4 * MAX_VALUE_LENGTH / 3) + 3) & ~3
 
-    validates :value, length: {
-      maximum: MAX_ENCODED_VALUE_LENGTH, # encoded user input length
-      too_long: -> (object, data) { _('exceeds the %{max_value_length} character limit') % { max_value_length: MAX_VALUE_LENGTH } } # user input length
-    }
+    validate :decoded_value
 
     # User input is base64 encoded before being encrypted in order to allow it to be masked by default
     def raw_value=(new_value)
@@ -49,5 +45,29 @@ module Dast
 
     # Use #raw_value= to ensure value is maskable
     private :value=
+
+    private
+
+    def human_readable_key
+      case key
+      when PASSWORD then _('Password')
+      when REQUEST_HEADERS then _('Request Headers')
+      else _('Value')
+      end
+    end
+
+    def decoded_value
+      decoded_value = Base64.strict_decode64(value)
+
+      if decoded_value.length < MIN_VALUE_LENGTH
+        errors.add(:base, _('%{human_readable_key} is less than %{min_value_length} characters') % { human_readable_key: human_readable_key, min_value_length: MIN_VALUE_LENGTH })
+
+        return
+      end
+
+      return unless decoded_value.length > MAX_VALUE_LENGTH
+
+      errors.add(:base, _('%{human_readable_key} exceeds %{max_value_length} characters') % { human_readable_key: human_readable_key, max_value_length: MAX_VALUE_LENGTH })
+    end
   end
 end
