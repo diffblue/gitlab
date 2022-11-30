@@ -49,7 +49,7 @@ export default class ProtectedTagCreate {
       this.$form.find('input[name="protected_tag[name]"]').val() && $allowedToCreate.length
     );
 
-    this.$form.find('input[type="submit"]').attr('disabled', toggle);
+    this.$form.find('button[type="submit"]').attr('disabled', toggle);
   }
 
   static getProtectedTags(term, callback) {
