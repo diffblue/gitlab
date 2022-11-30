@@ -6,7 +6,6 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
-      include ::ObjectStorage::BackgroundMove
       include Elastic::ApplicationVersionedSearch
       include UsageStatistics
 

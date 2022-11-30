@@ -1,3 +1,4 @@
+import { escape } from 'lodash';
 import { n__, __, s__, sprintf } from '~/locale';
 import { SEVERITY_LEVELS } from 'ee/security_dashboard/store/constants';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
@@ -83,7 +84,7 @@ export default {
 
       return [
         {
-          text: `<b class="gl-display-inline-block gl-my-4">${header}</b>`,
+          text: `<b class="gl-display-inline-block gl-my-4">${escape(header)}</b>`,
         },
         ...vulns.map((vuln) => ({
           modal: {
