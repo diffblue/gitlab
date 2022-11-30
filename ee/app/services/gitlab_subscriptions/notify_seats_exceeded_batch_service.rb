@@ -5,8 +5,7 @@ module GitlabSubscriptions
     class << self
       def execute
         iterator.each_batch(of: 100) do |records|
-          records = records.to_a
-          namespaces = Namespace.where(id: records.pluck(:namespace_id)) # rubocop:disable CodeReuse/ActiveRecord
+          namespaces = Namespace.where(id: records.select(:namespace_id)) # rubocop:disable CodeReuse/ActiveRecord
 
           next if namespaces.count == 0
 
