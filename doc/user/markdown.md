@@ -1039,7 +1039,7 @@ an attribute list. For example
 ![alt text](img/markdown_logo.png "Title Text"){width=100 height=100px}
 
 You can also use the `img` HTML tag instead of Markdown and set its `height` and
-`width` parameters.
+`width` parameters. The value should be an integer with a unit of either `%` or `px` (the default).
 
 #### Videos
 

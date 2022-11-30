@@ -16,9 +16,9 @@ module Banzai
       CSS   = 'img'
       XPATH = Gitlab::Utils::Nokogiri.css_to_xpath(CSS).freeze
 
-      ATTRIBUTES_PATTERN = %r{\A(?<matched>\{(?<attributes>(?:.{1,100}?))\})}.freeze
+      ATTRIBUTES_PATTERN = %r{\A(?<matched>\{(?<attributes>.{1,100})\})}.freeze
       WIDTH_HEIGHT_REGEX = %r{\A(?<name>height|width)="?(?<size>[\w%]{1,10})"?\z}.freeze
-      VALID_SIZE_REGEX   = %r{\A\d{1,4}(%|px|\z|)\z}.freeze
+      VALID_SIZE_REGEX   = %r{\A\d{1,4}(%|px)?\z}.freeze
 
       def call
         return doc unless Feature.enabled?(:markdown_image_attributes, group)
