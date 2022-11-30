@@ -2,13 +2,13 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
+RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList, feature_category: :dependency_management do
   let(:parser) { described_class.new(project, sha, pipeline) }
-  let(:project) { create(:project) }
+  let(:project) { build_stubbed(:project) }
   let(:sha) { '4242424242424242' }
   let(:report) { Gitlab::Ci::Reports::DependencyList::Report.new }
 
-  let_it_be(:pipeline) { create :ee_ci_pipeline, :with_dependency_list_report }
+  let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_dependency_list_report) }
 
   describe '#parse!' do
     let(:artifact) { pipeline.job_artifacts.last }
@@ -146,15 +146,13 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
   end
 
   describe '#parse_licenses!' do
-    let(:artifact) { create(:ee_ci_job_artifact, :license_scanning) }
     let(:dependency_info) { build(:dependency, :nokogiri, :with_vulnerabilities) }
+    let(:license_report) { build(:ci_reports_license_scanning_report, :license_for_nokogiri) }
 
     before do
       report.add_dependency(dependency)
 
-      artifact.each_blob do |blob|
-        parser.parse_licenses!(blob, report)
-      end
+      parser.parse_licenses!(license_report, report)
     end
 
     context 'with existing license' do
@@ -165,7 +163,7 @@ RSpec.describe Gitlab::Ci::Parsers::Security::DependencyList do
 
         expect(licenses.count).to eq(1)
         expect(licenses[0][:name]).to eq('MIT')
-        expect(licenses[0][:url]).to eq('http://opensource.org/licenses/mit-license')
+        expect(licenses[0][:url]).to eq('https://opensource.org/licenses/mit')
       end
     end
 

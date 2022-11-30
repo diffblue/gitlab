@@ -50,8 +50,7 @@ module Gitlab
             "#{CONTAINER_IMAGE_PATH_PREFIX}#{finding.image}"
           end
 
-          def parse_licenses!(json_data, report)
-            license_report = ::Gitlab::Ci::Reports::LicenseScanning::Report.parse_from(json_data)
+          def parse_licenses!(license_report, report)
             license_report.licenses.each do |license|
               report.apply_license(license)
             end
