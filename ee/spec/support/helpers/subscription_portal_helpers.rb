@@ -44,7 +44,7 @@ module SubscriptionPortalHelpers
   end
 
   def stub_subscription_request_seat_usage(eligible)
-    stub_request(:post, EE::SUBSCRIPTIONS_GRAPHQL_URL)
+    stub_full_request(EE::SUBSCRIPTIONS_GRAPHQL_URL, method: :post)
     .to_return(status: 200, body: {
       "data": {
         "subscription": {
