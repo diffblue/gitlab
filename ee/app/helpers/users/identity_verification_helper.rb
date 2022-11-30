@@ -29,7 +29,8 @@ module Users
 
     def phone_number_verification_data(user)
       paths = {
-        send_code_path: send_phone_verification_code_identity_verification_path
+        send_code_path: send_phone_verification_code_identity_verification_path,
+        verify_code_path: verify_phone_verification_code_identity_verification_path
       }
 
       phone_number_validation = user.phone_number_validation

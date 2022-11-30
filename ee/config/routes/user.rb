@@ -9,6 +9,7 @@ scope :users, module: :users do
     post :verify_email_code
     post :resend_email_code
     post :send_phone_verification_code
+    post :verify_phone_verification_code
   end
 end
 
