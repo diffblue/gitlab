@@ -11,7 +11,7 @@ import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/graphql_shared/constants';
 import { __ } from '~/locale';
-import createTimelogMutation from './graphql/mutations/create_timelog.mutation.graphql';
+import createTimelogMutation from '../../queries/create_timelog.mutation.graphql';
 
 export default {
   components: {

@@ -6,7 +6,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import CreateTimelogForm from '~/sidebar/components/time_tracking/create_timelog_form.vue';
-import createTimelogMutation from '~/sidebar/components/time_tracking/graphql/mutations/create_timelog.mutation.graphql';
+import createTimelogMutation from '~/sidebar/queries/create_timelog.mutation.graphql';
 import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/graphql_shared/constants';
 
 const mockMutationErrorMessage = 'Example error message';

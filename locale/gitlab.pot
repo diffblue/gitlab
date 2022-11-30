@@ -16275,6 +16275,9 @@ msgstr ""
 msgid "Example: (jar|exe)$"
 msgstr ""
 
+msgid "Example: 1h 30m"
+msgstr ""
+
 msgid "Example: @sub\\.company\\.com$"
 msgstr ""
 
