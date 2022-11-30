@@ -54,7 +54,9 @@ module Gitlab
               validates :key, alphanumeric: true
               validates :config_value, alphanumeric: true, allow_nil: true
               validates :config_description, alphanumeric: true, allow_nil: true
-              validates :config_expand, boolean: true, allow_nil: true, if: -> { ci_raw_variables_in_yaml_config_enabled? }
+              validates :config_expand, boolean: true, allow_nil: true, if: -> {
+                                                                              ci_raw_variables_in_yaml_config_enabled?
+                                                                            }
               validates :config_options, array_of_strings: true, allow_nil: true
 
               validate do
@@ -66,6 +68,10 @@ module Gitlab
                   errors.add(:config, "uses invalid data keys: #{extra_keys.join(', ')}") if extra_keys.present?
                 else
                   errors.add(:config, "must be a string")
+                end
+
+                if config_options.present? && config_options.exclude?(config_value)
+                  errors.add(:config, 'value must be present in options')
                 end
               end
             end
@@ -91,7 +97,7 @@ module Gitlab
             def value_with_prefill_data
               value_with_data.merge(
                 description: config_description,
-                value_options: config_options
+                options: config_options
               ).compact
             end
 
