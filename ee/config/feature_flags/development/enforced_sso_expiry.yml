@@ -1,8 +1,8 @@
 ---
 name: enforced_sso_expiry
 introduced_by_url: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/29786
-rollout_issue_url: 
+rollout_issue_url:
 milestone: '13.0'
 type: development
-group: group::access
+group: group::authentication and authorization
 default_enabled: false
