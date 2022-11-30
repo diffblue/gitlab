@@ -106,7 +106,8 @@ RSpec.describe API::Internal::SuggestedReviewers, feature_category: :workflow_au
                 'name' => 'Suggested reviewers token',
                 'access_level' => Gitlab::Access::REPORTER,
                 'scopes' => ['read_api'],
-                'expires_at' => expires_at
+                'expires_at' => expires_at,
+                'token' => kind_of(String)
               )
             end
           end
