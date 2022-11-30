@@ -121,6 +121,11 @@ export default {
       required: false,
       default: '',
     },
+    open: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -178,10 +183,18 @@ export default {
     libraryLink() {
       return this.isScannerProfile ? this.scannerProfilesLibraryPath : this.siteProfilesLibraryPath;
     },
+    isSidebarOpenComputed() {
+      return this.isSideDrawerOpen || this.open;
+    },
   },
   watch: {
     selectedScannerProfile: 'updateProfiles',
     selectedSiteProfile: 'updateProfiles',
+    open(newVal) {
+      if (!newVal) {
+        this.closeProfileDrawer();
+      }
+    },
   },
   created() {
     const params = queryToObject(window.location.search, { legacySpacesDecode: true });
@@ -223,6 +236,7 @@ export default {
       this.isSideDrawerOpen = false;
       this.$nextTick(() => {
         this.isSideDrawerOpen = true;
+        this.$emit('open-drawer');
       });
     },
     closeProfileDrawer() {
@@ -334,7 +348,7 @@ export default {
       :profile-id-in-use="profileIdInUse"
       :active-profile="activeProfile"
       :library-link="libraryLink"
-      :is-open="isSideDrawerOpen"
+      :open="isSideDrawerOpen"
       :is-loading="isLoadingProfiles"
       :selected-profile-id="selectedProfileId"
       @close-drawer="closeProfileDrawer"

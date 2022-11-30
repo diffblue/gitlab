@@ -206,6 +206,11 @@ describe('DastProfilesConfigurator', () => {
       await openDrawer();
       expect(findInUseLabel().exists()).toBe(true);
     });
+
+    it('should emit open event', async () => {
+      await openDrawer();
+      expect(wrapper.emitted('open-drawer')).toHaveLength(1);
+    });
   });
 
   describe('switching between modes', () => {

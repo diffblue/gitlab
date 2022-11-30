@@ -24,6 +24,8 @@ import { REF_TYPE_BRANCHES } from '~/ref/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import validation from '~/vue_shared/directives/validation';
 import {
+  DAST_PROFILES_DRAWER,
+  PRE_SCAN_VERIFICATION_DRAWER,
   HELP_PAGE_PATH,
   DAST_CONFIGURATION_HELP_PATH,
   SCANNER_TYPE,
@@ -52,6 +54,8 @@ export default {
   dastConfigurationHelpPath: DAST_CONFIGURATION_HELP_PATH,
   SCANNER_TYPE,
   SITE_TYPE,
+  DAST_PROFILES_DRAWER,
+  PRE_SCAN_VERIFICATION_DRAWER,
   i18n: {
     newOnDemandScanHeader: s__('OnDemandScans|New on-demand scan'),
     newOnDemandScanHeaderDescription: s__(
@@ -164,6 +168,7 @@ export default {
       errorType: null,
       errors: [],
       showAlert: false,
+      openedDrawer: null,
     };
   },
   computed: {
@@ -235,6 +240,12 @@ export default {
         profileSchedule,
       };
     },
+    isDastDrawerOpen() {
+      return this.openedDrawer === DAST_PROFILES_DRAWER;
+    },
+    isPreScanVerificationOpen() {
+      return this.openedDrawer === PRE_SCAN_VERIFICATION_DRAWER;
+    },
   },
   methods: {
     onSubmit({ runAfter = true, button = this.$options.saveAndRunScanBtnId } = {}) {
@@ -301,6 +312,9 @@ export default {
     selectProfiles({ scannerProfile, siteProfile }) {
       this.selectedSiteProfileId = siteProfile?.id;
       this.selectedScannerProfileId = scannerProfile?.id;
+    },
+    openDrawer(drawer) {
+      this.openedDrawer = drawer;
     },
   },
 };
@@ -402,8 +416,10 @@ export default {
         :full-path="projectPath"
         :scanner-profiles-library-path="scannerProfilesLibraryPath"
         :site-profiles-library-path="siteProfilesLibraryPath"
+        :open="isDastDrawerOpen"
         @error="showConfiguratorErrors"
         @profiles-selected="selectProfiles"
+        @open-drawer="openDrawer($options.DAST_PROFILES_DRAWER)"
       />
 
       <section-layout v-if="!failedToLoadProfiles" :heading="$options.i18n.scanScheduleHeader">
@@ -418,6 +434,8 @@ export default {
       <pre-scan-verification-configurator
         v-if="!failedToLoadProfiles && glFeatures.dastPreScanVerification"
         class="gl-my-6"
+        :open="isPreScanVerificationOpen"
+        @open-drawer="openDrawer($options.PRE_SCAN_VERIFICATION_DRAWER)"
       />
 
       <div v-if="!failedToLoadProfiles">

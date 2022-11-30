@@ -20,6 +20,7 @@ import { redirectTo } from '~/lib/utils/url_utility';
 import RefSelector from '~/ref/components/ref_selector.vue';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
+
 import {
   siteProfiles,
   scannerProfiles,
@@ -519,6 +520,30 @@ describe('OnDemandScansForm', () => {
       });
 
       expect(findPreScanVerificationConfigurator().exists()).toBe(expectedResult);
+    });
+  });
+
+  describe('toggle sidebars', () => {
+    beforeEach(() => {
+      createShallowComponent({}, false, {
+        glFeatures: {
+          dastPreScanVerification: true,
+        },
+      });
+    });
+
+    it('should close toggle sidebars when one sidebar opens', async () => {
+      findPreScanVerificationConfigurator().vm.$emit('open-drawer');
+      await nextTick();
+
+      expect(findDastProfilesConfigurator().props('open')).toBe(false);
+      expect(findPreScanVerificationConfigurator().props('open')).toBe(true);
+
+      findDastProfilesConfigurator().vm.$emit('open-drawer');
+      await nextTick();
+
+      expect(findDastProfilesConfigurator().props('open')).toBe(true);
+      expect(findPreScanVerificationConfigurator().props('open')).toBe(false);
     });
   });
 });
