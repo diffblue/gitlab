@@ -201,4 +201,14 @@ RSpec.describe Integrations::GitlabSlackApplication do
       expect(subject.configurable_events).to be_empty
     end
   end
+
+  describe '#description' do
+    it 'mentions notifications only when the flag is disabled' do
+      expect(subject.description).to include('notifications')
+
+      stub_feature_flags(integration_slack_app_notifications: false)
+
+      expect(subject.description).not_to include('notifications')
+    end
+  end
 end

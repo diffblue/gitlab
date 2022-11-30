@@ -15,7 +15,11 @@ module Integrations
     end
 
     def description
-      s_('Integrations|Enable GitLab.com slash commands in a Slack workspace.')
+      if Feature.enabled?(:integration_slack_app_notifications, project)
+        s_('Integrations|Enable slash commands and notifications for a Slack workspace.')
+      else
+        s_('Integrations|Enable GitLab.com slash commands in a Slack workspace.')
+      end
     end
 
     def self.to_param
