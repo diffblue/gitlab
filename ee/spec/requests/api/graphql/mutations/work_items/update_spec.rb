@@ -179,17 +179,6 @@ RSpec.describe 'Update a work item' do
       end
 
       it_behaves_like 'user without permission to admin work item cannot update the attribute'
-
-      context 'when the user does not have permission to update the work item' do
-        let(:current_user) { guest }
-
-        it_behaves_like 'a mutation that returns top-level errors', errors: [
-          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
-          'perform this action'
-        ]
-
-        it_behaves_like 'work item is not updated'
-      end
     end
   end
 
@@ -271,6 +260,66 @@ RSpec.describe 'Update a work item' do
         ]
 
         it_behaves_like 'work item is not updated'
+      end
+    end
+  end
+
+  context 'with health status widget input' do
+    let(:new_status) { 'onTrack' }
+    let(:input) { { 'healthStatusWidget' => { 'healthStatus' => new_status } } }
+
+    let_it_be_with_refind(:work_item) do
+      create(:work_item, health_status: :needs_attention, project: project)
+    end
+
+    let(:fields) do
+      <<~FIELDS
+        workItem {
+          widgets {
+            type
+            ... on WorkItemWidgetHealthStatus {
+              healthStatus
+            }
+          }
+        }
+        errors
+      FIELDS
+    end
+
+    context 'when issuable_health_status is unlicensed' do
+      let(:current_user) { reporter }
+
+      before do
+        stub_licensed_features(issuable_health_status: false)
+      end
+
+      it_behaves_like 'work item is not updated'
+    end
+
+    context 'when issuable_health_status is licensed' do
+      before do
+        stub_licensed_features(issuable_health_status: true)
+      end
+
+      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+
+      context 'when user has permissions to update the work item' do
+        let(:current_user) { reporter }
+
+        it 'updates work item health status' do
+          expect do
+            post_graphql_mutation(mutation, current_user: current_user)
+            work_item.reload
+          end.to change { work_item.health_status }.from('needs_attention').to('on_track')
+
+          expect(response).to have_gitlab_http_status(:success)
+          expect(mutation_response['workItem']['widgets']).to include(
+            {
+              'healthStatus' => 'onTrack',
+              'type' => 'HEALTH_STATUS'
+            }
+          )
+        end
       end
     end
   end

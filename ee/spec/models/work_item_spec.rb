@@ -89,6 +89,46 @@ RSpec.describe WorkItem do
         end
       end
     end
+
+    context 'for health status widget' do
+      context 'when issuable_health_status is licensed' do
+        subject { build(:work_item, *work_item_type).widgets }
+
+        before do
+          stub_licensed_features(issuable_health_status: true)
+        end
+
+        context 'when work item supports health_status' do
+          where(:work_item_type) { [:task, :issue, :objective, :key_result] }
+
+          with_them do
+            it 'returns an instance of the health status widget' do
+              is_expected.to include(instance_of(WorkItems::Widgets::HealthStatus))
+            end
+          end
+        end
+
+        context 'when work item does not support health status' do
+          where(:work_item_type) { [:test_case, :requirement] }
+
+          with_them do
+            it 'omits an instance of the health status widget' do
+              is_expected.not_to include(instance_of(WorkItems::Widgets::HealthStatus))
+            end
+          end
+        end
+      end
+
+      context 'when issuable_health_status is unlicensed' do
+        before do
+          stub_licensed_features(issuable_health_status: false)
+        end
+
+        it 'omits an instance of the health status widget' do
+          is_expected.not_to include(instance_of(WorkItems::Widgets::HealthStatus))
+        end
+      end
+    end
   end
 
   it_behaves_like 'a collection filtered by test reports state' do
