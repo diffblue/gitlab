@@ -1,4 +1,4 @@
-query getBranchRules($projectPath: ID!) {
+query getBranchRulesEE($projectPath: ID!) {
   project(fullPath: $projectPath) {
     id
     branchRules {
@@ -8,11 +8,18 @@ query getBranchRules($projectPath: ID!) {
         matchingBranchesCount
         branchProtection {
           allowForcePush
+          codeOwnerApprovalRequired
           mergeAccessLevels {
             edges {
               node {
                 accessLevel
                 accessLevelDescription
+                group {
+                  id
+                }
+                user {
+                  id
+                }
               }
             }
           }
@@ -21,8 +28,24 @@ query getBranchRules($projectPath: ID!) {
               node {
                 accessLevel
                 accessLevelDescription
+                group {
+                  id
+                }
+                user {
+                  id
+                }
               }
             }
+          }
+        }
+        externalStatusChecks {
+          nodes {
+            id
+          }
+        }
+        approvalRules {
+          nodes {
+            id
           }
         }
       }
