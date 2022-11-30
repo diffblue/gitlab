@@ -6,21 +6,19 @@ module QA
       let(:test_data_sast_string_fields_array) do
         [
           %w[SECURE_ANALYZERS_PREFIX registry.example.com],
-          ['SAST_EXCLUDED_PATHS', 'foo, bar'],
-          ['SAST_BANDIT_EXCLUDED_PATHS', 'exclude_path_a, exclude_path_b']
+          ['SAST_EXCLUDED_PATHS', 'foo, bar']
         ]
       end
 
       let(:test_data_int_fields_array) do
         [
           %w[SEARCH_MAX_DEPTH 42],
-          %w[SAST_BRAKEMAN_LEVEL 43],
-          %w[SAST_GOSEC_LEVEL 7]
+          %w[SAST_BRAKEMAN_LEVEL 43]
         ]
       end
 
       let(:test_data_checkbox_exclude_array) do
-        %w[eslint kubesec nodejs-scan phpcs-security-audit]
+        %w[kubesec nodejs-scan phpcs-security-audit]
       end
 
       let(:test_stage_name) do
