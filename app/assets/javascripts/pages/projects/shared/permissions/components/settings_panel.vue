@@ -927,7 +927,7 @@ export default {
         ref="monitor-settings"
         :label="$options.i18n.monitorLabel"
         :help-text="
-          s__('ProjectSettings|Configure your project resources and monitor their health.')
+          s__('ProjectSettings|Monitor the health of your project and respond to incidents.')
         "
       >
         <project-feature-setting
