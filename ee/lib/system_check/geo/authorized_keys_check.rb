@@ -3,6 +3,8 @@
 module SystemCheck
   module Geo
     class AuthorizedKeysCheck < ::SystemCheck::BaseCheck
+      include ::SystemCheck::MultiCheckHelpers
+
       set_name 'OpenSSH configured to use AuthorizedKeysCommand'
 
       AUTHORIZED_KEYS_DOCS = 'doc/administration/operations/fast_ssh_key_lookup.md'
@@ -140,27 +142,6 @@ module SystemCheck
       end
 
       private
-
-      def print_skipped(reason)
-        $stdout.puts 'skipped'.color(:magenta)
-
-        $stdout.puts '  Reason:'.color(:blue)
-        $stdout.puts "  #{reason}"
-      end
-
-      def print_warning(reason)
-        $stdout.puts 'warning'.color(:magenta)
-
-        $stdout.puts '  Reason:'.color(:blue)
-        $stdout.puts "  #{reason}"
-      end
-
-      def print_failure(reason)
-        $stdout.puts 'no'.color(:red)
-
-        $stdout.puts '  Reason:'.color(:blue)
-        $stdout.puts "  #{reason}"
-      end
 
       def openssh_config_exists?
         File.file?(openssh_config_path)
