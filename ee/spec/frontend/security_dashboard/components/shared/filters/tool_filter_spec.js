@@ -103,7 +103,7 @@ describe('Tool Filter component', () => {
     });
 
     it('displays the all option item', () => {
-      expect(findFilterItems().at(0).props()).toStrictEqual({
+      expect(findFilterItems().at(0).props()).toMatchObject({
         isChecked: true,
         text: allOptionName,
       });
@@ -153,7 +153,7 @@ describe('Tool Filter component', () => {
           findFilterItems()
             .at(index + 1)
             .props(),
-        ).toStrictEqual({ isChecked: false, text: name });
+        ).toMatchObject({ isChecked: false, text: name });
       });
     });
 
