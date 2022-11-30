@@ -1978,13 +1978,13 @@ RSpec.describe Project do
     it { is_expected.to eq(pipeline_1) }
   end
 
-  describe '#latest_pipeline_with_reports' do
+  describe '#latest_default_branch_pipeline_with_reports' do
     let_it_be(:project) { create(:project) }
     let_it_be(:pipeline_1) { create(:ee_ci_pipeline, :with_sast_report, project: project) }
     let_it_be(:pipeline_2) { create(:ee_ci_pipeline, :with_sast_report, project: project) }
     let_it_be(:pipeline_3) { create(:ee_ci_pipeline, :with_dependency_scanning_report, project: project) }
 
-    subject { project.latest_pipeline_with_reports(reports) }
+    subject { project.latest_default_branch_pipeline_with_reports(reports) }
 
     context 'when reports are found' do
       let_it_be(:reports) { ::Ci::JobArtifact.of_report_type(:sast) }

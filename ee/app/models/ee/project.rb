@@ -380,7 +380,7 @@ module EE
       vulnerability_statistic&.pipeline
     end
 
-    def latest_pipeline_with_reports(reports)
+    def latest_default_branch_pipeline_with_reports(reports)
       all_pipelines.success.newest_first(ref: default_branch).with_reports(reports).take
     end
 
@@ -856,7 +856,7 @@ module EE
       !!merge_requests_disable_committers_approval
     end
 
-    def license_compliance(pipeline = latest_pipeline_with_reports(::Ci::JobArtifact.of_report_type(:license_scanning)))
+    def license_compliance(pipeline = latest_default_branch_pipeline_with_reports(::Ci::JobArtifact.of_report_type(:license_scanning)))
       SCA::LicenseCompliance.new(self, pipeline)
     end
 
