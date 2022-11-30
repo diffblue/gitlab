@@ -148,7 +148,7 @@ describe('ScanResultPolicyEditor', () => {
           },
         });
         await nextTick();
-        expect(wrapper.vm.$data.yamlEditorValue).toEqual(policyConfig);
+        expect(findPolicyEditorLayout().props('yamlEditorValue')).toEqual(policyConfig);
       },
     );
 
