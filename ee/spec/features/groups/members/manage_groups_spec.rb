@@ -55,9 +55,9 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
     end
   end
 
-  shared_examples "triggers an overage modal when adding a group as Reporter" do
+  shared_examples "triggers an overage modal when adding a group with a given role" do |role|
     specify do
-      add_group_with_one_extra_user
+      add_group_with_one_extra_user(role)
       click_button 'Continue'
 
       wait_for_requests
@@ -67,7 +67,7 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
 
       page.within(first_row) do
         expect(page).to have_content(group_to_add.name)
-        expect(page).to have_content('Reporter')
+        expect(page).to have_content(role)
       end
     end
   end
@@ -92,7 +92,8 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       create(:gitlab_subscription, namespace: group, hosted_plan: premium_plan, seats: 1, seats_in_use: 0)
     end
 
-    it_behaves_like "triggers an overage modal when adding a group as Reporter"
+    it_behaves_like "triggers an overage modal when adding a group with a given role", 'Guest'
+    it_behaves_like "triggers an overage modal when adding a group with a given role", 'Developer'
 
     context 'when overage modal is shown' do
       it 'goes back to the initial modal if not confirmed' do
@@ -113,8 +114,8 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
       create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan, seats: 1, seats_in_use: 0)
     end
 
-    it_behaves_like "triggers an overage modal when adding a group as Reporter"
     it_behaves_like "doesn't trigger an overage modal when adding a group with a given role", 'Guest'
+    it_behaves_like "triggers an overage modal when adding a group with a given role", 'Developer'
   end
 
   describe 'inviting group with restricted email domain' do
@@ -230,13 +231,13 @@ RSpec.describe 'Groups > Members > Manage groups', :js, :saas do
     wait_for_requests
   end
 
-  def add_group_with_one_extra_user
+  def add_group_with_one_extra_user(role = 'Developer')
     group.add_owner(user)
     group_to_add.add_owner(user)
     group_to_add.add_developer(user2)
 
     visit group_group_members_path(group)
-    add_group(group_to_add.name, 'Reporter')
+    add_group(group_to_add.name, role)
 
     expect(page).to have_content("Your subscription includes 1 seat. If you continue, the #{group.name} group will"\
       " have 2 seats in use and will be billed for the overage. Learn more.")

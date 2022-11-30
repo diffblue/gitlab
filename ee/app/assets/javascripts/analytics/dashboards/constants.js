@@ -13,6 +13,12 @@ import {
   TIME_TO_RESTORE_SERVICE,
   CHANGE_FAILURE_RATE,
 } from 'ee/api/dora_api';
+import {
+  LEAD_TIME_METRIC_TYPE,
+  CYCLE_TIME_METRIC_TYPE,
+  ISSUES_METRIC_TYPE,
+  DEPLOYS_METRIC_TYPE,
+} from '~/api/analytics_api';
 
 export const DORA_METRICS = {
   [DEPLOYMENT_FREQUENCY_METRIC_TYPE]: {
@@ -33,6 +39,24 @@ export const DORA_METRICS = {
     label: s__('DORA4Metrics|Change Failure Rate'),
     invertTrendColor: true,
     formatValue: (value) => percentHundred(value, 2),
+  },
+  [LEAD_TIME_METRIC_TYPE]: {
+    label: s__('DORA4Metrics|Lead time'),
+    invertTrendColor: true,
+    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
+  },
+  [CYCLE_TIME_METRIC_TYPE]: {
+    label: s__('DORA4Metrics|Cycle time'),
+    invertTrendColor: true,
+    formatValue: (value) => days(value, 1, { unitSeparator: ' ' }),
+  },
+  [ISSUES_METRIC_TYPE]: {
+    label: s__('DORA4Metrics|New issues'),
+    formatValue: (value) => value,
+  },
+  [DEPLOYS_METRIC_TYPE]: {
+    label: s__('DORA4Metrics|Deploys'),
+    formatValue: (value) => value,
   },
 };
 
