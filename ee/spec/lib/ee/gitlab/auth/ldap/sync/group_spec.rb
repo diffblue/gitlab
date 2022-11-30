@@ -19,7 +19,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
     stub_ldap_group_find_by_cn('ldap_group1', ldap_group1, adapter)
   end
 
-  shared_examples :group_state_machine do
+  shared_examples 'group state machine' do
     it 'uses the ldap sync state machine' do
       expect(group).to receive(:start_ldap_sync)
       expect(group).to receive(:finish_ldap_sync)
@@ -102,7 +102,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
 
     let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
 
-    include_examples :group_state_machine
+    include_examples 'group state machine'
   end
 
   describe '.execute' do
@@ -118,7 +118,7 @@ RSpec.describe EE::Gitlab::Auth::Ldap::Sync::Group do
 
     let(:ldap_group1) { ldap_group_entry(user_dn(user.username)) }
 
-    include_examples :group_state_machine
+    include_examples 'group state machine'
   end
 
   describe '.fail_stuck_group' do

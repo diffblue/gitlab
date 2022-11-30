@@ -4440,7 +4440,7 @@ RSpec.describe User do
   shared_context '#ci_owned_runners' do
     let(:user) { create(:user) }
 
-    shared_examples :nested_groups_owner do
+    shared_examples 'nested groups owner' do
       context 'when the user is the owner of a multi-level group' do
         before do
           set_permissions_for_users
@@ -4457,7 +4457,7 @@ RSpec.describe User do
       end
     end
 
-    shared_examples :group_owner do
+    shared_examples 'group owner' do
       context 'when the user is the owner of a one level group' do
         before do
           group.add_owner(user)
@@ -4473,7 +4473,7 @@ RSpec.describe User do
       end
     end
 
-    shared_examples :project_owner do
+    shared_examples 'project owner' do
       context 'when the user is the owner of a project' do
         it 'loads the runner belonging to the project' do
           expect(user.ci_owned_runners).to contain_exactly(runner)
@@ -4485,7 +4485,7 @@ RSpec.describe User do
       end
     end
 
-    shared_examples :project_member do
+    shared_examples 'project member' do
       context 'when the user is a maintainer' do
         before do
           add_user(:maintainer)
@@ -4543,7 +4543,7 @@ RSpec.describe User do
       end
     end
 
-    shared_examples :group_member do
+    shared_examples 'group member' do
       context 'when the user is a maintainer' do
         before do
           add_user(:maintainer)
@@ -4616,7 +4616,7 @@ RSpec.describe User do
       let!(:project) { create(:project, namespace: namespace) }
       let!(:runner) { create(:ci_runner, :project, projects: [project]) }
 
-      it_behaves_like :project_owner
+      it_behaves_like 'project owner'
     end
 
     context 'with group runner in a non owned group' do
@@ -4627,14 +4627,14 @@ RSpec.describe User do
         group.add_member(user, access)
       end
 
-      it_behaves_like :group_member
+      it_behaves_like 'group member'
     end
 
     context 'with group runner in an owned group' do
       let!(:group) { create(:group) }
       let!(:group_runner) { create(:ci_runner, :group, groups: [group]) }
 
-      it_behaves_like :group_owner
+      it_behaves_like 'group owner'
     end
 
     context 'with group runner in an owned group and group runner in a different owner subgroup' do
@@ -4649,7 +4649,7 @@ RSpec.describe User do
         subgroup.add_owner(another_user)
       end
 
-      it_behaves_like :nested_groups_owner
+      it_behaves_like 'nested groups owner'
     end
 
     context 'with personal project runner in an an owned group and a group runner in that same group' do
@@ -4662,7 +4662,7 @@ RSpec.describe User do
         group.add_owner(user)
       end
 
-      it_behaves_like :nested_groups_owner
+      it_behaves_like 'nested groups owner'
     end
 
     context 'with personal project runner in an owned group and a group runner in a subgroup' do
@@ -4676,7 +4676,7 @@ RSpec.describe User do
         group.add_owner(user)
       end
 
-      it_behaves_like :nested_groups_owner
+      it_behaves_like 'nested groups owner'
     end
 
     context 'with personal project runner in an owned group in an owned namespace and a group runner in that group' do
@@ -4690,7 +4690,7 @@ RSpec.describe User do
         group.add_owner(user)
       end
 
-      it_behaves_like :nested_groups_owner
+      it_behaves_like 'nested groups owner'
     end
 
     context 'with personal project runner in an owned namespace, an owned group, a subgroup and a group runner in that subgroup' do
@@ -4705,7 +4705,7 @@ RSpec.describe User do
         group.add_owner(user)
       end
 
-      it_behaves_like :nested_groups_owner
+      it_behaves_like 'nested groups owner'
     end
 
     context 'with a project runner that belong to projects that belong to a not owned group' do
@@ -4717,7 +4717,7 @@ RSpec.describe User do
         project.add_member(user, access)
       end
 
-      it_behaves_like :project_member
+      it_behaves_like 'project member'
     end
 
     context 'with project runners that belong to projects that do not belong to any group' do
@@ -4740,7 +4740,7 @@ RSpec.describe User do
         group.add_member(another_user, :owner)
       end
 
-      it_behaves_like :group_member
+      it_behaves_like 'group member'
     end
   end
 

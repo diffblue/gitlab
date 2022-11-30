@@ -20,7 +20,7 @@ RSpec.describe ApprovalRules::ParamsFilteringService do
       accessible_group.add_developer(user)
     end
 
-    shared_examples_for(:assigning_users_and_groups) do
+    shared_examples_for('assigning users and groups') do
       before do
         allow(Ability).to receive(:allowed?).and_call_original
 
@@ -70,7 +70,7 @@ RSpec.describe ApprovalRules::ParamsFilteringService do
         }
       end
 
-      it_behaves_like :assigning_users_and_groups do
+      it_behaves_like 'assigning users and groups' do
         let(:approval_rules_attributes) do
           [
             { name: 'foo', user_ids: [project_member.id, outsider.id] },
@@ -212,7 +212,7 @@ RSpec.describe ApprovalRules::ParamsFilteringService do
       let!(:rule1) { create(:approval_merge_request_rule, merge_request: merge_request, users: [create(:user)]) }
       let!(:rule2) { create(:approval_merge_request_rule, merge_request: merge_request, groups: [existing_private_group]) }
 
-      it_behaves_like :assigning_users_and_groups do
+      it_behaves_like 'assigning users and groups' do
         let(:params) do
           {
             approval_rules_attributes: [
@@ -304,7 +304,7 @@ RSpec.describe ApprovalRules::ParamsFilteringService do
       end
 
       context 'with remove_hidden_groups being true' do
-        it_behaves_like :assigning_users_and_groups do
+        it_behaves_like 'assigning users and groups' do
           let(:params) do
             {
               approval_rules_attributes: [
