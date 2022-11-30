@@ -327,6 +327,47 @@ RSpec.describe Projects::UpdateMirrorService do
           end
         end
 
+        context 'when mirror_branch_regex is set' do
+          let(:new_branch_name) { "new-branch" }
+          let(:existing_branch_name) { "existing-branch" }
+          let(:fake_regex) { instance_spy(Gitlab::UntrustedRegexp) }
+          let!(:project_setting) { create(:project_setting, project: project, mirror_branch_regex: 'fake_regex') }
+
+          before do
+            allow(Gitlab::UntrustedRegexp).to receive(:new)
+                                    .with('fake_regex')
+                                    .and_return(fake_regex)
+
+            allow(fake_regex).to receive(:match?).and_return(false)
+          end
+
+          it 'create a new matched branch' do
+            allow(fake_regex).to receive(:match?).with(new_branch_name).and_return(true)
+            service.execute
+            expect(project.repository.branch_names).to include(new_branch_name)
+          end
+
+          it 'does not create mismatched branch' do
+            service.execute
+            expect(project.repository.branch_names).not_to include(new_branch_name)
+          end
+
+          it 'updates existing matched branches' do
+            allow(fake_regex).to receive(:match?).with('existing-branch').and_return(true)
+            service.execute
+
+            expect(project.repository.find_branch(existing_branch_name).dereferenced_target)
+              .to eq(project.repository.find_branch(master).dereferenced_target)
+          end
+
+          it 'does not update mismatched branches' do
+            service.execute
+
+            expect(project.repository.find_branch(existing_branch_name).dereferenced_target)
+              .not_to eq(project.repository.find_branch(master).dereferenced_target)
+          end
+        end
+
         context 'with diverged branches' do
           let(:diverged_branch) { "markdown" }
 

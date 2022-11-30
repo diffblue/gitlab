@@ -14,6 +14,7 @@ module EE
         only_mirror_protected_branches
         mirror_overwrites_diverged_branches
         import_data_attributes
+        mirror_branch_regex
       ].freeze
 
       override :execute
@@ -23,6 +24,7 @@ module EE
 
         shared_runners_setting
         mirror_user_setting
+        mirror_branch_setting
         compliance_framework_setting
 
         return update_failed! if project.errors.any?
@@ -111,6 +113,20 @@ module EE
         else
           params[:mirror_user_id] = current_user.id
         end
+      end
+
+      def mirror_branch_setting
+        if mirror_branch_regex_enabled? && params[:mirror_branch_regex].present?
+          params[:only_mirror_protected_branches] = false
+        end
+
+        params.delete(:mirror_branch_regex) unless mirror_branch_regex_enabled?
+
+        params[:mirror_branch_regex] = nil if params[:only_mirror_protected_branches]
+      end
+
+      def mirror_branch_regex_enabled?
+        ::Feature.enabled?(:mirror_only_branches_match_regex, project)
       end
 
       def compliance_framework_setting

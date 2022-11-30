@@ -50,7 +50,9 @@ module EE
 
       def mirror_params_attributes
         if can?(current_user, :admin_mirror, project)
-          super + mirror_params_attributes_ee
+          attributes = super
+          attributes[0][:remote_mirrors_attributes].push(:mirror_branch_regex) if mirror_branch_regex_enabled?
+          attributes + mirror_params_attributes_ee
         else
           super
         end
@@ -89,7 +91,31 @@ module EE
           end
         end
 
+        # avoid enable only_protected_branches and mirror_branch_regex at the same time
+        remote_mirror_data = params[:remote_mirrors_attributes]
+        if remote_mirror_data.present?
+          remote_mirror_data.transform_values! do |value|
+            format_remote_mirrors_attributes(value)
+            value
+          end
+        end
+
         params
+      end
+
+      # Pass mirror_branch_regex and only_protected_branches at same time will use mirror_branch_regex
+      def format_remote_mirrors_attributes(params)
+        return unless params.is_a?(ActionController::Parameters)
+
+        if mirror_branch_regex_enabled? && params[:mirror_branch_regex].present?
+          params[:only_protected_branches] = false
+        end
+
+        params[:mirror_branch_regex] = nil if params[:only_protected_branches].present?
+      end
+
+      def mirror_branch_regex_enabled?
+        ::Feature.enabled?(:mirror_only_branches_match_regex, project)
       end
     end
   end
