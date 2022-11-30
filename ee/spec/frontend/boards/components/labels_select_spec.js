@@ -17,9 +17,9 @@ import {
 } from 'jest/boards/mock_data';
 
 import defaultStore from '~/boards/stores';
-import searchGroupLabels from '~/vue_shared/components/sidebar/labels_select_widget/graphql/group_labels.query.graphql';
-import searchProjectLabels from '~/vue_shared/components/sidebar/labels_select_widget/graphql/project_labels.query.graphql';
-import DropdownValue from '~/vue_shared/components/sidebar/labels_select_widget/dropdown_value.vue';
+import searchGroupLabels from '~/sidebar/components/labels/labels_select_widget/graphql/group_labels.query.graphql';
+import searchProjectLabels from '~/sidebar/components/labels/labels_select_widget/graphql/project_labels.query.graphql';
+import DropdownValue from '~/sidebar/components/labels/labels_select_widget/dropdown_value.vue';
 import DropdownWidget from '~/vue_shared/components/dropdown/dropdown_widget/dropdown_widget.vue';
 
 Vue.use(VueApollo);
