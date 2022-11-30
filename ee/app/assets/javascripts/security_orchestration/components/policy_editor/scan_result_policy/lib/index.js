@@ -2,7 +2,14 @@ import { s__ } from '~/locale';
 
 export { fromYaml } from './from_yaml';
 export { toYaml } from './to_yaml';
-export { buildRule, invalidScanners } from './rules';
+export {
+  securityScanBuildRule,
+  emptyBuildRule,
+  getDefaultRule,
+  invalidScanners,
+  SCAN_FINDING,
+  LICENSE_FINDING,
+} from './rules';
 export { approversOutOfSync } from './actions';
 export * from './humanize';
 
@@ -19,6 +26,18 @@ rules:
       - critical
     vulnerability_states:
       - newly_detected
+actions:
+  - type: require_approval
+    approvals_required: 1
+    user_approvers: []
+`;
+
+export const DEFAULT_SCAN_RESULT_POLICY_V2 = `type: scan_result_policy
+name: ''
+description: ''
+enabled: true
+rules:
+  - type: ''
 actions:
   - type: require_approval
     approvals_required: 1
