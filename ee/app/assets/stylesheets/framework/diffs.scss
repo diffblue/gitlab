@@ -18,10 +18,6 @@
   &.inline-diff-view {
     .codequality-findings-list {
       margin-left: 6.2rem;
-
-      li {
-        border-left: 1px solid $gray-100;
-      }
     }
 
     .diff-grid-left {
@@ -70,5 +66,9 @@
 
   .more-count-copy {
     line-height: 0.9rem;
+  }
+
+  .severity-copy {
+    text-transform: capitalize;
   }
 }

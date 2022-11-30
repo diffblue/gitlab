@@ -27114,6 +27114,9 @@ msgstr ""
 msgid "New branch unavailable"
 msgstr ""
 
+msgid "New code quality Findings"
+msgstr ""
+
 msgid "New confidential epic title "
 msgstr ""
 
