@@ -144,3 +144,6 @@ export const SAVED_TAB_TABLE_FIELDS = [
     formatter: (_value, _key, item) => item.dastScannerProfile?.scanType,
   },
 ];
+
+export const DAST_PROFILES_DRAWER = 'dast';
+export const PRE_SCAN_VERIFICATION_DRAWER = 'verification';

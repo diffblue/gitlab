@@ -20,17 +20,18 @@ describe('PreScanVerificationConfigurator', () => {
 
   it('should open and close sidebar', async () => {
     createComponent();
-    expect(findPreScanVerificationSidebar().props('isOpen')).toBe(false);
+    expect(findPreScanVerificationSidebar().props('open')).toBe(false);
 
     findPreScanVerificationStatus().vm.$emit('select-results');
     await nextTick();
 
-    expect(findPreScanVerificationSidebar().props('isOpen')).toBe(true);
+    expect(findPreScanVerificationSidebar().props('open')).toBe(true);
 
     findPreScanVerificationSidebar().vm.$emit('close');
     await nextTick();
 
-    expect(findPreScanVerificationSidebar().props('isOpen')).toBe(false);
+    expect(wrapper.emitted('open-drawer')).toHaveLength(1);
+    expect(findPreScanVerificationSidebar().props('open')).toBe(false);
   });
 
   it.each`

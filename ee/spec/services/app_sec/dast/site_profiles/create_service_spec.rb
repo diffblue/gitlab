@@ -9,6 +9,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
   let_it_be(:target_url) { generate(:url) }
   let_it_be(:excluded_urls) { ["#{target_url}/signout"] }
   let_it_be(:request_headers) { "Authorization: Bearer #{SecureRandom.hex}" }
+  let_it_be(:auth_password) { SecureRandom.hex }
 
   let(:default_params) do
     {
@@ -22,7 +23,7 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
       auth_password_field: 'session[password]',
       auth_submit_field: 'css:button[type="submit"]',
       auth_username: generate(:email),
-      auth_password: SecureRandom.hex
+      auth_password: auth_password
     }
   end
 
@@ -180,6 +181,24 @@ RSpec.describe AppSec::Dast::SiteProfiles::CreateService do
 
         it_behaves_like 'it handles secret variable creation'
         it_behaves_like 'it handles secret variable creation failure'
+      end
+
+      context 'when the auth_password size is smaller than 8 characters' do
+        let(:auth_password) { '123' }
+
+        it 'returns an error response', :aggregate_failures do
+          expect(status).to eq(:error)
+          expect(message).to include('Password is less than 8 characters')
+        end
+      end
+
+      context 'when the request headers size is smaller than 8 characters' do
+        let(:request_headers) { 'abc' }
+
+        it 'returns an error response', :aggregate_failures do
+          expect(status).to eq(:error)
+          expect(message).to include('Request Headers is less than 8 characters')
+        end
       end
 
       context 'when an existing dast_site_validation does not exist' do

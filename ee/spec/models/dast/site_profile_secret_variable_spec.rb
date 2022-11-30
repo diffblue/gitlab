@@ -9,16 +9,6 @@ RSpec.describe Dast::SiteProfileSecretVariable, type: :model do
 
   it_behaves_like 'CI variable'
 
-  describe 'constants' do
-    describe 'MAX_ENCODED_VALUE_LENGTH' do
-      it 'correctly expresses the relationship between input and encoded length' do
-        raw_value = SecureRandom.alphanumeric(described_class::MAX_VALUE_LENGTH)
-
-        expect(described_class::MAX_ENCODED_VALUE_LENGTH).to eq(Base64.strict_encode64(raw_value).length)
-      end
-    end
-  end
-
   describe 'associations' do
     it { is_expected.to belong_to(:dast_site_profile) }
   end
@@ -46,7 +36,7 @@ RSpec.describe Dast::SiteProfileSecretVariable, type: :model do
 
         it 'is not valid', :aggregate_failures do
           expect(subject).not_to be_valid
-          expect(subject.errors.full_messages).to include('Value exceeds the 10000 character limit')
+          expect(subject.errors.full_messages).to include('Value exceeds 10000 characters')
         end
 
         it 'raises a database level error' do
@@ -56,7 +46,7 @@ RSpec.describe Dast::SiteProfileSecretVariable, type: :model do
         end
       end
 
-      context 'when value is under the limit' do
+      context 'when value at the maximum value' do
         let(:raw_value) { SecureRandom.alphanumeric(10_000) }
 
         it 'is valid' do
@@ -67,6 +57,29 @@ RSpec.describe Dast::SiteProfileSecretVariable, type: :model do
           allow(subject).to receive(:valid?).and_return(true)
 
           expect { subject.save! }.not_to raise_error
+        end
+      end
+
+      context 'when value at the minimum value' do
+        let(:raw_value) { SecureRandom.alphanumeric(8) }
+
+        it 'is valid' do
+          expect(subject).to be_valid
+        end
+
+        it 'does not raise database level error' do
+          allow(subject).to receive(:valid?).and_return(true)
+
+          expect { subject.save! }.not_to raise_error
+        end
+      end
+
+      context 'when value is under the limit' do
+        let(:raw_value) { SecureRandom.alphanumeric(7) }
+
+        it 'is not valid', :aggregate_failures do
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages).to include('Value is less than 8 characters')
         end
       end
     end

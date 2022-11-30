@@ -3,6 +3,7 @@ import { GlLink, GlSprintf, GlButton, GlForm, GlAlert } from '@gitlab/ui';
 import DastProfilesConfigurator from 'ee/security_configuration/dast_profiles/dast_profiles_configurator/dast_profiles_configurator.vue';
 import PreScanVerificationConfigurator from 'ee/security_configuration/dast_pre_scan_verification/components/pre_scan_verification_configurator.vue';
 import ConfigurationSnippetModal from 'ee/security_configuration/components/configuration_snippet_modal.vue';
+import { DAST_PROFILES_DRAWER, PRE_SCAN_VERIFICATION_DRAWER } from 'ee/on_demand_scans/constants';
 import { CONFIGURATION_SNIPPET_MODAL_ID } from 'ee/security_configuration/components/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { s__, __ } from '~/locale';
@@ -15,6 +16,8 @@ import {
 } from '../constants';
 
 export default {
+  DAST_PROFILES_DRAWER,
+  PRE_SCAN_VERIFICATION_DRAWER,
   DAST_HELP_PATH,
   dastConfigurationHelpPath: DAST_HELP_PATH,
   CONFIGURATION_SNIPPET_MODAL_ID,
@@ -57,6 +60,7 @@ export default {
       hasProfilesConflict: false,
       errorMessage: '',
       showAlert: false,
+      openedDrawer: null,
     };
   },
   computed: {
@@ -72,6 +76,12 @@ export default {
         this.hasProfilesConflict
       );
     },
+    isDastDrawerOpen() {
+      return this.openedDrawer === DAST_PROFILES_DRAWER;
+    },
+    isPreScanVerificationOpen() {
+      return this.openedDrawer === PRE_SCAN_VERIFICATION_DRAWER;
+    },
   },
   methods: {
     onSubmit() {
@@ -84,6 +94,9 @@ export default {
     showErrors(error) {
       this.errorMessage = error;
       this.showAlert = true;
+    },
+    openDrawer(drawer) {
+      this.openedDrawer = drawer;
     },
   },
 };
@@ -99,8 +112,10 @@ export default {
       :saved-scanner-profile-name="scannerProfile"
       :saved-site-profile-name="siteProfile"
       :site-profiles-library-path="siteProfilesLibraryPath"
+      :open="isDastDrawerOpen"
       @error="showErrors"
       @profiles-selected="updateProfiles"
+      @open-drawer="openDrawer($options.DAST_PROFILES_DRAWER)"
     >
       <template #description>
         <p>
@@ -113,7 +128,12 @@ export default {
       </template>
     </dast-profiles-configurator>
 
-    <pre-scan-verification-configurator v-if="glFeatures.dastPreScanVerification" class="gl-my-6" />
+    <pre-scan-verification-configurator
+      v-if="glFeatures.dastPreScanVerification"
+      class="gl-my-6"
+      :open="isPreScanVerificationOpen"
+      @open-drawer="openDrawer($options.PRE_SCAN_VERIFICATION_DRAWER)"
+    />
 
     <gl-alert
       v-if="showAlert"

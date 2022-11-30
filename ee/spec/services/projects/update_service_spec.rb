@@ -120,6 +120,48 @@ RSpec.describe Projects::UpdateService, '#execute' do
 
       update_project(project, user, opts)
     end
+
+    context 'when update mirror branch setting' do
+      before do
+        project.team.add_maintainer(admin)
+      end
+
+      it 'allow mirror_branch_regex to be updated' do
+        result = update_project(project, admin, opts.merge(mirror_branch_regex: :test))
+
+        expect(result).to eq(status: :success)
+        expect(project.mirror_branch_regex).to match('test')
+      end
+
+      it 'enable only_mirror_protected_branches would clean mirror_branch_regex' do
+        project.mirror_branch_regex = 'test'
+        result = update_project(project, admin, opts.merge(only_mirror_protected_branches: true))
+
+        expect(result).to eq(status: :success)
+        expect(project.mirror_branch_regex).to be_nil
+      end
+
+      it 'fill mirror_branch_regex would disable only_mirror_protected_branches' do
+        project.only_mirror_protected_branches = true
+        result = update_project(project, admin, opts.merge(mirror_branch_regex: 'text'))
+
+        expect(result).to eq(status: :success)
+        expect(project.only_mirror_protected_branches).to be_falsey
+      end
+
+      context 'when `mirror_only_branches_match_regex` FF is disabled' do
+        before do
+          stub_feature_flags(mirror_only_branches_match_regex: false)
+        end
+
+        it 'ignores mirror_branch_regex parameter' do
+          result = update_project(project, admin, opts.merge(mirror_branch_regex: 'text'))
+
+          expect(result).to eq(status: :success)
+          expect(project.mirror_branch_regex).to be_nil
+        end
+      end
+    end
   end
 
   context 'audit events' do
