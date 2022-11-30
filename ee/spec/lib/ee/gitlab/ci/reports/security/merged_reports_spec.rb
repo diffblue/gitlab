@@ -2,20 +2,24 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Ci::Reports::Security::Reports do
+RSpec.describe Gitlab::Ci::Reports::Security::MergedReports, feature_category: :security_policy_management do
   let_it_be(:pipeline) { create(:ci_pipeline) }
   let_it_be(:artifact) { create(:ci_job_artifact, :sast) }
 
-  let(:security_reports) { described_class.new(pipeline) }
+  let(:security_reports) { Gitlab::Ci::Reports::Security::Reports.new(pipeline) }
+  let(:merged_reports) { described_class.new(pipeline, [security_reports]) }
 
   describe "#violates_default_policy_against?" do
     let(:high_severity_dast) { build(:ci_reports_security_finding, severity: 'high', report_type: :dast) }
     let(:vulnerabilities_allowed) { 0 }
-    let(:severity_levels) { %w(critical high) }
-    let(:vulnerability_states) { %w(newly_detected) }
+    let(:severity_levels) { %w[critical high] }
+    let(:vulnerability_states) { %w[newly_detected] }
     let(:report_types) { [] }
 
-    subject { security_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states, report_types) }
+    subject do
+      merged_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels,
+     vulnerability_states, report_types)
+    end
 
     before do
       security_reports.get_report('sast', artifact).add_finding(high_severity_dast)
@@ -27,18 +31,21 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
       it { is_expected.to be(true) }
 
       context 'with existing vulnerabilities' do
-        let!(:finding) { create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project, uuid: high_severity_dast.uuid) }
+        let!(:finding) do
+          create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project,
+                                                      uuid: high_severity_dast.uuid)
+        end
 
         it { is_expected.to be(true) }
 
         context 'with vulnerability states matching existing vulnerabilities' do
-          let(:vulnerability_states) { %w(detected) }
+          let(:vulnerability_states) { %w[detected] }
 
           it { is_expected.to be(true) }
         end
 
         context 'with vulnerability states not matching existing vulnerabilities' do
-          let(:vulnerability_states) { %w(resolved) }
+          let(:vulnerability_states) { %w[resolved] }
 
           it { is_expected.to be(false) }
         end
@@ -46,7 +53,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
     end
 
     context 'when the target_reports is not `nil`' do
-      let(:target_reports) { described_class.new(pipeline) }
+      let(:target_reports) { Gitlab::Ci::Reports::Security::Reports.new(pipeline) }
 
       context "when a report has a new unsafe vulnerability" do
         context 'with severity levels matching the existing vulnerabilities' do
@@ -60,7 +67,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
         end
 
         context "without any severity levels matching the existing vulnerabilities" do
-          let(:severity_levels) { %w(critical) }
+          let(:severity_levels) { %w[critical] }
 
           it { is_expected.to be(false) }
         end
@@ -74,18 +81,21 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
         it { is_expected.to be(false) }
 
         context 'with existing vulnerabilities' do
-          let!(:finding) { create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project, uuid: high_severity_dast.uuid) }
+          let!(:finding) do
+            create(:vulnerabilities_finding, :detected, report_type: :sast, project: pipeline.project,
+                                                        uuid: high_severity_dast.uuid)
+          end
 
           it { is_expected.to be(false) }
 
           context 'with vulnerability states matching existing vulnerability' do
-            let(:vulnerability_states) { %w(detected) }
+            let(:vulnerability_states) { %w[detected] }
 
             it { is_expected.to be(true) }
           end
 
           context 'with vulnerability states not matching existing vulnerabilities' do
-            let(:vulnerability_states) { %w(resolved) }
+            let(:vulnerability_states) { %w[resolved] }
 
             it { is_expected.to be(false) }
           end
@@ -93,21 +103,24 @@ RSpec.describe Gitlab::Ci::Reports::Security::Reports do
       end
 
       context 'with related report_types' do
-        let(:report_types) { %w(sast dast) }
+        let(:report_types) { %w[sast dast] }
 
         it { is_expected.to be(true) }
       end
 
       context 'with unrelated report_types' do
-        let(:report_types) { %w(dependency_scanning) }
+        let(:report_types) { %w[dependency_scanning] }
 
         it { is_expected.to be(false) }
       end
 
       context 'when target_reports is not nil and reports is empty' do
-        let(:without_reports) { described_class.new(pipeline) }
+        let(:without_reports) { described_class.new(pipeline, []) }
 
-        subject { without_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels, vulnerability_states) }
+        subject do
+          without_reports.violates_default_policy_against?(target_reports, vulnerabilities_allowed, severity_levels,
+         vulnerability_states)
+        end
 
         before do
           target_reports.get_report('sast', artifact).add_finding(high_severity_dast)
