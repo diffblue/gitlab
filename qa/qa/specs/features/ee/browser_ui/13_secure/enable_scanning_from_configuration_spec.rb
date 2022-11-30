@@ -108,11 +108,7 @@ module QA
 
         it(
           'runs sast job when enabled from configuration',
-          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685',
-          quarantine: {
-            type: :stale,
-            issue: "https://gitlab.com/gitlab-org/gitlab/-/issues/381752"
-          }
+          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347685'
         ) do
           Page::Project::Menu.perform(&:click_on_security_configuration_link)
 
