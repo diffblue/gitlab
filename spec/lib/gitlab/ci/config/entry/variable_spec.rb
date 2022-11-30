@@ -319,7 +319,7 @@ RSpec.describe Gitlab::Ci::Config::Entry::Variable do
         describe '#errors' do
           subject(:errors) { entry.errors }
 
-          it { is_expected.to include 'var1 config value must be a string' }
+          it { is_expected.to include 'var1 config must be a string' }
         end
       end
 
