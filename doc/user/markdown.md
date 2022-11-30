@@ -1017,6 +1017,8 @@ Do not change to a reference style link.
 
 ![alt text](img/markdown_logo.png "Title Text")
 
+#### Change the image dimensions
+
 > Introduced in GitLab 15.7 [with a flag](../administration/feature_flags.md) named `markdown_image_attributes`. Disabled by default.
 
 FLAG:
@@ -1025,13 +1027,13 @@ ask an administrator to [enable the feature flag](../administration/feature_flag
 On GitLab.com, this feature is available.
 The feature is not ready for production use.
 
-The width and height of an image can be specified by following the image with 
+You can control the width and height of an image by following the image with 
 an attribute list. For example
 
 ```markdown
 ![alt text](img/markdown_logo.png "Title Text"){width=100 height=100px}
 
-![alt text](img/markdown_logo.png "Title Text"){ width=75% }
+![alt text](img/markdown_logo.png "Title Text"){width=75%}
 ```
 
 ![alt text](img/markdown_logo.png "Title Text"){width=100 height=100px}
