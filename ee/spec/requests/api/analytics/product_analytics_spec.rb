@@ -149,7 +149,7 @@ RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_anal
         request_load(false)
 
         expect(response).to have_gitlab_http_status(:not_found)
-        expect(response.parsed_body).to eq({ "message" => "404 Database Not Found" })
+        expect(response.parsed_body).to eq({ "message" => "404 Clickhouse Database Not Found" })
       end
     end
 

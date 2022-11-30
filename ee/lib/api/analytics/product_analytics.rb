@@ -68,7 +68,7 @@ module API
           else
             status :not_found
 
-            not_found!('Database')
+            not_found!('Clickhouse Database')
           end
         end
 
