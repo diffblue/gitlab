@@ -135,8 +135,6 @@ RSpec.describe API::Scim do
     end
 
     describe 'POST api/scim/v2/groups/:group/Users' do
-      it_behaves_like 'SCIM token authenticated'
-
       let_it_be(:post_params) do
         {
           externalId: 'test_uid',
@@ -150,6 +148,8 @@ RSpec.describe API::Scim do
           password: password
         }.to_query
       end
+
+      it_behaves_like 'SCIM token authenticated'
 
       it 'responds with 404 for a non existent group' do
         post scim_api("scim/v2/groups/#{non_existing_record_id}/Users?params=#{post_params}")

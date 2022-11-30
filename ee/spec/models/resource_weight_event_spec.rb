@@ -3,15 +3,15 @@
 require 'spec_helper'
 
 RSpec.describe ResourceWeightEvent, type: :model do
-  it_behaves_like 'a resource event'
-  it_behaves_like 'a resource event for issues'
-
   let_it_be(:user1) { create(:user) }
   let_it_be(:user2) { create(:user) }
 
   let_it_be(:issue1) { create(:issue, author: user1) }
   let_it_be(:issue2) { create(:issue, author: user1) }
   let_it_be(:issue3) { create(:issue, author: user2) }
+
+  it_behaves_like 'a resource event'
+  it_behaves_like 'a resource event for issues'
 
   describe 'validations' do
     it { is_expected.not_to allow_value(nil).for(:issue) }
