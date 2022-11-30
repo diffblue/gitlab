@@ -46,7 +46,7 @@ module API
         end
 
         def database_exists?(body)
-          (body['error'] =~ %r{^Error: Code: (81|60).*$}).nil?
+          (body['error'] =~ %r{\AError: Code: (81|60)\..*(UNKNOWN_DATABASE|UNKNOWN_TABLE)}).nil?
         end
 
         def cube_data_query(load_data)
