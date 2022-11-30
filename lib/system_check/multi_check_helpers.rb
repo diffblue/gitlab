@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SystemCheck
   # Helpers used inside a SystemCheck instance to standardize output responses
   # when using a multi_check version
@@ -24,7 +26,7 @@ module SystemCheck
     end
 
     def print_pass
-      $stdout.puts check_pass.color(:green)
+      $stdout.puts self.class.check_pass.color(:green)
     end
   end
 end
