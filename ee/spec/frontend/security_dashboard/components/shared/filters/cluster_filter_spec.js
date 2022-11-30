@@ -50,11 +50,11 @@ describe('Cluster Filter component', () => {
     await waitForPromises();
     const filterItems = findFilterItems();
     expect(filterItems.length).toBe(2);
-    expect(filterItems.at(0).props()).toStrictEqual({
+    expect(filterItems.at(0).props()).toMatchObject({
       isChecked: true,
       text: 'All clusters',
     });
-    expect(filterItems.at(1).props()).toStrictEqual({
+    expect(filterItems.at(1).props()).toMatchObject({
       isChecked: false,
       text: 'primary-agent',
     });
