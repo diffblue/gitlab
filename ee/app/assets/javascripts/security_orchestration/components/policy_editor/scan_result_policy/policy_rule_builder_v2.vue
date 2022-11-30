@@ -18,9 +18,6 @@ export default {
       required: true,
     },
   },
-  data() {
-    return {};
-  },
   computed: {
     scanRuleTypeToggleText() {
       return this.scanType ? '' : this.$options.i18n.scanRuleTypeToggleText;

@@ -53,12 +53,12 @@ export function invalidScanners(rules) {
   Returns the config for a particular rule type
 */
 export const getDefaultRule = (scanType) => {
-  if (scanType === SCAN_FINDING) {
-    return securityScanBuildRule();
+  switch (scanType) {
+    case SCAN_FINDING:
+      return securityScanBuildRule();
+    case LICENSE_FINDING:
+      return licenseScanBuildRule();
+    default:
+      return emptyBuildRule();
   }
-  if (scanType === LICENSE_FINDING) {
-    return licenseScanBuildRule();
-  }
-
-  return emptyBuildRule();
 };

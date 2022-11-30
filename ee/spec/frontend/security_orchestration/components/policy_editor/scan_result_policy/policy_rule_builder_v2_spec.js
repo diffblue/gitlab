@@ -22,10 +22,6 @@ describe('PolicyRuleBuilder V2', () => {
 
   const findDeleteBtn = () => wrapper.findByTestId('remove-rule');
 
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
   describe('initial rendering', () => {
     beforeEach(() => {
       factory();
