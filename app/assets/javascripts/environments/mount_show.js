@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import EnvironmentsDetailHeader from './components/environments_detail_header.vue';
-import EnvironmentsDetailPage from './components/environment_details_page.vue';
 import { apolloProvider } from './graphql/client';
 import environmentsMixin from './mixins/environments_mixin';
 
@@ -51,7 +50,12 @@ export const initHeader = () => {
   });
 };
 
-export const initPage = () => {
+export const initPage = async () => {
+  if (!gon.features.environmentDetailsVue) {
+    return null;
+  }
+  const EnvironmentsDetailPageModule = await import('./components/environment_details_page.vue');
+  const EnvironmentsDetailPage = EnvironmentsDetailPageModule.default;
   const dataElement = document.getElementById('environments-detail-view');
   const dataSet = convertObjectPropsToCamelCase(JSON.parse(dataElement.dataset.details));
 

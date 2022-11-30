@@ -16,26 +16,29 @@ import { __ } from '~/locale';
 import environmentDetailsQuery from '../graphql/queries/environment_details.query.graphql';
 import DeploymentStatusBadge from './deployment_status_badge.vue';
 
-const convertToDeploymentRow = (deploymentNode) => {
+const ENVIRONMENT_DETAILS_PAGE_SIZE = 20;
+
+const convertToDeploymentTableRow = (deploymentNode) => {
   return {
     status: deploymentNode.status.toLowerCase(),
     id: deploymentNode.iid,
     triggerer: deploymentNode.triggerer,
     commit: {
-      ...deploymentNode.commit,
-      shaLabel: deploymentNode.commit.sha.substring(0, 8),
+      message: deploymentNode.commit.message,
+      webUrl: deploymentNode.commit.webUrl,
+      shortId: deploymentNode.commit.shortId,
       isTag: deploymentNode.tag,
       commitRef: {
         name: deploymentNode.ref,
       },
-      sAuthor: deploymentNode.commit.author && {
+      author: deploymentNode.commit.author && {
         username: deploymentNode.commit.author.name,
         path: deploymentNode.commit.author.webUrl,
         avatar_url: deploymentNode.commit.author.avatarUrl,
       },
     },
     job: deploymentNode.job && {
-      ...deploymentNode.job,
+      webPath: deploymentNode.job.webPath,
       label: `${deploymentNode.job.name} (#${getIdFromGraphQLId(deploymentNode.job.id)})`,
     },
     created: deploymentNode.createdAt,
@@ -76,6 +79,7 @@ export default {
         return {
           projectFullPath: this.projectFullPath,
           environmentName: this.environmentName,
+          pageSize: ENVIRONMENT_DETAILS_PAGE_SIZE,
         };
       },
     },
@@ -127,12 +131,9 @@ export default {
   },
   computed: {
     deployments() {
-      if (this.isLoading) {
-        const loadingDeploymentsState = [{}, {}, {}];
-        return loadingDeploymentsState;
-      }
       return (
-        this.project.environments?.nodes[0]?.deployments.nodes.map(convertToDeploymentRow) || []
+        this.project.environments?.nodes[0]?.deployments.nodes.map(convertToDeploymentTableRow) ||
+        []
       );
     },
     isLoading() {
@@ -169,10 +170,10 @@ export default {
             class="gl-max-w-34"
             :tag="item.commit.isTag"
             :commit-ref="item.commit.commitRef"
-            :short-sha="item.commit.shaLabel"
+            :short-sha="item.commit.shortId"
             :commit-url="item.commit.webUrl"
             :title="item.commit.message"
-            :author="item.commit.sAuthor"
+            :author="item.commit.author"
           />
         </div>
       </template>
@@ -180,7 +181,7 @@ export default {
         <gl-link
           v-if="item.job"
           :href="item.job.webPath"
-          class="gl-display-inline-block gl-max-w-34"
+          class="gl-display-inline-block gl-w-full gl-max-w-34"
         >
           <gl-truncate :text="item.job.label" />
         </gl-link>

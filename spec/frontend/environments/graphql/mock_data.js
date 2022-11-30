@@ -796,3 +796,156 @@ export const resolvedDeploymentDetails = {
     },
   },
 };
+
+export const resolvedEnvironmentDetails = {
+  data: {
+    project: {
+      id: 'gid://gitlab/Project/20',
+      name: 'PipelinesTest',
+      environments: {
+        nodes: [
+          {
+            id: 'gid://gitlab/Environment/30',
+            name: 'production',
+            state: 'available',
+            deployments: {
+              nodes: [
+                {
+                  id: 'gid://gitlab/Deployment/93',
+                  iid: '48',
+                  status: 'SUCCESS',
+                  createdAt: '2022-11-29T10:46:35Z',
+                  ref: 'foo-bar',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    id: 'gid://gitlab/Ci::Build/877',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/877',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-11-29T10:47:07Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/64',
+                  iid: '19',
+                  status: 'CANCELED',
+                  createdAt: '2022-09-29T13:33:59Z',
+                  ref: 'css-issue-reproduce',
+                  tag: false,
+                  job: {
+                    name: 'rspec:windows 2 3',
+                    id: 'gid://gitlab/Ci::Build/9',
+                    webPath: '/jashkenas/Underscore/-/jobs/9',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/041ea9527f351eb15fcdea6b072b5a6f1fd4d54a',
+                    shortId: '041ea952',
+                    message: 'Update foobar.md',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/041ea9527f351eb15fcdea6b072b5a6f1fd4d54a',
+                    author: {
+                      id: 'gid://gitlab/User/1',
+                      name: 'Administrator',
+                      avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                      webUrl: 'http://gdk.test:3000/root',
+                    },
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/13',
+                    webUrl: 'http://gdk.test:3000/kyle',
+                    name: 'Carry Schmeler',
+                    avatarUrl:
+                      'https://www.gravatar.com/avatar/20bc91e36436fb051a85a0454c7a6587?s=80&d=identicon',
+                  },
+                  finishedAt: '2022-09-29T13:47:32Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/60',
+                  iid: '15',
+                  status: 'CANCELED',
+                  createdAt: '2022-09-29T13:33:01Z',
+                  ref: 'css-issue-reproduce',
+                  tag: false,
+                  job: {
+                    name: 'rspec:linux 2 3',
+                    id: 'gid://gitlab/Ci::Build/5',
+                    webPath: '/jashkenas/Underscore/-/jobs/5',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/0cb48dd5deddb7632fd7c3defb16075fc6c3ca74',
+                    shortId: '0cb48dd5',
+                    message: 'Update .gitlab-ci.yml file',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/0cb48dd5deddb7632fd7c3defb16075fc6c3ca74',
+                    author: {
+                      id: 'gid://gitlab/User/1',
+                      name: 'Administrator',
+                      avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                      webUrl: 'http://gdk.test:3000/root',
+                    },
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/9',
+                    webUrl: 'http://gdk.test:3000/madelene_kulas',
+                    name: 'Ja Grant',
+                    avatarUrl:
+                      'https://www.gravatar.com/avatar/93be1a6d3201e270946e67d3ff7c79bf?s=80&d=identicon',
+                  },
+                  finishedAt: '2022-09-29T13:33:59Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/57',
+                  iid: '12',
+                  status: 'FAILED',
+                  createdAt: '2022-09-29T13:31:09Z',
+                  ref: 'main',
+                  tag: false,
+                  job: {
+                    name: 'build:osx',
+                    id: 'gid://gitlab/Ci::Build/2',
+                    webPath: '/jashkenas/Underscore/-/jobs/2',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/0cb48dd5deddb7632fd7c3defb16075fc6c3ca74',
+                    shortId: '0cb48dd5',
+                    message: 'Update .gitlab-ci.yml file',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/0cb48dd5deddb7632fd7c3defb16075fc6c3ca74',
+                    author: {
+                      id: 'gid://gitlab/User/1',
+                      name: 'Administrator',
+                      avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                      webUrl: 'http://gdk.test:3000/root',
+                    },
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/11',
+                    webUrl: 'http://gdk.test:3000/georgie',
+                    name: 'Courtney Braun',
+                    avatarUrl:
+                      'https://www.gravatar.com/avatar/6892026f0456b768e883375ac7c99aaf?s=80&d=identicon',
+                  },
+                  finishedAt: '2022-09-29T15:00:21Z',
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  },
+};

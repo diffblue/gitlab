@@ -1,4 +1,4 @@
-query getEnvironmentDetails($projectFullPath: ID!, $environmentName: String) {
+query getEnvironmentDetails($projectFullPath: ID!, $environmentName: String, $pageSize: Int) {
   project(fullPath: $projectFullPath) {
     id
     name
@@ -7,12 +7,11 @@ query getEnvironmentDetails($projectFullPath: ID!, $environmentName: String) {
         id
         name
         state
-        deployments {
+        deployments(orderBy: { createdAt: DESC }, first: $pageSize) {
           nodes {
             id
             iid
             status
-            createdAt
             ref
             tag
             job {
@@ -22,7 +21,7 @@ query getEnvironmentDetails($projectFullPath: ID!, $environmentName: String) {
             }
             commit {
               id
-              sha
+              shortId
               message
               webUrl
               author {
@@ -38,6 +37,7 @@ query getEnvironmentDetails($projectFullPath: ID!, $environmentName: String) {
               name
               avatarUrl
             }
+            createdAt
             finishedAt
           }
         }

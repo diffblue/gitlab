@@ -10,6 +10,7 @@ RSpec.describe 'Environment', feature_category: :projects do
   before do
     sign_in(user)
     project.add_role(user, role)
+    stub_feature_flags(environment_details_vue: false)
   end
 
   def auto_stop_button_selector

@@ -11,6 +11,7 @@ RSpec.describe 'Environment detail page', feature_category: :environment_managem
 
   before do
     stub_licensed_features(protected_environments: true)
+    stub_feature_flags(environment_details_vue: false)
   end
 
   context 'when the environment is protected and the user has deployment-only access to it' do
