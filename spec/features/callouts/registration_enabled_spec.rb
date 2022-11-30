@@ -6,7 +6,7 @@ RSpec.describe 'Registration enabled callout', feature_category: :authentication
   let_it_be(:admin) { create(:admin) }
   let_it_be(:non_admin) { create(:user) }
   let_it_be(:project) { create(:project) }
-  let_it_be(:callout_title) { _('Check your sign-up restrictions.') }
+  let_it_be(:callout_title) { _('Check your sign-up restrictions') }
 
   context 'when "Sign-up enabled" setting is `true`' do
     before do

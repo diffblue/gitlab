@@ -8093,7 +8093,7 @@ msgstr ""
 msgid "Check your Kubernetes cluster images for known vulnerabilities."
 msgstr ""
 
-msgid "Check your sign-up restrictions."
+msgid "Check your sign-up restrictions"
 msgstr ""
 
 msgid "Checking %{text} availability…"

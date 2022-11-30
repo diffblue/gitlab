@@ -1,6 +1,6 @@
 - return unless show_registration_enabled_user_callout?
 
-= render Pajamas::AlertComponent.new(title: _('Check your sign-up restrictions.'),
+= render Pajamas::AlertComponent.new(title: _('Check your sign-up restrictions'),
   variant: :warning,
   alert_options: { class: 'js-registration-enabled-callout',
                    data: { feature_id: Users::CalloutsHelper::REGISTRATION_ENABLED_CALLOUT,
