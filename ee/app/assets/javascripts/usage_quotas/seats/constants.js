@@ -24,6 +24,11 @@ export const FIELDS = [
     thClass: thWidthPercent(20),
   },
   {
+    key: 'lastLoginAt',
+    label: __('Last login'),
+    thClass: thWidthPercent(20),
+  },
+  {
     key: 'actions',
     label: '',
     thClass: thWidthPercent(20),

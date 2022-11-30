@@ -24006,6 +24006,9 @@ msgstr ""
 msgid "Last event"
 msgstr ""
 
+msgid "Last login"
+msgstr ""
+
 msgid "Last modified"
 msgstr ""
 
