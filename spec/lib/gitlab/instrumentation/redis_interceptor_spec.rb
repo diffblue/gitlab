@@ -87,8 +87,8 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
         Gitlab::Redis::SharedState.with { |redis| redis.call(:mget, 'foo', 'bar') }
       end
 
-      it 'counts allowed cross-slot requests' do
-        expect(instrumentation_class).to receive(:increment_cross_slot_request_count).and_call_original
+      it 'does not count allowed cross-slot requests' do
+        expect(instrumentation_class).not_to receive(:increment_cross_slot_request_count).and_call_original
 
         Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
           Gitlab::Redis::SharedState.with { |redis| redis.call(:mget, 'foo', 'bar') }
