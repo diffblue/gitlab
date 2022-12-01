@@ -1,5 +1,5 @@
 <script>
-import { GlAvatarLabeled, GlListbox } from '@gitlab/ui';
+import { GlAvatarLabeled, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import searchUsersGroups from 'ee/security_orchestration/graphql/queries/get_users_groups.query.graphql';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -15,7 +15,7 @@ const createGroupObject = (group) => ({
 export default {
   components: {
     GlAvatarLabeled,
-    GlListbox,
+    GlCollapsibleListbox,
   },
   props: {
     existingApprovers: {
@@ -85,7 +85,7 @@ export default {
 </script>
 
 <template>
-  <gl-listbox
+  <gl-collapsible-listbox
     :items="groups"
     searchable
     is-check-centered
@@ -106,5 +106,5 @@ export default {
         :sub-label="item.fullPath || item.full_path"
       />
     </template>
-  </gl-listbox>
+  </gl-collapsible-listbox>
 </template>
