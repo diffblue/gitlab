@@ -12,7 +12,6 @@ import { initFormField } from 'ee/security_configuration/utils';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { serializeFormObject } from '~/lib/utils/forms';
 import { __, s__, n__, sprintf } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import BaseDastProfileForm from '../../components/base_dast_profile_form.vue';
 import dastProfileFormMixin from '../../dast_profile_form_mixin';
 import TooltipIcon from '../../dast_scanner_profiles/components/tooltip_icon.vue';
@@ -45,7 +44,7 @@ export default {
     GlFormSelect,
     GlLink,
   },
-  mixins: [dastProfileFormMixin(), glFeatureFlagMixin()],
+  mixins: [dastProfileFormMixin()],
   data() {
     const {
       name = '',
@@ -162,20 +161,11 @@ export default {
     isTargetAPI() {
       return this.form.fields.targetType.value === TARGET_TYPES.API.value;
     },
-    isAPISecurityEnabled() {
-      return this.glFeatures.dastApiScanner && this.isTargetAPI;
-    },
-    isAuthFieldSupport() {
-      return !this.isTargetAPI || this.isAPISecurityEnabled;
-    },
-    shouldRenderScanMethod() {
-      return this.isAPISecurityEnabled;
-    },
     selectedScanMethod() {
       return SCAN_METHODS[this.form.fields.scanMethod.value];
     },
     isAuthEnabled() {
-      return this.isAuthFieldSupport && this.authSection.fields.enabled;
+      return this.authSection.fields.enabled;
     },
     isSubmitBlocked() {
       return !this.form.state || (this.isAuthEnabled && !this.authSection.state);
@@ -195,14 +185,12 @@ export default {
         profileName,
         targetUrl,
         targetType,
-        ...(this.isAuthFieldSupport && {
-          auth: this.serializedAuthFields,
-        }),
+        auth: this.serializedAuthFields,
         excludedUrls: this.parsedExcludedUrls,
         ...(requestHeaders !== REDACTED_REQUEST_HEADERS && {
           requestHeaders,
         }),
-        ...(this.shouldRenderScanMethod && { scanMethod, scanFilePath }),
+        ...(this.isTargetAPI && { scanMethod, scanFilePath }),
       };
     },
   },
@@ -295,7 +283,7 @@ export default {
       </gl-form-group>
 
       <gl-form-group
-        v-if="shouldRenderScanMethod"
+        v-if="isTargetAPI"
         id="scan-method-popover-container"
         :label="i18n.scanMethod.label"
       >
@@ -393,7 +381,6 @@ export default {
     </gl-form-group>
 
     <dast-site-auth-section
-      v-if="isAuthFieldSupport"
       v-model="authSection"
       class="gl-mt-n3"
       :is-target-api="isTargetAPI"

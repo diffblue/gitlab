@@ -94,7 +94,6 @@ describe('DastSiteProfileForm', () => {
       {},
       {
         propsData: defaultProps,
-        provide: { glFeatures: { dastApiScanner: true } },
       },
       {
         apolloProvider,
@@ -361,26 +360,6 @@ describe('DastSiteProfileForm', () => {
 
     it('should disable all form groups', () => {
       expect(findParentFormGroup().attributes('disabled')).toBe('true');
-    });
-  });
-
-  describe('when dastApiScanner FF is disabled', () => {
-    beforeEach(() => {
-      createShallowComponent({
-        propsData: {
-          profile: { ...policySiteProfiles[0], targetType: TARGET_TYPES.API.value },
-        },
-        provide: { glFeatures: { dastApiScanner: false } },
-      });
-    });
-
-    it('should not show scan method options', () => {
-      expect(findScanMethodInput().exists()).toBe(false);
-      expect(scanFilePathInput().exists()).toBe(false);
-    });
-
-    it('should not show authentication section', async () => {
-      expect(findAuthSection().exists()).toBe(false);
     });
   });
 

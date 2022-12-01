@@ -54,13 +54,11 @@ module Types
 
     field :scan_method, Types::Dast::ScanMethodTypeEnum,
       null: true,
-      description: 'Scan method used by the scanner. Always returns `null` ' \
-                   'if `dast_api_scanner` feature flag is disabled.'
+      description: 'Scan method used by the scanner.'
 
     field :scan_file_path, GraphQL::Types::String,
       null: true,
-      description: 'Scan File Path used as input for the scanner. Will always return `null` ' \
-                   'if `dast_api_scanner` feature flag is disabled.'
+      description: 'Scan File Path used as input for the scanner.'
 
     field :validation_started_at, Types::TimeType,
           null: true,
@@ -87,18 +85,6 @@ module Types
         context,
         object
       )
-    end
-
-    def scan_method
-      return unless Feature.enabled?(:dast_api_scanner, object.project)
-
-      object.scan_method
-    end
-
-    def scan_file_path
-      return unless Feature.enabled?(:dast_api_scanner, object.project)
-
-      object.scan_file_path_or_dast_site_url
     end
   end
 end

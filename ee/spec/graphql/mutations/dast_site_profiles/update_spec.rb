@@ -158,24 +158,6 @@ RSpec.describe Mutations::DastSiteProfiles::Update do
             expect(subject).to include(errors: ['Oops'])
           end
         end
-
-        context 'when the feature flag dast_api_scanner is disabled' do
-          before do
-            stub_feature_flags(dast_api_scanner: false)
-          end
-
-          it 'does not update the scan_method and uses the default value according to the target_type' do
-            dast_site_profile = subject[:id].find
-
-            expect(dast_site_profile.scan_method).to eq('openapi')
-          end
-
-          it 'does not update the scan_file_path' do
-            dast_site_profile = subject[:id].find
-
-            expect(dast_site_profile.scan_file_path).to be_nil
-          end
-        end
       end
     end
   end

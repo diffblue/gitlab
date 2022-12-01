@@ -43,7 +43,7 @@ class DastSiteProfile < ApplicationRecord
 
   sanitizes! :name, :scan_file_path
 
-  before_save :ensure_scan_method, :ensure_scan_file_path
+  before_save :ensure_scan_file_path
 
   def self.names(site_profile_ids)
     find(*site_profile_ids).pluck(:name)
@@ -58,10 +58,8 @@ class DastSiteProfile < ApplicationRecord
       if target_type == 'website'
         variables.append(key: 'DAST_WEBSITE', value: url)
         variables.append(key: 'DAST_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
-      elsif Feature.enabled?(:dast_api_scanner, project)
-        variables.concat(dast_api_config(url))
       else
-        dast_zap_api_config(variables, url)
+        variables.concat(dast_api_config(url))
       end
 
       if auth_enabled
@@ -106,7 +104,7 @@ class DastSiteProfile < ApplicationRecord
   end
 
   def scan_file_path_or_dast_site_url
-    return dast_site.url if Feature.enabled?(:dast_api_scanner, project) && api? && scan_file_path.blank?
+    return dast_site.url if api? && scan_file_path.blank?
 
     scan_file_path
   end
@@ -151,19 +149,7 @@ class DastSiteProfile < ApplicationRecord
     errors.add(:excluded_urls, message % { urls: invalid.join(', ') })
   end
 
-  # This callback is necessary to avoid discrepancy between the scan_method and target_type
-  # before we enable the dast_api_scanner feature flag by default.
-  # More context can be found here:
-  # https://gitlab.com/gitlab-org/gitlab/-/merge_requests/78745#note_837953465
-  def ensure_scan_method
-    if api? && scan_method_site?
-      self.scan_method = 'openapi'
-    end
-  end
-
   def ensure_scan_file_path
-    return unless Feature.enabled?(:dast_api_scanner, project)
-
     if api? && scan_file_path.blank?
       self.scan_file_path = dast_site.url
     elsif website? && scan_file_path.present?
@@ -185,12 +171,6 @@ class DastSiteProfile < ApplicationRecord
 
       dast_api_config.append(key: SCAN_METHOD_VARIABLE_MAP[scan_method], value: api_specification)
     end
-  end
-
-  def dast_zap_api_config(variables, url)
-    variables.append(key: 'DAST_API_SPECIFICATION', value: url)
-    variables.append(key: 'DAST_API_HOST_OVERRIDE', value: URI(url).host)
-    variables.append(key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls.join(',')) unless excluded_urls.empty?
   end
 
   def api_secret_variable(key, value)

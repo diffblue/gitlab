@@ -60,7 +60,7 @@ module AppSec
         end
 
         def should_use_api_scan?
-          Feature.enabled?(:dast_api_scanner, dast_site_profile.project) && dast_site_profile.target_type == 'api'
+          dast_site_profile.target_type == 'api'
         end
 
         def dast_profile

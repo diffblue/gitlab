@@ -24,13 +24,11 @@ module Mutations
 
             argument :scan_method, Types::Dast::ScanMethodTypeEnum,
                      required: false,
-                     description: 'Scan method by the scanner. Is not saved or updated ' \
-                         'if `dast_api_scanner` feature flag is disabled.'
+                     description: 'Scan method by the scanner.'
 
             argument :scan_file_path, GraphQL::Types::String,
                      required: false,
-                     description: 'File Path or URL used as input for the scan method. Will not be saved or updated ' \
-                         'if `dast_api_scanner` feature flag is disabled.'
+                     description: 'File Path or URL used as input for the scan method.'
 
             argument :request_headers, GraphQL::Types::String,
                      required: false,

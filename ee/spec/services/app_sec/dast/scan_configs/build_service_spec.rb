@@ -92,14 +92,14 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
 
           let(:expected_yaml_configuration) do
             <<~YAML
-                ---
-                stages:
-                - dast
-                include:
-                - template: #{template}
-                dast:
-                  dast_configuration:
-                    site_profile: #{dast_site_profile.name}
+              ---
+              stages:
+              - dast
+              include:
+              - template: #{template}
+              dast:
+                dast_configuration:
+                  site_profile: #{dast_site_profile.name}
             YAML
           end
 
@@ -125,32 +125,20 @@ RSpec.describe AppSec::Dast::ScanConfigs::BuildService do
       end
     end
 
-    context 'when feature flag dast_api_scanner is disabled' do
-      let(:template) { on_demand_scan_template }
-
+    context 'when the target_type is api' do
       before do
-        stub_feature_flags(dast_api_scanner: false)
+        dast_site_profile.target_type = 'api'
       end
+
+      let(:template) { api_scan_template }
 
       it_behaves_like 'build service execute tests'
     end
 
-    context 'when feature flag dast_api_scanner is enabled' do
-      context 'when the target_type is api' do
-        before do
-          dast_site_profile.target_type = 'api'
-        end
+    context 'when the target_type is NOT api' do
+      let(:template) { on_demand_scan_template }
 
-        let(:template) { api_scan_template }
-
-        it_behaves_like 'build service execute tests'
-      end
-
-      context 'when the target_type is NOT api' do
-        let(:template) { on_demand_scan_template }
-
-        it_behaves_like 'build service execute tests'
-      end
+      it_behaves_like 'build service execute tests'
     end
   end
 end

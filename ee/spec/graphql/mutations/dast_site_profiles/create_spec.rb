@@ -68,28 +68,6 @@ RSpec.describe Mutations::DastSiteProfiles::Create do
           project.add_developer(user)
         end
 
-        context 'when the feature flag dast_api_scanner is disabled' do
-          before do
-            stub_feature_flags(dast_api_scanner: false)
-          end
-
-          context 'when the target_type is api' do
-            it 'creates a dast_site_profile with the default value for the scan_method' do
-              dast_site_profile = subject[:id].find
-              expect(dast_site_profile.scan_method).to eq('openapi')
-            end
-          end
-
-          context 'when the target_type is website' do
-            let_it_be(:target_type) { 'website' }
-
-            it 'creates a dast_site_profile with the default value for the scan_method' do
-              dast_site_profile = subject[:id].find
-              expect(dast_site_profile.scan_method).to eq('site')
-            end
-          end
-        end
-
         it 'creates a dast_site_profile and dast_site_profile_secret_variables', :aggregate_failures do
           dast_site_profile = subject[:id].find
 

@@ -8,7 +8,6 @@ import {
 import { DAST_SITE_VALIDATION_STATUS } from 'ee/security_configuration/dast_site_validation/constants';
 import { SITE_TYPE } from 'ee/on_demand_scans/constants';
 import { s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import DastProfileSummaryCard from './dast_profile_summary_card.vue';
 import SummaryCell from './summary_cell.vue';
 
@@ -20,7 +19,6 @@ export default {
     SummaryCell,
     DastSiteValidationBadge,
   },
-  mixins: [glFeatureFlagMixin()],
   props: {
     profile: {
       type: Object,
@@ -76,7 +74,7 @@ export default {
       return SCAN_METHODS[this.profile.scanMethod];
     },
     hasScanMethod() {
-      return this.glFeatures.dastApiScanner && this.selectedScanMethod;
+      return Boolean(this.selectedScanMethod);
     },
   },
   EXCLUDED_URLS_SEPARATOR,
