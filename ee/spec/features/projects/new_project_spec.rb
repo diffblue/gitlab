@@ -126,6 +126,8 @@ RSpec.describe 'New project', :js do
         click_link 'Run CI/CD for external repository'
 
         page.within '#ci-cd-project-pane' do
+          stub_request(:get, "http://foo.git/info/refs?service=git-upload-pack")
+            .to_return(status: 200, body: "001e# service=git-upload-pack", headers: { 'Content-Type': 'application/x-git-upload-pack-advertisement' })
           find('.js-import-git-toggle-button').click
 
           fill_in 'project_import_url', with: 'http://foo.git'
