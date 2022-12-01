@@ -2333,9 +2333,7 @@ class User < ApplicationRecord
   end
 
   def check_password_weakness
-    if Feature.enabled?(:block_weak_passwords) &&
-        password.present? &&
-        Security::WeakPasswords.weak_for_user?(password, self)
+    if password.present? && Security::WeakPasswords.weak_for_user?(password, self)
       errors.add(:password, _('must not contain commonly used combinations of words and letters'))
     end
   end
