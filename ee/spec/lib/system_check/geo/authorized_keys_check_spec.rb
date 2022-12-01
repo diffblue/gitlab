@@ -168,15 +168,15 @@ RSpec.describe SystemCheck::Geo::AuthorizedKeysCheck, :silence_stdout, feature_c
   end
 
   def expect_failure(reason)
-    expect(subject).to receive(:print_failure).with(reason)
+    expect(subject).to receive(:print_failure).with(reason).and_call_original
   end
 
   def expect_warning(reason)
-    expect(subject).to receive(:print_warning).with(reason)
+    expect(subject).to receive(:print_warning).with(reason).and_call_original
   end
 
   def expect_skipped(reason)
-    expect(subject).to receive(:print_skipped).with(reason)
+    expect(subject).to receive(:print_skipped).with(reason).and_call_original
   end
 
   def override_sshd_config(relative_path)
