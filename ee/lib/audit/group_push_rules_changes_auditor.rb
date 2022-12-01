@@ -7,11 +7,22 @@ module Audit
       :file_name_regex, :max_file_size
     ].freeze
 
+    EVENT_TYPE_PER_ATTR = { 
+      :max_file_size => 'group_push_rules_max_file_size_updated' 
+    }.freeze
+
     def execute
       return if model.blank? || model.group.nil?
 
       ::PushRule::AUDIT_LOG_ALLOWLIST.each do |attr, desc|
-        audit_changes(attr, as: desc, entity: model.group, model: model)
+        entity_type = if EVENT_TYPE_PER_ATTR.has_key?(attr) 
+          EVENT_TYPE_PER_ATTR[attr]
+        else
+          'audit_operation'
+        end
+                    
+        audit_changes(attr, as: desc, entity: model.group, model: model, 
+          event_type: entity_type)
       end
     end
 

@@ -59,4 +59,18 @@ RSpec.describe Audit::GroupPushRulesChangesAuditor do
       end
     end
   end
+
+  context 'auditing group-level events to external stream' do     
+    before do
+      stub_licensed_features(audit_events: true, external_audit_events: true)
+      group.external_audit_event_destinations.create!(destination_url: 'http://example.com')  
+    end
+
+    it 'streams correct audit event for max_file_size', :aggregate_failures do
+      push_rule.update!('max_file_size' => 50)
+      expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+        .with('group_push_rules_max_file_size_updated', anything, anything)  
+      subject.execute
+    end  
+  end
 end
