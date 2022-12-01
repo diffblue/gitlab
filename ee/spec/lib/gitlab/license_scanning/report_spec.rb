@@ -38,7 +38,7 @@ RSpec.describe ::Gitlab::LicenseScanning::Report, :license_compliance do
     context 'when pipeline is blank' do
       let(:pipeline) { nil }
 
-      it { is_expected.to be_nil }
+      it { is_expected.to be_falsey }
     end
 
     context 'when pipeline exists' do
