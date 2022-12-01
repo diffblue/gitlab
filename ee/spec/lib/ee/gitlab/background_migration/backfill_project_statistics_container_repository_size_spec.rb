@@ -3,10 +3,10 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::BackfillProjectStatisticsContainerRepositorySize, :migration, schema: 20220622080547 do # rubocop:disable Layout/LineLength
-  let_it_be(:namespace) { table(:namespaces) }
-  let_it_be(:container_repositories_table) { table(:container_repositories) }
-  let_it_be(:project_statistics_table) { table(:project_statistics) }
-  let_it_be(:project) { table(:projects) }
+  let!(:namespace) { table(:namespaces) }
+  let!(:container_repositories_table) { table(:container_repositories) }
+  let!(:project_statistics_table) { table(:project_statistics) }
+  let!(:project) { table(:projects) }
 
   let!(:root_group) do
     namespace.create!(name: 'root-group', path: 'root-group', type: 'Group') do |new_group|

@@ -6,8 +6,8 @@ RSpec.describe Gitlab::BackgroundMigration::FixIncorrectMaxSeatsUsed, :saas do
   describe '#perform' do
     subject(:migration) { described_class.new }
 
-    let_it_be(:namespaces) { table(:namespaces) }
-    let_it_be(:plans) { table(:plans) }
+    let!(:namespaces) { table(:namespaces) }
+    let!(:plans) { table(:plans) }
 
     let(:seats) { 2 }
     let(:seats_in_use) { 5 }

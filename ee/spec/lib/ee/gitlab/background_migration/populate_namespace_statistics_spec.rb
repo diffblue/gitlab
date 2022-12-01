@@ -5,8 +5,8 @@ require 'spec_helper'
 RSpec.describe Gitlab::BackgroundMigration::PopulateNamespaceStatistics do
   include AfterNextHelpers
 
-  let_it_be(:namespaces) { table(:namespaces) }
-  let_it_be(:namespace_statistics) { table(:namespace_statistics) }
+  let!(:namespaces) { table(:namespaces) }
+  let!(:namespace_statistics) { table(:namespace_statistics) }
 
   let!(:group1) { namespaces.create!(id: 10, type: 'Group', name: 'group1', path: 'group1') }
   let!(:group2) { namespaces.create!(id: 20, type: 'Group', name: 'group2', path: 'group2') }
