@@ -21,7 +21,6 @@ describe('DastScannerProfileSummary', () => {
         },
         ...props,
       },
-      provide: { glFeatures: { dastApiScanner: true } },
     });
   };
 

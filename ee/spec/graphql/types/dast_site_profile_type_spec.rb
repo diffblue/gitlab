@@ -106,18 +106,8 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
   end
 
   describe 'scan_method field' do
-    context 'when the feature flag is disabled' do
-      it 'resolves nil' do
-        stub_feature_flags(dast_api_scanner: false)
-
-        expect(resolve_field(:scan_method, object, current_user: user)).to eq(nil)
-      end
-    end
-
-    context 'when the feature flag is enabled' do
-      it 'is the scan method' do
-        expect(resolve_field(:scan_method, object, current_user: user)).to eq('site')
-      end
+    it 'is the scan method' do
+      expect(resolve_field(:scan_method, object, current_user: user)).to eq('site')
     end
   end
 
@@ -126,18 +116,8 @@ RSpec.describe GitlabSchema.types['DastSiteProfile'] do
     let_it_be(:scan_file_path) { 'https://www.domain.com/test-api-specification.json' }
     let_it_be(:object, reload: true) { create(:dast_site_profile, project: project, target_type: target_type, scan_file_path: scan_file_path) }
 
-    context 'when the feature flag is disabled' do
-      it 'resolves nil' do
-        stub_feature_flags(dast_api_scanner: false)
-
-        expect(resolve_field(:scan_file_path, object, current_user: user)).to eq(nil)
-      end
-    end
-
-    context 'when the feature flag is enabled' do
-      it 'is the scan file path' do
-        expect(resolve_field(:scan_file_path, object, current_user: user)).to eq(scan_file_path)
-      end
+    it 'is the scan file path' do
+      expect(resolve_field(:scan_file_path, object, current_user: user)).to eq(scan_file_path)
     end
   end
 

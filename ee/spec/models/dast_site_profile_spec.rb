@@ -346,24 +346,6 @@ RSpec.describe DastSiteProfile, type: :model do
           end
         end
 
-        shared_examples 'an api target when dast_api_scanner is disabled' do
-          context 'when the feature flag dast_api_scanner is disabled' do
-            before do
-              stub_feature_flags(dast_api_scanner: false)
-            end
-
-            let(:included) do
-              [
-                { key: 'DAST_API_SPECIFICATION', value: subject.dast_site.url, public: true },
-                { key: 'DAST_API_HOST_OVERRIDE', value: URI(subject.dast_site.url).host, public: true },
-                { key: 'DAST_API_EXCLUDE_URLS', value: excluded_urls, public: true }
-              ]
-            end
-
-            it_behaves_like 'an api target'
-          end
-        end
-
         context 'when scan_method is openapi' do
           let(:targeting_api) { 'test-api-specification.json' }
           let(:scan_file_path) { "http://test-deployment/#{targeting_api}" }
@@ -379,8 +361,6 @@ RSpec.describe DastSiteProfile, type: :model do
           end
 
           it_behaves_like 'an api target'
-
-          it_behaves_like 'an api target when dast_api_scanner is disabled'
 
           context 'when scan_file_path is blank' do
             let(:scan_file_path) { nil }
@@ -412,8 +392,6 @@ RSpec.describe DastSiteProfile, type: :model do
 
           it_behaves_like 'an api target'
 
-          it_behaves_like 'an api target when dast_api_scanner is disabled'
-
           context 'when scan_file_path is blank' do
             let(:scan_file_path) { nil }
 
@@ -444,8 +422,6 @@ RSpec.describe DastSiteProfile, type: :model do
 
           it_behaves_like 'an api target'
 
-          it_behaves_like 'an api target when dast_api_scanner is disabled'
-
           context 'when scan_file_path is blank' do
             let(:scan_file_path) { nil }
 
@@ -475,8 +451,6 @@ RSpec.describe DastSiteProfile, type: :model do
           end
 
           it_behaves_like 'an api target'
-
-          it_behaves_like 'an api target when dast_api_scanner is disabled'
 
           context 'when scan_file_path is blank' do
             let(:scan_file_path) { nil }
@@ -581,32 +555,6 @@ RSpec.describe DastSiteProfile, type: :model do
           create(:dast_site_profile_secret_variable, dast_site_profile: subject)
 
           expect(subject.secret_ci_variables(user).size).to be_zero
-        end
-      end
-    end
-
-    describe '#ensure_scan_method' do
-      let(:target_type) { 'website' }
-      let(:scan_method) { 'site' }
-      let(:scan_file_path) { nil }
-
-      subject do
-        create(:dast_site_profile, scan_method: scan_method, target_type: target_type,
-                                   scan_file_path: scan_file_path)
-      end
-
-      context 'when the target_type is website' do
-        it 'does not change the scan_method' do
-          expect(subject.scan_method).to eq('site')
-        end
-      end
-
-      context 'when the target type is api' do
-        let(:target_type) { 'api' }
-        let(:scan_file_path) { 'https://www.domain.com/test-api-specification.json' }
-
-        it 'does set the scan_method to openapi' do
-          expect(subject.scan_method).to eq('openapi')
         end
       end
     end
