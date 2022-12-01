@@ -175,20 +175,17 @@ RSpec.describe Gitlab::Instrumentation::RedisBase, :request_store do
 
           args = [[:mget, 'foo', 'bar']]
 
-          expectation = if allowed
-                          expect do
-                            Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
-                              instrumentation_class_a.redis_cluster_validate!(args)
-                            end
-                          end
-                        else
-                          expect { instrumentation_class_a.redis_cluster_validate!(args) }
-                        end
+          validation = -> { instrumentation_class_a.redis_cluster_validate!(args) }
+          under_test = if allowed
+                         -> { Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands(&validation) }
+                       else
+                         validation
+                       end
 
           if should_raise
-            expectation.to raise_error(::Gitlab::Instrumentation::RedisClusterValidator::CrossSlotError)
+            expect(&under_test).to raise_error(::Gitlab::Instrumentation::RedisClusterValidator::CrossSlotError)
           else
-            expectation.not_to raise_error
+            expect(&under_test).not_to raise_error
           end
         end
       end
