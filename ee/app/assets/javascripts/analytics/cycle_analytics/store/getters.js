@@ -1,10 +1,10 @@
 import { dateFormats } from '~/analytics/shared/constants';
-import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
+import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
 import {
   pathNavigationData as basePathNavigationData,
   paginationParams as basePaginationParams,
-} from '~/cycle_analytics/store/getters';
-import { filterStagesByHiddenStatus } from '~/cycle_analytics/utils';
+} from '~/analytics/cycle_analytics/store/getters';
+import { filterStagesByHiddenStatus } from '~/analytics/cycle_analytics/utils';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import dateFormat from '~/lib/dateformat';
 import httpStatus from '~/lib/utils/http_status';

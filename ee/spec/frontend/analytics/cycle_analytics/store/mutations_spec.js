@@ -1,10 +1,14 @@
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import mutations from 'ee/analytics/cycle_analytics/store/mutations';
-import { createdAfter, createdBefore, selectedProjects } from 'jest/cycle_analytics/mock_data';
+import {
+  createdAfter,
+  createdBefore,
+  selectedProjects,
+} from 'jest/analytics/cycle_analytics/mock_data';
 import {
   PAGINATION_SORT_DIRECTION_DESC,
   PAGINATION_SORT_FIELD_END_EVENT,
-} from '~/cycle_analytics/constants';
+} from '~/analytics/cycle_analytics/constants';
 import {
   issueStage,
   planStage,

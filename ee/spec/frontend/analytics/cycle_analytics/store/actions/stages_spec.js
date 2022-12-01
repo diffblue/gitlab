@@ -5,12 +5,16 @@ import * as actions from 'ee/analytics/cycle_analytics/store/actions/stages';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
-import { createdAfter, createdBefore, currentGroup } from 'jest/cycle_analytics/mock_data';
+import {
+  createdAfter,
+  createdBefore,
+  currentGroup,
+} from 'jest/analytics/cycle_analytics/mock_data';
 import {
   I18N_VSA_ERROR_STAGES,
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
-} from '~/cycle_analytics/constants';
+} from '~/analytics/cycle_analytics/constants';
 import createFlash from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {

@@ -1,8 +1,8 @@
 import { mount } from '@vue/test-utils';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import FormattedStageCount from '~/cycle_analytics/components/formatted_stage_count.vue';
-import Component from '~/cycle_analytics/components/path_navigation.vue';
-import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
+import FormattedStageCount from '~/analytics/cycle_analytics/components/formatted_stage_count.vue';
+import Component from '~/analytics/cycle_analytics/components/path_navigation.vue';
+import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
 import { transformedStagePathData, issueStage } from '../mock_data';
 
 describe('Group PathNavigation', () => {

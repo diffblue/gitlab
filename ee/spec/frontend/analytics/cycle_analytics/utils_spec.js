@@ -22,10 +22,14 @@ import {
   TASKS_BY_TYPE_SUBJECT_MERGE_REQUEST,
   TASKS_BY_TYPE_SUBJECT_FILTER_OPTIONS,
 } from 'ee/analytics/cycle_analytics/constants';
-import { createdAfter, createdBefore, rawStageMedians } from 'jest/cycle_analytics/mock_data';
+import {
+  createdAfter,
+  createdBefore,
+  rawStageMedians,
+} from 'jest/analytics/cycle_analytics/mock_data';
 import { toYmd } from '~/analytics/shared/utils';
-import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
-import { medianTimeToParsedSeconds } from '~/cycle_analytics/utils';
+import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
+import { medianTimeToParsedSeconds } from '~/analytics/cycle_analytics/utils';
 import { getDatesInRange, getDayDifference } from '~/lib/utils/datetime_utility';
 import {
   customStageEvents as events,

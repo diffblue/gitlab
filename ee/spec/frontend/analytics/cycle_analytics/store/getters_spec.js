@@ -1,5 +1,9 @@
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
-import { createdAfter, createdBefore, selectedProjects } from 'jest/cycle_analytics/mock_data';
+import {
+  createdAfter,
+  createdBefore,
+  selectedProjects,
+} from 'jest/analytics/cycle_analytics/mock_data';
 import {
   filterMilestones,
   filterUsers,

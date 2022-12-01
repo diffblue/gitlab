@@ -11,7 +11,7 @@ import {
 import { cloneDeep, uniqueId } from 'lodash';
 import Vue from 'vue';
 import { mapState, mapActions } from 'vuex';
-import { filterStagesByHiddenStatus } from '~/cycle_analytics/utils';
+import { filterStagesByHiddenStatus } from '~/analytics/cycle_analytics/utils';
 import { swapArrayItems } from '~/lib/utils/array_utility';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';

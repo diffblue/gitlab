@@ -5,7 +5,7 @@ import {
   selectedLabelNames,
 } from 'ee/analytics/cycle_analytics/store/modules/type_of_work/getters';
 import { TASKS_BY_TYPE_SUBJECT_ISSUE } from 'ee/analytics/cycle_analytics/constants';
-import { createdAfter, createdBefore } from 'jest/cycle_analytics/mock_data';
+import { createdAfter, createdBefore } from 'jest/analytics/cycle_analytics/mock_data';
 import {
   rawTasksByTypeData,
   transformedTasksByTypeData,

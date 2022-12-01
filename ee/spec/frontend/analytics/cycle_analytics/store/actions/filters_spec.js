@@ -1,7 +1,11 @@
 import * as actions from 'ee/analytics/cycle_analytics/store/actions/filters';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
-import { createdAfter, createdBefore, selectedProjects } from 'jest/cycle_analytics/mock_data';
+import {
+  createdAfter,
+  createdBefore,
+  selectedProjects,
+} from 'jest/analytics/cycle_analytics/mock_data';
 import { allowedStages as stages } from '../../mock_data';
 
 stages[0].hidden = true;

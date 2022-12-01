@@ -18,18 +18,18 @@ import {
   createdAfter,
   selectedProjects,
   initialPaginationQuery,
-} from 'jest/cycle_analytics/mock_data';
+} from 'jest/analytics/cycle_analytics/mock_data';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
-import PathNavigation from '~/cycle_analytics/components/path_navigation.vue';
-import StageTable from '~/cycle_analytics/components/stage_table.vue';
-import ValueStreamFilters from '~/cycle_analytics/components/value_stream_filters.vue';
+import PathNavigation from '~/analytics/cycle_analytics/components/path_navigation.vue';
+import StageTable from '~/analytics/cycle_analytics/components/stage_table.vue';
+import ValueStreamFilters from '~/analytics/cycle_analytics/components/value_stream_filters.vue';
 import {
   OVERVIEW_STAGE_ID,
   I18N_VSA_ERROR_STAGES,
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
-} from '~/cycle_analytics/constants';
+} from '~/analytics/cycle_analytics/constants';
 import createFlash from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
