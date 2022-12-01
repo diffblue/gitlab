@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { componentNames } from 'ee/reports/components/issue_body';
+import { componentNames } from 'ee/ci/reports/components/issue_body';
 import { codequalityParsedIssues } from 'ee_jest/vue_merge_request_widget/mock_data';
 import SecurityIssueBody from 'ee/vue_shared/security_reports/components/security_issue_body.vue';
 import {
@@ -8,8 +8,8 @@ import {
   parsedDast,
   secretDetectionParsedIssues,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
-import ReportIssues from '~/reports/components/report_item.vue';
-import { STATUS_FAILED, STATUS_SUCCESS } from '~/reports/constants';
+import ReportIssues from '~/ci/reports/components/report_item.vue';
+import { STATUS_FAILED, STATUS_SUCCESS } from '~/ci/reports/constants';
 
 describe('Report issues', () => {
   let wrapper;

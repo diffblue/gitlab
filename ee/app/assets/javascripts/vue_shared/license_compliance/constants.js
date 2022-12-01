@@ -1,6 +1,6 @@
 import { __, s__ } from '~/locale';
 
-import { STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS } from '~/reports/constants';
+import { STATUS_FAILED, STATUS_NEUTRAL, STATUS_SUCCESS } from '~/ci/reports/constants';
 
 const STATUSES = {
   ALLOWED: 'allowed',

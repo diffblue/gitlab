@@ -2,11 +2,11 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import { GlLink, GlIcon, GlButton } from '@gitlab/ui';
 import api from '~/api';
-import { componentNames, iconComponentNames } from 'ee/reports/components/issue_body';
+import { componentNames, iconComponentNames } from 'ee/ci/reports/components/issue_body';
 import { LICENSE_MANAGEMENT } from 'ee/vue_shared/license_compliance/store/constants';
 import reportsMixin from 'ee/vue_shared/security_reports/mixins/reports_mixin';
-import ReportItem from '~/reports/components/report_item.vue';
-import ReportSection from '~/reports/components/report_section.vue';
+import ReportItem from '~/ci/reports/components/report_item.vue';
+import ReportSection from '~/ci/reports/components/report_section.vue';
 import SmartVirtualList from '~/vue_shared/components/smart_virtual_list.vue';
 import { setupStore } from './store';
 

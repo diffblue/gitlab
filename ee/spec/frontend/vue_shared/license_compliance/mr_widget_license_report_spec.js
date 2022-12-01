@@ -5,9 +5,9 @@ import LicenseManagement from 'ee/vue_shared/license_compliance/mr_widget_licens
 import { stubComponent } from 'helpers/stub_component';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import { TEST_HOST } from 'spec/test_constants';
-import ReportItem from '~/reports/components/report_item.vue';
-import ReportSection from '~/reports/components/report_section.vue';
-import { LOADING, ERROR, SUCCESS } from '~/reports/constants';
+import ReportItem from '~/ci/reports/components/report_item.vue';
+import ReportSection from '~/ci/reports/components/report_section.vue';
+import { LOADING, ERROR, SUCCESS } from '~/ci/reports/constants';
 import {
   allowedLicense,
   deniedLicense,

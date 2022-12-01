@@ -3,7 +3,7 @@ import createFlash from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 
-import { parseCodeclimateMetrics } from '~/reports/codequality_report/store/utils/codequality_parser';
+import { parseCodeclimateMetrics } from '~/ci/reports/codequality_report/store/utils/codequality_parser';
 import { VIEW_EVENT_NAME } from './constants';
 import * as types from './mutation_types';
 

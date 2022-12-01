@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import { componentNames, iconComponentNames } from 'ee/reports/components/issue_body';
+import { componentNames, iconComponentNames } from 'ee/ci/reports/components/issue_body';
 import { codequalityParsedIssues } from 'ee_jest/vue_merge_request_widget/mock_data';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/license_issue_body.vue';
 import LicenseStatusIcon from 'ee/vue_shared/license_compliance/components/license_status_icon.vue';
@@ -11,8 +11,8 @@ import {
   secretDetectionParsedIssues,
   licenseComplianceParsedIssues,
 } from 'ee_jest/vue_shared/security_reports/mock_data';
-import ReportIssue from '~/reports/components/report_item.vue';
-import { STATUS_FAILED, STATUS_SUCCESS, STATUS_NEUTRAL } from '~/reports/constants';
+import ReportIssue from '~/ci/reports/components/report_item.vue';
+import { STATUS_FAILED, STATUS_SUCCESS, STATUS_NEUTRAL } from '~/ci/reports/constants';
 
 describe('Report issue', () => {
   let wrapper;

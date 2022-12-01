@@ -4,8 +4,8 @@ import Vuex from 'vuex';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import CodeQualityGutterIcon from 'ee/diffs/components/code_quality_gutter_icon.vue';
 import createDiffsStore from 'jest/diffs/create_diffs_store';
-import CodequalityIssueBody from '~/reports/codequality_report/components/codequality_issue_body.vue';
-import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/reports/codequality_report/constants';
+import CodequalityIssueBody from '~/ci/reports/codequality_report/components/codequality_issue_body.vue';
+import { SEVERITY_CLASSES, SEVERITY_ICONS } from '~/ci/reports/codequality_report/constants';
 import {
   fiveFindings,
   threeFindings,

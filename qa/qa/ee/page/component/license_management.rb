@@ -11,11 +11,11 @@ module QA
             super
 
             base.class_eval do
-              view 'app/assets/javascripts/reports/components/report_item.vue' do
+              view 'app/assets/javascripts/ci/reports/components/report_item.vue' do
                 element :report_item_row
               end
 
-              view 'app/assets/javascripts/reports/components/issue_status_icon.vue' do
+              view 'app/assets/javascripts/ci/reports/components/issue_status_icon.vue' do
                 element :icon_status, ':data-qa-selector="`status_${status}_icon`" ' # rubocop:disable QA/ElementWithPattern
               end
 

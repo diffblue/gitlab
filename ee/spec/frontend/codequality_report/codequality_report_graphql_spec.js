@@ -6,9 +6,9 @@ import waitForPromises from 'helpers/wait_for_promises';
 import { RENDER_ALL_SLOTS_TEMPLATE, stubComponent } from 'helpers/stub_component';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import CodequalityReportApp from 'ee/codequality_report/codequality_report_graphql.vue';
-import ReportSection from '~/reports/components/report_section.vue';
+import ReportSection from '~/ci/reports/components/report_section.vue';
 import getCodeQualityViolations from 'ee/codequality_report/graphql/queries/get_code_quality_violations.query.graphql';
-import { LOADING, ERROR, SUCCESS } from '~/reports/constants';
+import { LOADING, ERROR, SUCCESS } from '~/ci/reports/constants';
 import { mockGetCodeQualityViolationsResponse, codeQualityViolations } from './mock_data';
 
 Vue.use(VueApollo);

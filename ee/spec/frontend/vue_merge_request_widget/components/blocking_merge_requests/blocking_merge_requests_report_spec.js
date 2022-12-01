@@ -1,7 +1,7 @@
 import { shallowMount, config } from '@vue/test-utils';
 import BlockingMergeRequestsReport from 'ee/vue_merge_request_widget/components/blocking_merge_requests/blocking_merge_requests_report.vue';
-import ReportSection from '~/reports/components/report_section.vue';
-import { status as reportStatus } from '~/reports/constants';
+import ReportSection from '~/ci/reports/components/report_section.vue';
+import { status as reportStatus } from '~/ci/reports/constants';
 
 describe('BlockingMergeRequestsReport', () => {
   let wrapper;

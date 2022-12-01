@@ -8,8 +8,8 @@ import {
 import SecurityIssueBody from 'ee/vue_shared/security_reports/components/security_issue_body.vue';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import ReportLink from '~/reports/components/report_link.vue';
-import { STATUS_FAILED } from '~/reports/constants';
+import ReportLink from '~/ci/reports/components/report_link.vue';
+import { STATUS_FAILED } from '~/ci/reports/constants';
 import {
   sastParsedIssues,
   dockerReportParsed,
