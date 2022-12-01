@@ -460,10 +460,6 @@ module EE
       true
     end
 
-    def expire_free_plan_members_count_cache
-      # no-op - overridden in groups
-    end
-
     def exclude_guests?
       false
     end

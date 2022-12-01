@@ -443,17 +443,6 @@ module EE
       billable_ids[:user_ids].count
     end
 
-    def free_plan_members_count
-      billable_ids = billed_user_ids_including_guests
-
-      billable_ids[:user_ids].count
-    end
-
-    override :expire_free_plan_members_count_cache
-    def expire_free_plan_members_count_cache
-      clear_memoization(:billed_user_ids_including_guests)
-    end
-
     # For now, we are not billing for members with a Guest role for subscriptions
     # with a Gold/Ultimate plan. The other plans will treat Guest members as a regular member
     # for billing purposes.
@@ -686,6 +675,48 @@ module EE
       ::Clusters::Agent.for_projects(all_projects)
     end
 
+    # Members belonging directly to Group or its subgroups
+    def billed_group_users(exclude_guests: false)
+      members = ::GroupMember.active_without_invites_and_requests.where(
+        source_id: self_and_descendants
+      )
+
+      members = members.non_guests if exclude_guests
+
+      users_without_project_bots(members)
+    end
+
+    # Members belonging directly to Projects within Group or Projects within subgroups
+    def billed_project_users(exclude_guests: false)
+      members = ::ProjectMember.without_invites_and_requests
+
+      members = members.non_guests if exclude_guests
+
+      members = members.where(
+        source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
+      )
+
+      users_without_project_bots(members).with_state(:active)
+    end
+
+    # Members belonging to Groups invited to collaborate with Groups and Subgroups
+    def billed_shared_group_users(exclude_guests: false)
+      groups = (exclude_guests ? invited_non_guest_group_in_groups : invited_group_in_groups)
+      members = invited_or_shared_group_members(groups)
+      members = members.non_guests if exclude_guests
+
+      users_without_project_bots(members)
+    end
+
+    # Members belonging to Groups invited to collaborate with Projects
+    def billed_invited_group_to_project_users(exclude_guests: false)
+      groups = (exclude_guests ? invited_group_as_non_guests_in_projects : invited_groups_in_projects)
+      members = invited_or_shared_group_members(groups)
+      members = members.non_guests if exclude_guests
+
+      users_without_project_bots(members)
+    end
+
     def parent_epic_ids_in_ancestor_groups
       ids = Set.new
       epics.has_parent.each_batch(of: EPIC_BATCH_SIZE, column: :iid) do |batch|
@@ -734,35 +765,13 @@ module EE
 
     def billed_user_ids_excluding_guests
       strong_memoize(:billed_user_ids_excluding_guests) do
-        group_member_user_ids = billed_group_users(exclude_guests: true).distinct.pluck(:id)
-        project_member_user_ids = billed_project_users(exclude_guests: true).distinct.pluck(:id)
-        shared_group_user_ids = billed_shared_group_users(exclude_guests: true).distinct.pluck(:id)
-        shared_project_user_ids = billed_invited_group_to_project_users(exclude_guests: true).distinct.pluck(:id)
-
-        {
-          user_ids: (group_member_user_ids + project_member_user_ids + shared_group_user_ids + shared_project_user_ids).to_set,
-          group_member_user_ids: group_member_user_ids.to_set,
-          project_member_user_ids: project_member_user_ids.to_set,
-          shared_group_user_ids: shared_group_user_ids.to_set,
-          shared_project_user_ids: shared_project_user_ids.to_set
-        }
+        ::Namespaces::BilledUsersFinder.new(self, exclude_guests: true).execute
       end
     end
 
     def billed_user_ids_including_guests
       strong_memoize(:billed_user_ids_including_guests) do
-        group_member_user_ids = billed_group_users.distinct.pluck(:id)
-        project_member_user_ids = billed_project_users.distinct.pluck(:id)
-        shared_group_user_ids = billed_shared_group_users.distinct.pluck(:id)
-        shared_project_user_ids = billed_invited_group_to_project_users.distinct.pluck(:id)
-
-        {
-          user_ids: (group_member_user_ids + project_member_user_ids + shared_group_user_ids + shared_project_user_ids).to_set,
-          group_member_user_ids: group_member_user_ids.to_set,
-          project_member_user_ids: project_member_user_ids.to_set,
-          shared_group_user_ids: shared_group_user_ids.to_set,
-          shared_project_user_ids: shared_project_user_ids.to_set
-        }
+        ::Namespaces::BilledUsersFinder.new(self).execute
       end
     end
 
@@ -775,39 +784,6 @@ module EE
         .order(:created_at)
     end
 
-    # Members belonging directly to Group or its subgroups
-    def billed_group_users(exclude_guests: false)
-      members = ::GroupMember.active_without_invites_and_requests.where(
-        source_id: self_and_descendants
-      )
-
-      members = members.non_guests if exclude_guests
-
-      users_without_project_bots(members)
-    end
-
-    # Members belonging directly to Projects within Group or Projects within subgroups
-    def billed_project_users(exclude_guests: false)
-      members = ::ProjectMember.without_invites_and_requests
-
-      members = members.non_guests if exclude_guests
-
-      members = members.where(
-        source_id: ::Project.joins(:group).where(namespace: self_and_descendants)
-      )
-
-      users_without_project_bots(members).with_state(:active)
-    end
-
-    # Members belonging to Groups invited to collaborate with Projects
-    def billed_invited_group_to_project_users(exclude_guests: false)
-      groups = (exclude_guests ? invited_group_as_non_guests_in_projects : invited_groups_in_projects)
-      members = invited_or_shared_group_members(groups)
-      members = members.non_guests if exclude_guests
-
-      users_without_project_bots(members)
-    end
-
     def invited_group_as_non_guests_in_projects
       invited_groups_in_projects.merge(::ProjectGroupLink.non_guests)
     end
@@ -815,15 +791,6 @@ module EE
     def invited_groups_in_projects
       ::Group.joins(:project_group_links)
         .where(project_group_links: { project_id: all_projects })
-    end
-
-    # Members belonging to Groups invited to collaborate with Groups and Subgroups
-    def billed_shared_group_users(exclude_guests: false)
-      groups = (exclude_guests ? invited_non_guest_group_in_groups : invited_group_in_groups)
-      members = invited_or_shared_group_members(groups)
-      members = members.non_guests if exclude_guests
-
-      users_without_project_bots(members)
     end
 
     def invited_non_guest_group_in_groups
