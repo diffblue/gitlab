@@ -23,12 +23,11 @@ new_namespace_id)
         # If the project is indexed in Elasticsearch, the project and all associated data are queued up for indexing
         # to make sure the namespace_ancestry field gets updated in each document.
         ::Elastic::ProcessInitialBookkeepingService.backfill_projects!(project)
-      else
+      elsif should_invalidate_elasticsearch_indexes_cache &&
+          ::Gitlab::CurrentSettings.elasticsearch_indexing?
         # If the project is no longer indexed and the indexing settings are different between the old and new namespace,
         # the project should no longer exist in the index and will be deleted asynchronously.
-        ElasticDeleteProjectWorker.perform_async(project.id, project.es_id) if
-          should_invalidate_elasticsearch_indexes_cache &&
-          ::Gitlab::CurrentSettings.elasticsearch_indexing?
+        ElasticDeleteProjectWorker.perform_async(project.id, project.es_id)
       end
     end
 

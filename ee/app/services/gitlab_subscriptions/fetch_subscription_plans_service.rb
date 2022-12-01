@@ -52,12 +52,10 @@ module GitlabSubscriptions
         else
           "subscription-plan-#{@plan}"
         end
+      elsif @namespace_id.present?
+        "subscription-plans-#{@plan}-#{@namespace_id}"
       else
-        if @namespace_id.present?
-          "subscription-plans-#{@plan}-#{@namespace_id}"
-        else
-          "subscription-plans-#{@plan}"
-        end
+        "subscription-plans-#{@plan}"
       end
     end
   end

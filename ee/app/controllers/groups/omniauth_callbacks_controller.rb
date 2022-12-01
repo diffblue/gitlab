@@ -110,12 +110,10 @@ class Groups::OmniauthCallbacksController < OmniauthCallbacksController
   def fail_login(user)
     if user
       super
+    elsif ::Feature.enabled?(:sign_up_on_sso, @unauthenticated_group) && @saml_provider.enforced_group_managed_accounts?
+      redirect_to_group_sign_up
     else
-      if ::Feature.enabled?(:sign_up_on_sso, @unauthenticated_group) && @saml_provider.enforced_group_managed_accounts?
-        redirect_to_group_sign_up
-      else
-        redirect_to_login_or_register
-      end
+      redirect_to_login_or_register
     end
   end
 

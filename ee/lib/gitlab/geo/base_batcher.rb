@@ -55,8 +55,8 @@ module Gitlab
 
         if more_records || more_destination_records
           increment_batch(batch_last_id)
-        else
-          reset if batch_first_id > 1
+        elsif batch_first_id > 1
+          reset
         end
 
         batch_last_id
