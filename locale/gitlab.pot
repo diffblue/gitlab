@@ -32413,6 +32413,9 @@ msgstr ""
 msgid "ProjectSettings|Monitor"
 msgstr ""
 
+msgid "ProjectSettings|Monitor the health of your project and respond to incidents."
+msgstr ""
+
 msgid "ProjectSettings|No merge commits are created."
 msgstr ""
 
