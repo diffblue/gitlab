@@ -9,7 +9,7 @@ module Bundler::Checksum::Command
     def execute
       $stderr.puts "Initializing checksum file #{checksum_file}"
 
-      checksums = init_checksums
+      checksums = []
 
       compact_index_cache = Bundler::Fetcher::CompactIndex
         .new(nil, Bundler::Source::Rubygems::Remote.new(Bundler::URI("https://rubygems.org")), nil)
@@ -20,8 +20,14 @@ module Bundler::Checksum::Command
         next unless spec.source.is_a?(Bundler::Source::Rubygems)
         spec_identifier = "#{spec.name}==#{spec.version}"
 
-        if already_present?(checksums, spec)
+        previous_checksum = previous_checksums.select do |checksum|
+          checksum[:name] == spec.name && checksum[:version] == spec.version.to_s
+        end
+
+        if !previous_checksum.empty?
           $stderr.puts "Using #{spec_identifier}"
+          checksums += previous_checksum
+
           next
         end
 
@@ -56,16 +62,13 @@ module Bundler::Checksum::Command
 
     private
 
-    def init_checksums
-      return ::Bundler::Checksum.checksums_from_file if File.exist?(checksum_file)
-
-      []
-    end
-
-    def already_present?(checksums, spec)
-      checksums.any? do |checksum|
-        checksum[:name] == spec.name && checksum[:version] == spec.version.to_s
-      end
+    def previous_checksums
+      @previous_checksums ||=
+        if File.exist?(checksum_file)
+          ::Bundler::Checksum.checksums_from_file
+        else
+          []
+        end
     end
 
     def checksum_file
