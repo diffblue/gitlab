@@ -130,14 +130,14 @@ RSpec.describe 'Epic Issues', :js do
       end
 
       it 'user cannot add new issues to the epic from another group' do
-        add_issues("#{issue_invalid.to_reference(full: true)}")
+        add_issues(issue_invalid.to_reference(full: true))
 
         expect(page).to have_selector('.gl-field-error')
         expect(find('.gl-field-error')).to have_text("Issue cannot be found.")
       end
 
       it 'user can add new issues to the epic' do
-        references = "#{issue_to_add.to_reference(full: true)}"
+        references = issue_to_add.to_reference(full: true)
 
         add_issues(references)
 
@@ -184,7 +184,7 @@ RSpec.describe 'Epic Issues', :js do
         end
 
         it 'user can add new epics to the epic' do
-          references = "#{epic_to_add.to_reference(full: true)}"
+          references = epic_to_add.to_reference(full: true)
           add_epics(references)
 
           expect(page).not_to have_selector('.gl-field-error')
@@ -204,7 +204,7 @@ RSpec.describe 'Epic Issues', :js do
           end
 
           it 'user cannot add new epic when hierarchy level limit has been reached' do
-            references = "#{epic_to_add.to_reference(full: true)}"
+            references = epic_to_add.to_reference(full: true)
             add_epics(references)
 
             expect(page).to have_selector('.gl-field-error')
@@ -227,7 +227,7 @@ RSpec.describe 'Epic Issues', :js do
     end
 
     it 'user can add new issues to the epic' do
-      references = "#{issue_to_add.to_reference(full: true)}"
+      references = issue_to_add.to_reference(full: true)
 
       add_issues(references)
 

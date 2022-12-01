@@ -213,7 +213,7 @@ RSpec.describe Gitlab::ImportExport::Group::TreeSaver do
   end
 
   def read_association(group, association)
-    path = exported_path_for(File.join("#{group.id}", "#{association}.ndjson"))
+    path = exported_path_for(File.join(group.id.to_s, "#{association}.ndjson"))
 
     File.foreach(path).map { |line| Gitlab::Json.parse(line) }
   end

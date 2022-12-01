@@ -10,24 +10,24 @@ RSpec.describe Gitlab::Insights::Serializers::Chartjs::MultiSeriesSerializer do
       labels: ['January 2019', 'February 2019', 'March 2019'],
       datasets: [
         {
-          label: "#{manage_label}",
+          label: manage_label,
           data: [1, 0, 0],
-          backgroundColor: "#{colors[manage_label.to_sym]}"
+          backgroundColor: colors[manage_label.to_sym]
         },
         {
-          label: "#{plan_label}",
+          label: plan_label,
           data: [1, 1, 1],
-          backgroundColor: "#{colors[plan_label.to_sym]}"
+          backgroundColor: colors[plan_label.to_sym]
         },
         {
-          label: "#{create_label}",
+          label: create_label,
           data: [1, 0, 1],
-          backgroundColor: "#{colors[create_label.to_sym]}"
+          backgroundColor: colors[create_label.to_sym]
         },
         {
-          label: "#{undefined_label}",
+          label: undefined_label,
           data: [0, 0, 1],
-          backgroundColor: "#{colors[undefined_label.to_sym]}"
+          backgroundColor: colors[undefined_label.to_sym]
         }
       ]
     }.with_indifferent_access

@@ -91,7 +91,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
       end
 
       Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
-        describe "#{class_name}" do
+        describe class_name do
           it "does not create a standalone index" do
             proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
 
@@ -109,7 +109,7 @@ RSpec.describe 'gitlab:elastic namespace rake tasks', :elastic_clean, :silence_s
     end
 
     Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
-      describe "#{class_name}" do
+      describe class_name do
         it "creates a standalone index" do
           proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
           expect { subject }.to change { es_helper.index_exists?(index_name: proxy.index_name) }.from(false).to(true)

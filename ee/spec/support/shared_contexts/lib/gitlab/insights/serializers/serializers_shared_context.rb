@@ -9,10 +9,10 @@ RSpec.shared_context 'Insights serializers context' do
   let(:undefined_label) { 'undefined' }
   let!(:colors) do
     {
-      "#{manage_label}": "#{::Gitlab::Color.color_for(manage_label)}",
-      "#{plan_label}": "#{::Gitlab::Color.color_for(plan_label)}",
-      "#{create_label}": "#{::Gitlab::Color.color_for(create_label)}",
-      "#{undefined_label}": "#{Gitlab::Insights::UNCATEGORIZED_COLOR}"
+      "#{manage_label}": ::Gitlab::Color.color_for(manage_label).to_s,
+      "#{plan_label}": ::Gitlab::Color.color_for(plan_label).to_s,
+      "#{create_label}": ::Gitlab::Color.color_for(create_label).to_s,
+      "#{undefined_label}": Gitlab::Insights::UNCATEGORIZED_COLOR.to_s
     }
   end
 

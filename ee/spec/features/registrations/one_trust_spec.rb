@@ -17,7 +17,7 @@ RSpec.describe 'OneTrust in the sign up flow' do
 
   shared_examples_for 'one trust settings' do
     it 'has the OneTrust CSP settings', :aggregate_failures do
-      expect(response_headers['Content-Security-Policy']).to include("#{onetrust_url}")
+      expect(response_headers['Content-Security-Policy']).to include(onetrust_url)
       expect(page.html).to include("https://cdn.cookielaw.org/consent/#{one_trust_id}/OtAutoBlock.js")
     end
   end

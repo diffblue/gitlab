@@ -15,7 +15,7 @@ Gitlab::Seeder.quiet do
 
     if enabled_namespaces.any?(&:invalid?)
       puts "Error creating enabled_namespaces"
-      puts "#{enabled_namespaces.map(&:errors)}"
+      puts enabled_namespaces.map(&:errors).to_s
       next
     end
 

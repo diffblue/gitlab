@@ -818,7 +818,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
         own_issue ? issue.update!(author: user2) : issue.update!(author: user)
       end
 
-      it_behaves_like "#{params[:expected_status]}"
+      it_behaves_like params[:expected_status].to_s
     end
 
     context 'file size too large' do
@@ -914,7 +914,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
         own_issue ? issue.update!(author: user2) : issue.update!(author: user)
       end
 
-      it_behaves_like "#{params[:expected_status]}"
+      it_behaves_like params[:expected_status].to_s
     end
   end
 
@@ -982,7 +982,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
         create(:incident, project: project, confidential: confidential, author: author)
       end
 
-      it_behaves_like "#{params[:expected_status]}"
+      it_behaves_like params[:expected_status].to_s
     end
 
     context 'user has access' do
@@ -1078,7 +1078,7 @@ RSpec.describe API::Issues, :mailer, :aggregate_failures do
         create(:incident, project: project, confidential: confidential, author: author)
       end
 
-      it_behaves_like "#{params[:expected_status]}"
+      it_behaves_like params[:expected_status].to_s
     end
 
     context 'user has access' do

@@ -114,7 +114,7 @@ module Gitlab
           end
 
           def generate_color_code(label)
-            Gitlab::Insights::STATIC_COLOR_MAP[label] || "#{::Gitlab::Color.color_for(label)}"
+            Gitlab::Insights::STATIC_COLOR_MAP[label] || ::Gitlab::Color.color_for(label).to_s
           end
         end
       end

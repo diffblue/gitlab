@@ -63,7 +63,7 @@ RSpec.describe SearchService do
 
     context 'when no projects are accessible' do
       it 'returns nil' do
-        project_ids = "#{inaccessible_project.id}"
+        project_ids = inaccessible_project.id.to_s
         projects = described_class.new(user, project_ids: project_ids).projects
 
         expect(projects).to be_nil
@@ -84,7 +84,7 @@ RSpec.describe SearchService do
       end
 
       it 'returns nil' do
-        project_ids = "#{accessible_project.id}"
+        project_ids = accessible_project.id.to_s
         projects = described_class.new(user, project_ids: project_ids).projects
 
         expect(projects).to be_nil

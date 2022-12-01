@@ -35,8 +35,8 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
     it 'returns an error when the number of events exceeds the limit' do
       stub_const('TimeboxReportService::EVENT_COUNT_LIMIT', 1)
 
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 21.days)
-      create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 20.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: timebox_start_date - 21.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[1], timebox_type => timebox, action: :add, created_at: timebox_start_date - 20.days)
 
       expect(response)
         .to be_error
@@ -44,17 +44,17 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
     end
 
     it 'aggregates events before the start date to the start date' do
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 21.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: timebox_start_date - 21.days)
       create(:resource_weight_event, issue: issues[0], weight: 2, created_at: timebox_start_date - 14.days)
 
-      create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 20.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[1], timebox_type => timebox, action: :add, created_at: timebox_start_date - 20.days)
       create(:resource_weight_event, issue: issues[1], weight: 1, created_at: timebox_start_date - 14.days)
 
-      create(:"resource_#{timebox_type}_event", issue: issues[2], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 20.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[2], timebox_type => timebox, action: :add, created_at: timebox_start_date - 20.days)
       create(:resource_weight_event, issue: issues[2], weight: 3, created_at: timebox_start_date - 14.days)
       create(:resource_state_event, issue: issues[2], state: :closed, created_at: timebox_start_date - 7.days)
 
-      create(:"resource_#{timebox_type}_event", issue: issues[3], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date - 19.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[3], timebox_type => timebox, action: :add, created_at: timebox_start_date - 19.days)
       create(:resource_weight_event, issue: issues[3], weight: 4, created_at: timebox_start_date - 14.days)
       create(:resource_state_event, issue: issues[3], state: :closed, created_at: timebox_start_date - 6.days)
 
@@ -78,9 +78,9 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
     end
 
     context 'when events have the same timestamp for created_at', :aggregate_failures do
-      let_it_be(:event1) { create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => another_timebox, action: :add, created_at: timebox_start_date) }
-      let_it_be(:event2) { create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => another_timebox, action: :remove, created_at: timebox_start_date) }
-      let_it_be(:event3) { create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date) }
+      let_it_be(:event1) { create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => another_timebox, action: :add, created_at: timebox_start_date) }
+      let_it_be(:event2) { create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => another_timebox, action: :remove, created_at: timebox_start_date) }
+      let_it_be(:event3) { create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: timebox_start_date) }
 
       subject { described_class.new(timebox, scoped_projects) }
 
@@ -115,33 +115,33 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
 
     it 'updates counts and weight when the milestone is added or removed' do
       # Add milestone to an open issue with no weight.
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 4.days + 3.hours)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: timebox_start_date + 4.days + 3.hours)
       # Ignore duplicate add event.
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 4.days + 3.hours)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: timebox_start_date + 4.days + 3.hours)
 
       # Add milestone to an open issue with weight 2 on the same day. This should increment the scope totals for the same day.
       create(:resource_weight_event, issue: issues[1], weight: 2, created_at: timebox_start_date)
-      create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 4.days + 5.hours)
+      create(:"resource_#{timebox_type}_event", issue: issues[1], timebox_type => timebox, action: :add, created_at: timebox_start_date + 4.days + 5.hours)
 
       # Add milestone to already closed issue with weight 3. This should increment both the scope and completed totals.
       create(:resource_weight_event, issue: issues[2], weight: 3, created_at: timebox_start_date)
       create(:resource_state_event, issue: issues[2], state: :closed, created_at: timebox_start_date + 4.days)
-      create(:"resource_#{timebox_type}_event", issue: issues[2], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 5.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[2], timebox_type => timebox, action: :add, created_at: timebox_start_date + 5.days)
 
       # Remove milestone from the 2nd open issue. This should decrement the scope totals.
-      create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :remove, created_at: timebox_start_date + 6.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[1], timebox_type => timebox, action: :remove, created_at: timebox_start_date + 6.days)
 
       # Remove milestone from the closed issue. This should decrement both the scope and completed totals.
-      create(:"resource_#{timebox_type}_event", issue: issues[2], "#{timebox_type}" => timebox, action: :remove, created_at: timebox_start_date + 7.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[2], timebox_type => timebox, action: :remove, created_at: timebox_start_date + 7.days)
 
       # Adding a different milestone should not affect the data.
-      create(:"resource_#{timebox_type}_event", issue: issues[3], "#{timebox_type}" => another_timebox, action: :add, created_at: timebox_start_date + 7.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[3], timebox_type => another_timebox, action: :add, created_at: timebox_start_date + 7.days)
 
       # Adding the milestone after the due date should not affect the data.
-      create(:"resource_#{timebox_type}_event", issue: issues[4], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 21.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[4], timebox_type => timebox, action: :add, created_at: timebox_start_date + 21.days)
 
       # Removing the milestone after the due date should not affect the data.
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :remove, created_at: timebox_start_date + 21.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :remove, created_at: timebox_start_date + 21.days)
 
       expect(response.success?).to eq(true)
       expect(response.payload[:stats]).to eq({
@@ -184,7 +184,7 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
 
     it 'updates the completed counts when issue state is changed' do
       # Close an issue assigned to the milestone with weight 2. This should increment the completed totals.
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 1.hour)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: timebox_start_date + 1.hour)
       create(:resource_weight_event, issue: issues[0], weight: 2, created_at: timebox_start_date + 2.hours)
       create(:resource_state_event, issue: issues[0], state: :closed, created_at: timebox_start_date + 1.day)
 
@@ -195,7 +195,7 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
       create(:resource_state_event, issue: issues[0], state: :reopened, created_at: timebox_start_date + 3.days)
 
       # Closing and re-opening an issue on the same day should not change the totals.
-      create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 4.days + 1.hour)
+      create(:"resource_#{timebox_type}_event", issue: issues[1], timebox_type => timebox, action: :add, created_at: timebox_start_date + 4.days + 1.hour)
       create(:resource_weight_event, issue: issues[1], weight: 3, created_at: timebox_start_date + 4.days + 2.hours)
       create(:resource_state_event, issue: issues[1], state: :closed, created_at: timebox_start_date + 5.days + 5.hours)
       create(:resource_state_event, issue: issues[1], state: :reopened, created_at: timebox_start_date + 5.days + 8.hours)
@@ -272,11 +272,11 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
 
     it 'updates the weight totals when issue weight is changed' do
       # Issue starts out with no weight and should increment once the weight is changed to 2.
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: timebox_start_date)
       create(:resource_weight_event, issue: issues[0], weight: 2, created_at: timebox_start_date + 1.day)
 
       # A closed issue is added and weight is set to 5 and should add to the weight totals.
-      create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: timebox_start_date + 2.days + 1.hour)
+      create(:"resource_#{timebox_type}_event", issue: issues[1], timebox_type => timebox, action: :add, created_at: timebox_start_date + 2.days + 1.hour)
       create(:resource_state_event, issue: issues[1], state: :closed, created_at: timebox_start_date + 2.days + 2.hours)
       create(:resource_weight_event, issue: issues[1], weight: 5, created_at: timebox_start_date + 2.days + 3.hours)
 
@@ -284,7 +284,7 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
       create(:resource_weight_event, issue: issues[1], weight: 1, created_at: timebox_start_date + 3.days)
 
       # After the first issue is assigned to another milestone, weight changes shouldn't affect the data.
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => another_timebox, action: :add, created_at: timebox_start_date + 4.days)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => another_timebox, action: :add, created_at: timebox_start_date + 4.days)
       create(:resource_weight_event, issue: issues[0], weight: 10, created_at: timebox_start_date + 5.days)
 
       expect(response.success?).to eq(true)
@@ -367,16 +367,16 @@ RSpec.shared_examples 'timebox chart' do |timebox_type|
       before_all do
         created_at = timebox_start_date - 14.days
 
-        create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: :add, created_at: created_at)
         create(:resource_weight_event, issue: issues[0], weight: 1, created_at: created_at)
 
-        create(:"resource_#{timebox_type}_event", issue: issues[1], "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:"resource_#{timebox_type}_event", issue: issues[1], timebox_type => timebox, action: :add, created_at: created_at)
         create(:resource_weight_event, issue: issues[1], weight: 1, created_at: created_at)
 
-        create(:"resource_#{timebox_type}_event", issue: other_project_issue, "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:"resource_#{timebox_type}_event", issue: other_project_issue, timebox_type => timebox, action: :add, created_at: created_at)
         create(:resource_weight_event, issue: other_project_issue, weight: 2, created_at: created_at)
 
-        create(:"resource_#{timebox_type}_event", issue: subgroup_project_issue, "#{timebox_type}" => timebox, action: :add, created_at: created_at)
+        create(:"resource_#{timebox_type}_event", issue: subgroup_project_issue, timebox_type => timebox, action: :add, created_at: created_at)
         create(:resource_weight_event, issue: subgroup_project_issue, weight: 3, created_at: created_at)
       end
 
@@ -456,7 +456,7 @@ RSpec.describe TimeboxReportService, :aggregate_failures do
 
   def create_events(event_types, timebox_type)
     event_types.each_with_index do |event_type, index|
-      create(:"resource_#{timebox_type}_event", issue: issues[0], "#{timebox_type}" => timebox, action: event_type, created_at: timebox_start_date + 4.days + (index + 1).seconds)
+      create(:"resource_#{timebox_type}_event", issue: issues[0], timebox_type => timebox, action: event_type, created_at: timebox_start_date + 4.days + (index + 1).seconds)
     end
   end
 end
