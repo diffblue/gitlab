@@ -32176,10 +32176,16 @@ msgstr ""
 msgid "ProjectSettings|Allow"
 msgstr ""
 
+msgid "ProjectSettings|Allow anyone to pull from Package Registry"
+msgstr ""
+
 msgid "ProjectSettings|Always show thumbs-up and thumbs-down award emoji buttons on issues, merge requests, and snippets."
 msgstr ""
 
 msgid "ProjectSettings|Analytics"
+msgstr ""
+
+msgid "ProjectSettings|Anyone can pull packages with a package manager API."
 msgstr ""
 
 msgid "ProjectSettings|Auto-close referenced issues on default branch"
@@ -32261,9 +32267,6 @@ msgid "ProjectSettings|Every merge creates a merge commit."
 msgstr ""
 
 msgid "ProjectSettings|Every project can have its own space to store its Docker images"
-msgstr ""
-
-msgid "ProjectSettings|Every project can have its own space to store its packages."
 msgstr ""
 
 msgid "ProjectSettings|Every project can have its own space to store its packages. Note: The Package Registry is always visible when a project is public."
@@ -32423,6 +32426,9 @@ msgid "ProjectSettings|Project visibility"
 msgstr ""
 
 msgid "ProjectSettings|Public"
+msgstr ""
+
+msgid "ProjectSettings|Publish, store, and view packages in a project."
 msgstr ""
 
 msgid "ProjectSettings|Releases"
