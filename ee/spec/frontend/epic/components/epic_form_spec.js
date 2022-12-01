@@ -6,7 +6,7 @@ import createEpic from 'ee/epic/queries/create_epic.mutation.graphql';
 import { TEST_HOST } from 'helpers/test_constants';
 import Autosave from '~/autosave';
 import { visitUrl } from '~/lib/utils/url_utility';
-import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 
 jest.mock('~/lib/utils/url_utility', () => ({

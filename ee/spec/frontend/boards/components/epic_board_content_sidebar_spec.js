@@ -13,7 +13,7 @@ import SidebarDateWidget from '~/sidebar/components/date/sidebar_date_widget.vue
 import SidebarParticipantsWidget from '~/sidebar/components/participants/sidebar_participants_widget.vue';
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
-import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
 import { mockFormattedBoardEpic } from '../mock_data';
 

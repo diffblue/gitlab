@@ -23,7 +23,7 @@ module QA
                   element :labels_dropdown_content
                 end
 
-                view 'app/assets/javascripts/vue_shared/components/sidebar/labels_select_widget/dropdown_header.vue' do
+                view 'app/assets/javascripts/sidebar/components/labels/labels_select_widget/dropdown_header.vue' do
                   element :close_labels_dropdown_button
                 end
               end

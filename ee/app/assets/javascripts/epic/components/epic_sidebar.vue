@@ -14,9 +14,9 @@ import SidebarReferenceWidget from '~/sidebar/components/copy/sidebar_reference_
 import SidebarSubscriptionsWidget from '~/sidebar/components/subscriptions/sidebar_subscriptions_widget.vue';
 import SidebarTodoWidget from '~/sidebar/components/todo_toggle/sidebar_todo_widget.vue';
 import sidebarEventHub from '~/sidebar/event_hub';
-import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_widget/labels_select_root.vue';
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import ColorSelectDropdown from '~/vue_shared/components/color_select_dropdown/color_select_root.vue';
-import { LabelType } from '~/vue_shared/components/sidebar/labels_select_widget/constants';
+import { LabelType } from '~/sidebar/components/labels/labels_select_widget/constants';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 
 import epicUtils from '../utils/epic_utils';
