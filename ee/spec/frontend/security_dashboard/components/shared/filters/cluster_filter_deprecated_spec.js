@@ -4,7 +4,7 @@ import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import createFlash from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import ClusterFilter from 'ee/security_dashboard/components/shared/filters/cluster_filter.vue';
+import ClusterFilterDeprecated from 'ee/security_dashboard/components/shared/filters/cluster_filter_deprecated.vue';
 import { CLUSTER_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
 import { clusterFilter } from 'ee/security_dashboard/helpers';
 import clusterAgents from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
@@ -13,7 +13,7 @@ import { projectClusters } from '../../mock_data';
 
 jest.mock('~/flash');
 
-describe('Cluster Filter component', () => {
+describe('Cluster Filter component (deprecated)', () => {
   let wrapper;
   const projectFullPath = 'test/path';
   const defaultQueryResolver = jest.fn().mockResolvedValue(projectClusters);
@@ -24,7 +24,7 @@ describe('Cluster Filter component', () => {
   };
 
   const createWrapper = (queryResolver = undefined) => {
-    wrapper = shallowMount(ClusterFilter, {
+    wrapper = shallowMount(ClusterFilterDeprecated, {
       apolloProvider: createMockApolloProvider(queryResolver),
       propsData: { filter: clusterFilter },
       provide: { projectFullPath },
