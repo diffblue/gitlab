@@ -1027,8 +1027,11 @@ ask an administrator to [enable the feature flag](../administration/feature_flag
 On GitLab.com, this feature is available.
 The feature is not ready for production use.
 
-You can control the width and height of an image by following the image with 
-an attribute list. For example
+You can control the width and height of an image by following the image with
+an attribute list.
+The value must an integer with a unit of either `px` (default) or `%`.
+
+For example
 
 ```markdown
 ![alt text](img/markdown_logo.png "Title Text"){width=100 height=100px}
@@ -1039,7 +1042,7 @@ an attribute list. For example
 ![alt text](img/markdown_logo.png "Title Text"){width=100 height=100px}
 
 You can also use the `img` HTML tag instead of Markdown and set its `height` and
-`width` parameters. The value should be an integer with a unit of either `%` or `px` (the default).
+`width` parameters.
 
 #### Videos
 
