@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Analytics::ProductAnalytics do
+RSpec.describe API::Analytics::ProductAnalytics, feature_category: :product_analytics do
   let_it_be(:project) { create(:project) }
 
   let(:current_user) { project.owner }
@@ -137,11 +137,29 @@ RSpec.describe API::Analytics::ProductAnalytics do
 
   describe 'POST projects/:id/product_analytics/request/load' do
     before do
-      stub_cube_load
       stub_cube_proxy_setup
     end
 
-    it_behaves_like 'does basics of a cube query', is_dry_run: false
+    context 'when querying a database that does not exist' do
+      before do
+        stub_cube_load_no_db
+      end
+
+      it 'returns a 404' do
+        request_load(false)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+        expect(response.parsed_body).to eq({ "message" => "404 Clickhouse Database Not Found" })
+      end
+    end
+
+    context 'when querying an existing database' do
+      before do
+        stub_cube_load
+      end
+
+      it_behaves_like 'does basics of a cube query', is_dry_run: false
+    end
   end
 
   describe 'POST projects/:id/product_analytics/request/dry-run' do
@@ -205,6 +223,14 @@ RSpec.describe API::Analytics::ProductAnalytics do
   def stub_cube_load
     stub_request(:post, cube_api_load_url)
       .to_return(status: 201, body: "{}", headers: {})
+  end
+
+  def stub_cube_load_no_db
+    msg = '{ "error": "Error: Code: 81. DB::Exception: Database gitlab_project_12 doesn\'t exist.' \
+      '(UNKNOWN_DATABASE) (version 22.10.2.11 (official build))\n" }'
+
+    stub_request(:post, cube_api_load_url)
+      .to_return(status: 400, body: msg, headers: {})
   end
 
   def stub_cube_dry_run

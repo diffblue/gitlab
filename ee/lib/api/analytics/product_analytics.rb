@@ -45,6 +45,10 @@ module API
           }
         end
 
+        def database_exists?(body)
+          (body['error'] =~ %r{\AError: Code: (81|60)\..*(UNKNOWN_DATABASE|UNKNOWN_TABLE)}).nil?
+        end
+
         def cube_data_query(load_data)
           check_access_rights!
 
@@ -55,8 +59,17 @@ module API
             body: { query: params["query"], "queryType": params["queryType"] }.to_json
           )
 
-          status :ok
-          Gitlab::Json.parse(response.body)
+          body = Gitlab::Json.parse(response.body)
+
+          if database_exists?(body)
+            status :ok
+
+            body
+          else
+            status :not_found
+
+            not_found!('Clickhouse Database')
+          end
         end
 
         params :cube_query_params do
@@ -64,9 +77,10 @@ module API
           requires :query,
                    type: Hash,
                    desc: "A valid Cube query. See reference documentation: https://cube.dev/docs/query-format"
-          optional :queryType, type: 'String',
-                               default: 'multi',
-                               desc: 'The query type. Currently only "multi" is supported.'
+          optional :queryType,
+                   type: String,
+                   default: 'multi',
+                   desc: 'The query type. Currently only "multi" is supported.'
         end
       end
 
