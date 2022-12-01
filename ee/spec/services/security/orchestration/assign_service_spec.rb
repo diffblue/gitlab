@@ -32,6 +32,7 @@ RSpec.describe Security::Orchestration::AssignService do
             message: "Linked #{policy_project.name} as the security policy project"
           }
           expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+          expect(Security::SyncScanPoliciesWorker).to receive(:perform_async)
 
           expect(service).to be_success
 
@@ -90,7 +91,7 @@ RSpec.describe Security::Orchestration::AssignService do
           ).to eq(new_policy_project.id)
         end
 
-        it 'logs audit event' do
+        it 'logs audit event and calls SyncScanPoliciesWorker' do
           old_policy_project = container.security_orchestration_policy_configuration.security_policy_management_project
           audit_context = {
             name: "policy_project_updated",
@@ -101,6 +102,7 @@ RSpec.describe Security::Orchestration::AssignService do
           }
 
           expect(::Gitlab::Audit::Auditor).to receive(:audit).with(audit_context)
+          expect(Security::SyncScanPoliciesWorker).to receive(:perform_async).with(container.security_orchestration_policy_configuration.id)
 
           repeated_service
         end
@@ -118,6 +120,8 @@ RSpec.describe Security::Orchestration::AssignService do
             )
 
           allow(dbl_error).to receive(:security_policy_management_project).and_return(policy_project)
+          allow(dbl_error).to receive(:transaction).and_yield
+          allow(dbl_error).to receive(:delete_scan_finding_rules).and_return(nil)
           allow(dbl_error).to receive(:update!).and_raise(ActiveRecord::RecordInvalid)
 
           allow_next_instance_of(described_class) do |instance|
@@ -132,6 +136,12 @@ RSpec.describe Security::Orchestration::AssignService do
 
         it 'does not log audit event' do
           expect(::Gitlab::Audit::Auditor).not_to receive(:audit)
+
+          repeated_service
+        end
+
+        it 'does not call SyncScanPoliciesWorker' do
+          expect(Security::SyncScanPoliciesWorker).not_to receive(:perform_async)
 
           repeated_service
         end
