@@ -177,6 +177,18 @@ RSpec.describe 'admin/application_settings/_elasticsearch_form' do
         expect(rendered).not_to include("Documents reindexed:")
       end
     end
+
+    context 'when there are 0 documents expected' do
+      let_it_be(:task) { create(:elastic_reindexing_task, state: :reindexing) }
+      let_it_be(:subtask) { create(:elastic_reindexing_subtask, elastic_reindexing_task: task, documents_count_target: 0, documents_count: 0) }
+
+      it 'renders 100% completed progress' do
+        render
+
+        expect(rendered).to include('Expected documents: 0')
+        expect(rendered).to include('Documents reindexed: 0 (100%)')
+      end
+    end
   end
 
   context 'when there are elasticsearch indexed namespaces' do
