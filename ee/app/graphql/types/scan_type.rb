@@ -12,7 +12,7 @@ module Types
 
     field :errors, [GraphQL::Types::String], null: false, description: 'List of errors.'
     field :name, GraphQL::Types::String, null: false, description: 'Name of the scan.'
-    field :warnings, [GraphQL::Types::String], null: false, description: 'List of warnings.'
     field :status, Types::ScanStatusEnum, null: false, description: 'Indicates the status of the scan.'
+    field :warnings, [GraphQL::Types::String], null: false, description: 'List of warnings.'
   end
 end
