@@ -94,8 +94,8 @@ RSpec.describe 'Groups > Settings > Group Hooks' do
         check 'Enable SSL verification'
         click_button 'Save changes'
 
-        expect(page).to have_content 'SSL Verification: enabled'
-        expect(page).to have_content(url)
+        expect(page).to have_content('Enable SSL verification')
+        expect(page).to have_content('Recent events')
       end
 
       it 'tests an existing group hook', :js do

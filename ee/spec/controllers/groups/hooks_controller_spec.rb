@@ -152,7 +152,7 @@ RSpec.describe Groups::HooksController, feature_category: :integrations do
           patch :update, params: { group_id: group.to_param, id: hook, hook: hook_params }
 
           expect(response).to have_gitlab_http_status(:found)
-          expect(response).to redirect_to(group_hooks_path(group))
+          expect(response).to redirect_to(edit_group_hook_path(group, hook))
           expect(group.hooks.size).to eq(1)
           expect(hook.reload).to have_attributes(hook_params.except(:url_variables))
           expect(hook.url_variables).to eq(
