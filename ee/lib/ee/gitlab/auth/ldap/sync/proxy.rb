@@ -14,7 +14,7 @@ module EE
             # It's more efficient than the default of opening/closing per LDAP query.
             def self.open(provider, &block)
               ::Gitlab::Auth::Ldap::Adapter.open(provider) do |adapter|
-                block.call(self.new(provider, adapter))
+                yield(self.new(provider, adapter))
               end
             end
 

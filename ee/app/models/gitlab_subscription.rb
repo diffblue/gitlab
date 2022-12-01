@@ -48,9 +48,7 @@ class GitlabSubscription < ApplicationRecord
     # incredibly fast.
     subscriptions = GitlabSubscription.where('end_date < ?', Date.today - DAYS_AFTER_EXPIRATION_BEFORE_REMOVING_FROM_INDEX)
     subscriptions.each_batch(column: :namespace_id) do |relation|
-      ElasticsearchIndexedNamespace.where(namespace_id: relation.select(:namespace_id)).each do |indexed_namespace|
-        blk.call indexed_namespace
-      end
+      ElasticsearchIndexedNamespace.where(namespace_id: relation.select(:namespace_id)).each(&blk)
     end
   end
 
