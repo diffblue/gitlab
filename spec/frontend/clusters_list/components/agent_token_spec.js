@@ -24,8 +24,8 @@ describe('InstallAgentModal', () => {
   const findCodeBlock = () => wrapper.findComponent(CodeBlock);
   const findCopyButton = () => wrapper.findComponent(ModalCopyButton);
   const findInput = () => wrapper.findComponent(GlFormInputGroup);
-  const findLink = () => wrapper.findComponent(GlLink);
-  const findIcon = () => wrapper.findComponent(GlIcon);
+  const findHelmVersionPolicyLink = () => wrapper.findComponent(GlLink);
+  const findHelmExternalLinkIcon = () => wrapper.findComponent(GlIcon);
 
   const createWrapper = (newAgentName = agentName) => {
     const provide = {
@@ -66,11 +66,11 @@ describe('InstallAgentModal', () => {
       expect(wrapper.text()).toContain(
         sprintf(I18N_AGENT_TOKEN.helmVersionText, { linkStart: '', linkEnd: ' ' }),
       );
-      expect(findLink().attributes()).toMatchObject({
-        href: wrapper.vm.$options.helmVersionPolicy,
+      expect(findHelmVersionPolicyLink().attributes()).toMatchObject({
+        href: wrapper.vm.$options.helmVersionPolicyUrl,
         target: '_blank',
       });
-      expect(findIcon().props()).toMatchObject({ name: 'external-link', size: 12 });
+      expect(findHelmExternalLinkIcon().props()).toMatchObject({ name: 'external-link', size: 12 });
     });
 
     it('shows advanced agent installation instructions', () => {

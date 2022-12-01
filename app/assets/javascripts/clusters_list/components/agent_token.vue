@@ -11,7 +11,7 @@ export default {
   advancedInstallPath: helpPagePath('user/clusters/agent/install/index', {
     anchor: 'advanced-installation-method',
   }),
-  helmVersionPolicy: 'https://helm.sh/docs/topics/version_skew/',
+  helmVersionPolicyUrl: 'https://helm.sh/docs/topics/version_skew/',
   components: {
     GlAlert,
     CodeBlock,
@@ -81,7 +81,7 @@ export default {
       {{ $options.i18n.basicInstallBody }}
       <gl-sprintf :message="$options.i18n.helmVersionText">
         <template #link="{ content }"
-          ><gl-link :href="$options.helmVersionPolicy" target="_blank"
+          ><gl-link :href="$options.helmVersionPolicyUrl" target="_blank"
             >{{ content }} <gl-icon name="external-link" :size="12" /></gl-link></template
       ></gl-sprintf>
     </p>
