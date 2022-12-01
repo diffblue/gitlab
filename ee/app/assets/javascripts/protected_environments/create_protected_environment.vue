@@ -4,6 +4,7 @@ import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
 import { ACCESS_LEVELS } from './constants';
 
@@ -18,6 +19,7 @@ export default {
     GlCollapsibleListbox,
     AccessDropdown,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     searchUnprotectedEnvironmentsUrl: {
       type: String,
@@ -45,6 +47,9 @@ export default {
     },
     environmentText() {
       return this.environment || this.$options.i18n.environmentText;
+    },
+    canCreateMultipleRules() {
+      return this.glFeatures.multipleEnvironmentApprovalRulesFe;
     },
   },
   methods: {
