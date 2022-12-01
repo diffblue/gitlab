@@ -93,5 +93,12 @@ RSpec.describe Audit::GroupPushRulesChangesAuditor do
         .with('group_push_rules_commit_message_negative_regex_updated', anything, anything)  
       subject.execute
     end 
+
+    it 'streams correct audit event for commit_message_regex', :aggregate_failures do
+      push_rule.update!('commit_message_regex' => '.*\\w{2}')
+      expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+        .with('group_push_rules_commit_message_regex_updated', anything, anything)  
+      subject.execute
+    end 
   end
 end

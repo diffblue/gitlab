@@ -11,7 +11,8 @@ module Audit
       :max_file_size => 'group_push_rules_max_file_size_updated',
       :file_name_regex => 'group_push_rules_file_name_regex_updated', 
       :author_email_regex => 'group_push_rules_author_email_regex_updated',
-      :commit_message_negative_regex => 'group_push_rules_commit_message_negative_regex_updated' 
+      :commit_message_negative_regex => 'group_push_rules_commit_message_negative_regex_updated',
+      :commit_message_regex => 'group_push_rules_commit_message_regex_updated'  
     }.freeze
 
     def execute
