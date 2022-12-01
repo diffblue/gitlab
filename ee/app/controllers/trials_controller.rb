@@ -48,7 +48,7 @@ class TrialsController < ApplicationController
     result = GitlabSubscriptions::CreateHandRaiseLeadService.new.execute(hand_raise_lead_params)
 
     if result.success?
-      head 200
+      head :ok
     else
       render_403
     end
@@ -64,7 +64,7 @@ class TrialsController < ApplicationController
     result = GitlabSubscriptions::ExtendReactivateTrialService.new.execute(extend_reactivate_trial_params) if valid_extension?
 
     if result&.success?
-      head 200
+      head :ok
     else
       render_403
     end
