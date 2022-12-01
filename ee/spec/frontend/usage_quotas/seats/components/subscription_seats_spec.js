@@ -14,8 +14,10 @@ import StatisticsCard from 'ee/usage_quotas/components/statistics_card.vue';
 import StatisticsSeatsCard from 'ee/usage_quotas/components/statistics_seats_card.vue';
 import SubscriptionUpgradeInfoCard from 'ee/usage_quotas/seats/components/subscription_upgrade_info_card.vue';
 import SubscriptionSeats from 'ee/usage_quotas/seats/components/subscription_seats.vue';
-
-import { CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT } from 'ee/usage_quotas/seats/constants';
+import {
+  CANNOT_REMOVE_BILLABLE_MEMBER_MODAL_CONTENT,
+  SORT_OPTIONS,
+} from 'ee/usage_quotas/seats/constants';
 
 import { mockDataSeats, mockTableItems } from 'ee_jest/usage_quotas/seats/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
@@ -531,32 +533,7 @@ describe('Subscription Seats', () => {
     });
 
     it('contains the correct sort options', () => {
-      expect(findSearchAndSortBar().props('sortOptions')).toMatchObject([
-        {
-          id: 10,
-          title: 'Last Activity',
-          sortDirection: {
-            ascending: 'last_activity_on_asc',
-            descending: 'last_activity_on_desc',
-          },
-        },
-        {
-          id: 20,
-          title: 'Name',
-          sortDirection: {
-            ascending: 'name_asc',
-            descending: 'name_desc',
-          },
-        },
-        {
-          id: 30,
-          title: 'Last login',
-          sortDirection: {
-            ascending: 'oldest_sign_in',
-            descending: 'recent_sign_in',
-          },
-        },
-      ]);
+      expect(findSearchAndSortBar().props('sortOptions')).toMatchObject(SORT_OPTIONS);
     });
   });
 
