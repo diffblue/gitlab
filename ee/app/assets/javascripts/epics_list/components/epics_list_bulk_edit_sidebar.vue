@@ -1,8 +1,8 @@
 <script>
 import { GlForm, GlFormGroup } from '@gitlab/ui';
 import { intersectionBy, xorBy, unionBy } from 'lodash';
-import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
-import { DropdownVariant } from '~/vue_shared/components/sidebar/labels_select_vue/constants';
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
+import { DropdownVariant } from '~/sidebar/components/labels/labels_select_vue/constants';
 import csrf from '~/lib/utils/csrf';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 

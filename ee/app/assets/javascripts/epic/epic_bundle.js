@@ -6,7 +6,7 @@ import { setCookie, convertObjectPropsToCamelCase, parseBoolean } from '~/lib/ut
 import { parseIssuableData } from '~/issues/show/utils/parse_data';
 
 import { defaultClient } from '~/graphql_shared/issuable_client';
-import labelsSelectModule from '~/vue_shared/components/sidebar/labels_select_vue/store';
+import labelsSelectModule from '~/sidebar/components/labels/labels_select_vue/store';
 import getIssueStateQuery from '~/issues/show/queries/get_issue_state.query.graphql';
 import { IssuableType } from '~/issues/constants';
 

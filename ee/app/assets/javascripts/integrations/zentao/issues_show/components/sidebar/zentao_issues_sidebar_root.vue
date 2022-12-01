@@ -3,7 +3,7 @@ import Assignee from 'ee/external_issues_show/components/sidebar/assignee.vue';
 import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_date.vue';
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
 import { s__, __ } from '~/locale';
-import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 
 export default {
   name: 'ZentaoIssuesSidebar',

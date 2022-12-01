@@ -4,7 +4,7 @@ import IssueDueDate from 'ee/external_issues_show/components/sidebar/issue_due_d
 import IssueField from 'ee/external_issues_show/components/sidebar/issue_field.vue';
 import Sidebar from 'ee/integrations/zentao/issues_show/components/sidebar/zentao_issues_sidebar_root.vue';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
-import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 import { mockZentaoIssue as mockZentaoIssueData } from '../../mock_data';
 
 const mockZentaoIssue = convertObjectPropsToCamelCase(mockZentaoIssueData, { deep: true });

@@ -6,7 +6,7 @@ import { labelsFilterParam } from 'ee/external_issues_show/constants';
 
 import { __ } from '~/locale';
 import CopyableField from '~/sidebar/components/copy/copyable_field.vue';
-import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 
 export default {
   name: 'JiraIssuesSidebar',

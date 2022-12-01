@@ -5,7 +5,7 @@ import { nextTick } from 'vue';
 import IterationReportIssues from 'ee/iterations/components/iteration_report_issues.vue';
 import IterationReportTabs from 'ee/iterations/components/iteration_report_tabs.vue';
 import { GroupBy, Namespace } from 'ee/iterations/constants';
-import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 
 describe('Iterations report tabs', () => {
   let wrapper;

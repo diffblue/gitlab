@@ -4,8 +4,8 @@ import { differenceBy, unionBy } from 'lodash';
 import Vue from 'vue';
 import { isScopedLabel } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
-import { DropdownVariant } from '~/vue_shared/components/sidebar/labels_select_vue/constants';
-import LabelsSelect from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+import { DropdownVariant } from '~/sidebar/components/labels/labels_select_vue/constants';
+import LabelsSelect from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 import { GroupBy, Namespace } from '../constants';
 import IterationReportIssues from './iteration_report_issues.vue';
 
