@@ -11,6 +11,8 @@ module QA
       :requires_admin,
       only: { pipeline: :nightly }
     ) do
+      include_context 'advanced search active'
+
       p1_threshold = 15
       p2_threshold = 10
       p3_threshold = 5
@@ -24,21 +26,13 @@ module QA
         end
       end
 
-      let(:elasticsearch_original_state_on?) { Runtime::Search.elasticsearch_on?(api_client) }
-
       before do
-        QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api! unless elasticsearch_original_state_on?
-
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.add_files([
                              { file_path: 'README.md', content: project_file_content }
                            ])
         end
-      end
-
-      after do
-        Runtime::Search.disable_elasticsearch(api_client) if !elasticsearch_original_state_on? && !api_client.nil?
       end
 
       it(

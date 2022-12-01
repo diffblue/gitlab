@@ -11,6 +11,8 @@ module QA
       :requires_admin,
       :skip_live_env
     ) do
+      include_context 'advanced search active'
+
       let(:project_file_content) { "elasticsearch: #{SecureRandom.hex(8)}" }
       let(:non_member_user) do
         Resource::User.fabricate_or_use(
@@ -28,11 +30,7 @@ module QA
         end
       end
 
-      let(:elasticsearch_original_state_on?) { Runtime::Search.elasticsearch_on?(api_client) }
-
       before do
-        QA::EE::Resource::Settings::Elasticsearch.fabricate_via_api! unless elasticsearch_original_state_on?
-
         Resource::Repository::Commit.fabricate_via_api! do |commit|
           commit.project = project
           commit.add_files(
@@ -41,10 +39,6 @@ module QA
             }]
           )
         end
-      end
-
-      after do
-        Runtime::Search.disable_elasticsearch(api_client) if !elasticsearch_original_state_on? && !api_client.nil?
       end
 
       it(
