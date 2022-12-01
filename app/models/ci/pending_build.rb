@@ -1,12 +1,6 @@
 # frozen_string_literal: true
 
 module Ci
-  # This model represents metadata for a pending build.
-  # Despite the generic PendingBuild name, in this first iteration it applies only to shared runners.
-  # The decision to insert all of the pending builds here was deferred to avoid the pressure on the database as
-  # at this time that was not necessary.
-  # We can reconsider the decision to limit this only to shared runners when there is more evidence that inserting all
-  # of the pending builds there is worth the additional pressure.
   class PendingBuild < Ci::ApplicationRecord
     include EachBatch
     include Ci::Partitionable

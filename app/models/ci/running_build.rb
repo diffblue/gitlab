@@ -2,7 +2,8 @@
 
 module Ci
   # This model represents metadata for a running build.
-  # Despite the generic RunningBuild name, in this first iteration it applies only to shared runners.
+  # Despite the generic RunningBuild name, in this first iteration it applies only to shared runners
+  #   (see Ci::RunningBuild.upsert_shared_runner_build!).
   # The decision to insert all of the running builds here was deferred to avoid the pressure on the database as
   # at this time that was not necessary.
   # We can reconsider the decision to limit this only to shared runners when there is more evidence that inserting all
