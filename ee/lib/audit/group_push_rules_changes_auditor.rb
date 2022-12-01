@@ -8,7 +8,8 @@ module Audit
     ].freeze
 
     EVENT_TYPE_PER_ATTR = { 
-      :max_file_size => 'group_push_rules_max_file_size_updated' 
+      :max_file_size => 'group_push_rules_max_file_size_updated',
+      :file_name_regex => 'group_push_rules_file_name_regex_updated' 
     }.freeze
 
     def execute
