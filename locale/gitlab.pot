@@ -27129,6 +27129,9 @@ msgstr ""
 msgid "New incident"
 msgstr ""
 
+msgid "New incident has been created"
+msgstr ""
+
 msgid "New issue"
 msgstr ""
 
@@ -38676,6 +38679,9 @@ msgstr ""
 msgid "Something went wrong when reordering designs. Please try again"
 msgstr ""
 
+msgid "Something went wrong when sending the incident link to Slack."
+msgstr ""
+
 msgid "Something went wrong while adding timeline event."
 msgstr ""
 
@@ -41495,6 +41501,9 @@ msgid "There is too much data to calculate. Please change your selection."
 msgstr ""
 
 msgid "There was a problem communicating with your device."
+msgstr ""
+
+msgid "There was a problem creating the incident. Please try again."
 msgstr ""
 
 msgid "There was a problem fetching CRM contacts."

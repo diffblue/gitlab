@@ -3,19 +3,23 @@
 require 'spec_helper'
 
 RSpec.describe Integrations::SlackInteractivityWorker, :clean_gitlab_redis_shared_state do
+  using RSpec::Parameterized::TableSyntax
+
+  let_it_be(:slack_integration) { create(:slack_integration) }
+
   describe '.interaction?' do
-    subject { described_class.interaction?(slack_interaction) }
+    context 'when slack_interaction is known/unknown' do
+      where(:slack_interaction, :result) do
+        'view_closed'     | true
+        'view_submission' | true
+        'foo'             | false
+      end
 
-    context 'when slack_interaction is known' do
-      let(:slack_interaction) { 'view_closed' }
-
-      it { is_expected.to be_truthy }
-    end
-
-    context 'when slack_interaction is not known' do
-      let(:slack_interaction) { 'foo' }
-
-      it { is_expected.to be_falsey }
+      with_them do
+        it 'returns correct result' do
+          expect(described_class.interaction?(slack_interaction)).to be(result)
+        end
+      end
     end
   end
 
@@ -30,8 +34,6 @@ RSpec.describe Integrations::SlackInteractivityWorker, :clean_gitlab_redis_share
     end
 
     let(:worker) { described_class.new }
-    let(:slack_interaction) { 'view_closed' }
-    let(:service_class) { ::Integrations::SlackInteractions::IncidentManagement::IncidentModalClosedService }
 
     let(:args) do
       {
@@ -43,13 +45,16 @@ RSpec.describe Integrations::SlackInteractivityWorker, :clean_gitlab_redis_share
     let(:params) do
       {
         user: {
-          id: 'U0123ABCDEF'
+          id: slack_integration.user_id
         },
         team: {
-          id: 'T0123A456BC'
+          id: slack_integration.team_id
         },
         view: {
-          private_metadata: 'https://response.slack.com/id/123'
+          private_metadata: 'https://response.slack.com/id/123',
+          state: {
+            values: {}
+          }
         }
       }
     end
@@ -57,28 +62,52 @@ RSpec.describe Integrations::SlackInteractivityWorker, :clean_gitlab_redis_share
     shared_examples 'logs extra metadata on done' do
       specify do
         expect(worker).to receive(:log_extra_metadata_on_done).with(:slack_interaction, slack_interaction)
-        expect(worker).to receive(:log_extra_metadata_on_done).with(:slack_user_id, 'U0123ABCDEF')
-        expect(worker).to receive(:log_extra_metadata_on_done).with(:slack_workspace_id, 'T0123A456BC')
+        expect(worker).to receive(:log_extra_metadata_on_done).with(:slack_user_id, slack_integration.user_id)
+        expect(worker).to receive(:log_extra_metadata_on_done).with(:slack_workspace_id, slack_integration.team_id)
 
         worker.perform(args)
       end
     end
 
-    it 'executes the correct service' do
-      expect_next_instance_of(service_class, params) do |service|
-        expect(service).to receive(:execute).and_return(ServiceResponse.success)
+    context 'when view is closed' do
+      let(:slack_interaction) { 'view_closed' }
+
+      it 'executes the correct service' do
+        view_closed_service = described_class::INTERACTIONS['view_closed']
+
+        expect_next_instance_of(view_closed_service, params) do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
+        end
+
+        worker.perform(args)
       end
 
-      worker.perform(args)
+      it_behaves_like 'logs extra metadata on done'
     end
 
-    it_behaves_like 'logs extra metadata on done'
+    context 'when view is submitted' do
+      let(:slack_interaction) { 'view_submission' }
+
+      it 'executes the submission service' do
+        view_submission_service = described_class::INTERACTIONS['view_submission']
+
+        expect_next_instance_of(view_submission_service, params) do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
+        end
+
+        worker.perform(args)
+      end
+
+      it_behaves_like 'logs extra metadata on done'
+    end
 
     context 'when slack_interaction is not known' do
       let(:slack_interaction) { 'foo' }
 
-      it 'does not execute the service class' do
-        expect(service_class).not_to receive(:new)
+      it 'does not execute a service class' do
+        described_class::INTERACTIONS.each_value do |service_class|
+          expect(service_class).not_to receive(:new)
+        end
 
         worker.perform(args)
       end
