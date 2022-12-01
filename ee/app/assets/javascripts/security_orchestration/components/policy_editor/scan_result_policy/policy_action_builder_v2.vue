@@ -1,5 +1,5 @@
 <script>
-import { GlSprintf, GlForm, GlFormInput, GlListbox, GlModalDirective } from '@gitlab/ui';
+import { GlSprintf, GlForm, GlFormInput, GlCollapsibleListbox, GlModalDirective } from '@gitlab/ui';
 import { n__, s__ } from '~/locale';
 import UserSelect from './user_select.vue';
 import GroupSelect from './group_select.vue';
@@ -16,7 +16,7 @@ export default {
     GlSprintf,
     GlForm,
     GlFormInput,
-    GlListbox,
+    GlCollapsibleListbox,
     GroupSelect,
     UserSelect,
   },
@@ -111,7 +111,7 @@ export default {
         </template>
 
         <template #approverType>
-          <gl-listbox
+          <gl-collapsible-listbox
             v-model="approverType"
             :items="$options.APPROVER_TYPE_LIST_ITEMS"
             :toggle-text="approverTypeToggleText"

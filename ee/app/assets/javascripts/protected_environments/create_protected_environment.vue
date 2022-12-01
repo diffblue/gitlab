@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlButton, GlCard, GlFormGroup, GlListbox } from '@gitlab/ui';
+import { GlAlert, GlButton, GlCard, GlFormGroup, GlCollapsibleListbox } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 import Api from 'ee/api';
 import axios from '~/lib/utils/axios_utils';
@@ -15,7 +15,7 @@ export default {
     GlButton,
     GlCard,
     GlFormGroup,
-    GlListbox,
+    GlCollapsibleListbox,
     AccessDropdown,
   },
   props: {
@@ -115,7 +115,7 @@ export default {
         {{ errorMessage }}
       </gl-alert>
       <gl-form-group label-for="environment" :label="$options.i18n.environmentLabel">
-        <gl-listbox
+        <gl-collapsible-listbox
           id="create-environment"
           v-model="environment"
           :toggle-text="environmentText"
@@ -136,7 +136,7 @@ export default {
         />
       </gl-form-group>
       <gl-form-group label-for="create-approval-count" :label="$options.i18n.approvalLabel">
-        <gl-listbox
+        <gl-collapsible-listbox
           id="create-approval-count"
           v-model="approvals"
           :toggle-text="approvals"

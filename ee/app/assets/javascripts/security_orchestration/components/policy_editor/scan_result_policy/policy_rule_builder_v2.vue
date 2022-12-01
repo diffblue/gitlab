@@ -1,5 +1,5 @@
 <script>
-import { GlSprintf, GlForm, GlButton, GlListbox } from '@gitlab/ui';
+import { GlSprintf, GlForm, GlButton, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 
 import { getDefaultRule, SCAN_FINDING, LICENSE_FINDING } from './lib';
@@ -10,7 +10,7 @@ export default {
     GlSprintf,
     GlForm,
     GlButton,
-    GlListbox,
+    GlCollapsibleListbox,
   },
   props: {
     initRule: {
@@ -70,7 +70,7 @@ export default {
         </template>
 
         <template #selector>
-          <gl-listbox
+          <gl-collapsible-listbox
             id="scanType"
             v-model="scanType"
             class="gl-display-inline! gl-w-auto"

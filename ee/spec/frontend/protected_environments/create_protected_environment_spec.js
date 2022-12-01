@@ -1,6 +1,6 @@
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
-import { GlAlert, GlListbox } from '@gitlab/ui';
+import { GlAlert, GlCollapsibleListbox } from '@gitlab/ui';
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -52,9 +52,9 @@ describe('ee/protected_environments/create_protected_environment.vue', () => {
   };
 
   const findAlert = () => wrapper.findComponent(GlAlert);
-  const findEnvironmentsListbox = () => wrapper.findAllComponents(GlListbox).at(0);
+  const findEnvironmentsListbox = () => wrapper.findAllComponents(GlCollapsibleListbox).at(0);
   const findAccessDropdown = () => wrapper.findComponent(AccessDropdown);
-  const findRequiredCountSelect = () => wrapper.findAllComponents(GlListbox).at(1);
+  const findRequiredCountSelect = () => wrapper.findAllComponents(GlCollapsibleListbox).at(1);
   const findSubmitButton = () =>
     wrapper.findByRole('button', { name: s__('ProtectedEnvironment|Protect') });
 

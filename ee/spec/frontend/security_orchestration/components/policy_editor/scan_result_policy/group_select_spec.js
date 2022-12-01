@@ -1,6 +1,6 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
-import { GlListbox } from '@gitlab/ui';
+import { GlCollapsibleListbox } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
 import searchGroupsGroups from 'ee/security_orchestration/graphql/queries/get_users_groups.query.graphql';
@@ -56,7 +56,7 @@ describe('GroupSelect component', () => {
     });
   };
 
-  const findListbox = () => wrapper.findComponent(GlListbox);
+  const findListbox = () => wrapper.findComponent(GlCollapsibleListbox);
 
   const waitForApolloAndVue = async () => {
     await nextTick();

@@ -1,5 +1,5 @@
 <script>
-import { GlAvatarLabeled, GlListbox } from '@gitlab/ui';
+import { GlAvatarLabeled, GlCollapsibleListbox } from '@gitlab/ui';
 import { s__ } from '~/locale';
 import searchProjectMembers from '~/graphql_shared/queries/project_user_members_search.query.graphql';
 import searchGroupMembers from '~/graphql_shared/queries/group_users_search.query.graphql';
@@ -18,7 +18,7 @@ const createUserObject = (user) => ({
 export default {
   components: {
     GlAvatarLabeled,
-    GlListbox,
+    GlCollapsibleListbox,
   },
   inject: ['namespacePath', 'namespaceType'],
   props: {
@@ -99,7 +99,7 @@ export default {
 </script>
 
 <template>
-  <gl-listbox
+  <gl-collapsible-listbox
     :items="users"
     searchable
     is-check-centered
@@ -119,5 +119,5 @@ export default {
         :sub-label="item.username"
       />
     </template>
-  </gl-listbox>
+  </gl-collapsible-listbox>
 </template>

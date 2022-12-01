@@ -1,4 +1,4 @@
-import { GlForm, GlFormInput, GlListbox, GlSprintf } from '@gitlab/ui';
+import { GlForm, GlFormInput, GlCollapsibleListbox, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
 import PolicyActionBuilder from 'ee/security_orchestration/components/policy_editor/scan_result_policy/policy_action_builder_v2.vue';
 import GroupSelect from 'ee/security_orchestration/components/policy_editor/scan_result_policy/group_select.vue';
@@ -75,7 +75,7 @@ describe('PolicyActionBuilder', () => {
   };
 
   const findApprovalsRequiredInput = () => wrapper.findComponent(GlFormInput);
-  const findApproverTypeDropdown = () => wrapper.findComponent(GlListbox);
+  const findApproverTypeDropdown = () => wrapper.findComponent(GlCollapsibleListbox);
   const findGroupSelect = () => wrapper.findComponent(GroupSelect);
   const findUserSelect = () => wrapper.findComponent(UserSelect);
 
