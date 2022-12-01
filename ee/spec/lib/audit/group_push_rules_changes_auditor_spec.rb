@@ -79,5 +79,12 @@ RSpec.describe Audit::GroupPushRulesChangesAuditor do
         .with('group_push_rules_file_name_regex_updated', anything, anything)  
       subject.execute
     end 
+
+    it 'streams correct audit event for author_email_regex', :aggregate_failures do
+      push_rule.update!('author_email_regex' => '.*\\w{2}')
+      expect(AuditEvents::AuditEventStreamingWorker).to receive(:perform_async)
+        .with('group_push_rules_author_email_regex_updated', anything, anything)  
+      subject.execute
+    end 
   end
 end
