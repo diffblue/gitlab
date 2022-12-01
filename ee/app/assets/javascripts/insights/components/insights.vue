@@ -16,6 +16,7 @@ import {
   EMPTY_STATE_SVG_PATH,
   INSIGHTS_CONFIGURATION_TEXT,
   INSIGHTS_PAGE_FILTERED_OUT,
+  INSIGHTS_REPORT_DROPDOWN_EMPTY_TEXT,
 } from '../constants';
 import InsightsPage from './insights_page.vue';
 
@@ -103,6 +104,12 @@ export default {
     specifiedTab() {
       return this.$route.params.tabId;
     },
+    pageDropdownTitle() {
+      return (
+        (this.activeTab && this.configData[this.activeTab]?.title) ||
+        INSIGHTS_REPORT_DROPDOWN_EMPTY_TEXT
+      );
+    },
   },
   mounted() {
     this.fetchConfigData(this.endpoint);
@@ -153,12 +160,14 @@ export default {
         class="js-insights-dropdown"
         data-qa-selector="insights_dashboard_dropdown"
         toggle-class="dropdown-menu-toggle gl-field-error-outline"
-        :text="__('Select report')"
+        :text="pageDropdownTitle"
         :disabled="pageLoading"
       >
         <gl-dropdown-item
           v-for="page in pages"
           :key="page.scope"
+          is-check-item
+          :is-checked="page.isActive"
           @click="onChangePage(page.scope)"
           >{{ page.name }}</gl-dropdown-item
         >

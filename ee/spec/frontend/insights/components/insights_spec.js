@@ -21,6 +21,24 @@ const defaultMocks = {
   },
 };
 
+const defaultKey = 'issues';
+const selectedKey = 'mrs';
+const selectedKeyMocks = {
+  $route: {
+    params: {
+      tabId: selectedKey,
+    },
+  },
+};
+
+const invalidKeyMocks = {
+  $route: {
+    params: {
+      tabId: 'invalid',
+    },
+  },
+};
+
 const createComponent = (store, options = {}) => {
   const { mocks = defaultMocks } = options;
   return shallowMount(Insights, {
@@ -263,9 +281,6 @@ describe('Insights component', () => {
   });
 
   describe('hash fragment present', () => {
-    const defaultKey = 'issues';
-    const selectedKey = 'mrs';
-
     const configData = {};
     configData[defaultKey] = {};
     configData[selectedKey] = {};
@@ -277,14 +292,7 @@ describe('Insights component', () => {
     });
 
     it('selects the first tab if invalid', async () => {
-      const mocks = {
-        $route: {
-          params: {
-            tabId: 'invalid',
-          },
-        },
-      };
-      wrapper = createComponent(vuexStore, { mocks: { ...defaultMocks, ...mocks } });
+      wrapper = createComponent(vuexStore, { mocks: { ...defaultMocks, ...invalidKeyMocks } });
 
       jest.runOnlyPendingTimers();
 
@@ -293,19 +301,44 @@ describe('Insights component', () => {
     });
 
     it('selects the specified tab if valid', async () => {
-      const mocks = {
-        $route: {
-          params: {
-            tabId: selectedKey,
-          },
-        },
-      };
-      wrapper = createComponent(vuexStore, { mocks: { ...defaultMocks, ...mocks } });
+      wrapper = createComponent(vuexStore, { mocks: { ...defaultMocks, ...selectedKeyMocks } });
 
       jest.runOnlyPendingTimers();
 
       await nextTick();
       expect(vuexStore.dispatch).toHaveBeenCalledWith('insights/setActiveTab', selectedKey);
+    });
+  });
+
+  describe('dropdown title', () => {
+    const configData = {};
+    configData[defaultKey] = { title: 'Default key title' };
+    configData[selectedKey] = { title: 'Selected key title' };
+
+    beforeEach(() => {
+      vuexStore.state.insights.configLoading = false;
+      vuexStore.state.insights.configData = configData;
+      vuexStore.state.insights.activePage = pageInfo;
+    });
+
+    it('uses the default title when there is no active tab specified', async () => {
+      wrapper = createComponent(vuexStore, { mocks: { ...defaultMocks, ...selectedKeyMocks } });
+
+      jest.runOnlyPendingTimers();
+
+      await nextTick();
+      expect(wrapper.findComponent(GlDropdown).attributes('text')).toBe('Select report');
+    });
+
+    it('sets the title when there is an active tab specified', async () => {
+      vuexStore.state.insights.activeTab = selectedKey;
+
+      wrapper = createComponent(vuexStore, { mocks: { ...defaultMocks, ...selectedKeyMocks } });
+
+      jest.runOnlyPendingTimers();
+
+      await nextTick();
+      expect(wrapper.findComponent(GlDropdown).attributes('text')).toBe('Selected key title');
     });
   });
 });

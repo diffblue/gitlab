@@ -25,3 +25,4 @@ export const INSIGHTS_PAGE_FILTERED_OUT = s__(
 export const INSIGHTS_DATA_SOURCE_DORA = 'dora';
 
 export const INSIGHTS_NO_DATA_TOOLTIP = __('No data available');
+export const INSIGHTS_REPORT_DROPDOWN_EMPTY_TEXT = __('Select report');

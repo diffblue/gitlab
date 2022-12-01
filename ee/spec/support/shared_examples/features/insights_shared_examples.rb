@@ -50,6 +50,7 @@ RSpec.shared_examples 'Insights page' do
           it 'loads the correct page', :js do
             page.within(".insights-container") do
               expect(page).to have_content(non_default_tab_title)
+              expect(page.find('.js-insights-dropdown')).to have_text non_default_tab_title
             end
           end
         end
