@@ -9,7 +9,7 @@ value_type: number
 status: active
 instrumentation_class: HistoricalMaxUsersMetric
 time_frame: none
-data_source: database
+data_source: redis
 data_category: subscription
 distribution:
 - ee
