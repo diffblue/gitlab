@@ -123,7 +123,7 @@ describe('NamespaceStorageApp', () => {
     });
 
     it('renders the 2 projects', () => {
-      expect(wrapper.findComponent(ProjectList).props('projects').length).toBe(2);
+      expect(wrapper.findComponent(ProjectList).props('projects')).toHaveLength(2);
     });
   });
 
