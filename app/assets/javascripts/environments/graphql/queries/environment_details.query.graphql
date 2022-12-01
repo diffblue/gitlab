@@ -24,6 +24,9 @@ query getEnvironmentDetails($projectFullPath: ID!, $environmentName: String, $pa
               shortId
               message
               webUrl
+              authorGravatar
+              authorName
+              authorEmail
               author {
                 id
                 name

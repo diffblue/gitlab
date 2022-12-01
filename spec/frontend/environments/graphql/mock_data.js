@@ -819,6 +819,7 @@ export const resolvedEnvironmentDetails = {
                   tag: true,
                   job: {
                     name: 'deploy-prod',
+                    refName: 'foo-bar',
                     id: 'gid://gitlab/Ci::Build/877',
                     webPath: '/gitlab-org/pipelinestest/-/jobs/877',
                   },
@@ -829,6 +830,10 @@ export const resolvedEnvironmentDetails = {
                       'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
                     webUrl:
                       'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
                     author: null,
                   },
                   triggerer: {
@@ -840,6 +845,414 @@ export const resolvedEnvironmentDetails = {
                   finishedAt: '2022-11-29T10:47:07Z',
                 },
                 {
+                  id: 'gid://gitlab/Deployment/91',
+                  iid: '46',
+                  status: 'SUCCESS',
+                  createdAt: '2022-11-02T13:36:01Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/875',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/875',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-11-02T13:36:17Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/90',
+                  iid: '45',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-31T15:58:08Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/874',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/874',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-31T15:58:24Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/89',
+                  iid: '44',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-31T10:21:01Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/873',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/873',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-31T10:21:16Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/88',
+                  iid: '43',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-27T14:31:05Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/872',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/872',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-27T14:31:21Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/87',
+                  iid: '42',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-27T14:27:26Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/871',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/871',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-27T14:28:00Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/86',
+                  iid: '41',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-27T13:44:19Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/870',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/870',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-27T13:44:34Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/85',
+                  iid: '40',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-27T13:43:48Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/869',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/869',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-27T13:44:05Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/84',
+                  iid: '39',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-27T12:23:54Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/868',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/868',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-27T12:24:12Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/82',
+                  iid: '37',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-25T08:16:16Z',
+                  ref: '1.1.1',
+                  tag: true,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: '1.1.1',
+                    id: 'gid://gitlab/Ci::Build/866',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/866',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-25T08:16:38Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/79',
+                  iid: '34',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-17T07:46:32Z',
+                  ref: 'main',
+                  tag: false,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: 'main',
+                    id: 'gid://gitlab/Ci::Build/863',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/863',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    shortId: 'fff5bfc5',
+                    message:
+                      'This is a another super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n\n* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/fff5bfc57bac11216be3ef9307760ef925a86071',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-17T07:46:54Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/76',
+                  iid: '31',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-17T07:44:17Z',
+                  ref: 'main',
+                  tag: false,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: 'main',
+                    id: 'gid://gitlab/Ci::Build/860',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/860',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/02274a949a88c9aef68a29685d99bd9a661a7f9b',
+                    shortId: '02274a94',
+                    message:
+                      'This is a super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/02274a949a88c9aef68a29685d99bd9a661a7f9b',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-17T07:44:43Z',
+                },
+                {
+                  id: 'gid://gitlab/Deployment/72',
+                  iid: '27',
+                  status: 'SUCCESS',
+                  createdAt: '2022-10-17T07:37:52Z',
+                  ref: 'long-commit-name-test',
+                  tag: false,
+                  job: {
+                    name: 'deploy-prod',
+                    refName: 'long-commit-name-test',
+                    id: 'gid://gitlab/Ci::Build/855',
+                    webPath: '/gitlab-org/pipelinestest/-/jobs/855',
+                  },
+                  commit: {
+                    id: 'gid://gitlab/CommitPresenter/02274a949a88c9aef68a29685d99bd9a661a7f9b',
+                    shortId: '02274a94',
+                    message:
+                      'This is a super duper long commit message. A bunch of characters, way off, way to much. What are you doing? Forgo all hope, mortal. This is the longest commit message you possible can think of\n',
+                    webUrl:
+                      'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/02274a949a88c9aef68a29685d99bd9a661a7f9b',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/91811aee1dec1b2655fa56f894e9e7c9?s=80&d=identicon',
+                    authorName: 'Andrei Zubov',
+                    authorEmail: 'azubov@gitlab.com',
+                    author: null,
+                  },
+                  triggerer: {
+                    id: 'gid://gitlab/User/1',
+                    webUrl: 'http://gdk.test:3000/root',
+                    name: 'Administrator',
+                    avatarUrl: '/uploads/-/system/user/avatar/1/avatar.png',
+                  },
+                  finishedAt: '2022-10-17T07:38:17Z',
+                },
+                {
                   id: 'gid://gitlab/Deployment/64',
                   iid: '19',
                   status: 'CANCELED',
@@ -848,6 +1261,7 @@ export const resolvedEnvironmentDetails = {
                   tag: false,
                   job: {
                     name: 'rspec:windows 2 3',
+                    refName: 'master',
                     id: 'gid://gitlab/Ci::Build/9',
                     webPath: '/jashkenas/Underscore/-/jobs/9',
                   },
@@ -857,6 +1271,10 @@ export const resolvedEnvironmentDetails = {
                     message: 'Update foobar.md',
                     webUrl:
                       'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/041ea9527f351eb15fcdea6b072b5a6f1fd4d54a',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
+                    authorName: 'Administrator',
+                    authorEmail: 'admin@example.com',
                     author: {
                       id: 'gid://gitlab/User/1',
                       name: 'Administrator',
@@ -882,6 +1300,7 @@ export const resolvedEnvironmentDetails = {
                   tag: false,
                   job: {
                     name: 'rspec:linux 2 3',
+                    refName: 'master',
                     id: 'gid://gitlab/Ci::Build/5',
                     webPath: '/jashkenas/Underscore/-/jobs/5',
                   },
@@ -891,6 +1310,10 @@ export const resolvedEnvironmentDetails = {
                     message: 'Update .gitlab-ci.yml file',
                     webUrl:
                       'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/0cb48dd5deddb7632fd7c3defb16075fc6c3ca74',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
+                    authorName: 'Administrator',
+                    authorEmail: 'admin@example.com',
                     author: {
                       id: 'gid://gitlab/User/1',
                       name: 'Administrator',
@@ -916,6 +1339,7 @@ export const resolvedEnvironmentDetails = {
                   tag: false,
                   job: {
                     name: 'build:osx',
+                    refName: 'master',
                     id: 'gid://gitlab/Ci::Build/2',
                     webPath: '/jashkenas/Underscore/-/jobs/2',
                   },
@@ -925,6 +1349,10 @@ export const resolvedEnvironmentDetails = {
                     message: 'Update .gitlab-ci.yml file',
                     webUrl:
                       'http://gdk.test:3000/gitlab-org/pipelinestest/-/commit/0cb48dd5deddb7632fd7c3defb16075fc6c3ca74',
+                    authorGravatar:
+                      'https://www.gravatar.com/avatar/e64c7d89f26bd1972efa854d13d7dd61?s=80&d=identicon',
+                    authorName: 'Administrator',
+                    authorEmail: 'admin@example.com',
                     author: {
                       id: 'gid://gitlab/User/1',
                       name: 'Administrator',

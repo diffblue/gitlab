@@ -9,42 +9,14 @@ import {
   GlBadge,
   GlLoadingIcon,
 } from '@gitlab/ui';
-import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import Commit from '~/vue_shared/components/commit.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
 import { __ } from '~/locale';
 import environmentDetailsQuery from '../graphql/queries/environment_details.query.graphql';
+import { convertToDeploymentTableRow } from '../helpers/deployment_data_transformation_helper';
 import DeploymentStatusBadge from './deployment_status_badge.vue';
 
 const ENVIRONMENT_DETAILS_PAGE_SIZE = 20;
-
-const convertToDeploymentTableRow = (deploymentNode) => {
-  return {
-    status: deploymentNode.status.toLowerCase(),
-    id: deploymentNode.iid,
-    triggerer: deploymentNode.triggerer,
-    commit: {
-      message: deploymentNode.commit.message,
-      webUrl: deploymentNode.commit.webUrl,
-      shortId: deploymentNode.commit.shortId,
-      isTag: deploymentNode.tag,
-      commitRef: {
-        name: deploymentNode.ref,
-      },
-      author: deploymentNode.commit.author && {
-        username: deploymentNode.commit.author.name,
-        path: deploymentNode.commit.author.webUrl,
-        avatar_url: deploymentNode.commit.author.avatarUrl,
-      },
-    },
-    job: deploymentNode.job && {
-      webPath: deploymentNode.job.webPath,
-      label: `${deploymentNode.job.name} (#${getIdFromGraphQLId(deploymentNode.job.id)})`,
-    },
-    created: deploymentNode.createdAt,
-    deployed: deploymentNode.finishedAt,
-  };
-};
 
 export default {
   components: {
@@ -166,15 +138,7 @@ export default {
       </template>
       <template #cell(commit)="{ item }">
         <div class="gl-display-flex gl-justify-content-end gl-lg-justify-content-start">
-          <commit
-            class="gl-max-w-34"
-            :tag="item.commit.isTag"
-            :commit-ref="item.commit.commitRef"
-            :short-sha="item.commit.shortId"
-            :commit-url="item.commit.webUrl"
-            :title="item.commit.message"
-            :author="item.commit.author"
-          />
+          <commit class="gl-max-w-34" v-bind="item.commit" />
         </div>
       </template>
       <template #cell(job)="{ item }">
