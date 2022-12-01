@@ -240,7 +240,7 @@
                 - processed_documents = subtask.documents_count_target
                 %p= _('Expected documents: %{expected_documents}') % { expected_documents: expected_documents }
                 - if processed_documents && expected_documents
-                  - percentage = ((processed_documents / expected_documents.to_f) * 100).round(2)
+                  - percentage = expected_documents > 0 ? ((processed_documents / expected_documents.to_f) * 100).round(2) : 100
                   %p= _('Documents reindexed: %{processed_documents} (%{percentage}%%)') % { processed_documents: processed_documents, percentage: percentage }
                   .progress
                     .progress-bar{ "aria-valuemax" => "100", "aria-valuemin" => "0", "aria-valuenow" => percentage, :role => "progressbar", :style => "width: #{percentage}%" }
