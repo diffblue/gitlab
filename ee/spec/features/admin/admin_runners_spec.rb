@@ -17,7 +17,7 @@ RSpec.describe "Admin Runners", feature_category: :runner do
 
   describe "Admin Runners page", :js do
     context "with a GitLab version and runner releases" do
-      let(:runner) { create(:ci_runner, :instance, version: runner_version) }
+      let!(:runner) { create(:ci_runner, :instance, version: runner_version) }
 
       before do
         stub_runner_releases(available_runner_releases, gitlab_version: '15.1.0')
