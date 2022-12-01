@@ -228,6 +228,7 @@ RSpec.describe Admin::CredentialsController, type: :request do
               allow(Ability).to receive(:allowed?).with(admin, :log_in, :global) { true }
               allow(Ability).to receive(:allowed?).with(admin, :revoke_token, personal_access_token) { false }
               allow(Ability).to receive(:allowed?).with(admin, :update_name, admin).and_call_original
+              allow(Ability).to receive(:allowed?).with(admin, :admin_all_resources, :global).and_call_original
             end
 
             let(:token_id) { personal_access_token.id }
