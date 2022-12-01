@@ -29353,6 +29353,9 @@ msgstr ""
 msgid "PackageRegistry|published by %{author}"
 msgstr ""
 
+msgid "Packages"
+msgstr ""
+
 msgid "Packages and registries"
 msgstr ""
 
@@ -43852,6 +43855,9 @@ msgstr ""
 msgid "Uploading..."
 msgstr ""
 
+msgid "Uploads"
+msgstr ""
+
 msgid "Upstream"
 msgstr ""
 
@@ -43951,9 +43957,6 @@ msgstr ""
 msgid "UsageQuota|Increase storage temporarily"
 msgstr ""
 
-msgid "UsageQuota|LFS"
-msgstr ""
-
 msgid "UsageQuota|LFS storage"
 msgstr ""
 
@@ -43988,9 +43991,6 @@ msgid "UsageQuota|Pipeline artifacts and job artifacts, created with CI/CD."
 msgstr ""
 
 msgid "UsageQuota|Pipelines"
-msgstr ""
-
-msgid "UsageQuota|Project"
 msgstr ""
 
 msgid "UsageQuota|Purchase more storage"
@@ -44078,9 +44078,6 @@ msgid "UsageQuota|This namespace has no projects which used shared runners in th
 msgstr ""
 
 msgid "UsageQuota|This table omits projects that used 0 CI/CD minutes or 0 shared runners duration"
-msgstr ""
-
-msgid "UsageQuota|Total"
 msgstr ""
 
 msgid "UsageQuota|Total excess storage used"

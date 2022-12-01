@@ -1,6 +1,6 @@
 <script>
 import { GlTable, GlLink } from '@gitlab/ui';
-import { s__ } from '~/locale';
+import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 import { namespaceContainerRegistryPopoverContent } from '../constants';
 import NumberToHumanSize from './number_to_human_size.vue';
@@ -41,19 +41,16 @@ export default {
     },
   },
   fields: [
-    { key: 'name', label: s__('UsageQuota|Project') },
-    { key: 'storage', label: s__('UsageQuota|Total') },
-    { key: 'repository', label: s__('UsageQuota|Repository') },
-    { key: 'uploads', label: s__('UsageQuota|Uploads') },
-    { key: 'snippets', label: s__('UsageQuota|Snippets') },
-    { key: 'buildArtifacts', label: s__('UsageQuota|Artifacts') },
-    {
-      key: 'containerRegistry',
-      label: s__('UsageQuota|Container Registry'),
-    },
-    { key: 'lfsObjects', label: s__('UsageQuota|LFS') },
-    { key: 'packages', label: s__('UsageQuota|Packages') },
-    { key: 'wiki', label: s__('UsageQuota|Wiki') },
+    { key: 'name', label: __('Project') },
+    { key: 'storage', label: __('Total') },
+    { key: 'repository', label: __('Repository') },
+    { key: 'uploads', label: __('Uploads') },
+    { key: 'snippets', label: __('Snippets') },
+    { key: 'buildArtifacts', label: __('Artifacts') },
+    { key: 'containerRegistry', label: __('Container Registry') },
+    { key: 'lfsObjects', label: __('LFS') },
+    { key: 'packages', label: __('Packages') },
+    { key: 'wiki', label: __('Wiki') },
   ].map((f) => ({
     ...f,
     tdClass: 'gl-px-3!',
