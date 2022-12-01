@@ -10,7 +10,8 @@ module Integrations
     include ApplicationWorker
 
     INTERACTIONS = {
-      'view_closed' => SlackInteractions::IncidentManagement::IncidentModalClosedService
+      'view_closed' => SlackInteractions::IncidentManagement::IncidentModalClosedService,
+      'view_submission' => SlackInteractions::IncidentManagement::IncidentModalSubmitService
     }.freeze
 
     feature_category :integrations
