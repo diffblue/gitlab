@@ -242,7 +242,7 @@ RSpec.describe ApprovalRules::UpdateService do
           end
 
           it_behaves_like 'sends correct event type in audit event stream' do
-            let_it_be(:event_type) { 'update_aproval_rules' }
+            let_it_be(:event_type) { 'update_approval_rules' }
             subject { described_class.new(approval_rule, user, approvals_required: 1).execute }
           end
 
