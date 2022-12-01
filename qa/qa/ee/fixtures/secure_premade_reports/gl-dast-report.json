@@ -23,696 +23,881 @@
     "start_time": "2022-02-09T15:48:17",
     "status": "success",
     "type": "dast",
-    "scanned_resources": [{
-      "method": "POST",
-      "url": "http://target:7777/api/users",
-      "type": "url"
-    }]
+    "scanned_resources": [
+      {
+        "method": "POST",
+        "url": "http://target:7777/api/users",
+        "type": "url"
+      }
+    ]
   },
   "schema": "https://gitlab.com/gitlab-org/security-products/security-report-schemas/-/blob/25c8ff885e9cd16e54dc3fc3f62aa72e71f098fe/dist/dast-report-format.json",
-  "version": "14.1.1",
-  "vulnerabilities": [{
-    "id": "4e3b26c7-0b64-4c47-9d17-8572f7cd948e",
-    "category": "DAST API",
-    "name": "Cleartext Authentication",
-    "message": "Cleartext Authentication via POST target:7777/api/users",
-    "description": "Authentication credentials are transported via unencrypted channel (HTTP).  This exposes the transmitted credentials to any attacker who can monitor (sniff) the network traffic during transmition.  Sensitive information such as credentials should always be transmitted via encrypted channels such as HTTPS.\n\n\n",
-    "cve": "bucket:check:Cleartext Authentication:check_arg::assert:Cleartext Authentication",
-    "severity": "High",
-    "confidence": "Unknown",
-    "scanner": {
-      "id": "gitlab-api-security",
-      "name": "GitLab API Security"
-    },
-    "identifiers": [{
-      "type": "ApiSecurityCheck",
+  "version": "15.0.0",
+  "vulnerabilities": [
+    {
+      "id": "4e3b26c7-0b64-4c47-9d17-8572f7cd948e",
+      "category": "DAST API",
       "name": "Cleartext Authentication",
-      "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
-      "value": "bucket:check:Cleartext Authentication:check_arg::assert:Cleartext Authentication"
-    }],
-    "evidence": {
-      "source": {
-        "id": "assert:Cleartext Authentication",
-        "name": "Cleartext Authentication"
+      "message": "Cleartext Authentication via POST target:7777/api/users",
+      "description": "Authentication credentials are transported via unencrypted channel (HTTP).  This exposes the transmitted credentials to any attacker who can monitor (sniff) the network traffic during transmition.  Sensitive information such as credentials should always be transmitted via encrypted channels such as HTTPS.\n\n\n",
+      "cve": "bucket:check:Cleartext Authentication:check_arg::assert:Cleartext Authentication",
+      "severity": "High",
+      "confidence": "Unknown",
+      "scanner": {
+        "id": "gitlab-api-security",
+        "name": "GitLab API Security"
       },
-      "summary": "An API token was sent via an unencrypted channel (HTTP).\n\nOperation: POST /api/users\nAPI Token: Authorization\nAPI Token Value: Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3\n\n\n",
-      "request": {
-        "headers": [{
-          "name": "Authorization",
-          "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-        }, {
-          "name": "Accept",
-          "value": "application/json"
-        }, {
-          "name": "Content-Type",
-          "value": "application/json"
-        }, {
-          "name": "Host",
-          "value": "target:7777"
-        }, {
-          "name": "Connection",
-          "value": "keep-alive"
-        }, {
-          "name": "Via",
-          "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-        }, {
-          "name": "content-length",
-          "value": "62"
-        }],
-        "method": "POST",
-        "url": "http://target:7777/api/users",
-        "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
-      },
-      "response": {
-        "headers": [{
-          "name": "Server",
-          "value": "TwistedWeb/22.1.0"
-        }, {
-          "name": "Date",
-          "value": "Wed, 09 Feb 2022 15:48:18 GMT"
-        }, {
-          "name": "Content-Type",
-          "value": "application/json"
-        }, {
-          "name": "Content-Length",
-          "value": "15"
-        }, {
-          "name": "X-Powered-By",
-          "value": "PHP/7.0.11"
-        }, {
-          "name": "Access-Control-Allow-Origin",
-          "value": "*"
-        }],
-        "reason_phrase": "CREATED",
-        "status_code": 201,
-        "body": "{\"user_id\":2}"
-      },
-      "supporting_messages": [{
-        "name": "Original",
-        "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
-          "method": "POST",
-          "url": "http://target:7777/api/users",
-          "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+      "identifiers": [
+        {
+          "type": "ApiSecurityCheck",
+          "name": "Cleartext Authentication",
+          "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
+          "value": "bucket:check:Cleartext Authentication:check_arg::assert:Cleartext Authentication"
         }
-      }, {
-        "name": "Recorded",
+      ],
+      "evidence": {
+        "source": {
+          "id": "assert:Cleartext Authentication",
+          "name": "Cleartext Authentication"
+        },
+        "summary": "An API token was sent via an unencrypted channel (HTTP).\n\nOperation: POST /api/users\nAPI Token: Authorization\nAPI Token Value: Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3\n\n\n",
         "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Host",
+              "value": "target:7777"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Via",
+              "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+            },
+            {
+              "name": "content-length",
+              "value": "62"
+            }
+          ],
           "method": "POST",
           "url": "http://target:7777/api/users",
           "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
         },
         "response": {
-          "headers": [{
-            "name": "Server",
-            "value": "TwistedWeb/22.1.0"
-          }, {
-            "name": "Date",
-            "value": "Wed, 09 Feb 2022 15:48:18 GMT"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Content-Length",
-            "value": "15"
-          }, {
-            "name": "X-Powered-By",
-            "value": "PHP/7.0.11"
-          }, {
-            "name": "Access-Control-Allow-Origin",
-            "value": "*"
-          }],
+          "headers": [
+            {
+              "name": "Server",
+              "value": "TwistedWeb/22.1.0"
+            },
+            {
+              "name": "Date",
+              "value": "Wed, 09 Feb 2022 15:48:18 GMT"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Length",
+              "value": "15"
+            },
+            {
+              "name": "X-Powered-By",
+              "value": "PHP/7.0.11"
+            },
+            {
+              "name": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ],
           "reason_phrase": "CREATED",
           "status_code": 201,
           "body": "{\"user_id\":2}"
+        },
+        "supporting_messages": [
+          {
+            "name": "Original",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            }
+          },
+          {
+            "name": "Recorded",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            },
+            "response": {
+              "headers": [
+                {
+                  "name": "Server",
+                  "value": "TwistedWeb/22.1.0"
+                },
+                {
+                  "name": "Date",
+                  "value": "Wed, 09 Feb 2022 15:48:18 GMT"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Length",
+                  "value": "15"
+                },
+                {
+                  "name": "X-Powered-By",
+                  "value": "PHP/7.0.11"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "reason_phrase": "CREATED",
+              "status_code": 201,
+              "body": "{\"user_id\":2}"
+            }
+          }
+        ]
+      },
+      "location": {
+        "hostname": "http://target:7777",
+        "method": "POST",
+        "path": "/api/users"
+      },
+      "assets": [
+        {
+          "type": "postman",
+          "name": "Postman Collection",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_4e3b26c7-0b64-4c47-9d17-8572f7cd948e.postman_collection.json?inline=false"
+        },
+        {
+          "type": "http_session",
+          "name": "HTTP Messages",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_4e3b26c7-0b64-4c47-9d17-8572f7cd948e_messages.zip?inline=false"
         }
-      }]
+      ],
+      "discovered_at": "2022-02-09T15:48:18.259"
     },
-    "location": {
-      "hostname": "http://target:7777",
-      "method": "POST",
-      "path": "/api/users"
-    },
-    "assets": [{
-      "type": "postman",
-      "name": "Postman Collection",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_4e3b26c7-0b64-4c47-9d17-8572f7cd948e.postman_collection.json?inline=false"
-    }, {
-      "type": "http_session",
-      "name": "HTTP Messages",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_4e3b26c7-0b64-4c47-9d17-8572f7cd948e_messages.zip?inline=false"
-    }],
-    "discovered_at": "2022-02-09T15:48:18.259"
-  }, {
-    "id": "a93fafa1-c0b5-47d5-b147-0353b91246bf",
-    "category": "DAST API",
-    "name": "Framework Debug Mode",
-    "message": "Flask debug mode identified on target:7777",
-    "description": "The Flask framework was identified with debug mode enabled.  This allows an attacker the ability to download any file on the file system and other capabilities.  This is a high severity issue that is easy for an attacker to exploit.\n\n\n",
-    "cve": "bucket:check:Framework Debug Mode:check_arg::assert:Framework Debug Mode",
-    "severity": "High",
-    "confidence": "Unknown",
-    "scanner": {
-      "id": "gitlab-api-security",
-      "name": "GitLab API Security"
-    },
-    "identifiers": [{
-      "type": "ApiSecurityCheck",
+    {
+      "id": "a93fafa1-c0b5-47d5-b147-0353b91246bf",
+      "category": "DAST API",
       "name": "Framework Debug Mode",
-      "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
-      "value": "bucket:check:Framework Debug Mode:check_arg::assert:Framework Debug Mode"
-    }],
-    "evidence": {
-      "source": {
-        "id": "assert:Framework Debug Mode",
-        "name": "Framework Debug Mode"
+      "message": "Flask debug mode identified on target:7777",
+      "description": "The Flask framework was identified with debug mode enabled.  This allows an attacker the ability to download any file on the file system and other capabilities.  This is a high severity issue that is easy for an attacker to exploit.\n\n\n",
+      "cve": "bucket:check:Framework Debug Mode:check_arg::assert:Framework Debug Mode",
+      "severity": "High",
+      "confidence": "Unknown",
+      "scanner": {
+        "id": "gitlab-api-security",
+        "name": "GitLab API Security"
       },
-      "summary": "A request was made to download a file via the Flask debug service. The response included the file and is unlikely a false positive.\n\n\n",
-      "request": {
-        "headers": [{
-          "name": "Authorization",
-          "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-        }, {
-          "name": "Accept",
-          "value": "application/json"
-        }, {
-          "name": "Host",
-          "value": "target:7777"
-        }, {
-          "name": "Connection",
-          "value": "keep-alive"
-        }, {
-          "name": "Via",
-          "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-        }],
+      "identifiers": [
+        {
+          "type": "ApiSecurityCheck",
+          "name": "Framework Debug Mode",
+          "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
+          "value": "bucket:check:Framework Debug Mode:check_arg::assert:Framework Debug Mode"
+        }
+      ],
+      "evidence": {
+        "source": {
+          "id": "assert:Framework Debug Mode",
+          "name": "Framework Debug Mode"
+        },
+        "summary": "A request was made to download a file via the Flask debug service. The response included the file and is unlikely a false positive.\n\n\n",
+        "request": {
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Host",
+              "value": "target:7777"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Via",
+              "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+            }
+          ],
+          "method": "GET",
+          "url": "http://target:7777/?__debugger__=yes&cmd=resource&f=style.css",
+          "body": ""
+        },
+        "response": {
+          "headers": [
+            {
+              "name": "Server",
+              "value": "TwistedWeb/22.1.0"
+            },
+            {
+              "name": "Date",
+              "value": "Wed, 09 Feb 2022 15:48:19 GMT"
+            },
+            {
+              "name": "Content-Type",
+              "value": "text/css; charset=utf-8"
+            },
+            {
+              "name": "Content-Length",
+              "value": "6704"
+            }
+          ],
+          "reason_phrase": "OK",
+          "status_code": 200,
+          "body": "@font-face {\n  font-family: 'Ubuntu';\n  font-style: normal;\n  font-weight: normal;\n  src: local('Ubuntu'), local('Ubuntu-Regular'),\n    url('?__debugger__=yes&cmd=resource&f=ubuntu.ttf') format('truetype');\n}\n\nbody, input  { font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva',\n               'Verdana', sans-serif; color: #000; text-align: center;\n               margin: 1em; padding: 0; font-size: 15px; }\nh1, h2, h3   { font-family: 'Ubuntu', 'Lucida Grande', 'Lucida Sans Unicode',\n               'Geneva', 'Verdana', sans-serif; font-weight: normal; }\n\ninput        { background-color: #fff; margin: 0; text-align: left;\n               outline: none !important; }\ninput[type=\"submit\"] { padding: 3px 6px; }\na            { color: #11557C; }\na:hover      { color: #177199; }\npre, code,\ntextarea     { font-family: 'Consolas', 'Monaco', 'Bitstream Vera Sans Mono',\n               monospace; font-size: 14px; }\n\ndiv.debugger { text-align: left; padding: 12px; margin: auto;\n               background-color: white; }\nh1           { font-size: 36px; margin: 0 0 0.3em 0; }\ndiv.detail { cursor: pointer; }\ndiv.detail p { margin: 0 0 8px 13px; font-size: 14px; white-space: pre-wrap;\n               font-family: monospace; }\ndiv.explanation { margin: 20px 13px; font-size: 15px; color: #555; }\ndiv.footer   { font-size: 13px; text-align: right; margin: 30px 0;\n               color: #86989B; }\n\nh2           { font-size: 16px; margin: 1.3em 0 0.0 0; padding: 9px;\n               background-color: #11557C; color: white; }\nh2 em, h3 em { font-style: normal; color: #A5D6D9; font-weight: normal; }\n\ndiv.traceback, div.plain { border: 1px solid #ddd; margin: 0 0 1em 0; padding: 10px; }\ndiv.plain p      { margin: 0; }\ndiv.plain textarea,\ndiv.plain pre { margin: 10px 0 0 0; padding: 4px;\n                background-color: #E8EFF0; border: 1px solid #D3E7E9; }\ndiv.plain textarea { width: 99%; height: 300px; }\ndiv.traceback h3 { font-size: 1em; margin: 0 0 0.8em 0; }\ndiv.traceback ul { list-st\n---- TRUNCATED(Total Length: 6704 characters) ----"
+        },
+        "supporting_messages": [
+          {
+            "name": "Original",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            }
+          },
+          {
+            "name": "Recorded",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            },
+            "response": {
+              "headers": [
+                {
+                  "name": "Server",
+                  "value": "TwistedWeb/22.1.0"
+                },
+                {
+                  "name": "Date",
+                  "value": "Wed, 09 Feb 2022 15:48:18 GMT"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Length",
+                  "value": "15"
+                },
+                {
+                  "name": "X-Powered-By",
+                  "value": "PHP/7.0.11"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "reason_phrase": "CREATED",
+              "status_code": 201,
+              "body": "{\"user_id\":2}"
+            }
+          }
+        ]
+      },
+      "location": {
+        "hostname": "http://target:7777",
         "method": "GET",
-        "url": "http://target:7777/?__debugger__=yes&cmd=resource&f=style.css",
-        "body": ""
+        "path": "/"
       },
-      "response": {
-        "headers": [{
-          "name": "Server",
-          "value": "TwistedWeb/22.1.0"
-        }, {
-          "name": "Date",
-          "value": "Wed, 09 Feb 2022 15:48:19 GMT"
-        }, {
-          "name": "Content-Type",
-          "value": "text/css; charset=utf-8"
-        }, {
-          "name": "Content-Length",
-          "value": "6704"
-        }],
-        "reason_phrase": "OK",
-        "status_code": 200,
-        "body": "@font-face {\n  font-family: 'Ubuntu';\n  font-style: normal;\n  font-weight: normal;\n  src: local('Ubuntu'), local('Ubuntu-Regular'),\n    url('?__debugger__=yes&cmd=resource&f=ubuntu.ttf') format('truetype');\n}\n\nbody, input  { font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Geneva',\n               'Verdana', sans-serif; color: #000; text-align: center;\n               margin: 1em; padding: 0; font-size: 15px; }\nh1, h2, h3   { font-family: 'Ubuntu', 'Lucida Grande', 'Lucida Sans Unicode',\n               'Geneva', 'Verdana', sans-serif; font-weight: normal; }\n\ninput        { background-color: #fff; margin: 0; text-align: left;\n               outline: none !important; }\ninput[type=\"submit\"] { padding: 3px 6px; }\na            { color: #11557C; }\na:hover      { color: #177199; }\npre, code,\ntextarea     { font-family: 'Consolas', 'Monaco', 'Bitstream Vera Sans Mono',\n               monospace; font-size: 14px; }\n\ndiv.debugger { text-align: left; padding: 12px; margin: auto;\n               background-color: white; }\nh1           { font-size: 36px; margin: 0 0 0.3em 0; }\ndiv.detail { cursor: pointer; }\ndiv.detail p { margin: 0 0 8px 13px; font-size: 14px; white-space: pre-wrap;\n               font-family: monospace; }\ndiv.explanation { margin: 20px 13px; font-size: 15px; color: #555; }\ndiv.footer   { font-size: 13px; text-align: right; margin: 30px 0;\n               color: #86989B; }\n\nh2           { font-size: 16px; margin: 1.3em 0 0.0 0; padding: 9px;\n               background-color: #11557C; color: white; }\nh2 em, h3 em { font-style: normal; color: #A5D6D9; font-weight: normal; }\n\ndiv.traceback, div.plain { border: 1px solid #ddd; margin: 0 0 1em 0; padding: 10px; }\ndiv.plain p      { margin: 0; }\ndiv.plain textarea,\ndiv.plain pre { margin: 10px 0 0 0; padding: 4px;\n                background-color: #E8EFF0; border: 1px solid #D3E7E9; }\ndiv.plain textarea { width: 99%; height: 300px; }\ndiv.traceback h3 { font-size: 1em; margin: 0 0 0.8em 0; }\ndiv.traceback ul { list-st\n---- TRUNCATED(Total Length: 6704 characters) ----"
-      },
-      "supporting_messages": [{
-        "name": "Original",
-        "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
-          "method": "POST",
-          "url": "http://target:7777/api/users",
-          "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
-        }
-      }, {
-        "name": "Recorded",
-        "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
-          "method": "POST",
-          "url": "http://target:7777/api/users",
-          "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+      "assets": [
+        {
+          "type": "postman",
+          "name": "Postman Collection",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_a93fafa1-c0b5-47d5-b147-0353b91246bf.postman_collection.json?inline=false"
         },
-        "response": {
-          "headers": [{
-            "name": "Server",
-            "value": "TwistedWeb/22.1.0"
-          }, {
-            "name": "Date",
-            "value": "Wed, 09 Feb 2022 15:48:18 GMT"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Content-Length",
-            "value": "15"
-          }, {
-            "name": "X-Powered-By",
-            "value": "PHP/7.0.11"
-          }, {
-            "name": "Access-Control-Allow-Origin",
-            "value": "*"
-          }],
-          "reason_phrase": "CREATED",
-          "status_code": 201,
-          "body": "{\"user_id\":2}"
+        {
+          "type": "http_session",
+          "name": "HTTP Messages",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_a93fafa1-c0b5-47d5-b147-0353b91246bf_messages.zip?inline=false"
         }
-      }]
+      ],
+      "discovered_at": "2022-02-09T15:48:19.041"
     },
-    "location": {
-      "hostname": "http://target:7777",
-      "method": "GET",
-      "path": "/"
-    },
-    "assets": [{
-      "type": "postman",
-      "name": "Postman Collection",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_a93fafa1-c0b5-47d5-b147-0353b91246bf.postman_collection.json?inline=false"
-    }, {
-      "type": "http_session",
-      "name": "HTTP Messages",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_a93fafa1-c0b5-47d5-b147-0353b91246bf_messages.zip?inline=false"
-    }],
-    "discovered_at": "2022-02-09T15:48:19.041"
-  }, {
-    "id": "9f2fc1e8-3d53-4b41-8663-abf8d132f2ad",
-    "category": "DAST API",
-    "name": "Authentication Token",
-    "message": "HEAD target:7777/api/users operation does not check token Authorization",
-    "description": "Operation failed to property resistrct access using an authentication token.  This allows an attacker to bypass authentication gaining access to information or even the ability to modify data.\n\n\n",
-    "cve": "bucket:param:Header: authorization:check:Authentication Token:check_arg::assert:Authentication Token",
-    "severity": "High",
-    "confidence": "Unknown",
-    "scanner": {
-      "id": "gitlab-api-security",
-      "name": "GitLab API Security"
-    },
-    "identifiers": [{
-      "type": "ApiSecurityCheck",
+    {
+      "id": "9f2fc1e8-3d53-4b41-8663-abf8d132f2ad",
+      "category": "DAST API",
       "name": "Authentication Token",
-      "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
-      "value": "bucket:param:Header: authorization:check:Authentication Token:check_arg::assert:Authentication Token"
-    }],
-    "evidence": {
-      "source": {
-        "id": "assert:Authentication Token",
-        "name": "Authentication Token"
+      "message": "HEAD target:7777/api/users operation does not check token Authorization",
+      "description": "Operation failed to property resistrct access using an authentication token.  This allows an attacker to bypass authentication gaining access to information or even the ability to modify data.\n\n\n",
+      "cve": "bucket:param:Header: authorization:check:Authentication Token:check_arg::assert:Authentication Token",
+      "severity": "High",
+      "confidence": "Unknown",
+      "scanner": {
+        "id": "gitlab-api-security",
+        "name": "GitLab API Security"
       },
-      "summary": "The authentication token Authorization was removed from request.  Additionally the method type was changed to 'HEAD'.\nAfter modification the operation returned 200 indicating an authentication bypass.\n\nToken: Authorization\nToken Parameter: authorization\nOriginal Value: Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3\n\n\n",
-      "request": {
-        "headers": [{
-          "name": "Accept",
-          "value": "application/json"
-        }, {
-          "name": "Host",
-          "value": "target:7777"
-        }, {
-          "name": "Via",
-          "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-        }, {
-          "name": "Connection",
-          "value": "close"
-        }],
+      "identifiers": [
+        {
+          "type": "ApiSecurityCheck",
+          "name": "Authentication Token",
+          "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
+          "value": "bucket:param:Header: authorization:check:Authentication Token:check_arg::assert:Authentication Token"
+        }
+      ],
+      "evidence": {
+        "source": {
+          "id": "assert:Authentication Token",
+          "name": "Authentication Token"
+        },
+        "summary": "The authentication token Authorization was removed from request.  Additionally the method type was changed to 'HEAD'.\nAfter modification the operation returned 200 indicating an authentication bypass.\n\nToken: Authorization\nToken Parameter: authorization\nOriginal Value: Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3\n\n\n",
+        "request": {
+          "headers": [
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Host",
+              "value": "target:7777"
+            },
+            {
+              "name": "Via",
+              "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+            },
+            {
+              "name": "Connection",
+              "value": "close"
+            }
+          ],
+          "method": "HEAD",
+          "url": "http://target:7777/api/users",
+          "body": ""
+        },
+        "response": {
+          "headers": [
+            {
+              "name": "Connection",
+              "value": "close"
+            },
+            {
+              "name": "Server",
+              "value": "TwistedWeb/22.1.0"
+            },
+            {
+              "name": "Date",
+              "value": "Wed, 09 Feb 2022 15:48:30 GMT"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Length",
+              "value": "177"
+            },
+            {
+              "name": "X-Powered-By",
+              "value": "PHP/7.0.11"
+            },
+            {
+              "name": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ],
+          "reason_phrase": "OK",
+          "status_code": 200,
+          "body": ""
+        },
+        "supporting_messages": [
+          {
+            "name": "Original",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            }
+          },
+          {
+            "name": "Recorded",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            },
+            "response": {
+              "headers": [
+                {
+                  "name": "Server",
+                  "value": "TwistedWeb/22.1.0"
+                },
+                {
+                  "name": "Date",
+                  "value": "Wed, 09 Feb 2022 15:48:18 GMT"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Length",
+                  "value": "15"
+                },
+                {
+                  "name": "X-Powered-By",
+                  "value": "PHP/7.0.11"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "reason_phrase": "CREATED",
+              "status_code": 201,
+              "body": "{\"user_id\":2}"
+            }
+          }
+        ]
+      },
+      "location": {
+        "hostname": "http://target:7777",
         "method": "HEAD",
-        "url": "http://target:7777/api/users",
-        "body": ""
+        "param": "Header: authorization",
+        "path": "/api/users"
       },
-      "response": {
-        "headers": [{
-          "name": "Connection",
-          "value": "close"
-        }, {
-          "name": "Server",
-          "value": "TwistedWeb/22.1.0"
-        }, {
-          "name": "Date",
-          "value": "Wed, 09 Feb 2022 15:48:30 GMT"
-        }, {
-          "name": "Content-Type",
-          "value": "application/json"
-        }, {
-          "name": "Content-Length",
-          "value": "177"
-        }, {
-          "name": "X-Powered-By",
-          "value": "PHP/7.0.11"
-        }, {
-          "name": "Access-Control-Allow-Origin",
-          "value": "*"
-        }],
-        "reason_phrase": "OK",
-        "status_code": 200,
-        "body": ""
-      },
-      "supporting_messages": [{
-        "name": "Original",
-        "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
-          "method": "POST",
-          "url": "http://target:7777/api/users",
-          "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
-        }
-      }, {
-        "name": "Recorded",
-        "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
-          "method": "POST",
-          "url": "http://target:7777/api/users",
-          "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+      "assets": [
+        {
+          "type": "postman",
+          "name": "Postman Collection",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_9f2fc1e8-3d53-4b41-8663-abf8d132f2ad.postman_collection.json?inline=false"
         },
-        "response": {
-          "headers": [{
-            "name": "Server",
-            "value": "TwistedWeb/22.1.0"
-          }, {
-            "name": "Date",
-            "value": "Wed, 09 Feb 2022 15:48:18 GMT"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Content-Length",
-            "value": "15"
-          }, {
-            "name": "X-Powered-By",
-            "value": "PHP/7.0.11"
-          }, {
-            "name": "Access-Control-Allow-Origin",
-            "value": "*"
-          }],
-          "reason_phrase": "CREATED",
-          "status_code": 201,
-          "body": "{\"user_id\":2}"
+        {
+          "type": "http_session",
+          "name": "HTTP Messages",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_9f2fc1e8-3d53-4b41-8663-abf8d132f2ad_messages.zip?inline=false"
         }
-      }]
+      ],
+      "discovered_at": "2022-02-09T15:48:30.354"
     },
-    "location": {
-      "hostname": "http://target:7777",
-      "method": "HEAD",
-      "param": "Header: authorization",
-      "path": "/api/users"
-    },
-    "assets": [{
-      "type": "postman",
-      "name": "Postman Collection",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_9f2fc1e8-3d53-4b41-8663-abf8d132f2ad.postman_collection.json?inline=false"
-    }, {
-      "type": "http_session",
-      "name": "HTTP Messages",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_9f2fc1e8-3d53-4b41-8663-abf8d132f2ad_messages.zip?inline=false"
-    }],
-    "discovered_at": "2022-02-09T15:48:30.354"
-  }, {
-    "id": "44a784df-2237-4095-9d6d-03da9e09f25f",
-    "category": "DAST API",
-    "name": "Application Information Disclosure",
-    "message": "Version Number Exposed via 'POST target:7777/api/users'",
-    "description": "Application Information Leakage is an application weakness where an application reveals sensitive data, such as technical details of the web application or environment. Application data may be used by an attacker to exploit the target web application, its hosting network, or its users. Therefore, leakage of sensitive data should be limited or prevented whenever possible. Information Leakage, in its most common form, is the result of one or more of the following conditions: A failure to scrub out HTML/Script comments containing sensitive information or improper application or server configurations.\n\nFailure to scrub HTML/Script comments prior to a push to the production environment can result in the leak of sensitive, contextual, information such as server directory structure, SQL query structure, and internal network information. Often a developer will leave comments within the HTML and/or script code to help facilitate the debugging or integration process during the pre-production phase. Although there is no harm in allowing developers to include inline comments within the content they develop, these comments should all be removed prior to the content's public release.\n\nSoftware version numbers and verbose error messages (such as ASP.NET version numbers) are examples of improper server configurations. This information is useful to an attacker by providing detailed insight as to the framework, languages, or pre-built functions being utilized by a web application. Most default server configurations provide software version numbers and verbose error messages for debugging and troubleshooting purposes. Configuration changes can be made to disable these features, preventing the display of this information.\n\n\n",
-    "cve": "bucket:check:Application Information Disclosure:check_arg::assert:Response Body Analysis",
-    "severity": "Medium",
-    "confidence": "Unknown",
-    "scanner": {
-      "id": "gitlab-api-security",
-      "name": "GitLab API Security"
-    },
-    "identifiers": [{
-      "type": "ApiSecurityCheck",
+    {
+      "id": "44a784df-2237-4095-9d6d-03da9e09f25f",
+      "category": "DAST API",
       "name": "Application Information Disclosure",
-      "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
-      "value": "bucket:check:Application Information Disclosure:check_arg::assert:Response Body Analysis"
-    }],
-    "evidence": {
-      "source": {
-        "id": "assert:Response Body Analysis",
-        "name": "Response Body Analysis"
+      "message": "Version Number Exposed via 'POST target:7777/api/users'",
+      "description": "Application Information Leakage is an application weakness where an application reveals sensitive data, such as technical details of the web application or environment. Application data may be used by an attacker to exploit the target web application, its hosting network, or its users. Therefore, leakage of sensitive data should be limited or prevented whenever possible. Information Leakage, in its most common form, is the result of one or more of the following conditions: A failure to scrub out HTML/Script comments containing sensitive information or improper application or server configurations.\n\nFailure to scrub HTML/Script comments prior to a push to the production environment can result in the leak of sensitive, contextual, information such as server directory structure, SQL query structure, and internal network information. Often a developer will leave comments within the HTML and/or script code to help facilitate the debugging or integration process during the pre-production phase. Although there is no harm in allowing developers to include inline comments within the content they develop, these comments should all be removed prior to the content's public release.\n\nSoftware version numbers and verbose error messages (such as ASP.NET version numbers) are examples of improper server configurations. This information is useful to an attacker by providing detailed insight as to the framework, languages, or pre-built functions being utilized by a web application. Most default server configurations provide software version numbers and verbose error messages for debugging and troubleshooting purposes. Configuration changes can be made to disable these features, preventing the display of this information.\n\n\n",
+      "cve": "bucket:check:Application Information Disclosure:check_arg::assert:Response Body Analysis",
+      "severity": "Medium",
+      "confidence": "Unknown",
+      "scanner": {
+        "id": "gitlab-api-security",
+        "name": "GitLab API Security"
       },
-      "summary": "During testing a Version Number type value was identified in the HTTP response message. The value is a Generic version number message..\n\nInformation leaked:\n\nVersion: 1.1.1\n\n\n",
-      "request": {
-        "headers": [{
-          "name": "Authorization",
-          "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-        }, {
-          "name": "Accept",
-          "value": "application/json"
-        }, {
-          "name": "Content-Type",
-          "value": "application/json"
-        }, {
-          "name": "Host",
-          "value": "target:7777"
-        }, {
-          "name": "Connection",
-          "value": "keep-alive"
-        }, {
-          "name": "Via",
-          "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-        }, {
-          "name": "content-length",
-          "value": "60"
-        }],
-        "method": "POST",
-        "url": "http://target:7777/api/users",
-        "body": "{\"user\":\"dd\",\"first\":\"\\\"\",\"last\":\"smith\",\"password\":\"hello\"}"
-      },
-      "response": {
-        "headers": [{
-          "name": "Server",
-          "value": "TwistedWeb/22.1.0"
-        }, {
-          "name": "Date",
-          "value": "Wed, 09 Feb 2022 15:48:50 GMT"
-        }, {
-          "name": "Content-Type",
-          "value": "application/json"
-        }, {
-          "name": "Content-Length",
-          "value": "12668"
-        }, {
-          "name": "X-Powered-By",
-          "value": "PHP/7.0.11"
-        }, {
-          "name": "Access-Control-Allow-Origin",
-          "value": "*"
-        }],
-        "reason_phrase": "OK",
-        "status_code": 200,
-        "body": "\"Blah blah blah. Version: 1.1.1 Other other\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdal\n---- TRUNCATED(Total Length: 12667 characters) ----"
-      },
-      "supporting_messages": [{
-        "name": "Original",
-        "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
-          "method": "POST",
-          "url": "http://target:7777/api/users",
-          "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+      "identifiers": [
+        {
+          "type": "ApiSecurityCheck",
+          "name": "Application Information Disclosure",
+          "url": "https://docs.gitlab.com/ee/user/application_security/dast_api/",
+          "value": "bucket:check:Application Information Disclosure:check_arg::assert:Response Body Analysis"
         }
-      }, {
-        "name": "Recorded",
+      ],
+      "evidence": {
+        "source": {
+          "id": "assert:Response Body Analysis",
+          "name": "Response Body Analysis"
+        },
+        "summary": "During testing a Version Number type value was identified in the HTTP response message. The value is a Generic version number message..\n\nInformation leaked:\n\nVersion: 1.1.1\n\n\n",
         "request": {
-          "headers": [{
-            "name": "Authorization",
-            "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
-          }, {
-            "name": "Accept",
-            "value": "application/json"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Host",
-            "value": "target:7777"
-          }, {
-            "name": "Connection",
-            "value": "keep-alive"
-          }, {
-            "name": "Via",
-            "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
-          }, {
-            "name": "content-length",
-            "value": "62"
-          }],
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+            },
+            {
+              "name": "Accept",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Host",
+              "value": "target:7777"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Via",
+              "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+            },
+            {
+              "name": "content-length",
+              "value": "60"
+            }
+          ],
           "method": "POST",
           "url": "http://target:7777/api/users",
-          "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+          "body": "{\"user\":\"dd\",\"first\":\"\\\"\",\"last\":\"smith\",\"password\":\"hello\"}"
         },
         "response": {
-          "headers": [{
-            "name": "Server",
-            "value": "TwistedWeb/22.1.0"
-          }, {
-            "name": "Date",
-            "value": "Wed, 09 Feb 2022 15:48:18 GMT"
-          }, {
-            "name": "Content-Type",
-            "value": "application/json"
-          }, {
-            "name": "Content-Length",
-            "value": "15"
-          }, {
-            "name": "X-Powered-By",
-            "value": "PHP/7.0.11"
-          }, {
-            "name": "Access-Control-Allow-Origin",
-            "value": "*"
-          }],
-          "reason_phrase": "CREATED",
-          "status_code": 201,
-          "body": "{\"user_id\":2}"
+          "headers": [
+            {
+              "name": "Server",
+              "value": "TwistedWeb/22.1.0"
+            },
+            {
+              "name": "Date",
+              "value": "Wed, 09 Feb 2022 15:48:50 GMT"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Content-Length",
+              "value": "12668"
+            },
+            {
+              "name": "X-Powered-By",
+              "value": "PHP/7.0.11"
+            },
+            {
+              "name": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ],
+          "reason_phrase": "OK",
+          "status_code": 200,
+          "body": "\"Blah blah blah. Version: 1.1.1 Other other\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdalskdj\naskjdlaskjdlaksjdlaksjdlaksjdlakjsdlakjsdlkjasldkjalskdjalksjdal\n---- TRUNCATED(Total Length: 12667 characters) ----"
+        },
+        "supporting_messages": [
+          {
+            "name": "Original",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            }
+          },
+          {
+            "name": "Recorded",
+            "request": {
+              "headers": [
+                {
+                  "name": "Authorization",
+                  "value": "Token b5638ae7-6e77-4585-b035-7d9de2e3f6b3"
+                },
+                {
+                  "name": "Accept",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Host",
+                  "value": "target:7777"
+                },
+                {
+                  "name": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "name": "Via",
+                  "value": "HTTP/1.1 GitLabApiSecurity 1.6.202"
+                },
+                {
+                  "name": "content-length",
+                  "value": "62"
+                }
+              ],
+              "method": "POST",
+              "url": "http://target:7777/api/users",
+              "body": "{\"user\":\"dd\",\"first\":\"mike\",\"last\":\"smith\",\"password\":\"hello\"}"
+            },
+            "response": {
+              "headers": [
+                {
+                  "name": "Server",
+                  "value": "TwistedWeb/22.1.0"
+                },
+                {
+                  "name": "Date",
+                  "value": "Wed, 09 Feb 2022 15:48:18 GMT"
+                },
+                {
+                  "name": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "name": "Content-Length",
+                  "value": "15"
+                },
+                {
+                  "name": "X-Powered-By",
+                  "value": "PHP/7.0.11"
+                },
+                {
+                  "name": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ],
+              "reason_phrase": "CREATED",
+              "status_code": 201,
+              "body": "{\"user_id\":2}"
+            }
+          }
+        ]
+      },
+      "location": {
+        "hostname": "http://target:7777",
+        "method": "POST",
+        "path": "/api/users"
+      },
+      "assets": [
+        {
+          "type": "postman",
+          "name": "Postman Collection",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_44a784df-2237-4095-9d6d-03da9e09f25f.postman_collection.json?inline=false"
+        },
+        {
+          "type": "http_session",
+          "name": "HTTP Messages",
+          "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_44a784df-2237-4095-9d6d-03da9e09f25f_messages.zip?inline=false"
         }
-      }]
-    },
-    "location": {
-      "hostname": "http://target:7777",
-      "method": "POST",
-      "path": "/api/users"
-    },
-    "assets": [{
-      "type": "postman",
-      "name": "Postman Collection",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_44a784df-2237-4095-9d6d-03da9e09f25f.postman_collection.json?inline=false"
-    }, {
-      "type": "http_session",
-      "name": "HTTP Messages",
-      "url": "https://gitlab.com/gitlab-org/security-products/demos/api-dast/postman-example/-/jobs/2073995540/artifacts/file/gl-assets/vuln_44a784df-2237-4095-9d6d-03da9e09f25f_messages.zip?inline=false"
-    }],
-    "discovered_at": "2022-02-09T15:48:50.416"
-  }]
+      ],
+      "discovered_at": "2022-02-09T15:48:50.416"
+    }
+  ]
 }
