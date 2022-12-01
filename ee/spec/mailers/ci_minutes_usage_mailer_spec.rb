@@ -11,9 +11,9 @@ RSpec.describe CiMinutesUsageMailer do
   shared_examples 'mail format' do
     it { is_expected.to have_subject subject_text }
     it { is_expected.to bcc_to recipients }
-    it { is_expected.to have_body_text "#{group_path namespace}" }
+    it { is_expected.to have_body_text group_path(namespace) }
     it { is_expected.to have_body_text body_text }
-    it { is_expected.to have_body_text "#{buy_minutes_subscriptions_url(selected_group: namespace.id)}" }
+    it { is_expected.to have_body_text buy_minutes_subscriptions_url(selected_group: namespace.id) }
   end
 
   describe '#notify' do

@@ -287,7 +287,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
 
     it 'does not have N+1 per multiple references per group', :use_sql_query_cache, :aggregate_failures do
       max_count = 4
-      markdown = "#{iteration_reference}"
+      markdown = iteration_reference.to_s
 
       # warm the cache
       reference_filter(markdown)
@@ -304,7 +304,7 @@ RSpec.describe Banzai::Filter::References::IterationReferenceFilter do
     end
 
     it 'has N+1 for multiple unique group references', :use_sql_query_cache do
-      markdown = "#{iteration_reference}"
+      markdown = iteration_reference.to_s
       max_count = 4
 
       # warm the cache

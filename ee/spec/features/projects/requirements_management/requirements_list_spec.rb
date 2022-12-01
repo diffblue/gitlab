@@ -185,8 +185,8 @@ RSpec.describe 'Requirements list', :js do
 
         page.within('.requirement-form-drawer') do
           expect(page.find('.gl-drawer-header', match: :first)).to have_content("REQ-#{requirement1.iid}")
-          expect(page.find('input#issuable-title')['value']).to have_content("#{requirement1.title}")
-          expect(page.find('textarea#issuable-description')['value']).to have_content("#{requirement1.description}")
+          expect(page.find('input#issuable-title')['value']).to have_content(requirement1.title)
+          expect(page.find('textarea#issuable-description')['value']).to have_content(requirement1.description)
           expect(page.find('input[type="checkbox"]')['checked']).to eq(requirement1.last_test_report_state)
           expect(page.find('.js-requirement-save')).to have_content('Save changes')
         end

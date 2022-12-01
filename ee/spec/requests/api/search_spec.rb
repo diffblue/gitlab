@@ -137,7 +137,7 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
           project_2 = create(:project, :public, :repository, :wiki_repo, group: group, name: 'awesome project 2')
           project_2.repository.index_commits_and_blobs
           3.times do |i|
-            commit_sha = project.repository.create_file(user, "#{i}", "folder #{i}", message: "committing folder #{i}", branch_name: 'master')
+            commit_sha = project.repository.create_file(user, i.to_s, "folder #{i}", message: "committing folder #{i}", branch_name: 'master')
             project.repository.commit(commit_sha)
           end
           project.repository.index_commits_and_blobs
@@ -167,7 +167,7 @@ RSpec.describe API::Search, factory_default: :keep, quarantine: 'https://gitlab.
           project_2 = create(:project, :public, :repository, :wiki_repo, group: group, name: 'awesome project 2')
           project_2.repository.index_commits_and_blobs
           3.times do |i|
-            commit_sha = project.repository.create_file(user, "#{i}", "Issue team #{i}", message: "#{i}", branch_name: 'master')
+            commit_sha = project.repository.create_file(user, i.to_s, "Issue team #{i}", message: i.to_s, branch_name: 'master')
             project.repository.commit(commit_sha)
           end
 

@@ -63,7 +63,7 @@ RSpec.describe IncidentManagement::IssuableEscalationStatus do
   end
 
   [:acknowledge, :ignore, :resolve].each do |status_event|
-    describe "#{status_event}" do
+    describe status_event do
       subject { escalation_status.send(status_event) }
 
       it 'does not change escalations_started_at' do

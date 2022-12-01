@@ -2,7 +2,7 @@
 
 RSpec.shared_examples 'deletes all standalone indices' do
   Gitlab::Elastic::Helper::ES_SEPARATE_CLASSES.each do |class_name|
-    describe "#{class_name}" do
+    describe class_name do
       it 'removes a standalone index' do
         proxy = ::Elastic::Latest::ApplicationClassProxy.new(class_name, use_separate_indices: true)
 

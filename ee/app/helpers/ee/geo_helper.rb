@@ -77,7 +77,7 @@ module EE
                     else 'gl-text-gray-500'
                     end
 
-      content_tag(:div, class: "#{status_type}", data: { testid: 'project-status-icon' }) do
+      content_tag(:div, class: status_type, data: { testid: 'project-status-icon' }) do
         icon = geo_registry_status_icon(registry)
         text = geo_registry_status_text(registry)
 

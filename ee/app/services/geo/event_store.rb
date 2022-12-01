@@ -45,7 +45,7 @@ module Geo
       event = build_event
       event.validate!
 
-      Geo::EventLog.create!("#{self.class.event_type}" => event)
+      Geo::EventLog.create!(self.class.event_type.to_s => event)
     rescue ActiveRecord::RecordInvalid, NoMethodError => e
       log_error("#{self.class.event_type.to_s.humanize} could not be created", e)
     end

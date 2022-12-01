@@ -39,7 +39,7 @@ RSpec.describe Banzai::Filter::IssuableReferenceExpansionFilter do
 
     doc = filter(link, context.merge(group: other_group))
 
-    expect(doc.css('a').last.text).to eq("#{closed_epic.to_reference(other_group)}")
+    expect(doc.css('a').last.text).to eq(closed_epic.to_reference(other_group))
   end
 
   it 'shows title for references with +' do

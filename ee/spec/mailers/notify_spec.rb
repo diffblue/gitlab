@@ -120,7 +120,7 @@ RSpec.describe Notify do
         end
 
         it 'contains a link to the merge request' do
-          is_expected.to have_body_text("#{project_merge_request_path project, merge_request}")
+          is_expected.to have_body_text(project_merge_request_path(project, merge_request))
         end
 
         it 'contains the names of all of the approvers' do
@@ -182,7 +182,7 @@ RSpec.describe Notify do
         end
 
         it 'contains a link to the merge request' do
-          is_expected.to have_body_text("#{project_merge_request_path project, merge_request}")
+          is_expected.to have_body_text(project_merge_request_path(project, merge_request))
         end
 
         it 'contains the names of all of the approvers' do

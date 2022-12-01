@@ -50,10 +50,10 @@ module Geo
       return if repository_state.nil?
 
       repository_state.update!(
-        "#{repository_checksum_column}" => nil,
-        "#{repository_failure_column}" => nil,
-        "#{repository_retry_at_column}" => nil,
-        "#{repository_retry_count_column}" => nil
+        repository_checksum_column => nil,
+        repository_failure_column => nil,
+        repository_retry_at_column => nil,
+        repository_retry_count_column => nil
       )
     rescue StandardError => e
       log_error('Cannot reset repository checksum', e)

@@ -10,24 +10,24 @@ RSpec.describe Gitlab::Insights::Serializers::Chartjs::LineSerializer do
       labels: ['January 2019', 'February 2019', 'March 2019'],
       datasets: [
         {
-          label: "#{manage_label}",
+          label: manage_label,
           data: [1, 0, 0],
-          borderColor: "#{colors[manage_label.to_sym]}"
+          borderColor: colors[manage_label.to_sym]
         },
         {
-          label: "#{plan_label}",
+          label: plan_label,
           data: [1, 1, 1],
-          borderColor: "#{colors[plan_label.to_sym]}"
+          borderColor: colors[plan_label.to_sym]
         },
         {
-          label: "#{create_label}",
+          label: create_label,
           data: [1, 0, 1],
-          borderColor: "#{colors[create_label.to_sym]}"
+          borderColor: colors[create_label.to_sym]
         },
         {
-          label: "#{undefined_label}",
+          label: undefined_label,
           data: [0, 0, 1],
-          borderColor: "#{colors[undefined_label.to_sym]}"
+          borderColor: colors[undefined_label.to_sym]
         }
       ]
     }.with_indifferent_access
