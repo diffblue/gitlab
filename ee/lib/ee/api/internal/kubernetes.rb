@@ -64,7 +64,7 @@ module EE
                 end
 
                 route_setting :authentication, cluster_agent_token_allowed: true
-                put '/' do
+                put '/', feature_category: :container_scanning do
                   not_found! if agent.project.nil?
 
                   result = ::Vulnerabilities::StarboardVulnerabilityCreateService.new(
@@ -88,7 +88,7 @@ module EE
                 end
 
                 route_setting :authentication, cluster_agent_token_allowed: true
-                post "/scan_result", urgency: :low do
+                post "/scan_result", feature_category: :container_scanning, urgency: :low do
                   not_found! if agent.project.nil?
 
                   service = ::Vulnerabilities::StarboardVulnerabilityResolveService.new(agent, params[:uuids])
@@ -102,7 +102,7 @@ module EE
                 end
 
                 route_setting :authentication, cluster_agent_token_allowed: true
-                get '/policies_configuration' do
+                get '/policies_configuration', feature_category: :container_scanning do
                   not_found! if agent.project.nil?
                   not_found! unless agent.project.licensed_feature_available?(:security_orchestration_policies)
 
