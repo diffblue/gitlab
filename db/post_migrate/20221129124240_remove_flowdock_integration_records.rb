@@ -12,7 +12,7 @@ class RemoveFlowdockIntegrationRecords < Gitlab::Database::Migration[2.0]
   end
 
   def up
-    Integration.each_batch(of: 100_000, column: :id) do |relation|
+    Integration.each_batch(of: 1000, column: :id) do |relation|
       relation.delete_by(type_new: 'Integrations::Flowdock')
     end
   end
