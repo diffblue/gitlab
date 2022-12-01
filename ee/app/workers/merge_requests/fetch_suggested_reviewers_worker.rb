@@ -31,6 +31,14 @@ module MergeRequests
       else
         logger.error(structured_payload({ result: result }))
       end
+    rescue Gitlab::AppliedMl::Errors::ResourceNotAvailable => e
+      Gitlab::ErrorTracking.log_exception(
+        e,
+        project_id: merge_request.project.id,
+        merge_request_id: merge_request.id
+      )
+
+      nil
     end
   end
 end

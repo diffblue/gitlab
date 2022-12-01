@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
+RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client, feature_category: :workflow_automation do
   let(:stub_class) { Gitlab::AppliedMl::SuggestedReviewers::RecommenderServicesPb::Stub }
 
   let(:rpc_url) { 'example.org:1234' }
@@ -141,10 +141,22 @@ RSpec.describe Gitlab::AppliedMl::SuggestedReviewers::Client do
       it_behaves_like 'respecting channel credentials'
     end
 
-    context 'when a grpc bad status is received' do
+    context 'when a grpc connection error is received' do
       before do
         allow_next_instance_of(stub_class) do |stub|
           allow(stub).to receive(:merge_request_recommendations_v2).and_raise(GRPC::Unavailable)
+        end
+      end
+
+      it 'raises a new error' do
+        expect { subject }.to raise_error(Gitlab::AppliedMl::Errors::ConnectionFailed)
+      end
+    end
+
+    context 'when a grpc bad status is received' do
+      before do
+        allow_next_instance_of(stub_class) do |stub|
+          allow(stub).to receive(:merge_request_recommendations_v2).and_raise(GRPC::Internal)
         end
       end
 

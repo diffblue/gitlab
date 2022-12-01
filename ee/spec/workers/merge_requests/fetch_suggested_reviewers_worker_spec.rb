@@ -2,7 +2,9 @@
 
 require 'spec_helper'
 
-RSpec.describe MergeRequests::FetchSuggestedReviewersWorker do
+RSpec.describe MergeRequests::FetchSuggestedReviewersWorker, feature_category: :workflow_automation do
+  include AfterNextHelpers
+
   let_it_be(:merge_request) { create(:merge_request) }
 
   subject { described_class.new }
@@ -19,7 +21,7 @@ RSpec.describe MergeRequests::FetchSuggestedReviewersWorker do
     context 'when merge request does not have changes' do
       let_it_be(:merge_request) { create(:merge_request, :without_diffs) }
 
-      it 'returns without calling the fetch suggested reviewer service', :aggregate_failures do
+      it 'returns without calling the fetch suggested reviewer service' do
         expect(MergeRequests::FetchSuggestedReviewersService).not_to receive(:new)
 
         subject.perform(merge_request.id)
@@ -86,6 +88,30 @@ RSpec.describe MergeRequests::FetchSuggestedReviewersWorker do
           subject.perform(merge_request2.id)
 
           expect(merge_request2.predictions&.suggested_reviewers).to be_nil
+        end
+      end
+
+      context 'when exceptions are raised' do
+        it 're-raises exception when it is retriable' do
+          allow_next(::MergeRequests::FetchSuggestedReviewersService)
+            .to receive(:execute)
+            .and_raise(Gitlab::AppliedMl::Errors::ConnectionFailed)
+
+          expect { subject.perform(merge_request.id) }.to raise_error(Gitlab::AppliedMl::Errors::ConnectionFailed)
+        end
+
+        it 'does not raise but logs exception when it is swallowable', :aggregate_failures do
+          allow_next(::MergeRequests::FetchSuggestedReviewersService)
+            .to receive(:execute)
+            .and_raise(Gitlab::AppliedMl::Errors::ResourceNotAvailable)
+
+          expect(Gitlab::ErrorTracking).to receive(:log_exception).with(
+            Gitlab::AppliedMl::Errors::ResourceNotAvailable,
+            project_id: merge_request.project.id,
+            merge_request_id: merge_request.id
+          )
+
+          expect { subject.perform(merge_request.id) }.not_to raise_error
         end
       end
     end

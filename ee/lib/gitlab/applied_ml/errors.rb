@@ -8,6 +8,7 @@ module Gitlab
       ProjectAlreadyExists = Class.new(BaseError)
       ResourceNotAvailable = Class.new(BaseError)
       ConfigurationError = Class.new(BaseError)
+      ConnectionFailed = Class.new(BaseError)
     end
   end
 end
