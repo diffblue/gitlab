@@ -15,6 +15,11 @@ module Gitlab
         SECRET_NAME = "SUGGESTED_REVIEWERS_SECRET"
         SECRET_LENGTH = 64
 
+        NETWORK_ERRORS = [
+          GRPC::DeadlineExceeded,
+          GRPC::Unavailable
+        ].freeze
+
         def self.default_rpc_url
           if Gitlab.dev_or_test_env?
             'suggested-reviewer.dev:443'
@@ -48,6 +53,8 @@ module Gitlab
             top_n: response.top_n,
             reviewers: response.reviewers
           }
+        rescue *NETWORK_ERRORS => e
+          raise Errors::ConnectionFailed, e
         rescue GRPC::BadStatus => e
           raise Errors::ResourceNotAvailable, e
         end
