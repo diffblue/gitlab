@@ -1,6 +1,6 @@
 import { isNumeric } from '~/lib/utils/number_utils';
 import { fetchMetricsData } from '~/analytics/shared/utils';
-import { METRICS_REQUESTS } from '~/cycle_analytics/constants';
+import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import { DORA_METRICS } from './constants';
 
 export const percentChange = ({ current, previous }) =>

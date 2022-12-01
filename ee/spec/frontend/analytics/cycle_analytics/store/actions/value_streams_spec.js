@@ -4,7 +4,7 @@ import * as actions from 'ee/analytics/cycle_analytics/store/actions/value_strea
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import * as types from 'ee/analytics/cycle_analytics/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
-import { currentGroup } from 'jest/cycle_analytics/mock_data';
+import { currentGroup } from 'jest/analytics/cycle_analytics/mock_data';
 import httpStatusCodes from '~/lib/utils/http_status';
 import { allowedStages as stages, endpoints, valueStreams } from '../../mock_data';
 

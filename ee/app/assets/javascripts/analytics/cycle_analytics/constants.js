@@ -1,6 +1,6 @@
 import { getGroupValueStreamMetrics } from 'ee/api/analytics_api';
 import { METRIC_TYPE_SUMMARY, METRIC_TYPE_TIME_SUMMARY } from '~/api/analytics_api';
-import { OVERVIEW_STAGE_ID } from '~/cycle_analytics/constants';
+import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
 import { __, s__ } from '~/locale';
 
 export const EVENTS_LIST_ITEM_LIMIT = 50;

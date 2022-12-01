@@ -37,9 +37,12 @@ import {
   createdBefore,
   createdAfter,
   deepCamelCase,
-} from 'jest/cycle_analytics/mock_data';
+} from 'jest/analytics/cycle_analytics/mock_data';
 import { toYmd } from '~/analytics/shared/utils';
-import { transformStagesForPathNavigation, formatMedianValues } from '~/cycle_analytics/utils';
+import {
+  transformStagesForPathNavigation,
+  formatMedianValues,
+} from '~/analytics/cycle_analytics/utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getDatesInRange } from '~/lib/utils/datetime_utility';
 

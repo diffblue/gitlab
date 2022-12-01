@@ -5,7 +5,7 @@ import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metri
 import { toYmd } from '~/analytics/shared/utils';
 import createFlash from '~/flash';
 import { s__, sprintf } from '~/locale';
-import { SUMMARY_METRICS_REQUEST } from '~/cycle_analytics/constants';
+import { SUMMARY_METRICS_REQUEST } from '~/analytics/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import DoraChartHeader from './dora_chart_header.vue';
 import {

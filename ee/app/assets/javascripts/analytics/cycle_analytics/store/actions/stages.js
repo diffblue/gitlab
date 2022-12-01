@@ -4,7 +4,7 @@ import {
   I18N_VSA_ERROR_STAGES,
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
-} from '~/cycle_analytics/constants';
+} from '~/analytics/cycle_analytics/constants';
 import createFlash from '~/flash';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { OVERVIEW_STAGE_CONFIG } from '../../constants';

@@ -18,7 +18,7 @@ const apolloProvider = new VueApollo({
 });
 
 export default () => {
-  const el = document.querySelector('#js-cycle-analytics-app');
+  const el = document.querySelector('#js-cycle-analytics');
   const { emptyStateSvgPath, noDataSvgPath, noAccessSvgPath } = el.dataset;
   const initialData = buildCycleAnalyticsInitialData(el.dataset);
   const store = createStore();
