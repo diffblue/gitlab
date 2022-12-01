@@ -60,7 +60,7 @@ RSpec.describe 'Groups > Settings > Group Hooks' do
         expect(page).to have_content('Confidential issues events')
         expect(page).to have_content('Member events')
         expect(page).to have_content('Subgroup events')
-        expect(page).to have_content('Merge requests events')
+        expect(page).to have_content('Merge request events')
         expect(page).to have_content('Job events')
         expect(page).to have_content('Pipeline events')
         expect(page).to have_content('Wiki page events')

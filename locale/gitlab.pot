@@ -46041,9 +46041,6 @@ msgstr ""
 msgid "Webhooks|Are you sure you want to delete this webhook?"
 msgstr ""
 
-msgid "Webhooks|Comments"
-msgstr ""
-
 msgid "Webhooks|Confidential comments"
 msgstr ""
 
@@ -46096,9 +46093,6 @@ msgid "Webhooks|Must match part of URL"
 msgstr ""
 
 msgid "Webhooks|Pipeline events"
-msgstr ""
-
-msgid "Webhooks|Push events"
 msgstr ""
 
 msgid "Webhooks|Regex such as %{REGEX_CODE} is supported."
