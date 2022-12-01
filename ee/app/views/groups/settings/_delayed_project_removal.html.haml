@@ -10,7 +10,7 @@
   - if setting_locked
     = render 'shared/namespaces/cascading_settings/lock_icon', attribute: :delayed_project_removal,
         group: group,
-        settings_path_helper: -> (locked_ancestor) { edit_group_path(locked_ancestor, anchor: 'js-permissions-settings') },
+        settings_path_helper: ->(locked_ancestor) { edit_group_path(locked_ancestor, anchor: 'js-permissions-settings') },
         class_list: 'gl-relative!'
   %span.form-text.text-muted.gl-pb-4
     = delayed_project_removal_help_text
