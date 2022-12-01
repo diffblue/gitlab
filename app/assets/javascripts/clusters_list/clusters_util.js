@@ -1,7 +1,7 @@
 import { ACTIVE_CONNECTION_TIME, NAME_MAX_LENGTH } from './constants';
 
 function getTruncatedName(name) {
-  return name.length > NAME_MAX_LENGTH ? name.substring(0, NAME_MAX_LENGTH) : name;
+  return name.substring(0, NAME_MAX_LENGTH);
 }
 
 export function generateAgentRegistrationCommand({ name, token, version, address }) {
