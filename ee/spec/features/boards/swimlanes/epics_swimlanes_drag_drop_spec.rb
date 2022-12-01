@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'epics swimlanes', :js do
+RSpec.describe 'epics swimlanes', :js, feature_category: :team_planning do
   include DragTo
   include MobileHelpers
   include BoardHelpers

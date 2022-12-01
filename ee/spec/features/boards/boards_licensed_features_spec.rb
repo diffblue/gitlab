@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Boards licensed features', :js do
+RSpec.describe 'Boards licensed features', :js, feature_category: :team_planning do
   include BoardHelpers
 
   let_it_be(:user) { create(:user) }

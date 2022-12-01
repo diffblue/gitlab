@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'epics swimlanes sidebar', :js do
+RSpec.describe 'epics swimlanes sidebar', :js, feature_category: :team_planning do
   include BoardHelpers
 
   let_it_be(:user) { create(:user) }
