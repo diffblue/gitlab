@@ -24,7 +24,7 @@ module QA
 
             within_element(:roadmap_shell) do
               find("[data-qa-selector='epic_details_cell'] #{epic_href_selector}") &&
-              find("[data-qa-selector='epic_timeline_cell'] #{epic_href_selector}")
+                find("[data-qa-selector='epic_timeline_cell'] #{epic_href_selector}")
             end
           end
         end
