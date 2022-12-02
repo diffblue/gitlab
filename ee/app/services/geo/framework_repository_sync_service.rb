@@ -22,6 +22,7 @@ module Geo
     def initialize(replicator)
       @replicator = replicator
       @repository = replicator.repository
+      @new_repository = false
     end
 
     def execute
@@ -58,6 +59,7 @@ module Geo
 
     ensure
       expire_repository_caches
+      execute_housekeeping
     end
 
     def lease_key
@@ -261,6 +263,22 @@ module Geo
     def expire_repository_caches
       log_info('Expiring caches for repository')
       repository.after_sync
+    end
+
+    def execute_housekeeping
+      return unless replicator.class.housekeeping_enabled?
+
+      task = new_repository? ? :gc : nil
+      service = Repositories::HousekeepingService.new(replicator.model_record, task)
+      service.increment!
+
+      return if task.nil? && !service.needed?
+
+      service.execute do
+        replicator.before_housekeeping
+      end
+    rescue Repositories::HousekeepingService::LeaseTaken
+      # best-effort
     end
 
     def should_be_redownloaded?

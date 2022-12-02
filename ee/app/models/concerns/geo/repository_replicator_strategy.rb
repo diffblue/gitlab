@@ -25,6 +25,11 @@ module Geo
       def data_type_title
         _('Git')
       end
+
+      # Override this to disable git housekeeping
+      def housekeeping_enabled?
+        true
+      end
     end
 
     # Called by Gitlab::Geo::Replicator#consume
@@ -57,6 +62,11 @@ module Geo
 
     def reschedule_sync
       Geo::EventWorker.perform_async(replicable_name, 'updated', { model_record_id: model_record.id })
+    end
+
+    # Called by Geo::FrameworkHousekeepingService#execute
+    def before_housekeeping
+      # no-op
     end
 
     def remote_url

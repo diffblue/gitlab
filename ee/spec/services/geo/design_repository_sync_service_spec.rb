@@ -42,9 +42,6 @@ RSpec.describe Geo::DesignRepositorySyncService do
                              .with(url_to_repo, anything)
                              .and_return('master')
 
-      allow_any_instance_of(Geo::ProjectHousekeepingService).to receive(:execute)
-        .and_return(nil)
-
       allow_any_instance_of(Users::RefreshAuthorizedProjectsService).to receive(:execute)
         .and_return(nil)
     end
