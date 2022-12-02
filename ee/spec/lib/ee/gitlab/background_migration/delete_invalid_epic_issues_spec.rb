@@ -194,7 +194,8 @@ RSpec.describe Gitlab::BackgroundMigration::DeleteInvalidEpicIssues do
 
   def create_issue(iid:, title:, author:, project:)
     issues.create!(
-      iid: iid, project_id: project.id, title: title, author_id: author.id, work_item_type_id: issue_type_id
+      iid: iid, project_id: project.id, namespace_id: project.project_namespace_id,
+      title: title, author_id: author.id, work_item_type_id: issue_type_id
     )
   end
 end
