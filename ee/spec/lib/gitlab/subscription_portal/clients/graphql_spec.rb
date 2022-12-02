@@ -713,4 +713,82 @@ RSpec.describe Gitlab::SubscriptionPortal::Clients::Graphql do
       end
     end
   end
+
+  describe '#send_seat_overage_notification_batch' do
+    let(:query_params) do
+      {
+        variables: { namespaces: [] },
+        query: <<~GQL
+        mutation($namespaces: [NamespaceSeatOverageInput!]) {
+          sendSeatOverageNotificationEmail(input: {
+            namespaces: $namespaces
+          }) {
+            errors
+          }
+        }
+        GQL
+      }
+    end
+
+    context 'when the subscription portal response is successful' do
+      it 'returns successfully' do
+        portal_response = {
+          success: true,
+          data: {
+            "data" => {
+              "sendSeatOverageNotificationEmail" => {
+                "errors" => []
+              }
+            }
+          }
+        }
+
+        expect(client).to receive(:execute_graphql_query).with(query_params).and_return(portal_response)
+
+        request = client.send_seat_overage_notification_batch([])
+
+        expect(request).to eq({ success: true })
+      end
+    end
+
+    context 'when the subscription portal response is unsuccessful' do
+      it 'returns an error response' do
+        portal_response = {
+          success: true,
+          data: {
+            "errors" => [
+              {
+                "message" => "Argument 'maxSeatsUsed' on InputObject 'SendSeatOverageNotificationEmailInput' has an invalid value (null). Expected type 'Int!'.",
+                "locations" => [{ "line": 2, "column": 43 }],
+                "path" => %w[mutation sendSeatOverageNotificationEmail input maxSeatsUsed],
+                "extensions" => {
+                  "code" => "argumentLiteralsIncompatible",
+                  "typeName" => "InputObject",
+                  "argumentName" => "maxSeatsUsed"
+                }
+              }
+            ]
+          }
+        }
+
+        expect(client).to receive(:execute_graphql_query).with(query_params).and_return(portal_response)
+
+        request = client.send_seat_overage_notification_batch([])
+
+        expect(request[:success]).to be false
+        expect(request[:errors]).not_to be_empty
+      end
+    end
+
+    context 'when there is a network connectivity error' do
+      it 'returns an error response' do
+        allow(client).to receive(:execute_graphql_query).and_raise(HTTParty::Error)
+        expect(Gitlab::ErrorTracking).to receive(:log_exception).with(kind_of(HTTParty::Error))
+
+        request = client.send_seat_overage_notification_batch(group: build(:group), max_seats_used: nil)
+
+        expect(request).to eq({ success: false, errors: "CONNECTIVITY_ERROR" })
+      end
+    end
+  end
 end

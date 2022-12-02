@@ -45,6 +45,24 @@ RSpec.describe GitlabSubscription, :saas do
         expect(described_class.with_hosted_plan('bronze')).to be_empty
       end
     end
+
+    describe '.max_seats_used_changed_between', :timecop do
+      let(:from) { Time.current.beginning_of_day - 1.day }
+      let(:to) { Time.current.beginning_of_day }
+
+      let!(:in_bounds_subscription) do
+        create(:gitlab_subscription, max_seats_used_changed_at: to - 1.hour)
+      end
+
+      let!(:out_of_bounds_subscription) do
+        create(:gitlab_subscription, max_seats_used_changed_at: from - 1.hour)
+      end
+
+      it 'returns relevant subscriptions' do
+        expect(described_class.max_seats_used_changed_between(from: from, to: to))
+          .to contain_exactly(in_bounds_subscription)
+      end
+    end
   end
 
   describe '#calculate_seats_in_use' do
