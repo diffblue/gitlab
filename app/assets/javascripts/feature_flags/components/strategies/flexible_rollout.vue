@@ -90,7 +90,7 @@ export default {
               :id="inputId"
               :value="percentage"
               :state="isValid"
-              class="rollout-percentage gl-text-right gl-w-9"
+              class="gl-w-11"
               type="number"
               min="0"
               max="100"
