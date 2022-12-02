@@ -337,4 +337,30 @@ RSpec.describe ApplicationHelper do
       end
     end
   end
+
+  describe '#page_class' do
+    let_it_be(:expected_class) { 'logged-out-marketing-header' }
+
+    let(:current_user) { nil }
+
+    subject(:page_class) do
+      helper.page_class.flatten
+    end
+
+    before do
+      allow(helper).to receive(:current_user) { current_user }
+    end
+
+    it { is_expected.not_to include(expected_class) }
+
+    context 'when SaaS', :saas do
+      it { is_expected.to include(expected_class) }
+
+      context 'when a user is logged in' do
+        let(:current_user) { build(:user) }
+
+        it { is_expected.not_to include(expected_class) }
+      end
+    end
+  end
 end
