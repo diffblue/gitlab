@@ -1,5 +1,5 @@
 <script>
-import { GlAlert, GlButton, GlLoadingIcon, GlTableLite, GlLabel } from '@gitlab/ui';
+import { GlAlert, GlBadge, GlButton, GlLoadingIcon, GlTableLite, GlLabel } from '@gitlab/ui';
 import * as Sentry from '@sentry/browser';
 
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -7,6 +7,7 @@ import { s__ } from '~/locale';
 
 import { DANGER, INFO, EDIT_BUTTON_LABEL } from '../constants';
 import getComplianceFrameworkQuery from '../graphql/queries/get_compliance_framework.query.graphql';
+import updateComplianceFrameworkMutation from '../graphql/queries/update_compliance_framework.mutation.graphql';
 import { injectIdIntoEditPath } from '../utils';
 import DeleteModal from './delete_modal.vue';
 import EmptyState from './table_empty_state.vue';
@@ -17,6 +18,7 @@ export default {
     DeleteModal,
     EmptyState,
     GlAlert,
+    GlBadge,
     GlButton,
     GlLoadingIcon,
     GlTableLite,
@@ -95,8 +97,7 @@ export default {
         );
       },
       error(error) {
-        this.error = this.$options.i18n.fetchError;
-        Sentry.captureException(error);
+        this.setError(error, this.$options.i18n.fetchError);
       },
     },
   },
@@ -130,6 +131,10 @@ export default {
     },
   },
   methods: {
+    setError(error, userFriendlyText) {
+      this.error = userFriendlyText;
+      Sentry.captureException(error);
+    },
     dismissAlertMessage() {
       this.message = null;
     },
@@ -153,6 +158,38 @@ export default {
     isDeleting(id) {
       return this.deletingFrameworksIds.includes(id);
     },
+    async setDefaultFramework({ framework, defaultVal }) {
+      try {
+        const { data } = await this.$apollo.mutate({
+          mutation: updateComplianceFrameworkMutation,
+          variables: {
+            input: {
+              id: framework.id,
+              params: { default: defaultVal },
+            },
+          },
+          awaitRefetchQueries: true,
+          refetchQueries: [
+            {
+              query: getComplianceFrameworkQuery,
+              variables: {
+                fullPath: this.groupPath,
+              },
+            },
+          ],
+        });
+
+        const [error] = data?.updateComplianceFramework?.errors || [];
+
+        if (error) {
+          throw new Error(error);
+        }
+
+        this.message = this.$options.i18n.setDefaultMessage;
+      } catch (error) {
+        this.setError(error, this.$options.i18n.setDefaultError);
+      }
+    },
   },
   i18n: {
     deleteMessage: s__('ComplianceFrameworks|Compliance framework deleted successfully'),
@@ -165,7 +202,12 @@ export default {
     addBtn: s__('ComplianceFrameworks|Add framework'),
     name: s__('ComplianceFrameworks|Name'),
     description: s__('ComplianceFrameworks|Description'),
+    default: s__('ComplianceFrameworks|default'),
     editFramework: EDIT_BUTTON_LABEL,
+    setDefaultMessage: s__(
+      'ComplianceFrameworks|Default compliance framework successfully updated',
+    ),
+    setDefaultError: s__('ComplianceFrameworks|Error setting the default compliance frameworks'),
   },
 };
 </script>
@@ -195,6 +237,14 @@ export default {
           :title="framework.name"
           :target="framework.editPath"
         />
+        <gl-badge
+          v-if="framework.default"
+          size="md"
+          variant="info"
+          :aria-label="$options.i18n.default"
+          data-testid="compliance-framework-default-badge"
+          >{{ $options.i18n.default }}</gl-badge
+        >
       </template>
       <template #cell(description)="{ item: framework }">
         <p data-testid="compliance-framework-description" class="gl-mb-0">
@@ -207,6 +257,8 @@ export default {
           :framework="framework"
           :loading="isDeleting(framework.id)"
           @delete="markForDeletion"
+          @setDefault="setDefaultFramework"
+          @removeDefault="setDefaultFramework"
         />
       </template>
     </gl-table-lite>

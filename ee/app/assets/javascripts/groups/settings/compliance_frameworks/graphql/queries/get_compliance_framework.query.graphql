@@ -9,6 +9,7 @@ query getComplianceFramework(
       nodes {
         id
         name
+        default
         description
         color
         pipelineConfigurationFullPath

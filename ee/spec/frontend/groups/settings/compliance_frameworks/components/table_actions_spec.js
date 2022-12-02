@@ -1,25 +1,26 @@
 import { shallowMount } from '@vue/test-utils';
 import TableActions from 'ee/groups/settings/compliance_frameworks/components/table_actions.vue';
 import {
+  OPTIONS_BUTTON_LABEL,
   DELETE_BUTTON_LABEL,
   EDIT_BUTTON_LABEL,
+  SET_DEFAULT_BUTTON_LABEL,
+  REMOVE_DEFAULT_BUTTON_LABEL,
 } from 'ee/groups/settings/compliance_frameworks/constants';
 import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import { framework, defaultFramework } from '../mock_data';
 
 describe('TableActions', () => {
   let wrapper;
 
-  const framework = {
-    parsedId: 1,
-    name: 'framework',
-    description: 'a framework',
-    color: '#112233',
-    editPath: 'group/framework/1/edit',
-  };
-
   const findEditButton = () => wrapper.findByTestId('compliance-framework-edit-button');
+  const findDropdownButton = () => wrapper.findByTestId('compliance-framework-dropdown-button');
   const findDeleteButton = () => wrapper.findByTestId('compliance-framework-delete-button');
+  const findSetDefaultButton = () =>
+    wrapper.findByTestId('compliance-framework-set-default-button');
+  const findRemoveDefaultButton = () =>
+    wrapper.findByTestId('compliance-framework-remove-default-button');
 
   const createComponent = (props = {}) => {
     wrapper = extendedWrapper(
@@ -53,7 +54,7 @@ describe('TableActions', () => {
     });
 
     expect(findEditButton().exists()).toBe(false);
-    expect(findDeleteButton().exists()).toBe(false);
+    expect(findDropdownButton().exists()).toBe(false);
   });
 
   it('displays the edit button', () => {
@@ -65,22 +66,60 @@ describe('TableActions', () => {
     expect(button.attributes('href')).toBe('group/framework/1/edit');
   });
 
-  it('displays a delete button', () => {
+  it('displays a dropdown Button', () => {
     createComponent();
 
-    const button = findDeleteButton();
+    const button = findDropdownButton();
     const tooltip = getBinding(button.element, 'gl-tooltip');
 
-    displaysTheButton(button, 'remove', DELETE_BUTTON_LABEL);
-    expect(tooltip.value).toBe('Delete framework');
+    displaysTheButton(button, 'ellipsis_v', OPTIONS_BUTTON_LABEL);
+    expect(tooltip.value).toBe('Options');
   });
 
-  it('emits "delete" event when the delete button is clicked', async () => {
-    createComponent();
+  describe('when a framework is default', () => {
+    beforeEach(() => {
+      createComponent({ framework: defaultFramework });
+    });
 
-    findDeleteButton().vm.$emit('click');
+    it('displays a remove default button', () => {
+      expect(findRemoveDefaultButton().text()).toBe(REMOVE_DEFAULT_BUTTON_LABEL);
+      expect(findRemoveDefaultButton().attributes('aria-label')).toBe(REMOVE_DEFAULT_BUTTON_LABEL);
+    });
 
-    expect(wrapper.emitted('delete')[0]).toStrictEqual([framework]);
+    it('emits "removeDefault" event when the remove default button is clicked', async () => {
+      findRemoveDefaultButton().vm.$emit('click');
+      expect(wrapper.emitted('removeDefault')[0]).toStrictEqual([
+        { framework: defaultFramework, defaultVal: false },
+      ]);
+    });
+  });
+
+  describe('when a framework is not default', () => {
+    beforeEach(() => {
+      createComponent();
+    });
+
+    it('displays a set default button', () => {
+      expect(findSetDefaultButton().text()).toBe(SET_DEFAULT_BUTTON_LABEL);
+      expect(findSetDefaultButton().attributes('aria-label')).toBe(SET_DEFAULT_BUTTON_LABEL);
+    });
+
+    it('emits "setDefault" event when the set default button is clicked', async () => {
+      findSetDefaultButton().vm.$emit('click');
+
+      expect(wrapper.emitted('setDefault')[0]).toStrictEqual([{ framework, defaultVal: true }]);
+    });
+
+    it('displays a delete button', () => {
+      expect(findDeleteButton().text()).toBe(DELETE_BUTTON_LABEL);
+      expect(findDeleteButton().attributes('aria-label')).toBe(DELETE_BUTTON_LABEL);
+    });
+
+    it('emits "delete" event when the delete button is clicked', async () => {
+      findDeleteButton().vm.$emit('click');
+
+      expect(wrapper.emitted('delete')[0]).toStrictEqual([framework]);
+    });
   });
 
   describe('when loading', () => {
@@ -88,11 +127,11 @@ describe('TableActions', () => {
       createComponent({ loading: true });
     });
 
-    it('disables the delete button and shows loading', () => {
-      const button = findDeleteButton();
+    it('disables the dropdown button and shows loading', () => {
+      const button = findDropdownButton();
 
       expect(button.props('disabled')).toBe(true);
-      expect(button.props('loading')).toBe(true);
+      expect(button.props('loading')).toBe(false);
     });
 
     it('disables the edit button and does not show loading', () => {

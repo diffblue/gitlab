@@ -11,10 +11,16 @@ import TableActions from 'ee/groups/settings/compliance_frameworks/components/ta
 import DeleteModal from 'ee/groups/settings/compliance_frameworks/components/delete_modal.vue';
 import { PIPELINE_CONFIGURATION_PATH_FORMAT } from 'ee/groups/settings/compliance_frameworks/constants';
 import getComplianceFrameworkQuery from 'ee/groups/settings/compliance_frameworks/graphql/queries/get_compliance_framework.query.graphql';
+import updateComplianceFrameworkMutation from 'ee/groups/settings/compliance_frameworks/graphql//queries/update_compliance_framework.mutation.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import { validFetchResponse, emptyFetchResponse } from '../mock_data';
+import {
+  validFetchResponse,
+  emptyFetchResponse,
+  validSetDefaultFrameworkResponse,
+  errorSetDefaultFrameworkResponse,
+} from '../mock_data';
 
 Vue.use(VueApollo);
 
@@ -26,6 +32,8 @@ describe('Table', () => {
   const fetchEmpty = jest.fn().mockResolvedValue(emptyFetchResponse);
   const fetchLoading = jest.fn().mockResolvedValue(new Promise(() => {}));
   const fetchWithErrors = jest.fn().mockRejectedValue(sentryError);
+  const updateDefault = jest.fn().mockResolvedValue(validSetDefaultFrameworkResponse);
+  const updateDefaultWithErrors = jest.fn().mockResolvedValue(errorSetDefaultFrameworkResponse);
 
   const findTable = () => wrapper.findComponent(GlTableLite);
   const findLabels = () => wrapper.findAllComponents(GlLabel);
@@ -37,18 +45,24 @@ describe('Table', () => {
   const findAddBtn = () => wrapper.findComponent(GlButton);
   const findAllTableActions = () => wrapper.findAllComponents(TableActions);
 
-  function createMockApolloProvider(resolverMock) {
+  function createMockApolloProvider(fetchMockResolver, updateMockResolver = updateDefault) {
     Vue.use(VueApollo);
 
-    const requestHandlers = [[getComplianceFrameworkQuery, resolverMock]];
-
-    return createMockApollo(requestHandlers);
+    return createMockApollo([
+      [getComplianceFrameworkQuery, fetchMockResolver],
+      [updateComplianceFrameworkMutation, updateMockResolver],
+    ]);
   }
 
-  function createComponentWithApollo(resolverMock, props = {}, mountFn = shallowMount) {
+  function createComponentWithApollo(
+    fetchMockResolver,
+    updateMockResolver,
+    props = {},
+    mountFn = shallowMount,
+  ) {
     return extendedWrapper(
       mountFn(Table, {
-        apolloProvider: createMockApolloProvider(resolverMock),
+        apolloProvider: createMockApolloProvider(fetchMockResolver, updateMockResolver),
         propsData: {
           addFrameworkPath: 'group/framework/new',
           editFrameworkPath: 'group/framework/id/edit',
@@ -161,7 +175,7 @@ describe('Table', () => {
 
     describe('when no paths are provided', () => {
       beforeEach(() => {
-        wrapper = createComponentWithApollo(fetch, {
+        wrapper = createComponentWithApollo(fetch, updateDefault, {
           addFrameworkPath: null,
           editFrameworkPath: null,
         });
@@ -175,7 +189,7 @@ describe('Table', () => {
 
   describe('table content', () => {
     beforeEach(async () => {
-      wrapper = createComponentWithApollo(fetch, {}, mount);
+      wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount);
       await waitForPromises();
     });
 
@@ -189,6 +203,7 @@ describe('Table', () => {
               id: expect.stringContaining('gid://gitlab/ComplianceManagement::Framework/'),
               parsedId: expect.any(Number),
               name: expect.any(String),
+              default: expect.any(Boolean),
               description: expect.any(String),
               pipelineConfigurationFullPath: expect.stringMatching(
                 PIPELINE_CONFIGURATION_PATH_FORMAT,
@@ -215,6 +230,46 @@ describe('Table', () => {
         description: 'Edit framework',
       });
     });
+
+    it('displays the default label', () => {
+      const localWrapper = wrapper.findByTestId('compliance-framework-default-badge');
+      expect(localWrapper.exists()).toBe(true);
+      expect(localWrapper.element).toMatchSnapshot();
+    });
+  });
+
+  describe('set default framework', () => {
+    const clickSetDefaultFramework = async () => {
+      const tableAction = findAllTableActions().at(0);
+      const framework = tableAction.props('framework');
+      tableAction.vm.$emit('setDefault', { framework, defaultVal: true });
+      return waitForPromises();
+    };
+
+    it('calls the update mutation with the framework ID', async () => {
+      wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount);
+
+      await waitForPromises();
+      await clickSetDefaultFramework();
+
+      expect(updateDefault).toHaveBeenCalledWith({
+        input: { id: 'gid://gitlab/ComplianceManagement::Framework/1', params: { default: true } },
+      });
+    });
+
+    it('reports to Sentry when there is a graphql error', async () => {
+      jest.spyOn(Sentry, 'captureException');
+      wrapper = createComponentWithApollo(fetch, updateDefaultWithErrors, {}, mount);
+
+      await waitForPromises();
+      await clickSetDefaultFramework();
+
+      expect(updateDefaultWithErrors).toHaveBeenCalledWith({
+        input: { id: 'gid://gitlab/ComplianceManagement::Framework/1', params: { default: true } },
+      });
+
+      expect(Sentry.captureException.mock.calls[0][0]).toStrictEqual(new Error('graphql error'));
+    });
   });
 
   describe('delete framework', () => {
@@ -223,7 +278,7 @@ describe('Table', () => {
       const findTableAction = () => findAllTableActions().at(0);
 
       beforeEach(async () => {
-        wrapper = createComponentWithApollo(fetch, {}, mount);
+        wrapper = createComponentWithApollo(fetch, updateDefault, {}, mount);
 
         await waitForPromises();
 
