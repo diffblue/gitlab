@@ -6,6 +6,7 @@ fragment DastSiteProfileFragment on DastSiteProfile {
   targetType
   editPath
   validationStatus
+  validationStartedAt
   referencedInSecurityPolicies
   auth {
     enabled

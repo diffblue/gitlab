@@ -80,3 +80,4 @@ export const DAST_SITE_VALIDATION_MODAL_ID = 'dast-site-validation-modal';
 export const DAST_SITE_VALIDATION_REVOKE_MODAL_ID = 'dast-site-validation-revoke-modal';
 
 export const DAST_SITE_VALIDATION_POLLING_INTERVAL = 3000;
+export const DAST_SITE_VALIDATION_ALLOWED_TIMELINE_IN_MINUTES = 60;

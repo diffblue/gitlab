@@ -8,10 +8,12 @@ import {
   DAST_SITE_VALIDATION_POLLING_INTERVAL,
   DAST_SITE_VALIDATION_MODAL_ID,
   DAST_SITE_VALIDATION_REVOKE_MODAL_ID,
+  DAST_SITE_VALIDATION_ALLOWED_TIMELINE_IN_MINUTES,
 } from 'ee/security_configuration/dast_site_validation/constants';
 import dastSiteValidationsQuery from 'ee/security_configuration/dast_site_validation/graphql/dast_site_validations.query.graphql';
 import { fetchPolicies } from '~/lib/graphql';
 import { s__ } from '~/locale';
+import { getTimeDifferenceMinutes } from 'ee/security_configuration/utils';
 import { updateSiteProfilesStatuses } from '../graphql/cache_utils';
 import ProfilesList from './dast_profiles_list.vue';
 
@@ -48,8 +50,8 @@ export default {
           },
         },
       }) {
-        nodes.forEach(({ normalizedTargetUrl, status }) => {
-          this.updateSiteProfilesStatuses(normalizedTargetUrl, status);
+        nodes.forEach(({ normalizedTargetUrl, status, validationStartedAt }) => {
+          this.updateSiteProfilesStatuses(normalizedTargetUrl, status, validationStartedAt);
         });
       },
     },
@@ -71,6 +73,7 @@ export default {
     return {
       validatingProfile: null,
       revokeValidationProfile: null,
+      validations: [],
     };
   },
   statuses: DAST_SITE_VALIDATION_STATUS_PROPS,
@@ -88,13 +91,29 @@ export default {
     },
   },
   methods: {
-    updateSiteProfilesStatuses(normalizedTargetUrl, status) {
+    updateSiteProfilesStatuses(normalizedTargetUrl, validationStatus, validationStartedAt) {
+      const actualStatus = this.getValidationStatus({ validationStatus, validationStartedAt });
+
       updateSiteProfilesStatuses({
         fullPath: this.fullPath,
         normalizedTargetUrl,
-        status,
+        status: actualStatus,
         store: this.$apollo.getClient(),
       });
+    },
+    getValidationStatus({ validationStatus, validationStartedAt }) {
+      if (this.isPendingValidation(validationStatus)) {
+        const timeDiff = getTimeDifferenceMinutes(validationStartedAt);
+        /**
+         * Check if validation runs over an hour
+         * If yes, fail it explicitly
+         */
+        if (timeDiff > DAST_SITE_VALIDATION_ALLOWED_TIMELINE_IN_MINUTES) {
+          return FAILED;
+        }
+      }
+
+      return validationStatus;
     },
     isPendingValidation(status) {
       return [PENDING, INPROGRESS].includes(status);
@@ -155,23 +174,28 @@ export default {
         <gl-icon name="question-o" />
       </gl-link>
     </template>
-    <template #cell(validationStatus)="{ value }">
+    <template #cell(validationStatus)="{ value, item }">
       <template v-if="shouldShowValidationStatus(value)">
-        <gl-icon v-gl-tooltip v-bind="$options.statuses[value]" :size="12" class="gl-mr-3" /><span
-          >{{ $options.statuses[value].labelText }}</span
-        >
+        <gl-icon
+          v-gl-tooltip
+          v-bind="$options.statuses[getValidationStatus(item)]"
+          :size="12"
+          class="gl-mr-3"
+        />
+        <span>{{ $options.statuses[getValidationStatus(item)].labelText }}</span>
       </template>
     </template>
 
     <template #actions="{ profile }">
       <gl-button
-        v-if="!hasValidationPassed(profile.validationStatus)"
-        :disabled="!canValidateProfile(profile.validationStatus)"
+        v-if="!hasValidationPassed(getValidationStatus(profile))"
+        :disabled="!canValidateProfile(getValidationStatus(profile))"
+        data-testid="set-profile-button"
         variant="confirm"
         category="tertiary"
         size="small"
         @click="setValidatingProfile(profile)"
-        >{{ validateBtnLabel(profile.validationStatus) }}</gl-button
+        >{{ validateBtnLabel(getValidationStatus(profile)) }}</gl-button
       >
       <gl-button
         v-else
@@ -192,6 +216,7 @@ export default {
         updateSiteProfilesStatuses(
           validatingProfile.normalizedTargetUrl,
           $options.VALIDATION_STATUS.PENDING,
+          validatingProfile.validationStartedAt,
         )
       "
     />
@@ -207,6 +232,7 @@ export default {
         updateSiteProfilesStatuses(
           revokeValidationProfile.normalizedTargetUrl,
           $options.VALIDATION_STATUS.NONE,
+          validatingProfile.validationStartedAt,
         )
       "
     />

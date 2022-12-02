@@ -1,7 +1,8 @@
 import { within, fireEvent } from '@testing-library/dom';
-import { mount, shallowMount } from '@vue/test-utils';
 import Vue from 'vue';
 import { merge } from 'lodash';
+import { GlButton } from '@gitlab/ui';
+import { mount, shallowMount } from '@vue/test-utils';
 import VueApollo from 'vue-apollo';
 import ProfilesList from 'ee/security_configuration/dast_profiles/components/dast_profiles_list.vue';
 import Component from 'ee/security_configuration/dast_profiles/components/dast_site_profiles_list.vue';
@@ -72,6 +73,9 @@ describe('EE - DastSiteProfileList', () => {
   const getTableRowForProfile = (profile) => getAllTableRows()[siteProfiles.indexOf(profile)];
 
   const findProfileList = () => wrapper.findComponent(ProfilesList);
+  const findButtons = (f) => wrapper.findAllComponents(GlButton).filter(f);
+  const findSetProfileButtons = () =>
+    findButtons((b) => b.attributes('data-testid') === 'set-profile-button');
 
   afterEach(() => {
     wrapper.destroy();
@@ -120,10 +124,12 @@ describe('EE - DastSiteProfileList', () => {
               {
                 normalizedTargetUrl: pendingValidation.normalizedTargetUrl,
                 status: DAST_SITE_VALIDATION_STATUS.FAILED,
+                validationStartedAt: '2022-10-31T15:47:21Z',
               },
               {
                 normalizedTargetUrl: inProgressValidation.normalizedTargetUrl,
                 status: DAST_SITE_VALIDATION_STATUS.PASSED,
+                validationStartedAt: new Date(Date.now() - 1000 * 60 * 30),
               },
             ]),
           ),
@@ -226,6 +232,46 @@ describe('EE - DastSiteProfileList', () => {
           normalizedTargetUrl,
           status,
           store: apolloProvider.defaultClient,
+        });
+      },
+    );
+  });
+
+  describe('site validation stuck validation', () => {
+    describe.each`
+      timeElapsedMin | statusEnum                                | statusLabel            | buttonLabel           | isBtnDisabled
+      ${30}          | ${DAST_SITE_VALIDATION_STATUS.PENDING}    | ${'Validating...'}     | ${'Validate'}         | ${true}
+      ${62}          | ${DAST_SITE_VALIDATION_STATUS.PENDING}    | ${'Validation failed'} | ${'Retry validation'} | ${false}
+      ${null}        | ${DAST_SITE_VALIDATION_STATUS.PENDING}    | ${'Validating...'}     | ${'Validate'}         | ${true}
+      ${null}        | ${DAST_SITE_VALIDATION_STATUS.PENDING}    | ${'Validating...'}     | ${'Validate'}         | ${true}
+      ${30}          | ${DAST_SITE_VALIDATION_STATUS.INPROGRESS} | ${'Validating...'}     | ${'Validate'}         | ${true}
+      ${62}          | ${DAST_SITE_VALIDATION_STATUS.INPROGRESS} | ${'Validation failed'} | ${'Retry validation'} | ${false}
+      ${30}          | ${DAST_SITE_VALIDATION_STATUS.PASSED}     | ${'Validated'}         | ${'Validate'}         | ${true}
+      ${62}          | ${DAST_SITE_VALIDATION_STATUS.PASSED}     | ${'Validated'}         | ${'Validate'}         | ${true}
+    `(
+      'profile with $statusEnum validation',
+      ({ timeElapsedMin, statusEnum, statusLabel, buttonLabel, isBtnDisabled }) => {
+        const siteProfilesCopy = [...siteProfiles];
+
+        it(`should have correct status label`, async () => {
+          /**
+           * Set up time difference nad mock Date.now()
+           */
+          const dateNowMock = jest
+            .spyOn(Date, 'now')
+            .mockImplementation(() => new Date('2022-10-31T15:47:21Z').getTime());
+          const validationStartedAt = new Date(dateNowMock() - 1000 * 60 * timeElapsedMin);
+
+          const siteProfile = siteProfilesCopy[0];
+          siteProfile.validationStartedAt = validationStartedAt;
+          siteProfile.validationStatus = statusEnum;
+          createFullComponent({ propsData: { profiles: siteProfilesCopy } });
+          await waitForPromises();
+          const validationStatusCell = getTableRowForProfile(siteProfile).cells[2];
+
+          expect(validationStatusCell.innerText).toContain(statusLabel);
+          expect(findSetProfileButtons().at(0).text()).toBe(buttonLabel);
+          expect(findSetProfileButtons().at(0).props('disabled')).toBe(isBtnDisabled);
         });
       },
     );
