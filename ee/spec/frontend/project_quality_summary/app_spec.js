@@ -4,7 +4,7 @@ import VueApollo from 'vue-apollo';
 import mockProjectQualityResponse from 'test_fixtures/graphql/project_quality_summary/graphql/queries/get_project_quality.query.graphql.json';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 
 import ProjectQualitySummary from 'ee/project_quality_summary/app.vue';
@@ -66,7 +66,7 @@ describe('Project quality summary app component', () => {
     });
 
     it('shows a flash message', () => {
-      expect(createFlash).toHaveBeenCalled();
+      expect(createAlert).toHaveBeenCalled();
     });
   });
 

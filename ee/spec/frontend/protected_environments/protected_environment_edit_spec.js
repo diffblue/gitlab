@@ -7,7 +7,7 @@ import ProtectedEnvironmentEdit, {
   i18n,
 } from 'ee/protected_environments/protected_environment_edit.vue';
 import { ACCESS_LEVELS, LEVEL_TYPES } from 'ee/protected_environments/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 
 jest.mock('~/flash');
@@ -181,7 +181,7 @@ describe('Protected Environment Edit', () => {
     it('should show error message', async () => {
       findAccessDropdown().vm.$emit('hidden', [{ user_id: 1 }]);
       await waitForPromises();
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: i18n.failureMessage,
         parent: parentContainer,
       });
@@ -217,7 +217,7 @@ describe('Protected Environment Edit', () => {
     it('should show error message', async () => {
       findRequiredCountSelect().setValue(5);
       await waitForPromises();
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: i18n.failureMessage,
         parent: parentContainer,
       });

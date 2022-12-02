@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import CreateItemDropdown from '~/create_item_dropdown';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { s__, __ } from '~/locale';
 import AccessDropdown from '~/projects/settings/access_dropdown';
@@ -99,7 +99,7 @@ export default class ProtectedTagCreate {
         window.location.reload();
       })
       .catch(() =>
-        createFlash({
+        createAlert({
           message: s__('ProjectSettings|Failed to protect the tag'),
         }),
       );

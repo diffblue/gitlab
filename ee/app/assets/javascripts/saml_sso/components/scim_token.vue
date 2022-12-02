@@ -2,7 +2,7 @@
 import { GlSprintf, GlButton, GlLoadingIcon, GlModal } from '@gitlab/ui';
 
 import axios from '~/lib/utils/axios_utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import InputCopyToggleVisibility from '~/vue_shared/components/form/input_copy_toggle_visibility.vue';
 import { s__, __ } from '~/locale';
 
@@ -100,7 +100,7 @@ export default {
         this.token = token;
         this.endpointUrl = endpointUrl;
       } catch (error) {
-        createFlash({
+        createAlert({
           message: errorMessage,
           captureError: true,
           error,

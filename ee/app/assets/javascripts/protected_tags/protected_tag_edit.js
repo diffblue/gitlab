@@ -1,5 +1,5 @@
 import { find } from 'lodash';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import AccessDropdown from '~/projects/settings/access_dropdown';
 import { FAILED_TO_UPDATE_TAG_MESSAGE } from '~/protected_tags/constants';
@@ -67,7 +67,7 @@ export default class ProtectedTagEdit {
       })
       .catch(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        createFlash({
+        createAlert({
           message: FAILED_TO_UPDATE_TAG_MESSAGE,
         });
       });

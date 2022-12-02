@@ -1,7 +1,7 @@
 <script>
 import { GlPagination, GlAlert } from '@gitlab/ui';
 import Api from '~/api';
-import createFlash, { FLASH_TYPES } from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
 import { __, sprintf } from '~/locale';
@@ -187,7 +187,7 @@ export default {
         };
       },
       error() {
-        createFlash({
+        createAlert({
           message: __('Something went wrong while fetching requirements list.'),
           captureError: true,
         });
@@ -210,7 +210,7 @@ export default {
         };
       },
       error() {
-        createFlash({
+        createAlert({
           message: __('Something went wrong while fetching requirements count.'),
           captureError: true,
         });
@@ -426,7 +426,7 @@ export default {
           },
         })
         .catch((e) => {
-          createFlash({
+          createAlert({
             message: errorFlashMessage,
             parent: flashMessageContainer,
             captureError: true,
@@ -444,11 +444,11 @@ export default {
           },
         })
         .then(({ data }) => {
-          createFlash({ message: data?.message, type: FLASH_TYPES.NOTICE });
+          createAlert({ message: data?.message, variant: VARIANT_INFO });
         })
         .catch((err) => {
           const { data: { message = __('Something went wrong') } = {} } = err.response;
-          createFlash({ message });
+          createAlert({ message });
         });
     },
     exportCsv(selectedFields) {
@@ -474,7 +474,7 @@ export default {
           };
         })
         .catch((e) => {
-          createFlash({
+          createAlert({
             message: __('Something went wrong while exporting requirements'),
             captureError: true,
             error: e,
@@ -540,7 +540,7 @@ export default {
           }
         })
         .catch((e) => {
-          createFlash({
+          createAlert({
             message: __('Something went wrong while creating a requirement.'),
             parent: this.$el,
             captureError: true,

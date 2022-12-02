@@ -6,7 +6,7 @@ import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
 import axios from '~/lib/utils/axios_utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import ScimToken from 'ee/saml_sso/components/scim_token.vue';
 import InputCopyToggleVisibility from '~/vue_shared/components/form/input_copy_toggle_visibility.vue';
 
@@ -117,12 +117,12 @@ describe('ScimToken', () => {
     });
   };
   const itShowsLoadingIconThenCallsCreateFlash = (expectedErrorMessage) => {
-    it('shows loading icon then calls `createFlash`', async () => {
+    it('shows loading icon then calls `createAlert`', async () => {
       expectLoadingIconExists();
 
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: expectedErrorMessage,
         captureError: true,
         error: expect.any(Error),

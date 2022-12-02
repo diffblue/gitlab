@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlModal } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { sprintf, __ } from '~/locale';
 import lockPathMutation from '~/repository/mutations/lock_path.mutation.graphql';
 
@@ -84,7 +84,7 @@ export default {
           },
         })
         .catch((error) => {
-          createFlash({ message: error, captureError: true, error });
+          createAlert({ message: error, captureError: true, error });
         })
         .finally(() => {
           this.locked = locked;
