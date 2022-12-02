@@ -49,7 +49,7 @@ module API
         end
         # rubocop: disable CodeReuse/ActiveRecord
         get ':id/jobs', urgency: :low, feature_category: :continuous_integration do
-          check_rate_limit!(:jobs_show, scope: current_user) if enforce_jobs_api_rate_limits(@project)
+          check_rate_limit!(:jobs_index, scope: current_user) if enforce_jobs_api_rate_limits(@project)
 
           authorize_read_builds!
 
