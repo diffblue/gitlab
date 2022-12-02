@@ -113,4 +113,28 @@ RSpec.describe ProtectedBranches::CreateService do
       end
     end
   end
+
+  context 'when entity group' do
+    let_it_be_with_reload(:entity) { create(:group) }
+    let_it_be_with_reload(:user) { create(:user) }
+    let(:service) { described_class.new(entity, user) }
+
+    before do
+      entity.add_owner(user)
+    end
+
+    it 'return early in `sync_code_owner_approval_rules`' do
+      expect(service).to receive(:sync_code_owner_approval_rules)
+      expect(entity).not_to receive(:merge_requests)
+
+      service.execute
+    end
+
+    it 'return early in `track_onboarding_progress`' do
+      expect(service).to receive(:track_onboarding_progress)
+      expect(Onboarding::ProgressService).not_to receive(:new)
+
+      service.execute
+    end
+  end
 end

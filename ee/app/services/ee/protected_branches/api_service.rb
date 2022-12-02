@@ -12,9 +12,12 @@ module EE
         end
       end
 
+      override :attributes
       def attributes
         super.tap do |list|
-          list << :code_owner_approval_required if project.code_owner_approval_required_available?
+          if project_or_group.licensed_feature_available?(:code_owner_approval_required)
+            list << :code_owner_approval_required
+          end
         end
       end
     end

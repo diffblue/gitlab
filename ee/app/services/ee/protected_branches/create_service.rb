@@ -18,17 +18,20 @@ module EE
 
       override :save_protected_branch
       def save_protected_branch
-        protected_branch.code_owner_approval_required = false unless project.feature_available?(:code_owner_approval_required)
+        protected_branch.code_owner_approval_required = false unless project_or_group.feature_available?(:code_owner_approval_required)
 
         super
 
-        sync_code_owner_approval_rules if project.feature_available?(:code_owners)
+        sync_code_owner_approval_rules
         track_onboarding_progress
 
         protected_branch
       end
 
       def sync_code_owner_approval_rules
+        return if project_or_group.is_a?(Group) # Group-level MVC does not support this currently
+        return unless project_or_group.feature_available?(:code_owners)
+
         merge_requests_for_protected_branch.each do |merge_request|
           ::MergeRequests::SyncCodeOwnerApprovalRules.new(merge_request).execute
         end
@@ -45,7 +48,7 @@ module EE
       end
 
       def merge_requests_for_wildcard_branch
-        project.merge_requests
+        project_or_group.merge_requests
           .open_and_closed
           .by_target_branch_wildcard(protected_branch.name)
           .preload_source_project
@@ -53,7 +56,7 @@ module EE
       end
 
       def merge_requests_for_branch
-        project.merge_requests
+        project_or_group.merge_requests
           .open_and_closed
           .by_target_branch(protected_branch.name)
           .preload_source_project
@@ -61,9 +64,10 @@ module EE
       end
 
       def track_onboarding_progress
+        return if project_or_group.is_a?(Group) # Group-level MVC does not support this currently
         return unless protected_branch.code_owner_approval_required
 
-        Onboarding::ProgressService.new(project.namespace).execute(action: :code_owners_enabled)
+        Onboarding::ProgressService.new(project_or_group.namespace).execute(action: :code_owners_enabled)
       end
     end
   end
