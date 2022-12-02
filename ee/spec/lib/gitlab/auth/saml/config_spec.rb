@@ -10,7 +10,7 @@ RSpec.describe Gitlab::Auth::Saml::Config do
 
     context 'when SAML is enabled' do
       before do
-        allow(Gitlab::Auth::Saml::Config).to receive_messages({ options: { name: 'saml', args: {} } })
+        allow(described_class).to receive_messages({ options: { name: 'saml', args: {} } })
         allow(Gitlab::Auth::OAuth::Provider).to receive(:providers).and_return([:saml])
       end
 
@@ -18,7 +18,7 @@ RSpec.describe Gitlab::Auth::Saml::Config do
 
       context 'when the group attribute is configured' do
         before do
-          allow(Gitlab::Auth::Saml::Config).to receive(:groups).and_return(['Groups'])
+          allow(described_class).to receive(:groups).and_return(['Groups'])
         end
 
         it { is_expected.to eq(false) }

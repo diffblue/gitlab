@@ -470,7 +470,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
     subject { helper.ping? }
 
     it 'does not raise any exception' do
-      allow(Gitlab::Elastic::Helper.default.client).to receive(:ping).and_raise(StandardError)
+      allow(described_class.default.client).to receive(:ping).and_raise(StandardError)
 
       expect(subject).to be_falsey
       expect { subject }.not_to raise_exception
@@ -490,7 +490,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
 
     context 'server is accessible' do
       before do
-        allow(Gitlab::Elastic::Helper.default.client).to receive(:info).and_return(info)
+        allow(described_class.default.client).to receive(:info).and_return(info)
       end
 
       context 'using elasticsearch' do
@@ -529,7 +529,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
 
     context 'server is inaccessible' do
       before do
-        allow(Gitlab::Elastic::Helper.default.client).to receive(:info).and_raise(StandardError)
+        allow(described_class.default.client).to receive(:info).and_raise(StandardError)
       end
 
       it 'returns empty hash' do
@@ -562,7 +562,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
     context 'when Elasticsearch is enabled' do
       before do
         stub_ee_application_setting(elasticsearch_indexing: true)
-        allow(Gitlab::Elastic::Helper.default.client).to receive(:ping).and_return(true)
+        allow(described_class.default.client).to receive(:ping).and_return(true)
       end
 
       context 'when version is compatible' do
@@ -587,7 +587,7 @@ RSpec.describe Gitlab::Elastic::Helper, :request_store do
 
       context 'when Elasticsearch is unreachable' do
         before do
-          allow(Gitlab::Elastic::Helper.default.client).to receive(:ping).and_raise(StandardError)
+          allow(described_class.default.client).to receive(:ping).and_raise(StandardError)
         end
 
         it { is_expected.to be_truthy }

@@ -17,7 +17,7 @@ RSpec.describe Repositories::GitHttpController, feature_category: :source_code_m
       stub_group_wikis(true)
     end
 
-    it_behaves_like Repositories::GitHttpController do
+    it_behaves_like described_class do
       let(:container) { group.wiki }
       let(:access_checker_class) { Gitlab::GitAccessWiki }
     end

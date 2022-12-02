@@ -148,7 +148,7 @@ RSpec.describe Gitlab::Geo::Replicator do
     let(:events) { [event] }
 
     it 'creates events' do
-      expect { Gitlab::Geo::Replicator.bulk_create_events(events) }.to change { ::Geo::EventLog.count }.from(0).to(1)
+      expect { described_class.bulk_create_events(events) }.to change { ::Geo::EventLog.count }.from(0).to(1)
 
       expect(::Geo::EventLog.last.event).to be_present
     end

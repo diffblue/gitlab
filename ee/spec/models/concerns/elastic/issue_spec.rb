@@ -71,7 +71,7 @@ RSpec.describe Issue, :elastic do
     options = { project_ids: [project.id] }
 
     expect(described_class.elastic_search('(term1 | term2 | term3) +bla-bla', options: options).total_count).to eq(2)
-    expect(described_class.elastic_search(Issue.last.to_reference, options: options).total_count).to eq(1)
+    expect(described_class.elastic_search(described_class.last.to_reference, options: options).total_count).to eq(1)
     expect(described_class.elastic_search('bla-bla', options: { project_ids: :any, public_and_internal_projects: true }).total_count).to eq(3)
   end
 

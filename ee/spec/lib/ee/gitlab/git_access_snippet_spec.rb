@@ -11,7 +11,7 @@ RSpec.describe Gitlab::GitAccessSnippet do
   let(:actor) { :geo }
   let(:authentication_abilities) { [:read_project, :download_code, :push_code] }
 
-  subject(:access) { Gitlab::GitAccessSnippet.new(actor, snippet, protocol, authentication_abilities: authentication_abilities) }
+  subject(:access) { described_class.new(actor, snippet, protocol, authentication_abilities: authentication_abilities) }
 
   describe '#check' do
     subject { access.check('git-receive-pack', ::Gitlab::GitAccess::ANY) }

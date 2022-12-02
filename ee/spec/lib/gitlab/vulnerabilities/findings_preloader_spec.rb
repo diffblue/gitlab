@@ -42,7 +42,7 @@ RSpec.describe Gitlab::Vulnerabilities::FindingsPreloader do
 
     it 'calls .preload_feedback!' do
       create_list(:vulnerabilities_finding, 2, project: create(:project))
-      expect(Gitlab::Vulnerabilities::FindingsPreloader).to receive(:preload_feedback!)
+      expect(described_class).to receive(:preload_feedback!)
       preloaded_findings
     end
   end

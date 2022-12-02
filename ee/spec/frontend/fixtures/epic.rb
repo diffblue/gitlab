@@ -38,7 +38,7 @@ RSpec.describe 'Epics (JavaScript fixtures)' do
     let(:response) { @json_data.to_json }
 
     it 'epic/mock_meta.json' do
-      presenter = EpicPresenter.new(epic, current_user: user)
+      presenter = described_class.new(epic, current_user: user)
 
       @json_data = presenter.show_data(base_data: {}, author_icon: 'icon_path')
     end

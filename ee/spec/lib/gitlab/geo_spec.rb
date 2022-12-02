@@ -208,7 +208,7 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       where(:is_secondary) { [true, false] }
       with_them do
         before do
-          allow(Gitlab::Geo).to receive(:secondary_check_without_db_connection) { is_secondary }
+          allow(described_class).to receive(:secondary_check_without_db_connection) { is_secondary }
         end
 
         it { is_expected.to be(is_secondary) }
@@ -242,8 +242,8 @@ RSpec.describe Gitlab::Geo, :geo, :request_store do
       before do
         allow(Rails).to receive_message_chain(:env, :test?).and_return(false)
         allow(Rails).to receive_message_chain(:env, :development?).and_return(is_dev)
-        allow(Gitlab::Geo).to receive(:geo_database_configured?) { geo_database_configured }
-        allow(Gitlab::Geo).to receive(:gdk_geo_secondary?) { is_gdk_geo_secondary }
+        allow(described_class).to receive(:geo_database_configured?) { geo_database_configured }
+        allow(described_class).to receive(:gdk_geo_secondary?) { is_gdk_geo_secondary }
       end
 
       it { is_expected.to be(expected_secondary) }
