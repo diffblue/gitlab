@@ -7,8 +7,25 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
     render_403 unless can?(current_user, :read_group_cycle_analytics, @group)
   end
 
+  before_action :load_stage_events, only: %i[new edit]
+  before_action :load_value_stream, only: %i[show edit update]
+
+  layout 'group'
+
   def index
     render json: Analytics::CycleAnalytics::ValueStreamSerializer.new.represent(value_streams)
+  end
+
+  def new
+    render :new
+  end
+
+  def show
+    render json: Analytics::CycleAnalytics::ValueStreamSerializer.new.represent(@value_stream)
+  end
+
+  def edit
+    render :edit
   end
 
   def create
@@ -22,8 +39,7 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
   end
 
   def update
-    value_stream = @group.value_streams.find(params[:id])
-    result = Analytics::CycleAnalytics::ValueStreams::UpdateService.new(group: @group, params: update_params, current_user: current_user, value_stream: value_stream).execute
+    result = Analytics::CycleAnalytics::ValueStreams::UpdateService.new(group: @group, params: update_params, current_user: current_user, value_stream: @value_stream).execute
 
     if result.success?
       render json: serialize_value_stream(result), status: result.http_status
@@ -106,5 +122,16 @@ class Groups::Analytics::CycleAnalytics::ValueStreamsController < Groups::Analyt
 
   def serialize_value_stream_error(result)
     Analytics::CycleAnalytics::ValueStreamErrorsSerializer.new(result.payload[:value_stream])
+  end
+
+  def load_value_stream
+    @value_stream ||= @group.value_streams.find(params[:id])
+  end
+
+  def load_stage_events
+    @stage_events ||= begin
+      selectable_events = Gitlab::Analytics::CycleAnalytics::StageEvents.selectable_events
+      Analytics::CycleAnalytics::EventEntity.represent(selectable_events)
+    end
   end
 end

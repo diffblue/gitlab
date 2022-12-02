@@ -38,6 +38,53 @@ RSpec.describe Groups::Analytics::CycleAnalytics::ValueStreamsController, featur
     end
   end
 
+  describe 'GET #show' do
+    let!(:value_stream) { create(:cycle_analytics_group_value_stream, group: group) }
+
+    it 'succeeds' do
+      get :show, params: params.merge(id: value_stream.id)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to match_response_schema('analytics/cycle_analytics/value_stream', dir: 'ee')
+    end
+
+    context 'when value stream is not found' do
+      it 'renders 404' do
+        get :show, params: params.merge(id: non_existing_record_id)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'GET #edit' do
+    let!(:value_stream) { create(:cycle_analytics_group_value_stream, group: group) }
+
+    it 'succeeds' do
+      get :edit, params: params.merge(id: value_stream.id)
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to render_template(:edit)
+    end
+
+    context 'when value stream is not found' do
+      it 'renders 404' do
+        get :edit, params: params.merge(id: non_existing_record_id)
+
+        expect(response).to have_gitlab_http_status(:not_found)
+      end
+    end
+  end
+
+  describe 'GET #new' do
+    it 'succeeds' do
+      get :new, params: params
+
+      expect(response).to have_gitlab_http_status(:ok)
+      expect(response).to render_template(:new)
+    end
+  end
+
   describe 'POST #create' do
     context 'with valid params' do
       it 'returns a successful 200 response' do
