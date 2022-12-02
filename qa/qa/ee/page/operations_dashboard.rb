@@ -61,10 +61,8 @@ module QA
           all_elements(:remove_project_button, minimum: 1)
         end
 
-        def within_add_projects_modal
-          within_element(:add_projects_modal) do
-            yield
-          end
+        def within_add_projects_modal(&block)
+          within_element(:add_projects_modal, &block)
         end
 
         def open_add_project_modal

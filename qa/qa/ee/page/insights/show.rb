@@ -34,16 +34,12 @@ module QA
             end
           end
 
-          def within_insights_dropdown
-            within_element :insights_dashboard_dropdown do
-              yield
-            end
+          def within_insights_dropdown(&block)
+            within_element :insights_dashboard_dropdown, &block
           end
 
-          def within_insights_page
-            within_element :insights_page do
-              yield
-            end
+          def within_insights_page(&block)
+            within_element :insights_page, &block
           end
         end
       end

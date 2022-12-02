@@ -22,8 +22,8 @@ module QA
               end
             end
 
-            def wait_until_geo_max_replication_time(max_wait: Runtime::Geo.max_file_replication_time)
-              wait_until(max_duration: max_wait) { yield }
+            def wait_until_geo_max_replication_time(max_wait: Runtime::Geo.max_file_replication_time, &block)
+              wait_until(max_duration: max_wait, &block)
             end
           end
         end
