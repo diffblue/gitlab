@@ -124,7 +124,7 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
     let(:email_opted_in) { '0' }
     let(:joining_project) { 'false' }
 
-    subject(:update) do
+    subject(:patch_update) do
       patch :update, params: {
         user: {
           role: 'software_developer',
@@ -245,6 +245,12 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
         end
 
         context 'when signup_onboarding is enabled' do
+          let(:user) do
+            create(:user, onboarding_in_progress: true).tap do |record|
+              create(:user_detail, user: record, onboarding_step_url: '_url_')
+            end
+          end
+
           before do
             allow(controller.helpers).to receive(:signup_onboarding_enabled?).and_return(true)
           end
@@ -252,12 +258,27 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
           context 'when joining_project is "true"', :experiment do
             let(:joining_project) { 'true' }
 
-            it { is_expected.to redirect_to dashboard_projects_path }
+            specify do
+              patch_update
+              user.reload
+
+              expect(user.onboarding_in_progress).to be_falsey
+              expect(user.user_detail.onboarding_step_url).to be_nil
+              expect(response).to redirect_to dashboard_projects_path
+            end
           end
 
           context 'when joining_project is "false"' do
             context 'with group and project creation' do
-              it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
+              specify do
+                patch_update
+                user.reload
+                path = new_users_sign_up_groups_project_path
+
+                expect(user.onboarding_in_progress).to be_truthy
+                expect(user.user_detail.onboarding_step_url).to eq(path)
+                expect(response).to redirect_to path
+              end
             end
           end
 
@@ -273,13 +294,29 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
               }
             end
 
-            it { is_expected.to redirect_to new_users_sign_up_company_path(expected_params) }
+            specify do
+              patch_update
+              user.reload
+              path = new_users_sign_up_company_path(expected_params)
+
+              expect(user.onboarding_in_progress).to be_truthy
+              expect(user.user_detail.onboarding_step_url).to eq(path)
+              expect(response).to redirect_to path
+            end
           end
 
           context 'when setup_for_company is "false"' do
             let(:setup_for_company) { 'false' }
 
-            it { is_expected.to redirect_to new_users_sign_up_groups_project_path }
+            specify do
+              patch_update
+              user.reload
+              path = new_users_sign_up_groups_project_path
+
+              expect(user.onboarding_in_progress).to be_truthy
+              expect(user.user_detail.onboarding_step_url).to eq(path)
+              expect(response).to redirect_to path
+            end
           end
 
           context 'when in subscription flow' do
@@ -304,6 +341,33 @@ RSpec.describe Registrations::WelcomeController, feature_category: :authenticati
             end
 
             it { is_expected.not_to redirect_to new_users_sign_up_groups_project_path }
+
+            context 'when stored company path' do
+              let(:stored_path) { new_users_sign_up_company_path }
+
+              before do
+                controller.store_location_for(:user, stored_path)
+              end
+
+              specify do
+                patch_update
+                user.reload
+
+                path = ::Gitlab::Utils.add_url_parameters(
+                  stored_path, {
+                    glm_content: 'some_content',
+                    glm_source: 'some_source',
+                    jobs_to_be_done_other: '_jobs_to_be_done_other_',
+                    registration_objective: 'code_storage',
+                    role: 'software_developer'
+                  }
+                )
+
+                expect(user.onboarding_in_progress).to be_truthy
+                expect(user.user_detail.onboarding_step_url).to eq(path)
+                expect(response).to redirect_to path
+              end
+            end
           end
         end
       end

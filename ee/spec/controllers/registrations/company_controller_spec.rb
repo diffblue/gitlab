@@ -94,6 +94,50 @@ RSpec.describe Registrations::CompanyController, :saas, feature_category: :onboa
           expect(response).to redirect_to(new_users_sign_up_groups_project_path(redirect_query.merge(glm_params)))
         end
       end
+
+      context 'when saving onboarding_step_url' do
+        let(:path) { new_users_sign_up_groups_project_path(glm_params) }
+
+        subject(:post_create) { post :create, params: params }
+
+        before do
+          allow_next_instance_of(GitlabSubscriptions::CreateTrialOrLeadService) do |service|
+            allow(service).to receive(:execute).and_return(ServiceResponse.success)
+          end
+        end
+
+        context 'when current user onboarding is disabled' do
+          it 'does not store onboarding url' do
+            post_create
+
+            expect(user.user_detail.onboarding_step_url).to be_nil
+          end
+        end
+
+        context 'when ensure_onboarding is disabled' do
+          let_it_be(:user) { create(:user, onboarding_in_progress: true) }
+
+          before do
+            stub_feature_flags(ensure_onboarding: false)
+          end
+
+          it 'does not store onboarding url' do
+            post_create
+
+            expect(user.user_detail.onboarding_step_url).to be_nil
+          end
+        end
+
+        context 'when onboarding and feature flag are enabled' do
+          let_it_be(:user) { create(:user, onboarding_in_progress: true) }
+
+          it 'stores onboarding url' do
+            post_create
+
+            expect(user.user_detail.onboarding_step_url).to eq(path)
+          end
+        end
+      end
     end
 
     context 'on failure' do

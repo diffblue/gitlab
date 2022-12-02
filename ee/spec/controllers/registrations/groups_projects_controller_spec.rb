@@ -8,6 +8,49 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 
+  shared_examples 'finishing onboarding' do
+    let_it_be(:url) { '_url_' }
+    let_it_be(:onboarding_in_progress) { true }
+
+    let_it_be(:user) do
+      create(:user, onboarding_in_progress: onboarding_in_progress).tap do |record|
+        create(:user_detail, user: record, onboarding_step_url: url)
+      end
+    end
+
+    context 'when current user onboarding is disabled' do
+      let_it_be(:onboarding_in_progress) { false }
+
+      it 'does not finish onboarding' do
+        subject
+
+        expect(user.user_detail.onboarding_step_url).to eq url
+      end
+    end
+
+    context 'when ensure_onboarding is disabled' do
+      before do
+        stub_feature_flags(ensure_onboarding: false)
+      end
+
+      it 'does not finish onboarding' do
+        subject
+
+        expect(user.user_detail.onboarding_step_url).to eq url
+      end
+    end
+
+    context 'when onboarding and feature flag are enabled' do
+      it 'finishes onboarding' do
+        subject
+        user.reload
+
+        expect(user.user_detail.onboarding_step_url).to be_nil
+        expect(user.onboarding_in_progress).to be_falsey
+      end
+    end
+  end
+
   describe 'GET #new' do
     subject { get :new }
 
@@ -103,6 +146,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
       end
 
       it_behaves_like 'hides email confirmation warning'
+      it_behaves_like 'finishing onboarding'
 
       it 'creates a group and project' do
         expect { post_create }.to change(Group, :count).by(1).and change(Project, :count).by(1)
@@ -216,6 +260,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
       end
 
       it_behaves_like 'hides email confirmation warning'
+      it_behaves_like 'finishing onboarding'
 
       context "when a group can't be created" do
         before do
@@ -268,6 +313,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
 
       it { is_expected.to have_gitlab_http_status(:redirect) }
       it { is_expected.to redirect_to(root_url) }
+
+      it_behaves_like 'finishing onboarding'
 
       context 'when requires_credit_card_verification is true' do
         let_it_be(:user) { create(:user, requires_credit_card_verification: true) }

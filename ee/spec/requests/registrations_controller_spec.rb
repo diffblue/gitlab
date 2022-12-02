@@ -212,5 +212,33 @@ RSpec.describe RegistrationsController, type: :request do
         end
       end
     end
+
+    context 'with onboarding progress' do
+      before do
+        stub_feature_flags(arkose_labs_signup_challenge: false)
+      end
+
+      context 'when ensure_onboarding is enabled' do
+        it 'sets onboarding' do
+          create_user
+          user = User.find_by_username(user_attrs[:username])
+
+          expect(user.onboarding_in_progress).to be_truthy
+        end
+      end
+
+      context 'when ensure_onboarding is disabled' do
+        before do
+          stub_feature_flags(ensure_onboarding: false)
+        end
+
+        it 'does not set onboarding' do
+          create_user
+          user = User.find_by_username(user_attrs[:username])
+
+          expect(user.onboarding_in_progress).to be_falsey
+        end
+      end
+    end
   end
 end
