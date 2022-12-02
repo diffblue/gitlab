@@ -8,7 +8,6 @@ module QA
       'When using elasticsearch API to search for a public blob',
       :orchestrated,
       :elasticsearch,
-      :requires_admin,
       :skip_live_env
     ) do
       include_context 'advanced search active'

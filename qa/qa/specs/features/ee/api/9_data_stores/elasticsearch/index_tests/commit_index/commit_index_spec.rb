@@ -8,7 +8,6 @@ module QA
       'When using Advanced Search API to search for a public commit',
       :orchestrated,
       :elasticsearch,
-      :requires_admin,
       :skip_live_env
     ) do
       include_context 'advanced search active'

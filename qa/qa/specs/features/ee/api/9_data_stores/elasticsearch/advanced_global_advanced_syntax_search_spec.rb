@@ -8,7 +8,6 @@ module QA
       'Elasticsearch advanced global search with advanced syntax',
       :orchestrated,
       :elasticsearch,
-      :requires_admin,
       :skip_live_env
     ) do
       include_context 'advanced search active'
