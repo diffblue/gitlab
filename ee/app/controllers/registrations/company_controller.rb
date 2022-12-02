@@ -5,6 +5,7 @@ module Registrations
     include OneTrustCSP
     include GoogleAnalyticsCSP
     include RegistrationsTracking
+    include Onboarding::SetRedirect
 
     layout 'minimal'
 
@@ -22,7 +23,9 @@ module Registrations
       result = GitlabSubscriptions::CreateTrialOrLeadService.new(user: current_user, params: permitted_params).execute
 
       if result.success?
-        redirect_to new_users_sign_up_groups_project_path(redirect_params)
+        path = new_users_sign_up_groups_project_path(redirect_params)
+        save_onboarding_step_url(path)
+        redirect_to path
       else
         flash.now[:alert] = result[:message]
         render :new, status: result.http_status

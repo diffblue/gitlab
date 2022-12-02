@@ -51,14 +51,26 @@ feature_category: :onboarding do
 
       expect_to_see_welcome_form
 
+      # validate user is returned back to the specific onboarding step
+      visit root_path
+      expect_to_see_welcome_form
+
       fills_in_welcome_form
       click_on 'Continue'
 
       expect_to_be_see_company_form
 
+      # validate user is returned back to the specific onboarding step
+      visit root_path
+      expect_to_be_see_company_form
+
       fill_in_company_form(trial: false)
       click_on 'Continue'
 
+      expect_to_see_group_and_project_creation_form
+
+      # validate user is returned back to the specific onboarding step
+      visit root_path
       expect_to_see_group_and_project_creation_form
 
       fills_in_group_and_project_creation_form
@@ -133,7 +145,7 @@ feature_category: :onboarding do
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(137)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(143)
 
     fill_in 'group_name', with: 'Test Group'
     fill_in 'blank_project_name', with: 'Test Project'

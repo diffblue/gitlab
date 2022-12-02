@@ -12,9 +12,15 @@ RSpec.describe SubscriptionsController, feature_category: :purchase do
     it 'stores subscription URL for later' do
       subject
 
-      expected_subscription_path = new_subscriptions_path(plan_id: 'bronze_id') if redirect_from == 'checkout'
-      expected_subscription_path = buy_minutes_subscriptions_path(plan_id: 'bronze_id') if redirect_from == 'buy_minutes'
-      expected_subscription_path = buy_storage_subscriptions_path(plan_id: 'bronze_id') if redirect_from == 'buy_storage'
+      expected_subscription_path =
+        case redirect_from
+        when 'checkout'
+          new_subscriptions_path(plan_id: 'bronze_id')
+        when 'buy_minutes'
+          buy_minutes_subscriptions_path(plan_id: 'bronze_id')
+        when 'buy_storage'
+          buy_storage_subscriptions_path(plan_id: 'bronze_id')
+        end
 
       expect(controller.stored_location_for(:user)).to eq(expected_subscription_path)
     end

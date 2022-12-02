@@ -12,6 +12,7 @@ module EE
       prepended do
         include OneTrustCSP
         include GoogleAnalyticsCSP
+        include Onboarding::SetRedirect
 
         before_action :authorized_for_trial_onboarding!,
                       only: [
@@ -94,11 +95,16 @@ module EE
       override :update_success_path
       def update_success_path
         if params[:joining_project] == 'true'
+          finish_onboarding
           path_for_signed_in_user(current_user)
         elsif show_company_form?
-          new_users_sign_up_company_path(passed_through_params)
+          path = new_users_sign_up_company_path(passed_through_params)
+          save_onboarding_step_url(path)
+          path
         else
-          new_users_sign_up_groups_project_path
+          path = new_users_sign_up_groups_project_path
+          save_onboarding_step_url(path)
+          path
         end
       end
 
@@ -112,7 +118,8 @@ module EE
         return stored_url unless stored_url.include?(new_users_sign_up_company_path)
 
         redirect_uri = ::Gitlab::Utils.add_url_parameters(stored_url, passed_through_params)
-        store_location_for(:user, redirect_uri)
+        save_onboarding_step_url(redirect_uri)
+        redirect_uri
       end
     end
   end

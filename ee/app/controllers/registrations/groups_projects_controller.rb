@@ -4,6 +4,7 @@ module Registrations
   class GroupsProjectsController < ApplicationController
     include OneTrustCSP
     include GoogleAnalyticsCSP
+    include Onboarding::SetRedirect
 
     skip_before_action :require_verification, only: :new
     skip_before_action :set_confirm_warning
@@ -35,6 +36,7 @@ module Registrations
       result = Registrations::StandardNamespaceCreateService.new(current_user, params).execute
 
       if result.success?
+        finish_onboarding
         redirect_successful_namespace_creation(result.payload[:project].id)
       else
         @group = result.payload[:group]
@@ -48,6 +50,7 @@ module Registrations
       result = Registrations::ImportNamespaceCreateService.new(current_user, params).execute
 
       if result.success?
+        finish_onboarding
         import_url = URI.join(root_url, params[:import_url], "?namespace_id=#{result.payload[:group].id}").to_s
         redirect_to import_url
       else
@@ -65,6 +68,7 @@ module Registrations
         ::Users::UpdateService.new(current_user, user: current_user, requires_credit_card_verification: false).execute!
       end
 
+      finish_onboarding
       redirect_to root_url
     end
 

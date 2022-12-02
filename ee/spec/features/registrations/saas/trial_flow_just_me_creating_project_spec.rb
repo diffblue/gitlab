@@ -96,7 +96,7 @@ RSpec.describe 'Trial flow for user picking just me and creating a project', :js
     # The groups_and_projects_controller (on `click_on 'Create project'`) is over
     # the query limit threshold, so we have to adjust it.
     # https://gitlab.com/gitlab-org/gitlab/-/issues/338737
-    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(137)
+    allow(Gitlab::QueryLimiting::Transaction).to receive(:threshold).and_return(143)
 
     service_instance = instance_double(GitlabSubscriptions::Trials::ApplyTrialService)
     allow(GitlabSubscriptions::Trials::ApplyTrialService).to receive(:new).and_return(service_instance)

@@ -39,6 +39,17 @@ module EE
       record_arkose_data(user)
     end
 
+    override :set_resource_fields
+    def set_resource_fields
+      super
+
+      custom_confirmation_instructions_service.set_token(save: false)
+      return if registered_with_invite_email?
+      return unless ::Feature.enabled?(:ensure_onboarding)
+
+      resource.onboarding_in_progress = true
+    end
+
     override :set_blocked_pending_approval?
     def set_blocked_pending_approval?
       super || ::Gitlab::CurrentSettings.should_apply_user_signup_cap?
@@ -52,11 +63,6 @@ module EE
     override :custom_confirmation_enabled?
     def custom_confirmation_enabled?
       custom_confirmation_instructions_service.enabled?
-    end
-
-    override :set_custom_confirmation_token
-    def set_custom_confirmation_token
-      custom_confirmation_instructions_service.set_token(save: false)
     end
 
     override :send_custom_confirmation_instructions
