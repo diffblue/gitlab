@@ -4,7 +4,6 @@ FactoryBot.modify do
   factory :protected_branch do
     transient do
       ee { true }
-      group { nil }
       authorize_user_to_push { nil }
       authorize_user_to_merge { nil }
       authorize_user_to_unprotect { nil }

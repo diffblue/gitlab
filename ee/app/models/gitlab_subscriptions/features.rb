@@ -161,6 +161,7 @@ module GitlabSubscriptions
       zentao_issues_integration
       coverage_check_approval_rule
       issuable_resource_links
+      group_protected_branches
     ].freeze
 
     ULTIMATE_FEATURES = %i[

@@ -34,5 +34,11 @@ module EE
         access_level.check_access(user)
       end
     end
+
+    def supports_unprotection_restrictions?
+      return false if group
+
+      project.licensed_feature_available?(:unprotection_restrictions)
+    end
   end
 end
