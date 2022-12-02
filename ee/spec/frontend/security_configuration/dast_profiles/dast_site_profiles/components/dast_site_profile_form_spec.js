@@ -56,6 +56,7 @@ describe('DastSiteProfileForm', () => {
   const scanFilePathInput = () => wrapper.findByTestId('scan-file-path-input');
   const findAuthCheckbox = () => wrapper.findByTestId('auth-enable-checkbox');
   const findTargetTypeOption = () => wrapper.findByTestId('site-type-option');
+  const findGraphQlHelpText = () => wrapper.findByTestId('graphql-help-text');
 
   const setFieldValue = async (field, value) => {
     await field.setValue(value);
@@ -269,6 +270,13 @@ describe('DastSiteProfileForm', () => {
         it('should show scan file-path input upon selection', async () => {
           await setScanMethodOption(1);
           expect(scanFilePathInput().exists()).toBe(true);
+          expect(findGraphQlHelpText().exists()).toBe(false);
+        });
+
+        it('should display graphql help text only for graphql option', async () => {
+          await setScanMethodOption(2);
+          expect(scanFilePathInput().exists()).toBe(true);
+          expect(findGraphQlHelpText().exists()).toBe(true);
         });
       });
 

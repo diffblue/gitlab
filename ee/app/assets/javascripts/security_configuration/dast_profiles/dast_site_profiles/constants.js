@@ -5,6 +5,7 @@ export const MAX_CHAR_LIMIT_REQUEST_HEADERS = 2048;
 export const EXCLUDED_URLS_SEPARATOR = ',';
 export const REDACTED_PASSWORD = '••••••••';
 export const REDACTED_REQUEST_HEADERS = '••••••••';
+export const DAST_API_DOC_PATH_BASE = 'user/application_security/dast_api/index';
 
 export const TARGET_TYPES = {
   WEBSITE: { value: 'WEBSITE', text: s__('DastProfiles|Website') },
@@ -17,6 +18,12 @@ export const SCAN_METHODS = {
     value: 'HAR',
     inputLabel: __('HAR file URL'),
     placeholder: s__('DastProfiles|https://example.com/dast_example.har'),
+  },
+  GRAPHQL: {
+    text: __('GraphQL'),
+    value: 'GRAPHQL',
+    inputLabel: __('GraphQL endpoint path'),
+    placeholder: s__('DastProfiles|/graphql'),
   },
   OPENAPI: {
     text: __('OpenAPI'),
