@@ -10,7 +10,7 @@ module Namespaces
       def breached_cap_limit?
         return false unless subscription_expired? || expired_trial?
 
-        ::Namespaces::FreeUserCap::Standard.new(namespace).over_limit?
+        ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?
       end
 
       def base_alert_data

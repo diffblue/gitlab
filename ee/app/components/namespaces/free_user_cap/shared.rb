@@ -7,7 +7,7 @@ module Namespaces
 
       ALERT_CLASS = 'js-user-over-limit-free-plan-alert gl-mb-2 gl-mt-6'
       CONTAINER_CLASSES = 'gl-overflow-auto'
-      PREVIEW_IGNORE_DISMISSAL_EARLIER_THAN = 14.days.ago
+      NOTIFICATION_IGNORE_DISMISSAL_EARLIER_THAN = 14.days.ago
 
       # region: container class ----------------------------------------
 
@@ -15,7 +15,7 @@ module Namespaces
         "#{CONTAINER_CLASSES} #{content_class}"
       end
 
-      # region: standard shared ----------------------------------------
+      # region: enforcement shared ----------------------------------------
 
       def self.default_render?(user:, namespace:)
         user && Ability.allowed?(user, :owner_access, namespace)
@@ -33,8 +33,8 @@ module Namespaces
         }
       end
 
-      def self.breached_standard_cap_limit?(namespace)
-        ::Namespaces::FreeUserCap::Standard.new(namespace).over_limit?
+      def self.enforcement_over_limit?(namespace)
+        ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?
       end
 
       # region: alert data ---------------------------------------------
@@ -62,16 +62,16 @@ module Namespaces
         base_alert_data(feature_name).merge(**extra_alert_data(namespace))
       end
 
-      # region: preview specifics --------------------------------------
+      # region: notification specifics --------------------------------------
 
-      def self.preview_dismissed?(user:, namespace:, feature_name:)
+      def self.notification_dismissed?(user:, namespace:, feature_name:)
         user.dismissed_callout_for_group?(feature_name: feature_name,
                                           group: namespace,
-                                          ignore_dismissal_earlier_than: PREVIEW_IGNORE_DISMISSAL_EARLIER_THAN)
+                                          ignore_dismissal_earlier_than: NOTIFICATION_IGNORE_DISMISSAL_EARLIER_THAN)
       end
 
-      def self.breached_preview_cap_limit?(namespace)
-        ::Namespaces::FreeUserCap::Preview.new(namespace).over_limit?
+      def self.over_notification_limit?(namespace)
+        ::Namespaces::FreeUserCap::Notification.new(namespace).over_limit?
       end
 
       def self.non_owner_render?(user:, namespace:)
@@ -81,14 +81,7 @@ module Namespaces
         Ability.allowed?(user, :read_group, namespace)
       end
 
-      def self.preview_render?(user:, namespace:, feature_name:)
-        return false unless default_render?(user: user, namespace: namespace)
-        return false if preview_dismissed?(user: user, namespace: namespace, feature_name: feature_name)
-
-        breached_preview_cap_limit?(namespace)
-      end
-
-      def self.preview_alert_title(free_user_limit = self.free_user_limit)
+      def self.notification_alert_title(free_user_limit = self.free_user_limit)
         n_(
           'From October 19, 2022, free private groups will be limited to %d member',
           'From October 19, 2022, free private groups will be limited to %d members',

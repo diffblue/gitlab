@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap::Preview, :saas do
+RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
   let_it_be(:namespace, reload: true) { create(:group_with_plan, :private, plan: :free_plan) }
   let(:free_user_count) { 1 }
   let(:enforcement_limit) { 3 }

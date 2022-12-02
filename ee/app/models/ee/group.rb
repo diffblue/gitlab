@@ -679,7 +679,7 @@ module EE
     end
 
     def enforce_free_user_cap?
-      ::Namespaces::FreeUserCap::Standard.new(self).enforce_cap?
+      ::Namespaces::FreeUserCap::Enforcement.new(self).enforce_cap?
     end
 
     def cluster_agents

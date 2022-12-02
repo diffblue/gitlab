@@ -16,8 +16,8 @@ module EE
       end
 
       def check_free_user_cap_over_limit!
-        ::Namespaces::FreeUserCap::Standard.new(project.root_ancestor)
-                                           .git_check_over_limit!(::Commits::CreateService::ValidationError)
+        ::Namespaces::FreeUserCap::Enforcement.new(project.root_ancestor)
+                                              .git_check_over_limit!(::Commits::CreateService::ValidationError)
       end
 
       def validate_repository_size!

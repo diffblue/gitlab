@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require "spec_helper"
 
-RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate_failures, type: :component do
+RSpec.describe Namespaces::FreeUserCap::NotificationAlertComponent, :saas, :aggregate_failures, type: :component do
   let_it_be(:namespace) { create(:group) }
   let_it_be(:user, refind: true) { create(:user) }
   let_it_be(:content_class) { '_content_class_' }
@@ -12,7 +12,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }
 
   before do
-    allow_next_instance_of(::Namespaces::FreeUserCap::Preview) do |preview_free_user_cap|
+    allow_next_instance_of(::Namespaces::FreeUserCap::Notification) do |preview_free_user_cap|
       allow(preview_free_user_cap).to receive(:over_limit?).and_return(preview_free_user_cap_over?)
     end
   end
@@ -34,7 +34,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
         expect(page)
           .to have_css("[data-testid='user-over-limit-free-plan-alert']" \
                        "[data-dismiss-endpoint='#{group_callouts_path}']" \
-                       "[data-feature-id='#{described_class::PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT}']" \
+                       "[data-feature-id='#{described_class::NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT}']" \
                        "[data-group-id='#{namespace.id}']")
       end
 
@@ -60,7 +60,7 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
             create(:group_callout,
                    user: user,
                    group: namespace,
-                   feature_name: described_class::PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT,
+                   feature_name: described_class::NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT,
                    dismissed_at: Time.now)
           end
 
@@ -76,8 +76,8 @@ RSpec.describe Namespaces::FreeUserCap::PreviewAlertComponent, :saas, :aggregate
             create(:group_callout,
                    user: user,
                    group: namespace,
-                   feature_name: described_class::PREVIEW_USER_OVER_LIMIT_FREE_PLAN_ALERT,
-                   dismissed_at: Namespaces::FreeUserCap::Shared::PREVIEW_IGNORE_DISMISSAL_EARLIER_THAN - 1.day)
+                   feature_name: described_class::NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT,
+                   dismissed_at: Namespaces::FreeUserCap::Shared::NOTIFICATION_IGNORE_DISMISSAL_EARLIER_THAN - 1.day)
           end
 
           it 'renders the alert' do

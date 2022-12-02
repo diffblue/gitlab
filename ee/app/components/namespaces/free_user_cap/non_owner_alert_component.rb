@@ -2,7 +2,7 @@
 
 module Namespaces
   module FreeUserCap
-    class NonOwnerAlertComponent < AlertComponent
+    class NonOwnerAlertComponent < EnforcementAlertComponent
       private
 
       def render?

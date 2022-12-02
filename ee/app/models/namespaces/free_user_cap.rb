@@ -2,12 +2,12 @@
 
 module Namespaces
   module FreeUserCap
-    def self.enforce_preview_or_standard?(namespace)
-      # should only be needed temporarily while preview is still in codebase
-      # after preview is removed, we should merely call `Standard` in the
-      # places that use this. For preview cleanup https://gitlab.com/gitlab-org/gitlab/-/issues/356561
-      ::Namespaces::FreeUserCap::Preview.new(namespace).enforce_cap? ||
-        ::Namespaces::FreeUserCap::Standard.new(namespace).enforce_cap?
+    def self.notification_or_enforcement_enabled?(namespace)
+      # should only be needed temporarily while notification is still in codebase
+      # after notification is removed, we should merely call `Enforcement` in the
+      # places that use this. For notification cleanup https://gitlab.com/gitlab-org/gitlab/-/issues/356561
+      ::Namespaces::FreeUserCap::Notification.new(namespace).enforce_cap? ||
+        ::Namespaces::FreeUserCap::Enforcement.new(namespace).enforce_cap?
     end
 
     def self.dashboard_limit

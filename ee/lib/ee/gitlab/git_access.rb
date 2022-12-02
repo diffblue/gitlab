@@ -99,8 +99,8 @@ module EE
       end
 
       def check_free_user_cap_over_limit!
-        ::Namespaces::FreeUserCap::Standard.new(container.root_ancestor)
-                                           .git_check_over_limit!(::Gitlab::GitAccess::ForbiddenError)
+        ::Namespaces::FreeUserCap::Enforcement.new(container.root_ancestor)
+                                              .git_check_over_limit!(::Gitlab::GitAccess::ForbiddenError)
       end
 
       override :check_active_user!

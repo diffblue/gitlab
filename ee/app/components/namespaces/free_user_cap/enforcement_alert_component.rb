@@ -2,7 +2,7 @@
 
 module Namespaces
   module FreeUserCap
-    class AlertComponent < BaseAlertComponent
+    class EnforcementAlertComponent < BaseAlertComponent
       private
 
       USER_REACHED_LIMIT_FREE_PLAN_ALERT = 'user_reached_limit_free_plan_alert'

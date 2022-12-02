@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
+RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
   let_it_be(:namespace, reload: true) { create(:group_with_plan, :private, plan: :free_plan) }
 
   let(:dashboard_limit_enabled) { true }
@@ -303,10 +303,10 @@ RSpec.describe Namespaces::FreeUserCap::Standard, :saas do
 
         Benchmark.ips do |x|
           x.report('without cache') do
-            ::Namespaces::FreeUserCap::Standard.new(namespace).over_limit?(cache: false)
+            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?(cache: false)
           end
           x.report('with cache') do
-            ::Namespaces::FreeUserCap::Standard.new(namespace).over_limit?(cache: true)
+            ::Namespaces::FreeUserCap::Enforcement.new(namespace).over_limit?(cache: true)
           end
           x.compare!
         end
