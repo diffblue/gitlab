@@ -9,7 +9,7 @@ import {
   GlModalDirective,
 } from '@gitlab/ui';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
-import createFlash, { FLASH_TYPES } from '~/flash';
+import { createAlert, VARIANT_SUCCESS } from '~/flash';
 import { sprintf } from '~/locale';
 import Tracking from '~/tracking';
 import countriesQuery from 'ee/subscriptions/graphql/queries/countries.query.graphql';
@@ -179,15 +179,15 @@ export default {
 
       await SubscriptionsApi.sendHandRaiseLead(this.formParams)
         .then(() => {
-          createFlash({
+          createAlert({
             message: this.$options.i18n.handRaiseActionSuccess,
-            type: FLASH_TYPES.SUCCESS,
+            variant: VARIANT_SUCCESS,
           });
           this.resetForm();
           this.track('hand_raise_submit_form_succeeded');
         })
         .catch((error) => {
-          createFlash({
+          createAlert({
             message: this.$options.i18n.handRaiseActionError,
             captureError: true,
             error,

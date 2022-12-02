@@ -1,4 +1,4 @@
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __ } from '~/locale';
 import service from '../../../services/issue_analytics_service';
 import * as types from './mutation_types';
@@ -20,7 +20,7 @@ export const fetchChartData = ({ commit, dispatch, getters }, endpoint) => {
     .then((data) => commit(types.SET_CHART_DATA, data))
     .then(() => dispatch('setLoadingState', false))
     .catch(() =>
-      createFlash({
+      createAlert({
         message: __('An error occurred while loading chart data'),
       }),
     );

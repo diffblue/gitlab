@@ -6,7 +6,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { trimText } from 'helpers/text_helper';
 import { mountExtended, extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 
 jest.mock('~/flash');
@@ -83,7 +83,7 @@ describe('ee/issues/components/related_feature_flags.vue', () => {
       await waitForPromises();
       await nextTick();
 
-      expect(createFlash).toHaveBeenCalledWith(
+      expect(createAlert).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'There was an error loading related feature flags',
         }),

@@ -4,7 +4,7 @@ import createInitialState from 'ee/pages/groups/saml_providers/saml_members/stor
 import testAction from 'helpers/vuex_action_helper';
 import Api from '~/api';
 
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 jest.mock('~/flash');
 jest.mock('~/api', () => ({
@@ -19,7 +19,7 @@ const state = {
 describe('saml_members actions', () => {
   afterEach(() => {
     Api.groupMembers.mockClear();
-    createFlash.mockClear();
+    createAlert.mockClear();
   });
 
   describe('fetchPage', () => {
@@ -75,7 +75,7 @@ describe('saml_members actions', () => {
       Api.groupMembers.mockReturnValue(Promise.reject(new Error()));
       await testAction(fetchPage, undefined, state, [], []);
 
-      expect(createFlash).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledTimes(1);
     });
   });
 });

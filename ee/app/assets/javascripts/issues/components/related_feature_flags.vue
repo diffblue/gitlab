@@ -6,7 +6,7 @@ import {
   GlTruncate,
   GlTooltipDirective as GlTooltip,
 } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 
@@ -49,7 +49,7 @@ export default {
           this.featureFlags = data;
         })
         .catch((error) =>
-          createFlash({
+          createAlert({
             message: this.$options.i18n.error,
             error,
           }),

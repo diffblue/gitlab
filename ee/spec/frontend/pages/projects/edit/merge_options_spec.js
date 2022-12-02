@@ -3,7 +3,7 @@ import {
   ERROR_LOADING_MERGE_OPTION_SETTINGS,
 } from 'ee/pages/projects/edit/merge_options';
 import { setHTMLFixture, resetHTMLFixture } from 'helpers/fixtures';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import * as createDefaultClient from '~/lib/graphql';
 
 jest.mock('~/flash');
@@ -26,7 +26,7 @@ describe('MergOptions', () => {
   it('shows flash message on network error', async () => {
     await initMergeOptionSettings();
 
-    expect(createFlash).toHaveBeenCalledWith({
+    expect(createAlert).toHaveBeenCalledWith({
       message: ERROR_LOADING_MERGE_OPTION_SETTINGS,
       error: 'Error',
       captureError: true,

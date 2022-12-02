@@ -3,7 +3,7 @@ import * as actions from 'ee/geo_settings/store/actions';
 import * as types from 'ee/geo_settings/store/mutation_types';
 import state from 'ee/geo_settings/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { MOCK_BASIC_SETTINGS_DATA, MOCK_APPLICATION_SETTINGS_FETCH_RESPONSE } from '../mock_data';
 
@@ -14,8 +14,8 @@ describe('GeoSettings Store Actions', () => {
 
   const noCallback = () => {};
   const flashCallback = () => {
-    expect(createFlash).toHaveBeenCalledTimes(1);
-    createFlash.mockClear();
+    expect(createAlert).toHaveBeenCalledTimes(1);
+    createAlert.mockClear();
   };
 
   beforeEach(() => {

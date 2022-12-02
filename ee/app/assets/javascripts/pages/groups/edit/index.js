@@ -3,7 +3,7 @@ import initAccessRestrictionField from 'ee/groups/settings/access_restriction_fi
 import validateRestrictedIpAddress from 'ee/groups/settings/access_restriction_field/validate_ip_address';
 import { initGroupPermissionsFormSubmit } from 'ee/groups/settings/permissions';
 import { initServicePingSettingsClickTracking } from 'ee/registration_features_discovery_message';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __ } from '~/locale';
 
 if (gon.features.saasUserCapsAutoApprovePendingUsersOnCapIncrease) {
@@ -36,7 +36,7 @@ if (complianceFrameworksTable) {
       );
       createComplianceFrameworksTableApp(complianceFrameworksTable);
     } catch {
-      createFlash({ message: __('An error occurred while loading a section of this page.') });
+      createAlert({ message: __('An error occurred while loading a section of this page.') });
     }
   })();
 }
@@ -51,7 +51,7 @@ if (mergeRequestApprovalSetting) {
       );
       mountGroupApprovalSettings(mergeRequestApprovalSetting);
     } catch (error) {
-      createFlash({
+      createAlert({
         message: __('An error occurred while loading a section of this page.'),
         captureError: true,
         error: `Error mounting group approval settings component: #{error.message}`,

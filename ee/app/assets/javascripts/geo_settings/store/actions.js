@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 import * as types from './mutation_types';
 
@@ -18,7 +18,7 @@ export const fetchGeoSettings = ({ commit }) => {
       });
     })
     .catch(() => {
-      createFlash({
+      createAlert({
         message: i18n.errorFetchingSettings,
       });
       commit(types.RECEIVE_GEO_SETTINGS_ERROR);
@@ -38,7 +38,7 @@ export const updateGeoSettings = ({ commit, state }) => {
       });
     })
     .catch(() => {
-      createFlash({
+      createAlert({
         message: i18n.errorUpdatingSettings,
       });
       commit(types.RECEIVE_UPDATE_GEO_SETTINGS_ERROR);

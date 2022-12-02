@@ -6,7 +6,7 @@ import {
 import * as actions from 'ee/maintenance_mode_settings/store/actions';
 import { createState } from 'ee/maintenance_mode_settings/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { ACTIONS_TEST_DATA } from '../mock_data';
 
@@ -18,8 +18,8 @@ describe('MaintenanceModeSettings Store Actions', () => {
 
   const noCallback = () => {};
   const flashCallback = () => {
-    expect(createFlash).toHaveBeenCalledTimes(1);
-    createFlash.mockClear();
+    expect(createAlert).toHaveBeenCalledTimes(1);
+    createAlert.mockClear();
   };
 
   beforeEach(() => {

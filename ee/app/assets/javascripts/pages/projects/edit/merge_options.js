@@ -1,5 +1,5 @@
 import { gql } from '@apollo/client/core';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import createDefaultClient from '~/lib/graphql';
 import { s__ } from '~/locale';
 
@@ -66,6 +66,6 @@ export const initMergeOptionSettings = () => {
       initMergeOptions(mergePipelinesEnabled, mergeTrainsEnabled);
     })
     .catch((error) => {
-      createFlash({ message: ERROR_LOADING_MERGE_OPTION_SETTINGS, error, captureError: true });
+      createAlert({ message: ERROR_LOADING_MERGE_OPTION_SETTINGS, error, captureError: true });
     });
 };

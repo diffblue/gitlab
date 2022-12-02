@@ -1,6 +1,6 @@
 <script>
 import AccessDropdown from '~/groups/settings/components/access_dropdown.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import { ACCESS_LEVELS, LEVEL_TYPES } from './constants';
@@ -65,7 +65,7 @@ export default {
           this.updatePreselected(data);
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: i18n.failureMessage,
             parent: this.parentContainer,
           });

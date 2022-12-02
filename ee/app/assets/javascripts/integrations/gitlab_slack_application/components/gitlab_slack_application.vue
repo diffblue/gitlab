@@ -1,6 +1,6 @@
 <script>
 import { GlButton, GlIcon, GlLink } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 
@@ -64,7 +64,7 @@ export default {
       addProjectToSlack(this.slackLinkPath, this.selectedProject.id)
         .then((response) => redirectTo(response.data.add_to_slack_link))
         .catch(() =>
-          createFlash({
+          createAlert({
             message: i18n.slackErrorMessage,
           }),
         );
