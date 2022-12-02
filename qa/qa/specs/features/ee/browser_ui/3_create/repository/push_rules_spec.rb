@@ -182,13 +182,13 @@ module QA
         end
       end
 
-      def expect_no_error_on_push(commit_message: 'allowed commit', branch: @project.default_branch, file:, user: @creator, tag: nil, gpg: nil)
+      def expect_no_error_on_push(file:, commit_message: 'allowed commit', branch: @project.default_branch, user: @creator, tag: nil, gpg: nil)
         expect do
           push commit_message: commit_message, branch: branch, file: file, user: user, tag: tag, gpg: gpg
         end.not_to raise_error
       end
 
-      def expect_error_on_push(commit_message: 'allowed commit', branch: @project.default_branch, file:, user: @creator, tag: nil, gpg: nil, error: nil)
+      def expect_error_on_push(file:, commit_message: 'allowed commit', branch: @project.default_branch, user: @creator, tag: nil, gpg: nil, error: nil)
         expect do
           push commit_message: commit_message, branch: branch, file: file, user: user, tag: tag, gpg: gpg
         end.to raise_error(QA::Support::Run::CommandError, /#{error}/)
