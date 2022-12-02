@@ -8,7 +8,7 @@ import {
   GlFormInput,
 } from '@gitlab/ui';
 import $ from 'jquery';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import Autosave from '~/autosave';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
@@ -119,7 +119,7 @@ export default {
         .then(({ data }) => {
           const { errors, epic } = data.createEpic;
           if (errors?.length > 0) {
-            createFlash({
+            createAlert({
               message: errors[0],
             });
             this.loading = false;
@@ -131,7 +131,7 @@ export default {
         })
         .catch(() => {
           this.loading = false;
-          createFlash({
+          createAlert({
             message: s__('Epics|Unable to save epic. Please try again'),
           });
         });

@@ -1,5 +1,5 @@
 import Visibility from 'visibilityjs';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 import Poll from '~/lib/utils/poll';
@@ -59,7 +59,7 @@ export const fetchCodequality = ({ commit, state, dispatch }) => {
       } else {
         retryCount = 0;
         dispatch('stopCodequalityPolling');
-        createFlash({
+        createAlert({
           message: __('An unexpected error occurred while loading the code quality diff.'),
         });
       }

@@ -1,5 +1,5 @@
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 
@@ -31,7 +31,7 @@ export const fetchReport = ({ state, dispatch }) => {
     })
     .catch((error) => {
       dispatch('receiveReportError', error);
-      createFlash({
+      createAlert({
         message: s__('ciReport|There was an error fetching the codequality report.'),
       });
     });

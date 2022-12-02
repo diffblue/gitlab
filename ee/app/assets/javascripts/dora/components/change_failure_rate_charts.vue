@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/browser';
 import * as DoraApi from 'ee/api/dora_api';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
 import { METRICS_REQUESTS } from '~/analytics/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
@@ -84,7 +84,7 @@ export default {
     try {
       await this.getChartData();
     } catch (error) {
-      createFlash({
+      createAlert({
         message: s__('DORA4Metrics|Something went wrong while getting change failure rate data.'),
       });
 

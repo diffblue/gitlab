@@ -7,7 +7,7 @@ import last90DaysData from 'test_fixtures/api/dora/metrics/daily_time_to_restore
 import { useFixturesFakeDate } from 'helpers/fake_date';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 
@@ -96,7 +96,7 @@ describe('time_to_restore_service_charts.vue', () => {
     });
 
     it('does not show a flash message', () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
     });
 
     it('renders a header', () => {
@@ -146,8 +146,8 @@ describe('time_to_restore_service_charts.vue', () => {
     });
 
     it('shows a flash message', () => {
-      expect(createFlash).toHaveBeenCalledTimes(1);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while getting time to restore service data.',
       });
     });
@@ -191,7 +191,7 @@ describe('time_to_restore_service_charts.vue', () => {
       });
 
       it('does not throw an error', () => {
-        expect(createFlash).not.toHaveBeenCalled();
+        expect(createAlert).not.toHaveBeenCalled();
       });
     });
 
@@ -212,7 +212,7 @@ describe('time_to_restore_service_charts.vue', () => {
       });
 
       it('does not throw an error', () => {
-        expect(createFlash).not.toHaveBeenCalled();
+        expect(createAlert).not.toHaveBeenCalled();
       });
     });
 
@@ -229,7 +229,7 @@ describe('time_to_restore_service_charts.vue', () => {
       });
 
       it('throws an error (which shows a flash message)', () => {
-        expect(createFlash).toHaveBeenCalled();
+        expect(createAlert).toHaveBeenCalled();
       });
     });
 
@@ -243,7 +243,7 @@ describe('time_to_restore_service_charts.vue', () => {
       });
 
       it('throws an error (which shows a flash message)', () => {
-        expect(createFlash).toHaveBeenCalled();
+        expect(createAlert).toHaveBeenCalled();
       });
     });
   });

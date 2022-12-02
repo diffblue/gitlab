@@ -1,5 +1,5 @@
 import produce from 'immer';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 import { s__ } from '~/locale';
 
@@ -89,7 +89,7 @@ const deleteEscalationPolicFromStore = (store, query, { escalationPolicyDestroy 
 export const hasErrors = ({ errors = [] }) => errors?.length;
 
 const onError = (data, message) => {
-  createFlash({ message });
+  createAlert({ message });
   throw new Error(data.errors);
 };
 

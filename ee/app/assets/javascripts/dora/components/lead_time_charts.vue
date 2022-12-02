@@ -1,6 +1,6 @@
 <script>
 import * as DoraApi from 'ee/api/dora_api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
 import { buildNullSeries } from '../../analytics/shared/utils';
@@ -105,7 +105,7 @@ export default {
     if (requestErrors.length) {
       const allErrorMessages = requestErrors.join('\n');
 
-      createFlash({
+      createAlert({
         message: this.$options.i18n.flashMessage,
         error: new Error(`Something went wrong while getting lead time data:\n${allErrorMessages}`),
         captureError: true,
@@ -137,7 +137,7 @@ export default {
       }
 
       if (errorMessage) {
-        createFlash({
+        createAlert({
           message: this.$options.i18n.flashMessage,
           error: new Error(`Error while rendering lead time charts: ${errorMessage}`),
           captureError: true,

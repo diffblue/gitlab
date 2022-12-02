@@ -5,7 +5,7 @@ import lastWeekData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_cha
 import lastMonthData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_month.json';
 import last90DaysData from 'test_fixtures/api/dora/metrics/daily_lead_time_for_changes_for_last_90_days.json';
 import { useFixturesFakeDate } from 'helpers/fake_date';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 
@@ -84,7 +84,7 @@ describe('lead_time_charts.vue', () => {
     });
 
     it('does not show a flash message', () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
     });
 
     it('renders a header', () => {
@@ -102,8 +102,8 @@ describe('lead_time_charts.vue', () => {
     });
 
     it('shows a flash message', () => {
-      expect(createFlash).toHaveBeenCalledTimes(1);
-      expect(createFlash.mock.calls[0]).toEqual([
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert.mock.calls[0]).toEqual([
         {
           message: 'Something went wrong while getting lead time data.',
           captureError: true,
@@ -140,7 +140,7 @@ describe('lead_time_charts.vue', () => {
       });
 
       it('does not throw an error', () => {
-        expect(createFlash).not.toHaveBeenCalled();
+        expect(createAlert).not.toHaveBeenCalled();
       });
     });
 
@@ -163,7 +163,7 @@ describe('lead_time_charts.vue', () => {
       });
 
       it('does not throw an error', () => {
-        expect(createFlash).not.toHaveBeenCalled();
+        expect(createAlert).not.toHaveBeenCalled();
       });
     });
 
@@ -182,7 +182,7 @@ describe('lead_time_charts.vue', () => {
       });
 
       it('throws an error (which shows a flash message)', () => {
-        expect(createFlash).toHaveBeenCalled();
+        expect(createAlert).toHaveBeenCalled();
       });
     });
 
@@ -198,7 +198,7 @@ describe('lead_time_charts.vue', () => {
       });
 
       it('throws an error (which shows a flash message)', () => {
-        expect(createFlash).toHaveBeenCalled();
+        expect(createAlert).toHaveBeenCalled();
       });
     });
   });

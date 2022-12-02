@@ -11,7 +11,7 @@ import * as types from 'ee/dependencies/store/modules/list/mutation_types';
 import getInitialState from 'ee/dependencies/store/modules/list/state';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 import mockDependenciesResponse from './data/mock_dependencies.json';
 
@@ -37,7 +37,7 @@ describe('Dependencies actions', () => {
   };
 
   afterEach(() => {
-    createFlash.mockClear();
+    createAlert.mockClear();
   });
 
   describe('setDependenciesEndpoint', () => {
@@ -249,8 +249,8 @@ describe('Dependencies actions', () => {
             },
           ],
         ).then(() => {
-          expect(createFlash).toHaveBeenCalledTimes(1);
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledTimes(1);
+          expect(createAlert).toHaveBeenCalledWith({
             message: FETCH_ERROR_MESSAGE,
           });
         }));

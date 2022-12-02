@@ -9,7 +9,7 @@ import { RETRY_DELAY } from 'ee/diffs/store/constants';
 import * as types from 'ee/diffs/store/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import Poll from '~/lib/utils/poll';
 
@@ -73,7 +73,7 @@ describe('EE DiffsStoreActions', () => {
       it('should not show a flash message', async () => {
         await testAction(fetchCodequality, {}, { endpointCodequality }, [], []);
 
-        expect(createFlash).not.toHaveBeenCalled();
+        expect(createAlert).not.toHaveBeenCalled();
       });
 
       it('should retry five times with a delay, then stop polling', async () => {
@@ -117,8 +117,8 @@ describe('EE DiffsStoreActions', () => {
         [],
         [{ type: 'stopCodequalityPolling' }],
       );
-      expect(createFlash).toHaveBeenCalledTimes(1);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'An unexpected error occurred while loading the code quality diff.',
       });
     });

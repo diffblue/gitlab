@@ -6,7 +6,7 @@ import defaultState from 'ee/epic/store/state';
 import epicUtils from 'ee/epic/utils/epic_utils';
 
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 import axios from '~/lib/utils/axios_utils';
 
@@ -147,7 +147,7 @@ describe('Epic Store Actions', () => {
     it('shows flash error', () => {
       actions.requestEpicParticipantsFailure({ commit: () => {} });
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'There was an error getting the epic participants.',
       });
     });
@@ -191,7 +191,7 @@ describe('Epic Store Actions', () => {
     it('should show flash error', () => {
       actions.requestEpicStatusChangeFailure({ commit: () => {} });
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Unable to update this epic at this time.',
       });
     });
@@ -385,7 +385,7 @@ describe('Epic Store Actions', () => {
         {},
       );
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'There was an error deleting the To Do.',
       });
     });
@@ -399,7 +399,7 @@ describe('Epic Store Actions', () => {
         {},
       );
 
-      expect(createFlash).toHaveBeenCalledWith({ message: 'There was an error adding a To Do.' });
+      expect(createAlert).toHaveBeenCalledWith({ message: 'There was an error adding a To Do.' });
     });
   });
 
@@ -581,7 +581,7 @@ describe('Epic Store Actions', () => {
         commit: () => {},
       });
 
-      expect(createFlash).toHaveBeenCalledWith({ message: 'Error creating epic' });
+      expect(createAlert).toHaveBeenCalledWith({ message: 'Error creating epic' });
     });
   });
 

@@ -4,7 +4,7 @@ import axios from '~/lib/utils/axios_utils';
 
 import EpicsFilteredSearchMixin from 'ee/roadmap/mixins/filtered_search_mixin';
 
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 
@@ -97,7 +97,7 @@ export default {
         };
       },
       error(error) {
-        createFlash({
+        createAlert({
           message: s__('Epics|Something went wrong while fetching epics list.'),
           captureError: true,
           error,
@@ -233,7 +233,7 @@ export default {
         })
         .then(() => window.location.reload())
         .catch((error) => {
-          createFlash({
+          createAlert({
             message: s__('Epics|Something went wrong while updating epics.'),
             captureError: true,
             error,

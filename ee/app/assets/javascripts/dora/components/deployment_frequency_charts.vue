@@ -3,7 +3,7 @@ import * as Sentry from '@sentry/browser';
 import * as DoraApi from 'ee/api/dora_api';
 import ValueStreamMetrics from '~/analytics/shared/components/value_stream_metrics.vue';
 import { toYmd } from '~/analytics/shared/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__, sprintf } from '~/locale';
 import { SUMMARY_METRICS_REQUEST } from '~/analytics/cycle_analytics/constants';
 import CiCdAnalyticsCharts from '~/vue_shared/components/ci_cd_analytics/ci_cd_analytics_charts.vue';
@@ -113,7 +113,7 @@ export default {
     const requestErrors = results.filter((r) => r.status === 'rejected').map((r) => r.reason);
 
     if (requestErrors.length) {
-      createFlash({
+      createAlert({
         message: s__('DORA4Metrics|Something went wrong while getting deployment frequency data.'),
       });
 

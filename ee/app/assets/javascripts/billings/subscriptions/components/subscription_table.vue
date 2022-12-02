@@ -5,7 +5,7 @@ import { mapActions, mapState, mapGetters } from 'vuex';
 import { removeTrialSuffix } from 'ee/billings/billings_util';
 import { TABLE_TYPE_DEFAULT, TABLE_TYPE_FREE, TABLE_TYPE_TRIAL } from 'ee/billings/constants';
 import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/components/extend_reactivate_trial_button.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { s__ } from '~/locale';
 import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
@@ -150,7 +150,7 @@ export default {
 
         this.fetchSubscription();
       } catch (error) {
-        createFlash({
+        createAlert({
           message: s__('SubscriptionTable|Something went wrong trying to refresh seats'),
           captureError: true,
           error,
