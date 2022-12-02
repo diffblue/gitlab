@@ -8,8 +8,8 @@ RSpec.shared_examples 'it runs batched background migration jobs' do |tracking_d
       expect(described_class.get_data_consistency).to eq(:always)
     end
 
-    it 'defines the feature_category as database' do
-      expect(described_class.get_feature_category).to eq(:database)
+    it 'defines the feature_category as not-owned' do
+      expect(described_class.get_feature_category).to eq(:not_owned)
     end
 
     it 'defines the idempotency as true' do
