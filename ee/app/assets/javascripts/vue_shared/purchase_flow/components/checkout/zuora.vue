@@ -11,7 +11,7 @@ import {
 import updateStateMutation from 'ee/subscriptions/graphql/mutations/update_state.mutation.graphql';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import Tracking from '~/tracking';
 
@@ -70,7 +70,7 @@ export default {
           this.renderZuoraIframe();
         })
         .catch((error) => {
-          createFlash({ message: ERROR_LOADING_PAYMENT_FORM });
+          createAlert({ message: ERROR_LOADING_PAYMENT_FORM });
           this.track('error', {
             label: 'payment_form_fetch_params',
             property: error?.message,
@@ -108,7 +108,7 @@ export default {
         .then(() => this.track('success'))
         .then(() => this.activateNextStep())
         .catch((error) => {
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
           this.track('error', {
             label: 'payment_form_submitted',
             property: error?.message,
@@ -128,7 +128,7 @@ export default {
           mutation: activateNextStepMutation,
         })
         .catch((error) => {
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
         });
     },
     updateState(payload) {
@@ -140,7 +140,7 @@ export default {
           },
         })
         .catch((error) => {
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
         });
     },
   },

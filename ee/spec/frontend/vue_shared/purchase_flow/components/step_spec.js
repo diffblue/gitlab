@@ -7,7 +7,7 @@ import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import updateStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/update_active_step.mutation.graphql';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import flash from '~/flash';
+import { createAlert } from '~/flash';
 import { STEPS } from '../mock_data';
 import { createMockApolloProvider } from '../spec_helper';
 
@@ -48,7 +48,7 @@ describe('Step', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    flash.mockClear();
+    createAlert.mockClear();
   });
 
   const findStepHeader = () => wrapper.findComponent(StepHeader);
@@ -95,8 +95,8 @@ describe('Step', () => {
       findEditButton().vm.$emit('click');
       await waitForPromises();
 
-      expect(flash.mock.calls).toHaveLength(1);
-      expect(flash.mock.calls[0][0]).toMatchObject({
+      expect(createAlert.mock.calls).toHaveLength(1);
+      expect(createAlert.mock.calls[0][0]).toMatchObject({
         message: GENERAL_ERROR_MESSAGE,
         captureError: true,
         error: expect.any(Error),
@@ -201,8 +201,8 @@ describe('Step', () => {
       findNextButton().vm.$emit('click');
       await waitForPromises();
 
-      expect(flash.mock.calls).toHaveLength(1);
-      expect(flash.mock.calls[0][0]).toMatchObject({
+      expect(createAlert.mock.calls).toHaveLength(1);
+      expect(createAlert.mock.calls[0][0]).toMatchObject({
         message: GENERAL_ERROR_MESSAGE,
         captureError: true,
         error: expect.any(Error),

@@ -5,7 +5,7 @@ import createNoteMutation from 'ee/security_dashboard/graphql/mutations/note_cre
 import destroyNoteMutation from 'ee/security_dashboard/graphql/mutations/note_destroy.mutation.graphql';
 import updateNoteMutation from 'ee/security_dashboard/graphql/mutations/note_update.mutation.graphql';
 import EventItem from 'ee/vue_shared/security_reports/components/event_item.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { TYPE_NOTE, TYPE_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { __, s__ } from '~/locale';
@@ -126,7 +126,7 @@ export default {
       } catch {
         this.isSavingComment = false;
 
-        createFlash({
+        createAlert({
           message: s__(
             'VulnerabilityManagement|Something went wrong while trying to save the comment. Please try again later.',
           ),
@@ -154,7 +154,7 @@ export default {
       } catch {
         this.isDeletingComment = false;
 
-        createFlash({
+        createAlert({
           message: s__(
             'VulnerabilityManagement|Something went wrong while trying to delete the comment. Please try again later.',
           ),

@@ -6,7 +6,7 @@ import vulnerabilityDiscussionsQuery from 'ee/security_dashboard/graphql/queries
 import MergeRequestNote from 'ee/vue_shared/security_reports/components/merge_request_note.vue';
 import SolutionCard from 'ee/vue_shared/security_reports/components/solution_card.vue';
 import { VULNERABILITY_STATE_OBJECTS } from 'ee/vulnerabilities/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { s__ } from '~/locale';
@@ -162,7 +162,7 @@ export default {
       }
     },
     showGraphQLError() {
-      createFlash({
+      createAlert({
         message: s__(
           'VulnerabilityManagement|Something went wrong while trying to retrieve the vulnerability history. Please try again later.',
         ),

@@ -9,7 +9,7 @@ import HistoryComment from 'ee/vulnerabilities/components/history_comment.vue';
 import HistoryCommentEditor from 'ee/vulnerabilities/components/history_comment_editor.vue';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { TYPE_DISCUSSION, TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { generateNote } from './mock_data';
@@ -121,7 +121,7 @@ describe('History Comment', () => {
 
   afterEach(() => {
     wrapper.destroy();
-    createFlash.mockReset();
+    createAlert.mockReset();
   });
 
   describe(`when there's no existing comment`, () => {
@@ -252,7 +252,7 @@ describe('History Comment', () => {
         await editAndSaveNewContent('new comment');
         await waitForPromises();
 
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'Something went wrong while trying to save the comment. Please try again later.',
         });
       });
@@ -269,7 +269,7 @@ describe('History Comment', () => {
         await editAndSaveNewContent('new comment');
         await waitForPromises();
 
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'Something went wrong while trying to save the comment. Please try again later.',
         });
 
@@ -320,7 +320,7 @@ describe('History Comment', () => {
 
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while trying to delete the comment. Please try again later.',
       });
     });
@@ -335,7 +335,7 @@ describe('History Comment', () => {
       confirmDeleteButton().trigger('click');
 
       await waitForPromises();
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while trying to delete the comment. Please try again later.',
       });
     });

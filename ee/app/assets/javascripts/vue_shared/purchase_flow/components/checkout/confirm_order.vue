@@ -5,7 +5,7 @@ import { STEPS } from 'ee/subscriptions/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 
@@ -25,7 +25,7 @@ export default {
       query: activeStepQuery,
       update: ({ activeStep }) => activeStep?.id === STEPS[3].id,
       error: (error) => {
-        createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+        createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
       },
     },
     confirmOrderParams: {
@@ -73,7 +73,7 @@ export default {
           }
         })
         .catch((error) => {
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
         })
         .finally(() => {
           this.isLoading = false;
