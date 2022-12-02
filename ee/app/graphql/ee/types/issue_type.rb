@@ -53,6 +53,10 @@ module EE
           description: 'Issuable resource links of the incident issue.',
           resolver: ::Resolvers::IncidentManagement::IssuableResourceLinksResolver
 
+        field :related_vulnerabilities, ::Types::VulnerabilityType.connection_type,
+          null: true,
+          description: 'Related vulnerabilities of the issue.'
+
         def iteration
           ::Gitlab::Graphql::Loaders::BatchModelLoader.new(::Iteration, object.sprint_id).find
         end

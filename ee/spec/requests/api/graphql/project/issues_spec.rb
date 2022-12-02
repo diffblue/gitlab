@@ -184,18 +184,65 @@ RSpec.describe 'getting an issue list for a project' do
     end
 
     def expect_blocking_issues(issue, expected_blocking_issues)
-      nodes = graphql_data.dig('project', 'issues', 'nodes')
+      nodes = graphql_dig_at(graphql_data.to_h, :project, :issues, :nodes)
       node = nodes.find { |r| r['id'] == issue.to_global_id.to_s }
 
       expect(node['blockedByIssues']['nodes']).to match_array expected_blocking_issues.map { |i| { "id" => i.to_global_id.to_s } }
     end
 
     def expect_blocked_count(issue, expected_blocked, expected_blocked_count)
-      nodes = graphql_data.dig('project', 'issues', 'nodes')
+      nodes = graphql_dig_at(graphql_data.to_h, :project, :issues, :nodes)
       node = nodes.find { |r| r['id'] == issue.to_global_id.to_s }
 
       expect(node['blocked']).to eq expected_blocked
       expect(node['blockedByCount']).to eq expected_blocked_count
+    end
+  end
+
+  describe 'related_vulnerabilities' do
+    let_it_be(:project) { create(:project, :public) }
+    let_it_be(:issues) do
+      create_list(:issue, 5, project: project) do |issue, i|
+        issue.related_vulnerabilities = [create(:vulnerability, project: project, title: "vuln#{i + 1}")]
+      end
+    end
+
+    let(:issues_data) { -> { graphql_dig_at(graphql_data.to_h, :project, :issues, :nodes) } }
+    let(:query) { graphql_query_for(:project, { fullPath: project.full_path }, query_graphql_field(:issues, {}, fields)) }
+
+    let_it_be(:fields) do
+      <<~QUERY
+        nodes {
+          id
+          relatedVulnerabilities {
+            nodes {
+              id
+              title
+            }
+          }
+        }
+      QUERY
+    end
+
+    before do
+      project.add_developer(current_user)
+      stub_licensed_features(security_dashboard: true)
+    end
+
+    it 'avoids N+1 queries', :aggregate_failures do
+      control = ActiveRecord::QueryRecorder.new { post_graphql(query, current_user: current_user) }
+
+      expect(issues_data.call.count).to eq(5)
+      vulnerability_titles = graphql_dig_at(issues_data.call, :relatedVulnerabilities, :nodes, :title)
+      expect(vulnerability_titles).to match_array(%w[vuln1 vuln2 vuln3 vuln4 vuln5])
+
+      create(:issue, project: project, related_vulnerabilities: [create(:vulnerability, project: project, title: 'vuln6')])
+
+      expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
+
+      expect(issues_data.call.count).to eq(6)
+      vulnerability_titles = graphql_dig_at(issues_data.call, :relatedVulnerabilities, :nodes, :title)
+      expect(vulnerability_titles).to match_array(%w[vuln1 vuln2 vuln3 vuln4 vuln5 vuln6])
     end
   end
 end
