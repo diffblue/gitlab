@@ -29,10 +29,8 @@ module EE
           super
 
           @awardable ||= # rubocop:disable Gitlab/ModuleWithInstanceVariables
-            begin
-              if params.include?(:epic_iid)
-                user_group.epics.find_by!(iid: params[:epic_iid])
-              end
+            if params.include?(:epic_iid)
+              user_group.epics.find_by!(iid: params[:epic_iid])
             end
         end
         # rubocop: enable CodeReuse/ActiveRecord

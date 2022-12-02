@@ -78,10 +78,8 @@ module Epics
       end
 
       def linkable_issuables(epics)
-        @linkable_issuables ||= begin
-          epics.select do |epic|
-            linkable_epic?(epic)
-          end
+        @linkable_issuables ||= epics.select do |epic|
+          linkable_epic?(epic)
         end
       end
 
