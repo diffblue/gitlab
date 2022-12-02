@@ -3072,6 +3072,15 @@
   :weight: 1
   :idempotent: true
   :tags: []
+- :name: projects_finalize_project_statistics_refresh
+  :worker_name: Projects::FinalizeProjectStatisticsRefreshWorker
+  :feature_category: :not_owned
+  :has_external_dependencies: false
+  :urgency: :low
+  :resource_boundary: :unknown
+  :weight: 1
+  :idempotent: true
+  :tags: []
 - :name: projects_git_garbage_collect
   :worker_name: Projects::GitGarbageCollectWorker
   :feature_category: :gitaly

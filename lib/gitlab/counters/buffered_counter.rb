@@ -31,9 +31,39 @@ module Gitlab
         end
       end
 
+      LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT = <<~LUA
+        local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
+        local amount, ref = KEYS[4], KEYS[5]
+        local tracking_key, opposing_tracking_key = KEYS[6], KEYS[7]
+
+        -- increment to the counter key when not refreshing
+        if redis.call("exists", refresh_indicator_key) == 0 then
+          return redis.call("incrby", counter_key, amount)
+        end
+
+        -- deduplicate and increment to the refresh counter key while refreshing
+        local found_duplicate = redis.call("sismember", tracking_key, ref)
+        if found_duplicate == 1 then
+          return redis.call("get", refresh_key)
+        end
+
+        redis.call("sadd", tracking_key, ref)
+
+        local found_opposing_increment = redis.call("sismember", opposing_tracking_key, ref)
+        local increment_without_previous_decrement = tonumber(amount) > 0 and found_opposing_increment == 0
+        local decrement_with_previous_increment = tonumber(amount) < 0 and found_opposing_increment == 1
+        local net_change = 0
+
+        if increment_without_previous_decrement or decrement_with_previous_increment then
+          net_change = amount
+        end
+
+        return redis.call("incrby", refresh_key, net_change)
+      LUA
+
       def increment(increment)
         result = redis_state do |redis|
-          redis.incrby(key, increment.amount)
+          redis.eval(LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT, keys: increment_args(increment)).to_i
         end
 
         FlushCounterIncrementsWorker.perform_in(WORKER_DELAY, counter_record.class.name, counter_record.id, attribute)
@@ -45,22 +75,46 @@ module Gitlab
         result = redis_state do |redis|
           redis.pipelined do |pipeline|
             increments.each do |increment|
-              pipeline.incrby(key, increment.amount)
+              pipeline.eval(LUA_INCREMENT_WITH_DEDUPLICATION_SCRIPT, keys: increment_args(increment))
             end
           end
         end
 
         FlushCounterIncrementsWorker.perform_in(WORKER_DELAY, counter_record.class.name, counter_record.id, attribute)
 
-        result.last
+        result.last.to_i
       end
 
-      def reset!
+      LUA_INITIATE_REFRESH_SCRIPT = <<~LUA
+        local counter_key, refresh_indicator_key = KEYS[1], KEYS[2]
+        redis.call("del", counter_key)
+        redis.call("set", refresh_indicator_key, 1)
+      LUA
+
+      def initiate_refresh!
         counter_record.update!(attribute => 0)
 
         redis_state do |redis|
-          redis.del(key)
+          redis.eval(LUA_INITIATE_REFRESH_SCRIPT, keys: [key, refresh_indicator_key])
         end
+      end
+
+      LUA_FINALIZE_REFRESH_SCRIPT = <<~LUA
+        local counter_key, refresh_key, refresh_indicator_key = KEYS[1], KEYS[2], KEYS[3]
+        local increment_tracking_key, decrement_tracking_key = KEYS[4], KEYS[5]
+        local refresh_amount = redis.call("get", refresh_key) or 0
+
+        redis.call("incrby", counter_key, refresh_amount)
+        redis.call("del", refresh_indicator_key, increment_tracking_key, decrement_tracking_key, refresh_key)
+      LUA
+
+      def finalize_refresh
+        redis_state do |redis|
+          keys = [key, refresh_key, refresh_indicator_key, increment_tracking_key, decrement_tracking_key]
+          redis.eval(LUA_FINALIZE_REFRESH_SCRIPT, keys: keys)
+        end
+
+        FlushCounterIncrementsWorker.perform_in(WORKER_DELAY, counter_record.class.name, counter_record.id, attribute)
       end
 
       def commit_increment!
@@ -101,9 +155,49 @@ module Gitlab
         "#{key}:flushed"
       end
 
+      def refresh_indicator_key
+        "#{key}:refresh-in-progress"
+      end
+
+      def refresh_key
+        "#{key}:refresh"
+      end
+
+      def increment_tracking_key
+        "#{refresh_key}:+"
+      end
+
+      def decrement_tracking_key
+        "#{refresh_key}:-"
+      end
+
       private
 
       attr_reader :counter_record, :attribute
+
+      def increment_args(increment)
+        [
+          key,
+          refresh_key,
+          refresh_indicator_key,
+          increment.amount,
+          increment.ref,
+          tracking_key(increment),
+          opposing_tracking_key(increment)
+        ]
+      end
+
+      def tracking_key(increment)
+        positive?(increment) ? increment_tracking_key : decrement_tracking_key
+      end
+
+      def opposing_tracking_key(increment)
+        positive?(increment) ? decrement_tracking_key : increment_tracking_key
+      end
+
+      def positive?(increment)
+        increment.amount > 0
+      end
 
       def remove_flushed_key
         redis_state do |redis|
