@@ -76,15 +76,13 @@ module OmniAuth
 
       override :callback_path
       def callback_path
-        @callback_path ||= begin
-          if options[:callback_path].call(env)
-            current_path
-          elsif group_lookup.path
-            "/groups/#{group_lookup.path}/-/saml/callback"
-          else
-            super
-          end
-        end
+        @callback_path ||= if options[:callback_path].call(env)
+                             current_path
+                           elsif group_lookup.path
+                             "/groups/#{group_lookup.path}/-/saml/callback"
+                           else
+                             super
+                           end
       end
 
       private

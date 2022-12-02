@@ -102,11 +102,9 @@ class Groups::SsoController < Groups::ApplicationController
   end
 
   def oauth_data
-    @oauth_data ||= begin
-      if session['oauth_data'] && session['oauth_group_id'] == unauthenticated_group.id
-        Gitlab::Auth::OAuth::AuthHash.new(session['oauth_data'])
-      end
-    end
+    @oauth_data ||= if session['oauth_data'] && session['oauth_group_id'] == unauthenticated_group.id
+                      Gitlab::Auth::OAuth::AuthHash.new(session['oauth_data'])
+                    end
   end
 
   def render_sign_up_form

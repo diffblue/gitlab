@@ -67,11 +67,9 @@ module Geo
 
     # rubocop: disable CodeReuse/ActiveRecord
     def registry
-      @registry ||= begin
-        Geo::ContainerRepositoryRegistry.find_or_initialize_by(
-          container_repository_id: container_repository.id
-        )
-      end
+      @registry ||= Geo::ContainerRepositoryRegistry.find_or_initialize_by(
+        container_repository_id: container_repository.id
+      )
     end
     # rubocop: enable CodeReuse/ActiveRecord
   end

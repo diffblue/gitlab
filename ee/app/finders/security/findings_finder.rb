@@ -57,11 +57,9 @@ module Security
     end
 
     def existing_vulnerabilities
-      @existing_vulnerabilities ||= begin
-        project.vulnerabilities
+      @existing_vulnerabilities ||= project.vulnerabilities
                .with_findings_by_uuid(loaded_uuids)
                .index_by(&:finding_uuid)
-      end
     end
 
     def loaded_uuids
@@ -69,13 +67,11 @@ module Security
     end
 
     def report_findings
-      @report_findings ||= begin
-        builds.each_with_object({}) do |build, memo|
-          reports = build.job_artifacts.map(&:security_report).compact
-          next unless reports.present?
+      @report_findings ||= builds.each_with_object({}) do |build, memo|
+        reports = build.job_artifacts.map(&:security_report).compact
+        next unless reports.present?
 
-          memo[build.id] = reports.flat_map(&:findings).index_by(&:uuid)
-        end
+        memo[build.id] = reports.flat_map(&:findings).index_by(&:uuid)
       end
     end
 

@@ -5,13 +5,11 @@ module EE
     private
 
     def schema_path
-      @schema_path ||= begin
-        if File.exist?(super)
-          super
-        else
-          Rails.root.join('ee', *base_directory, filename_with_extension).to_s
-        end
-      end
+      @schema_path ||= if File.exist?(super)
+                         super
+                       else
+                         Rails.root.join('ee', *base_directory, filename_with_extension).to_s
+                       end
     end
   end
 end

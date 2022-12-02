@@ -132,13 +132,11 @@ module SystemCheck
       end
 
       def openssh_config_path
-        @openssh_config_path ||= begin
-          if in_docker?
-            '/assets/sshd_config' # path in our official docker containers
-          else
-            '/etc/ssh/sshd_config'
-          end
-        end
+        @openssh_config_path ||= if in_docker?
+                                   '/assets/sshd_config' # path in our official docker containers
+                                 else
+                                   '/etc/ssh/sshd_config'
+                                 end
       end
 
       private
