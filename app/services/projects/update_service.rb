@@ -65,14 +65,24 @@ module Projects
       return unless changing_default_branch?
 
       previous_default_branch = project.default_branch
+      new_default_branch = params[:default_branch]
 
-      if project.change_head(params[:default_branch])
+      if project.change_head(new_default_branch)
         params[:previous_default_branch] = previous_default_branch
+
+        if !project.root_ref?(new_default_branch) && has_custom_head_branch?
+          raise ValidationError, s_("UpdateProject|Could not set the default branch. Do you have branch `head` in your repository?")
+        end
 
         after_default_branch_change(previous_default_branch)
       else
         raise ValidationError, s_("UpdateProject|Could not set the default branch")
       end
+    end
+
+    # See issue: https://gitlab.com/gitlab-org/gitlab/-/issues/381731
+    def has_custom_head_branch?
+      project.repository.branch_names.any? { |name| name.casecmp('head') == 0 }
     end
 
     def after_default_branch_change(previous_default_branch)

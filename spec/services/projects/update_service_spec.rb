@@ -303,6 +303,25 @@ RSpec.describe Projects::UpdateService do
         expect(project.default_branch).to eq 'master'
         expect(project.previous_default_branch).to be_nil
       end
+
+      context 'when repository write_ref upgrade fails' do
+        before do
+          allow(project.repository.raw).to receive(:write_ref).and_return(false)
+          allow(project.repository).to receive(:branch_names) { %w[fix master main HEAD] }
+        end
+
+        it 'returns an error to the user' do
+          result = update_project(project, admin, default_branch: 'fix')
+
+          expect(result).to include(status: :error)
+          expect(result[:message]).to match('Could not set the default branch. Do you have branch `head` in your repository?')
+
+          project.reload
+
+          expect(project.default_branch).to eq 'master'
+          expect(project.previous_default_branch).to be_nil
+        end
+      end
     end
 
     context 'when we update project but not enabling a wiki' do

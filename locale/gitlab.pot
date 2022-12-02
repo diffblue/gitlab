@@ -43849,6 +43849,9 @@ msgstr ""
 msgid "UpdateProject|Could not set the default branch"
 msgstr ""
 
+msgid "UpdateProject|Could not set the default branch. Do you have branch `head` in your repository?"
+msgstr ""
+
 msgid "UpdateProject|New visibility level not allowed!"
 msgstr ""
 
