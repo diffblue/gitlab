@@ -5,7 +5,7 @@ import { GlTruncate } from '@gitlab/ui';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
-import ImageFilter from 'ee/security_dashboard/components/shared/filters/image_filter.vue';
+import ImageFilterDeprecated from 'ee/security_dashboard/components/shared/filters/image_filter_deprecated.vue';
 import { IMAGE_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
 import { imageFilter } from 'ee/security_dashboard/helpers';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
@@ -16,7 +16,7 @@ import { agentVulnerabilityImages, projectVulnerabilityImages } from '../../mock
 
 jest.mock('~/flash');
 
-describe('Image Filter component', () => {
+describe('Image Filter component (deprecated)', () => {
   let wrapper;
   const projectFullPath = 'test/path';
   const defaultQueryResolver = {
@@ -37,7 +37,7 @@ describe('Image Filter component', () => {
   };
 
   const createWrapper = ({ agentQueryResolver, projectQueryResolver, provide = {} } = {}) => {
-    wrapper = shallowMount(ImageFilter, {
+    wrapper = shallowMount(ImageFilterDeprecated, {
       apolloProvider: createMockApolloProvider({ agentQueryResolver, projectQueryResolver }),
       propsData: { filter: imageFilter },
       provide: { projectFullPath, ...provide },
