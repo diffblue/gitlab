@@ -9,6 +9,8 @@ module EE
         helpers do
           extend ::Gitlab::Utils::Override
 
+          include ::Admin::IpRestrictionHelper
+
           override :find_groups
           # rubocop: disable CodeReuse/ActiveRecord
           def find_groups(params, parent_id = nil)
@@ -44,7 +46,7 @@ module EE
               group.licensed_feature_available?(:custom_file_templates_for_namespace)
 
             params.delete(:ip_restriction_ranges) unless
-              group.licensed_feature_available?(:group_ip_restriction)
+              ip_restriction_feature_available?(group)
 
             params.delete(:prevent_forking_outside_group) unless
               can?(current_user, :change_prevent_group_forking, group)

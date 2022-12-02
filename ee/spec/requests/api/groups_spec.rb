@@ -335,7 +335,7 @@ RSpec.describe API::Groups do
     context 'when ip_restriction_ranges is specified' do
       let(:params) { { ip_restriction_ranges: "192.168.0.0/24,10.0.0.0/8" } }
 
-      context " when feature is available" do
+      context "when feature is available" do
         before do
           stub_licensed_features(group_ip_restriction: true)
         end
@@ -351,6 +351,19 @@ RSpec.describe API::Groups do
         it 'does not update the ip restriction range for the group' do
           expect { subject }.not_to change { group.reload.ip_restriction_ranges }
           expect(json_response).not_to have_key 'ip_restriction_ranges'
+        end
+
+        context 'for instances that have the usage_ping_features activated' do
+          before do
+            stub_application_setting(usage_ping_enabled: true)
+            stub_application_setting(usage_ping_features_enabled: true)
+          end
+
+          it 'updates ip restriction range for the group' do
+            expect { subject }.to change { group.reload.ip_restriction_ranges }.to("192.168.0.0/24,10.0.0.0/8")
+            expect(response).to have_gitlab_http_status(:ok)
+            expect(json_response['ip_restriction_ranges']).to eq("192.168.0.0/24,10.0.0.0/8")
+          end
         end
       end
     end

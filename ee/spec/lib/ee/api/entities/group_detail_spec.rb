@@ -96,6 +96,17 @@ RSpec.describe API::Entities::GroupDetail do
           :ip_restriction_ranges
         )
       end
+
+      context 'for instances that have the usage_ping_features activated' do
+        before do
+          stub_application_setting(usage_ping_enabled: true)
+          stub_application_setting(usage_ping_features_enabled: true)
+        end
+
+        it 'exposes the attributes' do
+          expect(subject[:ip_restriction_ranges]).to eq("192.168.0.0/24,10.0.0.0/8")
+        end
+      end
     end
   end
 
