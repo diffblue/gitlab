@@ -1117,7 +1117,7 @@ $system-note-svg-size: 1rem;
     }
   }
 
-  .draft-note-component .draft-note.timeline-entry {
+  .draft-note-component.draft-note.timeline-entry {
     .timeline-content:not(.flash-container) {
       padding: $gl-padding-8 $gl-padding-8 $gl-padding-8 $gl-padding;
     }
