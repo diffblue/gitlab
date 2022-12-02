@@ -16051,6 +16051,15 @@ msgstr ""
 msgid "EscalationPolicies|mins"
 msgstr ""
 
+msgid "EscalationStatus|Acknowledged"
+msgstr ""
+
+msgid "EscalationStatus|Resolved"
+msgstr ""
+
+msgid "EscalationStatus|Triggered"
+msgstr ""
+
 msgid "Estimate"
 msgstr ""
 
@@ -39372,6 +39381,9 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
+msgid "Status (optional)"
+msgstr ""
+
 msgid "Status was retried."
 msgstr ""
 
@@ -47957,9 +47969,6 @@ msgid "ZentaoIntegration|ZenTao Web URL"
 msgstr ""
 
 msgid "ZentaoIntegration|ZenTao issues"
-msgstr ""
-
-msgid "Zoom"
 msgstr ""
 
 msgid "Zoom meeting added"

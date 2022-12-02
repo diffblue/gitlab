@@ -63,6 +63,7 @@ module Integrations
             "severity": severity,
             "confidential": confidential?,
             "description": description,
+            "escalation_status": { status: status },
             "issue_type": "incident"
           }
         end
@@ -114,6 +115,10 @@ module Integrations
 
         def severity
           values.dig(:project_and_severity_selector, :severity, :selected_option, :value) || 'unknown'
+        end
+
+        def status
+          values.dig(:status_and_assignee_selector, :status, :selected_option, :value)
         end
       end
     end

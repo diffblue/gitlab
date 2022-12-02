@@ -22,6 +22,7 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
     # Setting below params as they are optional, have added values wherever required in specs
     let(:zoom_link) { '' }
     let(:severity) { {} }
+    let(:status) { '' }
     let(:confidential_selected_options) { [] }
     let(:confidential) { { selected_options: confidential_selected_options } }
     let(:title) { 'Incident title' }
@@ -67,7 +68,14 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
               confidentiality: {
                 confidential: confidential
               },
-              zoom: zoom
+              zoom: zoom,
+              status_and_assignee_selector: {
+                status: {
+                  selected_option: {
+                    value: status
+                  }
+                }
+              }
             }
           }
         }
@@ -126,6 +134,7 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
           expect(incident.author).to eq(user)
           expect(incident.severity).to eq('unknown')
           expect(incident.confidential).to be_falsey
+          expect(incident.escalation_status).to be_triggered
         end
 
         it 'sends incident link to slack' do
@@ -162,6 +171,16 @@ RSpec.describe Integrations::SlackInteractions::IncidentManagement::IncidentModa
 
           expect(incident.confidential).to be_truthy
           expect(incident.severity).to eq('high')
+        end
+      end
+
+      context 'with incident status' do
+        let(:status) { 'resolved' }
+
+        it 'sets the incident status' do
+          incident = execute_service[:incident]
+
+          expect(incident.escalation_status).to be_resolved
         end
       end
 

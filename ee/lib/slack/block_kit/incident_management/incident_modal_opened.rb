@@ -21,6 +21,7 @@ module Slack
             "blocks": [
               title_block,
               details_selection_block,
+              status_and_assignee_block,
               confidential_block,
               incident_description_block,
               zoom_link_block
@@ -83,6 +84,40 @@ module Slack
             },
             "options": construct_project_selector,
             "initial_option": project_selector_option(projects.first)
+          }
+        end
+
+        def status_selection
+          {
+            "type": "static_select",
+            "action_id": "status",
+            "placeholder": {
+              "type": "plain_text",
+              "text": s_("Status (optional)")
+            },
+            "options": [
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": s_("EscalationStatus|Triggered")
+                },
+                "value": "triggered"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": s_("EscalationStatus|Acknowledged")
+                },
+                "value": "acknowledged"
+              },
+              {
+                "text": {
+                  "type": "plain_text",
+                  "text": s_("EscalationStatus|Resolved")
+                },
+                "value": "resolved"
+              }
+            ]
           }
         end
 
@@ -160,6 +195,16 @@ module Slack
           }
         end
 
+        def status_and_assignee_block
+          {
+            "type": "actions",
+            "block_id": "status_and_assignee_selector",
+            "elements": [
+              status_selection
+            ]
+          }
+        end
+
         def incident_description_block
           {
             "block_id": "incident_description",
@@ -198,7 +243,7 @@ module Slack
             },
             "label": {
               "type": "plain_text",
-              "text": s_("Zoom")
+              "text": "Zoom"
             }
           }
         end
