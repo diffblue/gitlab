@@ -184,7 +184,6 @@ module Gitlab
 
       class << self
         def validate(commands)
-          return if allow_cross_slot_commands?
           return if commands.empty?
 
           # early exit for single-command (non-pipelined) if it is a single-key-command

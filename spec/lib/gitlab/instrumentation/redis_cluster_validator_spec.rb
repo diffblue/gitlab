@@ -80,7 +80,8 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
         described_class.allow_cross_slot_commands do
           described_class.validate([[:mget, 'foo', 'bar']])
         end
-      ).to eq(nil)
+      ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
+                command: "mget foo bar" })
     end
 
     it 'allows nested invocation' do
@@ -92,7 +93,8 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
 
           described_class.validate([[:mget, 'foo', 'bar']])
         end
-      ).to eq(nil)
+      ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
+                command: "mget foo bar" })
     end
   end
 end
