@@ -145,7 +145,7 @@ export default {
         @hide="$emit('update-schedule-form', { type: 'timezone', value: selectedDropdownTimezone })"
       >
         <template #button-content>
-          <span v-safe-html="selectedTimezone" class="gl-new-dropdown-button-text"></span>
+          <span v-safe-html="selectedTimezone" class="gl-dropdown-button-text"></span>
           <gl-icon class="dropdown-chevron" name="chevron-down" />
         </template>
         <gl-search-box-by-type v-model.trim="tzSearchTerm" />

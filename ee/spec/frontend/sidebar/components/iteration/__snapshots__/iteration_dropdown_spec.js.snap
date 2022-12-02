@@ -4,7 +4,7 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
 <b-dropdown-stub
   block="true"
   boundary="scrollParent"
-  class="gl-new-dropdown gl-w-full"
+  class="gl-dropdown gl-w-full"
   offset="0"
   popperopts="[object Object]"
   role="menu"
@@ -17,13 +17,13 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
   variant="default"
 >
   <div
-    class="gl-new-dropdown-inner"
+    class="gl-dropdown-inner"
   >
     <div
-      class="gl-new-dropdown-header gl-border-b-0!"
+      class="gl-dropdown-header gl-border-b-0!"
     >
       <p
-        class="gl-new-dropdown-header-top"
+        class="gl-dropdown-header-top"
       >
         
         Assign Iteration
@@ -39,7 +39,7 @@ exports[`IterationDropdown default shows gl-dropdown 1`] = `
     <!---->
      
     <div
-      class="gl-new-dropdown-contents"
+      class="gl-dropdown-contents"
     >
       <!---->
         

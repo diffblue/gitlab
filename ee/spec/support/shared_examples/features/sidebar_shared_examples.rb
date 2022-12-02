@@ -30,7 +30,7 @@ RSpec.shared_examples 'issue boards sidebar EE' do
             click_button 'Edit'
             wait_for_requests
 
-            find('.gl-new-dropdown-item', text: epic2.title).click
+            find('.gl-dropdown-item', text: epic2.title).click
             wait_for_requests
 
             expect(page).to have_content(epic2.title)

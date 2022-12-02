@@ -130,16 +130,16 @@ RSpec.describe 'Protected Environments' do
     click_button s_('ProtectedEnvironment|Select an environment')
     fill_in 'Search', with: environment_name
     wait_for_requests
-    within '.gl-new-dropdown-contents' do
-      find('.gl-new-dropdown-item', text: environment_name).click
+    within '.gl-dropdown-contents' do
+      find('.gl-dropdown-item', text: environment_name).click
     end
   end
 
   def set_allowed_to_deploy(option)
     click_button('Select users')
 
-    within '.gl-new-dropdown-contents' do
-      Array(option).each { |opt| find('.gl-new-dropdown-item', text: opt).click }
+    within '.gl-dropdown-contents' do
+      Array(option).each { |opt| find('.gl-dropdown-item', text: opt).click }
     end
   end
 
@@ -148,8 +148,8 @@ RSpec.describe 'Protected Environments' do
       click_button '0'
     end
 
-    within '.gl-new-dropdown-contents' do
-      find('.gl-new-dropdown-item', text: number.to_s).click
+    within '.gl-dropdown-contents' do
+      find('.gl-dropdown-item', text: number.to_s).click
     end
   end
 end

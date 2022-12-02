@@ -64,7 +64,7 @@ RSpec.describe 'Service Desk Setting', :js, :clean_gitlab_redis_cache do
 
   it 'persists file_template_project_id on save' do
     find('#service-desk-template-select').click
-    find('.gl-new-dropdown-item-text-primary', exact_text: 'template').click
+    find('.gl-dropdown-item-text-primary', exact_text: 'template').click
     find('[data-testid="save_service_desk_settings_button"]').click
 
     wait_for_requests

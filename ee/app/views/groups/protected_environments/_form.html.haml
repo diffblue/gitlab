@@ -6,7 +6,7 @@
       = form_errors(@protected_environment)
       .form-group
         = f.label :name, s_('ProtectedEnvironment|Environment'), class: 'label-bold gl-display-block'
-        .dropdown.b-dropdown.gl-new-dropdown.gl-min-w-20.btn-group
+        .dropdown.b-dropdown.gl-dropdown.gl-min-w-20.btn-group
           = f.select :name, @tiers.keys.map { |tier| [tier.to_s, tier] }, {}, class: 'dropdown-menu-toggle select-control'
           = sprite_icon('chevron-down', css_class: 'gl-absolute gl-top-3 gl-right-3 gl-text-gray-500')
 

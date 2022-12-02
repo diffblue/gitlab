@@ -137,7 +137,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
       </div>
        
       <div
-        class="dropdown b-dropdown gl-new-dropdown gl-mt-3 gl-display-none"
+        class="dropdown b-dropdown gl-dropdown gl-mt-3 gl-display-none"
         id="__BVID__41"
       >
         <!---->
@@ -153,7 +153,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           <!---->
            
           <span
-            class="gl-new-dropdown-button-text"
+            class="gl-dropdown-button-text"
           >
             Unknown
           </span>
@@ -176,13 +176,13 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
           tabindex="-1"
         >
           <div
-            class="gl-new-dropdown-inner"
+            class="gl-dropdown-inner"
           >
             <div
-              class="gl-new-dropdown-header gl-border-b-0!"
+              class="gl-dropdown-header gl-border-b-0!"
             >
               <p
-                class="gl-new-dropdown-header-top"
+                class="gl-dropdown-header-top"
               >
                 
         Assign severity
@@ -194,12 +194,12 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
             <!---->
              
             <div
-              class="gl-new-dropdown-contents"
+              class="gl-dropdown-contents"
             >
               <!---->
                
               <li
-                class="gl-new-dropdown-item"
+                class="gl-dropdown-item"
                 role="presentation"
               >
                 <button
@@ -210,7 +210,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
                     data-testid="dropdown-item-checkbox"
                     role="img"
                   >
@@ -224,10 +224,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   <!---->
                    
                   <div
-                    class="gl-new-dropdown-item-text-wrapper"
+                    class="gl-dropdown-item-text-wrapper"
                   >
                     <p
-                      class="gl-new-dropdown-item-text-primary"
+                      class="gl-dropdown-item-text-primary"
                     >
                       <div
                         class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
@@ -260,7 +260,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 </button>
               </li>
               <li
-                class="gl-new-dropdown-item"
+                class="gl-dropdown-item"
                 role="presentation"
               >
                 <button
@@ -271,7 +271,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
                     data-testid="dropdown-item-checkbox"
                     role="img"
                   >
@@ -285,10 +285,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   <!---->
                    
                   <div
-                    class="gl-new-dropdown-item-text-wrapper"
+                    class="gl-dropdown-item-text-wrapper"
                   >
                     <p
-                      class="gl-new-dropdown-item-text-primary"
+                      class="gl-dropdown-item-text-primary"
                     >
                       <div
                         class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
@@ -321,7 +321,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 </button>
               </li>
               <li
-                class="gl-new-dropdown-item"
+                class="gl-dropdown-item"
                 role="presentation"
               >
                 <button
@@ -332,7 +332,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
                     data-testid="dropdown-item-checkbox"
                     role="img"
                   >
@@ -346,10 +346,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   <!---->
                    
                   <div
-                    class="gl-new-dropdown-item-text-wrapper"
+                    class="gl-dropdown-item-text-wrapper"
                   >
                     <p
-                      class="gl-new-dropdown-item-text-primary"
+                      class="gl-dropdown-item-text-primary"
                     >
                       <div
                         class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
@@ -382,7 +382,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 </button>
               </li>
               <li
-                class="gl-new-dropdown-item"
+                class="gl-dropdown-item"
                 role="presentation"
               >
                 <button
@@ -393,7 +393,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
+                    class="gl-icon s16 gl-dropdown-item-check-icon gl-visibility-hidden gl-mt-3 gl-align-self-start"
                     data-testid="dropdown-item-checkbox"
                     role="img"
                   >
@@ -407,10 +407,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   <!---->
                    
                   <div
-                    class="gl-new-dropdown-item-text-wrapper"
+                    class="gl-dropdown-item-text-wrapper"
                   >
                     <p
-                      class="gl-new-dropdown-item-text-primary"
+                      class="gl-dropdown-item-text-primary"
                     >
                       <div
                         class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"
@@ -443,7 +443,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 </button>
               </li>
               <li
-                class="gl-new-dropdown-item"
+                class="gl-dropdown-item"
                 role="presentation"
               >
                 <button
@@ -454,7 +454,7 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                 >
                   <svg
                     aria-hidden="true"
-                    class="gl-icon s16 gl-new-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
+                    class="gl-icon s16 gl-dropdown-item-check-icon gl-mt-3 gl-align-self-start"
                     data-testid="dropdown-item-checkbox"
                     role="img"
                   >
@@ -468,10 +468,10 @@ exports[`ee/BoardContentSidebar incident sidebar matches the snapshot 1`] = `
                   <!---->
                    
                   <div
-                    class="gl-new-dropdown-item-text-wrapper"
+                    class="gl-dropdown-item-text-wrapper"
                   >
                     <p
-                      class="gl-new-dropdown-item-text-primary"
+                      class="gl-dropdown-item-text-primary"
                     >
                       <div
                         class="incident-severity gl-display-inline-flex gl-align-items-center gl-justify-content-between gl-max-w-full"

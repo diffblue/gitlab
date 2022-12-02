@@ -44,7 +44,7 @@ RSpec.describe 'Epic in issue sidebar', :js do
           click_edit
 
           aggregate_failures do
-            expect(page).to have_selector('.gl-new-dropdown-contents .gl-new-dropdown-item', count: 4)
+            expect(page).to have_selector('.gl-dropdown-contents .gl-dropdown-item', count: 4)
             expect(page).to have_content 'No epic'
             expect(page).to have_content epic1.title
             expect(page).to have_content epic2.title
@@ -62,7 +62,7 @@ RSpec.describe 'Epic in issue sidebar', :js do
           wait_for_all_requests
 
           aggregate_failures do
-            expect(page).to have_selector('.gl-new-dropdown-contents .gl-new-dropdown-item', count: 2)
+            expect(page).to have_selector('.gl-dropdown-contents .gl-dropdown-item', count: 2)
             expect(page).to have_content 'No epic'
             expect(page).to have_content epic1.title
           end
@@ -73,7 +73,7 @@ RSpec.describe 'Epic in issue sidebar', :js do
         page.within(sidebar_epic_selector) do
           click_edit
 
-          find('.gl-new-dropdown-item', text: epic2.title).click
+          find('.gl-dropdown-item', text: epic2.title).click
 
           wait_for_all_requests
 
@@ -93,7 +93,7 @@ RSpec.describe 'Epic in issue sidebar', :js do
           click_edit
 
           aggregate_failures do
-            expect(page).to have_selector('.gl-new-dropdown-contents .gl-new-dropdown-item', count: 5)
+            expect(page).to have_selector('.gl-dropdown-contents .gl-dropdown-item', count: 5)
             expect(page).to have_content 'No epic'
             expect(page).to have_content epic1.title
             expect(page).to have_content epic2.title
