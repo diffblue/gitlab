@@ -22,9 +22,8 @@
   .form-actions
     - if @milestone.new_record?
       = f.submit _('Create milestone'), data: { qa_selector: "create_milestone_button" }, pajamas_button: true
-      = render Pajamas::ButtonComponent.new(href: group_milestone_path(@group,)) do
-        = s_("Cancel")"
+      = render Pajamas::ButtonComponent.new(href: group_milestones_path(@group, @milestone)) do
+        = s_("Cancel")
     - else
-      = f.submit _('Update milestone'), pajamas_button: true
       = render Pajamas::ButtonComponent.new(href: group_milestone_path(@group, @milestone)) do
         = s_("Cancel")
