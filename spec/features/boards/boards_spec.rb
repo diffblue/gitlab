@@ -2,6 +2,17 @@
 
 require 'spec_helper'
 
+# Flaky spec warning: the queries in this file routinely exceed the defined GraphQL query limit of 100.
+# Until those queries are optimized, we need to disable query limit checking in order for these tests
+# to pass consistently. Note that removing the disabling code can lead to flaky failures locally and in CI.
+# Before removing we need to be sure that the underlying queries are properly optimized.
+# See:
+# - https://gitlab.com/gitlab-org/gitlab/-/issues/323426
+# - https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56458#note_535900110
+# - https://gitlab.com/gitlab-org/gitlab/-/merge_requests/102719
+# - https://gitlab.com/gitlab-org/gitlab/-/merge_requests/105849
+# - https://gitlab.com/gitlab-org/gitlab/-/issues/383970
+#
 RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
   include DragTo
   include MobileHelpers
@@ -125,7 +136,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       it 'infinite scrolls list' do
         create_list(:labeled_issue, 30, project: project, labels: [planning])
 
-        visit_project_board(project, board)
+        visit_project_board_path_without_query_limit(project, board)
 
         page.within(find('.board:nth-child(2)')) do
           expect(page.find('.board-header')).to have_content('38')
@@ -204,7 +215,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           expect(find('.board:nth-child(3) [data-testid="board-list-header"]')).to have_content(planning.title)
 
           # Make sure list positions are preserved after a reload
-          visit_project_board(project, board)
+          visit_project_board_path_without_query_limit(project, board)
 
           expect(find('.board:nth-child(2) [data-testid="board-list-header"]')).to have_content(development.title)
           expect(find('.board:nth-child(3) [data-testid="board-list-header"]')).to have_content(planning.title)
@@ -216,19 +227,14 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           let_it_be(:list2) { create(:list, board: board, label: development, position: 1) }
 
           it 'changes position of list' do
-            inspect_requests(inject_headers: { 'X-GITLAB-DISABLE-SQL-QUERY-LIMIT' => 'https://gitlab.com/gitlab-org/gitlab/-/issues/323426' }) do
-              visit_project_board(project, board)
-            end
+            visit_project_board_path_without_query_limit(project, board)
 
             drag(list_from_index: 0, list_to_index: 1, selector: '.board-header')
 
             expect(find('.board:nth-child(1) [data-testid="board-list-header"]')).to have_content(development.title)
             expect(find('.board:nth-child(2) [data-testid="board-list-header"]')).to have_content(planning.title)
 
-            inspect_requests(inject_headers: { 'X-GITLAB-DISABLE-SQL-QUERY-LIMIT' => 'https://gitlab.com/gitlab-org/gitlab/-/issues/323426' }) do
-              # Make sure list positions are preserved after a reload
-              visit_project_board(project, board)
-            end
+            visit_project_board_path_without_query_limit(project, board)
 
             expect(find('.board:nth-child(1) [data-testid="board-list-header"]')).to have_content(development.title)
             expect(find('.board:nth-child(2) [data-testid="board-list-header"]')).to have_content(planning.title)
@@ -600,5 +606,11 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
     visit project_board_path(project, board)
 
     wait_for_requests
+  end
+
+  def visit_project_board_path_without_query_limit(project, board)
+    inspect_requests(inject_headers: { 'X-GITLAB-DISABLE-SQL-QUERY-LIMIT' => 'https://gitlab.com/gitlab-org/gitlab/-/issues/323426' }) do
+      visit_project_board(project, board)
+    end
   end
 end
