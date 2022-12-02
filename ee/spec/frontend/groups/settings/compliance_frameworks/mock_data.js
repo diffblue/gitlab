@@ -15,6 +15,7 @@ export const validFetchResponse = {
           {
             id: 'gid://gitlab/ComplianceManagement::Framework/1',
             name: 'GDPR',
+            default: true,
             description: 'General Data Protection Regulation',
             pipelineConfigurationFullPath: 'file.yml@group/project',
             color: '#1aaa55',
@@ -23,6 +24,7 @@ export const validFetchResponse = {
           {
             id: 'gid://gitlab/ComplianceManagement::Framework/2',
             name: 'PCI-DSS',
+            default: false,
             description: 'Payment Card Industry-Data Security Standard',
             pipelineConfigurationFullPath: 'file.yml@group/project',
             color: '#6666c4',
@@ -41,6 +43,7 @@ export const emptyFetchResponse = {
     namespace: {
       id: 'gid://group-1/Group/1',
       name: 'Group 1',
+      default: false,
       complianceFrameworks: {
         nodes: [],
         __typename: 'ComplianceFrameworkConnection',
@@ -53,6 +56,7 @@ export const emptyFetchResponse = {
 export const frameworkFoundResponse = {
   id: 'gid://gitlab/ComplianceManagement::Framework/1',
   name: 'GDPR',
+  default: false,
   description: 'General Data Protection Regulation',
   pipelineConfigurationFullPath: 'file.yml@group/project',
   color: '#1aaa55',
@@ -68,6 +72,7 @@ export const validFetchOneResponse = {
           {
             id: 'gid://gitlab/ComplianceManagement::Framework/1',
             name: 'GDPR',
+            default: true,
             description: 'General Data Protection Regulation',
             pipelineConfigurationFullPath: 'file.yml@group/project',
             color: '#1aaa55',
@@ -87,6 +92,7 @@ export const validCreateResponse = {
       framework: {
         id: 'gid://gitlab/ComplianceManagement::Framework/1',
         name: 'GDPR',
+        default: true,
         description: 'General Data Protection Regulation',
         pipelineConfigurationFullPath: 'file.yml@group/project',
         color: '#1aaa55',
@@ -146,4 +152,42 @@ export const errorDeleteResponse = {
       __typename: 'DestroyComplianceFrameworkPayload',
     },
   },
+};
+
+export const validSetDefaultFrameworkResponse = {
+  data: {
+    updateComplianceFramework: {
+      clientMutationId: null,
+      errors: [],
+      __typename: 'UpdateComplianceFrameworkPayload',
+    },
+  },
+};
+
+export const errorSetDefaultFrameworkResponse = {
+  data: {
+    updateComplianceFramework: {
+      clientMutationId: null,
+      errors: ['graphql error'],
+      __typename: 'UpdateComplianceFrameworkPayload',
+    },
+  },
+};
+
+export const framework = {
+  parsedId: 1,
+  name: 'framework a',
+  default: false,
+  description: 'a framework',
+  color: '#112233',
+  editPath: 'group/framework/1/edit',
+};
+
+export const defaultFramework = {
+  parsedId: 2,
+  name: 'framework b',
+  default: true,
+  description: 'b framework',
+  color: '#00b140',
+  editPath: 'group/framework/2/edit',
 };

@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Table table content displays the default label 1`] = `
+<span
+  aria-label="default"
+  class="badge badge-info badge-pill gl-badge md"
+  data-testid="compliance-framework-default-badge"
+>
+  <!---->
+   default
+</span>
+`;
