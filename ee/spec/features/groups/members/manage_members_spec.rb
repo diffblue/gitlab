@@ -48,7 +48,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
     end
 
     shared_examples "shows an overage modal when adding one user with a given role" do |role|
-      it "shows a modal and invites them to a group if confirmed" do
+      it "shows a modal and invites them to a group if confirmed", quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/382373" do
         group.add_owner(user1)
         add_user_by_name(user2.name, role)
 
