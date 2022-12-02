@@ -9,5 +9,8 @@ export default () => ({
   filter: '',
   pageInfo: {
     page: 0,
+    startCursor: null,
+    endCursor: null,
+    hasNextPage: true,
   },
 });
