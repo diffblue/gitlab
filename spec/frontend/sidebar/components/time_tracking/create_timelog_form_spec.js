@@ -78,7 +78,6 @@ describe('Create Timelog Form', () => {
   };
 
   afterEach(() => {
-    wrapper.destroy();
     fakeApollo = null;
   });
 
