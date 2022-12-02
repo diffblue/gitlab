@@ -7,6 +7,7 @@ import {
   GlFormTextarea,
   GlFormSelect,
   GlLink,
+  GlSprintf,
 } from '@gitlab/ui';
 import { initFormField } from 'ee/security_configuration/utils';
 import { helpPagePath } from '~/helpers/help_page_helper';
@@ -16,6 +17,7 @@ import BaseDastProfileForm from '../../components/base_dast_profile_form.vue';
 import dastProfileFormMixin from '../../dast_profile_form_mixin';
 import TooltipIcon from '../../dast_scanner_profiles/components/tooltip_icon.vue';
 import {
+  DAST_API_DOC_PATH_BASE,
   MAX_CHAR_LIMIT_EXCLUDED_URLS,
   MAX_CHAR_LIMIT_REQUEST_HEADERS,
   EXCLUDED_URLS_SEPARATOR,
@@ -29,8 +31,39 @@ import dastSiteProfileUpdateMutation from '../graphql/dast_site_profile_update.m
 import DastSiteAuthSection from './dast_site_auth_section.vue';
 
 export default {
+  DAST_API_DOC_PATH: helpPagePath(DAST_API_DOC_PATH_BASE, {
+    anchor: 'enable-dast-api-scanning',
+  }),
+  DAST_API_DOC_GRAPHQL_PATH: helpPagePath(DAST_API_DOC_PATH_BASE, {
+    anchor: 'graphql-schema',
+  }),
   dastSiteProfileCreateMutation,
   dastSiteProfileUpdateMutation,
+  i18n: {
+    excludedUrls: {
+      description: s__('DastProfiles|Enter URLs in a comma-separated list.'),
+      tooltip: s__('DastProfiles|URLs to skip during the authenticated scan.'),
+      placeholder: 'https://example.com/logout, https://example.com/send_mail',
+    },
+    requestHeaders: {
+      label: s__('DastProfiles|Additional request headers (optional)'),
+      description: s__('DastProfiles|Enter headers in a comma-separated list.'),
+      tooltip: s__(
+        'DastProfiles|Request header names and values. Headers are added to every request made by DAST.',
+      ),
+      // eslint-disable-next-line @gitlab/require-i18n-strings
+      placeholder: 'Cache-control: no-cache, User-Agent: DAST/1.0',
+    },
+    scanMethod: {
+      label: s__('DastProfiles|Scan method'),
+      helpText: s__('DastProfiles|What does each method do?'),
+      defaultOption: s__('DastProfiles|Choose a scan method'),
+    },
+    disabledProfileName: s__('DastProfiles|Profile in use and cannot be renamed'),
+    dastApiDocsGraphQlHelpText: s__(
+      'DastProfiles|Must allow introspection queries to request the API schema. %{linkStart}How do I enable introspection%{linkEnd}?',
+    ),
+  },
   name: 'DastSiteProfileForm',
   components: {
     BaseDastProfileForm,
@@ -43,6 +76,7 @@ export default {
     TooltipIcon,
     GlFormSelect,
     GlLink,
+    GlSprintf,
   },
   mixins: [dastProfileFormMixin()],
   data() {
@@ -93,9 +127,6 @@ export default {
     };
   },
   computed: {
-    hasRequestHeaders() {
-      return Boolean(this.profile.requestHeaders);
-    },
     i18n() {
       const { isEdit } = this;
       return {
@@ -109,36 +140,13 @@ export default {
           label: this.isTargetAPI
             ? s__('DastProfiles|Excluded paths (optional)')
             : s__('DastProfiles|Excluded URLs (optional)'),
-          description: s__('DastProfiles|Enter URLs in a comma-separated list.'),
-          tooltip: s__('DastProfiles|URLs to skip during the authenticated scan.'),
-          placeholder: 'https://example.com/logout, https://example.com/send_mail',
-        },
-        requestHeaders: {
-          label: s__('DastProfiles|Additional request headers (optional)'),
-          description: s__('DastProfiles|Enter headers in a comma-separated list.'),
-          tooltip: s__(
-            'DastProfiles|Request header names and values. Headers are added to every request made by DAST.',
-          ),
-          // eslint-disable-next-line @gitlab/require-i18n-strings
-          placeholder: 'Cache-control: no-cache, User-Agent: DAST/1.0',
         },
         targetUrl: {
           label: this.isTargetAPI
             ? s__('DastProfiles|API endpoint URL')
             : s__('DastProfiles|Target URL'),
         },
-        scanMethod: {
-          label: s__('DastProfiles|Scan method'),
-          helpText: s__('DastProfiles|What does each method do?'),
-          defaultOption: s__('DastProfiles|Choose a scan method'),
-        },
-        disabledProfileName: s__('DastProfiles|Profile in use and cannot be renamed'),
       };
-    },
-    dastApiDocsPath() {
-      return helpPagePath('user/application_security/dast_api/', {
-        anchor: 'enable-dast-api-scanning',
-      });
     },
     parsedExcludedUrls() {
       const { value } = this.form.fields.excludedUrls;
@@ -157,6 +165,9 @@ export default {
         authFields.submitField = '';
       }
       return authFields;
+    },
+    isGraphQlMethod() {
+      return this.form.fields.scanMethod.value === SCAN_METHODS.GRAPHQL.value;
     },
     isTargetAPI() {
       return this.form.fields.targetType.value === TARGET_TYPES.API.value;
@@ -242,7 +253,7 @@ export default {
       <gl-form-group :invalid-feedback="form.fields.profileName.feedback">
         <template #label>
           {{ s__('DastProfiles|Profile name') }}
-          <tooltip-icon v-if="isProfileInUse" :title="i18n.disabledProfileName" />
+          <tooltip-icon v-if="isProfileInUse" :title="$options.i18n.disabledProfileName" />
         </template>
         <gl-form-input
           v-model="form.fields.profileName.value"
@@ -285,7 +296,7 @@ export default {
       <gl-form-group
         v-if="isTargetAPI"
         id="scan-method-popover-container"
-        :label="i18n.scanMethod.label"
+        :label="$options.i18n.scanMethod.label"
       >
         <gl-form-select
           v-model="form.fields.scanMethod.value"
@@ -298,13 +309,13 @@ export default {
           required
         >
           <template #first>
-            <option :value="null" disabled>{{ i18n.scanMethod.defaultOption }}</option>
+            <option :value="null" disabled>{{ $options.i18n.scanMethod.defaultOption }}</option>
           </template>
         </gl-form-select>
 
         <gl-form-text
-          ><gl-link :href="dastApiDocsPath" target="_blank">{{
-            i18n.scanMethod.helpText
+          ><gl-link :href="$options.DAST_API_DOC_PATH" target="_blank">{{
+            $options.i18n.scanMethod.helpText
           }}</gl-link></gl-form-text
         >
 
@@ -325,6 +336,16 @@ export default {
             required
             :state="form.fields.scanFilePath.state"
           />
+
+          <gl-form-text v-if="isGraphQlMethod" data-testid="graphql-help-text" class="gl-max-w-62">
+            <gl-sprintf :message="$options.i18n.dastApiDocsGraphQlHelpText">
+              <template #link="{ content }">
+                <gl-link :href="$options.DAST_API_DOC_GRAPHQL_PATH" target="_blank">{{
+                  content
+                }}</gl-link>
+              </template>
+            </gl-sprintf>
+          </gl-form-text>
         </gl-form-group>
       </gl-form-group>
 
@@ -336,13 +357,15 @@ export default {
         >
           <template #label>
             {{ i18n.excludedUrls.label }}
-            <tooltip-icon :title="i18n.excludedUrls.tooltip" />
-            <gl-form-text class="gl-mt-3">{{ i18n.excludedUrls.description }}</gl-form-text>
+            <tooltip-icon :title="$options.i18n.excludedUrls.tooltip" />
+            <gl-form-text class="gl-mt-3">{{
+              $options.i18n.excludedUrls.description
+            }}</gl-form-text>
           </template>
           <gl-form-textarea
             v-model="form.fields.excludedUrls.value"
             :maxlength="$options.MAX_CHAR_LIMIT_EXCLUDED_URLS"
-            :placeholder="i18n.excludedUrls.placeholder"
+            :placeholder="$options.i18n.excludedUrls.placeholder"
             :no-resize="false"
             data-testid="excluded-urls-input"
           />
@@ -359,14 +382,16 @@ export default {
           :class="{ 'col-md-6': !stacked, 'col-md-12': stacked }"
         >
           <template #label>
-            {{ i18n.requestHeaders.label }}
-            <tooltip-icon :title="i18n.requestHeaders.tooltip" />
-            <gl-form-text class="gl-mt-3">{{ i18n.requestHeaders.description }}</gl-form-text>
+            {{ $options.i18n.requestHeaders.label }}
+            <tooltip-icon :title="$options.i18n.requestHeaders.tooltip" />
+            <gl-form-text class="gl-mt-3">{{
+              $options.i18n.requestHeaders.description
+            }}</gl-form-text>
           </template>
           <gl-form-textarea
             v-model="form.fields.requestHeaders.value"
             :maxlength="$options.MAX_CHAR_LIMIT_REQUEST_HEADERS"
-            :placeholder="i18n.requestHeaders.placeholder"
+            :placeholder="$options.i18n.requestHeaders.placeholder"
             :no-resize="false"
             data-testid="request-headers-input"
           />
