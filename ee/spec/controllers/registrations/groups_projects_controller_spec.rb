@@ -105,14 +105,14 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
       it_behaves_like 'hides email confirmation warning'
 
       it 'creates a group and project' do
-        expect { post_create }.to change(Group, :count).by(1).and change(Project, :count).by(1)
+        expect { post_create }.to change { Group.count }.by(1).and change { Project.count }.by(1)
       end
 
       context 'when there is no suggested path based from the name' do
         let(:group_params) { { name: '⛄⛄⛄', path: '' } }
 
         it 'creates a group' do
-          expect { subject }.to change(Group, :count).by(1)
+          expect { subject }.to change { Group.count }.by(1)
         end
       end
 
@@ -120,7 +120,7 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
         let(:group_params) { { name: '', path: '' } }
 
         it 'does not create a group', :aggregate_failures do
-          expect { post_create }.not_to change(Group, :count)
+          expect { post_create }.not_to change { Group.count }
           expect(assigns(:group).errors).not_to be_blank
         end
 
@@ -144,8 +144,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
         let(:project_params) { { name: '', path: '', visibility_level: Gitlab::VisibilityLevel::PRIVATE } }
 
         it 'does not create a project', :aggregate_failures do
-          expect { post_create }.to change(Group, :count)
-          expect { post_create }.not_to change(Project, :count)
+          expect { post_create }.to change { Group.count }
+          expect { post_create }.not_to change { Project.count }
           expect(assigns(:project).errors).not_to be_blank
         end
 
@@ -161,8 +161,8 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
         let(:group_params) { { id: group.id } }
 
         it 'creates a project and not another group', :aggregate_failures do
-          expect { post_create }.to change(Project, :count)
-          expect { post_create }.not_to change(Group, :count)
+          expect { post_create }.to change { Project.count }
+          expect { post_create }.not_to change { Group.count }
         end
       end
 
@@ -231,14 +231,14 @@ RSpec.describe Registrations::GroupsProjectsController, :experiment, feature_cat
         let(:group_params) { { name: '⛄⛄⛄', path: '' } }
 
         it 'creates a group, and redirects' do
-          expect { subject }.to change(Group, :count).by(1)
+          expect { subject }.to change { Group.count }.by(1)
           expect(subject).to have_gitlab_http_status(:redirect)
         end
       end
 
       context 'when group can be created' do
         it 'creates a group' do
-          expect { post_import }.to change(Group, :count).by(1)
+          expect { post_import }.to change { Group.count }.by(1)
         end
 
         it 'redirects to the import url with a namespace_id parameter' do

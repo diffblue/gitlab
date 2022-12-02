@@ -84,7 +84,7 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :authentic
           }
         ).and_call_original
 
-        expect { post provider, params: { group_id: group } }.to change(AuthenticationEvent, :count).by(1)
+        expect { post provider, params: { group_id: group } }.to change { AuthenticationEvent.count }.by(1)
       end
 
       include_examples 'works with session enforcement'
@@ -102,7 +102,7 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :authentic
       end
 
       it 'uses existing linked identity' do
-        expect { post provider, params: { group_id: group } }.not_to change(linked_accounts, :count)
+        expect { post provider, params: { group_id: group } }.not_to change { linked_accounts.count }
       end
 
       it 'skips authenticity token based forgery protection' do
@@ -136,7 +136,7 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :authentic
       end
 
       it 'adds linked identity' do
-        expect { post provider, params: { group_id: group } }.to change(linked_accounts, :count)
+        expect { post provider, params: { group_id: group } }.to change { linked_accounts.count }
       end
 
       it 'adds group membership' do
@@ -157,7 +157,7 @@ RSpec.describe Groups::OmniauthCallbacksController, feature_category: :authentic
       end
 
       it 'does not add linked identity' do
-        expect { post provider, params: { group_id: group } }.not_to change(linked_accounts, :count)
+        expect { post provider, params: { group_id: group } }.not_to change { linked_accounts.count }
       end
 
       it 'does not add group membership' do

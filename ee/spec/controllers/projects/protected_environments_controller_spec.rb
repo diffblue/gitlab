@@ -35,7 +35,7 @@ RSpec.describe Projects::ProtectedEnvironmentsController, feature_category: :con
         it 'creates a new ProtectedEnvironment' do
           expect do
             subject
-          end.to change(ProtectedEnvironment, :count).by(1)
+          end.to change { ProtectedEnvironment.count }.by(1)
         end
 
         it 'sets a flash' do
@@ -61,7 +61,7 @@ RSpec.describe Projects::ProtectedEnvironmentsController, feature_category: :con
         it 'does not create a new ProtectedEnvironment' do
           expect do
             subject
-          end.not_to change(ProtectedEnvironment, :count)
+          end.not_to change { ProtectedEnvironment.count }
         end
 
         it 'redirects to CI/CD settings' do

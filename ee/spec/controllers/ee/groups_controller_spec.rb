@@ -189,7 +189,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
 
           it 'does not immediately delete the group' do
             Sidekiq::Testing.fake! do
-              expect { subject }.not_to change(GroupDestroyWorker.jobs, :size)
+              expect { subject }.not_to change { GroupDestroyWorker.jobs.size }
             end
           end
 
@@ -252,7 +252,7 @@ RSpec.describe GroupsController, feature_category: :subgroups do
 
         it 'immediately schedules a group destroy' do
           Sidekiq::Testing.fake! do
-            expect { subject }.to change(GroupDestroyWorker.jobs, :size).by(1)
+            expect { subject }.to change { GroupDestroyWorker.jobs.size }.by(1)
           end
         end
 

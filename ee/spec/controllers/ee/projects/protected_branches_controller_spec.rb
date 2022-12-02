@@ -15,7 +15,7 @@ RSpec.describe Projects::ProtectedBranchesController, feature_category: :source_
     it "sets code owner approvals to #{boolean} when protecting the branch" do
       expect do
         post(:create, params: project_params.merge(protected_branch: create_params))
-      end.to change(ProtectedBranch, :count).by(1)
+      end.to change { ProtectedBranch.count }.by(1)
 
       expect(ProtectedBranch.last.attributes["code_owner_approval_required"]).to eq(boolean)
     end

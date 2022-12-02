@@ -21,7 +21,7 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
       end
 
       it 'does not create a new board when group does not have one' do
-        expect { list_boards }.not_to change(group.epic_boards, :count)
+        expect { list_boards }.not_to change { group.epic_boards.count }
       end
 
       it 'returns a not found 404 response' do
@@ -33,7 +33,7 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
 
     context 'with authorized user' do
       it 'creates a new board when group does not have one' do
-        expect { list_boards }.to change(group.epic_boards, :count).by(1)
+        expect { list_boards }.to change { group.epic_boards.count }.by(1)
       end
 
       it 'returns correct response' do
@@ -65,7 +65,7 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
       end
 
       it 'does not create a new board when group does not have one' do
-        expect { list_boards }.not_to change(group.epic_boards, :count)
+        expect { list_boards }.not_to change { group.epic_boards.count }
       end
 
       it 'returns a not found 404 response' do
@@ -83,7 +83,7 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
       end
 
       it 'creates a new board when group does not have one' do
-        expect { list_boards }.to change(group.epic_boards, :count).by(1)
+        expect { list_boards }.to change { group.epic_boards.count }.by(1)
       end
 
       it 'returns a 200 response' do
@@ -152,7 +152,7 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
 
     context 'when format is HTML' do
       it 'renders template' do
-        expect { read_board board: board }.not_to change(BoardGroupRecentVisit, :count)
+        expect { read_board board: board }.not_to change { BoardGroupRecentVisit.count }
 
         expect(response).to render_template :show
         expect(response.media_type).to eq 'text/html'
@@ -181,7 +181,7 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
           it 'does not save visit' do
             sign_out(user)
 
-            expect { read_board board: board }.not_to change(Boards::EpicBoardRecentVisit, :count)
+            expect { read_board board: board }.not_to change { Boards::EpicBoardRecentVisit.count }
 
             expect(response).to render_template :show
             expect(response.media_type).to eq 'text/html'
@@ -190,7 +190,7 @@ RSpec.describe Groups::EpicBoardsController, feature_category: :portfolio_manage
 
         context 'when user is signed in' do
           it 'saves the visit' do
-            expect { read_board board: board }.to change(Boards::EpicBoardRecentVisit, :count)
+            expect { read_board board: board }.to change { Boards::EpicBoardRecentVisit.count }
 
             expect(response).to render_template :show
             expect(response.media_type).to eq 'text/html'

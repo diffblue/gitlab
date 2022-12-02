@@ -81,7 +81,7 @@ RSpec.describe 'SAML provider settings' do
       fill_in 'Identity provider single sign-on URL', with: 'https://localhost:9999/adfs/ls'
       fill_in 'Certificate fingerprint', with: 'aa:bb:cc:dd:ee:ff:11:22:33:44:55:66:77:88:99:0a:1b:2c:3d:00'
 
-      expect { submit }.to change(SamlProvider, :count).by(1)
+      expect { submit }.to change { SamlProvider.count }.by(1)
     end
 
     it 'shows errors if fields missing' do
