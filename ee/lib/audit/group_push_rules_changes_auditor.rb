@@ -7,27 +7,23 @@ module Audit
       :file_name_regex, :max_file_size
     ].freeze
 
-    EVENT_TYPE_PER_ATTR = { 
-      :max_file_size => 'group_push_rules_max_file_size_updated',
-      :file_name_regex => 'group_push_rules_file_name_regex_updated', 
-      :author_email_regex => 'group_push_rules_author_email_regex_updated',
-      :commit_message_negative_regex => 'group_push_rules_commit_message_negative_regex_updated',
-      :commit_message_regex => 'group_push_rules_commit_message_regex_updated',
-      :branch_name_regex => 'group_push_rules_branch_name_regex_updated'   
+    EVENT_TYPE_PER_ATTR = {
+      'max_file_size': 'group_push_rules_max_file_size_updated',
+      'file_name_regex': 'group_push_rules_file_name_regex_updated',
+      'author_email_regex': 'group_push_rules_author_email_regex_updated',
+      'commit_message_negative_regex': 'group_push_rules_commit_message_negative_regex_updated',
+      'commit_message_regex': 'group_push_rules_commit_message_regex_updated',
+      'branch_name_regex': 'group_push_rules_branch_name_regex_updated'
     }.freeze
 
     def execute
       return if model.blank? || model.group.nil?
 
       ::PushRule::AUDIT_LOG_ALLOWLIST.each do |attr, desc|
-        entity_type = if EVENT_TYPE_PER_ATTR.has_key?(attr) 
-          EVENT_TYPE_PER_ATTR[attr]
-        else
-          'audit_operation'
-        end
-                    
-        audit_changes(attr, as: desc, entity: model.group, model: model, 
-          event_type: entity_type)
+        event_name = event_type = EVENT_TYPE_PER_ATTR[attr] || 'audit_operation'
+
+        audit_changes(attr, as: desc, entity: model.group, model: model,
+                            event_type: event_name)
       end
     end
 
