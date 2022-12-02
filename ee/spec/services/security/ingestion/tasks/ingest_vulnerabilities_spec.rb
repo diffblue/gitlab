@@ -55,15 +55,5 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities do
         ingest_vulnerabilities
       end
     end
-
-    context 'when `deprecate_vulnerabilities_feedback` feature flag is disabled' do
-      before do
-        stub_feature_flags(deprecate_vulnerabilities_feedback: false)
-      end
-
-      it 'does not updates present_on_default_branch to true for existing vulnerabilities' do
-        expect { ingest_vulnerabilities }.to not_change { existing_vulnerability.reload.present_on_default_branch }
-      end
-    end
   end
 end

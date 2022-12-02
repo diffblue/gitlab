@@ -25,23 +25,32 @@ module Security
       end
 
       def dismiss_finding
-        result = if Feature.enabled?(:deprecate_vulnerabilities_feedback, @project)
-                   create_and_dismiss_vulnerability
-                 else
-                   ::VulnerabilityFeedback::CreateService.new(
-                     @project,
-                     @current_user,
-                     feedback_params
-                   ).execute
-                 end
+        @error_message = nil
 
-        if result[:status] == :success
-          ServiceResponse.success(payload: { security_finding: @security_finding })
-        else
-          all_errors = result[:message].full_messages.join(",")
-          error_string = format(_("failed to dismiss security finding: %{message}"), message: all_errors)
-          ServiceResponse.error(message: error_string, http_status: :unprocessable_entity)
+        ApplicationRecord.transaction do
+          create_feedback
+          create_and_dismiss_vulnerability
         end
+
+        if @error_message
+          error_string = format(_("failed to dismiss security finding: %{message}"), message: @error_message)
+          ServiceResponse.error(message: error_string, http_status: :unprocessable_entity)
+        else
+          ServiceResponse.success(payload: { security_finding: @security_finding })
+        end
+      end
+
+      def create_feedback
+        result = ::VulnerabilityFeedback::CreateService.new(
+          @project,
+          @current_user,
+          feedback_params
+        ).execute
+
+        return if result[:status] == :success
+
+        @error_message = result[:message].full_messages.join(",")
+        raise ActiveRecord::Rollback
       end
 
       def create_and_dismiss_vulnerability

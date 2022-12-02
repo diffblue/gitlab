@@ -28,7 +28,9 @@ module Security
     end
 
     def execute
-      filter_by_present_on_default_branch if ::Feature.enabled?(:deprecate_vulnerabilities_feedback)
+      # As we are creating vulnerability with default branch set to false irrespective of feature flag
+      # from user interaction (issue/mr creation and dismissal of finding), we always need to do this filtering
+      filter_by_present_on_default_branch
       filter_by_projects
       filter_by_image
       filter_by_report_types
