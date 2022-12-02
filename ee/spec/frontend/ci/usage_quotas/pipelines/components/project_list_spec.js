@@ -50,7 +50,7 @@ describe('ProjectCIMinutesList', () => {
     it('renders Shared runner duration', () => {
       const firstProjectColumns = findTableRows().at(0).findAll('td');
 
-      expect(firstProjectColumns.at(1).text()).toBe('2.00');
+      expect(firstProjectColumns.at(1).text()).toBe('1.33');
     });
 
     it('renders CI minutes', () => {

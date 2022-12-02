@@ -1,17 +1,17 @@
 <script>
 import { GlTab, GlTabs } from '@gitlab/ui';
 import HelpPopover from '~/vue_shared/components/help_popover.vue';
-import MinutesUsageMonthChart from 'ee/ci/ci_minutes_usage/components/minutes_usage_month_chart.vue';
-import MinutesUsageProjectChart from 'ee/ci/ci_minutes_usage/components/minutes_usage_project_chart.vue';
-import SharedRunnerUsageMonthChart from 'ee/ci/ci_minutes_usage/components/shared_runner_usage_month_chart.vue';
-import NoMinutesAlert from 'ee/ci/ci_minutes_usage/components/no_minutes_alert.vue';
 import {
   USAGE_BY_MONTH_HEADER,
   USAGE_BY_PROJECT_HEADER,
   CI_CD_MINUTES_USAGE,
   SHARED_RUNNER_USAGE,
   SHARED_RUNNER_POPOVER_OPTIONS,
-} from 'ee/ci/ci_minutes_usage/constants';
+} from '../constants';
+import MinutesUsageMonthChart from './minutes_usage_month_chart.vue';
+import MinutesUsageProjectChart from './minutes_usage_project_chart.vue';
+import SharedRunnerUsageMonthChart from './shared_runner_usage_month_chart.vue';
+import NoMinutesAlert from './no_minutes_alert.vue';
 
 export default {
   name: 'MinutesUsageCharts',

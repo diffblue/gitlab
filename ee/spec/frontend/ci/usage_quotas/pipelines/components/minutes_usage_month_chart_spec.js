@@ -2,12 +2,12 @@ import timezoneMock from 'timezone-mock';
 import { GlAreaChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageMonthChart from 'ee/ci/ci_minutes_usage/components/minutes_usage_month_chart.vue';
-import { ciMinutesUsageMockData } from '../mock_data';
+import MinutesUsageMonthChart from 'ee/ci/usage_quotas/pipelines/components/minutes_usage_month_chart.vue';
+import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 const {
   data: { ciMinutesUsage },
-} = ciMinutesUsageMockData;
+} = mockGetCiMinutesUsageNamespace;
 
 describe('Minutes usage by month chart component', () => {
   let wrapper;

@@ -1,7 +1,7 @@
 import { cloneDeep } from 'lodash';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import MinutesUsageCharts from 'ee/ci/usage_quotas/pipelines/components/minutes_usage_charts.vue';
-import NoMinutesAlert from 'ee/ci/ci_minutes_usage/components/no_minutes_alert.vue';
+import NoMinutesAlert from 'ee/ci/usage_quotas/pipelines/components/no_minutes_alert.vue';
 import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 describe('MinutesUsageCharts', () => {
@@ -39,9 +39,20 @@ describe('MinutesUsageCharts', () => {
 
   describe('with no minutes', () => {
     beforeEach(() => {
-      const props = cloneDeep(defaultProps);
-      props.ciMinutesUsage[0].minutes = 0;
-      props.ciMinutesUsage[0].projects.nodes[0].minutes = 0;
+      const props = {
+        ...defaultProps,
+        ciMinutesUsage: defaultProps.ciMinutesUsage.map((usage) => ({
+          ...usage,
+          minutes: 0,
+          projects: {
+            ...usage.projects,
+            nodes: usage.projects.nodes.map((project) => ({
+              ...project,
+              minutes: 0,
+            })),
+          },
+        })),
+      };
 
       createComponent({ props });
     });
@@ -59,9 +70,20 @@ describe('MinutesUsageCharts', () => {
 
   describe('with no shared runners', () => {
     beforeEach(() => {
-      const props = cloneDeep(defaultProps);
-      props.ciMinutesUsage[0].sharedRunnersDuration = 0;
-      props.ciMinutesUsage[0].projects.nodes[0].sharedRunnersDuration = 0;
+      const props = {
+        ...defaultProps,
+        ciMinutesUsage: defaultProps.ciMinutesUsage.map((usage) => ({
+          ...usage,
+          sharedRunnersDuration: 0,
+          projects: {
+            ...usage.projects,
+            nodes: usage.projects.nodes.map((project) => ({
+              ...project,
+              sharedRunnersDuration: 0,
+            })),
+          },
+        })),
+      };
 
       createComponent({ props });
     });

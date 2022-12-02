@@ -14,7 +14,7 @@ export const defaultProvide = {
   pageSize: '20',
   ciMinutesAnyProjectEnabled: true,
   ciMinutesDisplayMinutesAvailableData: true,
-  ciMinutesLastResetDate: '2022-01-01',
+  ciMinutesLastResetDate: '2022-08-01',
   ciMinutesMonthlyMinutesLimit: '100',
   ciMinutesMonthlyMinutesUsed: '20',
   ciMinutesMonthlyMinutesUsedPercentage: '20',
@@ -26,51 +26,80 @@ export const defaultProvide = {
   buyAdditionalMinutesTarget: '_self',
 };
 
+export const pageInfo = {
+  __typename: 'PageInfo',
+  hasNextPage: false,
+  hasPreviousPage: false,
+  startCursor: 'eyJpZCI6IjYifQ',
+  endCursor: 'eyJpZCI6IjYifQ',
+};
+
 export const mockGetCiMinutesUsageNamespace = {
   data: {
     ciMinutesUsage: {
       nodes: [
         {
-          month: 'January',
-          monthIso8601: '2022-01-01',
-          minutes: 35,
-          sharedRunnersDuration: 120,
+          month: 'June',
+          monthIso8601: '2021-06-01',
+          minutes: 5,
+          sharedRunnersDuration: 60,
           projects: {
             nodes: [
               {
-                minutes: 35,
-                sharedRunnersDuration: 120,
+                minutes: 5,
+                sharedRunnersDuration: 60,
                 project: {
                   id: 'gid://gitlab/Project/6',
-                  name: 'Flight',
-                  nameWithNamespace: 'Flightjs / Flight',
+                  name: 'devcafe-wp-theme',
+                  nameWithNamespace: 'Group / devcafe-wp-theme',
                   avatarUrl: null,
-                  webUrl: 'http://gdk.test:3000/flightjs/Flight',
-                  __typename: 'Project',
+                  webUrl: 'http://gdk.test:3000/group/devcafe-wp-theme',
                 },
-                __typename: 'CiMinutesProjectMonthlyUsage',
               },
             ],
-            pageInfo: {
-              __typename: 'PageInfo',
-              hasNextPage: false,
-              hasPreviousPage: false,
-              startCursor: 'eyJpZCI6IjYifQ',
-              endCursor: 'eyJpZCI6IjYifQ',
-            },
-            __typename: 'CiMinutesProjectMonthlyUsageConnection',
+            pageInfo,
           },
-          __typename: 'CiMinutesNamespaceMonthlyUsage',
+        },
+        {
+          month: 'July',
+          monthIso8601: '2021-07-01',
+          minutes: 0,
+          sharedRunnersDuration: 0,
+          projects: {
+            nodes: [],
+            pageInfo,
+          },
+        },
+        {
+          month: 'August',
+          monthIso8601: '2022-08-01',
+          minutes: 5,
+          sharedRunnersDuration: 80,
+          projects: {
+            nodes: [
+              {
+                minutes: 5,
+                sharedRunnersDuration: 80,
+                project: {
+                  id: 'gid://gitlab/Project/7',
+                  name: 'devcafe-mx',
+                  nameWithNamespace: 'Group / devcafe-mx',
+                  avatarUrl: null,
+                  webUrl: 'http://gdk.test:3000/group/devcafe-mx',
+                },
+              },
+            ],
+            pageInfo,
+          },
         },
       ],
-      __typename: 'CiMinutesNamespaceMonthlyUsageConnection',
     },
   },
 };
 
 export const defaultProjectListProps = {
-  projects: mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[0].projects.nodes,
-  pageInfo: mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[0].projects.pageInfo,
+  projects: mockGetCiMinutesUsageNamespace.data.ciMinutesUsage.nodes[2].projects.nodes,
+  pageInfo,
 };
 
 export const defaultUsageOverviewProps = {

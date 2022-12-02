@@ -1,4 +1,3 @@
-import initCiMinutesUsageApp from 'ee/ci/ci_minutes_usage';
 import initPipelineUsageApp from 'ee/ci/usage_quotas/pipelines';
 import initNamespaceStorage from 'ee/usage_quotas/storage/init_namespace_storage';
 import { GlTabsBehavior, HISTORY_TYPE_HASH } from '~/tabs';
@@ -14,7 +13,6 @@ const initGlTabs = () => {
   new GlTabsBehavior(tabsEl, { history: HISTORY_TYPE_HASH });
 };
 
-initCiMinutesUsageApp();
 initPipelineUsageApp();
 initNamespaceStorage();
 initGlTabs();

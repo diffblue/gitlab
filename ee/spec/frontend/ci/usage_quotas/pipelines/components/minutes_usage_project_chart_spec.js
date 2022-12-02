@@ -1,13 +1,16 @@
 import { GlColumnChart } from '@gitlab/ui/dist/charts';
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import MinutesUsageProjectChart from 'ee/ci/ci_minutes_usage/components/minutes_usage_project_chart.vue';
-import { Y_AXIS_PROJECT_LABEL, Y_AXIS_SHARED_RUNNER_LABEL } from 'ee/ci/ci_minutes_usage/constants';
-import { ciMinutesUsageMockData } from '../mock_data';
+import MinutesUsageProjectChart from 'ee/ci/usage_quotas/pipelines/components/minutes_usage_project_chart.vue';
+import {
+  Y_AXIS_PROJECT_LABEL,
+  Y_AXIS_SHARED_RUNNER_LABEL,
+} from 'ee/ci/usage_quotas/pipelines/constants';
+import { mockGetCiMinutesUsageNamespace } from '../mock_data';
 
 const {
   data: { ciMinutesUsage },
-} = ciMinutesUsageMockData;
+} = mockGetCiMinutesUsageNamespace;
 
 describe('Minutes usage by project chart component', () => {
   let wrapper;
