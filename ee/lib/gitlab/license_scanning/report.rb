@@ -14,6 +14,10 @@ module Gitlab
         pipeline.blank? ? empty_report : pipeline.license_scanning_report
       end
 
+      def expose_license_scanning_data?
+        pipeline.blank? ? false : pipeline.expose_license_scanning_data?
+      end
+
       private
 
       def empty_report
