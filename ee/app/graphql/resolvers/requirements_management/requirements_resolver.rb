@@ -47,7 +47,8 @@ module Resolvers
           author: { requirement_issue: :author },
           state: :requirement_issue,
           created_at: :requirement_issue,
-          updated_at: :requirement_issue
+          updated_at: :requirement_issue,
+          work_item_iid: :requirement_issue
         }
       end
 
