@@ -19,12 +19,6 @@ module Mutations
       def find_object(id:)
         GitlabSchema.find_by_gid(id)
       end
-
-      def verify_notes_support!(noteable)
-        return if noteable&.supports_notes?
-
-        raise Gitlab::Graphql::Errors::ResourceNotAvailable, "Notes are not supported"
-      end
     end
   end
 end

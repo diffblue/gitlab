@@ -127,7 +127,7 @@ RSpec.describe 'Adding a Note', feature_category: :team_planning do
           end
 
           it_behaves_like 'a Note mutation that does not create a Note'
-          it_behaves_like 'a mutation that returns top-level errors', errors: ["Notes are not supported"]
+          it_behaves_like 'a mutation that returns errors in the response', errors: ["Notes are not supported"]
         end
       end
     end

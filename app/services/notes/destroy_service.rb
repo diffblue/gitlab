@@ -3,8 +3,10 @@
 module Notes
   class DestroyService < ::Notes::BaseService
     def execute(note)
+      super(note)
+
       TodoService.new.destroy_target(note) do |note|
-        note.destroy
+        note.destroy if note.errors[:base].empty?
       end
 
       clear_noteable_diffs_cache(note)

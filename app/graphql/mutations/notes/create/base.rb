@@ -31,8 +31,6 @@ module Mutations
 
         def resolve(args)
           noteable = authorized_find!(id: args[:noteable_id])
-
-          verify_notes_support!(noteable)
           verify_rate_limit!(current_user)
 
           note = ::Notes::CreateService.new(

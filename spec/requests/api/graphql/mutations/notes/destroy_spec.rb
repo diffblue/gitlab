@@ -67,7 +67,7 @@ RSpec.describe 'Destroying a Note', feature_category: :team_planning do
         end.to not_change { Note.count }
       end
 
-      it_behaves_like 'a mutation that returns top-level errors', errors: ["Notes are not supported"]
+      it_behaves_like 'a mutation that returns errors in the response', errors: ["Notes are not supported"]
     end
   end
 end

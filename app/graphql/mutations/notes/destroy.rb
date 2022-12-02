@@ -15,12 +15,10 @@ module Mutations
       def resolve(id:)
         note = authorized_find!(id: id)
 
-        verify_notes_support!(note.noteable)
-
         ::Notes::DestroyService.new(note.project, current_user).execute(note)
 
         {
-          errors: []
+          errors: errors_on_object(note)
         }
       end
     end
