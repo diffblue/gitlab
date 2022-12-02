@@ -30,7 +30,7 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import * as commonUtils from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
@@ -380,18 +380,18 @@ describe('EE Value Stream Analytics component', () => {
     });
 
     it('will display an error if the fetchGroupStagesAndEvents request fails', async () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       mock
         .onGet(endpoints.baseStagesEndpoint)
         .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
       wrapper = await createComponent();
 
-      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGES });
+      expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGES });
     });
 
     it('will display an error if the fetchStageData request fails', async () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       mock
         .onGet(endpoints.stageData)
@@ -399,11 +399,11 @@ describe('EE Value Stream Analytics component', () => {
 
       wrapper = await createComponent({ selectedStage: issueStage });
 
-      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_SELECTED_STAGE });
+      expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_SELECTED_STAGE });
     });
 
     it('will display an error if the fetchTopRankedGroupLabels request fails', async () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       mock
         .onGet(endpoints.tasksByTypeTopLabelsData)
@@ -411,13 +411,13 @@ describe('EE Value Stream Analytics component', () => {
       wrapper = await createComponent();
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'There was an error fetching the top labels for the selected group',
       });
     });
 
     it('will display an error if the fetchTasksByTypeData request fails', async () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       mock
         .onGet(endpoints.tasksByTypeData)
@@ -425,20 +425,20 @@ describe('EE Value Stream Analytics component', () => {
       wrapper = await createComponent();
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'There was an error fetching data for the tasks by type chart',
       });
     });
 
     it('will display an error if the fetchStageMedian request fails', async () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       mock
         .onGet(endpoints.stageMedian)
         .reply(httpStatusCodes.NOT_FOUND, { response: { status: httpStatusCodes.NOT_FOUND } });
       wrapper = await createComponent();
 
-      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
+      expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
     });
 
     it('will display an error if the fetchStageData request is successful but has an embedded error', async () => {

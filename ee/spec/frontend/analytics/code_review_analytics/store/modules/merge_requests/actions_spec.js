@@ -4,7 +4,7 @@ import * as actions from 'ee/analytics/code_review_analytics/store/modules/merge
 import * as types from 'ee/analytics/code_review_analytics/store/modules/merge_requests/mutation_types';
 import getInitialState from 'ee/analytics/code_review_analytics/store/modules/merge_requests/state';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { mockMergeRequests } from '../../../mock_data';
 
 jest.mock('~/flash');
@@ -44,7 +44,7 @@ describe('Code review analytics mergeRequests actions', () => {
 
   afterEach(() => {
     mock.restore();
-    createFlash.mockClear();
+    createAlert.mockClear();
   });
 
   describe('setProjectId', () => {
@@ -106,7 +106,7 @@ describe('Code review analytics mergeRequests actions', () => {
           [],
         );
 
-        expect(createFlash).toHaveBeenCalled();
+        expect(createAlert).toHaveBeenCalled();
       });
     });
   });

@@ -5,7 +5,7 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { OVERVIEW_STAGE_CONFIG } from '../../constants';
 import { checkForDataError, flashErrorIfStatusNotOk, throwIfUserForbidden } from '../../utils';
@@ -55,7 +55,7 @@ export const requestStageMedianValues = ({ commit }) => commit(types.REQUEST_STA
 
 export const receiveStageMedianValuesError = ({ commit }, error) => {
   commit(types.RECEIVE_STAGE_MEDIANS_ERROR, error);
-  createFlash({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
+  createAlert({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
 };
 
 const fetchStageMedian = ({ groupId, valueStreamId, stageId, params }) =>
@@ -136,7 +136,7 @@ export const requestGroupStages = ({ commit }) => commit(types.REQUEST_GROUP_STA
 
 export const receiveGroupStagesError = ({ commit }, error) => {
   commit(types.RECEIVE_GROUP_STAGES_ERROR, error);
-  createFlash({ message: I18N_VSA_ERROR_STAGES });
+  createAlert({ message: I18N_VSA_ERROR_STAGES });
 };
 
 export const receiveGroupStagesSuccess = ({ commit }, stages) =>

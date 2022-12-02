@@ -14,7 +14,7 @@ import {
 import createStore from 'ee/analytics/cycle_analytics/store';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/flash';
 import { groupLabels, groupLabelNames as selectedLabelNames } from '../../mock_data';
 
 const findSubjectFilters = (ctx) => ctx.findComponent(GlSegmentedControl);
@@ -142,9 +142,9 @@ describe('TasksByTypeFilters', () => {
       });
 
       it('should display a message', () => {
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'Only 2 labels can be selected at this time',
-          type: 'notice',
+          variant: VARIANT_INFO,
         });
       });
     });

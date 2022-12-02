@@ -11,7 +11,7 @@ import { debounce } from 'lodash';
 import { mapGetters, mapState } from 'vuex';
 import Api from 'ee/api';
 import { removeFlash } from '~/analytics/shared/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __ } from '~/locale';
 import { DATA_REFETCH_DELAY } from '../../shared/constants';
 
@@ -103,7 +103,7 @@ export default {
           this.labels = data;
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: __('There was an error fetching label data for the selected group'),
           });
         })

@@ -3,7 +3,7 @@ import { mapApprovalRuleRequest, mapApprovalSettingsResponse } from 'ee/approval
 import * as types from 'ee/approvals/stores/modules/base/mutation_types';
 import * as actions from 'ee/approvals/stores/modules/project_settings/actions';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatus from '~/lib/utils/http_status';
 
@@ -77,12 +77,12 @@ describe('EE approvals project settings module actions', () => {
 
   describe('receiveRulesError', () => {
     it('creates a flash', () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       actions.receiveRulesError();
 
-      expect(createFlash).toHaveBeenCalledTimes(1);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledWith({
         message: expect.stringMatching('error occurred'),
       });
     });
@@ -191,11 +191,11 @@ describe('EE approvals project settings module actions', () => {
 
   describe('deleteRuleError', () => {
     it('creates a flash', () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       actions.deleteRuleError();
 
-      expect(createFlash.mock.calls[0]).toEqual([
+      expect(createAlert.mock.calls[0]).toEqual([
         { message: expect.stringMatching('error occurred') },
       ]);
     });

@@ -8,7 +8,7 @@ import LabelsSelector from 'ee/analytics/cycle_analytics/components/labels_selec
 import createStore from 'ee/analytics/cycle_analytics/store';
 import * as getters from 'ee/analytics/cycle_analytics/store/getters';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { groupLabels } from '../mock_data';
 
 jest.mock('~/flash');
@@ -95,7 +95,7 @@ describe('Value Stream Analytics LabelsSelector', () => {
       });
 
       it('should flash an error message', () => {
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'There was an error fetching label data for the selected group',
         });
       });

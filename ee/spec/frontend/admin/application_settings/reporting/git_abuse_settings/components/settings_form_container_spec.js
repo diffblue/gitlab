@@ -1,6 +1,6 @@
 import { nextTick } from 'vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import createFlash from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/flash';
 import Api from 'ee/api';
 import SettingsForm from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form.vue';
 import SettingsFormContainer from 'ee/admin/application_settings/reporting/git_abuse_settings/components/settings_form_container.vue';
@@ -70,7 +70,7 @@ describe('SettingsFormContainer', () => {
 
       await nextTick();
 
-      expect(createFlash).toHaveBeenCalledWith({ message: SUCCESS_MESSAGE, type: 'notice' });
+      expect(createAlert).toHaveBeenCalledWith({ message: SUCCESS_MESSAGE, variant: VARIANT_INFO });
     });
 
     describe('Api.updateApplicationSettings fails', () => {
@@ -81,7 +81,7 @@ describe('SettingsFormContainer', () => {
 
         await nextTick();
 
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: SAVE_ERROR_MESSAGE,
           captureError: true,
         });

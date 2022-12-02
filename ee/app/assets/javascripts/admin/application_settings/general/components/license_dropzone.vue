@@ -1,7 +1,7 @@
 <script>
 import { GlLink, GlSprintf } from '@gitlab/ui';
 import UploadDropzone from '~/vue_shared/components/upload_dropzone/upload_dropzone.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import {
   DROPZONE_DESCRIPTION_TEXT,
   FILE_UPLOAD_ERROR_MESSAGE,
@@ -44,7 +44,7 @@ export default {
       this.fileName = file?.name;
     },
     onError() {
-      createFlash({ message: this.$options.i18n.FILE_UPLOAD_ERROR_MESSAGE });
+      createAlert({ message: this.$options.i18n.FILE_UPLOAD_ERROR_MESSAGE });
     },
   },
 };

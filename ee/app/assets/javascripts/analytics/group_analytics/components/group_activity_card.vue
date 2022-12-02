@@ -2,7 +2,7 @@
 import { GlSkeletonLoader, GlTooltipDirective } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
 import Api from 'ee/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __, s__ } from '~/locale';
 
 const ACTIVITY_COUNT_LIMIT = 999;
@@ -61,7 +61,7 @@ export default {
           this.isLoading = false;
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: __('Failed to load group activity metrics. Please try again.'),
           });
           this.isLoading = false;

@@ -5,7 +5,7 @@ import { dateFormats } from '~/analytics/shared/constants';
 import { toYmd } from '~/analytics/shared/utils';
 import { OVERVIEW_STAGE_ID } from '~/analytics/cycle_analytics/constants';
 import { medianTimeToParsedSeconds } from '~/analytics/cycle_analytics/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { newDate, dayAfter, secondsToDays, getDatesInRange } from '~/lib/utils/datetime_utility';
 import { isNumeric } from '~/lib/utils/number_utils';
@@ -316,7 +316,7 @@ const buildDataError = ({ status = httpStatus.INTERNAL_SERVER_ERROR, error }) =>
  */
 export const flashErrorIfStatusNotOk = ({ error, message }) => {
   if (error?.errorCode !== httpStatus.OK) {
-    createFlash({
+    createAlert({
       message,
     });
   }

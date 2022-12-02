@@ -5,7 +5,7 @@ import getUsersByUsernames from '~/graphql_shared/queries/get_users_by_usernames
 import searchUsersQuery from '~/graphql_shared/queries/users_search_all.query.graphql';
 import searchGroupUsers from '~/graphql_shared/queries/group_users_search.query.graphql';
 
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { DEFAULT_DEBOUNCE_AND_THROTTLE_MS } from '~/lib/utils/constants';
 
 import { SEARCH_USERS, LOAD_ERROR_MESSAGE, SEARCH_TERM_TOO_SHORT, NO_RESULTS } from '../constants';
@@ -47,7 +47,7 @@ export default {
         return data?.users?.nodes || [];
       },
       error(error) {
-        createFlash({
+        createAlert({
           message: this.$options.i18n.LOAD_ERROR_MESSAGE,
           captureError: true,
           error,
@@ -79,7 +79,7 @@ export default {
         return users || [];
       },
       error(error) {
-        createFlash({
+        createAlert({
           message: this.$options.i18n.LOAD_ERROR_MESSAGE,
           captureError: true,
           error,

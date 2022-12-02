@@ -1,4 +1,4 @@
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
@@ -76,7 +76,7 @@ export default class GroupMembers {
       })
       .catch((e) => {
         this.state.isLoading = false;
-        createFlash({
+        createAlert({
           message: __('Something went wrong while fetching group member contributions'),
         });
         throw e;
