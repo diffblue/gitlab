@@ -34,7 +34,7 @@ RSpec.describe 'Burndown charts', :js do
 
     it 'presents burndown charts promotion correctly' do
       stub_licensed_features(milestone_charts: false)
-      allow(License).to receive(:current) { nil }
+      allow(License).to receive(:current).and_return(nil)
 
       visit project_milestone_path(milestone.project, milestone)
 
@@ -62,7 +62,7 @@ RSpec.describe 'Burndown charts', :js do
 
     it 'presents burndown charts promotion correctly' do
       stub_licensed_features(milestone_charts: false)
-      allow(License).to receive(:current) { nil }
+      allow(License).to receive(:current).and_return(nil)
 
       visit group_milestone_path(milestone.group, milestone)
 

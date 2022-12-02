@@ -10,7 +10,7 @@ RSpec.describe 'Account recovery regular check callout' do
     let(:action_button) { 'Manage two-factor authentication' }
 
     before do
-      allow(Gitlab).to receive(:com?) { true }
+      allow(Gitlab).to receive(:com?).and_return(true)
     end
 
     context 'when user has two-factor authentication disabled' do

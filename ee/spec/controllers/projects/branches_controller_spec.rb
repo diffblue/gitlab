@@ -20,7 +20,7 @@ RSpec.describe Projects::BranchesController, feature_category: :source_code_mana
 
       before do
         create(:import_state, :mirror, :finished, project: project, last_successful_update_at: Time.current)
-        allow(project.repository).to receive(:diverged_from_upstream?) { true }
+        allow(project.repository).to receive(:diverged_from_upstream?).and_return(true)
       end
 
       it 'renders the diverged from upstream partial' do

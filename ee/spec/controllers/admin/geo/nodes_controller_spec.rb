@@ -78,7 +78,7 @@ RSpec.describe Admin::Geo::NodesController do
 
     context 'without add-on license' do
       before do
-        allow(Gitlab::Geo).to receive(:license_allows?) { false }
+        allow(Gitlab::Geo).to receive(:license_allows?).and_return(false)
         go
       end
 
@@ -115,7 +115,7 @@ RSpec.describe Admin::Geo::NodesController do
 
     context 'without add-on license' do
       before do
-        allow(Gitlab::Geo).to receive(:license_allows?) { false }
+        allow(Gitlab::Geo).to receive(:license_allows?).and_return(false)
         go
       end
 

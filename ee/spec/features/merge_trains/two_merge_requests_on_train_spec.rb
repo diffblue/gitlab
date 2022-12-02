@@ -37,7 +37,7 @@ RSpec.describe 'Two merge requests on a merge train' do
     stub_ci_pipeline_yaml_file(YAML.dump(ci_yaml))
 
     head_pipeline = double('Ci::Pipeline')
-    allow(head_pipeline).to receive(:complete?) { true }
+    allow(head_pipeline).to receive(:complete?).and_return(true)
     allow(merge_request_1).to receive(:actual_head_pipeline) { head_pipeline }
     allow(merge_request_2).to receive(:actual_head_pipeline) { head_pipeline }
 

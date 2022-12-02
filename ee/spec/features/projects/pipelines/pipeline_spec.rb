@@ -320,7 +320,7 @@ RSpec.describe 'Pipeline', :js do
     let(:ultimate_plan) { create(:ultimate_plan) }
 
     before do
-      allow(Gitlab).to receive(:com?) { true }
+      allow(Gitlab).to receive(:com?).and_return(true)
       create(:gitlab_subscription, :active_trial, namespace: namespace, hosted_plan: ultimate_plan)
     end
 

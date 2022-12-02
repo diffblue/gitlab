@@ -406,7 +406,7 @@ RSpec.describe 'New project', :js do
               let(:url) { new_project_path(namespace_id: group1.id) }
 
               before do
-                allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
+                allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
                 create(:gitlab_subscription, :ultimate, namespace: group1)
               end
 

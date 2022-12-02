@@ -58,7 +58,7 @@ RSpec.describe Mutations::Projects::SetLocked do
 
         before do
           allow_next_found_instance_of(Project) do |project|
-            allow(project).to receive(:lfs_enabled?) { true }
+            allow(project).to receive(:lfs_enabled?).and_return(true)
           end
         end
 
@@ -128,7 +128,7 @@ RSpec.describe Mutations::Projects::SetLocked do
 
         before do
           allow_next_found_instance_of(Project) do |project|
-            allow(project).to receive(:lfs_enabled?) { true }
+            allow(project).to receive(:lfs_enabled?).and_return(true)
           end
         end
 

@@ -287,7 +287,7 @@ RSpec.describe 'Edit group settings' do
         create(:gitlab_subscription, namespace: group, hosted_plan: plan)
         stub_licensed_features(group_project_templates: true)
         allow(Gitlab::CurrentSettings.current_application_settings)
-          .to receive(:should_check_namespace_plan?) { true }
+          .to receive(:should_check_namespace_plan?).and_return(true)
 
         visit edit_group_path(selected_group)
       end
