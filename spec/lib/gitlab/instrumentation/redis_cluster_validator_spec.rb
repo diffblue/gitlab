@@ -49,13 +49,21 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
 
     where(:arguments, :should_raise, :output) do
       [[:get, "foo"],
-       [:get, "bar"]] | true | { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false }
+       [:get,
+        "bar"]] | true | { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false,
+                           command: "get foo" }
       [[:get, "foo"],
-       [:mget, "foo", "bar"]] | true | { valid: false, key_count: 3, command_name: 'PIPELINE/MULTI', allowed: false }
+       [:mget, "foo",
+        "bar"]] | true | { valid: false, key_count: 3, command_name: 'PIPELINE/MULTI', allowed: false,
+                           command: "get foo" }
       [[:get, "{foo}:name"],
-       [:get, "{foo}:profile"]] | false | { valid: true, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false }
+       [:get,
+        "{foo}:profile"]] | false | { valid: true, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false,
+                                      command: "get {foo}:name" }
       [[:del, "foo"],
-       [:del, "bar"]] | true | { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false }
+       [:del,
+        "bar"]] | true | { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false,
+                           command: "del foo" }
       [] | false | nil # pipeline or transaction opened and closed without ops
     end
 

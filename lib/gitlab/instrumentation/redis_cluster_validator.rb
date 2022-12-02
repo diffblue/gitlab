@@ -197,7 +197,8 @@ module Gitlab
             valid: !key_slots.uniq.many?, # rubocop: disable CodeReuse/ActiveRecord
             command_name: command_name,
             key_count: key_slots.size,
-            allowed: allow_cross_slot_commands?
+            allowed: allow_cross_slot_commands?,
+            command: commands.first.join(' ')
           }
         end
 
