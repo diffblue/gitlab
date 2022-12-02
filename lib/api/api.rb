@@ -218,6 +218,7 @@ module API
         mount ::API::GroupAvatar
         mount ::API::GroupClusters
         mount ::API::GroupContainerRepositories
+        mount ::API::GroupDebianDistributions
         mount ::API::GroupExport
         mount ::API::GroupImport
         mount ::API::GroupPackages
@@ -305,7 +306,6 @@ module API
       mount ::API::ErrorTracking::Collector
       mount ::API::GenericPackages
       mount ::API::GroupBoards
-      mount ::API::GroupDebianDistributions
       mount ::API::GroupLabels
       mount ::API::GroupMilestones
       mount ::API::Issues
