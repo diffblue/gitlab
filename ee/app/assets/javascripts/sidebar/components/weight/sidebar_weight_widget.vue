@@ -8,7 +8,7 @@ import {
   GlIcon,
   GlTooltipDirective,
 } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __, sprintf } from '~/locale';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import { Tracking } from '~/sidebar/constants';
@@ -71,7 +71,7 @@ export default {
         return data.workspace?.issuable?.weight;
       },
       error() {
-        createFlash({
+        createAlert({
           message: sprintf(__('Something went wrong while setting %{issuableType} weight.'), {
             issuableType: this.issuableType,
           }),
@@ -128,7 +128,7 @@ export default {
         })
         .then(({ data: { issuableSetWeight } }) => {
           if (issuableSetWeight.errors?.length) {
-            createFlash({
+            createAlert({
               message: issuableSetWeight.errors[0],
             });
           } else {
@@ -139,7 +139,7 @@ export default {
           }
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: sprintf(__('Something went wrong while setting %{issuableType} weight.'), {
               issuableType: this.issuableType,
             }),

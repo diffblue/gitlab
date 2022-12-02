@@ -1,7 +1,7 @@
 <script>
 import { GlDropdownDivider, GlDropdownSectionHeader, GlFilteredSearchSuggestion } from '@gitlab/ui';
 import { groupByIterationCadences, getIterationPeriod } from 'ee/iterations/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
@@ -77,7 +77,7 @@ export default {
             ];
           })
           .catch((error) => {
-            createFlash({ message: this.$options.i18n.errorMessage, captureError: true, error });
+            createAlert({ message: this.$options.i18n.errorMessage, captureError: true, error });
           })
           .finally(() => {
             this.loading = false;
@@ -89,7 +89,7 @@ export default {
             this.iterations = Array.isArray(response) ? response : response.data;
           })
           .catch(() => {
-            createFlash({ message: this.$options.i18n.errorMessage });
+            createAlert({ message: this.$options.i18n.errorMessage });
           })
           .finally(() => {
             this.loading = false;

@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import {
   parseIntPagination,
@@ -134,7 +134,7 @@ export const receiveCreateIssueError = ({ commit }, { flashError }) => {
   commit(types.RECEIVE_CREATE_ISSUE_ERROR);
 
   if (flashError) {
-    createFlash({
+    createAlert({
       message: s__('SecurityReports|There was an error creating the issue.'),
       parent: document.querySelector('.ci-table'),
     });
@@ -205,7 +205,7 @@ export const receiveDismissSelectedVulnerabilitiesSuccess = ({ commit, getters }
 export const receiveDismissSelectedVulnerabilitiesError = ({ commit }, { flashError }) => {
   commit(types.RECEIVE_DISMISS_SELECTED_VULNERABILITIES_ERROR);
   if (flashError) {
-    createFlash({
+    createAlert({
       message: s__('SecurityReports|There was an error dismissing the vulnerabilities.'),
       parent: document.querySelector('.ci-table'),
     });
@@ -291,7 +291,7 @@ export const receiveDismissVulnerabilitySuccess = ({ commit }, payload) => {
 export const receiveDismissVulnerabilityError = ({ commit }, { flashError }) => {
   commit(types.RECEIVE_DISMISS_VULNERABILITY_ERROR);
   if (flashError) {
-    createFlash({
+    createAlert({
       message: s__('SecurityReports|There was an error dismissing the vulnerability.'),
       parent: document.querySelector('.ci-table'),
     });
@@ -413,7 +413,7 @@ export const receiveUndoDismissSuccess = ({ commit }, payload) => {
 export const receiveUndoDismissError = ({ commit }, { flashError }) => {
   commit(types.RECEIVE_REVERT_DISMISSAL_ERROR);
   if (flashError) {
-    createFlash({
+    createAlert({
       message: s__('SecurityReports|There was an error reverting this dismissal.'),
       parent: document.querySelector('.ci-table'),
     });
@@ -480,7 +480,7 @@ export const receiveCreateMergeRequestError = ({ commit }, { flashError }) => {
   commit(types.RECEIVE_CREATE_MERGE_REQUEST_ERROR);
 
   if (flashError) {
-    createFlash({
+    createAlert({
       message: s__('SecurityReports|There was an error creating the merge request.'),
       parent: document.querySelector('.ci-table'),
     });

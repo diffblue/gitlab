@@ -5,7 +5,7 @@ import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
@@ -94,14 +94,14 @@ describe('EpicToken', () => {
         expect(wrapper.vm.epics).toEqual(mockEpics);
       });
 
-      it('calls `createFlash` with flash error message when request fails', async () => {
+      it('calls `createAlert` with flash error message when request fails', async () => {
         jest.spyOn(wrapper.vm, 'fetchEpics').mockRejectedValue({});
 
         findBaseToken().vm.$emit('fetch-suggestions', 'foo');
 
         await waitForPromises();
 
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'There was a problem fetching epics.',
         });
       });

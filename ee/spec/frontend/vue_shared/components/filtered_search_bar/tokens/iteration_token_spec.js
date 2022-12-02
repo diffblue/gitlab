@@ -2,7 +2,7 @@ import { GlFilteredSearchToken, GlFilteredSearchTokenSegment } from '@gitlab/ui'
 import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import IterationToken from 'ee/vue_shared/components/filtered_search_bar/tokens/iteration_token.vue';
 import { mockIterationToken } from '../mock_data';
 
@@ -96,7 +96,7 @@ describe('IterationToken', () => {
 
     await waitForPromises();
 
-    expect(createFlash).toHaveBeenCalledWith({
+    expect(createAlert).toHaveBeenCalledWith({
       message: 'There was a problem fetching iterations.',
     });
   });

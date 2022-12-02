@@ -2,7 +2,7 @@ import Api from 'ee/api';
 import * as SubscriptionsApi from 'ee/api/subscriptions_api';
 import { gitLabResolvers } from 'ee/subscriptions/buy_addons_shared/graphql/resolvers';
 import { ERROR_FETCHING_COUNTRIES, ERROR_FETCHING_STATES } from 'ee/subscriptions/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 jest.mock('ee/api/subscriptions_api', () => {
   return {
@@ -60,7 +60,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         it('returns an array of countries with typename', async () => {
           const result = await gitLabResolvers.Query.countries();
 
-          expect(createFlash).not.toHaveBeenCalled();
+          expect(createAlert).not.toHaveBeenCalled();
           expect(result).toStrictEqual([
             {
               name: 'United States of America',
@@ -88,7 +88,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         it('shows a flash message', async () => {
           await gitLabResolvers.Query.countries();
 
-          expect(createFlash).toHaveBeenCalledWith({ message: ERROR_FETCHING_COUNTRIES });
+          expect(createAlert).toHaveBeenCalledWith({ message: ERROR_FETCHING_COUNTRIES });
         });
       });
     });
@@ -102,7 +102,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         it('returns an array of states with typename', async () => {
           const result = await gitLabResolvers.Query.states(null, { countryId: 1 });
 
-          expect(createFlash).not.toHaveBeenCalled();
+          expect(createAlert).not.toHaveBeenCalled();
           expect(result).toStrictEqual([{ id: 'CA', name: 'California', __typename: 'State' }]);
         });
       });
@@ -115,7 +115,7 @@ describe('~/subscriptions/buy_addons_shared/graphql/resolvers', () => {
         it('shows a flash message', async () => {
           await gitLabResolvers.Query.states(null, { countryId: 1 });
 
-          expect(createFlash).toHaveBeenCalledWith({ message: ERROR_FETCHING_STATES });
+          expect(createAlert).toHaveBeenCalledWith({ message: ERROR_FETCHING_STATES });
         });
       });
     });

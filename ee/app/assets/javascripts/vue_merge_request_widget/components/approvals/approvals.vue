@@ -1,5 +1,5 @@
 <script>
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { BV_HIDE_MODAL } from '~/lib/utils/constants';
 import Approvals from '~/vue_merge_request_widget/components/approvals/approvals.vue';
 import { FETCH_ERROR } from '~/vue_merge_request_widget/components/approvals/messages';
@@ -70,7 +70,7 @@ export default {
       if (this.isBasic) return Promise.resolve();
 
       return Promise.all([this.refreshRules(), this.refreshApprovals()]).catch(() =>
-        createFlash({
+        createAlert({
           message: FETCH_ERROR,
         }),
       );

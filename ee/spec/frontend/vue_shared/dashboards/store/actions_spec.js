@@ -4,7 +4,7 @@ import createStore from 'ee/vue_shared/dashboards/store/index';
 import * as types from 'ee/vue_shared/dashboards/store/mutation_types';
 import { mockHeaders, mockText, mockProjectData } from 'ee_jest/vue_shared/dashboards/mock_data';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 
 import clearState from '../helpers';
@@ -139,7 +139,7 @@ describe('actions', () => {
       selectProjects(1);
       addInvalidProjects([0]);
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: `Unable to add mock-name. ${errorMessage}`,
       });
     });
@@ -148,7 +148,7 @@ describe('actions', () => {
       selectProjects(2);
       addInvalidProjects([0, 1]);
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: `Unable to add mock-name and mock-name. ${errorMessage}`,
       });
     });
@@ -157,7 +157,7 @@ describe('actions', () => {
       selectProjects(3);
       addInvalidProjects([0, 1, 2]);
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: `Unable to add mock-name, mock-name, and mock-name. ${errorMessage}`,
       });
     });
@@ -167,7 +167,7 @@ describe('actions', () => {
     it('shows error message', () => {
       store.dispatch('receiveAddProjectsToDashboardError');
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: mockText.ADD_PROJECTS_ERROR,
       });
     });
@@ -265,7 +265,7 @@ describe('actions', () => {
         [],
       );
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: mockText.RECEIVE_PROJECTS_ERROR,
       });
     });
@@ -314,7 +314,7 @@ describe('actions', () => {
   describe('receiveRemoveProjectError', () => {
     it('displays project removal error', () => {
       return testAction(actions.receiveRemoveProjectError, null, null, [], []).then(() => {
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: mockText.REMOVE_PROJECT_ERROR,
         });
       });

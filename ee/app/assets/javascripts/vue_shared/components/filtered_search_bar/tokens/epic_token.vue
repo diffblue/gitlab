@@ -1,6 +1,6 @@
 <script>
 import { GlFilteredSearchSuggestion } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { getIdFromGraphQLId } from '~/graphql_shared/utils';
 import { __ } from '~/locale';
 import BaseToken from '~/vue_shared/components/filtered_search_bar/tokens/base_token.vue';
@@ -64,7 +64,7 @@ export default {
         .then((response) => {
           this.epics = Array.isArray(response) ? response : response?.data;
         })
-        .catch(() => createFlash({ message: __('There was a problem fetching epics.') }))
+        .catch(() => createAlert({ message: __('There was a problem fetching epics.') }))
         .finally(() => {
           this.loading = false;
         });

@@ -3,7 +3,7 @@ import mutations from 'ee/vue_shared/dashboards/store/mutations';
 import state from 'ee/vue_shared/dashboards/store/state';
 import { mockProjectData } from 'ee_jest/vue_shared/dashboards/mock_data';
 import { useLocalStorageSpy } from 'helpers/local_storage_helper';
-import createFlash from '~/flash';
+import { createAlert, VARIANT_WARNING } from '~/flash';
 import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
 
 jest.mock('~/flash');
@@ -61,9 +61,9 @@ describe('mutations', () => {
 
       mutations[types.SET_PROJECTS](localState, projects);
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Project order will not be saved as local storage is not available.',
-        type: 'warning',
+        variant: VARIANT_WARNING,
       });
     });
   });

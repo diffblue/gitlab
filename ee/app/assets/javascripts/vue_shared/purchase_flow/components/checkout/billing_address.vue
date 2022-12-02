@@ -8,7 +8,7 @@ import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
 import statesQuery from 'ee/subscriptions/graphql/queries/states.query.graphql';
 import Step from 'ee/vue_shared/purchase_flow/components/step.vue';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 import autofocusonshow from '~/vue_shared/directives/autofocusonshow';
 
@@ -139,7 +139,7 @@ export default {
           },
         })
         .catch((error) => {
-          createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+          createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
         });
     },
   },

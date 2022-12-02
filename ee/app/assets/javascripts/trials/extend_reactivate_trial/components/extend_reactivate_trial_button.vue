@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlModal, GlModalDirective } from '@gitlab/ui';
 import { extendTrial, reactivateTrial } from 'ee/api/subscriptions_api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { refreshCurrentPage } from '~/lib/utils/url_utility';
 import { sprintf, __ } from '~/locale';
 import { i18n, TRIAL_ACTION_EXTEND, TRIAL_ACTIONS } from '../constants';
@@ -68,7 +68,7 @@ export default {
           refreshCurrentPage();
         })
         .catch((error) => {
-          createFlash({
+          createAlert({
             message: this.i18nContext.trialActionError,
             captureError: true,
             error,

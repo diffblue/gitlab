@@ -2,7 +2,7 @@ import { createWrapper } from '@vue/test-utils';
 import mountStatusChecks from 'ee/status_checks/mount';
 import createStore from 'ee/status_checks/store';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 jest.mock('ee/status_checks/store');
 jest.mock('~/flash');
@@ -54,7 +54,7 @@ describe('mountStatusChecks', () => {
     const wrapper = createWrapper(mountStatusChecks(el));
     await waitForPromises();
 
-    expect(createFlash).toHaveBeenCalledWith({
+    expect(createAlert).toHaveBeenCalledWith({
       message: 'An error occurred fetching the status checks.',
       captureError: true,
       error,

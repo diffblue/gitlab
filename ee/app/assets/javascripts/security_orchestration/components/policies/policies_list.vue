@@ -2,7 +2,7 @@
 import { intersection } from 'lodash';
 import { GlIcon, GlLink, GlLoadingIcon, GlSprintf, GlTable, GlTooltipDirective } from '@gitlab/ui';
 import { NAMESPACE_TYPES } from 'ee/security_orchestration/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
@@ -41,7 +41,7 @@ const createPolicyFetchError = ({ gqlError, networkError }) => {
     gqlError?.message ||
     networkError?.message ||
     s__('SecurityOrchestration|Something went wrong, unable to fetch policies');
-  createFlash({
+  createAlert({
     message: error,
   });
 };

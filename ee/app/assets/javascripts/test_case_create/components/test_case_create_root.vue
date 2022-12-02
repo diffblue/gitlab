@@ -1,6 +1,6 @@
 <script>
 import { GlButton } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 
@@ -45,7 +45,7 @@ export default {
           const errors = data.createTestCase?.errors;
           if (errors?.length) {
             const error = errors[0];
-            createFlash({
+            createAlert({
               message: error,
               captureError: true,
               error,
@@ -55,7 +55,7 @@ export default {
           redirectTo(this.projectTestCasesPath);
         })
         .catch((error) => {
-          createFlash({
+          createAlert({
             message: s__('TestCases|Something went wrong while creating a test case.'),
             captureError: true,
             error,

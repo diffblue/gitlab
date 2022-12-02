@@ -2,7 +2,7 @@
 import { GlButton } from '@gitlab/ui';
 
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import IssuableList from '~/vue_shared/issuable/list/components/issuable_list_root.vue';
 import axios from '~/lib/utils/axios_utils';
 import { updateHistory, setUrlParams, queryToObject } from '~/lib/utils/url_utility';
@@ -85,7 +85,7 @@ export default {
         return queryVariables;
       },
       error(error) {
-        createFlash({
+        createAlert({
           message: s__('TestCases|Something went wrong while fetching test cases list.'),
           captureError: true,
           error,
