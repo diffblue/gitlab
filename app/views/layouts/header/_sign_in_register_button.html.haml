@@ -3,5 +3,5 @@
 %li.nav-item{ class: top_class }
   %div
     - sign_in_text = allow_signup? ? _('Sign in / Register') : _('Sign in')
-    = render Pajamas::ButtonComponent.new(href: new_session_path(:user, redirect_to_referer: 'yes'), button_options: { class: 'gl-button btn btn-default btn-sign-in'}) do
+    = render Pajamas::ButtonComponent.new(href: new_session_path(:user, redirect_to_referer: 'yes'), button_options: { class: 'btn-sign-in'}) do
       = sign_in_text
