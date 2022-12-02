@@ -25,5 +25,6 @@
       = render Pajamas::ButtonComponent.new(href: group_milestones_path(@group, @milestone)) do
         = s_("Cancel")
     - else
+      = f.submit _('Update milestone'), pajamas_button: true
       = render Pajamas::ButtonComponent.new(href: group_milestone_path(@group, @milestone)) do
         = s_("Cancel")
