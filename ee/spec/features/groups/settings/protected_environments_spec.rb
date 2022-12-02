@@ -46,12 +46,12 @@ RSpec.describe 'Protected Environments', :js do
       expect(page).to have_content('staging')
       click_button('1 group')
 
-      within('.gl-new-dropdown-contents li:nth-child(2)') do
-        expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: true)
+      within('.gl-dropdown-contents li:nth-child(2)') do
+        expect(page).to have_selector('.gl-dropdown-item-check-icon', visible: true)
         expect(page).to have_content('operator-group')
       end
-      within('.gl-new-dropdown-contents li:nth-child(3)') do
-        expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: false)
+      within('.gl-dropdown-contents li:nth-child(3)') do
+        expect(page).to have_selector('.gl-dropdown-item-check-icon', visible: false)
         expect(page).to have_content('developer-group')
       end
     end
@@ -69,7 +69,7 @@ RSpec.describe 'Protected Environments', :js do
 
       click_button('Select groups')
 
-      within('.gl-new-dropdown-inner') { find('.gl-search-box-by-type') }
+      within('.gl-dropdown-inner') { find('.gl-search-box-by-type') }
     end
   end
 
@@ -88,7 +88,7 @@ RSpec.describe 'Protected Environments', :js do
         expect(page).to have_content('production')
         click_button('1 group')
 
-        within('.gl-new-dropdown-contents') do
+        within('.gl-dropdown-contents') do
           click_button('operator-group')                  # Unselect operator-group
           click_button('developer-group')                 # Select developer-group
         end
@@ -102,12 +102,12 @@ RSpec.describe 'Protected Environments', :js do
         expect(page).to have_content('production')
         click_button('1 group')
 
-        within('.gl-new-dropdown-contents li:nth-child(2)') do
-          expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: false)
+        within('.gl-dropdown-contents li:nth-child(2)') do
+          expect(page).to have_selector('.gl-dropdown-item-check-icon', visible: false)
           expect(page).to have_content('operator-group')
         end
-        within('.gl-new-dropdown-contents li:nth-child(3)') do
-          expect(page).to have_selector('.gl-new-dropdown-item-check-icon', visible: true)
+        within('.gl-dropdown-contents li:nth-child(3)') do
+          expect(page).to have_selector('.gl-dropdown-item-check-icon', visible: true)
           expect(page).to have_content('developer-group')
         end
       end

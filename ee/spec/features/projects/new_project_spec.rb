@@ -276,7 +276,7 @@ RSpec.describe 'New project', :js do
           context 'namespace selector' do
             it "only shows the template's group hierarchy options" do
               page.within('#create-from-template-pane') do
-                elements = find_all('.gl-new-dropdown-item-text-wrapper').map { |e| e['innerText'] }
+                elements = find_all('.gl-dropdown-item-text-wrapper').map { |e| e['innerText'] }
                 expect(elements).to contain_exactly(group1.full_path, subgroup1.full_path, subsubgroup1.full_path)
               end
             end
@@ -304,7 +304,7 @@ RSpec.describe 'New project', :js do
 
           it 'list the appropriate groups' do
             page.within('#create-from-template-pane') do
-              elements = find_all('.gl-new-dropdown-item-text-wrapper').map { |e| e['innerText'] }
+              elements = find_all('.gl-dropdown-item-text-wrapper').map { |e| e['innerText'] }
               expect(elements).to contain_exactly(group1.full_path, subgroup1.full_path, subsubgroup1.full_path)
             end
           end

@@ -154,7 +154,7 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
       page.within(assignees_widget) do
         click_button('Edit')
 
-        expect(find('.dropdown-menu')).to have_selector('.gl-new-dropdown-item-check-icon')
+        expect(find('.dropdown-menu')).to have_selector('.gl-dropdown-item-check-icon')
       end
     end
 
@@ -212,7 +212,7 @@ RSpec.describe 'Issue Boards', :js, feature_category: :team_planning do
           click_button 'Edit'
           wait_for_requests
 
-          find('.gl-new-dropdown-item', text: epic2.title).click
+          find('.gl-dropdown-item', text: epic2.title).click
           wait_for_requests
 
           expect(page).to have_content(epic2.title)

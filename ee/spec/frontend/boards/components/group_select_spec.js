@@ -147,7 +147,7 @@ describe('GroupSelect component', () => {
       it('renders the name of the selected group', () => {
         createWrapper({ subGroups: mockSubGroups, selectedGroup: mockGroup0 });
 
-        expect(findGlDropdown().find('.gl-new-dropdown-button-text').text()).toBe(mockGroup0.name);
+        expect(findGlDropdown().find('.gl-dropdown-button-text').text()).toBe(mockGroup0.name);
       });
     });
 

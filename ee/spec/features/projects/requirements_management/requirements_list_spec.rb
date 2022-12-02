@@ -301,8 +301,8 @@ RSpec.describe 'Requirements list', :js do
 
       it 'shows sort dropdown' do
         page.within('.vue-filtered-search-bar-container') do
-          expect(page).to have_selector('.gl-new-dropdown button.gl-dropdown-toggle')
-          expect(page).to have_selector('.gl-new-dropdown ul.dropdown-menu', visible: false)
+          expect(page).to have_selector('.gl-dropdown button.gl-dropdown-toggle')
+          expect(page).to have_selector('.gl-dropdown ul.dropdown-menu', visible: false)
         end
       end
     end
