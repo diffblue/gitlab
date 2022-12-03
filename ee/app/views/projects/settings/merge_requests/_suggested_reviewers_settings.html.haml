@@ -5,7 +5,7 @@
   %section.settings.merge-requests-feature.no-animate#js-merge-request-suggested-reviewers-settings.expanded{ data: { qa_selector: 'merge_request_suggested_reviewers' } }
     .settings-header
       %h4.gl-display-inline-block= s_('SuggestedReviewers|Suggested reviewers')
-      = gl_badge_tag s_('Beta'), { variant: :info, size: :sm }, { class: 'gl-ml-2' }
+      = gl_badge_tag _('Beta'), { variant: :info, size: :sm }, { class: 'gl-ml-2' }
       %p
         = s_("SuggestedReviewers|Get suggestions for reviewers based on GitLab's machine learning tool.")
         = link_to _("Learn more."), help_page_path("user/project/merge_requests/reviews/index.md"), target: '_blank', rel: 'noopener noreferrer'
