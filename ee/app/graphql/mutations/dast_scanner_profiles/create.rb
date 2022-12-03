@@ -52,7 +52,7 @@ module Mutations
 
       authorize :create_on_demand_dast_scan
 
-      def resolve(full_path:, profile_name:, spider_timeout: nil, target_timeout: nil, scan_type:, use_ajax_spider:, show_debug_messages:)
+      def resolve(full_path:, profile_name:, scan_type:, use_ajax_spider:, show_debug_messages:, spider_timeout: nil, target_timeout: nil)
         project = authorized_find!(full_path)
 
         service = ::AppSec::Dast::ScannerProfiles::CreateService.new(project, current_user)
