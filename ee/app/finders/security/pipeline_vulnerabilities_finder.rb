@@ -133,7 +133,7 @@ module Security
         next if !include_dismissed? && dismissal_feedback?(finding)
         next unless confidence_levels.include?(finding.confidence)
         next unless severity_levels.include?(finding.severity)
-        next if scanners.present? && scanners.exclude?(finding.scanner.external_id)
+        next if scanners.present? && !scanners.include?(finding.scanner.external_id)
 
         finding
       end
