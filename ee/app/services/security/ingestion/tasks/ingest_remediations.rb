@@ -97,7 +97,7 @@ module Security
         def new_report_remediations
           existing_remediation_checksums = existing_remediations.map(&:checksum)
 
-          report_remediations.select { |remediation| !existing_remediation_checksums.include?(remediation.checksum) }
+          report_remediations.select { |remediation| existing_remediation_checksums.exclude?(remediation.checksum) }
         end
 
         def existing_remediations
