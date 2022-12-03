@@ -4,7 +4,7 @@ module Security
   module SecurityOrchestrationPolicies
     class CreatePipelineService < ::BaseProjectService
       def execute
-        return error(_('SecurityPolicies|Invalid or empty policy')) if ci_configs.values.all?(&:blank?)
+        return error(s_('SecurityPolicies|Invalid or empty policy')) if ci_configs.values.all?(&:blank?)
 
         pipelines = {}
         error_messages = []
