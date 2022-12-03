@@ -30,7 +30,7 @@ module Security
       def invalid_policy_type?
         return true if policy[:type].blank?
 
-        Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.exclude?(policy_type)
+        !Security::OrchestrationPolicyConfiguration::AVAILABLE_POLICY_TYPES.include?(policy_type)
       end
 
       def blank_name?
