@@ -1,5 +1,5 @@
 import { isValidCron } from 'cron-validator';
-import { convertToTitleCase, humanize, slugify as slugifyUtility } from '~/lib/utils/text_utility';
+import { convertToTitleCase, humanize } from '~/lib/utils/text_utility';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
 import createScanExecutionPolicy from 'ee/security_orchestration/graphql/mutations/create_scan_execution_policy.mutation.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
@@ -161,26 +161,6 @@ export const isValidPolicy = ({
 };
 
 /**
- * Replaces whitespace and non-sluggish characters with a given separator and returns array of values
- * @param str - The string to slugify
- * @param separator - The separator used to separate words (defaults to "-")
- * @returns {String[]}
- */
-export const slugifyToArray = (str, separator = '-') =>
-  slugifyUtility(str, separator).split(',').filter(Boolean);
-
-/**
- * Validate cadence cron string if it exists in rule
- * @param policy
- * @returns {Boolean}
- */
-export const hasInvalidCron = (policy) => {
-  const hasInvalidCronString = (cronString) => (cronString ? !isValidCron(cronString) : false);
-
-  return (policy.rules || []).some((rule) => hasInvalidCronString(rule?.cadence));
-};
-
-/**
  * Replaces whitespace and non-sluggish characters with a given separator
  * @param {String} str - The string to slugify
  * @param {String=} separator - The separator used to separate words (defaults to "-")
@@ -196,4 +176,27 @@ export const slugify = (str, separator = '-') => {
     .join(separator);
 
   return slug === separator ? '' : slug;
+};
+
+/**
+ * Replaces whitespace and non-sluggish characters with a given separator and returns array of values
+ * @param {String} branches - comma-separated branches
+ * @param {String=} separator - The separator used to separate words (defaults to "-")
+ * @returns {String[]}
+ */
+export const slugifyToArray = (branches, separator = '-') =>
+  branches
+    .split(',')
+    .map((branch) => slugify(branch, separator))
+    .filter(Boolean);
+
+/**
+ * Validate cadence cron string if it exists in rule
+ * @param policy
+ * @returns {Boolean}
+ */
+export const hasInvalidCron = (policy) => {
+  const hasInvalidCronString = (cronString) => (cronString ? !isValidCron(cronString) : false);
+
+  return (policy.rules || []).some((rule) => hasInvalidCronString(rule?.cadence));
 };

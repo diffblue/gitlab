@@ -5,6 +5,7 @@ import {
   isValidPolicy,
   hasInvalidCron,
   slugify,
+  slugifyToArray,
 } from 'ee/security_orchestration/components/policy_editor/utils';
 import { DEFAULT_ASSIGNED_POLICY_PROJECT } from 'ee/security_orchestration/constants';
 import createPolicyProject from 'ee/security_orchestration/graphql/mutations/create_policy_project.mutation.graphql';
@@ -147,17 +148,56 @@ describe('hasInvalidCron', () => {
   });
 });
 
+const BRANCHES = [
+  {
+    input: 'My Input String',
+    output: 'My-Input-String',
+  },
+  {
+    input: ' a new project ',
+    output: 'a-new-project',
+  },
+  {
+    input: 'test!_bra-nch/*~',
+    output: 'test-_bra-nch/*',
+  },
+  {
+    input: 'test!!!!_pro-ject~',
+    output: 'test-_pro-ject',
+  },
+  {
+    input: 'дружба',
+    output: '',
+  },
+  {
+    input: 'Test:-)',
+    output: 'Test',
+  },
+  {
+    input: '-Test:-)-',
+    output: 'Test',
+  },
+];
+
 describe('slugify', () => {
   it.each`
-    title                                                                                      | input                   | output
-    ${'should replaces whitespaces with hyphens'}                                              | ${'My Input String'}    | ${'My-Input-String'}
-    ${'should remove trailing whitespace and replace whitespaces within string with a hyphen'} | ${' a new project '}    | ${'a-new-project'}
-    ${'should only remove non-allowed special characters'}                                     | ${'test!_bra-nch/*~'}   | ${'test-_bra-nch/*'}
-    ${'should squash to multiple non-allowed special characters'}                              | ${'test!!!!_pro-ject~'} | ${'test-_pro-ject'}
-    ${'should return empty string if only non-allowed characters'}                             | ${'дружба'}             | ${''}
-    ${'should squash multiple separators'}                                                     | ${'Test:-)'}            | ${'Test'}
-    ${'should trim any separators from the beginning and end of the slug'}                     | ${'-Test:-)-'}          | ${'Test'}
+    title                                                                                      | input                | output
+    ${'should replaces whitespaces with hyphens'}                                              | ${BRANCHES[0].input} | ${BRANCHES[0].output}
+    ${'should remove trailing whitespace and replace whitespaces within string with a hyphen'} | ${BRANCHES[1].input} | ${BRANCHES[1].output}
+    ${'should only remove non-allowed special characters'}                                     | ${BRANCHES[2].input} | ${BRANCHES[2].output}
+    ${'should squash to multiple non-allowed special characters'}                              | ${BRANCHES[3].input} | ${BRANCHES[3].output}
+    ${'should return empty string if only non-allowed characters'}                             | ${BRANCHES[4].input} | ${BRANCHES[4].output}
+    ${'should squash multiple separators'}                                                     | ${BRANCHES[5].input} | ${BRANCHES[5].output}
+    ${'should trim any separators from the beginning and end of the slug'}                     | ${BRANCHES[6].input} | ${BRANCHES[6].output}
   `('$title', ({ input, output }) => {
     expect(slugify(input)).toBe(output);
+  });
+});
+
+describe('slugifyToArray', () => {
+  it('should create an array split on ","', () => {
+    expect(slugifyToArray(BRANCHES.map((b) => b.input).join(','))).toEqual(
+      BRANCHES.map((b) => b.output).filter(Boolean),
+    );
   });
 });
