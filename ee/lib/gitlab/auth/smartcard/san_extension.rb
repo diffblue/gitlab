@@ -4,7 +4,7 @@ module Gitlab
   module Auth
     module Smartcard
       class SANExtension
-        # From X.509 RFC https://tools.ietf.org/html/rfc5280
+        # From X.509 RFC https://www.rfc-editor.org/rfc/rfc5280
         # A.2. Implicitly Tagged Module, 1988 Syntax ....................
         # page-127
         #        Names                           TAG     Type
