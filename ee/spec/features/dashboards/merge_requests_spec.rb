@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Dashboard merge requests' do
+RSpec.describe 'Dashboard merge requests', feature_category: :code_review do
   let(:user) { create(:user) }
   let(:page_path) { merge_requests_dashboard_path }
 

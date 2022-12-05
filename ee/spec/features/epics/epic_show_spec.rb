@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Epic show', :js do
+RSpec.describe 'Epic show', :js, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user, name: 'Rick Sanchez', username: 'rick.sanchez') }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:public_project) { create(:project, :public, group: group) }

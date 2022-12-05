@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'create epic in board', :js do
+RSpec.describe 'create epic in board', :js, feature_category: :portfolio_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
 

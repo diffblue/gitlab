@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Assign labels to an epic', :js do
+RSpec.describe 'Assign labels to an epic', :js, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:label) { create(:group_label, group: group, title: 'bug') }

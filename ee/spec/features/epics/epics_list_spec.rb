@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'epics list', :js do
+RSpec.describe 'epics list', :js, feature_category: :portfolio_management do
   let(:group) { create(:group, :public) }
   let(:user) { create(:user) }
   let(:user_dev) { create(:user) }

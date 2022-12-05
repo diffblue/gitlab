@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User comments on epic', :js do
+RSpec.describe 'User comments on epic', :js, feature_category: :portfolio_management do
   include Spec::Support::Helpers::Features::NotesHelpers
 
   let_it_be(:user) { create(:user, name: '💃speciąl someone💃', username: 'someone.special') }

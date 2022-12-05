@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Dashboard issues' do
+RSpec.describe 'Dashboard issues', feature_category: :team_planning do
   let(:user) { create(:user) }
   let(:page_path) { issues_dashboard_path }
 

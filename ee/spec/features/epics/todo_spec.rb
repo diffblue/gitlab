@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Manually create a todo item from epic', :js do
+RSpec.describe 'Manually create a todo item from epic', :js, feature_category: :portfolio_management do
   let(:group) { create(:group) }
   let(:epic) { create(:epic, group: group) }
   let(:user) { create(:user) }
