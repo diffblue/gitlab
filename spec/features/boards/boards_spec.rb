@@ -5,7 +5,11 @@ require 'spec_helper'
 # Flaky spec warning: the queries in this file routinely exceed the defined GraphQL query limit of 100.
 # Until those queries are optimized, we need to disable query limit checking in order for these tests
 # to pass consistently. Note that removing the disabling code can lead to flaky failures locally and in CI.
-# Before removing we need to be sure that the underlying queries are properly optimized.
+#
+# In addition, it seems as though the use of `let_it_be` might be causing some of the
+# flakiness, as discussed in https://github.com/test-prof/test-prof/blob/master/docs/recipes/let_it_be.md#modifiers.
+# `reload: true` has been added to all `let_it_be` statements.
+#
 # See:
 # - https://gitlab.com/gitlab-org/gitlab/-/issues/323426
 # - https://gitlab.com/gitlab-org/gitlab/-/merge_requests/56458#note_535900110
