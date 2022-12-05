@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 import StatusChecks from './components/status_checks.vue';
 import createStore from './store';
@@ -17,7 +17,7 @@ export default function mountProjectSettingsApprovals(el) {
 
   store.dispatch('setSettings', { projectId, statusChecksPath });
   store.dispatch('fetchStatusChecks').catch((error) => {
-    createFlash({
+    createAlert({
       message: s__('StatusCheck|An error occurred fetching the status checks.'),
       captureError: true,
       error,

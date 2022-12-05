@@ -9,7 +9,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { preventDefault, stopPropagation } from 'ee_jest/admin/test_helpers';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import SidebarEditableItem from '~/sidebar/components/sidebar_editable_item.vue';
 import {
   issueNoWeightResponse,
@@ -132,6 +132,6 @@ describe('Sidebar Weight Widget', () => {
     });
     await waitForPromises();
 
-    expect(createFlash).toHaveBeenCalled();
+    expect(createAlert).toHaveBeenCalled();
   });
 });

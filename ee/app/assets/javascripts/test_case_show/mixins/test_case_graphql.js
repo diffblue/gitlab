@@ -1,5 +1,5 @@
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 
@@ -27,7 +27,7 @@ export default {
       },
       error(error) {
         this.testCaseLoadFailed = true;
-        createFlash({
+        createAlert({
           message: s__('TestCases|Something went wrong while fetching test case.'),
           captureError: true,
           error,
@@ -47,7 +47,7 @@ export default {
         return data.project?.issue?.taskCompletionStatus;
       },
       error(error) {
-        createFlash({
+        createAlert({
           message: s__('TestCases|Something went wrong while updating the test case.'),
           captureError: true,
           error,
@@ -85,7 +85,7 @@ export default {
           return data.updateIssue?.issue;
         })
         .catch((error) => {
-          createFlash({
+          createAlert({
             message: errorMessage,
             captureError: true,
             error,
@@ -103,7 +103,7 @@ export default {
           this.$apollo.queries.testCase.refetch();
         })
         .catch((error) => {
-          createFlash({
+          createAlert({
             message: s__('TestCases|Something went wrong while adding test case to a to-do item.'),
             captureError: true,
             error,
@@ -132,7 +132,7 @@ export default {
           this.$apollo.queries.testCase.refetch();
         })
         .catch((error) => {
-          createFlash({
+          createAlert({
             message: s__(
               'TestCases|Something went wrong while marking test case to-do item as done.',
             ),
@@ -168,7 +168,7 @@ export default {
         })
         .catch((error) => {
           this.testCaseMoveInProgress = false;
-          createFlash({
+          createAlert({
             message: s__('TestCases|Something went wrong while moving test case.'),
             captureError: true,
             error,

@@ -1,7 +1,7 @@
 import { find } from 'lodash';
 import Visibility from 'visibilityjs';
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import Poll from '~/lib/utils/poll';
 import { __, s__, n__, sprintf } from '~/locale';
@@ -70,7 +70,7 @@ export const receiveAddProjectsToDashboardSuccess = ({ dispatch, state }, data) 
     } else {
       invalidProjects = firstProject;
     }
-    createFlash({
+    createAlert({
       message: sprintf(
         s__(
           'Dashboard|Unable to add %{invalidProjects}. This dashboard is available for public projects, and private projects in groups with a Premium plan.',
@@ -88,7 +88,7 @@ export const receiveAddProjectsToDashboardSuccess = ({ dispatch, state }, data) 
 };
 
 export const receiveAddProjectsToDashboardError = ({ state }) => {
-  createFlash({
+  createAlert({
     message: sprintf(__('Something went wrong, unable to add %{project} to dashboard'), {
       project: n__('project', 'projects', state.selectedProjects.length),
     }),
@@ -134,7 +134,7 @@ export const requestProjects = ({ commit }) => {
 
 export const receiveProjectsError = ({ commit }) => {
   commit(types.RECEIVE_PROJECTS_ERROR);
-  createFlash({
+  createAlert({
     message: __('Something went wrong, unable to get projects'),
   });
 };
@@ -149,7 +149,7 @@ export const removeProject = ({ dispatch }, removePath) => {
 export const receiveRemoveProjectSuccess = ({ dispatch }) => dispatch('forceProjectsRequest');
 
 export const receiveRemoveProjectError = () => {
-  createFlash({
+  createAlert({
     message: __('Something went wrong, unable to delete project'),
   });
 };

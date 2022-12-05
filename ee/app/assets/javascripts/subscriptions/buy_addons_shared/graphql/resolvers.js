@@ -14,7 +14,7 @@ import {
   STORAGE_PER_PACK,
 } from 'ee/subscriptions/buy_addons_shared/constants';
 import stateQuery from 'ee/subscriptions/graphql/queries/state.query.graphql';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 const planCode = {
   CI_1000_MINUTES_PLAN: 'ci_minutes',
@@ -53,7 +53,7 @@ export const gitLabResolvers = {
             __typename: COUNTRY_TYPE,
           })),
         )
-        .catch(() => createFlash({ message: ERROR_FETCHING_COUNTRIES }));
+        .catch(() => createAlert({ message: ERROR_FETCHING_COUNTRIES }));
     },
     states: (_, { countryId }) => {
       return Api.fetchStates(countryId)
@@ -64,7 +64,7 @@ export const gitLabResolvers = {
             __typename: STATE_TYPE,
           }));
         })
-        .catch(() => createFlash({ message: ERROR_FETCHING_STATES }));
+        .catch(() => createAlert({ message: ERROR_FETCHING_STATES }));
     },
   },
   Mutation: {

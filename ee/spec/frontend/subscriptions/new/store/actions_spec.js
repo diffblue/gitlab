@@ -8,7 +8,7 @@ import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutati
 import { useMockLocationHelper } from 'helpers/mock_window_location_helper';
 import testAction from 'helpers/vuex_action_helper';
 import Tracking from '~/tracking';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import * as googleTagManager from '~/google_tag_manager';
 
@@ -153,7 +153,7 @@ describe('Subscriptions Actions', () => {
   describe('fetchCountriesError', () => {
     it('creates a flash', async () => {
       await testAction(actions.fetchCountriesError, null, {}, [], []);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to load countries. Please try again.',
       });
     });
@@ -218,7 +218,7 @@ describe('Subscriptions Actions', () => {
   describe('fetchStatesError', () => {
     it('creates a flash', async () => {
       await testAction(actions.fetchStatesError, null, {}, [], []);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to load states. Please try again.',
       });
     });
@@ -370,7 +370,7 @@ describe('Subscriptions Actions', () => {
         [],
         [],
       );
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Credit card form failed to load: error message',
       });
     });
@@ -379,7 +379,7 @@ describe('Subscriptions Actions', () => {
   describe('fetchPaymentFormParamsError', () => {
     it('creates a flash', async () => {
       await testAction(actions.fetchPaymentFormParamsError, null, {}, [], []);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Credit card form failed to load. Please try again.',
       });
     });
@@ -444,7 +444,7 @@ describe('Subscriptions Actions', () => {
         [],
         [],
       );
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message:
           'Submitting the credit card form failed with code codeFromResponse: messageFromResponse',
       });
@@ -520,7 +520,7 @@ describe('Subscriptions Actions', () => {
         ],
         [],
       );
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: GENERAL_ERROR_MESSAGE,
         error,
         captureError: true,
@@ -531,7 +531,7 @@ describe('Subscriptions Actions', () => {
   describe('fetchPaymentMethodDetailsError', () => {
     it('creates a flash', async () => {
       await testAction(actions.fetchPaymentMethodDetailsError, null, {}, [], []);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to register credit card. Please try again.',
       });
     });
@@ -651,7 +651,7 @@ describe('Subscriptions Actions', () => {
         [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: false }],
         [],
       );
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to confirm your order! Please try again.',
       });
     });
@@ -664,7 +664,7 @@ describe('Subscriptions Actions', () => {
         [{ type: 'UPDATE_IS_CONFIRMING_ORDER', payload: false }],
         [],
       );
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Failed to confirm your order: "Error". Please try again.',
       });
     });

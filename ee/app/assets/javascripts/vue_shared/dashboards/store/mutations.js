@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import createFlash from '~/flash';
+import { createAlert, VARIANT_WARNING } from '~/flash';
 import AccessorUtilities from '~/lib/utils/accessor';
 import { parseIntPagination, normalizeHeaders } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
@@ -29,9 +29,9 @@ export default {
         state.projects.map((p) => p.id),
       );
     } else {
-      createFlash({
+      createAlert({
         message: __('Project order will not be saved as local storage is not available.'),
-        type: 'warning',
+        variant: VARIANT_WARNING,
       });
     }
   },

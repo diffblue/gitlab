@@ -7,7 +7,7 @@ import updateTestCase from 'ee/test_case_show/queries/update_test_case.mutation.
 import { mockCurrentUserTodo } from 'jest/vue_shared/issuable/list/mock_data';
 
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { visitUrl } from '~/lib/utils/url_utility';
 
 import { mockProvide, mockTestCase } from '../mock_data';
@@ -85,7 +85,7 @@ describe('TestCaseGraphQL Mixin', () => {
       });
     });
 
-    it('calls `createFlash` with errorMessage on promise reject', () => {
+    it('calls `createAlert` with errorMessage on promise reject', () => {
       jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue({});
 
       return wrapper.vm
@@ -96,7 +96,7 @@ describe('TestCaseGraphQL Mixin', () => {
           errorMessage: 'Something went wrong',
         })
         .then(() => {
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message: 'Something went wrong',
             captureError: true,
             error: expect.any(Object),
@@ -134,11 +134,11 @@ describe('TestCaseGraphQL Mixin', () => {
       });
     });
 
-    it('calls `createFlash` method on request promise reject', () => {
+    it('calls `createAlert` method on request promise reject', () => {
       jest.spyOn(Api, 'addProjectIssueAsTodo').mockRejectedValue({});
 
       return wrapper.vm.addTestCaseAsTodo().then(() => {
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'Something went wrong while adding test case to a to-do item.',
           captureError: true,
           error: expect.any(Object),
@@ -196,11 +196,11 @@ describe('TestCaseGraphQL Mixin', () => {
       });
     });
 
-    it('calls `createFlash` with errorMessage on mutation promise reject', () => {
+    it('calls `createAlert` with errorMessage on mutation promise reject', () => {
       jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue({});
 
       return wrapper.vm.markTestCaseTodoDone().then(() => {
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'Something went wrong while marking test case to-do item as done.',
           captureError: true,
           error: expect.any(Object),
@@ -266,12 +266,12 @@ describe('TestCaseGraphQL Mixin', () => {
       expect(visitUrl).toHaveBeenCalledWith(moveResolvedMutation.data.issueMove.issue.webUrl);
     });
 
-    it('calls `createFlash` with errorMessage on mutation promise reject', async () => {
+    it('calls `createAlert` with errorMessage on mutation promise reject', async () => {
       jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue({});
 
       await wrapper.vm.moveTestCase(mockTargetProject);
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while moving test case.',
         captureError: true,
         error: expect.any(Object),

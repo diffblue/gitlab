@@ -4,7 +4,7 @@ import Vuex from 'vuex';
 import ModalDelete from 'ee/status_checks/components/modal_delete.vue';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 jest.mock('~/flash');
 
@@ -111,7 +111,7 @@ describe('Modal delete', () => {
 
       expect(wrapper.vm.$refs.modal.hide).toHaveBeenCalled();
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'An error occurred deleting the Foo status check.',
         captureError: true,
         error,

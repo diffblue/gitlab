@@ -7,7 +7,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import IssuableCreate from '~/vue_shared/issuable/create/components/issuable_create_root.vue';
 import { redirectTo } from '~/lib/utils/url_utility';
 
@@ -141,7 +141,7 @@ describe('TestCaseCreateRoot', () => {
     findSubmitButton().vm.$emit('click');
     await waitForPromises();
 
-    expect(createFlash).toHaveBeenCalledWith({
+    expect(createAlert).toHaveBeenCalledWith({
       captureError: true,
       error: mockError,
       message: 'Something went wrong while creating a test case.',
@@ -156,7 +156,7 @@ describe('TestCaseCreateRoot', () => {
     findSubmitButton().vm.$emit('click');
     await waitForPromises();
 
-    expect(createFlash).toHaveBeenCalledWith({
+    expect(createAlert).toHaveBeenCalledWith({
       captureError: true,
       error: titleError,
       message: titleError,

@@ -1,7 +1,7 @@
 <script>
 import { GlModal, GlModalDirective, GlSprintf } from '@gitlab/ui';
 import { mapActions, mapState } from 'vuex';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __, s__, sprintf } from '~/locale';
 
 const i18n = {
@@ -52,7 +52,7 @@ export default {
       try {
         await this.deleteStatusCheck(id);
       } catch (error) {
-        createFlash({
+        createAlert({
           message: sprintf(i18n.deleteError, { name }),
           captureError: true,
           error,

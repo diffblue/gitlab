@@ -4,7 +4,7 @@ import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/activate_next_step.mutation.graphql';
 import Tracking from '~/tracking';
 import { addExperimentContext } from '~/tracking/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, s__ } from '~/locale';
 import { trackCheckout, trackTransaction } from '~/google_tag_manager';
@@ -56,7 +56,7 @@ export const fetchCountriesSuccess = ({ commit }, data = []) => {
 };
 
 export const fetchCountriesError = () => {
-  createFlash({
+  createAlert({
     message: s__('Checkout|Failed to load countries. Please try again.'),
   });
 };
@@ -80,7 +80,7 @@ export const fetchStatesSuccess = ({ commit }, data = {}) => {
 };
 
 export const fetchStatesError = () => {
-  createFlash({
+  createAlert({
     message: s__('Checkout|Failed to load states. Please try again.'),
   });
 };
@@ -124,7 +124,7 @@ export const fetchPaymentFormParams = ({ dispatch }) =>
 
 export const fetchPaymentFormParamsSuccess = ({ commit }, data) => {
   if (data.errors) {
-    createFlash({
+    createAlert({
       message: sprintf(
         s__('Checkout|Credit card form failed to load: %{message}'),
         {
@@ -139,7 +139,7 @@ export const fetchPaymentFormParamsSuccess = ({ commit }, data) => {
 };
 
 export const fetchPaymentFormParamsError = () => {
-  createFlash({
+  createAlert({
     message: s__('Checkout|Credit card form failed to load. Please try again.'),
   });
 };
@@ -164,7 +164,7 @@ export const paymentFormSubmittedSuccess = ({ commit, dispatch }, paymentMethodI
 };
 
 export const paymentFormSubmittedError = (_, response) => {
-  createFlash({
+  createAlert({
     message: sprintf(
       s__(
         'Checkout|Submitting the credit card form failed with code %{errorCode}: %{errorMessage}',
@@ -189,12 +189,12 @@ export const fetchPaymentMethodDetailsSuccess = ({ commit }, creditCardDetails) 
       mutation: activateNextStepMutation,
     })
     .catch((error) => {
-      createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+      createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
     });
 };
 
 export const fetchPaymentMethodDetailsError = () => {
-  createFlash({
+  createAlert({
     message: s__('Checkout|Failed to register credit card. Please try again.'),
   });
 };
@@ -245,7 +245,7 @@ export const confirmOrderError = ({ commit }, message = null) => {
     ? s__('Checkout|Failed to confirm your order: %{message}. Please try again.')
     : s__('Checkout|Failed to confirm your order! Please try again.');
 
-  createFlash({
+  createAlert({
     message: sprintf(errorString, { message }, false),
   });
 };

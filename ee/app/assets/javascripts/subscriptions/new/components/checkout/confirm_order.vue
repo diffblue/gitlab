@@ -4,7 +4,7 @@ import { mapState, mapActions } from 'vuex';
 import { STEPS } from 'ee/subscriptions/constants';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 
 export default {
@@ -22,7 +22,7 @@ export default {
       query: activeStepQuery,
       update: ({ activeStep }) => activeStep?.id === STEPS[3].id,
       error: (error) => {
-        createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+        createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
       },
     },
   },
