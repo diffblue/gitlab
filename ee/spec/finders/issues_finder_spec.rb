@@ -12,6 +12,7 @@ RSpec.describe IssuesFinder do
 
       describe 'filter by scoped label wildcard' do
         let_it_be(:search_user) { create(:user) }
+        let(:base_params) { { project_id: project3.id } }
 
         let_it_be(:group_devops_plan_label) { create(:group_label, group: group, title: 'devops::plan') }
         let_it_be(:group_wfe_in_dev_label) { create(:group_label, group: group, title: 'workflow::frontend::in dev') }
@@ -33,8 +34,6 @@ RSpec.describe IssuesFinder do
         before do
           stub_licensed_features(scoped_labels: true)
         end
-
-        let(:base_params) { { project_id: project3.id } }
 
         context 'when scoped labels are unavailable' do
           let(:params) { base_params.merge(label_name: 'devops::*') }

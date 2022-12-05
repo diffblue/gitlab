@@ -368,11 +368,10 @@ RSpec.describe Security::PipelineVulnerabilitiesFinder do
 
     context 'by state' do
       let(:params) { {} }
+      let(:finding_with_feedback) { pipeline.security_reports.reports['sast'].findings.first }
       let(:aggregated_report) { described_class.new(pipeline: pipeline, params: params).execute }
 
       subject(:finding_uuids) { aggregated_report.findings.map(&:uuid) }
-
-      let(:finding_with_feedback) { pipeline.security_reports.reports['sast'].findings.first }
 
       before do
         create(:vulnerability_feedback, :dismissal,

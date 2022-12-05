@@ -4,10 +4,9 @@ require 'spec_helper'
 
 RSpec.describe Analytics::DevopsAdoption::EnabledNamespacesFinder do
   let_it_be(:admin_user) { create(:user, :admin) }
+  let(:params) { {} }
 
   subject(:finder) { described_class.new(admin_user, params: params).execute }
-
-  let(:params) { {} }
 
   describe '#execute' do
     let_it_be(:root_group_1) { create(:group, name: 'bbb') }

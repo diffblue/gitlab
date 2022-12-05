@@ -17,6 +17,7 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
 
   describe '#resolve' do
     let_it_be(:user) { create(:user) }
+    let(:params) { {} }
     let_it_be(:root_group_1) { create(:group, name: 'bbb') }
     let_it_be(:root_group_2) { create(:group, name: 'aaa') }
     let_it_be(:enabled_namespace_1) { create(:devops_adoption_enabled_namespace, namespace: root_group_1, display_namespace: root_group_1) }
@@ -25,8 +26,6 @@ RSpec.describe Resolvers::Analytics::DevopsAdoption::EnabledNamespacesResolver d
     let_it_be(:enabled_namespace_4) { create(:devops_adoption_enabled_namespace, namespace: root_group_2, display_namespace: nil) }
 
     subject(:resolved_enabled_namespaces) { resolve_enabled_namespaces(params, { current_user: current_user }) }
-
-    let(:params) { {} }
 
     context 'for instance level', :enable_admin_mode do
       let(:current_user) { admin_user }

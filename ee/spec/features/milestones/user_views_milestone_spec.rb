@@ -16,13 +16,10 @@ RSpec.describe "User views milestone" do
     sign_in(user)
   end
 
-  # can't use let_it_be because can't stub group_milestone_project_releases outside of example
-  let!(:release) { create(:release, name: 'PUBLIC RELEASE', project: project, milestones: [milestone]) }
-  let!(:no_access_release) do
-    create(:release, name: 'PRIVATE RELEASE', project: no_access_project, milestones: [milestone])
-  end
-
   it 'only shows releases that user has access to' do
+    create(:release, name: 'PUBLIC RELEASE', project: project, milestones: [milestone])
+    create(:release, name: 'PRIVATE RELEASE', project: no_access_project, milestones: [milestone])
+
     visit(group_milestones_path(group))
 
     expect(page.find('.milestone')).to have_text('PUBLIC RELEASE')

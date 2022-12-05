@@ -4,6 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['InstanceSecurityDashboard'] do
   let_it_be(:project) { create(:project) }
+  let(:result) { GitlabSchema.execute(query, context: { current_user: current_user }).as_json }
   let_it_be(:other_project) { create(:project) }
   let_it_be(:user) { create(:user, security_dashboard_projects: [project]) }
 
@@ -17,8 +18,6 @@ RSpec.describe GitlabSchema.types['InstanceSecurityDashboard'] do
 
     stub_licensed_features(security_dashboard: true)
   end
-
-  let(:result) { GitlabSchema.execute(query, context: { current_user: current_user }).as_json }
 
   specify { expect(described_class).to have_graphql_fields(fields) }
 

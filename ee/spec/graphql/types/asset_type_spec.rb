@@ -4,6 +4,10 @@ require 'spec_helper'
 
 RSpec.describe GitlabSchema.types['AssetType'] do
   let_it_be(:project) { create(:project) }
+  let(:fields) do
+    %i[name type url]
+  end
+
   let_it_be(:user) { create(:user) }
   let_it_be(:pipeline) { create(:ee_ci_pipeline, :with_api_fuzzing_report, project: project) }
 
@@ -11,10 +15,6 @@ RSpec.describe GitlabSchema.types['AssetType'] do
     stub_licensed_features(api_fuzzing: true, security_dashboard: true)
 
     project.add_developer(user)
-  end
-
-  let(:fields) do
-    %i[name type url]
   end
 
   subject { GitlabSchema.execute(query, context: { current_user: user }).as_json }
