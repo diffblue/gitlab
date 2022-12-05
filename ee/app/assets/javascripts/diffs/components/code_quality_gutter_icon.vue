@@ -92,7 +92,7 @@ export default {
           :size="16"
           :name="severity[firstCodequalityItem.severity].name"
           :class="severity[firstCodequalityItem.severity].class"
-          class="gl-hover-cursor-pointer codequality-severity-icon gl-vertical-align-baseline!"
+          class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-vertical-align-baseline!"
           @mouseenter="isHoveringFirstIcon = true"
           @mouseleave="isHoveringFirstIcon = false"
         />
@@ -103,13 +103,13 @@ export default {
         :size="16"
         :name="severity[item.severity].name"
         :class="[isHoveringFirstIcon ? 'first-icon-hovered' : '', severity[item.severity].class]"
-        class="gl-hover-cursor-pointer codequality-severity-icon gl-absolute gl-left-0 gl-opacity-0"
+        class="gl-hover-cursor-pointer gl-relative gl-top-1 codequality-severity-icon gl-absolute gl-left-0 gl-opacity-0"
       />
       <div
         v-if="moreCount"
         :class="[
           isHoveringFirstIcon ? 'first-icon-hovered' : '',
-          'more-count gl-px-2 gl-w-auto gl-absolute gl-left-0 gl-opacity-0',
+          'more-count gl-px-2 gl-w-auto gl-absolute gl-left-0 gl-opacity-0 gl-relative gl-top-1',
         ]"
         data-testid="codeQualityMoreCount"
       >
