@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Registrations::Verification, feature_category: :onboarding do
   controller(ActionController::Base) do
-    include Registrations::Verification
+    include Registrations::Verification # rubocop:disable Rspec/DescribedClass
 
     before_action :set_requires_verification, only: :new
 

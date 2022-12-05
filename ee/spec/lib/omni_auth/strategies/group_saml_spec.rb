@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
   include Gitlab::Routing
 
-  let(:strategy) { [OmniAuth::Strategies::GroupSaml, {}] }
+  let(:strategy) { [described_class, {}] }
   let!(:group) { create(:group, name: 'my-group') }
   let(:idp_sso_url) { 'https://saml.example.com/adfs/ls' }
   let(:fingerprint) { 'C1:59:74:2B:E8:0C:6C:A9:41:0F:6E:83:F6:D1:52:25:45:58:89:FB' }
@@ -21,7 +21,7 @@ RSpec.describe OmniAuth::Strategies::GroupSaml, type: :strategy do
   end
 
   describe 'callback_path option' do
-    let(:callback_path) { OmniAuth::Strategies::GroupSaml.default_options[:callback_path] }
+    let(:callback_path) { described_class.default_options[:callback_path] }
 
     def check(path)
       callback_path.call("PATH_INFO" => path)

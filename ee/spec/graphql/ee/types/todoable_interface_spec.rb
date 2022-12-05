@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Types::TodoableInterface do
-  let(:extended_class) { Types::TodoableInterface }
+  let(:extended_class) { described_class }
 
   describe ".resolve_type" do
     it 'knows the correct type for EE-only objects' do

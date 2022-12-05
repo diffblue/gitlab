@@ -14,7 +14,7 @@ RSpec.describe Gitlab::Checks::ChangesAccess do
     end
 
     let(:changes_access) do
-      Gitlab::Checks::ChangesAccess.new(
+      described_class.new(
         changes,
         project: project,
         user_access: user_access,

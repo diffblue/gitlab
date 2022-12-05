@@ -152,7 +152,7 @@ RSpec.describe Ci::Minutes::NamespaceMonthlyUsage do
         subject do
           pipeline.transaction do
             pipeline.touch
-            Ci::Minutes::NamespaceMonthlyUsage.find_or_create_current(namespace_id: namespace.id)
+            described_class.find_or_create_current(namespace_id: namespace.id)
           end
         end
 

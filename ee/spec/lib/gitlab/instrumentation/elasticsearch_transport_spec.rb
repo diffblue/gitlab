@@ -45,7 +45,7 @@ RSpec.describe ::Gitlab::Instrumentation::ElasticsearchTransport, :elastic, :req
       create(:merge_request, title: "new MR")
       ensure_elasticsearch_index!
 
-      requests = ::Gitlab::Instrumentation::ElasticsearchTransport.detail_store
+      requests = described_class.detail_store
       expect(requests).to include(a_hash_including(method: "POST", path: "_bulk"))
     end
   end
