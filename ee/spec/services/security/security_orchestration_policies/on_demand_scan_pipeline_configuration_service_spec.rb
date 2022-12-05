@@ -15,7 +15,8 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
         {
           scan: 'dast',
           site_profile: site_profile.name,
-          scanner_profile: scanner_profile.name
+          scanner_profile: scanner_profile.name,
+          tags: ['runner-tag']
         },
         {
           scan: 'dast',
@@ -58,6 +59,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::OnDemandScanPipelineConf
       expected_configuration = {
         'dast-on-demand-0': {
           stage: 'dast',
+          tags: ['runner-tag'],
           image: { name: '$SECURE_ANALYZERS_PREFIX/dast:$DAST_VERSION' },
           variables: {
             DAST_VERSION: 3,

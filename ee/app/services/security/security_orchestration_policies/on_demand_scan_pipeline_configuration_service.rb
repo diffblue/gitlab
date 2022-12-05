@@ -36,11 +36,13 @@ module Security
         action_variables = action[:variables].to_h.stringify_keys
         ci_configuration = YAML.safe_load(result.payload[:ci_configuration])
 
-        dast_on_demand_template[:dast].deep_merge(
-          'stage' => 'dast',
-          'variables' => dast_on_demand_variables(action_variables),
-          'dast_configuration' => ci_configuration['dast']['dast_configuration']
-        )
+        dast_on_demand_template[:dast]
+          .merge(action[:tags] ? { tags: action[:tags] } : {})
+          .deep_merge(
+            'stage' => 'dast',
+            'variables' => dast_on_demand_variables(action_variables),
+            'dast_configuration' => ci_configuration['dast']['dast_configuration']
+          )
       end
 
       def prepare_base_configuration(site_profile_name, scanner_profile_name)

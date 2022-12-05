@@ -13,13 +13,13 @@ module Security
       def execute(action, ci_variables)
         case action[:scan]
         when 'secret_detection'
-          secret_detection_configuration(ci_variables)
+          secret_detection_configuration(action, ci_variables)
         when 'container_scanning'
-          scan_configuration(action[:scan], ci_variables)
+          scan_configuration(action, ci_variables)
         when 'sast'
-          child_pipeline_configuration(action[:scan], ci_variables)
+          child_pipeline_configuration(action, ci_variables)
         when 'dependency_scanning'
-          child_pipeline_configuration(action[:scan], ci_variables)
+          child_pipeline_configuration(action, ci_variables)
         else
           error_script('Invalid Scan type')
         end
@@ -32,24 +32,32 @@ module Security
         Gitlab::Config::Loader::Yaml.new(template.content).load!
       end
 
-      def secret_detection_configuration(ci_variables)
+      def secret_detection_configuration(action, ci_variables)
+        tags = action[:tags]
         ci_configuration = scan_template('secret_detection')
 
         ci_configuration[:secret_detection]
+          .merge(tags ? { tags: tags } : {})
           .merge(ci_configuration[:'.secret-analyzer'])
           .deep_merge(variables: ci_configuration[:variables].deep_merge(ci_variables).compact)
           .except(:extends)
       end
 
-      def scan_configuration(template, ci_variables)
+      def scan_configuration(action, ci_variables)
+        template = action[:scan]
+        tags = action[:tags]
         ci_configuration = scan_template(template)
 
         ci_configuration[template.to_sym]
+          .merge(tags ? { tags: tags } : {})
           .deep_merge(variables: ci_configuration[:variables].deep_merge(ci_variables).compact)
       end
 
-      def child_pipeline_configuration(template, ci_variables)
+      def child_pipeline_configuration(action, ci_variables)
+        template = action[:scan]
+        tags = action[:tags]
         {
+          tags: tags,
           variables: ci_variables.compact.presence,
           inherit: {
             variables: false
