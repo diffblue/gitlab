@@ -138,7 +138,7 @@ RSpec.describe RegistrationsController, feature_category: :authentication_and_au
             end
 
             it 'does not log registration failure' do
-              expect { subject }.not_to change(AuditEvent, :count)
+              expect { subject }.not_to change { AuditEvent.count }
               expect(response).to render_template(:new)
             end
           end

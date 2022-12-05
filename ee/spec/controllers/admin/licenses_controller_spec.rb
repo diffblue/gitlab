@@ -15,7 +15,7 @@ RSpec.describe Admin::LicensesController, feature_category: :sm_provisioning do
     it 'redirects back when no license is entered/uploaded' do
       expect do
         post :create, params: { license: { data: '' } }
-      end.not_to change(License, :count)
+      end.not_to change { License.count }
 
       expect(response).to redirect_to general_admin_application_settings_path
       expect(flash[:alert]).to include(
@@ -31,7 +31,7 @@ RSpec.describe Admin::LicensesController, feature_category: :sm_provisioning do
 
           expect do
             post :create, params: { license: { data: license.data } }
-          end.to change(License, :count).by(1)
+          end.to change { License.count }.by(1)
 
           expect(response).to redirect_to(admin_subscription_path)
         end
@@ -43,7 +43,7 @@ RSpec.describe Admin::LicensesController, feature_category: :sm_provisioning do
 
           expect do
             post :create, params: { license: { data: license.data } }
-          end.not_to change(License, :count)
+          end.not_to change { License.count }
 
           expect(response).to redirect_to general_admin_application_settings_path
           expect(flash[:alert]).to include(
@@ -58,7 +58,7 @@ RSpec.describe Admin::LicensesController, feature_category: :sm_provisioning do
     it 'renders new with an alert when an invalid license is entered/uploaded' do
       expect do
         post :create, params: { license: { data: 'GA!89-)GaRBAGE' } }
-      end.not_to change(License, :count)
+      end.not_to change { License.count }
 
       expect(response).to redirect_to general_admin_application_settings_path
       expect(flash[:alert]).to include(_('The license key is invalid. Make sure it is exactly as you received it from GitLab Inc.'))
@@ -69,7 +69,7 @@ RSpec.describe Admin::LicensesController, feature_category: :sm_provisioning do
 
       expect do
         post :create, params: { license: { data: license.data } }
-      end.to change(License, :count).by(1)
+      end.to change { License.count }.by(1)
 
       expect(response).to redirect_to(admin_subscription_path)
     end
@@ -84,7 +84,7 @@ RSpec.describe Admin::LicensesController, feature_category: :sm_provisioning do
 
         expect do
           post :create, params: { license: { data: license.data } }
-        end.to change(License, :count).by(1)
+        end.to change { License.count }.by(1)
 
         expect(response).to redirect_to(admin_subscription_path)
       end

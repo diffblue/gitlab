@@ -77,7 +77,7 @@ RSpec.describe 'Groups > Settings > Group Hooks' do
         check 'Enable SSL verification'
         check 'Job events'
 
-        expect { click_button 'Add webhook' }.to change(GroupHook, :count).by(1)
+        expect { click_button 'Add webhook' }.to change { GroupHook.count }.by(1)
 
         expect(page).to have_content(url)
         expect(page).to have_content('SSL Verification: enabled')
@@ -125,14 +125,14 @@ RSpec.describe 'Groups > Settings > Group Hooks' do
         it 'deletes the group hook from the group hooks page' do
           visit webhooks_path
 
-          expect { click_link 'Delete' }.to change(GroupHook, :count).by(-1)
+          expect { click_link 'Delete' }.to change { GroupHook.count }.by(-1)
         end
 
         it 'deletes the group hook from the edit group hook page' do
           visit webhooks_path
           click_link 'Edit'
 
-          expect { click_link 'Delete' }.to change(GroupHook, :count).by(-1)
+          expect { click_link 'Delete' }.to change { GroupHook.count }.by(-1)
         end
       end
     end

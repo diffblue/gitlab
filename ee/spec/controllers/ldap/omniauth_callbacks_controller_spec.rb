@@ -70,7 +70,7 @@ RSpec.describe Ldap::OmniauthCallbacksController, feature_category: :authenticat
     it 'logs a failure event', retry: 0 do
       stub_licensed_features(extended_audit_events: true)
 
-      expect { post provider }.to change(AuditEvent, :count).by(1)
+      expect { post provider }.to change { AuditEvent.count }.by(1)
     end
   end
 end

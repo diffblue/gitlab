@@ -188,7 +188,7 @@ RSpec.describe Admin::Geo::ProjectsController, :geo do
 
       it 'schedules a batch job' do
         Sidekiq::Testing.fake! do
-          expect { subject }.to change(Geo::Batch::ProjectRegistrySchedulerWorker.jobs, :size).by(1)
+          expect { subject }.to change { Geo::Batch::ProjectRegistrySchedulerWorker.jobs.size }.by(1)
           expect(Geo::Batch::ProjectRegistrySchedulerWorker.jobs.last['args']).to include('reverify_repositories')
         end
       end
@@ -214,7 +214,7 @@ RSpec.describe Admin::Geo::ProjectsController, :geo do
 
       it 'schedules a batch job' do
         Sidekiq::Testing.fake! do
-          expect { subject }.to change(Geo::Batch::ProjectRegistrySchedulerWorker.jobs, :size).by(1)
+          expect { subject }.to change { Geo::Batch::ProjectRegistrySchedulerWorker.jobs.size }.by(1)
           expect(Geo::Batch::ProjectRegistrySchedulerWorker.jobs.last['args']).to include('resync_repositories')
         end
       end

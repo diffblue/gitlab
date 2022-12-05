@@ -43,7 +43,7 @@ RSpec.describe Groups::SsoController, feature_category: :authentication_and_auth
       it 'allows account unlinking' do
         expect do
           delete :unlink, params: { group_id: group }
-        end.to change(Identity, :count).by(-1)
+        end.to change { Identity.count }.by(-1)
       end
 
       context 'with block_password_auth_for_saml_users feature flag switched off' do
@@ -87,7 +87,7 @@ RSpec.describe Groups::SsoController, feature_category: :authentication_and_auth
 
         expect do
           delete :unlink, params: { group_id: group }
-        end.to change(Identity, :count).by(-1)
+        end.to change { Identity.count }.by(-1)
       end
     end
 
@@ -100,7 +100,7 @@ RSpec.describe Groups::SsoController, feature_category: :authentication_and_auth
       it 'DELETE /unlink still allows account unlinking' do
         expect do
           delete :unlink, params: { group_id: group }
-        end.to change(Identity, :count).by(-1)
+        end.to change { Identity.count }.by(-1)
       end
 
       it 'GET /saml renders 404' do

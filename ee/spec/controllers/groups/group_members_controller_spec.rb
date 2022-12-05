@@ -52,13 +52,13 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
         group.add_developer(developer)
         sign_in(developer)
 
-        expect { delete :leave, params: { group_id: group } }.to change(AuditEvent, :count).by(1)
+        expect { delete :leave, params: { group_id: group } }.to change { AuditEvent.count }.by(1)
       end
     end
 
     context 'when member is an owner' do
       it 'does not create an audit event' do
-        expect { delete :leave, params: { group_id: group } }.not_to change(AuditEvent, :count)
+        expect { delete :leave, params: { group_id: group } }.not_to change { AuditEvent.count }
       end
     end
 
@@ -68,7 +68,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
         group.request_access(requester)
         sign_in(requester)
 
-        expect { delete :leave, params: { group_id: group } }.to change(AuditEvent, :count).by(1)
+        expect { delete :leave, params: { group_id: group } }.to change { AuditEvent.count }.by(1)
       end
     end
   end

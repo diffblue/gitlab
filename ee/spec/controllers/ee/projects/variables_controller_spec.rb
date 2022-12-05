@@ -35,7 +35,7 @@ RSpec.describe Projects::VariablesController, feature_category: :pipeline_author
       end
 
       it 'logs audit event' do
-        expect { patch_update }.to change(AuditEvent, :count).from(0).to(1)
+        expect { patch_update }.to change { AuditEvent.count }.from(0).to(1)
       end
 
       it 'logs variable creation' do
@@ -57,7 +57,7 @@ RSpec.describe Projects::VariablesController, feature_category: :pipeline_author
       end
 
       it 'logs audit event' do
-        expect { patch_update }.to change(AuditEvent, :count).from(0).to(1)
+        expect { patch_update }.to change { AuditEvent.count }.from(0).to(1)
       end
 
       it 'logs variable protection update' do
@@ -79,7 +79,7 @@ RSpec.describe Projects::VariablesController, feature_category: :pipeline_author
       end
 
       it 'logs audit event' do
-        expect { patch_update }.to change(AuditEvent, :count).from(0).to(1)
+        expect { patch_update }.to change { AuditEvent.count }.from(0).to(1)
       end
 
       it 'logs variable destruction' do
