@@ -14,16 +14,13 @@ module IncidentManagement
     validates :name, presence: true, uniqueness: { scope: [:project_id] }, length: { maximum: 72 }
     validates :description, length: { maximum: 160 }
 
+    scope :by_exact_name, ->(name) { where('LOWER(name) = ?', name&.downcase) }
     scope :for_project, -> (project) { where(project: project) }
     scope :search_by_name, -> (query) { fuzzy_search(query, [:name]) }
 
     accepts_nested_attributes_for :rules
 
     delegate :name, to: :project, prefix: true
-
-    def self.find_by_name(name)
-      find_by('LOWER(name) = ?', name&.downcase)
-    end
 
     def hook_attrs
       {

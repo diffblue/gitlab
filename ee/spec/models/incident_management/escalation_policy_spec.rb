@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::EscalationPolicy do
+RSpec.describe IncidentManagement::EscalationPolicy, feature_category: :incident_management do
   subject(:escalation_policy) { build(:incident_management_escalation_policy) }
 
   it { is_expected.to be_valid }
@@ -40,6 +40,24 @@ RSpec.describe IncidentManagement::EscalationPolicy do
     let_it_be(:policy) { create(:incident_management_escalation_policy, project: project) }
     let_it_be(:other_policy) { create(:incident_management_escalation_policy, name: 'Other policy') }
 
+    describe '.by_exact_name' do
+      context 'with a valid name' do
+        subject { described_class.by_exact_name('oTheR polIcY') }
+
+        it 'returns the policy' do
+          expect(subject).to contain_exactly(other_policy)
+        end
+      end
+
+      context 'with name as nil' do
+        subject { described_class.by_exact_name(nil) }
+
+        it 'returns empty collection' do
+          expect(subject).to be_empty
+        end
+      end
+    end
+
     describe '.for_project' do
       subject { described_class.for_project(project) }
 
@@ -59,22 +77,5 @@ RSpec.describe IncidentManagement::EscalationPolicy do
     subject { escalation_policy.hook_attrs }
 
     it { is_expected.to eq({ id: escalation_policy.id, name: escalation_policy.name }) }
-  end
-
-  describe '#find_by_name' do
-    let_it_be(:name) { 'oTheR polIcY nAme' }
-    let_it_be(:policy) { create(:incident_management_escalation_policy, name: 'Other Policy Name') }
-
-    describe 'with valid name' do
-      subject { IncidentManagement::EscalationPolicy.find_by_name(name) }
-
-      it { is_expected.to eq(policy) }
-    end
-
-    describe 'with name as nil' do
-      subject { IncidentManagement::EscalationPolicy.find_by_name(nil) }
-
-      it { is_expected.to be_nil }
-    end
   end
 end

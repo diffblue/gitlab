@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe IncidentManagement::EscalationPoliciesFinder do
+RSpec.describe IncidentManagement::EscalationPoliciesFinder, feature_category: :incident_management do
   let_it_be(:current_user) { create(:user) }
   let_it_be_with_refind(:project) { create(:project) }
   let_it_be(:escalation_policy) { create(:incident_management_escalation_policy, project: project, name: 'unique identifier') }
@@ -33,6 +33,18 @@ RSpec.describe IncidentManagement::EscalationPoliciesFinder do
           it { is_expected.to contain_exactly(escalation_policy) }
         end
 
+        context 'when exact_name is given' do
+          let(:params) { { name: escalation_policy.name } }
+
+          it { is_expected.to contain_exactly(escalation_policy) }
+
+          context 'when the name does not match' do
+            let(:params) { { name: 'another name' } }
+
+            it { is_expected.to eq(IncidentManagement::EscalationPolicy.none) }
+          end
+        end
+
         context 'when search_name is given' do
           let(:params) { { name_search: 'ique iden' } }
 
@@ -43,6 +55,12 @@ RSpec.describe IncidentManagement::EscalationPoliciesFinder do
 
             it { is_expected.to eq(IncidentManagement::EscalationPolicy.none) }
           end
+        end
+
+        context 'when no params are given' do
+          let(:params) { { id: nil, name: nil, name_search: nil } }
+
+          it { is_expected.to contain_exactly(escalation_policy) }
         end
       end
 
