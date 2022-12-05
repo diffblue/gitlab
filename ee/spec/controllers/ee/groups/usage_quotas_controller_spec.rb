@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::UsageQuotasController, feature_category: :purchase do
+RSpec.describe Groups::UsageQuotasController, feature_category: :subscription_usage_reports do
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:user) { create(:user) }
 
