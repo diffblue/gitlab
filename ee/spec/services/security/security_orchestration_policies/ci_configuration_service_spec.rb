@@ -21,7 +21,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
 
     context 'when action is valid' do
       context 'when scan type is secret_detection' do
-        let_it_be(:action) { { scan: 'secret_detection' } }
+        let_it_be(:action) { { scan: 'secret_detection', tags: ['runner-tag'] } }
         let_it_be(:template_name) { 'Jobs/Secret-Detection' }
 
         it_behaves_like 'with template name for scan type'
@@ -30,6 +30,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           expected_configuration = {
             rules: [{ if: '$SECRET_DETECTION_DISABLED', when: 'never' }, { if: '$CI_COMMIT_BRANCH' }],
             script: ["/analyzer run"],
+            tags: ['runner-tag'],
             stage: 'test',
             image: '$SECURE_ANALYZERS_PREFIX/secrets:$SECRETS_ANALYZER_VERSION$SECRET_DETECTION_IMAGE_SUFFIX',
             services: [],
@@ -49,12 +50,12 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
             }
           }
 
-          expect(subject.deep_symbolize_keys).to include(expected_configuration)
+          expect(subject.deep_symbolize_keys).to eq(expected_configuration)
         end
       end
 
       context 'when scan type is container_scanning' do
-        let_it_be(:action) { { scan: 'container_scanning' } }
+        let_it_be(:action) { { scan: 'container_scanning', tags: ['runner-tag'] } }
         let_it_be(:template_name) { 'Jobs/Container-Scanning' }
         let_it_be(:ci_variables) { {} }
 
@@ -64,6 +65,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           expected_configuration = {
             image: '$CS_ANALYZER_IMAGE$CS_IMAGE_SUFFIX',
             stage: 'test',
+            tags: ['runner-tag'],
             allow_failure: true,
             artifacts: {
               reports: {
@@ -94,12 +96,13 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
       end
 
       context 'when scan type is sast' do
-        let_it_be(:action) { { scan: 'sast' } }
+        let_it_be(:action) { { scan: 'sast', tags: ['runner-tag'] } }
         let_it_be(:ci_variables) { { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep', 'SAST_DISABLED' => nil } }
 
         it 'returns prepared CI configuration for SAST' do
           expected_configuration = {
             inherit: { variables: false },
+            tags: ['runner-tag'],
             variables: { 'SAST_EXCLUDED_ANALYZERS' => 'semgrep' },
             trigger: { include: [{ template: 'Security/SAST.gitlab-ci.yml' }] }
           }
@@ -113,6 +116,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           it 'returns prepared CI configuration for SAST' do
             expected_configuration = {
               inherit: { variables: false },
+              tags: ['runner-tag'],
               trigger: { include: [{ template: 'Security/SAST.gitlab-ci.yml' }] }
             }
 
@@ -122,7 +126,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
       end
 
       context 'when scan type is dependency_scanning' do
-        let_it_be(:action) { { scan: 'dependency_scanning' } }
+        let_it_be(:action) { { scan: 'dependency_scanning', tags: ['runner-tag'] } }
         let_it_be(:ci_variables) do
           { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python', 'DEPENDENCY_SCANNING_DISABLED' => nil }
         end
@@ -130,6 +134,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
         it 'returns prepared CI configuration for Dependency Scanning' do
           expected_configuration = {
             inherit: { variables: false },
+            tags: ['runner-tag'],
             variables: { 'DS_EXCLUDED_ANALYZERS' => 'gemnasium-python' },
             trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
           }
@@ -143,6 +148,7 @@ RSpec.describe Security::SecurityOrchestrationPolicies::CiConfigurationService d
           it 'returns prepared CI configuration for Dependency Scanning' do
             expected_configuration = {
               inherit: { variables: false },
+              tags: ['runner-tag'],
               trigger: { include: [{ template: 'Jobs/Dependency-Scanning.gitlab-ci.yml' }] }
             }
 

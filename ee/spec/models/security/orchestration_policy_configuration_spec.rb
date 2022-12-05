@@ -212,6 +212,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
         it 'returns false if extra fields are present' do
           invalid_policy = policy.deep_dup
           invalid_policy[:scan_execution_policy][0][:actions][0][:scan] = 'secret_detection'
+          invalid_policy[:scan_execution_policy][0][:actions][0][:variables] = { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }
 
           expect(security_orchestration_policy_configuration.policy_configuration_valid?(invalid_policy)).to be_falsey
         end
@@ -369,6 +370,7 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
         it 'returns false if extra fields are present' do
           invalid_policy = policy.deep_dup
           invalid_policy[:scan_execution_policy][0][:actions][0][:scan] = 'secret_detection'
+          invalid_policy[:scan_execution_policy][0][:actions][0][:variables] = { 'SECRET_DETECTION_HISTORIC_SCAN' => 'false' }
           invalid_policy[:scan_execution_policy][0][:rules][0][:cadence] = 'invalid * * * *'
 
           expect(security_orchestration_policy_configuration.policy_configuration_validation_errors(invalid_policy)).to contain_exactly(
