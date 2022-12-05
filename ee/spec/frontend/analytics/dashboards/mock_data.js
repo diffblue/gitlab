@@ -1,10 +1,3 @@
-import {
-  THIS_MONTH,
-  LAST_MONTH,
-  TWO_MONTHS_AGO,
-  THREE_MONTHS_AGO,
-} from 'ee/analytics/dashboards/constants';
-
 const mockDoraMetrics = ([
   leadTimeForChanges,
   timeToRestoreService,
@@ -56,6 +49,36 @@ const mockDoraMetrics = ([
     identifier: 'deploys',
   },
 });
+
+const THIS_MONTH = {
+  key: 'thisMonth',
+  label: 'Month to date',
+  start: new Date('2020-07-01T00:00:00.000Z'),
+  end: new Date('2020-07-06T00:00:00.000Z'),
+};
+
+const LAST_MONTH = {
+  key: 'lastMonth',
+  label: 'June',
+  start: new Date('2020-06-01T00:00:00.000Z'),
+  end: new Date('2020-06-30T23:59:59.000Z'),
+};
+
+const TWO_MONTHS_AGO = {
+  key: 'twoMonthsAgo',
+  label: 'May',
+  start: new Date('2020-05-01T00:00:00.000Z'),
+  end: new Date('2020-05-31T23:59:59.000Z'),
+};
+
+const THREE_MONTHS_AGO = {
+  key: 'threeMonthsAgo',
+  label: 'April',
+  start: new Date('2020-04-01T00:00:00.000Z'),
+  end: new Date('2020-04-30T23:59:59.000Z'),
+};
+
+export const MOCK_TABLE_TIME_PERIODS = [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO, THREE_MONTHS_AGO];
 
 export const mockMonthToDate = mockDoraMetrics([5.1, 4, 8, 0, 2, 4, 6, 8]);
 export const mockMonthToDateTimePeriod = { ...THIS_MONTH, ...mockMonthToDate };

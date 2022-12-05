@@ -1,14 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
-import {
-  THIS_MONTH,
-  LAST_MONTH,
-  TWO_MONTHS_AGO,
-  THREE_MONTHS_AGO,
-} from 'ee/analytics/dashboards/constants';
 import Component from 'ee/analytics/dashboards/components/app.vue';
 import DoraComparisonTable from 'ee/analytics/dashboards/components/dora_comparison_table.vue';
 import * as utils from '~/analytics/shared/utils';
 import {
+  MOCK_TABLE_TIME_PERIODS,
   mockMonthToDateApiResponse,
   mockPreviousMonthApiResponse,
   mockTwoMonthsAgoApiResponse,
@@ -63,7 +58,7 @@ describe('Executive dashboard app', () => {
     it('will request the summary and time summary metrics for all time periods', () => {
       expect(utils.fetchMetricsData).toHaveBeenCalledTimes(4);
 
-      [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO, THREE_MONTHS_AGO].forEach((timePeriod) =>
+      MOCK_TABLE_TIME_PERIODS.forEach((timePeriod) =>
         expectDataRequests({
           created_after: timePeriod.start.toISOString(),
           created_before: timePeriod.end.toISOString(),
