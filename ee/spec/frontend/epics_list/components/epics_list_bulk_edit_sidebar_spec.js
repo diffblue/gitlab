@@ -8,8 +8,8 @@ import {
   mockLabels,
   mockRegularLabel,
   mockScopedLabel,
-} from 'jest/vue_shared/components/sidebar/labels_select_vue/mock_data';
-import LabelsSelectWidget from '~/vue_shared/components/sidebar/labels_select_vue/labels_select_root.vue';
+} from 'jest/sidebar/components/labels/labels_select_vue/mock_data';
+import LabelsSelectWidget from '~/sidebar/components/labels/labels_select_vue/labels_select_root.vue';
 
 const mockEpic1 = {
   ...mockFormattedEpic,
