@@ -141,6 +141,7 @@ module GitlabSubscriptions
 
         OauthAccessToken.new(
           application_id: application.id,
+          expires_in: 2.hours,
           resource_owner_id: current_user.id,
           token: Doorkeeper::OAuth::Helpers::UniqueToken.generate,
           scopes: application.scopes.to_s
