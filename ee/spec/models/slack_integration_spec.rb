@@ -7,6 +7,54 @@ RSpec.describe SlackIntegration do
     it { is_expected.to belong_to(:integration) }
   end
 
+  describe 'feature_available?' do
+    subject(:slack_integration) { create(:slack_integration) }
+
+    context 'without any scopes' do
+      it 'is always false' do
+        expect(slack_integration).not_to be_feature_available(:commands)
+        expect(slack_integration).not_to be_feature_available(:notifications)
+        expect(slack_integration).not_to be_feature_available(:foo)
+      end
+    end
+
+    context 'with enough scopes for notifications' do
+      before do
+        slack_integration.update!(authorized_scope_names: %w[chat:write.public chat:write foo])
+      end
+
+      it 'only has the correct features' do
+        expect(slack_integration).not_to be_feature_available(:commands)
+        expect(slack_integration).to be_feature_available(:notifications)
+        expect(slack_integration).not_to be_feature_available(:foo)
+      end
+    end
+
+    context 'with enough scopes for commands' do
+      before do
+        slack_integration.update!(authorized_scope_names: %w[commands foo])
+      end
+
+      it 'only has the correct features' do
+        expect(slack_integration).to be_feature_available(:commands)
+        expect(slack_integration).not_to be_feature_available(:notifications)
+        expect(slack_integration).not_to be_feature_available(:foo)
+      end
+    end
+
+    context 'with all scopes' do
+      before do
+        slack_integration.update!(authorized_scope_names: %w[commands chat:write chat:write.public])
+      end
+
+      it 'only has the correct features' do
+        expect(slack_integration).to be_feature_available(:commands)
+        expect(slack_integration).to be_feature_available(:notifications)
+        expect(slack_integration).not_to be_feature_available(:foo)
+      end
+    end
+  end
+
   describe 'Scopes' do
     let_it_be(:slack_integration) { create(:slack_integration) }
     let_it_be(:legacy_slack_integration) { create(:slack_integration, :legacy) }

@@ -298,6 +298,7 @@ jira_connect_subscriptions: :gitlab_main
 jira_imports: :gitlab_main
 jira_tracker_data: :gitlab_main
 keys: :gitlab_main
+known_slack_api_scopes: :gitlab_main
 label_links: :gitlab_main
 label_priorities: :gitlab_main
 labels: :gitlab_main
@@ -520,6 +521,7 @@ serverless_domain_cluster: :gitlab_main
 service_desk_settings: :gitlab_main
 shards: :gitlab_main
 slack_integrations: :gitlab_main
+slack_integrations_authorized_scopes: :gitlab_main
 smartcard_identities: :gitlab_main
 snippet_repositories: :gitlab_main
 snippet_repository_storage_moves: :gitlab_main

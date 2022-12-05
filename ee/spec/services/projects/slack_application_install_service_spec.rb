@@ -60,12 +60,12 @@ RSpec.describe Projects::SlackApplicationInstallService do
         ok: true,
         app_id: 'A12345',
         authed_user: { id: user_id },
-        scope: 'commands',
         token_type: 'bot',
         access_token: bot_access_token,
         bot_user_id: bot_user_id,
         team: { id: team_id, name: 'Team name' },
-        enterprise: { is_enterprise_install: false }
+        enterprise: { is_enterprise_install: false },
+        scope: 'chat:a,chat:b,chat:c'
       }
     end
 
@@ -83,7 +83,8 @@ RSpec.describe Projects::SlackApplicationInstallService do
           alias: project.full_path,
           user_id: user_id,
           bot_user_id: bot_user_id,
-          bot_access_token: bot_access_token
+          bot_access_token: bot_access_token,
+          authorized_scope_names: contain_exactly('chat:a', 'chat:b', 'chat:c')
         )
       end
     end
