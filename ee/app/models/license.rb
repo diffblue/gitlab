@@ -527,7 +527,7 @@ class License < ApplicationRecord
     add_limit_error(user_count: daily_billable_users_count)
   end
 
-  def add_limit_error(current_period: true, user_count:)
+  def add_limit_error(user_count:, current_period: true)
     overage_count = overage(user_count)
 
     message =  [current_period ? "This GitLab installation currently has" : "During the year before this license started, this GitLab installation had"]

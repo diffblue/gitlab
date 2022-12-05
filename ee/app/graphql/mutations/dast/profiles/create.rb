@@ -52,7 +52,7 @@ module Mutations
 
         authorize :create_on_demand_dast_scan
 
-        def resolve(full_path:, name:, description: '', branch_name: nil, dast_site_profile_id:, dast_scanner_profile_id:, run_after_create: false, dast_profile_schedule: nil)
+        def resolve(full_path:, name:, dast_site_profile_id:, dast_scanner_profile_id:, description: '', branch_name: nil, run_after_create: false, dast_profile_schedule: nil)
           project = authorized_find!(full_path)
 
           dast_site_profile = project.dast_site_profiles.find(dast_site_profile_id.model_id)

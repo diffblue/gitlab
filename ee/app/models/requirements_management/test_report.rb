@@ -35,7 +35,7 @@ module RequirementsManagement
         bulk_insert!(reports)
       end
 
-      def build_report(author: nil, state:, requirement_issue:, build: nil, timestamp: Time.current)
+      def build_report(state:, requirement_issue:, author: nil, build: nil, timestamp: Time.current)
         new(
           issue_id: requirement_issue.id,
           build_id: build&.id,

@@ -32,7 +32,7 @@ module Mutations
 
       authorize :create_on_demand_dast_scan
 
-      def resolve(id:, full_path: nil, profile_name:, target_url: nil, **params)
+      def resolve(id:, profile_name:, full_path: nil, target_url: nil, **params)
         dast_site_profile = authorized_find!(id)
 
         auth_params = params[:auth] || {}
