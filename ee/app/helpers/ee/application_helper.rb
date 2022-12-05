@@ -111,7 +111,7 @@ module EE
 
     def custom_maintenance_mode_message
       ::Gitlab::CurrentSettings.maintenance_mode_message&.html_safe ||
-        s_('GitLab is undergoing maintenance')
+        _('GitLab is undergoing maintenance')
     end
 
     def db_lag

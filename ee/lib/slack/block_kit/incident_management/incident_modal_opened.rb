@@ -36,21 +36,21 @@ module Slack
         def modal_title
           {
             "type": "plain_text",
-            "text": s_("New incident")
+            "text": _("New incident")
           }
         end
 
         def submit_button
           {
             "type": "plain_text",
-            "text": s_("Create")
+            "text": _("Create")
           }
         end
 
         def close_button
           {
             "type": "plain_text",
-            "text": s_("Cancel")
+            "text": _("Cancel")
           }
         end
 
@@ -60,14 +60,14 @@ module Slack
             "block_id": "title_input",
             "label": {
               "type": "plain_text",
-              "text": s_("Title")
+              "text": _("Title")
             },
             "element": {
               "type": "plain_text_input",
               "action_id": "title",
               "placeholder": {
                 "type": "plain_text",
-                "text": s_("Incident title")
+                "text": _("Incident title")
               },
               "focus_on_load": true
             }
@@ -80,7 +80,7 @@ module Slack
             "action_id": "project",
             "placeholder": {
               "type": "plain_text",
-              "text": s_("Select project")
+              "text": _("Select project")
             },
             "options": construct_project_selector,
             "initial_option": project_selector_option(projects.first)
@@ -175,7 +175,7 @@ module Slack
                     "value": "confidential",
                     "text": {
                       "type": "plain_text",
-                      "text": s_("Confidential")
+                      "text": _("Confidential")
                     }
                   }
                 ]
@@ -223,7 +223,7 @@ module Slack
             },
             "label": {
               "type": "plain_text",
-              "text": s_("Description")
+              "text": _("Description")
             }
           }
         end

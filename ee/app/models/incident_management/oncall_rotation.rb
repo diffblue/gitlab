@@ -101,7 +101,7 @@ module IncidentManagement
     private
 
     def valid_ends_at
-      errors.add(:ends_at, s_('must be after start')) if ends_at <= starts_at
+      errors.add(:ends_at, _('must be after start')) if ends_at <= starts_at
     end
 
     def no_active_period_for_hourly_shifts
