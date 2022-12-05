@@ -37,6 +37,7 @@ RSpec.describe User do
     it { is_expected.to have_many(:vulnerability_state_transitions).class_name('Vulnerabilities::StateTransition').with_foreign_key(:author_id).inverse_of(:author) }
     it { is_expected.to have_many(:deployment_approvals) }
     it { is_expected.to have_many(:namespace_bans).class_name('Namespaces::NamespaceBan') }
+    it { is_expected.to have_many(:dependency_list_exports).class_name('Dependencies::DependencyListExport') }
   end
 
   describe 'nested attributes' do

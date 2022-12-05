@@ -86,6 +86,8 @@ module EE
 
       has_many :namespace_bans, class_name: 'Namespaces::NamespaceBan'
 
+      has_many :dependency_list_exports, class_name: 'Dependencies::DependencyListExport', inverse_of: :author
+
       scope :not_managed, ->(group: nil) {
         scope = where(managing_group_id: nil)
         scope = scope.or(where.not(managing_group_id: group.id)) if group

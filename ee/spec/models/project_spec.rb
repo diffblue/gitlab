@@ -64,6 +64,8 @@ RSpec.describe Project do
     it { is_expected.to have_many(:security_scans) }
     it { is_expected.to have_many(:security_trainings) }
 
+    it { is_expected.to have_many(:dependency_list_exports).class_name('Dependencies::DependencyListExport') }
+
     include_examples 'ci_cd_settings delegation' do
       let(:attributes_with_prefix) do
         {
