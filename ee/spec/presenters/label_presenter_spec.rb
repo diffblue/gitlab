@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe LabelPresenter, feature_category: :team_planning do
-  let(:project) { build(:project) }
+  let(:project) { build_stubbed(:project) }
 
   describe '#scoped_label?' do
     subject { label.scoped_label? }
