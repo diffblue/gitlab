@@ -15,6 +15,8 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
 
   describe '#resolve' do
     let_it_be(:project) { create(:project) }
+    let(:ctx) { { current_user: current_user } }
+    let(:params) { {} }
     let_it_be(:maintainer) { create(:user, developer_projects: [project]) }
     let_it_be(:reporter) { create(:user) }
 
@@ -24,9 +26,6 @@ RSpec.describe Resolvers::Clusters::AgentsResolver do
     before do
       project.add_reporter(reporter)
     end
-
-    let(:ctx) { { current_user: current_user } }
-    let(:params) { {} }
 
     subject { resolve_agents(params) }
 

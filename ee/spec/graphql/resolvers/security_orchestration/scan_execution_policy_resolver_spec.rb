@@ -6,6 +6,14 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
   include GraphqlHelpers
 
   let_it_be(:group) { create(:group) }
+  let!(:policy_configuration) do
+    create(
+      :security_orchestration_policy_configuration,
+      security_policy_management_project: policy_management_project,
+      project: project
+    )
+  end
+
   let_it_be(:project) { create(:project, group: group) }
   let_it_be(:policy) { build(:scan_execution_policy, name: 'Run DAST in every pipeline') }
   let_it_be(:policy_yaml) { build(:orchestration_policy_yaml, scan_execution_policy: [policy]) }
@@ -41,14 +49,6 @@ RSpec.describe Resolvers::SecurityOrchestration::ScanExecutionPolicyResolver do
   subject(:resolve_scan_policies) do
     resolve(described_class, obj: project, args: args, ctx: { current_user: user },
                              arg_style: :internal)
-  end
-
-  let!(:policy_configuration) do
-    create(
-      :security_orchestration_policy_configuration,
-      security_policy_management_project: policy_management_project,
-      project: project
-    )
   end
 
   describe '#resolve' do

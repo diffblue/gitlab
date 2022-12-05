@@ -47,10 +47,6 @@ RSpec.describe 'group epic roadmap', :js do
 
   context 'when epics exist for the group' do
     let(:end_of_quarter) { Date.today.end_of_quarter }
-
-    available_tokens = %w[Author Label Milestone Epic My-Reaction]
-    available_sort_options = ['Start date', 'Due date']
-
     let!(:epic_with_bug) { create(:labeled_epic, group: group, start_date: end_of_quarter - 10.days, end_date: end_of_quarter - 1.day, labels: [bug_label]) }
     let!(:epic_with_critical) { create(:labeled_epic, group: group, start_date: end_of_quarter - 20.days, end_date: end_of_quarter - 2.days, labels: [critical_label]) }
     let!(:closed_epic) { create(:epic, :closed, group: group, start_date: end_of_quarter - 20.days, end_date: end_of_quarter - 2.days) }
@@ -60,6 +56,9 @@ RSpec.describe 'group epic roadmap', :js do
     let!(:milestone_subgroup) { create(:milestone, :with_dates, group: subgroup, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
     let!(:milestone_project) { create(:milestone, :with_dates, project: project, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
     let!(:milestone_project_2) { create(:milestone, :with_dates, project: project, start_date: end_of_quarter - 10.days, due_date: end_of_quarter - 1.day) }
+
+    available_tokens = %w[Author Label Milestone Epic My-Reaction]
+    available_sort_options = ['Start date', 'Due date']
 
     before do
       visit group_roadmap_path(group)

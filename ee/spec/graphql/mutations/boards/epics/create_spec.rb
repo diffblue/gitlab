@@ -6,6 +6,9 @@ RSpec.describe Mutations::Boards::Epics::Create do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
+  let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
+  let(:default_params) { { group_path: group.path, board_id: global_id_of(board), list_id: global_id_of(list), title: title } }
+  let(:epic_create_params) { default_params }
   let_it_be(:group) { create(:group, :private) }
   let_it_be(:board) { create(:epic_board, group: group) }
   let_it_be(:label) do
@@ -19,10 +22,6 @@ RSpec.describe Mutations::Boards::Epics::Create do
   before do
     stub_licensed_features(epics: true)
   end
-
-  let(:mutation) { described_class.new(object: nil, context: { current_user: user }, field: nil) }
-  let(:default_params) { { group_path: group.path, board_id: global_id_of(board), list_id: global_id_of(list), title: title } }
-  let(:epic_create_params) { default_params }
 
   subject { mutation.resolve(**epic_create_params) }
 

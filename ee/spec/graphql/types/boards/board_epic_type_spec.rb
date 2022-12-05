@@ -11,6 +11,8 @@ RSpec.describe GitlabSchema.types['BoardEpic'] do
 
   describe '#user_preferences' do
     let_it_be(:user) { create(:user) }
+    let(:epics) { result['data']['group']['board']['epics']['nodes'] }
+    let(:epic_preferences) { epics.first['userPreferences'] }
     let_it_be(:group) { create(:group) }
     let_it_be(:project) { create(:project, group: group) }
     let_it_be(:issue) { create(:issue, project: project) }
@@ -38,9 +40,6 @@ RSpec.describe GitlabSchema.types['BoardEpic'] do
     end
 
     subject(:result) { GitlabSchema.execute(query, context: context).as_json }
-
-    let(:epics) { result['data']['group']['board']['epics']['nodes'] }
-    let(:epic_preferences) { epics.first['userPreferences'] }
 
     before do
       stub_licensed_features(epics: true)

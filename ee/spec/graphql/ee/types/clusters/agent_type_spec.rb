@@ -18,12 +18,6 @@ RSpec.describe GitlabSchema.types['ClusterAgent'] do
         agent_id: cluster_agent.id, project: project, report_type: :cluster_image_scanning)
     end
 
-    before do
-      stub_licensed_features(security_dashboard: true)
-
-      project.add_developer(user)
-    end
-
     let_it_be(:query) do
       %(
         query {
@@ -38,6 +32,12 @@ RSpec.describe GitlabSchema.types['ClusterAgent'] do
           }
         }
       )
+    end
+
+    before do
+      stub_licensed_features(security_dashboard: true)
+
+      project.add_developer(user)
     end
 
     subject(:vulnerability_images) do

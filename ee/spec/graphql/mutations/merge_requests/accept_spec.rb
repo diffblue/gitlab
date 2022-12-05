@@ -6,11 +6,6 @@ RSpec.describe Mutations::MergeRequests::Accept do
   include GraphqlHelpers
 
   let_it_be(:user) { create(:user) }
-
-  let(:project) { create(:project, :public, :repository) }
-
-  subject(:mutation) { described_class.new(context: context, object: nil, field: nil) }
-
   let(:context) do
     GraphQL::Query::Context.new(
       query: query_double(schema: GitlabSchema),
@@ -18,6 +13,10 @@ RSpec.describe Mutations::MergeRequests::Accept do
       object: nil
     )
   end
+
+  let(:project) { create(:project, :public, :repository) }
+
+  subject(:mutation) { described_class.new(context: context, object: nil, field: nil) }
 
   def mutation_arguments(merge_request)
     {

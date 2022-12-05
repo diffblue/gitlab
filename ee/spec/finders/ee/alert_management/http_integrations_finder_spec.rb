@@ -5,6 +5,7 @@ require 'spec_helper'
 RSpec.describe AlertManagement::HttpIntegrationsFinder do
   describe '#execute' do
     let_it_be(:project) { create(:project) }
+    let(:params) { {} }
     let_it_be(:active_integration) { create(:alert_management_http_integration, project: project, endpoint_identifier: 'abc123' ) }
     let_it_be(:inactive_integration) { create(:alert_management_http_integration, :inactive, project: project, endpoint_identifier: 'abc123' ) }
     let_it_be(:alt_identifier_integration) { create(:alert_management_http_integration, project: project) }
@@ -13,8 +14,6 @@ RSpec.describe AlertManagement::HttpIntegrationsFinder do
     before do
       stub_licensed_features(multiple_alert_http_integrations: true)
     end
-
-    let(:params) { {} }
 
     subject(:execute) { described_class.new(project, params).execute }
 

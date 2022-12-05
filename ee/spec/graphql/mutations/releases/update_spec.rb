@@ -38,12 +38,11 @@ RSpec.describe Mutations::Releases::Update do
 
   describe '#resolve' do
     let(:current_user) { developer }
+    let(:updated_release) { subject[:release] }
 
     subject(:resolve) do
       mutation.resolve(**mutation_arguments)
     end
-
-    let(:updated_release) { subject[:release] }
 
     context 'milestones' do
       context 'when the provided milestones include a group milestone' do

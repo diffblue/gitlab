@@ -6,9 +6,6 @@ RSpec.describe 'User visits issue boards', :js, feature_category: :team_planning
   include BoardHelpers
   using RSpec::Parameterized::TableSyntax
 
-  let_it_be(:group) { create_default(:group, :public) }
-  let_it_be(:project) { create_default(:project, :public, group: group) }
-
   # TODO use 'let' when rspec-parameterized supports it.
   # https://gitlab.com/gitlab-org/gitlab/-/issues/329746
   assignee_username = 'root'
@@ -19,6 +16,8 @@ RSpec.describe 'User visits issue boards', :js, feature_category: :team_planning
   issue_with_assignee = "issue with assignee"
   issue_with_all_filters = "issue with all filters"
 
+  let_it_be(:group) { create_default(:group, :public) }
+  let_it_be(:project) { create_default(:project, :public, group: group) }
   let_it_be(:label) { create(:group_label, group: group, name: label_name) }
   let_it_be(:scoped_label) { create(:group_label, group: group, name: scoped_label_name) }
   let_it_be(:assignee) { create_default(:group_member, :maintainer, user: create(:user, username: assignee_username), group: group).user }
