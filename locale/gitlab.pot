@@ -23894,9 +23894,6 @@ msgstr ""
 msgid "Kubernetes deployment not found"
 msgstr ""
 
-msgid "Kubernetes error: %{error_code}"
-msgstr ""
-
 msgid "LDAP"
 msgstr ""
 
