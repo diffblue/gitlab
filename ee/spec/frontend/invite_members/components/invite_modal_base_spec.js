@@ -32,7 +32,7 @@ describe('EEInviteModalBase', () => {
       group: {
         id: 12345,
         gitlabSubscriptionsPreviewBillableUserChange: {
-          hasOverage: true,
+          willIncreaseOverage: true,
           newBillableUserCount: 2,
           seatsInSubscription: 1,
         },

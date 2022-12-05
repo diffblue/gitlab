@@ -6,7 +6,7 @@ RSpec.describe 'Query.gitlabSubscriptionsPreviewBillableUserChange' do
   include GraphqlHelpers
 
   let_it_be(:current_user) { create(:user) }
-  let_it_be(:fields) { 'hasOverage newBillableUserCount seatsInSubscription' }
+  let_it_be(:fields) { 'willIncreaseOverage newBillableUserCount seatsInSubscription' }
   let_it_be(:base_args) { { role: :DEVELOPER } }
 
   shared_examples 'preview billable user change' do
@@ -36,7 +36,7 @@ RSpec.describe 'Query.gitlabSubscriptionsPreviewBillableUserChange' do
 
             expect(subject).to eq(
               {
-                'hasOverage' => true,
+                'willIncreaseOverage' => false,
                 'newBillableUserCount' => 1,
                 'seatsInSubscription' => 0
               }
@@ -52,7 +52,7 @@ RSpec.describe 'Query.gitlabSubscriptionsPreviewBillableUserChange' do
 
             expect(subject).to eq(
               {
-                'hasOverage' => true,
+                'willIncreaseOverage' => true,
                 'newBillableUserCount' => 2,
                 'seatsInSubscription' => 0
               }
@@ -68,7 +68,7 @@ RSpec.describe 'Query.gitlabSubscriptionsPreviewBillableUserChange' do
 
             expect(subject).to eq(
               {
-                'hasOverage' => true,
+                'willIncreaseOverage' => true,
                 'newBillableUserCount' => 2,
                 'seatsInSubscription' => 0
               }

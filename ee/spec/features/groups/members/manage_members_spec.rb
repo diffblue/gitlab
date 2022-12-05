@@ -98,6 +98,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
     context 'when adding a member to a free group' do
       before do
+        stub_subscription_request_seat_usage(false)
         create(:gitlab_subscription, namespace: group, hosted_plan: nil)
       end
 
@@ -177,6 +178,15 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js do
 
       include_examples 'adding one user by email with a given role doesn\'t trigger an overage modal', 'Guest'
       include_examples 'adding user by email with a given role', 'Developer'
+    end
+
+    context 'when adding a member to a ultimate group that alerady has an overage' do
+      before do
+        create(:gitlab_subscription, namespace: group, hosted_plan: ultimate_plan, seats: 1, seats_in_use: 2)
+      end
+
+      include_examples 'shows an overage modal when adding one user with a given role', 'Developer'
+      include_examples 'adding one user by email with a given role doesn\'t trigger an overage modal', 'Guest'
     end
 
     context 'when adding to a group not eligible for reconciliation', :aggregate_failures do
