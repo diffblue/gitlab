@@ -187,6 +187,7 @@ module EE
           dashboard_limit_new_namespace_creation_enforcement_date: nil,
           default_project_deletion_protection: false,
           deletion_adjourned_period: DEFAULT_NUMBER_OF_DAYS_BEFORE_REMOVAL,
+          disable_personal_access_tokens: false,
           elasticsearch_aws_region: ENV['ELASTIC_REGION'] || 'us-east-1',
           elasticsearch_aws: false,
           elasticsearch_indexed_field_length_limit: 0,
@@ -446,7 +447,8 @@ module EE
 
     override :personal_access_tokens_disabled?
     def personal_access_tokens_disabled?
-      License.feature_available?(:fips_disable_personal_access_tokens) && ::Gitlab::FIPS.enabled?
+      License.feature_available?(:disable_personal_access_tokens) &&
+        ::Gitlab::CurrentSettings.disable_personal_access_tokens
     end
 
     def disable_feed_token

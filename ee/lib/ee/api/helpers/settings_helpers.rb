@@ -41,6 +41,7 @@ module EE
             optional :email_additional_text, type: String, desc: 'Additional text added to the bottom of every email for legal/auditing/compliance reasons'
             optional :default_project_deletion_protection, type: Grape::API::Boolean, desc: 'Disable project owners ability to delete project'
             optional :deletion_adjourned_period, type: Integer, desc: 'Number of days between marking project as deleted and actual removal'
+            optional :disable_personal_access_tokens, type: Grape::API::Boolean, desc: 'Disable personal access tokens'
             optional :help_text, type: String, desc: 'GitLab server administrator information'
             optional :repository_size_limit, type: Integer, desc: 'Size limit per repository (MB)'
             optional :file_template_project_id, type: Integer, desc: 'ID of project where instance-level file templates are stored.'

@@ -99,6 +99,7 @@ module GitlabSubscriptions
       default_branch_protection_restriction_in_groups
       default_project_deletion_protection
       disable_name_update_for_users
+      disable_personal_access_tokens
       domain_verification
       email_additional_text
       epics
@@ -107,7 +108,6 @@ module GitlabSubscriptions
       feature_flags_related_issues
       feature_flags_code_references
       file_locks
-      fips_disable_personal_access_tokens
       geo
       generic_alert_fingerprinting
       git_two_factor_enforcement

@@ -216,13 +216,25 @@ RSpec.describe PersonalAccessToken do
       expect(described_class.find_by_token(token.token)).to eq(token)
     end
 
-    context 'when FIPS mode is enabled', :fips_mode do
+    context 'when disable_personal_access_tokens feature is available' do
       before do
-        stub_licensed_features(fips_disable_personal_access_tokens: true)
+        stub_licensed_features(disable_personal_access_tokens: true)
       end
 
-      it 'does not find the token' do
-        expect(described_class.find_by_token(token.token)).to be_nil
+      context 'when personal access tokens are disabled' do
+        before do
+          stub_application_setting(disable_personal_access_tokens: true)
+        end
+
+        it 'does not find the token' do
+          expect(described_class.find_by_token(token.token)).to be_nil
+        end
+      end
+
+      context 'when personal access tokens are not disabled' do
+        it 'finds the token' do
+          expect(described_class.find_by_token(token.token)).to eq(token)
+        end
       end
     end
   end

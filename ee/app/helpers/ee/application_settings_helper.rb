@@ -123,6 +123,7 @@ module EE
          default_project_deletion_protection
          delayed_project_deletion
          delayed_group_deletion
+         disable_personal_access_tokens
          deletion_adjourned_period
          updating_name_disabled_for_users
          maven_package_requests_forwarding

@@ -1019,25 +1019,21 @@ RSpec.describe ApplicationSetting do
   describe '#personal_access_tokens_disabled?' do
     subject { setting.personal_access_tokens_disabled? }
 
-    context 'when the licensed feature is not available' do
+    context 'when disable_personal_access_tokens feature is available' do
       before do
-        stub_licensed_features(fips_disable_personal_access_tokens: false)
+        stub_licensed_features(disable_personal_access_tokens: true)
       end
 
-      it { is_expected.to eq(false) }
-    end
+      context 'when personal access tokens are disabled' do
+        before do
+          stub_application_setting(disable_personal_access_tokens: true)
+        end
 
-    context 'when the licensed feature is available' do
-      before do
-        stub_licensed_features(fips_disable_personal_access_tokens: true)
-      end
-
-      context 'when FIPS mode is disabled', fips_mode: false do
-        it { is_expected.to eq(false) }
-      end
-
-      context 'when FIPS mode is enabled', :fips_mode do
         it { is_expected.to eq(true) }
+      end
+
+      context 'when personal access tokens are not disabled' do
+        it { is_expected.to eq(false) }
       end
     end
   end
@@ -1049,9 +1045,10 @@ RSpec.describe ApplicationSetting do
       setting.update!(disable_feed_token: false)
     end
 
-    context 'when personal access tokens are disabled', :fips_mode do
+    context 'when personal access tokens are disabled' do
       before do
-        stub_licensed_features(fips_disable_personal_access_tokens: true)
+        stub_licensed_features(disable_personal_access_tokens: true)
+        stub_application_setting(disable_personal_access_tokens: true)
       end
 
       it { is_expected.to eq(true) }

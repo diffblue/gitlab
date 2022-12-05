@@ -8,9 +8,10 @@ RSpec.describe Gitlab::Auth, :use_clean_rails_memory_store_caching do
   let(:auth_failure) { { actor: nil, project: nil, type: nil, authentication_abilities: nil } }
   let(:gl_auth) { described_class }
 
-  context 'when FIPS mode is enabled', :fips_mode do
+  context 'when personal access tokens are disabled' do
     before do
-      stub_licensed_features(fips_disable_personal_access_tokens: true)
+      stub_licensed_features(disable_personal_access_tokens: true)
+      stub_application_setting(disable_personal_access_tokens: true)
     end
 
     it 'fails authentication when using personal access tokens' do
