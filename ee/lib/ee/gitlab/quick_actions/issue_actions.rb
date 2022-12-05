@@ -178,7 +178,7 @@ module EE
             quick_action_target.escalation_policies_available?
           end
           command :page do |escalation_policy_name|
-            policy = quick_action_target.project.incident_management_escalation_policies.find_by_name(escalation_policy_name)
+            policy = ::IncidentManagement::EscalationPoliciesFinder.new(current_user, quick_action_target.project, name: escalation_policy_name).execute.first
 
             if policy.nil?
               @execution_message[:page] = _("Policy '%{escalation_policy_name}' does not exist.") % { escalation_policy_name: escalation_policy_name }
