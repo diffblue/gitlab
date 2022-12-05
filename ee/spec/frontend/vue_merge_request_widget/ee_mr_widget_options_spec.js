@@ -16,6 +16,7 @@ import {
 import _GroupedLoadPerformanceReportsApp from 'ee/ci/reports/load_performance_report/grouped_load_performance_reports_app.vue';
 
 import MrWidgetOptions from 'ee/vue_merge_request_widget/mr_widget_options.vue';
+import WidgetContainer from 'ee/vue_merge_request_widget/components/widget/app.vue';
 // Force Jest to transpile and cache
 // eslint-disable-next-line no-unused-vars
 import _GroupedSecurityReportsApp from 'ee/vue_shared/security_reports/grouped_security_reports_app.vue';
@@ -107,6 +108,7 @@ describe('ee merge request widget options', () => {
 
   const findExtendedSecurityWidget = () => wrapper.find('.js-security-widget');
   const findBaseSecurityWidget = () => wrapper.find('[data-testid="security-mr-widget"]');
+  const findWidgetContainer = () => wrapper.findComponent(WidgetContainer);
 
   const VULNERABILITY_FEEDBACK_ENDPOINT = 'vulnerability_feedback_path';
 
@@ -899,5 +901,22 @@ describe('ee merge request widget options', () => {
         );
       },
     );
+  });
+
+  describe('widget container', () => {
+    afterEach(() => {
+      delete window.gon.features.refactorSecurityExtension;
+    });
+
+    it('should not be displayed when the refactor_security_extension feature flag is turned off', () => {
+      createComponent({ propsData: { mrData: gl.mrWidgetData } });
+      expect(findWidgetContainer().exists()).toBe(false);
+    });
+
+    it('should be displayed when the refactor_security_extension feature flag is turned on', () => {
+      window.gon = { features: { refactorSecurityExtension: true } };
+      createComponent({ propsData: { mrData: gl.mrWidgetData } });
+      expect(findWidgetContainer().exists()).toBe(true);
+    });
   });
 });
