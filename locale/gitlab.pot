@@ -34124,6 +34124,9 @@ msgstr ""
 msgid "ReleaseAssetLinkType|Runbooks"
 msgstr ""
 
+msgid "Released"
+msgstr ""
+
 msgid "Released date"
 msgstr ""
 
@@ -46565,6 +46568,9 @@ msgid "Will be created"
 msgstr ""
 
 msgid "Will be mapped to"
+msgstr ""
+
+msgid "Will be released"
 msgstr ""
 
 msgid "Will deploy to"
