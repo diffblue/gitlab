@@ -74,12 +74,17 @@ RSpec.describe GitlabSubscriptions::CreateService do
         expect { execute }.to change(OauthAccessToken, :count).by(1)
       end
 
-      it 'creates oauth token with correct application id' do
-        execute
+      it 'creates oauth token with correct application id and expiration' do
+        now = Time.current.beginning_of_hour
 
-        created_oauth_token = OauthAccessToken.by_token('foo_token')
+        travel_to(now) do
+          execute
 
-        expect(created_oauth_token.application_id).to eq(oauth_app.id)
+          created_oauth_token = OauthAccessToken.by_token('foo_token')
+
+          expect(created_oauth_token.application_id).to eq(oauth_app.id)
+          expect(created_oauth_token.expires_at).to eq now + 2.hours
+        end
       end
 
       context 'when failing to create a subscription' do
