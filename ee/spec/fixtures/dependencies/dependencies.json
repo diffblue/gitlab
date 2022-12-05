@@ -1,0 +1,711 @@
+{
+  "report": {
+    "status": "ok",
+    "job_path": "/root/oct-7-2022/builds/1311",
+    "generated_at": "2022-10-14T13:15:52.852Z"
+  },
+  "dependencies": [
+    {
+      "name": "activesupport",
+      "packager": "Ruby (Bundler)",
+      "version": "6.1.4",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "addressable",
+      "packager": "Ruby (Bundler)",
+      "version": "2.8.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "ast",
+      "packager": "Ruby (Bundler)",
+      "version": "2.4.2",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "binding_ninja",
+      "packager": "Ruby (Bundler)",
+      "version": "0.2.3",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "climate_control",
+      "packager": "Ruby (Bundler)",
+      "version": "1.0.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "coderay",
+      "packager": "Ruby (Bundler)",
+      "version": "1.1.3",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "concurrent-ruby",
+      "packager": "Ruby (Bundler)",
+      "version": "1.1.9",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "console",
+      "packager": "Ruby (Bundler)",
+      "version": "1.15.3",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "crack",
+      "packager": "Ruby (Bundler)",
+      "version": "0.4.5",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "diff-lcs",
+      "packager": "Ruby (Bundler)",
+      "version": "1.4.4",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "ecma-re-validator",
+      "packager": "Ruby (Bundler)",
+      "version": "0.3.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "fiber-local",
+      "packager": "Ruby (Bundler)",
+      "version": "1.0.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "gitlab-styles",
+      "packager": "Ruby (Bundler)",
+      "version": "6.2.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "hana",
+      "packager": "Ruby (Bundler)",
+      "version": "1.3.7",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "hashdiff",
+      "packager": "Ruby (Bundler)",
+      "version": "1.0.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "i18n",
+      "packager": "Ruby (Bundler)",
+      "version": "1.8.10",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "json_schemer",
+      "packager": "Ruby (Bundler)",
+      "version": "0.2.18",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "minitest",
+      "packager": "Ruby (Bundler)",
+      "version": "5.14.4",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "parallel",
+      "packager": "Ruby (Bundler)",
+      "version": "1.20.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "parser",
+      "packager": "Ruby (Bundler)",
+      "version": "3.0.2.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "proc_to_ast",
+      "packager": "Ruby (Bundler)",
+      "version": "0.1.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "public_suffix",
+      "packager": "Ruby (Bundler)",
+      "version": "4.0.6",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rack",
+      "packager": "Ruby (Bundler)",
+      "version": "2.2.3",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [
+        {
+          "name": "Denial of Service Vulnerability in Rack Multipart Parsing in rack",
+          "severity": "unknown",
+          "id": 39,
+          "url": "http://gdk.test:3000/root/oct-7-2022/-/security/vulnerabilities/39"
+        },
+        {
+          "name": "Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection') in rack",
+          "severity": "unknown",
+          "id": 40,
+          "url": "http://gdk.test:3000/root/oct-7-2022/-/security/vulnerabilities/40"
+        }
+      ],
+      "licenses": []
+    },
+    {
+      "name": "rainbow",
+      "packager": "Ruby (Bundler)",
+      "version": "3.0.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rake",
+      "packager": "Ruby (Bundler)",
+      "version": "12.3.3",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "regexp_parser",
+      "packager": "Ruby (Bundler)",
+      "version": "2.1.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rexml",
+      "packager": "Ruby (Bundler)",
+      "version": "3.2.5",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rspec",
+      "packager": "Ruby (Bundler)",
+      "version": "3.10.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rspec-core",
+      "packager": "Ruby (Bundler)",
+      "version": "3.10.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rspec-expectations",
+      "packager": "Ruby (Bundler)",
+      "version": "3.10.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rspec-mocks",
+      "packager": "Ruby (Bundler)",
+      "version": "3.10.2",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rspec-parameterized",
+      "packager": "Ruby (Bundler)",
+      "version": "0.5.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rspec-support",
+      "packager": "Ruby (Bundler)",
+      "version": "3.10.2",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rspec_junit_formatter",
+      "packager": "Ruby (Bundler)",
+      "version": "0.4.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rubocop",
+      "packager": "Ruby (Bundler)",
+      "version": "0.93.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rubocop-ast",
+      "packager": "Ruby (Bundler)",
+      "version": "1.8.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rubocop-gitlab-security",
+      "packager": "Ruby (Bundler)",
+      "version": "0.1.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rubocop-performance",
+      "packager": "Ruby (Bundler)",
+      "version": "1.9.2",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rubocop-rails",
+      "packager": "Ruby (Bundler)",
+      "version": "2.9.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "rubocop-rspec",
+      "packager": "Ruby (Bundler)",
+      "version": "1.44.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "ruby-progressbar",
+      "packager": "Ruby (Bundler)",
+      "version": "1.11.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "single_cov",
+      "packager": "Ruby (Bundler)",
+      "version": "1.6.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "sync",
+      "packager": "Ruby (Bundler)",
+      "version": "0.5.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "term-ansicolor",
+      "packager": "Ruby (Bundler)",
+      "version": "1.7.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "terminal-table",
+      "packager": "Ruby (Bundler)",
+      "version": "3.0.2",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "thor",
+      "packager": "Ruby (Bundler)",
+      "version": "1.2.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "tins",
+      "packager": "Ruby (Bundler)",
+      "version": "1.31.1",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "tzinfo",
+      "packager": "Ruby (Bundler)",
+      "version": "2.0.4",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "unicode-display_width",
+      "packager": "Ruby (Bundler)",
+      "version": "1.7.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "unparser",
+      "packager": "Ruby (Bundler)",
+      "version": "0.6.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "uri_template",
+      "packager": "Ruby (Bundler)",
+      "version": "0.7.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "webmock",
+      "packager": "Ruby (Bundler)",
+      "version": "3.13.0",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    },
+    {
+      "name": "zeitwerk",
+      "packager": "Ruby (Bundler)",
+      "version": "2.4.2",
+      "location": {
+        "blob_path": "/root/oct-7-2022/-/blob/40106db95e5e1b34073c7d797cd0291fa770c564/Gemfile.lock",
+        "path": "Gemfile.lock",
+        "top_level": null,
+        "ancestors": null
+      },
+      "vulnerabilities": [],
+      "licenses": []
+    }
+  ]
+}
