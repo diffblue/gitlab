@@ -158,12 +158,10 @@ detect-previous-failed-tests:
     - .rails:rules:detect-previous-failed-tests
   variables:
     PREVIOUS_FAILED_TESTS_DIR: tmp/previous_failed_tests/
-    RSPEC_PG_REGEX: /rspec .+ pg12( .+)?/
-    RSPEC_EE_PG_REGEX: /rspec-ee .+ pg12( .+)?/
   script:
     - source ./scripts/utils.sh
     - source ./scripts/rspec_helpers.sh
-    - retrieve_previous_failed_tests ${PREVIOUS_FAILED_TESTS_DIR} "${RSPEC_PG_REGEX}" "${RSPEC_EE_PG_REGEX}"
+    - retrieve_failed_tests "${PREVIOUS_FAILED_TESTS_DIR}" "oneline" "previous"
   artifacts:
     expire_in: 7d
     paths:
