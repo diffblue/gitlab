@@ -61,12 +61,6 @@ RSpec.describe Security::FindingsFinder do
         end.flatten
 
         findings.second.update!(deduplicated: false)
-
-        create(:vulnerability_feedback,
-               :dismissal,
-               project: pipeline.project,
-               category: :sast,
-               finding_uuid: findings.first.uuid)
       end
 
       before do
@@ -125,7 +119,35 @@ RSpec.describe Security::FindingsFinder do
         subject { finder_result.total_count }
 
         context 'when the scope is not provided' do
-          it { is_expected.to be(8) }
+          let(:finding_to_dismiss) { Security::Finding.first }
+
+          before do
+            stub_feature_flags(deprecate_vulnerabilities_feedback: deprecate_vulnerabilities_feedback?)
+          end
+
+          context 'when the `deprecate_vulnerabilities_feedback` feature is enabled' do
+            let(:deprecate_vulnerabilities_feedback?) { true }
+
+            before do
+              create(:vulnerabilities_finding, :dismissed, uuid: finding_to_dismiss.uuid)
+            end
+
+            it { is_expected.to be(7) }
+          end
+
+          context 'when the `deprecate_vulnerabilities_feedback` feature is disabled' do
+            let(:deprecate_vulnerabilities_feedback?) { false }
+
+            before do
+              create(:vulnerability_feedback,
+                 :dismissal,
+                 project: pipeline.project,
+                 category: :dependency_scanning,
+                 finding_uuid: finding_to_dismiss.uuid)
+            end
+
+            it { is_expected.to be(7) }
+          end
         end
 
         context 'when the scope is provided as `all`' do

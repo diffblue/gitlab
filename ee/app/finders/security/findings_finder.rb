@@ -80,7 +80,15 @@ module Security
     end
 
     def security_findings
-      @security_findings ||= include_dismissed? ? all_security_findings : all_security_findings.undismissed
+      @security_findings ||= include_dismissed? ? all_security_findings : undismissed_security_findings
+    end
+
+    def undismissed_security_findings
+      if Feature.enabled?(:deprecate_vulnerabilities_feedback, project)
+        all_security_findings.undismissed_by_vulnerability
+      else
+        all_security_findings.undismissed
+      end
     end
 
     def all_security_findings
