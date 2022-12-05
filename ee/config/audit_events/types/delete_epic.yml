@@ -2,7 +2,7 @@ name: delete_epic
 description: Event triggered on successful epic deletion
 introduced_by_issue: https://gitlab.com/gitlab-org/gitlab/-/issues/370487
 introduced_by_mr: https://gitlab.com/gitlab-org/gitlab/-/merge_requests/96773
-feature_category: "team_planning"
+feature_category: "portfolio_management"
 milestone: "15.4"
 saved_to_database: false
 streamed: true
