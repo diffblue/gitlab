@@ -48994,6 +48994,9 @@ msgstr ""
 msgid "is not allowed since the group is not top-level group."
 msgstr ""
 
+msgid "is not allowed to add this type of parent"
+msgstr ""
+
 msgid "is not allowed. Please use your regular email address."
 msgstr ""
 
