@@ -630,7 +630,7 @@ RSpec.describe IssuablesHelper do
     end
   end
 
-  describe '#hidden_issuable_icon' do
+  describe '#hidden_issuable_icon', feature_category: :insider_threat do
     let_it_be(:mock_svg) { '<svg></svg>'.html_safe }
 
     before do

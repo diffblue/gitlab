@@ -3307,7 +3307,7 @@ msgstr ""
 msgid "AdminUsers|Is using seat"
 msgstr ""
 
-msgid "AdminUsers|Issues authored by this user are hidden from other users."
+msgid "AdminUsers|Issues and merge requests authored by this user are hidden from other users."
 msgstr ""
 
 msgid "AdminUsers|It's you!"
