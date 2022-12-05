@@ -45,6 +45,7 @@ describe('Create Timelog Form', () => {
   const findForm = () => wrapper.find('form');
   const findModal = () => wrapper.findComponent(GlModal);
   const findAlert = () => wrapper.findComponent(GlAlert);
+  const findDocsLink = () => wrapper.findByTestId('timetracking-docs-link');
   const findSaveButton = () => findModal().props('actionPrimary');
   const findSaveButtonLoadingState = () => findSaveButton().attributes[0].loading;
   const findSaveButtonDisabledState = () => findSaveButton().attributes[0].disabled;
@@ -205,6 +206,14 @@ describe('Create Timelog Form', () => {
 
       expect(findAlert().exists()).toBe(true);
       expect(findAlert().text()).toBe('An error occurred while saving the time entry.');
+    });
+  });
+
+  describe('docs link message', () => {
+    it('is present', () => {
+      mountComponent();
+
+      expect(findDocsLink().exists()).toBe(true);
     });
   });
 });

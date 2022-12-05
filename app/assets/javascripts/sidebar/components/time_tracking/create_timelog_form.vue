@@ -6,12 +6,17 @@ import {
   GlFormTextarea,
   GlModal,
   GlAlert,
+  GlLink,
+  GlSprintf,
 } from '@gitlab/ui';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/graphql_shared/constants';
-import { __ } from '~/locale';
+import { joinPaths } from '~/lib/utils/url_utility';
+import { s__ } from '~/locale';
 import createTimelogMutation from '../../queries/create_timelog.mutation.graphql';
+
+export const CREATE_TIMELOG_MODAL_ID = 'create-timelog-modal';
 
 export default {
   components: {
@@ -21,6 +26,8 @@ export default {
     GlFormTextarea,
     GlModal,
     GlAlert,
+    GlLink,
+    GlSprintf,
   },
   inject: ['issuableType'],
   props: {
@@ -44,7 +51,7 @@ export default {
     },
     primaryProps() {
       return {
-        text: __('Save'),
+        text: s__('CreateTimelogForm|Save'),
         attributes: [
           {
             variant: 'confirm',
@@ -56,8 +63,11 @@ export default {
     },
     cancelProps() {
       return {
-        text: __('Cancel'),
+        text: s__('CreateTimelogForm|Cancel'),
       };
+    },
+    timeTrackignDocsPath() {
+      return joinPaths(gon.relative_url_root || '', '/help/user/project/time_tracking.md');
     },
   },
   methods: {
@@ -89,7 +99,7 @@ export default {
             input: {
               timeSpent: this.timeSpent,
               spentAt: this.spentAt
-                ? formatDate(this.spentAt, 'isoDateTime', true)
+                ? formatDate(this.spentAt, 'isoDateTime')
                 : formatDate(Date.now(), 'isoDateTime'),
               summary: this.summary,
               issuableId: this.getIssuableId(),
@@ -104,7 +114,9 @@ export default {
           }
         })
         .catch((error) => {
-          this.saveError = error?.message || __('An error occurred while saving the time entry.');
+          this.saveError =
+            error?.message ||
+            s__('CreateTimelogForm|An error occurred while saving the time entry.');
         })
         .finally(() => {
           this.isLoading = false;
@@ -129,8 +141,8 @@ export default {
 <template>
   <gl-modal
     ref="modal"
-    :title="__('Add time entry')"
-    modal-id="create-timelog-modal"
+    :title="s__('CreateTimelogForm|Add time entry')"
+    :modal-id="CREATE_TIMELOG_MODAL_ID"
     size="sm"
     data-testid="create-timelog-modal"
     :action-primary="primaryProps"
@@ -148,7 +160,7 @@ export default {
           key="time-spent"
           label-for="time-spent"
           label="Time spent"
-          :description="__(`Example: 1h 30m`)"
+          :description="s__(`CreateTimelogForm|Example: 1h 30m`)"
         >
           <gl-form-input
             id="time-spent"
@@ -169,9 +181,24 @@ export default {
           />
         </gl-form-group>
       </div>
-      <gl-form-group :label="__('Summary')" optional label-for="summary" class="gl-mb-0">
+      <gl-form-group :label="s__('CreateTimelogForm|Summary')" optional label-for="summary">
         <gl-form-textarea id="summary" v-model="summary" rows="3" :no-resize="true" />
       </gl-form-group>
+      <p class="gl-mb-0" data-testid="timetracking-docs-link">
+        <gl-sprintf
+          :message="
+            s__(
+              'CreateTimelogForm|View the full documentation on how time tracking works (e.g. setting estimated time) on %{timeTrackingDocsLinkStart}this page%{timeTrackingDocsLinkEnd}.',
+            )
+          "
+        >
+          <template #timeTrackingDocsLink>
+            <gl-link :href="timeTrackignDocsPath" target="_blank">{{
+              s__('CreateTimelogForm|this page')
+            }}</gl-link>
+          </template>
+        </gl-sprintf>
+      </p>
       <gl-alert v-if="saveError" variant="danger" class="gl-mt-5" :dismissible="false">
         {{ saveError }}
       </gl-alert>
