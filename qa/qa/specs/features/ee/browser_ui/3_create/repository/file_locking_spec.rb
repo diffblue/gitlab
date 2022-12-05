@@ -136,7 +136,7 @@ module QA
         end
       end
 
-      def push(branch: project.default_branch, file: 'file', as_user:)
+      def push(as_user:, branch: project.default_branch, file: 'file')
         Resource::Repository::ProjectPush.fabricate! do |push|
           push.project = project
           push.new_branch = false unless branch != project.default_branch
@@ -147,12 +147,12 @@ module QA
         end
       end
 
-      def expect_error_on_push(for_file: 'file', as_user:)
+      def expect_error_on_push(as_user:, for_file: 'file')
         expect { push branch: project.default_branch, file: for_file, as_user: as_user }.to raise_error(
           QA::Support::Run::CommandError)
       end
 
-      def expect_no_error_on_push(for_file: 'file', as_user:)
+      def expect_no_error_on_push(as_user:, for_file: 'file')
         expect { push branch: project.default_branch, file: for_file, as_user: as_user }.not_to raise_error
       end
 
