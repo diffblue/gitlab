@@ -87,17 +87,23 @@ RSpec.describe MergeRequest do
       context 'when suggests users who are members' do
         let_it_be(:first_member) { create(:user) }
         let_it_be(:second_member) { create(:user) }
+        let_it_be(:bot_member) { create(:user, :project_bot) }
+        let_it_be(:service_member) { create(:user, :service_user) }
 
         before_all do
           project.add_developer(first_member)
           project.add_developer(second_member)
+          project.add_reporter(bot_member)
+          project.add_reporter(service_member)
         end
 
         before do
           merge_request.predictions.suggested_reviewers = {
             'reviewers' => [
               second_member.username,
-              first_member.username
+              first_member.username,
+              bot_member.username,
+              service_member.username
             ]
           }
         end
@@ -107,13 +113,13 @@ RSpec.describe MergeRequest do
             second_member.deactivate
           end
 
-          it 'returns only active users' do
+          it 'returns only active human users' do
             expect(suggested_reviewer_users).to eq([first_member])
           end
         end
 
         context 'when all users are active' do
-          it 'returns users in correct suggested order' do
+          it 'returns human users in correct suggested order' do
             expect(suggested_reviewer_users).to eq([second_member, first_member])
           end
         end
