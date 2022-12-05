@@ -62,41 +62,48 @@ export default {
         loading: true,
       },
       loading: 0,
-      fields: [
+      tableFields: [
         {
           key: 'status',
           label: __('Status'),
+          columnClass: 'gl-w-10p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'id',
           label: __('ID'),
+          columnClass: 'gl-w-5p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'triggerer',
           label: __('Triggerer'),
+          columnClass: 'gl-w-10p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'commit',
           label: __('Commit'),
+          columnClass: 'gl-w-20p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'job',
           label: __('Job'),
+          columnClass: 'gl-w-20p',
           tdClass: 'gl-vertical-align-middle!',
         },
         {
           key: 'created',
           label: __('Created'),
-          tdClass: 'gl-vertical-align-middle!',
+          columnClass: 'gl-w-10p',
+          tdClass: 'gl-vertical-align-middle! gl-white-space-nowrap',
         },
         {
           key: 'deployed',
           label: __('Deployed'),
-          tdClass: 'gl-vertical-align-middle!',
+          columnClass: 'gl-w-10p',
+          tdClass: 'gl-vertical-align-middle! gl-white-space-nowrap',
         },
       ],
     };
@@ -117,7 +124,10 @@ export default {
 <template>
   <div>
     <gl-loading-icon v-if="isLoading" size="lg" class="mt-3" />
-    <gl-table-lite v-else :items="deployments" :fields="fields" stacked="lg">
+    <gl-table-lite v-else :items="deployments" :fields="tableFields" fixed stacked="lg">
+      <template #table-colgroup="{ fields }">
+        <col v-for="field in fields" :key="field.key" :class="field.columnClass" />
+      </template>
       <template #cell(status)="{ item }">
         <div>
           <deployment-status-badge :status="item.status" />
@@ -137,16 +147,10 @@ export default {
         </gl-avatar-link>
       </template>
       <template #cell(commit)="{ item }">
-        <div class="gl-display-flex gl-justify-content-end gl-lg-justify-content-start">
-          <commit class="gl-max-w-34" v-bind="item.commit" />
-        </div>
+        <commit v-bind="item.commit" />
       </template>
       <template #cell(job)="{ item }">
-        <gl-link
-          v-if="item.job"
-          :href="item.job.webPath"
-          class="gl-display-inline-block gl-w-full gl-max-w-34"
-        >
+        <gl-link v-if="item.job" :href="item.job.webPath">
           <gl-truncate :text="item.job.label" />
         </gl-link>
         <gl-badge v-else variant="info">{{ __('API') }}</gl-badge>
