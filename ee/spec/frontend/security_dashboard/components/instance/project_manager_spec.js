@@ -4,7 +4,7 @@ import ProjectList from 'ee/security_dashboard/components/instance/project_list.
 import ProjectManager from 'ee/security_dashboard/components/instance/project_manager.vue';
 import getProjects from 'ee/security_dashboard/graphql/queries/get_projects.query.graphql';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 
 jest.mock('~/flash');
@@ -162,8 +162,8 @@ describe('Project Manager component', () => {
       findAddProjectsButton().vm.$emit('click');
       await waitForPromises();
 
-      expect(createFlash).toHaveBeenCalledTimes(1);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledWith({
         message:
           'Unable to add Sample Project 2: Project was not found or you do not have permission to add this project to Security Dashboards.',
       });
@@ -178,8 +178,8 @@ describe('Project Manager component', () => {
       createWrapper({ data: { selectedProjects: multipleProjectsList }, mocks });
       findAddProjectsButton().vm.$emit('click');
       return waitForPromises().then(() => {
-        expect(createFlash).toHaveBeenCalledTimes(1);
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledTimes(1);
+        expect(createAlert).toHaveBeenCalledWith({
           message:
             'Unable to add Sample Project 2 and Sample Project 3: Project was not found or you do not have permission to add this project to Security Dashboards.',
         });
@@ -203,7 +203,7 @@ describe('Project Manager component', () => {
       createWrapper({ props: { selectedProjects: multipleProjectsList }, mocks });
       findProjectList().vm.$emit('projectRemoved', mockProject);
       return waitForPromises().then(() => {
-        expect(createFlash).toHaveBeenCalledTimes(1);
+        expect(createAlert).toHaveBeenCalledTimes(1);
       });
     });
   });

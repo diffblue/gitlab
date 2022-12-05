@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
@@ -38,7 +38,7 @@ export default () => {
         .then(() => window.location.reload())
         .catch(() => {
           toggleBtn.removeAttribute('disabled');
-          createFlash({
+          createAlert({
             message: __('An error occurred while initializing path locks'),
           });
         });

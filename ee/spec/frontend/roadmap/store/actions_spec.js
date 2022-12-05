@@ -9,7 +9,7 @@ import * as epicUtils from 'ee/roadmap/utils/epic_utils';
 import * as roadmapItemUtils from 'ee/roadmap/utils/roadmap_item_utils';
 import { getTimeframeForRangeType } from 'ee/roadmap/utils/roadmap_utils';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import {
   mockGroupId,
@@ -161,7 +161,7 @@ describe('Roadmap Vuex Actions', () => {
     it('should show flash error', () => {
       actions.receiveEpicsFailure({ commit: () => {} });
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while fetching epics',
       });
     });
@@ -652,7 +652,7 @@ describe('Roadmap Vuex Actions', () => {
     it('should show flash error', () => {
       actions.receiveMilestonesFailure({ commit: () => {} });
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while fetching milestones',
       });
     });

@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import createFlash, { createAlert } from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
@@ -90,7 +90,7 @@ export const setWeightSum = ({ commit }, data) => commit(types.SET_WEIGHT_SUM, d
 export const requestItems = ({ commit }, data) => commit(types.REQUEST_ITEMS, data);
 export const receiveItemsSuccess = ({ commit }, data) => commit(types.RECEIVE_ITEMS_SUCCESS, data);
 export const receiveItemsFailure = ({ commit }, data) => {
-  createFlash({
+  createAlert({
     message: s__('Epics|Something went wrong while fetching child epics.'),
   });
   commit(types.RECEIVE_ITEMS_FAILURE, data);
@@ -155,7 +155,7 @@ export const fetchItems = ({ dispatch }, { parentItem, isSubItem = false }) => {
 };
 
 export const receiveNextPageItemsFailure = () => {
-  createFlash({
+  createAlert({
     message: s__('Epics|Something went wrong while fetching child epics.'),
   });
 };
@@ -408,7 +408,7 @@ export const receiveCreateItemSuccess = ({ state, commit, dispatch, getters }, {
 };
 export const receiveCreateItemFailure = ({ commit }) => {
   commit(types.RECEIVE_CREATE_ITEM_FAILURE);
-  createFlash({
+  createAlert({
     message: s__('Epics|Something went wrong while creating child epics.'),
   });
 };
@@ -442,7 +442,7 @@ export const createItem = ({ state, dispatch }, { itemTitle, groupFullPath }) =>
 
 export const receiveReorderItemFailure = ({ commit }, data) => {
   commit(types.REORDER_ITEM, data);
-  createFlash({
+  createAlert({
     message: s__('Epics|Something went wrong while ordering item.'),
   });
 };
@@ -489,7 +489,7 @@ export const reorderItem = (
 
 export const receiveMoveItemFailure = ({ commit }, data) => {
   commit(types.MOVE_ITEM_FAILURE, data);
-  createFlash({
+  createAlert({
     message: s__('Epics|Something went wrong while moving item.'),
   });
 };
@@ -571,7 +571,7 @@ export const receiveCreateIssueSuccess = ({ commit }) =>
   commit(types.RECEIVE_CREATE_ITEM_SUCCESS, { insertAt: 0, items: [] });
 export const receiveCreateIssueFailure = ({ commit }) => {
   commit(types.RECEIVE_CREATE_ITEM_FAILURE);
-  createFlash({
+  createAlert({
     message: s__('Epics|Something went wrong while creating issue.'),
   });
 };
@@ -604,7 +604,7 @@ export const receiveProjectsSuccess = ({ commit }, data) =>
   commit(types.RECEIVE_PROJECTS_SUCCESS, data);
 export const receiveProjectsFailure = ({ commit }) => {
   commit(types.RECEIVE_PROJECTS_FAILURE);
-  createFlash({
+  createAlert({
     message: __('Something went wrong while fetching projects.'),
   });
 };

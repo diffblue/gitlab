@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 import { createAppOptions as createAppOptionsCE } from '~/pipelines/pipeline_tabs';
 import { convertObjectPropsToCamelCase } from '~/lib/utils/common_utils';
 import { getPipelineReportOptions } from 'ee/security_dashboard/utils/pipeline_report_options';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __ } from '~/locale';
 
 Vue.use(VueRouter);
@@ -26,7 +26,7 @@ export const createAppOptions = (selector, apolloProvider, router) => {
     );
     vulnerabilityReportProvides = getPipelineReportOptions(vulnerabilityReportData);
   } catch (error) {
-    createFlash({
+    createAlert({
       message: __("Unable to parse the vulnerability report's options."),
       error,
     });

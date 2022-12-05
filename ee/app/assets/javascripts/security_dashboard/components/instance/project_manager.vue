@@ -6,7 +6,7 @@ import deleteProjectFromSecurityDashboard from 'ee/security_dashboard/graphql/mu
 import getProjects from 'ee/security_dashboard/graphql/queries/get_projects.query.graphql';
 import instanceProjectsQuery from 'ee/security_dashboard/graphql/queries/instance_projects.query.graphql';
 import { createInvalidProjectMessage } from 'ee/security_dashboard/utils/project_manager_utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __, s__, sprintf } from '~/locale';
 import ProjectSelector from '~/vue_shared/components/project_selector/project_selector.vue';
 import ProjectList from './project_list.vue';
@@ -128,7 +128,7 @@ export default {
               },
             );
 
-            createFlash({
+            createAlert({
               message: errorMessages.join(' '),
             });
           }
@@ -162,7 +162,7 @@ export default {
           this.$emit('handleProjectManipulation', false);
         })
         .catch(() =>
-          createFlash({
+          createAlert({
             message: __('Something went wrong, unable to delete project'),
           }),
         );

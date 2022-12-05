@@ -1,7 +1,7 @@
 <script>
 import { GlSkeletonLoader, GlCard, GlLink, GlIcon, GlPopover } from '@gitlab/ui';
 import { GlSingleStat } from '@gitlab/ui/dist/charts';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { percent, percentHundred } from '~/lib/utils/unit_format';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import TestRunsEmptyState from './components/test_runs_empty_state.vue';
@@ -53,7 +53,7 @@ export default {
         return data.project?.pipelines?.nodes[0];
       },
       error(error) {
-        createFlash({
+        createAlert({
           message: this.$options.i18n.fetchError,
           error,
         });

@@ -2,7 +2,7 @@
 import { GlBadge, GlButton, GlLoadingIcon, GlTooltipDirective } from '@gitlab/ui';
 import projectsQuery from 'ee/security_dashboard/graphql/queries/instance_projects.query.graphql';
 import { PROJECT_LOADING_ERROR_MESSAGE } from 'ee/security_dashboard/helpers';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
 
@@ -55,7 +55,7 @@ export default {
       this.$emit('projectRemoved', project);
     },
     showErrorFlash() {
-      createFlash({ message: PROJECT_LOADING_ERROR_MESSAGE });
+      createAlert({ message: PROJECT_LOADING_ERROR_MESSAGE });
     },
   },
 };

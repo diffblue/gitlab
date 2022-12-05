@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import VueRouter from 'vue-router';
 import { cloneDeep } from 'lodash';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import ToolFilter from 'ee/security_dashboard/components/shared/filters/tool_filter.vue';
@@ -186,7 +186,7 @@ describe('Tool Filter component', () => {
 
       await createWrapper({ resolver: errorSpy });
 
-      expect(createFlash).toHaveBeenCalledWith({ message: TOOL_FILTER_ERROR });
+      expect(createAlert).toHaveBeenCalledWith({ message: TOOL_FILTER_ERROR });
     });
 
     it('skips the query for invalid dashboard type', async () => {

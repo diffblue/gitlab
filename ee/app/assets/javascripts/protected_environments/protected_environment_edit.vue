@@ -1,7 +1,7 @@
 <script>
 import { GlButton, GlLink, GlFormSelect } from '@gitlab/ui';
 import AccessDropdown from '~/projects/settings/components/access_dropdown.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __, s__, sprintf } from '~/locale';
 import { ACCESS_LEVELS, LEVEL_TYPES } from './constants';
@@ -123,7 +123,7 @@ export default {
       });
     },
     flash() {
-      createFlash({
+      createAlert({
         message: i18n.failureMessage,
         parent: this.parentContainer,
       });

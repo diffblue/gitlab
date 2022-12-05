@@ -24,7 +24,7 @@ import { TEST_HOST } from 'helpers/test_constants';
 import { mockTracking, unmockTracking } from 'helpers/tracking_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { queryToObject } from '~/lib/utils/url_utility';
 import {
   FILTERED_SEARCH_TERM,
@@ -400,11 +400,11 @@ describe('RequirementsRoot', () => {
         );
       });
 
-      it('calls `createFlash` when request fails', () => {
+      it('calls `createAlert` when request fails', () => {
         jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue(new Error({}));
 
         return wrapper.vm.exportCsv().catch(() => {
-          expect(createFlash).toHaveBeenCalledWith(
+          expect(createAlert).toHaveBeenCalledWith(
             expect.objectContaining({
               message: 'Something went wrong while exporting requirements',
               captureError: true,
@@ -501,7 +501,7 @@ describe('RequirementsRoot', () => {
         );
       });
 
-      it('calls `createFlash` with provided `errorFlashMessage` param when request fails', () => {
+      it('calls `createAlert` with provided `errorFlashMessage` param when request fails', () => {
         jest.spyOn(wrapper.vm.$apollo, 'mutate').mockRejectedValue(new Error({}));
 
         return wrapper.vm
@@ -514,7 +514,7 @@ describe('RequirementsRoot', () => {
             },
           )
           .catch(() => {
-            expect(createFlash).toHaveBeenCalledWith({
+            expect(createAlert).toHaveBeenCalledWith({
               message: 'Something went wrong',
               captureError: true,
             });
@@ -634,7 +634,7 @@ describe('RequirementsRoot', () => {
           });
       });
 
-      it('sets `createRequirementRequestActive` prop to `false` and calls `createFlash` when `$apollo.mutate` request fails', () => {
+      it('sets `createRequirementRequestActive` prop to `false` and calls `createAlert` when `$apollo.mutate` request fails', () => {
         jest.spyOn(wrapper.vm.$apollo, 'mutate').mockReturnValue(Promise.reject(new Error()));
 
         return wrapper.vm
@@ -643,7 +643,7 @@ describe('RequirementsRoot', () => {
             description: '_bar_',
           })
           .catch(() => {
-            expect(createFlash).toHaveBeenCalledWith({
+            expect(createAlert).toHaveBeenCalledWith({
               message: 'Something went wrong while creating a requirement.',
               captureError: true,
               parent: expect.any(Object),

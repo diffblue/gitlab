@@ -16,7 +16,7 @@ import Tracking from '~/tracking';
 
 import testAction from 'helpers/vuex_action_helper';
 import { TEST_HOST } from 'spec/test_constants';
-import createFlash, { createAlert } from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import {
   issuableTypesMap,
@@ -41,7 +41,7 @@ jest.mock('~/flash');
 
 describe('RelatedItemTree', () => {
   afterEach(() => {
-    createFlash.mockClear();
+    createAlert.mockClear();
   });
 
   describe('store', () => {
@@ -349,7 +349,7 @@ describe('RelatedItemTree', () => {
             {},
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message,
           });
         });
@@ -563,7 +563,7 @@ describe('RelatedItemTree', () => {
             {},
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message,
           });
         });
@@ -1177,7 +1177,7 @@ describe('RelatedItemTree', () => {
             },
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message,
           });
         });
@@ -1268,7 +1268,7 @@ describe('RelatedItemTree', () => {
             },
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message,
           });
         });
@@ -1415,7 +1415,7 @@ describe('RelatedItemTree', () => {
             },
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message,
           });
         });
@@ -1614,7 +1614,7 @@ describe('RelatedItemTree', () => {
             },
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message,
           });
         });
@@ -1702,7 +1702,7 @@ describe('RelatedItemTree', () => {
                 expect.objectContaining({ parentItem }),
               );
 
-              expect(createFlash).not.toHaveBeenCalled();
+              expect(createAlert).not.toHaveBeenCalled();
             });
           });
         });
@@ -1768,7 +1768,7 @@ describe('RelatedItemTree', () => {
             },
           );
 
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message,
           });
         });

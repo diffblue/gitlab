@@ -1,5 +1,5 @@
 <script>
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import getClusterAgentsQuery from 'ee/security_dashboard/graphql/queries/cluster_agents.query.graphql';
 import { CLUSTER_FILTER_ERROR } from './constants';
 import SimpleFilter from './simple_filter.vue';
@@ -25,7 +25,7 @@ export default {
           gid: c.id,
         })) || [],
       error() {
-        createFlash({
+        createAlert({
           message: CLUSTER_FILTER_ERROR,
         });
       },

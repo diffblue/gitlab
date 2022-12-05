@@ -14,7 +14,7 @@ import { debounce } from 'lodash';
 import { mapState, mapActions } from 'vuex';
 
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { STORAGE_KEY } from '~/frequent_items/constants';
 import { getTopFrequentItems } from '~/frequent_items/utils';
 import AccessorUtilities from '~/lib/utils/accessor';
@@ -148,7 +148,7 @@ export default {
           this.selectedProject = data;
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: __('Something went wrong while fetching details'),
           });
           this.selectedProject = null;

@@ -2,7 +2,7 @@ import { createAppOptions } from 'ee/pipelines/pipeline_tabs';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import findingsQuery from 'ee/security_dashboard/graphql/queries/pipeline_findings.query.graphql';
 import { dataset } from 'ee_jest/security_dashboard/mock_data/pipeline_report_dataset';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __ } from '~/locale';
 
 const mockCeOptions = {
@@ -36,7 +36,7 @@ describe('createAppOptions', () => {
     createElement();
     const options = createAppOptions(`#${EL_ID}`, null);
 
-    expect(createFlash).not.toHaveBeenCalled();
+    expect(createAlert).not.toHaveBeenCalled();
     expect(options).toMatchObject({
       ...mockCeOptions,
       provide: {
@@ -73,7 +73,7 @@ describe('createAppOptions', () => {
     delete el.dataset.vulnerabilityReportData;
     const options = createAppOptions(`#${EL_ID}`, null);
 
-    expect(createFlash).toHaveBeenCalledWith({
+    expect(createAlert).toHaveBeenCalledWith({
       message: __("Unable to parse the vulnerability report's options."),
       error: expect.any(Error),
     });

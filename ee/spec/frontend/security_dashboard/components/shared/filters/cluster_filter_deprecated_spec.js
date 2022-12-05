@@ -2,7 +2,7 @@ import Vue from 'vue';
 import VueApollo from 'vue-apollo';
 import { shallowMount } from '@vue/test-utils';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import ClusterFilterDeprecated from 'ee/security_dashboard/components/shared/filters/cluster_filter_deprecated.vue';
 import { CLUSTER_FILTER_ERROR } from 'ee/security_dashboard/components/shared/filters/constants';
@@ -34,7 +34,7 @@ describe('Cluster Filter component (deprecated)', () => {
   const findFilterItems = () => wrapper.findAllComponents(FilterItem);
 
   afterEach(() => {
-    createFlash.mockClear();
+    createAlert.mockClear();
     wrapper.destroy();
   });
 
@@ -64,6 +64,6 @@ describe('Cluster Filter component (deprecated)', () => {
     const errorSpy = jest.fn().mockRejectedValue();
     createWrapper(errorSpy);
     await waitForPromises();
-    expect(createFlash).toHaveBeenCalledWith({ message: CLUSTER_FILTER_ERROR });
+    expect(createAlert).toHaveBeenCalledWith({ message: CLUSTER_FILTER_ERROR });
   });
 });

@@ -1,4 +1,4 @@
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 
 import { ROADMAP_PAGE_SIZE } from '../constants';
@@ -138,7 +138,7 @@ export const receiveEpicsSuccess = (
 };
 export const receiveEpicsFailure = ({ commit }) => {
   commit(types.RECEIVE_EPICS_FAILURE);
-  createFlash({
+  createAlert({
     message: s__('GroupRoadmap|Something went wrong while fetching epics'),
   });
 };
@@ -300,7 +300,7 @@ export const receiveMilestonesSuccess = (
 
 export const receiveMilestonesFailure = ({ commit }) => {
   commit(types.RECEIVE_MILESTONES_FAILURE);
-  createFlash({
+  createAlert({
     message: s__('GroupRoadmap|Something went wrong while fetching milestones'),
   });
 };
