@@ -4509,9 +4509,6 @@ msgid_plural "An error occurred while saving the settings"
 msgstr[0] ""
 msgstr[1] ""
 
-msgid "An error occurred while saving the time entry."
-msgstr ""
-
 msgid "An error occurred while saving your settings. Try saving them again."
 msgstr ""
 
@@ -11490,6 +11487,30 @@ msgstr ""
 msgid "CreateTag|Tag"
 msgstr ""
 
+msgid "CreateTimelogForm|Add time entry"
+msgstr ""
+
+msgid "CreateTimelogForm|An error occurred while saving the time entry."
+msgstr ""
+
+msgid "CreateTimelogForm|Cancel"
+msgstr ""
+
+msgid "CreateTimelogForm|Example: 1h 30m"
+msgstr ""
+
+msgid "CreateTimelogForm|Save"
+msgstr ""
+
+msgid "CreateTimelogForm|Summary"
+msgstr ""
+
+msgid "CreateTimelogForm|View the full documentation on how time tracking works (e.g. setting estimated time) on %{timeTrackingDocsLinkStart}this page%{timeTrackingDocsLinkEnd}."
+msgstr ""
+
+msgid "CreateTimelogForm|this page"
+msgstr ""
+
 msgid "CreateValueStreamForm|%{name} (default)"
 msgstr ""
 
@@ -16273,9 +16294,6 @@ msgid "Example: (feature|hotfix)\\/*"
 msgstr ""
 
 msgid "Example: (jar|exe)$"
-msgstr ""
-
-msgid "Example: 1h 30m"
 msgstr ""
 
 msgid "Example: @sub\\.company\\.com$"
@@ -39261,6 +39279,9 @@ msgstr ""
 msgid "Spent at"
 msgstr ""
 
+msgid "Spent at can't be a future date and time."
+msgstr ""
+
 msgid "Squash commit message"
 msgstr ""
 
@@ -42539,6 +42560,9 @@ msgid "Time remaining"
 msgstr ""
 
 msgid "Time spent"
+msgstr ""
+
+msgid "Time spent can't be zero."
 msgstr ""
 
 msgid "Time spent must be formatted correctly. For example: 1h 30m."

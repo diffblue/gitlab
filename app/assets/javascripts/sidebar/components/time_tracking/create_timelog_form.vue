@@ -135,6 +135,7 @@ export default {
       return convertToGraphQLId(this.getGraphQLEntityType(), this.issuableId);
     },
   },
+  CREATE_TIMELOG_MODAL_ID,
 };
 </script>
 
@@ -142,7 +143,7 @@ export default {
   <gl-modal
     ref="modal"
     :title="s__('CreateTimelogForm|Add time entry')"
-    :modal-id="CREATE_TIMELOG_MODAL_ID"
+    :modal-id="$options.CREATE_TIMELOG_MODAL_ID"
     size="sm"
     data-testid="create-timelog-modal"
     :action-primary="primaryProps"
