@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'fast_spec_helper'
+require 'spec_helper'
 require 'support/helpers/rails_helpers'
 require 'rspec-parameterized'
 
@@ -9,6 +9,10 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
 
   describe '.validate' do
     using RSpec::Parameterized::TableSyntax
+
+    before do
+      stub_feature_flags(validate_allowed_cross_slow_commands: true)
+    end
 
     where(:command, :arguments, :keys, :is_valid) do
       :rename | %w(foo bar) | 2 | false
@@ -75,26 +79,46 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
   end
 
   describe '.allow_cross_slot_commands' do
-    it 'does not raise for invalid arguments' do
-      expect(
-        described_class.allow_cross_slot_commands do
-          described_class.validate([[:mget, 'foo', 'bar']])
-        end
-      ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
-                command: "mget foo bar" })
-    end
+    context 'with feature flags enabled' do
+      before do
+        stub_feature_flags(validate_allowed_cross_slow_commands: true)
+      end
 
-    it 'allows nested invocation' do
-      expect(
-        described_class.allow_cross_slot_commands do
+      it 'does not raise for invalid arguments' do
+        expect(
           described_class.allow_cross_slot_commands do
             described_class.validate([[:mget, 'foo', 'bar']])
           end
+        ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
+                  command: "mget foo bar" })
+      end
 
-          described_class.validate([[:mget, 'foo', 'bar']])
-        end
-      ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
-                command: "mget foo bar" })
+      it 'allows nested invocation' do
+        expect(
+          described_class.allow_cross_slot_commands do
+            described_class.allow_cross_slot_commands do
+              described_class.validate([[:mget, 'foo', 'bar']])
+            end
+
+            described_class.validate([[:mget, 'foo', 'bar']])
+          end
+        ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
+                  command: "mget foo bar" })
+      end
+    end
+
+    context 'with feature flag disabled' do
+      before do
+        stub_feature_flags(validate_allowed_cross_slow_commands: false)
+      end
+
+      it 'does not run for allowed commands' do
+        expect(
+          described_class.allow_cross_slot_commands do
+            described_class.validate([[:mget, 'foo', 'bar']])
+          end
+        ).to eq(nil)
+      end
     end
   end
 end
