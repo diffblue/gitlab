@@ -11,7 +11,7 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
     using RSpec::Parameterized::TableSyntax
 
     before do
-      stub_feature_flags(validate_allowed_cross_slow_commands: true)
+      stub_feature_flags(validate_allowed_cross_slot_commands: true)
     end
 
     where(:command, :arguments, :keys, :is_valid) do
@@ -81,7 +81,7 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
   describe '.allow_cross_slot_commands' do
     context 'with feature flags enabled' do
       before do
-        stub_feature_flags(validate_allowed_cross_slow_commands: true)
+        stub_feature_flags(validate_allowed_cross_slot_commands: true)
       end
 
       it 'does not raise for invalid arguments' do
@@ -109,7 +109,7 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
 
     context 'with feature flag disabled' do
       before do
-        stub_feature_flags(validate_allowed_cross_slow_commands: false)
+        stub_feature_flags(validate_allowed_cross_slot_commands: false)
       end
 
       it 'does not run for allowed commands' do

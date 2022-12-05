@@ -192,7 +192,7 @@ module Gitlab
 
           # Checking Feature.enabled? after single-command check
           # as Feature.enabled? runs a `get` command which is single key. This prevents recursive calls.
-          return if allow_cross_slot_commands? && !::Feature.enabled?(:validate_allowed_cross_slow_commands, type: :ops)
+          return if allow_cross_slot_commands? && !::Feature.enabled?(:validate_allowed_cross_slot_commands, type: :ops)
 
           key_slots = commands.map { |command| key_slots(command) }.flatten
 
