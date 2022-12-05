@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService do
   let_it_be(:user) { build_stubbed(:user) }
-  let_it_be(:project) { build_stubbed(:project) }
+  let_it_be(:project) { build_stubbed(:project, :in_group) }
 
   subject(:execute) { described_class.execute(user, project) }
 
@@ -80,6 +80,15 @@ RSpec.describe Users::Abuse::ProjectsDownloadBanCheckService do
         end
 
         it_behaves_like 'uses the result of the configured projects download throttle service'
+
+        context 'when project\'s root namespace is a User namespace' do
+          let_it_be(:project) { build_stubbed(:project) }
+
+          it 'returns a success response' do
+            expect(Users::Abuse::GitAbuse::NamespaceThrottleService).not_to receive(:execute)
+            expect(execute).to be_success
+          end
+        end
       end
     end
 
