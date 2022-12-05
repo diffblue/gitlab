@@ -17,7 +17,7 @@ import { normalizeGraphQLNote } from 'ee/vulnerabilities/helpers';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { addTypenamesToDiscussion, generateNote } from './mock_data';
 
 jest.mock('~/flash');
@@ -141,7 +141,7 @@ describe('Vulnerability Footer', () => {
         errors: [{ message: 'Something went wrong' }],
         success: false,
       });
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message:
           'Something went wrong while trying to retrieve the vulnerability history. Please try again later.',
       });

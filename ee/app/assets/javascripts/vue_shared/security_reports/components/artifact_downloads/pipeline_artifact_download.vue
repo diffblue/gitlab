@@ -1,6 +1,6 @@
 <script>
 import { reportTypeToSecurityReportTypeEnum } from 'ee/vue_shared/security_reports/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 import SecurityReportDownloadDropdown from '~/vue_shared/security_reports/components/security_report_download_dropdown.vue';
 import securityReportPipelineDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_pipeline_download_paths.query.graphql';
@@ -59,7 +59,7 @@ export default {
   },
   methods: {
     showError(error) {
-      createFlash({
+      createAlert({
         message: this.$options.i18n.apiError,
         captureError: true,
         error,

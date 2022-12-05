@@ -1,7 +1,7 @@
 <script>
 import { GlButton } from '@gitlab/ui';
 import axios from 'axios';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { joinPaths, redirectTo } from '~/lib/utils/url_utility';
 import { sprintf, __, s__ } from '~/locale';
 import RelatedIssuesBlock from '~/related_issues/components/related_issues_block.vue';
@@ -135,7 +135,7 @@ export default {
 
         if (hasErrors) {
           const messages = errors.map((error) => sprintf(RELATED_ISSUES_ERRORS.LINK_ERROR, error));
-          createFlash({
+          createAlert({
             message: messages.join(' '),
           });
         }
@@ -152,7 +152,7 @@ export default {
           this.store.removeRelatedIssue(issue);
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: RELATED_ISSUES_ERRORS.UNLINK_ERROR,
           });
         });
@@ -181,7 +181,7 @@ export default {
           );
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: __('An error occurred while fetching issues.'),
           });
         })

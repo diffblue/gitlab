@@ -4,7 +4,7 @@ import activateNextStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutati
 import updateStepMutation from 'ee/vue_shared/purchase_flow/graphql/mutations/update_active_step.mutation.graphql';
 import activeStepQuery from 'ee/vue_shared/purchase_flow/graphql/queries/active_step.query.graphql';
 import stepListQuery from 'ee/vue_shared/purchase_flow/graphql/queries/step_list.query.graphql';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { convertToSnakeCase, dasherize } from '~/lib/utils/text_utility';
 import { GENERAL_ERROR_MESSAGE } from '../constants';
 import StepHeader from './step_header.vue';
@@ -76,7 +76,7 @@ export default {
   },
   methods: {
     handleError(error) {
-      createFlash({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
+      createAlert({ message: GENERAL_ERROR_MESSAGE, error, captureError: true });
     },
     async nextStep() {
       if (!this.isValid) {

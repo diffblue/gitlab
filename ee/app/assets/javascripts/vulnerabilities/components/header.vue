@@ -3,7 +3,7 @@ import { GlLoadingIcon, GlButton } from '@gitlab/ui';
 import vulnerabilityStateMutations from 'ee/security_dashboard/graphql/mutate_vulnerability_state';
 import SplitButton from 'ee/vue_shared/security_reports/components/split_button.vue';
 import StatusBadge from 'ee/vue_shared/security_reports/components/status_badge.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { convertToGraphQLId } from '~/graphql_shared/utils';
 import { TYPE_VULNERABILITY } from '~/graphql_shared/constants';
 import axios from '~/lib/utils/axios_utils';
@@ -107,7 +107,7 @@ export default {
             this.user = userData;
           })
           .catch(() => {
-            createFlash({
+            createAlert({
               message: s__('VulnerabilityManagement|Something went wrong, could not get user.'),
             });
           })
@@ -142,7 +142,7 @@ export default {
           ...normalizeGraphQLVulnerability(data[queryName].vulnerability),
         });
       } catch (error) {
-        createFlash({
+        createAlert({
           message: {
             error,
             captureError: true,
@@ -187,7 +187,7 @@ export default {
         })
         .catch(() => {
           this.isProcessingAction = false;
-          createFlash({
+          createAlert({
             message: s__(
               'ciReport|There was an error creating the merge request. Please try again.',
             ),

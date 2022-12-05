@@ -10,7 +10,7 @@ import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
 import { stateData as initialStateData, subscriptionName } from 'ee_jest/subscriptions/mock_data';
 import { createMockApolloProvider } from 'ee_jest/vue_shared/purchase_flow/spec_helper';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import flash from '~/flash';
+import { createAlert } from '~/flash';
 import * as UrlUtility from '~/lib/utils/url_utility';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -133,7 +133,7 @@ describe('Confirm Order', () => {
         findConfirmButton().vm.$emit('click');
         await waitForPromises();
 
-        expect(flash.mock.calls[0][0]).toMatchObject({
+        expect(createAlert.mock.calls[0][0]).toMatchObject({
           message: GENERAL_ERROR_MESSAGE,
           captureError: true,
           error: new Error(JSON.stringify(errors)),
@@ -149,7 +149,7 @@ describe('Confirm Order', () => {
       });
 
       afterEach(() => {
-        flash.mockClear();
+        createAlert.mockClear();
       });
 
       it('does not render the root element', () => {

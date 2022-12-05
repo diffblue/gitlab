@@ -2,7 +2,7 @@ import { shallowMount } from '@vue/test-utils';
 import MockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
 import RelatedIssues from 'ee/vulnerabilities/components/related_issues.vue';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import httpStatusCodes from '~/lib/utils/http_status';
 import * as urlUtility from '~/lib/utils/url_utility';
@@ -111,7 +111,7 @@ describe('Vulnerability related issues component', () => {
       await axios.waitForAll();
 
       expect(blockProp('relatedIssues')).toEqual([]);
-      expect(createFlash).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -134,7 +134,7 @@ describe('Vulnerability related issues component', () => {
       expect(requestData.target_project_id).toBe(propsData.projectPath);
       expect(blockProp('relatedIssues')).toHaveLength(1);
       expect(blockProp('relatedIssues')[0].vulnerabilityLinkId).toBe(issue1.vulnerabilityLinkId);
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
     });
 
     it('adds multiple issues', async () => {
@@ -166,7 +166,7 @@ describe('Vulnerability related issues component', () => {
       expect(blockProp('isFormVisible')).toBe(true);
       expect(blockProp('inputValue')).toBe('');
       expect(blockProp('pendingReferences')).toEqual(['#2', '#4']);
-      expect(createFlash).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -260,7 +260,7 @@ describe('Vulnerability related issues component', () => {
 
       expect(mockAxios.history.delete).toHaveLength(1);
       expect(blockProp('relatedIssues')).toMatchObject([issue1, issue2]);
-      expect(createFlash).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledTimes(1);
     });
   });
 

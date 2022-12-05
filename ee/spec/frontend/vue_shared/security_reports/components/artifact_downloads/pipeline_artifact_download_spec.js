@@ -11,7 +11,7 @@ import {
   expectedDownloadDropdownPropsWithText,
   securityReportPipelineDownloadPathsQueryResponse,
 } from 'jest/vue_shared/security_reports/mock_data';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import SecurityReportDownloadDropdown from '~/vue_shared/security_reports/components/security_report_download_dropdown.vue';
 import securityReportPipelineDownloadPathsQuery from '~/vue_shared/security_reports/graphql/queries/security_report_pipeline_download_paths.query.graphql';
 
@@ -93,8 +93,8 @@ describe('Pipeline artifact Download', () => {
       });
     });
 
-    it('calls createFlash correctly', () => {
-      expect(createFlash).toHaveBeenCalledWith({
+    it('calls createAlert correctly', () => {
+      expect(createAlert).toHaveBeenCalledWith({
         message: Component.i18n.apiError,
         captureError: true,
         error: expect.any(Error),
