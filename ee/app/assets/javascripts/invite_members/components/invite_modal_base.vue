@@ -82,7 +82,7 @@ export default {
   },
   data() {
     return {
-      hasOverage: false,
+      willIncreaseOverage: false,
       totalUserCount: null,
       subscriptionSeats: 0,
       namespaceId: parseInt(this.rootGroupId, 10),
@@ -102,7 +102,7 @@ export default {
       return undefined;
     },
     showOverageModal() {
-      return this.hasOverage && this.enabledOverageCheck && !this.actualFeedbackMessage;
+      return this.willIncreaseOverage && this.enabledOverageCheck && !this.actualFeedbackMessage;
     },
     submitDisabledEE() {
       if (this.showOverageModal) {
@@ -144,7 +144,7 @@ export default {
   },
   watch: {
     invalidFeedbackMessage(newValue) {
-      this.hasOverage = false;
+      this.willIncreaseOverage = false;
       this.actualFeedbackMessage = newValue;
     },
   },
@@ -158,7 +158,7 @@ export default {
     },
     onReset() {
       // don't reopen the overage modal
-      this.hasOverage = false;
+      this.willIncreaseOverage = false;
       this.actualFeedbackMessage = '';
 
       this.$emit('reset');
@@ -166,7 +166,7 @@ export default {
     onSubmit(args) {
       if (this.reachedLimit) return;
 
-      if (this.enabledOverageCheck && !this.hasOverage && this.hasInput) {
+      if (this.enabledOverageCheck && !this.willIncreaseOverage && this.hasInput) {
         this.actualFeedbackMessage = '';
         this.checkEligibility(args);
       } else {
@@ -217,8 +217,8 @@ export default {
           this.emitSubmit(args);
         }
         const billingDetails = data.group.gitlabSubscriptionsPreviewBillableUserChange;
-        this.hasOverage = billingDetails.hasOverage;
-        if (this.hasOverage) {
+        this.willIncreaseOverage = billingDetails.willIncreaseOverage;
+        if (this.willIncreaseOverage) {
           this.totalUserCount = billingDetails.newBillableUserCount;
           this.subscriptionSeats = billingDetails.seatsInSubscription;
         } else {
@@ -261,7 +261,7 @@ export default {
     },
     onCancel() {
       if (this.showOverageModal) {
-        this.hasOverage = false;
+        this.willIncreaseOverage = false;
       }
     },
   },

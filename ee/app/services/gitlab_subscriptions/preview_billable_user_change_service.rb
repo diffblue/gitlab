@@ -17,7 +17,7 @@ module GitlabSubscriptions
       {
         success: true,
         data: {
-          has_overage: has_overage?,
+          will_increase_overage: will_increase_overage?,
           new_billable_user_count: new_billable_user_count,
           seats_in_subscription: seats_in_subscription
         }
@@ -54,8 +54,8 @@ module GitlabSubscriptions
       group.billed_user_ids[:user_ids]
     end
 
-    def has_overage?
-      new_billable_user_count > seats_in_subscription
+    def will_increase_overage?
+      new_billable_user_count > current_max_billable_users
     end
 
     def new_billable_user_count
@@ -70,6 +70,10 @@ module GitlabSubscriptions
 
     def seats_in_subscription
       @seats_in_subscription ||= target_namespace.gitlab_subscription&.seats || 0
+    end
+
+    def current_max_billable_users
+      [target_namespace.billable_members_count, seats_in_subscription].max
     end
   end
 end

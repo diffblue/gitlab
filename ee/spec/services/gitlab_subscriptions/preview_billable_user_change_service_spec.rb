@@ -40,7 +40,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
                   expect(execute).to include({
                     success: true,
                     data: {
-                      has_overage: true,
+                      will_increase_overage: true,
                       new_billable_user_count: 4,
                       seats_in_subscription: 0
                     }
@@ -56,7 +56,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
                     expect(execute).to include({
                       success: true,
                       data: {
-                        has_overage: true,
+                        will_increase_overage: true,
                         new_billable_user_count: 4,
                         seats_in_subscription: 0
                       }
@@ -70,7 +70,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
                   expect(execute).to include({
                     success: true,
                     data: {
-                      has_overage: true,
+                      will_increase_overage: false,
                       new_billable_user_count: 1,
                       seats_in_subscription: 0
                     }
@@ -85,7 +85,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
               it 'returns successfully' do
                 expect(execute).to include({
                   success: true,
-                  data: { has_overage: true, new_billable_user_count: 1, seats_in_subscription: 0 }
+                  data: { will_increase_overage: false, new_billable_user_count: 1, seats_in_subscription: 0 }
                 })
               end
             end
@@ -108,7 +108,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
               expect(execute).to include({
                 success: true,
                 data: {
-                  has_overage: true,
+                  will_increase_overage: true,
                   new_billable_user_count: 3,
                   seats_in_subscription: 0
                 }
@@ -122,7 +122,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
                 expect(execute).to include({
                   success: true,
                   data: {
-                    has_overage: true,
+                    will_increase_overage: true,
                     new_billable_user_count: 3,
                     seats_in_subscription: 0
                   }
@@ -147,7 +147,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
               expect(execute).to include({
                 success: true,
                 data: {
-                  has_overage: true,
+                  will_increase_overage: true,
                   new_billable_user_count: 2,
                   seats_in_subscription: 0
                 }
@@ -161,7 +161,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
                 expect(execute).to include({
                   success: true,
                   data: {
-                    has_overage: true,
+                    will_increase_overage: true,
                     new_billable_user_count: 2,
                     seats_in_subscription: 0
                   }
@@ -191,7 +191,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
                 expect(execute).to include({
                   success: true,
                   data: {
-                    has_overage: true,
+                    will_increase_overage: false,
                     new_billable_user_count: 1,
                     seats_in_subscription: 0
                   }
@@ -208,7 +208,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
                 expect(execute).to include({
                   success: true,
                   data: {
-                    has_overage: true,
+                    will_increase_overage: true,
                     new_billable_user_count: 2,
                     seats_in_subscription: 0
                   }
@@ -218,7 +218,7 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
           end
         end
 
-        context 'when added users results in an overage' do
+        context 'when added users results in an increased overage' do
           let_it_be(:add_user_ids) do
             10.times.map do |i| # rubocop:disable Performance/TimesMap
               non_existing_record_id - i
@@ -234,11 +234,11 @@ RSpec.describe ::GitlabSubscriptions::PreviewBillableUserChangeService do
             ).execute
           end
 
-          it 'sets has_overage: true' do
+          it 'sets will_increase_overage: true' do
             expect(execute).to include({
               success: true,
               data: {
-                has_overage: true,
+                will_increase_overage: true,
                 new_billable_user_count: 11,
                 seats_in_subscription: 0
               }
