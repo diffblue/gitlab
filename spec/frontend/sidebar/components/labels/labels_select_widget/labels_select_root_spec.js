@@ -162,7 +162,7 @@ describe('LabelsSelectRoot', () => {
       });
 
       expect(findEmbeddedLabelsList().props()).toMatchObject({
-        disableLabels: false,
+        disabled: false,
         selectedLabels: [],
         allowLabelRemove: false,
         labelsFilterBasePath: mockConfig.labelsFilterBasePath,

@@ -9,7 +9,7 @@ export default {
   },
   inject: ['allowScopedLabels'],
   props: {
-    disableLabels: {
+    disabled: {
       type: Boolean,
       required: false,
       default: false,
@@ -33,16 +33,16 @@ export default {
   },
   computed: {
     sortedSelectedLabels() {
-      return sortBy(this.selectedLabels, (label) => (isScopedLabel(label) ? 0 : 1));
+      return sortBy(this.selectedLabels, (label) => isScopedLabel(label));
     },
   },
   methods: {
-    labelFilterUrl(label) {
-      return `${this.labelsFilterBasePath}?${this.labelsFilterParam}[]=${encodeURIComponent(
-        label.title,
-      )}`;
+    buildFilterUrl({ title }) {
+      const { labelsFilterBasePath: basePath, labelsFilterParam: filterParam } = this;
+
+      return `${basePath}?${filterParam}[]=${encodeURIComponent(title)}`;
     },
-    scopedLabel(label) {
+    showScopedLabel(label) {
       return this.allowScopedLabels && isScopedLabel(label);
     },
     removeLabel(labelId) {
@@ -58,15 +58,14 @@ export default {
       v-for="label in sortedSelectedLabels"
       :key="label.id"
       class="gl-mr-2 gl-mb-2"
-      data-qa-selector="embedded_labels_list_label"
       :data-qa-label-name="label.title"
       :title="label.title"
       :description="label.description"
       :background-color="label.color"
-      :target="labelFilterUrl(label)"
-      :scoped="scopedLabel(label)"
+      :target="buildFilterUrl(label)"
+      :scoped="showScopedLabel(label)"
       :show-close-button="allowLabelRemove"
-      :disabled="disableLabels"
+      :disabled="disabled"
       tooltip-placement="top"
       @close="removeLabel(label.id)"
     />

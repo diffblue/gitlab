@@ -1,5 +1,9 @@
 import { shallowMount } from '@vue/test-utils';
 import { GlIcon } from '@gitlab/ui';
+import {
+  mockRegularLabel,
+  mockScopedLabel,
+} from 'jest/sidebar/components/labels/labels_select_widget/mock_data';
 import IssuableLabelSelector from '~/vue_shared/issuable/create/components/issuable_label_selector.vue';
 import LabelsSelect from '~/sidebar/components/labels/labels_select_widget/labels_select_root.vue';
 import {
@@ -19,24 +23,6 @@ const issuableType = 'issue';
 const labelType = LabelType.project;
 const variant = DropdownVariant.Embedded;
 const workspaceType = WorkspaceType.project;
-
-const label1 = {
-  __typename: 'Label',
-  id: 1,
-  title: 'Label 1',
-  description: 'Label 1 description',
-  color: '#00FF00',
-  textColor: '#000000',
-};
-
-const label2 = {
-  __typename: 'Label',
-  id: 2,
-  title: 'Label 2',
-  description: 'Label 2 description',
-  color: '#FF0000',
-  textColor: '#FFFFFF',
-};
 
 describe('IssuableLabelSelector', () => {
   let wrapper;
@@ -68,13 +54,20 @@ describe('IssuableLabelSelector', () => {
     wrapper.destroy();
   });
 
+  const expectTitleWithCount = (count) => {
+    const title = findTitle();
+
+    expect(title).toContain(__('Labels'));
+    expect(title).toContain(count.toString());
+  };
+
   describe('by default', () => {
     beforeEach(() => {
       wrapper = createComponent();
     });
 
     it('has the selected labels count', () => {
-      expect(findTitle()).toBe('Labels 0');
+      expectTitleWithCount(0);
       expect(findLabelIcon().props('name')).toBe('labels');
     });
 
@@ -101,44 +94,47 @@ describe('IssuableLabelSelector', () => {
   });
 
   it('passing initial labels applies them to the form', () => {
-    wrapper = createComponent({ initialLabels: [label1, label2] });
+    wrapper = createComponent({ initialLabels: [mockRegularLabel, mockScopedLabel] });
 
-    expect(findTitle()).toBe('Labels 2');
-    expect(findLabelSelector().props('selectedLabels')).toStrictEqual([label1, label2]);
+    expectTitleWithCount(2);
+    expect(findLabelSelector().props('selectedLabels')).toStrictEqual([
+      mockRegularLabel,
+      mockScopedLabel,
+    ]);
     expect(findAllHiddenInputs().wrappers.map((input) => input.element.value)).toStrictEqual([
-      `${label1.id}`,
-      `${label2.id}`,
+      `${mockRegularLabel.id}`,
+      `${mockScopedLabel.id}`,
     ]);
   });
 
   it('updates the selected labels on the `updateSelectedLabels` event', async () => {
     wrapper = createComponent();
 
-    expect(findTitle()).toBe('Labels 0');
+    expectTitleWithCount(0);
     expect(findLabelSelector().props('selectedLabels')).toStrictEqual([]);
     expect(findAllHiddenInputs()).toHaveLength(0);
 
-    await findLabelSelector().vm.$emit('updateSelectedLabels', { labels: [label1] });
+    await findLabelSelector().vm.$emit('updateSelectedLabels', { labels: [mockRegularLabel] });
 
-    expect(findTitle()).toBe('Labels 1');
-    expect(findLabelSelector().props('selectedLabels')).toStrictEqual([label1]);
+    expectTitleWithCount(1);
+    expect(findLabelSelector().props('selectedLabels')).toStrictEqual([mockRegularLabel]);
     expect(findAllHiddenInputs().wrappers.map((input) => input.element.value)).toStrictEqual([
-      `${label1.id}`,
+      `${mockRegularLabel.id}`,
     ]);
   });
 
   it('updates the selected labels on the `onLabelRemove` event', async () => {
-    wrapper = createComponent({ initialLabels: [label1] });
+    wrapper = createComponent({ initialLabels: [mockRegularLabel] });
 
-    expect(findTitle()).toBe('Labels 1');
-    expect(findLabelSelector().props('selectedLabels')).toStrictEqual([label1]);
+    expectTitleWithCount(1);
+    expect(findLabelSelector().props('selectedLabels')).toStrictEqual([mockRegularLabel]);
     expect(findAllHiddenInputs().wrappers.map((input) => input.element.value)).toStrictEqual([
-      `${label1.id}`,
+      `${mockRegularLabel.id}`,
     ]);
 
-    await findLabelSelector().vm.$emit('onLabelRemove', 1);
+    await findLabelSelector().vm.$emit('onLabelRemove', mockRegularLabel.id);
 
-    expect(findTitle()).toBe('Labels 0');
+    expectTitleWithCount(0);
     expect(findLabelSelector().props('selectedLabels')).toStrictEqual([]);
     expect(findAllHiddenInputs()).toHaveLength(0);
   });

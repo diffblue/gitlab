@@ -7,8 +7,12 @@ describe('EmbeddedLabelsList', () => {
   let wrapper;
 
   const findAllLabels = () => wrapper.findAllComponents(GlLabel);
-  const findRegularLabel = () => findAllLabels().at(1);
-  const findScopedLabel = () => findAllLabels().at(0);
+  const findLabelByTitle = (title) =>
+    findAllLabels()
+      .filter((label) => label.props('title') === title)
+      .at(0);
+  const findRegularLabel = () => findLabelByTitle(mockRegularLabel.title);
+  const findScopedLabel = () => findLabelByTitle(mockScopedLabel.title);
   const findWrapper = () => wrapper.findByTestId('embedded-labels-list');
 
   const createComponent = (props = {}, slots = {}) => {

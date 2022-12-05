@@ -429,7 +429,7 @@ export default {
       />
       <embedded-labels-list
         v-if="isLabelListEnabled"
-        :disable-labels="labelsSelectInProgress"
+        :disabled="labelsSelectInProgress"
         :selected-labels="issuableLabels"
         :allow-label-remove="allowLabelRemove"
         :labels-filter-base-path="labelsFilterBasePath"
