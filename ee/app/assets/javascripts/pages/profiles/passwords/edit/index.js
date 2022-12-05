@@ -1,3 +1,3 @@
-import PasswordValidator from 'ee/password/password_validator';
+import initPasswordValidator from 'ee/password/password_validator';
 
-new PasswordValidator(); // eslint-disable-line no-new
+initPasswordValidator();
