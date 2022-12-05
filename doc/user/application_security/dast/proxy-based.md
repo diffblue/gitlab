@@ -472,8 +472,6 @@ An on-demand DAST scan:
 - Is associated with your project's default branch.
 - Is saved on creation so it can be run later.
 
-### On-demand scan modes
-
 An on-demand scan can be run in active or passive mode:
 
 - _Passive mode_ is the default and runs a ZAP Baseline Scan.
