@@ -56,10 +56,10 @@ export default {
           :id="inputId"
           :value="percentage"
           :state="isValid"
-          class="gl-w-11"
           type="number"
           min="0"
           max="100"
+          size="xs"
           @input="onPercentageChange"
         />
         <span class="gl-ml-2">%</span>
