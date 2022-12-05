@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'CodeReviewAnalytics', :js do
+RSpec.describe 'CodeReviewAnalytics', :js, feature_category: :devops_reports do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:auditor) { create(:user, auditor: true) }
