@@ -1,5 +1,5 @@
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
 import * as types from './mutation_types';
@@ -22,7 +22,7 @@ export function fetchPage({ commit, state }, newPage) {
       });
     })
     .catch(() => {
-      createFlash({
+      createAlert({
         message: __('An error occurred while loading group members.'),
       });
     });

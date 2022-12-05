@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { loadCSSFile } from '~/lib/utils/css_utils';
 import { __ } from '~/locale';
 import MirrorRepos from '~/mirrors/mirror_repos';
@@ -32,7 +32,7 @@ export default class EEMirrorRepos extends MirrorRepos {
         this.showForm();
       })
       .catch(() => {
-        createFlash({
+        createAlert({
           message: __('Something went wrong on our end.'),
         });
       });

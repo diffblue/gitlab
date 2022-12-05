@@ -12,7 +12,7 @@ import {
   GlLabel,
 } from '@gitlab/ui';
 
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { getDayDifference } from '~/lib/utils/datetime_utility';
 import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
@@ -127,7 +127,7 @@ export default {
         return data.project?.issues.nodes || data.group?.issues.nodes || [];
       },
       error() {
-        createFlash({
+        createAlert({
           message: s__('IssueAnalytics|Failed to load issues. Please try again.'),
         });
       },

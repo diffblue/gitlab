@@ -1,4 +1,4 @@
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
@@ -46,7 +46,7 @@ export const receiveLicensesSuccess = ({ commit }, { headers, data }) => {
 
 export const receiveLicensesError = ({ commit }) => {
   commit(types.RECEIVE_LICENSES_ERROR);
-  createFlash({
+  createAlert({
     message: FETCH_ERROR_MESSAGE,
   });
 };

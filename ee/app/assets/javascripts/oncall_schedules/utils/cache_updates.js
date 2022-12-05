@@ -1,5 +1,5 @@
 import produce from 'immer';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 import {
   DELETE_SCHEDULE_ERROR,
@@ -159,7 +159,7 @@ const deleteRotationFromStore = (
 };
 
 const onError = (data, message) => {
-  createFlash({ message });
+  createAlert({ message });
   throw new Error(data.errors);
 };
 

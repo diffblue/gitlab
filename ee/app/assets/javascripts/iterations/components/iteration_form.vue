@@ -1,6 +1,6 @@
 <script>
 import { GlAlert, GlButton, GlDatepicker, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { dayAfter, formatDate, parsePikadayDate } from '~/lib/utils/datetime_utility';
 import { TYPE_ITERATION, TYPE_ITERATIONS_CADENCE } from '~/graphql_shared/constants';
 import { convertToGraphQLId, getIdFromGraphQLId } from '~/graphql_shared/utils';
@@ -196,7 +196,7 @@ export default {
 
           if (errors.length > 0) {
             this.loading = false;
-            createFlash({
+            createAlert({
               message: errors[0],
             });
             return;
@@ -212,7 +212,7 @@ export default {
         })
         .catch(() => {
           this.loading = false;
-          createFlash({
+          createAlert({
             message: __('Unable to save iteration. Please try again'),
           });
         });
@@ -228,7 +228,7 @@ export default {
         .then(({ data }) => {
           const { errors } = data.updateIteration;
           if (errors.length > 0) {
-            createFlash({
+            createAlert({
               message: errors[0],
             });
             return;
@@ -243,7 +243,7 @@ export default {
           });
         })
         .catch(() => {
-          createFlash({
+          createAlert({
             message: __('Unable to save iteration. Please try again'),
           });
         })

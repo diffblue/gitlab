@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { __ } from '~/locale';
 import * as types from './mutation_types';
 
@@ -16,7 +16,7 @@ export const updateMaintenanceModeSettings = ({ commit, state }) => {
       });
     })
     .catch(() => {
-      createFlash({ message: __('There was an error updating the Maintenance Mode Settings') });
+      createAlert({ message: __('There was an error updating the Maintenance Mode Settings') });
       commit(types.RECEIVE_UPDATE_MAINTENANCE_MODE_SETTINGS_ERROR);
     });
 };

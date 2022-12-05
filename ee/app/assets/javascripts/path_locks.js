@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { confirmAction } from '~/lib/utils/confirm_via_gl_modal/confirm_via_gl_modal';
 import { sprintf, __ } from '~/locale';
@@ -27,7 +27,7 @@ export default function initPathLocks(url, path) {
         window.location.reload();
       })
       .catch(() =>
-        createFlash({
+        createAlert({
           message: __('An error occurred while initializing path locks'),
         }),
       );

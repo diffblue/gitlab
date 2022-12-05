@@ -11,7 +11,7 @@ import getInitialState from 'ee/license_compliance/store/modules/list/state';
 
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 
 import mockLicensesResponse from './data/mock_licenses.json';
 
@@ -37,7 +37,7 @@ describe('Licenses actions', () => {
   };
 
   afterEach(() => {
-    createFlash.mockClear();
+    createAlert.mockClear();
   });
 
   describe('setLicensesEndpoint', () => {
@@ -106,8 +106,8 @@ describe('Licenses actions', () => {
         ],
         [],
       ).then(() => {
-        expect(createFlash).toHaveBeenCalledTimes(1);
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledTimes(1);
+        expect(createAlert).toHaveBeenCalledWith({
           message: FETCH_ERROR_MESSAGE,
         });
       });
