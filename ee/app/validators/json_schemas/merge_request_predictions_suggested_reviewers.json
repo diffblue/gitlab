@@ -2,9 +2,15 @@
   "description": "Merge request predictions suggested reviewers",
   "type": "object",
   "properties": {
-    "top_n": { "type": "number" },
-    "version": { "type": "string" },
-    "reviewers": { "type": "array" }
+    "top_n": {
+      "type": "number"
+    },
+    "version": {
+      "type": "string"
+    },
+    "reviewers": {
+      "type": "array"
+    }
   },
   "additionalProperties": true
 }
