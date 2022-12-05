@@ -110,7 +110,7 @@ export default {
       <gl-button
         v-else-if="hasAssignedPolicyProject"
         data-testid="view-project-policy-button"
-        class="gl-mr-4"
+        class="gl-mr-3"
         target="_blank"
         :href="securityPolicyProjectPath"
       >
