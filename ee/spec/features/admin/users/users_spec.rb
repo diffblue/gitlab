@@ -18,7 +18,11 @@ RSpec.describe 'Admin::Users', feature_category: :users do
       gitlab_enable_admin_mode_sign_in(admin)
     end
 
-    it_behaves_like 'password complexity validations'
+    it 'does not render any rule' do
+      visit path_to_visit
+
+      expect(page).not_to have_selector('[data-testid="password-rule-text"]')
+    end
 
     context 'when all password complexity rules are enabled' do
       include_context 'with all password complexity rules enabled'
@@ -27,15 +31,34 @@ RSpec.describe 'Admin::Users', feature_category: :users do
       it 'updates user password' do
         visit path_to_visit
 
-        expect(page).to have_selector('[data-testid="password-rule-text"]', count: 4)
+        expect(page).to have_selector('[data-testid="password-rule-text"]', count: 0)
 
         fill_in :user_password, with: password
         fill_in :user_password_confirmation, with: password
+
+        expect(page).to have_selector('[data-testid="password-rule-text"]', count: 4)
 
         click_button submit_button_selector
 
         expect(page).to have_content(_('User was successfully updated.'))
         expect(page).to have_current_path(admin_user_path(user), ignore_query: true)
+      end
+
+      context 'without filling password' do
+        let(:new_user_name) { FFaker::Name.name }
+
+        it 'allows admin to update user info' do
+          visit path_to_visit
+
+          expect(page).to have_selector('[data-testid="password-rule-text"]', count: 0)
+
+          fill_in 'user_name', with: new_user_name
+          click_button submit_button_selector
+
+          expect(page).to have_content(_('User was successfully updated.'))
+          expect(page).to have_content(new_user_name)
+          expect(page).to have_current_path(admin_user_path(user), ignore_query: true)
+        end
       end
     end
   end
