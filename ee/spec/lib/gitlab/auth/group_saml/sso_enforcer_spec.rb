@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer do
+RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer, feature_category: :authentication_and_authorization do
   let(:saml_provider) { build_stubbed(:saml_provider, enforced_sso: true) }
   let(:session) { {} }
 
@@ -186,6 +186,26 @@ RSpec.describe Gitlab::Auth::GroupSaml::SsoEnforcer do
         end
 
         it_behaves_like 'restricted access for all groups in the hierarchy'
+
+        context 'when the SAML provider is not enabled' do
+          before do
+            root_group.saml_provider.update!(enabled: false)
+          end
+
+          it 'does not restrict access for the group' do
+            expect(described_class).not_to be_group_access_restricted(root_group, user: user)
+          end
+        end
+
+        context 'when Group SAML is not licensed' do
+          before do
+            stub_licensed_features(group_saml: false)
+          end
+
+          it 'does not restrict access for the group' do
+            expect(described_class).not_to be_group_access_restricted(root_group, user: user)
+          end
+        end
 
         context 'when the transparent_sso_enforcement feature flag is disabled globally' do
           before do

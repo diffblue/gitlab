@@ -47,6 +47,7 @@ module Gitlab
           return true if saml_provider&.enforced_sso?
           return false unless user && group
           return false unless Feature.enabled?(:transparent_sso_enforcement, group)
+          return false unless saml_provider&.enabled? && group.licensed_feature_available?(:group_saml)
 
           user.group_sso?(group)
         end
