@@ -43,6 +43,15 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
       end
     end
 
+    let_it_be(:service_params) do
+      {
+        email: 'work@example.com',
+        name: 'Test Name',
+        extern_uid: 'test_uid',
+        username: 'username'
+      }
+    end
+
     context 'valid params' do
       let_it_be(:service_params) do
         {
@@ -135,15 +144,6 @@ RSpec.describe ::EE::Gitlab::Scim::ProvisioningService, :saas do
       it 'fails with missing params' do
         expect(service.execute.message).to eq("Missing params: [:username]")
       end
-    end
-
-    let_it_be(:service_params) do
-      {
-        email: 'work@example.com',
-        name: 'Test Name',
-        extern_uid: 'test_uid',
-        username: 'username'
-      }
     end
 
     it 'creates the SCIM identity' do

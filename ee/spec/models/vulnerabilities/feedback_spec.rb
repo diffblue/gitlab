@@ -26,14 +26,14 @@ RSpec.describe Vulnerabilities::Feedback do
   end
 
   describe 'validations' do
+    let_it_be(:project) { create(:project) }
+
     it { is_expected.to validate_presence_of(:project) }
     it { is_expected.to validate_presence_of(:author) }
     it { is_expected.to validate_presence_of(:feedback_type) }
     it { is_expected.to validate_presence_of(:category) }
     it { is_expected.to validate_presence_of(:project_fingerprint) }
     it { is_expected.to validate_length_of(:comment).is_at_most(50_000) }
-
-    let_it_be(:project) { create(:project) }
 
     context 'pipeline is nil' do
       let(:feedback) { build(:vulnerability_feedback, project: project, pipeline_id: nil) }

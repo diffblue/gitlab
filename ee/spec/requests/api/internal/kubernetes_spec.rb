@@ -262,10 +262,10 @@ RSpec.describe API::Internal::Kubernetes do
       get api('/internal/kubernetes/modules/starboard_vulnerability/policies_configuration'), headers: headers.reverse_merge(jwt_auth_headers)
     end
 
+    let_it_be(:agent_token) { create(:cluster_agent_token) }
+
     include_examples 'authorization'
     include_examples 'agent authentication'
-
-    let_it_be(:agent_token) { create(:cluster_agent_token) }
 
     shared_examples 'agent token tracking'
 
