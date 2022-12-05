@@ -15,7 +15,7 @@ import {
   I18N_VSA_ERROR_STAGE_MEDIAN,
   I18N_VSA_ERROR_SELECTED_STAGE,
 } from '~/analytics/cycle_analytics/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
   allowedStages as stages,
@@ -206,7 +206,7 @@ describe('Value Stream Analytics actions / stages', () => {
 
     it('will flash an error message', () => {
       actions.receiveStageDataError({ commit: () => {} }, {});
-      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_SELECTED_STAGE });
+      expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_SELECTED_STAGE });
     });
   });
 
@@ -315,7 +315,7 @@ describe('Value Stream Analytics actions / stages', () => {
 
     it('will flash an error message', () => {
       actions.receiveStageMedianValuesError({ commit: () => {} });
-      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
+      expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
     });
   });
 
@@ -365,11 +365,11 @@ describe('Value Stream Analytics actions / stages', () => {
     });
 
     it('will flash an error message', async () => {
-      expect(createFlash).not.toHaveBeenCalled();
+      expect(createAlert).not.toHaveBeenCalled();
 
       await actions.receiveGroupStagesError({ commit: () => {} });
 
-      expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGES });
+      expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGES });
     });
   });
 

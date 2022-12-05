@@ -1,7 +1,7 @@
 import MockAdapter from 'axios-mock-adapter';
 import { TABLE_COLUMNS } from 'ee/analytics/contribution_analytics/constants';
 import GroupMembers from 'ee/analytics/contribution_analytics/group_members';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import waitForPromises from 'helpers/wait_for_promises';
 
@@ -17,7 +17,7 @@ describe('GroupMembers', () => {
   });
 
   afterEach(() => {
-    createFlash.mockClear();
+    createAlert.mockClear();
   });
 
   describe('setColumns', () => {
@@ -92,7 +92,7 @@ describe('GroupMembers', () => {
         new Error('Request failed with status code 500'),
       );
       expect(store.isLoading).toBe(false);
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'Something went wrong while fetching group member contributions',
       });
     });

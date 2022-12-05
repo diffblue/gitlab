@@ -1,7 +1,7 @@
 <script>
 import { GlDropdownDivider, GlSegmentedControl, GlIcon, GlSprintf } from '@gitlab/ui';
 import { removeFlash } from '~/analytics/shared/utils';
-import createFlash from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/flash';
 import { s__, sprintf } from '~/locale';
 import {
   TASKS_BY_TYPE_FILTERS,
@@ -68,9 +68,9 @@ export default {
           s__('CycleAnalytics|Only %{maxLabels} labels can be selected at this time'),
           { maxLabels },
         );
-        createFlash({
+        createAlert({
           message,
-          type: 'notice',
+          variant: VARIANT_INFO,
         });
       }
     },

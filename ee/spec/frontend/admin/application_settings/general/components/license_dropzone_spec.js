@@ -3,7 +3,7 @@ import { shallowMount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import LicenseDropzone from 'ee/admin/application_settings/general/components/license_dropzone.vue';
 import { FILE_UPLOAD_ERROR_MESSAGE } from 'ee/admin/application_settings/general/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import UploadDropzone from '~/vue_shared/components/upload_dropzone/upload_dropzone.vue';
 
 jest.mock('~/flash');
@@ -22,7 +22,7 @@ describe('Upload dropzone component', () => {
   }
 
   beforeEach(() => {
-    createFlash.mockClear();
+    createAlert.mockClear();
     createComponent();
   });
 
@@ -35,7 +35,7 @@ describe('Upload dropzone component', () => {
     findUploadDropzone().vm.$emit('error');
 
     await nextTick();
-    expect(createFlash).toHaveBeenCalledWith({ message: FILE_UPLOAD_ERROR_MESSAGE });
+    expect(createAlert).toHaveBeenCalledWith({ message: FILE_UPLOAD_ERROR_MESSAGE });
   });
 
   it('displays filename when the file is set in upload-dropzone', async () => {

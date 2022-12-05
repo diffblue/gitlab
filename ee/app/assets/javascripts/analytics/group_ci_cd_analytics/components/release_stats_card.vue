@@ -1,6 +1,6 @@
 <script>
 import { GlCard, GlSkeletonLoader } from '@gitlab/ui';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { sprintf, n__, s__ } from '~/locale';
 import { STAT_ERROR_PLACEHOLDER } from '../constants';
 import groupReleaseStatsQuery from '../graphql/group_release_stats.query.graphql';
@@ -30,7 +30,7 @@ export default {
       error(error) {
         this.errored = true;
 
-        createFlash({
+        createAlert({
           message: s__('CICDAnalytics|Something went wrong while fetching release statistics'),
           captureError: true,
           error,

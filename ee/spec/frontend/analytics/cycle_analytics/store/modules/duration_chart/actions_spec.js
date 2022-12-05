@@ -6,7 +6,7 @@ import * as getters from 'ee/analytics/cycle_analytics/store/modules/duration_ch
 import * as types from 'ee/analytics/cycle_analytics/store/modules/duration_chart/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore, group } from 'jest/analytics/cycle_analytics/mock_data';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import {
   allowedStages as activeStages,
@@ -187,7 +187,7 @@ describe('DurationChart actions', () => {
         commit: () => {},
       });
 
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'There was an error while fetching value stream analytics duration data.',
       });
     });

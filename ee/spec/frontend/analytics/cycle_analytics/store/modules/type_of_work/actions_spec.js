@@ -10,7 +10,7 @@ import * as getters from 'ee/analytics/cycle_analytics/store/modules/type_of_wor
 import * as types from 'ee/analytics/cycle_analytics/store/modules/type_of_work/mutation_types';
 import testAction from 'helpers/vuex_action_helper';
 import { createdAfter, createdBefore } from 'jest/analytics/cycle_analytics/mock_data';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import { groupLabels, groupLabelNames, endpoints, rawTasksByTypeData } from '../../../mock_data';
 
@@ -143,7 +143,7 @@ describe('Type of work actions', () => {
           commit: () => {},
         });
 
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'There was an error fetching the top labels for the selected group',
         });
       });
@@ -215,7 +215,7 @@ describe('Type of work actions', () => {
           commit: () => {},
         });
 
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'There was an error fetching data for the tasks by type chart',
         });
       });

@@ -3,7 +3,7 @@ import {
   mapApprovalSettingsResponse,
   mapApprovalFallbackRuleRequest,
 } from 'ee/approvals/mappers';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { __ } from '~/locale';
 import * as types from '../base/mutation_types';
@@ -18,7 +18,7 @@ export const receiveRulesSuccess = ({ commit }, approvalSettings) => {
 };
 
 export const receiveRulesError = () => {
-  createFlash({
+  createAlert({
     message: __('An error occurred fetching the approval rules.'),
   });
 };
@@ -61,7 +61,7 @@ export const deleteRuleSuccess = ({ dispatch }) => {
 };
 
 export const deleteRuleError = () => {
-  createFlash({
+  createAlert({
     message: __('An error occurred while deleting the approvers group'),
   });
 };

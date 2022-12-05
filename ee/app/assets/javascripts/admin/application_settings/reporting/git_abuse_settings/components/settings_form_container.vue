@@ -1,5 +1,5 @@
 <script>
-import createFlash from '~/flash';
+import { createAlert, VARIANT_INFO } from '~/flash';
 import Api from 'ee/api';
 import { SUCCESS_MESSAGE, SAVE_ERROR_MESSAGE } from '../constants';
 import SettingsForm from './settings_form.vue';
@@ -48,12 +48,12 @@ export default {
           auto_ban_user_on_excessive_projects_download: autoBanUsers,
         });
 
-        createFlash({
+        createAlert({
           message: SUCCESS_MESSAGE,
-          type: 'notice',
+          variant: VARIANT_INFO,
         });
       } catch (error) {
-        createFlash({
+        createAlert({
           message: SAVE_ERROR_MESSAGE,
           captureError: true,
           error,

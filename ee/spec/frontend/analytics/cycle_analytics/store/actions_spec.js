@@ -13,7 +13,7 @@ import {
   I18N_VSA_ERROR_STAGES,
   I18N_VSA_ERROR_STAGE_MEDIAN,
 } from '~/analytics/cycle_analytics/constants';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import { allowedStages as stages, valueStreams, endpoints, groupLabels } from '../mock_data';
 
@@ -158,7 +158,7 @@ describe('Value Stream Analytics actions', () => {
           commit: () => {},
         })
         .then(() => {
-          expect(createFlash).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
+          expect(createAlert).toHaveBeenCalledWith({ message: I18N_VSA_ERROR_STAGE_MEDIAN });
         });
     });
 
@@ -182,7 +182,7 @@ describe('Value Stream Analytics actions', () => {
           commit: () => {},
         })
         .then(() => {
-          expect(createFlash).toHaveBeenCalledWith({
+          expect(createAlert).toHaveBeenCalledWith({
             message: I18N_VSA_ERROR_STAGES,
           });
         });
@@ -243,7 +243,7 @@ describe('Value Stream Analytics actions', () => {
         { response },
       );
 
-      expect(createFlash).toHaveBeenCalledWith({ message: flashErrorMessage });
+      expect(createAlert).toHaveBeenCalledWith({ message: flashErrorMessage });
     });
   });
 

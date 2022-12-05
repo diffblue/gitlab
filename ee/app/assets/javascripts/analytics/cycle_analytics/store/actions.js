@@ -1,6 +1,6 @@
 import Api from 'ee/api';
 import { removeFlash } from '~/analytics/shared/utils';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import httpStatus from '~/lib/utils/http_status';
 import { __ } from '~/locale';
 import * as types from './mutation_types';
@@ -41,7 +41,7 @@ export const receiveCycleAnalyticsDataError = ({ commit }, { response = {} }) =>
 
   commit(types.RECEIVE_VALUE_STREAM_DATA_ERROR, status);
   if (status !== httpStatus.FORBIDDEN) {
-    createFlash({
+    createAlert({
       message: __('There was an error while fetching value stream analytics data.'),
     });
   }
