@@ -33,6 +33,7 @@ module EE
       def preload_associations(projects)
         super.with_compliance_framework_settings
              .with_group_saml_provider
+             .with_project_setting
       end
 
       def check_adjourned_deletion_listing_availability

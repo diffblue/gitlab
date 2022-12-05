@@ -216,6 +216,8 @@ module EE
         order.apply_cursor_conditions(joins(:statistics)).order(order)
       end
 
+      scope :with_project_setting, -> { includes(:project_setting) }
+
       delegate :shared_runners_seconds, to: :statistics, allow_nil: true
 
       delegate :ci_minutes_usage, to: :shared_runners_limit_namespace

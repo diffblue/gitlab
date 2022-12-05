@@ -496,6 +496,17 @@ RSpec.describe Project do
         expect(described_class.with_feature_available(:adjourned_deletion_for_projects_and_groups)).not_to include(no_plan_project)
       end
     end
+
+    describe '.with_project_setting' do
+      it 'eager loads the project setting and avoids N+1 queries' do
+        create(:project)
+        project = described_class.with_project_setting.first
+        recorder = ActiveRecord::QueryRecorder.new { project.project_setting }
+
+        expect(recorder.count).to be_zero
+        expect(project.association(:project_setting).loaded?).to eq(true)
+      end
+    end
   end
 
   describe 'validations' do
