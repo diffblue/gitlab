@@ -485,7 +485,7 @@ export default {
         :work-item-type="workItemType"
         @error="updateError = $event"
       />
-      <template v-if="workItemsMvc2Enabled">
+      <template v-if="workItemsMvcEnabled">
         <work-item-milestone
           v-if="workItemMilestone"
           :work-item-id="workItem.id"

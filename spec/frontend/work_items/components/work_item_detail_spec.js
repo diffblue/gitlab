@@ -93,6 +93,7 @@ describe('WorkItemDetail component', () => {
     subscriptionHandler = titleSubscriptionHandler,
     confidentialityMock = [updateWorkItemMutation, jest.fn()],
     error = undefined,
+    workItemsMvcEnabled = false,
     workItemsMvc2Enabled = false,
     fetchByIid = false,
   } = {}) => {
@@ -117,6 +118,7 @@ describe('WorkItemDetail component', () => {
       },
       provide: {
         glFeatures: {
+          workItemsMvc: workItemsMvcEnabled,
           workItemsMvc2: workItemsMvc2Enabled,
           useIidInWorkItemsPath: fetchByIid,
         },
@@ -579,7 +581,7 @@ describe('WorkItemDetail component', () => {
     `('$description', async ({ milestoneWidgetPresent, exists }) => {
       const response = workItemResponseFactory({ milestoneWidgetPresent });
       const handler = jest.fn().mockResolvedValue(response);
-      createComponent({ handler, workItemsMvc2Enabled: true });
+      createComponent({ handler, workItemsMvcEnabled: true });
       await waitForPromises();
 
       expect(findWorkItemMilestone().exists()).toBe(exists);
