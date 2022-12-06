@@ -312,7 +312,7 @@ RSpec.describe Integrations::Jira do
         jira_integration.create_issue('x', 'y', user)
       end
 
-      it_behaves_like 'Snowplow event tracking' do
+      it_behaves_like 'Snowplow event tracking with RedisHLL context' do
         subject(:create_issue) { jira_integration.create_issue('x', 'y', user) }
 
         let(:user) { build_stubbed(:user) }
