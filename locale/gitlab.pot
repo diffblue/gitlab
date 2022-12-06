@@ -46713,9 +46713,6 @@ msgstr ""
 msgid "WorkItem|Incident"
 msgstr ""
 
-msgid "WorkItem|Introducing tasks"
-msgstr ""
-
 msgid "WorkItem|Issue"
 msgstr ""
 
@@ -46723,9 +46720,6 @@ msgid "WorkItem|Iteration"
 msgstr ""
 
 msgid "WorkItem|Key result"
-msgstr ""
-
-msgid "WorkItem|Learn about tasks."
 msgstr ""
 
 msgid "WorkItem|Milestone"
@@ -46843,9 +46837,6 @@ msgid "WorkItem|Turn on confidentiality"
 msgstr ""
 
 msgid "WorkItem|Undo"
-msgstr ""
-
-msgid "WorkItem|Use tasks to break down your work in an issue into smaller pieces. %{learnMoreLink}"
 msgstr ""
 
 msgid "WorkItem|View current version"
