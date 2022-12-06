@@ -9262,6 +9262,9 @@ msgstr ""
 msgid "ClusterAgents|Unknown user"
 msgstr ""
 
+msgid "ClusterAgents|Use a Helm version compatible with your Kubernetes version (see %{linkStart}Helm version support policy%{linkEnd})."
+msgstr ""
+
 msgid "ClusterAgents|Valid access token"
 msgstr ""
 
