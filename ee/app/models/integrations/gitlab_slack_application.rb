@@ -2,7 +2,20 @@
 
 module Integrations
   class GitlabSlackApplication < BaseSlackNotification
-    attribute :category, default: 'chat'
+    attribute :alert_events, default: false
+    attribute :commit_events, default: false
+    attribute :confidential_issues_events, default: false
+    attribute :confidential_note_events, default: false
+    attribute :deployment_events, default: false
+    attribute :issues_events, default: false
+    attribute :job_events, default: false
+    attribute :merge_requests_events, default: false
+    attribute :note_events, default: false
+    attribute :pipeline_events, default: false
+    attribute :push_events, default: false
+    attribute :tag_push_events, default: false
+    attribute :vulnerability_events, default: false
+    attribute :wiki_page_events, default: false
 
     has_one :slack_integration, foreign_key: :integration_id
 
