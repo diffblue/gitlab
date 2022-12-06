@@ -106,6 +106,8 @@ describe('Tool Filter component', () => {
       expect(findFilterItems().at(0).props()).toMatchObject({
         isChecked: true,
         text: allOptionName,
+        disabled: false,
+        tooltip: '',
       });
     });
 
@@ -148,12 +150,17 @@ describe('Tool Filter component', () => {
     it('populates the filter options from the query response', async () => {
       await createWrapper();
 
-      defaultFormattedScanners.forEach(({ name }, index) => {
+      defaultFormattedScanners.forEach(({ name, disabled }, index) => {
         expect(
           findFilterItems()
             .at(index + 1)
             .props(),
-        ).toMatchObject({ isChecked: false, text: name });
+        ).toMatchObject({
+          isChecked: false,
+          text: name,
+          disabled,
+          tooltip: `${disabled ? ToolFilter.i18n.disabledTooltip : ''}`,
+        });
       });
     });
 
