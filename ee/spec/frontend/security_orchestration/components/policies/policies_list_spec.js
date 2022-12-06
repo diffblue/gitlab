@@ -60,9 +60,6 @@ describe('PoliciesList component', () => {
         documentationPath: 'documentation_path',
       },
       provide: {
-        glFeatures: {
-          groupLevelScanResultPolicies: true,
-        },
         documentationPath: 'path/to/docs',
         namespacePath,
         namespaceType: NAMESPACE_TYPES.PROJECT,

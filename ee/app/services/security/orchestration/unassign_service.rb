@@ -8,7 +8,6 @@ module Security
 
         old_policy_project = security_orchestration_policy_configuration.security_policy_management_project
 
-        security_orchestration_policy_configuration.delete_scan_finding_rules # To be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/369473#feature-update
         result = security_orchestration_policy_configuration.delete
 
         if result

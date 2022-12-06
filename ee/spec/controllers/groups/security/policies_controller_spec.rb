@@ -35,13 +35,6 @@ RSpec.describe Groups::Security::PoliciesController, type: :request, feature_cat
           end
         end
 
-        it 'propagates group_level_scan_result_policies feature flag' do
-          stub_feature_flags(group_level_scan_result_policies: true)
-          get edit
-
-          expect(response.body).to have_pushed_frontend_feature_flags(groupLevelScanResultPolicies: true)
-        end
-
         it 'renders the edit page', :aggregate_failures do
           get edit
 

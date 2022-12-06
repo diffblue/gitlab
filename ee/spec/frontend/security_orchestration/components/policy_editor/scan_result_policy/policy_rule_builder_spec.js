@@ -128,50 +128,33 @@ describe('PolicyRuleBuilder', () => {
   });
 
   describe('when namespaceType is other than project', () => {
-    it('does not display group level branches', () => {
+    it('displays group level branches', async () => {
       factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
-
-      expect(findBranches().exists()).toBe(true);
-      expect(findGroupLevelBranches().exists()).toBe(false);
+      await nextTick();
+      expect(findBranches().exists()).toBe(false);
+      expect(findGroupLevelBranches().exists()).toBe(true);
     });
 
-    describe('when groupLevelScanResultPolicies feature flag is enabled', () => {
-      beforeEach(() => {
-        factory(
-          {},
-          {
-            namespaceType: NAMESPACE_TYPES.GROUP,
-            glFeatures: { groupLevelScanResultPolicies: true },
-          },
-        );
-      });
+    it('triggers a changed event with the updated rule', async () => {
+      factory({}, { namespaceType: NAMESPACE_TYPES.GROUP });
+      await nextTick();
+      const INPUT_BRANCHES = 'main, test';
+      const EXPECTED_BRANCHES = ['main', 'test'];
+      await findGroupLevelBranches().vm.$emit('input', INPUT_BRANCHES);
 
-      it('displays group level branches', () => {
-        expect(findBranches().exists()).toBe(false);
-        expect(findGroupLevelBranches().exists()).toBe(true);
-      });
+      expect(wrapper.emitted().changed).toEqual([
+        [expect.objectContaining({ branches: EXPECTED_BRANCHES })],
+      ]);
+    });
 
-      it('triggers a changed event with the updated rule', async () => {
-        const INPUT_BRANCHES = 'main, test';
-        const EXPECTED_BRANCHES = ['main', 'test'];
-        await findGroupLevelBranches().vm.$emit('input', INPUT_BRANCHES);
+    it('group level branches is invalid when empty', async () => {
+      factory(
+        { initRule: { ...DEFAULT_RULE, branches: [''] } },
+        { namespaceType: NAMESPACE_TYPES.GROUP },
+      );
+      await nextTick();
 
-        expect(wrapper.emitted().changed).toEqual([
-          [expect.objectContaining({ branches: EXPECTED_BRANCHES })],
-        ]);
-      });
-
-      it('group level branches is invalid when empty', () => {
-        factory(
-          { initRule: { ...DEFAULT_RULE, branches: [''] } },
-          {
-            namespaceType: NAMESPACE_TYPES.GROUP,
-            glFeatures: { groupLevelScanResultPolicies: true },
-          },
-        );
-
-        expect(findGroupLevelBranches().classes('is-invalid')).toBe(true);
-      });
+      expect(findGroupLevelBranches().classes('is-invalid')).toBe(true);
     });
   });
 });

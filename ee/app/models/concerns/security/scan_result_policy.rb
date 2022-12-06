@@ -22,20 +22,6 @@ module Security
         inverse_of: :security_orchestration_policy_configuration
 
       def delete_scan_finding_rules
-        if project? # To be removed in https://gitlab.com/gitlab-org/gitlab/-/issues/369473#feature-update
-          project
-            .approval_rules
-            .scan_finding
-            .where(security_orchestration_policy_configuration_id: nil)
-            .delete_all
-
-          project
-            .approval_merge_request_rules
-            .scan_finding
-            .where(security_orchestration_policy_configuration_id: nil)
-            .delete_all
-        end
-
         approval_merge_request_rules.each_batch { |batch| delete_batch(batch) }
         approval_project_rules.each_batch { |batch| delete_batch(batch) }
       end
