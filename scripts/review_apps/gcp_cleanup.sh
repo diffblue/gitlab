@@ -90,6 +90,8 @@ function get_service_name_in_forwarding_rule() {
 }
 
 function forwarding_rule_k8s_service_exists() {
+  local forwarding_rule=${1}
+
   local namespace="${KUBE_NAMESPACE}"
   local namespaced_service_name=$(get_service_name_in_forwarding_rule "$forwarding_rule")
 
@@ -129,6 +131,8 @@ function gcp_cleanup() {
   local firewall_rules_to_delete=()
   local forwarding_rules_to_delete=()
   local http_health_checks_to_delete=()
+  local forwarding_rule_missing_count=0
+  local forwarding_rule_missing_threshold=3
 
   for forwarding_rule in $(gcloud compute forwarding-rules list --filter="region:(${REVIEW_APPS_GCP_REGION})" --format "value(name)"); do
     echoinfo "Inspecting forwarding rule ${forwarding_rule}" true
