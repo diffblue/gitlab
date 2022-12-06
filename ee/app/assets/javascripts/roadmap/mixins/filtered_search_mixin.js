@@ -21,6 +21,7 @@ import {
   TOKEN_TYPE_LABEL,
   TOKEN_TYPE_MILESTONE,
   TOKEN_TYPE_MY_REACTION,
+  TOKEN_TYPE_SEARCH_WITHIN,
 } from '~/vue_shared/components/filtered_search_bar/constants';
 import AuthorToken from '~/vue_shared/components/filtered_search_bar/tokens/author_token.vue';
 import EmojiToken from '~/vue_shared/components/filtered_search_bar/tokens/emoji_token.vue';
@@ -34,6 +35,7 @@ export default {
   computed: {
     urlParams() {
       const {
+        in: searchWithin,
         search,
         authorUsername,
         labelName,
@@ -47,6 +49,7 @@ export default {
       } = this.filterParams || {};
 
       return {
+        in: searchWithin,
         state: this.currentState || this.epicsState,
         page: this.currentPage,
         sort: this.sortedBy,
@@ -206,6 +209,7 @@ export default {
     },
     getFilteredSearchValue() {
       const {
+        in: searchWithin,
         authorUsername,
         labelName,
         milestoneTitle,
@@ -223,6 +227,13 @@ export default {
         filteredSearchValue.push({
           type: TOKEN_TYPE_AUTHOR,
           value: { data: authorUsername, operator: OPERATOR_IS },
+        });
+      }
+
+      if (searchWithin) {
+        filteredSearchValue.push({
+          type: TOKEN_TYPE_SEARCH_WITHIN,
+          value: { data: searchWithin, operator: OPERATOR_IS },
         });
       }
 
@@ -326,6 +337,9 @@ export default {
           }
           case TOKEN_TYPE_EPIC:
             filterParams.epicIid = filter.value.data;
+            break;
+          case TOKEN_TYPE_SEARCH_WITHIN:
+            filterParams.in = filter.value.data;
             break;
           case FILTERED_SEARCH_TERM:
             if (filter.value.data) plainText.push(filter.value.data);
