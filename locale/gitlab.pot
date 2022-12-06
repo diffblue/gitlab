@@ -29470,6 +29470,9 @@ msgstr ""
 msgid "PackageRegistry|published by %{author}"
 msgstr ""
 
+msgid "Packages"
+msgstr ""
+
 msgid "Packages and registries"
 msgstr ""
 
@@ -44090,6 +44093,9 @@ msgid "Uploading changes to terminal"
 msgstr ""
 
 msgid "Uploading..."
+msgstr ""
+
+msgid "Uploads"
 msgstr ""
 
 msgid "Upstream"

@@ -1,64 +1,140 @@
 <script>
-import { PROJECT_TABLE_LABEL_PROJECT, PROJECT_TABLE_LABEL_USAGE } from '../constants';
-import CollapsibleProjectStorageDetail from './collapsible_project_storage_detail.vue';
-import ProjectsSkeletonLoader from './projects_skeleton_loader.vue';
+import { GlTable, GlLink } from '@gitlab/ui';
+import { __ } from '~/locale';
+import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
+import { namespaceContainerRegistryPopoverContent } from '../constants';
+import NumberToHumanSize from './number_to_human_size.vue';
+import StorageTypeHelpLink from './storage_type_help_link.vue';
+import StorageTypeWarning from './storage_type_warning.vue';
 
 export default {
   name: 'ProjectList',
   components: {
-    CollapsibleProjectStorageDetail,
-    ProjectsSkeletonLoader,
+    GlTable,
+    GlLink,
+    ProjectAvatar,
+    NumberToHumanSize,
+    StorageTypeHelpLink,
+    StorageTypeWarning,
   },
   props: {
     projects: {
       type: Array,
       required: true,
     },
-    additionalPurchasedStorageSize: {
-      type: Number,
-      required: true,
-    },
     isLoading: {
       type: Boolean,
-      required: false,
-      default: false,
+      required: true,
     },
-    usageLabel: {
-      type: String,
-      required: false,
-      default: PROJECT_TABLE_LABEL_USAGE,
+    helpLinks: {
+      type: Object,
+      required: true,
     },
   },
+  methods: {
+    /**
+     * Builds a gl-table td cell slot name for particular field
+     * @param {string} key
+     * @returns {string} */
+    getHeaderSlotName(key) {
+      return `head(${key})`;
+    },
+  },
+  fields: [
+    { key: 'name', label: __('Project') },
+    { key: 'storage', label: __('Total') },
+    { key: 'repository', label: __('Repository') },
+    { key: 'uploads', label: __('Uploads') },
+    { key: 'snippets', label: __('Snippets') },
+    { key: 'buildArtifacts', label: __('Artifacts') },
+    { key: 'containerRegistry', label: __('Container Registry') },
+    { key: 'lfsObjects', label: __('LFS') },
+    { key: 'packages', label: __('Packages') },
+    { key: 'wiki', label: __('Wiki') },
+  ].map((f) => ({
+    ...f,
+    tdClass: 'gl-px-3!',
+    thClass: 'gl-px-3!',
+  })),
   i18n: {
-    PROJECT_TABLE_LABEL_PROJECT,
+    namespaceContainerRegistryPopoverContent,
   },
 };
 </script>
 
 <template>
-  <div>
-    <div
-      class="gl-responsive-table-row table-row-header gl-border-t-solid gl-border-t-1 gl-border-gray-100 gl-line-height-normal gl-text-black-normal gl-font-base"
-      role="row"
-    >
-      <div class="table-section section-70 gl-font-weight-bold" role="columnheader">
-        {{ $options.i18n.PROJECT_TABLE_LABEL_PROJECT }}
+  <gl-table
+    :fields="$options.fields"
+    :items="projects"
+    :busy="isLoading"
+    :show-empty="true"
+    :empty-text="s__('UsageQuota|No projects to display.')"
+    small
+    stacked="lg"
+  >
+    <template v-for="field in $options.fields" #[getHeaderSlotName(field.key)]>
+      <div :key="field.key" :data-testid="'th-' + field.key">
+        {{ field.label }}
+
+        <storage-type-help-link
+          v-if="field.key in helpLinks"
+          :storage-type="field.key"
+          :help-links="helpLinks"
+        />
       </div>
-      <div
-        class="table-section section-30 gl-font-weight-bold"
-        role="columnheader"
-        data-testid="usage-label"
-      >
-        {{ usageLabel }}
-      </div>
-    </div>
-    <projects-skeleton-loader v-if="isLoading" />
-    <collapsible-project-storage-detail
-      v-for="project in projects"
-      v-else
-      :key="project.id"
-      :project="project"
-      :additional-purchased-storage-size="additionalPurchasedStorageSize"
-    />
-  </div>
+    </template>
+
+    <template #cell(name)="{ item: project }">
+      <project-avatar
+        :project-id="project.id"
+        :project-name="project.name"
+        :project-avatar-url="project.avatarUrl"
+        :size="16"
+        :alt="project.name"
+        class="gl-display-inline-block gl-mr-2 gl-text-center!"
+      />
+
+      <gl-link :href="project.webUrl" class="gl-text-gray-900! js-project-link">{{
+        project.nameWithNamespace
+      }}</gl-link>
+    </template>
+
+    <template #cell(storage)="{ item: project }">
+      <number-to-human-size :value="project.statistics.storageSize" />
+    </template>
+
+    <template #cell(repository)="{ item: project }">
+      <number-to-human-size :value="project.statistics.repositorySize" />
+    </template>
+
+    <template #cell(lfsObjects)="{ item: project }">
+      <number-to-human-size :value="project.statistics.lfsObjectsSize" />
+    </template>
+
+    <template #cell(containerRegistry)="{ item: project }">
+      <number-to-human-size :value="project.statistics.containerRegistrySize" />
+
+      <storage-type-warning :content="$options.i18n.namespaceContainerRegistryPopoverContent" />
+    </template>
+
+    <template #cell(buildArtifacts)="{ item: project }">
+      <number-to-human-size :value="project.statistics.buildArtifactsSize" />
+    </template>
+
+    <template #cell(packages)="{ item: project }">
+      <number-to-human-size :value="project.statistics.packagesSize" />
+    </template>
+
+    <template #cell(wiki)="{ item: project }">
+      <number-to-human-size :value="project.statistics.wikiSize" />
+    </template>
+
+    <template #cell(snippets)="{ item: project }">
+      <number-to-human-size :value="project.statistics.snippetsSize" />
+    </template>
+
+    <template #cell(uploads)="{ item: project }">
+      <number-to-human-size :value="project.statistics.uploadsSize" />
+    </template>
+  </gl-table>
 </template>

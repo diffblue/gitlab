@@ -1,66 +1,75 @@
-import { shallowMountExtended } from 'helpers/vue_test_utils_helper';
-import CollapsibleProjectStorageDetail from 'ee/usage_quotas/storage/components/collapsible_project_storage_detail.vue';
+import { GlTable } from '@gitlab/ui';
+import { mountExtended } from 'helpers/vue_test_utils_helper';
 import ProjectList from 'ee/usage_quotas/storage/components/project_list.vue';
-import {
-  PROJECT_TABLE_LABEL_STORAGE_USAGE,
-  PROJECT_TABLE_LABEL_USAGE,
-} from 'ee/usage_quotas/storage/constants';
-import { projects } from '../mock_data';
+import { numberToHumanSize } from '~/lib/utils/number_utils';
+import StorageTypeHelpLink from 'ee/usage_quotas/storage/components/storage_type_help_link.vue';
+import { projectHelpLinks, projects } from '../mock_data';
 
 let wrapper;
 
-const createComponent = ({ props = {}, additionalRepoStorageByNamespace = false } = {}) => {
-  wrapper = shallowMountExtended(ProjectList, {
+const createComponent = ({ props = {} } = {}) => {
+  wrapper = mountExtended(ProjectList, {
     propsData: {
       projects,
-      additionalPurchasedStorageSize: 0,
+      helpLinks: projectHelpLinks,
+      isLoading: false,
       ...props,
-    },
-    provide: {
-      glFeatures: {
-        additionalRepoStorageByNamespace,
-      },
     },
   });
 };
 
-const findTableRows = () => wrapper.findAllComponents(CollapsibleProjectStorageDetail);
-const findUsageLabel = () => wrapper.findByTestId('usage-label');
+const findTable = () => wrapper.findComponent(GlTable);
+
+const storageTypes = [
+  { key: 'storage' },
+  { key: 'repository' },
+  { key: 'uploads' },
+  { key: 'snippets' },
+  { key: 'buildArtifacts' },
+  { key: 'containerRegistry' },
+  { key: 'lfsObjects' },
+  { key: 'packages' },
+  { key: 'wiki' },
+];
 
 describe('ProjectList', () => {
-  beforeEach(() => {
-    createComponent();
-  });
-
-  afterEach(() => {
-    wrapper.destroy();
-  });
-
-  it('renders regular project rows by default', () => {
-    expect(findTableRows()).toHaveLength(3);
-  });
-
-  describe('usage column', () => {
-    it('renders passed `usageLabel` as column label', () => {
-      createComponent({ props: { usageLabel: PROJECT_TABLE_LABEL_STORAGE_USAGE } });
-
-      expect(findUsageLabel().text()).toBe(PROJECT_TABLE_LABEL_STORAGE_USAGE);
-    });
-
-    it('renders `Usage` as column label by default', () => {
-      createComponent();
-
-      expect(findUsageLabel().text()).toBe(PROJECT_TABLE_LABEL_USAGE);
-    });
-  });
-
-  describe('with additional repo storage feature flag', () => {
+  describe('Normal state', () => {
     beforeEach(() => {
-      createComponent({ additionalRepoStorageByNamespace: true });
+      createComponent();
     });
 
-    it('renders regular project rows by default', () => {
-      expect(findTableRows()).toHaveLength(3);
+    describe('Table header', () => {
+      it.each(storageTypes)('$key', ({ key }) => {
+        const th = wrapper.findByTestId(`th-${key}`);
+        const hasHelpLink = Boolean(projectHelpLinks[key]);
+
+        expect(th.findComponent(StorageTypeHelpLink).exists()).toBe(hasHelpLink);
+      });
+    });
+
+    describe('Project items are rendered', () => {
+      let tableText;
+      beforeEach(() => {
+        tableText = findTable().text();
+      });
+
+      describe.each(projects)('$name', (project) => {
+        it('renders project name with namespace', () => {
+          expect(tableText).toContain(project.nameWithNamespace);
+        });
+
+        it.each(storageTypes)('$key', ({ key }) => {
+          const expectedText = numberToHumanSize(project.statistics[`${key}Size`], 1);
+          expect(tableText).toContain(expectedText);
+        });
+      });
+    });
+
+    describe('Empty state', () => {
+      it('displays empty state message', () => {
+        createComponent({ props: { projects: [] } });
+        expect(findTable().findAll('tr').at(1).text()).toBe('No projects to display.');
+      });
     });
   });
 });
