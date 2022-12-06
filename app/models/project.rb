@@ -258,13 +258,13 @@ class Project < ApplicationRecord
   has_one :service_desk_setting, class_name: 'ServiceDeskSetting'
 
   # Merge requests for target project should be removed with it
-  has_many :merge_requests, foreign_key: 'target_project_id', inverse_of: :target_project
+  has_many :merge_requests, foreign_key: 'target_project_id', inverse_of: :target_project, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
   has_many :merge_request_metrics, foreign_key: 'target_project', class_name: 'MergeRequest::Metrics', inverse_of: :target_project
   has_many :source_of_merge_requests, foreign_key: 'source_project_id', class_name: 'MergeRequest'
-  has_many :issues
+  has_many :issues, dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
   has_many :incident_management_issuable_escalation_statuses, through: :issues, inverse_of: :project, class_name: 'IncidentManagement::IssuableEscalationStatus'
   has_many :incident_management_timeline_event_tags, inverse_of: :project, class_name: 'IncidentManagement::TimelineEventTag'
-  has_many :labels, class_name: 'ProjectLabel'
+  has_many :labels, class_name: 'ProjectLabel', dependent: :destroy # rubocop:disable Cop/ActiveRecordDependent
   has_many :events
   has_many :milestones
 
