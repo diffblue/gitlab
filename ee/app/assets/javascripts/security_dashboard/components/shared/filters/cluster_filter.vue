@@ -53,11 +53,11 @@ export default {
   },
   watch: {
     selected() {
-      const clusterIds = this.clusterAgents
+      const gids = this.clusterAgents
         .filter(({ id }) => this.selected.includes(id))
         .map(({ gid }) => gid);
 
-      this.$emit('filter-changed', { cluster: clusterIds });
+      this.$emit('filter-changed', { clusterAgentId: gids });
     },
   },
   methods: {
