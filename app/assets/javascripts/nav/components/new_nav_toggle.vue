@@ -45,7 +45,6 @@ export default {
     badgeLabel: s__('NorthstarNavigation|Alpha'),
     toggleMenuItemLabel: s__('NorthstarNavigation|New navigation'),
     toggleLabel: s__('NorthstarNavigation|Toggle new navigation'),
-    feedbackMenuItemLabel: s__('NorthstarNavigation|Provide feedback'),
   },
 };
 </script>
@@ -68,7 +67,5 @@ export default {
         @change="toggleNav"
       />
     </div>
-
-    <a class="menu-item" href="#">{{ $options.i18n.feedbackMenuItemLabel }}</a>
   </li>
 </template>
