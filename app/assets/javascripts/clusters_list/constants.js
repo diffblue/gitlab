@@ -111,6 +111,8 @@ export const I18N_AGENT_TOKEN = {
   ),
 };
 
+export const HELM_VERSION_POLICY_URL = 'https://helm.sh/docs/topics/version_skew/';
+
 export const I18N_AGENT_MODAL = {
   registerAgentButton: s__('ClusterAgents|Register'),
   close: __('Close'),

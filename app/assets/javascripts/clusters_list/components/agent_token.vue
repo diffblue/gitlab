@@ -4,14 +4,14 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import ModalCopyButton from '~/vue_shared/components/modal_copy_button.vue';
 import CodeBlock from '~/vue_shared/components/code_block.vue';
 import { generateAgentRegistrationCommand } from '../clusters_util';
-import { I18N_AGENT_TOKEN } from '../constants';
+import { I18N_AGENT_TOKEN, HELM_VERSION_POLICY_URL } from '../constants';
 
 export default {
   i18n: I18N_AGENT_TOKEN,
   advancedInstallPath: helpPagePath('user/clusters/agent/install/index', {
     anchor: 'advanced-installation-method',
   }),
-  helmVersionPolicyUrl: 'https://helm.sh/docs/topics/version_skew/',
+  HELM_VERSION_POLICY_URL,
   components: {
     GlAlert,
     CodeBlock,
@@ -81,7 +81,7 @@ export default {
       {{ $options.i18n.basicInstallBody }}
       <gl-sprintf :message="$options.i18n.helmVersionText">
         <template #link="{ content }"
-          ><gl-link :href="$options.helmVersionPolicyUrl" target="_blank"
+          ><gl-link :href="$options.HELM_VERSION_POLICY_URL" target="_blank"
             >{{ content }} <gl-icon name="external-link" :size="12" /></gl-link></template
       ></gl-sprintf>
     </p>

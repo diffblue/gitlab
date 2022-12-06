@@ -6,6 +6,7 @@ import {
   I18N_AGENT_TOKEN,
   INSTALL_AGENT_MODAL_ID,
   NAME_MAX_LENGTH,
+  HELM_VERSION_POLICY_URL,
 } from '~/clusters_list/constants';
 import { generateAgentRegistrationCommand } from '~/clusters_list/clusters_util';
 import CodeBlock from '~/vue_shared/components/code_block.vue';
@@ -67,7 +68,7 @@ describe('InstallAgentModal', () => {
         sprintf(I18N_AGENT_TOKEN.helmVersionText, { linkStart: '', linkEnd: ' ' }),
       );
       expect(findHelmVersionPolicyLink().attributes()).toMatchObject({
-        href: wrapper.vm.$options.helmVersionPolicyUrl,
+        href: HELM_VERSION_POLICY_URL,
         target: '_blank',
       });
       expect(findHelmExternalLinkIcon().props()).toMatchObject({ name: 'external-link', size: 12 });
