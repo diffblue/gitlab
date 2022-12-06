@@ -75,10 +75,17 @@ module Gitlab
           query_time.round(::Gitlab::InstrumentationHelper::DURATION_PRECISION)
         end
 
+        def validate_allowed_commands?
+          flag = ::RequestStore[validate_allowed_commands_key]
+          return flag unless flag.nil?
+
+          ::RequestStore[validate_allowed_commands_key] = Feature.enabled?(:validate_allowed_cross_slot_commands, type: :development)
+        end
+
         def redis_cluster_validate!(commands)
           return true unless @redis_cluster_validation
 
-          result = ::Gitlab::Instrumentation::RedisClusterValidator.validate(commands)
+          result = ::Gitlab::Instrumentation::RedisClusterValidator.validate(commands, validate_allowed_commands?)
           return true if result.nil?
 
           if !result[:valid] && !result[:allowed] && (Rails.env.development? || Rails.env.test?)
@@ -142,6 +149,10 @@ module Gitlab
 
         def cross_slots_key
           strong_memoize(:cross_slots_key) { build_key(:redis_cross_slot_request_count) }
+        end
+
+        def validate_allowed_commands_key
+          strong_memoize(:validate_allowed_commands_key) { "validate_allowed_commands_flag" }
         end
 
         def build_key(namespace)

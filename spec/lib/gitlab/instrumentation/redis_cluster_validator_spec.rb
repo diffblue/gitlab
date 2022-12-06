@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'spec_helper'
+require 'fast_spec_helper'
 require 'support/helpers/rails_helpers'
 require 'rspec-parameterized'
 
@@ -9,10 +9,6 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
 
   describe '.validate' do
     using RSpec::Parameterized::TableSyntax
-
-    before do
-      stub_feature_flags(validate_allowed_cross_slot_commands: true)
-    end
 
     where(:command, :arguments, :keys, :is_valid) do
       :rename | %w(foo bar) | 2 | false
@@ -41,53 +37,59 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
       it do
         args = [[command] + arguments]
         if is_valid.nil?
-          expect(described_class.validate(args)).to eq(nil)
+          expect(described_class.validate(args, true)).to eq(nil)
         else
-          expect(described_class.validate(args)[:valid]).to eq(is_valid)
-          expect(described_class.validate(args)[:allowed]).to eq(false)
-          expect(described_class.validate(args)[:command_name]).to eq(command.to_s.upcase)
-          expect(described_class.validate(args)[:key_count]).to eq(keys)
+          expect(described_class.validate(args, true)[:valid]).to eq(is_valid)
+          expect(described_class.validate(args, true)[:allowed]).to eq(false)
+          expect(described_class.validate(args, true)[:command_name]).to eq(command.to_s.upcase)
+          expect(described_class.validate(args, true)[:key_count]).to eq(keys)
         end
       end
     end
 
     where(:arguments, :should_raise, :output) do
-      [[:get, "foo"],
-       [:get,
-        "bar"]] | true | { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false,
-                           command: "get foo" }
-      [[:get, "foo"],
-       [:mget, "foo",
-        "bar"]] | true | { valid: false, key_count: 3, command_name: 'PIPELINE/MULTI', allowed: false,
-                           command: "get foo" }
-      [[:get, "{foo}:name"],
-       [:get,
-        "{foo}:profile"]] | false | { valid: true, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false,
-                                      command: "get {foo}:name" }
-      [[:del, "foo"],
-       [:del,
-        "bar"]] | true | { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false,
-                           command: "del foo" }
-      [] | false | nil # pipeline or transaction opened and closed without ops
+      [
+        [
+          [[:get, "foo"], [:get, "bar"]],
+          true,
+          { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false, command: "get foo" }
+        ],
+        [
+          [[:get, "foo"], [:mget, "foo", "bar"]],
+          true,
+          { valid: false, key_count: 3, command_name: 'PIPELINE/MULTI', allowed: false, command: "get foo" }
+        ],
+        [
+          [[:get, "{foo}:name"], [:get, "{foo}:profile"]],
+          false,
+          { valid: true, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false, command: "get {foo}:name" }
+        ],
+        [
+          [[:del, "foo"], [:del, "bar"]],
+          true,
+          { valid: false, key_count: 2, command_name: 'PIPELINE/MULTI', allowed: false, command: "del foo" }
+        ],
+        [
+          [],
+          false,
+          nil # pipeline or transaction opened and closed without ops
+        ]
+      ]
     end
 
     with_them do
       it do
-        expect(described_class.validate(arguments)).to eq(output)
+        expect(described_class.validate(arguments, true)).to eq(output)
       end
     end
   end
 
   describe '.allow_cross_slot_commands' do
     context 'with feature flags enabled' do
-      before do
-        stub_feature_flags(validate_allowed_cross_slot_commands: true)
-      end
-
       it 'does not raise for invalid arguments' do
         expect(
           described_class.allow_cross_slot_commands do
-            described_class.validate([[:mget, 'foo', 'bar']])
+            described_class.validate([[:mget, 'foo', 'bar']], true)
           end
         ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
                   command: "mget foo bar" })
@@ -97,10 +99,10 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
         expect(
           described_class.allow_cross_slot_commands do
             described_class.allow_cross_slot_commands do
-              described_class.validate([[:mget, 'foo', 'bar']])
+              described_class.validate([[:mget, 'foo', 'bar']], true)
             end
 
-            described_class.validate([[:mget, 'foo', 'bar']])
+            described_class.validate([[:mget, 'foo', 'bar']], true)
           end
         ).to eq({ valid: false, key_count: 2, command_name: 'MGET', allowed: true,
                   command: "mget foo bar" })
@@ -108,14 +110,10 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
     end
 
     context 'with feature flag disabled' do
-      before do
-        stub_feature_flags(validate_allowed_cross_slot_commands: false)
-      end
-
       it 'does not run for allowed commands' do
         expect(
           described_class.allow_cross_slot_commands do
-            described_class.validate([[:mget, 'foo', 'bar']])
+            described_class.validate([[:mget, 'foo', 'bar']], false)
           end
         ).to eq(nil)
       end

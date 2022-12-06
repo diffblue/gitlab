@@ -183,16 +183,13 @@ module Gitlab
       CrossSlotError = Class.new(StandardError)
 
       class << self
-        def validate(commands)
+        def validate(commands, validate_allowed_cmd)
+          return if allow_cross_slot_commands? && !validate_allowed_cmd
           return if commands.empty?
 
           # early exit for single-command (non-pipelined) if it is a single-key-command
           command_name = commands.size > 1 ? "PIPELINE/MULTI" : commands.first.first.to_s.upcase
           return if commands.size == 1 && REDIS_COMMANDS.dig(command_name, :single_key)
-
-          # Checking Feature.enabled? after single-command check
-          # as Feature.enabled? runs a `get` command which is single key. This prevents recursive calls.
-          return if allow_cross_slot_commands? && !::Feature.enabled?(:validate_allowed_cross_slot_commands, type: :ops)
 
           key_slots = commands.map { |command| key_slots(command) }.flatten
 

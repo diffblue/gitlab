@@ -153,6 +153,12 @@ RSpec.describe Gitlab::Instrumentation::RedisBase, :request_store do
   end
 
   describe '.redis_cluster_validate!' do
+    let(:args) { [[:mget, 'foo', 'bar']] }
+
+    before do
+      instrumentation_class_a.enable_redis_cluster_validation
+    end
+
     context 'Rails environments' do
       where(:env, :allowed, :should_raise) do
         'production' | false | false
@@ -165,15 +171,9 @@ RSpec.describe Gitlab::Instrumentation::RedisBase, :request_store do
         'test' | false | true
       end
 
-      before do
-        instrumentation_class_a.enable_redis_cluster_validation
-      end
-
       with_them do
         it do
           stub_rails_env(env)
-
-          args = [[:mget, 'foo', 'bar']]
 
           validation = -> { instrumentation_class_a.redis_cluster_validate!(args) }
           under_test = if allowed
@@ -188,6 +188,54 @@ RSpec.describe Gitlab::Instrumentation::RedisBase, :request_store do
             expect(&under_test).not_to raise_error
           end
         end
+      end
+    end
+
+    context 'validate_allowed_cross_slot_commands feature flag' do
+      context 'when disabled' do
+        before do
+          stub_feature_flags(validate_allowed_cross_slot_commands: false)
+        end
+
+        it 'skips check' do
+          expect(
+            Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+              instrumentation_class_a.redis_cluster_validate!(args)
+            end
+          ).to eq(true)
+        end
+      end
+
+      context 'when enabled' do
+        before do
+          stub_feature_flags(validate_allowed_cross_slot_commands: true)
+        end
+
+        it 'performs check' do
+          expect(
+            Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+              instrumentation_class_a.redis_cluster_validate!(args)
+            end
+          ).to eq(false)
+        end
+      end
+
+      it 'looks up feature-flag once per request' do
+        stub_feature_flags(validate_allowed_cross_slot_commands: true)
+        expect(
+          Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+            instrumentation_class_a.redis_cluster_validate!(args)
+          end
+        ).to eq(false)
+
+        # even with validate set to false, redis_cluster_validate! will use cached
+        # feature flag value and perform validation
+        stub_feature_flags(validate_allowed_cross_slot_commands: false)
+        expect(
+          Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
+            instrumentation_class_a.redis_cluster_validate!(args)
+          end
+        ).to eq(false)
       end
     end
   end
