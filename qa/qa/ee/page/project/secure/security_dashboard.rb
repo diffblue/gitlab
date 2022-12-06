@@ -11,6 +11,7 @@ module QA
               element :vulnerability_report_checkbox_all
               element :false_positive_vulnerability
               element :vulnerability_remediated_badge_content
+              element :vulnerability_issue_created_badge_content
               element :vulnerability_status_content
             end
 
@@ -49,6 +50,10 @@ module QA
 
             def has_remediated_badge?(vulnerability_name)
               has_element?(:vulnerability_remediated_badge_content, activity_description: vulnerability_name)
+            end
+
+            def has_issue_created_icon?(vulnerability_name)
+              has_element?(:vulnerability_issue_created_badge_content, badge_description: vulnerability_name)
             end
           end
         end
