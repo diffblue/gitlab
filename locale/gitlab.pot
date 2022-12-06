@@ -17295,15 +17295,6 @@ msgstr ""
 msgid "FloC|Participate in FLoC"
 msgstr ""
 
-msgid "FlowdockService|Enter your Flowdock token."
-msgstr ""
-
-msgid "FlowdockService|Send event notifications from GitLab to Flowdock flows."
-msgstr ""
-
-msgid "FlowdockService|Send event notifications from GitLab to Flowdock flows. %{docs_link}"
-msgstr ""
-
 msgid "Focus filter bar"
 msgstr ""
 
