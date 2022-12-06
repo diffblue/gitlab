@@ -102,13 +102,13 @@ describe('ClusterFilter component', () => {
         const ids = [];
         await clickDropdownItem(ALL_ID);
 
-        expect(wrapper.emitted('filter-changed')[0][0].cluster).toEqual([]);
+        expect(wrapper.emitted('filter-changed')[0][0].clusterAgentId).toEqual([]);
 
         for await (const { id, name } of mockClusters) {
           await clickDropdownItem(name);
           ids.push(id);
 
-          expect(wrapper.emitted('filter-changed')[ids.length][0].cluster).toEqual(ids);
+          expect(wrapper.emitted('filter-changed')[ids.length][0].clusterAgentId).toEqual(ids);
         }
       });
     });
