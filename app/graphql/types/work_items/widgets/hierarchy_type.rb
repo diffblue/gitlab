@@ -21,7 +21,10 @@ module Types
           description: 'Child work items.'
 
         def children
-          object.children.inc_relations_for_permission_check
+          relation = object.children
+          relation = relation.inc_relations_for_permission_check unless object.children.loaded?
+
+          relation
         end
       end
       # rubocop:enable Graphql/AuthorizeTypes
