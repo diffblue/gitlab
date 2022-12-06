@@ -8,28 +8,12 @@ RSpec.describe Security::Scans::PurgeWorker do
 
     before do
       allow(::Security::PurgeScansService).to receive(:purge_stale_records)
-
-      stub_feature_flags(purge_stale_security_findings: feature_enabled?)
     end
 
-    context 'when the `purge_stale_security_findings` feature is disabled' do
-      let(:feature_enabled?) { false }
+    it 'delegates the call to PurgeScansService' do
+      perform
 
-      it 'does not initiate the mark as purged job' do
-        perform
-
-        expect(::Security::PurgeScansService).not_to have_received(:purge_stale_records)
-      end
-    end
-
-    context 'when the `purge_stale_security_findings` feature is enabled' do
-      let(:feature_enabled?) { true }
-
-      it 'initiates the mark as purged job' do
-        perform
-
-        expect(::Security::PurgeScansService).to have_received(:purge_stale_records)
-      end
+      expect(::Security::PurgeScansService).to have_received(:purge_stale_records)
     end
   end
 end

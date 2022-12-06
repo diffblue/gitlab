@@ -12,8 +12,6 @@ module Security
       idempotent!
 
       def perform
-        return unless Feature.enabled?(:purge_stale_security_findings, type: :ops)
-
         ::Security::PurgeScansService.purge_stale_records
       end
     end
