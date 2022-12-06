@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::JobToken::ProjectScopeLink do
+RSpec.describe Ci::JobToken::ProjectScopeLink, feature_category: :continuous_integration do
   let_it_be(:project) { create(:project) }
   let_it_be(:group) { create(:group) }
 

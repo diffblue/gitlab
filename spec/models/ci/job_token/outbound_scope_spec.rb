@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Ci::JobToken::OutboundScope do
+RSpec.describe Ci::JobToken::OutboundScope, feature_category: :continuous_integration do
   using RSpec::Parameterized::TableSyntax
 
   let_it_be(:source_project) { create(:project, ci_outbound_job_token_scope_enabled: true) }

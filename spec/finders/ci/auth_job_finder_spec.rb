@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Ci::AuthJobFinder do
+RSpec.describe Ci::AuthJobFinder, feature_category: :continuous_integration do
   let_it_be(:user, reload: true) { create(:user) }
   let_it_be(:job, reload: true) { create(:ci_build, status: :running, user: user) }
 
