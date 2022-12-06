@@ -92,7 +92,7 @@ NOTE:
 At first, defining a WIT will only be possible at the root-level group, which would then be inherited by subgroups.
 We will investigate the possibility of defining new WITs at subgroup levels at a later iteration.
 
-### Introducing work_item_types table
+### Introducing `work_item_types` table
 
 For example, suppose there are three root-level groups with IDs: `11`, `12`, and `13`. Also,
 assume the following base types: `issue: 0`, `incident: 1`, `test_case: 2`.
