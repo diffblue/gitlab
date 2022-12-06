@@ -146,18 +146,22 @@ describe('Status Filter component', () => {
   });
 
   describe('filter-changed event', () => {
+    it('emits filter-changed event with default IDs when created', () => {
+      expect(wrapper.emitted('filter-changed')[0][0].state).toBe(DEFAULT_IDS);
+    });
+
     it('emits filter-changed event when selected item is changed', async () => {
       const ids = [];
       // Deselect everything to begin with.
       await clickDropdownItem(ALL_ID);
 
-      expect(wrapper.emitted('filter-changed')[0][0].state).toEqual([]);
+      expect(wrapper.emitted('filter-changed')[1][0].state).toEqual([]);
 
       for await (const id of OPTION_IDS) {
         await clickDropdownItem(id);
         ids.push(id);
 
-        expect(wrapper.emitted('filter-changed')[ids.length][0].state).toEqual(ids);
+        expect(wrapper.emitted('filter-changed')[ids.length + 1][0].state).toEqual(ids);
       }
     });
   });

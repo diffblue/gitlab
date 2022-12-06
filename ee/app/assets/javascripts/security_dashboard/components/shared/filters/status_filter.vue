@@ -35,8 +35,11 @@ export default {
     },
   },
   watch: {
-    selected() {
-      this.$emit('filter-changed', { state: this.selected });
+    selected: {
+      immediate: true,
+      handler() {
+        this.$emit('filter-changed', { state: this.selected });
+      },
     },
   },
   methods: {
