@@ -15,8 +15,7 @@ module Database
 
       included do
         data_consistency :always
-        # Feature category will be taken from the worker that enqueues this Batched migration
-        feature_category :not_owned # rubocop:disable Gitlab/AvoidFeatureCategoryNotOwned
+        feature_category :database
         idempotent!
       end
 
