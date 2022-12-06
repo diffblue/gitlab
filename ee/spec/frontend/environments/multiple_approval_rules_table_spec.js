@@ -67,7 +67,7 @@ describe('ee/environments/components/multiple_approval_rules_table.vue', () => {
       expect(cell.exists()).toBe(true);
     });
 
-    it('should show an avatar for all aprovals', () => {
+    it('should show an avatar for all approvals', () => {
       const avatars = wrapper.findAllComponents(GlAvatar);
       const avatarLinks = wrapper.findAllComponents(GlAvatarLink);
       const approvals = rules.flatMap((rule) => rule.approvals);
