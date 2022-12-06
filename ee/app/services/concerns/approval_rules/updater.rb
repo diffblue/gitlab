@@ -50,7 +50,8 @@ module ApprovalRules
 
       protected_branch_ids = params.delete(:protected_branch_ids)
 
-      return unless project.multiple_approval_rules_available? && can?(current_user, :admin_project, project)
+      return unless project.multiple_approval_rules_available? &&
+        (skip_authorization || can?(current_user, :admin_project, project))
 
       params[:protected_branches] =
         ProtectedBranch

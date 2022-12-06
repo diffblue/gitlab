@@ -119,6 +119,17 @@ RSpec.describe ApprovalRules::CreateService do
         expect(result[:status]).to eq(:error)
         expect(result[:message]).to include('Prohibited')
       end
+
+      context 'but skip_authorization is true' do
+        it 'does not return error message' do
+          result = described_class.new(target, user, {
+            approvals_required: 1,
+            skip_authorization: true
+          }).execute
+
+          expect(result[:status]).to eq(:success)
+        end
+      end
     end
 
     context 'when approval rule with empty users and groups is being created' do
@@ -181,6 +192,7 @@ RSpec.describe ApprovalRules::CreateService do
 
     context 'when protected_branch_ids param is present' do
       let(:protected_branch) { create(:protected_branch, project: target) }
+      let(:skip_authorization) { false }
 
       subject do
         described_class.new(
@@ -188,6 +200,7 @@ RSpec.describe ApprovalRules::CreateService do
           user,
           name: 'developers',
           approvals_required: 1,
+          skip_authorization: skip_authorization,
           protected_branch_ids: [protected_branch.id]
         ).execute
       end
@@ -211,6 +224,20 @@ RSpec.describe ApprovalRules::CreateService do
           it 'does not associate the approval rule to the protected branch' do
             expect(subject[:status]).to eq(:success)
             expect(subject[:rule].protected_branches).to be_empty
+          end
+        end
+
+        context 'but skip_authorization param is true' do
+          let(:skip_authorization) { true }
+
+          before do
+            allow(Ability).to receive(:allowed?).and_call_original
+            allow(Ability).to receive(:allowed?).with(user, :admin_project, target).and_return(false)
+          end
+
+          it 'associates the approval rule to the protected branch' do
+            expect(subject[:status]).to eq(:success)
+            expect(subject[:rule].protected_branches).to match_array([protected_branch])
           end
         end
 
