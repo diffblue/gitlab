@@ -73,7 +73,7 @@ RSpec.describe 'Promotions', :js do
   describe 'for burndown charts', :js do
     before do
       stub_application_setting(check_namespace_plan: true)
-      allow(Gitlab).to receive(:com?) { true }
+      allow(Gitlab).to receive(:com?).and_return(true)
 
       project.add_maintainer(user)
       sign_in(user)
@@ -145,7 +145,7 @@ RSpec.describe 'Promotions', :js do
     context 'gitlab.com' do
       before do
         stub_application_setting(check_namespace_plan: true)
-        allow(Gitlab).to receive(:com?) { true }
+        allow(Gitlab).to receive(:com?).and_return(true)
 
         project.add_maintainer(user)
         sign_in(user)

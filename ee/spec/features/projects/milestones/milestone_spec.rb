@@ -61,7 +61,7 @@ RSpec.describe 'Milestones on EE' do
         # `EE::ApplicationSetting` which breaks when using `any_instance`
         # https://gitlab.com/gitlab-org/gitlab-foss/issues/33587
         allow(Gitlab::CurrentSettings.current_application_settings)
-          .to receive(:should_check_namespace_plan?) { true }
+          .to receive(:should_check_namespace_plan?).and_return(true)
 
         visit_milestone
 
@@ -72,7 +72,7 @@ RSpec.describe 'Milestones on EE' do
 
       it 'has a link to upgrade to starter on premise' do
         allow(Gitlab::CurrentSettings.current_application_settings)
-          .to receive(:should_check_namespace_plan?) { false }
+          .to receive(:should_check_namespace_plan?).and_return(false)
 
         visit_milestone
 

@@ -12,7 +12,7 @@ RSpec.describe Groups::BillingsController, :saas, feature_category: :purchase do
     group.add_developer(developer)
     group.add_guest(auditor)
     group.add_owner(owner)
-    allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
+    allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
   end
 
   describe 'GET index' do
@@ -98,7 +98,7 @@ RSpec.describe Groups::BillingsController, :saas, feature_category: :purchase do
       end
 
       it 'renders 404 when the namespace check is disabled' do
-        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { false }
+        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(false)
 
         sign_in(owner)
 
@@ -183,7 +183,7 @@ RSpec.describe Groups::BillingsController, :saas, feature_category: :purchase do
       end
 
       it 'renders 404 when it is not gitlab.com' do
-        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { false }
+        allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(false)
         sign_in(owner)
 
         post_refresh_seats

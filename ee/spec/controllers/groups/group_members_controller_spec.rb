@@ -84,7 +84,7 @@ RSpec.describe Groups::GroupMembersController, feature_category: :subgroups do
 
       before do
         allow(Ability).to receive(:allowed?).and_call_original
-        allow(Ability).to receive(:allowed?).with(user, :override_group_member, membership) { true }
+        allow(Ability).to receive(:allowed?).with(user, :override_group_member, membership).and_return(true)
       end
 
       it 'is successful' do

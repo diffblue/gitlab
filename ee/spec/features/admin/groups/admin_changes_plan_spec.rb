@@ -9,7 +9,7 @@ RSpec.describe 'Changes GL.com plan for group', :js, :saas, feature_category: :s
   let(:admin) { create(:admin) }
 
   before do
-    allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?) { true }
+    allow(Gitlab::CurrentSettings).to receive(:should_check_namespace_plan?).and_return(true)
 
     sign_in(admin)
     gitlab_enable_admin_mode_sign_in(admin)
