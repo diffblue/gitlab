@@ -63,6 +63,10 @@ RSpec.describe MergeRequests::ResetApprovalsService do
       it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
         let(:action) { service.execute('refs/heads/master', newrev) }
       end
+
+      it_behaves_like 'triggers GraphQL subscription mergeRequestApprovalStateUpdated' do
+        let(:action) { service.execute('refs/heads/master', newrev) }
+      end
     end
 
     context 'when skip_reset_checks: true' do
@@ -155,6 +159,10 @@ RSpec.describe MergeRequests::ResetApprovalsService do
       end
 
       it_behaves_like 'triggers GraphQL subscription mergeRequestMergeStatusUpdated' do
+        let(:action) { service.execute('feature', feature_sha3) }
+      end
+
+      it_behaves_like 'triggers GraphQL subscription mergeRequestApprovalStateUpdated' do
         let(:action) { service.execute('feature', feature_sha3) }
       end
     end
