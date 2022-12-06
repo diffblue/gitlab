@@ -26944,6 +26944,9 @@ msgstr ""
 msgid "NamespaceStorage|Buy more storage"
 msgstr ""
 
+msgid "NamespaceStorage|Uploads are not counted in namespace storage quotas."
+msgstr ""
+
 msgid "NamespaceStorage|We recommend that you buy additional storage to ensure your service is not interrupted."
 msgstr ""
 

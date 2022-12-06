@@ -124,3 +124,6 @@ export const projectContainerRegistryPopoverContent = s__(
 
 export const containerRegistryId = 'containerRegistrySize';
 export const containerRegistryPopoverId = 'container-registry-popover';
+
+export const uploadsId = 'uploadsSize';
+export const uploadsPopoverId = 'uploads-popover';
