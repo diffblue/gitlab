@@ -35499,6 +35499,9 @@ msgstr ""
 msgid "Runners|IP Address"
 msgstr ""
 
+msgid "Runners|Idle"
+msgstr ""
+
 msgid "Runners|Install a runner"
 msgstr ""
 
@@ -35703,6 +35706,9 @@ msgid "Runners|Runners are the agents that run your CI/CD jobs. Follow the %{lin
 msgstr ""
 
 msgid "Runners|Runners are the agents that run your CI/CD jobs. To register new runners, please contact your administrator."
+msgstr ""
+
+msgid "Runners|Running"
 msgstr ""
 
 msgid "Runners|Runs untagged jobs"
