@@ -41,7 +41,7 @@ RSpec.shared_examples 'authorizable for protected environments' do |factory_name
       end
     end
 
-    describe 'user access' do
+    describe 'non-admin user access' do
       context 'when specific access has been assigned to a user' do
         let(:authorizable) { create(factory_name, protected_environment: protected_environment, user: user) }
 
