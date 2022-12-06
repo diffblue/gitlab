@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import axios from '~/lib/utils/axios_utils';
 import eventHub from '~/projects/new/event_hub';
 import projectNew from '~/projects/project_new';
@@ -7,102 +6,118 @@ const INSTANCE_TAB_CONTENT_SELECTOR = '.js-custom-instance-project-templates-tab
 const GROUP_TAB_CONTENT_SELECTOR = '.js-custom-group-project-templates-tab-content';
 
 const bindEvents = () => {
-  const $newProjectForm = $('#new_project');
-  const $useCustomTemplateBtn = $('.custom-template-button > input');
-  const $projectFieldsForm = $('.project-fields-form');
-  const $selectedIcon = $('.selected-icon');
-  const $selectedTemplateText = $('.selected-template');
-  const $templateProjectNameInput = $('#template-project-name #project_path');
-  const $changeTemplateBtn = $('.change-template');
-  const $projectTemplateButtons = $('.project-templates-buttons');
-  const $projectFieldsFormInput = $('.project-fields-form input#project_use_custom_template');
-  const $subgroupWithTemplatesIdInput = $('.js-project-group-with-project-templates-id');
-  const $pagination = $('.gl-pagination');
+  const useCustomTemplateBtn = document.querySelectorAll('.custom-template-button > input');
+  const projectTemplateButtons = document.querySelectorAll('.project-templates-buttons');
+
+  const projectFieldsForm = document.querySelector('.project-fields-form');
+  const selectedIcon = document.querySelector('.selected-icon');
+  const selectedTemplateText = document.querySelector('.selected-template');
+  const templateProjectNameInput = document.querySelector('#template-project-name #project_path');
+  const changeTemplateBtn = document.querySelector('.change-template');
+  const projectFieldsFormInput = document.querySelector(
+    '.project-fields-form input#project_use_custom_template',
+  );
+  const subgroupWithTemplatesIdInput = document.querySelector(
+    '.js-project-group-with-project-templates-id',
+  );
+
+  const pagination = document.querySelector('.gl-pagination');
   let hasUserDefinedProjectName = false;
 
-  if ($newProjectForm.length !== 1 || $useCustomTemplateBtn.length === 0) {
+  if (useCustomTemplateBtn.length === 0) {
     return;
   }
 
   function enableCustomTemplate() {
-    $projectFieldsFormInput.val(true);
+    projectFieldsFormInput.value = true;
   }
 
   function disableCustomTemplate() {
-    $projectFieldsFormInput.val(false);
+    projectFieldsFormInput.value = false;
   }
 
-  function chooseTemplate() {
-    const subgroupId = $(this).data('subgroup-id');
-    const groupId = $(this).data('parent-group-id');
-    const templateName = $(this).data('template-name');
+  function chooseTemplate(e) {
+    const el = e.currentTarget;
+    const { subgroupId, parentGroupId, templateName } = el.dataset;
+
+    const activeTabProjectName = document.querySelector('.tab-pane.active #project_name');
+    const activeTabProjectPath = document.querySelector('.tab-pane.active #project_path');
+    const clonedTemplate = el.closest('.template-option').querySelector('.avatar').cloneNode(true);
 
     if (subgroupId) {
-      const subgroupFullPath = $(this).data('subgroup-full-path');
-      const targetGroupFullPath = $(this).data('target-group-full-path');
+      const { subgroupFullPath, targetGroupFullPath } = el.dataset;
       eventHub.$emit(
         'select-template',
-        targetGroupFullPath ? groupId : null,
+        targetGroupFullPath ? parentGroupId : null,
         targetGroupFullPath || subgroupFullPath,
       );
 
-      $subgroupWithTemplatesIdInput.val(subgroupId);
+      subgroupWithTemplatesIdInput.value = subgroupId;
     }
 
-    $projectTemplateButtons.addClass('hidden');
-    $projectFieldsForm.addClass('selected');
-    $selectedIcon.empty();
+    projectTemplateButtons.forEach((btn) => {
+      btn.classList.add('hidden');
+    });
+    projectFieldsForm.classList.add('selected');
 
-    $selectedTemplateText.text(templateName);
+    selectedIcon.innerHTML = '';
+    selectedTemplateText.textContent = templateName;
 
-    $(this)
-      .parents('.template-option')
-      .find('.avatar')
-      .clone()
-      .addClass('d-block')
-      .removeClass('s40')
-      .appendTo($selectedIcon);
+    clonedTemplate.classList.replace('s40', 'd-block');
+    selectedIcon.append(clonedTemplate);
 
-    $templateProjectNameInput.focus();
+    templateProjectNameInput.focus();
     enableCustomTemplate();
 
-    const $activeTabProjectName = $('.tab-pane.active #project_name');
-    const $activeTabProjectPath = $('.tab-pane.active #project_path');
-    $activeTabProjectName.focus();
-    $activeTabProjectName.on('keyup', () => {
-      projectNew.onProjectNameChangeJq($activeTabProjectName, $activeTabProjectPath);
-      hasUserDefinedProjectName = $activeTabProjectName.val().trim().length > 0;
+    activeTabProjectName.focus();
+    activeTabProjectName.addEventListener('keyup', () => {
+      projectNew.onProjectNameChange(activeTabProjectName, activeTabProjectPath);
+      hasUserDefinedProjectName = activeTabProjectName.value.trim().length > 0;
     });
-    $activeTabProjectPath.on('keyup', () =>
-      projectNew.onProjectPathChangeJq(
-        $activeTabProjectName,
-        $activeTabProjectPath,
+    activeTabProjectPath.addEventListener('keyup', () =>
+      projectNew.onProjectPathChange(
+        activeTabProjectName,
+        activeTabProjectPath,
         hasUserDefinedProjectName,
       ),
     );
   }
 
-  $useCustomTemplateBtn.on('change', chooseTemplate);
+  useCustomTemplateBtn.forEach((btn) => {
+    btn.addEventListener('change', (e) => {
+      chooseTemplate(e);
+    });
+  });
 
-  $changeTemplateBtn.on('click', () => {
-    $projectTemplateButtons.removeClass('hidden');
-    $useCustomTemplateBtn.prop('checked', false);
+  changeTemplateBtn.addEventListener('click', () => {
+    projectTemplateButtons.forEach((btn) => {
+      btn.classList.remove('hidden');
+    });
+
+    useCustomTemplateBtn.forEach((btn) => {
+      // eslint-disable-next-line no-param-reassign
+      btn.checked = false;
+    });
+
     disableCustomTemplate();
   });
 
-  $pagination.on('ajax:success', (event) => {
-    const $tabContent = $pagination.closest(
+  pagination?.addEventListener('ajax:success', (event) => {
+    const tabContent = pagination.closest(
       [INSTANCE_TAB_CONTENT_SELECTOR, GROUP_TAB_CONTENT_SELECTOR].join(','),
     );
     const doc = event.detail[0];
     const element = document.adoptNode(doc.body.firstElementChild);
 
-    $tabContent.empty().append(element);
+    tabContent.innerHTML = '';
+    tabContent.append(element);
     bindEvents();
   });
 
-  $(document).on('click', '.js-template-group-options', function toggleExpandedClass() {
-    $(this).toggleClass('expanded');
+  document.querySelectorAll('.js-template-group-options').forEach((tmplEl) => {
+    tmplEl.addEventListener('click', function toggleExpandedClass(el) {
+      el.currentTarget.classList.toggle('expanded');
+    });
   });
 
   document.querySelector('.js-create-project-button').addEventListener('click', (e) => {
@@ -111,19 +126,22 @@ const bindEvents = () => {
 };
 
 export default () => {
-  const $navElement = $('.js-custom-instance-project-templates-nav-link');
-  const $tabContent = $(INSTANCE_TAB_CONTENT_SELECTOR);
-  const $groupNavElement = $('.js-custom-group-project-templates-nav-link');
-  const $groupTabContent = $(GROUP_TAB_CONTENT_SELECTOR);
-  const fetchHtmlForTabContent = async ($content) => {
-    const response = await axios.get($content.data('initialTemplates'));
+  const navElement = document.querySelector('.js-custom-instance-project-templates-nav-link');
+  const tabContent = document.querySelector(INSTANCE_TAB_CONTENT_SELECTOR);
+  const groupNavElement = document.querySelector('.js-custom-group-project-templates-nav-link');
+  const groupTabContent = document.querySelector(GROUP_TAB_CONTENT_SELECTOR);
+
+  const fetchHtmlForTabContent = async (content) => {
+    const response = await axios.get(content.dataset.initialTemplates);
     // eslint-disable-next-line no-param-reassign,no-unsanitized/property
-    $content[0].innerHTML = response.data;
+    content.innerHTML = response.data;
     bindEvents();
   };
 
-  $navElement.one('click', () => fetchHtmlForTabContent($tabContent));
-  $groupNavElement.one('click', () => fetchHtmlForTabContent($groupTabContent));
+  navElement.addEventListener('click', () => fetchHtmlForTabContent(tabContent), { once: true });
+  groupNavElement.addEventListener('click', () => fetchHtmlForTabContent(groupTabContent), {
+    once: true,
+  });
 
   bindEvents();
 };
