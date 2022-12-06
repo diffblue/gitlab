@@ -9,19 +9,19 @@ RSpec.describe SystemCheck::Geo::ClocksSynchronizationCheck, :silence_stdout, fe
 
   context 'with default accessor values' do
     describe '#ntp_host' do
-      it 'returns defined value from NTP_HOST env variable' do
+      it 'returns the default value' do
         expect(subject.ntp_host).to eq('pool.ntp.org')
       end
     end
 
     describe '#ntp_port' do
-      it 'returns defined value from NTP_PORT env variable' do
+      it 'returns the default value' do
         expect(subject.ntp_port).to eq('ntp')
       end
     end
 
     describe '#ntp_timeout' do
-      it 'returns defined value from NTP_TIMEOUT env variable' do
+      it 'returns the default value' do
         expect(subject.ntp_timeout).to eq(60)
       end
     end
