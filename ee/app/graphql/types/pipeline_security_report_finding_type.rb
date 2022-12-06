@@ -13,6 +13,37 @@ module Types
           null: true,
           description: 'Type of the security report that found the vulnerability finding.'
 
+    field :project,
+          type: ::Types::ProjectType,
+          null: true,
+          description: 'Project on which the vulnerability finding was found.'
+
+    field :description,
+          type: GraphQL::Types::String,
+          null: true,
+          description: 'Description of the vulnerability finding.'
+
+    field :location,
+          type: VulnerabilityLocationType,
+          null: true,
+          description: 'Location metadata for the vulnerability. Its fields depend on the type of security scan that ' \
+            'found the vulnerability.'
+
+    field :solution,
+          type: GraphQL::Types::String,
+          null: true,
+          description: "URL to the vulnerability's details page."
+
+    field :state,
+          type: VulnerabilityStateEnum,
+          null: true,
+          description: "Finding status."
+
+    field :details, [::Types::VulnerabilityDetailType],
+          null: false,
+          resolver: Resolvers::Vulnerabilities::DetailsResolver,
+          description: 'Details of the security finding.'
+
     # TODO: deprecate the `name` field because it's been replaced by the `title` field
     # See https://gitlab.com/gitlab-org/gitlab/-/issues/346335
     field :name,
@@ -81,40 +112,8 @@ module Types
     field :uuid,
           type: GraphQL::Types::String,
           null: true,
-          description: 'Name of the vulnerability finding.'
-
-    field :project,
-          type: ::Types::ProjectType,
-          null: true,
-          description: 'Project on which the vulnerability finding was found.'
-
-    field :description,
-          type: GraphQL::Types::String,
-          null: true,
-          description: 'Description of the vulnerability finding.'
-
-    field :location,
-          type: VulnerabilityLocationType,
-          null: true,
-          description: <<~DESC.squish
-            Location metadata for the vulnerability.
-            Its fields depend on the type of security scan that found the vulnerability.
-          DESC
-
-    field :solution,
-          type: GraphQL::Types::String,
-          null: true,
-          description: "URL to the vulnerability's details page."
-
-    field :state,
-          type: VulnerabilityStateEnum,
-          null: true,
-          description: "Finding status."
-
-    field :details, [::Types::VulnerabilityDetailType],
-          null: false,
-          resolver: Resolvers::Vulnerabilities::DetailsResolver,
-          description: 'Details of the security finding.'
+          description: 'UUIDv5 digest based on the vulnerability\'s report type, primary identifier, location, ' \
+            'fingerprint, project identifier.'
 
     markdown_field :description_html, null: true
 
