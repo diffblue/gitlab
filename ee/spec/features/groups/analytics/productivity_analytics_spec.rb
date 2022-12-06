@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups::ProductivityAnalytics' do
+RSpec.describe 'Groups::ProductivityAnalytics', feature_category: :value_stream_management do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:project) { create(:project, group: group) }

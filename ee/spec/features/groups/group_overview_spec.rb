@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group information', :js, :aggregate_failures do
+RSpec.describe 'Group information', :js, :aggregate_failures, feature_category: :subgroups do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 

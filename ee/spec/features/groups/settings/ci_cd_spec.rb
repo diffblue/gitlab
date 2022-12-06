@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group CI/CD settings' do
+RSpec.describe 'Group CI/CD settings', feature_category: :continuous_integration do
   include Spec::Support::Helpers::ModalHelpers
   include WaitForRequests
 

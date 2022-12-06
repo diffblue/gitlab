@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User creates iteration in a cadence', :js do
+RSpec.describe 'User creates iteration in a cadence', :js, feature_category: :team_planning do
   let_it_be(:now) { Time.zone.now }
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:group_member, :maintainer, user: create(:user), group: group).user }

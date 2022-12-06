@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe 'Multiple value streams', :js do
+RSpec.describe 'Multiple value streams', :js, feature_category: :value_stream_management do
   include CycleAnalyticsHelpers
 
   let_it_be(:group) { create(:group, name: 'CA-test-group') }

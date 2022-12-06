@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Edit group settings' do
+RSpec.describe 'Edit group settings', feature_category: :subgroups do
   include Select2Helper
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group reporting settings', :js do
+RSpec.describe 'Group reporting settings', :js, feature_category: :subgroups do
   let_it_be(:user) { create(:user) }
 
   let(:group) { create(:group) }

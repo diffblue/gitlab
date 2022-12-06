@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Settings > Group Hooks' do
+RSpec.describe 'Groups > Settings > Group Hooks', feature_category: :integrations do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
 

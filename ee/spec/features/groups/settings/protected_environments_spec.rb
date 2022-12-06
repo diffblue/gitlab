@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Protected Environments', :js do
+RSpec.describe 'Protected Environments', :js, feature_category: :environment_management do
   let_it_be_with_refind(:organization) { create(:group, :private) }
   let_it_be(:developer_group) { create(:group, :private, name: 'developer-group', parent: organization) }
   let_it_be(:operator_group) { create(:group, :private, name: 'operator-group', parent: organization) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'SAML group links' do
+RSpec.describe 'SAML group links', feature_category: :authentication_and_authorization do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 

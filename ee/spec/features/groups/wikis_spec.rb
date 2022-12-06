@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe 'Group wikis', :js do
+RSpec.describe 'Group wikis', :js, feature_category: :wiki do
   include WikiHelpers
 
   let_it_be(:user) { create(:user) }

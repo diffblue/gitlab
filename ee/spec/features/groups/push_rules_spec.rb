@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Push Rules', :js do
+RSpec.describe 'Groups > Push Rules', :js, feature_category: :source_code_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:push_rule) { create(:push_rule_without_project) }
   let_it_be(:group) { create(:group, push_rule: push_rule) }

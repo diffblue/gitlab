@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group issues page' do
+RSpec.describe 'Group issues page', feature_category: :team_planning do
   let(:group) { create(:group) }
   let(:project) { create(:project, :public, group: group) }
 

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Contribution Analytics', :js do
+RSpec.describe 'Groups > Contribution Analytics', :js, feature_category: :value_stream_management do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:empty_project) { create(:project, namespace: group) }
