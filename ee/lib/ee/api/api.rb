@@ -63,6 +63,7 @@ module EE
 
         mount ::API::Internal::AppSec::Dast::SiteValidations
         mount ::API::Internal::UpcomingReconciliations
+        mount ::API::Internal::SuggestedReviewers
       end
     end
   end

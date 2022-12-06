@@ -10,6 +10,10 @@ module EE
       false
     end
 
+    def suggested_reviewers_bot?
+      false
+    end
+
     def group_sso?(_)
       false
     end
