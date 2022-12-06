@@ -56,7 +56,10 @@ describe('Filter Item component', () => {
       const tooltipItem = getBinding(dropdownItem().element, 'gl-tooltip');
 
       expect(tooltipItem.value).toBe(tooltip);
-      expect(tooltip.modifiers).toBeUndefined();
+      expect(tooltipItem.modifiers).toEqual({
+        left: true,
+        viewport: true,
+      });
     });
   });
 
