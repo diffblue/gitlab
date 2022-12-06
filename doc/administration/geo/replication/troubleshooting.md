@@ -80,6 +80,21 @@ All projects are in hashed storage? ... yes
 Checking Geo ... Finished
 ```
 
+Since GitLab 15.7 you can specify a custom NTP server to perform comparisons using ENV variables. 
+If none is specified it will use the default `pool.ntp.org`:
+
+-`NTP_HOST`
+-`NTP_PORT`
+-`NTP_TIMEOUT`
+
+Example: 
+
+```shell
+export NTP_HOST="ntp.ubuntu.com"
+export NTP_TIMEOUT="30"
+sudo gitlab-rake gitlab:geo:check
+```
+
 #### Sync status Rake task
 
 Current sync information can be found manually by running this Rake task on any
