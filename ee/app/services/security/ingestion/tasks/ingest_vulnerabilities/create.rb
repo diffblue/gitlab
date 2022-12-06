@@ -51,7 +51,12 @@ module Security
           end
 
           def vulnerability_state(feedback)
-            feedback ? :dismissed : :detected
+            case feedback&.feedback_type
+            when "dismissal"
+              :dismissed
+            else
+              :detected
+            end
           end
         end
       end
