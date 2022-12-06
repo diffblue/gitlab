@@ -85,8 +85,8 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
   end
 
   describe '.allow_cross_slot_commands' do
-    context 'with feature flags enabled' do
-      it 'does not raise for invalid arguments' do
+    context 'with validate_allowed_cmd set to true' do
+      it 'runs validation for allowed commands' do
         expect(
           described_class.allow_cross_slot_commands do
             described_class.validate([[:mget, 'foo', 'bar']], true)
@@ -109,7 +109,7 @@ RSpec.describe Gitlab::Instrumentation::RedisClusterValidator do
       end
     end
 
-    context 'with feature flag disabled' do
+    context 'with validate_allowed_cmd set to false' do
       it 'does not run for allowed commands' do
         expect(
           described_class.allow_cross_slot_commands do
