@@ -26,6 +26,7 @@ import {
   TOKEN_TYPE_ORGANIZATION,
   TOKEN_TYPE_RELEASE,
   TOKEN_TYPE_TYPE,
+  TOKEN_TYPE_SEARCH_WITHIN,
   TOKEN_TYPE_WEIGHT,
 } from 'ee/vue_shared/components/filtered_search_bar/constants';
 import BlockingIssuesCount from 'ee/issues/components/blocking_issues_count.vue';
@@ -268,6 +269,7 @@ describe('EE IssuesListApp component', () => {
           { type: TOKEN_TYPE_MY_REACTION },
           { type: TOKEN_TYPE_ORGANIZATION },
           { type: TOKEN_TYPE_RELEASE },
+          { type: TOKEN_TYPE_SEARCH_WITHIN },
           { type: TOKEN_TYPE_TYPE },
           { type: TOKEN_TYPE_WEIGHT },
         ]);
