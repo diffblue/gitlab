@@ -37,10 +37,10 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService do
       end
     end
 
-    shared_examples 'limit exceeded' do
+    shared_examples 'quota exceeded' do
       before do
         allow(pipeline.project).to receive(:ci_minutes_usage)
-          .and_return(double('usage', minutes_used_up?: true, limit_enabled?: true))
+          .and_return(double('usage', minutes_used_up?: true, quota_enabled?: true))
       end
 
       it 'drops the job with ci_quota_exceeded reason' do
@@ -96,7 +96,7 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService do
       context 'when the CI quota is exceeded' do
         before do
           allow(pipeline.project).to receive(:ci_minutes_usage)
-            .and_return(double('usage', minutes_used_up?: true, limit_enabled?: true))
+            .and_return(double('usage', minutes_used_up?: true, quota_enabled?: true))
         end
 
         it_behaves_like 'jobs allowed to run'
@@ -109,7 +109,7 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService do
       end
 
       it_behaves_like 'jobs allowed to run'
-      it_behaves_like 'limit exceeded'
+      it_behaves_like 'quota exceeded'
     end
 
     context 'with private projects' do
@@ -118,7 +118,7 @@ RSpec.describe Ci::PipelineCreation::DropNotRunnableBuildsService do
       end
 
       it_behaves_like 'jobs allowed to run'
-      it_behaves_like 'limit exceeded'
+      it_behaves_like 'quota exceeded'
     end
   end
 end

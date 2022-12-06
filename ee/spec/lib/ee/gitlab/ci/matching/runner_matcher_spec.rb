@@ -65,7 +65,7 @@ RSpec.describe Gitlab::Ci::Matching::RunnerMatcher do
         before do
           allow(project)
             .to receive(:ci_minutes_usage)
-            .and_return(double(minutes_used_up?: quota_minutes_used_up, limit_enabled?: true))
+            .and_return(double(minutes_used_up?: quota_minutes_used_up, quota_enabled?: true))
         end
 
         it { is_expected.to eq(result) }

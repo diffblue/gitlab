@@ -1279,10 +1279,16 @@ msgstr ""
 msgid "(Group Managed Account)"
 msgstr ""
 
+msgid "(Limited to %{quota} pipeline minutes per month)"
+msgstr ""
+
 msgid "(No changes)"
 msgstr ""
 
 msgid "(UTC %{offset}) %{timezone}"
+msgstr ""
+
+msgid "(Unlimited pipeline minutes)"
 msgstr ""
 
 msgid "(check progress)"
@@ -38054,6 +38060,9 @@ msgid "Share the %{strong_open}GitLab single sign-on URL%{strong_close} with mem
 msgstr ""
 
 msgid "Shared Runners"
+msgstr ""
+
+msgid "Shared Runners:"
 msgstr ""
 
 msgid "Shared projects"

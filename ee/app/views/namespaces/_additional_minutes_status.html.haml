@@ -3,7 +3,7 @@
 - namespace = local_assigns.fetch(:namespace)
 - minutes_usage = namespace.ci_minutes_usage
 - minutes_usage_presenter = Ci::Minutes::UsagePresenter.new(minutes_usage)
-- return unless minutes_usage.limit_enabled?
+- return unless minutes_usage.quota_enabled?
 
 
 - if minutes_usage_presenter.display_shared_runners_data?

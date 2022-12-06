@@ -13,7 +13,7 @@ RSpec.describe Ci::Minutes::Usage do
   describe '#enabled?' do
     let(:project) { create(:project, namespace: namespace) }
 
-    subject { usage.limit_enabled? }
+    subject { usage.quota_enabled? }
 
     context 'when namespace is root' do
       context 'when namespace has any project with shared runners enabled' do

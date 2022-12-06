@@ -31,26 +31,26 @@ module Gitlab
           # MAX_SHARED_RUNNERS_DURATION_MINUTES (pre-cost factor minutes)
           # for GitLab contributions, regardless of their plan.
           # In order to do that we can calculate the cost factor by adjusting it
-          # based on the monthly limit.
+          # based on the monthly quota.
           #
           # Example:
-          # - 300,000 duration in minutes * 0.03333333333 cost factor = 10,000 CI minutes limit
-          # - 10,000 CI minutes limit / 300,000 duration in minutes = 0.03333333333 cost factor
-          minutes_limit.monthly.to_f / MAX_SHARED_RUNNERS_DURATION_MINUTES
+          # - 300,000 duration in minutes * 0.03333333333 cost factor = 10,000 CI minutes quota
+          # - 10,000 CI minutes quota / 300,000 duration in minutes = 0.03333333333 cost factor
+          minutes_quota.monthly.to_f / MAX_SHARED_RUNNERS_DURATION_MINUTES
         end
 
         private
 
-        def minutes_limit
-          strong_memoize(:minutes_limit) do
-            ::Ci::Minutes::Limit.new(@build.project.root_namespace)
+        def minutes_quota
+          strong_memoize(:minutes_quota) do
+            ::Ci::Minutes::Quota.new(@build.project.root_namespace)
           end
         end
 
         def gitlab_contribution_cost_factor?
           merge_request &&
             gitlab_group_contribution? &&
-            minutes_limit.enabled?
+            minutes_quota.enabled?
         end
 
         def gitlab_group_contribution?
