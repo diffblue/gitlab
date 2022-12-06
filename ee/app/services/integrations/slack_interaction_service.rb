@@ -4,27 +4,32 @@ module Integrations
   class SlackInteractionService
     UnknownInteractionError = Class.new(StandardError)
 
+    INTERACTIONS = {
+      'view_closed' => SlackInteractions::IncidentManagement::IncidentModalClosedService,
+      'view_submission' => SlackInteractions::IncidentManagement::IncidentModalSubmitService
+    }.freeze
+
     def initialize(params)
-      @slack_interaction = params.delete(:type)
+      @interaction_type = params.delete(:type)
       @params = params
     end
 
     def execute
-      if route_to_interactivity_worker?
-        SlackInteractivityWorker.perform_async(slack_interaction: slack_interaction, params: params)
+      raise UnknownInteractionError, "Unable to handle interaction type: '#{interaction_type}'" \
+        unless interaction?(interaction_type)
 
-        return ServiceResponse.success
-      end
+      service_class = INTERACTIONS[interaction_type]
+      response = service_class.new(params).execute
 
-      raise UnknownInteractionError, "Unable to handle interaction type: '#{slack_interaction}'"
+      ServiceResponse.success(payload: response)
     end
 
     private
 
-    def route_to_interactivity_worker?
-      SlackInteractivityWorker.interaction?(slack_interaction)
-    end
+    attr_reader :interaction_type, :params
 
-    attr_reader :slack_interaction, :params
+    def interaction?(type)
+      INTERACTIONS.key?(type)
+    end
   end
 end

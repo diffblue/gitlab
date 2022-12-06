@@ -11,7 +11,7 @@ module API
         feature_category :integrations
 
         namespace 'integrations/slack' do
-          post :interactions do
+          post :interactions, urgency: :low do
             service_params = Gitlab::Json.parse(params[:payload]).deep_symbolize_keys!
             response = ::Integrations::SlackInteractionService.new(service_params).execute
 

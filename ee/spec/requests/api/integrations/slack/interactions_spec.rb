@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::Integrations::Slack::Interactions do
+RSpec.describe API::Integrations::Slack::Interactions, feature_category: :integrations do
   describe 'POST /integrations/slack/interactions' do
     let_it_be(:slack_installation) { create(:slack_integration) }
 
@@ -55,7 +55,7 @@ RSpec.describe API::Integrations::Slack::Interactions do
         }
       end
 
-      it 'calls the Slack Interctivity Worker', :sidekiq_inline, :clean_gitlab_redis_shared_state do
+      it 'calls the Slack Interactivity Service' do
         expect_next_instance_of(::Integrations::SlackInteractionService) do |service|
           expect(service).to receive(:execute).and_return(ServiceResponse.success)
         end
