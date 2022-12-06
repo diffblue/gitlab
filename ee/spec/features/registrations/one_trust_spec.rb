@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'OneTrust in the sign up flow' do
+RSpec.describe 'OneTrust in the sign up flow', feature_category: :system_access do
   let_it_be(:onetrust_url) { 'https://*.onetrust.com' }
   let_it_be(:one_trust_id) { SecureRandom.uuid }
   let_it_be(:user) { create(:user) }
