@@ -42,7 +42,7 @@ export const getCommitFromDeploymentNode = (deploymentNode) => {
 };
 
 /**
- * This function transforms deploymentNode object coming from GraphQL to object compatible with app/assets/javascripts/environments/components/environment_details_page.vue table
+ * This function transforms deploymentNode object coming from GraphQL to object compatible with app/assets/javascripts/environments/environment_details/page.vue table
  * @param {Object} deploymentNode
  * @returns {Object}
  */

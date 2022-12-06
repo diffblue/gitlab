@@ -11,12 +11,10 @@ import {
 } from '@gitlab/ui';
 import Commit from '~/vue_shared/components/commit.vue';
 import TimeAgoTooltip from '~/vue_shared/components/time_ago_tooltip.vue';
-import { __ } from '~/locale';
 import environmentDetailsQuery from '../graphql/queries/environment_details.query.graphql';
 import { convertToDeploymentTableRow } from '../helpers/deployment_data_transformation_helper';
-import DeploymentStatusBadge from './deployment_status_badge.vue';
-
-const ENVIRONMENT_DETAILS_PAGE_SIZE = 20;
+import DeploymentStatusBadge from '../components/deployment_status_badge.vue';
+import { ENVIRONMENT_DETAILS_PAGE_SIZE, ENVIRONMENT_DETAILS_TABLE_FIELDS } from './constants';
 
 export default {
   components: {
@@ -62,50 +60,7 @@ export default {
         loading: true,
       },
       loading: 0,
-      tableFields: [
-        {
-          key: 'status',
-          label: __('Status'),
-          columnClass: 'gl-w-10p',
-          tdClass: 'gl-vertical-align-middle!',
-        },
-        {
-          key: 'id',
-          label: __('ID'),
-          columnClass: 'gl-w-5p',
-          tdClass: 'gl-vertical-align-middle!',
-        },
-        {
-          key: 'triggerer',
-          label: __('Triggerer'),
-          columnClass: 'gl-w-10p',
-          tdClass: 'gl-vertical-align-middle!',
-        },
-        {
-          key: 'commit',
-          label: __('Commit'),
-          columnClass: 'gl-w-20p',
-          tdClass: 'gl-vertical-align-middle!',
-        },
-        {
-          key: 'job',
-          label: __('Job'),
-          columnClass: 'gl-w-20p',
-          tdClass: 'gl-vertical-align-middle!',
-        },
-        {
-          key: 'created',
-          label: __('Created'),
-          columnClass: 'gl-w-10p',
-          tdClass: 'gl-vertical-align-middle! gl-white-space-nowrap',
-        },
-        {
-          key: 'deployed',
-          label: __('Deployed'),
-          columnClass: 'gl-w-10p',
-          tdClass: 'gl-vertical-align-middle! gl-white-space-nowrap',
-        },
-      ],
+      tableFields: ENVIRONMENT_DETAILS_TABLE_FIELDS,
     };
   },
   computed: {

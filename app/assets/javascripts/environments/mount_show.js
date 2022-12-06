@@ -54,13 +54,13 @@ export const initPage = async () => {
   if (!gon.features.environmentDetailsVue) {
     return null;
   }
-  const EnvironmentsDetailPageModule = await import('./components/environment_details_page.vue');
+  const EnvironmentsDetailPageModule = await import('./environment_details/index.vue');
   const EnvironmentsDetailPage = EnvironmentsDetailPageModule.default;
   const dataElement = document.getElementById('environments-detail-view');
   const dataSet = convertObjectPropsToCamelCase(JSON.parse(dataElement.dataset.details));
 
   Vue.use(VueApollo);
-  const el = document.getElementById('app');
+  const el = document.getElementById('environment_details_page');
   return new Vue({
     el,
     apolloProvider: apolloProvider(),

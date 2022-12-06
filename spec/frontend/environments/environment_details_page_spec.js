@@ -4,11 +4,11 @@ import { GlLoadingIcon, GlTableLite } from '@gitlab/ui';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import createMockApollo from '../__helpers__/mock_apollo_helper';
 import waitForPromises from '../__helpers__/wait_for_promises';
-import EnvironmentsDetailPage from '../../../app/assets/javascripts/environments/components/environment_details_page.vue';
+import EnvironmentsDetailPage from '../../../app/assets/javascripts/environments/environment_details/index.vue';
 import getEnvironmentDetails from '../../../app/assets/javascripts/environments/graphql/queries/environment_details.query.graphql';
 import { resolvedEnvironmentDetails } from './graphql/mock_data';
 
-describe('~/environments/components/environment_details_page.vue', () => {
+describe('~/environments/environment_details/page.vue', () => {
   Vue.use(VueApollo);
 
   let wrapper;

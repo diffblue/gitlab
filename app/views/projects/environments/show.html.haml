@@ -9,7 +9,7 @@
   #environments-detail-view-header
 
   - if Feature.enabled?(:environment_details_vue, @project)
-    #app
+    #environment_details_page
   - else
     .environments-container
       - if @deployments.blank?
