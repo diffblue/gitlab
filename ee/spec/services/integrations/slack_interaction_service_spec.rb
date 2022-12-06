@@ -2,39 +2,53 @@
 
 require 'spec_helper'
 
-RSpec.describe Integrations::SlackInteractionService do
+RSpec.describe Integrations::SlackInteractionService, feature_category: :integrations do
   describe '#execute' do
     subject(:execute) { described_class.new(params).execute }
 
     let(:params) do
       {
-        type: 'view_closed',
-        event: {
-          foo: 'bar'
-        }
+        type: slack_interaction,
+        foo: 'bar'
       }
     end
 
-    it 'queues a interaction worker and returns success response' do
-      expect(Integrations::SlackInteractivityWorker).to receive(:perform_async)
-        .with(
-          slack_interaction: 'view_closed',
-          params: {
-            event: {
-              foo: 'bar'
-            }
-          }
-        )
+    context 'when view is closed' do
+      let(:slack_interaction) { 'view_closed' }
 
-      expect(execute.payload).to eq({})
+      it 'executes the correct service' do
+        view_closed_service = described_class::INTERACTIONS['view_closed']
 
-      is_expected.to be_success
+        expect_next_instance_of(view_closed_service, { foo: 'bar' }) do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
+        end
+
+        execute
+      end
     end
 
-    context 'when event is unknown' do
-      let(:params) { super().merge(type: 'foo') }
+    context 'when view is submitted' do
+      let(:slack_interaction) { 'view_submission' }
 
-      it 'raises an error' do
+      it 'executes the submission service' do
+        view_submission_service = described_class::INTERACTIONS['view_submission']
+
+        expect_next_instance_of(view_submission_service, { foo: 'bar' }) do |service|
+          expect(service).to receive(:execute).and_return(ServiceResponse.success)
+        end
+
+        execute
+      end
+    end
+
+    context 'when slack_interaction is not known' do
+      let(:slack_interaction) { 'foo' }
+
+      it 'raises an error and does not execute a service class' do
+        described_class::INTERACTIONS.each_value do |service_class|
+          expect(service_class).not_to receive(:new)
+        end
+
         expect { execute }.to raise_error(described_class::UnknownInteractionError)
       end
     end
