@@ -2,7 +2,7 @@
 import { GlIcon, GlLink, GlSprintf, GlTableLite, GlPopover } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { thWidthPercent } from '~/lib/utils/table_utility';
-import { sprintf } from '~/locale';
+import { s__, sprintf } from '~/locale';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import {
   HELP_LINK_ARIA_LABEL,
@@ -10,6 +10,8 @@ import {
   PROJECT_TABLE_LABEL_USAGE,
   containerRegistryId,
   containerRegistryPopoverId,
+  uploadsId,
+  uploadsPopoverId,
 } from '../constants';
 import { descendingStorageUsageSort } from '../utils';
 import StorageTypeIcon from './storage_type_icon.vue';
@@ -34,7 +36,26 @@ export default {
   },
   computed: {
     sizeSortedStorageTypes() {
-      return [...this.storageTypes].sort(descendingStorageUsageSort('value'));
+      const warnings = {
+        [containerRegistryId]: {
+          popoverId: containerRegistryPopoverId,
+          popoverContent: this.containerRegistryPopoverContent,
+        },
+        [uploadsId]: {
+          popoverId: uploadsPopoverId,
+          popoverContent: this.$options.i18n.uploadsPopoverContent,
+        },
+      };
+
+      return this.storageTypes
+        .map((type) => {
+          const warning = warnings[type.storageType.id] || null;
+          return {
+            warning,
+            ...type,
+          };
+        })
+        .sort(descendingStorageUsageSort('value'));
     },
   },
   methods: {
@@ -57,8 +78,11 @@ export default {
       thClass: thWidthPercent(10),
     },
   ],
-  containerRegistryId,
-  containerRegistryPopoverId,
+  i18n: {
+    uploadsPopoverContent: s__(
+      'NamespaceStorage|Uploads are not counted in namespace storage quotas.',
+    ),
+  },
 };
 </script>
 <template>
@@ -102,18 +126,18 @@ export default {
     <template #cell(value)="{ item }">
       {{ numberToHumanSize(item.value, 1) }}
 
-      <template v-if="item.storageType.id === $options.containerRegistryId">
+      <template v-if="item.warning">
         <gl-icon
-          :id="$options.containerRegistryPopoverId"
+          :id="item.warning.popoverId"
           name="warning"
           class="gl-mt-2 gl-lg-mt-0 gl-lg-ml-2"
         />
         <gl-popover
           triggers="hover focus"
           placement="top"
-          :target="$options.containerRegistryPopoverId"
-          :content="containerRegistryPopoverContent"
-          :data-testid="$options.containerRegistryPopoverId"
+          :target="item.warning.popoverId"
+          :content="item.warning.popoverContent"
+          :data-testid="item.warning.popoverId"
         />
       </template>
     </template>
