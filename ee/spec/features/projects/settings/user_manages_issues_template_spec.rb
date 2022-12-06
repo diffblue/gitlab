@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'EE > Projects > Settings > User manages issue template' do
+RSpec.describe 'EE > Projects > Settings > User manages issue template', feature_category: :team_planning do
   let(:user) { create(:user) }
   let(:project) { create(:project, :public, :repository, namespace: user.namespace) }
 

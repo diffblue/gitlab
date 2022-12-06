@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Projects > Audit Events', :js do
+RSpec.describe 'Projects > Audit Events', :js, feature_category: :audit_events do
   include Spec::Support::Helpers::Features::MembersHelpers
 
   let_it_be(:user) { create(:user) }

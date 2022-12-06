@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'New project', :js do
+RSpec.describe 'New project', :js, feature_category: :projects do
   let(:user) { create(:admin) }
   let(:premium_plan) { create(:license, plan: License::PREMIUM_PLAN) }
 

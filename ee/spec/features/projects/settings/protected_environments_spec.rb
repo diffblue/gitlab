@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Protected Environments' do
+RSpec.describe 'Protected Environments', feature_category: :environment_management do
   include Spec::Support::Helpers::ModalHelpers
 
   let(:group) { create(:group) }

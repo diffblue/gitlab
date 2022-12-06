@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project settings > Issues', :js do
+RSpec.describe 'Project settings > Issues', :js, feature_category: :team_planning do
   let(:project) { create(:project, :public) }
   let(:user) { create(:user) }
 

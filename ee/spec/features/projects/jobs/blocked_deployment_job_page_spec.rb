@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Blocked deployment job page', :js do
+RSpec.describe 'Blocked deployment job page', :js, feature_category: :continuous_integration do
   let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
   let(:build) { create(:ci_build, :manual, environment: 'production', project: project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User edits On-demand Scan' do
+RSpec.describe 'User edits On-demand Scan', feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:dast_profile) { create(:dast_profile, project: project) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User manages merge trains option', :js do
+RSpec.describe 'User manages merge trains option', :js, feature_category: :merge_trains do
   let_it_be(:project, refind: true) { create(:project) }
   let_it_be(:user) { create(:user) }
 

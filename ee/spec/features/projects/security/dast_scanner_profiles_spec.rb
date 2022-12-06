@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User sees Scanner profile' do
+RSpec.describe 'User sees Scanner profile', feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
 

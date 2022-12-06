@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Environments page', :js do
+RSpec.describe 'Environments page', :js, feature_category: :environment_management do
   let(:project) { create(:project, :repository) }
   let!(:environment) { create(:environment, name: 'production', project: project) }
   let(:user) { create(:user) }

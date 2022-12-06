@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Environment detail page' do
+RSpec.describe 'Environment detail page', feature_category: :environment_management do
   let_it_be(:project) do
     create(:project, :repository).tap { |p| p.ci_cd_settings.update!(forward_deployment_enabled: false) }
   end

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'issues canonical link' do
+RSpec.describe 'issues canonical link', feature_category: :team_planning do
   include Spec::Support::Helpers::Features::CanonicalLinkHelpers
 
   let(:epic) { create(:epic) }
