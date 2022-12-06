@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Issues sub nav EE' do
+RSpec.describe 'Issues sub nav EE', feature_category: :team_planning do
   let(:user) { create(:user) }
   let(:project) { create(:project) }
 

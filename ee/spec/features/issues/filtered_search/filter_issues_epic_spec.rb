@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Filter issues by epic', :js do
+RSpec.describe 'Filter issues by epic', :js, feature_category: :team_planning do
   include FilteredSearchHelpers
 
   let_it_be(:group) { create(:group) }

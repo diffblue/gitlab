@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Profile > Usage Quota' do
+RSpec.describe 'Profile > Usage Quota', feature_category: :purchase do
   include ::Ci::MinutesHelpers
 
   using RSpec::Parameterized::TableSyntax

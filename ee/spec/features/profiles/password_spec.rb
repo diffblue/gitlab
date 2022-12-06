@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Profile > Password' do
+RSpec.describe 'Profile > Password', feature_category: :users do
   let_it_be(:user) { create(:user) }
 
   def save_user_new_password

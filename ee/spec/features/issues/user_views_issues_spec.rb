@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User views issues page', :js do
+RSpec.describe 'User views issues page', :js, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :public) }
   let_it_be(:issue1) { create(:issue, project: project, health_status: 'on_track', weight: 2) }

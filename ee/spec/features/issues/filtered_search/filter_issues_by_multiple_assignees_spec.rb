@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Filter issues by multiple assignees', :js do
+RSpec.describe 'Filter issues by multiple assignees', :js, feature_category: :team_planning do
   include FilteredSearchHelpers
 
   let_it_be(:user) { create(:user) }
