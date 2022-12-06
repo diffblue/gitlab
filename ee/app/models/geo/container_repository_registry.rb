@@ -83,7 +83,7 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
     num_rows = self.class
                    .where(container_repository_id: container_repository_id)
                    .with_state(:started)
-                   .update_all(state: 'synced')
+                   .update_all(state: Geo::ContainerRepositoryRegistry::STATE_VALUES[:synced])
 
     num_rows > 0
   end
