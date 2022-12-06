@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe 'Company Information', :js do
+RSpec.describe 'Company Information', :js, feature_category: :experimentation_adoption do
   let_it_be(:user) { create(:user) }
   let_it_be(:fields) { ['Company Name', 'Number of employees', 'Country', 'Telephone number (optional)', 'Website (optional)', 'GitLab Ultimate trial (optional)'] }
 

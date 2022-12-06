@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Login' do
+RSpec.describe 'Login', feature_category: :authentication_and_authorization do
   include LdapHelpers
   include UserLoginHelper
   include DeviseHelpers

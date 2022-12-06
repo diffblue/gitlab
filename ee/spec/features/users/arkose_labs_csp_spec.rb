@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'ArkoseLabs content security policy' do
+RSpec.describe 'ArkoseLabs content security policy', feature_category: :authentication_and_authorization do
   shared_examples 'configures Content Security Policy headers correctly' do
     context 'when feature flag is enabled' do
       let(:feature_flag_state) { true }

@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js do
+RSpec.describe 'Identity Verification', :clean_gitlab_redis_rate_limiting, :js,
+feature_category: :authentication_and_authorization do
   include EmailHelpers
   include SessionsHelper
 

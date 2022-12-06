@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe 'User sees experimental lmarketing header' do
+RSpec.describe 'User sees experimental lmarketing header', feature_category: :onboarding do
   let_it_be(:project) { create(:project, :public) }
 
   context 'when not logged in' do

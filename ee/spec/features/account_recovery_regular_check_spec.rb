@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Account recovery regular check callout' do
+RSpec.describe 'Account recovery regular check callout', feature_category: :user_management do
   context 'when signed in' do
     let(:user_two_factor_disabled) { create(:user) }
     let(:user_two_factor_enabled) { create(:user, :two_factor) }

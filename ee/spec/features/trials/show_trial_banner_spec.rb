@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Show trial banner', :js do
+RSpec.describe 'Show trial banner', :js, feature_category: :purchase do
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }

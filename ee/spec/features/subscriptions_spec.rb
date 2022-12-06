@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Subscriptions Content Security Policy' do
+RSpec.describe 'Subscriptions Content Security Policy', feature_category: :purchase do
   include ContentSecurityPolicyHelpers
 
   subject { response_headers['Content-Security-Policy'] }

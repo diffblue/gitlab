@@ -12,7 +12,7 @@ RSpec.describe 'Promotions', :js do
   let!(:issue) { create(:issue, project: project, author: user) }
   let(:otherproject) { create(:project, :repository, namespace: otherdeveloper.namespace) }
 
-  describe 'for merge request improve', :js do
+  describe 'for merge request improve', :js, feature_category: :code_review do
     before do
       allow(License).to receive(:current).and_return(nil)
       stub_application_setting(check_namespace_plan: false)
@@ -42,7 +42,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for repository features', :js do
+  describe 'for repository features', :js, feature_category: :source_code_management do
     before do
       allow(License).to receive(:current).and_return(nil)
       stub_application_setting(check_namespace_plan: false)
@@ -70,7 +70,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for burndown charts', :js do
+  describe 'for burndown charts', :js, feature_category: :planning_analytics do
     before do
       stub_application_setting(check_namespace_plan: true)
       allow(Gitlab).to receive(:com?).and_return(true)
@@ -98,7 +98,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for epics in issues sidebar', :js do
+  describe 'for epics in issues sidebar', :js, feature_category: :source_code_management do
     shared_examples 'Epics promotion' do
       it 'appears on the page' do
         visit project_issue_path(project, issue)
@@ -172,7 +172,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for issue weight', :js do
+  describe 'for issue weight', :js, feature_category: :team_planning do
     before do
       allow(License).to receive(:current).and_return(nil)
       stub_application_setting(check_namespace_plan: false)
@@ -251,7 +251,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for issue templates', :js do
+  describe 'for issue templates', :js, feature_category: :team_planning do
     before do
       allow(License).to receive(:current).and_return(nil)
       stub_application_setting(check_namespace_plan: false)
@@ -270,7 +270,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for project audit events', :js do
+  describe 'for project audit events', :js, feature_category: :audit_events do
     before do
       allow(License).to receive(:current).and_return(nil)
       stub_application_setting(check_namespace_plan: false)
@@ -306,7 +306,7 @@ RSpec.describe 'Promotions', :js do
     end
   end
 
-  describe 'for advanced search', :js do
+  describe 'for advanced search', :js, feature_category: :global_search do
     before do
       allow(License).to receive(:current).and_return(nil)
       stub_application_setting(check_namespace_plan: false)

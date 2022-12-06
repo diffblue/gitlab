@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Select Namespace', :js do
+RSpec.describe 'Trial Select Namespace', :js, feature_category: :purchase do
   include Select2Helper
 
   let_it_be(:group) { create(:group, path: 'group-test') }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Burndown charts', :js do
+RSpec.describe 'Burndown charts', :js, feature_category: :team_planning do
   let(:current_user) { create(:user) }
   let(:milestone) do
     create(:milestone, project: project,

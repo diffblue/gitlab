@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Geo read-only message', :geo do
+RSpec.describe 'Geo read-only message', :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }
