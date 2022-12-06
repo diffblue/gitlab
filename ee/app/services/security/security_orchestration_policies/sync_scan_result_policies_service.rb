@@ -8,11 +8,6 @@ module Security
       end
 
       def execute
-        if configuration.namespace? && Feature.disabled?(:group_level_scan_result_policies, configuration.namespace)
-          configuration.delete_scan_finding_rules
-          return
-        end
-
         projects.find_each do |project|
           Security::ProcessScanResultPolicyWorker.perform_async(project.id, configuration.id)
         end

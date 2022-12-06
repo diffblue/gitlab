@@ -6,12 +6,10 @@ import { createAlert } from '~/flash';
 import { getTimeago } from '~/lib/utils/datetime_utility';
 import { mergeUrlParams } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import projectScanExecutionPoliciesQuery from '../../graphql/queries/project_scan_execution_policies.query.graphql';
 import groupScanExecutionPoliciesQuery from '../../graphql/queries/group_scan_execution_policies.query.graphql';
 import projectScanResultPoliciesQuery from '../../graphql/queries/project_scan_result_policies.query.graphql';
 import groupScanResultPoliciesQuery from '../../graphql/queries/group_scan_result_policies.query.graphql';
-import deprecatedScanResultPoliciesQuery from '../../graphql/queries/scan_result_policies.query.graphql';
 import { getPolicyType } from '../../utils';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
 import PolicyDrawer from '../policy_drawer/policy_drawer.vue';
@@ -67,7 +65,6 @@ export default {
   directives: {
     GlTooltip: GlTooltipDirective,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['documentationPath', 'namespacePath', 'namespaceType', 'newPolicyPath'],
   props: {
     hasPolicyProject: {
@@ -99,33 +96,18 @@ export default {
     },
     scanResultPolicies: {
       query() {
-        if (
-          !this.glFeatures.groupLevelScanResultPolicies &&
-          this.namespaceType === NAMESPACE_TYPES.PROJECT
-        ) {
-          return deprecatedScanResultPoliciesQuery;
-        }
         return NAMESPACE_QUERY_DICT.scanResult[this.namespaceType];
       },
       variables() {
-        if (this.glFeatures.groupLevelScanResultPolicies) {
-          return {
-            fullPath: this.namespacePath,
-            relationship: this.selectedPolicySource,
-          };
-        }
-        return { fullPath: this.namespacePath };
+        return {
+          fullPath: this.namespacePath,
+          relationship: this.selectedPolicySource,
+        };
       },
       update(data) {
         return data?.namespace?.scanResultPolicies?.nodes ?? [];
       },
       error: createPolicyFetchError,
-      skip() {
-        return (
-          this.namespaceType !== NAMESPACE_TYPES.PROJECT &&
-          !this.glFeatures.groupLevelScanResultPolicies
-        );
-      },
     },
   },
   data() {

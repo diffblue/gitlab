@@ -629,12 +629,6 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
 
     context 'when associated to a project' do
       it_behaves_like 'approval rules deletion'
-
-      context 'with orphans rules' do
-        let(:security_orchestration_policy_configuration_id) { nil }
-
-        it_behaves_like 'approval rules deletion'
-      end
     end
 
     context 'when associated to namespace' do

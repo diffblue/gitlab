@@ -9,12 +9,8 @@ module EE
 
         prepended do
           before_action do
-            if @project.present?
-              if @project.licensed_feature_available?(:security_orchestration_policies)
-                push_licensed_feature(:security_orchestration_policies)
-              end
-
-              push_frontend_feature_flag(:group_level_scan_result_policies, @project.namespace)
+            if @project&.licensed_feature_available?(:security_orchestration_policies)
+              push_licensed_feature(:security_orchestration_policies)
             end
           end
         end

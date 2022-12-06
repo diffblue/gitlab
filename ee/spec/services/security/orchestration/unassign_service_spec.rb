@@ -78,10 +78,22 @@ RSpec.describe Security::Orchestration::UnassignService do
         let(:service) { described_class.new(container: container, current_user: current_user) }
 
         context 'with scan_finding rule' do
-          let_it_be(:scan_finding_rule) { create(:approval_project_rule, :scan_finding, project: container) }
           let_it_be(:merge_request) { create(:merge_request, target_project: container, source_project: container) }
+
+          let_it_be(:scan_finding_rule) do
+            create(:approval_project_rule,
+              :scan_finding,
+              project: container,
+              security_orchestration_policy_configuration_id: container.security_orchestration_policy_configuration.id
+            )
+          end
+
           let_it_be(:scan_finding_mr_rule) do
-            create(:report_approver_rule, :scan_finding, merge_request: merge_request)
+            create(:report_approver_rule,
+              :scan_finding,
+              merge_request: merge_request,
+              security_orchestration_policy_configuration_id: container.security_orchestration_policy_configuration.id
+            )
           end
 
           it 'deletes scan finding approval rules related to the project' do

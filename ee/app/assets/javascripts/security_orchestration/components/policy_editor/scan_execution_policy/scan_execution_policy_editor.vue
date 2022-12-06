@@ -1,6 +1,5 @@
 <script>
 import { GlEmptyState, GlButton } from '@gitlab/ui';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { joinPaths, visitUrl, setUrlFragment } from '~/lib/utils/url_utility';
 import { __, s__ } from '~/locale';
 import {
@@ -55,7 +54,6 @@ export default {
     PolicyEditorLayout,
     PolicyRuleBuilder,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: [
     'disableScanPolicyUpdate',
     'policyEditorEmptyStateSvgPath',

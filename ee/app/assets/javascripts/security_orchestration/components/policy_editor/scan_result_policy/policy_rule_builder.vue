@@ -95,10 +95,7 @@ export default {
       },
     },
     displayBranchSelector() {
-      return (
-        !this.glFeatures.groupLevelScanResultPolicies ||
-        NAMESPACE_TYPES.PROJECT === this.namespaceType
-      );
+      return NAMESPACE_TYPES.PROJECT === this.namespaceType;
     },
     isGroupLevelBranchesValid() {
       return this.enteredBranch.length > 0;

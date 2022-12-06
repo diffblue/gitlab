@@ -4,7 +4,6 @@ import { s__ } from '~/locale';
 import { getParameterByName, removeParams, visitUrl } from '~/lib/utils/url_utility';
 import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { POLICY_TYPE_COMPONENT_OPTIONS } from '../constants';
-import { NAMESPACE_TYPES } from '../../constants';
 import PolicySelection from './policy_selection.vue';
 import PolicyEditor from './policy_editor.vue';
 
@@ -21,15 +20,12 @@ export default {
   },
   data() {
     return {
-      selectedPolicy: this.initialPolicy(),
+      selectedPolicy: this.policyFromUrl(),
     };
   },
   computed: {
     enableWizard() {
-      if (this.glFeatures.groupLevelScanResultPolicies) {
-        return !this.existingPolicy;
-      }
-      return this.namespaceType === NAMESPACE_TYPES.PROJECT && !this.existingPolicy;
+      return !this.existingPolicy;
     },
     glPathItems() {
       const hasPolicy = Boolean(this.selectedPolicy);
@@ -70,14 +66,6 @@ export default {
       return Object.values(POLICY_TYPE_COMPONENT_OPTIONS).find(
         ({ urlParameter }) => urlParameter === policyType,
       );
-    },
-    initialPolicy() {
-      if (this.glFeatures.groupLevelScanResultPolicies) {
-        return this.policyFromUrl();
-      }
-      return this.namespaceType === NAMESPACE_TYPES.GROUP
-        ? POLICY_TYPE_COMPONENT_OPTIONS.scanExecution
-        : this.policyFromUrl();
     },
   },
   i18n: {
