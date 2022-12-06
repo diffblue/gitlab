@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User adds to merge train when pipeline succeeds', :js do
+RSpec.describe 'User adds to merge train when pipeline succeeds', :js, feature_category: :merge_trains do
   let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
 

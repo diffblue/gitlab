@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'EE user opens IDE', :js do
+RSpec.describe 'EE user opens IDE', :js, feature_category: :web_ide do
   using RSpec::Parameterized::TableSyntax
   include WebIdeSpecHelpers
 

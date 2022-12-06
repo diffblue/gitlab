@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Two merge requests on a merge train' do
+RSpec.describe 'Two merge requests on a merge train', feature_category: :merge_trains do
   include RepoHelpers
 
   let(:project) { create(:project, :repository) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'On-call Schedules', :js do
+RSpec.describe 'On-call Schedules', :js, feature_category: :on_call_schedule_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be_with_reload(:project) { create(:project) }

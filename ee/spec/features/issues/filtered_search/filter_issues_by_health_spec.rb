@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Filter issues health status', :js do
+RSpec.describe 'Filter issues health status', :js, feature_category: :team_planning do
   include FilteredSearchHelpers
 
   let_it_be(:project) { create(:project) }

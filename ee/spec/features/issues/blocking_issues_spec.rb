@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Blocking issues count' do
+RSpec.describe 'Blocking issues count', feature_category: :team_planning do
   let_it_be(:project) { build(:project, :public) }
   let_it_be(:blocked_issue) { build(:issue, project: project, created_at: 1.day.ago) }
   let_it_be(:issue1) { build(:issue, project: project, created_at: 2.days.ago, title: 'blocks one issue') }

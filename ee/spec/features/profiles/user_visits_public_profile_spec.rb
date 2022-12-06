@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User visits public profile' do
+RSpec.describe 'User visits public profile', feature_category: :users do
   context 'when user profile is provisioned by group' do
     let_it_be(:group) { create(:group) }
     let_it_be(:scim_identity) { create(:scim_identity, group: group) }

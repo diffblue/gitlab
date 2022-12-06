@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Issues > Bulk edit issues' do
+RSpec.describe 'Issues > Bulk edit issues', feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:epic) { create(:epic, group: group) }

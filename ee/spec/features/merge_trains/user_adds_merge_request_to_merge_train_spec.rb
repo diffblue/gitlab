@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User adds a merge request to a merge train', :js do
+RSpec.describe 'User adds a merge request to a merge train', :js, feature_category: :merge_trains do
   let(:project) { create(:project, :repository) }
   let(:user) { create(:user) }
 
