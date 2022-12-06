@@ -69,14 +69,9 @@ button[disabled] {
   border-radius: 0;
 }
 
-.issuable-discussion .draft-note-component .referenced-commands.draft-note-commands {
-  margin: -$gl-padding-4 0 $gl-padding 40px;
-  z-index: 9999;
-  display: block;
-  position: relative;
-  border: 1px solid $border-color;
-  border-top: 0;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
-  padding-left: 56px;
+.referenced-commands.draft-note-commands {
+  @include gl-text-gray-500;
+  background-color: transparent;
+  border: 0;
+  padding: $gl-padding-8 0 0;
 }
