@@ -132,10 +132,10 @@ RSpec.describe Nav::TopNavHelper do
           title: "Switch to"
         )
         expected_primary = ::Gitlab::Nav::TopNavMenuItem.build(
-          css_class: 'qa-projects-dropdown',
           data: {
             track_action: 'click_dropdown',
-            track_label: 'projects_dropdown'
+            track_label: 'projects_dropdown',
+            qa_selector: 'projects_dropdown'
           },
           icon: 'project',
           id: 'project',
