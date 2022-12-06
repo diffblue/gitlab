@@ -17,7 +17,11 @@ module ApprovalRules
     attr_reader :rule
 
     def can_edit?
-      can?(current_user, :edit_approval_rule, rule)
+      skip_authorization || can?(current_user, :edit_approval_rule, rule)
+    end
+
+    def skip_authorization
+      @skip_authorization ||= params&.delete(:skip_authorization)
     end
 
     def success(*args, &blk)

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService do
+RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyService, feature_category: :security_policy_management do
   describe '#execute' do
     let(:policy_configuration) { create(:security_orchestration_policy_configuration, project: project) }
     let(:project) { create(:project, namespace: group) }
@@ -139,6 +139,17 @@ RSpec.describe Security::SecurityOrchestrationPolicies::ProcessScanResultPolicyS
           expect(project.approval_rules.count).to be expected_rules_count
         end
       end
+    end
+
+    context 'when user does not have edit_approval_rule permission' do
+      let(:policy) { build(:scan_result_policy, name: 'Test Policy', actions: [{ type: 'require_approval', approvals_required: 1, user_approvers_ids: [approver.id] }]) }
+
+      before do
+        allow(Ability).to receive(:allowed?).and_call_original
+        allow(Ability).to receive(:allowed?).with(approver, :edit_approval_rule, project).and_return(false)
+      end
+
+      it_behaves_like 'create approval rule with specific approver'
     end
 
     context 'with empty branches' do

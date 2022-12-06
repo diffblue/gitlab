@@ -32,6 +32,7 @@ module Security
 
       def rule_params(rule, rule_index, action_info)
         {
+          skip_authorization: true,
           approvals_required: action_info[:approvals_required],
           name: rule_name(policy[:name], rule_index),
           protected_branch_ids: project.protected_branches.get_ids_by_name(rule[:branches]),
