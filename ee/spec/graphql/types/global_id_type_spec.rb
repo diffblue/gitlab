@@ -15,7 +15,7 @@ RSpec.describe Types::GlobalIDType do
     let_it_be(:iteration) { create(:iteration) }
 
     shared_examples 'a working query' do
-      it 'works' do
+      it 'returns a successful response' do
         res = run_query(document, 'iterationId' => iteration.to_global_id.to_s)
 
         expect(res['errors']).to be_blank
