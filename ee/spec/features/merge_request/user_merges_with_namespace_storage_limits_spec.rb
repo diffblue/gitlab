@@ -2,7 +2,8 @@
 
 require "spec_helper"
 
-RSpec.describe "Merge request > User merges with namespace storage limits", :js, :saas, :sidekiq_inline do
+RSpec.describe "Merge request > User merges with namespace storage limits", :js, :saas, :sidekiq_inline,
+feature_category: :code_review do
   include NamespaceStorageHelpers
 
   let_it_be(:user) { create(:user) }
