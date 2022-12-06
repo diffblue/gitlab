@@ -87,8 +87,8 @@ RSpec.describe ::Routing::PseudonymizationHelper do
       it_behaves_like 'masked url'
     end
 
-    context 'when glm_content and gml_source is present' do
-      let(:masked_url) { "http://localhost/namespace#{group.id}/project#{project.id}/-/security/vulnerability_report?glm_content=register&glm_source=gitlab.com" }
+    context 'when _gl, glm_content and gml_source is present' do
+      let(:masked_url) { "http://localhost/namespace#{group.id}/project#{project.id}/-/security/vulnerability_report?_gl=foobar&glm_content=register&glm_source=gitlab.com" }
       let(:request) do
         double(
           :Request,
@@ -100,7 +100,7 @@ RSpec.describe ::Routing::PseudonymizationHelper do
           },
           protocol: 'http',
           host: 'localhost',
-          query_string: 'glm_content=register&glm_source=gitlab.com')
+          query_string: '_gl=foobar&glm_content=register&glm_source=gitlab.com')
       end
 
       before do
