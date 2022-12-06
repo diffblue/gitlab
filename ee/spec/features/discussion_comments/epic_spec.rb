@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Thread Comments Epic', :js do
+RSpec.describe 'Thread Comments Epic', :js, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:epic) { create(:epic) }
 

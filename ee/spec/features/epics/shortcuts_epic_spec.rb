@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Epic shortcuts', :js do
+RSpec.describe 'Epic shortcuts', :js, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:label) { create(:group_label, group: group, title: 'bug') }

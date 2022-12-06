@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "Confidential notes on epics", :js do
+RSpec.describe "Confidential notes on epics", :js, feature_category: :portfolio_management do
   before do
     stub_licensed_features(epics: true)
   end

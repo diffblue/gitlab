@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Dashboard projects' do
+RSpec.describe 'Dashboard projects', feature_category: :projects do
   let(:user) { create(:user) }
   let(:page_path) { dashboard_projects_path }
 

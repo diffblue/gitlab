@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'epic boards', :js do
+RSpec.describe 'epic boards', :js, feature_category: :portfolio_management do
   include DragTo
   include MobileHelpers
 

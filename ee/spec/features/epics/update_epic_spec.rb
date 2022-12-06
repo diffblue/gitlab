@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Update Epic', :js do
+RSpec.describe 'Update Epic', :js, feature_category: :portfolio_management do
   include DropzoneHelper
 
   let(:user) { create(:user) }

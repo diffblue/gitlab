@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Referencing Epics', :js do
+RSpec.describe 'Referencing Epics', :js, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:epic) { create(:epic, group: group) }

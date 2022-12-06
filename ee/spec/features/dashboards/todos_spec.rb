@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Dashboard todos' do
+RSpec.describe 'Dashboard todos', feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
 
   let(:page_path) { dashboard_todos_path }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Epic boards sidebar', :js do
+RSpec.describe 'Epic boards sidebar', :js, feature_category: :portfolio_management do
   include BoardHelpers
 
   let_it_be(:user) { create(:user) }

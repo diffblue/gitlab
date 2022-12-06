@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Delete Epic', :js do
+RSpec.describe 'Delete Epic', :js, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
   let(:epic) { create(:epic, group: group) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Epic Issues', :js do
+RSpec.describe 'Epic Issues', :js, feature_category: :portfolio_management do
   include NestedEpicsHelper
   include DragTo
 
