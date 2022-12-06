@@ -63,6 +63,7 @@ RSpec.describe Project do
 
     it { is_expected.to have_many(:security_scans) }
     it { is_expected.to have_many(:security_trainings) }
+    it { is_expected.to have_many(:vulnerability_hooks_integrations).class_name('Integration') }
 
     it { is_expected.to have_many(:dependency_list_exports).class_name('Dependencies::DependencyListExport') }
 

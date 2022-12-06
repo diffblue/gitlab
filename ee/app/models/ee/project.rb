@@ -118,6 +118,8 @@ module EE
 
       has_many :dependency_list_exports, class_name: 'Dependencies::DependencyListExport', inverse_of: :project
 
+      has_many :vulnerability_hooks_integrations, -> { vulnerability_hooks }, class_name: 'Integration'
+
       elastic_index_dependant_association :issues, on_change: :visibility_level
       elastic_index_dependant_association :merge_requests, on_change: :visibility_level
       elastic_index_dependant_association :notes, on_change: :visibility_level
