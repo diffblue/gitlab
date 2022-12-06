@@ -25,11 +25,7 @@ module API
         get do
           authorize_read_project_approval_rule!
 
-          if Feature.enabled?(:approval_rules_pagination, user_project)
-            present paginate(::Kaminari.paginate_array(user_project.visible_approval_rules)), with: EE::API::Entities::ProjectApprovalRule, current_user: current_user
-          else
-            present user_project.visible_approval_rules, with: EE::API::Entities::ProjectApprovalRule, current_user: current_user
-          end
+          present paginate(::Kaminari.paginate_array(user_project.visible_approval_rules)), with: EE::API::Entities::ProjectApprovalRule, current_user: current_user
         end
 
         desc 'Create new project approval rule' do
