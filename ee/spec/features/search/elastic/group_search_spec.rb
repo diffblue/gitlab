@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline do
+RSpec.describe 'Group elastic search', :js, :elastic, :sidekiq_inline, feature_category: :global_search do
   let(:user) { create(:user) }
   let(:group) { create(:group) }
   let(:project) { create(:project, :repository, :wiki_repo, namespace: group) }

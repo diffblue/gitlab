@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas, :saas_registration do
+RSpec.describe 'Standard flow for user picking company and joining a project', :js, :saas, :saas_registration,
+feature_category: :onboarding do
   context 'when project_list_filter_bar feature flag is enabled' do
     it 'registers the user and sends them to a project listing page' do
       stub_feature_flags(project_list_filter_bar: true)

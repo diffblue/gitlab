@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Registration group and project creation flow', :saas, :js do
+RSpec.describe 'Registration group and project creation flow', :saas, :js, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
 
   let(:experiments) { {} }

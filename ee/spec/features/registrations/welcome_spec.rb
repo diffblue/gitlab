@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Welcome screen', :js, :saas do
+RSpec.describe 'Welcome screen', :js, :saas, feature_category: :onboarding do
   let_it_be(:user) { create(:user, role: nil) }
 
   context 'when on GitLab.com' do
