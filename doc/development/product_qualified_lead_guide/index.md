@@ -144,7 +144,7 @@ sequenceDiagram
 
 ```
 
-#### Trial lead flow on CustomersDot (sync_to_gl)
+#### Trial lead flow on CustomersDot (`sync_to_gl`)
 
 ```mermaid
 sequenceDiagram
