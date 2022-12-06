@@ -37,6 +37,7 @@ class GitlabSubscriptionHistory < ApplicationRecord
     seats_in_use
     seats_owed
     max_seats_used_changed_at
+    last_seat_refresh_at
   ].freeze
 
   def self.create_from_change(change_type, attrs)
