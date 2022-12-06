@@ -47,7 +47,7 @@ RSpec.describe RegistrationsController, type: :request do
         it_behaves_like 'creates the user'
 
         it "records the user's data from Arkose Labs" do
-          expect { create_user }.to change(UserCustomAttribute, :count).from(0)
+          expect { create_user }.to change { UserCustomAttribute.count }.from(0)
         end
       end
 
@@ -215,15 +215,16 @@ RSpec.describe RegistrationsController, type: :request do
 
     context 'with onboarding progress' do
       before do
+        allow(::Gitlab::ApplicationRateLimiter).to receive(:throttled?).and_return(false)
         stub_feature_flags(arkose_labs_signup_challenge: false)
       end
 
       context 'when ensure_onboarding is enabled' do
         it 'sets onboarding' do
           create_user
-          user = User.find_by_username(user_attrs[:username])
 
-          expect(user.onboarding_in_progress).to be_truthy
+          created_user = User.find_by(email: user_attrs[:email])
+          expect(created_user.onboarding_in_progress).to be_truthy
         end
       end
 
@@ -234,9 +235,9 @@ RSpec.describe RegistrationsController, type: :request do
 
         it 'does not set onboarding' do
           create_user
-          user = User.find_by_username(user_attrs[:username])
 
-          expect(user.onboarding_in_progress).to be_falsey
+          created_user = User.find_by(email: user_attrs[:email])
+          expect(created_user.onboarding_in_progress).to be_falsey
         end
       end
     end
