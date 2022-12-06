@@ -1,3 +1,3 @@
-import initDashboards from 'ee/product_analytics/dashboards';
+import initProductAnalytics from 'ee/product_analytics';
 
-initDashboards();
+initProductAnalytics();

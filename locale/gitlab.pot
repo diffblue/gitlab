@@ -31336,6 +31336,9 @@ msgstr ""
 msgid "Proceed"
 msgstr ""
 
+msgid "Product Analytics|Onboarding view"
+msgstr ""
+
 msgid "Product analytics"
 msgstr ""
 
