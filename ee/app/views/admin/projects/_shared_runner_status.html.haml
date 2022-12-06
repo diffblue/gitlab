@@ -1,13 +1,13 @@
 - if project.builds_enabled?
   %li{ class: 'gl-px-5!' }
-    %span.light Shared Runners:
+    %span.light
+      = _('Shared Runners:')
     %strong
       - if project.shared_runners_enabled?
-        Enabled
+        = _('Enabled')
         - if project.shared_runners_minutes_limit_enabled?
-          - limit = project.ci_minutes_usage.limit.total
-          (Limited to #{limit} pipeline minutes per month)
+          = sprintf(_('(Limited to %{quota} pipeline minutes per month)'), { quota: project.ci_minutes_usage.quota.total })
         - else
-          (Unlimited pipeline minutes)
+          = _('(Unlimited pipeline minutes)')
       - else
-        Disabled
+        = _('Disabled')

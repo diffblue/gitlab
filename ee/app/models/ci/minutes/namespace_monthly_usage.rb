@@ -39,7 +39,7 @@ module Ci
           # recalculation of purchased minutes touches `namespaces` table.
           new_usage.run_after_commit do
             Namespace.find_by_id(namespace_id).try do |namespace|
-              Ci::Minutes::Limit.new(namespace).recalculate_remaining_purchased_minutes!
+              Ci::Minutes::Quota.new(namespace).recalculate_remaining_purchased_minutes!
               Ci::Minutes::RefreshCachedDataWorker.perform_async(namespace_id) # rubocop:disable CodeReuse/Worker
             end
           end

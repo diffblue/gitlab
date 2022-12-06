@@ -4,7 +4,7 @@
 
 module Ci
   module Minutes
-    class Limit
+    class Quota
       include Gitlab::Utils::StrongMemoize
 
       def initialize(namespace)
@@ -20,16 +20,14 @@ module Ci
       end
 
       def monthly
-        strong_memoize(:monthly) do
-          (namespace.shared_runners_minutes_limit || ::Gitlab::CurrentSettings.shared_runners_minutes).to_i
-        end
+        (namespace.shared_runners_minutes_limit || ::Gitlab::CurrentSettings.shared_runners_minutes).to_i
       end
+      strong_memoize_attr :monthly
 
       def purchased
-        strong_memoize(:purchased) do
-          namespace.extra_shared_runners_minutes_limit.to_i
-        end
+        namespace.extra_shared_runners_minutes_limit.to_i
       end
+      strong_memoize_attr :purchased
 
       def any_purchased?
         purchased > 0

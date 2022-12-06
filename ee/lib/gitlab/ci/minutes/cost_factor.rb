@@ -27,7 +27,7 @@ module Gitlab
         # based on the runner cost factors by project visibility level
         def for_project(project)
           return DISABLED unless @runner_matcher.instance_type?
-          return DISABLED unless project.ci_minutes_usage.limit_enabled?
+          return DISABLED unless project.ci_minutes_usage.quota_enabled?
 
           runner_cost_factor = cost_factor_for_runner(project)
           apply_discount(project, runner_cost_factor)

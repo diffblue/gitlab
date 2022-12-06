@@ -9,29 +9,29 @@ module Ci
     class Usage
       include Gitlab::Utils::StrongMemoize
 
-      attr_reader :namespace, :limit
+      attr_reader :namespace, :quota
 
       def initialize(namespace)
         @namespace = namespace
-        @limit = ::Ci::Minutes::Limit.new(namespace)
+        @quota = ::Ci::Minutes::Quota.new(namespace)
       end
 
-      def limit_enabled?
-        limit.enabled?
+      def quota_enabled?
+        quota.enabled?
       end
 
       def minutes_used_up?
-        limit_enabled? && total_minutes_used >= limit.total
+        quota_enabled? && total_minutes_used >= quota.total
       end
 
       def percent_total_minutes_remaining
-        return 0 unless limit_enabled?
+        return 0 unless quota_enabled?
 
-        100 * total_minutes_remaining.to_i / limit.total
+        100 * total_minutes_remaining.to_i / quota.total
       end
 
       def current_balance
-        limit.total - total_minutes_used
+        quota.total - total_minutes_used
       end
 
       def total_minutes_used
@@ -44,9 +44,9 @@ module Ci
 
       # === private to view ===
       def monthly_minutes_used_up?
-        return false unless limit_enabled?
+        return false unless quota_enabled?
 
-        monthly_minutes_used >= limit.monthly
+        monthly_minutes_used >= quota.monthly
       end
 
       def monthly_minutes_used
@@ -54,15 +54,15 @@ module Ci
       end
 
       def purchased_minutes_used_up?
-        return false unless limit_enabled?
+        return false unless quota_enabled?
 
-        limit.any_purchased? && purchased_minutes_used >= limit.purchased
+        quota.any_purchased? && purchased_minutes_used >= quota.purchased
       end
 
       def purchased_minutes_used
-        return 0 if !limit.any_purchased? || monthly_minutes_available?
+        return 0 if !quota.any_purchased? || monthly_minutes_available?
 
-        total_minutes_used - limit.monthly
+        total_minutes_used - quota.monthly
       end
 
       private
@@ -72,7 +72,7 @@ module Ci
       end
 
       def monthly_minutes_available?
-        total_minutes_used <= limit.monthly
+        total_minutes_used <= quota.monthly
       end
 
       def total_minutes_remaining

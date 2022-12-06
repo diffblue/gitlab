@@ -83,7 +83,7 @@ RSpec.describe Ci::Minutes::TrackLiveConsumptionService, :saas do
 
     context 'when namespace has unlimited minutes' do
       before do
-        usage = double('usage', limit_enabled?: false)
+        usage = double('usage', quota_enabled?: false)
         allow(project).to receive(:ci_minutes_usage).and_return(usage)
       end
 

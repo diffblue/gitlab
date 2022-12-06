@@ -531,7 +531,7 @@ module EE
       root_namespace = project.root_namespace
       ci_usage = root_namespace.ci_minutes_usage
 
-      return false if ci_usage.limit_enabled? && ci_usage.limit.any_purchased?
+      return false if ci_usage.quota_enabled? && ci_usage.quota.any_purchased?
 
       if root_namespace.free_plan?
         ::Feature.enabled?(:ci_require_credit_card_on_free_plan, project)
