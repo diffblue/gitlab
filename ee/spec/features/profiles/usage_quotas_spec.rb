@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Profile > Usage Quota', feature_category: :purchase do
+RSpec.describe 'Profile > Usage Quota', :js, feature_category: :subscription_usage_reports do
   include ::Ci::MinutesHelpers
 
   using RSpec::Parameterized::TableSyntax
@@ -11,10 +11,9 @@ RSpec.describe 'Profile > Usage Quota', feature_category: :purchase do
   let_it_be(:namespace, reload: true) { user.namespace }
   let_it_be(:statistics, reload: true) { create(:namespace_statistics, namespace: namespace) }
   let_it_be(:project, reload: true) { create(:project, namespace: namespace) }
-  let_it_be(:other_project) { create(:project, namespace: namespace, shared_runners_enabled: false) }
 
   before do
-    stub_feature_flags(usage_quotas_pipelines_vue: false)
+    stub_ee_application_setting(should_check_namespace_plan: true)
     sign_in(user)
   end
 
@@ -27,11 +26,11 @@ RSpec.describe 'Profile > Usage Quota', feature_category: :purchase do
   end
 
   describe 'shared runners use' do
-    where(:shared_runners_enabled, :used, :quota, :usage_class, :usage_text) do
-      false | 300  | 500 | 'success' | '300 / Not supported minutes 0% used'
-      true  | 300  | nil | 'success' | '300 / Unlimited minutes Unlimited'
-      true  | 300  | 500 | 'success' | '300 / 500 minutes 60% used'
-      true  | 1000 | 500 | 'danger'  | '1000 / 500 minutes 200% used'
+    where(:shared_runners_enabled, :used, :quota, :usage_text) do
+      false | 300  | 500 | '300 / Not supported minutes Unlimited'
+      true  | 300  | nil | '300 / Unlimited minutes Unlimited'
+      true  | 300  | 500 | '300 / 500 minutes 60% used'
+      true  | 1000 | 500 | '1000 / 500 minutes 200% used'
     end
 
     with_them do
@@ -43,31 +42,29 @@ RSpec.describe 'Profile > Usage Quota', feature_category: :purchase do
         namespace.update!(shared_runners_minutes_limit: quota)
 
         visit_usage_quotas_page
+        wait_for_requests
       end
 
       it 'shows the correct quota status' do
-        page.within('.pipeline-quota') do
+        page.within('#pipelines-quota-tab') do
           expect(page).to have_content(usage_text)
-          expect(page).to have_selector(".bg-#{usage_class}")
         end
       end
 
       it 'shows the correct per-project metrics' do
-        page.within('.pipeline-project-metrics') do
-          expect(page).not_to have_content(other_project.name)
+        page.within('[data-testid="pipelines-quota-tab-project-table"]') do
+          expect(page).to have_content(project.name)
 
           if shared_runners_enabled
-            expect(page).to have_content(project.name)
             expect(page).not_to have_content(no_shared_runners_text)
           else
-            expect(page).not_to have_content(project.name)
             expect(page).to have_content(no_shared_runners_text)
           end
         end
       end
     end
 
-    context 'pagination', :js do
+    context 'pagination' do
       let(:per_page) { 1 }
       let(:item_selector) { '.js-project-link' }
       let(:prev_button_selector) { '[data-testid="prevButton"]' }
@@ -76,7 +73,6 @@ RSpec.describe 'Profile > Usage Quota', feature_category: :purchase do
 
       before do
         allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
-        stub_ee_application_setting(should_check_namespace_plan: true)
       end
 
       context 'storage tab' do
@@ -86,57 +82,19 @@ RSpec.describe 'Profile > Usage Quota', feature_category: :purchase do
         it_behaves_like 'correct pagination'
       end
 
-      context 'pipelines tab: with usage_quotas_pipelines_vue disabled' do
+      context 'pipelines tab' do
         let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
-        let(:prev_button_selector) { '.page-item.js-previous-button a' }
-        let(:next_button_selector) { '.page-item.js-next-button a' }
 
         before do
           visit_usage_quotas_page
         end
+
         it_behaves_like 'correct pagination'
-      end
-
-      context 'pipelines tab: with usage_quotas_pipelines_vue enabled' do
-        let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
-
-        before do
-          stub_feature_flags(usage_quotas_pipelines_vue: true)
-          visit_usage_quotas_page
-        end
-        it_behaves_like 'correct pagination'
-      end
-    end
-
-    context 'when many projects are paginated', :js do
-      let(:per_page) { 2 }
-      let!(:project2) { create(:project, :with_ci_minutes, amount_used: 5.7, namespace: namespace) }
-      let!(:project3) { create(:project, :with_ci_minutes, amount_used: 3.1, namespace: namespace) }
-      let!(:project4) { create(:project, :with_ci_minutes, amount_used: 1.4, namespace: namespace) }
-      let!(:project5) { create(:project, :with_ci_minutes, amount_used: 8.9, namespace: namespace) }
-
-      before do
-        allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
-
-        visit_usage_quotas_page
-      end
-
-      it 'sorts projects list by CI minutes used in descending order' do
-        expect(page).to have_selector('.pipeline-project-metrics')
-
-        expect(page.text.index(project5.full_name)).to be < page.text.index(project2.full_name)
-        click_next_page_pipeline_projects
-        expect(page.text.index(project3.full_name)).to be < page.text.index(project4.full_name)
       end
     end
   end
 
   def visit_usage_quotas_page(anchor = 'pipelines-quota-tab')
     visit profile_usage_quotas_path(namespace, anchor: anchor)
-  end
-
-  def click_next_page_pipeline_projects
-    page.find('.gl-pagination .pagination .js-next-button').click
-    wait_for_requests
   end
 end

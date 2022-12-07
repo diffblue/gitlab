@@ -21,13 +21,6 @@
 
 .tab-content
   .tab-pane.active#pipelines-quota-tab
-    - if Feature.enabled?(:usage_quotas_pipelines_vue, @namespace)
-      #js-pipeline-usage-app{ data: pipeline_usage_app_data(@namespace) }
-    - else
-      = render "namespaces/pipelines_quota/ci_minutes_report",
-        locals: { namespace: @namespace, projects_usage: @projects_usage }
-      .js-ci-minutes-usage
-      = render "namespaces/pipelines_quota/list",
-        locals: { namespace: @namespace, projects_usage: @projects_usage }
+    #js-pipeline-usage-app{ data: pipeline_usage_app_data(@namespace) }
   .tab-pane#storage-quota-tab
     #js-storage-counter-app{ data: storage_usage_app_data(@namespace) }

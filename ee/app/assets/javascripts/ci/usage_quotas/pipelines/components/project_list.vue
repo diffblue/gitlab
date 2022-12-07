@@ -62,8 +62,8 @@ export default {
 };
 </script>
 <template>
-  <section class="pipelines-project-list">
-    <gl-alert :dismissible="false" class="gl-my-3">
+  <section class="pipelines-project-list" data-testid="pipelines-quota-tab-project-table">
+    <gl-alert :dismissible="false" class="gl-my-3" data-testid="project-usage-info-alert">
       {{ projectsTableInfoMessage }}
     </gl-alert>
     <gl-table-lite :items="projects" :fields="$options.PROJECTS_TABLE_FIELDS">
