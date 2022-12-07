@@ -37,6 +37,7 @@ module Ci
         Ci::PendingBuild
         Ci::RunningBuild
         Ci::PipelineVariable
+        Ci::Sources::Pipeline
         Ci::Stage
         Ci::UnitTestFailure
       ].freeze
