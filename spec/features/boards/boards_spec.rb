@@ -103,7 +103,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         wait_for_board_cards(3, 2)
       end
 
-      it 'shows confidential issues with icon' do
+      it 'shows confidential issues with icon', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
         page.within(find('.board:nth-child(2)')) do
           expect(page).to have_selector('.confidential-icon', count: 1)
         end
@@ -179,7 +179,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
         end
       end
 
-      context 'closed' do
+      context 'closed', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
         it 'shows list of closed issues' do
           wait_for_board_cards(4, 1)
           wait_for_requests
@@ -278,7 +278,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           expect(find('.board:nth-child(2)').all('.board-card').first).not_to have_content(planning.title)
         end
 
-        it 'issue moves from closed' do
+        it 'issue moves from closed', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
           drag(list_from_index: 2, list_to_index: 3)
 
           wait_for_board_cards(2, 8)
@@ -319,7 +319,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           wait_for_empty_boards((3..4))
         end
 
-        it 'filters by assignee' do
+        it 'filters by assignee', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
           set_filter("assignee", user.username)
           click_on user.username
           filter_submit.click
@@ -341,7 +341,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           wait_for_board_cards(4, 0)
         end
 
-        it 'filters by label' do
+        it 'filters by label', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
           set_filter("label", testing.title)
           click_on testing.title
           filter_submit.click
@@ -400,7 +400,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           wait_for_board_cards(2, 8)
         end
 
-        it 'infinite scrolls list with label filter' do
+        it 'infinite scrolls list with label filter', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
           create_list(:labeled_issue, 30, project: project, labels: [planning, testing])
 
           set_filter("label", testing.title)
