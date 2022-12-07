@@ -310,19 +310,30 @@ RSpec.describe Security::OrchestrationPolicyConfiguration do
       context 'with various approvers' do
         using RSpec::Parameterized::TableSyntax
 
-        where(:user_approvers, :user_approvers_ids, :group_approvers, :group_approvers_ids, :is_valid) do
-          []           | nil  | nil            | nil | false
-          ['username'] | nil  | nil            | nil | true
-          nil          | []   | nil            | nil | false
-          nil          | [1]  | nil            | nil | true
-          nil          | nil  | []             | nil | false
-          nil          | nil  | ['group_path'] | nil | true
-          nil          | nil  | nil            | []  | false
-          nil          | nil  | nil            | [2] | true
+        where(:user_approvers, :user_approvers_ids, :group_approvers, :group_approvers_ids, :role_approvers, :is_valid) do
+          []           | nil  | nil            | nil | nil | false
+          ['username'] | nil  | nil            | nil | nil | true
+          nil          | []   | nil            | nil | nil | false
+          nil          | [1]  | nil            | nil | nil | true
+          nil          | nil  | []             | nil | nil | false
+          nil          | nil  | ['group_path'] | nil | nil | true
+          nil          | nil  | nil            | []  | nil | false
+          nil          | nil  | nil            | [2] | nil | true
+          nil          | nil  | nil            | nil | [] | false
+          nil          | nil  | nil            | nil | ['developer'] | true
         end
 
         with_them do
-          let(:action) { { type: 'require_approval', approvals_required: 1, user_approvers: user_approvers, user_approvers_ids: user_approvers_ids, group_approvers: group_approvers, group_approvers_ids: group_approvers_ids }.compact }
+          let(:action) do
+            { type: 'require_approval',
+              approvals_required: 1,
+              user_approvers: user_approvers,
+              user_approvers_ids: user_approvers_ids,
+              group_approvers: group_approvers,
+              group_approvers_ids: group_approvers_ids,
+              role_approvers: role_approvers }.compact
+          end
+
           let(:scan_result_policy) { build(:scan_result_policy, name: 'Contains security critical severities', actions: [action]) }
 
           it { is_expected.to eq(is_valid) }
