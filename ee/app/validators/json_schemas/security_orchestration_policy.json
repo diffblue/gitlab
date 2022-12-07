@@ -383,7 +383,7 @@
             }
           },
           "actions": {
-            "description": "Specifies a list of actions that should be enforced in this policy. At least one of `user_approvers`, `user_approvers_ids`, `group_approvers`, `group_approvers_ids` should be provided.",
+            "description": "Specifies a list of actions that should be enforced in this policy. At least one of `user_approvers`, `user_approvers_ids`, `group_approvers`, `group_approvers_ids`, `role_approvers` should be provided.",
             "type": "array",
             "additionalItems": false,
             "items": {
@@ -414,6 +414,13 @@
                     "type",
                     "approvals_required",
                     "group_approvers_ids"
+                  ]
+                },
+                {
+                  "required": [
+                    "type",
+                    "approvals_required",
+                    "role_approvers"
                   ]
                 }
               ],
@@ -468,6 +475,24 @@
                   "items": {
                     "minLength": 1,
                     "type": "integer"
+                  }
+                },
+                "role_approvers": {
+                  "type": "array",
+                  "description": "Specifies a list of roles required to approve affected merge request.",
+                  "minItems": 1,
+                  "additionalItems": false,
+                  "items":{
+                    "type": {
+                      "enum": [
+                        "guest",
+                        "reporter",
+                        "developer",
+                        "maintainer",
+                        "owner"
+                      ]
+                    },
+                    "minLength": 1
                   }
                 }
               }
