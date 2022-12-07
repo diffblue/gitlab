@@ -21,20 +21,6 @@ RSpec.describe Clusters::ClusterPresenter do
           'metrics-endpoint': clusterable_presenter.metrics_cluster_path(cluster, format: :json)
         )
       end
-
-      context 'when prometheus_computed_alerts feature is disabled' do
-        before do
-          stub_feature_flags(prometheus_computed_alerts: false)
-        end
-
-        it 'alerts-endpoint is nil' do
-          expect(subject['alerts-endpoint']).to be_nil
-        end
-
-        it 'prometheus-alerts-available is nil' do
-          expect(subject['prometheus-alerts-available']).to be_nil
-        end
-      end
     end
 
     context 'with project cluster' do
