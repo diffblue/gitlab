@@ -11499,16 +11499,22 @@ msgstr ""
 msgid "CreateTimelogForm|Example: 1h 30m"
 msgstr ""
 
+msgid "CreateTimelogForm|How do I track and estimate time?"
+msgstr ""
+
 msgid "CreateTimelogForm|Save"
 msgstr ""
 
 msgid "CreateTimelogForm|Summary"
 msgstr ""
 
-msgid "CreateTimelogForm|View the full documentation on how time tracking works (e.g. setting estimated time) on %{timeTrackingDocsLinkStart}this page%{timeTrackingDocsLinkEnd}."
+msgid "CreateTimelogForm|Track time spent on this %{issuableTypeNameStart}%{issuableTypeNameEnd}. %{timeTrackingDocsLinkStart}%{timeTrackingDocsLinkEnd}"
 msgstr ""
 
-msgid "CreateTimelogForm|this page"
+msgid "CreateTimelogForm|issue"
+msgstr ""
+
+msgid "CreateTimelogForm|merge request"
 msgstr ""
 
 msgid "CreateValueStreamForm|%{name} (default)"

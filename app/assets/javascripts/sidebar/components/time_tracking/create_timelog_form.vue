@@ -69,6 +69,11 @@ export default {
     timeTrackignDocsPath() {
       return joinPaths(gon.relative_url_root || '', '/help/user/project/time_tracking.md');
     },
+    issuableTypeName() {
+      return this.isIssue()
+        ? s__('CreateTimelogForm|issue')
+        : s__('CreateTimelogForm|merge request');
+    },
   },
   methods: {
     resetModal() {
@@ -151,7 +156,24 @@ export default {
     @primary="registerTimeSpent"
     @cancel="close"
     @close="close"
+    @hide="close"
   >
+    <p data-testid="timetracking-docs-link">
+      <gl-sprintf
+        :message="
+          s__(
+            'CreateTimelogForm|Track time spent on this %{issuableTypeNameStart}%{issuableTypeNameEnd}. %{timeTrackingDocsLinkStart}%{timeTrackingDocsLinkEnd}',
+          )
+        "
+      >
+        <template #issuableTypeName>{{ issuableTypeName }}</template>
+        <template #timeTrackingDocsLink>
+          <gl-link :href="timeTrackignDocsPath" target="_blank">{{
+            s__('CreateTimelogForm|How do I track and estimate time?')
+          }}</gl-link>
+        </template>
+      </gl-sprintf>
+    </p>
     <form
       class="gl-display-flex gl-flex-direction-column js-quick-submit"
       @submit.prevent="registerTimeSpent"
@@ -165,6 +187,7 @@ export default {
         >
           <gl-form-input
             id="time-spent"
+            ref="timeSpent"
             v-model="timeSpent"
             class="gl-form-input-sm"
             autocomplete="off"
@@ -182,24 +205,14 @@ export default {
           />
         </gl-form-group>
       </div>
-      <gl-form-group :label="s__('CreateTimelogForm|Summary')" optional label-for="summary">
+      <gl-form-group
+        :label="s__('CreateTimelogForm|Summary')"
+        optional
+        label-for="summary"
+        class="gl-mb-0"
+      >
         <gl-form-textarea id="summary" v-model="summary" rows="3" :no-resize="true" />
       </gl-form-group>
-      <p class="gl-mb-0" data-testid="timetracking-docs-link">
-        <gl-sprintf
-          :message="
-            s__(
-              'CreateTimelogForm|View the full documentation on how time tracking works (e.g. setting estimated time) on %{timeTrackingDocsLinkStart}this page%{timeTrackingDocsLinkEnd}.',
-            )
-          "
-        >
-          <template #timeTrackingDocsLink>
-            <gl-link :href="timeTrackignDocsPath" target="_blank">{{
-              s__('CreateTimelogForm|this page')
-            }}</gl-link>
-          </template>
-        </gl-sprintf>
-      </p>
       <gl-alert v-if="saveError" variant="danger" class="gl-mt-5" :dismissible="false">
         {{ saveError }}
       </gl-alert>
