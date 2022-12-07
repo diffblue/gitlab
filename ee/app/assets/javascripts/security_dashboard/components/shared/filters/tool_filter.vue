@@ -5,6 +5,7 @@ import groupScannersQuery from 'ee/security_dashboard/graphql/queries/group_spec
 import instanceScannersQuery from 'ee/security_dashboard/graphql/queries/instance_specific_scanners.query.graphql';
 import { getFormattedScanners } from 'ee/security_dashboard/helpers';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
+import { s__ } from '~/locale';
 import SimpleFilter from './simple_filter.vue';
 import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
@@ -82,6 +83,9 @@ export default {
       return { fullPath: this[fullPath] };
     },
   },
+  i18n: {
+    disabledTooltip: s__('SecurityReports|Not available'),
+  },
 };
 </script>
 
@@ -102,6 +106,8 @@ export default {
       :key="option.id"
       :is-checked="isSelected(option)"
       :text="option.name"
+      :disabled="option.disabled"
+      :tooltip="option.disabled ? $options.i18n.disabledTooltip : ''"
       :data-testid="`option:${option.id}`"
       @click="toggleOption(option)"
     />

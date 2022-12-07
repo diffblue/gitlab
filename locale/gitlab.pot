@@ -37259,6 +37259,9 @@ msgstr ""
 msgid "SecurityReports|No vulnerabilities found for this pipeline"
 msgstr ""
 
+msgid "SecurityReports|Not available"
+msgstr ""
+
 msgid "SecurityReports|Oops, something doesn't seem right."
 msgstr ""
 
