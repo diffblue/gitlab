@@ -131,7 +131,7 @@ describe('License Compliance extension', () => {
       expect(findManageLicenseLink().text()).toBe('Manage Licenses');
 
       expect(findFullReportLink().exists()).toBe(true);
-      expect(findFullReportLink().text()).toBe('Full Report');
+      expect(findFullReportLink().text()).toBe('Full report');
 
       expect(findActionButtons().exists()).toBe(true);
     });
@@ -151,7 +151,7 @@ describe('License Compliance extension', () => {
       expect(findManageLicenseLink().exists()).toBe(false);
 
       expect(findFullReportLink().exists()).toBe(true);
-      expect(findFullReportLink().text()).toBe('Full Report');
+      expect(findFullReportLink().text()).toBe('Full report');
 
       expect(findActionButtons().exists()).toBe(true);
     });

@@ -59,7 +59,7 @@ export default {
       return [
         ...this.manageLicenseButtonConfig(),
         {
-          text: s__('ciReport|Full Report'),
+          text: s__('ciReport|Full report'),
           href: this.licenseCompliance.license_scanning.full_report_path,
           target: '_self',
         },
