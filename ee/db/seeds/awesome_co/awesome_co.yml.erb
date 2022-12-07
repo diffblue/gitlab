@@ -1,0 +1,187 @@
+---
+# AwesomeCo Seed File
+#   Seed 4 Priority Labels
+#        6 Squad Labels
+#        8 Type Labels
+#        8 Workflow Labels
+#        2 Version Labels
+#        4 Capability Labels
+#        4 Component Labels
+#        4 Effort Labels
+#
+#        4 Group Milestones
+name: AwesomeCo
+
+group_labels:
+  # Priorities
+  - _id: priority_1
+    name: priority::1
+    group_id: <%= @group.id %>
+    color: "#FF0000"
+  - name: priority::2
+    group_id: <%= @group.id %>
+    color: "#DD0000"
+  - name: priority::3
+    group_id: <%= @group.id %>
+    color: "#CC0000"
+  - name: priority::4
+    group_id: <%= @group.id %>
+    color: "#BB0000"
+
+  # Squads
+  - name: squad::a
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+  - name: squad::b
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+  - name: squad::c
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+  - name: squad::d
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+  - name: squad::e
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+  - name: squad::f
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+
+  # Types
+  - name: type::0-idea
+    group_id: <%= @group.id %>
+    color: "#00CC00"
+  - name: type::1-epic
+    group_id: <%= @group.id %>
+    color: "#00CC00"
+  - name: type::2-capability
+    group_id: <%= @group.id %>
+    color: "#00CC00"
+  - name: type::3-feature
+    group_id: <%= @group.id %>
+    color: "#00CC00"
+  - name: type::4-bug
+    group_id: <%= @group.id %>
+    color: "#00DD00"
+  - name: type::4-maintenance
+    group_id: <%= @group.id %>
+    color: "#00DD00"
+  - name: type::4-story
+    group_id: <%= @group.id %>
+    color: "#00DD00"
+  - name: type::4-task
+    group_id: <%= @group.id %>
+    color: "#00DD00"
+
+  # Workflows
+  - name: wf::1-triage
+    group_id: <%= @group.id %>
+    color: "#DDDDDD"
+  - name: wf::2-design
+    group_id: <%= @group.id %>
+    color: "#DDDDDD"
+  - name: wf::3-validation
+    group_id: <%= @group.id %>
+    color: "#DDDDDD"
+  - name: wf::4-refine
+    group_id: <%= @group.id %>
+    color: "#DDDDDD"
+  - name: wf::5-ready
+    group_id: <%= @group.id %>
+    color: "#DDDDDD"
+  - name: wf::6-in progress
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+  - name: wf::7-review
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+  - name: wf::8-done
+    group_id: <%= @group.id %>
+    color: "#CCCCCC"
+
+  # Versions
+  - name: version::1.0
+    group_id: <%= @group.id %>
+    color: "#00FD00"
+  - name: version::1.1
+    group_id: <%= @group.id %>
+    color: "#0000FD"
+
+  # Capabilities
+  - name: capability::1-refine
+    description: Capability is currently in refinement
+    group_id: <%= @group.id %>
+    color: "#000022"
+  - name: capability::2-review
+    description: Capability is in the review and approval process
+    group_id: <%= @group.id %>
+    color: "#000022"
+  - name: capability::3-backlog
+    description: Capability is approved and waiting to be started
+    group_id: <%= @group.id %>
+    color: "#000022"
+  - name: capability::4-in progress
+    description: Capability is currently under development
+    group_id: <%= @group.id %>
+    color: "#000022"
+
+  # Components
+  - name: comp::auth
+    description: The work item is related to the authentication components
+    group_id: <%= @group.id %>
+    color: "#6699CC"
+  - name: comp::infra
+    description: The work item is related to the authentication components
+    group_id: <%= @group.id %>
+    color: "#6699CC"
+  - name: comp::login
+    description: The work item is related to the authentication components
+    group_id: <%= @group.id %>
+    color: "#6699CC"
+  - name: comp::settings
+    description: The work item is related to the authentication components
+    group_id: <%= @group.id %>
+    color: "#6699CC"
+
+  # Efforts
+  - name: effort::xl
+    description: The effort for this epic is extra large
+    group_id: <%= @group.id %>
+    color: "#808080"
+  - name: effort::l
+    description: The effort for this epic is large
+    group_id: <%= @group.id %>
+    color: "#808080"
+  - name: effort::m
+    description: The effort for this epic is medium
+    group_id: <%= @group.id %>
+    color: "#808080"
+  - name: effort::s
+    description: The effort for this epic is small
+    group_id: <%= @group.id %>
+    color: "#808080"
+
+group_milestones:
+  - name: "Release #1"
+    group_id: <%= @group.id %>
+    group:
+    start_date: <%= 1.month.ago %>
+    due_date: <%= 1.day.ago %>
+    description: |
+      # This is Markdown
+  - name: "Release #2"
+    group_id: <%= @group.id %>
+    group:
+    start_date: <%= 1.day.ago %>
+    due_date: <%= 1.day.ago + 1.month %>
+  - name: "Release #3"
+    group_id: <%= @group.id %>
+    group:
+    start_date: <%= 1.month.from_now %>
+    due_date: <%= 2.months.from_now %>
+  - name: "Release #4"
+    group_id: <%= @group.id %>
+    group:
+    start_date: <%= 2.months.from_now %>
+    due_date: <%= 3.months.from_now %>
