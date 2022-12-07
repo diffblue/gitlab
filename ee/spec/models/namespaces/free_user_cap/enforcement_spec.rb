@@ -26,7 +26,7 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
     subject(:over_limit?) { described_class.new(namespace).over_limit? }
 
     before do
-      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_plan_members_count)
     end
 
     context 'when :free_user_cap is disabled' do
@@ -320,7 +320,7 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
     subject(:reached_limit?) { described_class.new(namespace).reached_limit? }
 
     before do
-      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_plan_members_count)
     end
 
     context 'when :free_user_cap is disabled' do
@@ -491,7 +491,7 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
     subject(:seat_available?) { described_class.new(namespace).seat_available?(user) }
 
     before do
-      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_plan_members_count)
     end
 
     shared_examples 'user is an already existing member in the namespace' do
@@ -677,6 +677,16 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
     subject { described_class.new(namespace).users_count }
 
     it { is_expected.to eq(0) }
+
+    it 'caches the result for the same instance' do
+      instance = described_class.new(namespace)
+
+      expect(instance.users_count).to eq(0)
+
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(1)
+
+      expect(instance.users_count).to eq(0)
+    end
   end
 
   describe '#enforce_cap?' do
@@ -767,7 +777,7 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
     subject(:close_to_dashboard_limit?) { described_class.new(namespace).close_to_dashboard_limit? }
 
     before do
-      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_plan_members_count)
       stub_ee_application_setting(dashboard_limit: 3)
     end
 
@@ -832,7 +842,7 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
     subject(:remaining_seats) { described_class.new(namespace).remaining_seats }
 
     before do
-      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_plan_members_count)
       stub_ee_application_setting(dashboard_enforcement_limit: 2)
     end
 
@@ -873,7 +883,7 @@ RSpec.describe Namespaces::FreeUserCap::Enforcement, :saas do
     subject(:git_check_over_limit!) { described_class.new(namespace).git_check_over_limit!(StandardError) }
 
     before do
-      allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+      allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_plan_members_count)
     end
 
     context 'when not over the user limit' do

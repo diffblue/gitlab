@@ -28,7 +28,7 @@ RSpec.describe Namespaces::FreeUserCap::UsageQuotaAlertComponent, :saas, :aggreg
 
     stub_ee_application_setting(dashboard_limit_enabled: true)
     stub_ee_application_setting(dashboard_enforcement_limit: 5)
-    allow(namespace).to receive(:free_plan_members_count).and_return(free_plan_members_count)
+    allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_plan_members_count)
   end
 
   shared_examples 'renders the alert' do

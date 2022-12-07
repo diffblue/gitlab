@@ -9,7 +9,7 @@ RSpec.describe Namespaces::FreeUserCap::Notification, :saas do
 
   before do
     stub_ee_application_setting(dashboard_limit_enabled: true)
-    allow(namespace).to receive(:free_plan_members_count).and_return(free_user_count)
+    allow(::Namespaces::FreeUserCap::UsersFinder).to receive(:count).and_return(free_user_count)
     stub_ee_application_setting(dashboard_enforcement_limit: enforcement_limit)
   end
 

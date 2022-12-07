@@ -1502,6 +1502,165 @@ RSpec.describe Group do
     end
   end
 
+  describe '#billed_group_users' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+    let_it_be(:sub_developer) { sub_group.add_developer(create(:user)).user }
+    let_it_be(:guest) { group.add_guest(create(:user)).user }
+    let_it_be(:developer) { group.add_developer(create(:user)).user }
+
+    before_all do
+      group.add_developer(create(:user, :blocked))
+      group.add_maintainer(create(:user, :project_bot))
+      create(:group_member, :developer)
+      create(:project_member, :developer, source: create(:project, namespace: group))
+      create(:group_member, :invited, :developer, source: group)
+      create(:group_member, :awaiting, :developer, source: group)
+      create(:group_member, :minimal_access, source: group)
+      create(:group_member, :access_request, :developer, source: group)
+    end
+
+    context 'with guests' do
+      it 'includes active users' do
+        expect(group.billed_group_users).to match_array([developer, guest, sub_developer])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes active users' do
+        expect(group.billed_group_users(exclude_guests: true)).to match_array([developer, sub_developer])
+      end
+    end
+  end
+
+  describe '#billed_project_users' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:sub_group_project) { create(:project, namespace: create(:group, parent: group)) }
+    let_it_be(:sub_developer) { sub_group_project.add_developer(create(:user)).user }
+    let_it_be(:guest) { project.add_guest(create(:user)).user }
+    let_it_be(:developer) { project.add_developer(create(:user)).user }
+
+    before_all do
+      group.add_developer(create(:user))
+      project.add_developer(create(:user, :blocked))
+      project.add_maintainer(create(:user, :project_bot))
+      create(:project_member, :developer)
+      create(:project_member, :invited, :developer, source: project)
+      create(:project_member, :awaiting, :developer, source: project)
+      create(:project_member, :access_request, :developer, source: project)
+    end
+
+    context 'with guests' do
+      it 'includes active users' do
+        expect(group.billed_project_users).to match_array([developer, guest, sub_developer])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes active users' do
+        expect(group.billed_project_users(exclude_guests: true)).to match_array([developer, sub_developer])
+      end
+    end
+  end
+
+  describe '#billed_shared_group_users' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:sub_group) { create(:group, parent: group) }
+    let_it_be(:ancestor_invited_group) { create(:group) }
+    let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+    let_it_be(:invited_guest_group) { create(:group) }
+    let_it_be(:sub_invited_group) { create(:group) }
+    let_it_be(:sub_invited_developer) { sub_invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_developer) { invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
+    let_it_be(:invited_guest_group_user) { invited_guest_group.add_developer(create(:user)).user }
+    let_it_be(:ancestor_invited_developer) { ancestor_invited_group.add_developer(create(:user)).user }
+
+    before_all do
+      group.add_developer(create(:user))
+      invited_group.add_developer(create(:user, :blocked))
+      invited_group.add_maintainer(create(:user, :project_bot))
+      create(:group_member, :invited, :developer, source: invited_group)
+      create(:group_member, :awaiting, :developer, source: invited_group)
+      create(:group_member, :minimal_access, source: invited_group)
+      create(:group_member, :access_request, :developer, source: invited_group)
+      create(:group_group_link)
+      create(:group_group_link, { shared_with_group: sub_invited_group, shared_group: sub_group })
+      create(:group_group_link, { shared_with_group: invited_group, shared_group: group })
+      create(:group_group_link, :guest, { shared_with_group: invited_guest_group, shared_group: group })
+    end
+
+    context 'with guests' do
+      it 'includes active users from the other group' do
+        expect(group.billed_shared_group_users)
+          .to match_array([
+                            invited_guest,
+                            invited_developer,
+                            invited_guest_group_user,
+                            ancestor_invited_developer,
+                            sub_invited_developer
+                          ])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes active users from the other group' do
+        expect(group.billed_shared_group_users(exclude_guests: true))
+          .to match_array([invited_developer, ancestor_invited_developer, sub_invited_developer])
+      end
+    end
+  end
+
+  describe '#billed_invited_group_to_project_users' do
+    let_it_be(:group) { create(:group) }
+    let_it_be(:project) { create(:project, namespace: group) }
+    let_it_be(:sub_group_project) { create(:project, namespace: create(:group, parent: group)) }
+    let_it_be(:ancestor_invited_group) { create(:group) }
+    let_it_be(:invited_group) { create(:group, parent: ancestor_invited_group) }
+    let_it_be(:invited_guest_group) { create(:group) }
+    let_it_be(:sub_invited_group) { create(:group) }
+    let_it_be(:sub_invited_developer) { sub_invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_developer) { invited_group.add_developer(create(:user)).user }
+    let_it_be(:invited_guest) { invited_group.add_guest(create(:user)).user }
+    let_it_be(:invited_guest_group_user) { invited_guest_group.add_developer(create(:user)).user }
+    let_it_be(:ancestor_invited_developer) { ancestor_invited_group.add_developer(create(:user)).user }
+
+    before_all do
+      group.add_developer(create(:user))
+      invited_group.add_developer(create(:user, :blocked))
+      invited_group.add_maintainer(create(:user, :project_bot))
+      create(:group_member, :invited, :developer, source: invited_group)
+      create(:group_member, :awaiting, :developer, source: invited_group)
+      create(:group_member, :minimal_access, source: invited_group)
+      create(:group_member, :access_request, :developer, source: invited_group)
+      create(:project_group_link)
+      create(:project_group_link, project: project, group: invited_group)
+      create(:project_group_link, project: sub_group_project, group: sub_invited_group)
+      create(:project_group_link, :guest, project: project, group: invited_guest_group)
+    end
+
+    context 'with guests' do
+      it 'includes active users from the other group' do
+        expect(group.billed_invited_group_to_project_users)
+          .to match_array([
+                            invited_guest,
+                            invited_developer,
+                            invited_guest_group_user,
+                            ancestor_invited_developer,
+                            sub_invited_developer
+                          ])
+      end
+    end
+
+    context 'without guests' do
+      it 'includes active users from the other group' do
+        expect(group.billed_invited_group_to_project_users(exclude_guests: true))
+          .to match_array([invited_developer, ancestor_invited_developer, sub_invited_developer])
+      end
+    end
+  end
+
   describe '#capacity_left_for_user?' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
@@ -2457,23 +2616,6 @@ RSpec.describe Group do
       expect(group).to receive(:billable_members_count).and_return(5)
 
       is_expected.to eq(5)
-    end
-  end
-
-  describe '#free_plan_members_count' do
-    let_it_be(:namespace) { create(:group) }
-    let_it_be(:owner) { create(:user) }
-    let_it_be(:project) { create(:project, group: namespace) }
-    let_it_be(:project_user) { create(:project_member, project: project).user }
-    let_it_be(:project_2) { create(:project, group: namespace) }
-    let_it_be(:project2_user) { create(:project_member, project: project_2).user }
-
-    before do
-      namespace.add_owner(owner)
-    end
-
-    it 'has the correct count' do
-      expect(namespace.free_plan_members_count).to eq 3
     end
   end
 

@@ -18,8 +18,9 @@ module Namespaces
       strong_memoize_attr :enforce_cap?, :enforce_cap
 
       def users_count
-        root_namespace.free_plan_members_count || 0
+        ::Namespaces::FreeUserCap::UsersFinder.count(root_namespace)
       end
+      strong_memoize_attr :users_count
 
       private
 
