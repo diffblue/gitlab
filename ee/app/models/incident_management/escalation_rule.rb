@@ -14,7 +14,11 @@ module IncidentManagement
     validates :status, presence: true
     validates :elapsed_time_seconds,
               presence: true,
-              numericality: { only_integer: true, greater_than_or_equal_to: 0, less_than_or_equal_to: 24.hours }
+              numericality: {
+                only_integer: true,
+                greater_than_or_equal_to: 0,
+                less_than_or_equal_to: ::IncidentManagement::Escalatable::MAX_ESCALATION_DELAY
+              }
 
     validate :schedule_or_rule_present
     validates :oncall_schedule_id,

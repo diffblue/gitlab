@@ -5,6 +5,8 @@ module EE
     module Escalatable
       extend ActiveSupport::Concern
 
+      MAX_ESCALATION_DELAY = 24.hours
+
       def escalation_policy
         project.incident_management_escalation_policies.first
       end

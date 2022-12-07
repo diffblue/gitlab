@@ -14,6 +14,7 @@ module IncidentManagement
       def execute
         return unless ::Gitlab::IncidentManagement.escalation_policies_available?(project) && !escalatable.resolved?
         return unless policy = escalatable.escalation_policy
+        return if target.pending_escalations.upcoming.any?
 
         create_escalations(policy.active_rules)
       end
