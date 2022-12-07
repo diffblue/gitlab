@@ -126,21 +126,7 @@ RSpec.describe Gitlab::Ci::Reports::Security::MergedReports, feature_category: :
           target_reports.get_report('sast', artifact).add_finding(high_severity_dast)
         end
 
-        context 'when require_approval_on_scan_removal feature is enabled' do
-          before do
-            stub_feature_flags(require_approval_on_scan_removal: true)
-          end
-
-          it { is_expected.to be(true) }
-        end
-
-        context 'when require_approval_on_scan_removal feature is disabled' do
-          before do
-            stub_feature_flags(require_approval_on_scan_removal: false)
-          end
-
-          it { is_expected.to be(false) }
-        end
+        it { is_expected.to be(true) }
       end
     end
   end
