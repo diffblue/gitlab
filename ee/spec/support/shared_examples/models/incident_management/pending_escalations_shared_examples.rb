@@ -21,18 +21,29 @@ RSpec.shared_examples 'IncidentManagement::PendingEscalation model' do
   end
 
   describe 'scopes' do
-    describe '.processable' do
-      subject { described_class.processable }
-
+    context 'with escalations scheduled for various times' do
       let_it_be(:policy) { create(:incident_management_escalation_policy) }
       let_it_be(:rule) { policy.rules.first }
 
       let_it_be(:two_months_ago_escalation) { create_escalation(rule: rule, process_at: 2.months.ago) }
       let_it_be(:three_weeks_ago_escalation) { create_escalation(rule: rule, process_at: 3.weeks.ago) }
       let_it_be(:three_days_ago_escalation) { create_escalation(rule: rule, process_at: 3.days.ago) }
-      let_it_be(:future_escalation) { create_escalation(rule: rule, process_at: 5.minutes.from_now) }
+      let_it_be(:upcoming_escalation) { create_escalation(rule: rule, process_at: 5.minutes.from_now) }
+      let_it_be(:future_escalation) { create_escalation(rule: rule, process_at: 3.days.from_now) }
 
-      it { is_expected.to match_array [three_weeks_ago_escalation, three_days_ago_escalation] }
+      let_it_be(:escalations) { described_class.where(rule: rule) }
+
+      describe '.processable' do
+        subject { escalations.processable }
+
+        it { is_expected.to match_array [three_weeks_ago_escalation, three_days_ago_escalation] }
+      end
+
+      describe '.upcoming' do
+        subject { escalations.upcoming }
+
+        it { is_expected.to match_array [three_weeks_ago_escalation, three_days_ago_escalation, upcoming_escalation] }
+      end
     end
 
     describe '.for_target' do

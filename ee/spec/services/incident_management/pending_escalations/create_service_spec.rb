@@ -56,6 +56,16 @@ RSpec.describe IncidentManagement::PendingEscalations::CreateService do
         end
       end
 
+      context 'when the escalatable has pending escalations' do
+        before do
+          target.pending_escalations.create!(rule: rules.first, process_at: 10.minutes.from_now)
+        end
+
+        it 'does nothing' do
+          expect { execute }.not_to change { escalation_class.count }
+        end
+      end
+
       it 'creates the escalations and queues the escalation process check' do
         expect(worker_class)
           .to receive(:bulk_perform_async)

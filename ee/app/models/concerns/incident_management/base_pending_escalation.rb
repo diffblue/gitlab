@@ -14,6 +14,7 @@ module IncidentManagement
     include EachBatch
 
     ESCALATION_BUFFER = 1.month.freeze
+    MAX_ESCALATION_DELAY = ::IncidentManagement::Escalatable::MAX_ESCALATION_DELAY
 
     included do
       # Required to find records by id on partitioned tables.
@@ -26,6 +27,7 @@ module IncidentManagement
       validates :process_at, :rule_id, presence: true
 
       scope :processable, -> { where(process_at: ESCALATION_BUFFER.ago..Time.current) }
+      scope :upcoming, -> { where(process_at: ESCALATION_BUFFER.ago..MAX_ESCALATION_DELAY.from_now) }
 
       delegate :project, to: :target
 
