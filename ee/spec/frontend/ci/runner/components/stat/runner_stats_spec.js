@@ -16,6 +16,15 @@ describe('RunnerStats', () => {
         variables: {},
         ...props,
       },
+      stubs: {
+        RunnerCount: {
+          render() {
+            return this.$scopedSlots.default({
+              count: 1, // at least one runner exists
+            });
+          },
+        },
+      },
     });
   };
 
