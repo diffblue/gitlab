@@ -73,10 +73,21 @@ RSpec.describe AuditEventsHelper do
   describe '#view_only_own_group_events?' do
     let_it_be(:group) { build(:group) }
     let_it_be(:current_user) { build(:user) }
+    let_it_be(:auditor) { build(:user, :auditor) }
 
-    context 'when the user has permission to view other events' do
+    context 'when the user is group admin' do
       before do
         setup_permission(group, :admin_group, current_user, true)
+      end
+
+      it "returns false" do
+        expect(helper.view_only_own_group_events?(group)).to eq(false)
+      end
+    end
+
+    context 'when the user is an auditor' do
+      before do
+        allow(helper).to receive(:current_user).and_return(auditor)
       end
 
       it "returns false" do
@@ -98,10 +109,21 @@ RSpec.describe AuditEventsHelper do
   describe '#view_only_own_project_events?' do
     let_it_be(:project) { build(:project) }
     let_it_be(:current_user) { build(:user) }
+    let_it_be(:auditor) { build(:user, :auditor) }
 
-    context 'when the user has permission to view other events' do
+    context 'when the user is project admin' do
       before do
         setup_permission(project, :admin_project, current_user, true)
+      end
+
+      it "returns false" do
+        expect(helper.view_only_own_project_events?(project)).to eq(false)
+      end
+    end
+
+    context 'when the user is an auditor' do
+      before do
+        allow(helper).to receive(:current_user).and_return(auditor)
       end
 
       it "returns false" do

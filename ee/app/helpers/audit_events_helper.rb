@@ -29,11 +29,11 @@ module AuditEventsHelper
   end
 
   def view_only_own_project_events?(project)
-    !can?(current_user, :admin_project, project)
+    !can?(current_user, :admin_project, project) && !current_user.auditor?
   end
 
   def view_only_own_group_events?(group)
-    !can?(current_user, :admin_group, group)
+    !can?(current_user, :admin_group, group) && !current_user.auditor?
   end
 
   def filter_view_only_own_events_token_values(view_only)
