@@ -2,7 +2,7 @@
 import { GlTable, GlLink } from '@gitlab/ui';
 import { __ } from '~/locale';
 import ProjectAvatar from '~/vue_shared/components/project_avatar.vue';
-import { namespaceContainerRegistryPopoverContent } from '../constants';
+import { namespaceContainerRegistryPopoverContent, uploadsPopoverContent } from '../constants';
 import NumberToHumanSize from './number_to_human_size.vue';
 import StorageTypeHelpLink from './storage_type_help_link.vue';
 import StorageTypeWarning from './storage_type_warning.vue';
@@ -58,6 +58,7 @@ export default {
   })),
   i18n: {
     namespaceContainerRegistryPopoverContent,
+    uploadsPopoverContent,
   },
 };
 </script>
@@ -112,9 +113,11 @@ export default {
     </template>
 
     <template #cell(containerRegistry)="{ item: project }">
-      <number-to-human-size :value="project.statistics.containerRegistrySize" />
+      <div :data-testid="`cell-${project.id}-storage-type-container-registry`">
+        <number-to-human-size :value="project.statistics.containerRegistrySize" />
 
-      <storage-type-warning :content="$options.i18n.namespaceContainerRegistryPopoverContent" />
+        <storage-type-warning :content="$options.i18n.namespaceContainerRegistryPopoverContent" />
+      </div>
     </template>
 
     <template #cell(buildArtifacts)="{ item: project }">
@@ -134,7 +137,11 @@ export default {
     </template>
 
     <template #cell(uploads)="{ item: project }">
-      <number-to-human-size :value="project.statistics.uploadsSize" />
+      <div :data-testid="`cell-${project.id}-storage-type-uploads`">
+        <number-to-human-size :value="project.statistics.uploadsSize" />
+
+        <storage-type-warning :content="$options.i18n.uploadsPopoverContent" />
+      </div>
     </template>
   </gl-table>
 </template>

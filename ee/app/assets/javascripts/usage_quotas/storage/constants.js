@@ -121,6 +121,10 @@ export const projectContainerRegistryPopoverContent = s__(
   'UsageQuotas|The project-level storage statistics for the Container Registry are directional only and do not include savings for instance-wide deduplication.',
 );
 
+export const uploadsPopoverContent = s__(
+  'NamespaceStorage|Uploads are not counted in namespace storage quotas.',
+);
+
 export const containerRegistryId = 'containerRegistrySize';
 export const containerRegistryPopoverId = 'container-registry-popover';
 

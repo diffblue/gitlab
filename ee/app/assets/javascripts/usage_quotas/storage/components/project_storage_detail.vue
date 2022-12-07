@@ -2,8 +2,7 @@
 import { GlIcon, GlLink, GlSprintf, GlTableLite, GlPopover } from '@gitlab/ui';
 import { numberToHumanSize } from '~/lib/utils/number_utils';
 import { thWidthPercent } from '~/lib/utils/table_utility';
-import { s__, sprintf } from '~/locale';
-import glFeatureFlagMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
+import { sprintf } from '~/locale';
 import {
   HELP_LINK_ARIA_LABEL,
   PROJECT_TABLE_LABEL_STORAGE_TYPE,
@@ -12,6 +11,7 @@ import {
   containerRegistryPopoverId,
   uploadsId,
   uploadsPopoverId,
+  uploadsPopoverContent,
 } from '../constants';
 import { descendingStorageUsageSort } from '../utils';
 import StorageTypeIcon from './storage_type_icon.vue';
@@ -26,7 +26,6 @@ export default {
     StorageTypeIcon,
     GlPopover,
   },
-  mixins: [glFeatureFlagMixin()],
   inject: ['containerRegistryPopoverContent'],
   props: {
     storageTypes: {
@@ -79,9 +78,7 @@ export default {
     },
   ],
   i18n: {
-    uploadsPopoverContent: s__(
-      'NamespaceStorage|Uploads are not counted in namespace storage quotas.',
-    ),
+    uploadsPopoverContent,
   },
 };
 </script>
