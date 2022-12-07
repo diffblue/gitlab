@@ -3,4 +3,5 @@ nodejs 16.15.0
 postgres 12.13 13.9
 redis 6.2.7
 ruby 2.7.7
+rust 1.65.0
 yarn 1.22.19
