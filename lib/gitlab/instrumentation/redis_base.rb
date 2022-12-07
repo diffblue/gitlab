@@ -5,6 +5,8 @@ require 'redis'
 module Gitlab
   module Instrumentation
     class RedisBase
+      VALIDATE_ALLOWED_COMMANDS_KEY = 'validate_allowed_commands_flag'
+
       class << self
         include ::Gitlab::Utils::StrongMemoize
         include ::Gitlab::Instrumentation::RedisPayload
@@ -76,10 +78,9 @@ module Gitlab
         end
 
         def validate_allowed_commands?
-          flag = ::RequestStore[validate_allowed_commands_key]
-          return flag unless flag.nil?
-
-          ::RequestStore[validate_allowed_commands_key] = Feature.enabled?(:validate_allowed_cross_slot_commands, type: :development)
+          ::Gitlab::SafeRequestStore.fetch(VALIDATE_ALLOWED_COMMANDS_KEY) do
+            Feature.enabled?(:validate_allowed_cross_slot_commands, type: :development)
+          end
         end
 
         def redis_cluster_validate!(commands)
@@ -149,10 +150,6 @@ module Gitlab
 
         def cross_slots_key
           strong_memoize(:cross_slots_key) { build_key(:redis_cross_slot_request_count) }
-        end
-
-        def validate_allowed_commands_key
-          strong_memoize(:validate_allowed_commands_key) { "validate_allowed_commands_flag" }
         end
 
         def build_key(namespace)

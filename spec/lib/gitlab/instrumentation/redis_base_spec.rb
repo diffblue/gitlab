@@ -228,8 +228,8 @@ RSpec.describe Gitlab::Instrumentation::RedisBase, :request_store do
           end
         ).to eq(false)
 
-        # even with validate set to false, redis_cluster_validate! will use cached
-        # feature flag value and perform validation
+        # even with validate set to false, redis_cluster_validate! will use the
+        # SafeRequestStore cached feature flag value and perform validation
         stub_feature_flags(validate_allowed_cross_slot_commands: false)
         expect(
           Gitlab::Instrumentation::RedisClusterValidator.allow_cross_slot_commands do
