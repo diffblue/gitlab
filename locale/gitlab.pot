@@ -36795,6 +36795,12 @@ msgstr ""
 msgid "SAST Configuration"
 msgstr ""
 
+msgid "SCIM|SCIM Token"
+msgstr ""
+
+msgid "SCIM|System for Cross-Domain Identity Management."
+msgstr ""
+
 msgid "SHA256"
 msgstr ""
 

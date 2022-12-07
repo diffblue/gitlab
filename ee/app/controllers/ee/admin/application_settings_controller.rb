@@ -14,6 +14,7 @@ module EE
         before_action :search_outdated_code_analyzer_detected, only: [:advanced_search]
         before_action :push_password_complexity_feature, only: [:general]
         before_action :new_license, only: [:general]
+        before_action :scim_token, only: [:general]
 
         feature_category :sm_provisioning, [:seat_link_payload]
         feature_category :source_code_management, [:templates]
@@ -52,6 +53,12 @@ module EE
           end
         rescue StandardError => e
           log_exception(e)
+        end
+
+        def scim_token
+          scim_token = ScimOauthAccessToken.find_for_instance
+
+          @scim_token_url = scim_token.as_entity_json[:scim_api_url] if scim_token
         end
       end
 
