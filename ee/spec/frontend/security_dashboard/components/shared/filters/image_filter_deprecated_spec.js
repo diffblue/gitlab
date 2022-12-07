@@ -11,7 +11,6 @@ import { imageFilter } from 'ee/security_dashboard/helpers';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
 import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
 import { agentVulnerabilityImages, projectVulnerabilityImages } from '../../mock_data';
 
 jest.mock('~/flash');
@@ -41,23 +40,19 @@ describe('Image Filter component (deprecated)', () => {
       apolloProvider: createMockApolloProvider({ agentQueryResolver, projectQueryResolver }),
       propsData: { filter: imageFilter },
       provide: { projectFullPath, ...provide },
-      directives: { GlTooltip: createMockDirective() },
     });
   };
 
   const findFilterItems = () => wrapper.findAllComponents(FilterItem);
 
   const expectFilterItem = (item, name) => {
-    const tooltip = getBinding(item.element, 'gl-tooltip');
     const truncate = item.findComponent(GlTruncate);
 
     expect(item.props('isChecked')).toBe(false);
+    expect(item.props('tooltip')).toBe(name);
 
     expect(truncate.attributes('title')).toBe('');
     expect(truncate.props()).toMatchObject({ text: name, position: 'middle' });
-
-    expect(tooltip.modifiers).toStrictEqual({ left: true, viewport: true });
-    expect(tooltip.value).toBe(name);
   };
 
   afterEach(() => {
