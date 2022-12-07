@@ -48,7 +48,7 @@
 
   - if Feature.enabled?(:super_sidebar_nav_toggle, current_user)
     %li.divider
-    .js-new-nav-toggle{ data: { enabled: current_user.use_new_navigation.to_s, endpoint: toggle_new_navigation_profile_preferences_url} }
+    .js-new-nav-toggle{ data: { enabled: current_user.use_new_navigation.to_s, endpoint: profile_preferences_url} }
 
   - if current_user_menu?(:sign_out)
     %li.divider

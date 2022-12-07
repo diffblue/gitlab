@@ -37,11 +37,7 @@ resource :profile, only: [:show, :update] do
         put :reset
       end
     end
-    resource :preferences, only: [:show, :update] do
-      collection do
-        put :toggle_new_navigation
-      end
-    end
+    resource :preferences, only: [:show, :update]
     resources :keys, only: [:index, :show, :create, :destroy]
     resources :gpg_keys, only: [:index, :create, :destroy] do
       member do
