@@ -18,7 +18,7 @@ module Mutations
         ::Notes::DestroyService.new(note.project, current_user).execute(note)
 
         {
-          errors: errors_on_object(note)
+          errors: []
         }
       end
     end

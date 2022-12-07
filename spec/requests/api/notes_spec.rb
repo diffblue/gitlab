@@ -243,7 +243,7 @@ RSpec.describe API::Notes, feature_category: :team_planning do
 
           expect do
             post api("#{request_path}/#{cross_reference_note.id}", private_user), params: params
-          end.to not_change { Note.system.count }.and( not_change { Note.where(system: false).count } )
+          end.to not_change { Note.system.count }.and(not_change { Note.where(system: false).count })
 
           expect(response).to have_gitlab_http_status(:not_found)
         end

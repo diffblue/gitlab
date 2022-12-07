@@ -61,7 +61,8 @@ module Issuable
     def can_read_issuable_notes?
       return Ability.allowed?(current_user, :read_security_resource, issuable) if issuable.is_a?(Vulnerability)
 
-      issuable.supports_notes? && Ability.allowed?(current_user, :"read_#{issuable.to_ability_name}", issuable)
+      Ability.allowed?(current_user, :"read_#{issuable.to_ability_name}", issuable) &&
+        Ability.allowed?(current_user, :read_note, issuable)
     end
   end
 end

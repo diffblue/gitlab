@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Notes::CreateService, feature_category: :team_planning do
+RSpec.describe Notes::CreateService do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:issue) { create(:issue, project: project) }
   let_it_be(:user) { create(:user) }
@@ -612,7 +612,7 @@ RSpec.describe Notes::CreateService, feature_category: :team_planning do
           note = subject
 
           expect(note.errors).not_to be_empty
-          expect(note.errors[:base]).to match_array(['Discussion to reply to cannot be found', 'Notes are not supported'])
+          expect(note.errors[:base]).to eq(['Discussion to reply to cannot be found'])
         end
       end
     end

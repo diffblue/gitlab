@@ -3,9 +3,7 @@
 module Notes
   class UpdateService < BaseService
     def execute(note)
-      super(note)
-
-      return note unless note.editable? && params.present? && note.errors.empty?
+      return note unless note.editable? && params.present?
 
       old_mentioned_users = note.mentioned_users(current_user).to_a
 

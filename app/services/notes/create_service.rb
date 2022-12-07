@@ -7,8 +7,6 @@ module Notes
     def execute(skip_capture_diff_note_position: false)
       note = Notes::BuildService.new(project, current_user, params.except(:merge_request_diff_head_sha)).execute
 
-      super(note)
-
       # n+1: https://gitlab.com/gitlab-org/gitlab-foss/issues/37440
       note_valid = Gitlab::GitalyClient.allow_n_plus_1_calls do
         # We may set errors manually in Notes::BuildService for this reason

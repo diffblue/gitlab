@@ -55,7 +55,6 @@ RSpec.describe IssuableActions do
     it 'instantiates and calls NotesFinder as expected' do
       expect(issuable).to receive(:to_ability_name).and_return('issue')
       expect(issuable).to receive(:project).and_return(project)
-      expect(issuable).to receive(:supports_notes?).and_return(true)
       expect(Ability).to receive(:allowed?).at_least(1).and_return(true)
       expect(Discussion).to receive(:build_collection).and_return([])
       expect(DiscussionSerializer).to receive(:new).and_return(discussion_serializer)

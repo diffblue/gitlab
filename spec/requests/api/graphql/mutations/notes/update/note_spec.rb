@@ -60,7 +60,8 @@ RSpec.describe 'Updating a Note', feature_category: :team_planning do
           expect(note.reload.note).to eq(original_body)
         end
 
-        it_behaves_like 'a mutation that returns errors in the response', errors: ["Notes are not supported"]
+        it_behaves_like 'a mutation that returns top-level errors',
+          errors: [Gitlab::Graphql::Authorize::AuthorizeResource::RESOURCE_ACCESS_ERROR]
       end
     end
   end

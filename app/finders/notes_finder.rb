@@ -34,18 +34,13 @@ class NotesFinder
   end
 
   def target
-    # sometimes we send project as the target so we check if this is a Noteable first
-    return @target if defined?(@target) && (!@target.is_a?(Noteable) || @target.supports_notes?)
+    return @target if defined?(@target)
 
-    found_target = if target_given?
-                     use_explicit_target
-                   else
-                     find_target_by_type_and_ids
-                   end
-
-    return if found_target.is_a?(Noteable) && !found_target.supports_notes?
-
-    found_target
+    if target_given?
+      use_explicit_target
+    else
+      find_target_by_type_and_ids
+    end
   end
 
   private

@@ -205,14 +205,6 @@ module Noteable
     model_name.singular
   end
 
-  def supports_notes?
-    # all non work item noteables(MRs, Snippets, etc) support notes.
-    return true unless respond_to?(:work_item_type)
-
-    # if this is a work item we need to check that it supports notes widget, see WorkItems::Type::WIDGETS_FOR_TYPE
-    work_item_type.widgets.include?(::WorkItems::Widgets::Notes)
-  end
-
   private
 
   # Synthetic system notes don't have discussion IDs because these are generated dynamically
