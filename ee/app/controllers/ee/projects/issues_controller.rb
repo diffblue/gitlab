@@ -136,6 +136,15 @@ module EE
 
         redirect_to project_quality_test_case_path(project, issue)
       end
+
+      override :allowed_work_item?
+      def allowed_work_item?
+        if ::Feature.enabled?(:okrs_mvc, project) && project.feature_available?(:okrs)
+          return super || issue.objective?
+        end
+
+        super
+      end
     end
   end
 end
