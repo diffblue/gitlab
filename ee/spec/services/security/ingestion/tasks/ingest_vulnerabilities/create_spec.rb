@@ -2,15 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::Create do
-  let(:user) { create(:user) }
-  let(:pipeline) { create(:ci_pipeline, user: user) }
-  let(:report_finding) { create(:ci_reports_security_finding) }
-  let(:finding_map) { create(:finding_map, :with_finding, report_finding: report_finding) }
+RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::Create, feature_category: :vulnerability_management do
+  let_it_be(:user) { create(:user) }
+  let_it_be(:pipeline) { create(:ci_pipeline, user: user) }
+  let_it_be(:report_finding) { create(:ci_reports_security_finding) }
+  let_it_be(:finding_map) { create(:finding_map, :with_finding, report_finding: report_finding) }
+  let(:vulnerability) { Vulnerability.last }
 
-  def create_vulnerabilities
-    described_class.new(pipeline, [finding_map]).execute
-  end
+  subject { described_class.new(pipeline, [finding_map]).execute }
 
   context 'vulnerability state' do
     context 'when finding has dismissal feedback' do
@@ -22,15 +21,32 @@ RSpec.describe Security::Ingestion::Tasks::IngestVulnerabilities::Create do
       end
 
       it 'sets the state of the vulnerability to `dismissed`' do
-        create_vulnerabilities
-        expect(Vulnerability.last.state).to eq('dismissed')
+        subject
+
+        expect(vulnerability.state).to eq('dismissed')
+      end
+    end
+
+    context 'when finding has issue feedback' do
+      let!(:feedback) do
+        create(:vulnerability_feedback,
+               :issue,
+               project: finding_map.security_finding.scan.project,
+               finding_uuid: finding_map.uuid)
+      end
+
+      it 'sets the state of the vulnerability to `detected`' do
+        subject
+
+        expect(vulnerability.state).to eq('detected')
       end
     end
 
     context 'when finding has no dismissal feedback' do
       it 'sets the state of the vulnerability to `detected`' do
-        create_vulnerabilities
-        expect(Vulnerability.last.state).to eq('detected')
+        subject
+
+        expect(vulnerability.state).to eq('detected')
       end
     end
   end
