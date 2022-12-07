@@ -342,7 +342,7 @@ RSpec.shared_examples 'it runs batched background migration jobs' do |tracking_d
       it 'creates job records for each processed batch', :aggregate_failures do
         expect { full_migration_run }.to change { migration.reload.batched_jobs.count }.from(0)
 
-        final_min_value = migration.batched_jobs.reduce(1) do |next_min_value, batched_job|
+        final_min_value = migration.batched_jobs.order(id: :asc).reduce(1) do |next_min_value, batched_job|
           expect(batched_job.min_value).to eq(next_min_value)
 
           batched_job.max_value + 1
