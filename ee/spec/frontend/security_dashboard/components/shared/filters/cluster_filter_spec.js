@@ -37,7 +37,7 @@ describe('ClusterFilter component', () => {
   const findDropdownItem = (name) => wrapper.findByTestId(name);
 
   const clickDropdownItem = async (name) => {
-    findDropdownItem(name).vm.$emit('click');
+    findDropdownItem(name).trigger('click');
     await nextTick();
   };
 
