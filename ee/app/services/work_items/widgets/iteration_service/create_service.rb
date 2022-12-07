@@ -3,8 +3,8 @@
 module WorkItems
   module Widgets
     module IterationService
-      class UpdateService < WorkItems::Widgets::IterationService::BaseService
-        def before_update_callback(params: {})
+      class CreateService < WorkItems::Widgets::IterationService::BaseService
+        def before_create_callback(params: {})
           handle_iteration_change(params: params)
         end
       end
