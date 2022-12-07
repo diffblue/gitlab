@@ -4,7 +4,7 @@ require 'spec_helper'
 
 RSpec.describe GitlabSubscriptions::SeatCountAlert, feature_category: :subscription_management do
   controller(ActionController::Base) do
-    include GitlabSubscriptions::SeatCountAlert # rubocop:disable Rspec/DescribedClass
+    include GitlabSubscriptions::SeatCountAlert # rubocop:disable RSpec/DescribedClass
   end
 
   let_it_be(:user) { create(:user) }
