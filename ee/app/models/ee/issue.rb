@@ -87,6 +87,7 @@ module EE
       scope :with_health_status, ->(status) { where(health_status: status) }
       scope :with_any_health_status, -> { where.not(health_status: nil) }
       scope :with_no_health_status, -> { where(health_status: nil) }
+      scope :without_health_status, ->(status) { where(health_status: nil).or(where.not(health_status: status)) }
 
       scope :distinct_epic_ids, -> do
         epic_ids = except(:order, :select).joins(:epic_issue).reselect('epic_issues.epic_id').distinct
