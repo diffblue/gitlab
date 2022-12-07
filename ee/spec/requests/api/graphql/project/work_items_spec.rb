@@ -74,16 +74,14 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
         )
       end
 
-      it 'avoids N+1 queries' do
-        post_graphql(query, current_user: current_user) # warm-up
-
-        control = ActiveRecord::QueryRecorder.new do
+      it 'avoids N+1 queries', :use_sql_query_cache do
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
           post_graphql(query, current_user: current_user)
         end
 
         create_list(:work_item, 3, :satisfied_status, project: project)
 
-        expect { post_graphql(query, current_user: current_user) }.not_to exceed_query_limit(control)
+        expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
       end
 
       context 'when filtering' do
@@ -127,6 +125,41 @@ RSpec.describe 'getting a work item list for a project', feature_category: :team
         post_graphql(query, current_user: current_user)
 
         expect_graphql_errors_to_be_empty
+      end
+    end
+
+    context 'with progress widget' do
+      let_it_be(:work_item1) { create(:work_item, :objective, project: project) }
+      let_it_be(:progress) { create(:progress, work_item: work_item1) }
+
+      let(:fields) do
+        <<~QUERY
+        edges {
+          node {
+            id
+            widgets {
+              type
+              ... on WorkItemWidgetProgress {
+                progress
+              }
+            }
+          }
+        }
+        QUERY
+      end
+
+      before do
+        stub_licensed_features(okrs: true)
+      end
+
+      it 'avoids N+1 queries', :use_sql_query_cache do
+        control = ActiveRecord::QueryRecorder.new(skip_cached: false) do
+          post_graphql(query, current_user: current_user)
+        end
+
+        create_list(:work_item, 3, :objective, project: project)
+
+        expect { post_graphql(query, current_user: current_user) }.not_to exceed_all_query_limit(control)
       end
     end
   end

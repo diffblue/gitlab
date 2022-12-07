@@ -10,7 +10,7 @@ module EE
         issue: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight, ::WorkItems::Widgets::HealthStatus],
         requirement: [::WorkItems::Widgets::Status],
         task: [::WorkItems::Widgets::Iteration, ::WorkItems::Widgets::Weight, ::WorkItems::Widgets::HealthStatus],
-        objective: [::WorkItems::Widgets::HealthStatus],
+        objective: [::WorkItems::Widgets::HealthStatus, ::WorkItems::Widgets::Progress],
         key_result: [::WorkItems::Widgets::HealthStatus]
       }.freeze
 

@@ -20,6 +20,8 @@ module EE
               ::Types::WorkItems::Widgets::IterationType
             when ::WorkItems::Widgets::HealthStatus
               ::Types::WorkItems::Widgets::HealthStatusType
+            when ::WorkItems::Widgets::Progress
+              ::Types::WorkItems::Widgets::ProgressType
             else
               super
             end
@@ -31,7 +33,8 @@ module EE
             ::Types::WorkItems::Widgets::WeightType,
             ::Types::WorkItems::Widgets::StatusType,
             ::Types::WorkItems::Widgets::IterationType,
-            ::Types::WorkItems::Widgets::HealthStatusType
+            ::Types::WorkItems::Widgets::HealthStatusType,
+            ::Types::WorkItems::Widgets::ProgressType
           ].freeze
 
           orphan_types(*ce_orphan_types, *EE_ORPHAN_TYPES)

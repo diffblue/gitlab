@@ -18,7 +18,8 @@ RSpec.describe WorkItems::Type do
         ::WorkItems::Widgets::Status,
         ::WorkItems::Widgets::HealthStatus,
         ::WorkItems::Widgets::Milestone,
-        ::WorkItems::Widgets::Notes
+        ::WorkItems::Widgets::Notes,
+        ::WorkItems::Widgets::Progress
       )
     end
   end
