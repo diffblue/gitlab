@@ -69,20 +69,18 @@ export default {
     closeForm() {
       this.$emit('closeForm');
     },
+    handleLicenseUpdate(license) {
+      this.licenseName = license;
+    },
   },
 };
 </script>
 <template>
   <div class="col-sm-6 js-add-license-form">
     <div class="form-group">
-      <label class="label-bold" for="js-license-dropdown">
-        {{ s__('LicenseCompliance|Add license and related policy') }}
-      </label>
       <add-license-form-dropdown
-        id="js-license-dropdown"
-        v-model="licenseName"
         :known-licenses="knownLicenses"
-        :placeholder="s__('LicenseCompliance|License name')"
+        @update-selected-license="handleLicenseUpdate"
       />
       <div class="invalid-feedback" :class="{ 'd-block': isInvalidLicense }">
         {{ s__('LicenseCompliance|This license already exists in this project.') }}

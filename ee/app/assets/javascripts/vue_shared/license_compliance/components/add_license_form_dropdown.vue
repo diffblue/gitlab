@@ -1,53 +1,34 @@
 <script>
-/* eslint-disable no-unused-vars */
-import $ from 'jquery';
-import select2 from 'select2/select2';
-import { loadCSSFile } from '~/lib/utils/css_utils';
+import { GlFormCombobox } from '@gitlab/ui';
 
 export default {
   name: 'AddLicenseFormDropdown',
+  components: {
+    GlFormCombobox,
+  },
   props: {
-    placeholder: {
-      type: String,
-      required: false,
-      default: '',
-    },
-    value: {
-      type: String,
-      required: false,
-      default: '',
-    },
     knownLicenses: {
       type: Array,
       required: true,
     },
   },
-  mounted() {
-    loadCSSFile(gon.select2_css_path)
-      .then(() => {
-        $(this.$refs.dropdownInput)
-          .val(this.value)
-          .select2({
-            allowClear: true,
-            placeholder: this.placeholder,
-            createSearchChoice: (term) => ({ id: term, text: term }),
-            createSearchChoicePosition: 'bottom',
-            data: this.knownLicenses.map((license) => ({
-              id: license,
-              text: license,
-            })),
-          })
-          .on('change', (e) => {
-            this.$emit('input', e.target.value);
-          });
-      })
-      .catch(() => {});
+  data() {
+    return {
+      licenseName: '',
+    };
   },
-  beforeDestroy() {
-    $(this.$refs.dropdownInput).select2('destroy');
+  watch: {
+    licenseName(query) {
+      this.$emit('update-selected-license', query);
+    },
   },
 };
 </script>
 <template>
-  <input ref="dropdownInput" type="hidden" />
+  <gl-form-combobox
+    v-model="licenseName"
+    :token-list="knownLicenses"
+    :label-text="s__('LicenseCompliance|Add license and related policy')"
+    :placeholder="s__('LicenseCompliance|License name')"
+  />
 </template>

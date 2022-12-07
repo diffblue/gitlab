@@ -2,6 +2,7 @@ import { GlFormRadio, GlFormRadioGroup } from '@gitlab/ui';
 import { shallowMount, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import LicenseIssueBody from 'ee/vue_shared/license_compliance/components/add_license_form.vue';
+import AddLicenseFormDropdown from 'ee/vue_shared/license_compliance/components/add_license_form_dropdown.vue';
 import { LICENSE_APPROVAL_STATUS } from 'ee/vue_shared/license_compliance/constants';
 
 const KNOWN_LICENSES = [{ name: 'BSD' }, { name: 'Apache' }];
@@ -19,6 +20,7 @@ describe('AddLicenseForm', () => {
   const findCancelButton = () => wrapper.find('.js-cancel');
   const findRadioInputs = () =>
     wrapper.findComponent(GlFormRadioGroup).findAllComponents(GlFormRadio);
+  const findAddLicenseFormDropdown = () => wrapper.findComponent(AddLicenseFormDropdown);
 
   beforeEach(() => {
     createComponent();
@@ -111,9 +113,7 @@ describe('AddLicenseForm', () => {
 
   describe('template', () => {
     it('renders the license select dropdown', () => {
-      const dropdownElement = wrapper.find('#js-license-dropdown');
-
-      expect(dropdownElement.exists()).toBe(true);
+      expect(findAddLicenseFormDropdown().exists()).toBe(true);
     });
 
     describe('license approval radio list', () => {
