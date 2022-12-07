@@ -226,7 +226,7 @@ func (api *API) newRequest(r *http.Request, suffix string) (*http.Request, error
 	authReq := &http.Request{
 		Method: r.Method,
 		URL:    rebaseUrl(r.URL, api.URL, suffix),
-		Header: helper.HeaderClone(r.Header),
+		Header: r.Header.Clone(),
 	}
 
 	authReq = authReq.WithContext(r.Context())
@@ -307,7 +307,7 @@ func (api *API) PreAuthorizeFixedPath(r *http.Request, method string, path strin
 	if err != nil {
 		return nil, fmt.Errorf("construct auth request: %w", err)
 	}
-	authReq.Header = helper.HeaderClone(r.Header)
+	authReq.Header = r.Header.Clone()
 	authReq.URL.RawQuery = r.URL.RawQuery
 
 	failureResponse, apiResponse, err := api.PreAuthorize(path, authReq)
