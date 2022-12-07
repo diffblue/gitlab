@@ -95,7 +95,7 @@ export const THREE_MONTHS_AGO = {
   key: 'threeMonthsAgo',
   label: monthInWords(nMonthsBefore(NOW, 3)),
   start: nMonthsBefore(PREVIOUS_MONTH_START, 2),
-  end: nSecondsBefore(PREVIOUS_MONTH_START, 2),
+  end: nSecondsBefore(nMonthsBefore(PREVIOUS_MONTH_START, 1), 1),
 };
 
 export const DASHBOARD_TIME_PERIODS = [THIS_MONTH, LAST_MONTH, TWO_MONTHS_AGO, THREE_MONTHS_AGO];
