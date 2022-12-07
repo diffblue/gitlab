@@ -6,7 +6,7 @@ module Projects
 
     before_action :authorize_read_dependency_list!
 
-    feature_category :dependency_scanning
+    feature_category :dependency_management
     urgency :low
 
     def index
