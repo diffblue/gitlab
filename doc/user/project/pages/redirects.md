@@ -108,9 +108,8 @@ and an [HTTP status code](#http-status-codes):
 
 ## Rewrites
 
-> - [Introduced](https://gitlab.com/gitlab-org/gitlab-pages/-/merge_requests/458) in GitLab 14.3.
-> - Enabled on GitLab.com.
-> - Disabled by default in self-managed GitLab behind the [`FF_ENABLE_PLACEHOLDERS` feature flag](#feature-flag-for-rewrites).
+> - [Introduced](https://gitlab.com/gitlab-org/gitlab-pages/-/merge_requests/458) in GitLab 14.3 [with a flag](../../../administration/feature_flags.md) named `FF_ENABLE_PLACEHOLDERS`. Disabled by default.
+> - [Enabled on GitLab.com and self-managed](https://gitlab.com/gitlab-org/gitlab-pages/-/issues/619) in GitLab 15.2.
 
 Provide a status code of `200` to serve the content of the `to` path when the
 request matches the `from`:
@@ -271,7 +270,7 @@ However, there are some minor differences:
 ## Feature flag for rewrites
 
 FLAG:
-Rewrites in GitLab Pages is under development, and is deployed behind a feature flag
+Rewrites in GitLab Pages is under development, and is deployed behind a "feature flag" (in this case, an environment variable)
 that is **disabled by default**.
 
 To enable rewrites, for [Omnibus installations](../../../administration/pages/index.md), define the
