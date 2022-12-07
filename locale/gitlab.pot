@@ -35565,6 +35565,9 @@ msgstr ""
 msgid "Runners|New registration token generated!"
 msgstr ""
 
+msgid "Runners|No description"
+msgstr ""
+
 msgid "Runners|No results found"
 msgstr ""
 
