@@ -1,11 +1,12 @@
 <script>
 import {
-  GlDropdownDivider,
   GlDropdownText,
   GlLoadingIcon,
   GlIntersectionObserver,
+  GlDropdown,
+  GlSearchBoxByType,
 } from '@gitlab/ui';
-import { escapeRegExp, has, xorBy } from 'lodash';
+import { escapeRegExp, xor } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import { createAlert } from '~/flash';
@@ -13,51 +14,54 @@ import { convertToGraphQLIds, getIdFromGraphQLId } from '~/graphql_shared/utils'
 import { __, s__ } from '~/locale';
 import groupProjectsQuery from '../../../graphql/queries/group_projects.query.graphql';
 import instanceProjectsQuery from '../../../graphql/queries/instance_projects.query.graphql';
-import { PROJECT_LOADING_ERROR_MESSAGE } from '../../../helpers';
-import FilterBody from './filter_body.vue';
 import FilterItem from './filter_item.vue';
-import SimpleFilter from './simple_filter.vue';
+import QuerystringSync from './querystring_sync.vue';
+import DropdownButtonText from './dropdown_button_text.vue';
+import { ALL_ID } from './constants';
 
 const SEARCH_TERM_MINIMUM_LENGTH = 3;
 const SELECTED_PROJECTS_MAX_COUNT = 100;
 const PROJECT_ENTITY_NAME = 'Project';
 
-const mapProjects = (projects = []) =>
-  projects.map((p) => ({ id: getIdFromGraphQLId(p.id).toString(), name: p.name }));
+const QUERIES = {
+  [DASHBOARD_TYPES.GROUP]: groupProjectsQuery,
+  [DASHBOARD_TYPES.INSTANCE]: instanceProjectsQuery,
+};
+
+// Convert the project IDs from "gid://gitlab/Project/1" to "1". It needs to be a string because
+// the IDs saved on the querystring are restored as strings.
+const mapProjects = (projects) =>
+  projects.map(({ id, name }) => ({ id: getIdFromGraphQLId(id).toString(), name }));
 
 export default {
-  name: 'ProjectFilter',
   components: {
-    FilterBody,
     FilterItem,
-    GlDropdownDivider,
     GlLoadingIcon,
     GlDropdownText,
     GlIntersectionObserver,
+    GlDropdown,
+    QuerystringSync,
+    DropdownButtonText,
+    GlSearchBoxByType,
   },
   directives: { SafeHtml },
-  extends: SimpleFilter,
   inject: ['groupFullPath', 'dashboardType'],
   data: () => ({
-    projectsCache: {},
+    projectNames: {},
     projects: [],
+    selected: [],
     pageInfo: { hasNextPage: true },
     searchTerm: '',
     hasDropdownBeenOpened: false,
   }),
   computed: {
-    options() {
-      // Return the projects that exist.
-      return Object.values(this.projectsCache).filter(Boolean);
-    },
-    selectedSet() {
-      return new Set(this.selectedOptions.map((x) => x.id));
-    },
     selectableProjects() {
-      // When searching, we want the "select in place" behavior when a dropdown item is clicked, so
-      // we show all the projects. If not, we want the "move the selected item to the top" behavior,
-      // so we show only unselected projects:
-      return this.isSearching ? this.projects : this.projects.filter((x) => !this.isSelected(x.id));
+      // When searching, clicking an item should select in place (item stays where it's at in the
+      // list), so we return all the projects. When not searching, clicking an item should move it
+      // to the top of the list, so we return only the unselected projects.
+      return this.isSearching
+        ? this.projects
+        : this.projects.filter(({ id }) => !this.selected.includes(id));
     },
     isLoadingProjects() {
       return this.$apollo.queries.projects.loading;
@@ -72,66 +76,68 @@ export default {
       return this.searchTerm.length > 0;
     },
     showSelectedProjectsSection() {
-      return Boolean(this.selectedOptions?.length) && !this.isSearching;
+      return Boolean(this.selected.length) && !this.isSearching;
     },
     isMaxProjectsSelected() {
-      return this.selectedOptions?.length >= SELECTED_PROJECTS_MAX_COUNT;
+      return this.selected.length >= SELECTED_PROJECTS_MAX_COUNT;
     },
     hasNoResults() {
       return !this.isLoadingProjects && this.projects.length <= 0;
     },
-    uncachedIds() {
-      const ids = this.querystringIds.includes(this.filter.allOption.id) ? [] : this.querystringIds;
-      return ids.filter((id) => !has(this.projectsCache, id));
-    },
-    query() {
-      return this.dashboardType === DASHBOARD_TYPES.GROUP
-        ? groupProjectsQuery
-        : instanceProjectsQuery;
+    // Project IDs that we didn't fetch the project data for.
+    unfetchedIds() {
+      return this.selected.filter((id) => !Object.hasOwn(this.projectNames, id));
     },
     shouldShowIntersectionObserver() {
       return this.pageInfo.hasNextPage && !this.isLoadingProjects;
     },
+    selectedProjectNames() {
+      const projects = this.validIds.map((id) => this.projectNames[id]);
+      return projects.length ? projects : [this.$options.i18n.allItemsText];
+    },
+    // IDs of projects that actually exist.
+    validIds() {
+      return this.selected.filter((id) => Boolean(this.projectNames[id]));
+    },
   },
   apollo: {
-    // Gets the projects from the project IDs in the querystring and adds them to the cache.
+    // Gets the project data for the project IDs in the querystring and adds them to projectNames.
     projectsById: {
       query() {
-        return this.query;
+        return QUERIES[this.dashboardType];
       },
+      // This prevents the query from creating a projectsById variable on the component. The query
+      // is only used to populate projectNames.
       manual: true,
       variables() {
         return {
           fullPath: this.groupFullPath,
           pageSize: SELECTED_PROJECTS_MAX_COUNT,
           // The IDs have to be in the format "gid://gitlab/Project/${projectId}"
-          ids: convertToGraphQLIds(PROJECT_ENTITY_NAME, this.uncachedIds),
+          ids: convertToGraphQLIds(PROJECT_ENTITY_NAME, this.unfetchedIds),
         };
       },
       result({ data }) {
-        // Add an entry to the cache for each uncached ID. We need to do this because the backend
-        // won't return a record for invalid IDs, so we need to record which IDs were queried for.
-        this.uncachedIds.forEach((id) => {
-          this.$set(this.projectsCache, id, undefined);
+        // Add each unfetched ID to projectNames so that we know we fetched the project data for it.
+        this.unfetchedIds.forEach((id) => {
+          this.$set(this.projectNames, id, undefined);
         });
 
         const projects = mapProjects(data[this.dashboardType].projects.edges.map((x) => x.node));
-        this.saveProjectsToCache(projects);
-        // Now that we have the project for each uncached ID, set the selected options.
-        this.selectedOptions = this.querystringOptions;
+        this.saveProjectNames(projects);
       },
       error() {
-        createAlert({ message: PROJECT_LOADING_ERROR_MESSAGE });
+        createAlert({ message: this.$options.i18n.loadingError });
       },
       skip() {
-        // Skip if we've already cached all the projects for every querystring ID.
-        return !this.uncachedIds.length;
+        // Skip if we've already fetched all the projects for every project ID.
+        return !this.unfetchedIds.length;
       },
     },
-    // Gets the projects for the group with an optional search, to show as dropdown options.
+    // Gets the projects to show in the dropdown, with search if there's a search term.
     projects: {
       query() {
-        return this.query;
+        return QUERIES[this.dashboardType];
       },
       variables() {
         return {
@@ -141,14 +147,14 @@ export default {
       },
       update(data) {
         const { projects } = data[this.dashboardType];
+        const mappedProjects = mapProjects(projects.edges.map((x) => x.node));
+        this.saveProjectNames(mappedProjects);
         this.pageInfo = projects.pageInfo;
-        return mapProjects(projects.edges.map((x) => x.node));
-      },
-      result() {
-        this.saveProjectsToCache(this.projects);
+
+        return mappedProjects;
       },
       error() {
-        createAlert({ message: PROJECT_LOADING_ERROR_MESSAGE });
+        createAlert({ message: this.$options.i18n.loadingError });
       },
       skip() {
         return !this.hasDropdownBeenOpened || this.isSearchTooShort || this.isMaxProjectsSelected;
@@ -157,30 +163,26 @@ export default {
   },
   watch: {
     searchTerm() {
-      // Reset the data state so that the projects query will load the first page of results.
+      // When the search term is changed, clear out projects so that the old results aren't shown
+      // while loading new results, and set pageInfo.hasNextPage to true so that the query will
+      // run even if the previous results set it to false.
       this.projects = [];
       this.pageInfo = { hasNextPage: true };
     },
+    selected() {
+      this.$emit('filter-changed', { projectId: this.validIds });
+    },
   },
   methods: {
-    processQuerystringIds() {
-      if (this.uncachedIds.length) {
-        this.emitFilterChanged({ [this.filter.id]: this.querystringIds });
-      } else {
-        this.selectedOptions = this.querystringOptions;
-      }
-    },
-    toggleOption(option) {
-      // Toggle the option's existence in the array.
-      this.selectedOptions = xorBy(this.selectedOptions, [option], (x) => x.id);
-      this.updateQuerystring();
-    },
-    setDropdownOpened() {
+    async setDropdownOpened() {
       this.hasDropdownBeenOpened = true;
+      // Wait one tick for the dropdown to open, then focus on the search box.
+      await this.$nextTick();
+      this.$refs.searchBox.focusInput();
     },
     highlightSearchTerm(name) {
-      // If we use the regex with no search term, it will wrap every character with <b>, i.e.
-      // '<b>1</b><b>2</b><b>3</b>'.
+      // Don't use the regex if there's no search term, otherwise it will wrap every character with
+      // <b>, i.e. '<b>1</b><b>2</b><b>3</b>'.
       if (!this.isSearching) {
         return name;
       }
@@ -190,75 +192,107 @@ export default {
       const regex = new RegExp(`(${terms})`, 'gi');
       return name.replace(regex, '<b>$1</b>');
     },
-    saveProjectsToCache(projects) {
-      projects.forEach((project) => this.$set(this.projectsCache, project.id, project));
+    saveProjectNames(projects) {
+      projects.forEach(({ id, name }) => this.$set(this.projectNames, id, name));
     },
     fetchNextPage() {
       this.$apollo.queries.projects.fetchMore({ variables: { after: this.pageInfo.endCursor } });
     },
+    deselectAll() {
+      this.selected = [];
+    },
+    toggleSelected(id) {
+      this.selected = xor(this.selected, [id]);
+    },
   },
   i18n: {
+    label: s__('SecurityReports|Project'),
+    allItemsText: s__('SecurityReports|All projects'),
     enterMoreCharactersToSearch: __('Enter at least three characters to search'),
     maxProjectsSelected: s__('SecurityReports|Maximum selected projects limit reached'),
     noMatchingResults: __('No matching results'),
+    loadingError: __('An error occurred while retrieving projects.'),
   },
+  ALL_ID,
 };
 </script>
 
 <template>
-  <filter-body
-    v-model.trim="searchTerm"
-    :name="filter.name"
-    :selected-options="selectedOptionsOrAll"
-    :show-search-box="true"
-    :loading="isLoadingProjectsById"
-    @dropdown-show="setDropdownOpened"
-  >
-    <div v-if="showSelectedProjectsSection" data-testid="selected-projects-section">
-      <filter-item
-        v-for="project in selectedOptions"
-        :key="project.id"
-        is-checked
-        :text="project.name"
-        @click="toggleOption(project)"
-      />
+  <div>
+    <querystring-sync v-model="selected" querystring-key="projectId" />
+    <label class="gl-mb-2">{{ $options.i18n.label }}</label>
+    <gl-dropdown
+      :header-text="$options.i18n.label"
+      :loading="isLoadingProjectsById"
+      block
+      toggle-class="gl-mb-0"
+      @show="setDropdownOpened"
+    >
+      <template #button-text>
+        <dropdown-button-text
+          :items="selectedProjectNames"
+          data-qa-selector="filter_project_dropdown"
+        />
+      </template>
 
-      <gl-dropdown-divider />
-    </div>
+      <template #header>
+        <gl-search-box-by-type
+          ref="searchBox"
+          v-model="searchTerm"
+          :placeholder="__('Search')"
+          autocomplete="off"
+        />
+      </template>
 
-    <gl-dropdown-text v-if="isMaxProjectsSelected">
-      {{ $options.i18n.maxProjectsSelected }}
-    </gl-dropdown-text>
-    <gl-dropdown-text v-else-if="isSearchTooShort">
-      {{ $options.i18n.enterMoreCharactersToSearch }}
-    </gl-dropdown-text>
-    <gl-dropdown-text v-else-if="hasNoResults">
-      {{ $options.i18n.noMatchingResults }}
-    </gl-dropdown-text>
-    <template v-else>
-      <filter-item
-        v-if="!isSearching"
-        :is-checked="isNoOptionsSelected"
-        :text="filter.allOption.name"
-        data-testid="allOption"
-        @click="deselectAllOptions"
-      />
+      <template #highlighted-items>
+        <template v-if="showSelectedProjectsSection">
+          <filter-item
+            v-for="id in validIds"
+            :key="id"
+            is-checked
+            :text="projectNames[id]"
+            :data-testid="id"
+            @click="toggleSelected(id)"
+          />
+        </template>
+      </template>
 
-      <filter-item
-        v-for="project in selectableProjects"
-        :key="project.id"
-        :is-checked="isSelected(project.id)"
-        :text="project.name"
-        @click="toggleOption(project)"
-      >
-        <div v-safe-html="highlightSearchTerm(project.name)"></div>
-      </filter-item>
-      <gl-intersection-observer v-if="shouldShowIntersectionObserver" @appear="fetchNextPage" />
-      <gl-loading-icon
-        v-if="pageInfo.hasNextPage"
-        :class="{ 'gl-visibility-hidden': !isLoadingProjects }"
-        class="gl-my-2"
-      />
-    </template>
-  </filter-body>
+      <gl-dropdown-text v-if="isMaxProjectsSelected">
+        {{ $options.i18n.maxProjectsSelected }}
+      </gl-dropdown-text>
+      <gl-dropdown-text v-else-if="isSearchTooShort">
+        {{ $options.i18n.enterMoreCharactersToSearch }}
+      </gl-dropdown-text>
+      <gl-dropdown-text v-else-if="hasNoResults">
+        {{ $options.i18n.noMatchingResults }}
+      </gl-dropdown-text>
+
+      <template v-else>
+        <filter-item
+          v-if="!isSearching"
+          :is-checked="!selected.length"
+          :text="$options.i18n.allItemsText"
+          :data-testid="$options.ALL_ID"
+          @click="deselectAll"
+        />
+
+        <filter-item
+          v-for="{ id, name } in selectableProjects"
+          :key="id"
+          :is-checked="selected.includes(id)"
+          :data-testid="id"
+          @click="toggleSelected(id)"
+        >
+          <div v-safe-html="highlightSearchTerm(name)"></div>
+        </filter-item>
+
+        <gl-intersection-observer v-if="shouldShowIntersectionObserver" @appear="fetchNextPage" />
+        <gl-loading-icon
+          v-if="pageInfo.hasNextPage"
+          :class="{ 'gl-visibility-hidden': !isLoadingProjects }"
+          class="gl-my-2"
+        />
+      </template>
+    </gl-dropdown>
+  </div>
 </template>
