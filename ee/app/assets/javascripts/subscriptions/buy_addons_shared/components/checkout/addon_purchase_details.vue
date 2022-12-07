@@ -12,6 +12,8 @@ import {
   I18N_DETAILS_INVALID_QUANTITY_MESSAGE,
 } from '../../constants';
 
+const DEFAULT_MIN_QUANTITY = 1;
+
 export default {
   name: 'AddonPurchaseDetails',
   components: {
@@ -41,26 +43,32 @@ export default {
       default: '',
     },
   },
+  data() {
+    return {
+      quantityModel: this.quantity || DEFAULT_MIN_QUANTITY,
+    };
+  },
   computed: {
-    quantityModel: {
-      get() {
-        return this.quantity || 0;
-      },
-      set(quantity) {
-        this.updateQuantity(quantity || 0);
-      },
-    },
     isValid() {
-      return this.quantity >= 1 && Number.isInteger(this.quantity);
+      return this.quantityModel >= DEFAULT_MIN_QUANTITY && Number.isInteger(this.quantityModel);
+    },
+  },
+  watch: {
+    quantityModel(value) {
+      this.updateQuantity(value);
     },
   },
   methods: {
-    updateQuantity(quantity = 0) {
+    updateQuantity() {
+      if (!this.isValid) {
+        return;
+      }
+
       this.$apollo
         .mutate({
           mutation: updateState,
           variables: {
-            input: { subscription: { quantity } },
+            input: { subscription: { quantity: this.quantityModel } },
           },
         })
         .catch((error) => {

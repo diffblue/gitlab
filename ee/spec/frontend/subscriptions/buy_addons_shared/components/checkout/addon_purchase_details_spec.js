@@ -1,5 +1,5 @@
 import { GlAlert, GlFormInput } from '@gitlab/ui';
-import Vue from 'vue';
+import Vue, { nextTick } from 'vue';
 import { merge } from 'lodash';
 import VueApollo from 'vue-apollo';
 import { stateData as initialStateData } from 'ee_jest/subscriptions/mock_data';
@@ -38,7 +38,7 @@ describe('AddonPurchaseDetails', () => {
       },
       propsData: {
         productLabel: 'CI minute pack',
-        quantity: 10,
+        quantity: 0,
         packsFormula: 'x %{packQuantity} minutes per pack = %{strong}',
         quantityText: '%{quantity} CI minutes',
         totalPurchase: 'Total minutes: %{quantity}',
@@ -74,12 +74,22 @@ describe('AddonPurchaseDetails', () => {
     expect(isStepValid()).toBe(true);
   });
 
-  describe('quantity validation', () => {
-    it('sets the proper error message for quantity', () => {
-      expect(findStep().props('errorMessage')).toBe(I18N_DETAILS_INVALID_QUANTITY_MESSAGE);
+  it('sets the proper error message for quantity', () => {
+    expect(findStep().props('errorMessage')).toBe(I18N_DETAILS_INVALID_QUANTITY_MESSAGE);
+  });
+
+  describe('initial quantity validation', () => {
+    describe('when 0', () => {
+      createComponent({
+        subscription: { namespaceId: 483 },
+      });
+
+      it('marks the step as valid', () => {
+        expect(isStepValid()).toBe(true);
+      });
     });
 
-    describe.each([0, 0.5, 1.5])('when given an invalid quantity: %s', (quantity) => {
+    describe.each([0.5, 1.5])('when invalid: %s', (quantity) => {
       beforeEach(() => {
         createComponent(
           {
@@ -94,7 +104,7 @@ describe('AddonPurchaseDetails', () => {
       });
     });
 
-    describe.each([1, 2, 9])('when given a valid quantity: %s', (quantity) => {
+    describe.each([1, 2, 9])('when valid: %s', (quantity) => {
       beforeEach(() => {
         createComponent(
           {
@@ -129,6 +139,45 @@ describe('AddonPurchaseDetails', () => {
       createComponent({}, { showAlert: true, alertText: 'Alert text about your purchase' });
       expect(findGlAlert().isVisible()).toBe(true);
       expect(findGlAlert().text()).toMatchInterpolatedText('Alert text about your purchase');
+    });
+  });
+
+  describe('updating the quantity', () => {
+    describe('when is invalid', () => {
+      beforeEach(() => {
+        findGlFormInput().vm.$emit('input', 0);
+
+        return nextTick();
+      });
+
+      it('does not invoke the mutation', () => {
+        expect(updateState).not.toHaveBeenCalled();
+      });
+
+      it('marks the step as invalid', () => {
+        expect(isStepValid()).toBe(false);
+      });
+    });
+
+    describe('when the quantity is valid', () => {
+      beforeEach(() => {
+        findGlFormInput().vm.$emit('input', 9);
+
+        return nextTick();
+      });
+
+      it('calls the mutation', () => {
+        expect(updateState).toHaveBeenCalledWith(
+          expect.any(Object),
+          { input: { subscription: { quantity: 9 } } },
+          expect.any(Object),
+          expect.any(Object),
+        );
+      });
+
+      it('marks the step as valid', () => {
+        expect(isStepValid()).toBe(true);
+      });
     });
   });
 
