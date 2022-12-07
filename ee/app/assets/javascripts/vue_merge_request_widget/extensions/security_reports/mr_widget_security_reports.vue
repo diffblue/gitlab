@@ -8,7 +8,7 @@ import { BV_SHOW_MODAL } from '~/lib/utils/constants';
 import FindingModal from 'ee/vue_shared/security_reports/components/modal.vue';
 import { VULNERABILITY_MODAL_ID } from 'ee/vue_shared/security_reports/components/constants';
 import { EXTENSION_ICONS } from '~/vue_merge_request_widget/constants';
-import { capitalizeFirstCharacter } from '~/lib/utils/text_utility';
+import { capitalizeFirstCharacter, convertToCamelCase } from '~/lib/utils/text_utility';
 import { helpPagePath } from '~/helpers/help_page_helper';
 import { CRITICAL, HIGH } from '~/vulnerabilities/constants';
 import SummaryText from './summary_text.vue';
@@ -164,7 +164,10 @@ export default {
         [this.mr.coverageFuzzingComparisonPath, 'COVERAGE_FUZZING'],
         [this.mr.dependencyScanningComparisonPath, 'DEPENDENCY_SCANNING'],
         [this.mr.containerScanningComparisonPath, 'CONTAINER_SCANNING'],
-      ].filter(([endpoint, reportType]) => Boolean(endpoint) && Boolean(reportType));
+      ].filter(([endpoint, reportType]) => {
+        const enabledReportsKeyName = convertToCamelCase(reportType.toLowerCase());
+        return Boolean(endpoint) && this.mr.enabledReports[enabledReportsKeyName];
+      });
 
       return endpoints.map(([path, reportType]) => () => {
         const props = {

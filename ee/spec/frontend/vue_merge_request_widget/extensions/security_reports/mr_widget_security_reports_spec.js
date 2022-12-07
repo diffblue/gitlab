@@ -43,6 +43,15 @@ describe('MR Widget Security Reports', () => {
       propsData: {
         ...propsData,
         mr: {
+          enabledReports: {
+            sast: true,
+            dast: true,
+            dependencyScanning: true,
+            containerScanning: true,
+            coverageFuzzing: true,
+            apiFuzzing: true,
+            secretDetection: true,
+          },
           ...propsData?.mr,
           ...reportEndpoints,
           securityConfigurationPath,
@@ -144,6 +153,26 @@ describe('MR Widget Security Reports', () => {
       });
     };
 
+    it('should make a call only for enabled reports', async () => {
+      mockWithData();
+
+      createComponent({
+        mountFn: mountExtended,
+        propsData: {
+          mr: {
+            enabledReports: {
+              sast: true,
+              dast: true,
+            },
+          },
+        },
+      });
+
+      await waitForPromises();
+
+      expect(mockAxios.history.get).toHaveLength(2);
+    });
+
     it('should display the dismissed badge', async () => {
       mockWithData();
 
@@ -164,7 +193,6 @@ describe('MR Widget Security Reports', () => {
       mockWithData();
 
       createComponent({
-        propsData: { mr: { ...reportEndpoints, securityConfigurationPath, sourceProjectFullPath } },
         mountFn: mountExtended,
       });
 
