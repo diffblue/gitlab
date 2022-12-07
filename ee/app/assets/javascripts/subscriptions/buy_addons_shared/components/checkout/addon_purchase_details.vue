@@ -51,7 +51,7 @@ export default {
       },
     },
     isValid() {
-      return this.quantity > 0;
+      return this.quantity >= 1 && Number.isInteger(this.quantity);
     },
   },
   methods: {

@@ -10,6 +10,7 @@ import createMockApollo from 'helpers/mock_apollo_helper';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
 import { GENERAL_ERROR_MESSAGE } from 'ee/vue_shared/purchase_flow/constants';
+import { I18N_DETAILS_INVALID_QUANTITY_MESSAGE } from 'ee/subscriptions/buy_addons_shared/constants';
 
 Vue.use(VueApollo);
 
@@ -50,7 +51,8 @@ describe('AddonPurchaseDetails', () => {
   const findGlAlert = () => wrapper.findComponent(GlAlert);
   const findGlFormInput = () => wrapper.findComponent(GlFormInput);
   const findProductLabel = () => wrapper.findByTestId('product-label');
-  const isStepValid = () => wrapper.findComponent(Step).props('isValid');
+  const findStep = () => wrapper.findComponent(Step);
+  const isStepValid = () => findStep().props('isValid');
 
   beforeEach(() => {
     createComponent();
@@ -72,15 +74,40 @@ describe('AddonPurchaseDetails', () => {
     expect(isStepValid()).toBe(true);
   });
 
-  it('is invalid when quantity is less than 1', async () => {
-    createComponent(
-      {
-        subscription: { namespaceId: 483 },
-      },
-      { quantity: 0 },
-    );
+  describe('quantity validation', () => {
+    it('sets the proper error message for quantity', () => {
+      expect(findStep().props('errorMessage')).toBe(I18N_DETAILS_INVALID_QUANTITY_MESSAGE);
+    });
 
-    expect(isStepValid()).toBe(false);
+    describe.each([0, 0.5, 1.5])('when given an invalid quantity: %s', (quantity) => {
+      beforeEach(() => {
+        createComponent(
+          {
+            subscription: { namespaceId: 483 },
+          },
+          { quantity },
+        );
+      });
+
+      it('marks the step as invalid', () => {
+        expect(isStepValid()).toBe(false);
+      });
+    });
+
+    describe.each([1, 2, 9])('when given a valid quantity: %s', (quantity) => {
+      beforeEach(() => {
+        createComponent(
+          {
+            subscription: { namespaceId: 483 },
+          },
+          { quantity },
+        );
+      });
+
+      it('marks the step as valid', () => {
+        expect(isStepValid()).toBe(true);
+      });
+    });
   });
 
   describe('alert', () => {
