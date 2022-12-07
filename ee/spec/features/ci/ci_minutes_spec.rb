@@ -12,7 +12,6 @@ RSpec.describe 'CI minutes', :js, time_travel_to: '2022-06-05', feature_category
   end
 
   before do
-    stub_feature_flags(usage_quotas_pipelines_vue: false)
     create_ci_minutes_usage(50, Date.new(Time.zone.now.year, 5, 1))
     create_ci_minutes_usage(60, Date.new(Time.zone.now.year, 6, 1))
 

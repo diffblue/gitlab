@@ -2,13 +2,12 @@
 
 require 'spec_helper'
 
-RSpec.describe 'view usage quotas' do
+RSpec.describe 'view usage quotas', feature_category: :subscription_usage_reports do
   describe 'GET /groups/:group/-/usage_quotas' do
     let_it_be(:group) { create(:group) }
     let_it_be(:user) { create(:user) }
 
     before_all do
-      stub_feature_flags(usage_quotas_pipelines_vue: false)
       group.add_owner(user)
     end
 

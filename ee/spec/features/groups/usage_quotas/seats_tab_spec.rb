@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :purchase do
+RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :subscription_usage_reports do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: group) }
@@ -12,7 +12,6 @@ RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :purc
   let_it_be(:shared_group_developer) { create(:user) }
 
   before do
-    stub_feature_flags(usage_quotas_pipelines_vue: false)
     stub_feature_flags(usage_quotas_for_all_editions: false)
     allow(Gitlab).to receive(:com?).and_return(true)
     stub_application_setting(check_namespace_plan: true)

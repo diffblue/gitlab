@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :continuous_integration do
+RSpec.describe 'Groups > Usage Quotas > Pipelines tab', :js, feature_category: :subscription_usage_reports do
   include UsageQuotasHelpers
 
   let_it_be(:user) { create(:user) }
@@ -15,23 +15,21 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :conti
   let(:gitlab_dot_com) { true }
 
   before do
-    stub_feature_flags(usage_quotas_pipelines_vue: false)
     stub_feature_flags(usage_quotas_for_all_editions: false)
-    allow(Gitlab).to receive(:com?).and_return(gitlab_dot_com)
+    stub_ee_application_setting(should_check_namespace_plan: gitlab_dot_com)
 
     group.add_owner(user)
     sign_in(user)
+    visit_usage_quotas_page
+    wait_for_requests
   end
 
   context 'with no quota' do
     let(:group) { create(:group, :with_ci_minutes, ci_minutes_limit: nil) }
 
     it 'shows correct group quota info' do
-      visit_usage_quotas_page
-
-      page.within('.pipeline-quota') do
+      page.within('#pipelines-quota-tab') do
         expect(page).to have_content("400 / Unlimited minutes")
-        expect(page).to have_selector('.bg-success')
       end
     end
   end
@@ -41,14 +39,11 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :conti
     let!(:project) { create(:project, namespace: group, shared_runners_enabled: false) }
 
     it 'shows correct group quota info' do
-      visit_usage_quotas_page
-
-      page.within('.pipeline-quota') do
-        expect(page).to have_content("0%")
-        expect(page).to have_selector('.bg-success')
+      page.within('#pipelines-quota-tab') do
+        expect(page).to have_content("Unlimited")
       end
 
-      page.within('.pipeline-project-metrics') do
+      page.within('[data-testid="pipelines-quota-tab-project-table"]') do
         expect(page).to have_content('Shared runners are disabled, so there are no limits set on pipeline usage')
       end
     end
@@ -58,12 +53,9 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :conti
     let(:group) { create(:group, :with_not_used_build_minutes_limit) }
 
     it 'shows correct group quota info' do
-      visit_usage_quotas_page
-
-      page.within('.pipeline-quota') do
+      page.within('#pipelines-quota-tab') do
         expect(page).to have_content("300 / 500 minutes")
         expect(page).to have_content("60% used")
-        expect(page).to have_selector('.bg-success')
       end
     end
   end
@@ -79,22 +71,17 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :conti
       let(:gitlab_dot_com) { false }
 
       it "does not show 'Buy additional minutes' button" do
-        visit_usage_quotas_page
-
         expect(page).not_to have_content('Buy additional minutes')
       end
     end
 
     it 'has correct tracking setup and shows correct group quota and projects info' do
-      visit_usage_quotas_page
-
-      page.within('.pipeline-quota') do
+      page.within('#pipelines-quota-tab') do
         expect(page).to have_content("1000 / 500 minutes")
         expect(page).to have_content("200% used")
-        expect(page).to have_selector('.bg-danger')
       end
 
-      page.within('.pipeline-project-metrics') do
+      page.within('[data-testid="pipelines-quota-tab-project-table"]') do
         expect(page).to have_content(project.full_name)
         expect(page).not_to have_content(other_project.full_name)
       end
@@ -115,7 +102,7 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :conti
       end
 
       it 'does not show projects with 0 minutes used' do
-        page.within('.pipeline-project-metrics') do
+        page.within('[data-testid="pipelines-quota-tab-project-table"]') do
           expect(page).to have_content(project.full_name)
           expect(page).not_to have_content(other_project.full_name)
           expect(page).not_to have_content(no_minutes_project.full_name)
@@ -195,16 +182,16 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :conti
     end
 
     it 'sorts projects list by CI minutes used in descending order' do
-      page.within('.pipeline-project-metrics') do
+      page.within('[data-testid="pipelines-quota-tab-project-table"]') do
         expect(page).to have_content("Project")
         expect(page).to have_content("Shared runner duration")
         expect(page).to have_content("CI/CD minutes usage")
 
         shared_runner_durations = all('[data-testid="project_shared_runner_duration"]').map(&:text)
-        expect(shared_runner_durations).to eq(%w[17 1 1 1 0])
+        expect(shared_runner_durations).to match_array(["16.67", "1.33", "0.83", "0.50", "0.17"])
 
         amounts_used = all('[data-testid="project_amount_used"]').map(&:text)
-        expect(amounts_used).to eq(%w[100 8 5 3 1])
+        expect(amounts_used).to match_array(%w[100 8 5 3 1])
       end
     end
 
@@ -213,43 +200,22 @@ RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :conti
     end
   end
 
-  context 'with pagination', :js do
+  context 'with pagination' do
     let(:per_page) { 1 }
-    let(:item_selector) { '.js-project-link' }
+    let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
     let(:prev_button_selector) { '[data-testid="prevButton"]' }
     let(:next_button_selector) { '[data-testid="nextButton"]' }
     let!(:projects) { create_list(:project, 3, :with_ci_minutes, amount_used: 5, namespace: group) }
 
     before do
       allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
-      stub_ee_application_setting(should_check_namespace_plan: true)
+      visit_usage_quotas_page
     end
 
-    context 'with usage_quotas_pipelines_vue disabled' do
-      let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
-      let(:prev_button_selector) { '.page-item.js-previous-button a' }
-      let(:next_button_selector) { '.page-item.js-next-button a' }
-
-      before do
-        visit_usage_quotas_page('pipelines-quota-tab')
-      end
-
-      it_behaves_like 'correct pagination'
-    end
-
-    context 'with usage_quotas_pipelines_vue enabled' do
-      let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
-
-      before do
-        stub_feature_flags(usage_quotas_pipelines_vue: true)
-        visit_usage_quotas_page('pipelines-quota-tab')
-      end
-
-      it_behaves_like 'correct pagination'
-    end
+    it_behaves_like 'correct pagination'
   end
 
-  def visit_usage_quotas_page(anchor = 'seats-quota-tab')
+  def visit_usage_quotas_page(anchor = 'pipelines-quota-tab')
     visit group_usage_quotas_path(group, anchor: anchor)
   end
 end

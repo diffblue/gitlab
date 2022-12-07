@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas', feature_category: :purchase do
+RSpec.describe 'Groups > Usage Quotas', feature_category: :subscription_usage_reports do
   include UsageQuotasHelpers
 
   let_it_be(:user) { create(:user) }
@@ -15,7 +15,6 @@ RSpec.describe 'Groups > Usage Quotas', feature_category: :purchase do
   let(:gitlab_dot_com) { true }
 
   before do
-    stub_feature_flags(usage_quotas_pipelines_vue: false)
     stub_feature_flags(usage_quotas_for_all_editions: false)
     allow(Gitlab).to receive(:com?).and_return(gitlab_dot_com)
 
