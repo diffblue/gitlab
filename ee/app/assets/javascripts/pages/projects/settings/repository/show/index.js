@@ -12,12 +12,10 @@ import CEProtectedTagEditList from '~/protected_tags/protected_tag_edit_list';
 import initSearchSettings from '~/search_settings';
 import initSettingsPanels from '~/settings_panels';
 import UserCallout from '~/user_callout';
-import UsersSelect from '~/users_select';
 import mountBranchRules from '~/projects/settings/repository/branch_rules/mount_branch_rules';
 import mountDefaultBranchSelector from '~/projects/settings/mount_default_branch_selector';
 import EEMirrorRepos from './ee_mirror_repos';
 
-new UsersSelect();
 new UserCallout();
 
 initDeployKeys();
