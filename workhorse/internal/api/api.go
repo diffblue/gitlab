@@ -361,7 +361,7 @@ func (api *API) doRequestWithoutRedirects(authReq *http.Request) (*http.Response
 }
 
 // removeConnectionHeaders removes hop-by-hop headers listed in the "Connection" header of h.
-// See https://tools.ietf.org/html/rfc7230#section-6.1
+// See https://www.rfc-editor.org/rfc/rfc7230#section-6.1
 func removeConnectionHeaders(h http.Header) {
 	for _, f := range h["Connection"] {
 		for _, sf := range strings.Split(f, ",") {

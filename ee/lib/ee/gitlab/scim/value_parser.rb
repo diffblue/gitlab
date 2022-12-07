@@ -6,7 +6,7 @@
 #
 # It also needs to accept capitalized True/False from Azure
 #
-# See https://tools.ietf.org/html/rfc7644#section-3.4.2.2
+# See https://www.rfc-editor.org/rfc/rfc7644#section-3.4.2.2
 module EE
   module Gitlab
     module Scim
