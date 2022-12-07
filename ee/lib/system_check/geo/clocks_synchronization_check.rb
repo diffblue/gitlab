@@ -24,7 +24,7 @@ module SystemCheck
 
         print_failure("Clocks are not in sync with #{ntp_host} NTP server")
         try_fixing_it(
-          'Enable a NTP update service on this machine to keep clocks synchronized'
+          'Enable an NTP update service on this machine to keep clocks synchronized'
         )
 
         false
@@ -39,7 +39,7 @@ module SystemCheck
       def show_ntp_connection_error
         try_fixing_it(
           "Check whether you have a connectivity problem or if there is a firewall blocking it",
-          "If this is an air-gaped system, you can ignore this error, " \
+          "If this is an offline environment, you can ignore this error, " \
           "but make sure you have a way to keep clocks synced"
         )
       end
