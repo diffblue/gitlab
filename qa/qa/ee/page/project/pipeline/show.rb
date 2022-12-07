@@ -19,12 +19,6 @@ module QA
                   element :licenses_counter
                 end
 
-                # TODO: Remove once pipeline_tabs_vue feature flag is enabled by default
-                # https://gitlab.com/gitlab-org/gitlab/-/issues/353118
-                view 'ee/app/views/projects/pipelines/_tabs_holder.html.haml' do
-                  element :licenses_counter
-                end
-
                 view 'app/assets/javascripts/ci/reports/components/report_item.vue' do
                   element :report_item_row
                 end
