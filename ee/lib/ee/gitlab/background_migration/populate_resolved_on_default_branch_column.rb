@@ -211,6 +211,7 @@ module EE
         class Route < ActiveRecord::Base
           self.table_name = 'routes'
         end
+
         class Vulnerability < ActiveRecord::Base
           include EachBatch
 
