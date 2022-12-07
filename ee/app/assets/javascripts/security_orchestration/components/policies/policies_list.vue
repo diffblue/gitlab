@@ -201,6 +201,9 @@ export default {
           key: 'policyType',
           label: s__('SecurityOrchestration|Policy type'),
           sortable: true,
+          tdAttr: {
+            'data-testid': 'policy-type-cell',
+          },
         },
         {
           key: 'source',

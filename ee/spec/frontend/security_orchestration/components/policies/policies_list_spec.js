@@ -28,6 +28,7 @@ import {
   mockGroupScanExecutionPolicy,
   mockScanExecutionPoliciesResponse,
   mockScanResultPoliciesResponse,
+  mockGroupScanResultPolicy,
 } from '../../mocks/mock_data';
 
 Vue.use(VueApollo);
@@ -91,6 +92,7 @@ describe('PoliciesList component', () => {
   const findPoliciesTable = () => wrapper.findComponent(GlTable);
   const findPolicyStatusCells = () => wrapper.findAllByTestId('policy-status-cell');
   const findPolicySourceCells = () => wrapper.findAllByTestId('policy-source-cell');
+  const findPolicyTypeCells = () => wrapper.findAllByTestId('policy-type-cell');
   const findPolicyDrawer = () => wrapper.findByTestId('policyDrawer');
 
   afterEach(() => {
@@ -305,18 +307,34 @@ describe('PoliciesList component', () => {
           projectScanExecutionPolicies: projectScanExecutionPolicies([
             mockGroupScanExecutionPolicy,
           ]),
+          projectScanResultPolicies: projectScanResultPolicies([mockGroupScanResultPolicy]),
         },
       });
+      await waitForPromises();
+
+      findPolicySourceFilter().vm.$emit('input', POLICY_SOURCE_OPTIONS.INHERITED.value);
       await waitForPromises();
     });
 
     it('displays inherited policies only', async () => {
-      findPolicySourceFilter().vm.$emit('input', POLICY_SOURCE_OPTIONS.INHERITED.value);
-      await waitForPromises();
-
-      expect(findPolicySourceCells()).toHaveLength(1);
+      expect(findPolicySourceCells()).toHaveLength(2);
       expect(trimText(findPolicySourceCells().at(0).text())).toBe(
         'Inherited from parent-group-name',
+      );
+      expect(trimText(findPolicySourceCells().at(1).text())).toBe(
+        'Inherited from parent-group-name',
+      );
+    });
+
+    it('displays inherited scan execution policies', async () => {
+      expect(trimText(findPolicyTypeCells().at(0).text())).toBe(
+        POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_EXECUTION.text,
+      );
+    });
+
+    it('displays inherited scan result policies', async () => {
+      expect(trimText(findPolicyTypeCells().at(1).text())).toBe(
+        POLICY_TYPE_FILTER_OPTIONS.POLICY_TYPE_SCAN_RESULT.text,
       );
     });
   });
