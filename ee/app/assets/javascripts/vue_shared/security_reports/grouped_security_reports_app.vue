@@ -261,7 +261,7 @@ export default {
     coverageFuzzingPopover,
     apiFuzzingPopover,
     scannedResources: s__('SecurityReports|scanned resources'),
-    fullReport: s__('ciReport|Full Report'),
+    fullReport: s__('ciReport|Full report'),
     divergedFromTargetBranch: __(
       'Security report is out of date. Please update your branch with the latest changes from the target branch (%{targetBranchName})',
     ),
