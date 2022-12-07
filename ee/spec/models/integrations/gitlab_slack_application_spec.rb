@@ -17,6 +17,21 @@ RSpec.describe Integrations::GitlabSlackApplication do
 
   describe 'default values' do
     it { expect(subject.category).to eq(:chat) }
+
+    it { is_expected.not_to be_alert_events }
+    it { is_expected.not_to be_commit_events }
+    it { is_expected.not_to be_confidential_issues_events }
+    it { is_expected.not_to be_confidential_note_events }
+    it { is_expected.not_to be_deployment_events }
+    it { is_expected.not_to be_issues_events }
+    it { is_expected.not_to be_job_events }
+    it { is_expected.not_to be_merge_requests_events }
+    it { is_expected.not_to be_note_events }
+    it { is_expected.not_to be_pipeline_events }
+    it { is_expected.not_to be_push_events }
+    it { is_expected.not_to be_tag_push_events }
+    it { is_expected.not_to be_vulnerability_events }
+    it { is_expected.not_to be_wiki_page_events }
   end
 
   describe '#chat_responder' do
