@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas > Pipelines tab' do
+RSpec.describe 'Groups > Usage Quotas > Pipelines tab', feature_category: :continuous_integration do
   include UsageQuotasHelpers
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Compliance Dashboard', :js do
+RSpec.describe 'Compliance Dashboard', :js, feature_category: :compliance_management do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:user) { current_user }
   let_it_be(:group) { create(:group) }

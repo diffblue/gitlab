@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group Feature Discovery Moments', :js, :aggregate_failures do
+RSpec.describe 'Group Feature Discovery Moments', :js, :aggregate_failures, feature_category: :experimentation_conversion do
   describe 'Advanced Features Dashboard' do
     let_it_be(:user) { create(:user) }
     let_it_be(:group) { create(:group) }

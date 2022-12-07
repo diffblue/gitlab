@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'approaching seat count threshold alert', :saas, :js do
+RSpec.describe 'approaching seat count threshold alert', :saas, :js, feature_category: :subscription_management do
   include SubscriptionPortalHelpers
 
   let_it_be(:user) { create(:user) }

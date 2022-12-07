@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas' do
+RSpec.describe 'Groups > Usage Quotas', feature_category: :purchase do
   include UsageQuotasHelpers
 
   let_it_be(:user) { create(:user) }

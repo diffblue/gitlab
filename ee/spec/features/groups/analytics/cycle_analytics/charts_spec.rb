@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe 'Value stream analytics charts', :js do
+RSpec.describe 'Value stream analytics charts', :js, feature_category: :value_stream_management do
   include CycleAnalyticsHelpers
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Groups > Usage Quotas > Seats tab', :js do
+RSpec.describe 'Groups > Usage Quotas > Seats tab', :js, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
   let_it_be(:sub_group) { create(:group, parent: group) }

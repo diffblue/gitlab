@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "User views hooks" do
+RSpec.describe "User views hooks", feature_category: :integrations do
   let_it_be(:group) { create(:group) }
   let_it_be(:hook) { create(:group_hook, group: group) }
   let_it_be(:user) { create(:user) }

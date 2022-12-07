@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group CI/CD Analytics', :js do
+RSpec.describe 'Group CI/CD Analytics', :js, feature_category: :value_stream_management do
   let_it_be(:user) { create(:user) }
   let_it_be_with_refind(:group) { create(:group) }
   let_it_be(:subgroup) { create(:group, parent: group) }

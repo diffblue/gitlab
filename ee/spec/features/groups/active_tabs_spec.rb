@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group active tab' do
+RSpec.describe 'Group active tab', feature_category: :subgroups do
   let(:user) { create :user }
   let(:group) { create(:group) }
 

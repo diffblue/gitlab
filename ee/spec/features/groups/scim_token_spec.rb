@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'SCIM Token handling', :js do
+RSpec.describe 'SCIM Token handling', :js, feature_category: :authentication_and_authorization do
   include Spec::Support::Helpers::ModalHelpers
 
   let_it_be(:user) { create(:user) }
