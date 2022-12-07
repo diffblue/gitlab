@@ -181,6 +181,12 @@ RSpec.describe Resolvers::BoardListIssuesResolver do
       context 'when filtering by no health status' do
         specify { expect(resolve_board_list_issues({ filters: { health_status_filter: 'none' } })).to contain_exactly(issue2) }
       end
+
+      context 'when filtering by negated health status' do
+        let(:filters) { { not: { health_status_filter: Issue.health_statuses[:at_risk] } } }
+
+        specify { expect(resolve_board_list_issues({ filters: filters })).to contain_exactly(issue2, issue3, issue4) }
+      end
     end
   end
 

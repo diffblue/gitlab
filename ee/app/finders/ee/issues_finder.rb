@@ -96,6 +96,7 @@ module EE
       items = by_negated_epic(items)
       items = by_negated_iteration(items)
       items = by_negated_weight(items)
+      items = by_negated_health_status(items)
 
       super(items)
     end
@@ -110,6 +111,12 @@ module EE
       return items unless not_params[:epic_id].present?
 
       items.not_in_epics(not_params[:epic_id].to_i)
+    end
+
+    def by_negated_health_status(items)
+      return items unless not_params[:health_status_filter].present?
+
+      items.without_health_status(not_params[:health_status_filter])
     end
 
     def by_negated_iteration(items)

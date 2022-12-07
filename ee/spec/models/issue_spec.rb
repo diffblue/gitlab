@@ -64,6 +64,18 @@ RSpec.describe Issue do
         end
       end
 
+      describe '.without_health_status' do
+        it 'returns the filtered by health issues' do
+          expect(described_class.without_health_status(:on_track)).to contain_exactly(needs_attention, at_risk, without_health_status)
+        end
+
+        context 'when using multiple health filter qualifications' do
+          it 'returns the filtered by health issues' do
+            expect(described_class.without_health_status([:needs_attention, :on_track])).to contain_exactly(at_risk, without_health_status)
+          end
+        end
+      end
+
       describe '.order_health_status_asc' do
         it 'returns healthy issues first' do
           expect(described_class.order_health_status_asc).to eq([on_track1, on_track2, needs_attention, at_risk, without_health_status])

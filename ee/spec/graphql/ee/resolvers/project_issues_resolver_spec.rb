@@ -229,6 +229,14 @@ RSpec.describe Resolvers::ProjectIssuesResolver do
             expect(resolve_issues(not: { iteration_wildcard_id: 'CURRENT' })).to contain_exactly(issue1, issue2, issue4)
           end
         end
+
+        describe "filtering by negated health_status" do
+          let(:at_risk) { Issue.health_statuses[:at_risk] }
+
+          it "only returns issues that do not have the specified health_status assigned" do
+            expect(resolve_issues(not: { health_status_filter: at_risk })).to contain_exactly(issue2, issue3, issue4)
+          end
+        end
       end
     end
   end

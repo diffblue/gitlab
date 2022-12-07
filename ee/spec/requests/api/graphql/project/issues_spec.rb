@@ -245,4 +245,28 @@ RSpec.describe 'getting an issue list for a project' do
       expect(vulnerability_titles).to match_array(%w[vuln1 vuln2 vuln3 vuln4 vuln5 vuln6])
     end
   end
+
+  describe 'filtered' do
+    context 'by negated health status' do
+      let_it_be(:project) { create(:project, :public) }
+      let_it_be(:issue_at_risk) { create(:issue, health_status: :at_risk, project: project) }
+      let_it_be(:issue_needs_attention) { create(:issue, health_status: :needs_attention, project: project) }
+
+      let(:params) { { not: { health_status_filter: :atRisk } } }
+      let(:query) do
+        graphql_query_for(:project, { full_path: project.full_path },
+          query_nodes(:issues, :id, args: params)
+        )
+      end
+
+      it 'only returns issues without the negated health status' do
+        post_graphql(query, current_user: current_user)
+
+        issues = graphql_data.dig('project', 'issues', 'nodes')
+
+        expect(issues.size).to eq(1)
+        expect(issues.first["id"]).to eq(issue_needs_attention.to_global_id.to_s)
+      end
+    end
+  end
 end

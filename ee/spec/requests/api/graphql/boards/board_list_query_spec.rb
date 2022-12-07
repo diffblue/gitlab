@@ -58,6 +58,12 @@ RSpec.describe 'Querying a Board list' do
 
         it { is_expected.to include({ 'issuesCount' => 1, 'title' => list.title }) }
       end
+
+      context 'when filtering by negated health_status argument' do
+        let(:filters) { { not: { health_status_filter: :atRisk } } }
+
+        it { is_expected.to include({ 'issuesCount' => 1, 'title' => list.title }) }
+      end
     end
   end
 

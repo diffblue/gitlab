@@ -365,6 +365,14 @@ RSpec.describe IssuesFinder do
             expect(items).to contain_exactly(issue1, issue2, issue3, issue5, issue6)
           end
         end
+
+        context 'filter issues without a sepcific health status' do
+          let(:params) { { not: { health_status_filter: :needs_attention } } }
+
+          it 'returns filtered issues' do
+            expect(items).to contain_exactly(item1, item2, item3, item4, item5, issue4, issue5, issue6)
+          end
+        end
       end
     end
   end
