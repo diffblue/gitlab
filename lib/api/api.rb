@@ -244,6 +244,8 @@ module API
         mount ::API::Metrics::Dashboard::Annotations
         mount ::API::Metrics::UserStarredDashboards
         mount ::API::Namespaces
+        mount ::API::NpmInstancePackages
+        mount ::API::NpmProjectPackages
         mount ::API::NugetGroupPackages
         mount ::API::NugetProjectPackages
         mount ::API::PackageFiles
@@ -313,8 +315,6 @@ module API
       mount ::API::Labels
       mount ::API::Notes
       mount ::API::NotificationSettings
-      mount ::API::NpmInstancePackages
-      mount ::API::NpmProjectPackages
       mount ::API::PagesDomains
       mount ::API::ProjectEvents
       mount ::API::ProjectMilestones
