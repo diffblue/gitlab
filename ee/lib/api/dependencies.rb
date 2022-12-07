@@ -4,7 +4,7 @@ module API
   class Dependencies < ::API::Base
     include PaginationParams
 
-    feature_category :dependency_scanning
+    feature_category :dependency_management
     urgency :low
 
     helpers do
