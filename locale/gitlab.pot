@@ -43537,6 +43537,9 @@ msgstr ""
 msgid "Try out GitLab Pipelines"
 msgstr ""
 
+msgid "Try out the new Web IDE"
+msgstr ""
+
 msgid "Try the troubleshooting steps here."
 msgstr ""
 
@@ -45025,6 +45028,9 @@ msgid "Using required encryption strategy when encrypted field is missing!"
 msgstr ""
 
 msgid "Using the %{codeStart}needs%{codeEnd} keyword makes jobs run before their stage is reached. Jobs run as soon as their %{codeStart}needs%{codeEnd} relationships are met, which speeds up your pipelines."
+msgstr ""
+
+msgid "VS Code in your browser. View code and make changes from the same UI as in your local IDE 🎉"
 msgstr ""
 
 msgid "Valid From"
