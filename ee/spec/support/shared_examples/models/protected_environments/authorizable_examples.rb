@@ -25,7 +25,7 @@ RSpec.shared_examples 'authorizable for protected environments' do |factory_name
       it { is_expected.to be_falsy }
     end
 
-    describe 'admin access' do
+    describe 'admin user has universal access' do
       let_it_be(:user) { create(:user, :admin) }
 
       context 'when admin user does have specific access' do
