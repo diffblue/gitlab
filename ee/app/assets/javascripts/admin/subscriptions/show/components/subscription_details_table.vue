@@ -1,5 +1,6 @@
 <script>
 import { GlSkeletonLoader, GlTableLite, GlBadge } from '@gitlab/ui';
+import { mapGetters } from 'vuex';
 import { slugifyWithUnderscore } from '~/lib/utils/text_utility';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
 import { copySubscriptionIdButtonText, detailsLabels } from '../constants';
@@ -38,13 +39,9 @@ export default {
       type: Array,
       required: true,
     },
-    syncDidFail: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
   },
   computed: {
+    ...mapGetters(['didSyncFail']),
     hasContent() {
       return this.details.some(({ value }) => Boolean(value));
     },
@@ -70,10 +67,11 @@ export default {
         'data-testid': `${type}-${slugifyWithUnderscore(detail)}`,
       };
     },
+    lastSyncFailed(item) {
+      return item.detail === 'lastSync' && this.didSyncFail;
+    },
     rowClass(item) {
-      return item.detail === 'lastSync' && this.syncDidFail
-        ? `gl-text-red-500`
-        : 'gl-text-gray-800';
+      return this.lastSyncFailed(item) ? `gl-text-red-500` : 'gl-text-gray-800';
     },
     rowLabel({ detail }) {
       return this.$options.detailsLabels[detail];

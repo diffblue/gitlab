@@ -38,11 +38,6 @@ export default {
       type: Object,
       required: true,
     },
-    syncDidFail: {
-      type: Boolean,
-      required: false,
-      default: false,
-    },
   },
   computed: {
     details() {
@@ -62,7 +57,7 @@ export default {
     <template v-if="headerText" #header>
       <h6 class="gl-m-0">{{ headerText }}</h6>
     </template>
-    <subscription-details-table :details="details" :sync-did-fail="syncDidFail" />
+    <subscription-details-table :details="details" />
     <template #footer>
       <slot name="footer"></slot>
     </template>

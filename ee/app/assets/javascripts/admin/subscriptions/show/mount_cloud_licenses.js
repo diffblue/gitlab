@@ -4,6 +4,7 @@ import { helpPagePath } from '~/helpers/help_page_helper';
 import createDefaultClient from '~/lib/graphql';
 import { parseBoolean } from '~/lib/utils/common_utils';
 import CloudLicenseShowApp from './components/app.vue';
+import initialStore from './store';
 
 Vue.use(VueApollo);
 
@@ -35,6 +36,7 @@ export default () => {
 
   return new Vue({
     el,
+    store: initialStore({ licenseRemovalPath: licenseRemovePath, subscriptionSyncPath }),
     name: 'CloudLicenseRoot',
     apolloProvider,
     provide: {

@@ -1,18 +1,16 @@
 <script>
+import { mapState, mapActions } from 'vuex';
 import { GlButton, GlModalDirective, GlModal } from '@gitlab/ui';
 import { uniqueId } from 'lodash';
 import SafeHtml from '~/vue_shared/directives/safe_html';
 import { createAlert } from '~/flash';
 import { __, sprintf } from '~/locale';
-import { refreshCurrentPage } from '~/lib/utils/url_utility';
-import axios from '~/lib/utils/axios_utils';
 import UserCalloutDismisser from '~/vue_shared/components/user_callout_dismisser.vue';
 import SubscriptionDetailsHistory from 'jh_else_ee/admin/subscriptions/show/components/subscription_details_history.vue';
 import {
   activateCloudLicense,
   licensedToHeaderText,
   manageSubscriptionButtonText,
-  subscriptionSyncStatus,
   subscriptionDetailsHeaderText,
   subscriptionTypes,
   syncSubscriptionButtonText,
@@ -86,15 +84,19 @@ export default {
   },
   data() {
     return {
-      hasAsyncActivity: false,
       licensedToFields,
-      shouldShowNotifications: false,
-      subscriptionSyncStatus: null,
       subscriptionDetailsFields,
       activationModalVisible: false,
     };
   },
   computed: {
+    ...mapState(['breakdown']),
+    licenseError() {
+      return this.breakdown.licenseError;
+    },
+    hasAsyncActivity() {
+      return this.breakdown.hasAsyncActivity;
+    },
     canActivateSubscription() {
       return this.isLicenseFileType;
     },
@@ -127,51 +129,29 @@ export default {
         this.canSyncSubscription
       );
     },
+    shouldShowNotifications() {
+      return this.breakdown.shouldShowNotifications;
+    },
     subscriptionHistory() {
       return this.hasSubscriptionHistory ? this.subscriptionList : [this.subscription];
     },
-    syncDidFail() {
-      return this.subscriptionSyncStatus === subscriptionSyncStatus.SYNC_FAILURE;
+  },
+  watch: {
+    licenseError(error, prevError) {
+      if (!error || error === prevError) {
+        return;
+      }
+
+      this.showAlert(error);
     },
   },
   methods: {
-    didDismissAlert() {
-      this.shouldShowNotifications = false;
-    },
+    ...mapActions(['syncSubscription', 'removeLicense']),
     showActivationModal() {
       this.activationModalVisible = true;
     },
-    syncSubscription() {
-      this.hasAsyncActivity = true;
-      this.shouldShowNotifications = false;
-      axios
-        .post(this.subscriptionSyncPath)
-        .then(() => {
-          this.subscriptionSyncStatus = subscriptionSyncStatus.SYNC_PENDING;
-        })
-        .catch(() => {
-          this.subscriptionSyncStatus = subscriptionSyncStatus.SYNC_FAILURE;
-        })
-        .finally(() => {
-          this.shouldShowNotifications = true;
-          this.hasAsyncActivity = false;
-        });
-    },
-    removeLicense() {
-      this.hasAsyncActivity = true;
-      return axios
-        .delete(this.licenseRemovePath)
-        .then(() => {
-          refreshCurrentPage();
-        })
-        .catch((e) => {
-          createAlert({
-            message: e,
-          });
-        })
-        .finally(() => {
-          this.hasAsyncActivity = false;
-        });
+    showAlert(errorMsg) {
+      createAlert({ message: errorMsg });
     },
   },
   i18n,
@@ -214,12 +194,7 @@ export default {
         />
       </template>
     </user-callout-dismisser>
-    <subscription-sync-notifications
-      v-if="shouldShowNotifications"
-      class="mb-4"
-      :sync-status="subscriptionSyncStatus"
-      @info-alert-dismissed="didDismissAlert"
-    />
+    <subscription-sync-notifications v-if="shouldShowNotifications" class="gl-mb-4" />
     <section class="row gl-mb-5">
       <div class="col-md-6 gl-mb-5">
         <subscription-details-card
@@ -227,7 +202,6 @@ export default {
           :details-fields="subscriptionDetailsFields"
           :header-text="$options.i18n.subscriptionDetailsHeaderText"
           :subscription="subscription"
-          :sync-did-fail="syncDidFail"
           data-testid="subscription-details"
           data-qa-selector="subscription_details"
         >

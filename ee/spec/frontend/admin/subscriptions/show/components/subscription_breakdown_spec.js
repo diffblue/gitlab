@@ -1,7 +1,12 @@
+import Vuex from 'vuex';
 import { GlCard } from '@gitlab/ui';
 import { mount, shallowMount } from '@vue/test-utils';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import { nextTick } from 'vue';
+import { createAlert } from '~/flash';
+import mutations from 'ee/admin/subscriptions/show/store/mutations';
+import * as types from 'ee/admin/subscriptions/show/store/mutation_types';
+import createState from 'ee/admin/subscriptions/show/store/state';
 import SubscriptionActivationBanner, {
   ACTIVATE_SUBSCRIPTION_EVENT,
 } from 'ee/admin/subscriptions/show/components/subscription_activation_banner.vue';
@@ -13,20 +18,19 @@ import SubscriptionBreakdown, {
 import SubscriptionDetailsCard from 'ee/admin/subscriptions/show/components/subscription_details_card.vue';
 import SubscriptionDetailsHistory from 'ee/admin/subscriptions/show/components/subscription_details_history.vue';
 import SubscriptionDetailsUserInfo from 'ee/admin/subscriptions/show/components/subscription_details_user_info.vue';
-import SubscriptionSyncNotifications, {
-  INFO_ALERT_DISMISSED_EVENT,
-} from 'ee/admin/subscriptions/show/components/subscription_sync_notifications.vue';
+import SubscriptionSyncNotifications from 'ee/admin/subscriptions/show/components/subscription_sync_notifications.vue';
 import {
   licensedToHeaderText,
-  subscriptionSyncStatus,
   subscriptionDetailsHeaderText,
   subscriptionTypes,
 } from 'ee/admin/subscriptions/show/constants';
 import { makeMockUserCalloutDismisser } from 'helpers/mock_user_callout_dismisser';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
-import waitForPromises from 'helpers/wait_for_promises';
 import axios from '~/lib/utils/axios_utils';
+import * as initialStore from 'ee/admin/subscriptions/show/store/';
 import { license, subscriptionPastHistory, subscriptionFutureHistory } from '../mock_data';
+
+jest.mock('~/flash');
 
 describe('Subscription Breakdown', () => {
   let axiosMock;
@@ -58,17 +62,40 @@ describe('Subscription Breakdown', () => {
   const findSubscriptionSyncNotifications = () =>
     wrapper.findComponent(SubscriptionSyncNotifications);
 
+  const createStore = ({
+    didSyncFail = false,
+    syncSubscriptionMock = jest.fn(),
+    initialState = createState({ licenseRemovePath: '', subscriptionSyncPath: '' }),
+  } = {}) => {
+    return new Vuex.Store({
+      ...initialStore,
+      actions: {
+        syncSubscription: syncSubscriptionMock,
+      },
+      getters: {
+        didSyncFail: () => didSyncFail,
+        isSyncPending: () => false,
+      },
+      state: {
+        ...initialState,
+      },
+    });
+  };
+
   const createComponent = ({
     props = {},
     provide = {},
     stubs = {},
     mountMethod = shallowMount,
     shouldShowCallout = true,
+    store = createStore(),
   } = {}) => {
     glModalDirective = jest.fn();
     userCalloutDismissSpy = jest.fn();
+
     wrapper = extendedWrapper(
       mountMethod(SubscriptionBreakdown, {
+        store,
         directives: {
           GlModalDirective: {
             bind(_, { value }) {
@@ -128,13 +155,11 @@ describe('Subscription Breakdown', () => {
             detailsFields: subscriptionDetailsFields,
             headerText: subscriptionDetailsHeaderText,
             subscription: license.ULTIMATE,
-            syncDidFail: false,
           },
           {
             detailsFields: licensedToFields,
             headerText: licensedToHeaderText,
             subscription: license.ULTIMATE,
-            syncDidFail: false,
           },
         ]),
       );
@@ -334,54 +359,63 @@ describe('Subscription Breakdown', () => {
       });
     });
 
-    describe('sync a subscription success', () => {
+    describe('sync a subscription triggers action', () => {
+      let syncSubscriptionSpy;
+
       beforeEach(() => {
-        axiosMock.onPost(subscriptionSyncPath).reply(200, { success: true });
-        createComponent({ stubs: { GlCard, SubscriptionDetailsCard } });
+        syncSubscriptionSpy = jest.fn();
+        const store = createStore({ syncSubscriptionMock: syncSubscriptionSpy });
+
+        createComponent({ stubs: { GlCard, SubscriptionDetailsCard }, store });
+
         findSubscriptionSyncAction().vm.$emit('click');
-        return waitForPromises();
       });
 
-      it('shows a success notification', () => {
-        expect(findSubscriptionSyncNotifications().props('syncStatus')).toBe(
-          subscriptionSyncStatus.SYNC_PENDING,
-        );
-      });
-
-      it('provides the sync status to the details card', () => {
-        expect(findDetailsCards().at(0).props('syncDidFail')).toBe(false);
-      });
-
-      it('dismisses the success notification', async () => {
-        findSubscriptionSyncNotifications().vm.$emit(INFO_ALERT_DISMISSED_EVENT);
-        await nextTick();
-
-        expect(findSubscriptionSyncNotifications().exists()).toBe(false);
+      it('calls syncSubscription action', () => {
+        expect(syncSubscriptionSpy).toHaveBeenCalled();
       });
     });
 
-    describe('sync a subscription failure', () => {
+    describe('showAlert', () => {
+      let state;
+
       beforeEach(() => {
-        axiosMock.onPost(subscriptionSyncPath).reply(422, { success: false });
-        createComponent({ stubs: { GlCard, SubscriptionDetailsCard } });
-        findSubscriptionSyncAction().vm.$emit('click');
-        return waitForPromises();
+        state = createState({ licenseRemovePath: '', subscriptionSyncPath: '' });
+        const store = createStore({ initialState: state });
+
+        createComponent({ stubs: { GlCard, SubscriptionDetailsCard }, store });
       });
 
-      it('shows a failure notification', () => {
-        expect(findSubscriptionSyncNotifications().props('syncStatus')).toBe(
-          subscriptionSyncStatus.SYNC_FAILURE,
-        );
+      afterEach(() => {
+        createAlert.mockClear();
       });
 
-      it('provides the sync status to the details card', () => {
-        expect(findDetailsCards().at(0).props('syncDidFail')).toBe(true);
+      const removeLicenseErrorMutation = async (payload) => {
+        mutations[types.RECEIVE_REMOVE_LICENSE_ERROR](state, payload);
+        await nextTick();
+      };
+
+      it('is called when licenseError is populated', async () => {
+        const payload = 'an error message';
+
+        await removeLicenseErrorMutation(payload);
+
+        expect(createAlert).toHaveBeenCalledWith({ message: payload });
       });
 
-      it('dismisses the failure notification when retrying to sync', async () => {
-        await findSubscriptionSyncAction().vm.$emit('click');
+      it('is not called again when licenseError is the same as the previous error', async () => {
+        const payload = 'an error message';
 
-        expect(findSubscriptionSyncNotifications().exists()).toBe(false);
+        await removeLicenseErrorMutation(payload);
+        await removeLicenseErrorMutation(payload);
+
+        expect(createAlert).toHaveBeenCalledTimes(1);
+      });
+
+      it('is not called when licenseError is empty', async () => {
+        await removeLicenseErrorMutation('');
+
+        expect(createAlert).not.toHaveBeenCalled();
       });
     });
   });

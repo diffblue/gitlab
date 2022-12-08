@@ -1,9 +1,7 @@
 <script>
 import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
+import { mapActions, mapGetters } from 'vuex';
 import { s__ } from '~/locale';
-import { subscriptionSyncStatus } from '../constants';
-
-export const INFO_ALERT_DISMISSED_EVENT = 'info-alert-dismissed';
 
 export const i18n = Object.freeze({
   CONNECTIVITY_ERROR_TITLE: s__('SuperSonics|There is a connectivity issue.'),
@@ -14,9 +12,6 @@ export const i18n = Object.freeze({
   ),
 });
 
-const subscriptionSyncStatusValidator = (value) =>
-  !value || Object.values(subscriptionSyncStatus).includes(value);
-
 export default {
   name: 'SubscriptionSyncNotifications',
   components: {
@@ -25,25 +20,11 @@ export default {
     GlSprintf,
   },
   inject: ['connectivityHelpURL'],
-  props: {
-    syncStatus: {
-      type: String,
-      required: true,
-      validator: subscriptionSyncStatusValidator,
-    },
-  },
   computed: {
-    isSyncPending() {
-      return this.syncStatus === subscriptionSyncStatus.SYNC_PENDING;
-    },
-    syncDidFail() {
-      return this.syncStatus === subscriptionSyncStatus.SYNC_FAILURE;
-    },
+    ...mapGetters(['didSyncFail', 'isSyncPending']),
   },
   methods: {
-    didDismissInfoAlert() {
-      this.$emit(INFO_ALERT_DISMISSED_EVENT);
-    },
+    ...mapActions(['dismissAlert']),
   },
   i18n,
 };
@@ -56,11 +37,11 @@ export default {
       variant="info"
       :title="$options.i18n.MANUAL_SYNC_PENDING_TITLE"
       data-testid="sync-info-alert"
-      @dismiss="didDismissInfoAlert"
+      @dismiss="dismissAlert"
       >{{ $options.i18n.MANUAL_SYNC_PENDING_TEXT }}</gl-alert
     >
     <gl-alert
-      v-else-if="syncDidFail"
+      v-else-if="didSyncFail"
       variant="danger"
       :dismissible="false"
       :title="$options.i18n.CONNECTIVITY_ERROR_TITLE"
