@@ -28,7 +28,14 @@ module QA
         project.group.remove_via_api!
       end
 
-      it 'deploys a K8s manifest file', testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347638' do
+      it(
+        'deploys a K8s manifest file',
+        testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/347638',
+        quarantine: {
+          issue: 'https://gitlab.com/gitlab-org/gitlab/-/issues/381461',
+          type: :flaky
+        }
+      ) do
         deploy_manifest(project)
 
         expect(manifest_deployed?).to be_truthy
