@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Geo::VerificationTimeoutWorker, :geo do
+RSpec.describe Geo::VerificationTimeoutWorker, :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let(:replicable_name) { 'snippet_repository' }

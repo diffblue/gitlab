@@ -4,12 +4,16 @@ module Geo
   # Fail verification for records which started verification a long time ago
   class VerificationTimeoutWorker
     include ApplicationWorker
-
-    data_consistency :always
     include GeoQueue
     include ::Gitlab::Geo::LogHelpers
 
+    # Do not execute (in fact, don't even enqueue) another instance of
+    # this Worker with the same args.
+    deduplicate :until_executed, including_scheduled: true
     idempotent!
+
+    data_consistency :always
+
     sidekiq_options retry: false
     loggable_arguments 0
 
