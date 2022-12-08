@@ -63,7 +63,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
 
       context 'when user has access to epic' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
 
           subject
         end
@@ -110,6 +110,19 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
           subject
 
           expect(response).to have_gitlab_http_status(:not_found)
+        end
+
+        context 'when epic is confidential' do
+          let(:epic1) { build(:epic, group: group, confidential: true) }
+          let(:parent_epic) { build(:epic, group: group, confidential: true) }
+
+          it 'returns 403 status when user is a guest' do
+            group.add_guest(user)
+
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
         end
       end
 
@@ -166,7 +179,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
 
       context 'when user has permissions to create requested association' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns correct response for the correct issue reference' do
@@ -219,7 +232,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
 
       context 'when user has permissions to reorder epics' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns status 200' do
@@ -271,7 +284,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
 
       context 'when user has permissions to update the parent epic' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns status 200' do
@@ -309,7 +322,7 @@ RSpec.describe Groups::Epics::EpicLinksController, feature_category: :portfolio_
     context 'when user has permissions to update the parent epic but epics feature is disabled' do
       before do
         stub_licensed_features(epics: false)
-        group.add_developer(user)
+        group.add_guest(user)
       end
 
       it 'does not destroy the link' do

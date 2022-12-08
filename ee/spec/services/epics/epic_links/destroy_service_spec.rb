@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::EpicLinks::DestroyService do
+RSpec.describe Epics::EpicLinks::DestroyService, feature_category: :portfolio_management do
   describe '#execute' do
     let(:group) { create(:group) }
     let(:user) { create(:user) }
@@ -68,7 +68,7 @@ RSpec.describe Epics::EpicLinks::DestroyService do
 
       context 'when user has permissions to remove epic relation' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         context 'when the child epic is nil' do

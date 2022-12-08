@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Epics::EpicLinks::CreateService do
+RSpec.describe Epics::EpicLinks::CreateService, feature_category: :portfolio_management do
   include NestedEpicsHelper
 
   describe '#execute' do
@@ -87,7 +87,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
 
           context 'when a user has permissions to add an epic' do
             before do
-              group.add_developer(user)
+              group.add_guest(user)
             end
 
             context 'when an epic from another group is given' do
@@ -95,26 +95,14 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 epic_to_add.update!(group: other_group)
               end
 
-              context 'when user has no permission to read child epic' do
+              context 'when user has no permission to admin_epic_tree_relation' do
                 let(:params) { { target_issuable: epic_to_add } }
 
                 subject { described_class.new(epic, user, params).execute }
 
                 before do
-                  epic_to_add.update!(confidential: true)
-                end
-
-                include_examples 'returns an error'
-              end
-
-              context 'when user has no permission to admin_epic_link' do
-                let(:expected_code) { 409 }
-                let(:expected_error) do
-                  "This epic cannot be added. You don't have access to perform this action."
-                end
-
-                before do
                   other_group.add_guest(user)
+                  epic_to_add.update!(confidential: true)
                 end
 
                 include_examples 'returns an error'
@@ -127,9 +115,10 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 end
 
                 before do
-                  other_group.add_developer(user)
+                  other_group.add_guest(user)
                   stub_licensed_features(epics: true)
-                  allow(group).to receive(:licensed_feature_available?).with(:subepics).and_return(true)
+
+                  allow(group).to receive(:licensed_feature_available?).and_return(true)
                   allow(other_group).to receive(:licensed_feature_available?).with(:subepics).and_return(false)
                 end
 
@@ -143,7 +132,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
                 end
 
                 before do
-                  other_group.add_developer(user)
+                  other_group.add_guest(user)
                   stub_feature_flags(child_epics_from_different_hierarchies: false)
                   epic_to_add.update!(group: other_group)
                 end
@@ -159,7 +148,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
               end
 
               before do
-                ancestor.add_developer(user)
+                ancestor.add_guest(user)
                 epic_to_add.update!(group: ancestor)
               end
 
@@ -319,22 +308,19 @@ RSpec.describe Epics::EpicLinks::CreateService do
 
             context 'when an epic from a another group is given' do
               before do
-                other_group.add_developer(user)
                 epic_to_add.update!(group: other_group)
               end
 
               context 'when user has insufficient permissions' do
-                before do
-                  other_group.add_guest(user)
-                end
-
                 include_examples 'returns an error'
               end
 
               context 'when subepics feature is not available for child group' do
                 before do
+                  other_group.add_guest(user)
                   stub_licensed_features(epics: true)
-                  allow(group).to receive(:licensed_feature_available?).with(:subepics).and_return(true)
+
+                  allow(group).to receive(:licensed_feature_available?).and_return(true)
                   allow(other_group).to receive(:licensed_feature_available?).with(:subepics).and_return(false)
                 end
 
@@ -344,6 +330,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
               context 'when child_epics_from_different_hierarchies feature flag is disabled' do
                 before do
                   stub_feature_flags(child_epics_from_different_hierarchies: false)
+                  other_group.add_guest(user)
                   epic_to_add.update!(group: other_group)
                 end
 
@@ -410,7 +397,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
         let_it_be_with_reload(:another_epic) { create(:epic, group: group) }
 
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         context 'when a correct reference is given' do
@@ -447,7 +434,7 @@ RSpec.describe Epics::EpicLinks::CreateService do
 
         context 'when an epic from ancestor group is given' do
           before do
-            ancestor.add_developer(user)
+            ancestor.add_guest(user)
             epic_to_add.update!(group: ancestor)
           end
 

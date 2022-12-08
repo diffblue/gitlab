@@ -28,7 +28,7 @@ module Groups
       def authorize_admin!
         return super unless action_name == 'destroy'
 
-        render_403 unless can?(current_user, 'destroy_epic_link', epic)
+        render_403 unless can?(current_user, 'admin_epic_relation', epic)
       end
 
       def create_service
@@ -44,7 +44,7 @@ module Groups
       end
 
       def authorized_object
-        'epic_link'
+        'epic_tree_relation'
       end
     end
   end

@@ -139,19 +139,17 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
         stub_licensed_features(epics: true, subepics: true)
       end
 
-      context 'when user is guest' do
+      context 'when user is not a member' do
         it 'returns 403' do
-          group.add_guest(user)
-
           subject
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
       end
 
-      context 'when user is developer' do
+      context 'when user is guest' do
         it 'returns 201 status' do
-          group.add_developer(user)
+          group.add_guest(user)
 
           subject
 
@@ -166,7 +164,7 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
         let_it_be(:child_epic) { create(:epic, group: other_group) }
 
         it 'returns 404 status' do
-          group.add_developer(user)
+          group.add_guest(user)
 
           subject
 
@@ -188,19 +186,31 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
         stub_licensed_features(epics: true, subepics: true)
       end
 
-      context 'when user is guest' do
+      context 'when user is not a member' do
         it 'returns 403' do
-          group.add_guest(user)
-
           subject
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
       end
 
-      context 'when user is developer' do
+      context 'when user is a guest' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
+        end
+
+        it 'returns 201 status' do
+          subject
+
+          expect(response).to have_gitlab_http_status(:created)
+          expect(response).to match_response_schema('public_api/v4/linked_epic', dir: 'ee')
+          expect(epic.reload.children).to include(Epic.last)
+        end
+      end
+
+      context 'when user is a reporter' do
+        before do
+          group.add_reporter(user)
         end
 
         it 'returns 201 status' do
@@ -269,7 +279,7 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
 
       context 'when user has permissions to reorder epics' do
         before do
-          group.add_developer(user)
+          group.add_guest(user)
         end
 
         it 'returns status 200' do
@@ -284,16 +294,14 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
           let_it_be(:other_child) { create(:epic, group: other_group, parent: epic, relative_position: 100) }
           let(:url) { "/groups/#{group_path}/epics/#{epic.iid}/epics/#{other_child.id}" }
 
-          it 'returns status 404 if user has guest access' do
-            other_group.add_guest(user)
-
+          it 'returns status 404 if user is not a member' do
             subject
 
             expect(response).to have_gitlab_http_status(:not_found)
           end
 
-          it 'returns status 200 if user has reporter access' do
-            other_group.add_reporter(user)
+          it 'returns status 200 if user has guest access' do
+            other_group.add_guest(user)
 
             subject
 
@@ -311,8 +319,6 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
 
       context 'when user does not have permissions to reorder epics' do
         it 'returns status 403' do
-          group.add_guest(user)
-
           subject
 
           expect(response).to have_gitlab_http_status(:forbidden)
@@ -335,19 +341,17 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
         stub_licensed_features(epics: true)
       end
 
-      context 'when user is guest' do
+      context 'when user is not a member' do
         it 'returns 403' do
-          group.add_guest(user)
-
           subject
 
           expect(response).to have_gitlab_http_status(:forbidden)
         end
       end
 
-      context 'when user is developer' do
+      context 'when user is guest' do
         it 'returns 200 status' do
-          group.add_developer(user)
+          group.add_guest(user)
 
           subject
 
@@ -355,15 +359,25 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
           expect(response).to match_response_schema('public_api/v4/epic', dir: 'ee')
           expect(epic.reload.children).not_to include(child_epic)
         end
+
+        context 'with confidential epic' do
+          let_it_be(:epic) { create(:epic, group: group, confidential: true) }
+          let_it_be(:child_epic) { create(:epic, group: group, parent: epic, confidential: true) }
+
+          it 'returns status 403' do
+            subject
+
+            expect(response).to have_gitlab_http_status(:forbidden)
+          end
+        end
       end
 
       context 'when child belongs to a different group hierarchy' do
         let_it_be(:child_epic) { create(:epic, group: other_group, parent: epic) }
 
-        context "when user has guest access to child's group" do
+        context "when user is not a member of the child's group" do
           before do
-            group.add_reporter(user)
-            other_group.add_guest(user)
+            group.add_guest(user)
           end
 
           it 'returns 404 status' do
@@ -373,10 +387,10 @@ RSpec.describe API::EpicLinks, feature_category: :portfolio_management do
           end
         end
 
-        context "when user has reporter access to child's group" do
+        context "when user has guest access to child's group" do
           before do
-            group.add_reporter(user)
-            other_group.add_reporter(user)
+            group.add_guest(user)
+            other_group.add_guest(user)
           end
 
           it 'returns 200 status' do

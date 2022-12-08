@@ -5,7 +5,7 @@ module Mutations
     class Reorder < ::Mutations::BaseMutation
       graphql_name "EpicTreeReorder"
 
-      authorize :admin_epic
+      authorize :admin_epic_relation
 
       argument :base_epic_id,
                ::Types::GlobalIDType[::Epic],

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe EpicPolicy do
+RSpec.describe EpicPolicy, feature_category: :portfolio_management do
   include ExternalAuthorizationServiceHelpers
 
   let(:user) { create(:user) }
@@ -57,7 +57,8 @@ RSpec.describe EpicPolicy do
                                    :read_issuable_participables,
                                    :create_todo, :read_related_epic_link,
                                    :admin_related_epic_link, :set_epic_metadata,
-                                   :set_confidentiality)
+                                   :set_confidentiality, :admin_epic_relation,
+                                   :admin_epic_tree_relation)
     end
   end
 
@@ -69,7 +70,7 @@ RSpec.describe EpicPolicy do
                                 :read_issuable_participables, :read_internal_note,
                                 :read_related_epic_link, :admin_related_epic_link,
                                 :set_epic_metadata, :set_confidentiality,
-                                :mark_note_as_confidential)
+                                :admin_epic_relation, :admin_epic_tree_relation)
     end
   end
 
@@ -137,9 +138,9 @@ RSpec.describe EpicPolicy do
     it_behaves_like 'all epic permissions disabled'
   end
 
-  context 'when epics feature is enabled' do
+  context 'when epics features are enabled' do
     before do
-      stub_licensed_features(epics: true, related_epics: true)
+      stub_licensed_features(epics: true, related_epics: true, subepics: true)
     end
 
     context 'when an epic is in a private group' do
@@ -181,8 +182,13 @@ RSpec.describe EpicPolicy do
       context 'anonymous user' do
         let(:user) { nil }
 
-        it { is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note, :read_issuable_participables) }
-        it { is_expected.to be_disallowed(:create_todo, :read_internal_note) }
+        it 'matches expected permissions' do
+          is_expected.to be_allowed(:read_epic, :read_epic_iid, :read_note,
+                                    :read_issuable_participables)
+
+          is_expected.to be_disallowed(:create_todo, :read_internal_note,
+                                       :admin_epic_tree_relation)
+        end
 
         it_behaves_like 'cannot comment on epics'
       end
@@ -291,7 +297,7 @@ RSpec.describe EpicPolicy do
       let(:group) { create(:group) }
 
       before do
-        stub_licensed_features(epics: true)
+        stub_licensed_features(epics: true, subepics: true)
         group.add_maintainer(user)
       end
 
@@ -299,9 +305,27 @@ RSpec.describe EpicPolicy do
         is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
                                   :admin_epic, :create_epic, :create_note,
                                   :award_emoji, :read_note, :create_todo,
-                                  :read_issuable_participables)
+                                  :read_issuable_participables, :admin_epic_relation,
+                                  :admin_epic_tree_relation)
         is_expected.to be_disallowed(:read_related_epic_link,
                                      :admin_related_epic_link)
+      end
+    end
+
+    context 'when subepics feature is not available' do
+      let(:group) { create(:group) }
+
+      before do
+        stub_licensed_features(epics: true, related_epics: true)
+        group.add_maintainer(user)
+      end
+
+      it 'matches expected permissions' do
+        is_expected.to be_allowed(:read_epic, :read_epic_iid, :update_epic,
+                                  :admin_epic, :create_epic, :create_note,
+                                  :award_emoji, :read_note, :create_todo,
+                                  :read_issuable_participables, :admin_epic_relation)
+        is_expected.to be_disallowed(:admin_epic_tree_relation)
       end
     end
   end

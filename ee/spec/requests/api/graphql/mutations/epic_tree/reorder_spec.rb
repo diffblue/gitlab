@@ -60,16 +60,32 @@ RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management 
       it 'returns the error message' do
         post_graphql_mutation(mutation, current_user: current_user)
 
-        expect(mutation_response['errors']).to eq(['You don\'t have permissions to move the objects.'])
+        expect(mutation_response['errors']).to contain_exactly('You don\'t have permissions to move the objects.')
+      end
+
+      context 'when moving an issue' do
+        before do
+          group.add_guest(current_user)
+          variables[:moved][:id] = GitlabSchema.id_from_object(epic_issue2).to_s
+          variables[:moved][:adjacent_reference_id] = GitlabSchema.id_from_object(epic_issue1).to_s
+        end
+
+        it_behaves_like 'a mutation that does not update the tree'
+
+        it 'returns the error message' do
+          post_graphql_mutation(mutation, current_user: current_user)
+
+          expect(mutation_response['errors']).to contain_exactly('You don\'t have permissions to move the objects.')
+        end
       end
     end
 
     context 'when the user has permission' do
-      before do
-        group.add_developer(current_user)
-      end
-
       context 'when moving an epic' do
+        before do
+          group.add_guest(current_user)
+        end
+
         context 'when moving an epic is successful' do
           it 'updates the epics relative positions' do
             post_graphql_mutation(mutation, current_user: current_user)
@@ -164,6 +180,7 @@ RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management 
 
       context 'when moving an issue' do
         before do
+          group.add_reporter(current_user)
           variables[:moved][:id] = GitlabSchema.id_from_object(epic_issue2).to_s
           variables[:moved][:adjacent_reference_id] = GitlabSchema.id_from_object(epic_issue1).to_s
         end
@@ -207,6 +224,7 @@ RSpec.describe 'Updating an epic tree', feature_category: :portfolio_management 
         let(:epic_issue2) { create(:epic_issue, relative_position: 20) }
 
         before do
+          group.add_reporter(current_user)
           variables[:moved][:id] = GitlabSchema.id_from_object(epic_issue2).to_s
           variables[:moved][:adjacent_reference_id] = GitlabSchema.id_from_object(epic_issue1).to_s
         end

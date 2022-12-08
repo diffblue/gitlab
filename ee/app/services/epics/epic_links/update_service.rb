@@ -13,7 +13,7 @@ module Epics
       end
 
       def execute
-        unless can?(current_user, :admin_epic_link, epic.group)
+        unless can?(current_user, :admin_epic_tree_relation, epic)
           return error('Epic not found for given params', 404)
         end
 
