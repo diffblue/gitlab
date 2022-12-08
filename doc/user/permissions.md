@@ -491,6 +491,11 @@ Owners can add members with a "minimal access" role to a parent group. Such user
 projects and subgroups underneath. Owners must explicitly add these "minimal access" users to the specific subgroups and
 projects.
 
+You can use minimal access to give the same member more than one role in a group:
+
+1. Add the member to the parent group with a minimal access role.
+1. Invite the member as a direct member with a specific role in any subgroup or project in that group.
+
 Because of an [outstanding issue](https://gitlab.com/gitlab-org/gitlab/-/issues/267996), when minimal access users:
 
 - Sign in with standard web authentication, they receive a `404` error when accessing the parent group.
