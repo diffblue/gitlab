@@ -12,7 +12,6 @@ import ViolationFilter from 'ee/compliance_dashboard/components/violations/filte
 import getComplianceViolationsQuery from 'ee/compliance_dashboard/graphql/compliance_violations.query.graphql';
 import SeverityBadge from 'ee/vue_shared/security_reports/components/severity_badge.vue';
 import { mapViolations } from 'ee/compliance_dashboard/graphql/mappers';
-import { stripTypenames } from 'helpers/graphql_helpers';
 import waitForPromises from 'helpers/wait_for_promises';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import UrlSync from '~/vue_shared/components/url_sync.vue';
@@ -400,12 +399,13 @@ describe('ComplianceReport component', () => {
 
     describe('pagination', () => {
       it('renders and configures the pagination', () => {
-        const pageInfo = stripTypenames(
-          violationsResponse.data.group.mergeRequestViolations.pageInfo,
-        );
+        const {
+          __typename,
+          ...paginationProps
+        } = violationsResponse.data.group.mergeRequestViolations.pageInfo;
 
         expect(findPagination().props()).toMatchObject({
-          ...pageInfo,
+          ...paginationProps,
           disabled: false,
         });
       });
