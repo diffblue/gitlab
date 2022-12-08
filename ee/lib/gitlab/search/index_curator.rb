@@ -6,7 +6,9 @@ module Gitlab
       # Reference: https://docs.gitlab.com/ee/integration/advanced_search/elasticsearch.html#tuning
 
       DEFAULT_SETTINGS = {
-        dry_run: false,
+        dry_run: true,
+        debug: false,
+        force: false,
         max_shard_size_gb: 50,
         max_docs_denominator: 5_000_000,
         min_docs_before_rollover: 100_000,
@@ -20,15 +22,7 @@ module Gitlab
 
       def self.curate(settings = {})
         curator = new(settings)
-        curator.preflight_checks!
-
-        [].tap do |rolled_over_indices|
-          curator.write_indices.each do |index_info|
-            next unless curator.should_rollover?(index_info)
-
-            rolled_over_indices << curator.rollover_index(index_info)
-          end
-        end
+        curator.curate!
       rescue StandardError => err
         curator.log_exception(err)
       end
@@ -37,20 +31,70 @@ module Gitlab
         @settings = validate_settings!(DEFAULT_SETTINGS.merge(settings))
       end
 
-      def rollover_index(index_info)
-        old_index_name = index_info.fetch('index')
-        new_index_name = increment_index_name(old_index_name)
+      def curate!
+        preflight_checks!
 
-        { from: old_index_name, to: new_index_name }.tap do |rollover_info|
-          if settings[:dry_run]
+        [].tap do |done_items|
+          todo.each do |rollover_info|
+            rollover_index(rollover_info) unless settings[:dry_run]
+
             logger.info(
-              log_labels.merge(message: "[DRY RUN]: would have rolled over => #{rollover_info}")
+              log_labels.merge(
+                message: "Search curator rolled over an index",
+                class: self.class.name,
+                dry_run: settings[:dry_run],
+                from: rollover_info[:from],
+                to: rollover_info[:to],
+                reasons: rollover_info[:reasons]
+              )
             )
-          else
-            create_new_index_with_same_settings(old_index: old_index_name, new_index: new_index_name)
-            update_aliases(old_index: old_index_name, new_index: new_index_name)
+
+            done_items << rollover_info
           end
         end
+      end
+
+      def todo
+        [].tap do |todo_list|
+          write_indices.each do |index_info|
+            next if should_skip_rollover?(index_info)
+
+            reasons = collect_rollover_reasons(index_info)
+            next unless reasons.present?
+
+            old_index_name = index_info.fetch('index')
+            new_index_name = increment_index_name(old_index_name)
+
+            todo_list << {
+              from: old_index_name,
+              to: new_index_name,
+              reasons: reasons,
+              info: index_info
+            }
+          end
+        end
+      end
+
+      def should_skip_rollover?(index_info)
+        return false if forced?
+
+        should_ignore_index?(index_info) || too_few_docs?(index_info)
+      end
+
+      def collect_rollover_reasons(index_info)
+        [].tap do |reasons|
+          reasons << "too many docs" if too_many_docs?(index_info)
+          reasons << "primary shard size too big" if primary_shard_size_too_big?(index_info)
+          reasons << "rollover forced" if forced?
+        end
+      end
+
+      def rollover_index(rollover_info)
+        old_index_name = rollover_info[:from]
+        new_index_name = rollover_info[:to]
+
+        create_new_index_with_same_settings(old_index: old_index_name, new_index: new_index_name)
+        update_aliases(old_index: old_index_name, new_index: new_index_name)
       end
 
       def increment_index_name(index_name)
@@ -60,28 +104,6 @@ module Gitlab
           index_name[0...-4] + (index_num + 1).to_s.rjust(4, "0")
         else # Otherwise, start next index with number suffix
           "#{index_name}-0002"
-        end
-      end
-
-      def should_rollover?(index_info)
-        return false if should_ignore_index?(index_info) || too_few_docs?(index_info)
-
-        reasons = []
-        reasons << "too many docs" if too_many_docs?(index_info)
-        reasons << "primary shard size too big" if primary_shard_size_too_big?(index_info)
-
-        if reasons.present?
-          logger.info(
-            log_labels.merge(
-              message: "Search curator rollover triggered",
-              class: self.class.name,
-              index: index_info['index'],
-              reasons: reasons
-            )
-          )
-          true
-        else
-          false
         end
       end
 
@@ -102,6 +124,10 @@ module Gitlab
         return false if settings[:include_patterns].any? { |p| p.match? index_info['index'] }
 
         settings[:ignore_patterns].any? { |p| p.match? index_info['index'] }
+      end
+
+      def forced?
+        settings[:force]
       end
 
       def read_indices
@@ -151,6 +177,12 @@ module Gitlab
 
       def validate_settings!(settings)
         raise ArgumentError, 'max_docs_denominator must be greater than 0' if settings[:max_docs_denominator] <= 0
+
+        settings.each_key do |key|
+          next if DEFAULT_SETTINGS.has_key? key
+
+          raise ArgumentError, "Invalid setting: `#{key}`. Valid options are `#{DEFAULT_SETTINGS.keys.sort}`"
+        end
 
         settings
       end
@@ -216,7 +248,7 @@ module Gitlab
       end
 
       def logger
-        @logger ||= ::Gitlab::Elasticsearch::Logger.build
+        @logger ||= settings[:debug] ? ::Logger.new($stdout) : ::Gitlab::Elasticsearch::Logger.build
       end
     end
   end
