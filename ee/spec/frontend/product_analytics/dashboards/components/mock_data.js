@@ -18,4 +18,39 @@ export const mockResultSet = {
       'pageview,Jitsu.count': 14,
     },
   ],
+  tableColumns: () => [
+    {
+      key: 'Jitsu.utcTime.day',
+      title: 'Jitsu Utc Time',
+      shortTitle: 'Utc Time',
+      type: 'time',
+      dataIndex: 'Jitsu.utcTime.day',
+    },
+    {
+      key: 'Jitsu.eventType',
+      title: 'Jitsu Event Type',
+      shortTitle: 'Event Type',
+      type: 'string',
+      dataIndex: 'Jitsu.eventType',
+    },
+    {
+      key: 'Jitsu.count',
+      type: 'number',
+      dataIndex: 'Jitsu.count',
+      title: 'Jitsu Count',
+      shortTitle: 'Count',
+    },
+  ],
+  tablePivot: () => [
+    {
+      'Jitsu.utcTime.day': '2022-11-09T00:00:00.000',
+      'Jitsu.eventType': 'pageview',
+      'Jitsu.count': '55',
+    },
+    {
+      'Jitsu.utcTime.day': '2022-11-10T00:00:00.000',
+      'Jitsu.eventType': 'pageview',
+      'Jitsu.count': '14',
+    },
+  ],
 };

@@ -1,0 +1,19 @@
+{
+  "version": "1",
+  "type": "DataTable",
+  "data": {
+    "type": "cube_analytics",
+    "query": {
+      "measures": [
+        "Jitsu.count"
+      ],
+      "dimensions": [
+        "Jitsu.sourceIp"
+      ],
+      "order": {
+        "Jitsu.count": "desc"
+      },
+      "limit": 100
+    }
+  }
+}

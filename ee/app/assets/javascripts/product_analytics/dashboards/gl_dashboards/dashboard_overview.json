@@ -12,7 +12,7 @@
       }
     },
     {
-      "visualization": "cube_analytics_line_chart",
+      "visualization": "cube_analytics_data_table",
       "title": "Sources",
       "gridAttributes": {
         "size": {
