@@ -89,7 +89,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
       let_it_be(:issue10, reload: true) { create(:labeled_issue, project: project, title: 'issue +', description: 'A+ great issue', labels: [a_plus]) }
 
       before do
-        visit_project_board(project, board)
+        visit_project_board_path_without_query_limit(project, board)
       end
 
       it 'shows description tooltip on list title', :quarantine do
@@ -295,7 +295,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
             end
           end
 
-          context 'list header' do
+          context 'list header', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
             let(:total_planning_issues) { "8" }
 
             it 'shows issue count on the list' do
