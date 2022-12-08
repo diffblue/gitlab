@@ -15,8 +15,7 @@ import { TYPE_ISSUE, TYPE_MERGE_REQUEST } from '~/graphql_shared/constants';
 import { joinPaths } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
 import createTimelogMutation from '../../queries/create_timelog.mutation.graphql';
-
-export const CREATE_TIMELOG_MODAL_ID = 'create-timelog-modal';
+import { CREATE_TIMELOG_MODAL_ID } from './constants';
 
 export default {
   components: {
@@ -66,7 +65,7 @@ export default {
         text: s__('CreateTimelogForm|Cancel'),
       };
     },
-    timeTrackignDocsPath() {
+    timeTrackingDocsPath() {
       return joinPaths(gon.relative_url_root || '', '/help/user/project/time_tracking.md');
     },
     issuableTypeName() {
@@ -113,7 +112,7 @@ export default {
         })
         .then(({ data }) => {
           if (data.timelogCreate?.errors.length) {
-            this.saveError = data.timelogCreate?.errors[0].message || data.timelogCreate?.errors[0];
+            this.saveError = data.timelogCreate.errors[0].message || data.timelogCreate.errors[0];
           } else {
             this.close();
           }
@@ -168,7 +167,7 @@ export default {
       >
         <template #issuableTypeName>{{ issuableTypeName }}</template>
         <template #timeTrackingDocsLink>
-          <gl-link :href="timeTrackignDocsPath" target="_blank">{{
+          <gl-link :href="timeTrackingDocsPath" target="_blank">{{
             s__('CreateTimelogForm|How do I track and estimate time?')
           }}</gl-link>
         </template>
@@ -182,7 +181,7 @@ export default {
         <gl-form-group
           key="time-spent"
           label-for="time-spent"
-          label="Time spent"
+          :label="s__(`CreateTimelogForm|Time spent`)"
           :description="s__(`CreateTimelogForm|Example: 1h 30m`)"
         >
           <gl-form-input
@@ -193,7 +192,12 @@ export default {
             autocomplete="off"
           />
         </gl-form-group>
-        <gl-form-group key="spent-at" optional label-for="spent-at" label="Spent at">
+        <gl-form-group
+          key="spent-at"
+          optional
+          label-for="spent-at"
+          :label="s__(`CreateTimelogForm|Spent at`)"
+        >
           <gl-datepicker
             :target="null"
             :value="spentAt"

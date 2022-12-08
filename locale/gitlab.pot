@@ -11505,7 +11505,13 @@ msgstr ""
 msgid "CreateTimelogForm|Save"
 msgstr ""
 
+msgid "CreateTimelogForm|Spent at"
+msgstr ""
+
 msgid "CreateTimelogForm|Summary"
+msgstr ""
+
+msgid "CreateTimelogForm|Time spent"
 msgstr ""
 
 msgid "CreateTimelogForm|Track time spent on this %{issuableTypeNameStart}%{issuableTypeNameEnd}. %{timeTrackingDocsLinkStart}%{timeTrackingDocsLinkEnd}"

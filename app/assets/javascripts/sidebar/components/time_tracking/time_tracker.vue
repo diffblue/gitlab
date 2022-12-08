@@ -18,7 +18,8 @@ import TimeTrackingCollapsedState from './collapsed_state.vue';
 import TimeTrackingComparisonPane from './comparison_pane.vue';
 import TimeTrackingReport from './report.vue';
 import TimeTrackingSpentOnlyPane from './spent_only_pane.vue';
-import CreateTimelogForm, { CREATE_TIMELOG_MODAL_ID } from './create_timelog_form.vue';
+import { CREATE_TIMELOG_MODAL_ID } from './constants';
+import CreateTimelogForm from './create_timelog_form.vue';
 
 export default {
   name: 'IssuableTimeTracker',
