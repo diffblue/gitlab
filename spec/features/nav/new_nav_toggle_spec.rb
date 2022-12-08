@@ -7,13 +7,13 @@ RSpec.describe 'new navigation toggle', :js, feature_category: :navigation do
 
   before do
     user.update!(use_new_navigation: user_preference)
-    stub_feature_flags(super_sidebar_nav_toggle: nav_toggle_ff)
+    stub_feature_flags(super_sidebar_nav: new_nav_ff)
     sign_in(user)
     visit explore_projects_path
   end
 
-  context 'with nav_toggle feature flag off' do
-    let(:nav_toggle_ff) { false }
+  context 'with feature flag off' do
+    let(:new_nav_ff) { false }
 
     where(:user_preference) do
       [true, false]
@@ -29,8 +29,8 @@ RSpec.describe 'new navigation toggle', :js, feature_category: :navigation do
     end
   end
 
-  context 'with nav_toggle feature flag on' do
-    let(:nav_toggle_ff) { true }
+  context 'with feature flag on' do
+    let(:new_nav_ff) { true }
 
     context 'when user has new nav disabled' do
       let(:user_preference) { false }
