@@ -75,6 +75,8 @@ module Users
     end
 
     def log_identity_verification(method, event, reason = nil)
+      return unless %w[Email Phone].include?(method)
+
       category = "IdentityVerification::#{method}"
 
       Gitlab::AppLogger.info(
