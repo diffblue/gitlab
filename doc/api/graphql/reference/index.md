@@ -16838,6 +16838,7 @@ Represents pipeline counts for the project.
 | <a id="pipelineschedulecron"></a>`cron` | [`String!`](#string) | Cron notation for the schedule. |
 | <a id="pipelineschedulecrontimezone"></a>`cronTimezone` | [`String!`](#string) | Timezone for the pipeline schedule. |
 | <a id="pipelinescheduledescription"></a>`description` | [`String`](#string) | Description of the pipeline schedule. |
+| <a id="pipelinescheduleeditpath"></a>`editPath` | [`String`](#string) | Edit path of the pipeline schedule. |
 | <a id="pipelineschedulefortag"></a>`forTag` | [`Boolean!`](#boolean) | Indicates if a pipelines schedule belongs to a tag. |
 | <a id="pipelinescheduleid"></a>`id` | [`ID!`](#id) | ID of the pipeline schedule. |
 | <a id="pipelineschedulelastpipeline"></a>`lastPipeline` | [`Pipeline`](#pipeline) | Last pipeline object. |
