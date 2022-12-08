@@ -41,6 +41,10 @@ fragment WorkItemWidgets on WorkItemWidget {
     type
     weight
   }
+  ... on WorkItemWidgetProgress {
+    type
+    progress
+  }
   ... on WorkItemWidgetHierarchy {
     type
     hasChildren
