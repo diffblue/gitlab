@@ -8,7 +8,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
   let(:from) { 1.day.ago }
   let(:user) { create(:user) }
 
-  subject { described_class.new(group, options: { from: Time.now, current_user: user }).data }
+  subject { described_class.new(group, options: { from: Time.current, current_user: user }).data }
 
   before do
     group.add_owner(user)
@@ -55,7 +55,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
           travel_to(5.days.from_now) { create(:issue, project: create(:project, namespace: group)) }
         end
 
-        subject { described_class.new(group, options: { from: Time.now, current_user: user, projects: [project.id, project_2.id] }).data }
+        subject { described_class.new(group, options: { from: Time.current, current_user: user, projects: [project.id, project_2.id] }).data }
 
         it 'finds issues from those projects' do
           expect(subject.first[:value]).to eq('2')
@@ -70,7 +70,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
           issue.assignees << assignee
         end
 
-        subject { described_class.new(group, options: { from: Time.now, current_user: user, assignee_username: [assignee.username] }).data }
+        subject { described_class.new(group, options: { from: Time.current, current_user: user, assignee_username: [assignee.username] }).data }
 
         it 'finds issues from those projects' do
           expect(subject.first[:value]).to eq('1')
@@ -84,7 +84,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
           project.issues.last.update!(author: author)
         end
 
-        subject { described_class.new(group, options: { from: Time.now, current_user: user, author_username: [author.username] }).data }
+        subject { described_class.new(group, options: { from: Time.current, current_user: user, author_username: [author.username] }).data }
 
         it 'finds issues from those projects' do
           expect(subject.first[:value]).to eq('1')
@@ -105,7 +105,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
           ).execute(issue)
         end
 
-        subject { described_class.new(group, options: { from: Time.now, current_user: user, label_name: [label1.name, label2.name] }).data }
+        subject { described_class.new(group, options: { from: Time.current, current_user: user, label_name: [label1.name, label2.name] }).data }
 
         it 'finds issue with two labels' do
           expect(subject.first[:value]).to eq('1')
@@ -113,7 +113,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::Summary::Group::StageSummary d
       end
 
       context 'when `from` and `to` parameters are provided' do
-        subject { described_class.new(group, options: { from: 10.days.ago, to: Time.now, current_user: user }).data }
+        subject { described_class.new(group, options: { from: 10.days.ago, to: Time.current, current_user: user }).data }
 
         it 'finds issues from 5 days ago' do
           expect(subject.first[:value]).to eq('2')

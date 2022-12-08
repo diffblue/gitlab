@@ -5,7 +5,7 @@ require 'spec_helper'
 RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
   let_it_be(:user) { create(:user) }
 
-  let(:current_time) { Time.new(2019, 6, 1) }
+  let(:current_time) { Time.zone.local(2019, 6, 1) }
 
   before do
     stub_licensed_features(cycle_analytics_for_groups: true)
@@ -39,17 +39,17 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
   # `create_data_for_end_event`. For each stage we create 3 records with a fixed
   # durations (10, 5, 15 days) in order to easily generalize the test cases.
   shared_examples 'custom Value Stream Analytics Stage' do
-    let(:params) { { from: Time.new(2019), to: Time.new(2020), current_user: user } }
+    let(:params) { { from: Time.zone.local(2019), to: Time.zone.local(2020), current_user: user } }
     let(:data_collector) { described_class.new(stage: stage, params: params) }
     let(:aggregated_data_collector) { described_class.new(stage: stage, params: params.merge(use_aggregated_data_collector: true)) }
 
-    let_it_be(:resource_1_end_time) { Time.new(2019, 3, 15) }
-    let_it_be(:resource_2_end_time) { Time.new(2019, 3, 10) }
-    let_it_be(:resource_3_end_time) { Time.new(2019, 3, 20) }
+    let_it_be(:resource_1_end_time) { Time.zone.local(2019, 3, 15) }
+    let_it_be(:resource_2_end_time) { Time.zone.local(2019, 3, 10) }
+    let_it_be(:resource_3_end_time) { Time.zone.local(2019, 3, 20) }
 
     let_it_be(:resource1) do
       # takes 10 days
-      resource = travel_to(Time.new(2019, 3, 5)) do
+      resource = travel_to(Time.zone.local(2019, 3, 5)) do
         create_data_for_start_event(self)
       end
 
@@ -62,7 +62,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
     let_it_be(:resource2) do
       # takes 5 days
-      resource = travel_to(Time.new(2019, 3, 5)) do
+      resource = travel_to(Time.zone.local(2019, 3, 5)) do
         create_data_for_start_event(self)
       end
 
@@ -75,7 +75,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
     let_it_be(:resource3) do
       # takes 15 days
-      resource = travel_to(Time.new(2019, 3, 5)) do
+      resource = travel_to(Time.zone.local(2019, 3, 5)) do
         create_data_for_start_event(self)
       end
 
@@ -86,8 +86,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       resource
     end
 
-    let_it_be(:unfinished_resource_1_start_time) { Time.new(2019, 3, 5) }
-    let_it_be(:unfinished_resource_2_start_time) { Time.new(2019, 5, 10) }
+    let_it_be(:unfinished_resource_1_start_time) { Time.zone.local(2019, 3, 5) }
+    let_it_be(:unfinished_resource_2_start_time) { Time.zone.local(2019, 5, 10) }
 
     let_it_be(:unfinished_resource_1) do
       travel_to(unfinished_resource_1_start_time) do
@@ -204,7 +204,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         end
 
         def create_data_for_end_event(issue, example_class)
-          issue.metrics.update!(first_mentioned_in_commit_at: Time.now)
+          issue.metrics.update!(first_mentioned_in_commit_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -231,12 +231,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         def create_data_for_start_event(example_class)
           issue = create(:issue, :opened, project: example_class.project)
-          issue.metrics.update!(first_mentioned_in_commit_at: Time.now)
+          issue.metrics.update!(first_mentioned_in_commit_at: Time.current)
           issue
         end
 
         def create_data_for_end_event(resource, example_class)
-          resource.metrics.update!(first_associated_with_milestone_at: Time.now)
+          resource.metrics.update!(first_associated_with_milestone_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -251,7 +251,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         end
 
         def create_data_for_end_event(resource, example_class)
-          resource.metrics.update!(first_added_to_board_at: Time.now)
+          resource.metrics.update!(first_added_to_board_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -266,7 +266,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         end
 
         def create_data_for_end_event(resource, example_class)
-          resource.update!(last_edited_at: Time.now)
+          resource.update!(last_edited_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -337,8 +337,8 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
           context 'when filtering for two labels' do
             let(:params) do
               {
-                from: Time.new(2019),
-                to: Time.new(2020),
+                from: Time.zone.local(2019),
+                to: Time.zone.local(2020),
                 current_user: user,
                 label_name: [label.name, other_label.name]
               }
@@ -386,7 +386,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         end
 
         def create_data_for_end_event(mr, example_class)
-          mr.metrics.update!(merged_at: Time.now)
+          mr.metrics.update!(merged_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -398,12 +398,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         def create_data_for_start_event(example_class)
           create(:merge_request, :unique_branches, :opened, source_project: example_class.project).tap do |mr|
-            mr.metrics.update!(merged_at: Time.now)
+            mr.metrics.update!(merged_at: Time.current)
           end
         end
 
         def create_data_for_end_event(mr, example_class)
-          mr.metrics.update!(first_deployed_to_production_at: Time.now)
+          mr.metrics.update!(first_deployed_to_production_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -415,12 +415,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         def create_data_for_start_event(example_class)
           create(:merge_request, :unique_branches, :opened, source_project: example_class.project).tap do |mr|
-            mr.metrics.update!(first_commit_at: Time.now)
+            mr.metrics.update!(first_commit_at: Time.current)
           end
         end
 
         def create_data_for_end_event(mr, example_class)
-          mr.metrics.update!(merged_at: Time.now)
+          mr.metrics.update!(merged_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -432,12 +432,12 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
         def create_data_for_start_event(example_class)
           create(:merge_request, :unique_branches, :opened, source_project: example_class.project).tap do |mr|
-            mr.metrics.update!(latest_build_started_at: Time.now)
+            mr.metrics.update!(latest_build_started_at: Time.current)
           end
         end
 
         def create_data_for_end_event(mr, example_class)
-          mr.metrics.update!(latest_build_finished_at: Time.now)
+          mr.metrics.update!(latest_build_finished_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -452,7 +452,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         end
 
         def create_data_for_end_event(resource, example_class)
-          resource.metrics.update!(latest_closed_at: Time.now)
+          resource.metrics.update!(latest_closed_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -467,7 +467,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
         end
 
         def create_data_for_end_event(resource, example_class)
-          resource.update!(last_edited_at: Time.now)
+          resource.update!(last_edited_at: Time.current)
         end
 
         it_behaves_like 'custom Value Stream Analytics Stage'
@@ -587,7 +587,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
 
       let(:data_collector_params) do
         {
-          created_after: Time.new(2019, 1, 1),
+          created_after: Time.zone.local(2019, 1, 1),
           current_user: user
         }
       end
@@ -601,7 +601,7 @@ RSpec.describe Gitlab::Analytics::CycleAnalytics::DataCollector do
       before do
         group.add_member(user, GroupMember::MAINTAINER)
 
-        travel_to(Time.new(2019, 6, 1))
+        travel_to(Time.zone.local(2019, 6, 1))
         mr = create(:merge_request, source_project: project1)
         mr.metrics.update!(merged_at: 1.hour.from_now)
 

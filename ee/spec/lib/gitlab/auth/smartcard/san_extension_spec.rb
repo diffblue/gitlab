@@ -14,8 +14,8 @@ RSpec.describe Gitlab::Auth::Smartcard::SANExtension do
     cert = OpenSSL::X509::Certificate.new
     cert.version = 3
     cert.serial = 0
-    cert.not_before = Time.now
-    cert.not_after = Time.now + 3600
+    cert.not_before = Time.current
+    cert.not_after = Time.current + 3600
     cert.public_key = key.public_key
     cert.subject = name
     cert

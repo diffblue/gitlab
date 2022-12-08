@@ -260,8 +260,8 @@ RSpec.describe Gitlab::Auth::Ldap::Access do
         end
 
         it 'does not performs the membership update for existing users' do
-          user.created_at = Time.now - 10.minutes
-          user.last_credential_check_at = Time.now
+          user.created_at = Time.current - 10.minutes
+          user.last_credential_check_at = Time.current
           user.save!
 
           expect(LdapGroupLink).not_to receive(:where)
