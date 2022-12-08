@@ -3,7 +3,7 @@
 require 'spec_helper'
 
 RSpec.describe Gitlab::BackgroundMigration::MigrateRequirementsToWorkItems,
-  :migration, schema: 20221118103352, feature_category: :team_planning do
+  :migration, schema: 20220505174658, feature_category: :team_planning do
   let_it_be(:issue_base_type_enum) { 0 }
   let_it_be(:issue_type_id) { table(:work_item_types).find_by(base_type: issue_base_type_enum).id }
 
@@ -33,12 +33,6 @@ RSpec.describe Gitlab::BackgroundMigration::MigrateRequirementsToWorkItems,
   let!(:requirement_5) { requirements.create!(iid: 5, project_id: project2.id, author_id: user2.id, title: 'r 5', state: 1, created_at: 2.hours.ago, updated_at: Time.current) }
 
   let(:migration) { described_class::MIGRATION }
-
-  before_all do
-    # Drops requirements.issue_id NOT NULL constraint to allow creating
-    # invalid requirements on the before block before running the migration on specs
-    ApplicationRecord.connection.execute('ALTER TABLE requirements DROP CONSTRAINT check_requirement_issue_not_null;')
-  end
 
   let(:now) { Time.now.utc.to_s }
 
