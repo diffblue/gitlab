@@ -38,12 +38,6 @@ RSpec.describe 'Every metric definition' do
     ).freeze
   end
 
-  let(:events_not_defined_yet) do
-    %w(
-      redis_hll_counters.environments.users_visiting_environments_pages_weekly
-    )
-  end
-
   let(:metric_files_key_paths) do
     Gitlab::Usage::MetricDefinition
       .definitions
@@ -87,8 +81,8 @@ RSpec.describe 'Every metric definition' do
 
   it 'is included in the Usage Ping hash structure', :aggregate_failures do
     msg = "see https://docs.gitlab.com/ee/development/service_ping/metrics_dictionary.html#metrics-added-dynamic-to-service-ping-payload"
-    expect(metric_files_key_paths + events_not_defined_yet).to match_array(usage_ping_key_paths)
-    expect(metric_files_key_paths + events_not_defined_yet).to match_array(usage_ping_key_paths), msg
+    expect(metric_files_key_paths).to match_array(usage_ping_key_paths)
+    expect(metric_files_key_paths).to match_array(usage_ping_key_paths), msg
   end
 
   describe 'metrics classes' do

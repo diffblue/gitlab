@@ -189,11 +189,6 @@ RSpec.describe Gitlab::UsageDataCounters::HLLRedisCounter, :clean_gitlab_redis_s
         end
       end
     end
-
-    it 'does not include instrumented categories' do
-      expect(described_class.unique_events_data.keys)
-        .not_to include(*described_class.categories_collected_from_metrics_definitions)
-    end
   end
 
   describe '.track_event' do
