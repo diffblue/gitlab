@@ -104,7 +104,7 @@ export default {
 
 <template>
   <div>
-    <querystring-sync v-model="selected" querystring-key="reportType" />
+    <querystring-sync v-model="selected" querystring-key="scanner" />
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
     <gl-dropdown :header-text="$options.i18n.label" block toggle-class="gl-mb-0">
       <template #button-text>
