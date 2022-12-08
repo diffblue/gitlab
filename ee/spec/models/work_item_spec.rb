@@ -90,6 +90,42 @@ RSpec.describe WorkItem do
       end
     end
 
+    context 'for progress widget' do
+      context 'when okrs is licensed' do
+        subject { build(:work_item, *work_item_type).widgets }
+
+        before do
+          stub_licensed_features(okrs: true)
+        end
+
+        context 'when work item supports progress' do
+          let(:work_item_type) { [:objective] }
+
+          it 'returns an instance of the progress widget' do
+            is_expected.to include(instance_of(WorkItems::Widgets::Progress))
+          end
+        end
+
+        context 'when work item does not support progress' do
+          let(:work_item_type) { :requirement }
+
+          it 'omits an instance of the progress widget' do
+            is_expected.not_to include(instance_of(WorkItems::Widgets::Progress))
+          end
+        end
+      end
+
+      context 'when okrs is unlicensed' do
+        before do
+          stub_licensed_features(okrs: false)
+        end
+
+        it 'omits an instance of the progress widget' do
+          is_expected.not_to include(instance_of(WorkItems::Widgets::Progress))
+        end
+      end
+    end
+
     context 'for health status widget' do
       context 'when issuable_health_status is licensed' do
         subject { build(:work_item, *work_item_type).widgets }

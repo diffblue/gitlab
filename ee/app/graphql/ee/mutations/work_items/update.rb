@@ -15,6 +15,10 @@ module EE
                    required: false,
                    description: 'Input for weight widget.'
 
+          argument :progress_widget, ::Types::WorkItems::Widgets::ProgressInputType,
+                   required: false,
+                   description: 'Input for progress widget.'
+
           argument :status_widget, ::Types::WorkItems::Widgets::StatusInputType,
                    required: false,
                    description: 'Input for status widget.'

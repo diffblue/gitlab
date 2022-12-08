@@ -35,6 +35,33 @@ RSpec.describe 'Update a work item' do
     end
   end
 
+  shared_examples 'update work item progress widget' do
+    it 'updates the progress widget' do
+      expect do
+        post_graphql_mutation(mutation, current_user: current_user)
+        work_item.reload
+      end.to change { work_item_progress }.from(nil).to(new_progress)
+
+      expect(response).to have_gitlab_http_status(:success)
+      expect(mutation_response['workItem']['widgets']).to include(
+        {
+          'progress' => new_progress,
+          'type' => 'PROGRESS'
+        }
+      )
+    end
+  end
+
+  shared_examples 'does not update work_item progress widget' do
+    it 'does not update progress widget' do
+      expect do
+        post_graphql_mutation(mutation, current_user: current_user)
+        work_item.reload
+      end.not_to change { work_item_progress }
+      expect(mutation_response['errors']).to contain_exactly(message)
+    end
+  end
+
   context 'with iteration widget input' do
     let_it_be(:cadence) { create(:iterations_cadence, group: group) }
     let_it_be(:old_iteration) { create(:iteration, iterations_cadence: cadence) }
@@ -179,6 +206,88 @@ RSpec.describe 'Update a work item' do
       end
 
       it_behaves_like 'user without permission to admin work item cannot update the attribute'
+    end
+  end
+
+  context 'with progress widget input' do
+    let(:new_progress) { 30 }
+    let(:input) { { 'progressWidget' => { 'progress' => new_progress } } }
+
+    let_it_be_with_refind(:work_item) { create(:work_item, :objective, project: project) }
+
+    let(:fields) do
+      <<~FIELDS
+        workItem {
+          widgets {
+            type
+            ... on WorkItemWidgetProgress {
+              progress
+            }
+          }
+        }
+        errors
+      FIELDS
+    end
+
+    def work_item_progress
+      work_item.progress&.progress
+    end
+
+    context 'when okrs is unlicensed' do
+      let(:current_user) { reporter }
+
+      before do
+        stub_licensed_features(okrs: false)
+      end
+
+      it_behaves_like 'work item is not updated'
+    end
+
+    context 'when okrs is licensed' do
+      before do
+        stub_licensed_features(okrs: true)
+      end
+
+      context 'when user has permissions to admin a work item' do
+        let(:current_user) { reporter }
+
+        it_behaves_like 'update work item progress widget'
+
+        context 'when setting progress to an invalid value' do
+          context 'if progress is greater than 100' do
+            let(:input) do
+              { 'progressWidget' => { 'progress' => 102 } }
+            end
+
+            it_behaves_like 'does not update work_item progress widget' do
+              let(:message) { 'Progress must be less than or equal to 100' }
+            end
+          end
+
+          context 'if progress is less than 0' do
+            let(:input) do
+              { 'progressWidget' => { 'progress' => -10 } }
+            end
+
+            it_behaves_like 'does not update work_item progress widget' do
+              let(:message) { 'Progress must be greater than or equal to 0' }
+            end
+          end
+        end
+      end
+
+      it_behaves_like 'user without permission to admin work item cannot update the attribute'
+
+      context 'when the user does not have permission to update the work item' do
+        let(:current_user) { guest }
+
+        it_behaves_like 'a mutation that returns top-level errors', errors: [
+          'The resource that you are attempting to access does not exist or you don\'t have permission to ' \
+          'perform this action'
+        ]
+
+        it_behaves_like 'work item is not updated'
+      end
     end
   end
 
