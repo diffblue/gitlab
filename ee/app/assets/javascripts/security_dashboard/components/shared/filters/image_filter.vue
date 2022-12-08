@@ -111,7 +111,7 @@ export default {
       <filter-item
         v-for="image in images"
         :key="image"
-        v-gl-tooltip.left.viewport="image"
+        :tooltip="image"
         :data-testid="image"
         :is-checked="selected.includes(image)"
         @click="toggleSelected(image)"

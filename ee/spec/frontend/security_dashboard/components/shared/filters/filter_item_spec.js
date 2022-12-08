@@ -57,6 +57,7 @@ describe('Filter Item component', () => {
 
       expect(tooltipItem.value).toBe(tooltip);
       expect(tooltipItem.modifiers).toEqual({
+        d0: true,
         left: true,
         viewport: true,
       });

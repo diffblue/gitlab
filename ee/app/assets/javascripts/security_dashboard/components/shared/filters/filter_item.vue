@@ -46,7 +46,7 @@ export default {
     // See https://gitlab.com/gitlab-org/gitlab-ui/-/issues/2092
    -->
   <gl-dropdown-item
-    v-gl-tooltip.left.viewport="tooltip"
+    v-gl-tooltip.left.viewport.d0="tooltip"
     is-check-item
     :is-checked="isChecked"
     :data-qa-selector="qaSelector"

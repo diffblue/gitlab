@@ -15,7 +15,7 @@ import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import agentImagesQuery from 'ee/security_dashboard/graphql/queries/agent_images.query.graphql';
 import projectImagesQuery from 'ee/security_dashboard/graphql/queries/project_images.query.graphql';
-import { createMockDirective, getBinding } from 'helpers/vue_mock_directive';
+import { createMockDirective } from 'helpers/vue_mock_directive';
 import { agentVulnerabilityImages, projectVulnerabilityImages } from '../../mock_data';
 
 jest.mock('~/flash');
@@ -67,16 +67,15 @@ describe('ImageFilter component', () => {
 
   const expectDropdownItem = (name) => {
     const item = findDropdownItem(name);
-    const tooltip = getBinding(item.element, 'gl-tooltip');
     const truncate = item.findComponent(GlTruncate);
 
-    expect(item.props('isChecked')).toBe(false);
+    expect(item.props()).toMatchObject({
+      isChecked: false,
+      tooltip: name,
+    });
 
     expect(truncate.attributes('title')).toBe('');
     expect(truncate.props()).toMatchObject({ text: name, position: 'middle' });
-
-    expect(tooltip.modifiers).toStrictEqual({ left: true, viewport: true });
-    expect(tooltip.value).toBe(name);
   };
 
   afterEach(() => {
