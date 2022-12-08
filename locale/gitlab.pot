@@ -43064,6 +43064,9 @@ msgstr ""
 msgid "Todos|Mark all as done"
 msgstr ""
 
+msgid "Todos|Member access requested"
+msgstr ""
+
 msgid "Todos|Mentioned"
 msgstr ""
 
@@ -43101,6 +43104,9 @@ msgid "Todos|Your To-Do List shows what to work on next"
 msgstr ""
 
 msgid "Todos|added a todo for"
+msgstr ""
+
+msgid "Todos|has requested access to"
 msgstr ""
 
 msgid "Todos|mentioned %{who} on"
