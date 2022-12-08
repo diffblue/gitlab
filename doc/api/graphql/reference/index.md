@@ -22651,7 +22651,7 @@ Category of error.
 | <a id="todoactionenumassigned"></a>`assigned` | User was assigned. |
 | <a id="todoactionenumbuild_failed"></a>`build_failed` | Build triggered by the user failed. |
 | <a id="todoactionenumdirectly_addressed"></a>`directly_addressed` | User was directly addressed. |
-| <a id="todoactionenummarked"></a>`marked` | User added a TODO. |
+| <a id="todoactionenummarked"></a>`marked` | User added a to-do item. |
 | <a id="todoactionenummember_access_requested"></a>`member_access_requested` | Group access requested from the user. |
 | <a id="todoactionenummentioned"></a>`mentioned` | User was mentioned. |
 | <a id="todoactionenummerge_train_removed"></a>`merge_train_removed` | Merge request authored by the user was removed from the merge train. |

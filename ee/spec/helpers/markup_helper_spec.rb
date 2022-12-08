@@ -16,7 +16,7 @@ RSpec.describe MarkupHelper do
       it 'shows proper tooltip' do
         note = build(:note, note: label.to_reference, project: project)
 
-        result = first_line_in_markdown(note, :note, nil, project: project)
+        result = first_line_in_markdown(note, :note, 100, is_todo: true, project: project)
         doc = Nokogiri::HTML.parse(result)
 
         expect(doc.css('.gl-label-link')[0].attr('data-html')).to eq('true')
