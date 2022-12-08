@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Disable Merge Trains Setting', :js do
+RSpec.describe 'Disable Merge Trains Setting', :js, feature_category: :merge_trains do
   let_it_be_with_reload(:project) { create(:project) }
   let_it_be(:user) { create(:user) }
 

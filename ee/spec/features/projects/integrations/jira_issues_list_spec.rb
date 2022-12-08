@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Jira issues list', :js do
+RSpec.describe 'Jira issues list', :js, feature_category: :integrations do
   include_context 'project integration activation'
 
   let_it_be(:per_page) { 20 }

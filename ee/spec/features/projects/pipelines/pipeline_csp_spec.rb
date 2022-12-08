@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Pipelines Content Security' do
+RSpec.describe 'Pipelines Content Security', feature_category: :continuous_integration do
   include ContentSecurityPolicyHelpers
 
   let_it_be(:user) { create(:user) }

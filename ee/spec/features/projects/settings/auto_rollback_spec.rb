@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Automatic Deployment Rollbacks' do
+RSpec.describe 'Automatic Deployment Rollbacks', feature_category: :release_orchestration do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 

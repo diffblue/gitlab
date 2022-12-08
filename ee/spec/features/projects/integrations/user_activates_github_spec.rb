@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User activates GitHub integration' do
+RSpec.describe 'User activates GitHub integration', feature_category: :integrations do
   include_context 'project integration activation'
 
   context 'without a license' do

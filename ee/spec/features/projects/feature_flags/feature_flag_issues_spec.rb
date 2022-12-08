@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Feature flag issue links', :js do
+RSpec.describe 'Feature flag issue links', :js, feature_category: :feature_flags do
   include FeatureFlagHelpers
 
   let_it_be(:developer) { create(:user) }

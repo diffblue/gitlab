@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Service Desk Setting', :js, :clean_gitlab_redis_cache do
+RSpec.describe 'Service Desk Setting', :js, :clean_gitlab_redis_cache, feature_category: :service_desk do
   let_it_be(:issuable_project_template_files) do
     {
       '.gitlab/issue_templates/project-issue-bar.md' => 'Project Issue Template Bar',

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Path Locks', :js do
+RSpec.describe 'Path Locks', :js, feature_category: :source_code_management do
   include Spec::Support::Helpers::ModalHelpers
 
   let(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project settings > [EE] repository' do
+RSpec.describe 'Project settings > [EE] repository', feature_category: :code_review do
   let(:user) { create(:user) }
   let(:project) { create(:project_empty_repo) }
 

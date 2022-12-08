@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Slack application', :js do
+RSpec.describe 'Slack application', :js, feature_category: :integrations do
   let_it_be(:project) { create(:project) }
   let_it_be(:user) { create(:user, maintainer_projects: [project]) }
   let_it_be(:integration) { create(:gitlab_slack_application_integration, project: project) }

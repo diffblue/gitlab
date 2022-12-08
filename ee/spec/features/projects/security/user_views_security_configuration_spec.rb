@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'User sees Security Configuration table', :js do
+RSpec.describe 'User sees Security Configuration table', :js, feature_category: :dynamic_application_security_testing do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:pipeline) { create(:ci_pipeline, project: project) }

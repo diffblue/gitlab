@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Project > Members > Invite group and members' do
+RSpec.describe 'Project > Members > Invite group and members', feature_category: :subgroups do
   include ActionView::Helpers::DateHelper
   include Spec::Support::Helpers::Features::MembersHelpers
 

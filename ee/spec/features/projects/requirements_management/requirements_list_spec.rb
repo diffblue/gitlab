@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Requirements list', :js do
+RSpec.describe 'Requirements list', :js, feature_category: :requirements_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:user_guest) { create(:user) }
   let_it_be(:project) { create(:project) }

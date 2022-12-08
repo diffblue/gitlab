@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe 'Project settings > [EE] Merge Requests', :js do
+RSpec.describe 'Project settings > [EE] Merge Requests', :js, feature_category: :code_review do
   include GitlabRoutingHelper
 
   let_it_be(:user) { create(:user) }

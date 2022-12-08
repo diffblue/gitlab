@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Pipelines', :js do
+RSpec.describe 'Pipelines', :js, feature_category: :continuous_integration do
   let(:user) { create(:user) }
   let(:project) { create(:project, :repository) }
 

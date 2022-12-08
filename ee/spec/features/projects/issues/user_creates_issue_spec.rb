@@ -2,7 +2,7 @@
 
 require "spec_helper"
 
-RSpec.describe "User creates issue", :js do
+RSpec.describe "User creates issue", :js, feature_category: :team_planning do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group, :public) }
   let_it_be(:project) { create(:project_empty_repo, :public, namespace: group) }

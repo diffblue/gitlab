@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Milestones on EE' do
+RSpec.describe 'Milestones on EE', feature_category: :team_planning do
   let(:user) { create(:user) }
   let(:project) { create(:project, name: 'test', namespace: user.namespace) }
   let(:milestone) { create(:milestone, project: project, start_date: Date.today, due_date: 7.days.from_now) }

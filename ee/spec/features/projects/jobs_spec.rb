@@ -3,7 +3,7 @@
 require 'spec_helper'
 require 'tempfile'
 
-RSpec.describe 'Jobs', :clean_gitlab_redis_shared_state do
+RSpec.describe 'Jobs', :clean_gitlab_redis_shared_state, feature_category: :continuous_integration do
   let(:user) { create(:user) }
   let(:user_access_level) { :developer }
   let(:pipeline) { create(:ci_pipeline, project: project) }
