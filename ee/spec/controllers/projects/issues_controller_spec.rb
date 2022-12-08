@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Projects::IssuesController, feature_category: :team_planning do
-  let(:namespace) { create(:group, :public) }
-  let(:project)   { create(:project_empty_repo, :public, namespace: namespace) }
-  let(:user) { create(:user) }
+  let_it_be(:namespace, reload: true) { create(:group, :public) }
+  let_it_be(:project, reload: true) { create(:project_empty_repo, :public, namespace: namespace) }
+  let_it_be(:user, reload: true) { create(:user) }
 
   describe 'licensed features' do
     let(:project) { create(:project, group: namespace) }
@@ -210,6 +210,73 @@ RSpec.describe Projects::IssuesController, feature_category: :team_planning do
           issue = Issue.first
           expect(issue.weight).to be_nil
           expect(issue.epic).to be_nil
+        end
+      end
+    end
+  end
+
+  describe 'GET #show' do
+    before do
+      project.add_developer(user)
+      sign_in(user)
+      stub_licensed_features(okrs: true)
+    end
+
+    context 'when issue is of type objective' do
+      let(:query) { {} }
+
+      let_it_be(:objective) { create(:issue, :objective, project: project) }
+
+      shared_examples 'redirects to show work item page' do
+        context 'when use_iid_in_work_items_path feature flag is disabled' do
+          before do
+            stub_feature_flags(use_iid_in_work_items_path: false)
+          end
+
+          it 'redirects to work item page' do
+            make_request
+
+            expect(response).to redirect_to(project_work_items_path(project, objective.id, query))
+          end
+        end
+
+        it 'redirects to work item page using iid' do
+          make_request
+
+          expect(response).to redirect_to(project_work_items_path(project, objective.iid, query.merge(iid_path: true)))
+        end
+      end
+
+      context 'show action' do
+        let(:query) { { query: 'any' } }
+
+        it_behaves_like 'redirects to show work item page' do
+          subject(:make_request) do
+            get :show, params: { namespace_id: project.namespace, project_id: project, id: objective.iid, **query }
+          end
+        end
+      end
+
+      context 'edit action' do
+        let(:query) { { query: 'any' } }
+
+        it_behaves_like 'redirects to show work item page' do
+          subject(:make_request) do
+            get :edit, params: { namespace_id: project.namespace, project_id: project, id: objective.iid, **query }
+          end
+        end
+      end
+
+      context 'update action' do
+        it_behaves_like 'redirects to show work item page' do
+          subject(:make_request) do
+            put :update, params: {
+              namespace_id: project.namespace,
+              project_id: project,
+              id: objective.iid,
+              issue: { title: 'New title' }
+            }
+          end
         end
       end
     end
