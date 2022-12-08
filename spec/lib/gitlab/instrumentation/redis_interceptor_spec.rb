@@ -93,6 +93,18 @@ RSpec.describe Gitlab::Instrumentation::RedisInterceptor, :clean_gitlab_redis_sh
         Gitlab::Redis::SharedState.with { |redis| redis.call(:mget, 'foo', 'bar') }
       end
     end
+
+    context 'without active RequestStore' do
+      before do
+        ::RequestStore.end!
+      end
+
+      it 'still runs cross-slot validation' do
+        expect do
+          Gitlab::Redis::SharedState.with { |redis| redis.mget('foo', 'bar') }
+        end.to raise_error(instance_of(Gitlab::Instrumentation::RedisClusterValidator::CrossSlotError))
+      end
+    end
   end
 
   describe 'latency' do
