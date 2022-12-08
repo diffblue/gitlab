@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Vulnerabilities::FindingSerializer do
+RSpec.describe Vulnerabilities::FindingSerializer, feature_category: :vulnerability_management do
   let_it_be(:project) { create(:project, :repository) }
   let_it_be(:user) { create(:user) }
 
@@ -10,9 +10,11 @@ RSpec.describe Vulnerabilities::FindingSerializer do
     described_class.new(current_user: user)
   end
 
-  subject { serializer.represent(resource) }
+  let(:opts) { {} }
 
-  describe '#represent' do
+  subject { serializer.represent(resource, opts) }
+
+  shared_examples '#represent' do
     context 'when used without pagination' do
       it 'created a not paginated serializer' do
         expect(serializer).not_to be_paginated
@@ -91,6 +93,44 @@ RSpec.describe Vulnerabilities::FindingSerializer do
 
             subject
           end
+        end
+      end
+    end
+  end
+
+  context 'when deprecate_vulnerabilities_feedback is enabled' do
+    include_examples '#represent'
+
+    describe "#represent" do
+      context 'when preload is requested' do
+        let(:opts) { { preload: true } }
+        let(:resource) { create(:vulnerabilities_finding, project: project) }
+
+        it 'vulnerability feedbacks are not preloaded' do
+          expect(Gitlab::Vulnerabilities::FindingsPreloader).not_to receive(:preload!)
+
+          subject
+        end
+      end
+    end
+  end
+
+  context 'when deprecate_vulnerabilities_feedback is disabled' do
+    before do
+      stub_feature_flags(deprecate_vulnerabilities_feedback: false)
+    end
+
+    include_examples '#represent'
+
+    describe "#represent" do
+      context 'when preload is requested' do
+        let(:opts) { { preload: true } }
+        let(:resource) { create(:vulnerabilities_finding, project: project) }
+
+        it 'vulnerability feedbacks are preloaded' do
+          expect(Gitlab::Vulnerabilities::FindingsPreloader).to receive(:preload!).with(resource)
+
+          subject
         end
       end
     end

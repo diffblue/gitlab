@@ -33,6 +33,8 @@ module Security
         @identifier_ids = identifiers.map { |identifier| fingerprint_id_map[identifier.fingerprint] }
       end
 
+      # Deprecated under deprecate_vulnerabilities_feedback FF. When this flag is active, this method should not be being called.
+      # Issue: https://gitlab.com/gitlab-org/gitlab/-/issues/384222
       def issue_feedback
         BatchLoader.for([project.id, project_fingerprint]).batch do |tuples, loader|
           Vulnerabilities::Feedback.for_issue
