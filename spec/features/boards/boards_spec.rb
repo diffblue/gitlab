@@ -256,7 +256,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           expect(page).to have_selector(selector, text: development.title, count: 1)
         end
 
-        it 'issue moves between lists and does not show the "Development" label since the card is in the "Development" list label' do
+        it 'issue moves between lists and does not show the "Development" label since the card is in the "Development" list label', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
           drag(list_from_index: 1, from_index: 1, list_to_index: 2)
 
           wait_for_board_cards(2, 7)
@@ -267,7 +267,7 @@ RSpec.describe 'Project issue boards', :js, feature_category: :team_planning do
           expect(find('.board:nth-child(3)').all('.board-card').last).not_to have_content(development.title)
         end
 
-        it 'issue moves between lists and does not show the "Planning" label since the card is in the "Planning" list label' do
+        it 'issue moves between lists and does not show the "Planning" label since the card is in the "Planning" list label', quarantine: 'https://gitlab.com/gitlab-org/gitlab/-/issues/383970' do
           drag(list_from_index: 2, list_to_index: 1)
 
           wait_for_board_cards(2, 9)
