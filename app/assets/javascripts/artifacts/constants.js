@@ -43,6 +43,11 @@ export const I18N_MODAL_BODY = s__(
 export const I18N_MODAL_PRIMARY = s__('Artifacts|Delete artifact');
 export const I18N_MODAL_CANCEL = __('Cancel');
 
+export const I18N_FEEDBACK_BANNER_TITLE = s__('Artifacts|Feedback banner title');
+export const I18N_FEEDBACK_BANNER_BODY = s__('Artifacts|Feedback banner body');
+export const I18N_FEEDBACK_BANNER_BUTTON = s__('Artifacts|Feedback banner button');
+export const FEEDBACK_URL = '#';
+
 export const INITIAL_CURRENT_PAGE = 1;
 export const INITIAL_PREVIOUS_PAGE_CURSOR = '';
 export const INITIAL_NEXT_PAGE_CURSOR = '';
