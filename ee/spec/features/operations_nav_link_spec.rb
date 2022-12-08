@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Operations dropdown navbar EE', :js do
+RSpec.describe 'Operations dropdown navbar EE', :js, feature_category: :navigation do
   include Spec::Support::Helpers::Features::TopNavSpecHelpers
 
   let(:user) { create(:user) }

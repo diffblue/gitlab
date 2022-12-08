@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Expiring Subscription Message', :js, :freeze_time do
+RSpec.describe 'Expiring Subscription Message', :js, :freeze_time, feature_category: :subscription_management do
   shared_examples 'no expiration notification' do
     it 'loads the page without any subscription expiration notifications' do
       expect(page).not_to have_content('Your subscription expired!')

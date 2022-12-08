@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Welcome screen', :js do
+RSpec.describe 'Welcome screen', :js, feature_category: :subscription_management do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group) }
 

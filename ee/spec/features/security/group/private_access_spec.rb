@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe '[EE] Private Group access' do
+RSpec.describe '[EE] Private Group access', feature_category: :subgroups do
   include AccessMatchers
 
   let_it_be(:group)   { create(:group, :private) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Sign Up', :saas do
+RSpec.describe 'Trial Sign Up', :saas, feature_category: :purchase do
   before do
     stub_application_setting(require_admin_approval_after_user_signup: false)
     stub_feature_flags(arkose_labs_signup_challenge: false)

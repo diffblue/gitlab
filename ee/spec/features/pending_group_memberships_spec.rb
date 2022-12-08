@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Pending group memberships', :js do
+RSpec.describe 'Pending group memberships', :js, feature_category: :subgroups do
   let_it_be(:developer) { create(:user) }
 
   before do

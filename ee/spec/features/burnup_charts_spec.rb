@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Burnup charts', :js do
+RSpec.describe 'Burnup charts', :js, feature_category: :team_planning do
   let_it_be(:burnup_chart_selector) { '.js-burnup-chart' }
   let_it_be(:burndown_chart_selector) { '.js-burndown-chart' }
 

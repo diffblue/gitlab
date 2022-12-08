@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Signup' do
+RSpec.describe 'Signup', feature_category: :authentication_and_authorization do
   context 'almost there page' do
     context 'when public visibility is restricted' do
       before do

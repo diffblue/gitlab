@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Trial Capture Lead', :js do
+RSpec.describe 'Trial Capture Lead', :js, feature_category: :purchase do
   let_it_be(:user) { create(:user) }
 
   before do

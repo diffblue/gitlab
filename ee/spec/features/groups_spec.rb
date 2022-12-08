@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Group' do
+RSpec.describe 'Group', feature_category: :subgroups do
   describe 'group edit', :js do
     let_it_be(:user) { create(:user) }
 

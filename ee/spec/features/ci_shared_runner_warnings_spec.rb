@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'CI shared runner limits' do
+RSpec.describe 'CI shared runner limits', feature_category: :runner do
   using RSpec::Parameterized::TableSyntax
   include UsageQuotasHelpers
 

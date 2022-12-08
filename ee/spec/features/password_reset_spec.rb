@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Password reset' do
+RSpec.describe 'Password reset', feature_category: :users do
   describe 'password complexity', :js do
     let_it_be(:user) { create(:user) }
 

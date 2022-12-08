@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'GEO Nodes', :geo do
+RSpec.describe 'GEO Nodes', :geo, feature_category: :geo_replication do
   include ::EE::GeoHelpers
 
   let_it_be(:user) { create(:user) }

@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Uncompleted learn gitlab link', :feature, :js do
+RSpec.describe 'Uncompleted learn gitlab link', :feature, :js, feature_category: :onboarding do
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, name: Onboarding::LearnGitlab::PROJECT_NAME, namespace: user.namespace) }
   let_it_be(:namespace) { project.namespace }

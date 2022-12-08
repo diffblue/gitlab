@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'Contextual sidebar', :saas, :js do
+RSpec.describe 'Contextual sidebar', :saas, :js, feature_category: :navigation do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) do
     create(:group).tap do |record|
