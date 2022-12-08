@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe ::EE::Gitlab::Scim::DeprovisionService do
+RSpec.describe ::EE::Gitlab::Scim::GroupSamlDeprovisioningService,
+feature_category: :authentication_and_authorization do
   describe '#execute' do
     let(:identity) { create(:scim_identity, active: true) }
     let(:group) { identity.group }
@@ -71,7 +72,9 @@ RSpec.describe ::EE::Gitlab::Scim::DeprovisionService do
           response = service.execute
 
           expect(response.error?).to be true
-          expect(response.errors).to include("Could not remove #{user.name} from #{group.name}. Cannot remove last group owner.")
+          expect(response.errors).to include(
+            "Could not remove #{user.name} from #{group.name}. Cannot remove last group owner."
+          )
         end
       end
 

@@ -3,7 +3,7 @@
 module EE
   module Gitlab
     module Scim
-      class ReprovisionService
+      class GroupSamlReprovisionService
         attr_reader :identity
 
         delegate :user, :group, to: :identity
