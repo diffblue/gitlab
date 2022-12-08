@@ -64,7 +64,7 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :subscription_usa
       end
     end
 
-    context 'pagination' do
+    context 'with pagination' do
       let(:per_page) { 1 }
       let(:item_selector) { '.js-project-link' }
       let(:prev_button_selector) { '[data-testid="prevButton"]' }
@@ -75,14 +75,15 @@ RSpec.describe 'Profile > Usage Quota', :js, feature_category: :subscription_usa
         allow(Kaminari.config).to receive(:default_per_page).and_return(per_page)
       end
 
-      context 'storage tab' do
+      context 'on storage tab' do
         before do
           visit_usage_quotas_page('storage-quota-tab')
         end
+
         it_behaves_like 'correct pagination'
       end
 
-      context 'pipelines tab' do
+      context 'on pipelines tab' do
         let(:item_selector) { '[data-testid="pipelines-quota-tab-project-name"]' }
 
         before do
