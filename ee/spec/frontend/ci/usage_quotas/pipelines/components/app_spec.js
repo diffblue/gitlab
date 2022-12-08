@@ -1,7 +1,7 @@
 import Vue, { nextTick } from 'vue';
 import VueApollo from 'vue-apollo';
 import { GlAlert, GlButton, GlLoadingIcon } from '@gitlab/ui';
-import getCiMinutesUsageNamespace from 'ee/ci/usage_quotas/ci_minutes_usage/graphql/queries/ci_minutes_namespace.query.graphql';
+import getCiMinutesUsageNamespace from 'ee/ci/usage_quotas/pipelines/graphql/queries/ci_minutes_namespace.query.graphql';
 import { sprintf } from '~/locale';
 import { formatDate } from '~/lib/utils/datetime_utility';
 import { pushEECproductAddToCartEvent } from '~/google_tag_manager';
