@@ -12,16 +12,6 @@ RSpec.describe 'Create a timelog' do
 
   let(:current_user) { nil }
   let(:users_container) { group }
-  let(:mutation) do
-    graphql_mutation(:timelogCreate, {
-      'time_spent' => time_spent,
-      'spent_at' => '2022-07-08',
-      'summary' => 'Test summary',
-      'issuable_id' => issuable.to_global_id.to_s
-    })
-  end
-
-  let(:mutation_response) { graphql_mutation_response(:timelog_create) }
 
   context 'when issuable is an Epic' do
     let_it_be(:issuable) { create(:epic, group: group) }
