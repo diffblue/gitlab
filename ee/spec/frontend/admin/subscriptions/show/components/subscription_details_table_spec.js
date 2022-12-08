@@ -1,9 +1,11 @@
 import { GlSkeletonLoader, GlBadge } from '@gitlab/ui';
 import { mount } from '@vue/test-utils';
+import Vuex from 'vuex';
 import SubscriptionDetailsTable from 'ee/admin/subscriptions/show/components/subscription_details_table.vue';
 import { detailsLabels } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import ClipboardButton from '~/vue_shared/components/clipboard_button.vue';
+import * as initialStore from 'ee/admin/subscriptions/show/store/';
 
 const licenseDetails = [
   {
@@ -33,9 +35,21 @@ describe('Subscription Details Table', () => {
   const hasClass = (className) => (w) => w.classes(className);
   const isNotLastSyncRow = (w) => w.attributes('data-testid') !== 'row-lastsync';
 
-  const createComponent = (props) => {
+  const createStore = ({ didSyncFail } = {}) => {
+    return new Vuex.Store({
+      ...initialStore,
+      getters: {
+        didSyncFail: () => didSyncFail,
+      },
+    });
+  };
+
+  const createComponent = ({ store = createStore(), props } = {}) => {
     wrapper = extendedWrapper(
-      mount(SubscriptionDetailsTable, { propsData: { details: licenseDetails, ...props } }),
+      mount(SubscriptionDetailsTable, {
+        store,
+        propsData: { details: licenseDetails, ...props },
+      }),
     );
   };
 
@@ -83,12 +97,14 @@ describe('Subscription Details Table', () => {
   describe('with type detail', () => {
     beforeEach(() => {
       createComponent({
-        details: [
-          {
-            detail: 'type',
-            value: 'My type',
-          },
-        ],
+        props: {
+          details: [
+            {
+              detail: 'type',
+              value: 'My type',
+            },
+          ],
+        },
       });
     });
 
@@ -104,12 +120,14 @@ describe('Subscription Details Table', () => {
   describe('with copy-able detail', () => {
     beforeEach(() => {
       createComponent({
-        details: [
-          {
-            detail: 'id',
-            value: 13,
-          },
-        ],
+        props: {
+          details: [
+            {
+              detail: 'id',
+              value: 13,
+            },
+          ],
+        },
       });
     });
 
@@ -124,14 +142,16 @@ describe('Subscription Details Table', () => {
 
   describe('subscription sync state', () => {
     it('when the sync succeeded', () => {
-      createComponent({ syncDidFail: false });
+      const store = createStore({ didSyncFail: false });
+      createComponent({ store });
 
       expect(findLastSyncRow().classes('gl-text-gray-800')).toBe(true);
     });
 
     describe('when the sync failed', () => {
       beforeEach(() => {
-        createComponent({ syncDidFail: true });
+        const store = createStore({ didSyncFail: true });
+        createComponent({ store });
       });
 
       it('shows the highlighted color for the last sync row', () => {
@@ -148,7 +168,7 @@ describe('Subscription Details Table', () => {
 
   describe('with no content', () => {
     it('displays a loader', () => {
-      createComponent({ details: [] });
+      createComponent({ props: { details: [] } });
 
       expect(wrapper.findComponent(GlSkeletonLoader).exists()).toBe(true);
     });

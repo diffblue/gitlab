@@ -83,20 +83,6 @@ describe('Subscription Details Card', () => {
     });
   });
 
-  describe('subscription sync state', () => {
-    it('passes true when sync succeeded', () => {
-      createComponent({ syncDidFail: false });
-
-      expect(findSubscriptionDetailsTable().props('syncDidFail')).toBe(false);
-    });
-
-    it('passes true when sync failed', () => {
-      createComponent({ syncDidFail: true });
-
-      expect(findSubscriptionDetailsTable().props('syncDidFail')).toBe(true);
-    });
-  });
-
   describe('with no title', () => {
     it('does not display a title', () => {
       createComponent();

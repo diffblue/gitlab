@@ -1,29 +1,43 @@
 import { GlAlert, GlLink, GlSprintf } from '@gitlab/ui';
 import { shallowMount } from '@vue/test-utils';
+import Vuex from 'vuex';
 import SubscriptionSyncNotifications, {
-  INFO_ALERT_DISMISSED_EVENT,
   i18n,
 } from 'ee/admin/subscriptions/show/components/subscription_sync_notifications.vue';
-import { subscriptionSyncStatus } from 'ee/admin/subscriptions/show/constants';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
+import * as initialStore from 'ee/admin/subscriptions/show/store/';
 
 describe('Subscription Sync Notifications', () => {
   let wrapper;
 
   const connectivityHelpURL = 'connectivity/help/url';
 
-  const finAllAlerts = () => wrapper.findAllComponents(GlAlert);
+  const findAllAlerts = () => wrapper.findAllComponents(GlAlert);
   const findFailureAlert = () => wrapper.findByTestId('sync-failure-alert');
   const findInfoAlert = () => wrapper.findByTestId('sync-info-alert');
   const findLink = () => wrapper.findComponent(GlLink);
 
-  const createComponent = ({ props, stubs } = {}) => {
+  const createStore = ({
+    didSyncFail = false,
+    isSyncPending = false,
+    dismissMock = jest.fn(),
+  } = {}) => {
+    return new Vuex.Store({
+      ...initialStore,
+      getters: {
+        didSyncFail: () => didSyncFail,
+        isSyncPending: () => isSyncPending,
+      },
+      actions: {
+        dismissAlert: dismissMock,
+      },
+    });
+  };
+
+  const createComponent = ({ stubs, store = createStore() } = {}) => {
     wrapper = extendedWrapper(
       shallowMount(SubscriptionSyncNotifications, {
-        propsData: {
-          syncStatus: '',
-          ...props,
-        },
+        store,
         provide: { connectivityHelpURL },
         stubs,
       }),
@@ -38,14 +52,19 @@ describe('Subscription Sync Notifications', () => {
     it('displays no alert', () => {
       createComponent();
 
-      expect(finAllAlerts()).toHaveLength(0);
+      expect(findAllAlerts()).toHaveLength(0);
     });
   });
 
   describe('sync info notification', () => {
+    let spy;
+
     beforeEach(() => {
+      spy = jest.fn();
+      const store = createStore({ isSyncPending: true, dismissMock: spy });
+
       createComponent({
-        props: { syncStatus: subscriptionSyncStatus.SYNC_PENDING },
+        store,
       });
     });
 
@@ -61,17 +80,21 @@ describe('Subscription Sync Notifications', () => {
       expect(findInfoAlert().text()).toBe(i18n.MANUAL_SYNC_PENDING_TEXT);
     });
 
-    it('emits an event when dismissed', () => {
+    it('triggers dismissAlert action when dismiss event is emitted', () => {
       findInfoAlert().vm.$emit('dismiss');
 
-      expect(wrapper.emitted(INFO_ALERT_DISMISSED_EVENT)).toHaveLength(1);
+      expect(spy).toHaveBeenCalled();
     });
   });
 
   describe('sync failure notification', () => {
+    let spy;
+
     beforeEach(() => {
+      spy = jest.fn();
+
       createComponent({
-        props: { syncStatus: subscriptionSyncStatus.SYNC_FAILURE },
+        store: createStore({ didSyncFail: true, dismissMock: spy }),
         stubs: { GlSprintf },
       });
     });
@@ -84,6 +107,12 @@ describe('Subscription Sync Notifications', () => {
       expect(findFailureAlert().text()).toBe(
         'You can no longer sync your subscription details with GitLab. Get help for the most common connectivity issues by troubleshooting the activation code.',
       );
+    });
+
+    it('does not trigger dismissAlert action when dismiss event is emitted', () => {
+      findFailureAlert().vm.$emit('dismiss');
+
+      expect(spy).not.toHaveBeenCalled();
     });
 
     it('displays a link', () => {
