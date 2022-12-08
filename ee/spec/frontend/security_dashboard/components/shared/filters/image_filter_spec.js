@@ -6,10 +6,7 @@ import QuerystringSync from 'ee/security_dashboard/components/shared/filters/que
 import DropdownButtonText from 'ee/security_dashboard/components/shared/filters/dropdown_button_text.vue';
 import FilterItem from 'ee/security_dashboard/components/shared/filters/filter_item.vue';
 import { mountExtended } from 'helpers/vue_test_utils_helper';
-import {
-  ALL_ID,
-  IMAGE_FILTER_ERROR,
-} from 'ee/security_dashboard/components/shared/filters/constants';
+import { ALL_ID } from 'ee/security_dashboard/components/shared/filters/constants';
 import waitForPromises from 'helpers/wait_for_promises';
 import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
@@ -219,6 +216,6 @@ describe('ImageFilter component', () => {
     createWrapper({ projectQueryResolver: jest.fn().mockRejectedValue() });
     await waitForPromises();
 
-    expect(createAlert).toHaveBeenCalledWith({ message: IMAGE_FILTER_ERROR });
+    expect(createAlert).toHaveBeenCalledWith({ message: ImageFilter.i18n.loadingError });
   });
 });

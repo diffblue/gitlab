@@ -7,7 +7,7 @@ import { createAlert } from '~/flash';
 import FilterItem from './filter_item.vue';
 import QuerystringSync from './querystring_sync.vue';
 import DropdownButtonText from './dropdown_button_text.vue';
-import { ALL_ID, CLUSTER_FILTER_ERROR } from './constants';
+import { ALL_ID } from './constants';
 
 export default {
   components: {
@@ -18,7 +18,7 @@ export default {
   },
   apollo: {
     clusterAgents: {
-      loadingKey: 'isLoading',
+      loadingKey: 'loading',
       query: getClusterAgentsQuery,
       variables() {
         return {
@@ -32,9 +32,7 @@ export default {
           gid: c.id,
         })) || [],
       error() {
-        createAlert({
-          message: CLUSTER_FILTER_ERROR,
-        });
+        createAlert({ message: this.$options.i18n.loadingError });
       },
     },
   },
@@ -42,7 +40,7 @@ export default {
   data: () => ({
     clusterAgents: [],
     selected: [],
-    isLoading: 0,
+    loading: 0,
   }),
   computed: {
     selectedItemNames() {
@@ -71,6 +69,7 @@ export default {
   i18n: {
     label: s__('SecurityReports|Cluster'),
     allItemsText: s__('SecurityReports|All clusters'),
+    loadingError: s__('SecurityOrchestration|Failed to load cluster agents.'),
   },
   ALL_ID,
 };
@@ -82,7 +81,7 @@ export default {
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
     <gl-dropdown
       :header-text="$options.i18n.label"
-      :loading="Boolean(isLoading)"
+      :loading="Boolean(loading)"
       block
       toggle-class="gl-mb-0"
     >

@@ -9,7 +9,7 @@ import { DASHBOARD_TYPES } from 'ee/security_dashboard/store/constants';
 import FilterItem from './filter_item.vue';
 import QuerystringSync from './querystring_sync.vue';
 import DropdownButtonText from './dropdown_button_text.vue';
-import { ALL_ID, IMAGE_FILTER_ERROR } from './constants';
+import { ALL_ID } from './constants';
 
 export default {
   components: {
@@ -22,7 +22,7 @@ export default {
   directives: { GlTooltip },
   apollo: {
     images: {
-      loadingKey: 'isLoading',
+      loadingKey: 'loading',
       query() {
         return this.isAgentDashboard ? agentImagesQuery : projectImagesQuery;
       },
@@ -40,9 +40,7 @@ export default {
         return vulnerabilityImages.nodes.map(({ name }) => name);
       },
       error() {
-        createAlert({
-          message: IMAGE_FILTER_ERROR,
-        });
+        createAlert({ message: this.$options.i18n.loadingError });
       },
     },
   },
@@ -55,7 +53,7 @@ export default {
   data: () => ({
     images: [],
     selected: [],
-    isLoading: 0,
+    loading: 0,
   }),
   computed: {
     isAgentDashboard() {
@@ -82,6 +80,7 @@ export default {
   i18n: {
     label: s__('SecurityReports|Image'),
     allItemsText: s__('SecurityReports|All images'),
+    loadingError: s__('SecurityOrchestration|Failed to load images.'),
   },
   ALL_ID,
 };
@@ -93,7 +92,7 @@ export default {
     <label class="gl-mb-2">{{ $options.i18n.label }}</label>
     <gl-dropdown
       :header-text="$options.i18n.label"
-      :loading="Boolean(isLoading)"
+      :loading="Boolean(loading)"
       block
       toggle-class="gl-mb-0"
     >
