@@ -20,6 +20,7 @@ class Group < Namespace
   include BulkUsersByEmailLoad
   include ChronicDurationAttribute
   include RunnerTokenExpirationInterval
+  include Todoable
 
   extend ::Gitlab::Utils::Override
 
