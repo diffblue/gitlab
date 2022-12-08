@@ -94,10 +94,7 @@ module Integrations
         end
 
         def find_user
-          ChatNames::FindUserService.new(
-            nil,
-            { team_id: team_id, user_id: user_id }
-          ).execute
+          ChatNames::FindUserService.new(team_id, user_id).execute
         end
 
         def description
