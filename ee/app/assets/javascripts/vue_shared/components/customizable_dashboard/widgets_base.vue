@@ -8,6 +8,8 @@ export default {
     GlLoadingIcon,
     LineChart: () =>
       import('ee/product_analytics/dashboards/components/visualizations/line_chart.vue'),
+    DataTable: () =>
+      import('ee/product_analytics/dashboards/components/visualizations/data_table.vue'),
   },
   inject: ['projectId'],
   props: {
@@ -34,13 +36,19 @@ export default {
     };
   },
   async created() {
-    const { type, query } = this.visualization.data;
+    const { projectId, queryOverrides } = this;
+    const { type: dataType, query } = this.visualization.data;
     this.loading = true;
     this.error = null;
 
     try {
-      const { fetch } = await dataSources[type]();
-      this.data = await fetch(this.projectId, query, this.queryOverrides);
+      const { fetch } = await dataSources[dataType]();
+      this.data = await fetch({
+        projectId,
+        query,
+        queryOverrides,
+        visualizationType: this.visualization.type,
+      });
     } catch (error) {
       this.error = error;
       this.$emit('error', error);

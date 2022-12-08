@@ -1,4 +1,5 @@
 import { CubejsApi, HttpTransport } from '@cubejs-client/core';
+import { convertToSnakeCase } from '~/lib/utils/text_utility';
 import csrf from '~/lib/utils/csrf';
 
 // This can be any value because the cube proxy adds the real API token.
@@ -6,7 +7,7 @@ const CUBE_API_TOKEN = '1';
 
 const PRODUCT_ANALYTICS_CUBE_PROXY = '/api/v4/projects/:id/product_analytics/request';
 
-const convertToEChartFormat = (resultSet) => {
+const convertToLineChartFormat = (resultSet) => {
   const seriesNames = resultSet.seriesNames();
   const pivot = resultSet.chartPivot();
 
@@ -16,7 +17,27 @@ const convertToEChartFormat = (resultSet) => {
   }));
 };
 
-export const fetch = async (projectId, query, queryOverrides = {}) => {
+const convertToTableFormat = (resultSet) => {
+  const columns = resultSet.tableColumns();
+  const rows = resultSet.tablePivot();
+
+  const columnTitles = Object.fromEntries(
+    columns.map((column) => [column.key, convertToSnakeCase(column.shortTitle)]),
+  );
+
+  return rows.map((row) => {
+    return Object.fromEntries(
+      Object.entries(row).map(([key, value]) => [columnTitles[key], value]),
+    );
+  });
+};
+
+const VISUALIZATION_PARSERS = {
+  LineChart: convertToLineChartFormat,
+  DataTable: convertToTableFormat,
+};
+
+export const fetch = async ({ projectId, visualizationType, query, queryOverrides = {} }) => {
   const cubejsApi = new CubejsApi(CUBE_API_TOKEN, {
     transport: new HttpTransport({
       apiUrl: PRODUCT_ANALYTICS_CUBE_PROXY.replace(':id', projectId),
@@ -31,5 +52,5 @@ export const fetch = async (projectId, query, queryOverrides = {}) => {
 
   const resultSet = await cubejsApi.load({ ...query, ...queryOverrides });
 
-  return convertToEChartFormat(resultSet);
+  return VISUALIZATION_PARSERS[visualizationType](resultSet);
 };

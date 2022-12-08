@@ -6,6 +6,8 @@ import CustomizableDashboard from 'ee/vue_shared/components/customizable_dashboa
 const VISUALIZATION_JSONS = {
   cube_analytics_line_chart: () =>
     import(`../gl_dashboards/visualizations/cube_analytics_line_chart.json`),
+  cube_analytics_data_table: () =>
+    import(`../gl_dashboards/visualizations/cube_analytics_data_table.json`),
 };
 
 const DASHBOARD_JSONS = {

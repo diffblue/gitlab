@@ -17,15 +17,14 @@ jest.mock('~/lib/utils/csrf', () => ({
 }));
 
 describe('Cube Analytics Data Source', () => {
+  const projectId = 'TEST_ID';
+  const visualizationType = 'LineChart';
+  const query = { alpha: 'one' };
+  const queryOverrides = { alpha: 'two' };
+
   describe('fetch', () => {
-    let result;
-
-    beforeEach(async () => {
-      result = await fetch('TEST_ID', { alpha: 'one' }, { alpha: 'two' });
-    });
-
-    afterEach(() => {
-      result = null;
+    beforeEach(() => {
+      return fetch({ projectId, visualizationType, query, queryOverrides });
     });
 
     it('creates a new CubejsApi connection', () => {
@@ -47,13 +46,27 @@ describe('Cube Analytics Data Source', () => {
       expect(mockLoad).toHaveBeenCalledWith({ alpha: 'two' });
     });
 
-    it('returns the data in the expected charts format', () => {
-      expect(result[0]).toMatchObject({
-        data: [
-          ['2022-11-09T00:00:00.000', 55],
-          ['2022-11-10T00:00:00.000', 14],
-        ],
-        name: 'pageview, Jitsu Count',
+    describe('formarts the data', () => {
+      it('returns the expected data format for line charts', async () => {
+        const result = await fetch({ projectId, visualizationType, query });
+
+        expect(result[0]).toMatchObject({
+          data: [
+            ['2022-11-09T00:00:00.000', 55],
+            ['2022-11-10T00:00:00.000', 14],
+          ],
+          name: 'pageview, Jitsu Count',
+        });
+      });
+
+      it('returns the expected data format for data tables', async () => {
+        const result = await fetch({ projectId, visualizationType: 'DataTable', query });
+
+        expect(result[0]).toMatchObject({
+          count: '55',
+          event_type: 'pageview',
+          utc_time: '2022-11-09T00:00:00.000',
+        });
       });
     });
   });
