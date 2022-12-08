@@ -94,7 +94,7 @@
               .form-group
                 = f.label :ci_needs_size_limit, s_('AdminSettings|Maximum number of DAG dependencies that a job can have')
                 = f.number_field :ci_needs_size_limit, class: 'form-control gl-form-input'
-                %span= s_('AdminSettings|This limit cannot be disabled. Set to 0 to block all DAG dependencies.')
+                .form-text.text-muted= s_('AdminSettings|This limit cannot be disabled. Set to 0 to block all DAG dependencies.')
               .form-group
                 = f.label :ci_registered_group_runners, s_('AdminSettings|Maximum number of runners registered per group')
                 = f.number_field :ci_registered_group_runners, class: 'form-control gl-form-input'
