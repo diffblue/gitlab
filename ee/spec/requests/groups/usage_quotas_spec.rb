@@ -16,16 +16,18 @@ RSpec.describe 'view usage quotas', feature_category: :subscription_usage_report
     end
 
     context 'when storage size is over limit' do
-      let(:usage_message) { FFaker::Lorem.sentence }
+      let(:payload) do
+        {
+          alert_level: :info,
+          usage_message: FFaker::Lorem.sentence,
+          explanation_message: "Explanation",
+          root_namespace: group.root_ancestor
+        }
+      end
 
       before do
         allow_next_instance_of(EE::Namespace::Storage::Notification, group, user) do |notification|
-          allow(notification).to receive(:payload).and_return({
-            alert_level: :info,
-            usage_message: usage_message,
-            explanation_message: "Explanation",
-            root_namespace: group.root_ancestor
-          })
+          allow(notification).to receive(:payload).and_return(payload)
         end
       end
 
@@ -33,7 +35,7 @@ RSpec.describe 'view usage quotas', feature_category: :subscription_usage_report
         send_request
 
         expect(response).to have_gitlab_http_status(:ok)
-        expect(response.body).not_to include(usage_message)
+        expect(response.body).not_to include(payload[:usage_message])
       end
     end
 

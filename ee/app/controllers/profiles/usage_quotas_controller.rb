@@ -1,22 +1,24 @@
 # frozen_string_literal: true
 
-class Profiles::UsageQuotasController < Profiles::ApplicationController
-  include OneTrustCSP
-  include GoogleAnalyticsCSP
+module Profiles
+  class UsageQuotasController < Profiles::ApplicationController
+    include OneTrustCSP
+    include GoogleAnalyticsCSP
 
-  feature_category :purchase
-  urgency :low
+    feature_category :purchase
+    urgency :low
 
-  before_action :push_feature_flags, only: :index
+    before_action :push_feature_flags, only: :index
 
-  def index
-    @hide_search_settings = true
-    @namespace = current_user.namespace
-  end
+    def index
+      @hide_search_settings = true
+      @namespace = current_user.namespace
+    end
 
-  private
+    private
 
-  def push_feature_flags
-    push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+    def push_feature_flags
+      push_frontend_feature_flag(:gitlab_gtm_datalayer, type: :ops)
+    end
   end
 end
