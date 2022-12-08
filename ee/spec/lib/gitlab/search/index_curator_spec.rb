@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe Gitlab::Search::IndexCurator do
+RSpec.describe Gitlab::Search::IndexCurator, feature_category: :global_search do
   subject(:curator) { described_class.new(settings) }
 
-  let(:settings) { {} }
+  let(:settings) { { dry_run: false } }
   let(:client) { Gitlab::Search::Client.new }
   let(:stubbed_helper) { instance_double(::Gitlab::Elastic::Helper) }
   let(:stubbed_logger) { instance_double(::Gitlab::Elasticsearch::Logger) }
@@ -23,47 +23,122 @@ RSpec.describe Gitlab::Search::IndexCurator do
       "pri.store.size" => "108.7" }
   end
 
+  let(:rollover_info) do
+    {
+      from: 'gitlab-development-20220915-0422',
+      to: 'gitlab-development-20220915-0423',
+      reasons: ['foo'],
+      info: index_info
+    }
+  end
+
   describe '.curate' do
     subject(:stubbed_curator) { instance_double(described_class) }
-
-    let(:index_one) { instance_double(Hash) }
-    let(:index_two) { instance_double(Hash) }
-    let(:index_three) { instance_double(Hash) }
 
     before do
       allow(described_class).to receive(:new).and_return(stubbed_curator)
     end
 
-    it 'rolls over the indices that need to be rolled over' do
-      allow(stubbed_curator).to receive(:preflight_checks!)
-      allow(stubbed_curator).to receive(:write_indices).and_return([index_one, index_two, index_three])
-      allow(stubbed_curator).to receive(:should_rollover?).and_return false
-      allow(stubbed_curator).to receive(:should_rollover?).with(index_two).and_return true
-
-      expect(stubbed_curator).to receive(:rollover_index).with(index_two)
-
+    it 'calls curator.curate!' do
+      expect(stubbed_curator).to receive(:curate!)
       described_class.curate
     end
 
     it 'logs any exceptions' do
       err = ArgumentError.new("boom")
-      expect(stubbed_curator).to receive(:preflight_checks!).and_raise err
+      expect(stubbed_curator).to receive(:curate!).and_raise err
       expect(stubbed_curator).to receive(:log_exception).with err
 
       described_class.curate
     end
+  end
+
+  describe '#curate!' do
+    let(:todo) { [rollover_info] }
+
+    before do
+      allow(curator).to receive(:preflight_checks!)
+      allow(curator).to receive(:todo).and_return(todo)
+      allow(curator).to receive(:logger).and_return(stubbed_logger)
+    end
+
+    it 'rolls over the indices that need to be rolled over' do
+      expect(curator).to receive(:rollover_index).with(rollover_info)
+      expect(stubbed_logger).to receive(:info).with(
+        hash_including(
+          message: "Search curator rolled over an index",
+          dry_run: false,
+          from: rollover_info[:from],
+          to: rollover_info[:to],
+          reasons: rollover_info[:reasons]
+        )
+      )
+      expect(curator.curate!).to eq(todo)
+    end
 
     it 'does not do any rollovers if preflight checks fail' do
-      allow(stubbed_curator).to receive(:helper).and_return stubbed_helper
-      allow(stubbed_helper).to receive(:pending_migrations?).and_return true
-      allow(stubbed_curator).to receive(:indices).and_return([index_one])
-      expect(stubbed_curator).not_to receive(:rollover_index)
+      allow(curator).to receive(:preflight_checks!).and_raise ArgumentError, "preflight checks failed"
+      expect(curator).not_to receive(:rollover_index)
+      expect { curator.curate! }.to raise_error(ArgumentError, "preflight checks failed")
+    end
+
+    context 'when dry_run is enabled' do
+      let(:settings) { { dry_run: true } }
+
+      it 'does not do anything' do
+        expect(curator).not_to receive(:rollover_index)
+        expect(stubbed_logger).to receive(:info).with(
+          hash_including(
+            message: "Search curator rolled over an index",
+            dry_run: true,
+            from: rollover_info[:from],
+            to: rollover_info[:to],
+            reasons: rollover_info[:reasons]
+          )
+        )
+        expect(curator.curate!).to eq(todo)
+      end
+    end
+  end
+
+  describe '#todo' do
+    let(:settings) do
+      {
+        min_docs_before_rollover: 1,
+        max_docs_denominator: 20
+      }
+    end
+
+    it 'returns an array of indices that need to be rolled over and important info' do
+      small_index_info = index_info.dup.merge(
+        "docs.count" => "10",
+        "pri.store.size" => "1",
+        "name" => "i-should-not-be-rolled-over"
+      )
+
+      allow(curator).to receive(:write_indices).and_return [index_info, small_index_info]
+      expect(curator.todo).to match_array([rollover_info.merge(reasons: ['too many docs',
+                                                                         'primary shard size too big'])])
     end
   end
 
   describe '#settings' do
+    let(:settings) { {} }
+
     it 'has defaults' do
       expect(curator.settings).to eq(described_class::DEFAULT_SETTINGS)
+    end
+
+    it 'has dry_run on by default' do
+      expect(curator.settings[:dry_run]).to be_truthy
+    end
+
+    context 'when given an invalid setting' do
+      let(:settings) { { foo: 'invalid' } }
+
+      it 'raises an ArgumentError' do
+        expect { curator }.to raise_error(ArgumentError, /invalid setting: `foo`/i)
+      end
     end
 
     context 'when specific values are passed' do
@@ -84,34 +159,13 @@ RSpec.describe Gitlab::Search::IndexCurator do
   end
 
   describe '#rollover_index' do
-    let(:rollover_info) do
-      { from: "gitlab-development-20220915-0422", to: "gitlab-development-20220915-0423" }
-    end
+    let(:from) { rollover_info[:from] }
+    let(:to) { rollover_info[:to] }
 
-    context 'when dry_run is not enabled' do
-      it 'updates settings and returns rollover info' do
-        expect(curator).to receive(:create_new_index_with_same_settings)
-        expect(curator).to receive(:update_aliases)
-
-        expect(curator.rollover_index(index_info)).to eq(rollover_info)
-      end
-    end
-
-    context 'when dry_run is enabled' do
-      let(:settings) { { dry_run: true } }
-
-      it 'logs a statement, does not do anything, and returns rollover info' do
-        expect(curator).not_to receive(:create_new_index_with_same_settings)
-        expect(curator).not_to receive(:update_aliases)
-        allow(curator).to receive(:logger).and_return(stubbed_logger)
-
-        expect(stubbed_logger).to receive(:info).with(
-          message: "[DRY RUN]: would have rolled over => #{rollover_info}",
-          class: "Gitlab::Search::IndexCurator"
-        )
-
-        expect(curator.rollover_index(index_info)).to eq(rollover_info)
-      end
+    it 'performs necessary steps to rollover an index' do
+      expect(curator).to receive(:create_new_index_with_same_settings).with(old_index: from, new_index: to)
+      expect(curator).to receive(:update_aliases).with(old_index: from, new_index: to)
+      curator.rollover_index(rollover_info)
     end
   end
 
@@ -120,6 +174,13 @@ RSpec.describe Gitlab::Search::IndexCurator do
     let(:new_index_name) { "foo-index-0002" }
     let(:alias_name) { "foo-index" }
     let(:index_info) { get_index_info(index: index_name) }
+    let(:rollover_info ) do
+      {
+        from: index_name,
+        to: new_index_name,
+        info: index_info
+      }
+    end
 
     before do
       client.index(index: index_name, body: { bar: "baz" })
@@ -142,7 +203,7 @@ RSpec.describe Gitlab::Search::IndexCurator do
     context 'when write alias is not specified' do
       it 'creates another index and updates write alias' do
         expect(get_alias_info(index: index_name).dig(alias_name, "is_write_index")).to be_nil
-        curator.rollover_index(index_info)
+        curator.rollover_index(rollover_info)
         expect(client.indices.exists(index: new_index_name)).to be_truthy
         expect(get_alias_info(index: index_name).dig(alias_name, "is_write_index")).to be_falsey
         expect(get_alias_info(index: new_index_name).dig(alias_name, "is_write_index")).to be_truthy
@@ -156,7 +217,7 @@ RSpec.describe Gitlab::Search::IndexCurator do
 
       it 'creates another index and updates write alias' do
         expect(get_alias_info(index: index_name).dig(alias_name, "is_write_index")).to be_truthy
-        curator.rollover_index(index_info)
+        curator.rollover_index(rollover_info)
         expect(client.indices.exists(index: new_index_name)).to be_truthy
         expect(get_alias_info(index: index_name).dig(alias_name, "is_write_index")).to be_falsey
         expect(get_alias_info(index: new_index_name).dig(alias_name, "is_write_index")).to be_truthy
@@ -164,26 +225,22 @@ RSpec.describe Gitlab::Search::IndexCurator do
     end
   end
 
-  describe '#should_rollover?' do
+  describe '#should_skip_rollover?' do
     using RSpec::Parameterized::TableSyntax
 
-    where(:should_ignore_index, :too_few_docs, :too_many_docs, :primary_shard_size_too_big, :expected_value) do
-      false | false | false | false | false
-      false | false | true  | true  | true
-      false | false | true  | false | true
-      false | false | false | true  | true
-      false | true  | false | true  | false
-      true  | false | true  | true  | false
+    where(:should_ignore_index, :too_few_docs, :expected_value) do
+      false | false | false
+      true  | false | true
+      false | true  | true
+      true  | true  | true
     end
 
     with_them do
       it 'returns correct value' do
         allow(curator).to receive(:should_ignore_index?).and_return should_ignore_index
-        allow(curator).to receive(:too_many_docs?).and_return too_many_docs
         allow(curator).to receive(:too_few_docs?).and_return too_few_docs
-        allow(curator).to receive(:primary_shard_size_too_big?).and_return primary_shard_size_too_big
 
-        expect(curator.should_rollover?(index_info)).to eq(expected_value)
+        expect(curator.should_skip_rollover?(index_info)).to eq(expected_value)
       end
     end
   end

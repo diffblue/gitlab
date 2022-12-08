@@ -13,7 +13,9 @@ module Elastic
     end
 
     def curator
-      @curator ||= ::Gitlab::Search::IndexCurator.new(ignore_patterns: [/migrations/])
+      @curator ||= ::Gitlab::Search::IndexCurator.new(
+        ignore_patterns: [/migrations/], force: true, dry_run: false
+      )
     end
 
     def setup(multi_index: true)
@@ -23,14 +25,8 @@ module Elastic
       helper.create_migrations_index
       ::Elastic::DataMigrationService.mark_all_as_completed!
       helper.create_standalone_indices
-      rollover_indices if multi_index
+      curator.curate! if multi_index
       refresh_elasticsearch_index!
-    end
-
-    def rollover_indices
-      curator.write_indices.each do |index_info|
-        curator.rollover_index(index_info) unless curator.should_ignore_index?(index_info)
-      end
     end
 
     def teardown
