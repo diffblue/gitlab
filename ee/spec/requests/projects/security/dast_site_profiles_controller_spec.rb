@@ -96,7 +96,7 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
       end
 
       context 'record exists' do
-        let(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project) }
+        let(:dast_site_profile) { create(:dast_site_profile, :with_dast_submit_field, project: project, target_type: 'api', scan_method: 'openapi') }
 
         before do
           create(:dast_site_profile_secret_variable, :password, dast_site_profile: dast_site_profile)
@@ -111,6 +111,7 @@ RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
             targetUrl: dast_site_profile.dast_site.url,
             targetType: dast_site_profile.target_type.upcase,
             requestHeaders: Dast::SiteProfilePresenter::REDACTED_REQUEST_HEADERS,
+            scan_method: dast_site_profile.scan_method.upcase,
             auth: a_graphql_entity_for(
               enabled: dast_site_profile.auth_enabled,
               url: dast_site_profile.auth_url,

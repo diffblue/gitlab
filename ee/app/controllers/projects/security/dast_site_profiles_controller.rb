@@ -31,6 +31,7 @@ module Projects
                 requestHeaders
                 auth { enabled url username usernameField password passwordField submitField }
                 referencedInSecurityPolicies
+                scanMethod
               }
             }
           }
