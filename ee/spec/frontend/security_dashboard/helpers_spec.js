@@ -71,115 +71,41 @@ describe('preparePageInfo', () => {
 });
 
 describe('getFormattedScanners', () => {
-  const manuallyAddedAvailableScanner = {
-    id: 'gid://gitlab/Vulnerabilities::Scanner/3',
-    name: 'manually-created-vulnerability',
-    reportType: 'GENERIC',
-    vendor: 'GitLab',
-  };
-  const manuallyAddedName = 'Manually added';
-  const allNotAvailableVulnerabilityScanners = [];
+  const vulnerabilityScanners = [
+    {
+      id: 'gid://gitlab/Vulnerabilities::Scanner/1',
+      name: 'Find Security Bugs',
+      reportType: 'SAST',
+      vendor: 'GitLab',
+    },
+    {
+      id: 'gid://gitlab/Vulnerabilities::Scanner/2',
+      name: 'ESLint',
+      reportType: 'SAST',
+      vendor: 'GitLab',
+    },
+    {
+      id: 'gid://gitlab/Vulnerabilities::Scanner/3',
+      name: 'manually-created-vulnerability',
+      reportType: 'GENERIC',
+      vendor: 'GitLab',
+    },
+  ];
 
-  it('returns all possible scanners', () => {
-    expect(getFormattedScanners(allNotAvailableVulnerabilityScanners)).toHaveLength(
-      Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).length,
-    );
-  });
+  it('returns all possible scanners in the correct order', () => {
+    const scanners = getFormattedScanners();
+    const reportIds = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).map((id) => id.toUpperCase());
 
-  it('returns empty scannerIds for not available scanners', () => {
-    const unavailableScanners = getFormattedScanners(allNotAvailableVulnerabilityScanners);
-    const unavailableScannerIds = unavailableScanners.map(({ scannerIds }) => scannerIds);
-
-    unavailableScannerIds.forEach((value) => {
-      expect(value).toEqual([]);
-    });
+    expect(scanners).toHaveLength(reportIds.length);
+    expect(scanners.map(({ id }) => id)).toEqual(reportIds);
   });
 
   it('sets disabled attribute for not available scanners', () => {
-    const unavailableScanners = getFormattedScanners(allNotAvailableVulnerabilityScanners);
-    const unavailableDisabledAttributes = unavailableScanners.map(({ disabled }) => disabled);
+    const scanners = getFormattedScanners(vulnerabilityScanners);
+    const enabledScanners = ['SAST', 'GENERIC'];
 
-    unavailableDisabledAttributes.forEach((value) => {
-      expect(value).toEqual(true);
+    scanners.forEach(({ id, disabled }) => {
+      expect(disabled).toBe(!enabledScanners.includes(id));
     });
-  });
-
-  it('returns a formatted array for the available scanners', () => {
-    const vulnerabilityScanners = [
-      {
-        id: 'gid://gitlab/Vulnerabilities::Scanner/1',
-        name: 'Find Security Bugs',
-        reportType: 'SAST',
-        vendor: 'GitLab',
-      },
-      {
-        id: 'gid://gitlab/Vulnerabilities::Scanner/2',
-        name: 'ESLint',
-        reportType: 'SAST',
-        vendor: 'GitLab',
-      },
-      { ...manuallyAddedAvailableScanner },
-    ];
-
-    expect(getFormattedScanners(vulnerabilityScanners)).toEqual(
-      expect.arrayContaining([
-        {
-          id: 'SAST',
-          reportType: 'SAST',
-          name: 'SAST',
-          scannerIds: [
-            'gid://gitlab/Vulnerabilities::Scanner/1',
-            'gid://gitlab/Vulnerabilities::Scanner/2',
-          ],
-          disabled: false,
-        },
-        {
-          id: 'GENERIC',
-          reportType: 'GENERIC',
-          name: manuallyAddedName,
-          scannerIds: ['gid://gitlab/Vulnerabilities::Scanner/3'],
-          disabled: false,
-        },
-      ]),
-    );
-  });
-
-  it('renames "GENERIC" report type to "Manually added"', () => {
-    const vulnerabilityScanners = [{ ...manuallyAddedAvailableScanner }];
-    const genericItemIndex = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).length - 1;
-
-    expect(getFormattedScanners(vulnerabilityScanners)[genericItemIndex].name).toBe(
-      manuallyAddedName,
-    );
-  });
-
-  it('sets the "GENERIC" report type as the default if no matching report type found', () => {
-    const customReportTypeScanner = {
-      ...manuallyAddedAvailableScanner,
-      reportType: '',
-    };
-    const vulnerabilityScanners = [{ ...customReportTypeScanner }];
-
-    expect(getFormattedScanners(vulnerabilityScanners)[0].name).toBe(manuallyAddedName);
-  });
-
-  it('sorts "GENERIC" as the last item and everything else alphabetically', () => {
-    const unsortedVulnerabilityScanners = [
-      { ...manuallyAddedAvailableScanner },
-      { reportType: 'SAST' },
-      { reportType: 'DEPENDENCY_SCANNING' },
-      { reportType: 'CONTAINER_SCANNING' },
-      { reportType: 'DAST' },
-    ];
-
-    const formattedReportTypes = getFormattedScanners(unsortedVulnerabilityScanners).map(
-      ({ reportType }) => reportType,
-    );
-
-    const allReportTypes = Object.keys(REPORT_TYPES_WITH_MANUALLY_ADDED).map((x) =>
-      x.toUpperCase(),
-    );
-
-    expect(formattedReportTypes).toEqual(allReportTypes);
   });
 });
