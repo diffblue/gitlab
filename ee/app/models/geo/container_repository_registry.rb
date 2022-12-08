@@ -65,26 +65,4 @@ class Geo::ContainerRepositoryRegistry < Geo::BaseRegistry
       Gitlab.config.geo.registry_replication.enabled
     end
   end
-
-  def finish_sync!
-    update!(
-      retry_count: 0,
-      last_sync_failure: nil,
-      retry_at: nil
-    )
-
-    mark_synced_atomically
-  end
-
-  def mark_synced_atomically
-    # We can only update registry if state is started.
-    # If state is set to pending that means that pending! was called
-    # during the sync so we need to reschedule new sync
-    num_rows = self.class
-                   .where(container_repository_id: container_repository_id)
-                   .with_state(:started)
-                   .update_all(state: Geo::ContainerRepositoryRegistry::STATE_VALUES[:synced])
-
-    num_rows > 0
-  end
 end

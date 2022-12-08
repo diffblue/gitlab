@@ -100,7 +100,7 @@ RSpec.shared_examples 'a Geo verifiable registry' do
       # This lets us test things that are synced but failed verification, which
       # should not happen anymore, but may exist from before we implemented
       # automatic resync of verification failures.
-      subject.synced
+      subject.synced!
       subject.verification_state = verification_state_value(:verification_failed)
       subject.verification_failure = 'foo'
       subject.verification_retry_count = 1

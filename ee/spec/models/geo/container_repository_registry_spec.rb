@@ -39,46 +39,6 @@ RSpec.describe Geo::ContainerRepositoryRegistry, :geo do
     end
   end
 
-  describe '#finish_sync!' do
-    let_it_be(:registry) { create(:geo_container_repository_registry, :started) }
-
-    it 'finishes registry record' do
-      registry.finish_sync!
-
-      expect(registry.reload).to have_attributes(
-        retry_count: 0,
-        retry_at: nil,
-        last_sync_failure: nil
-      )
-      expect(registry.synced?).to be_truthy
-    end
-
-    context 'when a container sync was scheduled after the last sync began' do
-      before do
-        registry.update!(
-          state: 'pending',
-          retry_count: 2,
-          retry_at: 1.hour.ago,
-          last_sync_failure: 'error'
-        )
-
-        registry.finish_sync!
-      end
-
-      it 'does not reset state' do
-        expect(registry.reload.pending?).to be_truthy
-      end
-
-      it 'resets the other sync state fields' do
-        expect(registry.reload).to have_attributes(
-          retry_count: 0,
-          retry_at: nil,
-          last_sync_failure: nil
-        )
-      end
-    end
-  end
-
   describe '.find_registry_differences' do
     let_it_be(:secondary) { create(:geo_node) }
     let_it_be(:synced_group) { create(:group) }

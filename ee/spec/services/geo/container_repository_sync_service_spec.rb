@@ -83,14 +83,25 @@ RSpec.describe Geo::ContainerRepositorySyncService, :geo do
     end
   end
 
-  context 'race condition' do
-    it 'reschedules the sync' do
-      allow_any_instance_of(described_class).to receive(:registry).and_return(registry)
+  context 'reschedules sync due to race condition instead of waiting for backfill' do
+    describe '#mark_sync_as_successful' do
+      context 'when UpdatedEvent was processed during a sync' do
+        it 'reschedules the sync' do
+          expect(::Geo::ContainerRepositorySyncWorker)
+            .to receive(:perform_async)
+            .with(container_repository.id)
+            .once
 
-      expect(::Geo::ContainerRepositorySyncWorker).to receive(:perform_async)
-      expect(registry).to receive(:finish_sync!).and_return(false)
+          expect_any_instance_of(registry.class)
+            .to receive(:synced!)
+            .once
+            .and_call_original
 
-      described_class.new(registry.container_repository).send(:mark_sync_as_successful)
+          registry.pending!
+
+          subject.send(:mark_sync_as_successful)
+        end
+      end
     end
   end
 end
