@@ -7,7 +7,7 @@ module Namespaces
 
       ALERT_CLASS = 'js-user-over-limit-free-plan-alert gl-mb-2 gl-mt-6'
       CONTAINER_CLASSES = 'gl-overflow-auto'
-      NOTIFICATION_IGNORE_DISMISSAL_EARLIER_THAN = 14.days.ago
+      NOTIFICATION_IGNORE_DISMISSAL_EARLIER_THAN = 3.days.ago
 
       # region: container class ----------------------------------------
 
@@ -79,14 +79,6 @@ module Namespaces
         return false if default_render?(user: user, namespace: namespace)
 
         Ability.allowed?(user, :read_group, namespace)
-      end
-
-      def self.notification_alert_title(free_user_limit = self.free_user_limit)
-        n_(
-          'From October 19, 2022, free private groups will be limited to %d member',
-          'From October 19, 2022, free private groups will be limited to %d members',
-          free_user_limit
-        ) % free_user_limit
       end
 
       # region: html helpers -------------------------------------------

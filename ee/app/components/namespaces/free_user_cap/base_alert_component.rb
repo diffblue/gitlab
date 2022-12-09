@@ -72,15 +72,11 @@ module Namespaces
 
       def namespace_secondary_cta
         link_to _('Explore paid plans'),
-                namespace_secondary_cta_path,
+                group_billings_path(namespace, source: 'user-limit-alert-enforcement'),
                 class: 'btn gl-alert-action btn-default btn-md gl-button',
                 data: { track_action: 'click_button',
                         track_label: 'explore_paid_plans',
                         testid: 'user-over-limit-secondary-cta' }
-      end
-
-      def namespace_secondary_cta_path
-        group_billings_path(namespace)
       end
 
       def link_end

@@ -48,10 +48,6 @@ module Namespaces
         }
       end
 
-      def namespace_secondary_cta_path
-        group_billings_path(namespace, source: 'user-limit-alert-enforcement')
-      end
-
       def free_user_limit_link_start
         "<a href='#{free_user_limit_url}' target='_blank' rel='noopener noreferrer'>".html_safe
       end
