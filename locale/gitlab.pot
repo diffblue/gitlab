@@ -36187,10 +36187,16 @@ msgstr ""
 msgid "ScanResultPolicy|add an approver"
 msgstr ""
 
+msgid "ScanResultPolicy|from %{scanners} find(s) more than %{vulnerabilitiesAllowed} %{severities} %{vulnerabilityStates} vulnerabilities in an open merge request targeting %{branches}"
+msgstr ""
+
 msgid "ScanResultPolicy|scanners"
 msgstr ""
 
 msgid "ScanResultPolicy|severity levels"
+msgstr ""
+
+msgid "ScanResultPolicy|vulnerabilities allowed"
 msgstr ""
 
 msgid "ScanResultPolicy|vulnerability states"
@@ -37122,6 +37128,9 @@ msgid "SecurityOrchestration|branch"
 msgstr ""
 
 msgid "SecurityOrchestration|branches"
+msgstr ""
+
+msgid "SecurityOrchestration|group level branch"
 msgstr ""
 
 msgid "SecurityOrchestration|scanner finds"
