@@ -17,6 +17,7 @@ RSpec.describe 'SAML provider settings', feature_category: :authentication_and_a
     stub_saml_config
   end
 
+  # This emulate a successful response from the SAML provider
   around do |example|
     with_omniauth_full_host { example.run }
   end
@@ -221,7 +222,7 @@ RSpec.describe 'SAML provider settings', feature_category: :authentication_and_a
     context 'with existing SAML provider' do
       let!(:saml_provider) { create(:saml_provider, group: group) }
 
-      context 'when not signed in' do
+      context 'when not signed in', :js do
         it "shows the sso page so user can sign in" do
           visit sso_group_saml_providers_path(group)
 
@@ -270,7 +271,7 @@ RSpec.describe 'SAML provider settings', feature_category: :authentication_and_a
         end
       end
 
-      context 'when user has access locked' do
+      context 'when user has access locked', :js do
         before do
           user.lock_access!
           identity = create(:group_saml_identity, saml_provider: saml_provider, user: user)
