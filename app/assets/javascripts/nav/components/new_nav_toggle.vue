@@ -5,6 +5,15 @@ import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 
 export default {
+  i18n: {
+    badgeLabel: s__('NorthstarNavigation|Alpha'),
+    sectionTitle: s__('NorthstarNavigation|Navigation redesign'),
+    toggleMenuItemLabel: s__('NorthstarNavigation|New navigation'),
+    toggleLabel: s__('NorthstarNavigation|Toggle new navigation'),
+    updateError: s__(
+      'NorthstarNavigation|Could not update the new navigation preference. Please try again later.',
+    ),
+  },
   components: {
     GlBadge,
     GlToggle,
@@ -36,15 +45,6 @@ export default {
         });
       }
     },
-  },
-  i18n: {
-    updateError: s__(
-      'NorthstarNavigation|Could not update the new navigation preference. Please try again later.',
-    ),
-    sectionTitle: s__('NorthstarNavigation|Navigation redesign'),
-    badgeLabel: s__('NorthstarNavigation|Alpha'),
-    toggleMenuItemLabel: s__('NorthstarNavigation|New navigation'),
-    toggleLabel: s__('NorthstarNavigation|Toggle new navigation'),
   },
 };
 </script>
