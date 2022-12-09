@@ -7,17 +7,19 @@ type: reference
 
 # SAML SSO for self-managed GitLab instances **(FREE SELF)**
 
-This page describes instance-wide SAML 2.0 for self-managed GitLab instances. For
-SAML 2.0 on GitLab.com, see [SAML SSO for GitLab.com groups](../user/group/saml_sso/index.md).
+This page describes how to set up instance-wide SAML single sign on (SSO) for
+self-managed GitLab instances.
 
-You should also reference the [OmniAuth documentation](omniauth.md) for general
-settings that apply to all OmniAuth providers.
+You can configure GitLab to act as a SAML service provider (SP). This allows
+GitLab to consume assertions from a SAML identity provider (IdP), such as
+Okta, to authenticate users.
 
-If required, you can find a [glossary of common terms](#glossary-of-common-terms).
+To set up SAML on GitLab.com, see [SAML SSO for GitLab.com groups](../user/group/saml_sso/index.md).
 
-GitLab can be configured to act as a SAML 2.0 Service Provider (SP). This allows
-GitLab to consume assertions from a SAML 2.0 identity provider (IdP), such as
-Okta to authenticate users.
+For more information on:
+
+- OmniAuth provider settings, see the [OmniAuth documentation](omniauth.md).
+- Commonly-used terms, see the [glossary of common terms](#glossary-of-common-terms).
 
 ## Configure SAML support in GitLab
 
