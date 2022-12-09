@@ -10326,7 +10326,7 @@ msgstr ""
 msgid "Configure the %{link} integration."
 msgstr ""
 
-msgid "Configure the default first day of the week and time tracking units."
+msgid "Configure the default first day of the week, time tracking units, and default language."
 msgstr ""
 
 msgid "Configure the way a user creates a new account."
@@ -12911,6 +12911,12 @@ msgid "Default first day of the week"
 msgstr ""
 
 msgid "Default first day of the week in calendars and date pickers."
+msgstr ""
+
+msgid "Default language"
+msgstr ""
+
+msgid "Default language for users who are not logged in."
 msgstr ""
 
 msgid "Default projects limit"
