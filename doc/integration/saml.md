@@ -281,7 +281,7 @@ for a full list of supported assertions.
 
 ## SAML Groups
 
-You can require users to be members of a certain group, or assign users [external](../user/admin_area/external_users.md), administrator or [auditor](../user/permissions.md#auditor-users) roles based on group membership.
+You can require users to be members of a certain group, or assign users [external](../user/admin_area/external_users.md), administrator or [auditor](../administration/auditor_users.md) access levels based on group membership.
 These groups are checked on each SAML login and user attributes updated as necessary.
 This feature **does not** allow you to
 automatically add users to GitLab [Groups](../user/group/index.md).
@@ -394,7 +394,7 @@ The requirements are the same as the previous settings:
 
 - The IdP must pass Group information to GitLab.
 - GitLab should know where to look for the groups in the SAML response, as well as which
-  groups include users with the [Auditor role](../user/permissions.md#auditor-users).
+  groups include users with the [Auditor access level](../administration/auditor_users.md).
 
 ```yaml
 { name: 'saml',
