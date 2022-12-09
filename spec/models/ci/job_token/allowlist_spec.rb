@@ -7,11 +7,11 @@ RSpec.describe Ci::JobToken::Allowlist, feature_category: :continuous_integratio
 
   let_it_be(:source_project) { create(:project) }
 
-  let(:scope) { described_class.new(source_project, direction: direction) }
+  let(:allowlist) { described_class.new(source_project, direction: direction) }
   let(:direction) { :outbound }
 
   describe '#projects' do
-    subject(:all_projects) { scope.all_projects }
+    subject(:all_projects) { allowlist.all_projects }
 
     context 'when no projects are added to the scope' do
       [:inbound, :outbound].each do |d|
@@ -40,7 +40,7 @@ RSpec.describe Ci::JobToken::Allowlist, feature_category: :continuous_integratio
   end
 
   describe '#includes?' do
-    subject { scope.includes?(includes_project) }
+    subject { allowlist.includes?(includes_project) }
 
     context 'without scoped projects' do
       let(:unscoped_project) { build(:project) }
