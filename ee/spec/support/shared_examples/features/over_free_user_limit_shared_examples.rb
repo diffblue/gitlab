@@ -20,20 +20,18 @@ RSpec.shared_examples_for 'over the free user limit alert' do
         stub_ee_application_setting(dashboard_enforcement_limit: 3)
       end
 
-      let(:alert_title_content) do
-        'From October 19, 2022, free private groups will be limited to'
-      end
-
       it 'performs dismiss cycle', :js do
         visit_page
 
-        expect(page).not_to have_content(alert_title_content)
+        expect(page).not_to have_content('is over the')
+        expect(page).not_to have_content('user limit')
 
         group.add_developer(create(:user))
 
         page.refresh
 
-        expect(page).to have_content(alert_title_content)
+        expect(page).to have_content('is over the')
+        expect(page).to have_content('user limit')
 
         page.within('[data-testid="user-over-limit-free-plan-alert"]') do
           expect(page).to have_link('Manage members')
@@ -45,7 +43,8 @@ RSpec.shared_examples_for 'over the free user limit alert' do
 
         page.refresh
 
-        expect(page).not_to have_content(alert_title_content)
+        expect(page).not_to have_content('is over the')
+        expect(page).not_to have_content('user limit')
       end
     end
   end

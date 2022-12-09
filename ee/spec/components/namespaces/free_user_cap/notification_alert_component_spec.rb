@@ -7,7 +7,11 @@ RSpec.describe Namespaces::FreeUserCap::NotificationAlertComponent, :saas, :aggr
   let_it_be(:content_class) { '_content_class_' }
 
   let(:preview_free_user_cap_over?) { true }
-  let(:title) { 'From October 19, 2022, free private groups will be limited' }
+
+  let(:title) do
+    "Your namespace #{namespace.name} is over the " \
+    "#{::Namespaces::FreeUserCap.dashboard_limit} user limit"
+  end
 
   subject(:component) { described_class.new(namespace: namespace, user: user, content_class: content_class) }
 
@@ -26,11 +30,16 @@ RSpec.describe Namespaces::FreeUserCap::NotificationAlertComponent, :saas, :aggr
       it 'has content for the preview alert' do
         render_inline(component)
 
-        expect(page).to have_selector(".#{content_class}")
+        expect(page).to have_css(".gl-overflow-auto.#{content_class}")
         expect(page).to have_content(title)
+        expect(page).to have_link('read-only', href: described_class::READ_ONLY_NAMESPACES_URL)
         expect(page).to have_link('Manage members', href: group_usage_quotas_path(namespace))
-        expect(page).to have_link('Explore paid plans', href: group_billings_path(namespace))
-        expect(page).to have_link('Over limit status', href: described_class::BLOG_URL)
+
+        expect(page).to have_link(
+          'Explore paid plans',
+          href: group_billings_path(namespace, source: 'user-limit-alert-enforcement')
+        )
+
         expect(page)
           .to have_css("[data-testid='user-over-limit-free-plan-alert']" \
                        "[data-dismiss-endpoint='#{group_callouts_path}']" \

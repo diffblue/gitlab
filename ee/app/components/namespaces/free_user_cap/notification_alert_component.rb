@@ -6,13 +6,10 @@ module Namespaces
       private
 
       NOTIFICATION_USER_OVER_LIMIT_FREE_PLAN_ALERT = 'preview_user_over_limit_free_plan_alert'
+      READ_ONLY_NAMESPACES_URL = 'https://docs.gitlab.com/ee/user/read_only_namespaces.html'
 
       def breached_cap_limit?
         Shared.over_notification_limit?(namespace)
-      end
-
-      def variant
-        :info
       end
 
       def ignore_dismissal_earlier_than
@@ -25,43 +22,36 @@ module Namespaces
 
       def alert_attributes
         {
-          title: alert_title,
-          body: _(
-            '%{over_limit_message} To get more members, an owner of the group can start ' \
-            'a trial or upgrade to a paid tier.'
-          ).html_safe % { over_limit_message: over_limit_message },
+          title: _(
+            'Your namespace %{namespace_name} is over the %{free_user_limit} user limit'
+          ).html_safe % {
+            namespace_name: namespace.name,
+            free_user_limit: free_user_limit
+          },
+          body: n_(
+            'GitLab will enforce this limit in the future. If you are over %{free_user_limit} ' \
+            'user when enforcement begins, your namespace will be placed in a ' \
+            '%{link_start}read-only%{link_end} state. To avoid being placed in a read-only ' \
+            'state, reduce your namespace to %{free_user_limit} user or less or purchase a ' \
+            'paid tier.',
+            'GitLab will enforce this limit in the future. If you are over %{free_user_limit} ' \
+            'users when enforcement begins, your namespace will be placed in a ' \
+            '%{link_start}read-only%{link_end} state. To avoid being placed in a read-only ' \
+            'state, reduce your namespace to %{free_user_limit} users or less or purchase a ' \
+            'paid tier.',
+            free_user_limit
+          ).html_safe % {
+            free_user_limit: free_user_limit,
+            link_start: read_only_namespaces_link_start,
+            link_end: link_end
+          },
           primary_cta: namespace_primary_cta,
           secondary_cta: namespace_secondary_cta
         }
       end
 
-      def alert_title
-        Shared.notification_alert_title
-      end
-
-      def over_limit_message
-        free_user_limit = Shared.free_user_limit
-
-        n_(
-          'Your group, %{strong_start}%{namespace_name}%{strong_end} has more than %{free_user_limit} ' \
-          'member. From October 19, 2022, the %{free_user_limit} most recently active member will remain ' \
-          'active, and the remaining members will have the %{link_start}Over limit status%{link_end} and ' \
-          'lose access to the group. You can go to the Usage Quotas page to manage which %{free_user_limit} ' \
-          'member will remain in your group.',
-          'Your group, %{strong_start}%{namespace_name}%{strong_end} has more than %{free_user_limit} ' \
-          'members. From October 19, 2022, the %{free_user_limit} most recently active members will remain ' \
-          'active, and the remaining members will have the %{link_start}Over limit status%{link_end} and ' \
-          'lose access to the group. You can go to the Usage Quotas page to manage which %{free_user_limit} ' \
-          'members will remain in your group.',
-          free_user_limit
-        ).html_safe % {
-          strong_start: Shared.strong_start,
-          strong_end: Shared.strong_end,
-          namespace_name: namespace.name,
-          free_user_limit: free_user_limit,
-          link_start: blog_link_start,
-          link_end: link_end
-        }
+      def read_only_namespaces_link_start
+        "<a href='#{READ_ONLY_NAMESPACES_URL}' target='_blank' rel='noopener noreferrer'>".html_safe
       end
     end
   end
