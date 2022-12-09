@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Issue do
+RSpec.describe Issue, feature_category: :team_planning do
   include ExternalAuthorizationServiceHelpers
 
   using RSpec::Parameterized::TableSyntax
@@ -29,8 +29,7 @@ RSpec.describe Issue do
 
   context 'scopes' do
     describe 'health status' do
-      let_it_be(:on_track1) { create(:issue, health_status: :on_track) }
-      let_it_be(:on_track2) { create(:issue, health_status: :on_track) }
+      let_it_be(:on_track) { create(:issue, health_status: :on_track) }
       let_it_be(:needs_attention) { create(:issue, health_status: :needs_attention) }
       let_it_be(:at_risk) { create(:issue, health_status: :at_risk) }
       let_it_be(:without_health_status) { create(:issue, health_status: nil) }
@@ -42,19 +41,19 @@ RSpec.describe Issue do
         end
 
         it 'returns the filtered by health issues' do
-          expect(described_class.with_health_status(:on_track)).to match_array([on_track1, on_track2])
+          expect(described_class.with_health_status(:on_track)).to match_array([on_track])
         end
 
         context 'when using multiple health filter qualifications' do
           it 'returns the filtered by health issues' do
-            expect(described_class.with_health_status([:at_risk, :on_track])).to match_array([on_track1, on_track2, at_risk])
+            expect(described_class.with_health_status([:at_risk, :on_track])).to match_array([on_track, at_risk])
           end
         end
       end
 
       describe '.with_any_health_status' do
         it 'only returns the issues with a health_status' do
-          expect(described_class.with_any_health_status).to match_array([on_track1, on_track2, needs_attention, at_risk])
+          expect(described_class.with_any_health_status).to match_array([on_track, needs_attention, at_risk])
         end
       end
 
@@ -78,13 +77,13 @@ RSpec.describe Issue do
 
       describe '.order_health_status_asc' do
         it 'returns healthy issues first' do
-          expect(described_class.order_health_status_asc).to eq([on_track1, on_track2, needs_attention, at_risk, without_health_status])
+          expect(described_class.order_health_status_asc).to eq([on_track, needs_attention, at_risk, without_health_status])
         end
       end
 
       describe '.order_health_status_desc' do
         it 'returns non-healthy issues first' do
-          expect(described_class.order_health_status_desc).to eq([at_risk, needs_attention, on_track1, on_track2, without_health_status])
+          expect(described_class.order_health_status_desc).to eq([at_risk, needs_attention, on_track, without_health_status])
         end
       end
     end
