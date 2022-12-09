@@ -29,6 +29,15 @@ RSpec.describe Groups::Security::ComplianceDashboardsController, feature_categor
           let(:request_params) { { group_id: group.to_param } }
           let(:target_id) { 'g_compliance_dashboard' }
         end
+
+        it_behaves_like 'Snowplow event tracking with RedisHLL context' do
+          let(:feature_flag_name) { :route_hll_to_snowplow_phase4 }
+          let(:category) { described_class.to_s }
+          let(:action) { 'show_compliance_dashboard' }
+          let(:namespace) { group }
+          let(:label) { 'redis_hll_counters.compliance.g_compliance_dashboard_monthly' }
+          let(:property) { 'g_compliance_dashboard' }
+        end
       end
 
       context 'when user is not allowed to access group compliance dashboard' do
