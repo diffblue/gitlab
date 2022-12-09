@@ -108,8 +108,9 @@ function install_junit_merge_gem() {
 }
 
 function fail_on_warnings() {
-  local cmd="$@"
-  local warnings="$(mktemp)"
+  local cmd="$*"
+  local warnings
+  warnings="$(mktemp)"
 
   eval "$cmd 2>$warnings"
   local ret=$?
