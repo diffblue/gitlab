@@ -22,14 +22,14 @@ module RequirementsManagement
 
     def header_to_value_hash
       @header_to_value_hash ||= {
-        'Requirement ID' => 'iid',
+        'Requirement ID' => -> (work_item) { work_item.requirement.iid },
         'Title' => 'title',
         'Description' => 'description',
-        'Author' => -> (requirement) { requirement.author&.name },
-        'Author Username' => -> (requirement) { requirement.author&.username },
-        'Created At (UTC)' => -> (requirement) { requirement.created_at.utc },
-        'State' => -> (requirement) { requirement.last_test_report_state == 'passed' ? 'Satisfied' : '' },
-        'State Updated At (UTC)' => -> (requirement) { requirement.latest_report&.created_at&.utc }
+        'Author' => -> (work_item) { work_item.author&.name },
+        'Author Username' => -> (work_item) { work_item.author&.username },
+        'Created At (UTC)' => -> (work_item) { work_item.created_at.utc },
+        'State' => -> (work_item) { work_item.requirement.last_test_report_state == 'passed' ? 'Satisfied' : '' },
+        'State Updated At (UTC)' => -> (work_item) { work_item.requirement.latest_report&.created_at&.utc }
       }
     end
 

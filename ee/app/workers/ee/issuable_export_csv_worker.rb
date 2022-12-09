@@ -14,7 +14,7 @@ module EE
       return super unless [:requirement, :issue].include?(type.to_sym)
 
       issuable_classes = issuable_classes_for(type.to_sym)
-      issuables = issuable_classes[:finder].new(user, parse_params(params, project.id)).execute
+      issuables = issuable_classes[:finder].new(user, parse_params(params, project.id, type)).execute
 
       if type.to_sym == :issue
         issuable_classes[:service].new(issuables, project, user)
@@ -29,9 +29,16 @@ module EE
       return super unless type.to_sym == :requirement
 
       {
-        finder: ::RequirementsManagement::RequirementsFinder,
+        finder: ::WorkItems::WorkItemsFinder,
         service: ::RequirementsManagement::ExportCsvService
       }
+    end
+
+    override :parse_params
+    def parse_params(params, project_id, type)
+      return super unless type.to_sym == :requirement
+
+      super.merge(issue_types: [:requirement])
     end
 
     override :type_error_message

@@ -10,7 +10,7 @@ RSpec.describe RequirementsManagement::ExportCsvService do
 
   let(:fields) { [] }
 
-  subject { described_class.new(RequirementsManagement::Requirement.all, project, fields) }
+  subject { described_class.new(WorkItem.all, project, fields) }
 
   before do
     stub_licensed_features(requirements: true)
@@ -69,6 +69,15 @@ RSpec.describe RequirementsManagement::ExportCsvService do
 
     specify 'created date' do
       expect(csv[0]['Created At (UTC)']).to eq requirement.created_at.utc.strftime(time_format)
+    end
+
+    it 'does not execute n+1 queries' do
+      control = ActiveRecord::QueryRecorder.new { described_class.new(WorkItem.all, project, fields).csv_data }
+
+      create(:work_item, :requirement, state: :opened)
+
+      expect { described_class.new(WorkItem.all, project, fields).csv_data }
+        .not_to exceed_query_limit(control)
     end
 
     context 'when last test report failed' do

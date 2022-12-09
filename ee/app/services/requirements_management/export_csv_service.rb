@@ -15,7 +15,7 @@ module RequirementsManagement
     private
 
     def associations_to_preload
-      [{ requirement_issue: :author }, :test_reports]
+      [{ requirement: :recent_test_reports }, :author]
     end
 
     def header_to_value_hash

@@ -53,7 +53,7 @@ RSpec.describe Emails::Requirements do
 
     let_it_be(:csv_data) do
       RequirementsManagement::ExportCsvService
-        .new(RequirementsManagement::Requirement.all, project).csv_data
+        .new(WorkItem.all, project).csv_data
     end
 
     subject { Notify.requirements_csv_email(user, project, csv_data, export_status) }

@@ -24,8 +24,11 @@ RSpec.describe IssuableExportCsvWorker do
       subject
     end
 
-    it 'calls the Requirements finder' do
-      expect(RequirementsManagement::RequirementsFinder).to receive(:new).once.and_call_original
+    it 'calls the Work Items finder' do
+      expect(WorkItems::WorkItemsFinder).to receive(:new)
+        .with(user, { "project_id" => project.id, "issue_types" => [:requirement] })
+        .once
+        .and_call_original
 
       subject
     end
