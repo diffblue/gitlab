@@ -77,7 +77,7 @@ describe('Tool With Vendor Filter component', () => {
     describe('QuerystringSync component', () => {
       it('has expected props', () => {
         expect(findQuerystringSync().props()).toMatchObject({
-          querystringKey: 'reportType',
+          querystringKey: 'scanner',
           value: [],
         });
       });
