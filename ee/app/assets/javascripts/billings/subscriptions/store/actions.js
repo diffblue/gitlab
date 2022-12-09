@@ -1,5 +1,5 @@
 import Api from 'ee/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__ } from '~/locale';
 import * as types from './mutation_types';
 
@@ -24,7 +24,7 @@ export const receiveSubscriptionSuccess = ({ commit }, response) =>
   commit(types.RECEIVE_SUBSCRIPTION_SUCCESS, response);
 
 export const receiveSubscriptionError = ({ commit }) => {
-  createFlash({
+  createAlert({
     message: s__('SubscriptionTable|An error occurred while loading the subscription details.'),
   });
   commit(types.RECEIVE_SUBSCRIPTION_ERROR);

@@ -1,5 +1,5 @@
 import epicDetailsQuery from 'shared_queries/epic/epic_details.query.graphql';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { EVENT_ISSUABLE_VUE_APP_CHANGE } from '~/issuable/constants';
 
 import axios from '~/lib/utils/axios_utils';
@@ -39,7 +39,7 @@ export const fetchEpicDetails = ({ state, dispatch }) => {
 };
 
 export const requestEpicParticipantsFailure = () => {
-  createFlash({
+  createAlert({
     message: __('There was an error getting the epic participants.'),
   });
 };
@@ -51,7 +51,7 @@ export const requestEpicStatusChangeSuccess = ({ commit }, data) =>
 
 export const requestEpicStatusChangeFailure = ({ commit }) => {
   commit(types.REQUEST_EPIC_STATUS_CHANGE_FAILURE);
-  createFlash({
+  createAlert({
     message: __('Unable to update this epic at this time.'),
   });
 };
@@ -107,11 +107,11 @@ export const requestEpicTodoToggleFailure = ({ commit, state }, data) => {
   commit(types.REQUEST_EPIC_TODO_TOGGLE_FAILURE, data);
 
   if (state.todoExists) {
-    createFlash({
+    createAlert({
       message: __('There was an error deleting the To Do.'),
     });
   } else {
-    createFlash({
+    createAlert({
       message: __('There was an error adding a To Do.'),
     });
   }
@@ -166,7 +166,7 @@ export const requestEpicCreate = ({ commit }) => commit(types.REQUEST_EPIC_CREAT
 export const requestEpicCreateSuccess = (_, webUrl) => visitUrl(webUrl);
 export const requestEpicCreateFailure = ({ commit }) => {
   commit(types.REQUEST_EPIC_CREATE_FAILURE);
-  createFlash({
+  createAlert({
     message: __('Error creating epic'),
   });
 };

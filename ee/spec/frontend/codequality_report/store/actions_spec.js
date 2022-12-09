@@ -6,7 +6,7 @@ import * as types from 'ee/codequality_report/store/mutation_types';
 import { TEST_HOST } from 'helpers/test_constants';
 import testAction from 'helpers/vuex_action_helper';
 import Api from '~/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { unparsedIssues, parsedIssues } from '../mock_data';
 
@@ -98,7 +98,7 @@ describe('Codequality report actions', () => {
         [],
         [{ type: 'requestReport' }, { type: 'receiveReportError', payload: expect.any(Error) }],
       );
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'There was an error fetching the codequality report.',
       });
     });
@@ -111,7 +111,7 @@ describe('Codequality report actions', () => {
         [],
         [{ type: 'requestReport' }, { type: 'receiveReportError', payload: expect.any(Error) }],
       );
-      expect(createFlash).toHaveBeenCalledWith({
+      expect(createAlert).toHaveBeenCalledWith({
         message: 'There was an error fetching the codequality report.',
       });
     });

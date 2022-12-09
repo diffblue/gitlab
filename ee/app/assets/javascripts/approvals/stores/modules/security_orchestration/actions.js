@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/browser';
 import { s__ } from '~/locale';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import projectScanResultPoliciesQuery from 'ee/security_orchestration/graphql/queries/project_scan_result_policies.query.graphql';
 import { gqClient } from 'ee/security_orchestration/utils';
 import { fromYaml } from 'ee/security_orchestration/components/policy_editor/scan_result_policy/lib/from_yaml';
@@ -32,7 +32,7 @@ export const fetchScanResultPolicies = ({ commit }, { fullPath }) => {
     })
     .catch((error) => {
       commit(types.SCAN_RESULT_POLICIES_FAILED, error);
-      createFlash({
+      createAlert({
         message: s__(
           'SecurityOrchestration|An error occurred while fetching the scan result policies.',
         ),

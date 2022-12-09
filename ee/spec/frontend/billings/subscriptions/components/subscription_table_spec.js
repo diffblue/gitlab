@@ -12,7 +12,7 @@ import ExtendReactivateTrialButton from 'ee/trials/extend_reactivate_trial/compo
 import { mockDataSubscription } from 'ee_jest/billings/mock_data';
 import { extendedWrapper } from 'helpers/vue_test_utils_helper';
 import waitForPromises from 'helpers/wait_for_promises';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import axios from '~/lib/utils/axios_utils';
 import { getSubscriptionData } from 'ee/billings/subscriptions/subscription_actions.customer.query.graphql';
@@ -328,7 +328,7 @@ describe('SubscriptionTable component', () => {
 
       it('makes call to BE to refresh seats', () => {
         expect(mock.history.post).toHaveLength(1);
-        expect(createFlash).not.toHaveBeenCalled();
+        expect(createAlert).not.toHaveBeenCalled();
       });
     });
 
@@ -341,7 +341,7 @@ describe('SubscriptionTable component', () => {
       });
 
       it('flashes error', () => {
-        expect(createFlash).toHaveBeenCalledWith({
+        expect(createAlert).toHaveBeenCalledWith({
           message: 'Something went wrong trying to refresh seats',
           captureError: true,
           error: expect.any(Error),

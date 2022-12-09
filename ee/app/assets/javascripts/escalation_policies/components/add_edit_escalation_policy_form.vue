@@ -1,7 +1,7 @@
 <script>
 import { GlLink, GlForm, GlFormGroup, GlFormInput } from '@gitlab/ui';
 import { cloneDeep, uniqueId } from 'lodash';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { s__, __ } from '~/locale';
 import {
   EMAIL_ONCALL_SCHEDULE_USER,
@@ -69,7 +69,7 @@ export default {
         return nodes;
       },
       error(error) {
-        createFlash({ message: i18n.failedLoadingSchedules, captureError: true, error });
+        createAlert({ message: i18n.failedLoadingSchedules, captureError: true, error });
       },
     },
   },

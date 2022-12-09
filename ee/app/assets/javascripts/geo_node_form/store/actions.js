@@ -1,6 +1,6 @@
 import { flatten } from 'lodash';
 import Api from 'ee/api';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { convertObjectPropsToSnakeCase } from '~/lib/utils/common_utils';
 import { visitUrl } from '~/lib/utils/url_utility';
 import { s__ } from '~/locale';
@@ -27,7 +27,7 @@ export const requestSyncNamespaces = ({ commit }) => commit(types.REQUEST_SYNC_N
 export const receiveSyncNamespacesSuccess = ({ commit }, data) =>
   commit(types.RECEIVE_SYNC_NAMESPACES_SUCCESS, data);
 export const receiveSyncNamespacesError = ({ commit }) => {
-  createFlash({
+  createAlert({
     message: i18n.errorFetchingGroups,
   });
   commit(types.RECEIVE_SYNC_NAMESPACES_ERROR);
@@ -57,7 +57,7 @@ export const receiveSaveGeoNodeError = ({ commit }, data) => {
     errorMessage += ` ${getSaveErrorMessage(data.message)}`;
   }
 
-  createFlash({
+  createAlert({
     message: errorMessage,
   });
   commit(types.RECEIVE_SAVE_GEO_NODE_COMPLETE);

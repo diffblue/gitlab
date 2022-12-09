@@ -5,7 +5,7 @@ import * as actions from 'ee/geo_replicable/store/actions';
 import * as types from 'ee/geo_replicable/store/mutation_types';
 import createState from 'ee/geo_replicable/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import toast from '~/vue_shared/plugins/global_toast';
 import {
@@ -78,7 +78,7 @@ describe('GeoReplicable Store Actions', () => {
         [{ type: types.RECEIVE_REPLICABLE_ITEMS_ERROR }],
         [],
         () => {
-          expect(createFlash).toHaveBeenCalledTimes(1);
+          expect(createAlert).toHaveBeenCalledTimes(1);
         },
       );
     });
@@ -410,7 +410,7 @@ describe('GeoReplicable Store Actions', () => {
         [{ type: types.RECEIVE_INITIATE_ALL_REPLICABLE_SYNCS_ERROR }],
         [],
         () => {
-          expect(createFlash).toHaveBeenCalledTimes(1);
+          expect(createAlert).toHaveBeenCalledTimes(1);
         },
       );
     });
@@ -503,7 +503,7 @@ describe('GeoReplicable Store Actions', () => {
         [{ type: types.RECEIVE_INITIATE_REPLICABLE_SYNC_ERROR }],
         [],
       );
-      expect(createFlash).toHaveBeenCalledTimes(1);
+      expect(createAlert).toHaveBeenCalledTimes(1);
     });
   });
 

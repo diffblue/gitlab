@@ -3,7 +3,7 @@ import * as actions from 'ee/geo_nodes/store/actions';
 import * as types from 'ee/geo_nodes/store/mutation_types';
 import createState from 'ee/geo_nodes/store/state';
 import testAction from 'helpers/vuex_action_helper';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import {
   MOCK_PRIMARY_VERSION,
@@ -66,8 +66,8 @@ describe('GeoNodes Store Actions', () => {
           state,
           expectedMutations: [{ type: types.REQUEST_NODES }, { type: types.RECEIVE_NODES_ERROR }],
         }).then(() => {
-          expect(createFlash).toHaveBeenCalledTimes(1);
-          createFlash.mockClear();
+          expect(createAlert).toHaveBeenCalledTimes(1);
+          createAlert.mockClear();
         });
       });
     });
@@ -107,8 +107,8 @@ describe('GeoNodes Store Actions', () => {
             { type: types.RECEIVE_NODE_REMOVAL_ERROR },
           ],
         }).then(() => {
-          expect(createFlash).toHaveBeenCalledTimes(1);
-          createFlash.mockClear();
+          expect(createAlert).toHaveBeenCalledTimes(1);
+          createAlert.mockClear();
         });
       });
     });

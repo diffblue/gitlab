@@ -1,4 +1,4 @@
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import axios from '~/lib/utils/axios_utils';
 import { normalizeHeaders, parseIntPagination } from '~/lib/utils/common_utils';
 import { __ } from '~/locale';
@@ -50,7 +50,7 @@ export const fetchDependencies = ({ state, dispatch }, params = {}) => {
     })
     .catch((error) => {
       dispatch('receiveDependenciesError', error);
-      createFlash({
+      createAlert({
         message: FETCH_ERROR_MESSAGE,
       });
     });

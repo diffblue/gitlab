@@ -6,7 +6,7 @@ import {
   GlAvatar,
 } from '@gitlab/ui';
 import { debounce } from 'lodash';
-import createFlash from '~/flash';
+import { createAlert } from '~/flash';
 import httpStatusCodes from '~/lib/utils/http_status';
 import { sprintf, s__, __ } from '~/locale';
 
@@ -113,7 +113,7 @@ export default {
       } else {
         message = s__('AuditLogs|Failed to find %{type}. Please try again.');
       }
-      createFlash({
+      createAlert({
         message: sprintf(message, { type }),
       });
     },
