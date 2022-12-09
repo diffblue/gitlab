@@ -7,6 +7,7 @@ class Groups::EpicsController < Groups::ApplicationController
   include ToggleSubscriptionAction
   include EpicsActions
   include DescriptionDiffActions
+  include ::Observability::ContentSecurityPolicy
 
   before_action :check_epics_available!
   before_action :epic, except: [:index, :create, :new, :bulk_update]
