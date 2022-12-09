@@ -32,9 +32,20 @@ const convertToTableFormat = (resultSet) => {
   });
 };
 
+const convertToSingleValue = (resultSet) => {
+  const [row] = resultSet.rawData();
+
+  if (!row) {
+    return null;
+  }
+
+  return Object.values(row)[0];
+};
+
 const VISUALIZATION_PARSERS = {
   LineChart: convertToLineChartFormat,
   DataTable: convertToTableFormat,
+  SingleStat: convertToSingleValue,
 };
 
 export const fetch = async ({ projectId, visualizationType, query, queryOverrides = {} }) => {

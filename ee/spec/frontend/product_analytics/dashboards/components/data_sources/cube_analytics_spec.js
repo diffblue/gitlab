@@ -68,6 +68,12 @@ describe('Cube Analytics Data Source', () => {
           utc_time: '2022-11-09T00:00:00.000',
         });
       });
+
+      it('returns the expected data format for single stats', async () => {
+        const result = await fetch({ projectId, visualizationType: 'SingleStat', query });
+
+        expect(result).toBe('36');
+      });
     });
   });
 });

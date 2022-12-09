@@ -70,11 +70,11 @@ export default {
     getGridAttribute(widget, attribute) {
       const { gridAttributes: { position = {}, size = {} } = {} } = widget;
 
-      if (position[attribute]) {
+      if (position[attribute] !== undefined) {
         return position[attribute];
       }
 
-      if (size[attribute]) {
+      if (size[attribute] !== undefined) {
         return size[attribute];
       }
 
