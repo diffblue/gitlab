@@ -7,17 +7,21 @@ import {
   unsupportedYamlManifest,
   unsupportedYamlObject,
   mockDastScanExecutionManifest,
+  mockDastScanExecutionWithTagsManifest,
   mockDastScanExecutionObject,
+  mockDastScanExecutionWithTagsObject,
   rulesWithInvalidCadence,
 } from 'ee_jest/security_orchestration/mocks/mock_data';
 
 describe('fromYaml', () => {
   it.each`
-    title                                                                                                | input                                                            | output
-    ${'returns the policy object for a supported manifest'}                                              | ${{ manifest: mockDastScanExecutionManifest }}                   | ${mockDastScanExecutionObject}
-    ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedYamlManifest, validateRuleMode: true }} | ${{ error: true }}
-    ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedYamlManifest }}                         | ${unsupportedYamlObject}
-    ${'returns error object for a policy with invalid cadence cron string'}                              | ${{ manifest: rulesWithInvalidCadence, validateRuleMode: true }} | ${{ error: true }}
+    title                                                                                                | input                                                                                             | output
+    ${'returns the policy object for a supported manifest'}                                              | ${{ manifest: mockDastScanExecutionManifest }}                                                    | ${mockDastScanExecutionObject}
+    ${'returns the error object for a policy with an unsupported attribute'}                             | ${{ manifest: unsupportedYamlManifest, validateRuleMode: true }}                                  | ${{ error: true }}
+    ${'returns the policy object for a policy with the `tags` attribute when `includeTags` is true'}     | ${{ manifest: mockDastScanExecutionWithTagsManifest, validateRuleMode: true, includeTags: true }} | ${mockDastScanExecutionWithTagsObject}
+    ${'returns the error object for a policy with the `tags` attribute when `includeTags` is false'}     | ${{ manifest: mockDastScanExecutionWithTagsManifest, validateRuleMode: true }}                    | ${{ error: true }}
+    ${'returns the policy object for a policy with an unsupported attribute when validation is skipped'} | ${{ manifest: unsupportedYamlManifest }}                                                          | ${unsupportedYamlObject}
+    ${'returns error object for a policy with invalid cadence cron string'}                              | ${{ manifest: rulesWithInvalidCadence, validateRuleMode: true }}                                  | ${{ error: true }}
   `('$title', ({ input, output }) => {
     expect(fromYaml(input)).toStrictEqual(output);
   });
@@ -25,11 +29,13 @@ describe('fromYaml', () => {
 
 describe('createPolicyObject', () => {
   it.each`
-    title                                                                      | input                            | output
-    ${'returns the policy object and no errors for a supported manifest'}      | ${mockDastScanExecutionManifest} | ${{ policy: mockDastScanExecutionObject, hasParsingError: false }}
-    ${'returns the error policy object and the error an unsupported manifest'} | ${unsupportedYamlManifest}       | ${{ policy: { error: true }, hasParsingError: true }}
+    title                                                                                                       | input                                             | output
+    ${'returns the policy object and no errors for a supported manifest'}                                       | ${[mockDastScanExecutionManifest]}                | ${{ policy: mockDastScanExecutionObject, hasParsingError: false }}
+    ${'returns the error policy object and the error for an unsupported manifest'}                              | ${[unsupportedYamlManifest]}                      | ${{ policy: { error: true }, hasParsingError: true }}
+    ${'returns the policy object and no errors for a manifest with tags in it if `includeTags` is true'}        | ${[mockDastScanExecutionWithTagsManifest, true]}  | ${{ policy: mockDastScanExecutionWithTagsObject, hasParsingError: false }}
+    ${'returns the error policy object and the error for a manifest with tags in it if `includeTags` is false'} | ${[mockDastScanExecutionWithTagsManifest, false]} | ${{ policy: { error: true }, hasParsingError: true }}
   `('$title', ({ input, output }) => {
-    expect(createPolicyObject(input)).toStrictEqual(output);
+    expect(createPolicyObject(...input)).toStrictEqual(output);
   });
 });
 

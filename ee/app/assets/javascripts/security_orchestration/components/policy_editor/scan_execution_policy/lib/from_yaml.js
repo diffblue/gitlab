@@ -23,7 +23,7 @@ export const hasRuleModeSupportedScanners = (policy) => {
 /*
   Construct a policy object expected by the policy editor from a yaml manifest.
 */
-export const fromYaml = ({ manifest, validateRuleMode = false }) => {
+export const fromYaml = ({ manifest, validateRuleMode = false, includeTags = false }) => {
   const policy = safeLoad(manifest, { json: true });
 
   if (validateRuleMode) {
@@ -36,6 +36,10 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
     const primaryKeys = ['type', 'name', 'description', 'enabled', 'rules', 'actions'];
     const rulesKeys = ['type', 'agents', 'branches', 'cadence'];
     const actionsKeys = ['scan', 'site_profile', 'scanner_profile', 'variables'];
+
+    if (includeTags) {
+      actionsKeys.push('tags');
+    }
 
     return isValidPolicy({ policy, primaryKeys, rulesKeys, actionsKeys }) &&
       !hasInvalidCron(policy) &&
@@ -52,8 +56,8 @@ export const fromYaml = ({ manifest, validateRuleMode = false }) => {
  * @param {String} manifest a security policy in yaml form
  * @returns {Object} security policy object and any errors
  */
-export const createPolicyObject = (manifest) => {
-  const policy = fromYaml({ manifest, validateRuleMode: true });
+export const createPolicyObject = (manifest, includeTags = false) => {
+  const policy = fromYaml({ manifest, validateRuleMode: true, includeTags });
 
   return { policy, hasParsingError: Boolean(policy.error) };
 };

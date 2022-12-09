@@ -9,12 +9,15 @@ import {
   GlForm,
 } from '@gitlab/ui';
 import { s__ } from '~/locale';
+import glFeatureFlagsMixin from '~/vue_shared/mixins/gl_feature_flags_mixin';
 import { ACTION_THEN_LABEL, ACTION_AND_LABEL } from '../constants';
 import {
   DAST_HUMANIZED_TEMPLATE,
+  DAST_HUMANIZED_TEMPLATE_WITH_TAGS,
   DEFAULT_SCANNER,
   SCANNER_DAST,
   SCANNER_HUMANIZED_TEMPLATE,
+  SCANNER_HUMANIZED_TEMPLATE_WITH_TAGS,
   RULE_MODE_SCANNERS,
 } from './constants';
 import { buildScannerAction } from './lib';
@@ -30,6 +33,7 @@ export default {
     GlFormInput,
     GlSprintf,
   },
+  mixins: [glFeatureFlagsMixin()],
   props: {
     initAction: {
       type: Object,
@@ -51,8 +55,14 @@ export default {
       return this.actionIndex === 0 ? ACTION_THEN_LABEL : ACTION_AND_LABEL;
     },
     actionMessage() {
-      return this.selectedScanner === SCANNER_DAST
-        ? DAST_HUMANIZED_TEMPLATE
+      if (this.selectedScanner === SCANNER_DAST) {
+        return this.glFeatures.scanExecutionTags
+          ? DAST_HUMANIZED_TEMPLATE_WITH_TAGS
+          : DAST_HUMANIZED_TEMPLATE;
+      }
+
+      return this.glFeatures.scanExecutionTags
+        ? SCANNER_HUMANIZED_TEMPLATE_WITH_TAGS
         : SCANNER_HUMANIZED_TEMPLATE;
     },
     siteProfile: {
@@ -71,6 +81,15 @@ export default {
         this.setSelectedScanner({ scannerProfile: value });
       },
     },
+    tags: {
+      get() {
+        return this.initAction.tags?.join(',').trim() ?? '';
+      },
+      set(values) {
+        const tags = values.split(',');
+        this.$emit('changed', { ...this.initAction, tags });
+      },
+    },
   },
   methods: {
     setSelectedScanner({
@@ -82,12 +101,21 @@ export default {
         this.selectedScanner = scanner;
       }
 
-      this.$emit('changed', buildScannerAction({ scanner, siteProfile, scannerProfile }));
+      this.$emit(
+        'changed',
+        buildScannerAction({
+          scanner,
+          siteProfile,
+          scannerProfile,
+          includeTags: this.glFeatures.scanExecutionTags,
+        }),
+      );
     },
   },
   i18n: {
     selectedScannerProfilePlaceholder: s__('ScanExecutionPolicy|Select scanner profile'),
     selectedSiteProfilePlaceholder: s__('ScanExecutionPolicy|Select site profile'),
+    selectedTagsPlaceholder: s__('ScanExecutionPolicy|Select tags (if any)'),
   },
 };
 </script>
@@ -139,6 +167,21 @@ export default {
               v-model="siteProfile"
               :placeholder="$options.i18n.selectedSiteProfilePlaceholder"
               data-testid="site-profile-selection"
+            />
+          </gl-form-group>
+        </template>
+
+        <template #tags>
+          <gl-form-group
+            :label="s__('ScanExecutionPolicy|Tags')"
+            label-for="policy-tags"
+            label-sr-only
+          >
+            <gl-form-input
+              id="policy-tags"
+              v-model="tags"
+              :placeholder="$options.i18n.selectedTagsPlaceholder"
+              data-testid="policy-tags-input"
             />
           </gl-form-group>
         </template>
