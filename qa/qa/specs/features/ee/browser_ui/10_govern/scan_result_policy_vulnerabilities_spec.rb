@@ -71,7 +71,7 @@ module QA
         runner.remove_via_api!
       end
 
-      it 'requires approval when a pipeline report has findings matching the scan result policy',
+      it 'requires approval when a pipeline report has findings matching the scan result policy', :reliable,
          testcase: 'https://gitlab.com/gitlab-org/gitlab/-/quality/test_cases/365005' do
         expect(scan_result_policy_commit.api_response).to have_key(:branch)
         expect(scan_result_policy_commit.api_response[:branch]).not_to be nil
