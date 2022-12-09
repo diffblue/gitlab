@@ -33,10 +33,7 @@ RSpec.describe 'Query.runner(id)' do
       runner_data = graphql_data_at(:runner)
       expect(runner_data).not_to be_nil
 
-      expect(runner_data).to match a_hash_including(
-        'id' => runner.to_global_id.to_s,
-        'upgradeStatus' => expected_upgrade_status
-      )
+      expect(runner_data).to match a_graphql_entity_for(runner, upgrade_status: expected_upgrade_status)
     end
   end
 
@@ -150,10 +147,7 @@ RSpec.describe 'Query.runner(id)' do
 
           runner_data = graphql_data_at(:runner)
           expect(runner_data).not_to be_nil
-          expect(runner_data).to match a_hash_including(
-            'id' => runner.to_global_id.to_s,
-            'upgradeStatus' => 'RECOMMENDED'
-          )
+          expect(runner_data).to match a_graphql_entity_for(runner, upgrade_status: 'RECOMMENDED')
         end
       end
     end
