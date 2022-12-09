@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe API::BulkImports do
+RSpec.describe API::BulkImports, feature_category: :importers do
   let_it_be(:user) { create(:user) }
   let_it_be(:import_1) { create(:bulk_import, user: user) }
   let_it_be(:import_2) { create(:bulk_import, user: user) }
@@ -44,6 +44,8 @@ RSpec.describe API::BulkImports do
   end
 
   describe 'POST /bulk_imports' do
+    let(:api_response) { { 'scopes' => %w[api read_repository] } }
+
     before do
       allow_next_instance_of(BulkImports::Clients::HTTP) do |instance|
         allow(instance)
@@ -53,6 +55,9 @@ RSpec.describe API::BulkImports do
         allow(instance)
           .to receive(:instance_enterprise)
           .and_return(false)
+        allow(instance)
+          .to receive(:get)
+          .and_return(api_response)
       end
     end
 
