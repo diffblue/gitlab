@@ -7,6 +7,10 @@ module EE
         extend ActiveSupport::Concern
 
         prepended do
+          # Override attributes
+          expose :user, override: true, merge: true, using: ::API::Entities::UserWithProvisionedAttrs
+
+          # EE attributes
           expose :group_saml_identity,
                  using: ::API::Entities::Identity,
                  if: -> (member, options) { Ability.allowed?(options[:current_user], :read_group_saml_identity, member.source) }
