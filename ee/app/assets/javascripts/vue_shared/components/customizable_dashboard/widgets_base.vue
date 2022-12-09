@@ -10,6 +10,8 @@ export default {
       import('ee/product_analytics/dashboards/components/visualizations/line_chart.vue'),
     DataTable: () =>
       import('ee/product_analytics/dashboards/components/visualizations/data_table.vue'),
+    SingleStat: () =>
+      import('ee/product_analytics/dashboards/components/visualizations/single_stat.vue'),
   },
   inject: ['projectId'],
   props: {

@@ -53,4 +53,9 @@ export const mockResultSet = {
       'Jitsu.count': '14',
     },
   ],
+  rawData: () => [
+    {
+      'Jitsu.count': '36',
+    },
+  ],
 };

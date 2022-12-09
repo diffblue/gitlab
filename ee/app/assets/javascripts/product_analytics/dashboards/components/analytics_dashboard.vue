@@ -8,6 +8,8 @@ const VISUALIZATION_JSONS = {
     import(`../gl_dashboards/visualizations/cube_analytics_line_chart.json`),
   cube_analytics_data_table: () =>
     import(`../gl_dashboards/visualizations/cube_analytics_data_table.json`),
+  cube_analytics_single_stat: () =>
+    import(`../gl_dashboards/visualizations/cube_analytics_single_stat.json`),
 };
 
 const DASHBOARD_JSONS = {
