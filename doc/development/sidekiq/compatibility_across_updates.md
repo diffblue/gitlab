@@ -190,7 +190,7 @@ When renaming queues, use the `sidekiq_queue_migrate` helper migration method
 in a **post-deployment migration**:
 
 ```ruby
-class MigrateTheRenamedSidekiqQueue < Gitlab::Database::Migration[2.0]
+class MigrateTheRenamedSidekiqQueue < Gitlab::Database::Migration[2.1]
   restrict_gitlab_migration gitlab_schema: :gitlab_main
   disable_ddl_transaction!
 
