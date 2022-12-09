@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::Geo::NodesController, :geo do
+RSpec.describe Admin::Geo::NodesController, :geo, feature_category: :geo_replication do
   include AdminModeHelper
 
   let_it_be(:admin) { create(:admin) }

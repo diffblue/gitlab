@@ -2,7 +2,8 @@
 
 require 'spec_helper'
 
-RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessions, :clean_gitlab_redis_rate_limiting do
+RSpec.describe Users::IdentityVerificationController, :clean_gitlab_redis_sessions, :clean_gitlab_redis_rate_limiting,
+feature_category: :authentication_and_authorization do
   include SessionHelpers
 
   let_it_be(:unconfirmed_user) { create(:user, :unconfirmed) }

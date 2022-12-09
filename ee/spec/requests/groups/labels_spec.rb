@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe 'view audit events' do
+RSpec.describe 'view audit events', feature_category: :team_planning do
   describe 'GET /groups/:group/-/audit_events' do
     let_it_be(:group) { create(:group, :public) }
     let_it_be(:group1) { create(:group, parent: group) }

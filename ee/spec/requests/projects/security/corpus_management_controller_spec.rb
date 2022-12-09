@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Security::CorpusManagementController, type: :request do
+RSpec.describe Projects::Security::CorpusManagementController, type: :request, feature_category: :fuzz_testing do
   let(:project) { create(:project) }
   let(:user) { create(:user) }
 

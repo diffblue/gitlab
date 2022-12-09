@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'spec_helper'
 
-RSpec.describe Groups::RoadmapController do
+RSpec.describe Groups::RoadmapController, feature_category: :portfolio_management do
   let(:user) { create(:user) }
   let(:group) { create(:group, :public) }
 

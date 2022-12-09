@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::IncidentsController do
+RSpec.describe Projects::IncidentsController, feature_category: :incident_management do
   let_it_be(:issue) { create(:incident) }
   let_it_be(:project) { issue.project }
   let_it_be(:user) { issue.author }

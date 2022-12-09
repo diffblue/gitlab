@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Analytics::DevopsAdoptionController do
+RSpec.describe Groups::Analytics::DevopsAdoptionController, feature_category: :devops_reports do
   let_it_be(:current_user) { create(:user) }
   let_it_be(:group) { create :group }
 

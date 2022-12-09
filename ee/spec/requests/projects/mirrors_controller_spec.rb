@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::MirrorsController do
+RSpec.describe Projects::MirrorsController, feature_category: :source_code_management do
   let(:project) do
     create(:project, :repository,
            mirror: true,

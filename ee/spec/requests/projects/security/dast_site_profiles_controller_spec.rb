@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Security::DastSiteProfilesController, type: :request do
+RSpec.describe Projects::Security::DastSiteProfilesController, type: :request, feature_category: :dynamic_application_security_testing do
   include GraphqlHelpers
 
   let(:project) { create(:project) }

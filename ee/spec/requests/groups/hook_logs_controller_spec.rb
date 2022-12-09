@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::HookLogsController do
+RSpec.describe Groups::HookLogsController, feature_category: :integrations do
   let_it_be(:user) { create(:user) }
   let_it_be_with_refind(:web_hook) { create(:group_hook) }
   let_it_be_with_refind(:web_hook_log) { create(:web_hook_log, web_hook: web_hook) }

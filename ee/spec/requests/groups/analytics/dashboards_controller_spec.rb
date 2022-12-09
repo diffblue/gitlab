@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Analytics::DashboardsController do
+RSpec.describe Groups::Analytics::DashboardsController, feature_category: :subgroups do
   let_it_be(:group) { create(:group) }
   let_it_be(:another_group) { create(:group) }
   let_it_be(:user) do

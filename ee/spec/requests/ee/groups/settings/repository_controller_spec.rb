@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Groups::Settings::RepositoryController do
+RSpec.describe Groups::Settings::RepositoryController, feature_category: :source_code_management do
   let_it_be(:group) { create(:group) }
   let_it_be(:user) { create(:user) }
 

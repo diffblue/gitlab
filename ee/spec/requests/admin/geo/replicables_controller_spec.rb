@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Admin::Geo::ReplicablesController, :geo do
+RSpec.describe Admin::Geo::ReplicablesController, :geo, feature_category: :geo_replication do
   include AdminModeHelper
   include EE::GeoHelpers
 

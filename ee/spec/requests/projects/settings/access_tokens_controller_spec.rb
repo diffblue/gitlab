@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Settings::AccessTokensController, :saas do
+RSpec.describe Projects::Settings::AccessTokensController, :saas, feature_category: :authentication_and_authorization do
   let_it_be(:user) { create(:user) }
   let_it_be(:group) { create(:group_with_plan, plan: :bronze_plan) }
   let_it_be(:resource) { create(:project, group: group) }

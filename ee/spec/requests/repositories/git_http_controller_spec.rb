@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Repositories::GitHttpController, type: :request do
+RSpec.describe Repositories::GitHttpController, type: :request, feature_category: :source_code_management do
   include GitHttpHelpers
   include ::EE::GeoHelpers
 

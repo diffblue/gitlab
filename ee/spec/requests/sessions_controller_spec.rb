@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe SessionsController do
+RSpec.describe SessionsController, feature_category: :authentication_and_authorization do
   describe '#create' do
     let_it_be(:user) { create(:user, :unconfirmed) }
 

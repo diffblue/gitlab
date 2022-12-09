@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 RSpec.describe ApplicationController, type: :request do
-  context 'with redirection due to onboarding' do
+  context 'with redirection due to onboarding', feature_category: :onboarding do
     let(:onboarding_in_progress) { true }
     let(:url) { '_onboarding_step_' }
 

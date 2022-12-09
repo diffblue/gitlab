@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::Security::PoliciesController, type: :request do
+RSpec.describe Projects::Security::PoliciesController, type: :request, feature_category: :security_policy_management do
   let_it_be(:owner) { create(:user) }
   let_it_be(:user) { create(:user) }
   let_it_be(:project) { create(:project, :repository, namespace: owner.namespace) }

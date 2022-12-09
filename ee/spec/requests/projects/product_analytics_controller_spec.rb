@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe Projects::ProductAnalyticsController, type: :request do
+RSpec.describe Projects::ProductAnalyticsController, type: :request, feature_category: :product_analytics do
   describe 'GET /:namespace/:project/-/product_analytics/dashboards' do
     let_it_be(:project) { create(:project, :repository) }
     let_it_be(:user) { project.first_owner }
