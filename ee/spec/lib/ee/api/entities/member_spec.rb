@@ -76,4 +76,23 @@ RSpec.describe API::Entities::Member do
       end
     end
   end
+
+  context 'with member role' do
+    let_it_be(:member_role) { create(:member_role) }
+
+    it 'exposes member role' do
+      allow(member).to receive(:member_role).and_return(member_role)
+
+      expect(entity_representation[:member_role][:id]).to eq member_role.id
+      expect(entity_representation[:member_role][:base_access_level]).to eq member_role.base_access_level
+      expect(entity_representation[:member_role][:download_code]).to eq member_role.download_code
+      expect(entity_representation[:member_role][:group_id]).to eq(member_role.namespace.id)
+    end
+  end
+
+  context 'without member role' do
+    it 'does not expose member role' do
+      expect(entity_representation[:member_role]).to be_nil
+    end
+  end
 end

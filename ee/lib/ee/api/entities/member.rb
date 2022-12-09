@@ -21,6 +21,7 @@ module EE
                  if: ->(member, _) { member.source_type == 'Namespace' && member.ldap? }
 
           expose :human_state_name, as: :membership_state
+          expose :member_role, with: MemberRole, expose_nil: false
         end
       end
     end
