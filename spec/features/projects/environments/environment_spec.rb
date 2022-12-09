@@ -29,7 +29,7 @@ RSpec.describe 'Environment', feature_category: :projects do
     end
 
     context 'with auto-stop' do
-      let!(:environment) { create(:environment, :will_auto_stop, name: 'staging', project: project) }
+      let_it_be(:environment) { create(:environment, :will_auto_stop, name: 'staging', project: project) }
 
       before do
         visit_environment(environment)
