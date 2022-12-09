@@ -4,9 +4,9 @@
 - date = permanent_deletion_date(project.marked_for_deletion_at)
 - title = _('This project will be deleted on %{date}') %{ date: date }
 
-= render Pajamas::AlertComponent.new( variant: :warning,
+= render Pajamas::AlertComponent.new(variant: :warning,
   title: title,
-  alert_options: { class: "gl-mb-7"} ) do |c|
+  alert_options: { class: "gl-mb-7"}) do |c|
   = c.body do
     = _("Restoring the project will prevent the project from being removed on this date and restore people's ability to make changes to it.")
     = _("The repository can be committed to, and issues, comments and other entities can be created.")

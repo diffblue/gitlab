@@ -6,7 +6,7 @@
       %span.nav-item-name
         = _("Billing")
     %ul.sidebar-sub-level-items.is-fly-out-only
-      = nav_link(controller: :billings, html_options: { class: "fly-out-top-item" } ) do
+      = nav_link(controller: :billings, html_options: { class: "fly-out-top-item" }) do
         = link_to profile_billings_path do
           %strong.fly-out-top-item-name
             #{ _('Billing') }
