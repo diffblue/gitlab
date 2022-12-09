@@ -21,6 +21,15 @@ describe('buildScannerAction', () => {
         scanner_profile: scannerProfile,
       });
     });
+
+    it('returns a DAST scanner action with tags if provided `includeTags`', () => {
+      expect(buildScannerAction({ scanner: SCANNER_DAST, includeTags: true })).toEqual({
+        scan: SCANNER_DAST,
+        site_profile: '',
+        scanner_profile: '',
+        tags: [],
+      });
+    });
   });
 
   describe('non-DAST', () => {
@@ -28,6 +37,14 @@ describe('buildScannerAction', () => {
       const scanner = 'sast';
       expect(buildScannerAction({ scanner })).toEqual({
         scan: scanner,
+      });
+    });
+
+    it('returns a non-DAST scanner action with tags if provided `includeTags`', () => {
+      const scanner = 'sast';
+      expect(buildScannerAction({ scanner, includeTags: true })).toEqual({
+        scan: scanner,
+        tags: [],
       });
     });
   });
