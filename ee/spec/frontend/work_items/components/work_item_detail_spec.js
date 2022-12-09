@@ -5,6 +5,7 @@ import VueApollo from 'vue-apollo';
 import WorkItemWeight from 'ee/work_items/components/work_item_weight.vue';
 import WorkItemProgress from 'ee/work_items/components/work_item_progress.vue';
 import WorkItemIteration from 'ee/work_items/components/work_item_iteration.vue';
+import WorkItemHealthStatus from 'ee/work_items/components/work_item_health_status.vue';
 import workItemWeightSubscription from 'ee/work_items/graphql/work_item_weight.subscription.graphql';
 import createMockApollo from 'helpers/mock_apollo_helper';
 import waitForPromises from 'helpers/wait_for_promises';
@@ -50,6 +51,7 @@ describe('WorkItemDetail component', () => {
   const findWorkItemWeight = () => wrapper.findComponent(WorkItemWeight);
   const findWorkItemProgress = () => wrapper.findComponent(WorkItemProgress);
   const findWorkItemIteration = () => wrapper.findComponent(WorkItemIteration);
+  const findWorkItemHealthStatus = () => wrapper.findComponent(WorkItemHealthStatus);
 
   const createComponent = ({
     handler = successHandler,
@@ -73,6 +75,7 @@ describe('WorkItemDetail component', () => {
         },
         hasIssueWeightsFeature: true,
         hasIterationsFeature: true,
+        hasIssuableHealthStatusFeature: true,
         hasOkrsFeature: true,
         projectNamespace: 'namespace',
         fullPath: 'group/project',
@@ -139,6 +142,36 @@ describe('WorkItemDetail component', () => {
       const updateError = 'Failed to update';
 
       findWorkItemWeight().vm.$emit('error', updateError);
+      await waitForPromises();
+
+      expect(findAlert().text()).toBe(updateError);
+    });
+  });
+
+  describe('health status widget', () => {
+    describe.each`
+      description                               | healthStatusWidgetPresent | exists
+      ${'when widget is returned from API'}     | ${true}                   | ${true}
+      ${'when widget is not returned from API'} | ${false}                  | ${false}
+    `('$description', ({ healthStatusWidgetPresent, exists }) => {
+      it(`${
+        healthStatusWidgetPresent ? 'renders' : 'does not render'
+      } healthStatus component`, async () => {
+        const response = workItemResponseFactory({ healthStatusWidgetPresent });
+        const handler = jest.fn().mockResolvedValue(response);
+        createComponent({ handler });
+        await waitForPromises();
+
+        expect(findWorkItemHealthStatus().exists()).toBe(exists);
+      });
+    });
+
+    it('shows an error message when it emits an `error` event', async () => {
+      createComponent();
+      await waitForPromises();
+      const updateError = 'Failed to update';
+
+      findWorkItemHealthStatus().vm.$emit('error', updateError);
       await waitForPromises();
 
       expect(findAlert().text()).toBe(updateError);
