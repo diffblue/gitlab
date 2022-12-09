@@ -117,7 +117,7 @@ function fail_on_warnings() {
 
   if test -s "$warnings";
   then
-    echo "There were warnings:"
+    echoerr "There were warnings:"
     cat "$warnings"
     rm "$warnings"
     return 1
