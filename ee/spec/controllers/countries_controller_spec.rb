@@ -3,8 +3,6 @@
 require 'spec_helper'
 
 RSpec.describe CountriesController, feature_category: :not_owned do
-  include CountriesControllerTestHelper
-
   describe 'GET #index' do
     it 'returns list of countries as json' do
       get :index
@@ -21,7 +19,7 @@ RSpec.describe CountriesController, feature_category: :not_owned do
       # response is returned as [["Country Name", "Country Code", "Country Flag Emoji", "Dialing Code"], ...]
       resultant_countries = json_response.map { |row| row[0] }
 
-      expect(resultant_countries).not_to include(*world_deny_list)
+      expect(resultant_countries).not_to include(*World.country_deny_list)
     end
 
     it 'overrides Ukraine name and adds information about restricted regions' do

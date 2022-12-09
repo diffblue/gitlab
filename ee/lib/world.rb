@@ -4,16 +4,33 @@ module World
   include ::Gitlab::Utils::StrongMemoize
   extend self
 
-  DENYLIST = ['Iran (Islamic Republic of)', 'Sudan', 'Syrian Arab Republic', 'Korea (Democratic People\'s Republic of)', 'Cuba', 'Belarus', 'Russian Federation'].freeze
+  COUNTRY_DENYLIST = [
+    'BY', # Belarus
+    'CU', # Cuba
+    'IR', # Iran (Islamic Republic of)
+    'KP', # Korea (Democratic People's Republic of)
+    'RU', # Russian Federation
+    'SD', # Sudan
+    'SY' # Syrian Arab Republic
+  ].freeze
+
+  JH_MARKET = [
+    'CN', # China
+    'HK', # Hong Kong
+    'MO' # Macao
+  ].freeze
+
   STATE_DENYLIST_FOR_COUNTRY = {
     # For reason, see: https://gitlab.com/gitlab-com/legal-and-compliance/-/issues/1024
     'UA' => ["Donets'ka Oblast'", "Luhans'ka Oblast'", "Respublika Krym"].freeze
   }.freeze
 
-  JH_MARKET = ['China', 'Hong Kong', 'Macao'].freeze
+  def country_deny_list
+    COUNTRY_DENYLIST + JH_MARKET
+  end
 
   def countries_for_select
-    strong_memoize(:countries_for_select) { all_countries.sort_by(&:name).map { |c| [c.name, c.alpha2, c.emoji_flag, c.country_code] } }
+    strong_memoize(:countries_for_select) { supported_countries.sort_by(&:name).map { |c| [c.name, c.alpha2, c.emoji_flag, c.country_code] } }
   end
 
   def states_for_country(country_code)
@@ -28,8 +45,8 @@ module World
     end
   end
 
-  def all_countries
-    strong_memoize(:all_countries) { ISO3166::Country.all.reject { |item| DENYLIST.include?(item.name) || JH_MARKET.include?(item.name) } }
+  def supported_countries
+    ISO3166::Country.all.reject { |item| country_deny_list.include?(item.alpha2) }
   end
 
   def alpha3_from_alpha2(alpha2)
