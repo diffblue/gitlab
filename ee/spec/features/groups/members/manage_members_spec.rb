@@ -70,7 +70,7 @@ RSpec.describe 'Groups > Members > Manage members', :saas, :js, feature_category
     end
 
     shared_examples "adding user by email with a given role" do |role|
-      it "shows a modal and invites them to a group if confirmed" do
+      it "shows a modal and invites them to a group if confirmed", quarantine: "https://gitlab.com/gitlab-org/gitlab/-/issues/384518" do
         group.add_owner(user1)
         add_user_by_email(role)
 
