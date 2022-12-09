@@ -2,10 +2,10 @@
 
 require 'spec_helper'
 
-RSpec.describe EE::ReadonlyAbilities do
+RSpec.describe EE::ReadonlyAbilities, feature_category: :subscription_management do
   let(:test_class) do
     Class.new do
-      include ReadonlyAbilities
+      include EE::ReadonlyAbilities
     end
   end
 
@@ -15,13 +15,13 @@ RSpec.describe EE::ReadonlyAbilities do
 
   describe '.readonly_abilities' do
     it 'returns an array of abilites to be prevented when readonly' do
-      expect(TestClass.readonly_abilities).to include(*described_class::READONLY_ABILITIES_EE)
+      expect(TestClass.readonly_abilities).to include(*described_class::READONLY_ABILITIES)
     end
   end
 
   describe '.readonly_features' do
     it 'returns an array of features to be prevented when readonly' do
-      expect(TestClass.readonly_features).to include(*described_class::READONLY_FEATURES_EE)
+      expect(TestClass.readonly_features).to include(*described_class::READONLY_FEATURES)
     end
   end
 end

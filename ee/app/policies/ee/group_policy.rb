@@ -490,8 +490,6 @@ module EE
         prevent :admin_milestone
         prevent :upload_file
         prevent :admin_label
-        prevent :admin_issue_board_list
-        prevent :admin_issue
         prevent :admin_pipeline
         prevent :admin_group_runners
         prevent :register_group_runners

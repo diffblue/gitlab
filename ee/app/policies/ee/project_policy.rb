@@ -6,6 +6,8 @@ module EE
     extend ::Gitlab::Utils::Override
 
     prepended do
+      include ReadonlyAbilities
+
       with_scope :subject
       condition(:auto_fix_enabled) { @subject.security_setting&.auto_fix_enabled? }
 
@@ -517,14 +519,11 @@ module EE
       end
 
       rule { read_only }.policy do
-        # We are allowing `push_code` so the `GitAccessProject` can render
-        # an appropriate error message before failing
-        prevent(*(readonly_abilities - [:push_code]))
+        prevent(*readonly_abilities)
 
         readonly_features.each do |feature|
           prevent(*create_update_admin(feature))
         end
-        prevent :create_package
       end
 
       rule { auditor | can?(:developer_access) }.enable :add_project_to_instance_security_dashboard

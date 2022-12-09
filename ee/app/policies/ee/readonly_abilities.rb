@@ -4,15 +4,38 @@ module EE
   module ReadonlyAbilities
     extend ActiveSupport::Concern
 
-    READONLY_ABILITIES_EE = %i[
+    READONLY_ABILITIES = %i[
+      admin_tag
+      push_to_delete_protected_branch
+      request_access
+      upload_file
+      resolve_note
+      create_merge_request_from
+      create_merge_request_in
+      award_emoji
       admin_software_license_policy
       modify_auto_fix_setting
       create_test_case
+      create_package
     ].freeze
 
-    READONLY_FEATURES_EE = %i[
-      issue_board
-      issue_link
+    READONLY_FEATURES = %i[
+      merge_request
+      label
+      milestone
+      snippet
+      wiki
+      pipeline
+      pipeline_schedule
+      build
+      trigger
+      environment
+      deployment
+      commit_status
+      container_image
+      pages
+      cluster
+      release
       approvers
       vulnerability_feedback
       vulnerability
@@ -22,16 +45,12 @@ module EE
     ].freeze
 
     class_methods do
-      extend ::Gitlab::Utils::Override
-
-      override :readonly_abilities
       def readonly_abilities
-        (super + READONLY_ABILITIES_EE).freeze
+        READONLY_ABILITIES
       end
 
-      override :readonly_features
       def readonly_features
-        (super + READONLY_FEATURES_EE).freeze
+        READONLY_FEATURES
       end
     end
   end

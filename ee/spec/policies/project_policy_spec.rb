@@ -1928,7 +1928,7 @@ RSpec.describe ProjectPolicy do
     let(:current_user) { maintainer }
     let(:abilities) do
       described_class.readonly_features.flat_map { |feature| described_class.create_update_admin(feature) } +
-        (described_class.readonly_abilities - %i[push_code]) + %i[create_package]
+        described_class.readonly_abilities
     end
 
     before do
