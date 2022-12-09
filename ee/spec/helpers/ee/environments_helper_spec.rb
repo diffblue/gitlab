@@ -33,7 +33,7 @@ RSpec.describe EnvironmentsHelper do
 
       allow(helper).to receive(:current_user).and_return(user)
       allow(helper).to receive(:can?)
-        .with(user, :update_deployment, deployment)
+        .with(user, :approve_deployment, deployment)
         .and_return(true)
     end
 
@@ -88,7 +88,9 @@ RSpec.describe EnvironmentsHelper do
   end
 
   describe '#can_approve_deployment?' do
-    let_it_be(:protected_environment) { create(:protected_environment, name: environment.name, project: project) }
+    let_it_be(:protected_environment) do
+      create(:protected_environment, name: environment.name, project: project, authorize_user_to_deploy: user)
+    end
 
     subject { helper.can_approve_deployment?(deployment) }
 
@@ -101,9 +103,7 @@ RSpec.describe EnvironmentsHelper do
     context 'when environment has a unified approval setting' do
       context 'user has access' do
         before do
-          allow(helper).to receive(:can?)
-            .with(user, :update_deployment, deployment)
-            .and_return(true)
+          project.add_developer(user)
         end
 
         context 'with required approvals count = 0' do
@@ -125,9 +125,7 @@ RSpec.describe EnvironmentsHelper do
 
       context 'user does not have access' do
         before do
-          allow(helper).to receive(:can?)
-            .with(user, :update_deployment, deployment)
-            .and_return(false)
+          project.add_reporter(user)
         end
 
         it 'returns false' do
@@ -153,10 +151,7 @@ RSpec.describe EnvironmentsHelper do
       context 'user has access' do
         before do
           qa_group.add_developer(user)
-
-          allow(helper).to receive(:can?)
-            .with(user, :read_deployment, deployment)
-            .and_return(true)
+          project.add_developer(user)
         end
 
         it 'returns true' do
@@ -167,9 +162,7 @@ RSpec.describe EnvironmentsHelper do
       context 'user does not have access' do
         context 'with no matching approval rules' do
           before do
-            allow(helper).to receive(:can?)
-              .with(user, :read_deployment, deployment)
-              .and_return(true)
+            project.add_reporter(user)
           end
 
           it 'returns false' do
@@ -180,10 +173,7 @@ RSpec.describe EnvironmentsHelper do
         context 'when cannot read deployment' do
           before do
             qa_group.add_developer(user)
-
-            allow(helper).to receive(:can?)
-              .with(user, :read_deployment, deployment)
-              .and_return(false)
+            project.add_guest(user)
           end
 
           it 'returns false' do

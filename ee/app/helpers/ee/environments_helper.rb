@@ -24,11 +24,7 @@ module EE
     end
 
     def can_approve_deployment?(deployment)
-      if deployment.environment.has_approval_rules?
-        can?(current_user, :read_deployment, deployment) && deployment.environment.find_approval_rule_for(current_user).present?
-      else
-        can?(current_user, :update_deployment, deployment) && deployment.environment.required_approval_count > 0
-      end
+      can?(current_user, :approve_deployment, deployment)
     end
   end
 end

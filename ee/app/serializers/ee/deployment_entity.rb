@@ -9,7 +9,7 @@ module EE
       expose :approvals, using: ::API::Entities::Deployments::Approval
 
       expose :can_approve_deployment do |deployment|
-        can?(request.current_user, :update_deployment, deployment)
+        can?(request.current_user, :approve_deployment, deployment)
       end
 
       expose :has_approval_rules do |deployment|
