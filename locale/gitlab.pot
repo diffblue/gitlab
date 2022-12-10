@@ -1768,6 +1768,9 @@ msgstr ""
 msgid "A sign-in to your account has been made from the following IP address: %{ip}"
 msgstr ""
 
+msgid "A template for starting a new TYPO3 project"
+msgstr ""
+
 msgid "A title is required"
 msgstr ""
 
@@ -32837,6 +32840,9 @@ msgid "ProjectTemplates|Serverless Framework/JS"
 msgstr ""
 
 msgid "ProjectTemplates|Spring"
+msgstr ""
+
+msgid "ProjectTemplates|TYPO3 Distribution"
 msgstr ""
 
 msgid "ProjectTemplates|Tencent Serverless Framework/NextjsSSR"
